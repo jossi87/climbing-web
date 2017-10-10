@@ -47,11 +47,7 @@ export default class Login extends Component {
       if (!loggedIn) {
         return this.setState({message: <Panel bsStyle='danger'>Invalid username and/or password.</Panel>});
       } else {
-        if (location.state && location.state.nextPathname) {
-          this.setState({message: null, pushUrl: location.state.nextPathname});
-        } else {
-          this.setState({message: null, pushUrl: "/"});
-        }
+        return this.setState({message: null, pushUrl: "/"});
       }
     });
   }

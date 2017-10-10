@@ -23,7 +23,7 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
 export default class SectorEdit extends Component {
   componentWillMount() {
     if (!auth.isAdmin()) {
-      history.replace('/login');
+      this.setState({pushUrl: "/login", error: null});
     }
   }
 

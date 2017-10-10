@@ -18,10 +18,7 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
 export default class AreaEdit extends Component {
   componentWillMount() {
     if (!auth.isAdmin()) {
-      replace({
-        pathname: '/login',
-        state: { nextPathname: nextState.location.pathname }
-      })
+      this.setState({pushUrl: "/login", error: null});
     }
   }
 

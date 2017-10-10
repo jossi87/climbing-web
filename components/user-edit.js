@@ -13,10 +13,7 @@ export default class UserEdit extends Component {
 
   componentWillMount() {
     if (!auth.loggedIn()) {
-      replace({
-        pathname: '/login',
-        state: { nextPathname: nextState.location.pathname }
-      })
+      this.setState({pushUrl: "/login"});
     }
   }
 
