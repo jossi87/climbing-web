@@ -28,15 +28,6 @@ export default class User extends Component {
     });
   }
 
-  componentWillMount() {
-    if (!auth.loggedIn()) {
-      replace({
-        pathname: '/login',
-        state: { nextPathname: nextState.location.pathname }
-      })
-    }
-  }
-
   componentDidMount() {
     this.refresh(this.props.match.params.userId);
   }
