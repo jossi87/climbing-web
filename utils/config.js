@@ -5,7 +5,7 @@ module.exports = {
     } else if (window.location.hostname=='buldring.fredrikstadklatreklubb.org') {
       return "https://buldring.fredrikstadklatreklubb.org/com.buldreinfo.jersey.jaxb/v1/" + str;
     } else if (window.location.hostname=='brattelinjer.no') {
-      return "https://klatring.buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/" + str;
+      return "https://brattelinjer.no/com.buldreinfo.jersey.jaxb/v1/" + str;
     } else {
       return "https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/" + str;
     }
@@ -17,7 +17,7 @@ module.exports = {
     } else if (window.location.hostname=='buldring.fredrikstadklatreklubb.org') {
       return "Buldring i Fredrikstad";
     } else if (window.location.hostname=='brattelinjer.no') {
-      return "Klatring i Rogaland";
+      return "Bratte linjer";
     } else {
       return "buldreinfo";
     }
