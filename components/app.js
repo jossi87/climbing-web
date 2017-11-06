@@ -66,14 +66,19 @@ export default class App extends Component {
   }
 
   inputChange(e) {
-    const value = e.target.value;
-    if (value && value.length>0) {
-      this.setState({searchString: value});
-      Request.get(config.getUrl("search?regionId=" + config.getRegion() + "&value=" + value)).withCredentials().end((err, res) => {
+    if (e.target.value && e.target.value.length>0) {
+      this.setState({searchString: e.target.value});
+
+      Request.post(config.getUrl("search"))
+      .withCredentials()
+      .send({regionId: config.getRegion(), value: e.target.value})
+      .set('Accept', 'application/json')
+      .end((err, res) => {
         if (err) {
           console.log(err);
+        } else {
+          this.setState({searchResults: res.body});
         }
-        this.setState({searchResults: res.body});
       });
     }
     else {
