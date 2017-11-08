@@ -30,7 +30,7 @@ export default class Login extends Component {
     } else if (!this.validateEmail(this.state.username)) {
       this.setState({message: <Panel bsStyle='danger'>No email address registered on &quot;{this.state.username}&quot;. Contact Jostein (jostein.oygarden@gmail.com) to recover password.</Panel>});
     } else {
-      Request.get(config.getUrl("users/forgotPassword?username=" + this.state.username)).withCredentials().end((err, res) => {
+      Request.get(config.getUrl("users/forgotPassword?username=" + this.state.username + "&hostname=" + window.location.hostname)).withCredentials().end((err, res) => {
         if (err) {
           this.setState({message: <Panel bsStyle='danger'>{err.toString()}</Panel>});
         } else {
