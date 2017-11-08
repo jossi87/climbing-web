@@ -6,7 +6,7 @@ module.exports = {
   entry: './app',
   // Output our app to the dist/ directory
   output: {
-    filename: 'index.js',
+    filename: './index.js',
     path: __dirname + '/public'
   },
   // Emit source maps so we can debug our code in the browser
