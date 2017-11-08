@@ -6,6 +6,7 @@ module.exports = {
   entry: './app',
   // Output our app to the dist/ directory
   output: {
+    publicPath: '/',
     filename: 'index.js',
     path: __dirname + '/public'
   },
