@@ -1,11 +1,12 @@
 {
-  "url": "https://github.com/owner/project/issues",
-  "description": "buldreinfo.com",
+  "description": "https://buldreinfo.com | https://buldring.fredrikstadklatreklubb.org | https://buldring.bergen-klatreklubb.no | https://brattelinjer.no",
   "email": "jostein.oygarden@gmail.com",
   "repository": {
-    "private": true
+    "type" : "git"
+  , "url" : "https://bitbucket.org/josteinoygarden/buldreinfo-web.git"
   },
   "license": "UNLICENSED",
+  "private": true,
   "dependencies": {
     "create-react-class": "^15.6.2",
     "object-fit-images": "^3.2.3",
@@ -37,7 +38,6 @@
     "uglifyjs-webpack-plugin": "^1.0.0-rc.0",
     "webpack": "^3.8.1"
   },
-  "private": true,
   "scripts": {
     "build": "webpack",
     "debug": "webpack --display-error-details"
