@@ -1,12 +1,15 @@
 {
+  "name": "buldreinfo-web",
+  "version": "1.0.0",
   "description": "https://buldreinfo.com | https://buldring.fredrikstadklatreklubb.org | https://buldring.bergen-klatreklubb.no | https://brattelinjer.no",
-  "email": "jostein.oygarden@gmail.com",
+  "homepage": "https://buldreinfo.com",
+  "license": "UNLICENSED",
+  "private": true,
+  "author": "Jostein Oeygarden <jostein.oygarden@gmail.com> (https://jossi.org)",
   "repository": {
     "type" : "git"
   , "url" : "https://bitbucket.org/josteinoygarden/buldreinfo-web.git"
   },
-  "license": "UNLICENSED",
-  "private": true,
   "dependencies": {
     "create-react-class": "^15.6.2",
     "object-fit-images": "^3.2.3",
