@@ -189,7 +189,7 @@ export default class ProblemEdit extends Component {
           </FormGroup>
           <FormGroup controlId="formControlsTypeId">
             <ControlLabel>Type</ControlLabel><br/>
-            <DropdownButton title={selectedType.type + (selectedType.subType && " " + selectedType.subType)} id="bg-nested-dropdown">
+            <DropdownButton title={selectedType.type + (selectedType.subType? " " + selectedType.subType : "")} id="bg-nested-dropdown">
               {this.state.types.map((t, i) => { return <MenuItem key={i} eventKey={i} onSelect={this.onTypeIdChanged.bind(this, t.id)}>{t.type} {t.subType}</MenuItem> })}
             </DropdownButton>
           </FormGroup>
