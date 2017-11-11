@@ -37,6 +37,7 @@ export default class Problem extends Component {
           id: res.body[0].id,
           visibility: res.body[0].visibility,
           nr: res.body[0].nr,
+          t: res.body[0].t,
           name: res.body[0].name,
           comment: res.body[0].comment,
           grade: res.body[0].grade,
@@ -262,6 +263,7 @@ export default class Problem extends Component {
         </Breadcrumb>
         {topoContent}
         <Well bsSize="small">
+          <strong>Comment:</strong> {this.state.t.type + (this.state.t.subType? " " + this.state.t.subType : "")}<br/>
           <strong>Comment:</strong> {this.state.comment}<br/>
           <strong>FA:</strong> {fa}<br/>
           <strong>FA date:</strong> {this.state.faDate}<br/>
