@@ -263,7 +263,7 @@ export default class Problem extends Component {
         </Breadcrumb>
         {topoContent}
         <Well bsSize="small">
-          <strong>Comment:</strong> {this.state.t.type + (this.state.t.subType? " " + this.state.t.subType : "")}<br/>
+          <strong>Type:</strong> {this.state.t.type + (this.state.t.subType? " " + this.state.t.subType : "")}<br/>
           <strong>Comment:</strong> {this.state.comment}<br/>
           <strong>FA:</strong> {fa}<br/>
           <strong>FA date:</strong> {this.state.faDate}<br/>
