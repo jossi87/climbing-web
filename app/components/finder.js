@@ -4,7 +4,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 import Request from 'superagent';
 import Map from './common/map/map';
 import Gallery from './common/gallery/gallery';
-import { Tabs, Tab, Panel, ButtonToolbar, ButtonGroup, Button, OverlayTrigger, Tooltip, Popover, DropdownButton, MenuItem, Breadcrumb } from 'react-bootstrap';
+import { Badge, Tabs, Tab, Panel, ButtonToolbar, ButtonGroup, Button, OverlayTrigger, Tooltip, Popover, DropdownButton, MenuItem, Breadcrumb } from 'react-bootstrap';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import config from '../utils/config.js';
 
@@ -76,6 +76,10 @@ export default class Finder extends Component {
 
   formatName(cell, row) {
     return <span><Link to={`/problem/${row.id}`}>{row.name}</Link> {row.visibility===1 && <i className="fa fa-lock"></i>}{row.visibility===2 && <i className="fa fa-expeditedssl"></i>}</span>
+  }
+
+  formatGrade(cell, row) {
+    return <span>{row.grade} {row.t.id === 3 && <Badge>Trad</Badge>}</span>;
   }
 
   formatFa(cell, row) {
@@ -210,7 +214,7 @@ export default class Finder extends Component {
           <TableHeaderColumn dataField="areaName" dataSort={true} dataFormat={this.formatAreaName.bind(this)} width="150" filter={{type: "TextFilter", placeholder: "Filter"}}>Area</TableHeaderColumn>
           <TableHeaderColumn dataField="sectorName" dataSort={true} dataFormat={this.formatSectorName.bind(this)} width="150" filter={{type: "TextFilter", placeholder: "Filter"}}>Sector</TableHeaderColumn>
           <TableHeaderColumn dataField="name" dataSort={true} dataFormat={this.formatName.bind(this)} width="150" filter={{type: "TextFilter", placeholder: "Filter"}}>Name</TableHeaderColumn>
-          <TableHeaderColumn dataField="grade" dataSort={true} dataAlign="center" width="70">Grade</TableHeaderColumn>
+          <TableHeaderColumn dataField="grade" dataSort={true} dataFormat={this.formatGrade.bind(this)} dataAlign="center" width="70">Grade</TableHeaderColumn>
           <TableHeaderColumn dataField="fa" dataSort={true} dataFormat={this.formatFa.bind(this)} sortFunc={this.sortFa.bind(this)} dataAlign="center" width="70">FA</TableHeaderColumn>
           <TableHeaderColumn dataField="numTicks" dataSort={true} dataAlign="center" width="50">Ticks</TableHeaderColumn>
           <TableHeaderColumn dataField="stars" dataSort={true} dataFormat={this.formatStars.bind(this)} dataAlign="center" width="70">Stars</TableHeaderColumn>

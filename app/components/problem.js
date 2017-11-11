@@ -4,7 +4,7 @@ import Map from './common/map/map';
 import Gallery from './common/gallery/gallery';
 import Request from 'superagent';
 import { LinkContainer } from 'react-router-bootstrap';
-import { Tabs, Tab, Well, Panel, ButtonGroup, Button, Breadcrumb, OverlayTrigger, Popover, Tooltip, Table } from 'react-bootstrap';
+import { Badge, Tabs, Tab, Well, Panel, ButtonGroup, Button, Breadcrumb, OverlayTrigger, Popover, Tooltip, Table } from 'react-bootstrap';
 import auth from '../utils/auth.js';
 import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
@@ -259,7 +259,7 @@ export default class Problem extends Component {
 
         <Breadcrumb>
           {headerButtons}
-          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${this.state.areaId}`}>{this.state.areaName}</Link> {this.state.areaVisibility===1 && <i className="fa fa-lock"></i>}{this.state.areaVisibility===2 && <i className="fa fa-expeditedssl"></i>} / <Link to={`/sector/${this.state.sectorId}`}>{this.state.sectorName}</Link> {this.state.sectorVisibility===1 && <i className="fa fa-lock"></i>}{this.state.sectorVisibility===2 && <i className="fa fa-expeditedssl"></i>} / {this.state.nr} <font color='#777'>{this.state.name}</font> {this.state.grade} {this.state.visibility===1 && <i className="fa fa-lock"></i>}{this.state.visibility===2 && <i className="fa fa-expeditedssl"></i>}
+          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${this.state.areaId}`}>{this.state.areaName}</Link> {this.state.areaVisibility===1 && <i className="fa fa-lock"></i>}{this.state.areaVisibility===2 && <i className="fa fa-expeditedssl"></i>} / <Link to={`/sector/${this.state.sectorId}`}>{this.state.sectorName}</Link> {this.state.sectorVisibility===1 && <i className="fa fa-lock"></i>}{this.state.sectorVisibility===2 && <i className="fa fa-expeditedssl"></i>} / {this.state.nr} <font color='#777'>{this.state.name}</font> {this.state.grade} {this.state.t.id === 3 && <Badge>Trad</Badge>} {this.state.visibility===1 && <i className="fa fa-lock"></i>}{this.state.visibility===2 && <i className="fa fa-expeditedssl"></i>}
         </Breadcrumb>
         {topoContent}
         <Well bsSize="small">
