@@ -28,6 +28,12 @@ export default class ProblemEdit extends Component {
         grades: err? null : res.body
       });
     });
+    Request.get(config.getUrl("types?regionId=" + config.getRegion())).end((err, res) => {
+      this.setState({
+        error: err? err : null,
+        types: err? null : res.body
+      });
+    });
     if (this.props.match.params.problemId==-1) {
       this.setState({
         id: -1,
@@ -57,6 +63,7 @@ export default class ProblemEdit extends Component {
             fa: res.body[0].fa,
             faDate: date,
             nr: res.body[0].nr,
+            typeId: res.body[0].t.id,
             lat: res.body[0].lat,
             lng: res.body[0].lng,
             newMedia: []
@@ -101,6 +108,10 @@ export default class ProblemEdit extends Component {
     this.setState({originalGrade: originalGrade});
   }
 
+  onTypeIdChanged(typeId, e) {
+    this.setState({typeId: typeId});
+  }
+
   onNewMediaChanged(newMedia) {
     this.setState({newMedia: newMedia});
   }
@@ -111,7 +122,7 @@ export default class ProblemEdit extends Component {
     const newMedia = this.state.newMedia.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
     var req = Request.post(config.getUrl("problems?regionId=" + config.getRegion()))
     .withCredentials()
-    .field('json', JSON.stringify({sectorId: this.props.location.query.idSector, id: this.state.id, visibility: this.state.visibility, name: this.state.name, comment: this.state.comment, originalGrade: this.state.originalGrade, fa: this.state.fa, faDate: this.state.faDate, nr: this.state.nr, lat: this.state.lat, lng: this.state.lng, newMedia: newMedia}))
+    .field('json', JSON.stringify({sectorId: this.props.location.query.idSector, id: this.state.id, visibility: this.state.visibility, name: this.state.name, comment: this.state.comment, originalGrade: this.state.originalGrade, fa: this.state.fa, faDate: this.state.faDate, nr: this.state.nr, t: this.state.typeId? this.state.types.find(t => t.id === this.state.typeId) : this.state.types[0], lat: this.state.lat, lng: this.state.lng, newMedia: newMedia}))
     .set('Accept', 'application/json');
     this.state.newMedia.forEach(m => req.attach(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
     req.end((err, res) => {
@@ -139,7 +150,7 @@ export default class ProblemEdit extends Component {
   }
 
   render() {
-    if (!this.state || !this.state.id) {
+    if (!this.state || !this.state.id || !this.state.types || !this.state.grades) {
       return <center><i className="fa fa-cog fa-spin fa-2x"></i></center>;
     }
     else if (this.state.error) {
@@ -159,6 +170,8 @@ export default class ProblemEdit extends Component {
       visibilityText = 'Only visible for super administrators';
     }
 
+    const selectedType = this.state.typeId? this.state.types.find(t => t.id === this.state.typeId) : this.state.types[0];
+
     return (
       <Well>
         <form onSubmit={this.save.bind(this)}>
@@ -174,13 +187,19 @@ export default class ProblemEdit extends Component {
               <Button onClick={this.onFaDateChanged.bind(this, new Date().toISOString().substring(0,10))}>Today</Button>
             </ButtonGroup>
           </FormGroup>
-          <FormGroup controlId="formControlsGrade">
-            <ControlLabel>Grade</ControlLabel><br/>
-            <DropdownButton title={this.state.originalGrade} id="bg-nested-dropdown">
-              {this.state && this.state.grades && this.state.grades.map((g, i) => { return <MenuItem key={i} eventKey={i} onSelect={this.onOriginalGradeChanged.bind(this, g.grade)}>{g.grade}</MenuItem> })}
+          <FormGroup controlId="formControlsTypeId">
+            <ControlLabel>Type</ControlLabel><br/>
+            <DropdownButton title={selectedType.type + " " + selectedType.subType} id="bg-nested-dropdown">
+              {this.state.types.map((t, i) => { return <MenuItem key={i} eventKey={i} onSelect={this.onTypeIdChanged.bind(this, t.id)}>{t.type} {t.subType}</MenuItem> })}
             </DropdownButton>
           </FormGroup>
           <FormGroup controlId="formControlsGrade">
+            <ControlLabel>Grade</ControlLabel><br/>
+            <DropdownButton title={this.state.originalGrade} id="bg-nested-dropdown">
+              {this.state.grades.map((g, i) => { return <MenuItem key={i} eventKey={i} onSelect={this.onOriginalGradeChanged.bind(this, g.grade)}>{g.grade}</MenuItem> })}
+            </DropdownButton>
+          </FormGroup>
+          <FormGroup controlId="formControlsFA">
             <ControlLabel>FA</ControlLabel><br/>
             <UserSelecter users={this.state.fa? this.state.fa.map(u => {return {id: u.id, name: u.firstname + " " + u.surname}}) : []} onUsersUpdated={this.onUsersUpdated.bind(this)}/>
           </FormGroup>
