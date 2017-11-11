@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Request from 'superagent';
 import Map from './common/map/map';
 import Gallery from './common/gallery/gallery';
-import { Tabs, Tab, Well, OverlayTrigger, Tooltip, Popover, ButtonGroup, Button, Table, Breadcrumb } from 'react-bootstrap';
+import { Badge, Tabs, Tab, Well, OverlayTrigger, Tooltip, Popover, ButtonGroup, Button, Table, Breadcrumb } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import auth from '../utils/auth.js';
 import config from '../utils/config.js';
@@ -50,7 +50,7 @@ class TableRow extends Component {
         <td>{this.props.problem.nr}</td>
         <td><Link to={`/problem/${this.props.problem.id}`}>{this.props.problem.name}</Link> {this.props.problem.visibility===1 && <i className="fa fa-lock"></i>}{this.props.problem.visibility===2 && <i className="fa fa-expeditedssl"></i>}</td>
         <td>{comment}</td>
-        <td>{this.props.problem.grade} {this.props.problem.t.id === 3 && "(nat)"}</td>
+        <td>{this.props.problem.grade} {this.props.problem.t.id === 3 && <Badge>Trad</Badge>}</td>
         <td>{fa}</td>
         <td>{this.props.problem.numTicks}</td>
         <td>
