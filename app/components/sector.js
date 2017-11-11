@@ -50,7 +50,7 @@ class TableRow extends Component {
         <td>{this.props.problem.nr}</td>
         <td><Link to={`/problem/${this.props.problem.id}`}>{this.props.problem.name}</Link> {this.props.problem.visibility===1 && <i className="fa fa-lock"></i>}{this.props.problem.visibility===2 && <i className="fa fa-expeditedssl"></i>}</td>
         <td>{comment}</td>
-        <td>{this.props.problem.grade}</td>
+        <td>{this.props.problem.grade} {this.props.problem.t.id === 3 && "(nat)"}</td>
         <td>{fa}</td>
         <td>{this.props.problem.numTicks}</td>
         <td>
