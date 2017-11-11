@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { Link } from 'react-router-dom';
-import { Table, Grid, Well, Row, Col, Clearfix } from 'react-bootstrap';
+import { Badge, Table, Grid, Well, Row, Col, Clearfix } from 'react-bootstrap';
 import Request from 'superagent';
 import TextBox from './textbox/textbox';
 import ImageBox from './imagebox/imagebox';
@@ -32,7 +32,7 @@ export default class Index extends Component {
     const newestProblems = this.state.data.fas.map((x, i) => {
       return (
         <p key={i}>
-          <Link to={`/problem/${x.idProblem}`}>{x.problem}</Link> {x.grade}<br/>
+          <Link to={`/problem/${x.idProblem}`}>{x.problem}</Link> {x.grade} {x.typeId === 3 && <Badge>Trad</Badge>}<br/>
           <small style={{color: '#777'}}><Link to={`/area/${x.idArea}`} style={{color: '#777'}}>{x.area}</Link> / <Link to={`/sector/${x.idSector}`} style={{color: '#777'}}>{x.sector}</Link> {x.date}</small>
         </p>
       )
@@ -41,7 +41,7 @@ export default class Index extends Component {
     const latestAscents = this.state.data.ascents.map((x, i) => {
       return (
         <p key={i}>
-          <Link to={`/problem/${x.idProblem}`}>{x.problem}</Link> {x.grade}<br/>
+          <Link to={`/problem/${x.idProblem}`}>{x.problem}</Link> {x.grade} {x.typeId === 3 && <Badge>Trad</Badge>}<br/>
           <small style={{color: '#777'}}><Link to={`/user/${x.idUser}`} style={{color: '#777'}}>{x.user}</Link> {x.date}</small>
         </p>
       )
