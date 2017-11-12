@@ -47,11 +47,19 @@ class TableRow extends Component {
     else if (this.props.problem.stars===3.0) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star"/></div>; }
     var type;
     if (config.getRegion()==4) {
+      var typeImg;
       switch (this.props.problem.t.id) {
-        case 2: type = <td><img src="/jpg/bolt.jpg"/></td>; break;
-        case 3: type = <td><img src="/jpg/trad.jpg"/></td>; break;
-        case 4: type = <td><img src="/jpg/mixed.jpg"/></td>; break;
+        case 2: typeImg = <img height="20" src="/jpg/bolt.jpg"/>; break;
+        case 3: typeImg = <img height="20" src="/jpg/trad.jpg"/>; break;
+        case 4: typeImg = <img height="20" src="/jpg/mixed.jpg"/>; break;
       }
+      type = <OverlayTrigger placement="top" overlay={
+        <Popover id={this.props.problem.t.id} title="Type">
+          {this.props.problem.t.type + (this.props.problem.t.subType? " - " + this.props.problem.t.subType : "")}
+        </Popover>
+      }>
+        {typeImg}
+      </OverlayTrigger>;
     }
     return (
       <tr className={isTickedClassName}>
