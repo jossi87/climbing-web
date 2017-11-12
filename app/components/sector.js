@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Request from 'superagent';
 import Map from './common/map/map';
 import Gallery from './common/gallery/gallery';
-import { Badge, Tabs, Tab, Well, OverlayTrigger, Tooltip, Popover, ButtonGroup, Button, Table, Breadcrumb } from 'react-bootstrap';
+import { Tabs, Tab, Well, OverlayTrigger, Tooltip, Popover, ButtonGroup, Button, Table, Breadcrumb } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import auth from '../utils/auth.js';
 import config from '../utils/config.js';
@@ -45,12 +45,20 @@ class TableRow extends Component {
     else if (this.props.problem.stars===2.0) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star-o"/></div>; }
     else if (this.props.problem.stars===2.5) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star-half-o"/></div>; }
     else if (this.props.problem.stars===3.0) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star"/></div>; }
+    var type;
+    switch (this.props.problem.t.id) {
+      case 1: type = null; break;
+      case 2: type = <td><img src="/jpg/bolt.jpg"/></td>; break;
+      case 3: type = <td><img src="/jpg/trad.jpg"/></td>; break;
+      case 4: type = <td><img src="/jpg/mixed.jpg"/></td>; break;
+    }
     return (
       <tr className={isTickedClassName}>
         <td>{this.props.problem.nr}</td>
         <td><Link to={`/problem/${this.props.problem.id}`}>{this.props.problem.name}</Link> {this.props.problem.visibility===1 && <i className="fa fa-lock"></i>}{this.props.problem.visibility===2 && <i className="fa fa-expeditedssl"></i>}</td>
         <td>{comment}</td>
-        <td>{this.props.problem.grade} {this.props.problem.t.id === 3 && <Badge>Trad</Badge>}</td>
+        {type}
+        <td>{this.props.problem.grade}</td>
         <td>{fa}</td>
         <td>{this.props.problem.numTicks}</td>
         <td>
@@ -180,6 +188,7 @@ export default class Sector extends Component {
               <th><i className="fa fa-hashtag"></i></th>
               <th>Name</th>
               <th>Description</th>
+              {this.props.problem.t.id>1 && <th>Type</th>}
               <th>Grade</th>
               <th>FA</th>
               <th>Ticks</th>
