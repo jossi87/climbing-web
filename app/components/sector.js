@@ -46,7 +46,7 @@ class TableRow extends Component {
     else if (this.props.problem.stars===2.5) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star-half-o"/></div>; }
     else if (this.props.problem.stars===3.0) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star"/></div>; }
     var type;
-    if (config.showType()) {
+    if (config.getRegion()==4) {
       switch (this.props.problem.t.id) {
         case 2: type = <td><img src="/jpg/bolt.jpg"/></td>; break;
         case 3: type = <td><img src="/jpg/trad.jpg"/></td>; break;
@@ -189,7 +189,7 @@ export default class Sector extends Component {
               <th><i className="fa fa-hashtag"></i></th>
               <th>Name</th>
               <th>Description</th>
-              {config.showType() && <th>Type</th>}
+              {config.getRegion()==4 && <th>Type</th>}
               <th>Grade</th>
               <th>FA</th>
               <th>Ticks</th>
