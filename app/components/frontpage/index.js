@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { Link } from 'react-router-dom';
-import { Badge, Table, Grid, Well, Row, Col, Clearfix } from 'react-bootstrap';
+import { Table, Grid, Well, Row, Col, Clearfix } from 'react-bootstrap';
 import Request from 'superagent';
 import TextBox from './textbox/textbox';
 import ImageBox from './imagebox/imagebox';
@@ -30,18 +30,34 @@ export default class Index extends Component {
     }
 
     const newestProblems = this.state.data.fas.map((x, i) => {
+      var typeImg = null;
+      if (config.getRegion()==4) {
+        switch (x.typeId) {
+          case 2: typeImg = <img height="20" src="/jpg/bolt.jpg"/>; break;
+          case 3: typeImg = <img height="20" src="/jpg/trad.jpg"/>; break;
+          case 4: typeImg = <img height="20" src="/jpg/mixed.jpg"/>; break;
+        }
+      }
       return (
         <p key={i}>
-          <Link to={`/problem/${x.idProblem}`}>{x.problem}</Link> {x.grade} {x.typeId === 3 && <Badge>Trad</Badge>}<br/>
+          <Link to={`/problem/${x.idProblem}`}>{x.problem}</Link> {x.grade} {typeImg}<br/>
           <small style={{color: '#777'}}><Link to={`/area/${x.idArea}`} style={{color: '#777'}}>{x.area}</Link> / <Link to={`/sector/${x.idSector}`} style={{color: '#777'}}>{x.sector}</Link> {x.date}</small>
         </p>
       )
     });
 
     const latestAscents = this.state.data.ascents.map((x, i) => {
+      var typeImg = null;
+      if (config.getRegion()==4) {
+        switch (x.typeId) {
+          case 2: typeImg = <img height="20" src="/jpg/bolt.jpg"/>; break;
+          case 3: typeImg = <img height="20" src="/jpg/trad.jpg"/>; break;
+          case 4: typeImg = <img height="20" src="/jpg/mixed.jpg"/>; break;
+        }
+      }
       return (
         <p key={i}>
-          <Link to={`/problem/${x.idProblem}`}>{x.problem}</Link> {x.grade} {x.typeId === 3 && <Badge>Trad</Badge>}<br/>
+          <Link to={`/problem/${x.idProblem}`}>{x.problem}</Link> {x.grade} {typeImg}<br/>
           <small style={{color: '#777'}}><Link to={`/user/${x.idUser}`} style={{color: '#777'}}>{x.user}</Link> {x.date}</small>
         </p>
       )
