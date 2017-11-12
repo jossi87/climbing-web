@@ -43,6 +43,10 @@ module.exports = {
     return getRegion() != 4;
   },
 
+  showType() {
+    return getRegion() == 4;
+  },
+
   getDefaultCenter() {
     if (window.location.hostname=='buldring.bergen-klatreklubb.no') {
       return {lat: 60.47521, lng: 6.83169};

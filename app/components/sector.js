@@ -46,11 +46,12 @@ class TableRow extends Component {
     else if (this.props.problem.stars===2.5) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star-half-o"/></div>; }
     else if (this.props.problem.stars===3.0) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star"/></div>; }
     var type;
-    switch (this.props.problem.t.id) {
-      case 1: type = null; break;
-      case 2: type = <td><img src="/jpg/bolt.jpg"/></td>; break;
-      case 3: type = <td><img src="/jpg/trad.jpg"/></td>; break;
-      case 4: type = <td><img src="/jpg/mixed.jpg"/></td>; break;
+    if (config.showType()) {
+      switch (this.props.problem.t.id) {
+        case 2: type = <td><img src="/jpg/bolt.jpg"/></td>; break;
+        case 3: type = <td><img src="/jpg/trad.jpg"/></td>; break;
+        case 4: type = <td><img src="/jpg/mixed.jpg"/></td>; break;
+      }
     }
     return (
       <tr className={isTickedClassName}>
@@ -188,7 +189,7 @@ export default class Sector extends Component {
               <th><i className="fa fa-hashtag"></i></th>
               <th>Name</th>
               <th>Description</th>
-              {this.props.problem.t.id>1 && <th>Type</th>}
+              {config.showType() && <th>Type</th>}
               <th>Grade</th>
               <th>FA</th>
               <th>Ticks</th>
