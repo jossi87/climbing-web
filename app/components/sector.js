@@ -53,13 +53,9 @@ class TableRow extends Component {
         case 3: typeImg = <img height="20" src="/jpg/trad.jpg"/>; break;
         case 4: typeImg = <img height="20" src="/jpg/mixed.jpg"/>; break;
       }
-      type = <OverlayTrigger placement="top" overlay={
-        <Popover id={this.props.problem.t.id} title="Type">
-          {this.props.problem.t.type + (this.props.problem.t.subType? " - " + this.props.problem.t.subType : "")}
-        </Popover>
-      }>
-        {typeImg}
-      </OverlayTrigger>;
+      type = <td><OverlayTrigger placement="top" overlay={<Popover id={this.props.problem.t.id} title="Type">
+          {this.props.problem.t.type + " - " + this.props.problem.t.subType}
+        </Popover>}>{typeImg}</OverlayTrigger></td>;
     }
     return (
       <tr className={isTickedClassName}>
