@@ -33,14 +33,14 @@ export default class Index extends Component {
       var typeImg = null;
       if (config.getRegion()==4) {
         switch (x.typeId) {
-          case 2: typeImg = <img height="20" src="/jpg/bolt.jpg"/>; break;
-          case 3: typeImg = <img height="20" src="/jpg/trad.jpg"/>; break;
-          case 4: typeImg = <img height="20" src="/jpg/mixed.jpg"/>; break;
+          case 2: typeImg = <img height="16" src="/jpg/bolt.jpg"/>; break;
+          case 3: typeImg = <img height="16" src="/jpg/trad.jpg"/>; break;
+          case 4: typeImg = <img height="16" src="/jpg/mixed.jpg"/>; break;
         }
       }
       return (
         <p key={i}>
-          <Link to={`/problem/${x.idProblem}`}>{x.problem}</Link> {x.grade} {typeImg}<br/>
+          <Link to={`/problem/${x.idProblem}`}>{x.problem}</Link> {typeImg} {x.grade}<br/>
           <small style={{color: '#777'}}><Link to={`/area/${x.idArea}`} style={{color: '#777'}}>{x.area}</Link> / <Link to={`/sector/${x.idSector}`} style={{color: '#777'}}>{x.sector}</Link> {x.date}</small>
         </p>
       )
@@ -50,14 +50,14 @@ export default class Index extends Component {
       var typeImg = null;
       if (config.getRegion()==4) {
         switch (x.typeId) {
-          case 2: typeImg = <img height="20" src="/jpg/bolt.jpg"/>; break;
-          case 3: typeImg = <img height="20" src="/jpg/trad.jpg"/>; break;
-          case 4: typeImg = <img height="20" src="/jpg/mixed.jpg"/>; break;
+          case 2: typeImg = <img height="16" src="/jpg/bolt.jpg"/>; break;
+          case 3: typeImg = <img height="16" src="/jpg/trad.jpg"/>; break;
+          case 4: typeImg = <img height="16" src="/jpg/mixed.jpg"/>; break;
         }
       }
       return (
         <p key={i}>
-          <Link to={`/problem/${x.idProblem}`}>{x.problem}</Link> {x.grade} {typeImg}<br/>
+          <Link to={`/problem/${x.idProblem}`}>{x.problem}</Link> {typeImg} {x.grade}<br/>
           <small style={{color: '#777'}}><Link to={`/user/${x.idUser}`} style={{color: '#777'}}>{x.user}</Link> {x.date}</small>
         </p>
       )

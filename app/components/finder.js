@@ -80,12 +80,12 @@ export default class Finder extends Component {
 
   formatType(cell, row) {
     var typeImg;
-    switch (this.props.problem.t.id) {
+    switch (row.t.id) {
       case 2: typeImg = <img height="20" src="/jpg/bolt.jpg"/>; break;
       case 3: typeImg = <img height="20" src="/jpg/trad.jpg"/>; break;
       case 4: typeImg = <img height="20" src="/jpg/mixed.jpg"/>; break;
     }
-    return <OverlayTrigger placement="top" overlay={<Popover id={this.props.problem.t.id} title="Type"> {row.t.type + " - " + row.t.subType}</Popover>}>
+    return <OverlayTrigger placement="top" overlay={<Popover id={row.t.id} title="Type"> {row.t.type + " - " + row.t.subType}</Popover>}>
         {typeImg}
       </OverlayTrigger>;
   }
