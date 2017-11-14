@@ -21,7 +21,7 @@ class TableRow extends Component {
     return (
       <tr>
         <td><Link to={`/area/${this.props.area.id}`}>{this.props.area.name}</Link> {this.props.area.visibility===1 && <i className="fa fa-lock"></i>}{this.props.area.visibility===2 && <i className="fa fa-expeditedssl"></i>}</td>
-        <td>{comment}</td>
+        <td>{comment? <Well><div dangerouslySetInnerHTML={{ __html: comment }} /></Well> : null}</td>
         <td>{this.props.area.numSectors}</td>
       </tr>
     )
