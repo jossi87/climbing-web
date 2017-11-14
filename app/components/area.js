@@ -102,7 +102,7 @@ export default class Area extends Component {
           <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <font color='#777'>{this.state.name}</font> {this.state.visibility===1 && <i className="fa fa-lock"></i>}{this.state.visibility===2 && <i className="fa fa-expeditedssl"></i>}
         </Breadcrumb>
         {map}
-        {this.state.comment? <Well>{this.state.comment}</Well> : null}
+        {this.state.comment? <Well><div dangerouslySetInnerHTML={{ __html: this.state.comment }} /></Well> : null}
         <Table striped condensed hover>
           <thead>
             <tr>
