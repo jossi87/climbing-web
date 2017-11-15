@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import Request from 'superagent';
 import { Redirect } from 'react-router';
 import { FormGroup, ControlLabel, FormControl, Checkbox, ButtonGroup, DropdownButton, MenuItem, Button, Well } from 'react-bootstrap';
+import ImageUpload from './common/image-upload/image-upload';
 import {withGoogleMap, GoogleMap, Marker} from "react-google-maps";
 import config from '../utils/config.js';
 import auth from '../utils/auth.js';
@@ -31,7 +32,8 @@ export default class AreaEdit extends Component {
         name: "",
         comment: "",
         lat: 0,
-        lng: 0
+        lng: 0,
+        newMedia: []
       });
     } else {
       Request.get(config.getUrl("areas?id=" + this.props.match.params.areaId)).withCredentials().end((err, res) => {
@@ -44,7 +46,8 @@ export default class AreaEdit extends Component {
             name: res.body.name,
             comment: res.body.comment,
             lat: res.body.lat,
-            lng: res.body.lng
+            lng: res.body.lng,
+            newMedia: []
           });
         }
       });
@@ -63,13 +66,20 @@ export default class AreaEdit extends Component {
     this.setState({comment: e.target.value});
   }
 
+  onNewMediaChanged(newMedia) {
+    this.setState({newMedia: newMedia});
+  }
+
   save(event) {
     event.preventDefault();
-    Request.post(config.getUrl("areas"))
+    this.setState({isSaving: true});
+    const newMedia = this.state.newMedia.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
+    var req = Request.post(config.getUrl("areas"))
     .withCredentials()
-    .send({regionId: config.getRegion(), id: this.state.id, visibility: this.state.visibility, name: this.state.name, comment: this.state.comment, lat: this.state.lat, lng: this.state.lng})
+    .field('json', JSON.stringify({regionId: config.getRegion(), id: this.state.id, visibility: this.state.visibility, name: this.state.name, comment: this.state.comment, lat: this.state.lat, lng: this.state.lng, newMedia: newMedia}))
     .set('Accept', 'application/json')
-    .end((err, res) => {
+    this.state.newMedia.forEach(m => req.attach(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
+    req.end((err, res) => {
       if (err) {
         this.setState({error: err});
       } else {
@@ -122,6 +132,9 @@ export default class AreaEdit extends Component {
               {auth.isSuperAdmin() && <MenuItem eventKey="2" onSelect={this.onVisibilityChanged.bind(this, 2)}>Only visible for super administrators</MenuItem>}
             </DropdownButton>
           </FormGroup>
+          <FormGroup controlId="formControlsMedia">
+            <ImageUpload onMediaChanged={this.onNewMediaChanged.bind(this)} />
+          </FormGroup>
           <FormGroup controlId="formControlsMap">
             <ControlLabel>Click to mark area center on map</ControlLabel><br/>
             <section style={{height: '600px'}}>
@@ -135,7 +148,8 @@ export default class AreaEdit extends Component {
               />
             </section>
           </FormGroup>
-          <ButtonGroup><Button bsStyle="danger" onClick={this.onCancel.bind(this)}>Cancel</Button><Button type="submit" bsStyle="success">Save area</Button></ButtonGroup>
+
+          <ButtonGroup><Button bsStyle="danger" onClick={this.onCancel.bind(this)}>Cancel</Button><Button type="submit" bsStyle="success" disabled={this.state.isSaving}>{this.state.isSaving? 'Saving...' : 'Save area'}</Button></ButtonGroup>
         </form>
       </Well>
     );

@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import { Link } from 'react-router-dom';
 import Request from 'superagent';
-import { Well, OverlayTrigger, Tooltip, ButtonGroup, Button, Table, Breadcrumb } from 'react-bootstrap';
+import { Tabs, Tab, Well, OverlayTrigger, Tooltip, ButtonGroup, Button, Table, Breadcrumb } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import Map from './common/map/map';
+import Gallery from './common/gallery/gallery';
 import auth from '../utils/auth.js';
 import config from '../utils/config.js';
 
@@ -29,6 +30,12 @@ class TableRow extends Component {
 }
 
 export default class Area extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      tabIndex: 1
+    };
+  }
   componentDidMount() {
     Request.get(config.getUrl("areas?id=" + this.props.match.params.areaId)).withCredentials().end((err, res) => {
       if (err) {
@@ -38,6 +45,7 @@ export default class Area extends Component {
           id: res.body.id,
           visibility: res.body.visibility,
           name: res.body.name,
+          media: res.body.media,
           comment: res.body.comment,
           lat: res.body.lat,
           lng: res.body.lng,
@@ -46,6 +54,15 @@ export default class Area extends Component {
         document.title=config.getTitle() + " | " + this.state.name;
       }
     });
+  }
+
+  handleTabsSelection(key) {
+    this.setState({tabIndex: key});
+  }
+
+  onRemoveMedia(idMediaToRemove) {
+    const allMedia = this.state.media.filter(m => m.id!=idMediaToRemove);
+    this.setState({media: allMedia});
   }
 
   render() {
@@ -83,6 +100,21 @@ export default class Area extends Component {
       }
     });
     const map = markers.length>0 || polygons.length>0? <Map markers={markers} polygons={polygons} defaultCenter={{lat: this.state.lat, lng: this.state.lng}} defaultZoom={14}/> : null;
+    const gallery = this.state.media && this.state.media.length>0? <Gallery media={this.state.media} showThumbnails={this.state.media.length>1} removeMedia={this.onRemoveMedia.bind(this)}/> : null;
+    var topoContent = null;
+    if (map && gallery) {
+      topoContent = (
+        <Tabs activeKey={this.state.tabIndex} animation={false} onSelect={this.handleTabsSelection.bind(this)} id="area_tab" unmountOnExit={true}>
+          <Tab eventKey={1} title="Topo">{this.state.tabIndex==1? gallery : false}</Tab>
+          <Tab eventKey={2} title="Map">{this.state.tabIndex==2? map : false}</Tab>
+        </Tabs>
+      );
+    } else if (map) {
+      topoContent = map;
+    } else if (gallery) {
+      topoContent = gallery;
+    }
+
     return (
       <span>
         <Breadcrumb>
@@ -101,7 +133,7 @@ export default class Area extends Component {
           }
           <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <font color='#777'>{this.state.name}</font> {this.state.visibility===1 && <i className="fa fa-lock"></i>}{this.state.visibility===2 && <i className="fa fa-expeditedssl"></i>}
         </Breadcrumb>
-        {map}
+        {topoContent}
         {this.state.comment? <Well><div dangerouslySetInnerHTML={{ __html: this.state.comment }} /></Well> : null}
         <Table striped condensed hover>
           <thead>
