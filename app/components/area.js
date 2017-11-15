@@ -66,7 +66,7 @@ export default class Area extends Component {
   }
 
   render() {
-    if (!this.state) {
+    if (!this.state.id) {
       return <center><i className="fa fa-cog fa-spin fa-2x"></i></center>;
     }
     if (this.state.error) {
