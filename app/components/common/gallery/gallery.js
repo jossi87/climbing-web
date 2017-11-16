@@ -141,12 +141,15 @@ export default class Gallery extends Component {
       const shapes = [];
       for (let svg of m.svgs) {
         if (svg.textTransform) {
-          shapes.push(<text key={shapes.length} transform={svg.textTransform}>{svg.nr}</text>);
+          shapes.push(<text key={shapes.length} transform={svg.textTransform} style={{fill: '#FFFFFF', fontSize: '9px'}}>{svg.nr}</text>);
+        }
+        else {
+          shapes.push(<path key={shapes.length} d={svg.pathD}  style={{fill: 'none', stroke: '#E2011A', strokeWidth: '0.898'}}/>);
         }
       };
       return (
         <div className='image-gallery-image'>
-          <svg width={800} height={600} style={{display: 'block', margin: 'auto'}}>
+          <svg width="100%" height="100%" style={{display: 'block', margin: 'auto'}}>
             <image ref="img" xlinkHref={config.getUrl(`images?id=${m.id}`)} x="0" y="0" height="100%" width="100%"/>
             {shapes}
           </svg>
