@@ -140,16 +140,15 @@ export default class Gallery extends Component {
     if (m.svgs) {
       const shapes = [];
       for (let svg of m.svgs) {
-        if (svg.textTransform) {
-          shapes.push(<text key={shapes.length} transform={svg.textTransform} style={{fill: '#FFFFFF', fontSize: '14px'}}>{svg.nr}</text>);
-        }
-        else {
-          shapes.push(<path key={shapes.length} d={svg.pathD}  style={{fill: 'none', stroke: '#E2011A', strokeWidth: '2'}}/>);
+        shapes.push(<text key={shapes.length} transform={svg.textTransform} style={{fill: '#FFFFFF', fontSize: '14px'}}>{svg.nr}</text>);
+        shapes.push(<path key={shapes.length} d={svg.linePathD}  style={{fill: 'none', stroke: '#E2011A', strokeWidth: '2'}}/>);
+        if (svg.topPathD) {
+          shapes.push(<path key={shapes.length} d={svg.topPathD}  style={{fill: 'none', stroke: '#E2011A', strokeWidth: '2'}}/>);
         }
       };
       return (
         <div className='image-gallery-image'>
-          <svg viewBox="0 0 841.9 595.3" style={{maxHeight: '100vh', maxWidth: '100vw', objectFit: 'scale-down', fontFamily: "'object-fit: scale-down'", overflow: 'visible'}}>
+          <svg viewBox={"0 0 " + m.svgs[0].width + " " + m.svgs[0].height} style={{maxHeight: '100vh', maxWidth: '100vw', objectFit: 'scale-down', fontFamily: "'object-fit: scale-down'", overflow: 'visible'}}>
             <image xlinkHref={config.getUrl(`images?id=${m.id}`)} x="0" y="0" width="100%" height="100%"/>
             {shapes}
           </svg>
