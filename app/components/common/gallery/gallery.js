@@ -137,8 +137,8 @@ export default class Gallery extends Component {
   }
 
   renderImage(m) {
-    if (m.svg) {
-      console.log(m.svg);
+    if (m.svgs) {
+      console.log(m.svgs);
     }
     return (
       <div className='image-gallery-image'>
