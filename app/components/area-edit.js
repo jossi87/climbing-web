@@ -113,8 +113,8 @@ export default class AreaEdit extends Component {
     } else if (this.state.visibility===2) {
       visibilityText = 'Only visible for super administrators';
     }
-    const defaultCenter = this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? {lat: parseFloat(this.props.location.query.lat), lng: parseFloat(this.props.location.query.lng)} : config.getDefaultCenter();
-    const defaultZoom = this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? 8 : config.getDefaultZoom();
+    const defaultCenter = this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? {lat: parseFloat(this.props.location.query.lat), lng: parseFloat(this.props.location.query.lng)} : config.getDefaultCenter();
+    const defaultZoom = this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? 8 : config.getDefaultZoom();
     return (
       <Well>
         <form onSubmit={this.save.bind(this)}>
