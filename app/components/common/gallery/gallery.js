@@ -149,8 +149,8 @@ export default class Gallery extends Component {
       };
       return (
         <div className='image-gallery-image'>
-          <svg width={684} height={457} style={{display: 'block', margin: 'auto'}}>
-            <image ref="img" xlinkHref={config.getUrl(`images?id=${m.id}`)} x="0" y="0" height="100%" width="100%"/>
+          <svg viewBox="0 0 841.9 595.3" width="1789" height="1195" style={{overflow: 'visible'}}>
+            <image xlinkHref={config.getUrl(`images?id=${m.id}`)} x="0" y="0" height="100%" width="100%"/>
             {shapes}
           </svg>
         </div>
