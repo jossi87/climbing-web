@@ -136,7 +136,7 @@ export default class Gallery extends Component {
     );
   }
 
-  renderImage(item, svg) {
+  renderImage(svg, item) {
     if (svg) {
       console.log(svg);
     }
