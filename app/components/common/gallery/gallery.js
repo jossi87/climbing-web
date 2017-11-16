@@ -150,7 +150,7 @@ export default class Gallery extends Component {
       return (
         <div className='image-gallery-image'>
           <svg viewBox="0 0 841.9 595.3" style={{maxHeight: '100vh', maxWidth: '100vw', objectFit: 'scale-down', fontFamily: "'object-fit: scale-down'", overflow: 'visible'}}>
-            <image xlinkHref={config.getUrl(`images?id=${m.id}`)} x="0" y="0" width="1789" height="1195"/>
+            <image xlinkHref={config.getUrl(`images?id=${m.id}`)} x="0" y="0"/>
             {shapes}
           </svg>
         </div>
