@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { Redirect } from 'react-router';
 import {withGoogleMap, GoogleMap, Marker, Polygon} from "react-google-maps";
 import {default as MarkerClusterer} from 'react-google-maps/lib/components/addons/MarkerClusterer';
+import config from '../../../utils/config.js';
 
 export default class Map extends Component {
   constructor(props) {
@@ -47,7 +48,7 @@ export default class Map extends Component {
     const GettingStartedGoogleMap = withGoogleMap(props => (
       <GoogleMap
         defaultZoom={this.props.defaultZoom}
-        defaultCenter={this.props.defaultCenter}
+        defaultCenter={this.props.defaultCenter? this.props.defaultCenter : config.getDefaultCenter()}
       >
         <MarkerClusterer
           averageCenter={ false }
