@@ -138,10 +138,17 @@ export default class Gallery extends Component {
 
   renderImage(m) {
     if (m.svgs) {
+      const shapes = [];
+      for (let svg of m.svgs) {
+        if (svg.textTransform) {
+          shapes.push(<text key={shapes.length} transform={svg.textTransform}>{svg.nr}</text>);
+        }
+      };
       return (
         <div className='image-gallery-image'>
           <svg width={800} height={600} style={{display: 'block', margin: 'auto'}}>
             <image ref="img" xlinkHref={config.getUrl(`images?id=${m.id}`)} x="0" y="0" height="100%" width="100%"/>
+            {shapes}
           </svg>
         </div>
       );
