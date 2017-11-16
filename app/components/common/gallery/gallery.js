@@ -141,10 +141,10 @@ export default class Gallery extends Component {
       const shapes = [];
       for (let svg of m.svgs) {
         if (svg.textTransform) {
-          shapes.push(<text key={shapes.length} transform={svg.textTransform} style={{fill: '#FFFFFF', fontSize: '9px'}}>{svg.nr}</text>);
+          shapes.push(<text key={shapes.length} transform={svg.textTransform} style={{fill: '#FFFFFF', fontSize: '14px'}}>{svg.nr}</text>);
         }
         else {
-          shapes.push(<path key={shapes.length} d={svg.pathD}  style={{fill: 'none', stroke: '#E2011A', strokeWidth: '0.898'}}/>);
+          shapes.push(<path key={shapes.length} d={svg.pathD}  style={{fill: 'none', stroke: '#E2011A', strokeWidth: '2'}}/>);
         }
       };
       return (
