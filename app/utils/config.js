@@ -43,5 +43,9 @@ module.exports = {
     } else {
       return {lat: 58.78119, lng: 5.86361};
     }
+  },
+
+  getDefaultZoom() {
+    return 7;
   }
 }

@@ -60,7 +60,7 @@ export default class Browse extends Component {
           url: '/area/' + a.id
         }
     });
-    const map = markers.length>0? <Map markers={markers} defaultCenter={config.getDefaultCenter()} defaultZoom={7}/> : null;
+    const map = markers.length>0? <Map markers={markers} defaultCenter={config.getDefaultCenter()} defaultZoom={config.getDefaultZoom()}/> : null;
     return (
       <span>
         <Breadcrumb>

@@ -151,7 +151,8 @@ export default class Sector extends Component {
       });
     }
     const defaultCenter = this.state.lat && this.state.lat>0? {lat: this.state.lat, lng: this.state.lng} : config.getDefaultCenter();
-    const map = markers.length>0? <Map markers={markers} defaultCenter={defaultCenter} defaultZoom={15}/> : null;
+    const defaultZoom = this.state.lat && this.state.lat>0? 15 : config.getDefaultZoom();
+    const map = markers.length>0? <Map markers={markers} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/> : null;
     const gallery = this.state.media && this.state.media.length>0? <Gallery media={this.state.media} showThumbnails={this.state.media.length>1} removeMedia={this.onRemoveMedia.bind(this)}/> : null;
     var topoContent = null;
     if (map && gallery) {
