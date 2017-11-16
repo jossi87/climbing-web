@@ -48,7 +48,7 @@ export default class Map extends Component {
       <GoogleMap
         defaultZoom={this.props.defaultZoom}
         defaultCenter={this.props.defaultCenter}
-        defaultMapTypeId='TERRAIN'//{google.maps.MapTypeId.TERRAIN}
+        defaultMapTypeId={google.maps.MapTypeId.TERRAIN}
       >
         <MarkerClusterer
           averageCenter={ false }
