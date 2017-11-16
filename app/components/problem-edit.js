@@ -171,7 +171,8 @@ export default class ProblemEdit extends Component {
     }
 
     const selectedType = this.state.typeId? this.state.types.find(t => t.id === this.state.typeId) : this.state.types[0];
-
+    const defaultCenter = this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? {lat: parseFloat(this.props.location.query.lat), lng: parseFloat(this.props.location.query.lng)} : config.getDefaultCenter();
+    const defaultZoom = this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? 14 : config.getDefaultZoom();
     return (
       <Well>
         <form onSubmit={this.save.bind(this)}>
@@ -228,8 +229,8 @@ export default class ProblemEdit extends Component {
               <GettingStartedGoogleMap
                 containerElement={<div style={{ height: `100%` }} />}
                 mapElement={<div style={{ height: `100%` }} />}
-                defaultZoom={14}
-                defaultCenter={{lat: parseFloat(this.props.location.query.lat), lng: parseFloat(this.props.location.query.lng)}}
+                defaultZoom={defaultZoom}
+                defaultCenter={defaultCenter}
                 onClick={this.onMapClick.bind(this)}
                 markers={this.state.lat!=0 && this.state.lng!=0? <Marker position={{lat: this.state.lat, lng: this.state.lng}}/> : ""}
               />

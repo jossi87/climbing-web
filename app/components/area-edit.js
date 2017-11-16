@@ -113,6 +113,8 @@ export default class AreaEdit extends Component {
     } else if (this.state.visibility===2) {
       visibilityText = 'Only visible for super administrators';
     }
+    const defaultCenter = this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? {lat: parseFloat(this.props.location.query.lat), lng: parseFloat(this.props.location.query.lng)} : config.getDefaultCenter();
+    const defaultZoom = this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? 8 : config.getDefaultZoom();
     return (
       <Well>
         <form onSubmit={this.save.bind(this)}>
@@ -141,8 +143,8 @@ export default class AreaEdit extends Component {
               <GettingStartedGoogleMap
                 containerElement={<div style={{ height: `100%` }} />}
                 mapElement={<div style={{ height: `100%` }} />}
-                defaultZoom={8}
-                defaultCenter={{lat: this.state.lat!=0? this.state.lat : 59, lng: this.state.lng!=0? this.state.lng : 7.23769}}
+                defaultZoom={defaultZoom}
+                defaultCenter={defaultCenter}
                 onClick={this.onMarkerClick.bind(this)}
                 markers={this.state.lat!=0 && this.state.lng!=0? <Marker position={{lat: this.state.lat, lng: this.state.lng}}/> : ""}
               />

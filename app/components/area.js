@@ -99,7 +99,9 @@ export default class Area extends Component {
         url: '/sector/' + s.id
       }
     });
-    const map = markers.length>0 || polygons.length>0? <Map markers={markers} polygons={polygons} defaultCenter={{lat: this.state.lat, lng: this.state.lng}} defaultZoom={14}/> : null;
+    const defaultCenter = this.state.lat && this.state.lat>0? {lat: this.state.lat, lng: this.state.lng} : config.getDefaultCenter();
+    const defaultZoom = this.state.lat && this.state.lat>0? 14 : config.getDefaultZoom();
+    const map = markers.length>0 || polygons.length>0? <Map markers={markers} polygons={polygons} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/> : null;
     const gallery = this.state.media && this.state.media.length>0? <Gallery media={this.state.media} showThumbnails={this.state.media.length>1} removeMedia={this.onRemoveMedia.bind(this)}/> : null;
     var topoContent = null;
     if (map && gallery) {
@@ -125,7 +127,7 @@ export default class Area extends Component {
                   <LinkContainer to={{ pathname: `/sector/edit/-1`, query: { idArea: this.state.id, lat: this.state.lat, lng: this.state.lng } }}><Button bsStyle="primary" bsSize="xsmall"><i className="fa fa-inverse fa-plus-square"/></Button></LinkContainer>
                 </OverlayTrigger>
                 <OverlayTrigger placement="top" overlay={<Tooltip id={this.state.id}>Edit area</Tooltip>}>
-                  <LinkContainer to={`/area/edit/${this.state.id}`}><Button bsStyle="primary" bsSize="xsmall"><i className="fa fa-inverse fa-pencil-square-o"/></Button></LinkContainer>
+                  <LinkContainer to={{ pathname: `/area/edit/${this.state.id}`, query: { lat: this.state.lat, lng: this.state.lng } }}><Button bsStyle="primary" bsSize="xsmall"><i className="fa fa-inverse fa-pencil-square-o"/></Button></LinkContainer>
                 </OverlayTrigger>
               </ButtonGroup>
             </div>:
