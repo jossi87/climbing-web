@@ -136,13 +136,13 @@ export default class Gallery extends Component {
     );
   }
 
-  renderImage(svg, item) {
-    if (svg) {
-      console.log(svg);
+  renderImage(m) {
+    if (m.svg) {
+      console.log(m.svg);
     }
     return (
       <div className='image-gallery-image'>
-        <img src={item.original} style={{maxHeight: '100vh', maxWidth: '100vw', objectFit: 'scale-down', fontFamily: "'object-fit: scale-down'"}}/>
+        <img src={config.getUrl(`images?id=${m.id}`)} style={{maxHeight: '100vh', maxWidth: '100vw', objectFit: 'scale-down', fontFamily: "'object-fit: scale-down'"}}/>
       </div>
     );
   }
@@ -157,7 +157,7 @@ export default class Gallery extends Component {
           thumbnailClass: 'featured-thumb',
           originalAlt: 'original-alt',
           thumbnailAlt: 'thumbnail-alt',
-          renderItem: this.renderImage.bind(this, m.svg)
+          renderItem: this.renderImage.bind(m)
         }
       }
       else {
