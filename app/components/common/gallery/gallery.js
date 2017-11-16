@@ -157,7 +157,7 @@ export default class Gallery extends Component {
           thumbnailClass: 'featured-thumb',
           originalAlt: 'original-alt',
           thumbnailAlt: 'thumbnail-alt',
-          renderItem: this.renderImage.bind(m)
+          renderItem: this.renderImage.bind(this, m)
         }
       }
       else {
