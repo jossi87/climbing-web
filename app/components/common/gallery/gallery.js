@@ -138,7 +138,13 @@ export default class Gallery extends Component {
 
   renderImage(m) {
     if (m.svgs) {
-      console.log(m.svgs);
+      return (
+        <div className='image-gallery-image'>
+          <svg width={800} height={600} style={{display: 'block', margin: 'auto'}}>
+            <image ref="img" xlinkHref={config.getUrl(`images?id=${m.id}`)} x="0" y="0" height="100%" width="100%"/>
+          </svg>
+        </div>
+      );
     }
     return (
       <div className='image-gallery-image'>
