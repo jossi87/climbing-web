@@ -20,7 +20,6 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
   </GoogleMap>
 ));
 
-
 export default class SectorEdit extends Component {
   componentWillMount() {
     if (!auth.isAdmin()) {

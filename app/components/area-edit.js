@@ -11,6 +11,7 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
   <GoogleMap
     defaultZoom={props.defaultZoom}
     defaultCenter={props.defaultCenter}
+    defaultMapTypeId={google.maps.MapTypeId.TERRAIN}
     onClick={props.onClick.bind(this)}>
     {props.markers}
   </GoogleMap>
@@ -145,7 +146,6 @@ export default class AreaEdit extends Component {
                 mapElement={<div style={{ height: `100%` }} />}
                 defaultZoom={defaultZoom}
                 defaultCenter={defaultCenter}
-                defaultMapTypeId={google.maps.MapTypeId.TERRAIN}
                 onClick={this.onMarkerClick.bind(this)}
                 markers={this.state.lat!=0 && this.state.lng!=0? <Marker position={{lat: this.state.lat, lng: this.state.lng}}/> : ""}
               />
