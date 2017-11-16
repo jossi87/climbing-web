@@ -149,7 +149,7 @@ export default class Gallery extends Component {
       };
       return (
         <div className='image-gallery-image'>
-          <svg width="100%" height="100%" style={{display: 'block', margin: 'auto'}}>
+          <svg width={1920} height={1280} style={{display: 'block', margin: 'auto'}}>
             <image ref="img" xlinkHref={config.getUrl(`images?id=${m.id}`)} x="0" y="0" height="100%" width="100%"/>
             {shapes}
           </svg>
