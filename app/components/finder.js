@@ -81,7 +81,6 @@ export default class Finder extends Component {
   formatType(cell, row) {
     var typeImg;
     switch (row.t.id) {
-      case 1: return "";
       case 2: typeImg = <img height="20" src="/jpg/bolt.jpg"/>; break;
       case 3: typeImg = <img height="20" src="/jpg/trad.jpg"/>; break;
       case 4: typeImg = <img height="20" src="/jpg/mixed.jpg"/>; break;
@@ -205,6 +204,48 @@ export default class Finder extends Component {
         }
     });
     const map = markers.length>0? <Map markers={markers} defaultCenter={config.getDefaultCenter()} defaultZoom={7}/> : null;
+    var table = null;
+    if (config.getRegion()==4) {
+      table = <BootstrapTable
+                containerStyle={{margin: '-5px -10px'}}
+                data={this.state.problems}
+                trClassName={this.trClassFormat.bind(this)}
+                condensed={true}
+                hover={true}
+                columnFilter={false}>
+                <TableHeaderColumn dataField="id" isKey={true} hidden={true}>id</TableHeaderColumn>
+                <TableHeaderColumn dataField="areaName" dataSort={true} dataFormat={this.formatAreaName.bind(this)} width="150" filter={{type: "TextFilter", placeholder: "Filter"}}>Area</TableHeaderColumn>
+                <TableHeaderColumn dataField="sectorName" dataSort={true} dataFormat={this.formatSectorName.bind(this)} width="150" filter={{type: "TextFilter", placeholder: "Filter"}}>Sector</TableHeaderColumn>
+                <TableHeaderColumn dataField="name" dataSort={true} dataFormat={this.formatName.bind(this)} width="150" filter={{type: "TextFilter", placeholder: "Filter"}}>Name</TableHeaderColumn>
+                <TableHeaderColumn dataField="type" dataFormat={this.formatType.bind(this)} dataAlign="center" width="70">Type</TableHeaderColumn>
+                <TableHeaderColumn dataField="grade" dataSort={true} dataAlign="center" width="70">Grade</TableHeaderColumn>
+                <TableHeaderColumn dataField="fa" dataSort={true} dataFormat={this.formatFa.bind(this)} sortFunc={this.sortFa.bind(this)} dataAlign="center" width="70">FA</TableHeaderColumn>
+                <TableHeaderColumn dataField="numTicks" dataSort={true} dataAlign="center" width="50">Ticks</TableHeaderColumn>
+                <TableHeaderColumn dataField="stars" dataSort={true} dataFormat={this.formatStars.bind(this)} dataAlign="center" width="70">Stars</TableHeaderColumn>
+                <TableHeaderColumn dataField="numImages" dataSort={true} dataFormat={this.formatNumImages.bind(this)} sortFunc={this.sortNumImages.bind(this)} dataAlign="center" width="50"><i className="fa fa-camera"></i></TableHeaderColumn>
+                <TableHeaderColumn dataField="numMovies" dataSort={true} dataFormat={this.formatNumMovies.bind(this)} sortFunc={this.sortNumMovies.bind(this)} dataAlign="center" width="50"><i className="fa fa-video-camera"></i></TableHeaderColumn>
+              </BootstrapTable>;
+    } else {
+      table = <BootstrapTable
+                containerStyle={{margin: '-5px -10px'}}
+                data={this.state.problems}
+                trClassName={this.trClassFormat.bind(this)}
+                condensed={true}
+                hover={true}
+                columnFilter={false}>
+                <TableHeaderColumn dataField="id" isKey={true} hidden={true}>id</TableHeaderColumn>
+                <TableHeaderColumn dataField="areaName" dataSort={true} dataFormat={this.formatAreaName.bind(this)} width="150" filter={{type: "TextFilter", placeholder: "Filter"}}>Area</TableHeaderColumn>
+                <TableHeaderColumn dataField="sectorName" dataSort={true} dataFormat={this.formatSectorName.bind(this)} width="150" filter={{type: "TextFilter", placeholder: "Filter"}}>Sector</TableHeaderColumn>
+                <TableHeaderColumn dataField="name" dataSort={true} dataFormat={this.formatName.bind(this)} width="150" filter={{type: "TextFilter", placeholder: "Filter"}}>Name</TableHeaderColumn>
+                <TableHeaderColumn dataField="grade" dataSort={true} dataAlign="center" width="70">Grade</TableHeaderColumn>
+                <TableHeaderColumn dataField="fa" dataSort={true} dataFormat={this.formatFa.bind(this)} sortFunc={this.sortFa.bind(this)} dataAlign="center" width="70">FA</TableHeaderColumn>
+                <TableHeaderColumn dataField="numTicks" dataSort={true} dataAlign="center" width="50">Ticks</TableHeaderColumn>
+                <TableHeaderColumn dataField="stars" dataSort={true} dataFormat={this.formatStars.bind(this)} dataAlign="center" width="70">Stars</TableHeaderColumn>
+                <TableHeaderColumn dataField="numImages" dataSort={true} dataFormat={this.formatNumImages.bind(this)} sortFunc={this.sortNumImages.bind(this)} dataAlign="center" width="50"><i className="fa fa-camera"></i></TableHeaderColumn>
+                <TableHeaderColumn dataField="numMovies" dataSort={true} dataFormat={this.formatNumMovies.bind(this)} sortFunc={this.sortNumMovies.bind(this)} dataAlign="center" width="50"><i className="fa fa-video-camera"></i></TableHeaderColumn>
+                <TableHeaderColumn dataField="distance" dataSort={true} dataFormat={this.formatDistance.bind(this)} sortFunc={this.sortDistance.bind(this)} dataAlign="center" width="60"><i className="fa fa-plane"></i></TableHeaderColumn>
+              </BootstrapTable>;
+    }
 
     return (
       <span>
@@ -212,26 +253,7 @@ export default class Finder extends Component {
           <Link to={`/`}>Home</Link> / <font color='#777'>Finder (problems: {this.state.problems.length})</font>
         </Breadcrumb>
         {map}
-        <BootstrapTable
-          containerStyle={{margin: '-5px -10px'}}
-        	data={this.state.problems}
-          trClassName={this.trClassFormat.bind(this)}
-          condensed={true}
-        	hover={true}
-        	columnFilter={false}>
-          <TableHeaderColumn dataField="id" isKey={true} hidden={true}>id</TableHeaderColumn>
-          <TableHeaderColumn dataField="areaName" dataSort={true} dataFormat={this.formatAreaName.bind(this)} width="150" filter={{type: "TextFilter", placeholder: "Filter"}}>Area</TableHeaderColumn>
-          <TableHeaderColumn dataField="sectorName" dataSort={true} dataFormat={this.formatSectorName.bind(this)} width="150" filter={{type: "TextFilter", placeholder: "Filter"}}>Sector</TableHeaderColumn>
-          <TableHeaderColumn dataField="name" dataSort={true} dataFormat={this.formatName.bind(this)} width="150" filter={{type: "TextFilter", placeholder: "Filter"}}>Name</TableHeaderColumn>
-          <TableHeaderColumn dataField="type" dataFormat={this.formatType.bind(this)} dataAlign="center" width="70">Type</TableHeaderColumn>
-          <TableHeaderColumn dataField="grade" dataSort={true} dataAlign="center" width="70">Grade</TableHeaderColumn>
-          <TableHeaderColumn dataField="fa" dataSort={true} dataFormat={this.formatFa.bind(this)} sortFunc={this.sortFa.bind(this)} dataAlign="center" width="70">FA</TableHeaderColumn>
-          <TableHeaderColumn dataField="numTicks" dataSort={true} dataAlign="center" width="50">Ticks</TableHeaderColumn>
-          <TableHeaderColumn dataField="stars" dataSort={true} dataFormat={this.formatStars.bind(this)} dataAlign="center" width="70">Stars</TableHeaderColumn>
-          <TableHeaderColumn dataField="numImages" dataSort={true} dataFormat={this.formatNumImages.bind(this)} sortFunc={this.sortNumImages.bind(this)} dataAlign="center" width="50"><i className="fa fa-camera"></i></TableHeaderColumn>
-          <TableHeaderColumn dataField="numMovies" dataSort={true} dataFormat={this.formatNumMovies.bind(this)} sortFunc={this.sortNumMovies.bind(this)} dataAlign="center" width="50"><i className="fa fa-video-camera"></i></TableHeaderColumn>
-          <TableHeaderColumn dataField="distance" dataSort={true} dataFormat={this.formatDistance.bind(this)} sortFunc={this.sortDistance.bind(this)} dataAlign="center" width="60"><i className="fa fa-plane"></i></TableHeaderColumn>
-        </BootstrapTable>
+        {table}
       </span>
     );
   }
