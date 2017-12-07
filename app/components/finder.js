@@ -81,6 +81,7 @@ export default class Finder extends Component {
   formatType(cell, row) {
     var typeImg;
     switch (row.t.id) {
+      case 1: return "";
       case 2: typeImg = <img height="20" src="/jpg/bolt.jpg"/>; break;
       case 3: typeImg = <img height="20" src="/jpg/trad.jpg"/>; break;
       case 4: typeImg = <img height="20" src="/jpg/mixed.jpg"/>; break;
