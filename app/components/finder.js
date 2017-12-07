@@ -223,7 +223,7 @@ export default class Finder extends Component {
           <TableHeaderColumn dataField="areaName" dataSort={true} dataFormat={this.formatAreaName.bind(this)} width="150" filter={{type: "TextFilter", placeholder: "Filter"}}>Area</TableHeaderColumn>
           <TableHeaderColumn dataField="sectorName" dataSort={true} dataFormat={this.formatSectorName.bind(this)} width="150" filter={{type: "TextFilter", placeholder: "Filter"}}>Sector</TableHeaderColumn>
           <TableHeaderColumn dataField="name" dataSort={true} dataFormat={this.formatName.bind(this)} width="150" filter={{type: "TextFilter", placeholder: "Filter"}}>Name</TableHeaderColumn>
-          {config.getRegion()==4 && <TableHeaderColumn dataField="type" dataFormat={this.formatType.bind(this)} dataAlign="center" width="70">Type</TableHeaderColumn>}
+          <TableHeaderColumn dataField="type" dataFormat={this.formatType.bind(this)} dataAlign="center" width="70">Type</TableHeaderColumn>
           <TableHeaderColumn dataField="grade" dataSort={true} dataAlign="center" width="70">Grade</TableHeaderColumn>
           <TableHeaderColumn dataField="fa" dataSort={true} dataFormat={this.formatFa.bind(this)} sortFunc={this.sortFa.bind(this)} dataAlign="center" width="70">FA</TableHeaderColumn>
           <TableHeaderColumn dataField="numTicks" dataSort={true} dataAlign="center" width="50">Ticks</TableHeaderColumn>
