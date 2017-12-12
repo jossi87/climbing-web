@@ -90,7 +90,8 @@ export default class App extends Component {
     this.setState({searchString: '', searchResults: null});
   }
 
-  hoverImage(hover) {
+  hoverImage(hover, e) {
+    e.preventDefault();
     const logo = hover? '/png/buldreinfo_logo_white.png' : '/png/buldreinfo_logo_gray.png';
     this.setState({logo: logo});
   }
