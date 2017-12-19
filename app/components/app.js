@@ -21,6 +21,21 @@ import User from './user';
 import UserEdit from './user-edit';
 
 export default class App extends Component {
+  // Temp fix to collapse nav-button on devices: https://github.com/lefant/react-bootstrap/commit/c68b46baea + https://github.com/react-bootstrap/react-router-bootstrap/issues/112#issuecomment-142599003
+  componentDidMount() {
+    const navBar = ReactDOM.findDOMNode(this).querySelector('nav.navbar');
+    const collapsibleNav = navBar.querySelector('div.navbar-collapse');
+    const btnToggle = navBar.querySelector('button.navbar-toggle');
+
+    navBar.addEventListener('click', (evt) => {
+      if (evt.target.tagName !== 'A' || evt.target.classList.contains('dropdown-toggle') || ! collapsibleNav.classList.contains('in')) {
+        return;
+      }
+
+      btnToggle.click();
+    }, false);
+  }
+
   render() {
     return (
       <span>

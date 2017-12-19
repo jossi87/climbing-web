@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import ReactDOM from 'react-dom'; // Used for navbar hack
 import { Navbar, Nav, NavItem, FormGroup, FormControl, MenuItem, NavDropdown } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import Request from 'superagent';
@@ -25,20 +24,7 @@ export default class Navigation extends Component {
     auth.login();
   }
 
-  // Temp fix to collapse nav-button on devices: https://github.com/lefant/react-bootstrap/commit/c68b46baea + https://github.com/react-bootstrap/react-router-bootstrap/issues/112#issuecomment-142599003
   componentDidMount() {
-    const navBar = ReactDOM.findDOMNode(this).querySelector('nav.navbar');
-    const collapsibleNav = navBar.querySelector('div.navbar-collapse');
-    const btnToggle = navBar.querySelector('button.navbar-toggle');
-
-    navBar.addEventListener('click', (evt) => {
-      if (evt.target.tagName !== 'A' || evt.target.classList.contains('dropdown-toggle') || ! collapsibleNav.classList.contains('in')) {
-        return;
-      }
-
-      btnToggle.click();
-    }, false);
-
     Request.get(config.getUrl("grades?regionId=" + config.getRegion())).end((err, res) => {
       this.setState({
         error: err? err : null,
