@@ -50,7 +50,7 @@ export default class Navigation extends Component {
       });
     }
     else {
-      this.setState({searchString: value, searchResults: null});
+      this.setState({searchString: e.target.value, searchResults: null});
     }
   }
 
