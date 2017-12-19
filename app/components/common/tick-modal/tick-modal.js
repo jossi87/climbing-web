@@ -46,7 +46,7 @@ export default class TickModal extends Component {
   }
 
   onDateChanged(newDate) {
-    d = null;
+    var d = null;
     if (newDate) {
       newDate = newDate.getYear() + "-" + newDate.getISOLocalMonth() + "-" + newDate.getISOLocalDate();
     }
