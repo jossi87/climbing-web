@@ -17,9 +17,7 @@ export default class TickModal extends Component {
       } else {
         date = props.date;
       }
-    } else if (props.idTick) {
-      date = null;
-    } else {
+    } else if (props.idTick==-1) {
       date = new Date().toISOString().substring(0,10);
     }
 
