@@ -113,8 +113,8 @@ export default class TickModal extends Component {
         </Modal.Header>
         <Modal.Body>
           <FormGroup>
-            <ControlLabel>Date</ControlLabel>
-            <DatePicker dateFormat="YYYY-MM-DD" value={this.state.date} onChange={this.onDateChanged.bind(this)} />
+            <ControlLabel>Date</ControlLabel><br/>
+            <DatePicker dateFormat="YYYY-MM-DD" value={this.state.date} onChange={this.onDateChanged.bind(this)} /><br/>
             <ButtonGroup>
               <Button onClick={this.onDateChanged.bind(this, yesterday.toISOString().substring(0,10))}>Yesterday</Button>
               <Button onClick={this.onDateChanged.bind(this, new Date().toISOString().substring(0,10))}>Today</Button>

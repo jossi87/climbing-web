@@ -195,7 +195,7 @@ export default class ProblemEdit extends Component {
           </FormGroup>
           <FormGroup controlId="formControlsFaDate">
             <ControlLabel>FA date (YYYY-MM-DD)</ControlLabel><br/>
-            <DatePicker dateFormat="YYYY-MM-DD" value={this.state.faDate} onChange={this.onFaDateChanged.bind(this)} />
+            <DatePicker dateFormat="YYYY-MM-DD" value={this.state.faDate} onChange={this.onFaDateChanged.bind(this)} style={{ zIndex: 1}} /><br/>
             <ButtonGroup>
               <Button onClick={this.onFaDateChanged.bind(this, yesterday.toISOString().substring(0,10))}>Yesterday</Button>
               <Button onClick={this.onFaDateChanged.bind(this, new Date().toISOString().substring(0,10))}>Today</Button>
