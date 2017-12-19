@@ -99,10 +99,14 @@ export default class ProblemEdit extends Component {
   }
 
   onFaDateChanged(newDate) {
-    if (newDate === 'Invalid date') {
-      newDate = null;
+    var dateString = null;
+    if (newDate) {
+      var d = newDate.getDate();
+      var m = newDate.getMonth() + 1;
+      var y = newDate.getFullYear();
+      dateString = (d <= 9 ? '0' + d : d) + '-' + (m <= 9 ? '0' + m : m) + '-' + y;
     }
-    return this.setState({faDate: newDate});
+    return this.setState({date: dateString});
   }
 
   onOriginalGradeChanged(originalGrade, e) {
@@ -197,8 +201,8 @@ export default class ProblemEdit extends Component {
             <ControlLabel>FA date</ControlLabel><br/>
             <DatePicker value={this.state.faDate} onChange={this.onFaDateChanged.bind(this)} /><br/>
             <ButtonGroup>
-              <Button onClick={this.onFaDateChanged.bind(this, yesterday.toISOString().substring(0,10))}>Yesterday</Button>
-              <Button onClick={this.onFaDateChanged.bind(this, new Date().toISOString().substring(0,10))}>Today</Button>
+              <Button onClick={this.onFaDateChanged.bind(this, yesterday)}>Yesterday</Button>
+              <Button onClick={this.onFaDateChanged.bind(this, new Date())}>Today</Button>
             </ButtonGroup>
           </FormGroup>
           <FormGroup controlId="formControlsTypeId">

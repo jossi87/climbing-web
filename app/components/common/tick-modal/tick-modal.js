@@ -48,12 +48,11 @@ export default class TickModal extends Component {
   onDateChanged(newDate) {
     var dateString = null;
     if (newDate) {
-      var d = date.getDate();
-      var m = date.getMonth() + 1;
-      var y = date.getFullYear();
+      var d = newDate.getDate();
+      var m = newDate.getMonth() + 1;
+      var y = newDate.getFullYear();
       dateString = (d <= 9 ? '0' + d : d) + '-' + (m <= 9 ? '0' + m : m) + '-' + y;
     }
-    console.log(newDate + " og " + dateString);
     return this.setState({date: dateString});
   }
 
@@ -119,7 +118,7 @@ export default class TickModal extends Component {
         <Modal.Body>
           <FormGroup>
             <ControlLabel>Date</ControlLabel><br/>
-            <DatePicker calendarType="ISO 8601" value={this.state.date} onChange={this.onDateChanged.bind(this)} /><br/>
+            <DatePicker value={this.state.date} onChange={this.onDateChanged.bind(this)} /><br/>
             <ButtonGroup>
               <Button onClick={this.onDateChanged.bind(this, yesterday)}>Yesterday</Button>
               <Button onClick={this.onDateChanged.bind(this, new Date())}>Today</Button>
