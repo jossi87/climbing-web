@@ -46,12 +46,15 @@ export default class TickModal extends Component {
   }
 
   onDateChanged(newDate) {
-    var d = null;
+    var dateString = null;
     if (newDate) {
-      newDate = newDate.getYear() + "-" + newDate.getISOLocalMonth() + "-" + newDate.getISOLocalDate();
+      var d = date.getDate();
+      var m = date.getMonth() + 1;
+      var y = date.getFullYear();
+      dateString = (d <= 9 ? '0' + d : d) + '-' + (m <= 9 ? '0' + m : m) + '-' + y;
     }
-    console.log(newDate + " og " + d);
-    return this.setState({date: d});
+    console.log(newDate + " og " + dateString);
+    return this.setState({date: dateString});
   }
 
   onCommentChanged(e) {
