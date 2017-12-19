@@ -106,7 +106,7 @@ export default class ProblemEdit extends Component {
       var y = newDate.getFullYear();
       dateString = y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
     }
-    return this.setState({date: dateString});
+    return this.setState({faDate: dateString});
   }
 
   onOriginalGradeChanged(originalGrade, e) {
