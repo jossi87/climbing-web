@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router'
 import Request from 'superagent';
 import { FormGroup, ControlLabel, FormControl, ButtonGroup, Button, DropdownButton, MenuItem, Well } from 'react-bootstrap';
-import DatePicker from 'react-bootstrap-date-picker';
+import DatePicker from 'react-date-picker';
 import {withGoogleMap, GoogleMap, Marker} from "react-google-maps";
 import UserSelecter from './common/user-selecter/user-selecter';
 import ImageUpload from './common/image-upload/image-upload';

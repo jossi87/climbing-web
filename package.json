@@ -7,28 +7,28 @@
   "private": true,
   "author": "Jostein Oeygarden <jostein.oygarden@gmail.com> (https://jossi.org)",
   "repository": {
-    "type" : "git"
-  , "url" : "https://bitbucket.org/josteinoygarden/buldreinfo-web.git"
+    "type": "git",
+    "url": "https://bitbucket.org/josteinoygarden/buldreinfo-web.git"
   },
   "dependencies": {
-    "markerclustererplus": "^2.1.2",
+    "markerclustererplus": "^2.1.4",
     "object-fit-images": "^3.2.3",
     "prop-types": "^15.6.0",
     "react": "^15.6.2",
     "react-bootstrap": "^0.31.5",
-    "react-bootstrap-date-picker": "^5.1.0",
-    "react-bootstrap-table": "^4.2.0",
+    "react-bootstrap-table": "^4.3.0",
+    "react-date-picker": "^6.5.2",
     "react-dom": "^15.6.2",
     "react-dropzone": "^4.2.3",
     "react-ga": "^2.3.5",
-    "react-google-maps": "^9.4.2",
+    "react-google-maps": "^9.4.3",
     "react-image-gallery": "^0.8.6",
-    "react-modal": "^3.1.7",
+    "react-modal": "^3.1.8",
     "react-player": "^0.25.3",
     "react-router": "^4.2.0",
     "react-router-bootstrap": "^0.24.4",
     "react-router-dom": "^4.2.2",
-    "superagent": "^3.8.1",
+    "superagent": "^3.8.2",
     "watchify": "^3.9.0"
   },
   "devDependencies": {
@@ -37,9 +37,11 @@
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
     "create-react-class": "^15.6.2",
+    "css-loader": "^0.28.7",
     "html-webpack-plugin": "^2.30.1",
     "http-server": "^0.10.0",
-    "uglifyjs-webpack-plugin": "^1.1.2",
+    "style-loader": "^0.19.1",
+    "uglifyjs-webpack-plugin": "^1.1.4",
     "webpack": "^3.10.0"
   },
   "scripts": {

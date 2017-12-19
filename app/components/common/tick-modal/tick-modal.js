@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { Modal, Button, FormGroup, ControlLabel, FormControl, ButtonGroup, DropdownButton, MenuItem } from 'react-bootstrap';
-import DatePicker from 'react-bootstrap-date-picker';
+import DatePicker from 'react-date-picker';
 import Request from 'superagent';
 import config from '../../../utils/config.js';
 
