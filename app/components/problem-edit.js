@@ -104,7 +104,7 @@ export default class ProblemEdit extends Component {
       var d = newDate.getDate();
       var m = newDate.getMonth() + 1;
       var y = newDate.getFullYear();
-      dateString = (d <= 9 ? '0' + d : d) + '-' + (m <= 9 ? '0' + m : m) + '-' + y;
+      dateString = y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
     }
     return this.setState({date: dateString});
   }
