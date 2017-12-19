@@ -46,10 +46,7 @@ export default class TickModal extends Component {
   }
 
   onDateChanged(newDate) {
-    if (newDate === 'Invalid date') {
-      newDate = null;
-    }
-    return this.setState({date: newDate});
+    return this.setState({date: newDate.toISOString().substring(0,10)});
   }
 
   onCommentChanged(e) {
@@ -113,8 +110,8 @@ export default class TickModal extends Component {
         </Modal.Header>
         <Modal.Body>
           <FormGroup>
-            <ControlLabel>Date</ControlLabel>
-            <DatePicker calendarType="ISO 8601" value={this.state.date} onChange={this.onDateChanged.bind(this)} /><br/>
+            <ControlLabel>Date</ControlLabel><br/>
+            <DatePicker value={this.state.date} onChange={this.onDateChanged.bind(this)} /><br/>
             <ButtonGroup>
               <Button onClick={this.onDateChanged.bind(this, yesterday.toISOString().substring(0,10))}>Yesterday</Button>
               <Button onClick={this.onDateChanged.bind(this, new Date().toISOString().substring(0,10))}>Today</Button>
