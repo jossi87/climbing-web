@@ -115,11 +115,11 @@ export default class Navigation extends Component {
               <LinkContainer to="/login"><NavItem eventKey={5}>Sign in</NavItem></LinkContainer>
             }
             <NavDropdown eventKey={6} title="Contact and links" id='basic-nav-dropdown'>
-              <NavItem eventKey={6.1} href="mailto:jostein.oygarden@gmail.com">Contact</NavItem>
+              <MenuItem eventKey={6.1} href="mailto:jostein.oygarden@gmail.com">Contact</MenuItem>
               <MenuItem divider />
-              <NavItem eventKey={6.2} href="https://buldreinfo.com" target="_blank">https://buldreinfo.com</NavItem>
+              <MenuItem eventKey={6.2} href="https://buldreinfo.com" target="_blank">buldreinfo.com</MenuItem>
               <MenuItem divider />
-              <NavItem eventKey={6.3} href="https://brattelinjer.com" target="_blank">https://brattelinjer.com</NavItem>
+              <MenuItem eventKey={6.3} href="https://brattelinjer.com" target="_blank">brattelinjer.com</MenuItem>
             </NavDropdown>
           </Nav>
           <Navbar.Form pullRight>
