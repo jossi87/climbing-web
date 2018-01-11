@@ -145,7 +145,7 @@ export default class User extends Component {
         	hover={true}
         	columnFilter={false}>
           <TableHeaderColumn dataField="idProblem" isKey={true} hidden={true}>idProblem</TableHeaderColumn>
-          <TableHeaderColumn dataField="date" dataSort={true} sortFunc={this.sortDate.bind(this)} dataAlign="center" width="70">Date</TableHeaderColumn>
+          <TableHeaderColumn dataField="dateHr" dataSort={true} sortFunc={this.sortDate.bind(this)} dataAlign="center" width="70">Date</TableHeaderColumn>
           <TableHeaderColumn dataField="name" dataSort={true} dataFormat={this.formatName.bind(this)} width="300">Name</TableHeaderColumn>
           <TableHeaderColumn dataField="grade" dataSort={true} dataAlign="center" width="70">Grade</TableHeaderColumn>
           <TableHeaderColumn dataField="comment" dataSort={true} sortFunc={this.sortComment.bind(this)} dataFormat={this.formatComment.bind(this)} width="300">Comment</TableHeaderColumn>

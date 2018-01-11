@@ -46,6 +46,10 @@ module.exports = {
   },
 
   getDefaultZoom() {
-    return 7;
+    if (window.location.hostname=='brattelinjer.no') {
+      return 10;
+    } else {
+      return 7;
+    }
   }
 }

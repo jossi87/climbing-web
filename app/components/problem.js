@@ -43,7 +43,7 @@ export default class Problem extends Component {
           grade: res.body[0].grade,
           originalGrade: res.body[0].originalGrade,
           fa: res.body[0].fa,
-          faDate: res.body[0].faDate,
+          faDateHr: res.body[0].faDateHr,
           lat: res.body[0].lat,
           lng: res.body[0].lng,
           media: res.body[0].media,
@@ -266,7 +266,7 @@ export default class Problem extends Component {
           {config.getRegion()==4 && <span><strong>Type:</strong> {this.state.t.type + " - " + this.state.t.subType}<br/></span>}
           <strong>Comment:</strong> {this.state.comment}<br/>
           <strong>FA:</strong> {fa}<br/>
-          <strong>FA date:</strong> {this.state.faDate}<br/>
+          <strong>FA date:</strong> {this.state.faDateHr}<br/>
           <strong>Original grade:</strong> {this.state.originalGrade}<br/>
           {this.state.sectorLat>0 && this.state.sectorLng>0 &&
             <span><a href={`http://maps.google.com/maps?q=loc:${this.state.sectorLat},${this.state.sectorLng}&navigate=yes`} target="_blank">Start navigation</a><br/></span>}
