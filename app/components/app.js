@@ -61,7 +61,7 @@ export default class App extends Component {
             <Route path="/logout" component={Logout}/>
           </Switch>
           <footer style={{paddingTop: '10px', marginTop: '40px', color: '#777', textAlign: 'center', borderTop: '1px solid #e5e5e5'}}>
-            &copy; buldreinfo.com &amp; brattelinjer.no 2006-2018
+            buldreinfo.com &amp; brattelinjer.no &copy; 2006-2018
           </footer>
         </div>
       </span>
