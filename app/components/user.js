@@ -103,10 +103,22 @@ export default class User extends Component {
   }
 
   sortGrade(a, b, order) {
-    const x = a.gradeNumber;
-    const y = b.gradeNumber;
-    if (order==='asc') return x.localeCompare(y, 'en-US-u-kn-true');
-    return y.localeCompare(x, 'en-US-u-kn-true');
+    const x = a.gradeNumber? a.gradeNumber : 0;
+    const y = b.gradeNumber? b.gradeNumber : 0;
+    if (order==='asc') {
+      if (x<y) {
+        return -1
+      } else if (x>y) {
+        return 1;
+      }
+      return 0;
+    }
+    if (y<x) {
+      return -1
+    } else if (y>x) {
+      return 1;
+    }
+    return 0;
   }
 
   sortComment(a, b, order) {
