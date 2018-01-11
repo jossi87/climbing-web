@@ -118,8 +118,10 @@ export default class Navigation extends Component {
               <MenuItem eventKey={6.1} href="mailto:jostein.oygarden@gmail.com">Contact</MenuItem>
               <MenuItem divider />
               <MenuItem eventKey={6.2} href="https://buldreinfo.com" target="_blank">buldreinfo.com</MenuItem>
+              <MenuItem eventKey={6.3} href="https://buldring.bergen-klatreklubb.no" target="_blank">buldring.bergen-klatreklubb.no</MenuItem>
+              <MenuItem eventKey={6.4} href="https://buldring.fredrikstadklatreklubb.org" target="_blank">buldring.fredrikstadklatreklubb.org</MenuItem>
               <MenuItem divider />
-              <MenuItem eventKey={6.3} href="https://brattelinjer.com" target="_blank">brattelinjer.com</MenuItem>
+              <MenuItem eventKey={6.5} href="https://brattelinjer.com" target="_blank">brattelinjer.com</MenuItem>
             </NavDropdown>
           </Nav>
           <Navbar.Form pullRight>
