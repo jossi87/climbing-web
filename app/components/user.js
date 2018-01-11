@@ -102,6 +102,11 @@ export default class User extends Component {
     return y.localeCompare(x);
   }
 
+  sortGrade(a, b, order) {
+    if (order==='asc') return a.gradeNumber.localeCompare(b.gradeNumber, 'en-US-u-kn-true');
+    return b.gradeNumber.localeCompare(a.gradeNumber, 'en-US-u-kn-true');
+  }
+
   sortComment(a, b, order) {
     const x = a.comment? a.comment : "";
     const y = b.comment? b.comment : "";
@@ -147,7 +152,7 @@ export default class User extends Component {
           <TableHeaderColumn dataField="idProblem" isKey={true} hidden={true}>idProblem</TableHeaderColumn>
           <TableHeaderColumn dataField="dateHr" dataSort={true} sortFunc={this.sortDate.bind(this)} dataAlign="center" width="70">Date</TableHeaderColumn>
           <TableHeaderColumn dataField="name" dataSort={true} dataFormat={this.formatName.bind(this)} width="300">Name</TableHeaderColumn>
-          <TableHeaderColumn dataField="grade" dataSort={true} dataAlign="center" width="70">Grade</TableHeaderColumn>
+          <TableHeaderColumn dataField="grade" dataSort={true} sortFunc={this.sortGrade.bind(this)} dataAlign="center" width="70">Grade</TableHeaderColumn>
           <TableHeaderColumn dataField="comment" dataSort={true} sortFunc={this.sortComment.bind(this)} dataFormat={this.formatComment.bind(this)} width="300">Comment</TableHeaderColumn>
           <TableHeaderColumn dataField="stars" dataSort={true} dataFormat={this.formatStars.bind(this)} dataAlign="center" width="70">Stars</TableHeaderColumn>
           <TableHeaderColumn dataField="fa" dataSort={true} dataFormat={this.formatFa.bind(this)} dataAlign="center" width="50">FA</TableHeaderColumn>
