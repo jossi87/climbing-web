@@ -17,7 +17,6 @@
     "react": "^16.2.0",
     "react-bootstrap": "^0.31.5",
     "react-bootstrap-table": "^4.3.0",
-    "react-date-picker": "^6.5.2",
     "react-dom": "^16.2.0",
     "react-dropzone": "^4.2.3",
     "react-ga": "^2.3.5",

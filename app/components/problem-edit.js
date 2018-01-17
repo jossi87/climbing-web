@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router'
 import Request from 'superagent';
 import { FormGroup, ControlLabel, FormControl, ButtonGroup, Button, DropdownButton, MenuItem, Well } from 'react-bootstrap';
-import DatePicker from 'react-date-picker';
 import {withGoogleMap, GoogleMap, Marker} from "react-google-maps";
 import UserSelecter from './common/user-selecter/user-selecter';
 import ImageUpload from './common/image-upload/image-upload';
@@ -99,14 +98,7 @@ export default class ProblemEdit extends Component {
   }
 
   onFaDateChanged(newDate) {
-    var dateString = null;
-    if (newDate) {
-      var d = newDate.getDate();
-      var m = newDate.getMonth() + 1;
-      var y = newDate.getFullYear();
-      dateString = y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
-    }
-    return this.setState({faDate: dateString});
+    this.setState({faDate: dateString});
   }
 
   onOriginalGradeChanged(originalGrade, e) {
@@ -154,6 +146,13 @@ export default class ProblemEdit extends Component {
     window.history.back();
   }
 
+  convertFromDateToString(date) {
+    var d = date.getDate();
+    var m = date.getMonth() + 1;
+    var y = today.getFullYear();
+    return y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
+  }
+
   render() {
     if (!this.state || !this.state.id || !this.state.types || !this.state.grades) {
       return <center><i className="fa fa-cog fa-spin fa-2x"></i></center>;
@@ -198,11 +197,11 @@ export default class ProblemEdit extends Component {
             <FormControl type="text" value={this.state.name} placeholder="Enter name" onChange={this.onNameChanged.bind(this)} />
           </FormGroup>
           <FormGroup controlId="formControlsFaDate">
-            <ControlLabel>FA date</ControlLabel><br/>
-            <DatePicker value={this.state.faDate} onChange={this.onFaDateChanged.bind(this)} /><br/>
+            <ControlLabel>FA date (yyyy-mm-dd)</ControlLabel><br/>
+            <FormControl type="text" value={this.state.faDate} placeholder="yyyy-mm-dd" onChange={this.onFaDateChanged.bind(this)} />
             <ButtonGroup>
-              <Button onClick={this.onFaDateChanged.bind(this, yesterday)}>Yesterday</Button>
-              <Button onClick={this.onFaDateChanged.bind(this, new Date())}>Today</Button>
+              <Button onClick={this.onFaDateChanged.bind(this, convertFromDateToString(yesterday))}>Yesterday</Button>
+              <Button onClick={this.onFaDateChanged.bind(this, convertFromDateToString(new Date()))}>Today</Button>
             </ButtonGroup>
           </FormGroup>
           <FormGroup controlId="formControlsTypeId">

@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import { Modal, Button, FormGroup, ControlLabel, FormControl, ButtonGroup, DropdownButton, MenuItem } from 'react-bootstrap';
-import DatePicker from 'react-date-picker';
 import Request from 'superagent';
 import config from '../../../utils/config.js';
 
@@ -12,13 +11,9 @@ export default class TickModal extends Component {
   refresh(props) {
     var date = null;
     if (props.date) {
-      if (props.date.length==8) {
-        date = (parseInt(props.date.substring(0,2))<50? "20" : "19") + props.date;
-      } else {
-        date = props.date;
-      }
+      date = props.date;
     } else if (props.idTick==-1) {
-      date = new Date().toISOString().substring(0,10);
+      date = convertFromDateToString(new Date());
     }
 
     this.setState({
@@ -66,6 +61,13 @@ export default class TickModal extends Component {
 
   onGradeChanged(grade, e) {
     this.setState({grade: grade});
+  }
+
+  convertFromDateToString(date) {
+    var d = date.getDate();
+    var m = date.getMonth() + 1;
+    var y = today.getFullYear();
+    return y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
   }
 
   delete(e) {
@@ -117,11 +119,11 @@ export default class TickModal extends Component {
         </Modal.Header>
         <Modal.Body>
           <FormGroup>
-            <ControlLabel>Date</ControlLabel><br/>
-            <DatePicker value={this.state.date} onChange={this.onDateChanged.bind(this)} /><br/>
+            <ControlLabel>Date (yyyy-mm-dd)</ControlLabel><br/>
+            <FormControl type="text" value={this.state.date} placeholder="yyyy-mm-dd" onChange={this.onDateChanged.bind(this)} />
             <ButtonGroup>
-              <Button onClick={this.onDateChanged.bind(this, yesterday)}>Yesterday</Button>
-              <Button onClick={this.onDateChanged.bind(this, new Date())}>Today</Button>
+              <Button onClick={this.onDateChanged.bind(this, convertFromDateToString(yesterday))}>Yesterday</Button>
+              <Button onClick={this.onDateChanged.bind(this, convertFromDateToString(new Date()))}>Today</Button>
             </ButtonGroup>
           </FormGroup>
           <FormGroup>
