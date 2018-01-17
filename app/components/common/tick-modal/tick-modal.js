@@ -13,7 +13,7 @@ export default class TickModal extends Component {
     if (props.date) {
       date = props.date;
     } else if (props.idTick==-1) {
-      date = convertFromDateToString(new Date());
+      date = config.convertFromDateToString(new Date());
     }
 
     this.setState({
@@ -61,13 +61,6 @@ export default class TickModal extends Component {
 
   onGradeChanged(grade, e) {
     this.setState({grade: grade});
-  }
-
-  convertFromDateToString(date) {
-    var d = date.getDate();
-    var m = date.getMonth() + 1;
-    var y = today.getFullYear();
-    return y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
   }
 
   delete(e) {
@@ -122,8 +115,8 @@ export default class TickModal extends Component {
             <ControlLabel>Date (yyyy-mm-dd)</ControlLabel><br/>
             <FormControl type="text" value={this.state.date} placeholder="yyyy-mm-dd" onChange={this.onDateChanged.bind(this)} />
             <ButtonGroup>
-              <Button onClick={this.onDateChanged.bind(this, convertFromDateToString(yesterday))}>Yesterday</Button>
-              <Button onClick={this.onDateChanged.bind(this, convertFromDateToString(new Date()))}>Today</Button>
+              <Button onClick={this.onDateChanged.bind(this, config.convertFromDateToString(yesterday))}>Yesterday</Button>
+              <Button onClick={this.onDateChanged.bind(this, config.convertFromDateToString(new Date()))}>Today</Button>
             </ButtonGroup>
           </FormGroup>
           <FormGroup>

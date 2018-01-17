@@ -146,13 +146,6 @@ export default class ProblemEdit extends Component {
     window.history.back();
   }
 
-  convertFromDateToString(date) {
-    var d = date.getDate();
-    var m = date.getMonth() + 1;
-    var y = today.getFullYear();
-    return y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
-  }
-
   render() {
     if (!this.state || !this.state.id || !this.state.types || !this.state.grades) {
       return <center><i className="fa fa-cog fa-spin fa-2x"></i></center>;
@@ -200,8 +193,8 @@ export default class ProblemEdit extends Component {
             <ControlLabel>FA date (yyyy-mm-dd)</ControlLabel><br/>
             <FormControl type="text" value={this.state.faDate} placeholder="yyyy-mm-dd" onChange={this.onFaDateChanged.bind(this)} />
             <ButtonGroup>
-              <Button onClick={this.onFaDateChanged.bind(this, convertFromDateToString(yesterday))}>Yesterday</Button>
-              <Button onClick={this.onFaDateChanged.bind(this, convertFromDateToString(new Date()))}>Today</Button>
+              <Button onClick={this.onFaDateChanged.bind(this, config.convertFromDateToString(yesterday))}>Yesterday</Button>
+              <Button onClick={this.onFaDateChanged.bind(this, config.convertFromDateToString(new Date()))}>Today</Button>
             </ButtonGroup>
           </FormGroup>
           <FormGroup controlId="formControlsTypeId">
