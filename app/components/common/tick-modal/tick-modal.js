@@ -40,8 +40,8 @@ export default class TickModal extends Component {
     this.refresh(nextProps);
   }
 
-  onDateChanged(newDate) {
-    return this.setState({date: newDate});
+  onDateChanged(e) {
+    this.setState({date: e.target.value});
   }
 
   onCommentChanged(e) {

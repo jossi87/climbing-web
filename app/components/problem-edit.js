@@ -97,8 +97,8 @@ export default class ProblemEdit extends Component {
     this.setState({comment: e.target.value});
   }
 
-  onFaDateChanged(newFaDate) {
-    this.setState({faDate: newFaDate});
+  onFaDateChanged(e) {
+    this.setState({faDate: e.target.value});
   }
 
   onOriginalGradeChanged(originalGrade, e) {
