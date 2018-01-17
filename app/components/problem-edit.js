@@ -8,6 +8,7 @@ import UserSelecter from './common/user-selecter/user-selecter';
 import ImageUpload from './common/image-upload/image-upload';
 import config from '../utils/config.js';
 import auth from '../utils/auth.js';
+import Calendar from 'react-input-calendar';
 
 const GettingStartedGoogleMap = withGoogleMap(props => (
   <GoogleMap
@@ -42,7 +43,7 @@ export default class ProblemEdit extends Component {
         comment: "",
         originalGrade: "n/a",
         fa: [],
-        faDate: new Date().toISOString().substring(0, 10),
+        faDate: config.convertFromDateToString(new Date()),
         nr: this.props.location.query.nr,
         lat: 0,
         lng: 0,
@@ -53,7 +54,6 @@ export default class ProblemEdit extends Component {
         if (err) {
           this.setState({error: err});
         } else {
-          const date = res.body[0].faDate? (parseInt(res.body[0].faDate.substring(0,2))<50? "20" : "19") + res.body[0].faDate : null;
           this.setState({
             id: res.body[0].id,
             visibility: res.body[0].visibility,
@@ -61,7 +61,7 @@ export default class ProblemEdit extends Component {
             comment: res.body[0].comment,
             originalGrade: res.body[0].originalGrade,
             fa: res.body[0].fa,
-            faDate: date,
+            faDate: res.body[0].faDate,
             nr: res.body[0].nr,
             typeId: res.body[0].t.id,
             lat: res.body[0].lat,
@@ -97,8 +97,8 @@ export default class ProblemEdit extends Component {
     this.setState({comment: e.target.value});
   }
 
-  onFaDateChanged(e) {
-    this.setState({faDate: e.target.value});
+  onFaDateChanged(newFaDate) {
+    this.setState({faDate: newFaDate});
   }
 
   onOriginalGradeChanged(originalGrade, e) {
@@ -191,7 +191,7 @@ export default class ProblemEdit extends Component {
           </FormGroup>
           <FormGroup controlId="formControlsFaDate">
             <ControlLabel>FA date (yyyy-mm-dd)</ControlLabel><br/>
-            <FormControl type="text" value={this.state.faDate} placeholder="yyyy-mm-dd" onChange={this.onFaDateChanged.bind(this)} />
+            <Calendar format='YYYY-MM-DD' computableFormat='YYYY-MM-DD' date={this.state.faDate} onChange={this.onFaDateChanged.bind(this)} />
             <ButtonGroup>
               <Button onClick={this.onFaDateChanged.bind(this, config.convertFromDateToString(yesterday))}>Yesterday</Button>
               <Button onClick={this.onFaDateChanged.bind(this, config.convertFromDateToString(new Date()))}>Today</Button>

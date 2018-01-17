@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "markerclustererplus": "^2.1.4",
+    "moment": "^2.20.1",
+    "moment-range": "^2.1.0",
     "object-fit-images": "^3.2.3",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
@@ -22,6 +24,7 @@
     "react-ga": "^2.3.5",
     "react-google-maps": "^9.4.3",
     "react-image-gallery": "^0.8.6",
+    "react-input-calendar": "^0.5.2",
     "react-modal": "^3.1.8",
     "react-player": "^0.25.3",
     "react-router": "^4.2.0",

@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { Modal, Button, FormGroup, ControlLabel, FormControl, ButtonGroup, DropdownButton, MenuItem } from 'react-bootstrap';
 import Request from 'superagent';
 import config from '../../../utils/config.js';
+import Calendar from 'react-input-calendar';
 
 export default class TickModal extends Component {
   constructor(props) {
@@ -40,8 +41,8 @@ export default class TickModal extends Component {
     this.refresh(nextProps);
   }
 
-  onDateChanged(e) {
-    this.setState({date: e.target.value});
+  onDateChanged(newDate) {
+    this.setState({date: newDate});
   }
 
   onCommentChanged(e) {
@@ -106,7 +107,7 @@ export default class TickModal extends Component {
         <Modal.Body>
           <FormGroup>
             <ControlLabel>Date (yyyy-mm-dd)</ControlLabel><br/>
-            <FormControl type="text" value={this.state.date} placeholder="yyyy-mm-dd" onChange={this.onDateChanged.bind(this)} />
+            <Calendar format='YYYY-MM-DD' computableFormat='YYYY-MM-DD' date={this.state.date} onChange={this.onDateChanged.bind(this)} />
             <ButtonGroup>
               <Button onClick={this.onDateChanged.bind(this, config.convertFromDateToString(yesterday))}>Yesterday</Button>
               <Button onClick={this.onDateChanged.bind(this, config.convertFromDateToString(new Date()))}>Today</Button>
