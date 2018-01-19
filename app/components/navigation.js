@@ -122,6 +122,8 @@ export default class Navigation extends Component {
               <MenuItem eventKey={6.4} href="https://buldring.fredrikstadklatreklubb.org" target="_blank">buldring.fredrikstadklatreklubb.org</MenuItem>
               <MenuItem divider />
               <MenuItem eventKey={6.5} href="https://brattelinjer.no" target="_blank">brattelinjer.no</MenuItem>
+              <MenuItem divider />
+              <MenuItem eventKey={6.6} href="/gpl-3.0.txt" target="_blank">GNU Public License</MenuItem>
             </NavDropdown>
           </Nav>
           <Navbar.Form pullRight>
