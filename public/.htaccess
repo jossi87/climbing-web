@@ -11,7 +11,8 @@ RewriteRule problem/(\d*)$ http://jossi.org/com.buldreinfo.jersey.jaxb/v1/static
 RewriteRule ^ http://jossi.org/com.buldreinfo.jersey.jaxb/v1/static/frontpage?base=%{HTTP_HOST} [P]
 
 # React.JS redirect to index.html
-RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !^/gpl-3.0.txt$ [OR]
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} =/gpl-3.0.txt
+RewriteRule ^ - [S=4] # Skip following lines if NOT gpl-3.0.txt
 RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f [OR]
 RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -d
 RewriteRule ^ - [L]
