@@ -116,14 +116,13 @@ export default class Navigation extends Component {
             }
             <NavDropdown eventKey={6} title="Contact and links" id='basic-nav-dropdown'>
               <MenuItem eventKey={6.1} href="mailto:jostein.oygarden@gmail.com">Contact</MenuItem>
+              <MenuItem eventKey={6.2} href="/gpl-3.0.txt" target="_blank">GNU Public License</MenuItem>
               <MenuItem divider />
-              <MenuItem eventKey={6.2} href="https://buldreinfo.com" target="_blank">buldreinfo.com</MenuItem>
-              <MenuItem eventKey={6.3} href="https://buldring.bergen-klatreklubb.no" target="_blank">buldring.bergen-klatreklubb.no</MenuItem>
-              <MenuItem eventKey={6.4} href="https://buldring.fredrikstadklatreklubb.org" target="_blank">buldring.fredrikstadklatreklubb.org</MenuItem>
+              <MenuItem eventKey={6.3} href="https://buldreinfo.com" target="_blank">buldreinfo.com</MenuItem>
+              <MenuItem eventKey={6.4} href="https://buldring.bergen-klatreklubb.no" target="_blank">buldring.bergen-klatreklubb.no</MenuItem>
+              <MenuItem eventKey={6.5} href="https://buldring.fredrikstadklatreklubb.org" target="_blank">buldring.fredrikstadklatreklubb.org</MenuItem>
               <MenuItem divider />
-              <MenuItem eventKey={6.5} href="https://brattelinjer.no" target="_blank">brattelinjer.no</MenuItem>
-              <MenuItem divider />
-              <MenuItem eventKey={6.6} href="/gpl-3.0.txt" target="_blank">GNU Public License</MenuItem>
+              <MenuItem eventKey={6.6} href="https://brattelinjer.no" target="_blank">brattelinjer.no</MenuItem>
             </NavDropdown>
           </Nav>
           <Navbar.Form pullRight>
