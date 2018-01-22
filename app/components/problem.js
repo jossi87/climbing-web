@@ -212,9 +212,10 @@ export default class Problem extends Component {
       const comments = this.state.comments.map((c, i) => {
         const header = <span><Link to={`/user/${c.idUser}`}>{c.name}</Link> <small><i>{c.date}</i></small></span>;
         return (
-          <Panel key={i} header={header}>
-            {c.message}
-          </Panel>
+          <Panel key={i}>
+      			<Panel.Heading>{header}</Panel.Heading>
+      			<Panel.Body>{c.message}</Panel.Body>
+      		</Panel>
         );
       });
       comment = <span>{comments}</span>;
