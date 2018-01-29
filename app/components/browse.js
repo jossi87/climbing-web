@@ -18,11 +18,16 @@ class TableRow extends Component {
         comment = this.props.area.comment;
       }
     }
+    var distance = "";
+    if (this.state.currLat>0 && this.state.currLng>0 && this.props.area.lat>0 && this.props.area.lng>0) {
+      distance = this.calcCrow(this.state.currLat, this.state.currLng, row.lat, row.lng).toFixed(1) + " km";
+    }
     return (
       <tr>
         <td><Link to={`/area/${this.props.area.id}`}>{this.props.area.name}</Link> {this.props.area.visibility===1 && <i className="fa fa-lock"></i>}{this.props.area.visibility===2 && <i className="fa fa-expeditedssl"></i>}</td>
         <td>{comment}</td>
         <td>{this.props.area.numSectors}</td>
+        <td>{distance}</td>
       </tr>
     )
   }
@@ -30,6 +35,9 @@ class TableRow extends Component {
 
 export default class Browse extends Component {
   componentDidMount() {
+    navigator.geolocation.getCurrentPosition((position) => {
+      this.setState({currLat: position.coords.latitude, currLng: position.coords.longitude});
+    });
     Request.get(config.getUrl("areas/list?regionId=" + config.getRegion())).withCredentials().end((err, res) => {
       this.setState({
         error: err? err : null,
@@ -37,6 +45,24 @@ export default class Browse extends Component {
       });
       document.title=config.getTitle() + " | browse";
     });
+  }
+
+  toRad(value) {
+    return value * Math.PI / 180;
+  }
+
+  calcCrow(lat1, lon1, lat2, lon2) {
+    var R = 6371; // km
+    var dLat = this.toRad(lat2-lat1);
+    var dLon = this.toRad(lon2-lon1);
+    var lat1 = this.toRad(lat1);
+    var lat2 = this.toRad(lat2);
+
+    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    var d = R * c;
+    return d;
   }
 
   render() {
@@ -79,6 +105,7 @@ export default class Browse extends Component {
               <th>Name</th>
               <th>Description</th>
               <th>#sectors</th>
+              <th><i className="fa fa-plane"></i></th>
             </tr>
           </thead>
           <tbody>
