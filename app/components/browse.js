@@ -37,8 +37,8 @@ class TableRow extends Component {
       }
     }
     var distance = "";
-    if (this.props.area.currLat>0 && this.props.area.currLng>0 && this.props.area.lat>0 && this.props.area.lng>0) {
-      distance = this.calcCrow(this.props.area.currLat, this.props.area.currLng, this.props.area.lat, this.props.area.lng).toFixed(1) + " km";
+    if (this.props.currLat>0 && this.props.currLng>0 && this.props.area.lat>0 && this.props.area.lng>0) {
+      distance = this.calcCrow(this.props.currLat, this.props.currLng, this.props.area.lat, this.props.area.lng).toFixed(1) + " km";
     }
     return (
       <tr>
