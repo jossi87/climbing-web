@@ -20,7 +20,7 @@ class TableRow extends Component {
     }
     var distance = "";
     if (this.state.currLat>0 && this.state.currLng>0 && this.props.area.lat>0 && this.props.area.lng>0) {
-      distance = this.calcCrow(this.state.currLat, this.state.currLng, row.lat, row.lng).toFixed(1) + " km";
+      distance = this.calcCrow(this.state.currLat, this.state.currLng, this.props.area.lat, this.props.area.lng).toFixed(1) + " km";
     }
     return (
       <tr>
