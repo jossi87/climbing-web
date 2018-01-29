@@ -2,12 +2,47 @@ import React, {Component} from 'react';
 import { Link } from 'react-router-dom';
 import Request from 'superagent';
 import { OverlayTrigger, Tooltip, Button, Table, Breadcrumb } from 'react-bootstrap';
+import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { LinkContainer } from 'react-router-bootstrap';
 import Map from './common/map/map';
 import auth from '../utils/auth.js';
 import config from '../utils/config.js';
 
-class TableRow extends Component {
+export default class Browse extends Component {
+  componentDidMount() {
+    navigator.geolocation.getCurrentPosition((position) => {
+      this.setState({currLat: position.coords.latitude, currLng: position.coords.longitude});
+    });
+    Request.get(config.getUrl("areas/list?regionId=" + config.getRegion())).withCredentials().end((err, res) => {
+      this.setState({
+        error: err? err : null,
+        areas: err? null : res.body
+      });
+      document.title=config.getTitle() + " | browse";
+    });
+  }
+
+  formatName(cell, row) {
+    return <span><Link to={`/area/${row.id}`}>{row.name}</Link> {row.visibility===1 && <i className="fa fa-lock"></i>}{row.visibility===2 && <i className="fa fa-expeditedssl"></i>}</span>;
+  }
+
+  formatDescription(cell, row) {
+    var comment = "";
+    if (row.comment) {
+      if (row.comment.length>100) {
+        const tooltip = (<Tooltip id={row.id}>{row.comment}</Tooltip>);
+        comment = <OverlayTrigger key={row.id} placement="top" overlay={tooltip}><span>{row.comment.substring(0,100) + "..."}</span></OverlayTrigger>;
+      } else {
+        comment = row.comment;
+      }
+    }
+    return comment;
+  }
+
+  formatNumSectors(cell, row) {
+    return row.numSectors;
+  }
+
   toRad(value) {
     return value * Math.PI / 180;
   }
@@ -26,43 +61,25 @@ class TableRow extends Component {
     return d;
   }
 
-  render() {
-    var comment = "";
-    if (this.props.area.comment) {
-      if (this.props.area.comment.length>100) {
-        const tooltip = (<Tooltip id={this.props.area.id}>{this.props.area.comment}</Tooltip>);
-        comment = <OverlayTrigger key={this.props.area.id} placement="top" overlay={tooltip}><span>{this.props.area.comment.substring(0,100) + "..."}</span></OverlayTrigger>;
-      } else {
-        comment = this.props.area.comment;
-      }
+  formatDistance(cell, row) {
+    if (this.state.currLat>0 && this.state.currLng>0 && row.lat>0 && row.lng>0) {
+      return this.calcCrow(this.state.currLat, this.state.currLng, row.lat, row.lng).toFixed(1) + " km";
     }
-    var distance = "";
-    if (this.props.currLat>0 && this.props.currLng>0 && this.props.area.lat>0 && this.props.area.lng>0) {
-      distance = this.calcCrow(this.props.currLat, this.props.currLng, this.props.area.lat, this.props.area.lng).toFixed(1) + " km";
-    }
-    return (
-      <tr>
-        <td><Link to={`/area/${this.props.area.id}`}>{this.props.area.name}</Link> {this.props.area.visibility===1 && <i className="fa fa-lock"></i>}{this.props.area.visibility===2 && <i className="fa fa-expeditedssl"></i>}</td>
-        <td>{comment}</td>
-        <td>{this.props.area.numSectors}</td>
-        <td>{distance}</td>
-      </tr>
-    )
+    return "";
   }
-}
 
-export default class Browse extends Component {
-  componentDidMount() {
-    navigator.geolocation.getCurrentPosition((position) => {
-      this.setState({currLat: position.coords.latitude, currLng: position.coords.longitude});
-    });
-    Request.get(config.getUrl("areas/list?regionId=" + config.getRegion())).withCredentials().end((err, res) => {
-      this.setState({
-        error: err? err : null,
-        areas: err? null : res.body
-      });
-      document.title=config.getTitle() + " | browse";
-    });
+  sortDistance(a, b, order) {
+    const x = this.state.currLat>0 && this.state.currLng>0 && a.lat>0 && a.lng>0? this.calcCrow(this.state.currLat, this.state.currLng, a.lat, a.lng) : 0;
+    const y = this.state.currLat>0 && this.state.currLng>0 && b.lat>0 && b.lng>0? this.calcCrow(this.state.currLat, this.state.currLng, b.lat, b.lng) : 0;
+    if (order==='asc') {
+      if (x<y) return -1;
+      else if (x>y) return 1;
+      return 0;
+    } else {
+      if (x<y) return 1;
+      else if (x>y) return -1;
+      return 0;
+    }
   }
 
   render() {
@@ -72,11 +89,6 @@ export default class Browse extends Component {
     if (this.state.error) {
       return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;
     }
-    const rows = this.state.areas.map((area, i) => {
-      return (
-        <TableRow area={area} currLat={this.state.currLat} currLng={this.state.currLng} key={i} />
-      )
-    });
     const markers = this.state.areas.filter(a => a.lat!=0 && a.lng!=0).map(a => {
       return {
           lat: a.lat,
@@ -99,19 +111,18 @@ export default class Browse extends Component {
           <Link to={`/`}>Home</Link> / <font color='#777'>Browse</font>
         </Breadcrumb>
         {map}
-        <Table striped condensed hover>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Description</th>
-              <th>#sectors</th>
-              <th>Distance</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows}
-          </tbody>
-        </Table>
+        <BootstrapTable
+          containerStyle={{margin: '-5px -10px'}}
+          data={this.state.areas}
+          condensed={true}
+          hover={true}
+          columnFilter={false}>
+          <TableHeaderColumn dataField="id" isKey={true} hidden={true}>id</TableHeaderColumn>
+          <TableHeaderColumn dataField="name" dataSort={true} dataFormat={this.formatName.bind(this)} width="150" filter={{type: "TextFilter", placeholder: "Filter"}}>Name</TableHeaderColumn>
+          <TableHeaderColumn dataField="description" dataSort={true} dataFormat={this.formatDescription.bind(this)} width="150" filter={{type: "TextFilter", placeholder: "Filter"}}>Description</TableHeaderColumn>
+          <TableHeaderColumn dataField="numSectors" dataSort={true} dataFormat={this.formatNumSectors.bind(this)} sortFunc={this.sortNumSectors.bind(this)} dataAlign="center" width="50">#sectors</TableHeaderColumn>
+          <TableHeaderColumn dataField="distance" dataSort={true} dataFormat={this.formatDistance.bind(this)} sortFunc={this.sortDistance.bind(this)} dataAlign="center" width="50">Distance</TableHeaderColumn>
+        </BootstrapTable>
       </span>
     );
   }
