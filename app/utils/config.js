@@ -6,6 +6,8 @@ module.exports = {
       return "https://buldring.fredrikstadklatreklubb.org/com.buldreinfo.jersey.jaxb/v1/" + str;
     } else if (window.location.hostname=='brattelinjer.no') {
       return "https://brattelinjer.no/com.buldreinfo.jersey.jaxb/v1/" + str;
+    } else if (window.location.hostname=='dev.jossi.org') {
+      return "https://dev.jossi.org/com.buldreinfo.jersey.jaxb/v1/" + str;
     } else {
       return "https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/" + str;
     }
@@ -18,6 +20,8 @@ module.exports = {
       return "Buldring i Fredrikstad";
     } else if (window.location.hostname=='brattelinjer.no') {
       return "Bratte linjer";
+    } else if (window.location.hostname=='dev.jossi.org') {
+      return "Bratte linjer (dev)";
     } else {
       return "buldreinfo";
     }
@@ -29,6 +33,8 @@ module.exports = {
     } else if (window.location.hostname=='buldring.fredrikstadklatreklubb.org') {
       return "3";
     } else if (window.location.hostname=='brattelinjer.no') {
+      return "4";
+    } else if (window.location.hostname=='dev.jossi.org') {
       return "4";
     } else {
       return "1";
@@ -47,6 +53,8 @@ module.exports = {
 
   getDefaultZoom() {
     if (window.location.hostname=='brattelinjer.no') {
+      return 9;
+    else if (window.location.hostname=='dev.jossi.org') {
       return 9;
     } else {
       return 7;
