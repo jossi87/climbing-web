@@ -39,10 +39,6 @@ export default class Browse extends Component {
     return comment;
   }
 
-  formatNumSectors(cell, row) {
-    return row.numSectors;
-  }
-
   toRad(value) {
     return value * Math.PI / 180;
   }
@@ -119,7 +115,7 @@ export default class Browse extends Component {
           <TableHeaderColumn dataField="id" isKey={true} hidden={true}>id</TableHeaderColumn>
           <TableHeaderColumn dataField="name" dataSort={true} dataFormat={this.formatName.bind(this)} width="150" filter={{type: "TextFilter", placeholder: "Filter"}}>Name</TableHeaderColumn>
           <TableHeaderColumn dataField="description" dataFormat={this.formatDescription.bind(this)} width="150">Description</TableHeaderColumn>
-          <TableHeaderColumn dataField="numSectors" dataSort={true} dataFormat={this.formatNumSectors.bind(this)} dataAlign="center" width="50">#sectors</TableHeaderColumn>
+          <TableHeaderColumn dataField="numSectors" dataAlign="center" width="50">#sectors</TableHeaderColumn>
           <TableHeaderColumn dataField="distance" dataSort={true} dataFormat={this.formatDistance.bind(this)} sortFunc={this.sortDistance.bind(this)} dataAlign="center" width="60"><i className="fa fa-plane"></i></TableHeaderColumn>
         </BootstrapTable>
       </span>
