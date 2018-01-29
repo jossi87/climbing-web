@@ -37,8 +37,8 @@ class TableRow extends Component {
       }
     }
     var distance = "";
-    if (this.state && this.state.currLat>0 && this.state.currLng>0 && this.props.area.lat>0 && this.props.area.lng>0) {
-      distance = this.calcCrow(this.state.currLat, this.state.currLng, this.props.area.lat, this.props.area.lng).toFixed(1) + " km";
+    if (this.props.area.currLat>0 && this.props.area.currLng>0 && this.props.area.lat>0 && this.props.area.lng>0) {
+      distance = this.calcCrow(this.props.area.currLat, this.props.area.currLng, this.props.area.lat, this.props.area.lng).toFixed(1) + " km";
     }
     return (
       <tr>
@@ -74,7 +74,7 @@ export default class Browse extends Component {
     }
     const rows = this.state.areas.map((area, i) => {
       return (
-        <TableRow area={area} key={i} />
+        <TableRow area={area} currLat={this.state.currLat} currLng={this.state.currLng} key={i} />
       )
     });
     const markers = this.state.areas.filter(a => a.lat!=0 && a.lng!=0).map(a => {
