@@ -43,20 +43,6 @@ export default class Browse extends Component {
     return row.numSectors;
   }
 
-  sortNumSectors(a, b, order) {
-    const x = a.numSectors;
-    const y = b.numSectors;
-    if (order==='asc') {
-      if (x<y) return -1;
-      else if (x>y) return 1;
-      return 0;
-    } else {
-      if (x<y) return 1;
-      else if (x>y) return -1;
-      return 0;
-    }
-  }
-
   toRad(value) {
     return value * Math.PI / 180;
   }
@@ -126,15 +112,14 @@ export default class Browse extends Component {
         </Breadcrumb>
         {map}
         <BootstrapTable
-          containerStyle={{margin: '-5px -10px'}}
           data={this.state.areas}
           condensed={true}
           hover={true}
           columnFilter={false}>
           <TableHeaderColumn dataField="id" isKey={true} hidden={true}>id</TableHeaderColumn>
           <TableHeaderColumn dataField="name" dataSort={true} dataFormat={this.formatName.bind(this)} width="150" filter={{type: "TextFilter", placeholder: "Filter"}}>Name</TableHeaderColumn>
-          <TableHeaderColumn dataField="description" dataSort={true} dataFormat={this.formatDescription.bind(this)} width="150" filter={{type: "TextFilter", placeholder: "Filter"}}>Description</TableHeaderColumn>
-          <TableHeaderColumn dataField="numSectors" dataSort={true} dataFormat={this.formatNumSectors.bind(this)} sortFunc={this.sortNumSectors.bind(this)} dataAlign="center" width="50">#sectors</TableHeaderColumn>
+          <TableHeaderColumn dataField="description" dataFormat={this.formatDescription.bind(this)} width="150">Description</TableHeaderColumn>
+          <TableHeaderColumn dataField="numSectors" dataSort={true} dataFormat={this.formatNumSectors.bind(this)} dataAlign="center" width="50">#sectors</TableHeaderColumn>
           <TableHeaderColumn dataField="distance" dataSort={true} dataFormat={this.formatDistance.bind(this)} sortFunc={this.sortDistance.bind(this)} dataAlign="center" width="60"><i className="fa fa-plane"></i></TableHeaderColumn>
         </BootstrapTable>
       </span>
