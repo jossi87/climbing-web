@@ -54,7 +54,7 @@ module.exports = {
   getDefaultZoom() {
     if (window.location.hostname=='brattelinjer.no') {
       return 9;
-    else if (window.location.hostname=='dev.jossi.org') {
+    } else if (window.location.hostname=='dev.jossi.org') {
       return 9;
     } else {
       return 7;
