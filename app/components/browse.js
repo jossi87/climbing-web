@@ -101,8 +101,8 @@ export default class Browse extends Component {
           columnFilter={false}>
           <TableHeaderColumn dataField="id" isKey={true} hidden={true}>id</TableHeaderColumn>
           <TableHeaderColumn dataField="name" dataSort={true} dataFormat={this.formatName.bind(this)} width="150" filter={{type: "TextFilter", placeholder: "Filter"}}>Name</TableHeaderColumn>
-          <TableHeaderColumn dataField="numSectors" dataAlign="center" width="50">#sectors</TableHeaderColumn>
-          <TableHeaderColumn dataField="numProblems" dataAlign="center" width="50">#problems</TableHeaderColumn>
+          <TableHeaderColumn dataField="numSectors" dataSort={true} dataAlign="center" width="50">#sectors</TableHeaderColumn>
+          <TableHeaderColumn dataField="numProblems" dataSort={true} dataAlign="center" width="50">#problems</TableHeaderColumn>
           <TableHeaderColumn dataField="distance" dataSort={true} dataFormat={this.formatDistance.bind(this)} sortFunc={this.sortDistance.bind(this)} dataAlign="center" width="60"><i className="fa fa-plane"></i></TableHeaderColumn>
         </BootstrapTable>
       </span>
