@@ -6,6 +6,9 @@ import {default as MarkerClusterer} from 'react-google-maps/lib/components/addon
 export default class Map extends Component {
   constructor(props) {
     super(props);
+    navigator.geolocation.getCurrentPosition((position) => {
+      this.setState({currLat: position.coords.latitude, currLng: position.coords.longitude});
+    });
   }
 
   handleOnClick(pushUrl) {
@@ -32,11 +35,11 @@ export default class Map extends Component {
         );
       });
     }
-    if (this.props.currLat && this.props.currLng && this.props.currLat>0 && this.props.currLng>0) {
+    if (this.state.currLat && this.state.currLng && this.state.currLat>0 && this.state.currLng>0) {
       markers.push(<Marker
                     key={-1}
                     icon="http://maps.gstatic.com/mapfiles/markers2/measle_blue.png"
-                    position={{lat: this.props.currLat, lng: this.props.currLng}}/>)
+                    position={{lat: this.state.currLat, lng: this.state.currLng}}/>)
     }
     var polygons = null;
     if (this.props.polygons) {
