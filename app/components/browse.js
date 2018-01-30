@@ -26,19 +26,6 @@ export default class Browse extends Component {
     return <span><Link to={`/area/${row.id}`}>{row.name}</Link> {row.visibility===1 && <i className="fa fa-lock"></i>}{row.visibility===2 && <i className="fa fa-expeditedssl"></i>}</span>;
   }
 
-  formatDescription(cell, row) {
-    var comment = "";
-    if (row.comment) {
-      if (row.comment.length>100) {
-        const tooltip = (<Tooltip id={row.id}>{row.comment}</Tooltip>);
-        comment = <OverlayTrigger key={row.id} placement="top" overlay={tooltip}><span>{row.comment.substring(0,100) + "..."}</span></OverlayTrigger>;
-      } else {
-        comment = row.comment;
-      }
-    }
-    return comment;
-  }
-
   toRad(value) {
     return value * Math.PI / 180;
   }
@@ -114,7 +101,6 @@ export default class Browse extends Component {
           columnFilter={false}>
           <TableHeaderColumn dataField="id" isKey={true} hidden={true}>id</TableHeaderColumn>
           <TableHeaderColumn dataField="name" dataSort={true} dataFormat={this.formatName.bind(this)} width="150" filter={{type: "TextFilter", placeholder: "Filter"}}>Name</TableHeaderColumn>
-          <TableHeaderColumn dataField="description" dataFormat={this.formatDescription.bind(this)} width="150">Description</TableHeaderColumn>
           <TableHeaderColumn dataField="numSectors" dataAlign="center" width="50">#sectors</TableHeaderColumn>
           <TableHeaderColumn dataField="distance" dataSort={true} dataFormat={this.formatDistance.bind(this)} sortFunc={this.sortDistance.bind(this)} dataAlign="center" width="60"><i className="fa fa-plane"></i></TableHeaderColumn>
         </BootstrapTable>
