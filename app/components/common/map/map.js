@@ -32,6 +32,12 @@ export default class Map extends Component {
         );
       });
     }
+    if (this.props.currLat && this.props.currLng && this.props.currLat>0 && this.props.currLng>0) {
+      markers.push(<Marker
+                    key={-1}
+                    position={{lat: this.props.currLat, lng: this.props.currLng}}
+                    />)
+    }
     var polygons = null;
     if (this.props.polygons) {
       polygons = this.props.polygons.map((p, i) => {

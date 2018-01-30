@@ -203,7 +203,7 @@ export default class Finder extends Component {
           }
         }
     });
-    const map = markers.length>0? <Map markers={markers} defaultCenter={config.getDefaultCenter()} defaultZoom={7}/> : null;
+    const map = markers.length>0? <Map markers={markers} defaultCenter={config.getDefaultCenter()} defaultZoom={7} currLat={this.state.currLat} currLng={this.state.currLng}/> : null;
     var table = null;
     if (config.getRegion()==4) {
       table = <BootstrapTable
