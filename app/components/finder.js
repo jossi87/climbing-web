@@ -207,7 +207,6 @@ export default class Finder extends Component {
     var table = null;
     if (config.getRegion()==4) {
       table = <BootstrapTable
-                containerStyle={{margin: '-5px -10px'}}
                 data={this.state.problems}
                 trClassName={this.trClassFormat.bind(this)}
                 condensed={true}
