@@ -38,7 +38,7 @@ export default class Map extends Component {
     if (this.state && this.state.currLat && this.state.currLng && this.state.currLat>0 && this.state.currLng>0) {
       markers.push(<Marker
                     key={-1}
-                    icon="http://maps.gstatic.com/mapfiles/markers2/measle_blue.png"
+                    icon="https://maps.gstatic.com/mapfiles/markers2/measle_blue.png"
                     position={{lat: this.state.currLat, lng: this.state.currLng}}/>)
     }
     var polygons = null;
