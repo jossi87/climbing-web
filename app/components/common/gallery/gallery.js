@@ -141,17 +141,17 @@ export default class Gallery extends Component {
       const shapes = [];
       for (let svg of m.svgs) {
         if (svg.nrPathD) {
-          shapes.push(<path key={shapes.length} d={svg.nrPathD}  style={{fill: '#E2011A', strokeWidth: '10'}}/>);
+          shapes.push(<path key={shapes.length} d={svg.nrPathD} className="buldreinfo-svg-ring"/>);
         }
-        shapes.push(<path key={shapes.length} d={svg.linePathD}  style={{fill: 'none', stroke: '#E2011A', strokeWidth: '10', strokeDasharray: '20'}}/>);
+        shapes.push(<path key={shapes.length} d={svg.linePathD} className="buldreinfo-svg-route"/>);
         if (svg.topPathD) {
-          shapes.push(<path key={shapes.length} d={svg.topPathD}  style={{fill: '#E2011A', strokeWidth: '10'}}/>);
+          shapes.push(<path key={shapes.length} d={svg.topPathD} className="buldreinfo-svg-ring"}}/>);
         }
-        shapes.push(<text key={shapes.length} transform={svg.textTransform} style={{fill: '#FFFFFF', fontSize: '72px'}}>{svg.nr}</text>);
+        shapes.push(<text key={shapes.length} transform={svg.textTransform} className="buldreinfo-svg-routenr">{svg.nr}</text>);
       };
       return (
         <div className='image-gallery-image'>
-          <svg viewBox={"0 0 " + m.width + " " + m.height} style={{maxHeight: '100vh', maxWidth: '100vw', objectFit: 'scale-down', fontFamily: "'object-fit: scale-down'", overflow: 'visible'}}>
+          <svg viewBox={"0 0 " + m.width + " " + m.height} className="buldreinfo-svg">
             <image xlinkHref={config.getUrl(`images?id=${m.id}`)} x="0" y="0" width="100%" height="100%"/>
             {shapes}
           </svg>
@@ -160,7 +160,7 @@ export default class Gallery extends Component {
     }
     return (
       <div className='image-gallery-image'>
-        <img src={config.getUrl(`images?id=${m.id}`)} style={{maxHeight: '100vh', maxWidth: '100vw', objectFit: 'scale-down', fontFamily: "'object-fit: scale-down'"}}/>
+        <img src={config.getUrl(`images?id=${m.id}`)} className="buldreinfo-svg-img"/>
       </div>
     );
   }
