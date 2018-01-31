@@ -145,7 +145,7 @@ export default class Gallery extends Component {
         }
         shapes.push(<path key={shapes.length} d={svg.linePathD} className="buldreinfo-svg-route"/>);
         if (svg.topPathD) {
-          shapes.push(<path key={shapes.length} d={svg.topPathD} className="buldreinfo-svg-ring"}}/>);
+          shapes.push(<path key={shapes.length} d={svg.topPathD} className="buldreinfo-svg-ring"/>);
         }
         shapes.push(<text key={shapes.length} transform={svg.textTransform} className="buldreinfo-svg-routenr">{svg.nr}</text>);
       };
