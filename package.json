@@ -48,6 +48,7 @@
   },
   "scripts": {
     "build": "webpack",
-    "debug": "webpack --display-error-details"
+    "debug": "webpack --display-error-details",
+    "dev": "webpack --watch"
   }
 }

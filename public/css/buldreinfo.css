@@ -25,3 +25,27 @@
   fill: #FFFFFF;
   font-size: 72px;
 }
+
+.buldreinfo-svg-edit-route {
+  fill: none;
+  stroke: #E2011A;
+  stroke-width: 10;
+}
+.buldreinfo-svg-edit-circle {
+  cursor: pointer;
+  fill: #E2011A;
+  stroke-width: 10;
+}
+.buldreinfo-svg-edit-anchor-line {
+  stroke: #E2011A;
+  stroke-width: 10;
+  opacity: .75;
+  stroke-dasharray: 20;
+}
+.buldreinfo-svg-edit-anchor-point {
+  cursor: pointer;
+  fill: #fff;
+  stroke: #E2011A;
+  stroke-width: 10;
+  opacity: .75;
+}
