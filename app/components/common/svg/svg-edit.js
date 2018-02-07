@@ -15,7 +15,8 @@ export default class SvgEdit extends Component {
         points: points,
         activePoint: 0,
         draggedPoint: false,
-        draggedCubic: false
+        draggedCubic: false,
+        hasAnchor: false
     });
   }
 
@@ -31,6 +32,10 @@ export default class SvgEdit extends Component {
   handleKeyUp(e) {
     if (!e.ctrlKey) this.setState({ctrl: false});
   };
+
+  toggleAnchor() {
+    this.setState({hasAnchor: !this.state.hasAnchor});
+  }
 
   cancelDragging(e) {
     this.setState({
@@ -161,7 +166,8 @@ export default class SvgEdit extends Component {
       points: [],
       activePoint: 0,
       draggedPoint: false,
-      draggedCubic: false
+      draggedCubic: false,
+      hasAnchor: false
     });
   };
 
@@ -208,22 +214,26 @@ export default class SvgEdit extends Component {
         <form>
           <FormGroup controlId="formControlsInfo">
             <Alert bsStyle="info">
-              <strong>CTRL + CLICK</strong> to add a point | <strong>CLICK</strong> to select a point | <strong>CLICK AND DRAG</strong> to move a point
+              <center>
+                <strong>CTRL + CLICK</strong> to add a point | <strong>CLICK</strong> to select a point | <strong>CLICK AND DRAG</strong> to move a point<br/>
+                <ButtonGroup>
+                  {this.state.activePoint !== 0 && (
+                    <DropdownButton title={!!this.state.points[this.state.activePoint].c? "Selected point: Curve to" : "Selected point: Line to"} id="bg-nested-dropdown">
+                      <MenuItem eventKey="0" onSelect={this.setPointType.bind(this, "L")}>Selected point: Line to</MenuItem>
+                      <MenuItem eventKey="1" onSelect={this.setPointType.bind(this, "C")}>Selected point: Curve to</MenuItem>
+                    </DropdownButton>
+                  )}
+                  {this.state.activePoint !== 0 && (
+                    <Button onClick={this.removeActivePoint.bind(this)}>Remove this point</Button>
+                  )}
+                  <DropdownButton title={!!this.state.hasAnchor? "Route has anchor" : "No anchor on route"} disabled={this.state.points.length===0} id="bg-nested-dropdown">
+                    <MenuItem eventKey="0" onSelect={this.toggleAnchor.bind(this)}>No anchor on route</MenuItem>
+                    <MenuItem eventKey="1" onSelect={this.toggleAnchor.bind(this)}>Route has anchor</MenuItem>
+                  </DropdownButton>
+                  <Button bsStyle="warning" disabled={this.state.points.length===0} onClick={this.reset.bind(this)}>Reset path</Button>
+                </ButtonGroup>
+              </center>
             </Alert>
-          </FormGroup>
-          <FormGroup controlId="formControlsSettings">
-            <ButtonGroup>
-              {this.state.activePoint !== 0 && (
-                <DropdownButton title={!!this.state.points[this.state.activePoint].c? "Selected point: Curve to" : "Selected point: Line to"} id="bg-nested-dropdown">
-                  <MenuItem eventKey="0" onSelect={this.setPointType.bind(this, "L")}>Selected point: Line to</MenuItem>
-                  <MenuItem eventKey="1" onSelect={this.setPointType.bind(this, "C")}>Selected point: Curve to</MenuItem>
-                </DropdownButton>
-              )}
-              {this.state.activePoint !== 0 && (
-                <Button onClick={this.removeActivePoint.bind(this)}>Remove this point</Button>
-              )}
-              <Button bsStyle="warning" disabled={this.state.points.length===0} onClick={this.reset.bind(this)}>Reset path</Button>
-            </ButtonGroup>
           </FormGroup>
           <FormGroup controlId="formControlsImage">
             <svg viewBox={"0 0 " + this.state.w + " " + this.state.h} className="buldreinfo-svg" onClick={this.addPoint.bind(this)} onMouseMove={this.handleMouseMove.bind(this)}>
