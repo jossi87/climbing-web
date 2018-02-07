@@ -15,7 +15,6 @@ export default class SvgEdit extends Component {
         const m = res.body[0].media[0];
         var readOnlySvgs = [];
         var points;
-        console.log("1");
         for (let svg of m.svgs) {
           if (svg.id===res.body[0].id) {
             points = this.parsePath(svg.path);
@@ -24,7 +23,7 @@ export default class SvgEdit extends Component {
             readOnlySvgs.push({ nr: svg.nr, hasAnchor: svg.hasAnchor, path: svg.path });
           }
         }
-        console.log("2");
+        console.log("test0");
         this.setState({
           mediaId: m.id,
           nr: res.body[0].nr,
@@ -38,6 +37,7 @@ export default class SvgEdit extends Component {
           draggedCubic: false,
           hasAnchor: false
         });
+        console.log("test1");
       }
     });
     document.addEventListener("keydown", this.handleKeyDown.bind(this));
@@ -266,6 +266,7 @@ export default class SvgEdit extends Component {
     else if (this.state.error) {
       return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;
     }
+    console.log(this.state);
     var circles = this.state.points.map((p, i, a) => {
       var anchors = [];
       if (p.c) {
