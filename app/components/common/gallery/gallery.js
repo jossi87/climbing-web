@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import { Redirect } from 'react-router';
 import ImageGallery from 'react-image-gallery';
 import { Well } from 'react-bootstrap';
 import ReactPlayer from 'react-player'
@@ -12,7 +13,8 @@ export default class Gallery extends Component {
     super(props);
     this.state = {
       mediaIndex: 0,
-      hover: false,
+      hoverTrash: false,
+      hoverEdit: false,
       showFullscreenButton: true,
       showGalleryFullscreenButton: true,
       showPlayButton: true,
@@ -25,7 +27,8 @@ export default class Gallery extends Component {
   componentWillReceiveProps(nextProps) {
     this.state = {
       mediaIndex: 0,
-      hover: false,
+      hoverTrash: false,
+      hoverEdit: false,
       showFullscreenButton: true,
       showGalleryFullscreenButton: true,
       showPlayButton: true,
@@ -36,8 +39,12 @@ export default class Gallery extends Component {
     this.imageGallery.slideToIndex(0);
   }
 
-  toggleHover() {
-    this.setState({hover: !this.state.hover});
+  toggleHoverTrash() {
+    this.setState({hoverTrash: !this.state.hoverTrash});
+  }
+
+  toggleHoverEdit() {
+    this.setState({hoverEdit: !this.state.hoverEdit});
   }
 
   onDeleteImage(event) {
@@ -195,7 +202,14 @@ export default class Gallery extends Component {
     );
   }
 
+  pushUrl(url) {
+    this.setState({pushUrl: url});
+  }
+
   render() {
+    if (this.state && this.state.pushUrl) {
+      return (<Redirect to={this.state.pushUrl} push />);
+    }
     const caruselItems = this.props.media.map((m, i) => {
       if (m.idType==1) {
         return {
@@ -227,7 +241,12 @@ export default class Gallery extends Component {
       <Well className='app'>
         {!this.state.isFullscreen && this.props.media[this.state.mediaIndex].idType==1 && auth.isAdmin() && (
           <span style={{position: 'absolute', zIndex: '4', background: 'rgba(0, 0, 0, 0.4)', padding: '8px 20px'}}>
-            <a href="#" onMouseEnter={this.toggleHover.bind(this)} onMouseLeave={this.toggleHover.bind(this)}><i className="fa fa-trash-o" style={this.state.hover? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}} onClick={this.onDeleteImage.bind(this)}></i></a>
+            <a href="#" onMouseEnter={this.toggleHoverTrash.bind(this)} onMouseLeave={this.toggleHoverTrash.bind(this)}><i className="fa fa-trash-o" style={this.state.hoverTrash? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}} onClick={this.onDeleteImage.bind(this)}></i></a>
+          </span>
+        )}
+        {!this.state.isFullscreen && this.props.media[this.state.mediaIndex].idType==1 && this.props.media[this.state.mediaIndex].svgProblemId && this.props.media[this.state.mediaIndex].svgProblemId>0 && auth.isAdmin() && (
+          <span style={{position: 'absolute', zIndex: '4', background: 'rgba(0, 0, 0, 0.4)', padding: '8px 20px', marginTop: '25px'}}>
+            <a href="#" onMouseEnter={this.toggleHoverEdit.bind(this)} onMouseLeave={this.toggleHoverEdit.bind(this)}><i className="fa fa-edit-o" style={this.state.hoverEdit? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}} onClick={this.pushUrl.bind(this, "/problem/svg-edit/" + this.props.media[this.state.mediaIndex].svgProblemId)}></i></a>
           </span>
         )}
         <ImageGallery

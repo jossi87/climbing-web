@@ -43,7 +43,7 @@ export default class App extends Component {
         <Navigation/>
         <div className="container">
           <Switch>
-            <Route exact path='/' component={SvgEdit}/> // Index
+            <Route exact path='/' component={Index}/>
             <Route path="/browse" component={Browse}/>
             <Route path="/ethics" component={Ethics}/>
             <Route exact path="/area/:areaId" component={Area}/>
@@ -52,6 +52,7 @@ export default class App extends Component {
             <Route exact path="/sector/edit/:sectorId" component={SectorEdit}/>
             <Route exact path="/problem/:problemId" component={Problem}/>
             <Route exact path="/problem/edit/:problemId" component={ProblemEdit}/>
+            <Route exact path="/problem/svg-edit/:problemId" component={SvgEdit}/>
             <Route exact path="/finder/:grade" component={Finder}/>
             <Route exact path="/user" component={User}/>
             <Route exact path="/user/:userId" component={User}/>
