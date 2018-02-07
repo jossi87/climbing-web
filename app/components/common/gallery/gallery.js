@@ -245,8 +245,8 @@ export default class Gallery extends Component {
           </span>
         )}
         {!this.state.isFullscreen && this.props.media[this.state.mediaIndex].idType==1 && this.props.media[this.state.mediaIndex].svgProblemId && this.props.media[this.state.mediaIndex].svgProblemId>0 && auth.isAdmin() && (
-          <span style={{position: 'absolute', zIndex: '4', background: 'rgba(0, 0, 0, 0.4)', padding: '8px 20px', marginTop: '25px'}}>
-            <a href="#" onMouseEnter={this.toggleHoverEdit.bind(this)} onMouseLeave={this.toggleHoverEdit.bind(this)}><i className="fa fa-edit-o" style={this.state.hoverEdit? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}} onClick={this.pushUrl.bind(this, "/problem/svg-edit/" + this.props.media[this.state.mediaIndex].svgProblemId)}></i></a>
+          <span style={{position: 'absolute', zIndex: '4', background: 'rgba(0, 0, 0, 0.4)', padding: '8px 20px', marginTop: '40px'}}>
+            <a href="#" onMouseEnter={this.toggleHoverEdit.bind(this)} onMouseLeave={this.toggleHoverEdit.bind(this)}><i className="fa fa-edit" style={this.state.hoverEdit? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}} onClick={this.pushUrl.bind(this, "/problem/svg-edit/" + this.props.media[this.state.mediaIndex].svgProblemId)}></i></a>
           </span>
         )}
         <ImageGallery
