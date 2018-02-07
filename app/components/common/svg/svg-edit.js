@@ -123,7 +123,6 @@ export default class SvgEdit extends Component {
     if (!this.state) {
       return <center><i className="fa fa-cog fa-spin fa-2x"></i></center>;
     }
-    console.log(this.state);
     var circles = this.state.points.map((p, i, a) => {
       var anchors = [];
       if (p.c) {
@@ -131,15 +130,15 @@ export default class SvgEdit extends Component {
           <g>
             <line className="buldreinfo-svg-edit-anchor-line" x1={a[i-1].x} y1={a[i-1].y} x2={p.c[0].x} y2={p.c[0].y} />
             <line className="buldreinfo-svg-edit-anchor-line" x1={p.x} y1={p.y} x2={p.c[1].x} y2={p.c[1].y} />
-            <circle className="buldreinfo-svg-edit-anchor-point" cx={p.c[0].x} cy={p.c[0].y} r={10} onMouseDown={this.setDraggedCubic.bind(this, i, 0)}/>
-            <circle className="buldreinfo-svg-edit-anchor-point" cx={p.c[1].x} cy={p.c[1].y} r={10} onMouseDown={this.setDraggedCubic.bind(this, i, 1)}/>
+            <circle className="buldreinfo-svg-edit-anchor-point" cx={p.c[0].x} cy={p.c[0].y} r={14} onMouseDown={this.setDraggedCubic.bind(this, i, 0)}/>
+            <circle className="buldreinfo-svg-edit-anchor-point" cx={p.c[1].x} cy={p.c[1].y} r={14} onMouseDown={this.setDraggedCubic.bind(this, i, 1)}/>
           </g>
         );
       }
       return (
-        <g>
-          <circle className="buldreinfo-svg-edit-circle" cx={p.x} cy={p.y} r={16} onMouseDown={this.setDraggedPoint.bind(this, i)}/>
+        <g className={"buldreinfo-svg-edit-circle-group" + (this.state.activePoint === i ? "  is-active" : "")}>
           {anchors}
+          <circle className="buldreinfo-svg-edit-circle" cx={p.x} cy={p.y} r={18} onMouseDown={this.setDraggedPoint.bind(this, i)}/>
         </g>
       );
     });
