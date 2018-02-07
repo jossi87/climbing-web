@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import { Well, FormGroup, MenuItem, ButtonGroup, Button, DropdownButton, Alert } from 'react-bootstrap';
 import {parseSVG, makeAbsolute} from 'svg-path-parser';
 import config from '../../../utils/config.js';
-import auth from '../utils/auth.js';
 import Request from 'superagent';
 
 export default class SvgEdit extends Component {
