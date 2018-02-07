@@ -1,18 +1,32 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
-import { Well, FormGroup, FormControl, MenuItem, ButtonToolbar, ButtonGroup, Button, DropdownButton, ControlLabel, Alert } from 'react-bootstrap';
+import { Well, FormGroup, MenuItem, ButtonGroup, Button, DropdownButton, Alert } from 'react-bootstrap';
 import {parseSVG, makeAbsolute} from 'svg-path-parser';
+import config from '../../../utils/config.js';
 
 export default class SvgEdit extends Component {
   componentDidMount() {
     document.addEventListener("keydown", this.handleKeyDown.bind(this), false);
     document.addEventListener("keyup", this.handleKeyUp.bind(this), false);
-    const points = this.parsePath("M1337.2489,154.67413c-10.081575,60.867134-33.125175,669.53845-36.005627,738.2825c-2.88045,68.74406-53.288326,1019.7034-56.168777,1050.4951");
+    const points = []; // this.parsePath("M1337.2489,154.67413c-10.081575,60.867134-33.125175,669.53845-36.005627,738.2825c-2.88045,68.74406-53.288326,1019.7034-56.168777,1050.4951");
+    const svgs = [
+      {nr:"1",hasAnchor:true,path:"M0.0,1232.3805c53.288326-134.62376,173.54712-342.28812,196.59071-385.96924c23.0436-42.965034,36.005627-129.61119,226.83545-200.5035c191.54993-70.8923,352.13504-167.56363,545.84534-202.65173c193.71027-35.804195,403.263-106.6965,446.46976-121.73427c43.20675-15.037762,484.63574-159.6867,484.63574-159.6867"},
+      {nr:"2",hasAnchor:true,path:"M554.48663,1920.5371c30.96484-152.52586,102.255974-654.50073,107.29676-725.393c5.0407877-70.8923,86.4135-481.9245,102.255974-560.6937c15.122362-78.769226,56.168777-363.05453,56.168777-363.05453"},
+      {nr:"3",hasAnchor:false,path:"M1337.2489,154.67413c-10.081575,60.867134-33.125175,669.53845-36.005627,738.2825c-2.88045,68.74406-53.288326,1019.7034-56.168777,1050.4951"},
+      {nr:"4",hasAnchor:false,path:"M1684.3431,1925.5496c-30.96484-136.77203-104.41631-887.94403-104.41631-920.884c0.0-32.939857-46.0872-580.744-58.329117-621.56085c-12.962025-40.81678-23.0436-246.33287-23.0436-246.33287"},
+      {nr:"5",hasAnchor:true,path:"M1667.0604,154.67413c23.0436,60.867134,193.71027,842.1147,198.75105,923.7482c5.0407877,80.91748,186.50914,890.8084,193.71027,918.73566"},
+      {nr:"6",hasAnchor:false,path:"M2575.1223,1910.5117c-51.127987-149.66153-352.13504-971.7258-372.2982-1017.5553c-20.16315-45.829372-150.50351-363.05453-158.42476-408.16782c-7.921238-45.829372-109.4571-289.2979-112.337555-299.32306"},
+      {nr:"7",hasAnchor:true,path:"M2424.619,403.15524c33.125175,40.81678,181.46835,370.2154,196.59071,401.007s370.13785,875.0545,398.22223,907.99445"},
+      {nr:"99",hasAnchor:true,path:"M2503.8313,448.98462c56.168777,30.791609,257.80026,162.55106,272.92267,172.57622c15.122362,10.025174,120.2588,85.93007,150.50351,223.41818c30.96484,136.77203,48.247536,211.96085,92.1744,270.67972"}
+    ];
     this.setState({
+        mediaId: 20264,
+        nr: 47,
         w: 3072,
         h: 2048,
         ctrl: false,
         points: points,
+        readOnlySvgs: svgs,
         activePoint: 0,
         draggedPoint: false,
         draggedCubic: false,
@@ -171,6 +185,55 @@ export default class SvgEdit extends Component {
     });
   };
 
+  parseReadOnlySvgs() {
+    const shapes = [];
+    for (let svg of this.state.readOnlySvgs) {
+      shapes.push(<path key={shapes.length} d={svg.path} className="buldreinfo-svg-opacity buldreinfo-svg-route"/>);
+      const commands = parseSVG(svg.path);
+      makeAbsolute(commands); // Note: mutates the commands in place!
+      shapes.push(this.generateSvgNrAndAnchor(commands, svg.nr, svg.hasAnchor, false));
+    }
+    return shapes;
+  }
+
+  generateSvgNrAndAnchor(path, nr, hasAnchor, isNew) {
+    var ixNr;
+    var maxY = 0;
+    var ixAnchor;
+    var minY = 99999999;
+    for (var i=0, len=path.length; i < len; i++) {
+      if (path[i].y > maxY) {
+        ixNr = i;
+        maxY = path[i].y;
+      }
+      if (path[i].y < minY) {
+        ixAnchor = i;
+        minY = path[i].y;
+      }
+    }
+    var x = path[ixNr].x;
+    var y = path[ixNr].y;
+    const r = 45;
+    if (x < r) x = r;
+    if (x > (this.state.w-r)) x = this.state.w-r;
+    if (y < r) y = r;
+    if (y > (this.state.h-r)) y = this.state.h-r;
+    var anchor = null;
+    if (hasAnchor && !isNew) {
+      anchor = <circle className="buldreinfo-svg-ring" cx={path[ixAnchor].x} cy={path[ixAnchor].y} r="20"/>
+    }
+    else if (isNew) {
+      anchor = <text className="buldreinfo-svg-routenr" x={path[ixAnchor].x} y={path[ixAnchor].y+70}>{hasAnchor? "With anchor" : "Without anchor"}</text>
+    }
+    return (
+      <g className={isNew? "" : "buldreinfo-svg-opacity"}>
+        <circle className="buldreinfo-svg-ring" cx={x} cy={y - (isNew? 70 : 0)} r={r}/>
+        <text className="buldreinfo-svg-routenr" x={x} y={y - (isNew? 70 : 0)}>{nr}</text>
+        {anchor}
+      </g>
+    );
+  }
+
   parsePath(d) {
     if (d) {
       const commands = parseSVG(d);
@@ -237,9 +300,11 @@ export default class SvgEdit extends Component {
           </FormGroup>
           <FormGroup controlId="formControlsImage">
             <svg viewBox={"0 0 " + this.state.w + " " + this.state.h} className="buldreinfo-svg" onClick={this.addPoint.bind(this)} onMouseMove={this.handleMouseMove.bind(this)}>
-              <image ref="buldreinfo-svg-edit-img" xlinkHref="https://brattelinjer.no/com.buldreinfo.jersey.jaxb/v1/images?id=20264" x="0" y="0" width="100%" height="100%"/>
+              <image ref="buldreinfo-svg-edit-img" xlinkHref={config.getUrl(`images?id=${this.state.mediaId}`)} x="0" y="0" width="100%" height="100%"/>
+              {this.parseReadOnlySvgs()}
               <path className="buldreinfo-svg-edit-route" d={path} />
-              <g>{circles}</g>
+              {this.state.points.length>1 && this.generateSvgNrAndAnchor(this.state.points, this.state.nr, this.state.hasAnchor, true)}
+              {circles}
             </svg>
           </FormGroup>
           <FormGroup controlId="formControlsPath">

@@ -24,32 +24,37 @@
 .buldreinfo-svg-routenr {
   fill: #FFFFFF;
   font-size: 72px;
+  text-anchor: middle;
+  alignment-baseline: middle;
+}
+.buldreinfo-svg-opacity {
+  opacity: .5;
 }
 
 .buldreinfo-svg-edit-route {
   fill: none;
-  stroke: #E2011A;
+  stroke: #0000FF;
   stroke-width: 10;
 }
 .buldreinfo-svg-edit-circle {
   cursor: pointer;
-  fill: #E2011A;
+  fill: #0000FF;
   stroke-width: 10;
 }
 .buldreinfo-svg-edit-anchor-line {
-  stroke: #E2011A;
+  stroke: #0000FF;
   stroke-width: 8;
   opacity: .75;
   stroke-dasharray: 20;
 }
 .buldreinfo-svg-edit-anchor-point {
   cursor: pointer;
-  fill: #fff;
-  stroke: #E2011A;
+  fill: #FFFFFF;
+  stroke: #0000FF;
   stroke-width: 10;
   opacity: .75;
 }
 .buldreinfo-svg-edit-circle:hover,
 .buldreinfo-svg-edit-circle-group.is-active .buldreinfo-svg-edit-circle {
-    fill: #0000FF;
+    fill: #00FFFF;
 }
