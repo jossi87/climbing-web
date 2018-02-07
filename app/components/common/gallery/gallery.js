@@ -144,7 +144,7 @@ export default class Gallery extends Component {
     );
   }
 
-  generateShapes(svgs, w, h) {
+  generateShapes(svgs, svgProblemId, w, h) {
     return svgs.map((svg, key) => {
       const path = parseSVG(svg.path);
       makeAbsolute(path); // Note: mutates the commands in place!
@@ -174,7 +174,7 @@ export default class Gallery extends Component {
         anchor = <circle className="buldreinfo-svg-ring" cx={path[ixAnchor].x} cy={path[ixAnchor].y} r="20"/>
       }
       return (
-        <g key={key}>
+        <g className={svg.id===svgProblemId? "" : "buldreinfo-svg-opacity"}key={key}>
           <path d={svg.path} className="buldreinfo-svg-route"/>
           <circle className="buldreinfo-svg-ring" cx={x} cy={y} r={r}/>
           <text className="buldreinfo-svg-routenr" x={x} y={y}>{svg.nr}</text>
@@ -190,7 +190,7 @@ export default class Gallery extends Component {
         <div className='image-gallery-image'>
           <svg viewBox={"0 0 " + m.width + " " + m.height} className="buldreinfo-svg">
             <image xlinkHref={config.getUrl(`images?id=${m.id}`)} x="0" y="0" width="100%" height="100%"/>
-            {this.generateShapes(m.svgs, m.width, m.height)}
+            {this.generateShapes(m.svgs, m.svgProblemId, m.width, m.height)}
           </svg>
         </div>
       );
@@ -244,7 +244,7 @@ export default class Gallery extends Component {
             <a href="#" onMouseEnter={this.toggleHoverTrash.bind(this)} onMouseLeave={this.toggleHoverTrash.bind(this)}><i className="fa fa-trash-o" style={this.state.hoverTrash? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}} onClick={this.onDeleteImage.bind(this)}></i></a>
           </span>
         )}
-        {!this.state.isFullscreen && this.props.media[this.state.mediaIndex].idType==1 && this.props.media[this.state.mediaIndex].svgProblemId && this.props.media[this.state.mediaIndex].svgProblemId>0 && auth.isAdmin() && (
+        {!this.state.isFullscreen && this.props.media[this.state.mediaIndex].idType==1 && this.props.media[this.state.mediaIndex].svgProblemId>0 && auth.isAdmin() && (
           <span style={{position: 'absolute', zIndex: '4', background: 'rgba(0, 0, 0, 0.4)', padding: '8px 20px', marginTop: '40px'}}>
             <a href="#" onMouseEnter={this.toggleHoverEdit.bind(this)} onMouseLeave={this.toggleHoverEdit.bind(this)}><i className="fa fa-edit" style={this.state.hoverEdit? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}} onClick={this.pushUrl.bind(this, "/problem/svg-edit/" + this.props.media[this.state.mediaIndex].svgProblemId)}></i></a>
           </span>
