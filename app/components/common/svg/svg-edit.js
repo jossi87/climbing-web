@@ -6,8 +6,8 @@ import config from '../../../utils/config.js';
 
 export default class SvgEdit extends Component {
   componentDidMount() {
-    document.addEventListener("keydown", this.handleKeyDown.bind(this), false);
-    document.addEventListener("keyup", this.handleKeyUp.bind(this), false);
+    document.addEventListener("keydown", this.handleKeyDown.bind(this));
+    document.addEventListener("keyup", this.handleKeyUp.bind(this));
     const points = this.parsePath("M2424.619,403.15524c33.125175,40.81678,181.46835,370.2154,196.59071,401.007s370.13785,875.0545,398.22223,907.99445");
     const svgs = [
       {nr:"1",hasAnchor:true,path:"M0.0,1232.3805c53.288326-134.62376,173.54712-342.28812,196.59071-385.96924c23.0436-42.965034,36.005627-129.61119,226.83545-200.5035c191.54993-70.8923,352.13504-167.56363,545.84534-202.65173c193.71027-35.804195,403.263-106.6965,446.46976-121.73427c43.20675-15.037762,484.63574-159.6867,484.63574-159.6867"},
@@ -35,8 +35,8 @@ export default class SvgEdit extends Component {
   }
 
   componentWillUnmount() {
-    document.removeEventListener("keydown");
-    document.removeEventListener("keyup");
+    document.removeEventListener("keydown", this.handleKeyDown.bind(this));
+    document.removeEventListener("keyup", this.handleKeyUp.bind(this));
   }
 
   handleKeyDown(e) {
