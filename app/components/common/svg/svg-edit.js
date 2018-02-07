@@ -12,7 +12,7 @@ export default class SvgEdit extends Component {
       if (err) {
         this.setState({error: err});
       } else {
-        const m = res.body[0].media.filter(x => x.svgProblemId>0)[0];
+        const m = res.body[0].media[0];
         var readOnlySvgs = [];
         var points;
         for (let svg of m.svgs) {
