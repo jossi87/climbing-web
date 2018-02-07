@@ -140,7 +140,7 @@ export default class Gallery extends Component {
   generateShapes(svgs, w, h) {
     return svgs.map((svg, key) => {
       const path = parseSVG(svg.path);
-      makeAbsolute(commands); // Note: mutates the commands in place!
+      makeAbsolute(path); // Note: mutates the commands in place!
       var ixNr;
       var maxY = 0;
       var ixAnchor;
