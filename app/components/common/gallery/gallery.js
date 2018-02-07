@@ -143,7 +143,7 @@ export default class Gallery extends Component {
       var ixAnchor;
       var minY = 99999999;
       for (var i=0, len=svg.path.length; i < len; i++) {
-        if (path[i].y > maxY) {
+        if (svg.path[i].y > maxY) {
           ixNr = i;
           maxY = svg.path[i].y;
         }
