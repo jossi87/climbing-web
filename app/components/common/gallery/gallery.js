@@ -136,24 +136,51 @@ export default class Gallery extends Component {
     );
   }
 
+  generateShapes(svgs, w, h) {
+    return svgs.map((svg, key) => {
+      var ixNr;
+      var maxY = 0;
+      var ixAnchor;
+      var minY = 99999999;
+      for (var i=0, len=svg.path.length; i < len; i++) {
+        if (path[i].y > maxY) {
+          ixNr = i;
+          maxY = svg.path[i].y;
+        }
+        if (svg.path[i].y < minY) {
+          ixAnchor = i;
+          minY = svg.path[i].y;
+        }
+      }
+      var x = svg.path[ixNr].x;
+      var y = svg.path[ixNr].y;
+      const r = 45;
+      if (x < r) x = r;
+      if (x > (w-r)) x = w-r;
+      if (y < r) y = r;
+      if (y > (h-r)) y = h-r;
+      var anchor = null;
+      if (svg.hasAnchor) {
+        anchor = <circle className="buldreinfo-svg-ring" cx={svg.path[ixAnchor].x} cy={svg.path[ixAnchor].y} r="20"/>
+      }
+      return (
+        <g key={key}>
+          <path d={svg.path} className="buldreinfo-svg-route"/>
+          <circle className="buldreinfo-svg-ring" cx={x} cy={y} r={r}/>
+          <text className="buldreinfo-svg-routenr" x={x} y={y}>{svg.nr}</text>
+          {anchor}
+        </g>
+      );
+    });
+  }
+
   renderImage(m) {
     if (m.svgs) {
-      const shapes = [];
-      for (let svg of m.svgs) {
-        if (svg.nrPathD) {
-          shapes.push(<path key={shapes.length} d={svg.nrPathD} className="buldreinfo-svg-ring"/>);
-        }
-        shapes.push(<path key={shapes.length} d={svg.linePathD} className="buldreinfo-svg-route"/>);
-        if (svg.topPathD) {
-          shapes.push(<path key={shapes.length} d={svg.topPathD} className="buldreinfo-svg-ring"/>);
-        }
-        shapes.push(<text key={shapes.length} transform={svg.textTransform} className="buldreinfo-svg-routenr">{svg.nr}</text>);
-      };
       return (
         <div className='image-gallery-image'>
           <svg viewBox={"0 0 " + m.width + " " + m.height} className="buldreinfo-svg">
             <image xlinkHref={config.getUrl(`images?id=${m.id}`)} x="0" y="0" width="100%" height="100%"/>
-            {shapes}
+            {this.generateShapes(m.svgs, m.width, m.height)}
           </svg>
         </div>
       );
