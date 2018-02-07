@@ -1,21 +1,19 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import { Well, FormGroup, FormControl, MenuItem, ButtonToolbar, ButtonGroup, Button, DropdownButton, ControlLabel, Alert } from 'react-bootstrap';
+import {parseSVG, makeAbsolute} from 'svg-path-parser';
 
 export default class SvgEdit extends Component {
   componentDidMount() {
     document.addEventListener("keydown", this.handleKeyDown.bind(this), false);
     document.addEventListener("keyup", this.handleKeyUp.bind(this), false);
+    const points = this.parsePath("M1337.2489,154.67413c-10.081575,60.867134-33.125175,669.53845-36.005627,738.2825c-2.88045,68.74406-53.288326,1019.7034-56.168777,1050.4951");
     this.setState({
         w: 3072,
         h: 2048,
         ctrl: false,
-        points: [
-            { x: 100, y: 300 },
-            { x: 250, y: 700 },
-            { x: 1000, y: 600, c: [{ x: 650, y: 650 }, { x: 950, y: 200 }] }
-        ],
-        activePoint: 2,
+        points: points,
+        activePoint: 0,
         draggedPoint: false,
         draggedCubic: false
     });
@@ -125,23 +123,23 @@ export default class SvgEdit extends Component {
     if (active !== 0) { // not the first point
       switch (v) {
         case "L":
-            points[active] = {x: points[active].x, y: points[active].y};
-            break;
+          points[active] = {x: points[active].x, y: points[active].y};
+          break;
         case "C":
-            points[active] = {
-              x: points[active].x,
-              y: points[active].y,
-              c: [
-                  {
-                    x: (points[active].x + points[active - 1].x - 50) / 2,
-                    y: (points[active].y + points[active - 1].y) / 2
-                  },
-                  {
-                    x: (points[active].x + points[active - 1].x + 50) / 2,
-                    y: (points[active].y + points[active - 1].y) / 2
-                  }
-              ]
-            };
+          points[active] = {
+            x: points[active].x,
+            y: points[active].y,
+            c: [
+                {
+                  x: (points[active].x + points[active - 1].x - 50) / 2,
+                  y: (points[active].y + points[active - 1].y) / 2
+                },
+                {
+                  x: (points[active].x + points[active - 1].x + 50) / 2,
+                  y: (points[active].y + points[active - 1].y) / 2
+                }
+            ]
+          };
         break;
       }
       this.setState({points});
@@ -166,6 +164,20 @@ export default class SvgEdit extends Component {
       draggedCubic: false
     });
   };
+
+  parsePath(d) {
+    if (d) {
+      const commands = parseSVG(d);
+      makeAbsolute(commands); // Note: mutates the commands in place!
+      return commands.map(c => {
+        switch (c.code) {
+          case "M": return { x: Math.round(c.x), y: Math.round(c.y) };
+          case "C": return { x: Math.round(c.x), y: Math.round(c.y), c: [{x: Math.round(c.x1), y: Math.round(c.y1)}, {x: Math.round(c.x2), y: Math.round(c.y2)}] };
+        }
+      });
+    }
+    return [];
+  }
 
   render() {
     if (!this.state) {
@@ -196,7 +208,7 @@ export default class SvgEdit extends Component {
         <form>
           <FormGroup controlId="formControlsInfo">
             <Alert bsStyle="info">
-              <strong>CLICK</strong> to select a point. <strong>CLICK AND DRAG</strong> to move a point. <strong>CTRL + CLICK</strong> to add a point.
+              <strong>CTRL + CLICK</strong> to add a point | <strong>CLICK</strong> to select a point | <strong>CLICK AND DRAG</strong> to move a point
             </Alert>
           </FormGroup>
           <FormGroup controlId="formControlsSettings">
