@@ -12,10 +12,10 @@ export default class SvgEdit extends Component {
       if (err) {
         this.setState({error: err});
       } else {
-        console.log(res.body[0]);
         const m = res.body[0].media[0];
         var readOnlySvgs = [];
         var points;
+        console.log("1");
         for (let svg of m.svgs) {
           if (svg.id===res.body[0].id) {
             points = this.parsePath(svg.path);
@@ -24,6 +24,7 @@ export default class SvgEdit extends Component {
             readOnlySvgs.push({ nr: svg.nr, hasAnchor: svg.hasAnchor, path: svg.path });
           }
         }
+        console.log("2");
         this.setState({
           mediaId: m.id,
           nr: res.body[0].nr,
