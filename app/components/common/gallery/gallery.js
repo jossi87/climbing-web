@@ -4,6 +4,7 @@ import { Well } from 'react-bootstrap';
 import ReactPlayer from 'react-player'
 import auth from '../../../utils/auth.js';
 import Request from 'superagent';
+import {parseSVG, makeAbsolute} from 'svg-path-parser';
 import config from '../../../utils/config.js';
 
 export default class Gallery extends Component {
@@ -138,22 +139,24 @@ export default class Gallery extends Component {
 
   generateShapes(svgs, w, h) {
     return svgs.map((svg, key) => {
+      const path = parseSVG(svg.path);
+      makeAbsolute(commands); // Note: mutates the commands in place!
       var ixNr;
       var maxY = 0;
       var ixAnchor;
       var minY = 99999999;
-      for (var i=0, len=svg.path.length; i < len; i++) {
-        if (svg.path[i].y > maxY) {
+      for (var i=0, len=path.length; i < len; i++) {
+        if (path[i].y > maxY) {
           ixNr = i;
-          maxY = svg.path[i].y;
+          maxY = path[i].y;
         }
-        if (svg.path[i].y < minY) {
+        if (path[i].y < minY) {
           ixAnchor = i;
-          minY = svg.path[i].y;
+          minY = path[i].y;
         }
       }
-      var x = svg.path[ixNr].x;
-      var y = svg.path[ixNr].y;
+      var x = path[ixNr].x;
+      var y = path[ixNr].y;
       const r = 45;
       if (x < r) x = r;
       if (x > (w-r)) x = w-r;
@@ -161,7 +164,7 @@ export default class Gallery extends Component {
       if (y > (h-r)) y = h-r;
       var anchor = null;
       if (svg.hasAnchor) {
-        anchor = <circle className="buldreinfo-svg-ring" cx={svg.path[ixAnchor].x} cy={svg.path[ixAnchor].y} r="20"/>
+        anchor = <circle className="buldreinfo-svg-ring" cx={path[ixAnchor].x} cy={path[ixAnchor].y} r="20"/>
       }
       return (
         <g key={key}>

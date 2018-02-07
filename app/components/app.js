@@ -17,6 +17,7 @@ import Recover from './recover';
 import Register from './register';
 import Sector from './sector';
 import SectorEdit from './sector-edit';
+import SvgEdit from './common/svg/svg-edit';
 import User from './user';
 import UserEdit from './user-edit';
 
@@ -42,7 +43,7 @@ export default class App extends Component {
         <Navigation/>
         <div className="container">
           <Switch>
-            <Route exact path='/' component={Index}/>
+            <Route exact path='/' component={SvgEdit}/> // Index
             <Route path="/browse" component={Browse}/>
             <Route path="/ethics" component={Ethics}/>
             <Route exact path="/area/:areaId" component={Area}/>
