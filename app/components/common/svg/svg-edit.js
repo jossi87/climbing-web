@@ -8,7 +8,7 @@ export default class SvgEdit extends Component {
   componentDidMount() {
     document.addEventListener("keydown", this.handleKeyDown.bind(this), false);
     document.addEventListener("keyup", this.handleKeyUp.bind(this), false);
-    const points = []; // this.parsePath("M1337.2489,154.67413c-10.081575,60.867134-33.125175,669.53845-36.005627,738.2825c-2.88045,68.74406-53.288326,1019.7034-56.168777,1050.4951");
+    const points = this.parsePath("M2424.619,403.15524c33.125175,40.81678,181.46835,370.2154,196.59071,401.007s370.13785,875.0545,398.22223,907.99445");
     const svgs = [
       {nr:"1",hasAnchor:true,path:"M0.0,1232.3805c53.288326-134.62376,173.54712-342.28812,196.59071-385.96924c23.0436-42.965034,36.005627-129.61119,226.83545-200.5035c191.54993-70.8923,352.13504-167.56363,545.84534-202.65173c193.71027-35.804195,403.263-106.6965,446.46976-121.73427c43.20675-15.037762,484.63574-159.6867,484.63574-159.6867"},
       {nr:"2",hasAnchor:true,path:"M554.48663,1920.5371c30.96484-152.52586,102.255974-654.50073,107.29676-725.393c5.0407877-70.8923,86.4135-481.9245,102.255974-560.6937c15.122362-78.769226,56.168777-363.05453,56.168777-363.05453"},
@@ -242,6 +242,7 @@ export default class SvgEdit extends Component {
         switch (c.code) {
           case "M": return { x: Math.round(c.x), y: Math.round(c.y) };
           case "C": return { x: Math.round(c.x), y: Math.round(c.y), c: [{x: Math.round(c.x1), y: Math.round(c.y1)}, {x: Math.round(c.x2), y: Math.round(c.y2)}] };
+          case "S": return { x: Math.round(c.x), y: Math.round(c.y), c: [{x: Math.round(c.x0), y: Math.round(c.y0)}, {x: Math.round(c.x2), y: Math.round(c.y2)}] };
         }
       });
     }
