@@ -5,6 +5,7 @@ import { Well, FormGroup, MenuItem, ButtonGroup, Button, DropdownButton, Alert, 
 import {parseSVG, makeAbsolute} from 'svg-path-parser';
 import config from '../../../utils/config.js';
 import Request from 'superagent';
+import { Redirect } from 'react-router'
 
 export default class SvgEdit extends Component {
   componentDidMount() {
@@ -42,6 +43,7 @@ export default class SvgEdit extends Component {
           sectorId: res.body[0].sectorId,
           sectorName: res.body[0].sectorName,
           sectorVisibility: res.body[0].sectorVisibility,
+          id: res.body[0].id,
           name: res.body[0].name,
           grade: res.body[0].grade,
           visibility: res.body[0].visibility
@@ -67,6 +69,24 @@ export default class SvgEdit extends Component {
 
   toggleAnchor() {
     this.setState({hasAnchor: !this.state.hasAnchor});
+  }
+
+  onCancel() {
+    window.history.back();
+  }
+
+  save(event) {
+    event.preventDefault();
+    Request.post(config.getUrl("problems/svg?problemId=" + this.state.id + "&mediaId=" + this.state.mediaId))
+    .withCredentials()
+    .send({delete: this.state.points.length<2, id: this.state.id, path: this.generatePath(), hasAnchor: this.state.hasAnchor})
+    .end((err, res) => {
+      if (err) {
+        this.setState({error: err});
+      } else {
+        this.setState({pushUrl: "/problem/" + this.state.id});
+      }
+    });
   }
 
   cancelDragging(e) {
@@ -274,6 +294,10 @@ export default class SvgEdit extends Component {
     else if (this.state.error) {
       return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;
     }
+    else if (this.state.pushUrl) {
+      return (<Redirect to={this.state.pushUrl} push />);
+    }
+
     var circles = this.state.points.map((p, i, a) => {
       var anchors = [];
       if (p.c) {
@@ -297,10 +321,10 @@ export default class SvgEdit extends Component {
     return (
       <span>
         <Breadcrumb>
-          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${this.state.areaId}`}>{this.state.areaName}</Link> {this.state.areaVisibility===1 && <i className="fa fa-lock"></i>}{this.state.areaVisibility===2 && <i className="fa fa-expeditedssl"></i>} / <Link to={`/sector/${this.state.sectorId}`}>{this.state.sectorName}</Link> {this.state.sectorVisibility===1 && <i className="fa fa-lock"></i>}{this.state.sectorVisibility===2 && <i className="fa fa-expeditedssl"></i>} / {this.state.nr} <font color='#777'>{this.state.name}</font> {this.state.grade} {this.state.visibility===1 && <i className="fa fa-lock"></i>}{this.state.visibility===2 && <i className="fa fa-expeditedssl"></i>}
+          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${this.state.areaId}`}>{this.state.areaName}</Link> {this.state.areaVisibility===1 && <i className="fa fa-lock"></i>}{this.state.areaVisibility===2 && <i className="fa fa-expeditedssl"></i>} / <Link to={`/sector/${this.state.sectorId}`}>{this.state.sectorName}</Link> {this.state.sectorVisibility===1 && <i className="fa fa-lock"></i>}{this.state.sectorVisibility===2 && <i className="fa fa-expeditedssl"></i>} / <Link to={`/problem/${this.state.id}`}>{this.state.nr} {this.state.name} {this.state.grade}</Link> {this.state.visibility===1 && <i className="fa fa-lock"></i>}{this.state.visibility===2 && <i className="fa fa-expeditedssl"></i>}
         </Breadcrumb>
         <Well bsSize="small" onMouseUp={this.cancelDragging.bind(this)} onMouseLeave={this.cancelDragging.bind(this)}>
-          <form>
+          <form onSubmit={this.save.bind(this)}>
             <FormGroup controlId="formControlsInfo">
               <Alert bsStyle="info">
                 <center>
@@ -320,6 +344,8 @@ export default class SvgEdit extends Component {
                       <MenuItem eventKey="1" onSelect={this.toggleAnchor.bind(this)}>Route has anchor</MenuItem>
                     </DropdownButton>
                     <Button bsStyle="warning" disabled={this.state.points.length===0} onClick={this.reset.bind(this)}>Reset path</Button>
+                    <Button bsStyle="danger" onClick={this.onCancel.bind(this)}>Cancel</Button>
+                    <Button type="submit" bsStyle="success">{this.state.points.length>=2? 'Save' : 'Delete'}</Button></ButtonGroup>
                   </ButtonGroup>
                 </center>
               </Alert>
