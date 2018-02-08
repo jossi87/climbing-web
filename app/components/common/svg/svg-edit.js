@@ -345,7 +345,7 @@ export default class SvgEdit extends Component {
                     </DropdownButton>
                     <Button bsStyle="warning" disabled={this.state.points.length===0} onClick={this.reset.bind(this)}>Reset path</Button>
                     <Button bsStyle="danger" onClick={this.onCancel.bind(this)}>Cancel</Button>
-                    <Button type="submit" bsStyle="success">{this.state.points.length>=2? 'Save' : 'Delete'}</Button></ButtonGroup>
+                    <Button type="submit" bsStyle="success">{this.state.points.length>=2? 'Save' : 'Delete'}</Button>
                   </ButtonGroup>
                 </center>
               </Alert>
