@@ -299,7 +299,7 @@ export default class SvgEdit extends Component {
         <Breadcrumb>
           <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${this.state.areaId}`}>{this.state.areaName}</Link> {this.state.areaVisibility===1 && <i className="fa fa-lock"></i>}{this.state.areaVisibility===2 && <i className="fa fa-expeditedssl"></i>} / <Link to={`/sector/${this.state.sectorId}`}>{this.state.sectorName}</Link> {this.state.sectorVisibility===1 && <i className="fa fa-lock"></i>}{this.state.sectorVisibility===2 && <i className="fa fa-expeditedssl"></i>} / {this.state.nr} <font color='#777'>{this.state.name}</font> {this.state.grade} {this.state.visibility===1 && <i className="fa fa-lock"></i>}{this.state.visibility===2 && <i className="fa fa-expeditedssl"></i>}
         </Breadcrumb>
-        <Well bsSize="small" onMouseUp={this.cancelDragging.bind(this)}>
+        <Well bsSize="small" onMouseUp={this.cancelDragging.bind(this)} onMouseLeave={this.cancelDragging.bind(this)}>
           <form>
             <FormGroup controlId="formControlsInfo">
               <Alert bsStyle="info">
