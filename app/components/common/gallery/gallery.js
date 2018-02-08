@@ -239,7 +239,7 @@ export default class Gallery extends Component {
         )}
         {!this.state.isFullscreen && this.props.media[this.state.mediaIndex].idType==1 && this.props.media[this.state.mediaIndex].svgProblemId>0 && auth.isAdmin() && (
           <span style={{position: 'absolute', zIndex: '4', background: 'rgba(0, 0, 0, 0.4)', padding: '8px 20px', marginTop: '40px'}}>
-            <Link to={`"/problem/svg-edit/"${this.props.media[this.state.mediaIndex].svgProblemId)}`}><i className="fa fa-edit" style={this.state.hoverEdit? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}}></i></Link>
+            <Link to={`"/problem/svg-edit/"${this.props.media[this.state.mediaIndex].svgProblemId}`}><i className="fa fa-edit" style={this.state.hoverEdit? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}}></i></Link>
           </span>
         )}
         <ImageGallery
