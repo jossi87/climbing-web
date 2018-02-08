@@ -174,7 +174,7 @@ export default class Gallery extends Component {
         anchor = <circle className="buldreinfo-svg-ring" cx={path[ixAnchor].x} cy={path[ixAnchor].y} r="20"/>
       }
       return (
-        <g className={svg.id===svgProblemId? "" : "buldreinfo-svg-opacity"}key={key}>
+        <g className={svg.problemId===svgProblemId? "" : "buldreinfo-svg-opacity"}key={key}>
           <path d={svg.path} className="buldreinfo-svg-route"/>
           <circle className="buldreinfo-svg-ring" cx={x} cy={y} r={r}/>
           <text className="buldreinfo-svg-routenr" x={x} y={y}>{svg.nr}</text>
