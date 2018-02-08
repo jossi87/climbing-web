@@ -18,13 +18,15 @@ export default class SvgEdit extends Component {
         const readOnlySvgs = [];
         var svgId = 0;
         var points = [];
-        for (let svg of m.svgs) {
-          if (svg.problemId===res.body[0].id) {
-            svgId = svg.id;
-            points = this.parsePath(svg.path);
-          }
-          else {
-            readOnlySvgs.push({ nr: svg.nr, hasAnchor: svg.hasAnchor, path: svg.path });
+        if (m.svgs) {
+          for (let svg of m.svgs) {
+            if (svg.problemId===res.body[0].id) {
+              svgId = svg.id;
+              points = this.parsePath(svg.path);
+            }
+            else {
+              readOnlySvgs.push({ nr: svg.nr, hasAnchor: svg.hasAnchor, path: svg.path });
+            }
           }
         }
         this.setState({
