@@ -230,20 +230,19 @@ export default class Gallery extends Component {
       }
     });
 
+    var button = "";
+    if (!this.state.isFullscreen && this.props.media[this.state.mediaIndex].idType==1 && auth.isAdmin()) {
+      if (!this.props.media[this.state.mediaIndex].svgs) {
+        button = <span style={{position: 'absolute', zIndex: '4', background: 'rgba(0, 0, 0, 0.4)', padding: '8px 20px'}}><a href="#" onMouseEnter={this.toggleHoverTrash.bind(this)} onMouseLeave={this.toggleHoverTrash.bind(this)}><i className="fa fa-trash-o" style={this.state.hoverTrash? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}} onClick={this.onDeleteImage.bind(this)}></i></a></span>;
+      }
+      else if (this.props.media[this.state.mediaIndex].svgProblemId>0) {
+        button = <span style={{position: 'absolute', zIndex: '4', background: 'rgba(0, 0, 0, 0.4)', padding: '8px 20px'}}><Link to={`/problem/svg-edit/${this.props.media[this.state.mediaIndex].svgProblemId}`} onMouseEnter={this.toggleHoverEdit.bind(this)} onMouseLeave={this.toggleHoverEdit.bind(this)}><i className="fa fa-edit" style={this.state.hoverEdit? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}}></i></Link></span>;
+      }
+    }
+
     return (
       <Well className='app'>
-        {!this.state.isFullscreen && this.props.media[this.state.mediaIndex].idType==1 && !this.props.media[this.state.mediaIndex].svgs && auth.isAdmin() && (
-          <span style={{position: 'absolute', zIndex: '4', background: 'rgba(0, 0, 0, 0.4)', padding: '8px 20px'}}>
-            <a href="#" onMouseEnter={this.toggleHoverTrash.bind(this)} onMouseLeave={this.toggleHoverTrash.bind(this)}><i className="fa fa-trash-o" style={this.state.hoverTrash? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}} onClick={this.onDeleteImage.bind(this)}></i></a>
-          </span>
-        )}
-        {!this.state.isFullscreen && this.props.media[this.state.mediaIndex].idType==1 && this.props.media[this.state.mediaIndex].svgProblemId>0 && auth.isAdmin() && (
-          <span style={{position: 'absolute', zIndex: '4', background: 'rgba(0, 0, 0, 0.4)', padding: '8px 20px', marginTop: '40px'}}>
-            <Link to={`/problem/svg-edit/${this.props.media[this.state.mediaIndex].svgProblemId}`} onMouseEnter={this.toggleHoverEdit.bind(this)} onMouseLeave={this.toggleHoverEdit.bind(this)}>
-              <i className="fa fa-edit" style={this.state.hoverEdit? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}}></i>
-            </Link>
-          </span>
-        )}
+        {button}
         <ImageGallery
           ref={i => this.imageGallery = i}
           items={caruselItems}

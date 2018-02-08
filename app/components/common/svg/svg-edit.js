@@ -22,8 +22,6 @@ export default class SvgEdit extends Component {
           if (svg.problemId===res.body[0].id) {
             svgId = svg.id;
             points = this.parsePath(svg.path);
-            console.log(svg.path);
-            console.log(points);
           }
           else {
             readOnlySvgs.push({ nr: svg.nr, hasAnchor: svg.hasAnchor, path: svg.path });
@@ -283,7 +281,7 @@ export default class SvgEdit extends Component {
       makeAbsolute(commands); // Note: mutates the commands in place!
       return commands.map(c => {
         switch (c.code) {
-          case "M": return { x: Math.round(c.x), y: Math.round(c.y) };
+          case "L": case "M": return { x: Math.round(c.x), y: Math.round(c.y) };
           case "C": return { x: Math.round(c.x), y: Math.round(c.y), c: [{x: Math.round(c.x1), y: Math.round(c.y1)}, {x: Math.round(c.x2), y: Math.round(c.y2)}] };
           case "S": return { x: Math.round(c.x), y: Math.round(c.y), c: [{x: Math.round(c.x0), y: Math.round(c.y0)}, {x: Math.round(c.x2), y: Math.round(c.y2)}] };
         }
