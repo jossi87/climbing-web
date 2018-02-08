@@ -16,9 +16,11 @@ export default class SvgEdit extends Component {
       } else {
         const m = res.body[0].media[0];
         const readOnlySvgs = [];
+        var svgId = 0;
         var points = [];
         for (let svg of m.svgs) {
           if (svg.problemId===res.body[0].id) {
+            svgId = svg.id;
             points = this.parsePath(svg.path);
           }
           else {
@@ -31,6 +33,7 @@ export default class SvgEdit extends Component {
           w: m.width,
           h: m.height,
           ctrl: false,
+          svgId: svgId,
           points: points,
           readOnlySvgs: readOnlySvgs,
           activePoint: 0,
@@ -79,7 +82,7 @@ export default class SvgEdit extends Component {
     event.preventDefault();
     Request.post(config.getUrl("problems/svg?problemId=" + this.state.id + "&mediaId=" + this.state.mediaId))
     .withCredentials()
-    .send({delete: this.state.points.length<2, id: this.state.id, path: this.generatePath(), hasAnchor: this.state.hasAnchor})
+    .send({delete: this.state.points.length<2, id: this.state.svgId, path: this.generatePath(), hasAnchor: this.state.hasAnchor})
     .end((err, res) => {
       if (err) {
         this.setState({error: err});
@@ -345,7 +348,7 @@ export default class SvgEdit extends Component {
                     </DropdownButton>
                     <Button bsStyle="warning" disabled={this.state.points.length===0} onClick={this.reset.bind(this)}>Reset path</Button>
                     <Button bsStyle="danger" onClick={this.onCancel.bind(this)}>Cancel</Button>
-                    <Button type="submit" bsStyle="success">{this.state.points.length>=2? 'Save' : 'Delete'}</Button>
+                    <Button type="submit" bsStyle="success">{this.state.points.length>=2? 'Save' : 'Delete path'}</Button>
                   </ButtonGroup>
                 </center>
               </Alert>
