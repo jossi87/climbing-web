@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
-import { Redirect } from 'react-router';
 import ImageGallery from 'react-image-gallery';
 import { Well } from 'react-bootstrap';
 import ReactPlayer from 'react-player'
 import auth from '../../../utils/auth.js';
 import Request from 'superagent';
 import {parseSVG, makeAbsolute} from 'svg-path-parser';
+import { Link } from 'react-router-dom';
 import config from '../../../utils/config.js';
 
 export default class Gallery extends Component {
@@ -202,14 +202,7 @@ export default class Gallery extends Component {
     );
   }
 
-  pushUrl(url) {
-    this.setState({pushUrl: url});
-  }
-
   render() {
-    if (this.state && this.state.pushUrl) {
-      return (<Redirect to={this.state.pushUrl} push />);
-    }
     const caruselItems = this.props.media.map((m, i) => {
       if (m.idType==1) {
         return {
@@ -246,7 +239,7 @@ export default class Gallery extends Component {
         )}
         {!this.state.isFullscreen && this.props.media[this.state.mediaIndex].idType==1 && this.props.media[this.state.mediaIndex].svgProblemId>0 && auth.isAdmin() && (
           <span style={{position: 'absolute', zIndex: '4', background: 'rgba(0, 0, 0, 0.4)', padding: '8px 20px', marginTop: '40px'}}>
-            <a href="#" onMouseEnter={this.toggleHoverEdit.bind(this)} onMouseLeave={this.toggleHoverEdit.bind(this)}><i className="fa fa-edit" style={this.state.hoverEdit? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}} onClick={this.pushUrl.bind(this, "/problem/svg-edit/" + this.props.media[this.state.mediaIndex].svgProblemId)}></i></a>
+            <Link to={`"/problem/svg-edit/"${this.props.media[this.state.mediaIndex].svgProblemId)}`}><i className="fa fa-edit" style={this.state.hoverEdit? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}}></i></Link>
           </span>
         )}
         <ImageGallery

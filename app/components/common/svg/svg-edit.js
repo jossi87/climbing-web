@@ -17,7 +17,7 @@ export default class SvgEdit extends Component {
         const readOnlySvgs = [];
         var points = [];
         for (let svg of m.svgs) {
-          if (svg.id===res.body[0].id) {
+          if (svg.problemId===res.body[0].id) {
             points = this.parsePath(svg.path);
           }
           else {
