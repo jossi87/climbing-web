@@ -33,16 +33,16 @@
 
 .buldreinfo-svg-edit-route {
   fill: none;
-  stroke: #0000FF;
+  stroke: #E2011A;
   stroke-width: 10;
 }
 .buldreinfo-svg-edit-circle {
   cursor: pointer;
-  fill: #0000FF;
+  fill: #E2011A;
   stroke-width: 10;
 }
 .buldreinfo-svg-edit-anchor-line {
-  stroke: #0000FF;
+  stroke: #E2011A;
   stroke-width: 8;
   opacity: .75;
   stroke-dasharray: 20;
@@ -50,11 +50,11 @@
 .buldreinfo-svg-edit-anchor-point {
   cursor: pointer;
   fill: #FFFFFF;
-  stroke: #0000FF;
+  stroke: #E2011A;
   stroke-width: 10;
   opacity: .75;
 }
 .buldreinfo-svg-edit-circle:hover,
 .buldreinfo-svg-edit-circle-group.is-active .buldreinfo-svg-edit-circle {
-    fill: #00FFFF;
+    fill: #00E676;
 }
