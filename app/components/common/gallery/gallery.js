@@ -232,7 +232,7 @@ export default class Gallery extends Component {
 
     return (
       <Well className='app'>
-        {!this.state.isFullscreen && this.props.media[this.state.mediaIndex].idType==1 && auth.isAdmin() && (
+        {!this.state.isFullscreen && this.props.media[this.state.mediaIndex].idType==1 && !this.props.media[this.state.mediaIndex].svgs && auth.isAdmin() && (
           <span style={{position: 'absolute', zIndex: '4', background: 'rgba(0, 0, 0, 0.4)', padding: '8px 20px'}}>
             <a href="#" onMouseEnter={this.toggleHoverTrash.bind(this)} onMouseLeave={this.toggleHoverTrash.bind(this)}><i className="fa fa-trash-o" style={this.state.hoverTrash? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}} onClick={this.onDeleteImage.bind(this)}></i></a>
           </span>

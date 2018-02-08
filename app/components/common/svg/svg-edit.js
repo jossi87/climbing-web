@@ -22,6 +22,8 @@ export default class SvgEdit extends Component {
           if (svg.problemId===res.body[0].id) {
             svgId = svg.id;
             points = this.parsePath(svg.path);
+            console.log(svg.path);
+            console.log(points);
           }
           else {
             readOnlySvgs.push({ nr: svg.nr, hasAnchor: svg.hasAnchor, path: svg.path });
