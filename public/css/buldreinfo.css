@@ -50,11 +50,11 @@
 .buldreinfo-svg-edit-anchor-point {
   cursor: pointer;
   fill: #FFFFFF;
-  stroke: #E2011A;
+  stroke: #2E01E2;
   stroke-width: 10;
   opacity: .75;
 }
 .buldreinfo-svg-edit-circle:hover,
 .buldreinfo-svg-edit-circle-group.is-active .buldreinfo-svg-edit-circle {
-    fill: #000000;
+    fill: #01e24c;
 }

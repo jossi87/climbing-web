@@ -60,6 +60,7 @@ export default class SvgEdit extends Component {
   }
 
   cancelDragging(e) {
+    console.log("cancelDragging");
     this.setState({
       draggedPoint: false,
       draggedCubic: false
