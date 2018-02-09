@@ -258,6 +258,7 @@ export default class Gallery extends Component {
           items={caruselItems}
           onSlide={this.onSlide.bind(this)}
           onScreenChange={this.onScreenChange.bind(this)}
+          showNav={this.props.media.length>1}
           showThumbnails={this.props.showThumbnails}
           showBullets={this.state.showFullscreenButton && this.state.showGalleryFullscreenButton}
           showIndex={this.state.showFullscreenButton && this.state.showGalleryFullscreenButton}
