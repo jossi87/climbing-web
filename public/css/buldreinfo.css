@@ -22,11 +22,13 @@
   stroke-width: 10;
 }
 .buldreinfo-svg-routenr {
-  cursor: pointer;
   fill: #FFFFFF;
   font-size: 72px;
   text-anchor: middle;
   alignment-baseline: middle;
+}
+.buldreinfo-svg-pointer {
+  cursor: pointer;
 }
 .buldreinfo-svg-opacity {
   opacity: .4;
