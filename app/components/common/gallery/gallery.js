@@ -37,7 +37,6 @@ export default class Gallery extends Component {
       showVideo: {},
       isFullscreen: false,
     };
-    this.imageGallery.slideToIndex(0);
   }
 
   toggleHoverTrash() {
@@ -211,6 +210,7 @@ export default class Gallery extends Component {
     if (this.state && this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
     }
+    this.imageGallery.slideToIndex(this.state.mediaIndex);
     const caruselItems = this.props.media.map((m, i) => {
       if (m.idType==1) {
         return {
