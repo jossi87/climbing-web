@@ -5,7 +5,7 @@ import { Well, FormGroup, MenuItem, ButtonGroup, Button, DropdownButton, Alert, 
 import {parseSVG, makeAbsolute} from 'svg-path-parser';
 import config from '../../../utils/config.js';
 import Request from 'superagent';
-import { Redirect } from 'react-router'
+import { Redirect } from 'react-router';
 
 export default class SvgEdit extends Component {
   componentDidMount() {

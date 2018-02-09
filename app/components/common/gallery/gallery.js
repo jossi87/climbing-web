@@ -7,6 +7,7 @@ import Request from 'superagent';
 import {parseSVG, makeAbsolute} from 'svg-path-parser';
 import { Link } from 'react-router-dom';
 import config from '../../../utils/config.js';
+import { Redirect } from 'react-router';
 
 export default class Gallery extends Component {
   constructor(props) {
@@ -144,6 +145,10 @@ export default class Gallery extends Component {
     );
   }
 
+  pushUrl(url) {
+    this.setState({pushUrl: url});
+  }
+
   generateShapes(svgs, svgProblemId, w, h) {
     return svgs.map((svg, key) => {
       const path = parseSVG(svg.path);
@@ -174,10 +179,10 @@ export default class Gallery extends Component {
         anchor = <circle className="buldreinfo-svg-ring" cx={path[ixAnchor].x} cy={path[ixAnchor].y} r="20"/>
       }
       return (
-        <g className={(svgProblemId===0 || svg.problemId===svgProblemId)? "" : "buldreinfo-svg-opacity"}key={key}>
+        <g className={(svgProblemId===0 || svg.problemId===svgProblemId)? "" : "buldreinfo-svg-opacity"} key={key}>
           <path d={svg.path} className="buldreinfo-svg-route"/>
           <circle className="buldreinfo-svg-ring" cx={x} cy={y} r={r}/>
-          <text className="buldreinfo-svg-routenr" x={x} y={y}>{svg.nr}</text>
+          <text className="buldreinfo-svg-routenr" x={x} y={y} onClick={this.pushUrl.bind(this, "/problem/" + svg.problemId)}>{svg.nr}</text>
           {anchor}
         </g>
       );
@@ -203,6 +208,9 @@ export default class Gallery extends Component {
   }
 
   render() {
+    if (this.state && this.state.pushUrl) {
+      return (<Redirect to={this.state.pushUrl} push />);
+    }
     const caruselItems = this.props.media.map((m, i) => {
       if (m.idType==1) {
         return {
