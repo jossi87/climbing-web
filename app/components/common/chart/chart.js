@@ -11,9 +11,9 @@ export default class Chart extends Component {
   render() {
     var data = [];
     this.props.data.map(t => {
-      var d = data.filter(val => {return val.grade===t.grade})
+      var d = data.filter(val => {return val.gradeNumber===t.gradeNumber})
       if (!d[0]) {
-        data.push({grade: t.grade, fa: (t.fa? 1 : 0), tick: (t.fa? 0 : 1)});
+        data.push({gradeNumber: t.gradeNumber, grade: t.grade, fa: (t.fa? 1 : 0), tick: (t.fa? 0 : 1)});
       } else {
         if (t.fa) {
           d[0].fa++;
@@ -22,7 +22,7 @@ export default class Chart extends Component {
         }
       }
     });
-    data.sort((a,b) => {return b.grade.localeCompare(a.grade)});
+    data.sort((a,b) => {return a.gradeNumber-b.gradeNumber});
     const maxValue = Math.max.apply(Math, data.map(d => {return d.fa+d.tick}));
 
     const rows = data.map((d, i) => {
