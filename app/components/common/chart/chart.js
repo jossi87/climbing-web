@@ -1,8 +1,6 @@
 import React, {Component} from 'react';
 import { Table } from 'react-bootstrap';
 
-const margin = {top: '0px', right: '0px', bottom: '0px', left: '0px'};
-
 export default class Chart extends Component {
   constructor(props) {
     super(props);
@@ -22,7 +20,7 @@ export default class Chart extends Component {
         }
       }
     });
-    data.sort((a,b) => {return a.gradeNumber-b.gradeNumber});
+    data.sort((a,b) => {return b.gradeNumber-a.gradeNumber});
     const maxValue = Math.max.apply(Math, data.map(d => {return d.fa+d.tick}));
 
     const rows = data.map((d, i) => {
