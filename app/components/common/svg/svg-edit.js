@@ -142,6 +142,7 @@ export default class SvgEdit extends Component {
   }
 
   handleMouseMove(e) {
+    e.preventDefault();
     if (!this.state.ctrl) {
       if (this.state.draggedPoint) {
         this.setPointCoords(this.getMouseCoords(e));
@@ -149,6 +150,7 @@ export default class SvgEdit extends Component {
         this.setCubicCoords(this.getMouseCoords(e), this.state.draggedCubic);
       }
     }
+    return false;
   };
 
   setPointCoords(coords) {
