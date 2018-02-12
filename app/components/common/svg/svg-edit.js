@@ -233,7 +233,7 @@ export default class SvgEdit extends Component {
   parseReadOnlySvgs() {
     const shapes = [];
     for (let svg of this.state.readOnlySvgs) {
-      shapes.push(<path key={shapes.length} d={svg.path} className="buldreinfo-svg-opacity buldreinfo-svg-route"/>);
+      shapes.push(<path key={shapes.length} d={svg.path} className="buldreinfo-svg-opacity buldreinfo-svg-route" strokeWidth={0.00326*this.state.w} strokeDasharray={0.0065*this.state.w}/>);
       const commands = parseSVG(svg.path);
       makeAbsolute(commands); // Note: mutates the commands in place!
       shapes.push(this.generateSvgNrAndAnchor(commands, svg.nr, svg.hasAnchor));
