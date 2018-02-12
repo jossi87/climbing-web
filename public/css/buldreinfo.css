@@ -12,12 +12,11 @@
 .buldreinfo-svg-route {
   fill: none;
   stroke: #E2011A;
-  stroke-width: 2;
-  stroke-dasharray: 5;
+  stroke-width: 10;
+  stroke-dasharray: 20;
 }
 .buldreinfo-svg-ring {
   fill: #E2011A;
-  stroke-width: 10;
 }
 .buldreinfo-svg-routenr {
   fill: #FFFFFF;
@@ -35,12 +34,11 @@
 .buldreinfo-svg-edit-route {
   fill: none;
   stroke: #E2011A;
-  stroke-width: 2;
+  stroke-width: 10;
 }
 .buldreinfo-svg-edit-circle {
   cursor: pointer;
   fill: #E2011A;
-  stroke-width: 10;
 }
 .buldreinfo-svg-edit-anchor-line {
   stroke: #E2011A;
@@ -52,7 +50,6 @@
   cursor: pointer;
   fill: #FFFFFF;
   stroke: #E2011A;
-  stroke-width: 10;
   opacity: .75;
 }
 .buldreinfo-svg-edit-circle:hover,

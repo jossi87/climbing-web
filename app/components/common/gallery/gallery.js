@@ -178,13 +178,13 @@ export default class Gallery extends Component {
       if (y > (h-r)) y = h-r;
       var anchor = null;
       if (svg.hasAnchor) {
-        anchor = <circle className="buldreinfo-svg-ring" vectorEffect="non-scaling-stroke" cx={path[ixAnchor].x} cy={path[ixAnchor].y} r="20"/>
+        anchor = <circle className="buldreinfo-svg-ring" cx={path[ixAnchor].x} cy={path[ixAnchor].y} r="20"/>
       }
       return (
         <g className={(svgProblemId===0 || svg.problemId===svgProblemId)? "buldreinfo-svg-pointer" : "buldreinfo-svg-pointer buldreinfo-svg-opacity"} key={key} onClick={this.pushUrl.bind(this, "/problem/" + svg.problemId)}>
-          <path d={svg.path} className="buldreinfo-svg-route" vectorEffect="non-scaling-stroke"/>
-          <circle className="buldreinfo-svg-ring" vectorEffect="non-scaling-stroke" cx={x} cy={y} r={r}/>
-          <text className="buldreinfo-svg-routenr" vectorEffect="non-scaling-stroke" x={x} y={y}>{svg.nr}</text>
+          <path d={svg.path} className="buldreinfo-svg-route"/>
+          <circle className="buldreinfo-svg-ring" cx={x} cy={y} r={r}/>
+          <text className="buldreinfo-svg-routenr" x={x} y={y}>{svg.nr}</text>
           {anchor}
         </g>
       );
