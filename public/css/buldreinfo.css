@@ -1,8 +1,6 @@
 .buldreinfo-svg {
   max-height: 100vh;
   max-width: 100vw;
-  object-fit: 'scale-down';
-  font-family: 'object-fit: scale-down';
   overflow: visible;
 }
 .buldreinfo-svg-img {
@@ -14,8 +12,8 @@
 .buldreinfo-svg-route {
   fill: none;
   stroke: #E2011A;
-  stroke-width: 10;
-  stroke-dasharray: 20;
+  stroke-width: 2px;
+  stroke-dasharray: 5px;
 }
 .buldreinfo-svg-ring {
   fill: #E2011A;
@@ -37,7 +35,7 @@
 .buldreinfo-svg-edit-route {
   fill: none;
   stroke: #E2011A;
-  stroke-width: 10;
+  stroke-width: 2px;
 }
 .buldreinfo-svg-edit-circle {
   cursor: pointer;
