@@ -171,7 +171,7 @@ export default class Gallery extends Component {
       }
       var x = path[ixNr].x;
       var y = path[ixNr].y;
-      const r = 45;
+      const r = 0.0065*w;
       if (x < r) x = r;
       if (x > (w-r)) x = w-r;
       if (y < r) y = r;
