@@ -204,7 +204,7 @@ export default class Gallery extends Component {
     }
     return (
       <div className='image-gallery-image'>
-        <img src={config.getUrl(`images?id=${m.id}`)} className="buldreinfo-svg-img"/>
+        <img src={config.getUrl(`images?id=${m.id}`)} className="buldreinfo-scale-img"/>
       </div>
     );
   }
