@@ -310,17 +310,17 @@ export default class SvgEdit extends Component {
       if (p.c) {
         anchors.push(
           <g className="buldreinfo-svg-edit-opacity">
-            <line className="buldreinfo-svg-pointer buldreinfo-svg-route" x1={a[i-1].x} y1={a[i-1].y} x2={p.c[0].x} y2={p.c[0].y} strokeWidth={0.0026*w} strokeDasharray={0.0065*w}/>
-            <line className="buldreinfo-svg-pointer buldreinfo-svg-route" x1={p.x} y1={p.y} x2={p.c[1].x} y2={p.c[1].y} strokeWidth={0.0026*w} strokeDasharray={0.0065*w}/>
-            <circle className="buldreinfo-svg-pointer buldreinfo-svg-ring" cx={p.c[0].x} cy={p.c[0].y} r={0.00456*w} onMouseDown={this.setDraggedCubic.bind(this, i, 0)}/>
-            <circle className="buldreinfo-svg-pointer buldreinfo-svg-ring" cx={p.c[1].x} cy={p.c[1].y} r={0.00456*w} onMouseDown={this.setDraggedCubic.bind(this, i, 1)}/>
+            <line className="buldreinfo-svg-pointer buldreinfo-svg-route" x1={a[i-1].x} y1={a[i-1].y} x2={p.c[0].x} y2={p.c[0].y} strokeWidth={0.0026*this.state.w} strokeDasharray={0.0065*this.state.w}/>
+            <line className="buldreinfo-svg-pointer buldreinfo-svg-route" x1={p.x} y1={p.y} x2={p.c[1].x} y2={p.c[1].y} strokeWidth={0.0026*this.state.w} strokeDasharray={0.0065*this.state.w}/>
+            <circle className="buldreinfo-svg-pointer buldreinfo-svg-ring" cx={p.c[0].x} cy={p.c[0].y} r={0.00456*this.state.w} onMouseDown={this.setDraggedCubic.bind(this, i, 0)}/>
+            <circle className="buldreinfo-svg-pointer buldreinfo-svg-ring" cx={p.c[1].x} cy={p.c[1].y} r={0.00456*this.state.w} onMouseDown={this.setDraggedCubic.bind(this, i, 1)}/>
           </g>
         );
       }
       return (
         <g className={"buldreinfo-svg-edit-circle-group" + (this.state.activePoint === i ? "  is-active" : "")}>
           {anchors}
-          <circle className="buldreinfo-svg-pointer buldreinfo-svg-ring" cx={p.x} cy={p.y} r={0.00586*w} onMouseDown={this.setDraggedPoint.bind(this, i)}/>
+          <circle className="buldreinfo-svg-pointer buldreinfo-svg-ring" cx={p.x} cy={p.y} r={0.00586*this.state.w} onMouseDown={this.setDraggedPoint.bind(this, i)}/>
         </g>
       );
     });
