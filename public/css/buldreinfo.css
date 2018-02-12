@@ -2,6 +2,7 @@
   max-height: 100vh;
   max-width: 100vw;
   overflow: visible;
+  vector-effect: non-scaling-stroke;
 }
 .buldreinfo-svg-img {
   max-height: 100vh;
