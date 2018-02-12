@@ -12,7 +12,6 @@
 .buldreinfo-svg-route {
   fill: none;
   stroke: #E2011A;
-  stroke-dasharray: 20;
 }
 .buldreinfo-svg-ring {
   fill: #E2011A;
@@ -28,25 +27,7 @@
 .buldreinfo-svg-opacity {
   opacity: .4;
 }
-
-.buldreinfo-svg-edit-route {
-  fill: none;
-  stroke: #E2011A;
-}
-.buldreinfo-svg-edit-circle {
-  cursor: pointer;
-  fill: #E2011A;
-}
-.buldreinfo-svg-edit-anchor-line {
-  stroke: #E2011A;
-  stroke-width: 8;
-  opacity: .75;
-  stroke-dasharray: 20;
-}
-.buldreinfo-svg-edit-anchor-point {
-  cursor: pointer;
-  fill: #FFFFFF;
-  stroke: #E2011A;
+.buldreinfo-svg-edit-opacity {
   opacity: .75;
 }
 .buldreinfo-svg-edit-circle:hover,

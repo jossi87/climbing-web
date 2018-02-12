@@ -258,22 +258,22 @@ export default class SvgEdit extends Component {
     }
     var x = path[ixNr].x;
     var y = path[ixNr].y;
-    const r = 45;
+    const r = 0.015*this.state.w;
     if (x < r) x = r;
     if (x > (this.state.w-r)) x = this.state.w-r;
     if (y < r) y = r;
     if (y > (this.state.h-r)) y = this.state.h-r;
     var anchor = null;
     if (hasAnchor && !isNew) {
-      anchor = <circle className="buldreinfo-svg-ring" cx={path[ixAnchor].x} cy={path[ixAnchor].y} r="20"/>
+      anchor = <circle className="buldreinfo-svg-ring" cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.0065*this.state.w}/>
     }
     else if (isNew) {
-      anchor = <text className="buldreinfo-svg-routenr" x={path[ixAnchor].x} y={path[ixAnchor].y+70}>{hasAnchor? "With anchor" : "Without anchor"}</text>
+      anchor = <text className="buldreinfo-svg-routenr" x={path[ixAnchor].x} y={path[ixAnchor].y+70} fontSize={0.023*this.state.w}>{hasAnchor? "With anchor" : "Without anchor"}</text>
     }
     return (
       <g className={isNew? "" : "buldreinfo-svg-opacity"}>
         <circle className="buldreinfo-svg-ring" cx={x} cy={y - (isNew? 70 : 0)} r={r}/>
-        <text className="buldreinfo-svg-routenr" x={x} y={y - (isNew? 70 : 0)}>{nr}</text>
+        <text className="buldreinfo-svg-routenr" x={x} y={y - (isNew? 70 : 0)} fontSize={0.023*this.state.w}>{nr}</text>
         {anchor}
       </g>
     );
@@ -309,18 +309,18 @@ export default class SvgEdit extends Component {
       var anchors = [];
       if (p.c) {
         anchors.push(
-          <g>
-            <line className="buldreinfo-svg-edit-anchor-line" x1={a[i-1].x} y1={a[i-1].y} x2={p.c[0].x} y2={p.c[0].y} />
-            <line className="buldreinfo-svg-edit-anchor-line" x1={p.x} y1={p.y} x2={p.c[1].x} y2={p.c[1].y} />
-            <circle className="buldreinfo-svg-edit-anchor-point" cx={p.c[0].x} cy={p.c[0].y} r={14} onMouseDown={this.setDraggedCubic.bind(this, i, 0)}/>
-            <circle className="buldreinfo-svg-edit-anchor-point" cx={p.c[1].x} cy={p.c[1].y} r={14} onMouseDown={this.setDraggedCubic.bind(this, i, 1)}/>
+          <g className="buldreinfo-svg-edit-opacity">
+            <line className="buldreinfo-svg-pointer buldreinfo-svg-route" x1={a[i-1].x} y1={a[i-1].y} x2={p.c[0].x} y2={p.c[0].y} strokeWidth={0.0026*w} strokeDasharray={0.0065*w}/>
+            <line className="buldreinfo-svg-pointer buldreinfo-svg-route" x1={p.x} y1={p.y} x2={p.c[1].x} y2={p.c[1].y} strokeWidth={0.0026*w} strokeDasharray={0.0065*w}/>
+            <circle className="buldreinfo-svg-pointer buldreinfo-svg-ring" cx={p.c[0].x} cy={p.c[0].y} r={0.00456*w} onMouseDown={this.setDraggedCubic.bind(this, i, 0)}/>
+            <circle className="buldreinfo-svg-pointer buldreinfo-svg-ring" cx={p.c[1].x} cy={p.c[1].y} r={0.00456*w} onMouseDown={this.setDraggedCubic.bind(this, i, 1)}/>
           </g>
         );
       }
       return (
         <g className={"buldreinfo-svg-edit-circle-group" + (this.state.activePoint === i ? "  is-active" : "")}>
           {anchors}
-          <circle className="buldreinfo-svg-edit-circle" cx={p.x} cy={p.y} r={18} onMouseDown={this.setDraggedPoint.bind(this, i)}/>
+          <circle className="buldreinfo-svg-pointer buldreinfo-svg-ring" cx={p.x} cy={p.y} r={0.00586*w} onMouseDown={this.setDraggedPoint.bind(this, i)}/>
         </g>
       );
     });
@@ -361,7 +361,7 @@ export default class SvgEdit extends Component {
               <svg viewBox={"0 0 " + this.state.w + " " + this.state.h} className="buldreinfo-svg" onClick={this.addPoint.bind(this)} onMouseMove={this.handleMouseMove.bind(this)}>
                 <image ref="buldreinfo-svg-edit-img" xlinkHref={config.getUrl(`images?id=${this.state.mediaId}`)} x="0" y="0" width="100%" height="100%"/>
                 {this.parseReadOnlySvgs()}
-                <path className="buldreinfo-svg-edit-route" d={path} />
+                <path className="buldreinfo-svg-route" d={path} strokeWidth={0.00326*this.state.w}/>
                 {this.state.points.length>1 && this.generateSvgNrAndAnchor(this.state.points, this.state.nr, this.state.hasAnchor, true)}
                 {circles}
               </svg>
