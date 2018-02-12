@@ -12,8 +12,8 @@
 .buldreinfo-svg-route {
   fill: none;
   stroke: #E2011A;
-  stroke-width: 10;
-  stroke-dasharray: 20;
+  stroke-width: 2;
+  stroke-dasharray: 5;
 }
 .buldreinfo-svg-ring {
   fill: #E2011A;
@@ -35,7 +35,7 @@
 .buldreinfo-svg-edit-route {
   fill: none;
   stroke: #E2011A;
-  stroke-width: 10;
+  stroke-width: 2;
 }
 .buldreinfo-svg-edit-circle {
   cursor: pointer;
