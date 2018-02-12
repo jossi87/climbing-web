@@ -171,14 +171,14 @@ export default class Gallery extends Component {
       }
       var x = path[ixNr].x;
       var y = path[ixNr].y;
-      const r = 0.0065*w;
+      const r = 0.0015*w;
       if (x < r) x = r;
       if (x > (w-r)) x = w-r;
       if (y < r) y = r;
       if (y > (h-r)) y = h-r;
       var anchor = null;
       if (svg.hasAnchor) {
-        anchor = <circle className="buldreinfo-svg-ring" cx={path[ixAnchor].x} cy={path[ixAnchor].y} r="20"/>
+        anchor = <circle className="buldreinfo-svg-ring" cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.0065*w}/>
       }
       return (
         <g className={(svgProblemId===0 || svg.problemId===svgProblemId)? "buldreinfo-svg-pointer" : "buldreinfo-svg-pointer buldreinfo-svg-opacity"} key={key} onClick={this.pushUrl.bind(this, "/problem/" + svg.problemId)}>
