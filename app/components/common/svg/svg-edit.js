@@ -236,12 +236,12 @@ export default class SvgEdit extends Component {
       shapes.push(<path key={shapes.length} d={svg.path} className="buldreinfo-svg-opacity buldreinfo-svg-route"/>);
       const commands = parseSVG(svg.path);
       makeAbsolute(commands); // Note: mutates the commands in place!
-      shapes.push(this.generateSvgNrAndAnchor(commands, svg.nr, svg.hasAnchor, false));
+      shapes.push(this.generateSvgNrAndAnchor(commands, svg.nr, svg.hasAnchor));
     }
     return shapes;
   }
 
-  generateSvgNrAndAnchor(path, nr, hasAnchor, isNew) {
+  generateSvgNrAndAnchor(path, nr, hasAnchor) {
     var ixNr;
     var maxY = 0;
     var ixAnchor;
@@ -264,16 +264,13 @@ export default class SvgEdit extends Component {
     if (y < r) y = r;
     if (y > (this.state.h-r)) y = this.state.h-r;
     var anchor = null;
-    if (hasAnchor && !isNew) {
+    if (hasAnchor) {
       anchor = <circle className="buldreinfo-svg-ring" cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.0065*this.state.w}/>
     }
-    else if (isNew) {
-      anchor = <text className="buldreinfo-svg-routenr" x={path[ixAnchor].x} y={path[ixAnchor].y+70} fontSize={0.023*this.state.w}>{hasAnchor? "With anchor" : "Without anchor"}</text>
-    }
     return (
-      <g className={isNew? "" : "buldreinfo-svg-opacity"}>
-        <circle className="buldreinfo-svg-ring" cx={x} cy={y - (isNew? 70 : 0)} r={r}/>
-        <text className="buldreinfo-svg-routenr" x={x} y={y - (isNew? 70 : 0)} fontSize={0.023*this.state.w}>{nr}</text>
+      <g className="buldreinfo-svg-opacity">
+        <circle className="buldreinfo-svg-ring" cx={x} cy={y} r={r}/>
+        <text className="buldreinfo-svg-routenr" x={x} y={y} fontSize={0.023*this.state.w}>{nr}</text>
         {anchor}
       </g>
     );
@@ -362,7 +359,6 @@ export default class SvgEdit extends Component {
                 <image ref="buldreinfo-svg-edit-img" xlinkHref={config.getUrl(`images?id=${this.state.mediaId}`)} x="0" y="0" width="100%" height="100%"/>
                 {this.parseReadOnlySvgs()}
                 <path className="buldreinfo-svg-route" d={path} strokeWidth={0.00326*this.state.w}/>
-                {this.state.points.length>1 && this.generateSvgNrAndAnchor(this.state.points, this.state.nr, this.state.hasAnchor, true)}
                 {circles}
               </svg>
             </FormGroup>
