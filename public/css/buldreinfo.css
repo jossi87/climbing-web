@@ -41,6 +41,8 @@
 .buldreinfo-svg-edit-opacity {
   opacity: .75;
 }
-.buldreinfo-svg-hover:hover .buldreinfo-svg-ring .buldreinfo-svg-routenr .buldreinfo-svg-route {
+.buldreinfo-svg-ring:hover,
+.buldreinfo-svg-routenr:hover,
+.buldreinfo-svg-route:hover {
   transform: scale(1.2);
 }
