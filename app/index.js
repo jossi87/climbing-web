@@ -3,12 +3,8 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter, Route } from 'react-router-dom';
 import createHistory from 'history/createBrowserHistory'
 import App from './components/app';
-
-// objectFit does not work on IE and Edge http://caniuse.com/#search=object-fit
-import objectFitImages from 'object-fit-images';
-objectFitImages('img.buldreinfo-scale-img', {watchMQ: true});
-
 import ReactGA from 'react-ga';
+
 ReactGA.initialize('UA-76534258-1');
 
 function Analytics(props) {
