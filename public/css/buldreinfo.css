@@ -43,5 +43,8 @@
 }
 .buldreinfo-svg-ring:hover,
 .buldreinfo-svg-ring-group.is-active .buldreinfo-svg-ring {
-    fill: #01e24c;
+  fill: #01e24c;
+}
+.buldreinfo-svg-hover:hover path rect circle {
+  fill: #01e24c;
 }
