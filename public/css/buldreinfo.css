@@ -30,7 +30,7 @@
 .buldreinfo-svg-routenr {
   fill: #FFFFFF;
   text-anchor: middle;
-  alignment-baseline: middle;
+  dy: -.3em;
   line-height: 1;
 }
 .buldreinfo-svg-pointer {
