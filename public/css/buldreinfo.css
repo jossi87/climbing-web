@@ -5,6 +5,10 @@
   font-family: 'object-fit: scale-down';
 }
 
+.buldreinfo-svg {
+  max-height: 100vh;
+  max-width: 100vw;
+}
 .buldreinfo-svg-route {
   fill: none;
   stroke: #E2011A;
