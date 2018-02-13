@@ -16,6 +16,7 @@
   fill: #FFFFFF;
   text-anchor: middle;
   alignment-baseline: middle;
+  line-height: 1;
 }
 .buldreinfo-svg-pointer {
   cursor: pointer;

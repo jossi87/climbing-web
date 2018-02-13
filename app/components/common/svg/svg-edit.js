@@ -233,7 +233,7 @@ export default class SvgEdit extends Component {
   parseReadOnlySvgs() {
     const shapes = [];
     for (let svg of this.state.readOnlySvgs) {
-      shapes.push(<path key={shapes.length} d={svg.path} className="buldreinfo-svg-opacity buldreinfo-svg-route" strokeWidth={0.00326*this.state.w} strokeDasharray={0.0065*this.state.w}/>);
+      shapes.push(<path key={shapes.length} d={svg.path} className="buldreinfo-svg-opacity buldreinfo-svg-route" strokeWidth={0.003*this.state.w} strokeDasharray={0.006*this.state.w}/>);
       const commands = parseSVG(svg.path);
       makeAbsolute(commands); // Note: mutates the commands in place!
       shapes.push(this.generateSvgNrAndAnchor(commands, svg.nr, svg.hasAnchor));
@@ -258,19 +258,19 @@ export default class SvgEdit extends Component {
     }
     var x = path[ixNr].x;
     var y = path[ixNr].y;
-    const r = 0.015*this.state.w;
+    const r = 0.012*this.state.w;
     if (x < r) x = r;
     if (x > (this.state.w-r)) x = this.state.w-r;
     if (y < r) y = r;
     if (y > (this.state.h-r)) y = this.state.h-r;
     var anchor = null;
     if (hasAnchor) {
-      anchor = <circle className="buldreinfo-svg-ring" cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.0065*this.state.w}/>
+      anchor = <circle className="buldreinfo-svg-ring" cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.006*this.state.w}/>
     }
     return (
       <g className="buldreinfo-svg-opacity">
         <circle className="buldreinfo-svg-ring" cx={x} cy={y} r={r}/>
-        <text className="buldreinfo-svg-routenr" x={x} y={y} fontSize={0.023*this.state.w}>{nr}</text>
+        <text className="buldreinfo-svg-routenr" x={x} y={y} fontSize={0.02*this.state.w}>{nr}</text>
         {anchor}
       </g>
     );
