@@ -41,10 +41,12 @@
 .buldreinfo-svg-edit-opacity {
   opacity: .75;
 }
-.buldreinfo-svg-ring:hover,
-.buldreinfo-svg-ring-group.is-active .buldreinfo-svg-ring {
+.buldreinfo-svg-hover:hover circle {
   fill: #01e24c;
 }
-.buldreinfo-svg-hover:hover path rect circle {
-  fill: #01e24c;
+.buldreinfo-svg-hover:hover path {
+  stroke: #01e24c;
+}
+.buldreinfo-svg-hover:hover text {
+  text-decoration: underline;
 }
