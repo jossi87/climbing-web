@@ -355,7 +355,8 @@ export default class SvgEdit extends Component {
               </Alert>
             </FormGroup>
             <FormGroup controlId="formControlsImage">
-              <svg className="buldreinfo-svg" viewBox={"0 0 " + this.state.w + " " + this.state.h} onClick={this.addPoint.bind(this)} onMouseMove={this.handleMouseMove.bind(this)} height="100vh">
+              <canvas className="buldreinfo-svg-canvas-ie-hack" width={this.state.w} height={this.state.h}></canvas>
+              <svg className="buldreinfo-svg" viewBox={"0 0 " + this.state.w + " " + this.state.h} onClick={this.addPoint.bind(this)} onMouseMove={this.handleMouseMove.bind(this)} preserveAspectRatio="xMaxYMax meet">
                 <image ref="buldreinfo-svg-edit-img" xlinkHref={config.getUrl(`images?id=${this.state.mediaId}`)} width="100%" height="100%"/>
                 {this.parseReadOnlySvgs()}
                 <path className="buldreinfo-svg-route" d={path} strokeWidth={0.002*this.state.w}/>
