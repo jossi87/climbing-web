@@ -42,8 +42,6 @@
   opacity: .75;
 }
 .buldreinfo-svg-ring:hover,
-.buldreinfo-svg-routenr:hover,
-.buldreinfo-svg-route:hover,
 .buldreinfo-svg-ring-group.is-active .buldreinfo-svg-ring {
-    fill: #FF0000;
+    fill: #01e24c;
 }
