@@ -41,7 +41,7 @@ export default class SvgEdit extends Component {
           activePoint: 0,
           draggedPoint: false,
           draggedCubic: false,
-          hasAnchor: false,
+          hasAnchor: true,
           areaId: res.body[0].areaId,
           areaName: res.body[0].areaName,
           areaVisibility: res.body[0].areaVisibility,
