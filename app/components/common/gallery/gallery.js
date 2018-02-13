@@ -171,20 +171,20 @@ export default class Gallery extends Component {
       }
       var x = path[ixNr].x;
       var y = path[ixNr].y;
-      const r = 0.015*w;
+      const r = 0.012*w;
       if (x < r) x = r;
       if (x > (w-r)) x = w-r;
       if (y < r) y = r;
       if (y > (h-r)) y = h-r;
       var anchor = null;
       if (svg.hasAnchor) {
-        anchor = <circle className="buldreinfo-svg-ring" cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.0065*w}/>
+        anchor = <circle className="buldreinfo-svg-ring" cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.006*w}/>
       }
       return (
         <g className={(svgProblemId===0 || svg.problemId===svgProblemId)? "buldreinfo-svg-pointer" : "buldreinfo-svg-pointer buldreinfo-svg-opacity"} key={key} onClick={this.pushUrl.bind(this, "/problem/" + svg.problemId)}>
-          <path d={svg.path} className="buldreinfo-svg-route" strokeWidth={0.00326*w} strokeDasharray={0.0065*w}/>
+          <path d={svg.path} className="buldreinfo-svg-route" strokeWidth={0.003*w} strokeDasharray={0.006*w}/>
           <circle className="buldreinfo-svg-ring" cx={x} cy={y} r={r}/>
-          <text className="buldreinfo-svg-routenr" x={x} y={y} fontSize={0.023*w}>{svg.nr}</text>
+          <text className="buldreinfo-svg-routenr" x={x} y={y} fontSize={0.02*w}>{svg.nr}</text>
           {anchor}
         </g>
       );
