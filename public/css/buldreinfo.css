@@ -5,9 +5,18 @@
   font-family: 'object-fit: scale-down';
 }
 
+.svg-container {
+  display: block;
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%;
+  vertical-align: middle;
+}
 .buldreinfo-svg {
-  max-width: 100vw;
-  max-height: 100vh;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 .buldreinfo-svg-route {
   fill: none;
