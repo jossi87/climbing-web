@@ -33,7 +33,7 @@
 .buldreinfo-svg-edit-opacity {
   opacity: .75;
 }
-.buldreinfo-svg-edit-circle:hover,
-.buldreinfo-svg-edit-circle-group.is-active .buldreinfo-svg-edit-circle {
+.buldreinfo-svg-ring:hover,
+.buldreinfo-svg-ring-group.is-active .buldreinfo-svg-ring {
     fill: #01e24c;
 }

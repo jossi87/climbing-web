@@ -315,7 +315,7 @@ export default class SvgEdit extends Component {
         );
       }
       return (
-        <g className={"buldreinfo-svg-edit-circle-group" + (this.state.activePoint === i ? "  is-active" : "")}>
+        <g className={"buldreinfo-svg-ring-group" + (this.state.activePoint === i ? "  is-active" : "")}>
           {anchors}
           <circle className="buldreinfo-svg-pointer buldreinfo-svg-ring" cx={p.x} cy={p.y} r={0.003*this.state.w} onMouseDown={this.setDraggedPoint.bind(this, i)}/>
         </g>
