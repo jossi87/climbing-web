@@ -41,7 +41,6 @@
 .buldreinfo-svg-edit-opacity {
   opacity: .75;
 }
-.buldreinfo-svg-ring:hover,
-.buldreinfo-svg-ring-group.is-active .buldreinfo-svg-ring {
-    fill: #01e24c;
+.buldreinfo-svg-hover:hover .buldreinfo-svg-ring .buldreinfo-svg-routenr .buldreinfo-svg-route {
+  transform: scale(1.2);
 }
