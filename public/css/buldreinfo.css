@@ -36,7 +36,7 @@
   cursor: pointer;
 }
 .buldreinfo-svg-opacity {
-  opacity: .3;
+  opacity: .35;
 }
 .buldreinfo-svg-edit-opacity {
   opacity: .75;
@@ -44,8 +44,10 @@
 .buldreinfo-svg-hover:hover circle,
 .buldreinfo-svg-ring-group.is-active .buldreinfo-svg-ring {
   fill: #011ae2;
+  opacity: 1;
 }
 .buldreinfo-svg-hover:hover path,
 .buldreinfo-svg-ring-group.is-active .buldreinfo-svg-route {
   stroke: #011ae2;
+  opacity: 1;
 }
