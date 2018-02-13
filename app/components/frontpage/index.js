@@ -68,7 +68,7 @@ export default class Index extends Component {
       <Grid>
         <Row>
           <Well style={{textAlign: 'center'}}>
-            Total: {this.state.data.numProblems} ({this.state.data.numProblemsWithCoordinates}<i className="fas fa-map-marker-alt"/> {this.state.data.numProblemsWithTopo}<i className="fas fa-map"/>) | Public ascents: {this.state.data.numTicks} | Images: {this.state.data.numImages} | Ascents on video: {this.state.data.numMovies}
+            Total: {this.state.data.numProblems} ({this.state.data.numProblemsWithCoordinates} with coordinates, {this.state.data.numProblemsWithTopo>0? ", " + this.state.data.numProblemsWithTopo + " on topo" : ""}) | Public ascents: {this.state.data.numTicks} | Images: {this.state.data.numImages} | Ascents on video: {this.state.data.numMovies}
           </Well>
         </Row>
         <Row>
