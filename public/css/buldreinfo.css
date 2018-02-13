@@ -41,7 +41,7 @@
 .buldreinfo-svg-edit-opacity {
   opacity: .75;
 }
-.buldreinfo-svg-hover:hover circle, {
+.buldreinfo-svg-hover:hover circle {
   fill: #011ae2;
 }
 .buldreinfo-svg-hover:hover path {
