@@ -182,7 +182,7 @@ export default class Gallery extends Component {
         anchor = <circle className="buldreinfo-svg-ring" cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.006*w}/>
       }
       return (
-        <g className={"buldreinfo-svg-pointer" + ((svgProblemId===0 || svg.problemId===svgProblemId)? "" : " buldreinfo-svg-opacity")} key={key} onClick={this.pushUrl.bind(this, "/problem/" + svg.problemId)}>
+        <g className={"buldreinfo-svg-pointer buldreinfo-svg-hover" + ((svgProblemId===0 || svg.problemId===svgProblemId)? "" : " buldreinfo-svg-opacity")} key={key} onClick={this.pushUrl.bind(this, "/problem/" + svg.problemId)}>
           <path d={svg.path} className="buldreinfo-svg-route" strokeWidth={0.003*w} strokeDasharray={0.006*w}/>
           <circle className="buldreinfo-svg-ring" cx={x} cy={y} r={r}/>
           <text className="buldreinfo-svg-routenr" x={x} y={y} fontSize={0.02*w} dy=".3em">{svg.nr}</text>
