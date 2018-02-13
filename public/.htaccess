@@ -5,10 +5,10 @@ RewriteEngine On
 # allow social media crawlers to work by redirecting them to a server-rendered static version on the page
 RewriteCond %{HTTP_USER_AGENT} !(Facebot|facebookexternalhit/[0-9]|Twitterbot|Pinterest|Google.*snippet)
 RewriteRule ^ - [S=4] # Skip following lines if NOT crawler
-RewriteRule area/(\d*)$ http://jossi.org/com.buldreinfo.jersey.jaxb/v1/static/areas?id=$1&base=%{HTTP_HOST} [P]
-RewriteRule sector/(\d*)$ http://jossi.org/com.buldreinfo.jersey.jaxb/v1/static/sectors?id=$1&base=%{HTTP_HOST} [P]
-RewriteRule problem/(\d*)$ http://jossi.org/com.buldreinfo.jersey.jaxb/v1/static/problems?id=$1&base=%{HTTP_HOST} [P]
-RewriteRule ^ http://jossi.org/com.buldreinfo.jersey.jaxb/v1/static/frontpage?base=%{HTTP_HOST} [P]
+RewriteRule area/(\d*)$ http://45.56.87.57/com.buldreinfo.jersey.jaxb/v1/static/areas?id=$1&base=%{HTTP_HOST} [P]
+RewriteRule sector/(\d*)$ http://45.56.87.57/com.buldreinfo.jersey.jaxb/v1/static/sectors?id=$1&base=%{HTTP_HOST} [P]
+RewriteRule problem/(\d*)$ http://45.56.87.57/com.buldreinfo.jersey.jaxb/v1/static/problems?id=$1&base=%{HTTP_HOST} [P]
+RewriteRule ^ http://45.56.87.57/com.buldreinfo.jersey.jaxb/v1/static/frontpage?base=%{HTTP_HOST} [P]
 
 # React.JS redirect to index.html
 RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} =/gpl-3.0.txt
