@@ -195,7 +195,7 @@ export default class Gallery extends Component {
     if (m.svgs) {
       return (
         <div className='image-gallery-image'>
-          <svg className="buldreinfo-svg" viewBox={"0 0 " + m.width + " " + m.height} preserveAspectRatio="none slice">
+          <svg className="buldreinfo-svg" viewBox={"0 0 " + m.width + " " + m.height} preserveAspectRatio="none slice" width="100%">
             <image xlinkHref={config.getUrl(`images?id=${m.id}`)} width="100%" height="100%"/>
             {this.generateShapes(m.svgs, m.svgProblemId, m.width, m.height)}
           </svg>
