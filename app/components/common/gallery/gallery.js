@@ -108,7 +108,6 @@ export default class Gallery extends Component {
   }
 
   renderVideo(item) {
-    objectFitImages('buldreinfo-scale-img', {watchMQ: true});
     return (
       <div className='image-gallery-image'>
         {
@@ -213,6 +212,7 @@ export default class Gallery extends Component {
   }
 
   render() {
+    objectFitImages(null, {watchMQ: true});
     if (this.state && this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
     }
