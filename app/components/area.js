@@ -127,7 +127,7 @@ export default class Area extends Component {
                   <LinkContainer to={{ pathname: `/sector/edit/-1`, query: { idArea: this.state.id, lat: this.state.lat, lng: this.state.lng } }}><Button bsStyle="primary" bsSize="xsmall"><i className="fa-inverse fas fa-plus-square"/></Button></LinkContainer>
                 </OverlayTrigger>
                 <OverlayTrigger placement="top" overlay={<Tooltip id={this.state.id}>Edit area</Tooltip>}>
-                  <LinkContainer to={{ pathname: `/area/edit/${this.state.id}`, query: { lat: this.state.lat, lng: this.state.lng } }}><Button bsStyle="primary" bsSize="xsmall"><i className="fa-inverse far fa-edit"/></Button></LinkContainer>
+                  <LinkContainer to={{ pathname: `/area/edit/${this.state.id}`, query: { lat: this.state.lat, lng: this.state.lng } }}><Button bsStyle="primary" bsSize="xsmall"><i className="fa-inverse fas fa-edit"/></Button></LinkContainer>
                 </OverlayTrigger>
               </ButtonGroup>
             </div>:
