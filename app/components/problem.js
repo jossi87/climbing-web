@@ -110,7 +110,7 @@ export default class Problem extends Component {
       return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;
     }
     if (!this.state.id) {
-      return <center><i className="fa fa-cog fa-spin fa-2x"></i></center>;
+      return <center><div className="fa-3x"><i className="fas fa-spinner fa-spin"></i></div></center>;
     }
 
     const markers = [];
@@ -163,13 +163,13 @@ export default class Problem extends Component {
       const rows = this.state.ticks.map((t, i) => {
         const isTickedClassName = t.writable? 'success' : '';
         var stars = "";
-        if (t.stars===0.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={0}><i className="fa fa-star-o"/><i className="fa fa-star-o"/><i className="fa fa-star-o"/></div>; }
-        else if (t.stars===0.5) { stars = <div style={{whiteSpace: 'nowrap'}} id={1}><i className="fa fa-star-half-o"/><i className="fa fa-star-o"/><i className="fa fa-star-o"/></div>; }
-        else if (t.stars===1.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={2}><i className="fa fa-star"/><i className="fa fa-star-o"/><i className="fa fa-star-o"/></div>; }
-        else if (t.stars===1.5) { stars = <div style={{whiteSpace: 'nowrap'}} id={3}><i className="fa fa-star"/><i className="fa fa-star-half-o"/><i className="fa fa-star-o"/></div>; }
-        else if (t.stars===2.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={4}><i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star-o"/></div>; }
-        else if (t.stars===2.5) { stars = <div style={{whiteSpace: 'nowrap'}} id={5}><i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star-half-o"/></div>; }
-        else if (t.stars===3.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={6}><i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star"/></div>; }
+        if (t.stars===0.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={0}><i className="far fa-star"/><i className="far fa-star"/><i className="far fa-star"/></div>; }
+        else if (t.stars===0.5) { stars = <div style={{whiteSpace: 'nowrap'}} id={1}><i className="fas fa-star-half-o"/><i className="far fa-star"/><i className="far fa-star"/></div>; }
+        else if (t.stars===1.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={2}><i className="fas fa-star"/><i className="far fa-star"/><i className="far fa-star"/></div>; }
+        else if (t.stars===1.5) { stars = <div style={{whiteSpace: 'nowrap'}} id={3}><i className="fas fa-star"/><i className="fas fa-star-half-o"/><i className="far fa-star"/></div>; }
+        else if (t.stars===2.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={4}><i className="fas fa-star"/><i className="fas fa-star"/><i className="far fa-star"/></div>; }
+        else if (t.stars===2.5) { stars = <div style={{whiteSpace: 'nowrap'}} id={5}><i className="fas fa-star"/><i className="fas fa-star"/><i className="fas fa-star-half-o"/></div>; }
+        else if (t.stars===3.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={6}><i className="fas fa-star"/><i className="fas fa-star"/><i className="fas fa-star"/></div>; }
         return (
           <tr className={isTickedClassName} key={i}>
             <td>{t.date}</td>
@@ -179,10 +179,10 @@ export default class Problem extends Component {
             <td>
               <OverlayTrigger placement="top" overlay={
                 <Popover id={i} title="Guidelines">
-                  <i className="fa fa-star-o"/><i className="fa fa-star-o"/><i className="fa fa-star-o"/><br/>
-                  <i className="fa fa-star"/><i className="fa fa-star-o"/><i className="fa fa-star-o"/> Nice<br/>
-                  <i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star-o"/> Very nice<br/>
-                  <i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star"/> Fantastic!
+                  <i className="far fa-star"/><i className="far fa-star"/><i className="far fa-star"/><br/>
+                  <i className="fas fa-star"/><i className="far fa-star"/><i className="far fa-star"/> Nice<br/>
+                  <i className="fas fa-star"/><i className="fas fa-star"/><i className="far fa-star"/> Very nice<br/>
+                  <i className="fas fa-star"/><i className="fas fa-star"/><i className="fas fa-star"/> Fantastic!
                 </Popover>
               }>{stars}</OverlayTrigger>
             </td>
@@ -230,11 +230,11 @@ export default class Problem extends Component {
               <Button bsStyle="primary" bsSize="xsmall" onClick={this.openTickModal.bind(this)}>Tick</Button>
             </OverlayTrigger>
             <OverlayTrigger placement="top" overlay={<Tooltip id={-2}>Add comment</Tooltip>}>
-              <Button bsStyle="primary" bsSize="xsmall" onClick={this.openCommentModal.bind(this)}><i className="fa fa-inverse fa-commenting-o"/></Button>
+              <Button bsStyle="primary" bsSize="xsmall" onClick={this.openCommentModal.bind(this)}><i className="fa-inverse fas fa-comment"/></Button>
             </OverlayTrigger>
             {auth.isAdmin() &&
               <OverlayTrigger placement="top" overlay={<Tooltip id={this.state.id}>Edit problem</Tooltip>}>
-                <LinkContainer to={{ pathname: `/problem/edit/${this.state.id}`, query: { idSector: this.state.sectorId, lat: this.state.sectorLat, lng: this.state.sectorLng } }}><Button bsStyle="primary" bsSize="xsmall"><i className="fa fa-inverse fa-pencil-square-o"/></Button></LinkContainer>
+                <LinkContainer to={{ pathname: `/problem/edit/${this.state.id}`, query: { idSector: this.state.sectorId, lat: this.state.sectorLat, lng: this.state.sectorLng } }}><Button bsStyle="primary" bsSize="xsmall"><i className="fa-inverse far fa-edit"/></Button></LinkContainer>
               </OverlayTrigger>
             }
           </ButtonGroup>
@@ -260,7 +260,7 @@ export default class Problem extends Component {
 
         <Breadcrumb>
           {headerButtons}
-          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${this.state.areaId}`}>{this.state.areaName}</Link> {this.state.areaVisibility===1 && <i className="fa fa-lock"></i>}{this.state.areaVisibility===2 && <i className="fa fa-expeditedssl"></i>} / <Link to={`/sector/${this.state.sectorId}`}>{this.state.sectorName}</Link> {this.state.sectorVisibility===1 && <i className="fa fa-lock"></i>}{this.state.sectorVisibility===2 && <i className="fa fa-expeditedssl"></i>} / {this.state.nr} <font color='#777'>{this.state.name}</font> {this.state.grade} {this.state.visibility===1 && <i className="fa fa-lock"></i>}{this.state.visibility===2 && <i className="fa fa-expeditedssl"></i>}
+          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${this.state.areaId}`}>{this.state.areaName}</Link> {this.state.areaVisibility===1 && <i className="fas fa-lock"></i>}{this.state.areaVisibility===2 && <i className="fab fa-expeditedssl"></i>} / <Link to={`/sector/${this.state.sectorId}`}>{this.state.sectorName}</Link> {this.state.sectorVisibility===1 && <i className="fas fa-lock"></i>}{this.state.sectorVisibility===2 && <i className="fab fa-expeditedssl"></i>} / {this.state.nr} <font color='#777'>{this.state.name}</font> {this.state.grade} {this.state.visibility===1 && <i className="fas fa-lock"></i>}{this.state.visibility===2 && <i className="fab fa-expeditedssl"></i>}
         </Breadcrumb>
         {topoContent}
         <Well bsSize="small">

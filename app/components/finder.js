@@ -67,15 +67,15 @@ export default class Finder extends Component {
   }
 
   formatAreaName(cell, row) {
-    return <span><Link to={`/area/${row.areaId}`}>{row.areaName}</Link> {row.areaVisibility===1 && <i className="fa fa-lock"></i>}{row.areaVisibility===2 && <i className="fa fa-expeditedssl"></i>}</span>;
+    return <span><Link to={`/area/${row.areaId}`}>{row.areaName}</Link> {row.areaVisibility===1 && <i className="fas fa-lock"></i>}{row.areaVisibility===2 && <i className="fab fa-expeditedssl"></i>}</span>;
   }
 
   formatSectorName(cell, row) {
-    return <span><Link to={`/sector/${row.sectorId}`}>{row.sectorName}</Link> {row.sectorVisibility===1 && <i className="fa fa-lock"></i>}{row.sectorVisibility===2 && <i className="fa fa-expeditedssl"></i>}</span>;
+    return <span><Link to={`/sector/${row.sectorId}`}>{row.sectorName}</Link> {row.sectorVisibility===1 && <i className="fas fa-lock"></i>}{row.sectorVisibility===2 && <i className="fab fa-expeditedssl"></i>}</span>;
   }
 
   formatName(cell, row) {
-    return <span><Link to={`/problem/${row.id}`}>{row.name}</Link> {row.visibility===1 && <i className="fa fa-lock"></i>}{row.visibility===2 && <i className="fa fa-expeditedssl"></i>}</span>
+    return <span><Link to={`/problem/${row.id}`}>{row.name}</Link> {row.visibility===1 && <i className="fas fa-lock"></i>}{row.visibility===2 && <i className="fab fa-expeditedssl"></i>}</span>
   }
 
   formatType(cell, row) {
@@ -100,20 +100,20 @@ export default class Finder extends Component {
 
   formatStars(cell, row) {
     var stars = "";
-    if (row.stars===0.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={0}><i className="fa fa-star-o"/><i className="fa fa-star-o"/><i className="fa fa-star-o"/></div>; }
-    else if (row.stars===0.5) { stars = <div style={{whiteSpace: 'nowrap'}} id={1}><i className="fa fa-star-half-o"/><i className="fa fa-star-o"/><i className="fa fa-star-o"/></div>; }
-    else if (row.stars===1.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={2}><i className="fa fa-star"/><i className="fa fa-star-o"/><i className="fa fa-star-o"/></div>; }
-    else if (row.stars===1.5) { stars = <div style={{whiteSpace: 'nowrap'}} id={3}><i className="fa fa-star"/><i className="fa fa-star-half-o"/><i className="fa fa-star-o"/></div>; }
-    else if (row.stars===2.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={4}><i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star-o"/></div>; }
-    else if (row.stars===2.5) { stars = <div style={{whiteSpace: 'nowrap'}} id={5}><i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star-half-o"/></div>; }
-    else if (row.stars===3.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={6}><i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star"/></div>; }
+    if (row.stars===0.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={0}><i className="far fa-star"/><i className="far fa-star"/><i className="far fa-star"/></div>; }
+    else if (row.stars===0.5) { stars = <div style={{whiteSpace: 'nowrap'}} id={1}><i className="fas fa-star-half-o"/><i className="far fa-star"/><i className="far fa-star"/></div>; }
+    else if (row.stars===1.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={2}><i className="fas fa-star"/><i className="far fa-star"/><i className="far fa-star"/></div>; }
+    else if (row.stars===1.5) { stars = <div style={{whiteSpace: 'nowrap'}} id={3}><i className="fas fa-star"/><i className="fas fa-star-half-o"/><i className="far fa-star"/></div>; }
+    else if (row.stars===2.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={4}><i className="fas fa-star"/><i className="fas fa-star"/><i className="far fa-star"/></div>; }
+    else if (row.stars===2.5) { stars = <div style={{whiteSpace: 'nowrap'}} id={5}><i className="fas fa-star"/><i className="fas fa-star"/><i className="fas fa-star-half-o"/></div>; }
+    else if (row.stars===3.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={6}><i className="fas fa-star"/><i className="fas fa-star"/><i className="fas fa-star"/></div>; }
     else return cell;
     return <OverlayTrigger placement="top" overlay={
           <Popover id={0} title="Guidelines">
-            <i className="fa fa-star-o"/><i className="fa fa-star-o"/><i className="fa fa-star-o"/><br/>
-            <i className="fa fa-star"/><i className="fa fa-star-o"/><i className="fa fa-star-o"/> Nice<br/>
-            <i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star-o"/> Very nice<br/>
-            <i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star"/> Fantastic!
+            <i className="far fa-star"/><i className="far fa-star"/><i className="far fa-star"/><br/>
+            <i className="fas fa-star"/><i className="far fa-star"/><i className="far fa-star"/> Nice<br/>
+            <i className="fas fa-star"/><i className="fas fa-star"/><i className="far fa-star"/> Very nice<br/>
+            <i className="fas fa-star"/><i className="fas fa-star"/><i className="fas fa-star"/> Fantastic!
           </Popover>
         }>{stars}</OverlayTrigger>;
   }
@@ -184,7 +184,7 @@ export default class Finder extends Component {
 
   render() {
     if (!this.state.problems) {
-      return <center><i className="fa fa-cog fa-spin fa-2x"></i></center>;
+      return <center><div className="fa-3x"><i className="fas fa-spinner fa-spin"></i></div></center>;
     }
     if (this.state.error) {
       return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;
@@ -221,8 +221,8 @@ export default class Finder extends Component {
                 <TableHeaderColumn dataField="fa" dataSort={true} dataFormat={this.formatFa.bind(this)} sortFunc={this.sortFa.bind(this)} dataAlign="center" width="70">FA</TableHeaderColumn>
                 <TableHeaderColumn dataField="numTicks" dataSort={true} dataAlign="center" width="50">Ticks</TableHeaderColumn>
                 <TableHeaderColumn dataField="stars" dataSort={true} dataFormat={this.formatStars.bind(this)} dataAlign="center" width="70">Stars</TableHeaderColumn>
-                <TableHeaderColumn dataField="numImages" dataSort={true} dataFormat={this.formatNumImages.bind(this)} sortFunc={this.sortNumImages.bind(this)} dataAlign="center" width="50"><i className="fa fa-camera"></i></TableHeaderColumn>
-                <TableHeaderColumn dataField="numMovies" dataSort={true} dataFormat={this.formatNumMovies.bind(this)} sortFunc={this.sortNumMovies.bind(this)} dataAlign="center" width="50"><i className="fa fa-video-camera"></i></TableHeaderColumn>
+                <TableHeaderColumn dataField="numImages" dataSort={true} dataFormat={this.formatNumImages.bind(this)} sortFunc={this.sortNumImages.bind(this)} dataAlign="center" width="50"><i className="fas fa-camera"></i></TableHeaderColumn>
+                <TableHeaderColumn dataField="numMovies" dataSort={true} dataFormat={this.formatNumMovies.bind(this)} sortFunc={this.sortNumMovies.bind(this)} dataAlign="center" width="50"><i className="fas fa-video"></i></TableHeaderColumn>
               </BootstrapTable>;
     } else {
       table = <BootstrapTable
@@ -240,9 +240,9 @@ export default class Finder extends Component {
                 <TableHeaderColumn dataField="fa" dataSort={true} dataFormat={this.formatFa.bind(this)} sortFunc={this.sortFa.bind(this)} dataAlign="center" width="70">FA</TableHeaderColumn>
                 <TableHeaderColumn dataField="numTicks" dataSort={true} dataAlign="center" width="50">Ticks</TableHeaderColumn>
                 <TableHeaderColumn dataField="stars" dataSort={true} dataFormat={this.formatStars.bind(this)} dataAlign="center" width="70">Stars</TableHeaderColumn>
-                <TableHeaderColumn dataField="numImages" dataSort={true} dataFormat={this.formatNumImages.bind(this)} sortFunc={this.sortNumImages.bind(this)} dataAlign="center" width="50"><i className="fa fa-camera"></i></TableHeaderColumn>
-                <TableHeaderColumn dataField="numMovies" dataSort={true} dataFormat={this.formatNumMovies.bind(this)} sortFunc={this.sortNumMovies.bind(this)} dataAlign="center" width="50"><i className="fa fa-video-camera"></i></TableHeaderColumn>
-                <TableHeaderColumn dataField="distance" dataSort={true} dataFormat={this.formatDistance.bind(this)} sortFunc={this.sortDistance.bind(this)} dataAlign="center" width="60"><i className="fa fa-plane"></i></TableHeaderColumn>
+                <TableHeaderColumn dataField="numImages" dataSort={true} dataFormat={this.formatNumImages.bind(this)} sortFunc={this.sortNumImages.bind(this)} dataAlign="center" width="50"><i className="fas fa-camera"></i></TableHeaderColumn>
+                <TableHeaderColumn dataField="numMovies" dataSort={true} dataFormat={this.formatNumMovies.bind(this)} sortFunc={this.sortNumMovies.bind(this)} dataAlign="center" width="50"><i className="fas fa-video"></i></TableHeaderColumn>
+                <TableHeaderColumn dataField="distance" dataSort={true} dataFormat={this.formatDistance.bind(this)} sortFunc={this.sortDistance.bind(this)} dataAlign="center" width="60"><i className="fas fa-plane"></i></TableHeaderColumn>
               </BootstrapTable>;
     }
 

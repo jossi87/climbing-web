@@ -23,7 +23,7 @@ export default class Browse extends Component {
   }
 
   formatName(cell, row) {
-    return <span><Link to={`/area/${row.id}`}>{row.name}</Link> {row.visibility===1 && <i className="fa fa-lock"></i>}{row.visibility===2 && <i className="fa fa-expeditedssl"></i>}</span>;
+    return <span><Link to={`/area/${row.id}`}>{row.name}</Link> {row.visibility===1 && <i className="fas fa-lock"></i>}{row.visibility===2 && <i className="fab fa-expeditedssl"></i>}</span>;
   }
 
   toRad(value) {
@@ -67,7 +67,7 @@ export default class Browse extends Component {
 
   render() {
     if (!this.state || !this.state.areas) {
-      return <center><i className="fa fa-cog fa-spin fa-2x"></i></center>;
+      return <center><div className="fa-3x"><i className="fas fa-spinner fa-spin"></i></div></center>;
     }
     if (this.state.error) {
       return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;
@@ -87,7 +87,7 @@ export default class Browse extends Component {
         <Breadcrumb>
           {auth.isAdmin()?
             <OverlayTrigger placement="top" overlay={<Tooltip id={-1}>Add area</Tooltip>}>
-              <div style={{float: 'right'}}><LinkContainer to={`/area/edit/-1`}><Button bsStyle="primary" bsSize="xsmall"><i className="fa fa-inverse fa-plus-square"/></Button></LinkContainer></div>
+              <div style={{float: 'right'}}><LinkContainer to={`/area/edit/-1`}><Button bsStyle="primary" bsSize="xsmall"><i className="fa-inverse fas fa-plus-square"/></Button></LinkContainer></div>
             </OverlayTrigger>:
             null
           }
@@ -103,7 +103,7 @@ export default class Browse extends Component {
           <TableHeaderColumn dataField="name" dataSort={true} dataFormat={this.formatName.bind(this)} width="150" filter={{type: "TextFilter", placeholder: "Filter"}}>Name</TableHeaderColumn>
           <TableHeaderColumn dataField="numSectors" dataSort={true} dataAlign="center" width="50">#sectors</TableHeaderColumn>
           <TableHeaderColumn dataField="numProblems" dataSort={true} dataAlign="center" width="50">#problems</TableHeaderColumn>
-          <TableHeaderColumn dataField="distance" dataSort={true} dataFormat={this.formatDistance.bind(this)} sortFunc={this.sortDistance.bind(this)} dataAlign="center" width="60"><i className="fa fa-plane"></i></TableHeaderColumn>
+          <TableHeaderColumn dataField="distance" dataSort={true} dataFormat={this.formatDistance.bind(this)} sortFunc={this.sortDistance.bind(this)} dataAlign="center" width="60"><i className="fas fa-plane"></i></TableHeaderColumn>
         </BootstrapTable>
       </span>
     );

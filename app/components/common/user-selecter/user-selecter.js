@@ -69,7 +69,7 @@ export default class UserSelecter extends Component {
       );
     }
 
-    const users = this.state.users.map((u, i) => (<Button key={i} onClick={this.removeUser.bind(this, u.id)}><i className="fa fa-times"></i> {u.name}{u.id==-1? " (new user)" : ""}</Button>));
+    const users = this.state.users.map((u, i) => (<Button key={i} onClick={this.removeUser.bind(this, u.id)}><i className="fas fa-times"></i> {u.name}{u.id==-1? " (new user)" : ""}</Button>));
 
     return (
       <div style={{position: 'relative', width: '100%'}}>

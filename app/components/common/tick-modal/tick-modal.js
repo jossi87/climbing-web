@@ -87,14 +87,14 @@ export default class TickModal extends Component {
 
   render() {
     if (!this.state || !this.state.idProblem) {
-      return <center><i className="fa fa-cog fa-spin fa-2x"></i></center>;
+      return <center><div className="fa-3x"><i className="fas fa-spinner fa-spin"></i></div></center>;
     }
 
     var stars = null;
-    if (this.state.stars===0) { stars = <span><i className="fa fa-star-o"/><i className="fa fa-star-o"/><i className="fa fa-star-o"/></span>; }
-    else if (this.state.stars===1) { stars = <span><i className="fa fa-star"/><i className="fa fa-star-o"/><i className="fa fa-star-o"/></span>; }
-    else if (this.state.stars===2) { stars = <span><i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star-o"/></span>; }
-    else if (this.state.stars===3) { stars = <span><i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star"/></span>; }
+    if (this.state.stars===0) { stars = <span><i className="far fa-star"/><i className="far fa-star"/><i className="far fa-star"/></span>; }
+    else if (this.state.stars===1) { stars = <span><i className="fas fa-star"/><i className="far fa-star"/><i className="far fa-star"/></span>; }
+    else if (this.state.stars===2) { stars = <span><i className="fas fa-star"/><i className="fas fa-star"/><i className="far fa-star"/></span>; }
+    else if (this.state.stars===3) { stars = <span><i className="fas fa-star"/><i className="fas fa-star"/><i className="fas fa-star"/></span>; }
 
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate()-1);
@@ -122,10 +122,10 @@ export default class TickModal extends Component {
           <FormGroup>
             <ControlLabel>Stars</ControlLabel><br/>
             <DropdownButton title={stars} id="bg-nested-dropdown">
-              <MenuItem eventKey="0" onSelect={this.onStarsChanged.bind(this, 0)}><i className="fa fa-star-o"/><i className="fa fa-star-o"/><i className="fa fa-star-o"/></MenuItem>
-              <MenuItem eventKey="1" onSelect={this.onStarsChanged.bind(this, 1)}><i className="fa fa-star"/><i className="fa fa-star-o"/><i className="fa fa-star-o"/> Nice</MenuItem>
-              <MenuItem eventKey="2" onSelect={this.onStarsChanged.bind(this, 2)}><i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star-o"/> Very nice</MenuItem>
-              <MenuItem eventKey="3" onSelect={this.onStarsChanged.bind(this, 3)}><i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star"/> Fantastic!</MenuItem>
+              <MenuItem eventKey="0" onSelect={this.onStarsChanged.bind(this, 0)}><i className="far fa-star"/><i className="far fa-star"/><i className="far fa-star"/></MenuItem>
+              <MenuItem eventKey="1" onSelect={this.onStarsChanged.bind(this, 1)}><i className="fas fa-star"/><i className="far fa-star"/><i className="far fa-star"/> Nice</MenuItem>
+              <MenuItem eventKey="2" onSelect={this.onStarsChanged.bind(this, 2)}><i className="fas fa-star"/><i className="fas fa-star"/><i className="far fa-star"/> Very nice</MenuItem>
+              <MenuItem eventKey="3" onSelect={this.onStarsChanged.bind(this, 3)}><i className="fas fa-star"/><i className="fas fa-star"/><i className="fas fa-star"/> Fantastic!</MenuItem>
             </DropdownButton>
           </FormGroup>
           <FormGroup>

@@ -46,7 +46,7 @@ export default class User extends Component {
   }
 
   formatName(cell, row) {
-    return <span><Link to={`/problem/${row.idProblem}`}>{row.name}</Link> {row.visibility===1 && <i className="fa fa-lock"></i>}{row.visibility===2 && <i className="fa fa-expeditedssl"></i>}</span>;
+    return <span><Link to={`/problem/${row.idProblem}`}>{row.name}</Link> {row.visibility===1 && <i className="fas fa-lock"></i>}{row.visibility===2 && <i className="fab fa-expeditedssl"></i>}</span>;
   }
 
   formatComment(cell, row) {
@@ -63,34 +63,34 @@ export default class User extends Component {
 
   formatStars(cell, row) {
     var stars = "";
-    if (row.stars===0.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={0}><i className="fa fa-star-o"/><i className="fa fa-star-o"/><i className="fa fa-star-o"/></div>; }
-    else if (row.stars===0.5) { stars = <div style={{whiteSpace: 'nowrap'}} id={1}><i className="fa fa-star-half-o"/><i className="fa fa-star-o"/><i className="fa fa-star-o"/></div>; }
-    else if (row.stars===1.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={2}><i className="fa fa-star"/><i className="fa fa-star-o"/><i className="fa fa-star-o"/></div>; }
-    else if (row.stars===1.5) { stars = <div style={{whiteSpace: 'nowrap'}} id={3}><i className="fa fa-star"/><i className="fa fa-star-half-o"/><i className="fa fa-star-o"/></div>; }
-    else if (row.stars===2.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={4}><i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star-o"/></div>; }
-    else if (row.stars===2.5) { stars = <div style={{whiteSpace: 'nowrap'}} id={5}><i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star-half-o"/></div>; }
-    else if (row.stars===3.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={6}><i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star"/></div>; }
+    if (row.stars===0.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={0}><i className="far fa-star"/><i className="far fa-star"/><i className="far fa-star"/></div>; }
+    else if (row.stars===0.5) { stars = <div style={{whiteSpace: 'nowrap'}} id={1}><i className="fas fa-star-half-o"/><i className="far fa-star"/><i className="far fa-star"/></div>; }
+    else if (row.stars===1.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={2}><i className="fas fa-star"/><i className="far fa-star"/><i className="far fa-star"/></div>; }
+    else if (row.stars===1.5) { stars = <div style={{whiteSpace: 'nowrap'}} id={3}><i className="fas fa-star"/><i className="fas fa-star-half-o"/><i className="far fa-star"/></div>; }
+    else if (row.stars===2.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={4}><i className="fas fa-star"/><i className="fas fa-star"/><i className="far fa-star"/></div>; }
+    else if (row.stars===2.5) { stars = <div style={{whiteSpace: 'nowrap'}} id={5}><i className="fas fa-star"/><i className="fas fa-star"/><i className="fas fa-star-half-o"/></div>; }
+    else if (row.stars===3.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={6}><i className="fas fa-star"/><i className="fas fa-star"/><i className="fas fa-star"/></div>; }
     else return cell;
     return <OverlayTrigger placement="top" overlay={
           <Popover id={0} title="Guidelines">
-            <i className="fa fa-star-o"/><i className="fa fa-star-o"/><i className="fa fa-star-o"/><br/>
-            <i className="fa fa-star"/><i className="fa fa-star-o"/><i className="fa fa-star-o"/> Nice<br/>
-            <i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star-o"/> Very nice<br/>
-            <i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star"/> Fantastic!
+            <i className="far fa-star"/><i className="far fa-star"/><i className="far fa-star"/><br/>
+            <i className="fas fa-star"/><i className="far fa-star"/><i className="far fa-star"/> Nice<br/>
+            <i className="fas fa-star"/><i className="fas fa-star"/><i className="far fa-star"/> Very nice<br/>
+            <i className="fas fa-star"/><i className="fas fa-star"/><i className="fas fa-star"/> Fantastic!
           </Popover>
         }>{stars}</OverlayTrigger>;
   }
 
   formatFa(cell, row) {
     if (cell) {
-      return <i className="fa fa-check"/>;
+      return <i className="fas fa-check"/>;
     }
     return "";
   }
 
   formatEdit(cell, row) {
     if (this.state.user.readOnly==false && row.id!=0) {
-      return <OverlayTrigger placement="top" overlay={<Tooltip id={row.id}>Edit tick</Tooltip>}><Button bsSize="xsmall" bsStyle="primary" onClick={this.openTickModal.bind(this, row)}><i className="fa fa-inverse fa-pencil-square-o"/></Button></OverlayTrigger>
+      return <OverlayTrigger placement="top" overlay={<Tooltip id={row.id}>Edit tick</Tooltip>}><Button bsSize="xsmall" bsStyle="primary" onClick={this.openTickModal.bind(this, row)}><i className="fa-inverse far fa-edit"/></Button></OverlayTrigger>
     }
     return "";
   }
@@ -130,7 +130,7 @@ export default class User extends Component {
 
   render() {
     if (!this.state.user) {
-      return <center><i className="fa fa-cog fa-spin fa-2x"></i></center>;
+      return <center><div className="fa-3x"><i className="fas fa-spinner fa-spin"></i></div></center>;
     }
     if (this.state.error) {
       return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;
@@ -148,7 +148,7 @@ export default class User extends Component {
           {auth.loggedIn() && this.state.user.readOnly==false?
             <div style={{float: 'right'}}>
               <OverlayTrigger placement="top" overlay={<Tooltip id={this.state.user.id}>Edit user</Tooltip>}>
-                <LinkContainer to={`/user/${this.state.user.id}/edit`}><Button bsStyle="primary" bsSize="xsmall"><i className="fa fa-inverse fa-pencil-square-o"/></Button></LinkContainer>
+                <LinkContainer to={`/user/${this.state.user.id}/edit`}><Button bsStyle="primary" bsSize="xsmall"><i className="fa-inverse far fa-edit"/></Button></LinkContainer>
               </OverlayTrigger>
             </div>:
             null

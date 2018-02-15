@@ -69,7 +69,7 @@ export default class Navigation extends Component {
       const rows = this.state.searchResults.map((s, i) => {
         return (
           <LinkContainer key={i} to={`/problem/${s.id}`}>
-            <MenuItem key={i} href="#" onSelect={this.menuItemSelect.bind(this)}>{s.value} {s.visibility===1 && <i className="fa fa-lock"></i>}{s.visibility===2 && <i className="fa fa-expeditedssl"></i>}</MenuItem>
+            <MenuItem key={i} href="#" onSelect={this.menuItemSelect.bind(this)}>{s.value} {s.visibility===1 && <i className="fas fa-lock"></i>}{s.visibility===2 && <i className="fab fa-expeditedssl"></i>}</MenuItem>
           </LinkContainer>
         )
       });

@@ -38,13 +38,13 @@ class TableRow extends Component {
     fa = this.intersperse(fa, ", ");
     var stars = "";
     const isTickedClassName = this.props.problem.ticked? 'success' : '';
-    if (this.props.problem.stars===0.0) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="fa fa-star-o"/><i className="fa fa-star-o"/><i className="fa fa-star-o"/></div>; }
-    else if (this.props.problem.stars===0.5) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="fa fa-star-half-o"/><i className="fa fa-star-o"/><i className="fa fa-star-o"/></div>; }
-    else if (this.props.problem.stars===1.0) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="fa fa-star"/><i className="fa fa-star-o"/><i className="fa fa-star-o"/></div>; }
-    else if (this.props.problem.stars===1.5) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="fa fa-star"/><i className="fa fa-star-half-o"/><i className="fa fa-star-o"/></div>; }
-    else if (this.props.problem.stars===2.0) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star-o"/></div>; }
-    else if (this.props.problem.stars===2.5) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star-half-o"/></div>; }
-    else if (this.props.problem.stars===3.0) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star"/></div>; }
+    if (this.props.problem.stars===0.0) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="far fa-star"/><i className="far fa-star"/><i className="far fa-star"/></div>; }
+    else if (this.props.problem.stars===0.5) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="fas fa-star-half-o"/><i className="far fa-star"/><i className="far fa-star"/></div>; }
+    else if (this.props.problem.stars===1.0) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="fas fa-star"/><i className="far fa-star"/><i className="far fa-star"/></div>; }
+    else if (this.props.problem.stars===1.5) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="fas fa-star"/><i className="fas fa-star-half-o"/><i className="far fa-star"/></div>; }
+    else if (this.props.problem.stars===2.0) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="fas fa-star"/><i className="fas fa-star"/><i className="far fa-star"/></div>; }
+    else if (this.props.problem.stars===2.5) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="fas fa-star"/><i className="fas fa-star"/><i className="fas fa-star-half-o"/></div>; }
+    else if (this.props.problem.stars===3.0) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="fas fa-star"/><i className="fas fa-star"/><i className="fas fa-star"/></div>; }
     var type;
     if (config.getRegion()==4) {
       var typeImg;
@@ -60,7 +60,7 @@ class TableRow extends Component {
     return (
       <tr className={isTickedClassName}>
         <td>{this.props.problem.nr}</td>
-        <td><Link to={`/problem/${this.props.problem.id}`}>{this.props.problem.name}</Link> {this.props.problem.visibility===1 && <i className="fa fa-lock"></i>}{this.props.problem.visibility===2 && <i className="fa fa-expeditedssl"></i>}</td>
+        <td><Link to={`/problem/${this.props.problem.id}`}>{this.props.problem.name}</Link> {this.props.problem.visibility===1 && <i className="fas fa-lock"></i>}{this.props.problem.visibility===2 && <i className="fab fa-expeditedssl"></i>}</td>
         <td>{comment}</td>
         {type}
         <td>{this.props.problem.grade}</td>
@@ -69,16 +69,16 @@ class TableRow extends Component {
         <td>
           <OverlayTrigger placement="top" overlay={
             <Popover id={this.props.problem.id} title="Guidelines">
-              <i className="fa fa-star-o"/><i className="fa fa-star-o"/><i className="fa fa-star-o"/><br/>
-              <i className="fa fa-star"/><i className="fa fa-star-o"/><i className="fa fa-star-o"/> Nice<br/>
-              <i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star-o"/> Very nice<br/>
-              <i className="fa fa-star"/><i className="fa fa-star"/><i className="fa fa-star"/> Fantastic!
+              <i className="far fa-star"/><i className="far fa-star"/><i className="far fa-star"/><br/>
+              <i className="fas fa-star"/><i className="far fa-star"/><i className="far fa-star"/> Nice<br/>
+              <i className="fas fa-star"/><i className="fas fa-star"/><i className="far fa-star"/> Very nice<br/>
+              <i className="fas fa-star"/><i className="fas fa-star"/><i className="fas fa-star"/> Fantastic!
             </Popover>
           }>{stars}</OverlayTrigger>
         </td>
         <td>{this.props.problem.numImages}</td>
         <td>{this.props.problem.numMovies}</td>
-        <td>{this.props.problem.lat>0 && this.props.problem.lng>0 && <i className="fa fa-check"></i>}</td>
+        <td>{this.props.problem.lat>0 && this.props.problem.lng>0 && <i className="fas fa-check"></i>}</td>
       </tr>
     )
   }
@@ -114,7 +114,7 @@ export default class Sector extends Component {
 
   render() {
     if (!this.state.areaId) {
-      return <center><i className="fa fa-cog fa-spin fa-2x"></i></center>;
+      return <center><div className="fa-3x"><i className="fas fa-spinner fa-spin"></i></div></center>;
     }
     if (this.state.error) {
       return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;
@@ -176,23 +176,23 @@ export default class Sector extends Component {
             <div style={{float: 'right'}}>
               <ButtonGroup>
                 <OverlayTrigger placement="top" overlay={<Tooltip id={-1}>Add problem</Tooltip>}>
-                  <LinkContainer to={{ pathname: `/problem/edit/-1`, query: { idSector: this.state.id, nr: nextNr, lat: this.state.lat, lng: this.state.lng } }}><Button bsStyle="primary" bsSize="xsmall"><i className="fa fa-inverse fa-plus-square"/></Button></LinkContainer>
+                  <LinkContainer to={{ pathname: `/problem/edit/-1`, query: { idSector: this.state.id, nr: nextNr, lat: this.state.lat, lng: this.state.lng } }}><Button bsStyle="primary" bsSize="xsmall"><i className="fa-inverse fas fa-plus-square"/></Button></LinkContainer>
                 </OverlayTrigger>
                 <OverlayTrigger placement="top" overlay={<Tooltip id={this.state.id}>Edit sector</Tooltip>}>
-                  <LinkContainer to={{ pathname: `/sector/edit/${this.state.id}`, query: { idArea: this.state.areaId, lat: this.state.lat, lng: this.state.lng } }}><Button bsStyle="primary" bsSize="xsmall"><i className="fa fa-inverse fa-pencil-square-o"/></Button></LinkContainer>
+                  <LinkContainer to={{ pathname: `/sector/edit/${this.state.id}`, query: { idArea: this.state.areaId, lat: this.state.lat, lng: this.state.lng } }}><Button bsStyle="primary" bsSize="xsmall"><i className="fa-inverse far fa-edit"/></Button></LinkContainer>
                 </OverlayTrigger>
               </ButtonGroup>
             </div>:
             null
           }
-          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${this.state.areaId}`}>{this.state.areaName}</Link> {this.state.areaVisibility===1 && <i className="fa fa-lock"></i>}{this.state.areaVisibility===2 && <i className="fa fa-expeditedssl"></i>} / <font color='#777'>{this.state.name}</font> {this.state.visibility===1 && <i className="fa fa-lock"></i>}{this.state.visibility===2 && <i className="fa fa-expeditedssl"></i>}
+          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${this.state.areaId}`}>{this.state.areaName}</Link> {this.state.areaVisibility===1 && <i className="fas fa-lock"></i>}{this.state.areaVisibility===2 && <i className="fab fa-expeditedssl"></i>} / <font color='#777'>{this.state.name}</font> {this.state.visibility===1 && <i className="fas fa-lock"></i>}{this.state.visibility===2 && <i className="fab fa-expeditedssl"></i>}
         </Breadcrumb>
         {topoContent}
         {this.state.comment? <Well>{this.state.comment}</Well> : null}
         <Table striped condensed hover>
           <thead>
             <tr>
-              <th><i className="fa fa-hashtag"></i></th>
+              <th><i className="fas fa-hashtag"></i></th>
               <th>Name</th>
               <th>Description</th>
               {config.getRegion()==4 && <th>Type</th>}
@@ -200,9 +200,9 @@ export default class Sector extends Component {
               <th>FA</th>
               <th>Ticks</th>
               <th>Stars</th>
-              <th><i className="fa fa-camera"></i></th>
-              <th><i className="fa fa-video-camera"></i></th>
-              <th><i className="fa fa-map-marker"></i></th>
+              <th><i className="fas fa-camera"></i></th>
+              <th><i className="fas fa-video"></i></th>
+              <th><i className="fas fa-map-marker"></i></th>
             </tr>
           </thead>
           <tbody>

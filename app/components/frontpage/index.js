@@ -23,7 +23,7 @@ export default class Index extends Component {
 
   render() {
     if (!this.state) {
-      return <center><i className="fa fa-cog fa-spin fa-2x"></i></center>;
+      return <center><div className="fa-3x"><i className="fas fa-spinner fa-spin"></i></div></center>;
     }
     if (this.state.error) {
       return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;
@@ -48,7 +48,7 @@ export default class Index extends Component {
     });
 
     const newestMedia = this.state.data.medias.map((x, i) => {
-      const icon = x.type === 'image'? <i className="fa fa-camera"/> : <i className="fa fa-video-camera"/>;
+      const icon = x.type === 'image'? <i className="fas fa-camera"/> : <i className="fas fa-video"/>;
       return (
         <p key={i}>
           <Link to={`/problem/${x.idProblem}`}>{x.problem}</Link> <small>{x.grade}</small> {icon}

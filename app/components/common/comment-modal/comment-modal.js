@@ -45,7 +45,7 @@ export default class CommentModal extends Component {
 
   render() {
     if (!this.state) {
-      return <center><i className="fa fa-cog fa-spin fa-2x"></i></center>;
+      return <center><div className="fa-3x"><i className="fas fa-spinner fa-spin"></i></div></center>;
     }
 
     return (
