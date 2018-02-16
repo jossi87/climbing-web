@@ -8,7 +8,7 @@ import Map from './common/map/map';
 import auth from '../utils/auth.js';
 import config from '../utils/config.js';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner, faLock, faExpidetedssl, faPlane, faPlusSquare } from '@fortawesome/fontawesome-free-solid';
+import { faSpinner, faLock, faUserSecret, faPlane, faPlusSquare } from '@fortawesome/fontawesome-free-solid';
 
 export default class Browse extends Component {
   componentDidMount() {
@@ -25,7 +25,7 @@ export default class Browse extends Component {
   }
 
   formatName(cell, row) {
-    return <span><Link to={`/area/${row.id}`}>{row.name}</Link> {row.visibility===1 && <FontAwesomeIcon icon="lock" />}{row.visibility===2 && <FontAwesomeIcon icon="expidetedssl" />}</span>;
+    return <span><Link to={`/area/${row.id}`}>{row.name}</Link> {row.visibility===1 && <FontAwesomeIcon icon="lock" />}{row.visibility===2 && <FontAwesomeIcon icon="user-secret" />}</span>;
   }
 
   toRad(value) {
