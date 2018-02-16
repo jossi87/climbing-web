@@ -8,6 +8,7 @@ import Map from './common/map/map';
 import auth from '../utils/auth.js';
 import config from '../utils/config.js';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/fontawesome-free-solid';
 
 export default class Browse extends Component {
   componentDidMount() {
