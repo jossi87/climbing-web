@@ -166,7 +166,6 @@ export default class User extends Component {
         <Well bsSize="small">First ascents: {numFas}<br/>Public ascents: {numTicks}<br/>Pictures taken: {this.state.user.numImagesCreated}<br/>Appearance in pictures: {this.state.user.numImageTags}<br/>Videos created: {this.state.user.numVideosCreated}<br/>Appearance in videos: {this.state.user.numVideoTags}</Well>
         {chart}
         <BootstrapTable
-          containerStyle={{margin: '-5px -10px'}}
         	data={this.state.user.ticks}
           condensed={true}
         	hover={true}
