@@ -10,7 +10,7 @@ import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
 import config from '../utils/config.js';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner, faLock, faUserSecret } from '@fortawesome/fontawesome-free-solid';
+import { faSpinner, faLock, faUserSecret, faStar, faStarHalf } from '@fortawesome/fontawesome-free-solid';
 
 export default class Problem extends Component {
   constructor(props) {
@@ -164,30 +164,38 @@ export default class Problem extends Component {
     if (this.state.ticks) {
       const rows = this.state.ticks.map((t, i) => {
         const isTickedClassName = t.writable? 'success' : '';
-        var stars = "";
-        if (t.stars===0.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={0}><i className="far fa-star"/><i className="far fa-star"/><i className="far fa-star"/></div>; }
-        else if (t.stars===0.5) { stars = <div style={{whiteSpace: 'nowrap'}} id={1}><i className="fas fa-star-half-o"/><i className="far fa-star"/><i className="far fa-star"/></div>; }
-        else if (t.stars===1.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={2}><i className="fas fa-star"/><i className="far fa-star"/><i className="far fa-star"/></div>; }
-        else if (t.stars===1.5) { stars = <div style={{whiteSpace: 'nowrap'}} id={3}><i className="fas fa-star"/><i className="fas fa-star-half-o"/><i className="far fa-star"/></div>; }
-        else if (t.stars===2.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={4}><i className="fas fa-star"/><i className="fas fa-star"/><i className="far fa-star"/></div>; }
-        else if (t.stars===2.5) { stars = <div style={{whiteSpace: 'nowrap'}} id={5}><i className="fas fa-star"/><i className="fas fa-star"/><i className="fas fa-star-half-o"/></div>; }
-        else if (t.stars===3.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={6}><i className="fas fa-star"/><i className="fas fa-star"/><i className="fas fa-star"/></div>; }
+        var stars = null;
+        if (t.stars===0.5) {
+          stars = <FontAwesomeIcon icon="star-half" />;
+        } else if (t.stars===1.0) {
+          stars = <div style={{whiteSpace: 'nowrap'}} id={2}><FontAwesomeIcon icon="star" /></div>;
+        } else if (t.stars===1.5) {
+          stars = <div style={{whiteSpace: 'nowrap'}} id={3}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star-half" /></div>;
+        } else if (t.stars===2.0) {
+          stars = <div style={{whiteSpace: 'nowrap'}} id={4}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /></div>;
+        } else if (t.stars===2.5) {
+          stars = <div style={{whiteSpace: 'nowrap'}} id={5}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star-half" /></div>;
+        } else if (t.stars===3.0) {
+          stars = <div style={{whiteSpace: 'nowrap'}} id={6}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /></div>;
+        }
+        if (stars) {
+          stars = <OverlayTrigger placement="top" overlay={
+            <Popover id={0} title="Guidelines">
+              <FontAwesomeIcon icon="star" /> Nice<br/>
+              <FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Very nice<br/>
+              <FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Fantastic!
+            </Popover>
+          }>{stars}</OverlayTrigger>;
+        } else {
+          stars = "";
+        }
         return (
           <tr className={isTickedClassName} key={i}>
             <td>{t.date}</td>
             <td><Link to={`/user/${t.idUser}`}>{t.name}</Link></td>
             <td>{t.suggestedGrade}</td>
             <td>{t.comment}</td>
-            <td>
-              <OverlayTrigger placement="top" overlay={
-                <Popover id={i} title="Guidelines">
-                  <i className="far fa-star"/><i className="far fa-star"/><i className="far fa-star"/><br/>
-                  <i className="fas fa-star"/><i className="far fa-star"/><i className="far fa-star"/> Nice<br/>
-                  <i className="fas fa-star"/><i className="fas fa-star"/><i className="far fa-star"/> Very nice<br/>
-                  <i className="fas fa-star"/><i className="fas fa-star"/><i className="fas fa-star"/> Fantastic!
-                </Popover>
-              }>{stars}</OverlayTrigger>
-            </td>
+            <td>{stars}</td>
           </tr>
         );
       });
