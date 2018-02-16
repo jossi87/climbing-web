@@ -7,6 +7,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 import Map from './common/map/map';
 import auth from '../utils/auth.js';
 import config from '../utils/config.js';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 
 export default class Browse extends Component {
   componentDidMount() {
@@ -67,7 +68,7 @@ export default class Browse extends Component {
 
   render() {
     if (!this.state || !this.state.areas) {
-      return <center><div className="fa-3x"><i className="fas fa-spinner fa-spin"></i></div></center>;
+      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
     if (this.state.error) {
       return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;
