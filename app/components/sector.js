@@ -8,7 +8,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 import auth from '../utils/auth.js';
 import config from '../utils/config.js';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner, faLock, faUserSecret, faStar, faStarHalf } from '@fortawesome/fontawesome-free-solid';
+import { faSpinner, faLock, faUserSecret, faStar, faStarHalf, faCamera, faVideo, faCheck, faPlusSquare, faEdit, faHashtag, faMapMarker } from '@fortawesome/fontawesome-free-solid';
 
 class TableRow extends Component {
   /* intersperse: Return an array with the separator interspersed between
@@ -88,7 +88,7 @@ class TableRow extends Component {
         <td>{stars}</td>
         <td>{this.props.problem.numImages}</td>
         <td>{this.props.problem.numMovies}</td>
-        <td>{this.props.problem.lat>0 && this.props.problem.lng>0 && <i className="fas fa-check"></i>}</td>
+        <td>{this.props.problem.lat>0 && this.props.problem.lng>0 && <FontAwesomeIcon icon="check" />}</td>
       </tr>
     )
   }
@@ -186,10 +186,10 @@ export default class Sector extends Component {
             <div style={{float: 'right'}}>
               <ButtonGroup>
                 <OverlayTrigger placement="top" overlay={<Tooltip id={-1}>Add problem</Tooltip>}>
-                  <LinkContainer to={{ pathname: `/problem/edit/-1`, query: { idSector: this.state.id, nr: nextNr, lat: this.state.lat, lng: this.state.lng } }}><Button bsStyle="primary" bsSize="xsmall"><i className="fa-inverse fas fa-plus-square"/></Button></LinkContainer>
+                  <LinkContainer to={{ pathname: `/problem/edit/-1`, query: { idSector: this.state.id, nr: nextNr, lat: this.state.lat, lng: this.state.lng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="plus-square" inverse /></Button></LinkContainer>
                 </OverlayTrigger>
                 <OverlayTrigger placement="top" overlay={<Tooltip id={this.state.id}>Edit sector</Tooltip>}>
-                  <LinkContainer to={{ pathname: `/sector/edit/${this.state.id}`, query: { idArea: this.state.areaId, lat: this.state.lat, lng: this.state.lng } }}><Button bsStyle="primary" bsSize="xsmall"><i className="fa-inverse fas fa-edit"/></Button></LinkContainer>
+                  <LinkContainer to={{ pathname: `/sector/edit/${this.state.id}`, query: { idArea: this.state.areaId, lat: this.state.lat, lng: this.state.lng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="edit" inverse /></Button></LinkContainer>
                 </OverlayTrigger>
               </ButtonGroup>
             </div>:
@@ -202,7 +202,7 @@ export default class Sector extends Component {
         <Table striped condensed hover>
           <thead>
             <tr>
-              <th><i className="fas fa-hashtag"></i></th>
+              <th><FontAwesomeIcon icon="hashtag" /></th>
               <th>Name</th>
               <th>Description</th>
               {config.getRegion()==4 && <th>Type</th>}
@@ -210,9 +210,9 @@ export default class Sector extends Component {
               <th>FA</th>
               <th>Ticks</th>
               <th>Stars</th>
-              <th><i className="fas fa-camera"></i></th>
-              <th><i className="fas fa-video"></i></th>
-              <th><i className="fas fa-map-marker"></i></th>
+              <th><FontAwesomeIcon icon="camera" /></th>
+              <th><FontAwesomeIcon icon="video" /></th>
+              <th><FontAwesomeIcon icon="map-marker" /></th>
             </tr>
           </thead>
           <tbody>

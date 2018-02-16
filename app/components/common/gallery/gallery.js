@@ -9,6 +9,8 @@ import { Link } from 'react-router-dom';
 import config from '../../../utils/config.js';
 import { Redirect } from 'react-router';
 import objectFitImages from 'object-fit-images'; // objectFit does not work on IE and Edge http://caniuse.com/#search=object-fit
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { faEdit, faTrash } from '@fortawesome/fontawesome-free-solid';
 
 export default class Gallery extends Component {
   constructor(props) {
@@ -247,9 +249,9 @@ export default class Gallery extends Component {
     const m = this.props.media[this.state.mediaIndex];
     if (!this.state.isFullscreen && m.idType==1 && auth.isAdmin()) {
       if (m.svgProblemId>0) {
-        button = <span style={{position: 'absolute', zIndex: '4', background: 'rgba(0, 0, 0, 0.4)', padding: '8px 20px'}}><Link to={`/problem/svg-edit/${m.svgProblemId}/${m.id}`} onMouseEnter={this.toggleHoverEdit.bind(this)} onMouseLeave={this.toggleHoverEdit.bind(this)}><i className="fas fa-edit" style={this.state.hoverEdit? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}}></i></Link></span>;
+        button = <span style={{position: 'absolute', zIndex: '4', background: 'rgba(0, 0, 0, 0.4)', padding: '8px 20px'}}><Link to={`/problem/svg-edit/${m.svgProblemId}/${m.id}`} onMouseEnter={this.toggleHoverEdit.bind(this)} onMouseLeave={this.toggleHoverEdit.bind(this)}><FontAwesomeIcon icon="edit" style={this.state.hoverEdit? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}}/></Link></span>;
       } else if (!m.svgs) {
-        button = <span style={{position: 'absolute', zIndex: '4', background: 'rgba(0, 0, 0, 0.4)', padding: '8px 20px'}}><a href="#" onMouseEnter={this.toggleHoverTrash.bind(this)} onMouseLeave={this.toggleHoverTrash.bind(this)}><i className="fas fa-trash" style={this.state.hoverTrash? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}} onClick={this.onDeleteImage.bind(this)}></i></a></span>;
+        button = <span style={{position: 'absolute', zIndex: '4', background: 'rgba(0, 0, 0, 0.4)', padding: '8px 20px'}}><a href="#" onMouseEnter={this.toggleHoverTrash.bind(this)} onMouseLeave={this.toggleHoverTrash.bind(this)}><FontAwesomeIcon icon="trash" style={this.state.hoverTrash? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}} onClick={this.onDeleteImage.bind(this)}/></a></span>;
       }
     }
 

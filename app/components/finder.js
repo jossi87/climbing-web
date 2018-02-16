@@ -8,7 +8,7 @@ import { Tabs, Tab, Panel, ButtonToolbar, ButtonGroup, Button, OverlayTrigger, T
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import config from '../utils/config.js';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner, faLock, faUserSecret, faStar, faStarHalf } from '@fortawesome/fontawesome-free-solid';
+import { faSpinner, faLock, faUserSecret, faStar, faStarHalf, faCamera, faPlane } from '@fortawesome/fontawesome-free-solid';
 
 export default class Finder extends Component {
   constructor(props) {
@@ -229,8 +229,8 @@ export default class Finder extends Component {
                 <TableHeaderColumn dataField="fa" dataSort={true} dataFormat={this.formatFa.bind(this)} sortFunc={this.sortFa.bind(this)} dataAlign="center" width="70">FA</TableHeaderColumn>
                 <TableHeaderColumn dataField="numTicks" dataSort={true} dataAlign="center" width="50">Ticks</TableHeaderColumn>
                 <TableHeaderColumn dataField="stars" dataSort={true} dataFormat={this.formatStars.bind(this)} dataAlign="center" width="70">Stars</TableHeaderColumn>
-                <TableHeaderColumn dataField="numImages" dataSort={true} dataFormat={this.formatNumImages.bind(this)} sortFunc={this.sortNumImages.bind(this)} dataAlign="center" width="50"><i className="fas fa-camera"></i></TableHeaderColumn>
-                <TableHeaderColumn dataField="numMovies" dataSort={true} dataFormat={this.formatNumMovies.bind(this)} sortFunc={this.sortNumMovies.bind(this)} dataAlign="center" width="50"><i className="fas fa-video"></i></TableHeaderColumn>
+                <TableHeaderColumn dataField="numImages" dataSort={true} dataFormat={this.formatNumImages.bind(this)} sortFunc={this.sortNumImages.bind(this)} dataAlign="center" width="50"><FontAwesomeIcon icon="camera" /></TableHeaderColumn>
+                <TableHeaderColumn dataField="numMovies" dataSort={true} dataFormat={this.formatNumMovies.bind(this)} sortFunc={this.sortNumMovies.bind(this)} dataAlign="center" width="50"><FontAwesomeIcon icon="video" /></TableHeaderColumn>
               </BootstrapTable>;
     } else {
       table = <BootstrapTable
@@ -248,9 +248,9 @@ export default class Finder extends Component {
                 <TableHeaderColumn dataField="fa" dataSort={true} dataFormat={this.formatFa.bind(this)} sortFunc={this.sortFa.bind(this)} dataAlign="center" width="70">FA</TableHeaderColumn>
                 <TableHeaderColumn dataField="numTicks" dataSort={true} dataAlign="center" width="50">Ticks</TableHeaderColumn>
                 <TableHeaderColumn dataField="stars" dataSort={true} dataFormat={this.formatStars.bind(this)} dataAlign="center" width="70">Stars</TableHeaderColumn>
-                <TableHeaderColumn dataField="numImages" dataSort={true} dataFormat={this.formatNumImages.bind(this)} sortFunc={this.sortNumImages.bind(this)} dataAlign="center" width="50"><i className="fas fa-camera"></i></TableHeaderColumn>
-                <TableHeaderColumn dataField="numMovies" dataSort={true} dataFormat={this.formatNumMovies.bind(this)} sortFunc={this.sortNumMovies.bind(this)} dataAlign="center" width="50"><i className="fas fa-video"></i></TableHeaderColumn>
-                <TableHeaderColumn dataField="distance" dataSort={true} dataFormat={this.formatDistance.bind(this)} sortFunc={this.sortDistance.bind(this)} dataAlign="center" width="60"><i className="fas fa-plane"></i></TableHeaderColumn>
+                <TableHeaderColumn dataField="numImages" dataSort={true} dataFormat={this.formatNumImages.bind(this)} sortFunc={this.sortNumImages.bind(this)} dataAlign="center" width="50"><FontAwesomeIcon icon="camera" /></TableHeaderColumn>
+                <TableHeaderColumn dataField="numMovies" dataSort={true} dataFormat={this.formatNumMovies.bind(this)} sortFunc={this.sortNumMovies.bind(this)} dataAlign="center" width="50"><FontAwesomeIcon icon="video" /></TableHeaderColumn>
+                <TableHeaderColumn dataField="distance" dataSort={true} dataFormat={this.formatDistance.bind(this)} sortFunc={this.sortDistance.bind(this)} dataAlign="center" width="60"><FontAwesomeIcon icon="plane" /></TableHeaderColumn>
               </BootstrapTable>;
     }
 

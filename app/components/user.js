@@ -9,7 +9,7 @@ import TickModal from './common/tick-modal/tick-modal';
 import auth from '../utils/auth.js';
 import config from '../utils/config.js';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner, faLock, faUserSecret, faStar, faStarHalf } from '@fortawesome/fontawesome-free-solid';
+import { faSpinner, faLock, faUserSecret, faStar, faStarHalf, faCheck, faEdit } from '@fortawesome/fontawesome-free-solid';
 
 export default class User extends Component {
   constructor(props) {
@@ -91,14 +91,14 @@ export default class User extends Component {
 
   formatFa(cell, row) {
     if (cell) {
-      return <i className="fas fa-check"/>;
+      return <FontAwesomeIcon icon="check" />;
     }
     return "";
   }
 
   formatEdit(cell, row) {
     if (this.state.user.readOnly==false && row.id!=0) {
-      return <OverlayTrigger placement="top" overlay={<Tooltip id={row.id}>Edit tick</Tooltip>}><Button bsSize="xsmall" bsStyle="primary" onClick={this.openTickModal.bind(this, row)}><i className="fa-inverse fas fa-edit"/></Button></OverlayTrigger>
+      return <OverlayTrigger placement="top" overlay={<Tooltip id={row.id}>Edit tick</Tooltip>}><Button bsSize="xsmall" bsStyle="primary" onClick={this.openTickModal.bind(this, row)}><FontAwesomeIcon icon="edit" inverse /></Button></OverlayTrigger>
     }
     return "";
   }
@@ -156,7 +156,7 @@ export default class User extends Component {
           {auth.loggedIn() && this.state.user.readOnly==false?
             <div style={{float: 'right'}}>
               <OverlayTrigger placement="top" overlay={<Tooltip id={this.state.user.id}>Edit user</Tooltip>}>
-                <LinkContainer to={`/user/${this.state.user.id}/edit`}><Button bsStyle="primary" bsSize="xsmall"><i className="fa-inverse fas fa-edit"/></Button></LinkContainer>
+                <LinkContainer to={`/user/${this.state.user.id}/edit`}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="edit" inverse /></Button></LinkContainer>
               </OverlayTrigger>
             </div>:
             null

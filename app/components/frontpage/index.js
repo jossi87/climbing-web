@@ -7,7 +7,7 @@ import ImageBox from './imagebox/imagebox';
 import LinkBox from './linkbox/linkbox';
 import config from '../../utils/config.js';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/fontawesome-free-solid';
+import { faSpinner, faCamera, faVideo } from '@fortawesome/fontawesome-free-solid';
 
 const style = {padding: 0, textAlign: 'left'};
 const styleNw = {padding: 0, textAlign: 'left', whiteSpace: 'nowrap'};
@@ -50,7 +50,7 @@ export default class Index extends Component {
     });
 
     const newestMedia = this.state.data.medias.map((x, i) => {
-      const icon = x.type === 'image'? <i className="fas fa-camera"/> : <i className="fas fa-video"/>;
+      const icon = x.type === 'image'? <FontAwesomeIcon icon="camera" /> : <FontAwesomeIcon icon="video" />;
       return (
         <p key={i}>
           <Link to={`/problem/${x.idProblem}`}>{x.problem}</Link> <small>{x.grade}</small> {icon}

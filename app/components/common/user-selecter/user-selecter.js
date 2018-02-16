@@ -3,6 +3,8 @@ import { LinkContainer } from 'react-router-bootstrap';
 import Request from 'superagent';
 import { MenuItem, ButtonGroup, Button, FormGroup, FormControl } from 'react-bootstrap';
 import config from '../../../utils/config.js';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/fontawesome-free-solid';
 
 export default class UserSelecter extends Component {
   constructor(props) {
@@ -69,7 +71,7 @@ export default class UserSelecter extends Component {
       );
     }
 
-    const users = this.state.users.map((u, i) => (<Button key={i} onClick={this.removeUser.bind(this, u.id)}><i className="fas fa-times"></i> {u.name}{u.id==-1? " (new user)" : ""}</Button>));
+    const users = this.state.users.map((u, i) => (<Button key={i} onClick={this.removeUser.bind(this, u.id)}><FontAwesomeIcon icon="times" /> {u.name}{u.id==-1? " (new user)" : ""}</Button>));
 
     return (
       <div style={{position: 'relative', width: '100%'}}>

@@ -10,7 +10,7 @@ import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
 import config from '../utils/config.js';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner, faLock, faUserSecret, faStar, faStarHalf } from '@fortawesome/fontawesome-free-solid';
+import { faSpinner, faLock, faUserSecret, faStar, faStarHalf, faComment, faEdit } from '@fortawesome/fontawesome-free-solid';
 
 export default class Problem extends Component {
   constructor(props) {
@@ -238,11 +238,11 @@ export default class Problem extends Component {
               <Button bsStyle="primary" bsSize="xsmall" onClick={this.openTickModal.bind(this)}>Tick</Button>
             </OverlayTrigger>
             <OverlayTrigger placement="top" overlay={<Tooltip id={-2}>Add comment</Tooltip>}>
-              <Button bsStyle="primary" bsSize="xsmall" onClick={this.openCommentModal.bind(this)}><i className="fa-inverse fas fa-comment"/></Button>
+              <Button bsStyle="primary" bsSize="xsmall" onClick={this.openCommentModal.bind(this)}><FontAwesomeIcon icon="comment" inverse /></Button>
             </OverlayTrigger>
             {auth.isAdmin() &&
               <OverlayTrigger placement="top" overlay={<Tooltip id={this.state.id}>Edit problem</Tooltip>}>
-                <LinkContainer to={{ pathname: `/problem/edit/${this.state.id}`, query: { idSector: this.state.sectorId, lat: this.state.sectorLat, lng: this.state.sectorLng } }}><Button bsStyle="primary" bsSize="xsmall"><i className="fa-inverse fas fa-edit"/></Button></LinkContainer>
+                <LinkContainer to={{ pathname: `/problem/edit/${this.state.id}`, query: { idSector: this.state.sectorId, lat: this.state.sectorLat, lng: this.state.sectorLng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="edit" inverse /></Button></LinkContainer>
               </OverlayTrigger>
             }
           </ButtonGroup>
