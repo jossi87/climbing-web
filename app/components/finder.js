@@ -8,8 +8,8 @@ import { Tabs, Tab, Panel, ButtonToolbar, ButtonGroup, Button, OverlayTrigger, T
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import config from '../utils/config.js';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner, faLock, faUserSecret, faStar, faStarHalf } from '@fortawesome/fontawesome-free-solid';
-import { faStar } from '@fortawesome/fontawesome-free-regular';
+import { faSpinner, faLock, faUserSecret } from '@fortawesome/fontawesome-free-solid';
+import { faStar, faStarHalf } from '@fortawesome/fontawesome-free-regular';
 
 export default class Finder extends Component {
   constructor(props) {
@@ -104,27 +104,27 @@ export default class Finder extends Component {
   formatStars(cell, row) {
     var stars = "";
     if (row.stars===0.0) {
-      stars = <div style={{whiteSpace: 'nowrap'}} id={0}><FontAwesomeIcon icon="star" mask={['far', 'star']} /><FontAwesomeIcon icon="star" mask={['far', 'star']} /><FontAwesomeIcon icon="star" mask={['far', 'star']} /></div>;
+      stars = <div style={{whiteSpace: 'nowrap'}} id={0}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /></div>;
     } else if (row.stars===0.5) {
-      stars = <div style={{whiteSpace: 'nowrap'}} id={1}><FontAwesomeIcon icon="star-half" mask={['fas', 'star-half']} /><FontAwesomeIcon icon="star" mask={['far', 'star']} /><FontAwesomeIcon icon="star" mask={['far', 'star']} /></div>;
+      stars = <div style={{whiteSpace: 'nowrap'}} id={1}><FontAwesomeIcon icon="star-half" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /></div>;
     } else if (row.stars===1.0) {
-      stars = <div style={{whiteSpace: 'nowrap'}} id={2}><FontAwesomeIcon icon="star" mask={['fas', 'star']} /><FontAwesomeIcon icon="star" mask={['far', 'star']} /><FontAwesomeIcon icon="star" mask={['far', 'star']} /></div>;
+      stars = <div style={{whiteSpace: 'nowrap'}} id={2}><FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /></div>;
     } else if (row.stars===1.5) {
-      stars = <div style={{whiteSpace: 'nowrap'}} id={3}><FontAwesomeIcon icon="star" mask={['fas', 'star']} /><FontAwesomeIcon icon="star-half" mask={['fas', 'star-half']} /><FontAwesomeIcon icon="star" mask={['far', 'star']} /></div>;
+      stars = <div style={{whiteSpace: 'nowrap'}} id={3}><FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star-half" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star" /></div>;
     } else if (row.stars===2.0) {
-      stars = <div style={{whiteSpace: 'nowrap'}} id={4}><FontAwesomeIcon icon="star" mask={['fas', 'star']} /><FontAwesomeIcon icon="star" mask={['fas', 'star']} /><FontAwesomeIcon icon="star" mask={['far', 'star']} /></div>;
+      stars = <div style={{whiteSpace: 'nowrap'}} id={4}><FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star" /></div>;
     } else if (row.stars===2.5) {
-      stars = <div style={{whiteSpace: 'nowrap'}} id={5}><FontAwesomeIcon icon="star" mask={['fas', 'star']} /><FontAwesomeIcon icon="star" mask={['fas', 'star']} /><FontAwesomeIcon icon="star-half" mask={['fas', 'star-half']} /></div>;
+      stars = <div style={{whiteSpace: 'nowrap'}} id={5}><FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star-half" className="buldreinfo-star-fill" /></div>;
     } else if (row.stars===3.0) {
-      stars = <div style={{whiteSpace: 'nowrap'}} id={6}><FontAwesomeIcon icon="star" mask={['fas', 'star']} /><FontAwesomeIcon icon="star" mask={['fas', 'star']} /><FontAwesomeIcon icon="star" mask={['fas', 'star']} /></div>;
+      stars = <div style={{whiteSpace: 'nowrap'}} id={6}><FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /></div>;
     }
     else return cell;
     return <OverlayTrigger placement="top" overlay={
           <Popover id={0} title="Guidelines">
-            <FontAwesomeIcon icon="star" mask={['far', 'star']} /><FontAwesomeIcon icon="star" mask={['far', 'star']} /><FontAwesomeIcon icon="star" mask={['far', 'star']} /><br/>
-            <FontAwesomeIcon icon="star" mask={['fas', 'star']} /><FontAwesomeIcon icon="star" mask={['far', 'star']} /><FontAwesomeIcon icon="star" mask={['far', 'star']} /> Nice<br/>
-            <FontAwesomeIcon icon="star" mask={['fas', 'star']} /><FontAwesomeIcon icon="star" mask={['fas', 'star']} /><FontAwesomeIcon icon="star" mask={['far', 'star']} /> Very nice<br/>
-            <FontAwesomeIcon icon="star" mask={['fas', 'star']} /><FontAwesomeIcon icon="star" mask={['fas', 'star']} /><FontAwesomeIcon icon="star" mask={['fas', 'star']} /> Fantastic!
+            <FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><br/>
+            <FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Nice<br/>
+            <FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star" /> Very nice<br/>
+            <FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /> Fantastic!
           </Popover>
         }>{stars}</OverlayTrigger>;
   }
