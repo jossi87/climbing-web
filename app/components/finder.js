@@ -8,7 +8,8 @@ import { Tabs, Tab, Panel, ButtonToolbar, ButtonGroup, Button, OverlayTrigger, T
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import config from '../utils/config.js';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner, faLock, faUserSecret } from '@fortawesome/fontawesome-free-solid';
+import { faSpinner, faLock, faUserSecret, faStar, faStarHalf } from '@fortawesome/fontawesome-free-solid';
+import { faStar } from '@fortawesome/fontawesome-free-regular';
 
 export default class Finder extends Component {
   constructor(props) {
@@ -102,20 +103,20 @@ export default class Finder extends Component {
 
   formatStars(cell, row) {
     var stars = "";
-    if (row.stars===0.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={0}><i className="far fa-star"/><i className="far fa-star"/><i className="far fa-star"/></div>; }
-    else if (row.stars===0.5) { stars = <div style={{whiteSpace: 'nowrap'}} id={1}><i className="fas fa-star-half-o"/><i className="far fa-star"/><i className="far fa-star"/></div>; }
-    else if (row.stars===1.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={2}><i className="fas fa-star"/><i className="far fa-star"/><i className="far fa-star"/></div>; }
-    else if (row.stars===1.5) { stars = <div style={{whiteSpace: 'nowrap'}} id={3}><i className="fas fa-star"/><i className="fas fa-star-half-o"/><i className="far fa-star"/></div>; }
-    else if (row.stars===2.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={4}><i className="fas fa-star"/><i className="fas fa-star"/><i className="far fa-star"/></div>; }
-    else if (row.stars===2.5) { stars = <div style={{whiteSpace: 'nowrap'}} id={5}><i className="fas fa-star"/><i className="fas fa-star"/><i className="fas fa-star-half-o"/></div>; }
-    else if (row.stars===3.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={6}><i className="fas fa-star"/><i className="fas fa-star"/><i className="fas fa-star"/></div>; }
+    if (row.stars===0.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={0}><FontAwesomeIcon icon="star" mask={['far', 'star']} /><FontAwesomeIcon icon="star" mask={['far', 'star']} /><FontAwesomeIcon icon="star" mask={['far', 'star']} /></div>; }
+    else if (row.stars===0.5) { stars = <div style={{whiteSpace: 'nowrap'}} id={1}><FontAwesomeIcon icon="star-half" mask={['fas', 'star-half']} /><FontAwesomeIcon icon="star" mask={['far', 'star']} /><FontAwesomeIcon icon="star" mask={['far', 'star']} /></div>; }
+    else if (row.stars===1.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={2}><FontAwesomeIcon icon="star" mask={['fas', 'star']} /><FontAwesomeIcon icon="star" mask={['far', 'star']} /><FontAwesomeIcon icon="star" mask={['far', 'star']} />; }
+    else if (row.stars===1.5) { stars = <div style={{whiteSpace: 'nowrap'}} id={3}><FontAwesomeIcon icon="star" mask={['fas', 'star']} /><FontAwesomeIcon icon="star-half" mask={['fas', 'star-half']} /><FontAwesomeIcon icon="star" mask={['far', 'star']} />; }
+    else if (row.stars===2.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={4}><FontAwesomeIcon icon="star" mask={['fas', 'star']} /><FontAwesomeIcon icon="star" mask={['fas', 'star']} /><FontAwesomeIcon icon="star" mask={['far', 'star']} />; }
+    else if (row.stars===2.5) { stars = <div style={{whiteSpace: 'nowrap'}} id={5}><FontAwesomeIcon icon="star" mask={['fas', 'star']} /><FontAwesomeIcon icon="star" mask={['fas', 'star']} /><FontAwesomeIcon icon="star-half" mask={['fas', 'star-half']} /></div>; }
+    else if (row.stars===3.0) { stars = <div style={{whiteSpace: 'nowrap'}} id={6}><FontAwesomeIcon icon="star" mask={['fas', 'star']} /><FontAwesomeIcon icon="star" mask={['fas', 'star']} /><FontAwesomeIcon icon="star" mask={['fas', 'star']} /></div>; }
     else return cell;
     return <OverlayTrigger placement="top" overlay={
           <Popover id={0} title="Guidelines">
-            <i className="far fa-star"/><i className="far fa-star"/><i className="far fa-star"/><br/>
-            <i className="fas fa-star"/><i className="far fa-star"/><i className="far fa-star"/> Nice<br/>
-            <i className="fas fa-star"/><i className="fas fa-star"/><i className="far fa-star"/> Very nice<br/>
-            <i className="fas fa-star"/><i className="fas fa-star"/><i className="fas fa-star"/> Fantastic!
+            <FontAwesomeIcon icon="star" mask={['far', 'star']} /><FontAwesomeIcon icon="star" mask={['far', 'star']} /><FontAwesomeIcon icon="star" mask={['far', 'star']} /><br/>
+            <FontAwesomeIcon icon="star" mask={['fas', 'star']} /><FontAwesomeIcon icon="star" mask={['far', 'star']} /><FontAwesomeIcon icon="star" mask={['far', 'star']} /> Nice<br/>
+            <FontAwesomeIcon icon="star" mask={['fas', 'star']} /><FontAwesomeIcon icon="star" mask={['fas', 'star']} /><FontAwesomeIcon icon="star" mask={['far', 'star']} /> Very nice<br/>
+            <FontAwesomeIcon icon="star" mask={['fas', 'star']} /><FontAwesomeIcon icon="star" mask={['fas', 'star']} /><FontAwesomeIcon icon="star" mask={['fas', 'star']} /> Fantastic!
           </Popover>
         }>{stars}</OverlayTrigger>;
   }
