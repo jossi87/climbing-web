@@ -9,7 +9,7 @@ import TickModal from './common/tick-modal/tick-modal';
 import auth from '../utils/auth.js';
 import config from '../utils/config.js';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/fontawesome-free-solid';
+import { faSpinner, faLock, faUserSecret } from '@fortawesome/fontawesome-free-solid';
 
 export default class User extends Component {
   constructor(props) {
@@ -48,7 +48,7 @@ export default class User extends Component {
   }
 
   formatName(cell, row) {
-    return <span><Link to={`/problem/${row.idProblem}`}>{row.name}</Link> {row.visibility===1 && <i className="fas fa-lock"></i>}{row.visibility===2 && <i className="fab fa-expeditedssl"></i>}</span>;
+    return <span><Link to={`/problem/${row.idProblem}`}>{row.name}</Link> {row.visibility===1 && <FontAwesomeIcon icon="lock" />}{row.visibility===2 && <FontAwesomeIcon icon="user-secret" />}</span>;
   }
 
   formatComment(cell, row) {

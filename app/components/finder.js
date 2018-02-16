@@ -8,7 +8,7 @@ import { Tabs, Tab, Panel, ButtonToolbar, ButtonGroup, Button, OverlayTrigger, T
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import config from '../utils/config.js';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/fontawesome-free-solid';
+import { faSpinner, faLock, faUserSecret } from '@fortawesome/fontawesome-free-solid';
 
 export default class Finder extends Component {
   constructor(props) {
@@ -69,15 +69,15 @@ export default class Finder extends Component {
   }
 
   formatAreaName(cell, row) {
-    return <span><Link to={`/area/${row.areaId}`}>{row.areaName}</Link> {row.areaVisibility===1 && <i className="fas fa-lock"></i>}{row.areaVisibility===2 && <i className="fab fa-expeditedssl"></i>}</span>;
+    return <span><Link to={`/area/${row.areaId}`}>{row.areaName}</Link> {row.areaVisibility===1 && <FontAwesomeIcon icon="lock" />}{row.areaVisibility===2 && <FontAwesomeIcon icon="user-secret" />}</span>;
   }
 
   formatSectorName(cell, row) {
-    return <span><Link to={`/sector/${row.sectorId}`}>{row.sectorName}</Link> {row.sectorVisibility===1 && <i className="fas fa-lock"></i>}{row.sectorVisibility===2 && <i className="fab fa-expeditedssl"></i>}</span>;
+    return <span><Link to={`/sector/${row.sectorId}`}>{row.sectorName}</Link> {row.sectorVisibility===1 && <FontAwesomeIcon icon="lock" />}{row.sectorVisibility===2 && <FontAwesomeIcon icon="user-secret" />}</span>;
   }
 
   formatName(cell, row) {
-    return <span><Link to={`/problem/${row.id}`}>{row.name}</Link> {row.visibility===1 && <i className="fas fa-lock"></i>}{row.visibility===2 && <i className="fab fa-expeditedssl"></i>}</span>
+    return <span><Link to={`/problem/${row.id}`}>{row.name}</Link> {row.visibility===1 && <FontAwesomeIcon icon="lock" />}{row.visibility===2 && <FontAwesomeIcon icon="user-secret" />}</span>
   }
 
   formatType(cell, row) {

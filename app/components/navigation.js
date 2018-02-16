@@ -4,6 +4,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 import Request from 'superagent';
 import auth from '../utils/auth.js';
 import config from '../utils/config.js';
+import { faLock, faUserSecret } from '@fortawesome/fontawesome-free-solid';
 
 export default class Navigation extends Component {
   constructor(props) {
@@ -69,7 +70,7 @@ export default class Navigation extends Component {
       const rows = this.state.searchResults.map((s, i) => {
         return (
           <LinkContainer key={i} to={`/problem/${s.id}`}>
-            <MenuItem key={i} href="#" onSelect={this.menuItemSelect.bind(this)}>{s.value} {s.visibility===1 && <i className="fas fa-lock"></i>}{s.visibility===2 && <i className="fab fa-expeditedssl"></i>}</MenuItem>
+            <MenuItem key={i} href="#" onSelect={this.menuItemSelect.bind(this)}>{s.value} {s.visibility===1 && <FontAwesomeIcon icon="lock" />}{s.visibility===2 && <FontAwesomeIcon icon="user-secret" />}</MenuItem>
           </LinkContainer>
         )
       });

@@ -8,7 +8,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 import auth from '../utils/auth.js';
 import config from '../utils/config.js';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/fontawesome-free-solid';
+import { faSpinner, faLock, faUserSecret } from '@fortawesome/fontawesome-free-solid';
 
 class TableRow extends Component {
   /* intersperse: Return an array with the separator interspersed between
@@ -62,7 +62,7 @@ class TableRow extends Component {
     return (
       <tr className={isTickedClassName}>
         <td>{this.props.problem.nr}</td>
-        <td><Link to={`/problem/${this.props.problem.id}`}>{this.props.problem.name}</Link> {this.props.problem.visibility===1 && <i className="fas fa-lock"></i>}{this.props.problem.visibility===2 && <i className="fab fa-expeditedssl"></i>}</td>
+        <td><Link to={`/problem/${this.props.problem.id}`}>{this.props.problem.name}</Link> {this.props.problem.visibility===1 && <FontAwesomeIcon icon="lock" />}{this.props.problem.visibility===2 && <FontAwesomeIcon icon="user-secret" />}</td>
         <td>{comment}</td>
         {type}
         <td>{this.props.problem.grade}</td>
@@ -187,7 +187,7 @@ export default class Sector extends Component {
             </div>:
             null
           }
-          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${this.state.areaId}`}>{this.state.areaName}</Link> {this.state.areaVisibility===1 && <i className="fas fa-lock"></i>}{this.state.areaVisibility===2 && <i className="fab fa-expeditedssl"></i>} / <font color='#777'>{this.state.name}</font> {this.state.visibility===1 && <i className="fas fa-lock"></i>}{this.state.visibility===2 && <i className="fab fa-expeditedssl"></i>}
+          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${this.state.areaId}`}>{this.state.areaName}</Link> {this.state.areaVisibility===1 && <FontAwesomeIcon icon="lock" />}{this.state.areaVisibility===2 && <FontAwesomeIcon icon="user-secret" />} / <font color='#777'>{this.state.name}</font> {this.state.visibility===1 && <FontAwesomeIcon icon="lock" />}{this.state.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
         </Breadcrumb>
         {topoContent}
         {this.state.comment? <Well>{this.state.comment}</Well> : null}

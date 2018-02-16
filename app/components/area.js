@@ -8,7 +8,7 @@ import Gallery from './common/gallery/gallery';
 import auth from '../utils/auth.js';
 import config from '../utils/config.js';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/fontawesome-free-solid';
+import { faSpinner, faLock, faUserSecret, faPlusSquare, faEdit } from '@fortawesome/fontawesome-free-solid';
 
 class TableRow extends Component {
   render() {
@@ -23,7 +23,7 @@ class TableRow extends Component {
     }
     return (
       <tr>
-        <td><Link to={`/sector/${this.props.sector.id}`}>{this.props.sector.name}</Link> {this.props.sector.visibility===1 && <i className="fas fa-lock"></i>}{this.props.sector.visibility===2 && <i className="fab fa-expeditedssl"></i>}</td>
+        <td><Link to={`/sector/${this.props.sector.id}`}>{this.props.sector.name}</Link> {this.props.sector.visibility===1 && <FontAwesomeIcon icon="lock" />}{this.props.sector.visibility===2 && <FontAwesomeIcon icon="user-secret" />}</td>
         <td>{comment}</td>
         <td>{this.props.sector.numProblems}</td>
       </tr>
@@ -126,16 +126,16 @@ export default class Area extends Component {
             <div style={{float: 'right'}}>
               <ButtonGroup>
                 <OverlayTrigger placement="top" overlay={<Tooltip id={-1}>Add sector</Tooltip>}>
-                  <LinkContainer to={{ pathname: `/sector/edit/-1`, query: { idArea: this.state.id, lat: this.state.lat, lng: this.state.lng } }}><Button bsStyle="primary" bsSize="xsmall"><i className="fa-inverse fas fa-plus-square"/></Button></LinkContainer>
+                  <LinkContainer to={{ pathname: `/sector/edit/-1`, query: { idArea: this.state.id, lat: this.state.lat, lng: this.state.lng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="plus-square" inverse /></Button></LinkContainer>
                 </OverlayTrigger>
                 <OverlayTrigger placement="top" overlay={<Tooltip id={this.state.id}>Edit area</Tooltip>}>
-                  <LinkContainer to={{ pathname: `/area/edit/${this.state.id}`, query: { lat: this.state.lat, lng: this.state.lng } }}><Button bsStyle="primary" bsSize="xsmall"><i className="fa-inverse fas fa-edit"/></Button></LinkContainer>
+                  <LinkContainer to={{ pathname: `/area/edit/${this.state.id}`, query: { lat: this.state.lat, lng: this.state.lng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="edit" inverse /></Button></LinkContainer>
                 </OverlayTrigger>
               </ButtonGroup>
             </div>:
             null
           }
-          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <font color='#777'>{this.state.name}</font> {this.state.visibility===1 && <i className="fas fa-lock"></i>}{this.state.visibility===2 && <i className="fab fa-expeditedssl"></i>}
+          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <font color='#777'>{this.state.name}</font> {this.state.visibility===1 && <FontAwesomeIcon icon="lock" />}{this.state.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
         </Breadcrumb>
         {topoContent}
         {this.state.comment? <Well><div dangerouslySetInnerHTML={{ __html: this.state.comment }} /></Well> : null}

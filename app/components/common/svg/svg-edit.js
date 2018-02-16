@@ -7,7 +7,7 @@ import config from '../../../utils/config.js';
 import Request from 'superagent';
 import { Redirect } from 'react-router';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/fontawesome-free-solid';
+import { faSpinner, faLock, faUserSecret } from '@fortawesome/fontawesome-free-solid';
 
 export default class SvgEdit extends Component {
   componentDidMount() {
@@ -327,7 +327,7 @@ export default class SvgEdit extends Component {
     return (
       <span>
         <Breadcrumb>
-          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${this.state.areaId}`}>{this.state.areaName}</Link> {this.state.areaVisibility===1 && <i className="fas fa-lock"></i>}{this.state.areaVisibility===2 && <i className="fab fa-expeditedssl"></i>} / <Link to={`/sector/${this.state.sectorId}`}>{this.state.sectorName}</Link> {this.state.sectorVisibility===1 && <i className="fas fa-lock"></i>}{this.state.sectorVisibility===2 && <i className="fab fa-expeditedssl"></i>} / <Link to={`/problem/${this.state.id}`}>{this.state.nr} {this.state.name} {this.state.grade}</Link> {this.state.visibility===1 && <i className="fas fa-lock"></i>}{this.state.visibility===2 && <i className="fab fa-expeditedssl"></i>}
+          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${this.state.areaId}`}>{this.state.areaName}</Link> {this.state.areaVisibility===1 && <FontAwesomeIcon icon="lock" />}{this.state.areaVisibility===2 && <FontAwesomeIcon icon="user-secret" />} / <Link to={`/sector/${this.state.sectorId}`}>{this.state.sectorName}</Link> {this.state.sectorVisibility===1 && <FontAwesomeIcon icon="lock" />}{this.state.sectorVisibility===2 && <FontAwesomeIcon icon="user-secret" />} / <Link to={`/problem/${this.state.id}`}>{this.state.nr} {this.state.name} {this.state.grade}</Link> {this.state.visibility===1 && <FontAwesomeIcon icon="lock" />}{this.state.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
         </Breadcrumb>
         <Well bsSize="small" onMouseUp={this.cancelDragging.bind(this)} onMouseLeave={this.cancelDragging.bind(this)}>
           <form onSubmit={this.save.bind(this)}>
