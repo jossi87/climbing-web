@@ -8,7 +8,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 import auth from '../utils/auth.js';
 import config from '../utils/config.js';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner, faLock, faUserSecret } from '@fortawesome/fontawesome-free-solid';
+import { faSpinner, faLock, faUserSecret, faStar, faStarHalf } from '@fortawesome/fontawesome-free-solid';
 
 class TableRow extends Component {
   /* intersperse: Return an array with the separator interspersed between
@@ -38,15 +38,32 @@ class TableRow extends Component {
     }
     var fa = this.props.problem.fa? this.props.problem.fa.map((u, i) => {return (<Link key={i} to={`/user/${u.id}`}>{u.firstname} {u.surname}</Link>)}) : [];
     fa = this.intersperse(fa, ", ");
-    var stars = "";
     const isTickedClassName = this.props.problem.ticked? 'success' : '';
-    if (this.props.problem.stars===0.0) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="far fa-star"/><i className="far fa-star"/><i className="far fa-star"/></div>; }
-    else if (this.props.problem.stars===0.5) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="fas fa-star-half-o"/><i className="far fa-star"/><i className="far fa-star"/></div>; }
-    else if (this.props.problem.stars===1.0) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="fas fa-star"/><i className="far fa-star"/><i className="far fa-star"/></div>; }
-    else if (this.props.problem.stars===1.5) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="fas fa-star"/><i className="fas fa-star-half-o"/><i className="far fa-star"/></div>; }
-    else if (this.props.problem.stars===2.0) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="fas fa-star"/><i className="fas fa-star"/><i className="far fa-star"/></div>; }
-    else if (this.props.problem.stars===2.5) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="fas fa-star"/><i className="fas fa-star"/><i className="fas fa-star-half-o"/></div>; }
-    else if (this.props.problem.stars===3.0) { stars = <div style={{whiteSpace: 'nowrap'}}><i className="fas fa-star"/><i className="fas fa-star"/><i className="fas fa-star"/></div>; }
+
+    var stars = null;
+    if (this.props.problem.stars===0.5) {
+      stars = <FontAwesomeIcon icon="star-half" />;
+    } else if (this.props.problem.stars===1.0) {
+      stars = <div style={{whiteSpace: 'nowrap'}} id={2}><FontAwesomeIcon icon="star" /></div>;
+    } else if (this.props.problem.stars===1.5) {
+      stars = <div style={{whiteSpace: 'nowrap'}} id={3}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star-half" /></div>;
+    } else if (this.props.problem.stars===2.0) {
+      stars = <div style={{whiteSpace: 'nowrap'}} id={4}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /></div>;
+    } else if (this.props.problem.stars===2.5) {
+      stars = <div style={{whiteSpace: 'nowrap'}} id={5}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star-half" /></div>;
+    } else if (this.props.problem.stars===3.0) {
+      stars = <div style={{whiteSpace: 'nowrap'}} id={6}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /></div>;
+    }
+    if (stars) {
+      stars = <OverlayTrigger placement="top" overlay={
+        <Popover id={0} title="Guidelines">
+          <FontAwesomeIcon icon="star" /> Nice<br/>
+          <FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Very nice<br/>
+          <FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Fantastic!
+        </Popover>
+      }>{stars}</OverlayTrigger>;
+    }
+
     var type;
     if (config.getRegion()==4) {
       var typeImg;
@@ -68,16 +85,7 @@ class TableRow extends Component {
         <td>{this.props.problem.grade}</td>
         <td>{fa}</td>
         <td>{this.props.problem.numTicks}</td>
-        <td>
-          <OverlayTrigger placement="top" overlay={
-            <Popover id={this.props.problem.id} title="Guidelines">
-              <i className="far fa-star"/><i className="far fa-star"/><i className="far fa-star"/><br/>
-              <i className="fas fa-star"/><i className="far fa-star"/><i className="far fa-star"/> Nice<br/>
-              <i className="fas fa-star"/><i className="fas fa-star"/><i className="far fa-star"/> Very nice<br/>
-              <i className="fas fa-star"/><i className="fas fa-star"/><i className="fas fa-star"/> Fantastic!
-            </Popover>
-          }>{stars}</OverlayTrigger>
-        </td>
+        <td>{stars}</td>
         <td>{this.props.problem.numImages}</td>
         <td>{this.props.problem.numMovies}</td>
         <td>{this.props.problem.lat>0 && this.props.problem.lng>0 && <i className="fas fa-check"></i>}</td>

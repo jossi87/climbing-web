@@ -4,7 +4,7 @@ import Request from 'superagent';
 import config from '../../../utils/config.js';
 import Calendar from 'react-input-calendar';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/fontawesome-free-solid';
+import { faSpinner, faStar } from '@fortawesome/fontawesome-free-solid';
 
 export default class TickModal extends Component {
   constructor(props) {
@@ -92,12 +92,6 @@ export default class TickModal extends Component {
       return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
 
-    var stars = null;
-    if (this.state.stars===0) { stars = <span><i className="far fa-star"/><i className="far fa-star"/><i className="far fa-star"/></span>; }
-    else if (this.state.stars===1) { stars = <span><i className="fas fa-star"/><i className="far fa-star"/><i className="far fa-star"/></span>; }
-    else if (this.state.stars===2) { stars = <span><i className="fas fa-star"/><i className="fas fa-star"/><i className="far fa-star"/></span>; }
-    else if (this.state.stars===3) { stars = <span><i className="fas fa-star"/><i className="fas fa-star"/><i className="fas fa-star"/></span>; }
-
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate()-1);
 
@@ -123,11 +117,11 @@ export default class TickModal extends Component {
           </FormGroup>
           <FormGroup>
             <ControlLabel>Stars</ControlLabel><br/>
-            <DropdownButton title={stars} id="bg-nested-dropdown">
-              <MenuItem eventKey="0" onSelect={this.onStarsChanged.bind(this, 0)}><i className="far fa-star"/><i className="far fa-star"/><i className="far fa-star"/></MenuItem>
-              <MenuItem eventKey="1" onSelect={this.onStarsChanged.bind(this, 1)}><i className="fas fa-star"/><i className="far fa-star"/><i className="far fa-star"/> Nice</MenuItem>
-              <MenuItem eventKey="2" onSelect={this.onStarsChanged.bind(this, 2)}><i className="fas fa-star"/><i className="fas fa-star"/><i className="far fa-star"/> Very nice</MenuItem>
-              <MenuItem eventKey="3" onSelect={this.onStarsChanged.bind(this, 3)}><i className="fas fa-star"/><i className="fas fa-star"/><i className="fas fa-star"/> Fantastic!</MenuItem>
+            <DropdownButton title={this.state.stars} id="bg-nested-dropdown">
+              <MenuItem eventKey="0" onSelect={this.onStarsChanged.bind(this, 0)}>No stars</MenuItem>
+              <MenuItem eventKey="1" onSelect={this.onStarsChanged.bind(this, 1)}><FontAwesomeIcon icon="star" /> Nice</MenuItem>
+              <MenuItem eventKey="2" onSelect={this.onStarsChanged.bind(this, 2)}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Very nice</MenuItem>
+              <MenuItem eventKey="3" onSelect={this.onStarsChanged.bind(this, 3)}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Fantastic!</MenuItem>
             </DropdownButton>
           </FormGroup>
           <FormGroup>

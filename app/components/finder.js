@@ -114,8 +114,9 @@ export default class Finder extends Component {
       stars = <div style={{whiteSpace: 'nowrap'}} id={5}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star-half" /></div>;
     } else if (row.stars===3.0) {
       stars = <div style={{whiteSpace: 'nowrap'}} id={6}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /></div>;
+    } else {
+      return "";
     }
-    else return "";
     return <OverlayTrigger placement="top" overlay={
           <Popover id={0} title="Guidelines">
             <FontAwesomeIcon icon="star" /> Nice<br/>

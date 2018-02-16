@@ -186,8 +186,6 @@ export default class Problem extends Component {
               <FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Fantastic!
             </Popover>
           }>{stars}</OverlayTrigger>;
-        } else {
-          stars = "";
         }
         return (
           <tr className={isTickedClassName} key={i}>
