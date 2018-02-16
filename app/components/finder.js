@@ -104,7 +104,7 @@ export default class Finder extends Component {
   formatStars(cell, row) {
     var stars = "";
     if (row.stars===0.0) {
-      stars = <div style={{whiteSpace: 'nowrap'}} id={0}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /></div>;
+      stars = <div style={{whiteSpace: 'nowrap'}} id={0}><FontAwesomeIcon inverse icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /></div>;
     } else if (row.stars===0.5) {
       stars = <div style={{whiteSpace: 'nowrap'}} id={1}><FontAwesomeIcon icon="star-half" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /></div>;
     } else if (row.stars===1.0) {
