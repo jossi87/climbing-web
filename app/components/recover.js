@@ -5,6 +5,8 @@ import Request from 'superagent';
 import { FormGroup, ControlLabel, FormControl, HelpBlock, ButtonGroup, Button, Panel, Well } from 'react-bootstrap';
 import auth from '../utils/auth.js';
 import config from '../utils/config.js';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/fontawesome-free-solid';
 
 export default class Recover extends Component {
   constructor(props) {
@@ -59,7 +61,7 @@ export default class Recover extends Component {
 
   render() {
     if (!this.state.token) {
-      return <center><div className="fa-3x"><i className="fas fa-spinner fa-spin"></i></div></center>;
+      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
     else if (this.state.error) {
       return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;

@@ -7,6 +7,8 @@ import Map from './common/map/map';
 import Gallery from './common/gallery/gallery';
 import auth from '../utils/auth.js';
 import config from '../utils/config.js';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/fontawesome-free-solid';
 
 class TableRow extends Component {
   render() {
@@ -67,7 +69,7 @@ export default class Area extends Component {
 
   render() {
     if (!this.state.id) {
-      return <center><div className="fa-3x"><i className="fas fa-spinner fa-spin"></i></div></center>;
+      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
     if (this.state.error) {
       return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;

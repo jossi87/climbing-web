@@ -9,6 +9,8 @@ import ImageUpload from './common/image-upload/image-upload';
 import config from '../utils/config.js';
 import auth from '../utils/auth.js';
 import Calendar from 'react-input-calendar';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/fontawesome-free-solid';
 
 const GettingStartedGoogleMap = withGoogleMap(props => (
   <GoogleMap
@@ -148,7 +150,7 @@ export default class ProblemEdit extends Component {
 
   render() {
     if (!this.state || !this.state.id || !this.state.types || !this.state.grades) {
-      return <center><div className="fa-3x"><i className="fas fa-spinner fa-spin"></i></div></center>;
+      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
     else if (this.state.error) {
       return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;

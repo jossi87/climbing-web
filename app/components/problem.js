@@ -9,6 +9,8 @@ import auth from '../utils/auth.js';
 import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
 import config from '../utils/config.js';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/fontawesome-free-solid';
 
 export default class Problem extends Component {
   constructor(props) {
@@ -110,7 +112,7 @@ export default class Problem extends Component {
       return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;
     }
     if (!this.state.id) {
-      return <center><div className="fa-3x"><i className="fas fa-spinner fa-spin"></i></div></center>;
+      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
 
     const markers = [];

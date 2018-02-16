@@ -7,6 +7,8 @@ import Gallery from './common/gallery/gallery';
 import { Tabs, Tab, Panel, ButtonToolbar, ButtonGroup, Button, OverlayTrigger, Tooltip, Popover, DropdownButton, MenuItem, Breadcrumb } from 'react-bootstrap';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import config from '../utils/config.js';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/fontawesome-free-solid';
 
 export default class Finder extends Component {
   constructor(props) {
@@ -184,7 +186,7 @@ export default class Finder extends Component {
 
   render() {
     if (!this.state.problems) {
-      return <center><div className="fa-3x"><i className="fas fa-spinner fa-spin"></i></div></center>;
+      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
     if (this.state.error) {
       return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;

@@ -5,6 +5,8 @@ import Request from 'superagent';
 import { FormGroup, ControlLabel, FormControl, HelpBlock, ButtonGroup, Button, Panel, Breadcrumb, Well } from 'react-bootstrap';
 import auth from '../utils/auth.js';
 import config from '../utils/config.js';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/fontawesome-free-solid';
 
 export default class UserEdit extends Component {
   constructor(props) {
@@ -131,7 +133,7 @@ export default class UserEdit extends Component {
 
   render() {
     if (!this.state) {
-      return <center><div className="fa-3x"><i className="fas fa-spinner fa-spin"></i></div></center>;
+      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
     else if (this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);

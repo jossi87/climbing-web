@@ -7,6 +7,8 @@ import {withGoogleMap, GoogleMap, Marker, Polygon} from "react-google-maps";
 import ImageUpload from './common/image-upload/image-upload';
 import config from '../utils/config.js';
 import auth from '../utils/auth.js';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/fontawesome-free-solid';
 
 const GettingStartedGoogleMap = withGoogleMap(props => (
   <GoogleMap
@@ -118,7 +120,7 @@ export default class SectorEdit extends Component {
 
   render() {
     if (!this.state) {
-      return <center><div className="fa-3x"><i className="fas fa-spinner fa-spin"></i></div></center>;
+      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
     else if (this.state.error) {
       return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;

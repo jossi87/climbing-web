@@ -6,6 +6,8 @@ import TextBox from './textbox/textbox';
 import ImageBox from './imagebox/imagebox';
 import LinkBox from './linkbox/linkbox';
 import config from '../../utils/config.js';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/fontawesome-free-solid';
 
 const style = {padding: 0, textAlign: 'left'};
 const styleNw = {padding: 0, textAlign: 'left', whiteSpace: 'nowrap'};
@@ -23,7 +25,7 @@ export default class Index extends Component {
 
   render() {
     if (!this.state) {
-      return <center><div className="fa-3x"><i className="fas fa-spinner fa-spin"></i></div></center>;
+      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
     if (this.state.error) {
       return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;

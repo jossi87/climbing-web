@@ -6,6 +6,8 @@ import {parseSVG, makeAbsolute} from 'svg-path-parser';
 import config from '../../../utils/config.js';
 import Request from 'superagent';
 import { Redirect } from 'react-router';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/fontawesome-free-solid';
 
 export default class SvgEdit extends Component {
   componentDidMount() {
@@ -293,7 +295,7 @@ export default class SvgEdit extends Component {
 
   render() {
     if (!this.state) {
-      return <center><div className="fa-3x"><i className="fas fa-spinner fa-spin"></i></div></center>;
+      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
     else if (this.state.error) {
       return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;

@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import { Modal, Button, FormGroup, ControlLabel, FormControl, ButtonGroup } from 'react-bootstrap';
 import Request from 'superagent';
 import config from '../../../utils/config.js';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/fontawesome-free-solid';
 
 export default class CommentModal extends Component {
   constructor(props) {
@@ -45,7 +47,7 @@ export default class CommentModal extends Component {
 
   render() {
     if (!this.state) {
-      return <center><div className="fa-3x"><i className="fas fa-spinner fa-spin"></i></div></center>;
+      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
 
     return (
