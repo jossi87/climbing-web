@@ -101,7 +101,7 @@ export default class Finder extends Component {
   }
 
   formatStars(cell, row) {
-    var stars = "";
+    var stars = null;
     if (row.stars===0.5) {
       stars = <FontAwesomeIcon icon="star-half" />;
     } else if (row.stars===1.0) {
@@ -115,6 +115,7 @@ export default class Finder extends Component {
     } else if (row.stars===3.0) {
       stars = <div style={{whiteSpace: 'nowrap'}} id={6}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /></div>;
     }
+    else return "";
     return <OverlayTrigger placement="top" overlay={
           <Popover id={0} title="Guidelines">
             <FontAwesomeIcon icon="star" /> Nice<br/>
