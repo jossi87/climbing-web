@@ -95,6 +95,15 @@ export default class TickModal extends Component {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate()-1);
 
+    var stars = "No stars";
+    if (this.state.stars===1) {
+      stars = <span><FontAwesomeIcon icon="star" /> Nice</span>
+    } else if (this.state.stars===2) {
+      stars = <span><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Very nice</span>
+    } else if (this.state.stars===3) {
+      stars = <span><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Fantastic!</span>
+    }
+
     return (
       <Modal show={this.props.show} onHide={this.props.onHide.bind(this)}>
         <Modal.Header closeButton>
@@ -117,7 +126,7 @@ export default class TickModal extends Component {
           </FormGroup>
           <FormGroup>
             <ControlLabel>Stars</ControlLabel><br/>
-            <DropdownButton title={this.state.stars} id="bg-nested-dropdown">
+            <DropdownButton title={stars} id="bg-nested-dropdown">
               <MenuItem eventKey="0" onSelect={this.onStarsChanged.bind(this, 0)}>No stars</MenuItem>
               <MenuItem eventKey="1" onSelect={this.onStarsChanged.bind(this, 1)}><FontAwesomeIcon icon="star" /> Nice</MenuItem>
               <MenuItem eventKey="2" onSelect={this.onStarsChanged.bind(this, 2)}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Very nice</MenuItem>
