@@ -102,28 +102,25 @@ export default class Finder extends Component {
 
   formatStars(cell, row) {
     var stars = "";
-    if (row.stars===0.0) {
-      stars = <div style={{whiteSpace: 'nowrap'}} id={0}><FontAwesomeIcon icon="star" inverse /><FontAwesomeIcon icon="star" inverse /><FontAwesomeIcon icon="star" /></div>;
-    } else if (row.stars===0.5) {
-      stars = <div style={{whiteSpace: 'nowrap'}} id={1}><FontAwesomeIcon icon="star-half" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /></div>;
+    if (row.stars===0.5) {
+      stars = <FontAwesomeIcon icon="star-half" />;
     } else if (row.stars===1.0) {
-      stars = <div style={{whiteSpace: 'nowrap'}} id={2}><FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /></div>;
+      stars = <div style={{whiteSpace: 'nowrap'}} id={2}><FontAwesomeIcon icon="star" /></div>;
     } else if (row.stars===1.5) {
-      stars = <div style={{whiteSpace: 'nowrap'}} id={3}><FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star-half" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star" /></div>;
+      stars = <div style={{whiteSpace: 'nowrap'}} id={3}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star-half" /></div>;
     } else if (row.stars===2.0) {
-      stars = <div style={{whiteSpace: 'nowrap'}} id={4}><FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star" /></div>;
+      stars = <div style={{whiteSpace: 'nowrap'}} id={4}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /></div>;
     } else if (row.stars===2.5) {
-      stars = <div style={{whiteSpace: 'nowrap'}} id={5}><FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star-half" className="buldreinfo-star-fill" /></div>;
+      stars = <div style={{whiteSpace: 'nowrap'}} id={5}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star-half" /></div>;
     } else if (row.stars===3.0) {
-      stars = <div style={{whiteSpace: 'nowrap'}} id={6}><FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /></div>;
+      stars = <div style={{whiteSpace: 'nowrap'}} id={6}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /></div>;
     }
     else return cell;
     return <OverlayTrigger placement="top" overlay={
           <Popover id={0} title="Guidelines">
-            <FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><br/>
-            <FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Nice<br/>
-            <FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star" /> Very nice<br/>
-            <FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /><FontAwesomeIcon icon="star" className="buldreinfo-star-fill" /> Fantastic!
+            <FontAwesomeIcon icon="star" /> Nice<br/>
+            <FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Very nice<br/>
+            <FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Fantastic!
           </Popover>
         }>{stars}</OverlayTrigger>;
   }
