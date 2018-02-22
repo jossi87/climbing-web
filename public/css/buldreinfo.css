@@ -49,3 +49,49 @@
 .buldreinfo-svg-ring-group.is-active .buldreinfo-svg-route {
   stroke: #011ae2;
 }
+
+.gallery-play-button {
+  cursor: pointer;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  margin: auto;
+  height: 60px;
+  width: 100px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 5px;
+}
+.gallery-play-button:hover {
+  background-color: rgba(0, 0, 0, 0.9);
+}
+.gallery-play-button:after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 16.5px;
+  left: 40px;
+  margin: 0 auto;
+  border-style: solid;
+  border-width: 12.5px 0 12.5px 20px;
+  border-color: transparent transparent transparent rgba(255, 255, 255, 1);
+}
+.gallery-close-video::before {
+  content: '✖';
+  cursor: pointer;
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 20px;
+  padding: 20px;
+  z-index: 1;
+  line-height: .7;
+  display: block;
+  color: #fff;
+}
+.gallery-video-wrapper {
+  position: relative;
+  padding: 33.35% 0; /* 16:9 */
+  height: 0;
+}

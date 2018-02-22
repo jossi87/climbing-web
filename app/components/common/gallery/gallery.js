@@ -114,9 +114,9 @@ export default class Gallery extends Component {
       <div className='image-gallery-image'>
         {
           this.state.showVideo[item.embedUrl] ?
-            <div className='video-wrapper'>
+            <div className='gallery-video-wrapper'>
                 <a
-                  className='close-video'
+                  className='gallery-close-video'
                   onClick={this.toggleShowVideo.bind(this, item.embedUrl)}
                 >
                 </a>
@@ -133,7 +133,7 @@ export default class Gallery extends Component {
             </div>
           :
             <a onClick={this.toggleShowVideo.bind(this, item.embedUrl)}>
-              <div className='play-button'></div>
+              <div className='gallery-play-button'></div>
               <img src={item.original}/>
             </a>
         }
