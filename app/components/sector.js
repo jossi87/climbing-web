@@ -133,11 +133,14 @@ export default class Sector extends Component {
     const problemsInTopo = [];
     if (this.state.media) {
       this.state.media.forEach(m => {
+        console.log("media=" + m);
         if (m.svgs) {
           this.state.media.forEach(svg => problemsInTopo.push(svg.problemId));
+          console.log("svgs=" + m.svgs);
         }
       });
     }
+    console.log(problemsInTopo);
 
     const rows = this.state.problems.map((problem, i) => {
       return (
