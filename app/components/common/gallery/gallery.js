@@ -114,23 +114,19 @@ export default class Gallery extends Component {
       <div className='image-gallery-image'>
         {
           this.state.showVideo[item.embedUrl] ?
-            <div className='gallery-video-wrapper'>
-                <a
-                  className='gallery-close-video'
-                  onClick={this.toggleShowVideo.bind(this, item.embedUrl)}
-                >
-                </a>
-                <ReactPlayer
-                  ref={player => { this.player = player }}
-                  className='react-player'
-                  width='100%'
-                  height='100%'
-                  url={item.embedUrl}
-                  onDuration={duration => this.setState({ duration })}
-                  onStart={() => this.player.seekTo(parseFloat(item.seekTo/this.state.duration))}
-                  controls={true}
-                  playing={true} />
-            </div>
+            <span>
+              <a className='gallery-close-video' onClick={this.toggleShowVideo.bind(this, item.embedUrl)}></a>
+              <ReactPlayer
+                ref={player => { this.player = player }}
+                className='react-player'
+                width='100%'
+                height='100%'
+                url={item.embedUrl}
+                onDuration={duration => this.setState({ duration })}
+                onStart={() => this.player.seekTo(parseFloat(item.seekTo/this.state.duration))}
+                controls={true}
+                playing={true} />
+            </span>
           :
             <a onClick={this.toggleShowVideo.bind(this, item.embedUrl)}>
               <div className='gallery-play-button'></div>

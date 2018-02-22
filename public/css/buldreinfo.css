@@ -90,8 +90,3 @@
   display: block;
   color: #fff;
 }
-.gallery-video-wrapper {
-  position: relative;
-  padding: 33.35% 0; /* 16:9 */
-  height: 0;
-}
