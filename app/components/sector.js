@@ -76,6 +76,7 @@ class TableRow extends Component {
           {this.props.problem.t.type + " - " + this.props.problem.t.subType}
         </Popover>}>{typeImg}</OverlayTrigger></td>;
     }
+
     return (
       <tr className={isTickedClassName}>
         <td>{this.props.problem.nr}</td>
@@ -88,7 +89,7 @@ class TableRow extends Component {
         <td>{stars}</td>
         <td>{this.props.problem.numImages}</td>
         <td>{this.props.problem.numMovies}</td>
-        <td>{this.props.problem.lat>0 && this.props.problem.lng>0 && <FontAwesomeIcon icon="check" />}</td>
+        <td>{( (this.props.problem.lat>0 && this.props.problem.lng>0) || (this.props.problemsInTopo.indexOf(this.props.problem.id)>=0) ) && <FontAwesomeIcon icon="check" />}</td>
       </tr>
     )
   }
@@ -129,9 +130,18 @@ export default class Sector extends Component {
     if (this.state.error) {
       return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;
     }
+    const problemsInTopo = [];
+    if (this.state.media) {
+      this.state.media.forEach(m => (
+        if (m.svgs) {
+          this.state.media.forEach(svg => problemsInTopo.push(svg.problemId));
+        }
+      ));
+    }
+
     const rows = this.state.problems.map((problem, i) => {
       return (
-        <TableRow problem={problem} key={i} />
+        <TableRow problem={problem} problemsInTopo={problemsInTopo} key={i} />
       )
     });
 
