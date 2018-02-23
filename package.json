@@ -49,7 +49,7 @@
     "webpack": "^3.11.0"
   },
   "scripts": {
-    "build": "webpack -p",
+    "build": "webpack",
     "debug": "webpack --display-error-details",
     "dev": "webpack --watch",
     "bundle-analyzer": "webpack --profile --json > webpack-stats.json"
