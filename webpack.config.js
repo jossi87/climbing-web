@@ -1,7 +1,6 @@
 const webpack = require('webpack');
 const HtmlPlugin = require('html-webpack-plugin');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
-const MinifyPlugin = require("babel-minify-webpack-plugin");
 module.exports = {
   // Tell webpack to start bundling our app at app/index.js
   entry: './app',
@@ -41,7 +40,6 @@ module.exports = {
     new UglifyJSPlugin({
       sourceMap: true
     }),
-    new MinifyPlugin(),
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new webpack.DefinePlugin({
       'process.env': {
