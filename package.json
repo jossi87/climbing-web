@@ -15,6 +15,8 @@
     "@fortawesome/fontawesome-free-solid": "^5.0.6",
     "@fortawesome/react-fontawesome": "0.0.17",
     "markerclustererplus": "^2.1.4",
+    "moment": "^2.20.1",
+    "moment-range": "^2.1.0",
     "object-fit-images": "^3.2.3",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
@@ -42,8 +44,6 @@
     "create-react-class": "^15.6.3",
     "css-loader": "^0.28.10",
     "html-webpack-plugin": "^2.30.1",
-    "moment": "^2.20.1",
-    "moment-range": "^2.1.0",
     "style-loader": "^0.20.2",
     "uglifyjs-webpack-plugin": "^1.2.0",
     "webpack": "^3.11.0"
@@ -52,6 +52,6 @@
     "build": "webpack",
     "debug": "webpack --display-error-details",
     "dev": "webpack --watch",
-    "bundle-analyzer": "webpack --profile --json > webpack-stats.json"
+    "bundle-analyzer": "webpack --json > stats.json"
   }
 }
