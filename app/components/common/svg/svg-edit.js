@@ -16,7 +16,7 @@ export default class SvgEdit extends Component {
       if (err) {
         this.setState({error: err});
       } else {
-        const m = res.body[0].media.filter(x => x.id=this.props.match.params.mediaId)[0];
+        const m = res.body[0].media.filter(x => x.id===this.props.match.params.mediaId)[0];
         const readOnlySvgs = [];
         var svgId = 0;
         var points = [];
