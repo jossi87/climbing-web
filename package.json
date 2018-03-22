@@ -41,17 +41,16 @@
     "babel-loader": "^7.1.4",
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
     "create-react-class": "^15.6.3",
     "css-loader": "^0.28.11",
     "html-webpack-plugin": "^3.0.7",
     "style-loader": "^0.20.3",
     "uglifyjs-webpack-plugin": "^1.2.4",
-    "webpack": "^3.10.0"
+    "webpack": "^4.2.0",
+    "webpack-cli": "^2.0.12"
   },
   "scripts": {
-    "build": "webpack",
-    "debug": "webpack --display-error-details",
-    "dev": "webpack --watch",
-    "bundle-analyzer": "webpack --json > stats.json"
+    "build": "webpack --mode production"
   }
 }
