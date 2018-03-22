@@ -1,4 +1,4 @@
-import {Component} from 'react';
+import React, {Component} from 'react';
 class DynamicImport extends Component {
   state = {
     component: null
