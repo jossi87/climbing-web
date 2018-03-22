@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom'; // Used for navbar hack
 import { Route, Switch } from 'react-router-dom';
-// import DynamicImport from './common/dynamic-import/dynamic-import';
-// import Loading from './common/loading/loading';
-
-import Area from './area';
+import Loadable from 'react-loadable';
+import Loading from './common/loading/loading';
+const Area = Loadable({loader: () => import('./area'), loading: Loading});
 import AreaEdit from './area-edit';
 import Browse from './browse';
 import Ethics from './ethics';
@@ -34,7 +33,6 @@ export default class App extends Component {
       if (evt.target.tagName !== 'A' || evt.target.classList.contains('dropdown-toggle') || ! collapsibleNav.classList.contains('in')) {
         return;
       }
-
       btnToggle.click();
     }, false);
   }
