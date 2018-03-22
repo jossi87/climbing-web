@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'; // Used for navbar hack
 import { Route, Switch } from 'react-router-dom';
 import Loadable from 'react-loadable';
 import Loading from './common/loading/loading';
+import Navigation from './navigation';
 const Area = Loadable({loader: () => import('./area'), loading: Loading});
 const AreaEdit = Loadable({loader: () => import('./area-edit'), loading: Loading});
 const Browse = Loadable({loader: () => import('./browse'), loading: Loading});
@@ -11,7 +12,6 @@ const Finder = Loadable({loader: () => import('./finder'), loading: Loading});
 const Index = Loadable({loader: () => import('./frontpage/index'), loading: Loading});
 const Login = Loadable({loader: () => import('./login'), loading: Loading});
 const Logout = Loadable({loader: () => import('./logout'), loading: Loading});
-const Navigation = Loadable({loader: () => import('./navigation'), loading: Loading});
 const Problem = Loadable({loader: () => import('./problem'), loading: Loading});
 const ProblemEdit = Loadable({loader: () => import('./problem-edit'), loading: Loading});
 const Recover = Loadable({loader: () => import('./recover'), loading: Loading});
