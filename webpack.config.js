@@ -34,10 +34,13 @@ module.exports = {
     new HtmlPlugin({
       template: 'app/index.html'
     }),
+    new UglifyJSPlugin({
+      sourceMap: true
+    }),
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new webpack.DefinePlugin({
       'process.env': {
-        'NODE_ENV': JSON.stringify('development') // development / production
+        'NODE_ENV': JSON.stringify('production') // development / production
       }
     })
   ]

@@ -1,27 +1,27 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom'; // Used for navbar hack
 import { Route, Switch } from 'react-router-dom';
-import DynamicImport from './common/dynamic-import/dynamic-import';
-import Loading from './common/loading/loading';
+// import DynamicImport from './common/dynamic-import/dynamic-import';
+// import Loading from './common/loading/loading';
 
-const Area = (props) => (<DynamicImport load={() => import('./area')}>{(Component) => Component === null? <Loading /> : <Component {...props} />}</DynamicImport>)
-const AreaEdit = (props) => (<DynamicImport load={() => import('./area-edit')}>{(Component) => Component === null? <Loading /> : <Component {...props} />}</DynamicImport>);
-const Browse = (props) => (<DynamicImport load={() => import('./browse')}>{(Component) => Component === null? <Loading /> : <Component {...props} />}</DynamicImport>);
-const Ethics = (props) => (<DynamicImport load={() => import('./ethics')}>{(Component) => Component === null? <Loading /> : <Component {...props} />}</DynamicImport>);
-const Finder = (props) => (<DynamicImport load={() => import('./finder')}>{(Component) => Component === null? <Loading /> : <Component {...props} />}</DynamicImport>);
-const Index = (props) => (<DynamicImport load={() => import('./frontpage/index')}>{(Component) => Component === null? <Loading /> : <Component {...props} />}</DynamicImport>);
-const Login = (props) => (<DynamicImport load={() => import('./login')}>{(Component) => Component === null? <Loading /> : <Component {...props} />}</DynamicImport>);
-const Logout = (props) => (<DynamicImport load={() => import('./logout')}>{(Component) => Component === null? <Loading /> : <Component {...props} />}</DynamicImport>);
-const Navigation = (props) => (<DynamicImport load={() => import('./navigation')}>{(Component) => Component === null? <Loading /> : <Component {...props} />}</DynamicImport>);
-const Problem = (props) => (<DynamicImport load={() => import('./problem')}>{(Component) => Component === null? <Loading /> : <Component {...props} />}</DynamicImport>);
-const ProblemEdit = (props) => (<DynamicImport load={() => import('./problem-edit')}>{(Component) => Component === null? <Loading /> : <Component {...props} />}</DynamicImport>);
-const Recover = (props) => (<DynamicImport load={() => import('./recover')}>{(Component) => Component === null? <Loading /> : <Component {...props} />}</DynamicImport>);
-const Register = (props) => (<DynamicImport load={() => import('./register')}>{(Component) => Component === null? <Loading /> : <Component {...props} />}</DynamicImport>);
-const Sector = (props) => (<DynamicImport load={() => import('./sector')}>{(Component) => Component === null? <Loading /> : <Component {...props} />}</DynamicImport>);
-const SectorEdit = (props) => (<DynamicImport load={() => import('./sector-edit')}>{(Component) => Component === null? <Loading /> : <Component {...props} />}</DynamicImport>);
-const SvgEdit = (props) => (<DynamicImport load={() => import('./common/svg/svg-edit')}>{(Component) => Component === null? <Loading /> : <Component {...props} />}</DynamicImport>);
-const User = (props) => (<DynamicImport load={() => import('./user')}>{(Component) => Component === null? <Loading /> : <Component {...props} />}</DynamicImport>);
-const UserEdit = (props) => (<DynamicImport load={() => import('./user-edit')}>{(Component) => Component === null? <Loading /> : <Component {...props} />}</DynamicImport>);
+import Area from './area';
+import AreaEdit from './area-edit';
+import Browse from './browse';
+import Ethics from './ethics';
+import Finder from './finder';
+import Index from './frontpage/index';
+import Login from './login';
+import Logout from './logout';
+import Navigation from './navigation';
+import Problem from './problem';
+import ProblemEdit from './problem-edit';
+import Recover from './recover';
+import Register from './register';
+import Sector from './sector';
+import SectorEdit from './sector-edit';
+import SvgEdit from './common/svg/svg-edit';
+import User from './user';
+import UserEdit from './user-edit';
 
 export default class App extends Component {
   // Temp fix to collapse nav-button on devices: https://github.com/lefant/react-bootstrap/commit/c68b46baea + https://github.com/react-bootstrap/react-router-bootstrap/issues/112#issuecomment-142599003
