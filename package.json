@@ -52,6 +52,8 @@
     "webpack-cli": "^2.0.12"
   },
   "scripts": {
-    "build": "webpack --mode production"
+    "build": "webpack --mode production",
+    "stats": "webpack --profile --json > stats.json",
+    "help": "http://chrisbateman.github.io/webpack-visualizer/"
   }
 }
