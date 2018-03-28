@@ -74,13 +74,7 @@ export default class SvgEdit extends Component {
     if (!e.ctrlKey) this.setState({ctrl: false});
   };
 
-  toggleAnchor() {
-    var anchor = this.state.hasAnchor;
-    if (anchor === true) {
-      anchor = false;
-    } else {
-      anchor = true;
-    }
+  setHasAnchor(anchor) {
     this.setState({hasAnchor: anchor});
   }
 
@@ -352,8 +346,8 @@ export default class SvgEdit extends Component {
                       <Button onClick={this.removeActivePoint.bind(this)}>Remove this point</Button>
                     )}
                     <DropdownButton title={this.state.hasAnchor === true? "Route has anchor" : "No anchor on route"} disabled={this.state.points.length===0} id="bg-nested-dropdown">
-                      <MenuItem eventKey="0" onSelect={this.toggleAnchor.bind(this)}>No anchor on route</MenuItem>
-                      <MenuItem eventKey="1" onSelect={this.toggleAnchor.bind(this)}>Route has anchor</MenuItem>
+                      <MenuItem eventKey="0" onSelect={this.setHasAnchor.bind(this, false)}>No anchor on route</MenuItem>
+                      <MenuItem eventKey="1" onSelect={this.setHasAnchor.bind(this, true)}>Route has anchor</MenuItem>
                     </DropdownButton>
                     <Button bsStyle="warning" disabled={this.state.points.length===0} onClick={this.reset.bind(this)}>Reset path</Button>
                     <Button bsStyle="danger" onClick={this.onCancel.bind(this)}>Cancel</Button>
