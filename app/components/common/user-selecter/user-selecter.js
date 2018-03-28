@@ -18,6 +18,7 @@ export default class UserSelecter extends Component {
   inputChange(e) {
     var value = e.target.value;
     if (value.length>0) {
+      this.setState({searchInputValue: value});
       Request.get(config.getUrl("users/search?value=" + value)).withCredentials().end((err, res) => {
         if (err) {
           console.log(err);
@@ -26,7 +27,7 @@ export default class UserSelecter extends Component {
         if (sr.filter(u => u.name.toUpperCase()===value.toUpperCase()).length==0 && this.state.users.filter(u => u.name.toUpperCase()===value.toUpperCase()).length==0) {
           sr.push({id: -1, name: value});
         }
-        this.setState({searchInputValue: value, searchResults: sr});
+        this.setState({searchResults: sr});
       });
     }
     else {
