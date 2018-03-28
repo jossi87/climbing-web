@@ -345,7 +345,7 @@ export default class SvgEdit extends Component {
                     {this.state.activePoint !== 0 && (
                       <Button onClick={this.removeActivePoint.bind(this)}>Remove this point</Button>
                     )}
-                    <DropdownButton title={!!this.state.hasAnchor? "Route has anchor" : "No anchor on route"} disabled={this.state.points.length===0} id="bg-nested-dropdown">
+                    <DropdownButton title={this.state.hasAnchor? "Route has anchor" : "No anchor on route"} disabled={this.state.points.length===0} id="bg-nested-dropdown">
                       <MenuItem eventKey="0" onSelect={this.toggleAnchor.bind(this)}>No anchor on route</MenuItem>
                       <MenuItem eventKey="1" onSelect={this.toggleAnchor.bind(this)}>Route has anchor</MenuItem>
                     </DropdownButton>
