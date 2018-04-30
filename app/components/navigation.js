@@ -57,8 +57,9 @@ export default class Navigation extends Component {
     }
   }
 
-  handleChange(selectedOption) {
-    this.setState({pushUrl: selectedOption.value});
+  renderValue(value) {
+    console.log(value);
+    return value;
   }
 
   render() {
@@ -118,7 +119,7 @@ export default class Navigation extends Component {
               // Do no filtering, just return all options
               return options;
             }}
-            onChange={this.handleChange.bind(this)}
+            valueComponent={this.renderValue.bind(this)}
           />
           </Navbar.Form>
         </Navbar.Collapse>
