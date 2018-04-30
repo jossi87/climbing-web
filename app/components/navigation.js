@@ -36,15 +36,14 @@ const OptionComponent = createClass({
 	},
 	render () {
 		return (
-
 			<div className={this.props.className}
 				onMouseDown={this.handleMouseDown}
 				onMouseEnter={this.handleMouseEnter}
 				onMouseMove={this.handleMouseMove}
 				title={this.props.option.title}>
-        <LinkContainer key={this.props.optionIndex} to={this.props.option.value.url}>
+        <a href={this.props.option.value.url}>
   				{this.props.children} {this.props.option.value.visibility===1 && <FontAwesomeIcon icon="lock" />}{this.props.option.value.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
-        </LinkContainer>
+        </a>
   		</div>
 		);
 	}
