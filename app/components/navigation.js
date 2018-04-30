@@ -6,13 +6,14 @@ import auth from '../utils/auth.js';
 import config from '../utils/config.js';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { faLock, faUserSecret } from '@fortawesome/fontawesome-free-solid';
+import Select from 'react-select';
+import 'react-select/dist/react-select.css';
 
 export default class Navigation extends Component {
   constructor(props) {
     super(props);
     this.state = {
       logo: '/png/buldreinfo_logo_gray.png',
-      searchString: '',
       loggedIn: auth.loggedIn()
     };
   }
@@ -35,54 +36,17 @@ export default class Navigation extends Component {
     });
   }
 
-  inputChange(e) {
-    if (e.target.value && e.target.value.length>0) {
-      this.setState({searchString: e.target.value});
-
-      Request.post(config.getUrl("search"))
-      .withCredentials()
-      .send({regionId: config.getRegion(), value: e.target.value})
-      .set('Accept', 'application/json')
-      .end((err, res) => {
-        if (err) {
-          console.log(err);
-        } else {
-          this.setState({searchResults: res.body});
-        }
-      });
-    }
-    else {
-      this.setState({searchString: e.target.value, searchResults: null});
-    }
-  }
-
-  menuItemSelect() {
-    this.setState({searchString: '', searchResults: null});
-  }
-
   hoverImage(hover) {
     const logo = hover? '/png/buldreinfo_logo_white.png' : '/png/buldreinfo_logo_gray.png';
     this.setState({logo: logo});
   }
 
+  handleChange(selectedOption) {
+    this.setState({selectedOption});
+  }
+
   render() {
-    var searchResults = "";
-    if (this.state && this.state.searchResults && this.state.searchResults.length>0) {
-      const rows = this.state.searchResults.map((s, i) => {
-        return (
-          <LinkContainer key={i} to={`/problem/${s.id}`}>
-            <MenuItem key={i} href="#" onSelect={this.menuItemSelect.bind(this)}>{s.value} {s.visibility===1 && <FontAwesomeIcon icon="lock" />}{s.visibility===2 && <FontAwesomeIcon icon="user-secret" />}</MenuItem>
-          </LinkContainer>
-        )
-      });
-      searchResults=(
-        <div className="clearfix">
-          <ul className="dropdown-menu open" style={{display:'inline', right:'auto'}}>
-            {rows}
-          </ul>
-        </div>
-      );
-    }
+    const value = this.state && this.state.selectedOption && selectedOption.value;
     return (
       <Navbar inverse>
         <Navbar.Header>
@@ -128,10 +92,15 @@ export default class Navigation extends Component {
             </NavDropdown>
           </Nav>
           <Navbar.Form pullRight>
-            <FormGroup bsSize="small">
-              <FormControl type="text" placeholder="Search" value={this.state.searchString} onChange={this.inputChange.bind(this)} />
-            </FormGroup>
-            {searchResults}
+            <Select
+              name="form-field-name"
+              value={value}
+              onChange={this.handleChange.bind(this)}
+              options={[
+                { value: 'one', label: 'One' },
+                { value: 'two', label: 'Two' },
+              ]}
+            />
           </Navbar.Form>
         </Navbar.Collapse>
       </Navbar>
