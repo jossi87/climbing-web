@@ -118,26 +118,28 @@ export default class Navigation extends Component {
           <Navbar.Toggle />
         </Navbar.Header>
         <Navbar.Collapse>
-          <Nav>
+          <Navbar.Form pullLeft>
             <LinkContainer to="/browse">
               <NavItem eventKey={1}>Browse</NavItem>
             </LinkContainer>
-            <Async
-              style={{width: '200px'}}
-              placeholder="Search"
-              loadOptions={this.search.bind(this)}
-              filterOptions={(options, filter, currentValues) => {
-                // Do no filtering, just return all options
-                return options;
-              }}
-              optionComponent={this.OptionComponent}
-              onChange={this.onChange.bind(this)}
-            />
+            <FormGroup>
+              <Async
+                style={{width: '200px'}}
+                placeholder="Search"
+                loadOptions={this.search.bind(this)}
+                filterOptions={(options, filter, currentValues) => {
+                  // Do no filtering, just return all options
+                  return options;
+                }}
+                optionComponent={this.OptionComponent}
+                onChange={this.onChange.bind(this)}
+              />
+            </FormGroup>
             <NavDropdown eventKey={2} title="Finder" id='basic-nav-dropdown'>
               {auth.isSuperAdmin() && <LinkContainer to="/finder/-1"><MenuItem eventKey={2.0}>Grade: <strong>superadmin</strong></MenuItem></LinkContainer>}
               {this.state && this.state.grades && this.state.grades.map((g, i) => { return <LinkContainer key={"2." + i} to={"/finder/" + g.id}><MenuItem eventKey={"3." + i}>Grade: <strong>{g.grade}</strong></MenuItem></LinkContainer> })}
             </NavDropdown>
-          </Nav>
+          </Navbar.Form>
 
           <Nav pullRight>
             {this.state.loggedIn?
