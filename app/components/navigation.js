@@ -10,7 +10,7 @@ import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { faLock, faUserSecret } from '@fortawesome/fontawesome-free-solid';
 import { Async } from 'react-select';
 import 'react-select/dist/react-select.css';
-import { Redirect } from 'react-router';
+import { Switch, Redirect } from 'react-router';
 
 const OptionComponent = createClass({
 	propTypes: {
@@ -101,7 +101,7 @@ export default class Navigation extends Component {
 
   render() {
     if (this.state && this.state.pushUrl) {
-      return (<Redirect from="/" to={this.state.pushUrl} push />);
+      return (<Switch><Redirect to={this.state.pushUrl} push /></Switch>);
     }
     return (
       <Navbar inverse>
