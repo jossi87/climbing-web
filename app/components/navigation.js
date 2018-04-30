@@ -61,7 +61,7 @@ export default class Navigation extends Component {
     this.setState({loggedIn: !!loggedIn});
   }
 
-  componentWillRecieveProps(nextProps) {
+  componentWillReceiveProps(nextProps) {
     this.setState({pushUrl: null});
   }
 
