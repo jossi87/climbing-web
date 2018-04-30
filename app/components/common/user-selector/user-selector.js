@@ -24,6 +24,7 @@ var UserSelector = createClass({
     };
 	},
 	handleOnChange(value) {
+    console.log(value);
 		this.setState({multiValue: value});
 	},
 	render() {
