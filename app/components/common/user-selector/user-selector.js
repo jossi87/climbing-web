@@ -11,19 +11,20 @@ var UserSelector = createClass({
 		label: PropTypes.string
 	},
 	getInitialState() {
-    Request.get(config.getUrl("users/search?value=")).withCredentials().end((err, res) => {
+    Request.get(config.getUrl("users/search?value=" + value)).withCredentials().end((err, res) => {
       if (err) {
         console.log(err);
       } else {
-        return {
-    			multiValue: [],
-    			options: res.body.map(u => {return {value: u.id, label: u.name}})
-    		};
+        this.setState({options: res.body.map(u => {return {value: u.id, label: u.name}})});
       }
     });
+    return {
+      multiValue: [],
+      options: []
+    };
 	},
 	handleOnChange(value) {
-		this.setState({ multiValue: value });
+		this.setState({multiValue: value});
 	},
 	render() {
 		return (
