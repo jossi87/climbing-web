@@ -139,7 +139,7 @@ export default class ProblemEdit extends Component {
 
   onUsersUpdated(newUsers) {
     const fa = newUsers.map(u => {
-      return {id: u.id, firstname: u.name, surname: null};
+      return {id: u.value, firstname: u.label, surname: null};
     });
     this.setState({fa: fa});
   }
@@ -213,7 +213,7 @@ export default class ProblemEdit extends Component {
           </FormGroup>
           <FormGroup controlId="formControlsFA">
             <ControlLabel>FA</ControlLabel><br/>
-            <UserSelector users={this.state.fa? this.state.fa.map(u => {return {id: u.id, name: u.firstname + " " + u.surname}}) : []} onUsersUpdated={this.onUsersUpdated.bind(this)}/>
+            <UserSelector users={this.state.fa? this.state.fa.map(u => {return {value: u.id, label: u.firstname + " " + u.surname}}) : []} onUsersUpdated={this.onUsersUpdated.bind(this)}/>
           </FormGroup>
           <FormGroup controlId="formControlsVisibility">
             <ControlLabel>Visibility</ControlLabel><br/>

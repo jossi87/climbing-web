@@ -19,12 +19,12 @@ var UserSelector = createClass({
       }
     });
     return {
-      multiValue: [],
+      multiValue: this.props.users,
       options: []
     };
 	},
 	handleOnChange(value) {
-    console.log(value);
+    this.props.onUsersUpdated(value);
 		this.setState({multiValue: value});
 	},
 	render() {
