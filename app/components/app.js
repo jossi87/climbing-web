@@ -1,6 +1,11 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom'; // Used for navbar hack
 import { Route, Switch } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+} from 'react-router-dom';
 import Loadable from 'react-loadable';
 import Loading from './common/loading/loading';
 import Navigation from './navigation';
@@ -39,7 +44,7 @@ export default class App extends Component {
 
   render() {
     return (
-      <span>
+      <Router>
         <Navigation/>
         <div className="container">
           <Switch>
@@ -66,7 +71,7 @@ export default class App extends Component {
             buldreinfo.com &amp; brattelinjer.no &copy; 2006-2018
           </footer>
         </div>
-      </span>
+      </Router>
     );
   }
 }

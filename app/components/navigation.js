@@ -41,9 +41,7 @@ const OptionComponent = createClass({
 				onMouseEnter={this.handleMouseEnter}
 				onMouseMove={this.handleMouseMove}
 				title={this.props.option.title}>
-        <a href={this.props.option.value.url}>
-  				{this.props.children} {this.props.option.value.visibility===1 && <FontAwesomeIcon icon="lock" />}{this.props.option.value.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
-        </a>
+  			{this.props.children} {this.props.option.value.visibility===1 && <FontAwesomeIcon icon="lock" />}{this.props.option.value.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
   		</div>
 		);
 	}
