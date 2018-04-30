@@ -6,7 +6,7 @@ import auth from '../utils/auth.js';
 import config from '../utils/config.js';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { faLock, faUserSecret } from '@fortawesome/fontawesome-free-solid';
-import Select from 'react-select';
+import { Async } from 'react-select';
 import 'react-select/dist/react-select.css';
 
 export default class Navigation extends Component {
@@ -41,12 +41,28 @@ export default class Navigation extends Component {
     this.setState({logo: logo});
   }
 
-  handleChange(selectedOption) {
-    this.setState({selectedOption});
+  search(input, callback) {
+    Request.post(config.getUrl("search"))
+      .withCredentials()
+      .send({regionId: config.getRegion(), value: input})
+      .set('Accept', 'application/json')
+      .end((err, res) => {
+        if (err) {
+          console.log(err);
+        } else {
+          //this.setState({searchResults: res.body});
+          callback(null, {
+            options: [
+              { value: 'one', label: 'One' },
+              { value: 'two', label: 'Two' }
+            ]
+          });
+        }
+      }
+    );
   }
 
   render() {
-    const value = this.state && this.state.selectedOption && selectedOption.value;
     return (
       <Navbar inverse>
         <Navbar.Header>
@@ -92,15 +108,7 @@ export default class Navigation extends Component {
             </NavDropdown>
           </Nav>
           <Navbar.Form pullRight>
-            <Select
-              name="form-field-name"
-              value={value}
-              onChange={this.handleChange.bind(this)}
-              options={[
-                { value: 'one', label: 'One' },
-                { value: 'two', label: 'Two' },
-              ]}
-            />
+          <Async loadOptions={this.search.bind(this)}/>
           </Navbar.Form>
         </Navbar.Collapse>
       </Navbar>
