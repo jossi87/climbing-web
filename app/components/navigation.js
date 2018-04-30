@@ -57,9 +57,8 @@ export default class Navigation extends Component {
     }
   }
 
-  valueComponent(props) {
-    console.log(props);
-    return (props);
+  optionComponent(e) {
+    console.log(e);
   }
 
   render() {
@@ -119,7 +118,7 @@ export default class Navigation extends Component {
               // Do no filtering, just return all options
               return options;
             }}
-            valueComponent={this.valueComponent}
+            optionComponent={this.optionComponent.bind(this)}
           />
           </Navbar.Form>
         </Navbar.Collapse>
