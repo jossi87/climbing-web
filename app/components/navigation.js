@@ -8,6 +8,7 @@ import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { faLock, faUserSecret } from '@fortawesome/fontawesome-free-solid';
 import { Async } from 'react-select';
 import 'react-select/dist/react-select.css';
+import { Redirect } from 'react-router';
 
 export default class Navigation extends Component {
   constructor(props) {
@@ -48,7 +49,7 @@ export default class Navigation extends Component {
         .send({regionId: config.getRegion(), value: input})
         .set('Accept', 'application/json')
         .end((err, res) => {
-          callback(err, {options: res.body && res.body.map(s => {return {value: s.value, label: s.value}})});
+          callback(err, {options: res.body && res.body.map(s => {return {value: s.url, label: s.value}})});
         }
       );
     } else {
@@ -57,10 +58,13 @@ export default class Navigation extends Component {
   }
 
   handleChange(selectedOption) {
-    console.log(selectedOption);
+    this.setState({pushUrl: selectedOption.value});
   }
 
   render() {
+    if (this.state && this.state.pushUrl) {
+      return (<Redirect to={this.state.pushUrl} push />);
+    }
     return (
       <Navbar inverse>
         <Navbar.Header>
