@@ -56,8 +56,8 @@ export default class Navigation extends Component {
     }
   }
 
-  selectValue(value, event) {
-    console.log(value);
+  handleChange(selectedOption) {
+    console.log(selectedOption);
   }
 
   render() {
@@ -108,13 +108,14 @@ export default class Navigation extends Component {
           <Navbar.Form pullRight>
           <Async
             style={{width: '200px'}}
+            clearable
             placeholder="Search"
             loadOptions={this.search.bind(this)}
             filterOptions={(options, filter, currentValues) => {
               // Do no filtering, just return all options
               return options;
             }}
-            selectValue={this.selectValue.bind(this)}
+            onChange={this.handleChange.bind(this)}
           />
           </Navbar.Form>
         </Navbar.Collapse>
