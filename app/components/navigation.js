@@ -58,7 +58,11 @@ export default class Navigation extends Component {
   }
 
   optionComponent(e) {
-    console.log(e);
+    return (
+      <LinkContainer key={e.optionIndex} to={e.option.value}>
+        <MenuItem key={e.optionIndex} href="#">{e.option.label}</MenuItem>
+      </LinkContainer>
+    );
   }
 
   render() {
