@@ -42,14 +42,16 @@ export default class Navigation extends Component {
   }
 
   search(input, callback) {
-    Request.post(config.getUrl("search"))
-      .withCredentials()
-      .send({regionId: config.getRegion(), value: input})
-      .set('Accept', 'application/json')
-      .end((err, res) => {
-        callback(err, {options: res.body && res.body.map(s => {return {value: s.value, label: s.value}})});
-      }
-    );
+    if (input) {
+      Request.post(config.getUrl("search"))
+        .withCredentials()
+        .send({regionId: config.getRegion(), value: input})
+        .set('Accept', 'application/json')
+        .end((err, res) => {
+          callback(err, {options: res.body && res.body.map(s => {return {value: s.value, label: s.value}})});
+        }
+      );
+    }
   }
 
   render() {
@@ -99,6 +101,8 @@ export default class Navigation extends Component {
           </Nav>
           <Navbar.Form pullRight>
           <Async
+            style={{width: '200px'}}
+            placeholder="Search"
             loadOptions={this.search.bind(this)}
             filterOptions={(options, filter, currentValues) => {
               // Do no filtering, just return all options
