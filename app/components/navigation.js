@@ -57,14 +57,10 @@ export default class Navigation extends Component {
   }
 
   optionComponent(props) {
-    console.log(props);
     return (
       <LinkContainer key={props.optionIndex} to={props.option.value.url}>
-        <div className={props.className}
-          onMouseDown={props.onSelect}
-          onMouseEnter={props.onFocus}
-          onMouseMove={props.onFocus}>
-          {props.children}
+        <div className={props.className}>
+          {props.children} {props.option.value.visibility===1 && <FontAwesomeIcon icon="lock" />}{props.option.value.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
         </div>
       </LinkContainer>
     );
