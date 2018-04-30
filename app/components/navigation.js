@@ -7,6 +7,8 @@ import config from '../utils/config.js';
 import { Async } from 'react-select';
 import 'react-select/dist/react-select.css';
 import { Redirect } from 'react-router';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { faLock, faUserSecret } from '@fortawesome/fontawesome-free-solid';
 
 export default class Navigation extends Component {
   constructor(props) {
@@ -31,7 +33,7 @@ export default class Navigation extends Component {
   }
 
   optionRenderer(props) {
-    console.log(props);
+    return <span>{props.label} {this.state.visibility===1 && <FontAwesomeIcon icon="lock" />}{this.state.visibility===2 && <FontAwesomeIcon icon="user-secret" />}</span>
   }
 
   componentDidMount() {
