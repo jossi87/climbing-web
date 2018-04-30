@@ -10,7 +10,7 @@ import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { faLock, faUserSecret } from '@fortawesome/fontawesome-free-solid';
 import { Async } from 'react-select';
 import 'react-select/dist/react-select.css';
-import { Switch, Redirect } from 'react-router';
+import { Redirect } from 'react-router';
 
 const OptionComponent = createClass({
 	propTypes: {
@@ -61,6 +61,10 @@ export default class Navigation extends Component {
     this.setState({loggedIn: !!loggedIn});
   }
 
+  componentWillRecieveProps(nextProps) {
+    this.setState({pushUrl: null});
+  }
+
   componentWillMount() {
     auth.onChange = this.updateAuth.bind(this);
     auth.login();
@@ -101,7 +105,7 @@ export default class Navigation extends Component {
 
   render() {
     if (this.state && this.state.pushUrl) {
-      return (<Switch><Redirect to={this.state.pushUrl} push /></Switch>);
+      return (<Redirect to={this.state.pushUrl} push />);
     }
     return (
       <Navbar inverse>
