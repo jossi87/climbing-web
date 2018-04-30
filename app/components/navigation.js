@@ -118,10 +118,16 @@ export default class Navigation extends Component {
           <Navbar.Toggle />
         </Navbar.Header>
         <Navbar.Collapse>
-          <Navbar.Form pullLeft>
+          <Nav>
             <LinkContainer to="/browse">
               <NavItem eventKey={1}>Browse</NavItem>
             </LinkContainer>
+            <NavDropdown eventKey={2} title="Finder" id='basic-nav-dropdown'>
+              {auth.isSuperAdmin() && <LinkContainer to="/finder/-1"><MenuItem eventKey={2.0}>Grade: <strong>superadmin</strong></MenuItem></LinkContainer>}
+              {this.state && this.state.grades && this.state.grades.map((g, i) => { return <LinkContainer key={"2." + i} to={"/finder/" + g.id}><MenuItem eventKey={"3." + i}>Grade: <strong>{g.grade}</strong></MenuItem></LinkContainer> })}
+            </NavDropdown>
+          </Nav>
+          <Navbar.Form pullLeft>
             <FormGroup>
               <Async
                 style={{width: '200px'}}
@@ -135,10 +141,6 @@ export default class Navigation extends Component {
                 onChange={this.onChange.bind(this)}
               />
             </FormGroup>
-            <NavDropdown eventKey={2} title="Finder" id='basic-nav-dropdown'>
-              {auth.isSuperAdmin() && <LinkContainer to="/finder/-1"><MenuItem eventKey={2.0}>Grade: <strong>superadmin</strong></MenuItem></LinkContainer>}
-              {this.state && this.state.grades && this.state.grades.map((g, i) => { return <LinkContainer key={"2." + i} to={"/finder/" + g.id}><MenuItem eventKey={"3." + i}>Grade: <strong>{g.grade}</strong></MenuItem></LinkContainer> })}
-            </NavDropdown>
           </Navbar.Form>
 
           <Nav pullRight>
