@@ -11,7 +11,7 @@ var UserSelector = createClass({
 		label: PropTypes.string
 	},
 	getInitialState() {
-    Request.get(config.getUrl("users/search?value=" + value)).withCredentials().end((err, res) => {
+    Request.get(config.getUrl("users/search?value=")).withCredentials().end((err, res) => {
       if (err) {
         console.log(err);
       } else {
