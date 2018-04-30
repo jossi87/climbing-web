@@ -4,7 +4,7 @@ import { Redirect } from 'react-router'
 import Request from 'superagent';
 import { FormGroup, ControlLabel, FormControl, ButtonGroup, Button, DropdownButton, MenuItem, Well } from 'react-bootstrap';
 import {withGoogleMap, GoogleMap, Marker} from "react-google-maps";
-import UserSelecter from './common/user-selecter/user-selecter';
+import UserSelector from './common/user-selecter/user-selector';
 import ImageUpload from './common/image-upload/image-upload';
 import config from '../utils/config.js';
 import auth from '../utils/auth.js';
@@ -213,7 +213,7 @@ export default class ProblemEdit extends Component {
           </FormGroup>
           <FormGroup controlId="formControlsFA">
             <ControlLabel>FA</ControlLabel><br/>
-            <UserSelecter users={this.state.fa? this.state.fa.map(u => {return {id: u.id, name: u.firstname + " " + u.surname}}) : []} onUsersUpdated={this.onUsersUpdated.bind(this)}/>
+            <UserSelector users={this.state.fa? this.state.fa.map(u => {return {id: u.id, name: u.firstname + " " + u.surname}}) : []} onUsersUpdated={this.onUsersUpdated.bind(this)}/>
           </FormGroup>
           <FormGroup controlId="formControlsVisibility">
             <ControlLabel>Visibility</ControlLabel><br/>
