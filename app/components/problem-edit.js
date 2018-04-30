@@ -139,7 +139,7 @@ export default class ProblemEdit extends Component {
 
   onUsersUpdated(newUsers) {
     const fa = newUsers.map(u => {
-      return {id: u.value typeof stringValue? -1 : u.value, firstname: u.label, surname: null};
+      return {id: (typeof u.value === 'string' || u.value instanceof String)? -1 : u.value, firstname: u.label, surname: null};
     });
     this.setState({fa: fa});
   }
