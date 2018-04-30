@@ -4,7 +4,7 @@ import { Redirect } from 'react-router'
 import Request from 'superagent';
 import { FormGroup, ControlLabel, FormControl, ButtonGroup, Button, DropdownButton, MenuItem, Well } from 'react-bootstrap';
 import {withGoogleMap, GoogleMap, Marker} from "react-google-maps";
-import UserSelector from './common/user-selecter/user-selector';
+import UserSelector from './common/user-selector/user-selector';
 import ImageUpload from './common/image-upload/image-upload';
 import config from '../utils/config.js';
 import auth from '../utils/auth.js';
