@@ -30,6 +30,10 @@ export default class Navigation extends Component {
     auth.login();
   }
 
+  optionRenderer(props) {
+    console.log(props);
+  }
+
   componentDidMount() {
     Request.get(config.getUrl("grades?regionId=" + config.getRegion())).end((err, res) => {
       this.setState({
@@ -98,6 +102,7 @@ export default class Navigation extends Component {
                   return options;
                 }}
                 onChange={this.onChange.bind(this)}
+                optionRenderer={this.optionRenderer.bind(this)}
               />
             </FormGroup>
           </Navbar.Form>
