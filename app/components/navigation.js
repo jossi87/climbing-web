@@ -49,7 +49,7 @@ export default class Navigation extends Component {
         .send({regionId: config.getRegion(), value: input})
         .set('Accept', 'application/json')
         .end((err, res) => {
-          callback(err, {options: res.body && res.body.map(s => {return {value: s.url, label: s.value}})});
+          callback(err, {options: res.body && res.body.map(s => {return {value: s, label: s.value}})});
         }
       );
     } else {
@@ -58,8 +58,9 @@ export default class Navigation extends Component {
   }
 
   optionComponent(e) {
+    console.log(e.option);
     return (
-      <LinkContainer key={e.optionIndex} to={e.option.value}>
+      <LinkContainer key={e.optionIndex} to={e.option.value.url}>
         <MenuItem key={e.optionIndex} href="#">{e.option.label}</MenuItem>
       </LinkContainer>
     );
