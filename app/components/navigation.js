@@ -65,7 +65,7 @@ export default class Navigation extends Component {
           onMouseDown={props.handleMouseDown}
           onMouseEnter={props.handleMouseEnter}
           onMouseMove={props.handleMouseMove}>
-          {this.props.children}
+          {props.children}
         </div>
       </LinkContainer>
     );
