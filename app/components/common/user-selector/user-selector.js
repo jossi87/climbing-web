@@ -8,11 +8,10 @@ import config from '../../../utils/config.js';
 var UserSelector = createClass({
 	displayName: 'UserSelector',
 	propTypes: {
-		hint: PropTypes.string,
 		label: PropTypes.string
 	},
-	getInitialState () {
-    Request.get(config.getUrl("users/search?value=" + value)).withCredentials().end((err, res) => {
+	getInitialState() {
+    Request.get(config.getUrl("users/search?value=")).withCredentials().end((err, res) => {
       if (err) {
         console.log(err);
       } else {
@@ -23,10 +22,10 @@ var UserSelector = createClass({
       }
     });
 	},
-	handleOnChange (value) {
+	handleOnChange(value) {
 		this.setState({ multiValue: value });
 	},
-	render () {
+	render() {
 		return (
       <div style={{position: 'relative', width: '100%'}}>
         <div style={{width: '100%'}}>
