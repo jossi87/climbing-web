@@ -57,11 +57,16 @@ export default class Navigation extends Component {
     }
   }
 
-  optionComponent(e) {
-    console.log(e);
+  optionComponent(props) {
+    console.log(props);
     return (
-      <LinkContainer key={e.optionIndex} to={e.option.value.url}>
-        <MenuItem key={e.optionIndex} href="#">{e.option.label}</MenuItem>
+      <LinkContainer key={props.optionIndex} to={props.option.value.url}>
+        <div className={props.className}
+          onMouseDown={props.handleMouseDown}
+          onMouseEnter={props.handleMouseEnter}
+          onMouseMove={props.handleMouseMove}>
+          {this.props.children}
+        </div>
       </LinkContainer>
     );
   }
