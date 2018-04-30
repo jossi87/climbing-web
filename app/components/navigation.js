@@ -9,6 +9,44 @@ import { faLock, faUserSecret } from '@fortawesome/fontawesome-free-solid';
 import { Async } from 'react-select';
 import 'react-select/dist/react-select.css';
 
+const OptionComponent = createClass({
+	propTypes: {
+		children: PropTypes.node,
+		className: PropTypes.string,
+		isDisabled: PropTypes.bool,
+		isFocused: PropTypes.bool,
+		isSelected: PropTypes.bool,
+		onFocus: PropTypes.func,
+		onSelect: PropTypes.func,
+		option: PropTypes.object.isRequired,
+	},
+	handleMouseDown (event) {
+		event.preventDefault();
+		event.stopPropagation();
+		this.props.onSelect(this.props.option, event);
+	},
+	handleMouseEnter (event) {
+		this.props.onFocus(this.props.option, event);
+	},
+	handleMouseMove (event) {
+		if (this.props.isFocused) return;
+		this.props.onFocus(this.props.option, event);
+	},
+	render () {
+		return (
+      <LinkContainer key={this.props.optionIndex} to={this.props.option.value.url}>
+  			<div className={this.props.className}
+  				onMouseDown={this.handleMouseDown}
+  				onMouseEnter={this.handleMouseEnter}
+  				onMouseMove={this.handleMouseMove}
+  				title={this.props.option.title}>
+  				{this.props.children} {this.props.option.value.visibility===1 && <FontAwesomeIcon icon="lock" />}{this.props.option.value.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
+  			</div>
+      </LinkContainer>
+		);
+	}
+});
+
 export default class Navigation extends Component {
   constructor(props) {
     super(props);
@@ -54,16 +92,6 @@ export default class Navigation extends Component {
     } else {
       callback(null, {options: null});
     }
-  }
-
-  optionComponent(props) {
-    return (
-      <LinkContainer key={props.optionIndex} to={props.option.value.url}>
-        <div className={props.className}>
-          {props.children} {props.option.value.visibility===1 && <FontAwesomeIcon icon="lock" />}{props.option.value.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
-        </div>
-      </LinkContainer>
-    );
   }
 
   render() {
@@ -120,7 +148,7 @@ export default class Navigation extends Component {
               // Do no filtering, just return all options
               return options;
             }}
-            optionComponent={this.optionComponent.bind(this)}
+            optionComponent={this.OptionComponent}
           />
           </Navbar.Form>
         </Navbar.Collapse>
