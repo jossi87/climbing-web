@@ -1,6 +1,4 @@
 import React, {Component} from 'react';
-import createClass from 'create-react-class';
-import PropTypes from 'prop-types';
 import { Navbar, Nav, NavItem, FormGroup, FormControl, MenuItem, NavDropdown } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import Request from 'superagent';
@@ -11,43 +9,6 @@ import { faLock, faUserSecret } from '@fortawesome/fontawesome-free-solid';
 import { Async } from 'react-select';
 import 'react-select/dist/react-select.css';
 import { Redirect } from 'react-router';
-
-const OptionComponent = createClass({
-	propTypes: {
-		children: PropTypes.node,
-		className: PropTypes.string,
-		isDisabled: PropTypes.bool,
-		isFocused: PropTypes.bool,
-		isSelected: PropTypes.bool,
-		onFocus: PropTypes.func,
-		onSelect: PropTypes.func,
-		option: PropTypes.object.isRequired,
-	},
-	handleMouseDown (event) {
-		event.preventDefault();
-		event.stopPropagation();
-		this.props.onSelect(this.props.option, event);
-	},
-	handleMouseEnter (event) {
-		this.props.onFocus(this.props.option, event);
-	},
-	handleMouseMove (event) {
-		if (this.props.isFocused) return;
-		this.props.onFocus(this.props.option, event);
-	},
-	render () {
-    console.log(this.props);
-		return (
-			<div className={this.props.className}
-				onMouseDown={this.handleMouseDown}
-				onMouseEnter={this.handleMouseEnter}
-				onMouseMove={this.handleMouseMove}
-				title={this.props.option.title}>
-  			{this.props.children} {this.props.option.value.visibility===1 && <FontAwesomeIcon icon="lock" />}{this.props.option.value.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
-  		</div>
-		);
-	}
-});
 
 export default class Navigation extends Component {
   constructor(props) {
@@ -138,7 +99,6 @@ export default class Navigation extends Component {
                   // Do no filtering, just return all options
                   return options;
                 }}
-                optionComponent={this.OptionComponent}
                 onChange={this.onChange.bind(this)}
               />
             </FormGroup>
