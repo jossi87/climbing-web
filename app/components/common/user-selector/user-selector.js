@@ -12,15 +12,14 @@ var UserSelector = createClass({
 		label: PropTypes.string
 	},
 	getInitialState () {
-		return {
-			multiValue: [],
-			options: []
-		};
     Request.get(config.getUrl("users/search?value=" + value)).withCredentials().end((err, res) => {
       if (err) {
         console.log(err);
       } else {
-        this.setState({options: res.body.map(u => {return {value: u.id, label: u.name}})});
+        return {
+    			multiValue: [],
+    			options: res.body.map(u => {return {value: u.id, label: u.name}})
+    		};
       }
     });
 	},
