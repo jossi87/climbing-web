@@ -95,9 +95,8 @@ export default class Navigation extends Component {
     }
   }
 
-  onChange(e, b) {
-    console.log(e);
-    console.log(b);
+  onChange(props) {
+    this.setState({pushUrl: props.value.url});
   }
 
   render() {
