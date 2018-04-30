@@ -63,7 +63,7 @@ export default class Navigation extends Component {
 
   render() {
     if (this.state && this.state.pushUrl) {
-      return (<Redirect to={this.state.pushUrl} push />);
+      return (<Redirect to={this.state.pushUrl} />);
     }
     return (
       <Navbar inverse>
@@ -112,7 +112,6 @@ export default class Navigation extends Component {
           <Navbar.Form pullRight>
           <Async
             style={{width: '200px'}}
-            clearable
             placeholder="Search"
             loadOptions={this.search.bind(this)}
             filterOptions={(options, filter, currentValues) => {
