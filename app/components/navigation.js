@@ -56,7 +56,7 @@ export default class Navigation extends Component {
     }
   }
 
-  onValueClick(value, event) {
+  selectValue(value, event) {
     console.log(value);
   }
 
@@ -114,7 +114,7 @@ export default class Navigation extends Component {
               // Do no filtering, just return all options
               return options;
             }}
-            onValueClick={this.onValueClick.bind(this)}
+            selectValue={this.selectValue.bind(this)}
           />
           </Navbar.Form>
         </Navbar.Collapse>
