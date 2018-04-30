@@ -22,6 +22,11 @@ const OptionComponent = createClass({
 		onSelect: PropTypes.func,
 		option: PropTypes.object.isRequired,
 	},
+	handleMouseDown (event) {
+		event.preventDefault();
+		event.stopPropagation();
+		this.props.onSelect(this.props.option, event);
+	},
 	handleMouseEnter (event) {
 		this.props.onFocus(this.props.option, event);
 	},
@@ -31,14 +36,16 @@ const OptionComponent = createClass({
 	},
 	render () {
 		return (
-      <LinkContainer key={this.props.optionIndex} to={this.props.option.value.url}>
-  			<div className={this.props.className}
-  				onMouseEnter={this.handleMouseEnter}
-  				onMouseMove={this.handleMouseMove}
-  				title={this.props.option.title}>
+
+			<div className={this.props.className}
+				onMouseDown={this.handleMouseDown}
+				onMouseEnter={this.handleMouseEnter}
+				onMouseMove={this.handleMouseMove}
+				title={this.props.option.title}>
+        <LinkContainer key={this.props.optionIndex} to={this.props.option.value.url}>
   				{this.props.children} {this.props.option.value.visibility===1 && <FontAwesomeIcon icon="lock" />}{this.props.option.value.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
-  			</div>
-      </LinkContainer>
+        </LinkContainer>
+  		</div>
 		);
 	}
 });
