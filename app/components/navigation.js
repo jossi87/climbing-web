@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import createClass from 'create-react-class';
+import PropTypes from 'prop-types';
 import { Navbar, Nav, NavItem, FormGroup, FormControl, MenuItem, NavDropdown } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import Request from 'superagent';
