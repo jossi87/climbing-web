@@ -47,9 +47,7 @@ export default class Navigation extends Component {
       .send({regionId: config.getRegion(), value: input})
       .set('Accept', 'application/json')
       .end((err, res) => {
-        callback(err, {
-          options: res.body && res.body.map(s => {return {value: s.value, label: s.value}});
-        });
+        callback(err, {options: res.body && res.body.map(s => {return {value: s.value, label: s.value}})});
       }
     );
   }
@@ -100,7 +98,13 @@ export default class Navigation extends Component {
             </NavDropdown>
           </Nav>
           <Navbar.Form pullRight>
-          <Async loadOptions={this.search.bind(this)}/>
+          <Async
+            loadOptions={this.search.bind(this)}
+            filterOptions={(options, filter, currentValues) => {
+              // Do no filtering, just return all options
+              return options;
+            }}
+          />
           </Navbar.Form>
         </Navbar.Collapse>
       </Navbar>
