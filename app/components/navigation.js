@@ -48,7 +48,7 @@ export default class Navigation extends Component {
       .set('Accept', 'application/json')
       .end((err, res) => {
         callback(err, {
-          options: res.body && res.body.map(s => {value: s.value, label: s.value});
+          options: res.body && res.body.map(s => {return {value: s.value, label: s.value}});
         });
       }
     );
