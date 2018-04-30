@@ -56,6 +56,10 @@ export default class Navigation extends Component {
     }
   }
 
+  onValueClick(value, event) {
+    console.log(value);
+  }
+
   render() {
     return (
       <Navbar inverse>
@@ -110,6 +114,7 @@ export default class Navigation extends Component {
               // Do no filtering, just return all options
               return options;
             }}
+            onValueClick={this.onValueClick.bind(this)}
           />
           </Navbar.Form>
         </Navbar.Collapse>
