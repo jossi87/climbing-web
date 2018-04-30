@@ -36,6 +36,7 @@ const OptionComponent = createClass({
 		this.props.onFocus(this.props.option, event);
 	},
 	render () {
+    console.log(this.props.option);
 		return (
 			<div className={this.props.className}
 				onMouseDown={this.handleMouseDown}
