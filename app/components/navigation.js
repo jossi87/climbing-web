@@ -47,17 +47,9 @@ export default class Navigation extends Component {
       .send({regionId: config.getRegion(), value: input})
       .set('Accept', 'application/json')
       .end((err, res) => {
-        if (err) {
-          console.log(err);
-        } else {
-          //this.setState({searchResults: res.body});
-          callback(null, {
-            options: [
-              { value: 'one', label: 'One' },
-              { value: 'two', label: 'Two' }
-            ]
-          });
-        }
+        callback(err, {
+          options: res.body && res.body.map(s => {value: s.value, label: s.value});
+        });
       }
     );
   }
