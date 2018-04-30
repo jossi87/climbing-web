@@ -101,7 +101,7 @@ export default class Navigation extends Component {
 
   render() {
     if (this.state && this.state.pushUrl) {
-      return (<Redirect to={this.state.pushUrl} push />);
+      return (<Redirect from="/" to={this.state.pushUrl} push />);
     }
     return (
       <Navbar inverse>
