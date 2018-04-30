@@ -44,32 +44,34 @@ export default class App extends Component {
   render() {
     return (
       <Router>
-        <Navigation/>
-        <div className="container">
-          <Switch>
-            <Route exact path='/' component={Index}/>
-            <Route path="/browse" component={Browse}/>
-            <Route path="/ethics" component={Ethics}/>
-            <Route exact path="/area/:areaId" component={Area}/>
-            <Route exact path="/area/edit/:areaId" component={AreaEdit}/>
-            <Route exact path="/sector/:sectorId" component={Sector}/>
-            <Route exact path="/sector/edit/:sectorId" component={SectorEdit}/>
-            <Route exact path="/problem/:problemId" component={Problem}/>
-            <Route exact path="/problem/edit/:problemId" component={ProblemEdit}/>
-            <Route exact path="/problem/svg-edit/:problemId/:mediaId" component={SvgEdit}/>
-            <Route exact path="/finder/:grade" component={Finder}/>
-            <Route exact path="/user" component={User}/>
-            <Route exact path="/user/:userId" component={User}/>
-            <Route exact path="/user/:userId/edit" component={UserEdit}/>
-            <Route path="/login" component={Login}/>
-            <Route path="/register" component={Register}/>
-            <Route exact path="/recover/:token" component={Recover}/>
-            <Route path="/logout" component={Logout}/>
-          </Switch>
-          <footer style={{paddingTop: '10px', marginTop: '40px', color: '#777', textAlign: 'center', borderTop: '1px solid #e5e5e5'}}>
-            buldreinfo.com &amp; brattelinjer.no &copy; 2006-2018
-          </footer>
-        </div>
+        <span>
+          <Navigation/>
+          <div className="container">
+            <Switch>
+              <Route exact path='/' component={Index}/>
+              <Route path="/browse" component={Browse}/>
+              <Route path="/ethics" component={Ethics}/>
+              <Route exact path="/area/:areaId" component={Area}/>
+              <Route exact path="/area/edit/:areaId" component={AreaEdit}/>
+              <Route exact path="/sector/:sectorId" component={Sector}/>
+              <Route exact path="/sector/edit/:sectorId" component={SectorEdit}/>
+              <Route exact path="/problem/:problemId" component={Problem}/>
+              <Route exact path="/problem/edit/:problemId" component={ProblemEdit}/>
+              <Route exact path="/problem/svg-edit/:problemId/:mediaId" component={SvgEdit}/>
+              <Route exact path="/finder/:grade" component={Finder}/>
+              <Route exact path="/user" component={User}/>
+              <Route exact path="/user/:userId" component={User}/>
+              <Route exact path="/user/:userId/edit" component={UserEdit}/>
+              <Route path="/login" component={Login}/>
+              <Route path="/register" component={Register}/>
+              <Route exact path="/recover/:token" component={Recover}/>
+              <Route path="/logout" component={Logout}/>
+            </Switch>
+            <footer style={{paddingTop: '10px', marginTop: '40px', color: '#777', textAlign: 'center', borderTop: '1px solid #e5e5e5'}}>
+              buldreinfo.com &amp; brattelinjer.no &copy; 2006-2018
+            </footer>
+          </div>
+        </span>
       </Router>
     );
   }

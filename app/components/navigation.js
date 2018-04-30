@@ -95,6 +95,11 @@ export default class Navigation extends Component {
     }
   }
 
+  onChange(e, b) {
+    console.log(e);
+    console.log(b);
+  }
+
   render() {
     if (this.state && this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
@@ -153,6 +158,7 @@ export default class Navigation extends Component {
               return options;
             }}
             optionComponent={this.OptionComponent}
+            onChange={this.onChange.bind(this)}
           />
           </Navbar.Form>
         </Navbar.Collapse>
