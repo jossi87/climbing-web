@@ -8,7 +8,6 @@ import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { faLock, faUserSecret } from '@fortawesome/fontawesome-free-solid';
 import { Async } from 'react-select';
 import 'react-select/dist/react-select.css';
-import { Redirect } from 'react-router';
 
 export default class Navigation extends Component {
   constructor(props) {
@@ -62,9 +61,9 @@ export default class Navigation extends Component {
     return (
       <LinkContainer key={props.optionIndex} to={props.option.value.url}>
         <div className={props.className}
-          onMouseDown={props.handleMouseDown}
-          onMouseEnter={props.handleMouseEnter}
-          onMouseMove={props.handleMouseMove}>
+          onMouseDown={props.onSelect}
+          onMouseEnter={props.onFocus}
+          onMouseMove={props.onFocus}>
           {props.children}
         </div>
       </LinkContainer>
@@ -72,9 +71,6 @@ export default class Navigation extends Component {
   }
 
   render() {
-    if (this.state && this.state.pushUrl) {
-      return (<Redirect to={this.state.pushUrl} push={false} />);
-    }
     return (
       <Navbar inverse>
         <Navbar.Header>
