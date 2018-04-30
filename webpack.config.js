@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const HtmlPlugin = require('html-webpack-plugin');
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 module.exports = {
   entry: [
     './app'
@@ -32,6 +33,9 @@ module.exports = {
   plugins: [
     new HtmlPlugin({
       template: 'app/index.html'
+    }),
+    new UglifyJSPlugin({
+      sourceMap: true
     }),
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new webpack.DefinePlugin({

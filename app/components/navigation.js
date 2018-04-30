@@ -122,12 +122,22 @@ export default class Navigation extends Component {
             <LinkContainer to="/browse">
               <NavItem eventKey={1}>Browse</NavItem>
             </LinkContainer>
-            <LinkContainer to="/ethics">
-              <NavItem eventKey={2}>Ethics</NavItem>
-            </LinkContainer>
-            <NavDropdown eventKey={3} title="Finder" id='basic-nav-dropdown'>
-              {auth.isSuperAdmin() && <LinkContainer to="/finder/-1"><MenuItem eventKey={3.0}>Grade: <strong>superadmin</strong></MenuItem></LinkContainer>}
-              {this.state && this.state.grades && this.state.grades.map((g, i) => { return <LinkContainer key={"3." + i} to={"/finder/" + g.id}><MenuItem eventKey={"3." + i}>Grade: <strong>{g.grade}</strong></MenuItem></LinkContainer> })}
+            <Navbar.Form>
+              <Async
+                style={{width: '200px'}}
+                placeholder="Search"
+                loadOptions={this.search.bind(this)}
+                filterOptions={(options, filter, currentValues) => {
+                  // Do no filtering, just return all options
+                  return options;
+                }}
+                optionComponent={this.OptionComponent}
+                onChange={this.onChange.bind(this)}
+              />
+            </Navbar.Form>
+            <NavDropdown eventKey={2} title="Finder" id='basic-nav-dropdown'>
+              {auth.isSuperAdmin() && <LinkContainer to="/finder/-1"><MenuItem eventKey={2.0}>Grade: <strong>superadmin</strong></MenuItem></LinkContainer>}
+              {this.state && this.state.grades && this.state.grades.map((g, i) => { return <LinkContainer key={"2." + i} to={"/finder/" + g.id}><MenuItem eventKey={"3." + i}>Grade: <strong>{g.grade}</strong></MenuItem></LinkContainer> })}
             </NavDropdown>
           </Nav>
           <Nav pullRight>
@@ -140,7 +150,11 @@ export default class Navigation extends Component {
               :
               <LinkContainer to="/login"><NavItem eventKey={5}>Sign in</NavItem></LinkContainer>
             }
-            <NavDropdown eventKey={6} title="Contact and links" id='basic-nav-dropdown'>
+            <NavDropdown eventKey={6} title="..." id='basic-nav-dropdown'>
+              <LinkContainer to="/ethics">
+                <NavItem eventKey={6.0}>Ethics</NavItem>
+              </LinkContainer>
+              <MenuItem divider />
               <MenuItem eventKey={6.1} href="mailto:jostein.oygarden@gmail.com">Contact</MenuItem>
               <MenuItem eventKey={6.2} href="/gpl-3.0.txt" target="_blank">GNU Public License</MenuItem>
               <MenuItem divider />
@@ -151,19 +165,6 @@ export default class Navigation extends Component {
               <MenuItem eventKey={6.6} href="https://brattelinjer.no" target="_blank">brattelinjer.no</MenuItem>
             </NavDropdown>
           </Nav>
-          <Navbar.Form pullRight>
-          <Async
-            style={{width: '200px'}}
-            placeholder="Search"
-            loadOptions={this.search.bind(this)}
-            filterOptions={(options, filter, currentValues) => {
-              // Do no filtering, just return all options
-              return options;
-            }}
-            optionComponent={this.OptionComponent}
-            onChange={this.onChange.bind(this)}
-          />
-          </Navbar.Form>
         </Navbar.Collapse>
       </Navbar>
     );
