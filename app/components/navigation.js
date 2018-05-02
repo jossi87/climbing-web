@@ -103,6 +103,7 @@ export default class Navigation extends Component {
                   // Do no filtering, just return all options
                   return options;
                 }}
+                ignoreAccents={false} // Keep special characters ae, oe, aa. Don't substitute...
                 onChange={this.onChange.bind(this)}
                 optionRenderer={this.optionRenderer.bind(this)}
               />
