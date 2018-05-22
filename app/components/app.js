@@ -14,6 +14,7 @@ const Login = Loadable({loader: () => import('./login'), loading: Loading});
 const Logout = Loadable({loader: () => import('./logout'), loading: Loading});
 const Problem = Loadable({loader: () => import('./problem'), loading: Loading});
 const ProblemEdit = Loadable({loader: () => import('./problem-edit'), loading: Loading});
+const ProblemEditMedia = Loadable({loader: () => import('./problem-edit-media'), loading: Loading});
 const Recover = Loadable({loader: () => import('./recover'), loading: Loading});
 const Register = Loadable({loader: () => import('./register'), loading: Loading});
 const Sector = Loadable({loader: () => import('./sector'), loading: Loading});
@@ -52,6 +53,7 @@ export default class App extends Component {
             <Route exact path="/sector/edit/:sectorId" component={SectorEdit}/>
             <Route exact path="/problem/:problemId" component={Problem}/>
             <Route exact path="/problem/edit/:problemId" component={ProblemEdit}/>
+            <Route exact path="/problem/edit/media/:problemId" component={ProblemEditMedia}/>
             <Route exact path="/problem/svg-edit/:problemId/:mediaId" component={SvgEdit}/>
             <Route exact path="/finder/:grade" component={Finder}/>
             <Route exact path="/user" component={User}/>

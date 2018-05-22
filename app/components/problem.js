@@ -10,7 +10,7 @@ import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
 import config from '../utils/config.js';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner, faLock, faUserSecret, faStar, faStarHalf, faComment, faEdit } from '@fortawesome/fontawesome-free-solid';
+import { faSpinner, faLock, faUserSecret, faStar, faStarHalf, faComment, faImage } from '@fortawesome/fontawesome-free-solid';
 
 export default class Problem extends Component {
   constructor(props) {
@@ -243,6 +243,11 @@ export default class Problem extends Component {
             {auth.isAdmin() &&
               <OverlayTrigger placement="top" overlay={<Tooltip id={this.state.id}>Edit problem</Tooltip>}>
                 <LinkContainer to={{ pathname: `/problem/edit/${this.state.id}`, query: { idSector: this.state.sectorId, lat: this.state.sectorLat, lng: this.state.sectorLng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="edit" inverse /></Button></LinkContainer>
+              </OverlayTrigger>
+            }
+            {!auth.isAdmin() &&
+              <OverlayTrigger placement="top" overlay={<Tooltip id={this.state.id}>Add image(s)</Tooltip>}>
+                <LinkContainer to={{ pathname: `/problem/edit/media/${this.state.id}` }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="image" inverse /></Button></LinkContainer>
               </OverlayTrigger>
             }
           </ButtonGroup>
