@@ -51,7 +51,7 @@ export default class ProblemEditMedia extends Component {
   }
 
   render() {
-    if (!this.state || !this.state.id || !this.state.types || !this.state.grades) {
+    if (!this.state || !this.state.id) {
       return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
     else if (this.state.error) {
