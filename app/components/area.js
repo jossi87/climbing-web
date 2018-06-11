@@ -38,8 +38,9 @@ export default class Area extends Component {
       tabIndex: 1
     };
   }
-  componentDidMount() {
-    Request.get(config.getUrl("areas?id=" + this.props.match.params.areaId)).withCredentials().end((err, res) => {
+
+  refresh(id) {
+    Request.get(config.getUrl("areas?id=" + id)).withCredentials().end((err, res) => {
       if (err) {
         this.setState({error: err});
       } else {
@@ -56,6 +57,14 @@ export default class Area extends Component {
         document.title=config.getTitle() + " | " + this.state.name;
       }
     });
+  }
+
+  componentDidMount() {
+    this.refresh(this.props.match.params.areaId);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.refresh(nextProps.match.params.areaId);
   }
 
   handleTabsSelection(key) {
