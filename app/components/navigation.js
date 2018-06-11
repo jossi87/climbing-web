@@ -33,7 +33,7 @@ export default class Navigation extends Component {
   }
 
   optionRenderer(props) {
-    return <span>{props.label} {props.value.visibility===1 && <FontAwesomeIcon icon="lock" />}{props.value.visibility===2 && <FontAwesomeIcon icon="user-secret" />} {props.avatar=="A" && " (area)"} {props.avatar=="S" && " (sector)"}</span>
+    return <span>{props.label} {props.value.visibility===1 && <FontAwesomeIcon icon="lock" />}{props.value.visibility===2 && <FontAwesomeIcon icon="user-secret" />} {props.value.avatar==='A' && " (area)"} {props.value.avatar==='S' && " (sector)"}</span>
   }
 
   componentDidMount() {
