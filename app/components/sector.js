@@ -103,8 +103,8 @@ export default class Sector extends Component {
     };
   }
 
-  componentDidMount() {
-    Request.get(config.getUrl("sectors?regionId=" + config.getRegion() + "&id=" + this.props.match.params.sectorId)).withCredentials().end((err, res) => {
+  refresh(id) {
+    Request.get(config.getUrl("sectors?regionId=" + config.getRegion() + "&id=" + id)).withCredentials().end((err, res) => {
       if (err) {
         this.setState({error: err});
       } else {
@@ -112,6 +112,14 @@ export default class Sector extends Component {
         document.title=config.getTitle() + " | " + this.state.name;
       }
     });
+  }
+
+  componentDidMount() {
+    this.refresh(this.props.match.params.sectorId);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.refresh(nextProps.match.params.sectorId);
   }
 
   handleTabsSelection(key) {
