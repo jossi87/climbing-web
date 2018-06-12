@@ -34,9 +34,15 @@ export default class Navigation extends Component {
   }
 
   optionRenderer(props) {
+    var bg = "#4caf50";
+    if (props.value.avatar==='A') {
+      bg = "#ff5722";
+    } else if (props.value.avatar==='S') {
+      bg = "#673ab7";
+    }
     return (
       <span>
-        <Avatar value={props.value.avatar? props.value.avatar : "7A"} size="25" color="#000000" round={true} textSizeRatio="2" style={{marginRight: '10px'}} />
+        <Avatar value={props.value.avatar? props.value.avatar : "7A"} size="25" color={bg} round={true} textSizeRatio="2" style={{marginRight: '10px'}} />
         {props.label} {props.value.visibility===1 && <FontAwesomeIcon icon="lock" />}{props.value.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
       </span>
     );
