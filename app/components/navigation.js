@@ -102,7 +102,7 @@ export default class Navigation extends Component {
           <Navbar.Form pullLeft>
             <FormGroup>
               <Async
-                style={{width: '300px'}}
+                style={{width: '350px'}}
                 placeholder="Search"
                 loadOptions={this.search.bind(this)}
                 filterOptions={(options, filter, currentValues) => {
