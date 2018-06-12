@@ -36,7 +36,7 @@ export default class Navigation extends Component {
   optionRenderer(props) {
     return (
       <span>
-        <Avatar value={props.value.avatar? props.value.avatar : "7A"} size="25" color="#000000" round={true} />
+        <Avatar value={props.value.avatar? props.value.avatar : "7A"} size="25" color="#000000" round={true} textSizeRatio={2} style={{paddingRight: '10px'}} />
         {props.label} {props.value.visibility===1 && <FontAwesomeIcon icon="lock" />}{props.value.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
       </span>
     );
@@ -102,7 +102,7 @@ export default class Navigation extends Component {
           <Navbar.Form pullLeft>
             <FormGroup>
               <Async
-                style={{width: '200px'}}
+                style={{width: '300px'}}
                 placeholder="Search"
                 loadOptions={this.search.bind(this)}
                 filterOptions={(options, filter, currentValues) => {
