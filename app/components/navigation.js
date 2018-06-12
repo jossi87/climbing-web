@@ -36,7 +36,7 @@ export default class Navigation extends Component {
   optionRenderer(props) {
     return (
       <span>
-        <Avatar value={props.value.avatar? props.value.avatar : "7A"} />
+        <Avatar value={props.value.avatar? props.value.avatar : "7A"} size="15" color="#000000" />
         {props.label} {props.value.visibility===1 && <FontAwesomeIcon icon="lock" />}{props.value.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
       </span>
     );
