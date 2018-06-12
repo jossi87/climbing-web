@@ -42,7 +42,7 @@ export default class Navigation extends Component {
     }
     return (
       <span>
-        <Avatar value={props.value.avatar? props.value.avatar : "7A"} size="25" color={bg} round={true} textSizeRatio="2" style={{marginRight: '10px'}} />
+        <Avatar value={props.value.avatar? props.value.avatar : "7A"} size="25" color={bg} round={true} textSizeRatio="2.25" style={{marginRight: '10px'}} />
         {props.label} {props.value.visibility===1 && <FontAwesomeIcon icon="lock" />}{props.value.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
       </span>
     );
