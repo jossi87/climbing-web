@@ -35,6 +35,7 @@ var ProblemSection = createClass({
     this.setState({sections});
   },
   onDescriptionChanged(i, e) {
+    console.log(i);
     const sections = this.state.sections;
     sections[i].description = e.target.value;
     this.setState({sections});
@@ -72,6 +73,16 @@ var ProblemSection = createClass({
             <MenuItem key={8} eventKey={8} onSelect={this.onNumberOfSectionsChange.bind(this, 8)}>8</MenuItem>
             <MenuItem key={9} eventKey={9} onSelect={this.onNumberOfSectionsChange.bind(this, 9)}>9</MenuItem>
             <MenuItem key={10} eventKey={10} onSelect={this.onNumberOfSectionsChange.bind(this, 10)}>10</MenuItem>
+            <MenuItem key={11} eventKey={11} onSelect={this.onNumberOfSectionsChange.bind(this, 11)}>11</MenuItem>
+            <MenuItem key={12} eventKey={12} onSelect={this.onNumberOfSectionsChange.bind(this, 12)}>12</MenuItem>
+            <MenuItem key={13} eventKey={13} onSelect={this.onNumberOfSectionsChange.bind(this, 13)}>13</MenuItem>
+            <MenuItem key={14} eventKey={14} onSelect={this.onNumberOfSectionsChange.bind(this, 14)}>14</MenuItem>
+            <MenuItem key={15} eventKey={15} onSelect={this.onNumberOfSectionsChange.bind(this, 15)}>15</MenuItem>
+            <MenuItem key={16} eventKey={16} onSelect={this.onNumberOfSectionsChange.bind(this, 16)}>16</MenuItem>
+            <MenuItem key={17} eventKey={17} onSelect={this.onNumberOfSectionsChange.bind(this, 17)}>17</MenuItem>
+            <MenuItem key={18} eventKey={18} onSelect={this.onNumberOfSectionsChange.bind(this, 18)}>18</MenuItem>
+            <MenuItem key={19} eventKey={19} onSelect={this.onNumberOfSectionsChange.bind(this, 19)}>19</MenuItem>
+            <MenuItem key={20} eventKey={20} onSelect={this.onNumberOfSectionsChange.bind(this, 20)}>20</MenuItem>
           </DropdownButton>
         </FormGroup>
         {sections}
