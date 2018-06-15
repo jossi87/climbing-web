@@ -146,6 +146,10 @@ export default class ProblemEdit extends Component {
     this.setState({fa: fa});
   }
 
+  onSectionsUpdated(sections) {
+    this.setState({sections});
+  }
+
   onCancel() {
     window.history.back();
   }
@@ -215,7 +219,7 @@ export default class ProblemEdit extends Component {
           </FormGroup>
           <FormGroup controlId="formControlsFA">
             <ControlLabel>FA</ControlLabel><br/>
-            <UserSelector users={this.state.fa? this.state.fa.map(u => {return {value: u.id, label: u.firstname + " " + u.surname}}) : []} onUsersUpdated={this.onUsersUpdated.bind(this)}/>
+            <UserSelector users={this.state.fa? this.state.fa.map(u => {return {value: u.id, label: u.firstname + " " + u.surname}}) : []} onUsersUpdated={this.onUsersUpdated.bind(this)} />
           </FormGroup>
           <FormGroup controlId="formControlsVisibility">
             <ControlLabel>Visibility</ControlLabel><br/>
@@ -235,7 +239,7 @@ export default class ProblemEdit extends Component {
           </FormGroup>
           <FormGroup controlId="formControlsSections">
             <ControlLabel>Section(s)</ControlLabel><br/>
-            <ProblemSection sections={this.state.sections} grades={this.state.grades}/>
+            <ProblemSection sections={this.state.sections} grades={this.state.grades} onSectionsUpdated={this.onSectionsUpdated.bind(this)} />
           </FormGroup>
           <FormGroup controlId="formControlsMedia">
             <ImageUpload onMediaChanged={this.onNewMediaChanged.bind(this)} />

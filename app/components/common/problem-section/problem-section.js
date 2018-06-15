@@ -25,24 +25,28 @@ var ProblemSection = createClass({
         sections.pop();
       }
     }
+    this.props.onSectionsUpdated(sections);
     this.setState({sections});
   },
   onNrChanged(id, e) {
     const sections = this.state.sections;
     const section = sections.find(s => s.id === id);
     section.nr = e.target.value;
+    this.props.onSectionsUpdated(sections);
     this.setState({sections});
   },
   onGradeChanged(id, grade) {
     const sections = this.state.sections;
     const section = sections.find(s => s.id === id);
     section.grade = grade;
+    this.props.onSectionsUpdated(sections);
     this.setState({sections});
   },
   onDescriptionChanged(id, e) {
     const sections = this.state.sections;
     const section = sections.find(s => s.id === id);
     section.description = e.target.value;
+    this.props.onSectionsUpdated(sections);
     this.setState({sections});
   },
 	render() {
