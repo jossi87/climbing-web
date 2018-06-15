@@ -24,7 +24,7 @@ var ProblemSection = createClass({
     this.setState({sections});
   },
 	render() {
-    const sections = this.state.sections.map((s, i) => {
+    const sections = this.state.sections && this.state.sections.length > 1 && this.state.sections.map((s, i) => {
       return (
         <Form componentClass="fieldset" inline key={i}>
           <FormGroup controlId="formNr">
