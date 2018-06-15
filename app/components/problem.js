@@ -51,7 +51,7 @@ export default class Problem extends Component {
           media: res.body[0].media,
           ticks: res.body[0].ticks,
           comments: res.body[0].comments,
-          subsections: res.body[0].subsections
+          sections: res.body[0].sections
         });
         document.title=config.getTitle() + " | " + this.state.name;
       }
@@ -230,12 +230,12 @@ export default class Problem extends Component {
       comment = <span>{comments}</span>;
     };
 
-    var subsection = null;
-    if (this.state.subsections) {
-      const subsections = this.state.subsections.map((s, i) => {
+    var section = null;
+    if (this.state.sections) {
+      const sections = this.state.sections.map((s, i) => {
         return (<li key={i}>#{s.nr}  ({s.grade}) {s.description}</li>);
       });
-      subsection = <span><strong>Sections:</strong><br/><ul style={{listStyleType: 'square'}}>{subsections}</ul></span>;
+      section = <span><strong>Sections:</strong><br/><ul style={{listStyleType: 'square'}}>{sections}</ul></span>;
     };
 
     var headerButtons = null;
@@ -291,7 +291,7 @@ export default class Problem extends Component {
           <strong>FA:</strong> {fa}<br/>
           <strong>FA date:</strong> {this.state.faDateHr}<br/>
           <strong>Original grade:</strong> {this.state.originalGrade}<br/>
-          {subsection}
+          {section}
           {this.state.sectorLat>0 && this.state.sectorLng>0 &&
             <span><a href={`http://maps.google.com/maps?q=loc:${this.state.sectorLat},${this.state.sectorLng}&navigate=yes`} target="_blank">Start navigation</a><br/></span>}
         </Well>
