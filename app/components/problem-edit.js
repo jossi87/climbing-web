@@ -192,7 +192,7 @@ export default class ProblemEdit extends Component {
     }
 
     var sections = null;
-    if (config.getRegion() === 4) {
+    if (config.getRegion() == 4) {
       sections = (
         <FormGroup controlId="formControlsSections">
           <ControlLabel>Section(s)</ControlLabel><br/>
