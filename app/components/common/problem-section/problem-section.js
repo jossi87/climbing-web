@@ -10,16 +10,25 @@ var ProblemSection = createClass({
 	},
 	getInitialState() {
     return {
-      sections: this.props.sections,
-      numberOfSections: this.props.sections? this.props.sections.length : 1
+      sections: this.props.sections
     };
 	},
+  onNumberOfSectionsChange(num) {
+    var sections = this.state.sections? this.state.sections : [];
+    while (num < sections.length) {
+      sections.push({id: -1, nr: sections.length+1, grade: null, description: null});
+    }
+    while (num > sections.length) {
+      sections.pop();
+    }
+    this.setState({sections});
+  },
 	render() {
 		return (
       <Well>
         <FormGroup controlId="formControlsSections">
           <ControlLabel>Sections</ControlLabel>
-          <DropdownButton title={this.state.numberOfSections} id="bg-nested-dropdown">
+          <DropdownButton title={this.state.sections? this.state.sections.length : 1} id="bg-nested-dropdown">
             <MenuItem key={1} eventKey={1} onSelect={this.onNumberOfSectionsChange.bind(this, 1)}>1</MenuItem>
             <MenuItem key={2} eventKey={2} onSelect={this.onNumberOfSectionsChange.bind(this, 2)}>2</MenuItem>
             <MenuItem key={3} eventKey={3} onSelect={this.onNumberOfSectionsChange.bind(this, 3)}>3</MenuItem>
