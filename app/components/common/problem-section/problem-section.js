@@ -17,27 +17,29 @@ var ProblemSection = createClass({
   onNumberOfSectionsChange(num) {
     var sections = this.state.sections? this.state.sections : [];
     while (num > sections.length) {
-      sections.push({id: -1, nr: sections.length+1, grade: null, description: null});
+      sections.push({id: sections.length*-1, nr: sections.length+1, grade: null, description: null});
     }
     while (num < sections.length) {
       sections.pop();
     }
     this.setState({sections});
   },
-  onNrChanged(i, e) {
+  onNrChanged(id, e) {
     const sections = this.state.sections;
-    sections[i].nr = e.target.value;
+    const section = sections.find(s => s.id === id);
+    section.nr = e.target.value;
     this.setState({sections});
   },
-  onGradeChanged(i, grade) {
-    console.log(i);
+  onGradeChanged(id, grade) {
     const sections = this.state.sections;
-    sections[i].grade = grade;
+    const section = sections.find(s => s.id === id);
+    section.grade = grade;
     this.setState({sections});
   },
-  onDescriptionChanged(i, e) {
+  onDescriptionChanged(id, e) {
     const sections = this.state.sections;
-    sections[i].description = e.target.value;
+    const section = sections.find(s => s.id === id);
+    section.description = e.target.value;
     this.setState({sections});
   },
 	render() {
@@ -45,15 +47,15 @@ var ProblemSection = createClass({
       return (
         <Form componentClass="fieldset" inline key={i}>
           <FormGroup controlId="formNr">
-            <FormControl type="number" value={s.nr} onChange={this.onNrChanged.bind(this, i)} />
+            <FormControl type="number" value={s.nr} onChange={this.onNrChanged.bind(this, g.id)} />
           </FormGroup>{' '}
           <FormGroup controlId="formGrade">
             <DropdownButton title={s.grade} id="bg-nested-dropdown">
-              {this.state.grades.map((g, i) => { return <MenuItem key={i} eventKey={i} onSelect={this.onGradeChanged.bind(this, i, g.grade)}>{g.grade}</MenuItem> })}
+              {this.state.grades.map((g, i) => { return <MenuItem key={i} eventKey={i} onSelect={this.onGradeChanged.bind(this, g.id, g.grade)}>{g.grade}</MenuItem> })}
             </DropdownButton>
           </FormGroup>{' '}
           <FormGroup controlId="formDescription">
-            <FormControl type="text" value={s.description} onChange={this.onDescriptionChanged.bind(this, i)} />
+            <FormControl type="text" value={s.description} onChange={this.onDescriptionChanged.bind(this, g.id)} />
           </FormGroup>
         </Form>
       )
