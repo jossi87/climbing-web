@@ -24,15 +24,27 @@ var ProblemSection = createClass({
     }
     this.setState({sections});
   },
-  onGradeChanged(i, grade) {
-    console.log(i + " og " + grade);
+  onNrChanged(i, nr) {
+    const sections = this.state.sections;
+    sections[i].nr = nr;
+    this.setState({sections});
+  },
+  onGradeChanged(i, e) {
+    const sections = this.state.sections;
+    sections[i].grade = e.target.value;
+    this.setState({sections});
+  },
+  onDescriptionChanged(i, e) {
+    const sections = this.state.sections;
+    sections[i].description = e.target.value;
+    this.setState({sections});
   },
 	render() {
     const sections = this.state.sections && this.state.sections.length > 1 && this.state.sections.map((s, i) => {
       return (
         <Form componentClass="fieldset" inline key={i}>
           <FormGroup controlId="formNr">
-            <FormControl type="number" value={s.nr} />
+            <FormControl type="number" value={s.nr} onChange={this.onNrChanged.bind(this, i)} />
           </FormGroup>{' '}
           <FormGroup controlId="formGrade">
             <DropdownButton title={s.grade} id="bg-nested-dropdown">
@@ -40,7 +52,7 @@ var ProblemSection = createClass({
             </DropdownButton>
           </FormGroup>{' '}
           <FormGroup controlId="formDescription">
-            <FormControl type="text" value={s.description} />
+            <FormControl type="text" value={s.description} onChange={this.onDescriptionChanged.bind(this, i)} />
           </FormGroup>
         </Form>
       )

@@ -234,7 +234,7 @@ export default class ProblemEdit extends Component {
             <FormControl style={{height: '100px'}} componentClass="textarea" placeholder="Enter comment" value={this.state.comment} onChange={this.onCommentChanged.bind(this)} />
           </FormGroup>
           <FormGroup controlId="formControlsSections">
-            <ControlLabel>Sections</ControlLabel><br/>
+            <ControlLabel>Section(s)</ControlLabel><br/>
             <ProblemSection sections={this.state.sections} grades={this.state.grades}/>
           </FormGroup>
           <FormGroup controlId="formControlsMedia">
