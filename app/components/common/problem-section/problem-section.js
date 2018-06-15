@@ -1,7 +1,7 @@
 import React from 'react';
 import createClass from 'create-react-class';
 import PropTypes from 'prop-types';
-import { Form, FormGroup, ControlLabel, FormControl, DropdownButton, MenuItem, Well } from 'react-bootstrap';
+import { Form, FormGroup, FormControl, DropdownButton, MenuItem, Well } from 'react-bootstrap';
 
 var ProblemSection = createClass({
 	displayName: 'ProblemSection',
@@ -28,10 +28,10 @@ var ProblemSection = createClass({
       return (
         <Form componentClass="fieldset" inline key={i}>
           <FormGroup controlId="formNr">
-            <FormControl type="number" />
+            <FormControl type="number" value={s.nr} />
           </FormGroup>{' '}
           <FormGroup controlId="formDescription">
-            <FormControl type="text" />
+            <FormControl type="text" value={s.description} />
           </FormGroup>
         </Form>
       )
@@ -40,7 +40,6 @@ var ProblemSection = createClass({
 		return (
       <Well>
         <FormGroup controlId="formControlsNumSections">
-          <ControlLabel>Rope lengths</ControlLabel><br/>
           <DropdownButton title={this.state.sections? this.state.sections.length : 1} id="bg-nested-dropdown">
             <MenuItem key={1} eventKey={1} onSelect={this.onNumberOfSectionsChange.bind(this, 1)}>1</MenuItem>
             <MenuItem key={2} eventKey={2} onSelect={this.onNumberOfSectionsChange.bind(this, 2)}>2</MenuItem>
