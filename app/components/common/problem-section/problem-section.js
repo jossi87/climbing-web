@@ -47,7 +47,7 @@ var ProblemSection = createClass({
       return (
         <Form componentClass="fieldset" inline key={i}>
           <FormGroup controlId="formNr">
-            <FormControl type="number" value={s.nr} onChange={this.onNrChanged.bind(this, s.id)} />
+            <FormControl type="number" value={s.nr} onChange={this.onNrChanged.bind(this, s.id)} style={{width: '100px'}} />
           </FormGroup>{' '}
           <FormGroup controlId="formGrade">
             <DropdownButton title={s.grade} id="bg-nested-dropdown">
@@ -55,7 +55,7 @@ var ProblemSection = createClass({
             </DropdownButton>
           </FormGroup>{' '}
           <FormGroup controlId="formDescription">
-            <FormControl type="text" value={s.description} onChange={this.onDescriptionChanged.bind(this, s.id)} />
+            <FormControl type="text" value={s.description} onChange={this.onDescriptionChanged.bind(this, s.id)} style={{width: '100%'}} />
           </FormGroup>
         </Form>
       )
