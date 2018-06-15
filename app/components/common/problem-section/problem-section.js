@@ -30,12 +30,12 @@ var ProblemSection = createClass({
     this.setState({sections});
   },
   onGradeChanged(i, grade) {
+    console.log(i);
     const sections = this.state.sections;
     sections[i].grade = grade;
     this.setState({sections});
   },
   onDescriptionChanged(i, e) {
-    console.log(i);
     const sections = this.state.sections;
     sections[i].description = e.target.value;
     this.setState({sections});
