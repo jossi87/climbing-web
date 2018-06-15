@@ -24,14 +24,14 @@ var ProblemSection = createClass({
     }
     this.setState({sections});
   },
-  onNrChanged(i, nr) {
+  onNrChanged(i, e) {
     const sections = this.state.sections;
-    sections[i].nr = nr;
+    sections[i].nr = e.target.value;
     this.setState({sections});
   },
-  onGradeChanged(i, e) {
+  onGradeChanged(i, grade) {
     const sections = this.state.sections;
-    sections[i].grade = e.target.value;
+    sections[i].grade = grade;
     this.setState({sections});
   },
   onDescriptionChanged(i, e) {
