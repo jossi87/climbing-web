@@ -89,7 +89,7 @@ export default class Browse extends Component {
         <Breadcrumb>
           {auth.isAdmin()?
             <OverlayTrigger placement="top" overlay={<Tooltip id={-1}>Add area</Tooltip>}>
-              <div style={{float: 'right'}}><LinkContainer to={`/area/edit/-1`}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="plus-square" inverse /></Button></LinkContainer></div>
+              <div style={{float: 'right'}}><LinkContainer to={`/area/edit/-1`}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="plus-square" inverse="true" /></Button></LinkContainer></div>
             </OverlayTrigger>:
             null
           }

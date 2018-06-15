@@ -135,10 +135,10 @@ export default class Area extends Component {
             <div style={{float: 'right'}}>
               <ButtonGroup>
                 <OverlayTrigger placement="top" overlay={<Tooltip id={-1}>Add sector</Tooltip>}>
-                  <LinkContainer to={{ pathname: `/sector/edit/-1`, query: { idArea: this.state.id, lat: this.state.lat, lng: this.state.lng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="plus-square" inverse /></Button></LinkContainer>
+                  <LinkContainer to={{ pathname: `/sector/edit/-1`, query: { idArea: this.state.id, lat: this.state.lat, lng: this.state.lng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="plus-square" inverse="true" /></Button></LinkContainer>
                 </OverlayTrigger>
                 <OverlayTrigger placement="top" overlay={<Tooltip id={this.state.id}>Edit area</Tooltip>}>
-                  <LinkContainer to={{ pathname: `/area/edit/${this.state.id}`, query: { lat: this.state.lat, lng: this.state.lng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="edit" inverse /></Button></LinkContainer>
+                  <LinkContainer to={{ pathname: `/area/edit/${this.state.id}`, query: { lat: this.state.lat, lng: this.state.lng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="edit" inverse="true" /></Button></LinkContainer>
                 </OverlayTrigger>
               </ButtonGroup>
             </div>:

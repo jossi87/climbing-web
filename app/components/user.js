@@ -98,7 +98,7 @@ export default class User extends Component {
 
   formatEdit(cell, row) {
     if (this.state.user.readOnly==false && row.id!=0) {
-      return <OverlayTrigger placement="top" overlay={<Tooltip id={row.id}>Edit tick</Tooltip>}><Button bsSize="xsmall" bsStyle="primary" onClick={this.openTickModal.bind(this, row)}><FontAwesomeIcon icon="edit" inverse /></Button></OverlayTrigger>
+      return <OverlayTrigger placement="top" overlay={<Tooltip id={row.id}>Edit tick</Tooltip>}><Button bsSize="xsmall" bsStyle="primary" onClick={this.openTickModal.bind(this, row)}><FontAwesomeIcon icon="edit" inverse="true" /></Button></OverlayTrigger>
     }
     return "";
   }
@@ -156,7 +156,7 @@ export default class User extends Component {
           {auth.loggedIn() && this.state.user.readOnly==false?
             <div style={{float: 'right'}}>
               <OverlayTrigger placement="top" overlay={<Tooltip id={this.state.user.id}>Edit user</Tooltip>}>
-                <LinkContainer to={`/user/${this.state.user.id}/edit`}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="edit" inverse /></Button></LinkContainer>
+                <LinkContainer to={`/user/${this.state.user.id}/edit`}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="edit" inverse="true" /></Button></LinkContainer>
               </OverlayTrigger>
             </div>:
             null
