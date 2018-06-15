@@ -147,6 +147,7 @@ export default class ProblemEdit extends Component {
   }
 
   onSectionsUpdated(sections) {
+    console.log(sections);
     this.setState({sections});
   }
 
