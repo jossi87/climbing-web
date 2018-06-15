@@ -15,15 +15,15 @@ var ProblemSection = createClass({
     };
 	},
   onNumberOfSectionsChange(num) {
-    if (num === 1) {
-      this.setState({sections: null});
-    }
-    var sections = this.state.sections? this.state.sections : [];
-    while (num > sections.length) {
-      sections.push({id: sections.length*-1, nr: sections.length+1, grade: 'n/a', description: null});
-    }
-    while (num < sections.length) {
-      sections.pop();
+    var sections = null;
+    if (num > 1) {
+      sections = this.state.sections? this.state.sections : [];
+      while (num > sections.length) {
+        sections.push({id: sections.length*-1, nr: sections.length+1, grade: 'n/a', description: null});
+      }
+      while (num < sections.length) {
+        sections.pop();
+      }
     }
     this.setState({sections});
   },
@@ -58,7 +58,7 @@ var ProblemSection = createClass({
             </DropdownButton>
           </FormGroup>{' '}
           <FormGroup controlId="formDescription">
-            <FormControl type="text" value={s.description} onChange={this.onDescriptionChanged.bind(this, s.id)} />
+            <FormControl type="text" value={s.description} onChange={this.onDescriptionChanged.bind(this, s.id)} style={{width: '500px'}} />
           </FormGroup>
         </Form>
       )
