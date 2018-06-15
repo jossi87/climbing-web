@@ -235,7 +235,7 @@ export default class ProblemEdit extends Component {
           </FormGroup>
           <FormGroup controlId="formControlsSections">
             <ControlLabel>Sections</ControlLabel><br/>
-            <ProblemSection sections={this.state.sections}/>
+            <ProblemSection sections={this.state.sections} grades={this.state.grades}/>
           </FormGroup>
           <FormGroup controlId="formControlsMedia">
             <ImageUpload onMediaChanged={this.onNewMediaChanged.bind(this)} />
