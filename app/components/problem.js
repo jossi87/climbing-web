@@ -235,7 +235,7 @@ export default class Problem extends Component {
       const subsections = this.state.subsections.map((s, i) => {
         return (<li key={i}>#{s.nr}  ({s.grade}) {s.description}</li>);
       });
-      subsection = <span><strong>Sections:</strong><br/><ul>{subsections}</ul></span>;
+      subsection = <span><strong>Sections:</strong><br/><ul style={{listStyleType: 'square'}}>{subsections}</ul></span>;
     };
 
     var headerButtons = null;
