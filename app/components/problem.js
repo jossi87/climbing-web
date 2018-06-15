@@ -50,7 +50,8 @@ export default class Problem extends Component {
           lng: res.body[0].lng,
           media: res.body[0].media,
           ticks: res.body[0].ticks,
-          comments: res.body[0].comments
+          comments: res.body[0].comments,
+          subsections: res.body[0].subsections
         });
         document.title=config.getTitle() + " | " + this.state.name;
       }
@@ -229,6 +230,14 @@ export default class Problem extends Component {
       comment = <span>{comments}</span>;
     };
 
+    var subsection = null;
+    if (this.state.subsections) {
+      const subsections = this.state.subsections.map((s, i) => {
+        return (<li key={i}>{s.grade}{s.description && " - " + s.description}</li>);
+      });
+      subsection = <span><strong>Sections:</strong><br/><ol>{subsections}</ol></span>;
+    };
+
     var headerButtons = null;
     if (auth.loggedIn()) {
       headerButtons = (
@@ -282,6 +291,7 @@ export default class Problem extends Component {
           <strong>FA:</strong> {fa}<br/>
           <strong>FA date:</strong> {this.state.faDateHr}<br/>
           <strong>Original grade:</strong> {this.state.originalGrade}<br/>
+          {subsection}
           {this.state.sectorLat>0 && this.state.sectorLng>0 &&
             <span><a href={`http://maps.google.com/maps?q=loc:${this.state.sectorLat},${this.state.sectorLng}&navigate=yes`} target="_blank">Start navigation</a><br/></span>}
         </Well>
