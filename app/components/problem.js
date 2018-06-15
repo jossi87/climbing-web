@@ -234,7 +234,7 @@ export default class Problem extends Component {
     if (this.state.sections) {
       const sections = this.state.sections.map((s, i) => {
         return (
-          <tr>
+          <tr key={i}>
             <td>{s.nr}</td>
             <td>{s.grade}</td>
             <td>{s.description}</td>
@@ -242,18 +242,21 @@ export default class Problem extends Component {
         );
       });
       section = (
-        <Table striped condensed hover>
-          <thead>
-            <tr>
-              <td>#</td>
-              <td>Grade</td>
-              <td>Description</td>
-            </tr>
-          </thead>
-          <tbody>
-            {sections}
-          </tbody>
-        </Table>
+        <span>
+          <strong>Sections:</strong><br/>
+          <Table striped bordered condensed hover>
+            <thead>
+              <tr>
+                <td>#</td>
+                <td>Grade</td>
+                <td>Description</td>
+              </tr>
+            </thead>
+            <tbody>
+              {sections}
+            </tbody>
+          </Table>
+        </span>
       );
     };
 
@@ -310,9 +313,9 @@ export default class Problem extends Component {
           <strong>FA:</strong> {fa}<br/>
           <strong>FA date:</strong> {this.state.faDateHr}<br/>
           <strong>Original grade:</strong> {this.state.originalGrade}<br/>
-          {section}
           {this.state.sectorLat>0 && this.state.sectorLng>0 &&
             <span><a href={`http://maps.google.com/maps?q=loc:${this.state.sectorLat},${this.state.sectorLng}&navigate=yes`} target="_blank">Start navigation</a><br/></span>}
+          {section}
         </Well>
         {table}
         {comment}
