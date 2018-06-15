@@ -69,6 +69,7 @@ export default class ProblemEdit extends Component {
             typeId: res.body[0].t.id,
             lat: res.body[0].lat,
             lng: res.body[0].lng,
+            sections: res.body[0].sections,
             newMedia: []
           });
         }
