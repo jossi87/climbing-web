@@ -233,7 +233,7 @@ export default class Problem extends Component {
     var subsection = null;
     if (this.state.subsections) {
       const subsections = this.state.subsections.map((s, i) => {
-        return (<li key={i}>#{s.nr} | {s.grade} | {s.description}</li>);
+        return (<li key={i}>#{s.nr}  ({s.grade}) {s.description}</li>);
       });
       subsection = <span><strong>Sections:</strong><br/><ul>{subsections}</ul></span>;
     };
