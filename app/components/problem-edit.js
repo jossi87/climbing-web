@@ -190,6 +190,16 @@ export default class ProblemEdit extends Component {
       defaultCenter = config.getDefaultCenter();
       defaultZoom = config.getDefaultZoom();
     }
+
+    var sections = null;
+    if (config.getRegion() === 4) {
+      sections = (
+        <FormGroup controlId="formControlsSections">
+          <ControlLabel>Section(s)</ControlLabel><br/>
+          <ProblemSection sections={this.state.sections} grades={this.state.grades} onSectionsUpdated={this.onSectionsUpdated.bind(this)} />
+        </FormGroup>
+      );
+    }
     return (
       <Well>
         <form onSubmit={this.save.bind(this)}>
@@ -237,10 +247,7 @@ export default class ProblemEdit extends Component {
             <ControlLabel>Comment</ControlLabel>
             <FormControl style={{height: '100px'}} componentClass="textarea" placeholder="Enter comment" value={this.state.comment} onChange={this.onCommentChanged.bind(this)} />
           </FormGroup>
-          <FormGroup controlId="formControlsSections">
-            <ControlLabel>Section(s)</ControlLabel><br/>
-            <ProblemSection sections={this.state.sections} grades={this.state.grades} onSectionsUpdated={this.onSectionsUpdated.bind(this)} />
-          </FormGroup>
+          {sections}
           <FormGroup controlId="formControlsMedia">
             <ImageUpload onMediaChanged={this.onNewMediaChanged.bind(this)} />
           </FormGroup>
