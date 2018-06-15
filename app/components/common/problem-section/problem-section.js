@@ -15,17 +15,18 @@ var ProblemSection = createClass({
 	},
   onNumberOfSectionsChange(num) {
     var sections = this.state.sections? this.state.sections : [];
-    while (num < sections.length) {
+    while (num > sections.length) {
       console.log("+ | " + num + " og " + sections);
       sections.push({id: -1, nr: sections.length+1, grade: null, description: null});
     }
-    while (num > sections.length) {
+    while (num < sections.length) {
       console.log("- | " + num + " og " + sections);
       sections.pop();
     }
     this.setState({sections});
   },
 	render() {
+    console.log(this.state.sections);
 		return (
       <Well>
         <FormGroup controlId="formControlsSections">
