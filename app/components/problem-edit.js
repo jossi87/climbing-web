@@ -5,6 +5,7 @@ import Request from 'superagent';
 import { FormGroup, ControlLabel, FormControl, ButtonGroup, Button, DropdownButton, MenuItem, Well } from 'react-bootstrap';
 import {withGoogleMap, GoogleMap, Marker} from "react-google-maps";
 import UserSelector from './common/user-selector/user-selector';
+import ProblemSection from './common/problem-section/problem-section';
 import ImageUpload from './common/image-upload/image-upload';
 import config from '../utils/config.js';
 import auth from '../utils/auth.js';
@@ -230,6 +231,10 @@ export default class ProblemEdit extends Component {
           <FormGroup controlId="formControlsComment">
             <ControlLabel>Comment</ControlLabel>
             <FormControl style={{height: '100px'}} componentClass="textarea" placeholder="Enter comment" value={this.state.comment} onChange={this.onCommentChanged.bind(this)} />
+          </FormGroup>
+          <FormGroup controlId="formControlsSections">
+            <ControlLabel>Sections</ControlLabel><br/>
+            <ProblemSection sections={this.state.sections}/>
           </FormGroup>
           <FormGroup controlId="formControlsMedia">
             <ImageUpload onMediaChanged={this.onNewMediaChanged.bind(this)} />
