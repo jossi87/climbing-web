@@ -1,7 +1,7 @@
 import React from 'react';
 import createClass from 'create-react-class';
 import PropTypes from 'prop-types';
-import { FormGroup, ControlLabel, FormControl, DropdownButton, MenuItem, Well } from 'react-bootstrap';
+import { Form, FormGroup, ControlLabel, FormControl, DropdownButton, MenuItem, Well } from 'react-bootstrap';
 
 var ProblemSection = createClass({
 	displayName: 'ProblemSection',
@@ -16,21 +16,31 @@ var ProblemSection = createClass({
   onNumberOfSectionsChange(num) {
     var sections = this.state.sections? this.state.sections : [];
     while (num > sections.length) {
-      console.log("+ | " + num + " og " + sections);
       sections.push({id: -1, nr: sections.length+1, grade: null, description: null});
     }
     while (num < sections.length) {
-      console.log("- | " + num + " og " + sections);
       sections.pop();
     }
     this.setState({sections});
   },
 	render() {
-    console.log(this.state.sections);
+    const sections = this.state.sections.map((s, i) => {
+      return (
+        <Form componentClass="fieldset" inline key={i}>
+          <FormGroup controlId="formNr">
+            <FormControl type="number" />
+          </FormGroup>{' '}
+          <FormGroup controlId="formDescription">
+            <FormControl type="text" />
+          </FormGroup>
+        </Form>
+      )
+    });
+
 		return (
       <Well>
-        <FormGroup controlId="formControlsSections">
-          <ControlLabel>Sections</ControlLabel>
+        <FormGroup controlId="formControlsNumSections">
+          <ControlLabel>Rope lengths</ControlLabel><br/>
           <DropdownButton title={this.state.sections? this.state.sections.length : 1} id="bg-nested-dropdown">
             <MenuItem key={1} eventKey={1} onSelect={this.onNumberOfSectionsChange.bind(this, 1)}>1</MenuItem>
             <MenuItem key={2} eventKey={2} onSelect={this.onNumberOfSectionsChange.bind(this, 2)}>2</MenuItem>
@@ -44,6 +54,7 @@ var ProblemSection = createClass({
             <MenuItem key={10} eventKey={10} onSelect={this.onNumberOfSectionsChange.bind(this, 10)}>10</MenuItem>
           </DropdownButton>
         </FormGroup>
+        {sections}
       </Well>
 		);
 	}
