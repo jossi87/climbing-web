@@ -17,7 +17,7 @@ var ProblemSection = createClass({
   onNumberOfSectionsChange(num) {
     var sections = this.state.sections? this.state.sections : [];
     while (num > sections.length) {
-      sections.push({id: sections.length*-1, nr: sections.length+1, grade: null, description: null});
+      sections.push({id: sections.length*-1, nr: sections.length+1, grade: 'n/a', description: null});
     }
     while (num < sections.length) {
       sections.pop();
@@ -47,15 +47,15 @@ var ProblemSection = createClass({
       return (
         <Form componentClass="fieldset" inline key={i}>
           <FormGroup controlId="formNr">
-            <FormControl type="number" value={s.nr} onChange={this.onNrChanged.bind(this, g.id)} />
+            <FormControl type="number" value={s.nr} onChange={this.onNrChanged.bind(this, s.id)} />
           </FormGroup>{' '}
           <FormGroup controlId="formGrade">
             <DropdownButton title={s.grade} id="bg-nested-dropdown">
-              {this.state.grades.map((g, i) => { return <MenuItem key={i} eventKey={i} onSelect={this.onGradeChanged.bind(this, g.id, g.grade)}>{g.grade}</MenuItem> })}
+              {this.state.grades.map((g, i) => { return <MenuItem key={i} eventKey={i} onSelect={this.onGradeChanged.bind(this, s.id, g.grade)}>{g.grade}</MenuItem> })}
             </DropdownButton>
           </FormGroup>{' '}
           <FormGroup controlId="formDescription">
-            <FormControl type="text" value={s.description} onChange={this.onDescriptionChanged.bind(this, g.id)} />
+            <FormControl type="text" value={s.description} onChange={this.onDescriptionChanged.bind(this, s.id)} />
           </FormGroup>
         </Form>
       )
