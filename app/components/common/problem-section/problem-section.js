@@ -62,7 +62,7 @@ var ProblemSection = createClass({
             </DropdownButton>
           </FormGroup>{' '}
           <FormGroup controlId="formDescription">
-            <FormControl type="text" value={s.description} onChange={this.onDescriptionChanged.bind(this, s.id)} style={{width: '500px'}} />
+            <FormControl type="text" value={s.description? s.description : ""} onChange={this.onDescriptionChanged.bind(this, s.id)} style={{width: '500px'}} />
           </FormGroup>
         </Form>
       )
