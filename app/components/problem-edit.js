@@ -123,7 +123,7 @@ export default class ProblemEdit extends Component {
     const newMedia = this.state.newMedia.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
     var req = Request.post(config.getUrl("problems?regionId=" + config.getRegion()))
     .withCredentials()
-    .field('json', JSON.stringify({sectorId: this.props.location.query.idSector, id: this.state.id, visibility: this.state.visibility, name: this.state.name, comment: this.state.comment, originalGrade: this.state.originalGrade, fa: this.state.fa, faDate: this.state.faDate, nr: this.state.nr, t: this.state.typeId? this.state.types.find(t => t.id === this.state.typeId) : this.state.types[0], lat: this.state.lat, lng: this.state.lng, newMedia: newMedia}))
+    .field('json', JSON.stringify({sectorId: this.props.location.query.idSector, id: this.state.id, visibility: this.state.visibility, name: this.state.name, comment: this.state.comment, originalGrade: this.state.originalGrade, fa: this.state.fa, faDate: this.state.faDate, nr: this.state.nr, t: this.state.typeId? this.state.types.find(t => t.id === this.state.typeId) : this.state.types[0], lat: this.state.lat, lng: this.state.lng, sections: this.state.sections, newMedia: newMedia}))
     .set('Accept', 'application/json');
     this.state.newMedia.forEach(m => req.attach(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
     req.end((err, res) => {
@@ -147,7 +147,6 @@ export default class ProblemEdit extends Component {
   }
 
   onSectionsUpdated(sections) {
-    console.log(sections);
     this.setState({sections});
   }
 
