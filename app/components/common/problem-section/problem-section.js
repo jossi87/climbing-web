@@ -15,6 +15,9 @@ var ProblemSection = createClass({
     };
 	},
   onNumberOfSectionsChange(num) {
+    if (num === 1) {
+      this.setState({sections: null});
+    }
     var sections = this.state.sections? this.state.sections : [];
     while (num > sections.length) {
       sections.push({id: sections.length*-1, nr: sections.length+1, grade: 'n/a', description: null});
