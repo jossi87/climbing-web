@@ -233,9 +233,9 @@ export default class Problem extends Component {
     var subsection = null;
     if (this.state.subsections) {
       const subsections = this.state.subsections.map((s, i) => {
-        return (<li key={i}>{s.grade}{s.description && " - " + s.description}</li>);
+        return (<li key={i}>#{s.nr} | {s.grade} | {s.description}</li>);
       });
-      subsection = <span><strong>Sections:</strong><br/><ol>{subsections}</ol></span>;
+      subsection = <span><strong>Sections:</strong><br/><ul>{subsections}</ul></span>;
     };
 
     var headerButtons = null;
@@ -247,16 +247,16 @@ export default class Problem extends Component {
               <Button bsStyle="primary" bsSize="xsmall" onClick={this.openTickModal.bind(this)}>Tick</Button>
             </OverlayTrigger>
             <OverlayTrigger placement="top" overlay={<Tooltip id={-2}>Add comment</Tooltip>}>
-              <Button bsStyle="primary" bsSize="xsmall" onClick={this.openCommentModal.bind(this)}><FontAwesomeIcon icon="comment" inverse /></Button>
+              <Button bsStyle="primary" bsSize="xsmall" onClick={this.openCommentModal.bind(this)}><FontAwesomeIcon icon="comment" inverse="true" /></Button>
             </OverlayTrigger>
             {auth.isAdmin() &&
               <OverlayTrigger placement="top" overlay={<Tooltip id={this.state.id}>Edit problem</Tooltip>}>
-                <LinkContainer to={{ pathname: `/problem/edit/${this.state.id}`, query: { idSector: this.state.sectorId, lat: this.state.sectorLat, lng: this.state.sectorLng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="edit" inverse /></Button></LinkContainer>
+                <LinkContainer to={{ pathname: `/problem/edit/${this.state.id}`, query: { idSector: this.state.sectorId, lat: this.state.sectorLat, lng: this.state.sectorLng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="edit" inverse="true" /></Button></LinkContainer>
               </OverlayTrigger>
             }
             {!auth.isAdmin() &&
               <OverlayTrigger placement="top" overlay={<Tooltip id={this.state.id}>Add image(s)</Tooltip>}>
-                <LinkContainer to={{ pathname: `/problem/edit/media/${this.state.id}` }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="image" inverse /></Button></LinkContainer>
+                <LinkContainer to={{ pathname: `/problem/edit/media/${this.state.id}` }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="image" inverse="true" /></Button></LinkContainer>
               </OverlayTrigger>
             }
           </ButtonGroup>
