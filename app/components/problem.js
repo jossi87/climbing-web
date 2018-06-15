@@ -233,9 +233,28 @@ export default class Problem extends Component {
     var section = null;
     if (this.state.sections) {
       const sections = this.state.sections.map((s, i) => {
-        return (<li key={i}>#{s.nr}  ({s.grade}) {s.description}</li>);
+        return (
+          <tr>
+            <td>{s.nr}</td>
+            <td>{s.grade}</td>
+            <td>{s.description}</td>
+          </tr>
+        );
       });
-      section = <span><strong>Sections:</strong><br/><ul style={{listStyleType: 'square'}}>{sections}</ul></span>;
+      section = (
+        <Table striped condensed hover>
+          <thead>
+            <tr>
+              <td>#</td>
+              <td>Grade</td>
+              <td>Description</td>
+            </tr>
+          </thead>
+          <tbody>
+            {sections}
+          </tbody>
+        </Table>
+      );
     };
 
     var headerButtons = null;
