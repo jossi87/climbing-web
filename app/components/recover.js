@@ -11,7 +11,7 @@ import { faSpinner } from '@fortawesome/fontawesome-free-solid';
 export default class Recover extends Component {
   constructor(props) {
     super(props);
-    document.title=config.getTitle() + " | Reset password";
+    document.title=config.getTitle("Reset password");
     this.state = {
       password: '',
       password2: ''

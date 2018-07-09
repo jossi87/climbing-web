@@ -11,7 +11,7 @@ import config from '../utils/config.js';
 export default class Login extends Component {
   constructor(props) {
     super(props);
-    document.title=config.getTitle() + " | login";
+    document.title=config.getTitle("Login");
     this.state = {
       message: null,
       username: '',

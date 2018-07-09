@@ -20,7 +20,7 @@ export default class Browse extends Component {
         error: err? err : null,
         areas: err? null : res.body
       });
-      document.title=config.getTitle() + " | browse";
+      document.title=config.getTitle("Browse");
     });
   }
 

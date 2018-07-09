@@ -11,7 +11,7 @@ import { faSpinner } from '@fortawesome/fontawesome-free-solid';
 
 export default class ProblemEditMedia extends Component {
   componentDidMount() {
-    document.title=config.getTitle() + " | Problem edit (media)";
+    document.title=config.getTitle("Problem edit (media)");
     Request.get(config.getUrl("problems?regionId=" + config.getRegion() + "&id=" + this.props.match.params.problemId)).withCredentials().end((err, res) => {
       if (err) {
         this.setState({error: err});

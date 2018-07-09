@@ -13,17 +13,17 @@ module.exports = {
     }
   },
 
-  getTitle() {
+  getTitle(str) {
     if (window.location.hostname=='buldring.bergen-klatreklubb.no') {
-      return "Buldring i Hordaland";
+      return "Buldring i Hordaland | " + (str? str : "Fører");
     } else if (window.location.hostname=='buldring.fredrikstadklatreklubb.org') {
-      return "Buldring i Fredrikstad";
+      return "Buldring i Fredrikstad | " + (str? str : "Fører");
     } else if (window.location.hostname=='brattelinjer.no') {
-      return "Bratte linjer";
+      return "Bratte linjer | " + (str? str : "Offisiell fører for klatring i Rogaland");
     } else if (window.location.hostname=='dev.jossi.org') {
-      return "Bratte linjer (dev)";
+      return "Bratte linjer (dev) | " + (str? str : "Offisiell fører for klatring i Rogaland");
     } else {
-      return "buldreinfo";
+      return "buldreinfo | " + (str? str : "Offisiell fører for buldring i Rogaland og Hordaland");
     }
   },
 

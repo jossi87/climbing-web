@@ -34,7 +34,7 @@ export default class UserEdit extends Component {
           newPassword2: null,
           message: null
         });
-        document.title=config.getTitle() + " | Edit " + res.body.firstname + " " + res.body.lastname;
+        document.title=config.getTitle("Edit " + res.body.firstname + " " + res.body.lastname);
       }
     });
   }

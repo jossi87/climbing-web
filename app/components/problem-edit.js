@@ -25,7 +25,7 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
 
 export default class ProblemEdit extends Component {
   componentDidMount() {
-    document.title=config.getTitle() + " | Problem edit";
+    document.title=config.getTitle("Problem edit");
     Request.get(config.getUrl("grades?regionId=" + config.getRegion())).end((err, res) => {
       this.setState({
         error: err? err : null,

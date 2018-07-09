@@ -30,7 +30,7 @@ export default class SectorEdit extends Component {
   }
 
   componentDidMount() {
-    document.title=config.getTitle() + " | Sector edit";
+    document.title=config.getTitle("Sector edit");
     if (this.props.match.params.sectorId==-1) {
       this.setState({
         id: -1,

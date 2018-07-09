@@ -13,7 +13,7 @@ import { faSpinner, faLock, faUserSecret, faStar, faStarHalf, faCamera, faPlane 
 export default class Finder extends Component {
   constructor(props) {
     super(props);
-    document.title=config.getTitle() + " | finder";
+    document.title=config.getTitle("Finder");
     this.state = {
       tabIndex: 1,
       currLat: 0,

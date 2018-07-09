@@ -27,7 +27,7 @@ export default class AreaEdit extends Component {
   }
 
   componentDidMount() {
-    document.title=config.getTitle() + " | Area edit";
+    document.title=config.getTitle("Area edit");
     if (this.props.match.params.areaId==-1) {
       this.setState({
         id: -1,

@@ -11,7 +11,7 @@ import { faSpinner, faLock, faUserSecret } from '@fortawesome/fontawesome-free-s
 
 export default class SvgEdit extends Component {
   componentDidMount() {
-    document.title=config.getTitle() + " | Problem edit (SVG)";
+    document.title=config.getTitle("Problem edit (SVG)");
     Request.get(config.getUrl("problems?regionId=" + config.getRegion() + "&id=" + this.props.match.params.problemId)).withCredentials().end((err, res) => {
       if (err) {
         this.setState({error: err});

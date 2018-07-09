@@ -54,7 +54,7 @@ export default class Area extends Component {
           lng: res.body.lng,
           sectors: res.body.sectors
         });
-        document.title=config.getTitle() + " | " + this.state.name;
+        document.title=config.getTitle(this.state.name);
       }
     });
   }

@@ -25,7 +25,7 @@ export default class User extends Component {
         this.setState({error: err});
       } else {
         this.setState({user: res.body});
-        document.title=config.getTitle() + " | " + res.body.name;
+        document.title=config.getTitle(res.body.name);
       }
     });
   }

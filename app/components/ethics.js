@@ -6,7 +6,7 @@ import config from '../utils/config.js';
 export default class Ethics extends Component {
   constructor(props) {
     super(props);
-    document.title=config.getTitle() + " | Ethics";
+    document.title=config.getTitle("Ethics");
   }
 
   render() {

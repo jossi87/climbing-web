@@ -109,7 +109,7 @@ export default class Sector extends Component {
         this.setState({error: err});
       } else {
         this.setState(res.body);
-        document.title=config.getTitle() + " | " + this.state.name;
+        document.title=config.getTitle(this.state.name);
       }
     });
   }

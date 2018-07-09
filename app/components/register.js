@@ -9,7 +9,7 @@ import config from '../utils/config.js';
 export default class Register extends Component {
   constructor(props) {
     super(props);
-    document.title=config.getTitle() + " | Register";
+    document.title=config.getTitle("Register");
     this.state = {
       message: null,
       firstname: '',
