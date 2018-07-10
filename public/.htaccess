@@ -11,7 +11,9 @@ RewriteRule problem/(\d*)$ http://45.56.87.57:8080/com.buldreinfo.jersey.jaxb/v1
 RewriteRule ^ http://45.56.87.57:8080/com.buldreinfo.jersey.jaxb/v1/static/frontpage?base=%{HTTP_HOST} [P]
 
 # React.JS redirect to index.html
-RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} =/gpl-3.0.txt
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} =/gpl-3.0.txt [or]
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} =/css/bootstrap.min.css [or]
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} =/css/buldreinfo.css
 RewriteRule ^ - [S=4] # Skip following lines if NOT gpl-3.0.txt
 RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f [OR]
 RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -d
