@@ -76,7 +76,7 @@ function tryLogin(username, password, cb) {
         if (lvl>=0) {
           isAuthenticated = true;
           isAdmin = lvl>=1;
-          isSuperAdmin = lvl===2;
+          isSuperadmin = lvl===2;
         }
       }
       cb({ authenticated: isAuthenticated, admin: isAdmin, superadmin: isSuperadmin });
