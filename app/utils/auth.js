@@ -66,13 +66,20 @@ function tryLogin(username, password, cb) {
     .send({regionId: config.getRegion()})
     .set('Accept', 'application/json')
     .end((err, res) => {
+      var isAuthenticated = false;
+      var isAdmin = false;
+      var isSuperadmin = false;
       if (err) {
         console.log(err);
-        cb({ authenticated: false, admin: false, superadmin: false });
-      } else {
+      } else if (res && res.text) {
         const lvl = parseInt(res.text);
-        cb({ authenticated: true, admin: lvl>=1, superadmin: lvl===2 });
+        if (lvl>=0) {
+          isAuthenticated = true;
+          isAdmin = lvl>=1;
+          isSuperAdmin = lvl===2;
+        }
       }
+      cb({ authenticated: isAuthenticated, admin: isAdmin, superadmin: isSuperadmin });
     });
   }, 0)
 }
