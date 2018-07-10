@@ -11,7 +11,7 @@ RewriteRule problem/(\d*)$ http://45.56.87.57:8080/com.buldreinfo.jersey.jaxb/v1
 RewriteRule ^ http://45.56.87.57:8080/com.buldreinfo.jersey.jaxb/v1/static/frontpage?base=%{HTTP_HOST} [P]
 
 # React.JS redirect to index.html
-RewriteCond %{REQUEST_URI} !(\.txt|\.css|\.js|\.jpg|\.jpeg|\.bmp|\.png|\.webm|\.webp|\.mp4)$ [NC]
+RewriteCond %{REQUEST_URI} (\.txt|\.css|\.js|\.jpg|\.jpeg|\.bmp|\.png|\.webm|\.webp|\.mp4)$ [NC]
 RewriteRule ^ - [S=4] # Skip following lines if NOT .txt/.css/.js/...
 RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f [OR]
 RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -d
