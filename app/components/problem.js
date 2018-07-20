@@ -308,7 +308,7 @@ export default class Problem extends Component {
         </Breadcrumb>
         {topoContent}
         <Well bsSize="small">
-          {config.getRegion()==4 && <span><strong>Type:</strong> {this.state.t.type + " - " + this.state.t.subType}<br/></span>}
+          {!config.isBouldering() && <span><strong>Type:</strong> {this.state.t.type + " - " + this.state.t.subType}<br/></span>}
           <strong>Comment:</strong> {this.state.comment}<br/>
           <strong>FA:</strong> {fa}<br/>
           <strong>FA date:</strong> {this.state.faDateHr}<br/>

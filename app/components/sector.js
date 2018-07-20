@@ -65,7 +65,7 @@ class TableRow extends Component {
     }
 
     var type;
-    if (config.getRegion()==4) {
+    if (!config.isBouldering()) {
       var typeImg;
       switch (this.props.problem.t.id) {
         case 2: typeImg = <img height="20" src="/jpg/bolt.jpg"/>; break;
@@ -223,7 +223,7 @@ export default class Sector extends Component {
               <th><FontAwesomeIcon icon="hashtag" /></th>
               <th>Name</th>
               <th>Description</th>
-              {config.getRegion()==4 && <th>Type</th>}
+              {!config.isBouldering() && <th>Type</th>}
               <th>Grade</th>
               <th>FA</th>
               <th>Ticks</th>

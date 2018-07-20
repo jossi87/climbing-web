@@ -213,7 +213,7 @@ export default class Finder extends Component {
     });
     const map = markers.length>0? <Map markers={markers} defaultCenter={config.getDefaultCenter()} defaultZoom={7}/> : null;
     var table = null;
-    if (config.getRegion()==4) {
+    if (!config.isBouldering()) {
       table = <BootstrapTable
                 data={this.state.problems}
                 trClassName={this.trClassFormat.bind(this)}

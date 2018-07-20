@@ -79,6 +79,24 @@ module.exports = {
     }
   },
 
+  isBouldering() {
+    if (window.location.hostname=='buldring.bergen-klatreklubb.no') {
+      return true;
+    } else if (window.location.hostname=='buldring.fredrikstadklatreklubb.org') {
+      return true;
+    } else if (window.location.hostname=='brattelinjer.no') {
+      return false;
+    } else if (window.location.hostname=='buldring.jotunheimenfjellsport.com') {
+      return true;
+    } else if (window.location.hostname=='klatring.jotunheimenfjellsport.com') {
+      return false;
+    } else if (window.location.hostname=='dev.jossi.org') {
+      return true;
+    } else {
+      return true;
+    }
+  },
+
   convertFromDateToString(date) {
     var d = date.getDate();
     var m = date.getMonth() + 1;
