@@ -19,19 +19,19 @@ module.exports = {
 
   getTitle(str) {
     if (window.location.hostname=='buldring.bergen-klatreklubb.no') {
-      return "Buldring i Hordaland | " + (str? str : "Fører");
+      return (str? str : "Buldring i Hordaland") + " | buldring.bergen-klatreklubb.no";
     } else if (window.location.hostname=='buldring.fredrikstadklatreklubb.org') {
-      return "Buldring i Fredrikstad | " + (str? str : "Fører");
+      return (str? str : "Buldring i Fredrikstad") + " | buldring.fredrikstadklatreklubb.org";
     } else if (window.location.hostname=='brattelinjer.no') {
-      return "Bratte linjer | " + (str? str : "Offisiell fører for klatring i Rogaland");
+      return (str? str : "Klatring i Rogaland") + " | Bratte linjer";
     } else if (window.location.hostname=='buldring.jotunheimenfjellsport.com') {
-      return "Buldring i Jotunheimen | " + (str? str : "Fører");
+      return (str? str : "Buldring i Jotunheimen") + " | buldring.jotunheimenfjellsport.com";
     } else if (window.location.hostname=='klatring.jotunheimenfjellsport.com') {
-      return "Klatring i Jotunheimen | " + (str? str : "Fører");
+      return (str? str : "Klatring i Jotunheimen") + " | klatring.jotunheimenfjellsport.com";
     } else if (window.location.hostname=='dev.jossi.org') {
-      return "Bratte linjer (dev) | " + (str? str : "Offisiell fører for klatring i Rogaland");
+      return (str? str : "DEV") + " | dev.jossi.org";
     } else {
-      return "buldreinfo | " + (str? str : "Offisiell fører for buldring i Rogaland og Hordaland");
+      return (str? str : "Buldring i Rogaland") + " | Buldreinfo";
     }
   },
 

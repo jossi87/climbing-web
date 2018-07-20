@@ -53,7 +53,7 @@ export default class Problem extends Component {
           comments: res.body[0].comments,
           sections: res.body[0].sections
         });
-        document.title=config.getTitle(this.state.name + ' | ' + this.state.grade);
+        document.title=config.getTitle(this.state.areaName + " - " + this.state.sectorName + " - " + this.state.name + ' (' + this.state.grade + ')');
       }
     });
   }
