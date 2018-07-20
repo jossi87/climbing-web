@@ -33,7 +33,7 @@ export default class LinkBox extends Component {
     const styleGoogle = {maxWidth: '100%'};
     return (
       <div>
-        {!config.isBouldering() && <a href="https://play.google.com/store/apps/details?id=org.jossi.android.bouldering&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1" target="_blank"><img style={styleGoogle} alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" /></a>}
+        {config.isBouldering() && <a href="https://play.google.com/store/apps/details?id=org.jossi.android.bouldering&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1" target="_blank"><img style={styleGoogle} alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" /></a>}
         {config.getRegion()==1 && <a href={"http://sissportssenter.no/"} target="_blank"><img style={styleSis} src={"/png/sis-sportssenter.png"}/></a>}
         {(config.getRegion()==1 || config.getRegion()==4) && <a href={"http://brv.no/"} target="_blank"><img style={styleBrv} src={"/png/brv.png"}/></a>}
       </div>
