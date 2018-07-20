@@ -6,6 +6,10 @@ module.exports = {
       return "https://buldring.fredrikstadklatreklubb.org/com.buldreinfo.jersey.jaxb/v1/" + str;
     } else if (window.location.hostname=='brattelinjer.no') {
       return "https://brattelinjer.no/com.buldreinfo.jersey.jaxb/v1/" + str;
+    } else if (window.location.hostname=='buldring.jotunheimenfjellsport.com') {
+      return "https://buldring.jotunheimenfjellsport.com/com.buldreinfo.jersey.jaxb/v1/" + str;
+    } else if (window.location.hostname=='klatring.jotunheimenfjellsport.com') {
+      return "https://klatring.jotunheimenfjellsport.com/com.buldreinfo.jersey.jaxb/v1/" + str;
     } else if (window.location.hostname=='dev.jossi.org') {
       return "https://dev.jossi.org/com.buldreinfo.jersey.jaxb/v1/" + str;
     } else {
@@ -20,6 +24,10 @@ module.exports = {
       return "Buldring i Fredrikstad | " + (str? str : "Fører");
     } else if (window.location.hostname=='brattelinjer.no') {
       return "Bratte linjer | " + (str? str : "Offisiell fører for klatring i Rogaland");
+    } else if (window.location.hostname=='buldring.jotunheimenfjellsport.com') {
+      return "Buldring i Jotunheimen | " + (str? str : "Fører");
+    } else if (window.location.hostname=='klatring.jotunheimenfjellsport.com') {
+      return "Klatring i Jotunheimen | " + (str? str : "Fører");
     } else if (window.location.hostname=='dev.jossi.org') {
       return "Bratte linjer (dev) | " + (str? str : "Offisiell fører for klatring i Rogaland");
     } else {
@@ -34,6 +42,10 @@ module.exports = {
       return "3";
     } else if (window.location.hostname=='brattelinjer.no') {
       return "4";
+    } else if (window.location.hostname=='buldring.jotunheimenfjellsport.com') {
+      return "5";
+    } else if (window.location.hostname=='klatring.jotunheimenfjellsport.com') {
+      return "6";
     } else if (window.location.hostname=='dev.jossi.org') {
       return "4";
     } else {
@@ -46,6 +58,10 @@ module.exports = {
       return {lat: 60.47521, lng: 6.83169};
     } else if (window.location.hostname=='buldring.fredrikstadklatreklubb.org') {
       return {lat: 59.22844, lng: 10.91722};
+    } else if (window.location.hostname=='buldring.jotunheimenfjellsport.com') {
+      return {lat: 61.60500, lng: 8.47750};
+    } else if (window.location.hostname=='klatring.jotunheimenfjellsport.com') {
+      return {lat: 61.60500, lng: 8.47750};
     } else {
       return {lat: 58.78119, lng: 5.86361};
     }
@@ -53,6 +69,8 @@ module.exports = {
 
   getDefaultZoom() {
     if (window.location.hostname=='brattelinjer.no') {
+      return 9;
+    } else if (window.location.hostname=='klatring.jotunheimenfjellsport.com') {
       return 9;
     } else if (window.location.hostname=='dev.jossi.org') {
       return 9;

@@ -143,8 +143,10 @@ export default class Navigation extends Component {
               <MenuItem eventKey={6.3} href="https://buldreinfo.com" target="_blank">buldreinfo.com</MenuItem>
               <MenuItem eventKey={6.4} href="https://buldring.bergen-klatreklubb.no" target="_blank">buldring.bergen-klatreklubb.no</MenuItem>
               <MenuItem eventKey={6.5} href="https://buldring.fredrikstadklatreklubb.org" target="_blank">buldring.fredrikstadklatreklubb.org</MenuItem>
+              <MenuItem eventKey={6.6} href="https://buldring.jotunheimenfjellsport.com" target="_blank">buldring.jotunheimenfjellsport.com</MenuItem>
               <MenuItem divider />
-              <MenuItem eventKey={6.6} href="https://brattelinjer.no" target="_blank">brattelinjer.no</MenuItem>
+              <MenuItem eventKey={6.7} href="https://brattelinjer.no" target="_blank">brattelinjer.no</MenuItem>
+              <MenuItem eventKey={6.7} href="https://klatring.jotunheimenfjellsport.com" target="_blank">klatring.jotunheimenfjellsport.com</MenuItem>
             </NavDropdown>
           </Nav>
         </Navbar.Collapse>
