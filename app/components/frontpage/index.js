@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { Table, Grid, Well, Row, Col, Clearfix } from 'react-bootstrap';
 import Request from 'superagent';
@@ -20,7 +21,6 @@ export default class Index extends Component {
         data: err? null : res.body
       });
     });
-    document.title=config.getTitle();
   }
 
   render() {
@@ -67,36 +67,42 @@ export default class Index extends Component {
     });
 
     return (
-      <Grid>
-        <Row>
-          <Well style={{textAlign: 'center'}}>
-            Total: {this.state.data.numProblems} ({this.state.data.numProblemsWithCoordinates} with coordinates{this.state.data.numProblemsWithTopo>0? ", " + this.state.data.numProblemsWithTopo + " on topo" : ""}) | Public ascents: {this.state.data.numTicks} | Images: {this.state.data.numImages} | Ascents on video: {this.state.data.numMovies}
-          </Well>
-        </Row>
-        <Row>
-          <Col xs={8} md={9} style={{paddingLeft: '3px', paddingRight: '3px'}}>
-            <ImageBox data={this.state.data.randomMedia}/>
-          </Col>
-          <Col xs={4} md={3} style={{paddingLeft: '3px', paddingRight: '3px'}}>
-            <LinkBox/>
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={6} lg={3} style={{paddingLeft: '3px', paddingRight: '3px'}}>
-            <TextBox title="Newest" data={newestProblems}/>
-          </Col>
-          <Col xs={6} lg={3} style={{paddingLeft: '3px', paddingRight: '3px'}}>
-            <TextBox title="Latest ascents" data={latestAscents}/>
-          </Col>
-          <Clearfix visibleXsBlock></Clearfix>
-          <Col xs={6} lg={3} style={{paddingLeft: '3px', paddingRight: '3px'}}>
-            <TextBox title="Newest media" data={newestMedia}/>
-          </Col>
-          <Col xs={6} lg={3} style={{paddingLeft: '3px', paddingRight: '3px'}}>
-            <TextBox title="Latest comments" data={latestComments}/>
-          </Col>
-        </Row>
-      </Grid>
+      <span>
+        <MetaTags>
+          <title>{config.getTitle()}</title>
+          <meta name="description" content={config.getIndexMetaDescription()} />
+        </MetaTags>
+        <Grid>
+          <Row>
+            <Well style={{textAlign: 'center'}}>
+              Total: {this.state.data.numProblems} ({this.state.data.numProblemsWithCoordinates} with coordinates{this.state.data.numProblemsWithTopo>0? ", " + this.state.data.numProblemsWithTopo + " on topo" : ""}) | Public ascents: {this.state.data.numTicks} | Images: {this.state.data.numImages} | Ascents on video: {this.state.data.numMovies}
+            </Well>
+          </Row>
+          <Row>
+            <Col xs={8} md={9} style={{paddingLeft: '3px', paddingRight: '3px'}}>
+              <ImageBox data={this.state.data.randomMedia}/>
+            </Col>
+            <Col xs={4} md={3} style={{paddingLeft: '3px', paddingRight: '3px'}}>
+              <LinkBox/>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={6} lg={3} style={{paddingLeft: '3px', paddingRight: '3px'}}>
+              <TextBox title="Newest" data={newestProblems}/>
+            </Col>
+            <Col xs={6} lg={3} style={{paddingLeft: '3px', paddingRight: '3px'}}>
+              <TextBox title="Latest ascents" data={latestAscents}/>
+            </Col>
+            <Clearfix visibleXsBlock></Clearfix>
+            <Col xs={6} lg={3} style={{paddingLeft: '3px', paddingRight: '3px'}}>
+              <TextBox title="Newest media" data={newestMedia}/>
+            </Col>
+            <Col xs={6} lg={3} style={{paddingLeft: '3px', paddingRight: '3px'}}>
+              <TextBox title="Latest comments" data={latestComments}/>
+            </Col>
+          </Row>
+        </Grid>
+      </span>
     );
   }
 }
