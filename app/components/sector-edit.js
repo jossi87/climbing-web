@@ -151,6 +151,7 @@ export default class SectorEdit extends Component {
       <span>
         <MetaTags>
           <title>{config.getTitle("Sector edit")}</title>
+          <meta name="description" content={config.getMetaDescription("Edit sector")} />
         </MetaTags>
         <Well>
           <form onSubmit={this.save.bind(this)}>

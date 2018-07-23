@@ -109,6 +109,7 @@ export default class Register extends Component {
       <span>
         <MetaTags>
           <title>{config.getTitle("Register")}</title>
+          <meta name="description" content={config.getMetaDescription("Register")} />
         </MetaTags>
         <Breadcrumb>
           <Link to={`/`}>Home</Link> / <font color='#777'>Register</font>

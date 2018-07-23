@@ -204,6 +204,7 @@ export default class ProblemEdit extends Component {
       <span>
         <MetaTags>
           <title>{config.getTitle("Problem edit")}</title>
+          <meta name="description" content={config.getMetaDescription("Edit problem")} />
         </MetaTags>
         <Well>
           <form onSubmit={this.save.bind(this)}>

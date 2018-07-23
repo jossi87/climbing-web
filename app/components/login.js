@@ -68,6 +68,7 @@ export default class Login extends Component {
       <span>
         <MetaTags>
           <title>{config.getTitle("Login")}</title>
+          <meta name="description" content={config.getMetaDescription("Login")} />
         </MetaTags>
         <Breadcrumb>
           <Link to={`/`}>Home</Link> / <font color='#777'>Sign in</font>

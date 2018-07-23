@@ -142,6 +142,7 @@ export default class UserEdit extends Component {
       <span>
         <MetaTags>
           <title>{config.getTitle("Edit " + res.body.firstname + " " + res.body.lastname)}</title>
+          <meta name="description" content={config.getMetaDescription("Edit user")} />
         </MetaTags>
         <Breadcrumb>
           <Link to={`/`}>Home</Link> / <font color='#777'>User edit</font>

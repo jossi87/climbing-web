@@ -73,6 +73,7 @@ export default class Recover extends Component {
       <span>
         <MetaTags>
           <title>{config.getTitle("Reset password")}</title>
+          <meta name="description" content={config.getMetaDescription("Reset password")} />
         </MetaTags>
         <Well>
           <form onSubmit={this.recover.bind(this)}>

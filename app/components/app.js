@@ -1,6 +1,4 @@
 import React, {Component} from 'react';
-import MetaTags from 'react-meta-tags';
-import config from '../utils/config.js';
 import ReactDOM from 'react-dom'; // Used for navbar hack
 import {Route,  Switch} from 'react-router-dom';
 import Loadable from 'react-loadable';
@@ -43,9 +41,6 @@ export default class App extends Component {
   render() {
     return (
       <span>
-        <MetaTags>
-          <meta name="description" content={config.getIndexMetaDescription()} />
-        </MetaTags>
         <Navigation/>
         <div className="container">
           <Switch>
