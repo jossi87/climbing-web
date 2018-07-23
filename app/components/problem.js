@@ -297,11 +297,24 @@ export default class Problem extends Component {
       tickModal = <TickModal idTick={-1} idProblem={this.state.id} grade={this.state.originalGrade} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/>;
     }
 
+    var meta = this.state.fa? this.state.fa.map((u, i) => {return ({u.firstname} {u.surname})}) : [];
+    meta = this.intersperse(meta, ", ");
+    if (meta && this.state.faDateHr) {
+      meta = "First ascent by " + meta + " (" + this.state.faDateHr + ")";
+    }
+    if (meta && this.state.comment) {
+      meta = this.state.comment + " | " + meta;
+    } else if (this.state.comment) {
+      meta = this.state.comment;
+    } else {
+      meta = config.getIndexMetaDescription();
+    }
+
     return (
       <span>
         <MetaTags>
           <title>{config.getTitle(this.state.name + ' ' + this.state.grade + ' (' + this.state.areaName + " - " + this.state.sectorName + ')')}</title>
-          <meta name="description" content={this.state.comment? this.state.comment : config.getIndexMetaDescription()} />
+          <meta name="description" content={meta} />
         </MetaTags>
 
         {tickModal}
