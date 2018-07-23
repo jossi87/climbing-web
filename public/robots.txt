@@ -1,1 +1,1 @@
-Sitemap: https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/sitemap.txt
+Sitemap: https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/static/sitemap.txt
