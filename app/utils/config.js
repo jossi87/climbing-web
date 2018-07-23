@@ -23,7 +23,7 @@ module.exports = {
     } else if (window.location.hostname=='buldring.fredrikstadklatreklubb.org') {
       return (str? str : "Buldring i Fredrikstad") + " | buldring.fredrikstadklatreklubb.org";
     } else if (window.location.hostname=='brattelinjer.no') {
-      return (str? str : "Klatring i Rogaland") + " | Bratte linjer";
+      return (str? str : "Klatring i Rogaland") + " | Bratte Linjer";
     } else if (window.location.hostname=='buldring.jotunheimenfjellsport.com') {
       return (str? str : "Buldring i Jotunheimen") + " | buldring.jotunheimenfjellsport.com";
     } else if (window.location.hostname=='klatring.jotunheimenfjellsport.com') {
