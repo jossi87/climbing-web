@@ -297,7 +297,7 @@ export default class Problem extends Component {
       tickModal = <TickModal idTick={-1} idProblem={this.state.id} grade={this.state.originalGrade} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/>;
     }
 
-    var meta = this.state.fa? this.state.fa.map((u, i) => {return ({u.firstname} {u.surname})}) : [];
+    var meta = this.state.fa? this.state.fa.map((u, i) => {return (u.firstname + " " + u.surname)}) : [];
     meta = this.intersperse(meta, ", ");
     if (meta && this.state.faDateHr) {
       meta = "First ascent by " + meta + " (" + this.state.faDateHr + ")";
