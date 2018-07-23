@@ -299,10 +299,7 @@ export default class Problem extends Component {
 
     var meta = this.state.fa && this.state.fa.map(u => u.firstname + " " + u.surname).join(", ");
     if (meta) {
-      meta = "First ascent by " + meta + (this.state.faDateHr? " (" + this.state.faDateHr + ")" : "");
-    }
-    if (meta && this.state.comment) {
-      meta = this.state.comment + " | " + meta;
+      meta = (this.state.comment? this.state.comment + " | " : "") + "First ascent by " + meta + (this.state.faDateHr? " (" + this.state.faDateHr + ")" : "");
     } else if (this.state.comment) {
       meta = this.state.comment;
     } else {
