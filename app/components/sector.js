@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Request from 'superagent';
 import Map from './common/map/map';
@@ -109,7 +110,6 @@ export default class Sector extends Component {
         this.setState({error: err});
       } else {
         this.setState(res.body);
-        document.title=config.getTitle(this.state.name + " (" + this.state.areaName + ")");
       }
     });
   }
@@ -199,6 +199,9 @@ export default class Sector extends Component {
 
     return (
       <span>
+        <MetaTags>
+          <title>{config.getTitle(this.state.name + " (" + this.state.areaName + ")")}</title>
+        </MetaTags>
         <Breadcrumb>
           {auth.isAdmin()?
             <div style={{float: 'right'}}>

@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import Request from 'superagent';
@@ -9,7 +10,6 @@ import config from '../utils/config.js';
 export default class Register extends Component {
   constructor(props) {
     super(props);
-    document.title=config.getTitle("Register");
     this.state = {
       message: null,
       firstname: '',
@@ -107,6 +107,9 @@ export default class Register extends Component {
     }
     return (
       <span>
+        <MetaTags>
+          <title>{config.getTitle("Register")}</title>
+        </MetaTags>
         <Breadcrumb>
           <Link to={`/`}>Home</Link> / <font color='#777'>Register</font>
         </Breadcrumb>

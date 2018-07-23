@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import Request from 'superagent';
@@ -11,7 +12,6 @@ import { faSpinner } from '@fortawesome/fontawesome-free-solid';
 export default class Recover extends Component {
   constructor(props) {
     super(props);
-    document.title=config.getTitle("Reset password");
     this.state = {
       password: '',
       password2: ''
@@ -70,25 +70,30 @@ export default class Recover extends Component {
       return (<Redirect to={this.state.pushUrl} push />);
     }
     return (
-      <Well>
-        <form onSubmit={this.recover.bind(this)}>
-          <FormGroup controlId="formControlsPassword" validationState={this.validatePassword()}>
-            <ControlLabel>New password</ControlLabel>
-            <FormControl type="password" placeholder="Enter new password" onChange={this.onPasswordChanged.bind(this)} />
-            <FormControl.Feedback />
-            <HelpBlock>At least 8 characters.</HelpBlock>
-          </FormGroup>
-          <FormGroup controlId="formControlsPassword2" validationState={this.validatePassword2()}>
-            <ControlLabel>Confirm new password</ControlLabel>
-            <FormControl type="password" placeholder="Confirm new password" onChange={this.onConfirmPasswordChanged.bind(this)} />
-            <FormControl.Feedback />
-            <HelpBlock>Must match password field.</HelpBlock>
-          </FormGroup>
-          <ButtonGroup>
-            <Button type="submit" bsStyle="success">Reset password</Button>
-          </ButtonGroup>
-        </form>
-      </Well>
+      <span>
+        <MetaTags>
+          <title>{config.getTitle("Reset password")}</title>
+        </MetaTags>
+        <Well>
+          <form onSubmit={this.recover.bind(this)}>
+            <FormGroup controlId="formControlsPassword" validationState={this.validatePassword()}>
+              <ControlLabel>New password</ControlLabel>
+              <FormControl type="password" placeholder="Enter new password" onChange={this.onPasswordChanged.bind(this)} />
+              <FormControl.Feedback />
+              <HelpBlock>At least 8 characters.</HelpBlock>
+            </FormGroup>
+            <FormGroup controlId="formControlsPassword2" validationState={this.validatePassword2()}>
+              <ControlLabel>Confirm new password</ControlLabel>
+              <FormControl type="password" placeholder="Confirm new password" onChange={this.onConfirmPasswordChanged.bind(this)} />
+              <FormControl.Feedback />
+              <HelpBlock>Must match password field.</HelpBlock>
+            </FormGroup>
+            <ButtonGroup>
+              <Button type="submit" bsStyle="success">Reset password</Button>
+            </ButtonGroup>
+          </form>
+        </Well>
+      </span>
     );
   }
 }

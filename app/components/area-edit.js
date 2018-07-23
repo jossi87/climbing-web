@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import MetaTags from 'react-meta-tags';
 import Request from 'superagent';
 import { Redirect } from 'react-router';
 import { FormGroup, ControlLabel, FormControl, Checkbox, ButtonGroup, DropdownButton, MenuItem, Button, Well } from 'react-bootstrap';
@@ -27,7 +28,6 @@ export default class AreaEdit extends Component {
   }
 
   componentDidMount() {
-    document.title=config.getTitle("Area edit");
     if (this.props.match.params.areaId==-1) {
       this.setState({
         id: -1,
@@ -119,44 +119,49 @@ export default class AreaEdit extends Component {
     const defaultCenter = this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? {lat: parseFloat(this.props.location.query.lat), lng: parseFloat(this.props.location.query.lng)} : config.getDefaultCenter();
     const defaultZoom = this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? 8 : config.getDefaultZoom();
     return (
-      <Well>
-        <form onSubmit={this.save.bind(this)}>
-          <FormGroup controlId="formControlsName">
-            <ControlLabel>Area name</ControlLabel>
-            <FormControl type="text" value={this.state.name} placeholder="Enter name" onChange={this.onNameChanged.bind(this)} />
-          </FormGroup>
-          <FormGroup controlId="formControlsComment">
-            <ControlLabel>Comment</ControlLabel>
-            <FormControl style={{height: '100px'}} componentClass="textarea" placeholder="Enter comment" value={this.state.comment} onChange={this.onCommentChanged.bind(this)} />
-          </FormGroup>
-          <FormGroup controlId="formControlsVisibility">
-            <ControlLabel>Visibility</ControlLabel><br/>
-            <DropdownButton title={visibilityText} id="bg-nested-dropdown">
-              <MenuItem eventKey="0" onSelect={this.onVisibilityChanged.bind(this, 0)}>Visible for everyone</MenuItem>
-              <MenuItem eventKey="1" onSelect={this.onVisibilityChanged.bind(this, 1)}>Only visible for administrators</MenuItem>
-              {auth.isSuperAdmin() && <MenuItem eventKey="2" onSelect={this.onVisibilityChanged.bind(this, 2)}>Only visible for super administrators</MenuItem>}
-            </DropdownButton>
-          </FormGroup>
-          <FormGroup controlId="formControlsMedia">
-            <ImageUpload onMediaChanged={this.onNewMediaChanged.bind(this)} />
-          </FormGroup>
-          <FormGroup controlId="formControlsMap">
-            <ControlLabel>Click to mark area center on map</ControlLabel><br/>
-            <section style={{height: '600px'}}>
-              <GettingStartedGoogleMap
-                containerElement={<div style={{ height: `100%` }} />}
-                mapElement={<div style={{ height: `100%` }} />}
-                defaultZoom={defaultZoom}
-                defaultCenter={defaultCenter}
-                onClick={this.onMarkerClick.bind(this)}
-                markers={this.state.lat!=0 && this.state.lng!=0? <Marker position={{lat: this.state.lat, lng: this.state.lng}}/> : ""}
-              />
-            </section>
-          </FormGroup>
+      <span>
+        <MetaTags>
+          <title>{config.getTitle("Area edit")}</title>
+        </MetaTags>
+        <Well>
+          <form onSubmit={this.save.bind(this)}>
+            <FormGroup controlId="formControlsName">
+              <ControlLabel>Area name</ControlLabel>
+              <FormControl type="text" value={this.state.name} placeholder="Enter name" onChange={this.onNameChanged.bind(this)} />
+            </FormGroup>
+            <FormGroup controlId="formControlsComment">
+              <ControlLabel>Comment</ControlLabel>
+              <FormControl style={{height: '100px'}} componentClass="textarea" placeholder="Enter comment" value={this.state.comment} onChange={this.onCommentChanged.bind(this)} />
+            </FormGroup>
+            <FormGroup controlId="formControlsVisibility">
+              <ControlLabel>Visibility</ControlLabel><br/>
+              <DropdownButton title={visibilityText} id="bg-nested-dropdown">
+                <MenuItem eventKey="0" onSelect={this.onVisibilityChanged.bind(this, 0)}>Visible for everyone</MenuItem>
+                <MenuItem eventKey="1" onSelect={this.onVisibilityChanged.bind(this, 1)}>Only visible for administrators</MenuItem>
+                {auth.isSuperAdmin() && <MenuItem eventKey="2" onSelect={this.onVisibilityChanged.bind(this, 2)}>Only visible for super administrators</MenuItem>}
+              </DropdownButton>
+            </FormGroup>
+            <FormGroup controlId="formControlsMedia">
+              <ImageUpload onMediaChanged={this.onNewMediaChanged.bind(this)} />
+            </FormGroup>
+            <FormGroup controlId="formControlsMap">
+              <ControlLabel>Click to mark area center on map</ControlLabel><br/>
+              <section style={{height: '600px'}}>
+                <GettingStartedGoogleMap
+                  containerElement={<div style={{ height: `100%` }} />}
+                  mapElement={<div style={{ height: `100%` }} />}
+                  defaultZoom={defaultZoom}
+                  defaultCenter={defaultCenter}
+                  onClick={this.onMarkerClick.bind(this)}
+                  markers={this.state.lat!=0 && this.state.lng!=0? <Marker position={{lat: this.state.lat, lng: this.state.lng}}/> : ""}
+                />
+              </section>
+            </FormGroup>
 
-          <ButtonGroup><Button bsStyle="danger" onClick={this.onCancel.bind(this)}>Cancel</Button><Button type="submit" bsStyle="success" disabled={this.state.isSaving}>{this.state.isSaving? 'Saving...' : 'Save area'}</Button></ButtonGroup>
-        </form>
-      </Well>
+            <ButtonGroup><Button bsStyle="danger" onClick={this.onCancel.bind(this)}>Cancel</Button><Button type="submit" bsStyle="success" disabled={this.state.isSaving}>{this.state.isSaving? 'Saving...' : 'Save area'}</Button></ButtonGroup>
+          </form>
+        </Well>
+      </span>
     );
   }
 }

@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { Breadcrumb, Well } from 'react-bootstrap';
 import config from '../utils/config.js';
@@ -6,12 +7,14 @@ import config from '../utils/config.js';
 export default class Ethics extends Component {
   constructor(props) {
     super(props);
-    document.title=config.getTitle("Ethics");
   }
 
   render() {
     return (
       <span>
+        <MetaTags>
+          <title>{config.getTitle("Ethics")}</title>
+        </MetaTags>
         <Breadcrumb>
           <Link to={`/`}>Home</Link> / <font color='#777'>Ethics</font>
         </Breadcrumb>

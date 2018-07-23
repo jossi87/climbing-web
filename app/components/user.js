@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Request from 'superagent';
 import { LinkContainer } from 'react-router-bootstrap';
@@ -25,7 +26,6 @@ export default class User extends Component {
         this.setState({error: err});
       } else {
         this.setState({user: res.body});
-        document.title=config.getTitle(res.body.name);
       }
     });
   }
@@ -151,6 +151,10 @@ export default class User extends Component {
 
     return (
       <span>
+        <MetaTags>
+          <title>{config.getTitle(res.body.name)}</title>
+        </MetaTags>
+
         {this.state.currTick? <TickModal idTick={this.state.currTick.id} idProblem={this.state.currTick.idProblem} date={this.state.currTick.date} comment={this.state.currTick.comment} grade={this.state.currTick.grade} stars={this.state.currTick.stars} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/> : ""}
         <Breadcrumb>
           {auth.loggedIn() && this.state.user.readOnly==false?

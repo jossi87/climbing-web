@@ -70,7 +70,6 @@ export default class Index extends Component {
       <span>
         <MetaTags>
           <title>{config.getTitle()}</title>
-          <meta name="description" content={config.getIndexMetaDescription()} />
         </MetaTags>
         <Grid>
           <Row>

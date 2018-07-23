@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router'
 import Request from 'superagent';
@@ -11,7 +12,6 @@ import { faSpinner } from '@fortawesome/fontawesome-free-solid';
 
 export default class ProblemEditMedia extends Component {
   componentDidMount() {
-    document.title=config.getTitle("Problem edit (media)");
     Request.get(config.getUrl("problems?regionId=" + config.getRegion() + "&id=" + this.props.match.params.problemId)).withCredentials().end((err, res) => {
       if (err) {
         this.setState({error: err});
@@ -62,14 +62,19 @@ export default class ProblemEditMedia extends Component {
     }
 
     return (
-      <Well>
-        <form onSubmit={this.save.bind(this)}>
-          <FormGroup controlId="formControlsMedia">
-            <ImageUpload onMediaChanged={this.onNewMediaChanged.bind(this)} />
-          </FormGroup>
-          <ButtonGroup><Button bsStyle="danger" onClick={this.onCancel.bind(this)}>Cancel</Button><Button type="submit" bsStyle="success" disabled={this.state.isSaving}>{this.state.isSaving? 'Saving...' : 'Save'}</Button></ButtonGroup>
-        </form>
-      </Well>
+      <span>
+        <MetaTags>
+          <title>{config.getTitle("Problem edit (media)")}</title>
+        </MetaTags>
+        <Well>
+          <form onSubmit={this.save.bind(this)}>
+            <FormGroup controlId="formControlsMedia">
+              <ImageUpload onMediaChanged={this.onNewMediaChanged.bind(this)} />
+            </FormGroup>
+            <ButtonGroup><Button bsStyle="danger" onClick={this.onCancel.bind(this)}>Cancel</Button><Button type="submit" bsStyle="success" disabled={this.state.isSaving}>{this.state.isSaving? 'Saving...' : 'Save'}</Button></ButtonGroup>
+          </form>
+        </Well>
+      </span>
     );
   }
 }

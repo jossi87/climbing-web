@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Map from './common/map/map';
 import Gallery from './common/gallery/gallery';
@@ -53,7 +54,6 @@ export default class Problem extends Component {
           comments: res.body[0].comments,
           sections: res.body[0].sections
         });
-        document.title=config.getTitle(this.state.name + ' ' + this.state.grade + ' (' + this.state.areaName + " - " + this.state.sectorName + ')');
       }
     });
   }
@@ -299,6 +299,10 @@ export default class Problem extends Component {
 
     return (
       <span>
+        <MetaTags>
+          <title>{config.getTitle(this.state.name + ' ' + this.state.grade + ' (' + this.state.areaName + " - " + this.state.sectorName + ')')}</title>
+        </MetaTags>
+
         {tickModal}
         <CommentModal idProblem={this.state.id} show={this.state.showCommentModal} onHide={this.closeCommentModal.bind(this)}/>
 

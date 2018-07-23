@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router'
 import Request from 'superagent';
@@ -25,7 +26,6 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
 
 export default class ProblemEdit extends Component {
   componentDidMount() {
-    document.title=config.getTitle("Problem edit");
     Request.get(config.getUrl("grades?regionId=" + config.getRegion())).end((err, res) => {
       this.setState({
         error: err? err : null,
@@ -201,76 +201,81 @@ export default class ProblemEdit extends Component {
       );
     }
     return (
-      <Well>
-        <form onSubmit={this.save.bind(this)}>
-          <FormGroup controlId="formControlsName">
-            <ControlLabel>Problem name</ControlLabel>
-            <FormControl type="text" value={this.state.name} placeholder="Enter name" onChange={this.onNameChanged.bind(this)} />
-          </FormGroup>
-          <FormGroup controlId="formControlsFaDate">
-            <ControlLabel>FA date (yyyy-mm-dd)</ControlLabel><br/>
-            <Calendar format='YYYY-MM-DD' computableFormat='YYYY-MM-DD' date={this.state.faDate} onChange={this.onFaDateChanged.bind(this)} />
-            <ButtonGroup>
-              <Button onClick={this.onFaDateChanged.bind(this, config.convertFromDateToString(yesterday))}>Yesterday</Button>
-              <Button onClick={this.onFaDateChanged.bind(this, config.convertFromDateToString(new Date()))}>Today</Button>
-            </ButtonGroup>
-          </FormGroup>
-          <FormGroup controlId="formControlsTypeId">
-            <ControlLabel>Type</ControlLabel><br/>
-            <DropdownButton title={selectedType.type + (selectedType.subType? " - " + selectedType.subType : "")} id="bg-nested-dropdown">
-              {this.state.types.map((t, i) => { return <MenuItem key={i} eventKey={i} onSelect={this.onTypeIdChanged.bind(this, t.id)}>{t.type} {t.subType? " - " + t.subType : ""}</MenuItem> })}
-            </DropdownButton>
-          </FormGroup>
-          <FormGroup controlId="formControlsGrade">
-            <ControlLabel>Grade</ControlLabel><br/>
-            <DropdownButton title={this.state.originalGrade} id="bg-nested-dropdown">
-              {this.state.grades.map((g, i) => { return <MenuItem key={i} eventKey={i} onSelect={this.onOriginalGradeChanged.bind(this, g.grade)}>{g.grade}</MenuItem> })}
-            </DropdownButton>
-          </FormGroup>
-          <FormGroup controlId="formControlsFA">
-            <ControlLabel>FA</ControlLabel><br/>
-            <UserSelector users={this.state.fa? this.state.fa.map(u => {return {value: u.id, label: u.firstname + " " + u.surname}}) : []} onUsersUpdated={this.onUsersUpdated.bind(this)} />
-          </FormGroup>
-          <FormGroup controlId="formControlsVisibility">
-            <ControlLabel>Visibility</ControlLabel><br/>
-            <DropdownButton title={visibilityText} id="bg-nested-dropdown">
-              <MenuItem eventKey="0" onSelect={this.onVisibilityChanged.bind(this, 0)}>Visible for everyone</MenuItem>
-              <MenuItem eventKey="1" onSelect={this.onVisibilityChanged.bind(this, 1)}>Only visible for administrators</MenuItem>
-              {auth.isSuperAdmin() && <MenuItem eventKey="2" onSelect={this.onVisibilityChanged.bind(this, 2)}>Only visible for super administrators</MenuItem>}
-            </DropdownButton>
-          </FormGroup>
-          <FormGroup controlId="formControlsSectorNr">
-            <ControlLabel>Sector number</ControlLabel>
-            <FormControl type="text" value={this.state.nr} placeholder="Enter sector number" onChange={this.onNrChanged.bind(this)} />
-          </FormGroup>
-          <FormGroup controlId="formControlsComment">
-            <ControlLabel>Comment</ControlLabel>
-            <FormControl style={{height: '100px'}} componentClass="textarea" placeholder="Enter comment" value={this.state.comment} onChange={this.onCommentChanged.bind(this)} />
-          </FormGroup>
-          {sections}
-          <FormGroup controlId="formControlsMedia">
-            <ImageUpload onMediaChanged={this.onNewMediaChanged.bind(this)} />
-          </FormGroup>
-          <FormGroup controlId="formControlsMap">
-            <ControlLabel>Click to mark problem on map</ControlLabel><br/>
-            <section style={{height: '600px'}}>
-              <GettingStartedGoogleMap
-                containerElement={<div style={{ height: `100%` }} />}
-                mapElement={<div style={{ height: `100%` }} />}
-                defaultZoom={defaultZoom}
-                defaultCenter={defaultCenter}
-                onClick={this.onMapClick.bind(this)}
-                markers={this.state.lat!=0 && this.state.lng!=0? <Marker position={{lat: this.state.lat, lng: this.state.lng}}/> : ""}
-              />
-            </section>
-            <ControlLabel>Latitude</ControlLabel>
-            <FormControl type="text" value={this.state.lat} placeholder="Latitude" onChange={this.onLatChanged.bind(this)} />
-            <ControlLabel>Longitude</ControlLabel>
-            <FormControl type="text" value={this.state.lng} placeholder="Longitude" onChange={this.onLngChanged.bind(this)} />
-          </FormGroup>
-          <ButtonGroup><Button bsStyle="danger" onClick={this.onCancel.bind(this)}>Cancel</Button><Button type="submit" bsStyle="success" disabled={this.state.isSaving}>{this.state.isSaving? 'Saving...' : 'Save problem'}</Button></ButtonGroup>
-        </form>
-      </Well>
+      <span>
+        <MetaTags>
+          <title>{config.getTitle("Problem edit")}</title>
+        </MetaTags>
+        <Well>
+          <form onSubmit={this.save.bind(this)}>
+            <FormGroup controlId="formControlsName">
+              <ControlLabel>Problem name</ControlLabel>
+              <FormControl type="text" value={this.state.name} placeholder="Enter name" onChange={this.onNameChanged.bind(this)} />
+            </FormGroup>
+            <FormGroup controlId="formControlsFaDate">
+              <ControlLabel>FA date (yyyy-mm-dd)</ControlLabel><br/>
+              <Calendar format='YYYY-MM-DD' computableFormat='YYYY-MM-DD' date={this.state.faDate} onChange={this.onFaDateChanged.bind(this)} />
+              <ButtonGroup>
+                <Button onClick={this.onFaDateChanged.bind(this, config.convertFromDateToString(yesterday))}>Yesterday</Button>
+                <Button onClick={this.onFaDateChanged.bind(this, config.convertFromDateToString(new Date()))}>Today</Button>
+              </ButtonGroup>
+            </FormGroup>
+            <FormGroup controlId="formControlsTypeId">
+              <ControlLabel>Type</ControlLabel><br/>
+              <DropdownButton title={selectedType.type + (selectedType.subType? " - " + selectedType.subType : "")} id="bg-nested-dropdown">
+                {this.state.types.map((t, i) => { return <MenuItem key={i} eventKey={i} onSelect={this.onTypeIdChanged.bind(this, t.id)}>{t.type} {t.subType? " - " + t.subType : ""}</MenuItem> })}
+              </DropdownButton>
+            </FormGroup>
+            <FormGroup controlId="formControlsGrade">
+              <ControlLabel>Grade</ControlLabel><br/>
+              <DropdownButton title={this.state.originalGrade} id="bg-nested-dropdown">
+                {this.state.grades.map((g, i) => { return <MenuItem key={i} eventKey={i} onSelect={this.onOriginalGradeChanged.bind(this, g.grade)}>{g.grade}</MenuItem> })}
+              </DropdownButton>
+            </FormGroup>
+            <FormGroup controlId="formControlsFA">
+              <ControlLabel>FA</ControlLabel><br/>
+              <UserSelector users={this.state.fa? this.state.fa.map(u => {return {value: u.id, label: u.firstname + " " + u.surname}}) : []} onUsersUpdated={this.onUsersUpdated.bind(this)} />
+            </FormGroup>
+            <FormGroup controlId="formControlsVisibility">
+              <ControlLabel>Visibility</ControlLabel><br/>
+              <DropdownButton title={visibilityText} id="bg-nested-dropdown">
+                <MenuItem eventKey="0" onSelect={this.onVisibilityChanged.bind(this, 0)}>Visible for everyone</MenuItem>
+                <MenuItem eventKey="1" onSelect={this.onVisibilityChanged.bind(this, 1)}>Only visible for administrators</MenuItem>
+                {auth.isSuperAdmin() && <MenuItem eventKey="2" onSelect={this.onVisibilityChanged.bind(this, 2)}>Only visible for super administrators</MenuItem>}
+              </DropdownButton>
+            </FormGroup>
+            <FormGroup controlId="formControlsSectorNr">
+              <ControlLabel>Sector number</ControlLabel>
+              <FormControl type="text" value={this.state.nr} placeholder="Enter sector number" onChange={this.onNrChanged.bind(this)} />
+            </FormGroup>
+            <FormGroup controlId="formControlsComment">
+              <ControlLabel>Comment</ControlLabel>
+              <FormControl style={{height: '100px'}} componentClass="textarea" placeholder="Enter comment" value={this.state.comment} onChange={this.onCommentChanged.bind(this)} />
+            </FormGroup>
+            {sections}
+            <FormGroup controlId="formControlsMedia">
+              <ImageUpload onMediaChanged={this.onNewMediaChanged.bind(this)} />
+            </FormGroup>
+            <FormGroup controlId="formControlsMap">
+              <ControlLabel>Click to mark problem on map</ControlLabel><br/>
+              <section style={{height: '600px'}}>
+                <GettingStartedGoogleMap
+                  containerElement={<div style={{ height: `100%` }} />}
+                  mapElement={<div style={{ height: `100%` }} />}
+                  defaultZoom={defaultZoom}
+                  defaultCenter={defaultCenter}
+                  onClick={this.onMapClick.bind(this)}
+                  markers={this.state.lat!=0 && this.state.lng!=0? <Marker position={{lat: this.state.lat, lng: this.state.lng}}/> : ""}
+                />
+              </section>
+              <ControlLabel>Latitude</ControlLabel>
+              <FormControl type="text" value={this.state.lat} placeholder="Latitude" onChange={this.onLatChanged.bind(this)} />
+              <ControlLabel>Longitude</ControlLabel>
+              <FormControl type="text" value={this.state.lng} placeholder="Longitude" onChange={this.onLngChanged.bind(this)} />
+            </FormGroup>
+            <ButtonGroup><Button bsStyle="danger" onClick={this.onCancel.bind(this)}>Cancel</Button><Button type="submit" bsStyle="success" disabled={this.state.isSaving}>{this.state.isSaving? 'Saving...' : 'Save problem'}</Button></ButtonGroup>
+          </form>
+        </Well>
+      </span>
     );
   }
 }

@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Request from 'superagent';
 import { Tabs, Tab, Well, OverlayTrigger, Tooltip, ButtonGroup, Button, Table, Breadcrumb } from 'react-bootstrap';
@@ -54,7 +55,6 @@ export default class Area extends Component {
           lng: res.body.lng,
           sectors: res.body.sectors
         });
-        document.title=config.getTitle(this.state.name);
       }
     });
   }
@@ -130,6 +130,9 @@ export default class Area extends Component {
 
     return (
       <span>
+        <MetaTags>
+          <title>{config.getTitle(this.state.name)}</title>
+        </MetaTags>
         <Breadcrumb>
           {auth.isAdmin()?
             <div style={{float: 'right'}}>

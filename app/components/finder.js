@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { LinkContainer } from 'react-router-bootstrap';
 import Request from 'superagent';
@@ -12,7 +13,6 @@ import { faSpinner, faLock, faUserSecret, faStar, faStarHalf, faCamera, faPlane 
 export default class Finder extends Component {
   constructor(props) {
     super(props);
-    document.title=config.getTitle("Finder");
     this.state = {
       tabIndex: 1,
       currLat: 0,
@@ -254,6 +254,9 @@ export default class Finder extends Component {
 
     return (
       <span>
+        <MetaTags>
+          <title>{config.getTitle("Finder")}</title>
+        </MetaTags>
         <Breadcrumb>
           <Link to={`/`}>Home</Link> / <font color='#777'>Finder (problems: {this.state.problems.length})</font>
         </Breadcrumb>

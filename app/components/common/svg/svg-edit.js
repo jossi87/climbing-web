@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import MetaTags from 'react-meta-tags';
 import ReactDOM from 'react-dom';
 import { Link } from 'react-router-dom';
 import { Well, FormGroup, MenuItem, ButtonGroup, Button, DropdownButton, Alert, Breadcrumb } from 'react-bootstrap';
@@ -11,7 +12,6 @@ import { faSpinner, faLock, faUserSecret } from '@fortawesome/fontawesome-free-s
 
 export default class SvgEdit extends Component {
   componentDidMount() {
-    document.title=config.getTitle("Problem edit (SVG)");
     Request.get(config.getUrl("problems?regionId=" + config.getRegion() + "&id=" + this.props.match.params.problemId)).withCredentials().end((err, res) => {
       if (err) {
         this.setState({error: err});
@@ -326,6 +326,9 @@ export default class SvgEdit extends Component {
     const path = this.generatePath();
     return (
       <span>
+        <MetaTags>
+          <title>{config.getTitle("Problem edit (SVG)")}</title>
+        </MetaTags>
         <Breadcrumb>
           <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${this.state.areaId}`}>{this.state.areaName}</Link> {this.state.areaVisibility===1 && <FontAwesomeIcon icon="lock" />}{this.state.areaVisibility===2 && <FontAwesomeIcon icon="user-secret" />} / <Link to={`/sector/${this.state.sectorId}`}>{this.state.sectorName}</Link> {this.state.sectorVisibility===1 && <FontAwesomeIcon icon="lock" />}{this.state.sectorVisibility===2 && <FontAwesomeIcon icon="user-secret" />} / <Link to={`/problem/${this.state.id}`}>{this.state.nr} {this.state.name} {this.state.grade}</Link> {this.state.visibility===1 && <FontAwesomeIcon icon="lock" />}{this.state.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
         </Breadcrumb>

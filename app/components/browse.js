@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Request from 'superagent';
 import { OverlayTrigger, Tooltip, Button, Table, Breadcrumb } from 'react-bootstrap';
@@ -20,7 +21,6 @@ export default class Browse extends Component {
         error: err? err : null,
         areas: err? null : res.body
       });
-      document.title=config.getTitle("Browse");
     });
   }
 
@@ -86,6 +86,9 @@ export default class Browse extends Component {
     const map = markers.length>0? <Map markers={markers} defaultCenter={config.getDefaultCenter()} defaultZoom={config.getDefaultZoom()}/> : null;
     return (
       <span>
+        <MetaTags>
+          <title>{config.getTitle("Browse")}</title>
+        </MetaTags>
         <Breadcrumb>
           {auth.isAdmin()?
             <OverlayTrigger placement="top" overlay={<Tooltip id={-1}>Add area</Tooltip>}>

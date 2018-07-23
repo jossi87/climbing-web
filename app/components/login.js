@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import MetaTags from 'react-meta-tags';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
@@ -11,7 +12,6 @@ import config from '../utils/config.js';
 export default class Login extends Component {
   constructor(props) {
     super(props);
-    document.title=config.getTitle("Login");
     this.state = {
       message: null,
       username: '',
@@ -66,6 +66,9 @@ export default class Login extends Component {
     }
     return (
       <span>
+        <MetaTags>
+          <title>{config.getTitle("Login")}</title>
+        </MetaTags>
         <Breadcrumb>
           <Link to={`/`}>Home</Link> / <font color='#777'>Sign in</font>
         </Breadcrumb>
