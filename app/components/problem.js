@@ -144,7 +144,7 @@ export default class Problem extends Component {
       });
     }
     const map = markers.length>0? <Map markers={markers} defaultCenter={{lat: markers[0].lat, lng: markers[0].lng}} defaultZoom={16}/> : null;
-    const gallery = this.state.media && this.state.media.length>0? <Gallery media={this.state.media} showThumbnails={false} removeMedia={this.onRemoveMedia.bind(this)} /> : null;
+    const gallery = this.state.media && this.state.media.length>0? <Gallery alt={this.state.name + ' ' + this.state.grade + ' (' + this.state.areaName + " - " + this.state.sectorName + ')'} media={this.state.media} showThumbnails={false} removeMedia={this.onRemoveMedia.bind(this)} /> : null;
     var topoContent = null;
     if (map && gallery) {
       topoContent = (

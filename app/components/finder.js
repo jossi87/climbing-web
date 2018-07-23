@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { LinkContainer } from 'react-router-bootstrap';
 import Request from 'superagent';
 import Map from './common/map/map';
-import Gallery from './common/gallery/gallery';
 import { Tabs, Tab, Panel, ButtonToolbar, ButtonGroup, Button, OverlayTrigger, Tooltip, Popover, DropdownButton, MenuItem, Breadcrumb } from 'react-bootstrap';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import config from '../utils/config.js';
@@ -83,9 +82,9 @@ export default class Finder extends Component {
   formatType(cell, row) {
     var typeImg;
     switch (row.t.id) {
-      case 2: typeImg = <img height="20" src="/jpg/bolt.jpg"/>; break;
-      case 3: typeImg = <img height="20" src="/jpg/trad.jpg"/>; break;
-      case 4: typeImg = <img height="20" src="/jpg/mixed.jpg"/>; break;
+      case 2: typeImg = <img height="20" src="/jpg/bolt.jpg" alt="Bolt"/>; break;
+      case 3: typeImg = <img height="20" src="/jpg/trad.jpg" alt="Trad"/>; break;
+      case 4: typeImg = <img height="20" src="/jpg/mixed.jpg" alt="Mixed"/>; break;
     }
     return <OverlayTrigger placement="top" overlay={<Popover id={row.t.id} title="Type"> {row.t.type + " - " + row.t.subType}</Popover>}>
         {typeImg}

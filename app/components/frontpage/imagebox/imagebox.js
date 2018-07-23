@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import Gallery from './../../common/gallery/gallery';
 import { Link } from 'react-router-dom';
 import { Well } from 'react-bootstrap';
 import config from '../../../utils/config.js';
@@ -33,7 +32,7 @@ export default class ImageBox extends Component {
       }}>
         <h4><Link to={`/problem/${this.props.data.idProblem}`}>{this.props.data.problem}</Link> {this.props.data.grade}</h4>
         <Link to={`/problem/${this.props.data.idProblem}`}>
-          <img style={{maxWidth: '100%'}} src={config.getUrl(`images?id=${this.props.data.idMedia}&targetHeight=480`)}/>
+          <img style={{maxWidth: '100%'}} src={config.getUrl(`images?id=${this.props.data.idMedia}&targetHeight=480`)} alt={this.props.data.problem}/>
         </Link><br/>
         {txt}
       </Well>

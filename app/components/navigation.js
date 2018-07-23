@@ -90,7 +90,7 @@ export default class Navigation extends Component {
         <Navbar.Header>
           <Navbar.Brand>
             <LinkContainer to="/">
-              <a href="/" onMouseOver={this.hoverImage.bind(this, true)} onMouseOut={this.hoverImage.bind(this, false)}><img src={this.state.logo}/></a>
+              <a href="/" onMouseOver={this.hoverImage.bind(this, true)} onMouseOut={this.hoverImage.bind(this, false)}><img src={this.state.logo} alt={config.getTitle()}/></a>
             </LinkContainer>
           </Navbar.Brand>
           <Navbar.Toggle />

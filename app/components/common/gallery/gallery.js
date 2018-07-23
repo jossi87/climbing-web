@@ -130,7 +130,7 @@ export default class Gallery extends Component {
           :
             <a onClick={this.toggleShowVideo.bind(this, item.embedUrl)}>
               <div className='gallery-play-button'></div>
-              <img src={item.original}/>
+              <img src={item.original} alt={this.props.alt}/>
             </a>
         }
       </div>
@@ -195,7 +195,7 @@ export default class Gallery extends Component {
     }
     return (
       <div className='image-gallery-image'>
-        <img src={config.getUrl(`images?id=${m.id}`)} className="buldreinfo-scale-img"/>
+        <img src={config.getUrl(`images?id=${m.id}`)} className="buldreinfo-scale-img" alt={this.props.alt}/>
       </div>
     );
   }

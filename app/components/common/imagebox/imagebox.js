@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import Gallery from './../gallery/gallery';
 import { Link } from 'react-router-dom';
 import config from '../../../utils/config.js';
 
@@ -34,7 +33,7 @@ export default class ImageBox extends Component {
           letterSpacing: '1px',
         }}>{this.props.title}</div>
         <h4><Link to={`/problem/${this.props.data.idProblem}`}>{this.props.data.problem}</Link> {this.props.data.grade}</h4>
-        <img style={{maxWidth: '100%', maxHeight: '40vh'}} src={config.getUrl(`images?id=${this.props.data.idMedia}`)}/><br/>
+        <img style={{maxWidth: '100%', maxHeight: '40vh'}} src={config.getUrl(`images?id=${this.props.data.idMedia}`)} alt={this.props.data.problem}/><br/>
         <i>Photographer: <Link to={`/user/${this.props.data.idCreator}`}>{this.props.data.creator}</Link></i>
       </div>
     );
