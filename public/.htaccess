@@ -10,6 +10,11 @@ RewriteRule sector/(\d*)$ http://45.56.87.57:8080/com.buldreinfo.jersey.jaxb/v1/
 RewriteRule problem/(\d*)$ http://45.56.87.57:8080/com.buldreinfo.jersey.jaxb/v1/static/problems?id=$1&base=%{HTTP_HOST} [P]
 RewriteRule ^ http://45.56.87.57:8080/com.buldreinfo.jersey.jaxb/v1/static/frontpage?base=%{HTTP_HOST} [P]
 
+# sitemap.txt
+RewriteCond %{REQUEST_URI} (\sitemap.txt)$ [NC]
+RewriteRule ^ - [S=1] # Skip next line if NOT .sitemap.txt
+RewriteRule ^ http://45.56.87.57:8080/com.buldreinfo.jersey.jaxb/v1/static/sitemap.txt?base=%{HTTP_HOST} [P]
+
 # React.JS redirect to index.html
 RewriteCond %{REQUEST_URI} (\.txt|\.css|\.js|\.jpg|\.jpeg|\.bmp|\.png|\.webm|\.webp|\.mp4)$ [NC]
 RewriteRule ^ - [S=4] # Skip following lines if NOT .txt/.css/.js/...
