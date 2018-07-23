@@ -309,7 +309,7 @@ export default class Problem extends Component {
     return (
       <span>
         <MetaTags>
-          <title>{config.getTitle(this.state.name + ' (' + this.state.grade + ') | ' + this.state.areaName + " / " + this.state.sectorName)}</title>
+          <title>{config.getTitle(this.state.name + ' [' + this.state.grade + '] (' + this.state.areaName + " / " + this.state.sectorName + ")")}</title>
           <meta name="description" content={meta} />
         </MetaTags>
 
