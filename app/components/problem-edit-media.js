@@ -65,7 +65,7 @@ export default class ProblemEditMedia extends Component {
       <span>
         <MetaTags>
           <title>{config.getTitle("Problem edit (media)")}</title>
-          <meta name="description" content={config.getMetaDescription("Add media")} />
+          <meta name="description" content={"Add new media"} />
         </MetaTags>
         <Well>
           <form onSubmit={this.save.bind(this)}>

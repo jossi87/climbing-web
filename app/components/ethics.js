@@ -14,7 +14,7 @@ export default class Ethics extends Component {
       <span>
         <MetaTags>
           <title>{config.getTitle("Ethics")}</title>
-          <meta name="description" content={config.getMetaDescription("Ethics and privacy policy")} />
+          <meta name="description" content={"Ethics and privacy policy"} />
         </MetaTags>
         <Breadcrumb>
           <Link to={`/`}>Home</Link> / <font color='#777'>Ethics</font>

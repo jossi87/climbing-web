@@ -122,7 +122,7 @@ export default class AreaEdit extends Component {
       <span>
         <MetaTags>
           <title>{config.getTitle("Area edit")}</title>
-          <meta name="description" content={config.getMetaDescription()} />
+          <meta name="description" content={"Edit area: " + this.state.name} />
         </MetaTags>
         <Well>
           <form onSubmit={this.save.bind(this)}>

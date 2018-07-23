@@ -201,7 +201,7 @@ export default class Sector extends Component {
       <span>
         <MetaTags>
           <title>{config.getTitle(this.state.name + " (" + this.state.areaName + ")")}</title>
-          <meta name="description" content={config.getMetaDescription(this.state.comment)} />
+          <meta name="description" content={this.state.comment? this.state.comment : config.getIndexMetaDescription()} />
         </MetaTags>
         <Breadcrumb>
           {auth.isAdmin()?

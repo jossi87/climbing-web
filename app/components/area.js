@@ -132,7 +132,7 @@ export default class Area extends Component {
       <span>
         <MetaTags>
           <title>{config.getTitle(this.state.name)}</title>
-          <meta name="description" content={config.getMetaDescription(this.state.name)} />
+          <meta name="description" content={"List of sectors connected to " + this.state.name} />
         </MetaTags>
         <Breadcrumb>
           {auth.isAdmin()?

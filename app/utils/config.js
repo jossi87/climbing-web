@@ -35,21 +35,21 @@ module.exports = {
     }
   },
 
-  getMetaDescription(prefix) {
+  getIndexMetaDescription() {
     if (window.location.hostname=='buldring.bergen-klatreklubb.no') {
-      return (prefix? prefix + " | " : "") + "Official page for bouldering in the Hordaland area (Bergen, Western Norway). The site contains detailed topos (with images and videos), where logged in users can tick problems (log ascents).";
+      return "Official page for bouldering in the Hordaland area (Bergen, Western Norway). The site contains detailed topos (with images and videos), where logged in users can tick problems (log ascents).";
     } else if (window.location.hostname=='buldring.fredrikstadklatreklubb.org') {
-      return (prefix? prefix + " | " : "") + "Official page for bouldering in the Fredrikstad area (Eastern Norway). The site contains detailed topos (with images and videos), where logged in users can tick problems (log ascents).";
+      return "Official page for bouldering in the Fredrikstad area (Eastern Norway). The site contains detailed topos (with images and videos), where logged in users can tick problems (log ascents).";
     } else if (window.location.hostname=='brattelinjer.no') {
-      return (prefix? prefix + " | " : "") + "BRV's (Bratte Rogalands Venner) official page for climbing in the Rogaland area (Stavanger, Western Norway). The site contains detailed topos (with images and videos), where logged in users can tick routes (log ascents).";
+      return "BRV's (Bratte Rogalands Venner) official page for climbing in the Rogaland area (Stavanger, Western Norway). The site contains detailed topos (with images and videos), where logged in users can tick routes (log ascents).";
     } else if (window.location.hostname=='buldring.jotunheimenfjellsport.com') {
-      return (prefix? prefix + " | " : "") + "Official page for bouldering in the Jotunheimen area (Norway). The site contains detailed topos (with images and videos), where logged in users can tick problems (log ascents).";
+      return "Official page for bouldering in the Jotunheimen area (Norway). The site contains detailed topos (with images and videos), where logged in users can tick problems (log ascents).";
     } else if (window.location.hostname=='klatring.jotunheimenfjellsport.com') {
-      return (prefix? prefix + " | " : "") + "Official page for climbing in the Jotunheimen area (Norway). The site contains detailed topos (with images and videos), where logged in users can tick routes (log ascents).";
+      return "Official page for climbing in the Jotunheimen area (Norway). The site contains detailed topos (with images and videos), where logged in users can tick routes (log ascents).";
     } else if (window.location.hostname=='dev.jossi.org') {
-      return (prefix? prefix + " | " : "") + "DEV PAGE";
+      return "DEV PAGE";
     } else {
-      return (prefix? prefix + " | " : "") + "Official page for bouldering in the Rogaland area (Stavanger, Western Norway). The site contains detailed topos (with images and videos), where logged in users can tick problems (log ascents).";
+      return "Official page for bouldering in the Rogaland area (Stavanger, Western Norway). The site contains detailed topos (with images and videos), where logged in users can tick problems (log ascents).";
     }
   },
 

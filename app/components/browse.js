@@ -88,7 +88,7 @@ export default class Browse extends Component {
       <span>
         <MetaTags>
           <title>{config.getTitle("Browse")}</title>
-          <meta name="description" content={config.getMetaDescription("Browse areas")} />
+          <meta name="description" content={"Browse areas"} />
         </MetaTags>
         <Breadcrumb>
           {auth.isAdmin()?

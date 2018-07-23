@@ -301,7 +301,7 @@ export default class Problem extends Component {
       <span>
         <MetaTags>
           <title>{config.getTitle(this.state.name + ' ' + this.state.grade + ' (' + this.state.areaName + " - " + this.state.sectorName + ')')}</title>
-          <meta name="description" content={config.getMetaDescription(this.state.comment)} />
+          <meta name="description" content={this.state.comment? this.state.comment : config.getIndexMetaDescription()} />
         </MetaTags>
 
         {tickModal}

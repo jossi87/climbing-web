@@ -153,7 +153,7 @@ export default class User extends Component {
       <span>
         <MetaTags>
           <title>{config.getTitle(res.body.name)}</title>
-          <meta name="description" content={config.getMetaDescription("Log book for " + res.body.name)} />
+          <meta name="description" content={"Log book for " + res.body.name} />
         </MetaTags>
 
         {this.state.currTick? <TickModal idTick={this.state.currTick.id} idProblem={this.state.currTick.idProblem} date={this.state.currTick.date} comment={this.state.currTick.comment} grade={this.state.currTick.grade} stars={this.state.currTick.stars} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/> : ""}

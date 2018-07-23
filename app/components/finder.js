@@ -256,7 +256,7 @@ export default class Finder extends Component {
       <span>
         <MetaTags>
           <title>{config.getTitle("Finder")}</title>
-          <meta name="description" content={config.getMetaDescription("Search by difficulty")} />
+          <meta name="description" content={"Search by difficulty"} />
         </MetaTags>
         <Breadcrumb>
           <Link to={`/`}>Home</Link> / <font color='#777'>Finder (problems: {this.state.problems.length})</font>
