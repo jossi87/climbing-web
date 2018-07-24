@@ -30,10 +30,11 @@
 <IfModule mod_expires.c>
   ExpiresActive on
 
-  # Your document html
-  ExpiresByType text/html "access plus 10 seconds"
+  ExpiresByType text/html "access plus 12 hours"
+  ExpiresByType application/javascript "access plus 12 hours"
+  ExpiresByType text/css "access plus 12 hours"
+  ExpiresByType application/json "access 0 seconds"
 
-  # Media: images, video, audio
   ExpiresByType audio/ogg "access plus 1 month"
   ExpiresByType image/gif "access plus 1 month"
   ExpiresByType image/jpg "access plus 1 month"
@@ -44,10 +45,4 @@
   ExpiresByType video/ogg "access plus 1 month"
   ExpiresByType video/webm "access plus 1 month"
 
-  # CSS and JavaScript
-  ExpiresByType application/javascript "access plus 5 seconds"
-  ExpiresByType text/css "access plus 2 days"
-
-  # JSON
-  ExpiresByType application/json "access 2 seconds"
 </IfModule>
