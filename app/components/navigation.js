@@ -12,11 +12,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 const SelectContainer = ({ children, ...props }) => {
   console.log(children);
   return (
-    <Tooltip content={'customise your select container'} delay={0}>
-      <components.SelectContainer {...props}>
-        {children}
-      </components.SelectContainer>
-    </Tooltip>
+    <components.SelectContainer {...props}>
+      {children}
+    </components.SelectContainer>
   );
 };
 
