@@ -127,8 +127,8 @@ export default class SectorEdit extends Component {
     else if (this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
     }
-    else if (!this.props || !this.props.location || !this.props.location.query) {
-      return <span><h3>Edit sector only available through link from area, not direct url...</h3></span>;
+    else if (!this.props || !this.props.match || !this.props.match.params || !this.props.match.params.sectorId) {
+      return <span><h3>Invalid action...</h3></span>;
     }
     var triangleCoords = this.state.polygonCoords? this.state.polygonCoords.split(";").map((p, i) => {
       const latLng = p.split(",");
@@ -147,8 +147,8 @@ export default class SectorEdit extends Component {
     } else if (this.state.visibility===2) {
       visibilityText = 'Only visible for super administrators';
     }
-    const defaultCenter = this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? {lat: parseFloat(this.props.location.query.lat), lng: parseFloat(this.props.location.query.lng)} : config.getDefaultCenter();
-    const defaultZoom = this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? 14 : config.getDefaultZoom();
+    const defaultCenter = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? {lat: parseFloat(this.props.location.query.lat), lng: parseFloat(this.props.location.query.lng)} : config.getDefaultCenter();
+    const defaultZoom = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? 14 : config.getDefaultZoom();
     return (
       <span>
         <MetaTags>

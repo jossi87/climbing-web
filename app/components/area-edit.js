@@ -108,16 +108,18 @@ export default class AreaEdit extends Component {
     else if (this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
     }
+    else if (!this.props || !this.props.match || !this.props.match.params || !this.props.match.params.areaId) {
+      return <span><h3>Invalid action...</h3></span>;
+    }
 
-console.log(this.state);
     var visibilityText = 'Visible for everyone';
     if (this.state.visibility===1) {
       visibilityText = 'Only visible for administrators';
     } else if (this.state.visibility===2) {
       visibilityText = 'Only visible for super administrators';
     }
-    const defaultCenter = this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? {lat: parseFloat(this.props.location.query.lat), lng: parseFloat(this.props.location.query.lng)} : config.getDefaultCenter();
-    const defaultZoom = this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? 8 : config.getDefaultZoom();
+    const defaultCenter = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? {lat: parseFloat(this.props.location.query.lat), lng: parseFloat(this.props.location.query.lng)} : config.getDefaultCenter();
+    const defaultZoom = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? 8 : config.getDefaultZoom();
     return (
       <span>
         <MetaTags>
