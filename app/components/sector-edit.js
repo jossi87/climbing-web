@@ -8,7 +8,7 @@ import {withGoogleMap, GoogleMap, Marker, Polygon} from "react-google-maps";
 import ImageUpload from './common/image-upload/image-upload';
 import config from '../utils/config.js';
 import auth from '../utils/auth.js';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const GettingStartedGoogleMap = withGoogleMap(props => (
   <GoogleMap

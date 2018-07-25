@@ -8,7 +8,7 @@ import Map from './common/map/map';
 import Gallery from './common/gallery/gallery';
 import auth from '../utils/auth.js';
 import config from '../utils/config.js';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class TableRow extends Component {
   render() {

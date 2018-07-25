@@ -8,7 +8,7 @@ import { Tabs, Tab, Well, OverlayTrigger, Tooltip, Popover, ButtonGroup, Button,
 import { LinkContainer } from 'react-router-bootstrap';
 import auth from '../utils/auth.js';
 import config from '../utils/config.js';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class TableRow extends Component {
   /* intersperse: Return an array with the separator interspersed between

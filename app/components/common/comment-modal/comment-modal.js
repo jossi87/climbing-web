@@ -2,7 +2,7 @@
 import { Modal, Button, FormGroup, ControlLabel, FormControl, ButtonGroup } from 'react-bootstrap';
 import Request from 'superagent';
 import config from '../../../utils/config.js';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default class CommentModal extends Component {
   constructor(props) {

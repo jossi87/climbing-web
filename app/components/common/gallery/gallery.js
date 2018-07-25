@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 import config from '../../../utils/config.js';
 import { Redirect } from 'react-router';
 import objectFitImages from 'object-fit-images'; // objectFit does not work on IE and Edge http://caniuse.com/#search=object-fit
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default class Gallery extends Component {
   constructor(props) {

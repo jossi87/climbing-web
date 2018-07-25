@@ -7,7 +7,7 @@ import { FormGroup, ControlLabel, FormControl, ButtonGroup, Button, DropdownButt
 import ImageUpload from './common/image-upload/image-upload';
 import config from '../utils/config.js';
 import auth from '../utils/auth.js';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default class ProblemEditMedia extends Component {
   componentDidMount() {

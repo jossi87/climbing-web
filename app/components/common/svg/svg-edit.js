@@ -7,7 +7,7 @@ import {parseSVG, makeAbsolute} from 'svg-path-parser';
 import config from '../../../utils/config.js';
 import Request from 'superagent';
 import { Redirect } from 'react-router';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default class SvgEdit extends Component {
   componentDidMount() {

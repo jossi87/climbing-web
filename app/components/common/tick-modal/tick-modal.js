@@ -3,7 +3,7 @@ import { Modal, Button, FormGroup, ControlLabel, FormControl, ButtonGroup, Dropd
 import Request from 'superagent';
 import config from '../../../utils/config.js';
 import Calendar from 'react-input-calendar';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default class TickModal extends Component {
   constructor(props) {

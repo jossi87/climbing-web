@@ -8,7 +8,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 import Map from './common/map/map';
 import auth from '../utils/auth.js';
 import config from '../utils/config.js';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default class Browse extends Component {
   componentDidMount() {

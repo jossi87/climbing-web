@@ -9,7 +9,7 @@ import Chart from './common/chart/chart';
 import TickModal from './common/tick-modal/tick-modal';
 import auth from '../utils/auth.js';
 import config from '../utils/config.js';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default class User extends Component {
   constructor(props) {
