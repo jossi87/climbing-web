@@ -142,6 +142,7 @@ export default class ProblemEdit extends Component {
     const fa = newUsers.map(u => {
       return {id: (typeof u.value === 'string' || u.value instanceof String)? -1 : u.value, firstname: u.label, surname: null};
     });
+    console.log(fa);
     this.setState({fa: fa});
   }
 
