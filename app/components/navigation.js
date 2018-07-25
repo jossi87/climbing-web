@@ -61,7 +61,7 @@ export default class Navigation extends Component {
         .end((err, res) => {
           var options = null;
           if (res && res.body) {
-            options = res.body.map(s => return {value: s, label: s.value});
+            options = res.body.map(s => {return {value: s, label: s.value}});
           }
           callback(options);
         }
