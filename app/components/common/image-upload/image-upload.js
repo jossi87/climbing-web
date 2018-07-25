@@ -7,7 +7,7 @@ import config from '../../../utils/config.js';
 class Text extends Component {
   constructor(props) {
     super(props);
-    this.setState({searchResults: [], value: ''});
+    this.state = {searchResults: [], value: ''};
   }
 
   componentWillReceiveProps(nextProps) {
@@ -63,7 +63,7 @@ class Text extends Component {
 export default class ImageUpload extends Component {
   constructor(props) {
     super(props);
-    this.setState({media: []});
+    this.state = {media: []};
   }
 
   onDrop(files) {

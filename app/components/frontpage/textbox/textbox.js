@@ -3,10 +3,10 @@ import React, {Component} from 'react';
 export default class TextBox extends Component {
   constructor(props) {
     super(props);
-    this.setState({
+    this.state = {
       showAll: false,
       btnLabel: 'More'
-    });
+    };
   }
 
   handleOnClick(e) {
