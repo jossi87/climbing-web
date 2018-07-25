@@ -9,7 +9,7 @@ import { Redirect } from 'react-router';
 import Avatar from 'react-avatar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-const GroupHeading = (props) => {
+const CustomOption = (props) => {
   console.log(props);
   return (
     <div>test</div>
