@@ -27,18 +27,14 @@ var UserSelector = createClass({
     this.props.onUsersUpdated(value);
 		this.setState({multiValue: value});
 	},
-	handleCreateOption(value) {
-    
-	},
 	render() {
 		return (
       <div style={{position: 'relative', width: '100%'}}>
         <div style={{width: '100%'}}>
   				<CreatableSelect
-  					isMulti
+  					multi={true}
   					options={this.state.options}
   					onChange={this.handleOnChange}
-						onCreateOption={this.handleCreateOption}
   					value={this.state.multiValue}
   				/>
 				</div>
