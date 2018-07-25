@@ -163,6 +163,9 @@ export default class ProblemEdit extends Component {
     else if (this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
     }
+    else if (!this.props || !this.props.match || !this.props.match.params || !this.props.match.params.problemId || !this.props.location || !this.props.location.query || !this.props.location.query.idSector) {
+      return <span><h3>Invalid action...</h3></span>;
+    }
 
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate()-1);
