@@ -40,6 +40,7 @@ export default class Gallery extends Component {
       isFullscreen: false,
     });
     if (this.imageGallery) {
+      console.log("asdf");
       this.imageGallery.slideToIndex(0);
     }
   }
