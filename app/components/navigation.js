@@ -24,10 +24,7 @@ const CustomOption = (props) => {
   );
 };
 const customStyles = {
-  control: () => ({
-    // none of react-selects styles are passed to <View />
-    width: 350,
-  })
+  control: styles => ({ ...styles, width: '350px' })
 }
 
 export default class Navigation extends Component {
