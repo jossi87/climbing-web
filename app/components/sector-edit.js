@@ -127,7 +127,7 @@ export default class SectorEdit extends Component {
     else if (this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
     }
-    else if (!this.props || !this.props.match || !this.props.match.params || !this.props.match.params.sectorId) {
+    else if (!this.props || !this.props.match || !this.props.match.params || !this.props.match.params.sectorId || !this.props.location || !this.props.location.query || !this.props.location.query.idArea) {
       return <span><h3>Invalid action...</h3></span>;
     }
     var triangleCoords = this.state.polygonCoords? this.state.polygonCoords.split(";").map((p, i) => {
