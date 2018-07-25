@@ -7,7 +7,7 @@ export default class Map extends Component {
   constructor(props) {
     super(props);
     navigator.geolocation.getCurrentPosition((position) => {
-      this.setState({currLat: position.coords.latitude, currLng: position.coords.longitude});
+      this.state = {currLat: position.coords.latitude, currLng: position.coords.longitude};
     });
   }
 
