@@ -18,7 +18,7 @@ const CustomOption = (props) => {
     bg = "#673ab7";
   }
   return (
-    <components.Control>
+    <components.Control {...props}>
       <Avatar value={props.value.avatar? props.value.avatar : "7A"} size={25} color={bg} round={true} textSizeRatio={2.25} style={{marginRight: '10px'}} />
       {props.label} {props.value.visibility===1 && <FontAwesomeIcon icon="lock" />}{props.value.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
     </components.Control>
