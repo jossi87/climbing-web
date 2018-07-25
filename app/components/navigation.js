@@ -9,10 +9,12 @@ import { Redirect } from 'react-router';
 import Avatar from 'react-avatar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-const CustomOption = ({ innerProps, isDisabled }) =>
-  !isDisabled ? (
-    <div {...innerProps}>TEST</div>
-  ) : null;
+const GroupHeading = (props) => {
+  console.log(props);
+  return (
+    <div>test</div>
+  );
+};
 
 export default class Navigation extends Component {
   constructor(props) {
@@ -59,7 +61,7 @@ export default class Navigation extends Component {
         .end((err, res) => {
           var options = null;
           if (res && res.body) {
-            options = res.body.map(s => s.value);
+            options = res.body.map(s => return {value: s, label: s.value});
           }
           callback(options);
         }
