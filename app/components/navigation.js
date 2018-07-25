@@ -4,19 +4,10 @@ import { LinkContainer } from 'react-router-bootstrap';
 import Request from 'superagent';
 import auth from '../utils/auth.js';
 import config from '../utils/config.js';
-import Async, { components } from 'react-select';
+import Async from 'react-select';
 import { Redirect } from 'react-router';
 import Avatar from 'react-avatar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-
-const SelectContainer = ({ children, ...props }) => {
-  console.log(...props);
-  return (
-    <components.SelectContainer {...props}>
-      {children}
-    </components.SelectContainer>
-  );
-};
 
 export default class Navigation extends Component {
   constructor(props) {
@@ -109,7 +100,6 @@ export default class Navigation extends Component {
                 }}
                 ignoreAccents={false} // Keep special characters ae, oe, aa. Don't substitute...
                 onChange={this.onChange.bind(this)}
-                components={{SelectContainer}}
               />
             </FormGroup>
           </Navbar.Form>
