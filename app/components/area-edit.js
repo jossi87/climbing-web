@@ -109,6 +109,7 @@ export default class AreaEdit extends Component {
       return (<Redirect to={this.state.pushUrl} push />);
     }
 
+console.log(this.state);
     var visibilityText = 'Visible for everyone';
     if (this.state.visibility===1) {
       visibilityText = 'Only visible for administrators';
