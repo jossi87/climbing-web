@@ -1,7 +1,7 @@
 import React from 'react';
 import createClass from 'create-react-class';
 import PropTypes from 'prop-types';
-import Select from 'react-select';
+import Creatable from 'react-select/lib/Creatable';
 import Request from 'superagent';
 import config from '../../../utils/config.js';
 
@@ -31,7 +31,7 @@ var UserSelector = createClass({
 		return (
       <div style={{position: 'relative', width: '100%'}}>
         <div style={{width: '100%'}}>
-  				<Select.Creatable
+  				<Creatable
   					multi={true}
   					options={this.state.options}
   					onChange={this.handleOnChange}
