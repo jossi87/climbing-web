@@ -9,6 +9,11 @@ import { Redirect } from 'react-router';
 import Avatar from 'react-avatar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
+const CustomOption = ({ innerProps, isDisabled }) =>
+  !isDisabled ? (
+    <div {...innerProps}>TEST</div>
+  ) : null;
+
 export default class Navigation extends Component {
   constructor(props) {
     super(props);
@@ -100,6 +105,7 @@ export default class Navigation extends Component {
                 }}
                 ignoreAccents={false} // Keep special characters ae, oe, aa. Don't substitute...
                 onChange={this.onChange.bind(this)}
+                components={{ Option: CustomOption }}
               />
             </FormGroup>
           </Navbar.Form>
