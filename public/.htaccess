@@ -17,9 +17,9 @@
   RewriteCond %{REQUEST_URI} robots.txt [NC]
   RewriteRule ^ http://45.56.87.57:8080/com.buldreinfo.jersey.jaxb/v1/static/robots.txt?base=%{HTTP_HOST} [P]
 
-  # React.JS redirect to index.html
+  # React.JS redirect to index.html, google1588c034b4869b96.html used to authenticate https://buldring.fredrikstadklatreklubb.org in google search console
   RewriteCond %{REQUEST_URI} (\.txt|\.css|\.js|\.jpg|\.jpeg|\.bmp|\.png|\.webm|\.webp|\.mp4)$ [OR,NC]
-  RewriteCond %{REQUEST_URI} google1588c034b4869b96.html # (To enable search console for https://buldring.fredrikstadklatreklubb.org)
+  RewriteCond %{REQUEST_URI} google1588c034b4869b96.html [NC]
   RewriteRule ^ - [S=4] # Skip following lines if NOT .txt/.css/.js/...
   RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f [OR]
   RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -d
