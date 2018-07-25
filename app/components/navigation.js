@@ -13,7 +13,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 const controlStyles = {
   borderRadius: '1px solid black',
   padding: '5px',
-  color: 'white'
 };
 const CustomOption = (props) => {
   var bg = "#4caf50";
