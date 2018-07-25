@@ -27,22 +27,6 @@ const User = Loadable({loader: () => import('./user'), loading: Loading});
 const UserEdit = Loadable({loader: () => import('./user-edit'), loading: Loading});
 
 export default class App extends Component {
-  library.add(faCamera);
-  library.add(faCheck);
-  library.add(faComment);
-  library.add(faEdit);
-  library.add(faHashtag);
-  library.add(faImage);
-  library.add(faLock);
-  library.add(faMapMarker);
-  library.add(faPlane);
-  library.add(faPlusSquare);
-  library.add(faSpinner);
-  library.add(faStar);
-  library.add(faStarHalf);
-  library.add(faTrash);
-  library.add(faUserSecret);
-  library.add(faVideo);
 
   // Temp fix to collapse nav-button on devices: https://github.com/lefant/react-bootstrap/commit/c68b46baea + https://github.com/react-bootstrap/react-router-bootstrap/issues/112#issuecomment-142599003
   componentDidMount() {
@@ -56,6 +40,23 @@ export default class App extends Component {
       }
       btnToggle.click();
     }, false);
+
+    library.add(faCamera);
+    library.add(faCheck);
+    library.add(faComment);
+    library.add(faEdit);
+    library.add(faHashtag);
+    library.add(faImage);
+    library.add(faLock);
+    library.add(faMapMarker);
+    library.add(faPlane);
+    library.add(faPlusSquare);
+    library.add(faSpinner);
+    library.add(faStar);
+    library.add(faStarHalf);
+    library.add(faTrash);
+    library.add(faUserSecret);
+    library.add(faVideo);
   }
 
   render() {
