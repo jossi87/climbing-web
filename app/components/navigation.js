@@ -23,6 +23,13 @@ const CustomOption = (props) => {
     </span>
   );
 };
+const customStyles = {
+  control: styles => ({ ...styles, width: '350px' }),
+  option: (styles, { data, isDisabled, isFocused, isSelected }) => ({ ...styles }),
+  input: styles => ({ ...styles }),
+  placeholder: styles => ({ ...styles }),
+  singleValue: (styles, { data }) => ({ ...styles }),
+}
 
 export default class Navigation extends Component {
   constructor(props) {
@@ -112,7 +119,7 @@ export default class Navigation extends Component {
           <Navbar.Form pullLeft>
             <FormGroup>
               <Async
-                className="buldreinfo-select"
+                styles={customStyles}
                 placeholder="Search"
                 loadOptions={this.search.bind(this)}
                 filterOptions={(options, filter, currentValues) => {
