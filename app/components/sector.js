@@ -98,9 +98,9 @@ class TableRow extends Component {
 export default class Sector extends Component {
   constructor(props) {
     super(props);
-    this.state = {
+    this.setState({
       tabIndex: 1
-    };
+    });
   }
 
   refresh(id) {
