@@ -100,7 +100,13 @@ export default class Navigation extends Component {
                 }}
                 ignoreAccents={false} // Keep special characters ae, oe, aa. Don't substitute...
                 onChange={this.onChange.bind(this)}
-                optionRenderer={this.optionRenderer.bind(this)}
+                components={{
+                  Option: ({ children, innerProps }) => (
+                    <div className="custom-option" ref={innerRef} {...innerProps}>
+                      {children}
+                    </div>
+                  )
+                }}
               />
             </FormGroup>
           </Navbar.Form>
