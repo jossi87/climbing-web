@@ -6,8 +6,11 @@ import {default as MarkerClusterer} from 'react-google-maps/lib/components/addon
 export default class Map extends Component {
   constructor(props) {
     super(props);
+  }
+
+  componentDidMount() {
     navigator.geolocation.getCurrentPosition((position) => {
-      this.state = {currLat: position.coords.latitude, currLng: position.coords.longitude};
+      this.setState({currLat: position.coords.latitude, currLng: position.coords.longitude});
     });
   }
 
