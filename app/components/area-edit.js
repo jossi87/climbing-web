@@ -7,7 +7,7 @@ import ImageUpload from './common/image-upload/image-upload';
 import {withGoogleMap, GoogleMap, Marker} from "react-google-maps";
 import config from '../utils/config.js';
 import auth from '../utils/auth.js';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const GettingStartedGoogleMap = withGoogleMap(props => (
   <GoogleMap
@@ -99,9 +99,7 @@ export default class AreaEdit extends Component {
   }
 
   render() {
-    console.log(this.state);
     if (!this.state) {
-      console.log("ASA");
       return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
     else if (this.state.error) {
