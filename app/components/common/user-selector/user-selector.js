@@ -15,7 +15,7 @@ var UserSelector = createClass({
       if (err) {
         console.log(err);
       } else {
-        this.setState({options: res.body.map(u => {return {value: u.id, label: u.name}})});
+        this.setState({options: res.body.map(u => {return {value: u.name, label: u.id}})});
       }
     });
     return {
@@ -32,7 +32,7 @@ var UserSelector = createClass({
       <div style={{position: 'relative', width: '100%'}}>
         <div style={{width: '100%'}}>
   				<CreatableSelect
-  					multi={true}
+  					isMulti
   					options={this.state.options}
   					onChange={this.handleOnChange}
   					value={this.state.multiValue}
