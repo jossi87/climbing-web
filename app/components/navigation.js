@@ -4,7 +4,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 import Request from 'superagent';
 import auth from '../utils/auth.js';
 import config from '../utils/config.js';
-import Async from 'react-select/lib/Async';
+import Async, { components } from 'react-select';
 import { Redirect } from 'react-router';
 import Avatar from 'react-avatar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
