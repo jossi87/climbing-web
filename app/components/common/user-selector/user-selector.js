@@ -24,6 +24,7 @@ var UserSelector = createClass({
     };
 	},
 	handleOnChange(value) {
+		console.log(value);
     this.props.onUsersUpdated(value);
 		this.setState({multiValue: value});
 	},
