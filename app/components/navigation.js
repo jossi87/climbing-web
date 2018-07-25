@@ -57,11 +57,15 @@ export default class Navigation extends Component {
         .send({regionId: config.getRegion(), value: input})
         .set('Accept', 'application/json')
         .end((err, res) => {
-          callback(err, {options: res.body && res.body.map(s => {return {value: s, label: s.value}})});
+          var options = null;
+          if (res && res.body) {
+            options = res.body.map(s => s.value);
+          }
+          callback(options);
         }
       );
     } else {
-      callback(null, {options: null});
+      callback(null);
     }
   }
 
