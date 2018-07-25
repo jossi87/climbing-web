@@ -99,8 +99,9 @@ export default class AreaEdit extends Component {
   }
 
   render() {
-    console.log("1");
+    console.log(this.state);
     if (!this.state) {
+      console.log("ASA");
       return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
     else if (this.state.error) {
@@ -112,7 +113,7 @@ export default class AreaEdit extends Component {
     else if (!this.props || !this.props.match || !this.props.match.params || !this.props.match.params.areaId) {
       return <span><h3>Invalid action...</h3></span>;
     }
-console.log("2");
+
     var visibilityText = 'Visible for everyone';
     if (this.state.visibility===1) {
       visibilityText = 'Only visible for administrators';
