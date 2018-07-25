@@ -144,8 +144,8 @@ export default class SectorEdit extends Component {
     } else if (this.state.visibility===2) {
       visibilityText = 'Only visible for super administrators';
     }
-    const defaultCenter = this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? {lat: parseFloat(this.props.location.query.lat), lng: parseFloat(this.props.location.query.lng)} : config.getDefaultCenter();
-    const defaultZoom = this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? 14 : config.getDefaultZoom();
+    const defaultCenter = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? {lat: parseFloat(this.props.location.query.lat), lng: parseFloat(this.props.location.query.lng)} : config.getDefaultCenter();
+    const defaultZoom = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? 14 : config.getDefaultZoom();
     return (
       <span>
         <MetaTags>
