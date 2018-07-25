@@ -5,6 +5,10 @@
 	font-family: 'object-fit: scale-down';
 }
 
+.buldreinfo-select {
+  width: 350px;
+}
+
 .buldreinfo-svg-canvas-ie-hack {
   display: block;
   width: 100%;
