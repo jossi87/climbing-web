@@ -110,7 +110,7 @@ export default class Navigation extends Component {
             </NavDropdown>
           </Nav>
           <Navbar.Form pullLeft>
-            <FormGroup>
+            <FormGroup style={{width: '350px'}}>
               <Async
                 placeholder="Search"
                 loadOptions={this.search.bind(this)}
