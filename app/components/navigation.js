@@ -10,7 +10,7 @@ import Avatar from 'react-avatar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const SelectContainer = ({ children, ...props }) => {
-  console.log(children);
+  console.log(...props);
   return (
     <components.SelectContainer {...props}>
       {children}
