@@ -9,7 +9,6 @@ import { LinkContainer } from 'react-router-bootstrap';
 import auth from '../utils/auth.js';
 import config from '../utils/config.js';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner, faLock, faUserSecret, faStar, faStarHalf, faCamera, faVideo, faCheck, faPlusSquare, faEdit, faHashtag, faMapMarker } from '@fortawesome/fontawesome-free-solid';
 
 class TableRow extends Component {
   /* intersperse: Return an array with the separator interspersed between

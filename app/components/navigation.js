@@ -5,11 +5,9 @@ import Request from 'superagent';
 import auth from '../utils/auth.js';
 import config from '../utils/config.js';
 import { Async } from 'react-select';
-import 'react-select/dist/react-select.css';
 import { Redirect } from 'react-router';
 import Avatar from 'react-avatar';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faLock, faUserSecret } from '@fortawesome/fontawesome-free-solid';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 export default class Navigation extends Component {
   constructor(props) {

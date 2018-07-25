@@ -8,7 +8,6 @@ import ImageBox from './imagebox/imagebox';
 import LinkBox from './linkbox/linkbox';
 import config from '../../utils/config.js';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner, faCamera, faVideo } from '@fortawesome/fontawesome-free-solid';
 
 const style = {padding: 0, textAlign: 'left'};
 const styleNw = {padding: 0, textAlign: 'left', whiteSpace: 'nowrap'};

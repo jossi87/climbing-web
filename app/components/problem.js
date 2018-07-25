@@ -11,7 +11,6 @@ import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
 import config from '../utils/config.js';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner, faLock, faUserSecret, faStar, faStarHalf, faComment, faImage } from '@fortawesome/fontawesome-free-solid';
 
 export default class Problem extends Component {
   constructor(props) {

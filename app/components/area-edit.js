@@ -8,7 +8,6 @@ import {withGoogleMap, GoogleMap, Marker} from "react-google-maps";
 import config from '../utils/config.js';
 import auth from '../utils/auth.js';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/fontawesome-free-solid';
 
 const GettingStartedGoogleMap = withGoogleMap(props => (
   <GoogleMap

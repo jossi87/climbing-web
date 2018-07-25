@@ -4,7 +4,6 @@ import Request from 'superagent';
 import config from '../../../utils/config.js';
 import Calendar from 'react-input-calendar';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner, faStar } from '@fortawesome/fontawesome-free-solid';
 
 export default class TickModal extends Component {
   constructor(props) {

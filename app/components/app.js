@@ -23,6 +23,26 @@ const SvgEdit = Loadable({loader: () => import('./common/svg/svg-edit'), loading
 const User = Loadable({loader: () => import('./user'), loading: Loading});
 const UserEdit = Loadable({loader: () => import('./user-edit'), loading: Loading});
 
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCamera, faCheck, faComment, faEdit, faHashtag, faImage, faLock, faMapMarker, faPlane, faPlusSquare, faSpinner, faStar, faStarHalf, faTrash, faUserSecret, faVideo } from '@fortawesome/free-solid-svg-icons';
+library.add(faCamera);
+library.add(faCheck);
+library.add(faComment);
+library.add(faEdit);
+library.add(faHashtag);
+library.add(faImage);
+library.add(faLock);
+library.add(faMapMarker);
+library.add(faPlane);
+library.add(faPlusSquare);
+library.add(faSpinner);
+library.add(faStar);
+library.add(faStarHalf);
+library.add(faTrash);
+library.add(faUserSecret);
+library.add(faVideo);
+
 export default class App extends Component {
   // Temp fix to collapse nav-button on devices: https://github.com/lefant/react-bootstrap/commit/c68b46baea + https://github.com/react-bootstrap/react-router-bootstrap/issues/112#issuecomment-142599003
   componentDidMount() {

@@ -1,9 +1,8 @@
-import React, {Component} from 'react';
+ import React, {Component} from 'react';
 import { Modal, Button, FormGroup, ControlLabel, FormControl, ButtonGroup } from 'react-bootstrap';
 import Request from 'superagent';
 import config from '../../../utils/config.js';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/fontawesome-free-solid';
 
 export default class CommentModal extends Component {
   constructor(props) {

@@ -8,7 +8,6 @@ import { Tabs, Tab, Panel, ButtonToolbar, ButtonGroup, Button, OverlayTrigger, T
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import config from '../utils/config.js';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner, faLock, faUserSecret, faStar, faStarHalf, faCamera, faPlane } from '@fortawesome/fontawesome-free-solid';
 
 export default class Finder extends Component {
   constructor(props) {

@@ -7,7 +7,6 @@ import { FormGroup, ControlLabel, FormControl, HelpBlock, ButtonGroup, Button, P
 import auth from '../utils/auth.js';
 import config from '../utils/config.js';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/fontawesome-free-solid';
 
 export default class Recover extends Component {
   constructor(props) {

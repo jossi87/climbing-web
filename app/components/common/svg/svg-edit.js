@@ -8,7 +8,6 @@ import config from '../../../utils/config.js';
 import Request from 'superagent';
 import { Redirect } from 'react-router';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner, faLock, faUserSecret } from '@fortawesome/fontawesome-free-solid';
 
 export default class SvgEdit extends Component {
   componentDidMount() {

@@ -12,7 +12,6 @@ import config from '../utils/config.js';
 import auth from '../utils/auth.js';
 import Calendar from 'react-input-calendar';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/fontawesome-free-solid';
 
 const GettingStartedGoogleMap = withGoogleMap(props => (
   <GoogleMap

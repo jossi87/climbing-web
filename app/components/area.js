@@ -9,7 +9,6 @@ import Gallery from './common/gallery/gallery';
 import auth from '../utils/auth.js';
 import config from '../utils/config.js';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner, faLock, faUserSecret, faPlusSquare, faEdit } from '@fortawesome/fontawesome-free-solid';
 
 class TableRow extends Component {
   render() {

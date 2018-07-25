@@ -10,7 +10,6 @@ import TickModal from './common/tick-modal/tick-modal';
 import auth from '../utils/auth.js';
 import config from '../utils/config.js';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner, faLock, faUserSecret, faStar, faStarHalf, faCheck, faEdit } from '@fortawesome/fontawesome-free-solid';
 
 export default class User extends Component {
   constructor(props) {

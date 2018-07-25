@@ -8,7 +8,6 @@ import ImageUpload from './common/image-upload/image-upload';
 import config from '../utils/config.js';
 import auth from '../utils/auth.js';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/fontawesome-free-solid';
 
 export default class ProblemEditMedia extends Component {
   componentDidMount() {
