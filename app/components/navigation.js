@@ -9,6 +9,17 @@ import { Redirect } from 'react-router';
 import Avatar from 'react-avatar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
+const SelectContainer = ({ children, ...props }) => {
+  console.log(children);
+  return (
+    <Tooltip content={'customise your select container'} delay={0}>
+      <components.SelectContainer {...props}>
+        {children}
+      </components.SelectContainer>
+    </Tooltip>
+  );
+};
+
 export default class Navigation extends Component {
   constructor(props) {
     super(props);
@@ -100,13 +111,7 @@ export default class Navigation extends Component {
                 }}
                 ignoreAccents={false} // Keep special characters ae, oe, aa. Don't substitute...
                 onChange={this.onChange.bind(this)}
-                components={{
-                  Option: ({ children, innerProps }) => (
-                    <div className="custom-option" ref={innerRef} {...innerProps}>
-                      {children}
-                    </div>
-                  )
-                }}
+                components={{SelectContainer}}
               />
             </FormGroup>
           </Navbar.Form>
