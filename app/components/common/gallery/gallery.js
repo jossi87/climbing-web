@@ -24,6 +24,7 @@ export default class Gallery extends Component {
       showGalleryPlayButton: false,
       showVideo: {},
       isFullscreen: false,
+      pushUrl: null,
     };
   }
 
@@ -38,9 +39,9 @@ export default class Gallery extends Component {
       showGalleryPlayButton: false,
       showVideo: {},
       isFullscreen: false,
+      pushUrl: null,
     });
     if (this.imageGallery) {
-      console.log("asdf");
       this.imageGallery.slideToIndex(0);
     }
   }
