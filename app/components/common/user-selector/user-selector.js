@@ -15,7 +15,7 @@ var UserSelector = createClass({
       if (err) {
         console.log(err);
       } else {
-        this.setState({options: res.body.map(u => {return {value: u.name, label: u.id}})});
+        this.setState({options: res.body.map(u => {return {value: u.id, label: u.name}})});
       }
     });
     return {
@@ -27,6 +27,9 @@ var UserSelector = createClass({
     this.props.onUsersUpdated(value);
 		this.setState({multiValue: value});
 	},
+	isValidNewOption(inputValue) {
+		return this.state.options.filter(u => inputValue.toLowerCase() === u.label.toLowerCase()).length == 0;
+	},
 	render() {
 		return (
       <div style={{position: 'relative', width: '100%'}}>
@@ -35,6 +38,7 @@ var UserSelector = createClass({
   					isMulti
   					options={this.state.options}
   					onChange={this.handleOnChange}
+						isValidNewOption={this.isValidNewOption}
   					value={this.state.multiValue}
   				/>
 				</div>
