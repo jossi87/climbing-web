@@ -23,6 +23,12 @@ const CustomOption = (props) => {
     </span>
   );
 };
+const customStyles = {
+  control: () => ({
+    // none of react-selects styles are passed to <View />
+    width: 350,
+  })
+}
 
 export default class Navigation extends Component {
   constructor(props) {
@@ -80,7 +86,9 @@ export default class Navigation extends Component {
   }
 
   onChange(props) {
-    this.setState({pushUrl: props.value.url});
+    if (props && props.value && props.value.url) {
+      this.setState({pushUrl: props.value.url});
+    }
   }
 
   render() {
@@ -110,7 +118,7 @@ export default class Navigation extends Component {
           <Navbar.Form pullLeft>
             <FormGroup>
               <Async
-                style={{width: '350px'}}
+                styles={customStyles}
                 placeholder="Search"
                 loadOptions={this.search.bind(this)}
                 filterOptions={(options, filter, currentValues) => {
