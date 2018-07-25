@@ -11,10 +11,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 export default class Recover extends Component {
   constructor(props) {
     super(props);
-    this.state = {
+    this.setState({
       password: '',
       password2: ''
-    };
+    });
   }
 
   componentDidMount() {

@@ -14,7 +14,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 export default class Gallery extends Component {
   constructor(props) {
     super(props);
-    this.state = {
+    this.setState({
       mediaIndex: 0,
       hoverTrash: false,
       hoverEdit: false,
@@ -24,11 +24,11 @@ export default class Gallery extends Component {
       showGalleryPlayButton: false,
       showVideo: {},
       isFullscreen: false,
-    };
+    });
   }
 
   componentWillReceiveProps(nextProps) {
-    this.state = {
+    this.setState({
       mediaIndex: 0,
       hoverTrash: false,
       hoverEdit: false,
@@ -38,7 +38,7 @@ export default class Gallery extends Component {
       showGalleryPlayButton: false,
       showVideo: {},
       isFullscreen: false,
-    };
+    });
     if (this.imageGallery) {
       this.imageGallery.slideToIndex(0);
     }

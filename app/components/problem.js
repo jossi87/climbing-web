@@ -15,11 +15,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 export default class Problem extends Component {
   constructor(props) {
     super(props);
-    this.state = {
+    this.setState({
       tabIndex: 1,
       showTickModal: false,
       showCommentModal: false
-    };
+    });
   }
 
   refresh(id) {

@@ -30,10 +30,10 @@ const CustomOption = (props) => {
 export default class Navigation extends Component {
   constructor(props) {
     super(props);
-    this.state = {
+    this.setState({
       logo: '/png/buldreinfo_logo_gray.png',
       loggedIn: auth.loggedIn()
-    };
+    });
   }
 
   updateAuth(loggedIn) {

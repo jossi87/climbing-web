@@ -10,14 +10,14 @@ import config from '../utils/config.js';
 export default class Register extends Component {
   constructor(props) {
     super(props);
-    this.state = {
+    this.setState({
       message: null,
       firstname: '',
       lastname: '',
       username: '',
       password: '',
       password2: ''
-    };
+    });
   }
 
   register(event) {

@@ -34,9 +34,9 @@ class TableRow extends Component {
 export default class Area extends Component {
   constructor(props) {
     super(props);
-    this.state = {
+    this.setState({
       tabIndex: 1
-    };
+    });
   }
 
   refresh(id) {
