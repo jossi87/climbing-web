@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import MetaTags from 'react-meta-tags';
+import { Helmet } from "react-helmet";
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import Request from 'superagent';
@@ -107,10 +107,10 @@ export default class Register extends Component {
     }
     return (
       <span>
-        <MetaTags>
+        <Helmet>
           <title>{config.getTitle("Register")}</title>
           <meta name="description" content={"Register new user"} />
-        </MetaTags>
+        </Helmet>
         <Breadcrumb>
           <Link to={`/`}>Home</Link> / <font color='#777'>Register</font>
         </Breadcrumb>

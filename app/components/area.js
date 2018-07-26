@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import MetaTags from 'react-meta-tags';
+import { Helmet } from "react-helmet";
 import { Link } from 'react-router-dom';
 import Request from 'superagent';
 import { Tabs, Tab, Well, OverlayTrigger, Tooltip, ButtonGroup, Button, Table, Breadcrumb } from 'react-bootstrap';
@@ -130,11 +130,11 @@ export default class Area extends Component {
 
     return (
       <span>
-        <MetaTags>
+        <Helmet>
           <script type="application/ld+json">{this.state.metadata.jsonLd}</script>
           <title>{this.state.metadata.title}</title>
           <meta name="description" content={this.state.metadata.description} />
-        </MetaTags>
+        </Helmet>
         <Breadcrumb>
           {auth.isAdmin()?
             <div style={{float: 'right'}}>

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import MetaTags from 'react-meta-tags';
+import { Helmet } from "react-helmet";
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import Request from 'superagent';
@@ -70,10 +70,10 @@ export default class Recover extends Component {
     }
     return (
       <span>
-        <MetaTags>
+        <Helmet>
           <title>{config.getTitle("Reset password")}</title>
           <meta name="description" content={"Recover password"} />
-        </MetaTags>
+        </Helmet>
         <Well>
           <form onSubmit={this.recover.bind(this)}>
             <FormGroup controlId="formControlsPassword" validationState={this.validatePassword()}>

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import MetaTags from 'react-meta-tags';
+import { Helmet } from "react-helmet";
 import { Link } from 'react-router-dom';
 import { Breadcrumb, Well } from 'react-bootstrap';
 import config from '../utils/config.js';
@@ -12,10 +12,10 @@ export default class Ethics extends Component {
   render() {
     return (
       <span>
-        <MetaTags>
+        <Helmet>
           <title>{config.getTitle("Ethics")}</title>
           <meta name="description" content={"Ethics and privacy policy"} />
-        </MetaTags>
+        </Helmet>
         <Breadcrumb>
           <Link to={`/`}>Home</Link> / <font color='#777'>Ethics</font>
         </Breadcrumb>

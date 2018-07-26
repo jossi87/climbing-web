@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import MetaTags from 'react-meta-tags';
+import { Helmet } from "react-helmet";
 import { Link } from 'react-router-dom';
 import Request from 'superagent';
 import { OverlayTrigger, Tooltip, Button, Table, Breadcrumb } from 'react-bootstrap';
@@ -85,10 +85,10 @@ export default class Browse extends Component {
     const map = markers.length>0? <Map markers={markers} defaultCenter={config.getDefaultCenter()} defaultZoom={config.getDefaultZoom()}/> : null;
     return (
       <span>
-        <MetaTags>
+        <Helmet>
           <title>{config.getTitle("Browse")}</title>
           <meta name="description" content={"Browse areas"} />
-        </MetaTags>
+        </Helmet>
         <Breadcrumb>
           {auth.isAdmin()?
             <OverlayTrigger placement="top" overlay={<Tooltip id={-1}>Add area</Tooltip>}>

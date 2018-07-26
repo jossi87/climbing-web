@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import MetaTags from 'react-meta-tags';
+import { Helmet } from "react-helmet";
 import { Link } from 'react-router-dom';
 import { LinkContainer } from 'react-router-bootstrap';
 import Request from 'superagent';
@@ -253,10 +253,10 @@ export default class Finder extends Component {
 
     return (
       <span>
-        <MetaTags>
+        <Helmet>
           <title>{config.getTitle("Finder")}</title>
           <meta name="description" content={"Search by difficulty"} />
-        </MetaTags>
+        </Helmet>
         <Breadcrumb>
           <Link to={`/`}>Home</Link> / <font color='#777'>Finder (problems: {this.state.problems.length})</font>
         </Breadcrumb>
