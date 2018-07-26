@@ -95,7 +95,8 @@ export default class Area extends Component {
           title: s.name,
           icon: {
             url: 'https://maps.google.com/mapfiles/kml/shapes/parking_lot_maps.png',
-            scaledSize: {w: 32, h: 32}
+            scaledSizeW: 32,
+            scaledSizeH: 32
           },
           url: '/sector/' + s.id
         }

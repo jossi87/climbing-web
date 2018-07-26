@@ -161,7 +161,8 @@ export default class Sector extends Component {
           url: '/problem/' + p.id,
           icon: {
             url: p.ticked? 'https://mt.google.com/vt/icon?name=icons/spotlight/spotlight-waypoint-a.png' : 'https://mt.google.com/vt/icon?name=icons/spotlight/spotlight-waypoint-b.png',
-            labelOrigin: {x: 11, y: 13}
+            labelOriginX: 11,
+            labelOriginY: 13
           }
         }
     });
@@ -172,7 +173,8 @@ export default class Sector extends Component {
         title: 'Parking',
         icon: {
           url: 'https://maps.google.com/mapfiles/kml/shapes/parking_lot_maps.png',
-          scaledSize: {w: 32, h: 32}
+          scaledSizeW: 32,
+          scaledSizeH: 32
         },
         url: '/sector/' + this.state.id
       });
