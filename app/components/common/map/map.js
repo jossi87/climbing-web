@@ -27,8 +27,9 @@ export default class Map extends Component {
       var markers = null;
       if (this.props.markers) {
         markers = this.props.markers.map((m, i) => {
-          var myIcon = {};
+          var myIcon = null;
           if (m.icon) {
+            myIcon = {};
             if (m.icon.url) {
               myIcon.url = m.icon.url;
             }
@@ -69,7 +70,7 @@ export default class Map extends Component {
           );
         });
       }
-      
+
       return (
         <GoogleMap
           defaultZoom={this.props.defaultZoom}
