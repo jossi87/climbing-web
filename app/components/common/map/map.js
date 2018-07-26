@@ -27,14 +27,16 @@ export default class Map extends Component {
     if (this.props.markers) {
       markers = this.props.markers.map((m, i) => {
         var myIcon = null;
-        if (m.icon.url) {
-          myIcon.url = m.icon.url;
-        }
-        if (m.icon.scaledSizeW && m.icon.scaledSizeH) {
-          myIcon.scaledSize = new google.maps.Size(m.icon.scaledSizeW, m.icon.scaledSizeH);
-        }
-        if (m.icon.labelOriginX && m.icon.labelOriginY) {
-          myIcon.labelOrigin = new google.maps.Point(m.icon.labelOriginX, m.icon.labelOriginY);
+        if (m.icon) {
+          if (m.icon.url) {
+            myIcon.url = m.icon.url;
+          }
+          if (m.icon.scaledSizeW && m.icon.scaledSizeH) {
+            myIcon.scaledSize = new google.maps.Size(m.icon.scaledSizeW, m.icon.scaledSizeH);
+          }
+          if (m.icon.labelOriginX && m.icon.labelOriginY) {
+            myIcon.labelOrigin = new google.maps.Point(m.icon.labelOriginX, m.icon.labelOriginY);
+          }
         }
         return (
           <Marker
