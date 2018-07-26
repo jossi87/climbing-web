@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router'
 import Request from 'superagent';
 import { FormGroup, ControlLabel, FormControl, ButtonGroup, Button, DropdownButton, MenuItem, Well } from 'react-bootstrap';
-import {withGoogleMap, GoogleMap, Marker} from "react-google-maps";
+import { withScriptjs, withGoogleMap, GoogleMap, Marker } from "react-google-maps";
 import UserSelector from './common/user-selector/user-selector';
 import ProblemSection from './common/problem-section/problem-section';
 import ImageUpload from './common/image-upload/image-upload';
@@ -12,7 +12,7 @@ import auth from '../utils/auth.js';
 import Calendar from 'react-input-calendar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const GettingStartedGoogleMap = withGoogleMap(props => (
+const GettingStartedGoogleMap = withScriptjs(withGoogleMap(props => (
   <GoogleMap
     defaultZoom={props.defaultZoom}
     defaultCenter={props.defaultCenter}
@@ -20,7 +20,7 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
     onClick={props.onClick.bind(this)}>
     {props.markers}
   </GoogleMap>
-));
+)));
 
 export default class ProblemEdit extends Component {
   componentDidMount() {

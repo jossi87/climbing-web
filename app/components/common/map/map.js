@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { Redirect } from 'react-router';
-import {withGoogleMap, GoogleMap, Marker, Polygon} from "react-google-maps";
-import {default as MarkerClusterer} from 'react-google-maps/lib/components/addons/MarkerClusterer';
+import { withScriptjs, withGoogleMap, GoogleMap, Marker, Polygon } from "react-google-maps";
+import { default as MarkerClusterer } from 'react-google-maps/lib/components/addons/MarkerClusterer';
 
 export default class Map extends Component {
   constructor(props) {
@@ -56,7 +56,7 @@ export default class Map extends Component {
         );
       });
     }
-    const GettingStartedGoogleMap = withGoogleMap(props => (
+    const GettingStartedGoogleMap = withScriptjs(withGoogleMap(props => (
       <GoogleMap
         defaultZoom={this.props.defaultZoom}
         defaultCenter={this.props.defaultCenter}
@@ -72,7 +72,7 @@ export default class Map extends Component {
           {polygons}
         </MarkerClusterer>
       </GoogleMap>
-    ));
+    )));
 
     return (
       <section style={{height: '600px'}}>

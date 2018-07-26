@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import Request from 'superagent';
 import { FormGroup, ControlLabel, FormControl, ButtonGroup, DropdownButton, MenuItem, Button, Well } from 'react-bootstrap';
-import {withGoogleMap, GoogleMap, Marker, Polygon} from "react-google-maps";
+import { withScriptjs, withGoogleMap, GoogleMap, Marker, Polygon } from "react-google-maps";
 import ImageUpload from './common/image-upload/image-upload';
 import config from '../utils/config.js';
 import auth from '../utils/auth.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const GettingStartedGoogleMap = withGoogleMap(props => (
+const GettingStartedGoogleMap = withScriptjs(withGoogleMap(props => (
   <GoogleMap
     defaultZoom={props.defaultZoom}
     defaultCenter={props.defaultCenter}
@@ -19,7 +19,7 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
     {props.markers}
     {props.outline}
   </GoogleMap>
-));
+)));
 
 export default class SectorEdit extends Component {
   componentWillMount() {

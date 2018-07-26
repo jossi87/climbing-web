@@ -3,12 +3,12 @@ import Request from 'superagent';
 import { Redirect } from 'react-router';
 import { FormGroup, ControlLabel, FormControl, Checkbox, ButtonGroup, DropdownButton, MenuItem, Button, Well } from 'react-bootstrap';
 import ImageUpload from './common/image-upload/image-upload';
-import {withGoogleMap, GoogleMap, Marker} from "react-google-maps";
+import { withScriptjs, withGoogleMap, GoogleMap, Marker } from "react-google-maps";
 import config from '../utils/config.js';
 import auth from '../utils/auth.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const GettingStartedGoogleMap = withGoogleMap(props => (
+const GettingStartedGoogleMap = withScriptjs(withGoogleMap(props => (
   <GoogleMap
     defaultZoom={props.defaultZoom}
     defaultCenter={props.defaultCenter}
@@ -16,7 +16,7 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
     onClick={props.onClick.bind(this)}>
     {props.markers}
   </GoogleMap>
-));
+)));
 
 export default class AreaEdit extends Component {
   componentWillMount() {
