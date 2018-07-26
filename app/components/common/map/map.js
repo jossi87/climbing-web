@@ -26,7 +26,7 @@ export default class Map extends Component {
     var markers = null;
     if (this.props.markers) {
       markers = this.props.markers.map((m, i) => {
-        var myIcon = null;
+        var myIcon = {};
         if (m.icon) {
           if (m.icon.url) {
             myIcon.url = m.icon.url;
