@@ -68,8 +68,8 @@ export default class Index extends Component {
     return (
       <span>
         <MetaTags>
-          <title>{config.getTitle()}</title>
-          <meta name="description" content={config.getIndexMetaDescription()} />
+          <title>{this.state.data.metadata.title}</title>
+          <meta name="description" content={this.state.data.metadata.description} />
         </MetaTags>
         <Grid>
           <Row>

@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import MetaTags from 'react-meta-tags';
 import Request from 'superagent';
 import { Redirect } from 'react-router';
 import { FormGroup, ControlLabel, FormControl, Checkbox, ButtonGroup, DropdownButton, MenuItem, Button, Well } from 'react-bootstrap';
@@ -122,10 +121,6 @@ export default class AreaEdit extends Component {
     const defaultZoom = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? 8 : config.getDefaultZoom();
     return (
       <span>
-        <MetaTags>
-          <title>{config.getTitle("Area edit")}</title>
-          <meta name="description" content={"Edit area: " + this.state.name} />
-        </MetaTags>
         <Well>
           <form onSubmit={this.save.bind(this)}>
             <FormGroup controlId="formControlsName">

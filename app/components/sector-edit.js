@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import Request from 'superagent';
@@ -151,10 +150,6 @@ export default class SectorEdit extends Component {
     const defaultZoom = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? 14 : config.getDefaultZoom();
     return (
       <span>
-        <MetaTags>
-          <title>{config.getTitle("Sector edit")}</title>
-          <meta name="description" content={"Edit sector " + this.state.name} />
-        </MetaTags>
         <Well>
           <form onSubmit={this.save.bind(this)}>
             <FormGroup controlId="formControlsName">

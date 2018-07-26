@@ -52,7 +52,8 @@ export default class Area extends Component {
           comment: res.body.comment,
           lat: res.body.lat,
           lng: res.body.lng,
-          sectors: res.body.sectors
+          sectors: res.body.sectors,
+          metadata = res.body.metadata
         });
       }
     });
@@ -130,8 +131,8 @@ export default class Area extends Component {
     return (
       <span>
         <MetaTags>
-          <title>{config.getTitle(this.state.name)}</title>
-          <meta name="description" content={"List of sectors connected to " + this.state.name} />
+          <title>{metadata.title}</title>
+          <meta name="description" content={metadata.description} />
         </MetaTags>
         <Breadcrumb>
           {auth.isAdmin()?

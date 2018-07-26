@@ -51,7 +51,8 @@ export default class Problem extends Component {
           media: res.body[0].media,
           ticks: res.body[0].ticks,
           comments: res.body[0].comments,
-          sections: res.body[0].sections
+          sections: res.body[0].sections,
+          metadata: res.body[0].metadata
         });
       }
     });
@@ -296,20 +297,11 @@ export default class Problem extends Component {
       tickModal = <TickModal idTick={-1} idProblem={this.state.id} grade={this.state.originalGrade} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/>;
     }
 
-    var meta = this.state.fa && this.state.fa.map(u => u.firstname + " " + u.surname).join(", ");
-    if (meta) {
-      meta = (this.state.comment? this.state.comment + " | " : "") + "First ascent by " + meta + (this.state.faDateHr? " (" + this.state.faDateHr + ")" : "");
-    } else if (this.state.comment) {
-      meta = this.state.comment;
-    } else {
-      meta = config.getIndexMetaDescription();
-    }
-
     return (
       <span>
         <MetaTags>
-          <title>{config.getTitle(this.state.name + ' [' + this.state.grade + '] (' + this.state.areaName + " / " + this.state.sectorName + ")")}</title>
-          <meta name="description" content={meta} />
+          <title>{this.state.metadata.title}</title>
+          <meta name="description" content={this.state.metadata.description} />
         </MetaTags>
 
         {tickModal}

@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router'
 import Request from 'superagent';
@@ -62,10 +61,6 @@ export default class ProblemEditMedia extends Component {
 
     return (
       <span>
-        <MetaTags>
-          <title>{config.getTitle("Problem edit (media)")}</title>
-          <meta name="description" content={"Add new media"} />
-        </MetaTags>
         <Well>
           <form onSubmit={this.save.bind(this)}>
             <FormGroup controlId="formControlsMedia">
