@@ -18,7 +18,8 @@ module.exports = {
           { loader: 'style-loader' },
           { loader: 'css-loader' }
         ]
-      }
+      },
+      { test: /\.(eot|woff|woff2|svg|ttf)([\?]?.*)$/, loader: "file-loader" },
     ]
   },
   resolve: {

@@ -4,6 +4,13 @@ import {Route,  Switch} from 'react-router-dom';
 import Loadable from 'react-loadable';
 import Loading from './common/loading/loading';
 import Navigation from './navigation';
+
+import '../../static/css/bootstrap.min.css';
+import '../../static/css/react-input-calendar.css';
+import '../../static/css/image-gallery.css';
+import '../../static/css/react-bootstrap-table.css';
+import '../../static/css/buldreinfo.css';
+
 const Area = Loadable({loader: () => import('./area'), loading: Loading});
 const AreaEdit = Loadable({loader: () => import('./area-edit'), loading: Loading});
 const Browse = Loadable({loader: () => import('./browse'), loading: Loading});
