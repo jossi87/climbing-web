@@ -300,7 +300,7 @@ export default class Problem extends Component {
     return (
       <span>
         <Helmet>
-          <script type="application/ld+json">{`this.state.metadata.jsonLd`}</script>
+          <script type="application/ld+json">{{this.state.metadata.jsonLd}}</script>
           <title>{this.state.metadata.title}</title>
           <meta name="description" content={this.state.metadata.description} />
         </Helmet>
