@@ -300,6 +300,7 @@ export default class Problem extends Component {
     return (
       <span>
         <MetaTags>
+          <script type="application/ld+json">{this.state.metadata.jsonLd}</script>
           <title>{this.state.metadata.title}</title>
           <meta name="description" content={this.state.metadata.description} />
         </MetaTags>
