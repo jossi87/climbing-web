@@ -205,7 +205,8 @@ export default class Finder extends Component {
           url: '/problem/' + p.id,
           icon: {
             url: p.ticked? 'https://mt.google.com/vt/icon?name=icons/spotlight/spotlight-waypoint-a.png' : 'https://mt.google.com/vt/icon?name=icons/spotlight/spotlight-waypoint-b.png',
-            labelOrigin: new google.maps.Point(11, 13)
+            labelOriginX: 11,
+            labelOriginY: 13
           }
         }
     });
