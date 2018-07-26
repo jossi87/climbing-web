@@ -19,19 +19,19 @@ module.exports = {
 
   getTitle(str) {
     if (window.location.hostname=='buldring.bergen-klatreklubb.no') {
-      return (str? str : "Buldring i Hordaland") + " | buldring.bergen-klatreklubb.no";
+      return (str && str + " | ") + " | Buldring i Hordaland";
     } else if (window.location.hostname=='buldring.fredrikstadklatreklubb.org') {
-      return (str? str : "Buldring i Fredrikstad") + " | buldring.fredrikstadklatreklubb.org";
+      return (str && str + " | ") + " | Buldring i Fredrikstad";
     } else if (window.location.hostname=='brattelinjer.no') {
-      return (str? str : "Klatring i Rogaland") + " | Bratte Linjer";
+      return (str && str + " | ") + " | Bratte Linjer";
     } else if (window.location.hostname=='buldring.jotunheimenfjellsport.com') {
-      return (str? str : "Buldring i Jotunheimen") + " | buldring.jotunheimenfjellsport.com";
+      return (str && str + " | ") + " | Buldring i Jotunheimen";
     } else if (window.location.hostname=='klatring.jotunheimenfjellsport.com') {
-      return (str? str : "Klatring i Jotunheimen") + " | klatring.jotunheimenfjellsport.com";
+      return (str && str + " | ") + " | Klatring i Jotunheimen";
     } else if (window.location.hostname=='dev.jossi.org') {
-      return (str? str : "DEV") + " | dev.jossi.org";
+      return (str && str + " | ") + "dev.jossi.org";
     } else {
-      return (str? str : "Buldring i Rogaland") + " | Buldreinfo";
+      return (str && str + " | ") + "Buldreinfo";
     }
   },
 
