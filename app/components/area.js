@@ -53,7 +53,7 @@ export default class Area extends Component {
           lat: res.body.lat,
           lng: res.body.lng,
           sectors: res.body.sectors,
-          metadata = res.body.metadata
+          metadata: res.body.metadata
         });
       }
     });
