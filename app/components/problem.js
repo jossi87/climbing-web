@@ -126,7 +126,7 @@ export default class Problem extends Component {
         url: '/problem/' + this.state.id,
         icon: {
           url: (this.state.ticks && this.state.ticks.filter(t => t.writable).length>0)? 'https://mt.google.com/vt/icon?name=icons/spotlight/spotlight-waypoint-a.png' : 'https://mt.google.com/vt/icon?name=icons/spotlight/spotlight-waypoint-b.png',
-          labelOrigin: new google.maps.Point(11, 13)
+          labelOrigin: {x: 11, y: 13}
         }
       });
     }
@@ -138,7 +138,7 @@ export default class Problem extends Component {
         labelContent: this.state.sectorName,
         icon: {
           url: 'https://maps.google.com/mapfiles/kml/shapes/parking_lot_maps.png',
-          scaledSize: new google.maps.Size(32, 32)
+          scaledSize: {w: 32, h: 32}
         },
         url: '/sector/' + this.state.sectorId
       });

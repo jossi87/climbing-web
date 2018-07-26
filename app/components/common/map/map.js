@@ -26,9 +26,16 @@ export default class Map extends Component {
     var markers = null;
     if (this.props.markers) {
       markers = this.props.markers.map((m, i) => {
+        var myIcon = {url: m.icon.url};
+        if (m.scaledSize) {
+          myIcon.scaledSize = new google.maps.Size(m.icon.scaledSize.w, m.icon.scaledSize.h);
+        }
+        if (m.labelOrigin) {
+          myIcon.labelOrigin = new google.maps.Point(m.icon.labelOrigin.x, m.icon.labelOrigin.y);
+        }
         return (
           <Marker
-            icon={m.icon}
+            icon={myIcon}
             key={i}
             position={{lat: m.lat, lng: m.lng}}
             label={m.label}

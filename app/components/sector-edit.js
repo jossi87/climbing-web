@@ -183,7 +183,7 @@ export default class SectorEdit extends Component {
                   defaultCenter={defaultCenter}
                   onClick={this.onMapClick.bind(this)}
                   onRightClick={this.onMapRightClick.bind(this)}
-                  markers={this.state.lat!=0 && this.state.lng!=0? <Marker position={{lat: this.state.lat, lng: this.state.lng}} icon={{url: 'https://maps.google.com/mapfiles/kml/shapes/parking_lot_maps.png', scaledSize: new google.maps.Size(32, 32)}}/> : ""}
+                  markers={this.state.lat!=0 && this.state.lng!=0? <Marker position={{lat: this.state.lat, lng: this.state.lng}} icon={{url: 'https://maps.google.com/mapfiles/kml/shapes/parking_lot_maps.png', scaledSize: {w: 32, h: 32}}}/> : ""}
                   outline={outline}
                 />
               </section>
