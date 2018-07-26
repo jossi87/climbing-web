@@ -176,6 +176,7 @@ export default class SectorEdit extends Component {
               <section style={{height: '600px'}}>
                 <GettingStartedGoogleMap
                   googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyCpaVd5518yMB-oiIyP5JnTVWMfrOv4sAI&v=3.exp"
+                  loadingElement={<div style={{ height: `100%` }} />}
                   containerElement={<div style={{ height: `100%` }} />}
                   mapElement={<div style={{ height: `100%` }} />}
                   defaultZoom={defaultZoom}
