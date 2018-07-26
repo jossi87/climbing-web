@@ -151,8 +151,8 @@ export default class User extends Component {
     return (
       <span>
         <MetaTags>
-          <title>{user.metadata.title}</title>
-          <meta name="description" content={user.metadata.description} />
+          <title>{this.state.user.metadata.title}</title>
+          <meta name="description" content={this.state.user.metadata.description} />
         </MetaTags>
 
         {this.state.currTick? <TickModal idTick={this.state.currTick.id} idProblem={this.state.currTick.idProblem} date={this.state.currTick.date} comment={this.state.currTick.comment} grade={this.state.currTick.grade} stars={this.state.currTick.stars} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/> : ""}
