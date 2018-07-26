@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Helmet } from "react-helmet";
+import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Map from './common/map/map';
 import Gallery from './common/gallery/gallery';
@@ -299,11 +299,11 @@ export default class Problem extends Component {
 
     return (
       <span>
-        <Helmet>
+        <MetaTags>
           <script type="application/ld+json">{JSON.stringify(this.state.metadata.jsonLd)}</script>
           <title>{this.state.metadata.title}</title>
           <meta name="description" content={this.state.metadata.description} />
-        </Helmet>
+        </MetaTags>
 
         {tickModal}
         <CommentModal idProblem={this.state.id} show={this.state.showCommentModal} onHide={this.closeCommentModal.bind(this)}/>

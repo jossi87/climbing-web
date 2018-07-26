@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Helmet } from "react-helmet";
+import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { Table, Grid, Well, Row, Col, Clearfix } from 'react-bootstrap';
 import Request from 'superagent';
@@ -67,10 +67,10 @@ export default class Index extends Component {
 
     return (
       <span>
-        <Helmet>
+        <MetaTags>
           <title>{this.state.data.metadata.title}</title>
           <meta name="description" content={this.state.data.metadata.description} />
-        </Helmet>
+        </MetaTags>
         <Grid>
           <Row>
             <Well style={{textAlign: 'center'}}>

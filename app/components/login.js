@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Helmet } from "react-helmet";
+import MetaTags from 'react-meta-tags';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
@@ -66,10 +66,10 @@ export default class Login extends Component {
     }
     return (
       <span>
-        <Helmet>
+        <MetaTags>
           <title>{config.getTitle("Login")}</title>
           <meta name="description" content={"Log in with username and password"} />
-        </Helmet>
+        </MetaTags>
         <Breadcrumb>
           <Link to={`/`}>Home</Link> / <font color='#777'>Sign in</font>
         </Breadcrumb>

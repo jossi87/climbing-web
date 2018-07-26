@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Helmet } from "react-helmet";
+import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Request from 'superagent';
 import Map from './common/map/map';
@@ -198,11 +198,11 @@ export default class Sector extends Component {
 
     return (
       <span>
-        <Helmet>
+        <MetaTags>
           <script type="application/ld+json">{JSON.stringify(this.state.metadata.jsonLd)}</script>
           <title>{this.state.metadata.title}</title>
           <meta name="description" content={this.state.metadata.description} />
-        </Helmet>
+        </MetaTags>
         <Breadcrumb>
           {auth.isAdmin()?
             <div style={{float: 'right'}}>
