@@ -38,7 +38,7 @@ export default class AreaEdit extends Component {
         newMedia: []
       });
     } else {
-      Request.get(config.getUrl("areas?id=" + this.props.match.params.areaId)).withCredentials().end((err, res) => {
+      Request.get(config.getUrl("areas?regionId=" + config.getRegion() + "&id=" + this.props.match.params.areaId)).withCredentials().end((err, res) => {
         if (err) {
           this.setState({error: err});
         } else {

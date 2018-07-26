@@ -40,7 +40,7 @@ export default class Area extends Component {
   }
 
   refresh(id) {
-    Request.get(config.getUrl("areas?id=" + id)).withCredentials().end((err, res) => {
+    Request.get(config.getUrl("areas?regionId=" + config.getRegion() + "&id=" + id)).withCredentials().end((err, res) => {
       if (err) {
         this.setState({error: err});
       } else {
