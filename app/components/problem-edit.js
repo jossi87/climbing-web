@@ -257,6 +257,7 @@ export default class ProblemEdit extends Component {
               <ControlLabel>Click to mark problem on map</ControlLabel><br/>
               <section style={{height: '600px'}}>
                 <GettingStartedGoogleMap
+                  googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyCpaVd5518yMB-oiIyP5JnTVWMfrOv4sAI&v=3.exp"
                   containerElement={<div style={{ height: `100%` }} />}
                   mapElement={<div style={{ height: `100%` }} />}
                   defaultZoom={defaultZoom}

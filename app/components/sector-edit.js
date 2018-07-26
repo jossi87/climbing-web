@@ -175,6 +175,7 @@ export default class SectorEdit extends Component {
               <ControlLabel>Left mouse button to position parking coordinate, right mouse button to add polygon points (sector outline)</ControlLabel><br/>
               <section style={{height: '600px'}}>
                 <GettingStartedGoogleMap
+                  googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyCpaVd5518yMB-oiIyP5JnTVWMfrOv4sAI&v=3.exp"
                   containerElement={<div style={{ height: `100%` }} />}
                   mapElement={<div style={{ height: `100%` }} />}
                   defaultZoom={defaultZoom}

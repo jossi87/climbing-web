@@ -146,6 +146,7 @@ export default class AreaEdit extends Component {
               <ControlLabel>Click to mark area center on map</ControlLabel><br/>
               <section style={{height: '600px'}}>
                 <GettingStartedGoogleMap
+                  googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyCpaVd5518yMB-oiIyP5JnTVWMfrOv4sAI&v=3.exp"
                   containerElement={<div style={{ height: `100%` }} />}
                   mapElement={<div style={{ height: `100%` }} />}
                   defaultZoom={defaultZoom}
