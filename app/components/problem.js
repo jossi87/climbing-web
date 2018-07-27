@@ -322,7 +322,7 @@ export default class Problem extends Component {
           <strong>FA date:</strong> {this.state.faDateHr}<br/>
           <strong>Original grade:</strong> {this.state.originalGrade}<br/>
           {this.state.sectorLat>0 && this.state.sectorLng>0 &&
-            <span><a href={`http://maps.google.com/maps?q=loc:${this.state.sectorLat},${this.state.sectorLng}&navigate=yes`} target="_blank">Start navigation</a><br/></span>}
+            <span><a href={`http://maps.google.com/maps?q=loc:${this.state.sectorLat},${this.state.sectorLng}&navigate=yes`} rel="noopener" target="_blank">Start navigation</a><br/></span>}
           {section}
         </Well>
         {table}

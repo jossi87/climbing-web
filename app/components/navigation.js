@@ -144,15 +144,15 @@ export default class Navigation extends Component {
               </LinkContainer>
               <MenuItem divider />
               <MenuItem eventKey={6.1} href="mailto:jostein.oygarden@gmail.com">Contact</MenuItem>
-              <MenuItem eventKey={6.2} href="/gpl-3.0.txt" target="_blank">GNU Public License</MenuItem>
+              <MenuItem eventKey={6.2} href="/gpl-3.0.txt" rel="noopener" target="_blank">GNU Public License</MenuItem>
               <MenuItem divider />
-              <MenuItem eventKey={6.3} href="https://buldreinfo.com" target="_blank">buldreinfo.com</MenuItem>
-              <MenuItem eventKey={6.4} href="https://buldring.bergen-klatreklubb.no" target="_blank">buldring.bergen-klatreklubb.no</MenuItem>
-              <MenuItem eventKey={6.5} href="https://buldring.fredrikstadklatreklubb.org" target="_blank">buldring.fredrikstadklatreklubb.org</MenuItem>
-              <MenuItem eventKey={6.6} href="https://buldring.jotunheimenfjellsport.com" target="_blank">buldring.jotunheimenfjellsport.com</MenuItem>
+              <MenuItem eventKey={6.3} href="https://buldreinfo.com" rel="noopener" target="_blank">buldreinfo.com</MenuItem>
+              <MenuItem eventKey={6.4} href="https://buldring.bergen-klatreklubb.no" rel="noopener" target="_blank">buldring.bergen-klatreklubb.no</MenuItem>
+              <MenuItem eventKey={6.5} href="https://buldring.fredrikstadklatreklubb.org" rel="noopener" target="_blank">buldring.fredrikstadklatreklubb.org</MenuItem>
+              <MenuItem eventKey={6.6} href="https://buldring.jotunheimenfjellsport.com" rel="noopener" target="_blank">buldring.jotunheimenfjellsport.com</MenuItem>
               <MenuItem divider />
-              <MenuItem eventKey={6.7} href="https://brattelinjer.no" target="_blank">brattelinjer.no</MenuItem>
-              <MenuItem eventKey={6.7} href="https://klatring.jotunheimenfjellsport.com" target="_blank">klatring.jotunheimenfjellsport.com</MenuItem>
+              <MenuItem eventKey={6.7} href="https://brattelinjer.no" rel="noopener" target="_blank">brattelinjer.no</MenuItem>
+              <MenuItem eventKey={6.7} href="https://klatring.jotunheimenfjellsport.com" rel="noopener" target="_blank">klatring.jotunheimenfjellsport.com</MenuItem>
             </NavDropdown>
           </Nav>
         </Navbar.Collapse>
