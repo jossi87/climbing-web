@@ -3,7 +3,7 @@ const HtmlPlugin = require('html-webpack-plugin');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 module.exports = {
   entry: [
-    './app'
+    './src/app'
   ],
   module: {
     rules: [
@@ -33,7 +33,7 @@ module.exports = {
   devtool: 'source-map',
   plugins: [
     new HtmlPlugin({
-      template: 'app/index.html'
+      template: 'src/index.html'
     }),
     new UglifyJSPlugin({
       sourceMap: true
