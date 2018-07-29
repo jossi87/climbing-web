@@ -11,14 +11,14 @@ export default class Ethics extends Component {
       data = window.__INITIAL_DATA__;
       delete window.__INITIAL_DATA__;
     } else {
-      data = this.props.staticContext.data;
+      data = props.staticContext.data;
     }
     this.state = {data};
   }
 
   componentDidMount () {
     if (!this.state.data) {
-      this.props.fetchInitialData("Ethics").then((data) => this.setState(() => ({data})));
+      this.props.fetchInitialData().then((data) => this.setState(() => ({data})));
     }
   }
 

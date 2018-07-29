@@ -17,12 +17,12 @@ import SvgEdit from './components/common/svg/svg-edit';
 import User from './components/user';
 import UserEdit from './components/user-edit';
 
-import { getTitle } from './api';
+import { getBrowse, getEthics, getFinder } from './api';
 
 const routes =  [
   {path: '/', exact: true, component: Index},
-  {path: '/browse', exact: false, component: Browse},
-  {path: '/ethics', exact: false, component: Ethics, fetchInitialData: (path = '') => getTitle('Ethics')},
+  {path: '/browse', exact: false, component: Browse, fetchInitialData: (path = '') => getBrowse()},
+  {path: '/ethics', exact: false, component: Ethics, fetchInitialData: (path = '') => getEthics()},
   {path: '/area/:areaId', exact: true, component: Area},
   {path: '/area/edit/:areaId', exact: true, component: AreaEdit},
   {path: '/sector/:sectorId', exact: true, component: Sector},
@@ -31,7 +31,7 @@ const routes =  [
   {path: '/problem/edit/:problemId', exact: true, component: ProblemEdit},
   {path: '/problem/edit/media/:problemId', exact: true, component: ProblemEditMedia},
   {path: '/problem/svg-edit/:problemId/:mediaId', exact: true, component: SvgEdit},
-  {path: '/finder/:grade', exact: true, component: Finder},
+  {path: '/finder/:grade', exact: true, component: Finder, fetchInitialData: (path = '') => getFinder(path.split('/').pop())},
   {path: '/user', exact: true, component: User},
   {path: '/user/:userId', exact: true, component: User},
   {path: '/user/:userId/edit', exact: true, component: UserEdit},

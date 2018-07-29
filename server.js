@@ -1144,14 +1144,20 @@ var _userEdit = __webpack_require__(61);
 
 var _userEdit2 = _interopRequireDefault(_userEdit);
 
-var _api = __webpack_require__(68);
+var _api = __webpack_require__(62);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var routes = [{ path: '/', exact: true, component: _index2.default }, { path: '/browse', exact: false, component: _browse2.default }, { path: '/ethics', exact: false, component: _ethics2.default, fetchInitialData: function fetchInitialData() {
+var routes = [{ path: '/', exact: true, component: _index2.default }, { path: '/browse', exact: false, component: _browse2.default, fetchInitialData: function fetchInitialData() {
     var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    return (0, _api.getTitle)('Ethics');
-  } }, { path: '/area/:areaId', exact: true, component: _area2.default }, { path: '/area/edit/:areaId', exact: true, component: _areaEdit2.default }, { path: '/sector/:sectorId', exact: true, component: _sector2.default }, { path: '/sector/edit/:sectorId', exact: true, component: _sectorEdit2.default }, { path: '/problem/:problemId', exact: true, component: _problem2.default }, { path: '/problem/edit/:problemId', exact: true, component: _problemEdit2.default }, { path: '/problem/edit/media/:problemId', exact: true, component: _problemEditMedia2.default }, { path: '/problem/svg-edit/:problemId/:mediaId', exact: true, component: _svgEdit2.default }, { path: '/finder/:grade', exact: true, component: _finder2.default }, { path: '/user', exact: true, component: _user2.default }, { path: '/user/:userId', exact: true, component: _user2.default }, { path: '/user/:userId/edit', exact: true, component: _userEdit2.default }, { path: '/login', exact: false, component: _login2.default }, { path: '/register', exact: false, component: _register2.default }, { path: '/recover/:token', exact: true, component: _recover2.default }, { path: '/logout', exact: false, component: _logout2.default }];
+    return (0, _api.getBrowse)();
+  } }, { path: '/ethics', exact: false, component: _ethics2.default, fetchInitialData: function fetchInitialData() {
+    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    return (0, _api.getEthics)();
+  } }, { path: '/area/:areaId', exact: true, component: _area2.default }, { path: '/area/edit/:areaId', exact: true, component: _areaEdit2.default }, { path: '/sector/:sectorId', exact: true, component: _sector2.default }, { path: '/sector/edit/:sectorId', exact: true, component: _sectorEdit2.default }, { path: '/problem/:problemId', exact: true, component: _problem2.default }, { path: '/problem/edit/:problemId', exact: true, component: _problemEdit2.default }, { path: '/problem/edit/media/:problemId', exact: true, component: _problemEditMedia2.default }, { path: '/problem/svg-edit/:problemId/:mediaId', exact: true, component: _svgEdit2.default }, { path: '/finder/:grade', exact: true, component: _finder2.default, fetchInitialData: function fetchInitialData() {
+    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    return (0, _api.getFinder)(path.split('/').pop());
+  } }, { path: '/user', exact: true, component: _user2.default }, { path: '/user/:userId', exact: true, component: _user2.default }, { path: '/user/:userId/edit', exact: true, component: _userEdit2.default }, { path: '/login', exact: false, component: _login2.default }, { path: '/register', exact: false, component: _register2.default }, { path: '/recover/:token', exact: true, component: _recover2.default }, { path: '/logout', exact: false, component: _logout2.default }];
 
 exports.default = routes;
 
@@ -1630,15 +1636,15 @@ var _routes = __webpack_require__(18);
 
 var _routes2 = _interopRequireDefault(_routes);
 
-var _navigation = __webpack_require__(62);
+var _navigation = __webpack_require__(64);
 
 var _navigation2 = _interopRequireDefault(_navigation);
 
-var _fontawesomeSvgCore = __webpack_require__(66);
+var _fontawesomeSvgCore = __webpack_require__(68);
 
 var _reactFontawesome = __webpack_require__(5);
 
-var _freeSolidSvgIcons = __webpack_require__(67);
+var _freeSolidSvgIcons = __webpack_require__(69);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2550,10 +2556,6 @@ var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
 var _reactRouterDom = __webpack_require__(4);
 
-var _superagent = __webpack_require__(3);
-
-var _superagent2 = _interopRequireDefault(_superagent);
-
 var _reactBootstrap = __webpack_require__(1);
 
 var _reactBootstrapTable = __webpack_require__(14);
@@ -2568,10 +2570,6 @@ var _auth = __webpack_require__(6);
 
 var _auth2 = _interopRequireDefault(_auth);
 
-var _config = __webpack_require__(2);
-
-var _config2 = _interopRequireDefault(_config);
-
 var _reactFontawesome = __webpack_require__(5);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -2585,10 +2583,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Browse = function (_Component) {
   _inherits(Browse, _Component);
 
-  function Browse() {
+  function Browse(props) {
     _classCallCheck(this, Browse);
 
-    return _possibleConstructorReturn(this, (Browse.__proto__ || Object.getPrototypeOf(Browse)).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, (Browse.__proto__ || Object.getPrototypeOf(Browse)).call(this, props));
+
+    var data = void 0;
+    if (false) {
+      data = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+    } else {
+      data = props.staticContext.data;
+    }
+    _this.state = { data: data };
+    return _this;
   }
 
   _createClass(Browse, [{
@@ -2599,12 +2607,13 @@ var Browse = function (_Component) {
       navigator.geolocation.getCurrentPosition(function (position) {
         _this2.setState({ currLat: position.coords.latitude, currLng: position.coords.longitude });
       });
-      _superagent2.default.get(_config2.default.getUrl("areas/list")).withCredentials().end(function (err, res) {
-        _this2.setState({
-          error: err ? err : null,
-          areas: err ? null : res.body
+      if (!this.state.data) {
+        this.props.fetchInitialData().then(function (data) {
+          return _this2.setState(function () {
+            return { data: data };
+          });
         });
-      });
+      }
     }
   }, {
     key: 'formatName',
@@ -2665,26 +2674,14 @@ var Browse = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
-      if (!this.state || !this.state.areas) {
+      if (!this.state || !this.state.data) {
         return _react2.default.createElement(
           'center',
           null,
           _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'spinner', spin: true, size: '3x' })
         );
       }
-      if (this.state.error) {
-        return _react2.default.createElement(
-          'span',
-          null,
-          _react2.default.createElement(
-            'h3',
-            null,
-            this.state.error.status
-          ),
-          this.state.error.toString()
-        );
-      }
-      var markers = this.state.areas.filter(function (a) {
+      var markers = this.state.data.areas.filter(function (a) {
         return a.lat != 0 && a.lng != 0;
       }).map(function (a) {
         return {
@@ -2695,7 +2692,7 @@ var Browse = function (_Component) {
           url: '/area/' + a.id
         };
       });
-      var map = markers.length > 0 ? _react2.default.createElement(_map2.default, { markers: markers, defaultCenter: _config2.default.getDefaultCenter(), defaultZoom: _config2.default.getDefaultZoom() }) : null;
+      var map = markers.length > 0 ? _react2.default.createElement(_map2.default, { markers: markers, defaultCenter: this.state.data.defaultCenter, defaultZoom: this.state.data.defaultZoom }) : null;
       return _react2.default.createElement(
         'span',
         null,
@@ -2705,7 +2702,7 @@ var Browse = function (_Component) {
           _react2.default.createElement(
             'title',
             null,
-            _config2.default.getTitle("Browse")
+            this.state.data.title
           ),
           _react2.default.createElement('meta', { name: 'description', content: "Browse areas" })
         ),
@@ -2749,7 +2746,7 @@ var Browse = function (_Component) {
         _react2.default.createElement(
           _reactBootstrapTable.BootstrapTable,
           {
-            data: this.state.areas,
+            data: this.state.data.areas,
             condensed: true,
             hover: true,
             columnFilter: false },
@@ -2834,7 +2831,7 @@ var Ethics = function (_Component) {
       data = window.__INITIAL_DATA__;
       delete window.__INITIAL_DATA__;
     } else {
-      data = _this.props.staticContext.data;
+      data = props.staticContext.data;
     }
     _this.state = { data: data };
     return _this;
@@ -2846,7 +2843,7 @@ var Ethics = function (_Component) {
       var _this2 = this;
 
       if (!this.state.data) {
-        this.props.fetchInitialData("Ethics").then(function (data) {
+        this.props.fetchInitialData().then(function (data) {
           return _this2.setState(function () {
             return { data: data };
           });
@@ -3002,10 +2999,6 @@ var _reactBootstrap = __webpack_require__(1);
 
 var _reactBootstrapTable = __webpack_require__(14);
 
-var _config = __webpack_require__(2);
-
-var _config2 = _interopRequireDefault(_config);
-
 var _reactFontawesome = __webpack_require__(5);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -3024,7 +3017,15 @@ var Finder = function (_Component) {
 
     var _this = _possibleConstructorReturn(this, (Finder.__proto__ || Object.getPrototypeOf(Finder)).call(this, props));
 
+    var data = void 0;
+    if (false) {
+      data = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+    } else {
+      data = props.staticContext.data;
+    }
     _this.state = {
+      data: data,
       tabIndex: 1,
       currLat: 0,
       currLng: 0
@@ -3056,12 +3057,10 @@ var Finder = function (_Component) {
     value: function refresh(grade) {
       var _this2 = this;
 
-      _superagent2.default.get(_config2.default.getUrl("problems?grade=" + grade)).withCredentials().end(function (err, res) {
-        if (err) {
-          _this2.setState({ error: err });
-        } else {
-          _this2.setState({ problems: res.body });
-        }
+      this.props.fetchInitialData(grade).then(function (data) {
+        return _this2.setState(function () {
+          return { data: data };
+        });
       });
     }
   }, {
@@ -3069,15 +3068,19 @@ var Finder = function (_Component) {
     value: function componentDidMount() {
       var _this3 = this;
 
-      this.refresh(this.props.match.params.grade);
+      if (!this.state.data) {
+        this.refresh(this.props.match.params.grade);
+      }
       navigator.geolocation.getCurrentPosition(function (position) {
         _this3.setState({ currLat: position.coords.latitude, currLng: position.coords.longitude });
       });
     }
   }, {
-    key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(nextProps) {
-      this.refresh(nextProps.match.params.grade);
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate(prevProps, prevState) {
+      if (prevProps.match.params.grade !== this.props.match.params.grade) {
+        this.refresh(this.props.match.params.grade);
+      }
     }
   }, {
     key: 'handleTabsSelection',
@@ -3340,27 +3343,14 @@ var Finder = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
-      if (!this.state.problems) {
+      if (!this.state.data.problems) {
         return _react2.default.createElement(
           'center',
           null,
           _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'spinner', spin: true, size: '3x' })
         );
       }
-      if (this.state.error) {
-        return _react2.default.createElement(
-          'span',
-          null,
-          _react2.default.createElement(
-            'h3',
-            null,
-            this.state.error.status
-          ),
-          this.state.error.toString()
-        );
-      }
-
-      var markers = this.state.problems.filter(function (p) {
+      var markers = this.state.data.problems.filter(function (p) {
         return p.lat != 0 && p.lng != 0;
       }).map(function (p) {
         return {
@@ -3376,13 +3366,13 @@ var Finder = function (_Component) {
           }
         };
       });
-      var map = markers.length > 0 ? _react2.default.createElement(_map2.default, { markers: markers, defaultCenter: _config2.default.getDefaultCenter(), defaultZoom: 7 }) : null;
+      var map = markers.length > 0 ? _react2.default.createElement(_map2.default, { markers: markers, defaultCenter: this.state.data.defaultCenter, defaultZoom: 7 }) : null;
       var table = null;
-      if (!_config2.default.isBouldering()) {
+      if (!this.state.data.isBouldering) {
         table = _react2.default.createElement(
           _reactBootstrapTable.BootstrapTable,
           {
-            data: this.state.problems,
+            data: this.state.data.problems,
             trClassName: this.trClassFormat.bind(this),
             condensed: true,
             hover: true,
@@ -3447,7 +3437,7 @@ var Finder = function (_Component) {
         table = _react2.default.createElement(
           _reactBootstrapTable.BootstrapTable,
           {
-            data: this.state.problems,
+            data: this.state.data.problems,
             trClassName: this.trClassFormat.bind(this),
             condensed: true,
             hover: true,
@@ -3511,7 +3501,7 @@ var Finder = function (_Component) {
       }
 
       return _react2.default.createElement(
-        'span',
+        'div',
         null,
         _react2.default.createElement(
           _reactMetaTags2.default,
@@ -3519,7 +3509,7 @@ var Finder = function (_Component) {
           _react2.default.createElement(
             'title',
             null,
-            _config2.default.getTitle("Finder")
+            this.state.data.title
           ),
           _react2.default.createElement('meta', { name: 'description', content: "Search by difficulty" })
         ),
@@ -3536,7 +3526,7 @@ var Finder = function (_Component) {
             'font',
             { color: '#777' },
             'Finder (problems: ',
-            this.state.problems.length,
+            this.state.data.problems.length,
             ')'
           )
         ),
@@ -9426,6 +9416,59 @@ exports.default = UserEdit;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.getBrowse = getBrowse;
+exports.getEthics = getEthics;
+exports.getFinder = getFinder;
+
+var _isomorphicFetch = __webpack_require__(63);
+
+var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function getBrowse() {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/browse')).then(function (data) {
+    return data.json();
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
+function getEthics() {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/ethics')).then(function (data) {
+    return data.json();
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
+function getFinder(grade) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/finder?grade=' + grade)).then(function (data) {
+    return data.json();
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
+/***/ }),
+/* 63 */
+/***/ (function(module, exports) {
+
+module.exports = require("isomorphic-fetch");
+
+/***/ }),
+/* 64 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -9449,15 +9492,15 @@ var _config = __webpack_require__(2);
 
 var _config2 = _interopRequireDefault(_config);
 
-var _Async = __webpack_require__(63);
+var _Async = __webpack_require__(65);
 
 var _Async2 = _interopRequireDefault(_Async);
 
-var _reactSelect = __webpack_require__(64);
+var _reactSelect = __webpack_require__(66);
 
 var _reactRouter = __webpack_require__(7);
 
-var _reactAvatar = __webpack_require__(65);
+var _reactAvatar = __webpack_require__(67);
 
 var _reactAvatar2 = _interopRequireDefault(_reactAvatar);
 
@@ -9587,7 +9630,7 @@ var Navigation = function (_Component) {
               _react2.default.createElement(
                 'a',
                 { href: '/', onMouseOver: this.hoverImage.bind(this, true), onMouseOut: this.hoverImage.bind(this, false) },
-                _react2.default.createElement('img', { src: this.state.logo, alt: _config2.default.getTitle() })
+                _react2.default.createElement('img', { src: this.state.logo })
               )
             )
           ),
@@ -9765,69 +9808,34 @@ var Navigation = function (_Component) {
 exports.default = Navigation;
 
 /***/ }),
-/* 63 */
+/* 65 */
 /***/ (function(module, exports) {
 
 module.exports = require("react-select/lib/Async");
 
 /***/ }),
-/* 64 */
+/* 66 */
 /***/ (function(module, exports) {
 
 module.exports = require("react-select");
 
 /***/ }),
-/* 65 */
+/* 67 */
 /***/ (function(module, exports) {
 
 module.exports = require("react-avatar");
 
 /***/ }),
-/* 66 */
+/* 68 */
 /***/ (function(module, exports) {
 
 module.exports = require("@fortawesome/fontawesome-svg-core");
 
 /***/ }),
-/* 67 */
-/***/ (function(module, exports) {
-
-module.exports = require("@fortawesome/free-solid-svg-icons");
-
-/***/ }),
-/* 68 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.getTitle = getTitle;
-
-var _isomorphicFetch = __webpack_require__(69);
-
-var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function getTitle() {
-  var subTitle = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/title?subTitle=' + subTitle)).then(function (data) {
-    return data.json();
-  }).catch(function (error) {
-    console.warn(error);
-    return null;
-  });
-}
-
-/***/ }),
 /* 69 */
 /***/ (function(module, exports) {
 
-module.exports = require("isomorphic-fetch");
+module.exports = require("@fortawesome/free-solid-svg-icons");
 
 /***/ })
 /******/ ]);

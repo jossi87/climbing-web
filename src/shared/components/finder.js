@@ -6,13 +6,20 @@ import Request from 'superagent';
 import Map from './common/map/map';
 import { Tabs, Tab, Panel, ButtonToolbar, ButtonGroup, Button, OverlayTrigger, Tooltip, Popover, DropdownButton, MenuItem, Breadcrumb } from 'react-bootstrap';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-import config from '../utils/config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default class Finder extends Component {
   constructor(props) {
     super(props);
+    let data;
+    if (__isBrowser__) {
+      data = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+    } else {
+      data = props.staticContext.data;
+    }
     this.state = {
+      data,
       tabIndex: 1,
       currLat: 0,
       currLng: 0
@@ -38,24 +45,22 @@ export default class Finder extends Component {
   }
 
   refresh(grade) {
-    Request.get(config.getUrl("problems?grade=" + grade)).withCredentials().end((err, res) => {
-      if (err) {
-        this.setState({error: err});
-      } else {
-        this.setState({problems: res.body});
-      }
-    });
+    this.props.fetchInitialData(grade).then((data) => this.setState(() => ({data})));
   }
 
   componentDidMount() {
-    this.refresh(this.props.match.params.grade);
+    if (!this.state.data) {
+      this.refresh(this.props.match.params.grade);
+    }
     navigator.geolocation.getCurrentPosition((position) => {
       this.setState({currLat: position.coords.latitude, currLng: position.coords.longitude});
     });
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.refresh(nextProps.match.params.grade);
+  componentDidUpdate (prevProps, prevState) {
+    if (prevProps.match.params.grade !== this.props.match.params.grade) {
+      this.refresh(this.props.match.params.grade);
+    }
   }
 
   handleTabsSelection(key) {
@@ -189,14 +194,10 @@ export default class Finder extends Component {
   }
 
   render() {
-    if (!this.state.problems) {
+    if (!this.state.data.problems) {
       return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
-    if (this.state.error) {
-      return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;
-    }
-
-    const markers = this.state.problems.filter(p => p.lat!=0 && p.lng!=0).map(p => {
+    const markers = this.state.data.problems.filter(p => p.lat!=0 && p.lng!=0).map(p => {
       return {
           lat: p.lat,
           lng: p.lng,
@@ -210,11 +211,11 @@ export default class Finder extends Component {
           }
         }
     });
-    const map = markers.length>0? <Map markers={markers} defaultCenter={config.getDefaultCenter()} defaultZoom={7}/> : null;
+    const map = markers.length>0? <Map markers={markers} defaultCenter={this.state.data.defaultCenter} defaultZoom={7}/> : null;
     var table = null;
-    if (!config.isBouldering()) {
+    if (!this.state.data.isBouldering) {
       table = <BootstrapTable
-                data={this.state.problems}
+                data={this.state.data.problems}
                 trClassName={this.trClassFormat.bind(this)}
                 condensed={true}
                 hover={true}
@@ -233,7 +234,7 @@ export default class Finder extends Component {
               </BootstrapTable>;
     } else {
       table = <BootstrapTable
-                data={this.state.problems}
+                data={this.state.data.problems}
                 trClassName={this.trClassFormat.bind(this)}
                 condensed={true}
                 hover={true}
@@ -253,17 +254,17 @@ export default class Finder extends Component {
     }
 
     return (
-      <span>
+      <div>
         <MetaTags>
-          <title>{config.getTitle("Finder")}</title>
+          <title>{this.state.data.title}</title>
           <meta name="description" content={"Search by difficulty"} />
         </MetaTags>
         <Breadcrumb>
-          <Link to={`/`}>Home</Link> / <font color='#777'>Finder (problems: {this.state.problems.length})</font>
+          <Link to={`/`}>Home</Link> / <font color='#777'>Finder (problems: {this.state.data.problems.length})</font>
         </Breadcrumb>
         {map}
         {table}
-      </span>
+      </div>
     );
   }
 }

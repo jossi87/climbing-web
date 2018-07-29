@@ -1,26 +1,33 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
-import Request from 'superagent';
 import { OverlayTrigger, Tooltip, Button, Table, Breadcrumb } from 'react-bootstrap';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { LinkContainer } from 'react-router-bootstrap';
 import Map from './common/map/map';
 import auth from '../utils/auth.js';
-import config from '../utils/config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default class Browse extends Component {
+  constructor(props) {
+    super(props);
+    let data;
+    if (__isBrowser__) {
+      data = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+    } else {
+      data = props.staticContext.data;
+    }
+    this.state = {data};
+  }
+
   componentDidMount() {
     navigator.geolocation.getCurrentPosition((position) => {
       this.setState({currLat: position.coords.latitude, currLng: position.coords.longitude});
     });
-    Request.get(config.getUrl("areas/list")).withCredentials().end((err, res) => {
-      this.setState({
-        error: err? err : null,
-        areas: err? null : res.body
-      });
-    });
+    if (!this.state.data) {
+      this.props.fetchInitialData().then((data) => this.setState(() => ({data})));
+    }
   }
 
   formatName(cell, row) {
@@ -67,13 +74,10 @@ export default class Browse extends Component {
   }
 
   render() {
-    if (!this.state || !this.state.areas) {
+    if (!this.state || !this.state.data) {
       return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
-    if (this.state.error) {
-      return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;
-    }
-    const markers = this.state.areas.filter(a => a.lat!=0 && a.lng!=0).map(a => {
+    const markers = this.state.data.areas.filter(a => a.lat!=0 && a.lng!=0).map(a => {
       return {
           lat: a.lat,
           lng: a.lng,
@@ -82,11 +86,11 @@ export default class Browse extends Component {
           url: '/area/' + a.id
         }
     });
-    const map = markers.length>0? <Map markers={markers} defaultCenter={config.getDefaultCenter()} defaultZoom={config.getDefaultZoom()}/> : null;
+    const map = markers.length>0? <Map markers={markers} defaultCenter={this.state.data.defaultCenter} defaultZoom={this.state.data.defaultZoom}/> : null;
     return (
       <span>
         <MetaTags>
-          <title>{config.getTitle("Browse")}</title>
+          <title>{this.state.data.title}</title>
           <meta name="description" content={"Browse areas"} />
         </MetaTags>
         <Breadcrumb>
@@ -100,7 +104,7 @@ export default class Browse extends Component {
         </Breadcrumb>
         {map}
         <BootstrapTable
-          data={this.state.areas}
+          data={this.state.data.areas}
           condensed={true}
           hover={true}
           columnFilter={false}>
