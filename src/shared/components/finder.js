@@ -194,7 +194,7 @@ export default class Finder extends Component {
   }
 
   render() {
-    if (!this.state.data.problems) {
+    if (!this.state.data || !this.state.data.problems) {
       return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
     const markers = this.state.data.problems.filter(p => p.lat!=0 && p.lng!=0).map(p => {

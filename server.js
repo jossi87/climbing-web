@@ -3343,7 +3343,7 @@ var Finder = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
-      if (!this.state.data.problems) {
+      if (!this.state.data || !this.state.data.problems) {
         return _react2.default.createElement(
           'center',
           null,
