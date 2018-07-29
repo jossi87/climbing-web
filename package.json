@@ -10,11 +10,34 @@
     "type": "git",
     "url": "https://bitbucket.org/josteinoygarden/buldreinfo-web.git"
   },
+  "babel": {
+    "presets": [
+      "env",
+      "react"
+    ],
+    "plugins": [
+      "transform-object-rest-spread"
+    ]
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "nodemon": "^1.12.5",
+    "webpack": "^3.10.0",
+    "webpack-node-externals": "^1.6.0"
+  },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.2",
     "@fortawesome/free-solid-svg-icons": "^5.2.0",
     "@fortawesome/react-fontawesome": "^0.1.0",
     "babel-polyfill": "^6.26.0",
+    "cors": "^2.8.4",
+    "es6-promise": "^4.2.4",
+    "express": "^4.16.3",
+    "isomorphic-fetch": "^2.2.1",
     "markerclustererplus": "^2.1.4",
     "moment": "^2.22.1",
     "moment-range": "^2.1.0",
@@ -24,6 +47,7 @@
     "react-avatar": "^3.1.2",
     "react-bootstrap": "^0.32.1",
     "react-bootstrap-table": "^4.3.1",
+    "react-cookie": "^2.2.0",
     "react-dom": "^16.4.1",
     "react-dropzone": "^4.2.13",
     "react-ga": "^2.5.3",
@@ -38,27 +62,13 @@
     "react-router-bootstrap": "^0.24.4",
     "react-router-dom": "^4.3.1",
     "react-select": "^2.0.0",
+    "serialize-javascript": "^1.5.0",
     "superagent": "^3.8.3",
-    "svg-path-parser": "^1.1.0"
-  },
-  "devDependencies": {
-    "babel-core": "^6.26.3",
-    "babel-loader": "^7.1.5",
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-react": "^6.24.1",
-    "babel-preset-stage-2": "^6.24.1",
-    "create-react-class": "^15.6.3",
-    "css-loader": "^1.0.0",
-    "file-loader": "^1.1.11",
-    "html-webpack-plugin": "^3.2.0",
-    "style-loader": "^0.21.0",
-    "uglifyjs-webpack-plugin": "^1.2.7",
-    "webpack": "^4.16.2",
-    "webpack-cli": "^3.1.0"
+    "svg-path-parser": "^1.1.0",
+    "universal-cookie-express": "^2.2.0"
   },
   "scripts": {
-    "build": "webpack --mode production",
-    "stats": "webpack --profile --json > stats.json",
-    "help": "http://chrisbateman.github.io/webpack-visualizer/"
+    "dev1": "webpack -w",
+    "dev2": "nodemon server.js"
   }
 }
