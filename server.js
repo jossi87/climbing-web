@@ -1148,7 +1148,10 @@ var _api = __webpack_require__(62);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var routes = [{ path: '/', exact: true, component: _index2.default }, { path: '/browse', exact: false, component: _browse2.default, fetchInitialData: function fetchInitialData() {
+var routes = [{ path: '/', exact: true, component: _index2.default, fetchInitialData: function fetchInitialData() {
+    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    return (0, _api.getFrontpage)();
+  } }, { path: '/browse', exact: false, component: _browse2.default, fetchInitialData: function fetchInitialData() {
     var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
     return (0, _api.getBrowse)();
   } }, { path: '/ethics', exact: false, component: _ethics2.default, fetchInitialData: function fetchInitialData() {
@@ -3582,10 +3585,6 @@ var _linkbox = __webpack_require__(44);
 
 var _linkbox2 = _interopRequireDefault(_linkbox);
 
-var _config = __webpack_require__(2);
-
-var _config2 = _interopRequireDefault(_config);
-
 var _reactFontawesome = __webpack_require__(5);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -3602,10 +3601,20 @@ var styleNw = { padding: 0, textAlign: 'left', whiteSpace: 'nowrap' };
 var Index = function (_Component) {
   _inherits(Index, _Component);
 
-  function Index() {
+  function Index(props) {
     _classCallCheck(this, Index);
 
-    return _possibleConstructorReturn(this, (Index.__proto__ || Object.getPrototypeOf(Index)).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, (Index.__proto__ || Object.getPrototypeOf(Index)).call(this, props));
+
+    var data = void 0;
+    if (false) {
+      data = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+    } else {
+      data = props.staticContext.data;
+    }
+    _this.state = { data: data };
+    return _this;
   }
 
   _createClass(Index, [{
@@ -3613,33 +3622,22 @@ var Index = function (_Component) {
     value: function componentDidMount() {
       var _this2 = this;
 
-      _superagent2.default.get(_config2.default.getUrl("frontpage")).withCredentials().end(function (err, res) {
-        _this2.setState({
-          error: err ? err : null,
-          data: err ? null : res.body
+      if (!this.state.data) {
+        this.props.fetchInitialData().then(function (data) {
+          return _this2.setState(function () {
+            return { data: data };
+          });
         });
-      });
+      }
     }
   }, {
     key: 'render',
     value: function render() {
-      if (!this.state) {
+      if (!this.state || !this.state.data) {
         return _react2.default.createElement(
           'center',
           null,
           _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'spinner', spin: true, size: '3x' })
-        );
-      }
-      if (this.state.error) {
-        return _react2.default.createElement(
-          'span',
-          null,
-          _react2.default.createElement(
-            'h3',
-            null,
-            this.state.error.status
-          ),
-          this.state.error.toString()
         );
       }
 
@@ -9419,6 +9417,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.getBrowse = getBrowse;
 exports.getEthics = getEthics;
 exports.getFinder = getFinder;
+exports.getFrontpage = getFrontpage;
 
 var _isomorphicFetch = __webpack_require__(63);
 
@@ -9446,6 +9445,15 @@ function getEthics() {
 
 function getFinder(grade) {
   return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/finder?grade=' + grade)).then(function (data) {
+    return data.json();
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
+function getFrontpage() {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/frontpage')).then(function (data) {
     return data.json();
   }).catch(function (error) {
     console.warn(error);

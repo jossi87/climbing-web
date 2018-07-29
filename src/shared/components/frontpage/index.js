@@ -6,30 +6,35 @@ import Request from 'superagent';
 import TextBox from './textbox/textbox';
 import ImageBox from './imagebox/imagebox';
 import LinkBox from './linkbox/linkbox';
-import config from '../../utils/config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const style = {padding: 0, textAlign: 'left'};
 const styleNw = {padding: 0, textAlign: 'left', whiteSpace: 'nowrap'};
 
 export default class Index extends Component {
+  constructor(props) {
+    super(props);
+    let data;
+    if (__isBrowser__) {
+      data = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+    } else {
+      data = props.staticContext.data;
+    }
+    this.state = {data};
+  }
+
   componentDidMount() {
-    Request.get(config.getUrl("frontpage")).withCredentials().end((err, res) => {
-      this.setState({
-        error: err? err : null,
-        data: err? null : res.body
-      });
-    });
+    if (!this.state.data) {
+      this.props.fetchInitialData().then((data) => this.setState(() => ({data})));
+    }
   }
 
   render() {
-    if (!this.state) {
+    if (!this.state || !this.state.data) {
       return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
-    if (this.state.error) {
-      return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;
-    }
-
+    
     const newestProblems = this.state.data.fas.map((x, i) => {
       return (
         <p key={i}>

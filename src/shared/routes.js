@@ -17,10 +17,10 @@ import SvgEdit from './components/common/svg/svg-edit';
 import User from './components/user';
 import UserEdit from './components/user-edit';
 
-import { getBrowse, getEthics, getFinder } from './api';
+import { getBrowse, getEthics, getFinder, getFrontpage } from './api';
 
 const routes =  [
-  {path: '/', exact: true, component: Index},
+  {path: '/', exact: true, component: Index, fetchInitialData: (path = '') => getFrontpage()},
   {path: '/browse', exact: false, component: Browse, fetchInitialData: (path = '') => getBrowse()},
   {path: '/ethics', exact: false, component: Ethics, fetchInitialData: (path = '') => getEthics()},
   {path: '/area/:areaId', exact: true, component: Area},

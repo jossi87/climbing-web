@@ -26,3 +26,12 @@ export function getFinder(grade) {
       return null;
     });
 }
+
+export function getFrontpage() {
+  return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/frontpage`))
+    .then((data) => data.json())
+    .catch((error) => {
+      console.warn(error);
+      return null;
+    });
+}
