@@ -168,12 +168,6 @@ module.exports = {
     } else {
       return true;
     }
-  },
-  convertFromDateToString: function convertFromDateToString(date) {
-    var d = date.getDate();
-    var m = date.getMonth() + 1;
-    var y = date.getFullYear();
-    return y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
   }
 };
 
@@ -1183,19 +1177,13 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactBootstrap = __webpack_require__(1);
 
-var _superagent = __webpack_require__(3);
-
-var _superagent2 = _interopRequireDefault(_superagent);
-
-var _config = __webpack_require__(2);
-
-var _config2 = _interopRequireDefault(_config);
-
 var _reactInputCalendar = __webpack_require__(21);
 
 var _reactInputCalendar2 = _interopRequireDefault(_reactInputCalendar);
 
 var _reactFontawesome = __webpack_require__(5);
+
+var _api = __webpack_require__(62);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1223,7 +1211,7 @@ var TickModal = function (_Component) {
       if (props.date) {
         date = props.date;
       } else if (props.idTick == -1) {
-        date = _config2.default.convertFromDateToString(new Date());
+        date = this.convertFromDateToString(new Date());
       }
 
       this.setState({
@@ -1241,10 +1229,9 @@ var TickModal = function (_Component) {
       var _this2 = this;
 
       this.refresh(this.props);
-      _superagent2.default.get(_config2.default.getUrl("grades")).end(function (err, res) {
-        _this2.setState({
-          error: err ? err : null,
-          grades: err ? null : res.body
+      (0, _api.getGrades)().then(function (grades) {
+        return _this2.setState(function () {
+          return { grades: grades };
         });
       });
     }
@@ -1278,13 +1265,11 @@ var TickModal = function (_Component) {
     value: function _delete(e) {
       var _this3 = this;
 
-      _superagent2.default.post(_config2.default.getUrl("ticks")).withCredentials().send({ delete: true, id: this.state.idTick, idProblem: this.state.idProblem, comment: this.state.comment, date: this.state.date, stars: this.state.stars, grade: this.state.grade }).end(function (err, res) {
-        if (err) {
-          console.log(err);
-          alert(err);
-        } else {
-          _this3.props.onHide();
-        }
+      (0, _api.postTicks)(true, this.state.idTick, this.state.idProblem, this.state.comment, this.state.date, this.state.stars, this.state.grade).then(function (response) {
+        _this3.props.onHide();
+      }).catch(function (error) {
+        console.warn(error);
+        alert(error.toString());
       });
     }
   }, {
@@ -1292,13 +1277,11 @@ var TickModal = function (_Component) {
     value: function save(e) {
       var _this4 = this;
 
-      _superagent2.default.post(_config2.default.getUrl("ticks")).withCredentials().send({ delete: false, id: this.state.idTick, idProblem: this.state.idProblem, comment: this.state.comment, date: this.state.date, stars: this.state.stars, grade: this.state.grade }).end(function (err, res) {
-        if (err) {
-          console.log(err);
-          alert(err);
-        } else {
-          _this4.props.onHide();
-        }
+      (0, _api.postTicks)(false, this.state.idTick, this.state.idProblem, this.state.comment, this.state.date, this.state.stars, this.state.grade).then(function (response) {
+        _this4.props.onHide();
+      }).catch(function (error) {
+        console.warn(error);
+        alert(error.toString());
       });
     }
   }, {
@@ -1374,12 +1357,12 @@ var TickModal = function (_Component) {
               null,
               _react2.default.createElement(
                 _reactBootstrap.Button,
-                { onClick: this.onDateChanged.bind(this, _config2.default.convertFromDateToString(yesterday)) },
+                { onClick: this.onDateChanged.bind(this, this.convertFromDateToString(yesterday)) },
                 'Yesterday'
               ),
               _react2.default.createElement(
                 _reactBootstrap.Button,
-                { onClick: this.onDateChanged.bind(this, _config2.default.convertFromDateToString(new Date())) },
+                { onClick: this.onDateChanged.bind(this, this.convertFromDateToString(new Date())) },
                 'Today'
               )
             )
@@ -1480,6 +1463,14 @@ var TickModal = function (_Component) {
           )
         )
       );
+    }
+  }, {
+    key: 'convertFromDateToString',
+    value: function convertFromDateToString(date) {
+      var d = date.getDate();
+      var m = date.getMonth() + 1;
+      var y = date.getFullYear();
+      return y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
     }
   }]);
 
@@ -5153,15 +5144,9 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactBootstrap = __webpack_require__(1);
 
-var _superagent = __webpack_require__(3);
-
-var _superagent2 = _interopRequireDefault(_superagent);
-
-var _config = __webpack_require__(2);
-
-var _config2 = _interopRequireDefault(_config);
-
 var _reactFontawesome = __webpack_require__(5);
+
+var _api = __webpack_require__(62);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -5209,13 +5194,11 @@ var CommentModal = function (_Component) {
       var _this2 = this;
 
       if (this.state.comment) {
-        _superagent2.default.post(_config2.default.getUrl("comments")).withCredentials().send({ idProblem: this.state.idProblem, comment: this.state.comment }).end(function (err, res) {
-          if (err) {
-            console.log(err);
-            alert(err);
-          } else {
-            _this2.props.onHide();
-          }
+        (0, _api.postComment)(this.state.idProblem, this.state.comment).then(function (response) {
+          _this2.props.onHide();
+        }).catch(function (error) {
+          console.warn(error);
+          alert(error.toString());
         });
       }
     }
@@ -5392,7 +5375,7 @@ var ProblemEdit = function (_Component) {
           comment: "",
           originalGrade: "n/a",
           fa: [],
-          faDate: _config2.default.convertFromDateToString(new Date()),
+          faDate: this.convertFromDateToString(new Date()),
           nr: this.props.location.query.nr,
           lat: 0,
           lng: 0,
@@ -5629,12 +5612,12 @@ var ProblemEdit = function (_Component) {
                 null,
                 _react2.default.createElement(
                   _reactBootstrap.Button,
-                  { onClick: this.onFaDateChanged.bind(this, _config2.default.convertFromDateToString(yesterday)) },
+                  { onClick: this.onFaDateChanged.bind(this, this.convertFromDateToString(yesterday)) },
                   'Yesterday'
                 ),
                 _react2.default.createElement(
                   _reactBootstrap.Button,
-                  { onClick: this.onFaDateChanged.bind(this, _config2.default.convertFromDateToString(new Date())) },
+                  { onClick: this.onFaDateChanged.bind(this, this.convertFromDateToString(new Date())) },
                   'Today'
                 )
               )
@@ -5804,6 +5787,14 @@ var ProblemEdit = function (_Component) {
           )
         )
       );
+    }
+  }, {
+    key: 'convertFromDateToString',
+    value: function convertFromDateToString(date) {
+      var d = date.getDate();
+      var m = date.getMonth() + 1;
+      var y = date.getFullYear();
+      return y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
     }
   }]);
 
@@ -9371,11 +9362,15 @@ exports.getAreaEdit = getAreaEdit;
 exports.getBrowse = getBrowse;
 exports.getFinder = getFinder;
 exports.getFrontpage = getFrontpage;
+exports.getGrades = getGrades;
 exports.getMeta = getMeta;
 exports.getProblem = getProblem;
 exports.getUserPassword = getUserPassword;
 exports.getUserForgotPassword = getUserForgotPassword;
 exports.postArea = postArea;
+exports.postComment = postComment;
+exports.postSearch = postSearch;
+exports.postTicks = postTicks;
 exports.postUserRegister = postUserRegister;
 
 var _isomorphicFetch = __webpack_require__(63);
@@ -9383,6 +9378,8 @@ var _isomorphicFetch = __webpack_require__(63);
 var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+__webpack_require__(70).polyfill();
 
 function getArea(id) {
   return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/areas?id=' + id), { credentials: 'include' }).then(function (data) {
@@ -9442,6 +9439,15 @@ function getFrontpage() {
   });
 }
 
+function getGrades() {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/grades')).then(function (data) {
+    return data.json();
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
 function getMeta() {
   return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta')).then(function (data) {
     return data.json();
@@ -9463,24 +9469,79 @@ function getProblem(id) {
 }
 
 function getUserPassword(token, password) {
-  (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/password?token=' + token + '&password=' + password));
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/password?token=' + token + '&password=' + password));
 }
 
 function getUserForgotPassword(username) {
-  (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/forgotPassword?username=' + username));
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/forgotPassword?username=' + username));
 }
 
 function postArea(id, visibility, name, comment, lat, lng, newMedia) {
   var formData = new FormData();
-  formData.append('json', JSON.stringify({ id: this.state.id, visibility: this.state.visibility, name: this.state.name, comment: this.state.comment, lat: this.state.lat, lng: this.state.lng, newMedia: newMedia }));
+  formData.append('json', JSON.stringify({ id: id, visibility: visibility, name: name, comment: comment, lat: lat, lng: lng, newMedia: newMedia }));
   newMedia.forEach(function (m) {
     return formData.append(m.file.name.replace(/[^-a-z0-9.]/ig, '_'), m.file);
   });
-  (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/register'), { method: "POST", body: formData });
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/register'), {
+    mode: 'cors',
+    method: 'POST',
+    credentials: 'include',
+    body: formData,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
+function postComment(idProblem, comment) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/comments'), {
+    mode: 'cors',
+    method: 'POST',
+    credentials: 'include',
+    body: JSON.stringify({ idProblem: idProblem, comment: comment }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
+function postSearch(value) {
+  return (0, _isomorphicFetch2.default)("https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/search", {
+    mode: 'cors',
+    method: 'POST',
+    credentials: 'include',
+    body: JSON.stringify({ value: value }),
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    }
+  }).then(function (data) {
+    return data.json();
+  });
+}
+
+function postTicks(del, id, idProblem, comment, date, stars, grade) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/ticks'), {
+    mode: 'cors',
+    method: 'POST',
+    credentials: 'include',
+    body: JSON.stringify({ delete: del, id: id, idProblem: idProblem, comment: comment, date: date, stars: stars, grade: grade }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
 }
 
 function postUserRegister(firstname, lastname, username, password) {
-  (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/register'), { method: "POST", body: { firstname: firstname, lastname: lastname, username: username, password: password } });
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/register'), {
+    mode: 'cors',
+    method: 'POST',
+    credentials: 'include',
+    body: JSON.stringify({ firstname: firstname, lastname: lastname, username: username, password: password }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
 }
 
 /***/ }),
@@ -9535,6 +9596,8 @@ var _reactAvatar = __webpack_require__(67);
 var _reactAvatar2 = _interopRequireDefault(_reactAvatar);
 
 var _reactFontawesome = __webpack_require__(5);
+
+var _api = __webpack_require__(62);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -9619,13 +9682,10 @@ var Navigation = function (_Component) {
     key: 'search',
     value: function search(input, callback) {
       if (input) {
-        _superagent2.default.post(_config2.default.getUrl("search")).withCredentials().send({ value: input }).set('Accept', 'application/json').end(function (err, res) {
-          var options = null;
-          if (res && res.body) {
-            options = res.body.map(function (s) {
-              return { value: s, label: s.value };
-            });
-          }
+        (0, _api.postSearch)(input).then(function (res) {
+          var options = res.map(function (s) {
+            return { value: s, label: s.value };
+          });
           callback(options);
         });
       } else {
@@ -9866,6 +9926,12 @@ module.exports = require("@fortawesome/fontawesome-svg-core");
 /***/ (function(module, exports) {
 
 module.exports = require("@fortawesome/free-solid-svg-icons");
+
+/***/ }),
+/* 70 */
+/***/ (function(module, exports) {
+
+module.exports = require("es6-promise");
 
 /***/ })
 /******/ ]);

@@ -9,6 +9,7 @@ import { components } from 'react-select';
 import { Redirect } from 'react-router';
 import Avatar from 'react-avatar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { postSearch } from './../api';
 
 const CustomOption = (props) => {
   var bg = "#4caf50";
@@ -65,18 +66,10 @@ export default class Navigation extends Component {
 
   search(input, callback) {
     if (input) {
-      Request.post(config.getUrl("search"))
-        .withCredentials()
-        .send({value: input})
-        .set('Accept', 'application/json')
-        .end((err, res) => {
-          var options = null;
-          if (res && res.body) {
-            options = res.body.map(s => {return {value: s, label: s.value}});
-          }
-          callback(options);
-        }
-      );
+      postSearch(input).then((res) => {
+        var options = res.map(s => {return {value: s, label: s.value}});
+        callback(options);
+      });
     } else {
       callback(null);
     }

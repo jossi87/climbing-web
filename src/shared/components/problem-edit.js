@@ -44,7 +44,7 @@ export default class ProblemEdit extends Component {
         comment: "",
         originalGrade: "n/a",
         fa: [],
-        faDate: config.convertFromDateToString(new Date()),
+        faDate: this.convertFromDateToString(new Date()),
         nr: this.props.location.query.nr,
         lat: 0,
         lng: 0,
@@ -213,8 +213,8 @@ export default class ProblemEdit extends Component {
               <ControlLabel>FA date (yyyy-mm-dd)</ControlLabel><br/>
               <Calendar format='YYYY-MM-DD' computableFormat='YYYY-MM-DD' date={this.state.faDate} onChange={this.onFaDateChanged.bind(this)} />
               <ButtonGroup>
-                <Button onClick={this.onFaDateChanged.bind(this, config.convertFromDateToString(yesterday))}>Yesterday</Button>
-                <Button onClick={this.onFaDateChanged.bind(this, config.convertFromDateToString(new Date()))}>Today</Button>
+                <Button onClick={this.onFaDateChanged.bind(this, this.convertFromDateToString(yesterday))}>Yesterday</Button>
+                <Button onClick={this.onFaDateChanged.bind(this, this.convertFromDateToString(new Date()))}>Today</Button>
               </ButtonGroup>
             </FormGroup>
             <FormGroup controlId="formControlsTypeId">
@@ -277,5 +277,12 @@ export default class ProblemEdit extends Component {
         </Well>
       </span>
     );
+  }
+
+  convertFromDateToString(date) {
+    var d = date.getDate();
+    var m = date.getMonth() + 1;
+    var y = date.getFullYear();
+    return y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
   }
 }

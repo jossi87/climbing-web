@@ -1,8 +1,7 @@
  import React, {Component} from 'react';
 import { Modal, Button, FormGroup, ControlLabel, FormControl, ButtonGroup } from 'react-bootstrap';
-import Request from 'superagent';
-import config from '../../../utils/config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { postComment } from './../../../api';
 
 export default class CommentModal extends Component {
   constructor(props) {
@@ -30,16 +29,13 @@ export default class CommentModal extends Component {
 
   save(e) {
     if (this.state.comment) {
-      Request.post(config.getUrl("comments"))
-      .withCredentials()
-      .send({idProblem: this.state.idProblem, comment: this.state.comment})
-      .end((err, res) => {
-        if (err) {
-          console.log(err);
-          alert(err);
-        } else {
-          this.props.onHide();
-        }
+      postComment(this.state.idProblem, this.state.comment)
+      .then((response) => {
+        this.props.onHide();
+      })
+      .catch((error) => {
+        console.warn(error);
+        alert(error.toString());
       });
     }
   }

@@ -1,9 +1,8 @@
 import React, {Component} from 'react';
 import { Modal, Button, FormGroup, ControlLabel, FormControl, ButtonGroup, DropdownButton, MenuItem } from 'react-bootstrap';
-import Request from 'superagent';
-import config from '../../../utils/config.js';
 import Calendar from 'react-input-calendar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { getGrades, postTicks } from './../../../api';
 
 export default class TickModal extends Component {
   constructor(props) {
@@ -15,7 +14,7 @@ export default class TickModal extends Component {
     if (props.date) {
       date = props.date;
     } else if (props.idTick==-1) {
-      date = config.convertFromDateToString(new Date());
+      date = this.convertFromDateToString(new Date());
     }
 
     this.setState({
@@ -30,12 +29,7 @@ export default class TickModal extends Component {
 
   componentDidMount() {
     this.refresh(this.props);
-    Request.get(config.getUrl("grades")).end((err, res) => {
-      this.setState({
-        error: err? err : null,
-        grades: err? null : res.body
-      });
-    });
+    getGrades().then((grades) => this.setState(() => ({grades})));
   }
 
   componentWillReceiveProps(nextProps) {
@@ -59,30 +53,24 @@ export default class TickModal extends Component {
   }
 
   delete(e) {
-    Request.post(config.getUrl("ticks"))
-    .withCredentials()
-    .send({delete: true, id: this.state.idTick, idProblem: this.state.idProblem, comment: this.state.comment, date: this.state.date, stars: this.state.stars, grade: this.state.grade})
-    .end((err, res) => {
-      if (err) {
-        console.log(err);
-        alert(err);
-      } else {
-        this.props.onHide();
-      }
+    postTicks(true, this.state.idTick, this.state.idProblem, this.state.comment, this.state.date, this.state.stars, this.state.grade)
+    .then((response) => {
+      this.props.onHide();
+    })
+    .catch((error) => {
+      console.warn(error);
+      alert(error.toString());
     });
   }
 
   save(e) {
-    Request.post(config.getUrl("ticks"))
-    .withCredentials()
-    .send({delete: false, id: this.state.idTick, idProblem: this.state.idProblem, comment: this.state.comment, date: this.state.date, stars: this.state.stars, grade: this.state.grade})
-    .end((err, res) => {
-      if (err) {
-        console.log(err);
-        alert(err);
-      } else {
-        this.props.onHide();
-      }
+    postTicks(false, this.state.idTick, this.state.idProblem, this.state.comment, this.state.date, this.state.stars, this.state.grade)
+    .then((response) => {
+      this.props.onHide();
+    })
+    .catch((error) => {
+      console.warn(error);
+      alert(error.toString());
     });
   }
 
@@ -113,8 +101,8 @@ export default class TickModal extends Component {
             <ControlLabel>Date (yyyy-mm-dd)</ControlLabel><br/>
             <Calendar format='YYYY-MM-DD' computableFormat='YYYY-MM-DD' date={this.state.date} onChange={this.onDateChanged.bind(this)} />
             <ButtonGroup>
-              <Button onClick={this.onDateChanged.bind(this, config.convertFromDateToString(yesterday))}>Yesterday</Button>
-              <Button onClick={this.onDateChanged.bind(this, config.convertFromDateToString(new Date()))}>Today</Button>
+              <Button onClick={this.onDateChanged.bind(this, this.convertFromDateToString(yesterday))}>Yesterday</Button>
+              <Button onClick={this.onDateChanged.bind(this, this.convertFromDateToString(new Date()))}>Today</Button>
             </ButtonGroup>
           </FormGroup>
           <FormGroup>
@@ -146,5 +134,12 @@ export default class TickModal extends Component {
         </Modal.Footer>
       </Modal>
     );
+  }
+
+  convertFromDateToString(date) {
+    var d = date.getDate();
+    var m = date.getMonth() + 1;
+    var y = date.getFullYear();
+    return y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
   }
 }
