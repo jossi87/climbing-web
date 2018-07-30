@@ -1289,42 +1289,36 @@ var TickModal = function (_Component) {
     value: function render() {
       var _this4 = this;
 
-      if (!this.state || !this.state.idProblem) {
-        return _react2.default.createElement(
-          'center',
-          null,
-          _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'spinner', spin: true, size: '3x' })
-        );
-      }
-
       var yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
 
       var stars = "No stars";
-      if (this.state.stars === 1) {
-        stars = _react2.default.createElement(
-          'span',
-          null,
-          _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'star' }),
-          ' Nice'
-        );
-      } else if (this.state.stars === 2) {
-        stars = _react2.default.createElement(
-          'span',
-          null,
-          _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'star' }),
-          _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'star' }),
-          ' Very nice'
-        );
-      } else if (this.state.stars === 3) {
-        stars = _react2.default.createElement(
-          'span',
-          null,
-          _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'star' }),
-          _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'star' }),
-          _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'star' }),
-          ' Fantastic!'
-        );
+      if (this.state) {
+        if (this.state.stars === 1) {
+          stars = _react2.default.createElement(
+            'span',
+            null,
+            _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'star' }),
+            ' Nice'
+          );
+        } else if (this.state.stars === 2) {
+          stars = _react2.default.createElement(
+            'span',
+            null,
+            _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'star' }),
+            _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'star' }),
+            ' Very nice'
+          );
+        } else if (this.state.stars === 3) {
+          stars = _react2.default.createElement(
+            'span',
+            null,
+            _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'star' }),
+            _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'star' }),
+            _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'star' }),
+            ' Fantastic!'
+          );
+        }
       }
 
       return _react2.default.createElement(
@@ -1351,7 +1345,7 @@ var TickModal = function (_Component) {
               'Date (yyyy-mm-dd)'
             ),
             _react2.default.createElement('br', null),
-            _react2.default.createElement(_reactInputCalendar2.default, { format: 'YYYY-MM-DD', computableFormat: 'YYYY-MM-DD', date: this.state.date, onChange: this.onDateChanged.bind(this) }),
+            _react2.default.createElement(_reactInputCalendar2.default, { format: 'YYYY-MM-DD', computableFormat: 'YYYY-MM-DD', date: this.state && this.state.date, onChange: this.onDateChanged.bind(this) }),
             _react2.default.createElement(
               _reactBootstrap.ButtonGroup,
               null,
@@ -1378,7 +1372,7 @@ var TickModal = function (_Component) {
             _react2.default.createElement('br', null),
             _react2.default.createElement(
               _reactBootstrap.DropdownButton,
-              { title: this.state.grade, id: 'bg-nested-dropdown' },
+              { title: this.state && this.state.grade, id: 'bg-nested-dropdown' },
               this.state && this.state.grades && this.state.grades.map(function (g, i) {
                 return _react2.default.createElement(
                   _reactBootstrap.MenuItem,
@@ -1436,7 +1430,7 @@ var TickModal = function (_Component) {
               null,
               'Comment'
             ),
-            _react2.default.createElement(_reactBootstrap.FormControl, _defineProperty({ componentClass: 'textarea', placeholder: 'textarea', style: { height: '100px' }, value: this.state.comment, onChange: this.onCommentChanged.bind(this) }, 'placeholder', 'Comment'))
+            _react2.default.createElement(_reactBootstrap.FormControl, _defineProperty({ componentClass: 'textarea', placeholder: 'textarea', style: { height: '100px' }, value: this.state && this.state.comment, onChange: this.onCommentChanged.bind(this) }, 'placeholder', 'Comment'))
           )
         ),
         _react2.default.createElement(
@@ -1450,7 +1444,7 @@ var TickModal = function (_Component) {
               { onClick: this.save.bind(this), bsStyle: 'success' },
               'Save'
             ),
-            this.state.idTick > 1 ? _react2.default.createElement(
+            this.state && this.state.idTick > 1 ? _react2.default.createElement(
               _reactBootstrap.Button,
               { onClick: this.delete.bind(this), bsStyle: 'warning' },
               'Delete tick'
@@ -5144,8 +5138,6 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactBootstrap = __webpack_require__(1);
 
-var _reactFontawesome = __webpack_require__(5);
-
 var _api = __webpack_require__(62);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -5205,14 +5197,6 @@ var CommentModal = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
-      if (!this.state) {
-        return _react2.default.createElement(
-          'center',
-          null,
-          _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'spinner', spin: true, size: '3x' })
-        );
-      }
-
       return _react2.default.createElement(
         _reactBootstrap.Modal,
         { show: this.props.show, onHide: this.props.onHide.bind(this) },
@@ -5236,7 +5220,7 @@ var CommentModal = function (_Component) {
               null,
               'Comment'
             ),
-            _react2.default.createElement(_reactBootstrap.FormControl, { style: { height: '100px' }, componentClass: 'textarea', placeholder: 'Comment', value: this.state.comment, onChange: this.onCommentChanged.bind(this) })
+            _react2.default.createElement(_reactBootstrap.FormControl, { style: { height: '100px' }, componentClass: 'textarea', placeholder: 'Comment', value: this.state && this.state.comment, onChange: this.onCommentChanged.bind(this) })
           )
         ),
         _react2.default.createElement(

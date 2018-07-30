@@ -1,6 +1,5 @@
  import React, {Component} from 'react';
 import { Modal, Button, FormGroup, ControlLabel, FormControl, ButtonGroup } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { postComment } from './../../../api';
 
 export default class CommentModal extends Component {
@@ -41,10 +40,6 @@ export default class CommentModal extends Component {
   }
 
   render() {
-    if (!this.state) {
-      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
-    }
-
     return (
       <Modal show={this.props.show} onHide={this.props.onHide.bind(this)}>
         <Modal.Header closeButton>
@@ -53,7 +48,7 @@ export default class CommentModal extends Component {
         <Modal.Body>
           <FormGroup controlId="formControlsTextArea">
             <ControlLabel>Comment</ControlLabel>
-            <FormControl style={{height: '100px'}} componentClass="textarea" placeholder="Comment" value={this.state.comment} onChange={this.onCommentChanged.bind(this)} />
+            <FormControl style={{height: '100px'}} componentClass="textarea" placeholder="Comment" value={this.state && this.state.comment} onChange={this.onCommentChanged.bind(this)} />
           </FormGroup>
         </Modal.Body>
         <Modal.Footer>

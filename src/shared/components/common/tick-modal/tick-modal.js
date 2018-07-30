@@ -75,20 +75,18 @@ export default class TickModal extends Component {
   }
 
   render() {
-    if (!this.state || !this.state.idProblem) {
-      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
-    }
-
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate()-1);
 
     var stars = "No stars";
-    if (this.state.stars===1) {
-      stars = <span><FontAwesomeIcon icon="star" /> Nice</span>
-    } else if (this.state.stars===2) {
-      stars = <span><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Very nice</span>
-    } else if (this.state.stars===3) {
-      stars = <span><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Fantastic!</span>
+    if (this.state) {
+      if (this.state.stars===1) {
+        stars = <span><FontAwesomeIcon icon="star" /> Nice</span>
+      } else if (this.state.stars===2) {
+        stars = <span><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Very nice</span>
+      } else if (this.state.stars===3) {
+        stars = <span><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Fantastic!</span>
+      }
     }
 
     return (
@@ -99,7 +97,7 @@ export default class TickModal extends Component {
         <Modal.Body>
           <FormGroup>
             <ControlLabel>Date (yyyy-mm-dd)</ControlLabel><br/>
-            <Calendar format='YYYY-MM-DD' computableFormat='YYYY-MM-DD' date={this.state.date} onChange={this.onDateChanged.bind(this)} />
+            <Calendar format='YYYY-MM-DD' computableFormat='YYYY-MM-DD' date={this.state && this.state.date} onChange={this.onDateChanged.bind(this)} />
             <ButtonGroup>
               <Button onClick={this.onDateChanged.bind(this, this.convertFromDateToString(yesterday))}>Yesterday</Button>
               <Button onClick={this.onDateChanged.bind(this, this.convertFromDateToString(new Date()))}>Today</Button>
@@ -107,7 +105,7 @@ export default class TickModal extends Component {
           </FormGroup>
           <FormGroup>
             <ControlLabel>Grade</ControlLabel><br/>
-            <DropdownButton title={this.state.grade} id="bg-nested-dropdown">
+            <DropdownButton title={this.state && this.state.grade} id="bg-nested-dropdown">
               {this.state && this.state.grades && this.state.grades.map((g, i) => { return <MenuItem key={i} eventKey={i} onSelect={this.onGradeChanged.bind(this, g.grade)}>{g.grade}</MenuItem> })}
             </DropdownButton>
           </FormGroup>
@@ -122,13 +120,13 @@ export default class TickModal extends Component {
           </FormGroup>
           <FormGroup>
             <ControlLabel>Comment</ControlLabel>
-            <FormControl componentClass="textarea" placeholder="textarea" style={{height: '100px'}} value={this.state.comment} onChange={this.onCommentChanged.bind(this)} placeholder='Comment' />
+            <FormControl componentClass="textarea" placeholder="textarea" style={{height: '100px'}} value={this.state && this.state.comment} onChange={this.onCommentChanged.bind(this)} placeholder='Comment' />
           </FormGroup>
         </Modal.Body>
         <Modal.Footer>
           <ButtonGroup>
             <Button onClick={this.save.bind(this)} bsStyle="success">Save</Button>
-            {this.state.idTick>1? <Button onClick={this.delete.bind(this)} bsStyle="warning">Delete tick</Button> : ""}
+            {this.state && this.state.idTick>1? <Button onClick={this.delete.bind(this)} bsStyle="warning">Delete tick</Button> : ""}
             <Button onClick={this.props.onHide.bind(this)}>Close</Button>
           </ButtonGroup>
         </Modal.Footer>
