@@ -106,68 +106,6 @@ module.exports = {
     } else {
       return "https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/" + str;
     }
-  },
-  getDefaultCenter: function getDefaultCenter() {
-    var base = '';
-    if (typeof window !== 'undefined') {
-      base = window.location.protocol + '//' + window.location.host;
-    } else if (this.props && this.props.serverRequest) {
-      base = this.props.serverRequest.headers.host;
-    }
-
-    if (base == 'https://buldring.bergen-klatreklubb.no') {
-      return { lat: 60.47521, lng: 6.83169 };
-    } else if (base == 'https://buldring.fredrikstadklatreklubb.org') {
-      return { lat: 59.22844, lng: 10.91722 };
-    } else if (base == 'https://buldring.jotunheimenfjellsport.com') {
-      return { lat: 61.60500, lng: 8.47750 };
-    } else if (base == 'https://klatring.jotunheimenfjellsport.com') {
-      return { lat: 61.60500, lng: 8.47750 };
-    } else {
-      return { lat: 58.78119, lng: 5.86361 };
-    }
-  },
-  getDefaultZoom: function getDefaultZoom() {
-    var base = '';
-    if (typeof window !== 'undefined') {
-      base = window.location.protocol + '//' + window.location.host;
-    } else if (this.props && this.props.serverRequest) {
-      base = this.props.serverRequest.headers.host;
-    }
-
-    if (base == 'https://brattelinjer.no') {
-      return 9;
-    } else if (base == 'https://klatring.jotunheimenfjellsport.com') {
-      return 9;
-    } else if (base == 'https://dev.jossi.org') {
-      return 9;
-    } else {
-      return 7;
-    }
-  },
-  isBouldering: function isBouldering() {
-    var base = '';
-    if (typeof window !== 'undefined') {
-      base = window.location.protocol + '//' + window.location.host;
-    } else if (this.props && this.props.serverRequest) {
-      base = this.props.serverRequest.headers.host;
-    }
-
-    if (base == 'https://buldring.bergen-klatreklubb.no') {
-      return true;
-    } else if (base == 'https://buldring.fredrikstadklatreklubb.org') {
-      return true;
-    } else if (base == 'https://brattelinjer.no') {
-      return false;
-    } else if (base == 'https://buldring.jotunheimenfjellsport.com') {
-      return true;
-    } else if (base == 'https://klatring.jotunheimenfjellsport.com') {
-      return false;
-    } else if (base == 'https://dev.jossi.org') {
-      return true;
-    } else {
-      return true;
-    }
   }
 };
 
@@ -1136,10 +1074,16 @@ var routes = [{ path: '/', exact: true, component: _index2.default, fetchInitial
   } }, { path: '/sector/:sectorId', exact: true, component: _sector2.default, fetchInitialData: function fetchInitialData() {
     var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
     return (0, _api.getSector)(path.split('/').pop());
-  } }, { path: '/sector/edit/:sectorId', exact: true, component: _sectorEdit2.default }, { path: '/problem/:problemId', exact: true, component: _problem2.default, fetchInitialData: function fetchInitialData() {
+  } }, { path: '/sector/edit/:sectorId', exact: true, component: _sectorEdit2.default, fetchInitialData: function fetchInitialData() {
+    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    return (0, _api.getSectorEdit)(path.split('/').pop());
+  } }, { path: '/problem/:problemId', exact: true, component: _problem2.default, fetchInitialData: function fetchInitialData() {
     var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
     return (0, _api.getProblem)(path.split('/').pop());
-  } }, { path: '/problem/edit/:problemId', exact: true, component: _problemEdit2.default }, { path: '/problem/edit/media/:problemId', exact: true, component: _problemEditMedia2.default }, { path: '/problem/svg-edit/:problemId/:mediaId', exact: true, component: _svgEdit2.default }, { path: '/finder/:grade', exact: true, component: _finder2.default, fetchInitialData: function fetchInitialData() {
+  } }, { path: '/problem/edit/:problemId', exact: true, component: _problemEdit2.default, fetchInitialData: function fetchInitialData() {
+    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    return (0, _api.getProblemEdit)(path.split('/').pop());
+  } }, { path: '/problem/edit/media/:problemId', exact: true, component: _problemEditMedia2.default }, { path: '/problem/svg-edit/:problemId/:mediaId', exact: true, component: _svgEdit2.default }, { path: '/finder/:grade', exact: true, component: _finder2.default, fetchInitialData: function fetchInitialData() {
     var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
     return (0, _api.getFinder)(path.split('/').pop());
   } }, { path: '/user', exact: true, component: _user2.default }, { path: '/user/:userId', exact: true, component: _user2.default, fetchInitialData: function fetchInitialData() {
@@ -2258,15 +2202,27 @@ var AreaEdit = function (_Component) {
   }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
+      if (!this.state.data) {
+        this.refresh(this.props.match.params.areaId);
+      }
+    }
+  }, {
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate(prevProps, prevState) {
+      if (prevProps.match.params.areaId !== this.props.match.params.areaId) {
+        this.refresh(this.props.match.params.areaId);
+      }
+    }
+  }, {
+    key: 'refresh',
+    value: function refresh(id) {
       var _this2 = this;
 
-      if (!this.state.data) {
-        this.props.fetchInitialData(this.props.match.params.areaId).then(function (data) {
-          return _this2.setState(function () {
-            return { data: data };
-          });
+      this.props.fetchInitialData(id).then(function (data) {
+        return _this2.setState(function () {
+          return { data: data };
         });
-      }
+      });
     }
   }, {
     key: 'onNameChanged',
@@ -2320,13 +2276,8 @@ var AreaEdit = function (_Component) {
     value: function render() {
       if (this.state.error) {
         return _react2.default.createElement(
-          'span',
+          'h3',
           null,
-          _react2.default.createElement(
-            'h3',
-            null,
-            this.state.error.status
-          ),
           this.state.error.toString()
         );
       } else if (this.state.pushUrl) {
@@ -5267,13 +5218,13 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactMetaTags = __webpack_require__(8);
+
+var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
+
 var _reactRouterDom = __webpack_require__(4);
 
 var _reactRouter = __webpack_require__(7);
-
-var _superagent = __webpack_require__(3);
-
-var _superagent2 = _interopRequireDefault(_superagent);
 
 var _reactBootstrap = __webpack_require__(1);
 
@@ -5291,10 +5242,6 @@ var _imageUpload = __webpack_require__(12);
 
 var _imageUpload2 = _interopRequireDefault(_imageUpload);
 
-var _config = __webpack_require__(2);
-
-var _config2 = _interopRequireDefault(_config);
-
 var _auth = __webpack_require__(6);
 
 var _auth2 = _interopRequireDefault(_auth);
@@ -5304,6 +5251,8 @@ var _reactInputCalendar = __webpack_require__(21);
 var _reactInputCalendar2 = _interopRequireDefault(_reactInputCalendar);
 
 var _reactFontawesome = __webpack_require__(5);
+
+var _api = __webpack_require__(62);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -5328,66 +5277,53 @@ var GettingStartedGoogleMap = (0, _reactGoogleMaps.withScriptjs)((0, _reactGoogl
 var ProblemEdit = function (_Component) {
   _inherits(ProblemEdit, _Component);
 
-  function ProblemEdit() {
+  function ProblemEdit(props) {
     _classCallCheck(this, ProblemEdit);
 
-    return _possibleConstructorReturn(this, (ProblemEdit.__proto__ || Object.getPrototypeOf(ProblemEdit)).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, (ProblemEdit.__proto__ || Object.getPrototypeOf(ProblemEdit)).call(this, props));
+
+    var data = void 0;
+    if (false) {
+      data = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+    } else {
+      data = props.staticContext.data;
+    }
+    _this.state = { data: data };
+    return _this;
   }
 
   _createClass(ProblemEdit, [{
+    key: 'componentWillMount',
+    value: function componentWillMount() {
+      if (!_auth2.default.isAdmin()) {
+        this.setState({ pushUrl: "/login", error: null });
+      }
+    }
+  }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
+      if (!this.state.data) {
+        this.refresh(this.props.match.params.problemId);
+      }
+    }
+  }, {
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate(prevProps, prevState) {
+      if (prevProps.match.params.problemId !== this.props.match.params.problemId) {
+        this.refresh(this.props.match.params.problemId);
+      }
+    }
+  }, {
+    key: 'refresh',
+    value: function refresh(id) {
       var _this2 = this;
 
-      _superagent2.default.get(_config2.default.getUrl("grades")).end(function (err, res) {
-        _this2.setState({
-          error: err ? err : null,
-          grades: err ? null : res.body
+      this.props.fetchInitialData(id).then(function (data) {
+        return _this2.setState(function () {
+          return { data: data };
         });
       });
-      _superagent2.default.get(_config2.default.getUrl("types")).end(function (err, res) {
-        _this2.setState({
-          error: err ? err : null,
-          types: err ? null : res.body
-        });
-      });
-      if (this.props.match.params.problemId == -1) {
-        this.setState({
-          id: -1,
-          visibility: 0,
-          name: "",
-          comment: "",
-          originalGrade: "n/a",
-          fa: [],
-          faDate: this.convertFromDateToString(new Date()),
-          nr: this.props.location.query.nr,
-          lat: 0,
-          lng: 0,
-          newMedia: []
-        });
-      } else {
-        _superagent2.default.get(_config2.default.getUrl("problems?id=" + this.props.match.params.problemId)).withCredentials().end(function (err, res) {
-          if (err) {
-            _this2.setState({ error: err });
-          } else {
-            _this2.setState({
-              id: res.body[0].id,
-              visibility: res.body[0].visibility,
-              name: res.body[0].name,
-              comment: res.body[0].comment,
-              originalGrade: res.body[0].originalGrade,
-              fa: res.body[0].fa,
-              faDate: res.body[0].faDate,
-              nr: res.body[0].nr,
-              typeId: res.body[0].t.id,
-              lat: res.body[0].lat,
-              lng: res.body[0].lng,
-              sections: res.body[0].sections,
-              newMedia: []
-            });
-          }
-        });
-      }
     }
   }, {
     key: 'onNameChanged',
@@ -5446,21 +5382,18 @@ var ProblemEdit = function (_Component) {
 
       event.preventDefault();
       this.setState({ isSaving: true });
-      var newMedia = this.state.newMedia.map(function (m) {
+      var newMedia = this.state.data.newMedia.map(function (m) {
         return { name: m.file.name.replace(/[^-a-z0-9.]/ig, '_'), photographer: m.photographer, inPhoto: m.inPhoto };
       });
-      var req = _superagent2.default.post(_config2.default.getUrl("problems")).withCredentials().field('json', JSON.stringify({ sectorId: this.props.location.query.idSector, id: this.state.id, visibility: this.state.visibility, name: this.state.name, comment: this.state.comment, originalGrade: this.state.originalGrade, fa: this.state.fa, faDate: this.state.faDate, nr: this.state.nr, t: this.state.typeId ? this.state.types.find(function (t) {
-          return t.id === _this3.state.typeId;
-        }) : this.state.types[0], lat: this.state.lat, lng: this.state.lng, sections: this.state.sections, newMedia: newMedia })).set('Accept', 'application/json');
-      this.state.newMedia.forEach(function (m) {
-        return req.attach(m.file.name.replace(/[^-a-z0-9.]/ig, '_'), m.file);
-      });
-      req.end(function (err, res) {
-        if (err) {
-          _this3.setState({ error: err });
-        } else {
-          _this3.setState({ pushUrl: "/problem/" + res.body.id });
-        }
+      var data = this.state.data;
+
+      postSector(this.props.location.query.idSector, data.id, data.visibility, data.name, data.comment, data.originalGrade, data.fa, data.faDate, data.nr, data.typeId ? data.types.find(function (t) {
+        return t.id === data.typeId;
+      }) : data.types[0], data.lat, data.lng, data.sections, newMedia).then(function (response) {
+        _this3.setState({ pushUrl: "/problem/" + response.id });
+      }).catch(function (error) {
+        console.warn(error);
+        _this3.setState({ error: error });
       });
     }
   }, {
@@ -5491,23 +5424,10 @@ var ProblemEdit = function (_Component) {
     value: function render() {
       var _this4 = this;
 
-      if (!this.state || !this.state.id || !this.state.types || !this.state.grades) {
-        return _react2.default.createElement(
-          'center',
-          null,
-          _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'spinner', spin: true, size: '3x' })
-        );
-      } else if (this.state.error) {
-        return _react2.default.createElement(
-          'span',
-          null,
-          _react2.default.createElement(
-            'h3',
-            null,
-            this.state.error.status
-          ),
-          this.state.error.toString()
-        );
+      var data = this.state.data;
+
+      if (this.state.pushUrl) {
+        return _react2.default.createElement(_reactRouter.Redirect, { to: this.state.pushUrl, push: true });
       } else if (this.state.pushUrl) {
         return _react2.default.createElement(_reactRouter.Redirect, { to: this.state.pushUrl, push: true });
       } else if (!this.props || !this.props.match || !this.props.match.params || !this.props.match.params.problemId || !this.props.location || !this.props.location.query || !this.props.location.query.idSector) {
@@ -5520,36 +5440,42 @@ var ProblemEdit = function (_Component) {
             'Invalid action...'
           )
         );
+      } else if (!data) {
+        return _react2.default.createElement(
+          'center',
+          null,
+          _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'spinner', spin: true, size: '3x' })
+        );
       }
 
       var yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
 
       var visibilityText = 'Visible for everyone';
-      if (this.state.visibility === 1) {
+      if (data.visibility === 1) {
         visibilityText = 'Only visible for administrators';
-      } else if (this.state.visibility === 2) {
+      } else if (data.visibility === 2) {
         visibilityText = 'Only visible for super administrators';
       }
 
-      var selectedType = this.state.typeId ? this.state.types.find(function (t) {
-        return t.id === _this4.state.typeId;
-      }) : this.state.types[0];
+      var selectedType = data.typeId ? data.types.find(function (t) {
+        return t.id === data.typeId;
+      }) : data.types[0];
       var defaultCenter;
       var defaultZoom;
-      if (this.state.lat != 0 && this.state.lng != 0) {
-        defaultCenter = { lat: this.state.lat, lng: this.state.lng };
+      if (data.lat != 0 && data.lng != 0) {
+        defaultCenter = { lat: data.lat, lng: data.lng };
         defaultZoom = 15;
       } else if (this.props.location.query.lat && parseFloat(this.props.location.query.lat) > 0) {
         defaultCenter = { lat: parseFloat(this.props.location.query.lat), lng: parseFloat(this.props.location.query.lng) };
         defaultZoom = 14;
       } else {
-        defaultCenter = _config2.default.getDefaultCenter();
-        defaultZoom = _config2.default.getDefaultZoom();
+        defaultCenter = data.metadata.defaultCenter;
+        defaultZoom = data.metadata.defaultZoom;
       }
 
       var sections = null;
-      if (!_config2.default.isBouldering()) {
+      if (!data.metadata.isBouldering) {
         sections = _react2.default.createElement(
           _reactBootstrap.FormGroup,
           { controlId: 'formControlsSections' },
@@ -5559,12 +5485,21 @@ var ProblemEdit = function (_Component) {
             'Section(s)'
           ),
           _react2.default.createElement('br', null),
-          _react2.default.createElement(_problemSection2.default, { sections: this.state.sections, grades: this.state.grades, onSectionsUpdated: this.onSectionsUpdated.bind(this) })
+          _react2.default.createElement(_problemSection2.default, { sections: data.sections, grades: data.grades, onSectionsUpdated: this.onSectionsUpdated.bind(this) })
         );
       }
       return _react2.default.createElement(
         'span',
         null,
+        _react2.default.createElement(
+          _reactMetaTags2.default,
+          null,
+          _react2.default.createElement(
+            'title',
+            null,
+            data.metadata.title
+          )
+        ),
         _react2.default.createElement(
           _reactBootstrap.Well,
           null,
@@ -5579,7 +5514,7 @@ var ProblemEdit = function (_Component) {
                 null,
                 'Problem name'
               ),
-              _react2.default.createElement(_reactBootstrap.FormControl, { type: 'text', value: this.state.name, placeholder: 'Enter name', onChange: this.onNameChanged.bind(this) })
+              _react2.default.createElement(_reactBootstrap.FormControl, { type: 'text', value: data.name, placeholder: 'Enter name', onChange: this.onNameChanged.bind(this) })
             ),
             _react2.default.createElement(
               _reactBootstrap.FormGroup,
@@ -5590,7 +5525,7 @@ var ProblemEdit = function (_Component) {
                 'FA date (yyyy-mm-dd)'
               ),
               _react2.default.createElement('br', null),
-              _react2.default.createElement(_reactInputCalendar2.default, { format: 'YYYY-MM-DD', computableFormat: 'YYYY-MM-DD', date: this.state.faDate, onChange: this.onFaDateChanged.bind(this) }),
+              _react2.default.createElement(_reactInputCalendar2.default, { format: 'YYYY-MM-DD', computableFormat: 'YYYY-MM-DD', date: data.faDate, onChange: this.onFaDateChanged.bind(this) }),
               _react2.default.createElement(
                 _reactBootstrap.ButtonGroup,
                 null,
@@ -5618,7 +5553,7 @@ var ProblemEdit = function (_Component) {
               _react2.default.createElement(
                 _reactBootstrap.DropdownButton,
                 { title: selectedType.type + (selectedType.subType ? " - " + selectedType.subType : ""), id: 'bg-nested-dropdown' },
-                this.state.types.map(function (t, i) {
+                data.types.map(function (t, i) {
                   return _react2.default.createElement(
                     _reactBootstrap.MenuItem,
                     { key: i, eventKey: i, onSelect: _this4.onTypeIdChanged.bind(_this4, t.id) },
@@ -5640,8 +5575,8 @@ var ProblemEdit = function (_Component) {
               _react2.default.createElement('br', null),
               _react2.default.createElement(
                 _reactBootstrap.DropdownButton,
-                { title: this.state.originalGrade, id: 'bg-nested-dropdown' },
-                this.state.grades.map(function (g, i) {
+                { title: data.originalGrade, id: 'bg-nested-dropdown' },
+                data.grades.map(function (g, i) {
                   return _react2.default.createElement(
                     _reactBootstrap.MenuItem,
                     { key: i, eventKey: i, onSelect: _this4.onOriginalGradeChanged.bind(_this4, g.grade) },
@@ -5659,7 +5594,7 @@ var ProblemEdit = function (_Component) {
                 'FA'
               ),
               _react2.default.createElement('br', null),
-              _react2.default.createElement(_userSelector2.default, { users: this.state.fa ? this.state.fa.map(function (u) {
+              _react2.default.createElement(_userSelector2.default, { users: data.fa ? data.fa.map(function (u) {
                   return { value: u.id, label: u.firstname + " " + u.surname };
                 }) : [], onUsersUpdated: this.onUsersUpdated.bind(this) })
             ),
@@ -5700,7 +5635,7 @@ var ProblemEdit = function (_Component) {
                 null,
                 'Sector number'
               ),
-              _react2.default.createElement(_reactBootstrap.FormControl, { type: 'text', value: this.state.nr, placeholder: 'Enter sector number', onChange: this.onNrChanged.bind(this) })
+              _react2.default.createElement(_reactBootstrap.FormControl, { type: 'text', value: data.nr, placeholder: 'Enter sector number', onChange: this.onNrChanged.bind(this) })
             ),
             _react2.default.createElement(
               _reactBootstrap.FormGroup,
@@ -5710,7 +5645,7 @@ var ProblemEdit = function (_Component) {
                 null,
                 'Comment'
               ),
-              _react2.default.createElement(_reactBootstrap.FormControl, { style: { height: '100px' }, componentClass: 'textarea', placeholder: 'Enter comment', value: this.state.comment, onChange: this.onCommentChanged.bind(this) })
+              _react2.default.createElement(_reactBootstrap.FormControl, { style: { height: '100px' }, componentClass: 'textarea', placeholder: 'Enter comment', value: data.comment, onChange: this.onCommentChanged.bind(this) })
             ),
             sections,
             _react2.default.createElement(
@@ -5738,7 +5673,7 @@ var ProblemEdit = function (_Component) {
                   defaultZoom: defaultZoom,
                   defaultCenter: defaultCenter,
                   onClick: this.onMapClick.bind(this),
-                  markers: this.state.lat != 0 && this.state.lng != 0 ? _react2.default.createElement(_reactGoogleMaps.Marker, { position: { lat: this.state.lat, lng: this.state.lng } }) : ""
+                  markers: data.lat != 0 && data.lng != 0 ? _react2.default.createElement(_reactGoogleMaps.Marker, { position: { lat: data.lat, lng: data.lng } }) : ""
                 })
               ),
               _react2.default.createElement(
@@ -5746,13 +5681,13 @@ var ProblemEdit = function (_Component) {
                 null,
                 'Latitude'
               ),
-              _react2.default.createElement(_reactBootstrap.FormControl, { type: 'text', value: this.state.lat, placeholder: 'Latitude', onChange: this.onLatChanged.bind(this) }),
+              _react2.default.createElement(_reactBootstrap.FormControl, { type: 'text', value: data.lat, placeholder: 'Latitude', onChange: this.onLatChanged.bind(this) }),
               _react2.default.createElement(
                 _reactBootstrap.ControlLabel,
                 null,
                 'Longitude'
               ),
-              _react2.default.createElement(_reactBootstrap.FormControl, { type: 'text', value: this.state.lng, placeholder: 'Longitude', onChange: this.onLngChanged.bind(this) })
+              _react2.default.createElement(_reactBootstrap.FormControl, { type: 'text', value: data.lng, placeholder: 'Longitude', onChange: this.onLngChanged.bind(this) })
             ),
             _react2.default.createElement(
               _reactBootstrap.ButtonGroup,
@@ -7415,13 +7350,13 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactMetaTags = __webpack_require__(8);
+
+var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
+
 var _reactRouterDom = __webpack_require__(4);
 
 var _reactRouter = __webpack_require__(7);
-
-var _superagent = __webpack_require__(3);
-
-var _superagent2 = _interopRequireDefault(_superagent);
 
 var _reactBootstrap = __webpack_require__(1);
 
@@ -7431,15 +7366,13 @@ var _imageUpload = __webpack_require__(12);
 
 var _imageUpload2 = _interopRequireDefault(_imageUpload);
 
-var _config = __webpack_require__(2);
-
-var _config2 = _interopRequireDefault(_config);
-
 var _auth = __webpack_require__(6);
 
 var _auth2 = _interopRequireDefault(_auth);
 
 var _reactFontawesome = __webpack_require__(5);
+
+var _api = __webpack_require__(62);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -7466,10 +7399,20 @@ var GettingStartedGoogleMap = (0, _reactGoogleMaps.withScriptjs)((0, _reactGoogl
 var SectorEdit = function (_Component) {
   _inherits(SectorEdit, _Component);
 
-  function SectorEdit() {
+  function SectorEdit(props) {
     _classCallCheck(this, SectorEdit);
 
-    return _possibleConstructorReturn(this, (SectorEdit.__proto__ || Object.getPrototypeOf(SectorEdit)).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, (SectorEdit.__proto__ || Object.getPrototypeOf(SectorEdit)).call(this, props));
+
+    var data = void 0;
+    if (false) {
+      data = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+    } else {
+      data = props.staticContext.data;
+    }
+    _this.state = { data: data };
+    return _this;
   }
 
   _createClass(SectorEdit, [{
@@ -7482,37 +7425,27 @@ var SectorEdit = function (_Component) {
   }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
+      if (!this.state.data) {
+        this.refresh(this.props.match.params.sectorId);
+      }
+    }
+  }, {
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate(prevProps, prevState) {
+      if (prevProps.match.params.sectorId !== this.props.match.params.sectorId) {
+        this.refresh(this.props.match.params.sectorId);
+      }
+    }
+  }, {
+    key: 'refresh',
+    value: function refresh(id) {
       var _this2 = this;
 
-      if (this.props.match.params.sectorId == -1) {
-        this.setState({
-          id: -1,
-          visibility: 0,
-          name: "",
-          comment: "",
-          lat: 0,
-          lng: 0,
-          polygonCoords: null,
-          newMedia: []
+      this.props.fetchInitialData(id).then(function (data) {
+        return _this2.setState(function () {
+          return { data: data };
         });
-      } else {
-        _superagent2.default.get(_config2.default.getUrl("sectors?id=" + this.props.match.params.sectorId)).withCredentials().end(function (err, res) {
-          if (err) {
-            _this2.setState({ error: err });
-          } else {
-            _this2.setState({
-              id: res.body.id,
-              visibility: res.body.visibility,
-              name: res.body.name,
-              comment: res.body.comment,
-              lat: res.body.lat,
-              lng: res.body.lng,
-              polygonCoords: res.body.polygonCoords,
-              newMedia: []
-            });
-          }
-        });
-      }
+      });
     }
   }, {
     key: 'onNameChanged',
@@ -7541,19 +7474,14 @@ var SectorEdit = function (_Component) {
 
       event.preventDefault();
       this.setState({ isSaving: true });
-      var newMedia = this.state.newMedia.map(function (m) {
+      var newMedia = this.state.data.newMedia.map(function (m) {
         return { name: m.file.name.replace(/[^-a-z0-9.]/ig, '_'), photographer: m.photographer, inPhoto: m.inPhoto };
       });
-      var req = _superagent2.default.post(_config2.default.getUrl("sectors")).withCredentials().field('json', JSON.stringify({ areaId: this.props.location.query.idArea, id: this.state.id, visibility: this.state.visibility, name: this.state.name, comment: this.state.comment, lat: this.state.lat, lng: this.state.lng, polygonCoords: this.state.polygonCoords, newMedia: newMedia })).set('Accept', 'application/json');
-      this.state.newMedia.forEach(function (m) {
-        return req.attach(m.file.name.replace(/[^-a-z0-9.]/ig, '_'), m.file);
-      });
-      req.end(function (err, res) {
-        if (err) {
-          _this3.setState({ error: err });
-        } else {
-          _this3.setState({ pushUrl: "/sector/" + res.body.id });
-        }
+      (0, _api.postSector)(this.props.location.query.idArea, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, newMedia).then(function (response) {
+        _this3.setState({ pushUrl: "/sector/" + response.id });
+      }).catch(function (error) {
+        console.warn(error);
+        _this3.setState({ error: error });
       });
     }
   }, {
@@ -7564,9 +7492,9 @@ var SectorEdit = function (_Component) {
   }, {
     key: 'onMapRightClick',
     value: function onMapRightClick(event) {
-      if (this.state.polygonCoords) {
+      if (this.state.data.polygonCoords) {
         this.setState({
-          polygonCoords: this.state.polygonCoords + ";" + event.latLng.lat() + "," + event.latLng.lng()
+          polygonCoords: this.state.data.polygonCoords + ";" + event.latLng.lat() + "," + event.latLng.lng()
         });
       } else {
         this.setState({ polygonCoords: event.latLng.lat() + "," + event.latLng.lng() });
@@ -7585,21 +7513,10 @@ var SectorEdit = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
-      if (!this.state) {
+      if (this.state.error) {
         return _react2.default.createElement(
-          'center',
+          'h3',
           null,
-          _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'spinner', spin: true, size: '3x' })
-        );
-      } else if (this.state.error) {
-        return _react2.default.createElement(
-          'span',
-          null,
-          _react2.default.createElement(
-            'h3',
-            null,
-            this.state.error.status
-          ),
           this.state.error.toString()
         );
       } else if (this.state.pushUrl) {
@@ -7614,8 +7531,14 @@ var SectorEdit = function (_Component) {
             'Invalid action...'
           )
         );
+      } else if (!this.state.data) {
+        return _react2.default.createElement(
+          'center',
+          null,
+          _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'spinner', spin: true, size: '3x' })
+        );
       }
-      var triangleCoords = this.state.polygonCoords ? this.state.polygonCoords.split(";").map(function (p, i) {
+      var triangleCoords = this.state.data.polygonCoords ? this.state.data.polygonCoords.split(";").map(function (p, i) {
         var latLng = p.split(",");
         return { lat: parseFloat(latLng[0]), lng: parseFloat(latLng[1]) };
       }) : [];
@@ -7627,16 +7550,25 @@ var SectorEdit = function (_Component) {
       }
 
       var visibilityText = 'Visible for everyone';
-      if (this.state.visibility === 1) {
+      if (this.state.data.visibility === 1) {
         visibilityText = 'Only visible for administrators';
-      } else if (this.state.visibility === 2) {
+      } else if (this.state.data.visibility === 2) {
         visibilityText = 'Only visible for super administrators';
       }
-      var defaultCenter = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat) > 0 ? { lat: parseFloat(this.props.location.query.lat), lng: parseFloat(this.props.location.query.lng) } : _config2.default.getDefaultCenter();
-      var defaultZoom = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat) > 0 ? 14 : _config2.default.getDefaultZoom();
+      var defaultCenter = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat) > 0 ? { lat: parseFloat(this.props.location.query.lat), lng: parseFloat(this.props.location.query.lng) } : this.state.data.metadata.defaultCenter;
+      var defaultZoom = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat) > 0 ? 14 : this.state.data.metadata.defaultZoom;
       return _react2.default.createElement(
         'span',
         null,
+        _react2.default.createElement(
+          _reactMetaTags2.default,
+          null,
+          _react2.default.createElement(
+            'title',
+            null,
+            this.state.data.metadata.title
+          )
+        ),
         _react2.default.createElement(
           _reactBootstrap.Well,
           null,
@@ -7651,7 +7583,7 @@ var SectorEdit = function (_Component) {
                 null,
                 'Sector name'
               ),
-              _react2.default.createElement(_reactBootstrap.FormControl, { type: 'text', value: this.state.name, placeholder: 'Enter name', onChange: this.onNameChanged.bind(this) })
+              _react2.default.createElement(_reactBootstrap.FormControl, { type: 'text', value: this.state.data.name, placeholder: 'Enter name', onChange: this.onNameChanged.bind(this) })
             ),
             _react2.default.createElement(
               _reactBootstrap.FormGroup,
@@ -7661,7 +7593,7 @@ var SectorEdit = function (_Component) {
                 null,
                 'Comment'
               ),
-              _react2.default.createElement(_reactBootstrap.FormControl, { style: { height: '100px' }, componentClass: 'textarea', placeholder: 'Enter comment', value: this.state.comment, onChange: this.onCommentChanged.bind(this) })
+              _react2.default.createElement(_reactBootstrap.FormControl, { style: { height: '100px' }, componentClass: 'textarea', placeholder: 'Enter comment', value: this.state.data.comment, onChange: this.onCommentChanged.bind(this) })
             ),
             _react2.default.createElement(
               _reactBootstrap.FormGroup,
@@ -7718,7 +7650,7 @@ var SectorEdit = function (_Component) {
                   defaultCenter: defaultCenter,
                   onClick: this.onMapClick.bind(this),
                   onRightClick: this.onMapRightClick.bind(this),
-                  markers: this.state.lat != 0 && this.state.lng != 0 ? _react2.default.createElement(_reactGoogleMaps.Marker, { position: { lat: this.state.lat, lng: this.state.lng }, icon: { url: 'https://maps.google.com/mapfiles/kml/shapes/parking_lot_maps.png', scaledSize: new google.maps.Size(32, 32) } }) : "",
+                  markers: this.state.data.lat != 0 && this.state.data.lng != 0 ? _react2.default.createElement(_reactGoogleMaps.Marker, { position: { lat: this.state.data.lat, lng: this.state.data.lng }, icon: { url: 'https://maps.google.com/mapfiles/kml/shapes/parking_lot_maps.png', scaledSize: new google.maps.Size(32, 32) } }) : "",
                   outline: outline
                 })
               )
@@ -9327,13 +9259,17 @@ exports.getFrontpage = getFrontpage;
 exports.getGrades = getGrades;
 exports.getMeta = getMeta;
 exports.getProblem = getProblem;
+exports.getProblemEdit = getProblemEdit;
 exports.getSector = getSector;
+exports.getSectorEdit = getSectorEdit;
 exports.getUser = getUser;
 exports.getUserPassword = getUserPassword;
 exports.getUserForgotPassword = getUserForgotPassword;
 exports.postArea = postArea;
 exports.postComment = postComment;
+exports.postProblem = postProblem;
 exports.postSearch = postSearch;
+exports.postSector = postSector;
 exports.postTicks = postTicks;
 exports.postUserRegister = postUserRegister;
 
@@ -9365,7 +9301,7 @@ function getAreaEdit(id) {
       return null;
     });
   } else {
-    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/areas/edit?id=' + id), { credentials: 'include' }).then(function (data) {
+    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/areas?id=' + id), { credentials: 'include' }).then(function (data) {
       return data.json();
     }).then(function (json) {
       return { id: res.id, visibility: res.visibility, name: res.name, comment: res.comment, lat: res.lat, lng: res.lng, newMedia: [], metadata: res.metadata };
@@ -9432,6 +9368,33 @@ function getProblem(id) {
   });
 }
 
+function getProblemEdit(id) {
+  if (id === -1) {
+    var date = new Date();
+    var d = date.getDate();
+    var m = date.getMonth() + 1;
+    var y = date.getFullYear();
+    var faDate = y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
+    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta')).then(function (data) {
+      return data.json();
+    }).then(function (json) {
+      return { id: -1, visibility: 0, name: '', comment: '', originalGrade: 'n/a', fa: [], faDate: faDate, nr: 0, lat: 0, lng: 0, newMedia: [], metadata: { title: 'New problem | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, grades: res.metadata.grades, types: res.metadata.types } };
+    }).catch(function (error) {
+      console.warn(error);
+      return null;
+    });
+  } else {
+    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/problems?id=' + id), { credentials: 'include' }).then(function (data) {
+      return data.json();
+    }).then(function (json) {
+      return { id: res.id, visibility: res.visibility, name: res.name, comment: res.comment, originalGrade: res.originalGrade, fa: res.fa, faDate: res.faDate, nr: res.nr, typeId: res.t.id, lat: res.lat, lng: res.lng, sections: res.sections, metadata: res.metadata };
+    }).catch(function (error) {
+      console.warn(error);
+      return null;
+    });
+  }
+}
+
 function getSector(id) {
   return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/sectors?id=' + id), { credentials: 'include' }).then(function (data) {
     return data.json();
@@ -9439,6 +9402,28 @@ function getSector(id) {
     console.warn(error);
     return null;
   });
+}
+
+function getSectorEdit(id) {
+  if (id === -1) {
+    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta')).then(function (data) {
+      return data.json();
+    }).then(function (json) {
+      return { id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: { title: 'New sector | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter } };
+    }).catch(function (error) {
+      console.warn(error);
+      return null;
+    });
+  } else {
+    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/sectors?id=' + id), { credentials: 'include' }).then(function (data) {
+      return data.json();
+    }).then(function (json) {
+      return { id: res.id, visibility: res.visibility, name: res.name, comment: res.comment, lat: res.lat, lng: res.lng, newMedia: [], metadata: res.metadata };
+    }).catch(function (error) {
+      console.warn(error);
+      return null;
+    });
+  }
 }
 
 function getUser(id) {
@@ -9464,14 +9449,17 @@ function postArea(id, visibility, name, comment, lat, lng, newMedia) {
   newMedia.forEach(function (m) {
     return formData.append(m.file.name.replace(/[^-a-z0-9.]/ig, '_'), m.file);
   });
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/register'), {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/areas'), {
     mode: 'cors',
     method: 'POST',
     credentials: 'include',
     body: formData,
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
     }
+  }).then(function (data) {
+    return data.json();
   });
 }
 
@@ -9487,12 +9475,52 @@ function postComment(idProblem, comment) {
   });
 }
 
+function postProblem(sectorId, id, visibility, name, comment, originalGrade, fa, faDate, nr, t, lat, lng, sections, newMedia) {
+  var formData = new FormData();
+  formData.append('json', JSON.stringify({ sectorId: sectorId, id: id, visibility: visibility, name: name, comment: comment, originalGrade: originalGrade, fa: fa, faDate: faDate, nr: nr, t: t, lat: lat, lng: lng, sections: sections, newMedia: newMedia }));
+  newMedia.forEach(function (m) {
+    return formData.append(m.file.name.replace(/[^-a-z0-9.]/ig, '_'), m.file);
+  });
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/problems'), {
+    mode: 'cors',
+    method: 'POST',
+    credentials: 'include',
+    body: formData,
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    }
+  }).then(function (data) {
+    return data.json();
+  });
+}
+
 function postSearch(value) {
   return (0, _isomorphicFetch2.default)("https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/search", {
     mode: 'cors',
     method: 'POST',
     credentials: 'include',
     body: JSON.stringify({ value: value }),
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    }
+  }).then(function (data) {
+    return data.json();
+  });
+}
+
+function postSector(areaId, id, visibility, name, comment, lat, lng, newMedia) {
+  var formData = new FormData();
+  formData.append('json', JSON.stringify({ areaId: areaId, id: id, visibility: visibility, name: name, comment: comment, lat: lat, lng: lng, newMedia: newMedia }));
+  newMedia.forEach(function (m) {
+    return formData.append(m.file.name.replace(/[^-a-z0-9.]/ig, '_'), m.file);
+  });
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/sectors'), {
+    mode: 'cors',
+    method: 'POST',
+    credentials: 'include',
+    body: formData,
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json'

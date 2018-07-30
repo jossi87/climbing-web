@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
+import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
-import Request from 'superagent';
 import { FormGroup, ControlLabel, FormControl, ButtonGroup, DropdownButton, MenuItem, Button, Well } from 'react-bootstrap';
 import { withScriptjs, withGoogleMap, GoogleMap, Marker, Polygon } from "react-google-maps";
 import ImageUpload from './common/image-upload/image-upload';
-import config from '../utils/config.js';
 import auth from '../utils/auth.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { postSector } from './../api';
 
 const GettingStartedGoogleMap = withScriptjs(withGoogleMap(props => (
   <GoogleMap
@@ -22,6 +22,18 @@ const GettingStartedGoogleMap = withScriptjs(withGoogleMap(props => (
 )));
 
 export default class SectorEdit extends Component {
+  constructor(props) {
+    super(props);
+    let data;
+    if (__isBrowser__) {
+      data = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+    } else {
+      data = props.staticContext.data;
+    }
+    this.state = {data};
+  }
+
   componentWillMount() {
     if (!auth.isAdmin()) {
       this.setState({pushUrl: "/login", error: null});
@@ -29,35 +41,19 @@ export default class SectorEdit extends Component {
   }
 
   componentDidMount() {
-    if (this.props.match.params.sectorId==-1) {
-      this.setState({
-        id: -1,
-        visibility: 0,
-        name: "",
-        comment: "",
-        lat: 0,
-        lng: 0,
-        polygonCoords: null,
-        newMedia: []
-      });
-    } else {
-      Request.get(config.getUrl("sectors?id=" + this.props.match.params.sectorId)).withCredentials().end((err, res) => {
-        if (err) {
-          this.setState({error: err});
-        } else {
-          this.setState({
-            id: res.body.id,
-            visibility: res.body.visibility,
-            name: res.body.name,
-            comment: res.body.comment,
-            lat: res.body.lat,
-            lng: res.body.lng,
-            polygonCoords: res.body.polygonCoords,
-            newMedia: []
-          });
-        }
-      });
+    if (!this.state.data) {
+      this.refresh(this.props.match.params.sectorId);
     }
+  }
+
+  componentDidUpdate (prevProps, prevState) {
+    if (prevProps.match.params.sectorId !== this.props.match.params.sectorId) {
+      this.refresh(this.props.match.params.sectorId);
+    }
+  }
+
+  refresh(id) {
+    this.props.fetchInitialData(id).then((data) => this.setState(() => ({data})));
   }
 
   onNameChanged(e) {
@@ -79,18 +75,14 @@ export default class SectorEdit extends Component {
   save(event) {
     event.preventDefault();
     this.setState({isSaving: true});
-    const newMedia = this.state.newMedia.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
-    var req = Request.post(config.getUrl("sectors"))
-    .withCredentials()
-    .field('json', JSON.stringify({areaId: this.props.location.query.idArea, id: this.state.id, visibility: this.state.visibility, name: this.state.name, comment: this.state.comment, lat: this.state.lat, lng: this.state.lng, polygonCoords: this.state.polygonCoords, newMedia: newMedia}))
-    .set('Accept', 'application/json');
-    this.state.newMedia.forEach(m => req.attach(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
-    req.end((err, res) => {
-      if (err) {
-        this.setState({error: err});
-      } else {
-        this.setState({pushUrl: "/sector/" + res.body.id});
-      }
+    const newMedia = this.state.data.newMedia.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
+    postSector(this.props.location.query.idArea, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, newMedia)
+    .then((response) => {
+      this.setState({pushUrl: "/sector/" + response.id});
+    })
+    .catch((error) => {
+      console.warn(error);
+      this.setState({error});
     });
   }
 
@@ -99,9 +91,9 @@ export default class SectorEdit extends Component {
   }
 
   onMapRightClick(event) {
-    if (this.state.polygonCoords) {
+    if (this.state.data.polygonCoords) {
       this.setState({
-        polygonCoords: this.state.polygonCoords + ";" + event.latLng.lat() + "," + event.latLng.lng()
+        polygonCoords: this.state.data.polygonCoords + ";" + event.latLng.lat() + "," + event.latLng.lng()
       });
     } else {
       this.setState({polygonCoords: event.latLng.lat() + "," + event.latLng.lng()});
@@ -117,11 +109,8 @@ export default class SectorEdit extends Component {
   }
 
   render() {
-    if (!this.state) {
-      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
-    }
-    else if (this.state.error) {
-      return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;
+    if (this.state.error) {
+      return <h3>{this.state.error.toString()}</h3>;
     }
     else if (this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
@@ -129,7 +118,10 @@ export default class SectorEdit extends Component {
     else if (!this.props || !this.props.match || !this.props.match.params || !this.props.match.params.sectorId || !this.props.location || !this.props.location.query || !this.props.location.query.idArea) {
       return <span><h3>Invalid action...</h3></span>;
     }
-    var triangleCoords = this.state.polygonCoords? this.state.polygonCoords.split(";").map((p, i) => {
+    else if (!this.state.data) {
+      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
+    }
+    var triangleCoords = this.state.data.polygonCoords? this.state.data.polygonCoords.split(";").map((p, i) => {
       const latLng = p.split(",");
       return {lat: parseFloat(latLng[0]), lng: parseFloat(latLng[1])};
     }) : [];
@@ -141,24 +133,27 @@ export default class SectorEdit extends Component {
     }
 
     var visibilityText = 'Visible for everyone';
-    if (this.state.visibility===1) {
+    if (this.state.data.visibility===1) {
       visibilityText = 'Only visible for administrators';
-    } else if (this.state.visibility===2) {
+    } else if (this.state.data.visibility===2) {
       visibilityText = 'Only visible for super administrators';
     }
-    const defaultCenter = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? {lat: parseFloat(this.props.location.query.lat), lng: parseFloat(this.props.location.query.lng)} : config.getDefaultCenter();
-    const defaultZoom = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? 14 : config.getDefaultZoom();
+    const defaultCenter = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? {lat: parseFloat(this.props.location.query.lat), lng: parseFloat(this.props.location.query.lng)} : this.state.data.metadata.defaultCenter;
+    const defaultZoom = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? 14 : this.state.data.metadata.defaultZoom;
     return (
       <span>
+        <MetaTags>
+          <title>{this.state.data.metadata.title}</title>
+        </MetaTags>
         <Well>
           <form onSubmit={this.save.bind(this)}>
             <FormGroup controlId="formControlsName">
               <ControlLabel>Sector name</ControlLabel>
-              <FormControl type="text" value={this.state.name} placeholder="Enter name" onChange={this.onNameChanged.bind(this)} />
+              <FormControl type="text" value={this.state.data.name} placeholder="Enter name" onChange={this.onNameChanged.bind(this)} />
             </FormGroup>
             <FormGroup controlId="formControlsComment">
               <ControlLabel>Comment</ControlLabel>
-              <FormControl style={{height: '100px'}} componentClass="textarea" placeholder="Enter comment" value={this.state.comment} onChange={this.onCommentChanged.bind(this)} />
+              <FormControl style={{height: '100px'}} componentClass="textarea" placeholder="Enter comment" value={this.state.data.comment} onChange={this.onCommentChanged.bind(this)} />
             </FormGroup>
             <FormGroup controlId="formControlsVisibility">
               <ControlLabel>Visibility</ControlLabel><br/>
@@ -183,7 +178,7 @@ export default class SectorEdit extends Component {
                   defaultCenter={defaultCenter}
                   onClick={this.onMapClick.bind(this)}
                   onRightClick={this.onMapRightClick.bind(this)}
-                  markers={this.state.lat!=0 && this.state.lng!=0? <Marker position={{lat: this.state.lat, lng: this.state.lng}} icon={{url: 'https://maps.google.com/mapfiles/kml/shapes/parking_lot_maps.png', scaledSize: new google.maps.Size(32, 32)}}/> : ""}
+                  markers={this.state.data.lat!=0 && this.state.data.lng!=0? <Marker position={{lat: this.state.data.lat, lng: this.state.data.lng}} icon={{url: 'https://maps.google.com/mapfiles/kml/shapes/parking_lot_maps.png', scaledSize: new google.maps.Size(32, 32)}}/> : ""}
                   outline={outline}
                 />
               </section>

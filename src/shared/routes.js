@@ -17,7 +17,7 @@ import SvgEdit from './components/common/svg/svg-edit';
 import User from './components/user';
 import UserEdit from './components/user-edit';
 
-import { getArea, getAreaEdit, getBrowse, getFinder, getFrontpage, getMeta, getProblem, getSector, getUser } from './api';
+import { getArea, getAreaEdit, getBrowse, getFinder, getFrontpage, getMeta, getProblem, getProblemEdit, getSector, getSectorEdit, getUser } from './api';
 
 const routes =  [
   {path: '/', exact: true, component: Index, fetchInitialData: (path = '') => getFrontpage()},
@@ -26,9 +26,9 @@ const routes =  [
   {path: '/area/:areaId', exact: true, component: Area, fetchInitialData: (path = '') => getArea(path.split('/').pop())},
   {path: '/area/edit/:areaId', exact: true, component: AreaEdit, fetchInitialData: (path = '') => getAreaEdit(path.split('/').pop())},
   {path: '/sector/:sectorId', exact: true, component: Sector, fetchInitialData: (path = '') => getSector(path.split('/').pop())},
-  {path: '/sector/edit/:sectorId', exact: true, component: SectorEdit},
+  {path: '/sector/edit/:sectorId', exact: true, component: SectorEdit, fetchInitialData: (path = '') => getSectorEdit(path.split('/').pop())},
   {path: '/problem/:problemId', exact: true, component: Problem, fetchInitialData: (path = '') => getProblem(path.split('/').pop())},
-  {path: '/problem/edit/:problemId', exact: true, component: ProblemEdit},
+  {path: '/problem/edit/:problemId', exact: true, component: ProblemEdit, fetchInitialData: (path = '') => getProblemEdit(path.split('/').pop())},
   {path: '/problem/edit/media/:problemId', exact: true, component: ProblemEditMedia},
   {path: '/problem/svg-edit/:problemId/:mediaId', exact: true, component: SvgEdit},
   {path: '/finder/:grade', exact: true, component: Finder, fetchInitialData: (path = '') => getFinder(path.split('/').pop())},

@@ -1,16 +1,16 @@
 import React, {Component} from 'react';
+import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router'
-import Request from 'superagent';
 import { FormGroup, ControlLabel, FormControl, ButtonGroup, Button, DropdownButton, MenuItem, Well } from 'react-bootstrap';
 import { withScriptjs, withGoogleMap, GoogleMap, Marker } from "react-google-maps";
 import UserSelector from './common/user-selector/user-selector';
 import ProblemSection from './common/problem-section/problem-section';
 import ImageUpload from './common/image-upload/image-upload';
-import config from '../utils/config.js';
 import auth from '../utils/auth.js';
 import Calendar from 'react-input-calendar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { postProblem } from './../api';
 
 const GettingStartedGoogleMap = withScriptjs(withGoogleMap(props => (
   <GoogleMap
@@ -23,56 +23,38 @@ const GettingStartedGoogleMap = withScriptjs(withGoogleMap(props => (
 )));
 
 export default class ProblemEdit extends Component {
-  componentDidMount() {
-    Request.get(config.getUrl("grades")).end((err, res) => {
-      this.setState({
-        error: err? err : null,
-        grades: err? null : res.body
-      });
-    });
-    Request.get(config.getUrl("types")).end((err, res) => {
-      this.setState({
-        error: err? err : null,
-        types: err? null : res.body
-      });
-    });
-    if (this.props.match.params.problemId==-1) {
-      this.setState({
-        id: -1,
-        visibility: 0,
-        name: "",
-        comment: "",
-        originalGrade: "n/a",
-        fa: [],
-        faDate: this.convertFromDateToString(new Date()),
-        nr: this.props.location.query.nr,
-        lat: 0,
-        lng: 0,
-        newMedia: []
-      });
+  constructor(props) {
+    super(props);
+    let data;
+    if (__isBrowser__) {
+      data = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
     } else {
-      Request.get(config.getUrl("problems?id=" + this.props.match.params.problemId)).withCredentials().end((err, res) => {
-        if (err) {
-          this.setState({error: err});
-        } else {
-          this.setState({
-            id: res.body[0].id,
-            visibility: res.body[0].visibility,
-            name: res.body[0].name,
-            comment: res.body[0].comment,
-            originalGrade: res.body[0].originalGrade,
-            fa: res.body[0].fa,
-            faDate: res.body[0].faDate,
-            nr: res.body[0].nr,
-            typeId: res.body[0].t.id,
-            lat: res.body[0].lat,
-            lng: res.body[0].lng,
-            sections: res.body[0].sections,
-            newMedia: []
-          });
-        }
-      });
+      data = props.staticContext.data;
     }
+    this.state = {data};
+  }
+
+  componentWillMount() {
+    if (!auth.isAdmin()) {
+      this.setState({pushUrl: "/login", error: null});
+    }
+  }
+
+  componentDidMount() {
+    if (!this.state.data) {
+      this.refresh(this.props.match.params.problemId);
+    }
+  }
+
+  componentDidUpdate (prevProps, prevState) {
+    if (prevProps.match.params.problemId !== this.props.match.params.problemId) {
+      this.refresh(this.props.match.params.problemId);
+    }
+  }
+
+  refresh(id) {
+    this.props.fetchInitialData(id).then((data) => this.setState(() => ({data})));
   }
 
   onNameChanged(e) {
@@ -118,18 +100,15 @@ export default class ProblemEdit extends Component {
   save(event) {
     event.preventDefault();
     this.setState({isSaving: true});
-    const newMedia = this.state.newMedia.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
-    var req = Request.post(config.getUrl("problems"))
-    .withCredentials()
-    .field('json', JSON.stringify({sectorId: this.props.location.query.idSector, id: this.state.id, visibility: this.state.visibility, name: this.state.name, comment: this.state.comment, originalGrade: this.state.originalGrade, fa: this.state.fa, faDate: this.state.faDate, nr: this.state.nr, t: this.state.typeId? this.state.types.find(t => t.id === this.state.typeId) : this.state.types[0], lat: this.state.lat, lng: this.state.lng, sections: this.state.sections, newMedia: newMedia}))
-    .set('Accept', 'application/json');
-    this.state.newMedia.forEach(m => req.attach(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
-    req.end((err, res) => {
-      if (err) {
-        this.setState({error: err});
-      } else {
-        this.setState({pushUrl: "/problem/" + res.body.id});
-      }
+    const newMedia = this.state.data.newMedia.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
+    const { data } = this.state;
+    postSector(this.props.location.query.idSector, data.id, data.visibility, data.name, data.comment, data.originalGrade, data.fa, data.faDate, data.nr, (data.typeId? data.types.find(t => t.id === data.typeId) : data.types[0]), data.lat, data.lng, data.sections, newMedia)
+    .then((response) => {
+      this.setState({pushUrl: "/problem/" + response.id});
+    })
+    .catch((error) => {
+      console.warn(error);
+      this.setState({error});
     });
   }
 
@@ -153,11 +132,9 @@ export default class ProblemEdit extends Component {
   }
 
   render() {
-    if (!this.state || !this.state.id || !this.state.types || !this.state.grades) {
-      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
-    }
-    else if (this.state.error) {
-      return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;
+    const { data } = this.state;
+    if (this.state.pushUrl) {
+      return (<Redirect to={this.state.pushUrl} push />);
     }
     else if (this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
@@ -165,22 +142,25 @@ export default class ProblemEdit extends Component {
     else if (!this.props || !this.props.match || !this.props.match.params || !this.props.match.params.problemId || !this.props.location || !this.props.location.query || !this.props.location.query.idSector) {
       return <span><h3>Invalid action...</h3></span>;
     }
+    else if (!data) {
+      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
+    }
 
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate()-1);
 
     var visibilityText = 'Visible for everyone';
-    if (this.state.visibility===1) {
+    if (data.visibility===1) {
       visibilityText = 'Only visible for administrators';
-    } else if (this.state.visibility===2) {
+    } else if (data.visibility===2) {
       visibilityText = 'Only visible for super administrators';
     }
 
-    const selectedType = this.state.typeId? this.state.types.find(t => t.id === this.state.typeId) : this.state.types[0];
+    const selectedType = data.typeId? data.types.find(t => t.id === data.typeId) : data.types[0];
     var defaultCenter;
     var defaultZoom;
-    if (this.state.lat!=0 && this.state.lng!=0) {
-      defaultCenter = {lat: this.state.lat, lng: this.state.lng};
+    if (data.lat!=0 && data.lng!=0) {
+      defaultCenter = {lat: data.lat, lng: data.lng};
       defaultZoom = 15;
     }
     else if (this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0) {
@@ -188,30 +168,33 @@ export default class ProblemEdit extends Component {
       defaultZoom = 14;
     }
     else {
-      defaultCenter = config.getDefaultCenter();
-      defaultZoom = config.getDefaultZoom();
+      defaultCenter = data.metadata.defaultCenter;
+      defaultZoom = data.metadata.defaultZoom;
     }
 
     var sections = null;
-    if (!config.isBouldering()) {
+    if (!data.metadata.isBouldering) {
       sections = (
         <FormGroup controlId="formControlsSections">
           <ControlLabel>Section(s)</ControlLabel><br/>
-          <ProblemSection sections={this.state.sections} grades={this.state.grades} onSectionsUpdated={this.onSectionsUpdated.bind(this)} />
+          <ProblemSection sections={data.sections} grades={data.grades} onSectionsUpdated={this.onSectionsUpdated.bind(this)} />
         </FormGroup>
       );
     }
     return (
       <span>
+        <MetaTags>
+          <title>{data.metadata.title}</title>
+        </MetaTags>
         <Well>
           <form onSubmit={this.save.bind(this)}>
             <FormGroup controlId="formControlsName">
               <ControlLabel>Problem name</ControlLabel>
-              <FormControl type="text" value={this.state.name} placeholder="Enter name" onChange={this.onNameChanged.bind(this)} />
+              <FormControl type="text" value={data.name} placeholder="Enter name" onChange={this.onNameChanged.bind(this)} />
             </FormGroup>
             <FormGroup controlId="formControlsFaDate">
               <ControlLabel>FA date (yyyy-mm-dd)</ControlLabel><br/>
-              <Calendar format='YYYY-MM-DD' computableFormat='YYYY-MM-DD' date={this.state.faDate} onChange={this.onFaDateChanged.bind(this)} />
+              <Calendar format='YYYY-MM-DD' computableFormat='YYYY-MM-DD' date={data.faDate} onChange={this.onFaDateChanged.bind(this)} />
               <ButtonGroup>
                 <Button onClick={this.onFaDateChanged.bind(this, this.convertFromDateToString(yesterday))}>Yesterday</Button>
                 <Button onClick={this.onFaDateChanged.bind(this, this.convertFromDateToString(new Date()))}>Today</Button>
@@ -220,18 +203,18 @@ export default class ProblemEdit extends Component {
             <FormGroup controlId="formControlsTypeId">
               <ControlLabel>Type</ControlLabel><br/>
               <DropdownButton title={selectedType.type + (selectedType.subType? " - " + selectedType.subType : "")} id="bg-nested-dropdown">
-                {this.state.types.map((t, i) => { return <MenuItem key={i} eventKey={i} onSelect={this.onTypeIdChanged.bind(this, t.id)}>{t.type} {t.subType? " - " + t.subType : ""}</MenuItem> })}
+                {data.types.map((t, i) => { return <MenuItem key={i} eventKey={i} onSelect={this.onTypeIdChanged.bind(this, t.id)}>{t.type} {t.subType? " - " + t.subType : ""}</MenuItem> })}
               </DropdownButton>
             </FormGroup>
             <FormGroup controlId="formControlsGrade">
               <ControlLabel>Grade</ControlLabel><br/>
-              <DropdownButton title={this.state.originalGrade} id="bg-nested-dropdown">
-                {this.state.grades.map((g, i) => { return <MenuItem key={i} eventKey={i} onSelect={this.onOriginalGradeChanged.bind(this, g.grade)}>{g.grade}</MenuItem> })}
+              <DropdownButton title={data.originalGrade} id="bg-nested-dropdown">
+                {data.grades.map((g, i) => { return <MenuItem key={i} eventKey={i} onSelect={this.onOriginalGradeChanged.bind(this, g.grade)}>{g.grade}</MenuItem> })}
               </DropdownButton>
             </FormGroup>
             <FormGroup controlId="formControlsFA">
               <ControlLabel>FA</ControlLabel><br/>
-              <UserSelector users={this.state.fa? this.state.fa.map(u => {return {value: u.id, label: u.firstname + " " + u.surname}}) : []} onUsersUpdated={this.onUsersUpdated.bind(this)} />
+              <UserSelector users={data.fa? data.fa.map(u => {return {value: u.id, label: u.firstname + " " + u.surname}}) : []} onUsersUpdated={this.onUsersUpdated.bind(this)} />
             </FormGroup>
             <FormGroup controlId="formControlsVisibility">
               <ControlLabel>Visibility</ControlLabel><br/>
@@ -243,11 +226,11 @@ export default class ProblemEdit extends Component {
             </FormGroup>
             <FormGroup controlId="formControlsSectorNr">
               <ControlLabel>Sector number</ControlLabel>
-              <FormControl type="text" value={this.state.nr} placeholder="Enter sector number" onChange={this.onNrChanged.bind(this)} />
+              <FormControl type="text" value={data.nr} placeholder="Enter sector number" onChange={this.onNrChanged.bind(this)} />
             </FormGroup>
             <FormGroup controlId="formControlsComment">
               <ControlLabel>Comment</ControlLabel>
-              <FormControl style={{height: '100px'}} componentClass="textarea" placeholder="Enter comment" value={this.state.comment} onChange={this.onCommentChanged.bind(this)} />
+              <FormControl style={{height: '100px'}} componentClass="textarea" placeholder="Enter comment" value={data.comment} onChange={this.onCommentChanged.bind(this)} />
             </FormGroup>
             {sections}
             <FormGroup controlId="formControlsMedia">
@@ -264,13 +247,13 @@ export default class ProblemEdit extends Component {
                   defaultZoom={defaultZoom}
                   defaultCenter={defaultCenter}
                   onClick={this.onMapClick.bind(this)}
-                  markers={this.state.lat!=0 && this.state.lng!=0? <Marker position={{lat: this.state.lat, lng: this.state.lng}}/> : ""}
+                  markers={data.lat!=0 && data.lng!=0? <Marker position={{lat: data.lat, lng: data.lng}}/> : ""}
                 />
               </section>
               <ControlLabel>Latitude</ControlLabel>
-              <FormControl type="text" value={this.state.lat} placeholder="Latitude" onChange={this.onLatChanged.bind(this)} />
+              <FormControl type="text" value={data.lat} placeholder="Latitude" onChange={this.onLatChanged.bind(this)} />
               <ControlLabel>Longitude</ControlLabel>
-              <FormControl type="text" value={this.state.lng} placeholder="Longitude" onChange={this.onLngChanged.bind(this)} />
+              <FormControl type="text" value={data.lng} placeholder="Longitude" onChange={this.onLngChanged.bind(this)} />
             </FormGroup>
             <ButtonGroup><Button bsStyle="danger" onClick={this.onCancel.bind(this)}>Cancel</Button><Button type="submit" bsStyle="success" disabled={this.state.isSaving}>{this.state.isSaving? 'Saving...' : 'Save problem'}</Button></ButtonGroup>
           </form>

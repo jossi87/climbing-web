@@ -39,8 +39,18 @@ export default class AreaEdit extends Component {
 
   componentDidMount() {
     if (!this.state.data) {
-      this.props.fetchInitialData(this.props.match.params.areaId).then((data) => this.setState(() => ({data})));
+      this.refresh(this.props.match.params.areaId);
     }
+  }
+
+  componentDidUpdate (prevProps, prevState) {
+    if (prevProps.match.params.areaId !== this.props.match.params.areaId) {
+      this.refresh(this.props.match.params.areaId);
+    }
+  }
+
+  refresh(id) {
+    this.props.fetchInitialData(id).then((data) => this.setState(() => ({data})));
   }
 
   onNameChanged(e) {
@@ -83,7 +93,7 @@ export default class AreaEdit extends Component {
 
   render() {
     if (this.state.error) {
-      return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;
+      return <h3>{this.state.error.toString()}</h3>;
     }
     else if (this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
