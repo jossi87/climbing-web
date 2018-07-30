@@ -49,7 +49,7 @@ export default class Navigation extends Component {
   }
 
   componentDidMount() {
-    getGrades().then((res) => this.setState({res}));
+    getGrades().then((grades) => this.setState({grades}));
   }
 
   hoverImage(hover) {

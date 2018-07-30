@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom'; // Used for navbar hack
 import {Route,  Switch} from 'react-router-dom';
-import Loadable from 'react-loadable';
+import { withCookies, Cookies } from 'react-cookie';
 import Loading from './components/common/loading/loading';
 import routes from './routes';
 import Navigation from './components/navigation';
@@ -26,7 +26,7 @@ library.add(faTrash);
 library.add(faUserSecret);
 library.add(faVideo);
 
-export default class App extends Component {
+class App extends Component {
   // Temp fix to collapse nav-button on devices: https://github.com/lefant/react-bootstrap/commit/c68b46baea + https://github.com/react-bootstrap/react-router-bootstrap/issues/112#issuecomment-142599003
   componentDidMount() {
     const navBar = ReactDOM.findDOMNode(this).querySelector('nav.navbar');
@@ -61,3 +61,5 @@ export default class App extends Component {
     );
   }
 }
+
+export default withCookies(App);

@@ -1917,10 +1917,12 @@ var _routes2 = _interopRequireDefault(_routes);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var cookiesMiddleware = __webpack_require__(70);
 var app = (0, _express2.default)();
 
 app.use((0, _cors2.default)());
 app.use(_express2.default.static("public"));
+app.use(cookiesMiddleware());
 
 app.get("*", function (req, res, next) {
   var activeRoute = _routes2.default.find(function (route) {
@@ -1999,9 +2001,7 @@ var _reactDom2 = _interopRequireDefault(_reactDom);
 
 var _reactRouterDom = __webpack_require__(2);
 
-var _reactLoadable = __webpack_require__(29);
-
-var _reactLoadable2 = _interopRequireDefault(_reactLoadable);
+var _reactCookie = __webpack_require__(16);
 
 var _loading = __webpack_require__(30);
 
@@ -2111,15 +2111,10 @@ var App = function (_Component) {
   return App;
 }(_react.Component);
 
-exports.default = App;
+exports.default = (0, _reactCookie.withCookies)(App);
 
 /***/ }),
-/* 29 */
-/***/ (function(module, exports) {
-
-module.exports = require("react-loadable");
-
-/***/ }),
+/* 29 */,
 /* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -9760,8 +9755,8 @@ var Navigation = function (_Component) {
     value: function componentDidMount() {
       var _this2 = this;
 
-      (0, _api.getGrades)().then(function (res) {
-        return _this2.setState({ res: res });
+      (0, _api.getGrades)().then(function (grades) {
+        return _this2.setState({ grades: grades });
       });
     }
   }, {
@@ -10018,6 +10013,12 @@ module.exports = require("@fortawesome/fontawesome-svg-core");
 /***/ (function(module, exports) {
 
 module.exports = require("@fortawesome/free-solid-svg-icons");
+
+/***/ }),
+/* 70 */
+/***/ (function(module, exports) {
+
+module.exports = require("universal-cookie-express");
 
 /***/ })
 /******/ ]);

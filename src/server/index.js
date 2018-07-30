@@ -7,10 +7,13 @@ import { CookiesProvider } from 'react-cookie';
 import serialize from "serialize-javascript";
 import App from '../shared/App';
 import routes from '../shared/routes';
+
+const cookiesMiddleware = require('universal-cookie-express');
 const app = express();
 
 app.use(cors());
 app.use(express.static("public"));
+app.use(cookiesMiddleware());
 
 app.get("*", (req, res, next) => {
   const activeRoute = routes.find((route) => matchPath(req.url, route)) || {}
