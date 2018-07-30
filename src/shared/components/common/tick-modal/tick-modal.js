@@ -106,7 +106,7 @@ export default class TickModal extends Component {
           </FormGroup>
           <FormGroup>
             <ControlLabel>Grade</ControlLabel><br/>
-            <DropdownButton title={this.state && this.state.grade} id="bg-nested-dropdown">
+            <DropdownButton title={this.state? this.state.grade : "Loading"} id="bg-nested-dropdown">
               {this.state && this.state.grades && this.state.grades.map((g, i) => { return <MenuItem key={i} eventKey={i} onSelect={this.onGradeChanged.bind(this, g.grade)}>{g.grade}</MenuItem> })}
             </DropdownButton>
           </FormGroup>

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router'
-import { FormGroup, ControlLabel, FormControl, ButtonGroup, Button, DropdownButton, MenuItem, Well } from 'react-bootstrap';
+import { FormGroup, ControlLabel, ButtonGroup, Button, Well } from 'react-bootstrap';
 import ImageUpload from './common/image-upload/image-upload';
 import auth from '../utils/auth.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

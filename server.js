@@ -1271,7 +1271,7 @@ var TickModal = function (_Component) {
             _react2.default.createElement('br', null),
             _react2.default.createElement(
               _reactBootstrap.DropdownButton,
-              { title: this.state && this.state.grade, id: 'bg-nested-dropdown' },
+              { title: this.state ? this.state.grade : "Loading", id: 'bg-nested-dropdown' },
               this.state && this.state.grades && this.state.grades.map(function (g, i) {
                 return _react2.default.createElement(
                   _reactBootstrap.MenuItem,
