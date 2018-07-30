@@ -91,7 +91,7 @@ export default class Browse extends Component {
       <span>
         <MetaTags>
           <title>{this.state.data.metadata.title}</title>
-          <meta name="description" content={"Browse areas"} />
+          <meta name="description" content={this.state.data.metadata.description} />
         </MetaTags>
         <Breadcrumb>
           {auth.isAdmin()?

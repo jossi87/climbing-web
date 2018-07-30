@@ -1163,7 +1163,10 @@ var routes = [{ path: '/', exact: true, component: _index2.default, fetchInitial
   } }, { path: '/user', exact: true, component: _user2.default }, { path: '/user/:userId', exact: true, component: _user2.default }, { path: '/user/:userId/edit', exact: true, component: _userEdit2.default }, { path: '/login', exact: false, component: _login2.default, fetchInitialData: function fetchInitialData() {
     var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
     return (0, _api.getLogin)();
-  } }, { path: '/register', exact: false, component: _register2.default }, { path: '/recover/:token', exact: true, component: _recover2.default }, { path: '/logout', exact: false, component: _logout2.default }];
+  } }, { path: '/register', exact: false, component: _register2.default }, { path: '/recover/:token', exact: true, component: _recover2.default, fetchInitialData: function fetchInitialData() {
+    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    return (0, _api.getRecover)();
+  } }, { path: '/logout', exact: false, component: _logout2.default }];
 
 exports.default = routes;
 
@@ -2710,7 +2713,7 @@ var Browse = function (_Component) {
             null,
             this.state.data.metadata.title
           ),
-          _react2.default.createElement('meta', { name: 'description', content: "Browse areas" })
+          _react2.default.createElement('meta', { name: 'description', content: this.state.data.metadata.description })
         ),
         _react2.default.createElement(
           _reactBootstrap.Breadcrumb,
@@ -4251,7 +4254,7 @@ var Login = function (_Component) {
             '". Contact Jostein (jostein.oygarden@gmail.com) to recover password.'
           ) });
       } else {
-        var successCallback = function successCallback(response) {
+        (0, _api.getUserForgotPassword)(this.state.username).then(function (response) {
           _this3.setState({ message: _react2.default.createElement(
               _reactBootstrap.Panel,
               { bsStyle: 'success' },
@@ -4259,16 +4262,14 @@ var Login = function (_Component) {
               _this3.state.username,
               '".'
             ) });
-        };
-        var errorCallback = function errorCallback(error) {
+        }).catch(function (error) {
           console.warn(error);
           _this3.setState({ message: _react2.default.createElement(
               _reactBootstrap.Panel,
               { bsStyle: 'danger' },
               error.toString()
             ) });
-        };
-        (0, _api.getUserForgotPassword)(this.state.username, successCallback, errorCallback);
+        });
       }
     }
   }, {
@@ -6403,21 +6404,15 @@ var _reactRouterDom = __webpack_require__(4);
 
 var _reactRouter = __webpack_require__(7);
 
-var _superagent = __webpack_require__(3);
-
-var _superagent2 = _interopRequireDefault(_superagent);
-
 var _reactBootstrap = __webpack_require__(1);
 
 var _auth = __webpack_require__(6);
 
 var _auth2 = _interopRequireDefault(_auth);
 
-var _config = __webpack_require__(2);
-
-var _config2 = _interopRequireDefault(_config);
-
 var _reactFontawesome = __webpack_require__(5);
+
+var _api = __webpack_require__(62);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -6435,14 +6430,31 @@ var Recover = function (_Component) {
 
     var _this = _possibleConstructorReturn(this, (Recover.__proto__ || Object.getPrototypeOf(Recover)).call(this, props));
 
-    _this.state = {
-      password: '',
-      password2: ''
-    };
+    var data = void 0;
+    if (false) {
+      data = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+    } else {
+      data = props.staticContext.data;
+    }
+    _this.state = { data: data };
     return _this;
   }
 
   _createClass(Recover, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      if (!this.state.data) {
+        this.props.fetchInitialData().then(function (data) {
+          return _this2.setState(function () {
+            return { data: data, password: '', password2: '' };
+          });
+        });
+      }
+    }
+  }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
       this.setState({ token: this.props.match.params.token });
@@ -6450,7 +6462,7 @@ var Recover = function (_Component) {
   }, {
     key: 'recover',
     value: function recover(event) {
-      var _this2 = this;
+      var _this3 = this;
 
       event.preventDefault();
       if (this.validatePassword(null) === 'error' || this.validatePassword2(null) === 'error') {
@@ -6460,12 +6472,10 @@ var Recover = function (_Component) {
             'Invalid password.'
           ) });
       } else {
-        _superagent2.default.get(_config2.default.getUrl("users/password?token=" + this.state.token + "&password=" + this.state.password)).withCredentials().end(function (err, res) {
-          if (err) {
-            _this2.setState({ error: err });
-          } else {
-            _this2.setState({ error: null, pushUrl: "/login" });
-          }
+        (0, _api.getUserPassword)(this.state.token, this.state.password).then(function (response) {
+          _this3.setState({ pushUrl: "/login" });
+        }).catch(function (error) {
+          console.warn(error);
         });
       }
     }
@@ -6504,17 +6514,6 @@ var Recover = function (_Component) {
           null,
           _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'spinner', spin: true, size: '3x' })
         );
-      } else if (this.state.error) {
-        return _react2.default.createElement(
-          'span',
-          null,
-          _react2.default.createElement(
-            'h3',
-            null,
-            this.state.error.status
-          ),
-          this.state.error.toString()
-        );
       } else if (this.state.pushUrl) {
         return _react2.default.createElement(_reactRouter.Redirect, { to: this.state.pushUrl, push: true });
       }
@@ -6527,9 +6526,9 @@ var Recover = function (_Component) {
           _react2.default.createElement(
             'title',
             null,
-            _config2.default.getTitle("Reset password")
+            this.state.data && this.state.data.metadata.title
           ),
-          _react2.default.createElement('meta', { name: 'description', content: "Recover password" })
+          _react2.default.createElement('meta', { name: 'description', content: this.state.data && this.state.data.metadata.description })
         ),
         _react2.default.createElement(
           _reactBootstrap.Well,
@@ -9435,6 +9434,8 @@ exports.getEthics = getEthics;
 exports.getFinder = getFinder;
 exports.getFrontpage = getFrontpage;
 exports.getLogin = getLogin;
+exports.getRecover = getRecover;
+exports.getUserPassword = getUserPassword;
 exports.getUserForgotPassword = getUserForgotPassword;
 
 var _isomorphicFetch = __webpack_require__(63);
@@ -9462,7 +9463,7 @@ function getEthics() {
 }
 
 function getFinder(grade) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/finder?grade=' + grade)).then(function (data) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/finder?grade=' + grade), { credentials: 'include' }).then(function (data) {
     return data.json();
   }).catch(function (error) {
     console.warn(error);
@@ -9471,7 +9472,7 @@ function getFinder(grade) {
 }
 
 function getFrontpage() {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/frontpage')).then(function (data) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/frontpage'), { credentials: 'include' }).then(function (data) {
     return data.json();
   }).catch(function (error) {
     console.warn(error);
@@ -9488,8 +9489,21 @@ function getLogin() {
   });
 }
 
-function getUserForgotPassword(username, successCallback, errorCallback) {
-  (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/forgotPassword?username=' + username)).then(successCallback).catch(errorCallback);
+function getRecover() {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/recover')).then(function (data) {
+    return data.json();
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
+function getUserPassword(token, password) {
+  (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/password?token=' + token + '&password=' + password));
+}
+
+function getUserForgotPassword(username) {
+  (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/forgotPassword?username=' + username));
 }
 
 /***/ }),

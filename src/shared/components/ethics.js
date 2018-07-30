@@ -16,7 +16,7 @@ export default class Ethics extends Component {
     this.state = {data};
   }
 
-  componentDidMount () {
+  componentDidMount() {
     if (!this.state.data) {
       this.props.fetchInitialData().then((data) => this.setState(() => ({data})));
     }

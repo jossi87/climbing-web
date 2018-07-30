@@ -2,19 +2,28 @@ import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
-import Request from 'superagent';
 import { FormGroup, ControlLabel, FormControl, HelpBlock, ButtonGroup, Button, Panel, Well } from 'react-bootstrap';
 import auth from '../utils/auth.js';
-import config from '../utils/config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { getUserPassword } from './../api';
 
 export default class Recover extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      password: '',
-      password2: ''
-    };
+    let data;
+    if (__isBrowser__) {
+      data = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+    } else {
+      data = props.staticContext.data;
+    }
+    this.state = {data};
+  }
+
+  componentDidMount() {
+    if (!this.state.data) {
+      this.props.fetchInitialData().then((data) => this.setState(() => ({data, password: '', password2: ''})));
+    }
   }
 
   componentDidMount() {
@@ -26,12 +35,12 @@ export default class Recover extends Component {
     if (this.validatePassword(null)==='error' || this.validatePassword2(null)==='error') {
       this.setState({message: <Panel bsStyle='danger'>Invalid password.</Panel>});
     } else {
-      Request.get(config.getUrl("users/password?token=" + this.state.token + "&password=" + this.state.password)).withCredentials().end((err, res) => {
-        if (err) {
-          this.setState({error: err});
-        } else {
-          this.setState({error: null, pushUrl: "/login"});
-        }
+      getUserPassword(this.state.token, this.state.password)
+      .then((response) => {
+        this.setState({pushUrl: "/login"});
+      })
+      .catch ((error) => {
+        console.warn(error);
       });
     }
   }
@@ -62,17 +71,14 @@ export default class Recover extends Component {
     if (!this.state.token) {
       return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
-    else if (this.state.error) {
-      return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;
-    }
     else if (this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
     }
     return (
       <span>
         <MetaTags>
-          <title>{config.getTitle("Reset password")}</title>
-          <meta name="description" content={"Recover password"} />
+          <title>{this.state.data && this.state.data.metadata.title}</title>
+          <meta name="description" content={this.state.data && this.state.data.metadata.description} />
         </MetaTags>
         <Well>
           <form onSubmit={this.recover.bind(this)}>

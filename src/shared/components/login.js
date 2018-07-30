@@ -38,14 +38,14 @@ export default class Login extends Component {
     } else if (!this.validateEmail(this.state.username)) {
       this.setState({message: <Panel bsStyle='danger'>No email address registered on &quot;{this.state.username}&quot;. Contact Jostein (jostein.oygarden@gmail.com) to recover password.</Panel>});
     } else {
-      var successCallback = (response) => {
+      getUserForgotPassword(this.state.username)
+      .then((response) => {
         this.setState({message: <Panel bsStyle='success'>An e-mail with instructions to reset your password is sent to &quot;{this.state.username}&quot;.</Panel>});
-      };
-      var errorCallback = (error) => {
+      })
+      .catch((error) => {
         console.warn(error);
         this.setState({message: <Panel bsStyle='danger'>{error.toString()}</Panel>});
-      }
-      getUserForgotPassword(this.state.username, successCallback, errorCallback);
+      });
     }
   }
 
