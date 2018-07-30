@@ -1139,7 +1139,10 @@ var routes = [{ path: '/', exact: true, component: _index2.default, fetchInitial
   } }, { path: '/area/edit/:areaId', exact: true, component: _areaEdit2.default, fetchInitialData: function fetchInitialData() {
     var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
     return (0, _api.getAreaEdit)(path.split('/').pop());
-  } }, { path: '/sector/:sectorId', exact: true, component: _sector2.default }, { path: '/sector/edit/:sectorId', exact: true, component: _sectorEdit2.default }, { path: '/problem/:problemId', exact: true, component: _problem2.default }, { path: '/problem/edit/:problemId', exact: true, component: _problemEdit2.default }, { path: '/problem/edit/media/:problemId', exact: true, component: _problemEditMedia2.default }, { path: '/problem/svg-edit/:problemId/:mediaId', exact: true, component: _svgEdit2.default }, { path: '/finder/:grade', exact: true, component: _finder2.default, fetchInitialData: function fetchInitialData() {
+  } }, { path: '/sector/:sectorId', exact: true, component: _sector2.default }, { path: '/sector/edit/:sectorId', exact: true, component: _sectorEdit2.default }, { path: '/problem/:problemId', exact: true, component: _problem2.default, fetchInitialData: function fetchInitialData() {
+    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    return (0, _api.getProblem)(path.split('/').pop());
+  } }, { path: '/problem/edit/:problemId', exact: true, component: _problemEdit2.default }, { path: '/problem/edit/media/:problemId', exact: true, component: _problemEditMedia2.default }, { path: '/problem/svg-edit/:problemId/:mediaId', exact: true, component: _svgEdit2.default }, { path: '/finder/:grade', exact: true, component: _finder2.default, fetchInitialData: function fetchInitialData() {
     var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
     return (0, _api.getFinder)(path.split('/').pop());
   } }, { path: '/user', exact: true, component: _user2.default }, { path: '/user/:userId', exact: true, component: _user2.default }, { path: '/user/:userId/edit', exact: true, component: _userEdit2.default }, { path: '/login', exact: false, component: _login2.default, fetchInitialData: function fetchInitialData() {
@@ -3329,9 +3332,9 @@ var Finder = function (_Component) {
           }
         };
       });
-      var map = markers.length > 0 ? _react2.default.createElement(_map2.default, { markers: markers, defaultCenter: this.state.data.defaultCenter, defaultZoom: 7 }) : null;
+      var map = markers.length > 0 ? _react2.default.createElement(_map2.default, { markers: markers, defaultCenter: this.state.data.metadata.defaultCenter, defaultZoom: 7 }) : null;
       var table = null;
-      if (!this.state.data.isBouldering) {
+      if (!this.state.data.metadata.isBouldering) {
         table = _react2.default.createElement(
           _reactBootstrapTable.BootstrapTable,
           {
@@ -4448,10 +4451,6 @@ var _gallery = __webpack_require__(13);
 
 var _gallery2 = _interopRequireDefault(_gallery);
 
-var _superagent = __webpack_require__(3);
-
-var _superagent2 = _interopRequireDefault(_superagent);
-
 var _reactRouterBootstrap = __webpack_require__(9);
 
 var _reactBootstrap = __webpack_require__(1);
@@ -4467,10 +4466,6 @@ var _tickModal2 = _interopRequireDefault(_tickModal);
 var _commentModal = __webpack_require__(48);
 
 var _commentModal2 = _interopRequireDefault(_commentModal);
-
-var _config = __webpack_require__(2);
-
-var _config2 = _interopRequireDefault(_config);
 
 var _reactFontawesome = __webpack_require__(5);
 
@@ -4490,7 +4485,15 @@ var Problem = function (_Component) {
 
     var _this = _possibleConstructorReturn(this, (Problem.__proto__ || Object.getPrototypeOf(Problem)).call(this, props));
 
+    var data = void 0;
+    if (false) {
+      data = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+    } else {
+      data = props.staticContext.data;
+    }
     _this.state = {
+      data: data,
       tabIndex: 1,
       showTickModal: false,
       showCommentModal: false
@@ -4503,49 +4506,25 @@ var Problem = function (_Component) {
     value: function refresh(id) {
       var _this2 = this;
 
-      _superagent2.default.get(_config2.default.getUrl("problems?id=" + id)).withCredentials().end(function (err, res) {
-        if (err) {
-          _this2.setState({ error: err });
-        } else {
-          _this2.setState({
-            areaId: res.body[0].areaId,
-            areaVisibility: res.body[0].areaVisibility,
-            areaName: res.body[0].areaName,
-            sectorId: res.body[0].sectorId,
-            sectorVisibility: res.body[0].sectorVisibility,
-            sectorName: res.body[0].sectorName,
-            sectorLat: res.body[0].sectorLat,
-            sectorLng: res.body[0].sectorLng,
-            id: res.body[0].id,
-            visibility: res.body[0].visibility,
-            nr: res.body[0].nr,
-            t: res.body[0].t,
-            name: res.body[0].name,
-            comment: res.body[0].comment,
-            grade: res.body[0].grade,
-            originalGrade: res.body[0].originalGrade,
-            fa: res.body[0].fa,
-            faDateHr: res.body[0].faDateHr,
-            lat: res.body[0].lat,
-            lng: res.body[0].lng,
-            media: res.body[0].media,
-            ticks: res.body[0].ticks,
-            comments: res.body[0].comments,
-            sections: res.body[0].sections,
-            metadata: res.body[0].metadata
-          });
-        }
+      this.props.fetchInitialData(id).then(function (data) {
+        return _this2.setState(function () {
+          return { data: data };
+        });
       });
     }
   }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
-      this.refresh(this.props.match.params.problemId);
+      if (!this.state.data) {
+        this.refresh(this.props.match.params.problemId);
+      }
     }
   }, {
-    key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(nextProps) {
-      this.refresh(nextProps.match.params.problemId);
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate(prevProps, prevState) {
+      if (prevProps.match.params.problemId !== this.props.match.params.problemId) {
+        this.refresh(this.props.match.params.problemId);
+      }
     }
   }, {
     key: 'handleTabsSelection',
@@ -4595,7 +4574,7 @@ var Problem = function (_Component) {
   }, {
     key: 'onRemoveMedia',
     value: function onRemoveMedia(idMediaToRemove) {
-      var allMedia = this.state.media.filter(function (m) {
+      var allMedia = this.state.data.media.filter(function (m) {
         return m.id != idMediaToRemove;
       });
       this.setState({ media: allMedia });
@@ -4603,19 +4582,9 @@ var Problem = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
-      if (this.state.error) {
-        return _react2.default.createElement(
-          'span',
-          null,
-          _react2.default.createElement(
-            'h3',
-            null,
-            this.state.error.status
-          ),
-          this.state.error.toString()
-        );
-      }
-      if (!this.state.id) {
+      var data = this.state.data;
+
+      if (!data) {
         return _react2.default.createElement(
           'center',
           null,
@@ -4624,15 +4593,15 @@ var Problem = function (_Component) {
       }
 
       var markers = [];
-      if (this.state.lat > 0 && this.state.lng > 0) {
+      if (data.lat > 0 && data.lng > 0) {
         markers.push({
-          lat: this.state.lat,
-          lng: this.state.lng,
-          title: this.state.name + ' [' + this.state.grade + ']',
-          label: this.state.name.charAt(0),
-          url: '/problem/' + this.state.id,
+          lat: data.lat,
+          lng: data.lng,
+          title: data.name + ' [' + data.grade + ']',
+          label: data.name.charAt(0),
+          url: '/problem/' + data.id,
           icon: {
-            url: this.state.ticks && this.state.ticks.filter(function (t) {
+            url: data.ticks && data.ticks.filter(function (t) {
               return t.writable;
             }).length > 0 ? 'https://mt.google.com/vt/icon?name=icons/spotlight/spotlight-waypoint-a.png' : 'https://mt.google.com/vt/icon?name=icons/spotlight/spotlight-waypoint-b.png',
             labelOriginX: 11,
@@ -4640,22 +4609,22 @@ var Problem = function (_Component) {
           }
         });
       }
-      if (this.state.sectorLat > 0 && this.state.sectorLng > 0) {
+      if (data.sectorLat > 0 && data.sectorLng > 0) {
         markers.push({
-          lat: this.state.sectorLat,
-          lng: this.state.sectorLng,
+          lat: data.sectorLat,
+          lng: data.sectorLng,
           title: 'Parking',
-          labelContent: this.state.sectorName,
+          labelContent: data.sectorName,
           icon: {
             url: 'https://maps.google.com/mapfiles/kml/shapes/parking_lot_maps.png',
             scaledSizeW: 32,
             scaledSizeH: 32
           },
-          url: '/sector/' + this.state.sectorId
+          url: '/sector/' + data.sectorId
         });
       }
       var map = markers.length > 0 ? _react2.default.createElement(_map2.default, { markers: markers, defaultCenter: { lat: markers[0].lat, lng: markers[0].lng }, defaultZoom: 16 }) : null;
-      var gallery = this.state.media && this.state.media.length > 0 ? _react2.default.createElement(_gallery2.default, { alt: this.state.name + ' ' + this.state.grade + ' (' + this.state.areaName + " - " + this.state.sectorName + ')', media: this.state.media, showThumbnails: false, removeMedia: this.onRemoveMedia.bind(this) }) : null;
+      var gallery = data.media && data.media.length > 0 ? _react2.default.createElement(_gallery2.default, { alt: data.name + ' ' + data.grade + ' (' + data.areaName + " - " + data.sectorName + ')', media: data.media, showThumbnails: false, removeMedia: this.onRemoveMedia.bind(this) }) : null;
       var topoContent = null;
       if (map && gallery) {
         topoContent = _react2.default.createElement(
@@ -4677,7 +4646,7 @@ var Problem = function (_Component) {
       } else if (gallery) {
         topoContent = gallery;
       }
-      var fa = this.state.fa ? this.state.fa.map(function (u, i) {
+      var fa = data.fa ? data.fa.map(function (u, i) {
         return _react2.default.createElement(
           _reactRouterDom.Link,
           { key: i, to: '/user/' + u.id },
@@ -4689,8 +4658,8 @@ var Problem = function (_Component) {
       fa = this.intersperse(fa, ", ");
 
       var table = null;
-      if (this.state.ticks) {
-        var rows = this.state.ticks.map(function (t, i) {
+      if (data.ticks) {
+        var rows = data.ticks.map(function (t, i) {
           var isTickedClassName = t.writable ? 'success' : '';
           var stars = null;
           if (t.stars === 0.5) {
@@ -4832,8 +4801,8 @@ var Problem = function (_Component) {
       }
 
       var comment = null;
-      if (this.state.comments) {
-        var comments = this.state.comments.map(function (c, i) {
+      if (data.comments) {
+        var comments = data.comments.map(function (c, i) {
           var header = _react2.default.createElement(
             'span',
             null,
@@ -4876,8 +4845,8 @@ var Problem = function (_Component) {
       };
 
       var section = null;
-      if (this.state.sections) {
-        var sections = this.state.sections.map(function (s, i) {
+      if (data.sections) {
+        var sections = data.sections.map(function (s, i) {
           return _react2.default.createElement(
             'tr',
             { key: i },
@@ -4980,12 +4949,12 @@ var Problem = function (_Component) {
               _reactBootstrap.OverlayTrigger,
               { placement: 'top', overlay: _react2.default.createElement(
                   _reactBootstrap.Tooltip,
-                  { id: this.state.id },
+                  { id: data.id },
                   'Edit problem'
                 ) },
               _react2.default.createElement(
                 _reactRouterBootstrap.LinkContainer,
-                { to: { pathname: '/problem/edit/' + this.state.id, query: { idSector: this.state.sectorId, lat: this.state.sectorLat, lng: this.state.sectorLng } } },
+                { to: { pathname: '/problem/edit/' + data.id, query: { idSector: data.sectorId, lat: data.sectorLat, lng: data.sectorLng } } },
                 _react2.default.createElement(
                   _reactBootstrap.Button,
                   { bsStyle: 'primary', bsSize: 'xsmall' },
@@ -4997,12 +4966,12 @@ var Problem = function (_Component) {
               _reactBootstrap.OverlayTrigger,
               { placement: 'top', overlay: _react2.default.createElement(
                   _reactBootstrap.Tooltip,
-                  { id: this.state.id },
+                  { id: data.id },
                   'Add image(s)'
                 ) },
               _react2.default.createElement(
                 _reactRouterBootstrap.LinkContainer,
-                { to: { pathname: '/problem/edit/media/' + this.state.id } },
+                { to: { pathname: '/problem/edit/media/' + data.id } },
                 _react2.default.createElement(
                   _reactBootstrap.Button,
                   { bsStyle: 'primary', bsSize: 'xsmall' },
@@ -5015,16 +4984,16 @@ var Problem = function (_Component) {
       }
 
       var tickModal = null;
-      if (this.state.ticks) {
-        var userTicks = this.state.ticks.filter(function (t) {
+      if (data.ticks) {
+        var userTicks = data.ticks.filter(function (t) {
           return t.writable;
         });
         if (userTicks && userTicks.length > 0) {
-          tickModal = _react2.default.createElement(_tickModal2.default, { idTick: userTicks[0].id, idProblem: this.state.id, date: userTicks[0].date, comment: userTicks[0].comment, grade: userTicks[0].suggestedGrade, stars: userTicks[0].stars, show: this.state.showTickModal, onHide: this.closeTickModal.bind(this) });
+          tickModal = _react2.default.createElement(_tickModal2.default, { idTick: userTicks[0].id, idProblem: data.id, date: userTicks[0].date, comment: userTicks[0].comment, grade: userTicks[0].suggestedGrade, stars: userTicks[0].stars, show: this.state.showTickModal, onHide: this.closeTickModal.bind(this) });
         }
       }
       if (!tickModal) {
-        tickModal = _react2.default.createElement(_tickModal2.default, { idTick: -1, idProblem: this.state.id, grade: this.state.originalGrade, show: this.state.showTickModal, onHide: this.closeTickModal.bind(this) });
+        tickModal = _react2.default.createElement(_tickModal2.default, { idTick: -1, idProblem: data.id, grade: data.originalGrade, show: this.state.showTickModal, onHide: this.closeTickModal.bind(this) });
       }
 
       return _react2.default.createElement(
@@ -5036,17 +5005,17 @@ var Problem = function (_Component) {
           _react2.default.createElement(
             'script',
             { type: 'application/ld+json' },
-            JSON.stringify(this.state.metadata.jsonLd)
+            JSON.stringify(data.metadata.jsonLd)
           ),
           _react2.default.createElement(
             'title',
             null,
-            this.state.metadata.title
+            data.metadata.title
           ),
-          _react2.default.createElement('meta', { name: 'description', content: this.state.metadata.description })
+          _react2.default.createElement('meta', { name: 'description', content: data.metadata.description })
         ),
         tickModal,
-        _react2.default.createElement(_commentModal2.default, { idProblem: this.state.id, show: this.state.showCommentModal, onHide: this.closeCommentModal.bind(this) }),
+        _react2.default.createElement(_commentModal2.default, { idProblem: data.id, show: this.state.showCommentModal, onHide: this.closeCommentModal.bind(this) }),
         _react2.default.createElement(
           _reactBootstrap.Breadcrumb,
           null,
@@ -5065,40 +5034,40 @@ var Problem = function (_Component) {
           ' / ',
           _react2.default.createElement(
             _reactRouterDom.Link,
-            { to: '/area/' + this.state.areaId },
-            this.state.areaName
+            { to: '/area/' + data.areaId },
+            data.areaName
           ),
           ' ',
-          this.state.areaVisibility === 1 && _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'lock' }),
-          this.state.areaVisibility === 2 && _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'user-secret' }),
+          data.areaVisibility === 1 && _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'lock' }),
+          data.areaVisibility === 2 && _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'user-secret' }),
           ' / ',
           _react2.default.createElement(
             _reactRouterDom.Link,
-            { to: '/sector/' + this.state.sectorId },
-            this.state.sectorName
+            { to: '/sector/' + data.sectorId },
+            data.sectorName
           ),
           ' ',
-          this.state.sectorVisibility === 1 && _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'lock' }),
-          this.state.sectorVisibility === 2 && _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'user-secret' }),
+          data.sectorVisibility === 1 && _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'lock' }),
+          data.sectorVisibility === 2 && _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'user-secret' }),
           ' / ',
-          this.state.nr,
+          data.nr,
           ' ',
           _react2.default.createElement(
             'font',
             { color: '#777' },
-            this.state.name
+            data.name
           ),
           ' ',
-          this.state.grade,
+          data.grade,
           ' ',
-          this.state.visibility === 1 && _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'lock' }),
-          this.state.visibility === 2 && _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'user-secret' })
+          data.visibility === 1 && _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'lock' }),
+          data.visibility === 2 && _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'user-secret' })
         ),
         topoContent,
         _react2.default.createElement(
           _reactBootstrap.Well,
           { bsSize: 'small' },
-          !_config2.default.isBouldering() && _react2.default.createElement(
+          !data.metadata.isBouldering && _react2.default.createElement(
             'span',
             null,
             _react2.default.createElement(
@@ -5107,7 +5076,7 @@ var Problem = function (_Component) {
               'Type:'
             ),
             ' ',
-            this.state.t.type + " - " + this.state.t.subType,
+            data.t.type + " - " + data.t.subType,
             _react2.default.createElement('br', null)
           ),
           _react2.default.createElement(
@@ -5116,7 +5085,7 @@ var Problem = function (_Component) {
             'Comment:'
           ),
           ' ',
-          this.state.comment,
+          data.comment,
           _react2.default.createElement('br', null),
           _react2.default.createElement(
             'strong',
@@ -5132,7 +5101,7 @@ var Problem = function (_Component) {
             'FA date:'
           ),
           ' ',
-          this.state.faDateHr,
+          data.faDateHr,
           _react2.default.createElement('br', null),
           _react2.default.createElement(
             'strong',
@@ -5140,14 +5109,14 @@ var Problem = function (_Component) {
             'Original grade:'
           ),
           ' ',
-          this.state.originalGrade,
+          data.originalGrade,
           _react2.default.createElement('br', null),
-          this.state.sectorLat > 0 && this.state.sectorLng > 0 && _react2.default.createElement(
+          data.sectorLat > 0 && data.sectorLng > 0 && _react2.default.createElement(
             'span',
             null,
             _react2.default.createElement(
               'a',
-              { href: 'http://maps.google.com/maps?q=loc:' + this.state.sectorLat + ',' + this.state.sectorLng + '&navigate=yes', rel: 'noopener', target: '_blank' },
+              { href: 'http://maps.google.com/maps?q=loc:' + data.sectorLat + ',' + data.sectorLng + '&navigate=yes', rel: 'noopener', target: '_blank' },
               'Start navigation'
             ),
             _react2.default.createElement('br', null)
@@ -9389,12 +9358,138 @@ exports.default = UserEdit;
 
 /***/ }),
 /* 62 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-throw new Error("Module build failed: SyntaxError: C:/git/buldreinfo-web/src/shared/api.js: `getAreaEdit` has already been exported. Exported identifiers must be unique. (12:0)\n\n\u001b[0m \u001b[90m 10 | \u001b[39m}\n \u001b[90m 11 | \u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 12 | \u001b[39m\u001b[36mexport\u001b[39m \u001b[36mfunction\u001b[39m getAreaEdit(id) {\n \u001b[90m    | \u001b[39m\u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 13 | \u001b[39m  \u001b[36mreturn\u001b[39m fetch(encodeURI(\u001b[32m`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/areas/edit?id=${id}`\u001b[39m)\u001b[33m,\u001b[39m {credentials\u001b[33m:\u001b[39m \u001b[32m'include'\u001b[39m})\n \u001b[90m 14 | \u001b[39m    \u001b[33m.\u001b[39mthen((data) \u001b[33m=>\u001b[39m data\u001b[33m.\u001b[39mjson())\n \u001b[90m 15 | \u001b[39m    \u001b[33m.\u001b[39m\u001b[36mcatch\u001b[39m((error) \u001b[33m=>\u001b[39m {\u001b[0m\n");
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getArea = getArea;
+exports.getAreaEdit = getAreaEdit;
+exports.getBrowse = getBrowse;
+exports.getFinder = getFinder;
+exports.getFrontpage = getFrontpage;
+exports.getMeta = getMeta;
+exports.getProblem = getProblem;
+exports.getUserPassword = getUserPassword;
+exports.getUserForgotPassword = getUserForgotPassword;
+exports.postArea = postArea;
+exports.postUserRegister = postUserRegister;
+
+var _isomorphicFetch = __webpack_require__(63);
+
+var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function getArea(id) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/areas?id=' + id), { credentials: 'include' }).then(function (data) {
+    return data.json();
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
+function getAreaEdit(id) {
+  if (id === -1) {
+    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta')).then(function (data) {
+      return data.json();
+    }).then(function (json) {
+      return { id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: { title: 'New area | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter } };
+    }).catch(function (error) {
+      console.warn(error);
+      return null;
+    });
+  } else {
+    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/areas/edit?id=' + id), { credentials: 'include' }).then(function (data) {
+      return data.json();
+    }).then(function (json) {
+      return { id: res.id, visibility: res.visibility, name: res.name, comment: res.comment, lat: res.lat, lng: res.lng, newMedia: [], metadata: res.metadata };
+    }).catch(function (error) {
+      console.warn(error);
+      return null;
+    });
+  }
+}
+
+function getBrowse() {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/browse'), { credentials: 'include' }).then(function (data) {
+    return data.json();
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
+function getFinder(grade) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/finder?grade=' + grade), { credentials: 'include' }).then(function (data) {
+    return data.json();
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
+function getFrontpage() {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/frontpage'), { credentials: 'include' }).then(function (data) {
+    return data.json();
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
+function getMeta() {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta')).then(function (data) {
+    return data.json();
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
+function getProblem(id) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/problems?id=' + id), { credentials: 'include' }).then(function (data) {
+    return data.json();
+  }).then(function (json) {
+    return json[0];
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
+function getUserPassword(token, password) {
+  (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/password?token=' + token + '&password=' + password));
+}
+
+function getUserForgotPassword(username) {
+  (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/forgotPassword?username=' + username));
+}
+
+function postArea(id, visibility, name, comment, lat, lng, newMedia) {
+  var formData = new FormData();
+  formData.append('json', JSON.stringify({ id: this.state.id, visibility: this.state.visibility, name: this.state.name, comment: this.state.comment, lat: this.state.lat, lng: this.state.lng, newMedia: newMedia }));
+  newMedia.forEach(function (m) {
+    return formData.append(m.file.name.replace(/[^-a-z0-9.]/ig, '_'), m.file);
+  });
+  (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/register'), { method: "POST", body: formData });
+}
+
+function postUserRegister(firstname, lastname, username, password) {
+  (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/register'), { method: "POST", body: { firstname: firstname, lastname: lastname, username: username, password: password } });
+}
 
 /***/ }),
-/* 63 */,
+/* 63 */
+/***/ (function(module, exports) {
+
+module.exports = require("isomorphic-fetch");
+
+/***/ }),
 /* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 

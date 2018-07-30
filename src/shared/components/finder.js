@@ -211,9 +211,9 @@ export default class Finder extends Component {
           }
         }
     });
-    const map = markers.length>0? <Map markers={markers} defaultCenter={this.state.data.defaultCenter} defaultZoom={7}/> : null;
+    const map = markers.length>0? <Map markers={markers} defaultCenter={this.state.data.metadata.defaultCenter} defaultZoom={7}/> : null;
     var table = null;
-    if (!this.state.data.isBouldering) {
+    if (!this.state.data.metadata.isBouldering) {
       table = <BootstrapTable
                 data={this.state.data.problems}
                 trClassName={this.trClassFormat.bind(this)}

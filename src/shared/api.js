@@ -1,6 +1,6 @@
 import fetch from 'isomorphic-fetch';
 
-export function getAreaEdit(id) {
+export function getArea(id) {
   return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/areas?id=${id}`), {credentials: 'include'})
     .then((data) => data.json())
     .catch((error) => {
@@ -10,12 +10,27 @@ export function getAreaEdit(id) {
 }
 
 export function getAreaEdit(id) {
-  return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/areas/edit?id=${id}`), {credentials: 'include'})
-    .then((data) => data.json())
-    .catch((error) => {
-      console.warn(error);
-      return null;
-    });
+  if (id === -1) {
+    return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta`))
+      .then((data) => data.json())
+      .then((json) => {
+        return {id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: {title: 'New area | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter}};
+      })
+      .catch((error) => {
+        console.warn(error);
+        return null;
+      });
+  } else {
+    return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/areas/edit?id=${id}`), {credentials: 'include'})
+      .then((data) => data.json())
+      .then((json) => {
+        return {id: res.id, visibility: res.visibility, name: res.name, comment: res.comment, lat: res.lat, lng: res.lng, newMedia: [], metadata: res.metadata};
+      })
+      .catch((error) => {
+        console.warn(error);
+        return null;
+      });
+  }
 }
 
 export function getBrowse() {
@@ -48,6 +63,16 @@ export function getFrontpage() {
 export function getMeta() {
   return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta`))
     .then((data) => data.json())
+    .catch((error) => {
+      console.warn(error);
+      return null;
+    });
+}
+
+export function getProblem(id) {
+  return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/problems?id=${id}`), {credentials: 'include'})
+    .then((data) => data.json())
+    .then((json) => json[0])
     .catch((error) => {
       console.warn(error);
       return null;

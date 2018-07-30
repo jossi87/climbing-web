@@ -3,19 +3,25 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Map from './common/map/map';
 import Gallery from './common/gallery/gallery';
-import Request from 'superagent';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Tabs, Tab, Well, Panel, ButtonGroup, Button, Breadcrumb, OverlayTrigger, Popover, Tooltip, Table } from 'react-bootstrap';
 import auth from '../utils/auth.js';
 import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
-import config from '../utils/config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default class Problem extends Component {
   constructor(props) {
     super(props);
+    let data;
+    if (__isBrowser__) {
+      data = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+    } else {
+      data = props.staticContext.data;
+    }
     this.state = {
+      data,
       tabIndex: 1,
       showTickModal: false,
       showCommentModal: false
@@ -23,47 +29,19 @@ export default class Problem extends Component {
   }
 
   refresh(id) {
-    Request.get(config.getUrl("problems?id=" + id)).withCredentials().end((err, res) => {
-      if (err) {
-        this.setState({error: err});
-      } else {
-        this.setState({
-          areaId: res.body[0].areaId,
-          areaVisibility: res.body[0].areaVisibility,
-          areaName: res.body[0].areaName,
-          sectorId: res.body[0].sectorId,
-          sectorVisibility: res.body[0].sectorVisibility,
-          sectorName: res.body[0].sectorName,
-          sectorLat: res.body[0].sectorLat,
-          sectorLng: res.body[0].sectorLng,
-          id: res.body[0].id,
-          visibility: res.body[0].visibility,
-          nr: res.body[0].nr,
-          t: res.body[0].t,
-          name: res.body[0].name,
-          comment: res.body[0].comment,
-          grade: res.body[0].grade,
-          originalGrade: res.body[0].originalGrade,
-          fa: res.body[0].fa,
-          faDateHr: res.body[0].faDateHr,
-          lat: res.body[0].lat,
-          lng: res.body[0].lng,
-          media: res.body[0].media,
-          ticks: res.body[0].ticks,
-          comments: res.body[0].comments,
-          sections: res.body[0].sections,
-          metadata: res.body[0].metadata
-        });
-      }
-    });
+    this.props.fetchInitialData(id).then((data) => this.setState(() => ({data})));
   }
 
   componentDidMount() {
-    this.refresh(this.props.match.params.problemId);
+    if (!this.state.data) {
+      this.refresh(this.props.match.params.problemId);
+    }
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.refresh(nextProps.match.params.problemId);
+  componentDidUpdate (prevProps, prevState) {
+    if (prevProps.match.params.problemId !== this.props.match.params.problemId) {
+      this.refresh(this.props.match.params.problemId);
+    }
   }
 
   handleTabsSelection(key) {
@@ -104,49 +82,47 @@ export default class Problem extends Component {
   }
 
   onRemoveMedia(idMediaToRemove) {
-    const allMedia = this.state.media.filter(m => m.id!=idMediaToRemove);
+    const allMedia = this.state.data.media.filter(m => m.id!=idMediaToRemove);
     this.setState({media: allMedia});
   }
 
   render() {
-    if (this.state.error) {
-      return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;
-    }
-    if (!this.state.id) {
+    const { data } = this.state;
+    if (!data) {
       return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
 
     const markers = [];
-    if (this.state.lat>0 && this.state.lng>0) {
+    if (data.lat>0 && data.lng>0) {
       markers.push({
-        lat: this.state.lat,
-        lng: this.state.lng,
-        title: this.state.name + ' [' + this.state.grade + ']',
-        label: this.state.name.charAt(0),
-        url: '/problem/' + this.state.id,
+        lat: data.lat,
+        lng: data.lng,
+        title: data.name + ' [' + data.grade + ']',
+        label: data.name.charAt(0),
+        url: '/problem/' + data.id,
         icon: {
-          url: (this.state.ticks && this.state.ticks.filter(t => t.writable).length>0)? 'https://mt.google.com/vt/icon?name=icons/spotlight/spotlight-waypoint-a.png' : 'https://mt.google.com/vt/icon?name=icons/spotlight/spotlight-waypoint-b.png',
+          url: (data.ticks && data.ticks.filter(t => t.writable).length>0)? 'https://mt.google.com/vt/icon?name=icons/spotlight/spotlight-waypoint-a.png' : 'https://mt.google.com/vt/icon?name=icons/spotlight/spotlight-waypoint-b.png',
           labelOriginX: 11,
           labelOriginY: 13
         }
       });
     }
-    if (this.state.sectorLat>0 && this.state.sectorLng>0) {
+    if (data.sectorLat>0 && data.sectorLng>0) {
       markers.push({
-        lat: this.state.sectorLat,
-        lng: this.state.sectorLng,
+        lat: data.sectorLat,
+        lng: data.sectorLng,
         title: 'Parking',
-        labelContent: this.state.sectorName,
+        labelContent: data.sectorName,
         icon: {
           url: 'https://maps.google.com/mapfiles/kml/shapes/parking_lot_maps.png',
           scaledSizeW: 32,
           scaledSizeH: 32
         },
-        url: '/sector/' + this.state.sectorId
+        url: '/sector/' + data.sectorId
       });
     }
     const map = markers.length>0? <Map markers={markers} defaultCenter={{lat: markers[0].lat, lng: markers[0].lng}} defaultZoom={16}/> : null;
-    const gallery = this.state.media && this.state.media.length>0? <Gallery alt={this.state.name + ' ' + this.state.grade + ' (' + this.state.areaName + " - " + this.state.sectorName + ')'} media={this.state.media} showThumbnails={false} removeMedia={this.onRemoveMedia.bind(this)} /> : null;
+    const gallery = data.media && data.media.length>0? <Gallery alt={data.name + ' ' + data.grade + ' (' + data.areaName + " - " + data.sectorName + ')'} media={data.media} showThumbnails={false} removeMedia={this.onRemoveMedia.bind(this)} /> : null;
     var topoContent = null;
     if (map && gallery) {
       topoContent = (
@@ -160,12 +136,12 @@ export default class Problem extends Component {
     } else if (gallery) {
       topoContent = gallery;
     }
-    var fa = this.state.fa? this.state.fa.map((u, i) => {return (<Link key={i} to={`/user/${u.id}`}>{u.firstname} {u.surname}</Link>)}) : [];
+    var fa = data.fa? data.fa.map((u, i) => {return (<Link key={i} to={`/user/${u.id}`}>{u.firstname} {u.surname}</Link>)}) : [];
     fa = this.intersperse(fa, ", ");
 
     var table = null;
-    if (this.state.ticks) {
-      const rows = this.state.ticks.map((t, i) => {
+    if (data.ticks) {
+      const rows = data.ticks.map((t, i) => {
         const isTickedClassName = t.writable? 'success' : '';
         var stars = null;
         if (t.stars===0.5) {
@@ -219,8 +195,8 @@ export default class Problem extends Component {
     }
 
     var comment = null;
-    if (this.state.comments) {
-      const comments = this.state.comments.map((c, i) => {
+    if (data.comments) {
+      const comments = data.comments.map((c, i) => {
         const header = <span><Link to={`/user/${c.idUser}`}>{c.name}</Link> <small><i>{c.date}</i></small></span>;
         return (
           <Panel key={i}>
@@ -233,8 +209,8 @@ export default class Problem extends Component {
     };
 
     var section = null;
-    if (this.state.sections) {
-      const sections = this.state.sections.map((s, i) => {
+    if (data.sections) {
+      const sections = data.sections.map((s, i) => {
         return (
           <tr key={i}>
             <td>{s.nr}</td>
@@ -274,13 +250,13 @@ export default class Problem extends Component {
               <Button bsStyle="primary" bsSize="xsmall" onClick={this.openCommentModal.bind(this)}><FontAwesomeIcon icon="comment" inverse={true} /></Button>
             </OverlayTrigger>
             {auth.isAdmin() &&
-              <OverlayTrigger placement="top" overlay={<Tooltip id={this.state.id}>Edit problem</Tooltip>}>
-                <LinkContainer to={{ pathname: `/problem/edit/${this.state.id}`, query: { idSector: this.state.sectorId, lat: this.state.sectorLat, lng: this.state.sectorLng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="edit" inverse={true} /></Button></LinkContainer>
+              <OverlayTrigger placement="top" overlay={<Tooltip id={data.id}>Edit problem</Tooltip>}>
+                <LinkContainer to={{ pathname: `/problem/edit/${data.id}`, query: { idSector: data.sectorId, lat: data.sectorLat, lng: data.sectorLng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="edit" inverse={true} /></Button></LinkContainer>
               </OverlayTrigger>
             }
             {!auth.isAdmin() &&
-              <OverlayTrigger placement="top" overlay={<Tooltip id={this.state.id}>Add image(s)</Tooltip>}>
-                <LinkContainer to={{ pathname: `/problem/edit/media/${this.state.id}` }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="image" inverse={true} /></Button></LinkContainer>
+              <OverlayTrigger placement="top" overlay={<Tooltip id={data.id}>Add image(s)</Tooltip>}>
+                <LinkContainer to={{ pathname: `/problem/edit/media/${data.id}` }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="image" inverse={true} /></Button></LinkContainer>
               </OverlayTrigger>
             }
           </ButtonGroup>
@@ -289,40 +265,40 @@ export default class Problem extends Component {
     }
 
     var tickModal = null;
-    if (this.state.ticks) {
-      const userTicks = this.state.ticks.filter(t => t.writable);
+    if (data.ticks) {
+      const userTicks = data.ticks.filter(t => t.writable);
       if (userTicks && userTicks.length>0) {
-        tickModal = <TickModal idTick={userTicks[0].id} idProblem={this.state.id} date={userTicks[0].date} comment={userTicks[0].comment} grade={userTicks[0].suggestedGrade} stars={userTicks[0].stars} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/>
+        tickModal = <TickModal idTick={userTicks[0].id} idProblem={data.id} date={userTicks[0].date} comment={userTicks[0].comment} grade={userTicks[0].suggestedGrade} stars={userTicks[0].stars} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/>
       }
     }
     if (!tickModal) {
-      tickModal = <TickModal idTick={-1} idProblem={this.state.id} grade={this.state.originalGrade} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/>;
+      tickModal = <TickModal idTick={-1} idProblem={data.id} grade={data.originalGrade} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/>;
     }
 
     return (
       <span>
         <MetaTags>
-          <script type="application/ld+json">{JSON.stringify(this.state.metadata.jsonLd)}</script>
-          <title>{this.state.metadata.title}</title>
-          <meta name="description" content={this.state.metadata.description} />
+          <script type="application/ld+json">{JSON.stringify(data.metadata.jsonLd)}</script>
+          <title>{data.metadata.title}</title>
+          <meta name="description" content={data.metadata.description} />
         </MetaTags>
 
         {tickModal}
-        <CommentModal idProblem={this.state.id} show={this.state.showCommentModal} onHide={this.closeCommentModal.bind(this)}/>
+        <CommentModal idProblem={data.id} show={this.state.showCommentModal} onHide={this.closeCommentModal.bind(this)}/>
 
         <Breadcrumb>
           {headerButtons}
-          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${this.state.areaId}`}>{this.state.areaName}</Link> {this.state.areaVisibility===1 && <FontAwesomeIcon icon="lock" />}{this.state.areaVisibility===2 && <FontAwesomeIcon icon="user-secret" />} / <Link to={`/sector/${this.state.sectorId}`}>{this.state.sectorName}</Link> {this.state.sectorVisibility===1 && <FontAwesomeIcon icon="lock" />}{this.state.sectorVisibility===2 && <FontAwesomeIcon icon="user-secret" />} / {this.state.nr} <font color='#777'>{this.state.name}</font> {this.state.grade} {this.state.visibility===1 && <FontAwesomeIcon icon="lock" />}{this.state.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
+          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${data.areaId}`}>{data.areaName}</Link> {data.areaVisibility===1 && <FontAwesomeIcon icon="lock" />}{data.areaVisibility===2 && <FontAwesomeIcon icon="user-secret" />} / <Link to={`/sector/${data.sectorId}`}>{data.sectorName}</Link> {data.sectorVisibility===1 && <FontAwesomeIcon icon="lock" />}{data.sectorVisibility===2 && <FontAwesomeIcon icon="user-secret" />} / {data.nr} <font color='#777'>{data.name}</font> {data.grade} {data.visibility===1 && <FontAwesomeIcon icon="lock" />}{data.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
         </Breadcrumb>
         {topoContent}
         <Well bsSize="small">
-          {!config.isBouldering() && <span><strong>Type:</strong> {this.state.t.type + " - " + this.state.t.subType}<br/></span>}
-          <strong>Comment:</strong> {this.state.comment}<br/>
+          {!data.metadata.isBouldering && <span><strong>Type:</strong> {data.t.type + " - " + data.t.subType}<br/></span>}
+          <strong>Comment:</strong> {data.comment}<br/>
           <strong>FA:</strong> {fa}<br/>
-          <strong>FA date:</strong> {this.state.faDateHr}<br/>
-          <strong>Original grade:</strong> {this.state.originalGrade}<br/>
-          {this.state.sectorLat>0 && this.state.sectorLng>0 &&
-            <span><a href={`http://maps.google.com/maps?q=loc:${this.state.sectorLat},${this.state.sectorLng}&navigate=yes`} rel="noopener" target="_blank">Start navigation</a><br/></span>}
+          <strong>FA date:</strong> {data.faDateHr}<br/>
+          <strong>Original grade:</strong> {data.originalGrade}<br/>
+          {data.sectorLat>0 && data.sectorLng>0 &&
+            <span><a href={`http://maps.google.com/maps?q=loc:${data.sectorLat},${data.sectorLng}&navigate=yes`} rel="noopener" target="_blank">Start navigation</a><br/></span>}
           {section}
         </Well>
         {table}
