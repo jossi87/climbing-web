@@ -17,7 +17,7 @@ import SvgEdit from './components/common/svg/svg-edit';
 import User from './components/user';
 import UserEdit from './components/user-edit';
 
-import { getArea, getAreaEdit, getBrowse, getFinder, getFrontpage, getMeta, getProblem, getSector } from './api';
+import { getArea, getAreaEdit, getBrowse, getFinder, getFrontpage, getMeta, getProblem, getSector, getUser } from './api';
 
 const routes =  [
   {path: '/', exact: true, component: Index, fetchInitialData: (path = '') => getFrontpage()},
@@ -33,7 +33,7 @@ const routes =  [
   {path: '/problem/svg-edit/:problemId/:mediaId', exact: true, component: SvgEdit},
   {path: '/finder/:grade', exact: true, component: Finder, fetchInitialData: (path = '') => getFinder(path.split('/').pop())},
   {path: '/user', exact: true, component: User},
-  {path: '/user/:userId', exact: true, component: User},
+  {path: '/user/:userId', exact: true, component: User, fetchInitialData: (path = '') => getUser(path.split('/').pop())},
   {path: '/user/:userId/edit', exact: true, component: UserEdit},
   {path: '/login', exact: false, component: Login, fetchInitialData: (path = '') => getMeta()},
   {path: '/register', exact: false, component: Register, fetchInitialData: (path = '') => getMeta()},

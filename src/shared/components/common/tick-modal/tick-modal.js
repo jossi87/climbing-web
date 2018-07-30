@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { Modal, Button, FormGroup, ControlLabel, FormControl, ButtonGroup, DropdownButton, MenuItem } from 'react-bootstrap';
 import Calendar from 'react-input-calendar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { getGrades, postTicks } from './../../../api';
+import { postTicks } from './../../../api';
 
 export default class TickModal extends Component {
   constructor(props) {
@@ -23,13 +23,13 @@ export default class TickModal extends Component {
       date: date,
       comment: props.comment? props.comment : "",
       grade: props.grade,
-      stars: props.stars? props.stars : 0
+      stars: props.stars? props.stars : 0,
+      grades: props.grades
     });
   }
 
   componentDidMount() {
     this.refresh(this.props);
-    getGrades().then((grades) => this.setState(() => ({grades})));
   }
 
   componentWillReceiveProps(nextProps) {

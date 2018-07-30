@@ -1,40 +1,41 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
-import Request from 'superagent';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Tabs, Tab, ButtonToolbar, ButtonGroup, Button, OverlayTrigger, Tooltip, Popover, DropdownButton, MenuItem, Well, Breadcrumb } from 'react-bootstrap';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Chart from './common/chart/chart';
 import TickModal from './common/tick-modal/tick-modal';
 import auth from '../utils/auth.js';
-import config from '../utils/config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default class User extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      showTickModal: false
-    };
+    let data;
+    if (__isBrowser__) {
+      data = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+    } else {
+      data = props.staticContext.data;
+    }
+    this.state = {data, showTickModal: false};
   }
 
-  refresh(userId) {
-    Request.get(config.getUrl("users" + (userId? "?id=" + userId : ""))).withCredentials().end((err, res) => {
-      if (err) {
-        this.setState({error: err});
-      } else {
-        this.setState({user: res.body});
-      }
-    });
+  refresh(id) {
+    this.props.fetchInitialData(id).then((data) => this.setState(() => ({data})));
   }
 
   componentDidMount() {
-    this.refresh(this.props.match.params.userId);
+    if (!this.state.data) {
+      this.refresh(this.props.match.params.userId);
+    }
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.refresh(nextProps.match.params.userId);
+  componentDidUpdate (prevProps, prevState) {
+    if (prevProps.match.params.userId !== this.props.match.params.userId) {
+      this.refresh(this.props.match.params.userId);
+    }
   }
 
   closeTickModal(event) {
@@ -96,7 +97,7 @@ export default class User extends Component {
   }
 
   formatEdit(cell, row) {
-    if (this.state.user.readOnly==false && row.id!=0) {
+    if (this.state.data.readOnly==false && row.id!=0) {
       return <OverlayTrigger placement="top" overlay={<Tooltip id={row.id}>Edit tick</Tooltip>}><Button bsSize="xsmall" bsStyle="primary" onClick={this.openTickModal.bind(this, row)}><FontAwesomeIcon icon="edit" inverse={true} /></Button></OverlayTrigger>
     }
     return "";
@@ -136,41 +137,39 @@ export default class User extends Component {
   }
 
   render() {
-    if (!this.state.user) {
+    const { data } = this.state;
+    if (!data) {
       return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
-    if (this.state.error) {
-      return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;
-    }
 
-    var numTicks = this.state.user.ticks.filter(t => !t.fa).length;
-    var numFas = this.state.user.ticks.filter(t => t.fa).length;
+    var numTicks = data.ticks.filter(t => !t.fa).length;
+    var numFas = data.ticks.filter(t => t.fa).length;
 
-    const chart = this.state.user.ticks.length>0? <Chart data={this.state.user.ticks}/> : null;
+    const chart = data.ticks.length>0? <Chart data={data.ticks}/> : null;
 
     return (
       <span>
         <MetaTags>
-          <title>{this.state.user.metadata.title}</title>
-          <meta name="description" content={this.state.user.metadata.description} />
+          <title>{data.metadata.title}</title>
+          <meta name="description" content={data.metadata.description} />
         </MetaTags>
 
-        {this.state.currTick? <TickModal idTick={this.state.currTick.id} idProblem={this.state.currTick.idProblem} date={this.state.currTick.date} comment={this.state.currTick.comment} grade={this.state.currTick.grade} stars={this.state.currTick.stars} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/> : ""}
+        {this.state.currTick? <TickModal idTick={this.state.currTick.id} idProblem={this.state.currTick.idProblem} date={this.state.currTick.date} comment={this.state.currTick.comment} grade={this.state.currTick.grade} grades={data.metadata.grades} stars={this.state.currTick.stars} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/> : ""}
         <Breadcrumb>
-          {auth.loggedIn() && this.state.user.readOnly==false?
+          {auth.loggedIn() && currTick.user.readOnly==false?
             <div style={{float: 'right'}}>
-              <OverlayTrigger placement="top" overlay={<Tooltip id={this.state.user.id}>Edit user</Tooltip>}>
-                <LinkContainer to={`/user/${this.state.user.id}/edit`}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="edit" inverse={true} /></Button></LinkContainer>
+              <OverlayTrigger placement="top" overlay={<Tooltip id={data.id}>Edit user</Tooltip>}>
+                <LinkContainer to={`/user/${data.id}/edit`}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="edit" inverse={true} /></Button></LinkContainer>
               </OverlayTrigger>
             </div>:
             null
           }
-          <Link to={`/`}>Home</Link> / <font color='#777'>{this.state.user.name}</font>
+          <Link to={`/`}>Home</Link> / <font color='#777'>{data.name}</font>
         </Breadcrumb>
-        <Well bsSize="small">First ascents: {numFas}<br/>Public ascents: {numTicks}<br/>Pictures taken: {this.state.user.numImagesCreated}<br/>Appearance in pictures: {this.state.user.numImageTags}<br/>Videos created: {this.state.user.numVideosCreated}<br/>Appearance in videos: {this.state.user.numVideoTags}</Well>
+        <Well bsSize="small">First ascents: {numFas}<br/>Public ascents: {numTicks}<br/>Pictures taken: {data.numImagesCreated}<br/>Appearance in pictures: {data.numImageTags}<br/>Videos created: {data.numVideosCreated}<br/>Appearance in videos: {data.numVideoTags}</Well>
         {chart}
         <BootstrapTable
-        	data={this.state.user.ticks}
+        	data={data.ticks}
           condensed={true}
         	hover={true}
         	columnFilter={false}>

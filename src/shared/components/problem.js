@@ -268,7 +268,7 @@ export default class Problem extends Component {
     if (data.ticks) {
       const userTicks = data.ticks.filter(t => t.writable);
       if (userTicks && userTicks.length>0) {
-        tickModal = <TickModal idTick={userTicks[0].id} idProblem={data.id} date={userTicks[0].date} comment={userTicks[0].comment} grade={userTicks[0].suggestedGrade} stars={userTicks[0].stars} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/>
+        tickModal = <TickModal idTick={userTicks[0].id} idProblem={data.id} date={userTicks[0].date} comment={userTicks[0].comment} grade={userTicks[0].suggestedGrade} grades={data.metadata.grades} stars={userTicks[0].stars} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/>
       }
     }
     if (!tickModal) {

@@ -1142,7 +1142,10 @@ var routes = [{ path: '/', exact: true, component: _index2.default, fetchInitial
   } }, { path: '/problem/edit/:problemId', exact: true, component: _problemEdit2.default }, { path: '/problem/edit/media/:problemId', exact: true, component: _problemEditMedia2.default }, { path: '/problem/svg-edit/:problemId/:mediaId', exact: true, component: _svgEdit2.default }, { path: '/finder/:grade', exact: true, component: _finder2.default, fetchInitialData: function fetchInitialData() {
     var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
     return (0, _api.getFinder)(path.split('/').pop());
-  } }, { path: '/user', exact: true, component: _user2.default }, { path: '/user/:userId', exact: true, component: _user2.default }, { path: '/user/:userId/edit', exact: true, component: _userEdit2.default }, { path: '/login', exact: false, component: _login2.default, fetchInitialData: function fetchInitialData() {
+  } }, { path: '/user', exact: true, component: _user2.default }, { path: '/user/:userId', exact: true, component: _user2.default, fetchInitialData: function fetchInitialData() {
+    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    return (0, _api.getUser)(path.split('/').pop());
+  } }, { path: '/user/:userId/edit', exact: true, component: _userEdit2.default }, { path: '/login', exact: false, component: _login2.default, fetchInitialData: function fetchInitialData() {
     var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
     return (0, _api.getMeta)();
   } }, { path: '/register', exact: false, component: _register2.default, fetchInitialData: function fetchInitialData() {
@@ -1223,20 +1226,14 @@ var TickModal = function (_Component) {
         date: date,
         comment: props.comment ? props.comment : "",
         grade: props.grade,
-        stars: props.stars ? props.stars : 0
+        stars: props.stars ? props.stars : 0,
+        grades: props.grades
       });
     }
   }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
-      var _this2 = this;
-
       this.refresh(this.props);
-      (0, _api.getGrades)().then(function (grades) {
-        return _this2.setState(function () {
-          return { grades: grades };
-        });
-      });
     }
   }, {
     key: 'componentWillReceiveProps',
@@ -1266,10 +1263,10 @@ var TickModal = function (_Component) {
   }, {
     key: 'delete',
     value: function _delete(e) {
-      var _this3 = this;
+      var _this2 = this;
 
       (0, _api.postTicks)(true, this.state.idTick, this.state.idProblem, this.state.comment, this.state.date, this.state.stars, this.state.grade).then(function (response) {
-        _this3.props.onHide();
+        _this2.props.onHide();
       }).catch(function (error) {
         console.warn(error);
         alert(error.toString());
@@ -1278,10 +1275,10 @@ var TickModal = function (_Component) {
   }, {
     key: 'save',
     value: function save(e) {
-      var _this4 = this;
+      var _this3 = this;
 
       (0, _api.postTicks)(false, this.state.idTick, this.state.idProblem, this.state.comment, this.state.date, this.state.stars, this.state.grade).then(function (response) {
-        _this4.props.onHide();
+        _this3.props.onHide();
       }).catch(function (error) {
         console.warn(error);
         alert(error.toString());
@@ -1290,7 +1287,7 @@ var TickModal = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
-      var _this5 = this;
+      var _this4 = this;
 
       if (!this.state || !this.state.idProblem) {
         return _react2.default.createElement(
@@ -1385,7 +1382,7 @@ var TickModal = function (_Component) {
               this.state && this.state.grades && this.state.grades.map(function (g, i) {
                 return _react2.default.createElement(
                   _reactBootstrap.MenuItem,
-                  { key: i, eventKey: i, onSelect: _this5.onGradeChanged.bind(_this5, g.grade) },
+                  { key: i, eventKey: i, onSelect: _this4.onGradeChanged.bind(_this4, g.grade) },
                   g.grade
                 );
               })
@@ -4983,7 +4980,7 @@ var Problem = function (_Component) {
           return t.writable;
         });
         if (userTicks && userTicks.length > 0) {
-          tickModal = _react2.default.createElement(_tickModal2.default, { idTick: userTicks[0].id, idProblem: data.id, date: userTicks[0].date, comment: userTicks[0].comment, grade: userTicks[0].suggestedGrade, stars: userTicks[0].stars, show: this.state.showTickModal, onHide: this.closeTickModal.bind(this) });
+          tickModal = _react2.default.createElement(_tickModal2.default, { idTick: userTicks[0].id, idProblem: data.id, date: userTicks[0].date, comment: userTicks[0].comment, grade: userTicks[0].suggestedGrade, grades: data.metadata.grades, stars: userTicks[0].stars, show: this.state.showTickModal, onHide: this.closeTickModal.bind(this) });
         }
       }
       if (!tickModal) {
@@ -8421,10 +8418,6 @@ var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
 var _reactRouterDom = __webpack_require__(4);
 
-var _superagent = __webpack_require__(3);
-
-var _superagent2 = _interopRequireDefault(_superagent);
-
 var _reactRouterBootstrap = __webpack_require__(9);
 
 var _reactBootstrap = __webpack_require__(1);
@@ -8442,10 +8435,6 @@ var _tickModal2 = _interopRequireDefault(_tickModal);
 var _auth = __webpack_require__(6);
 
 var _auth2 = _interopRequireDefault(_auth);
-
-var _config = __webpack_require__(2);
-
-var _config2 = _interopRequireDefault(_config);
 
 var _reactFontawesome = __webpack_require__(5);
 
@@ -8465,34 +8454,41 @@ var User = function (_Component) {
 
     var _this = _possibleConstructorReturn(this, (User.__proto__ || Object.getPrototypeOf(User)).call(this, props));
 
-    _this.state = {
-      showTickModal: false
-    };
+    var data = void 0;
+    if (false) {
+      data = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+    } else {
+      data = props.staticContext.data;
+    }
+    _this.state = { data: data, showTickModal: false };
     return _this;
   }
 
   _createClass(User, [{
     key: 'refresh',
-    value: function refresh(userId) {
+    value: function refresh(id) {
       var _this2 = this;
 
-      _superagent2.default.get(_config2.default.getUrl("users" + (userId ? "?id=" + userId : ""))).withCredentials().end(function (err, res) {
-        if (err) {
-          _this2.setState({ error: err });
-        } else {
-          _this2.setState({ user: res.body });
-        }
+      this.props.fetchInitialData(id).then(function (data) {
+        return _this2.setState(function () {
+          return { data: data };
+        });
       });
     }
   }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
-      this.refresh(this.props.match.params.userId);
+      if (!this.state.data) {
+        this.refresh(this.props.match.params.userId);
+      }
     }
   }, {
-    key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(nextProps) {
-      this.refresh(nextProps.match.params.userId);
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate(prevProps, prevState) {
+      if (prevProps.match.params.userId !== this.props.match.params.userId) {
+        this.refresh(this.props.match.params.userId);
+      }
     }
   }, {
     key: 'closeTickModal',
@@ -8622,7 +8618,7 @@ var User = function (_Component) {
   }, {
     key: 'formatEdit',
     value: function formatEdit(cell, row) {
-      if (this.state.user.readOnly == false && row.id != 0) {
+      if (this.state.data.readOnly == false && row.id != 0) {
         return _react2.default.createElement(
           _reactBootstrap.OverlayTrigger,
           { placement: 'top', overlay: _react2.default.createElement(
@@ -8678,34 +8674,24 @@ var User = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
-      if (!this.state.user) {
+      var data = this.state.data;
+
+      if (!data) {
         return _react2.default.createElement(
           'center',
           null,
           _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'spinner', spin: true, size: '3x' })
         );
       }
-      if (this.state.error) {
-        return _react2.default.createElement(
-          'span',
-          null,
-          _react2.default.createElement(
-            'h3',
-            null,
-            this.state.error.status
-          ),
-          this.state.error.toString()
-        );
-      }
 
-      var numTicks = this.state.user.ticks.filter(function (t) {
+      var numTicks = data.ticks.filter(function (t) {
         return !t.fa;
       }).length;
-      var numFas = this.state.user.ticks.filter(function (t) {
+      var numFas = data.ticks.filter(function (t) {
         return t.fa;
       }).length;
 
-      var chart = this.state.user.ticks.length > 0 ? _react2.default.createElement(_chart2.default, { data: this.state.user.ticks }) : null;
+      var chart = data.ticks.length > 0 ? _react2.default.createElement(_chart2.default, { data: data.ticks }) : null;
 
       return _react2.default.createElement(
         'span',
@@ -8716,27 +8702,27 @@ var User = function (_Component) {
           _react2.default.createElement(
             'title',
             null,
-            this.state.user.metadata.title
+            data.metadata.title
           ),
-          _react2.default.createElement('meta', { name: 'description', content: this.state.user.metadata.description })
+          _react2.default.createElement('meta', { name: 'description', content: data.metadata.description })
         ),
-        this.state.currTick ? _react2.default.createElement(_tickModal2.default, { idTick: this.state.currTick.id, idProblem: this.state.currTick.idProblem, date: this.state.currTick.date, comment: this.state.currTick.comment, grade: this.state.currTick.grade, stars: this.state.currTick.stars, show: this.state.showTickModal, onHide: this.closeTickModal.bind(this) }) : "",
+        this.state.currTick ? _react2.default.createElement(_tickModal2.default, { idTick: this.state.currTick.id, idProblem: this.state.currTick.idProblem, date: this.state.currTick.date, comment: this.state.currTick.comment, grade: this.state.currTick.grade, grades: data.metadata.grades, stars: this.state.currTick.stars, show: this.state.showTickModal, onHide: this.closeTickModal.bind(this) }) : "",
         _react2.default.createElement(
           _reactBootstrap.Breadcrumb,
           null,
-          _auth2.default.loggedIn() && this.state.user.readOnly == false ? _react2.default.createElement(
+          _auth2.default.loggedIn() && currTick.user.readOnly == false ? _react2.default.createElement(
             'div',
             { style: { float: 'right' } },
             _react2.default.createElement(
               _reactBootstrap.OverlayTrigger,
               { placement: 'top', overlay: _react2.default.createElement(
                   _reactBootstrap.Tooltip,
-                  { id: this.state.user.id },
+                  { id: data.id },
                   'Edit user'
                 ) },
               _react2.default.createElement(
                 _reactRouterBootstrap.LinkContainer,
-                { to: '/user/' + this.state.user.id + '/edit' },
+                { to: '/user/' + data.id + '/edit' },
                 _react2.default.createElement(
                   _reactBootstrap.Button,
                   { bsStyle: 'primary', bsSize: 'xsmall' },
@@ -8754,7 +8740,7 @@ var User = function (_Component) {
           _react2.default.createElement(
             'font',
             { color: '#777' },
-            this.state.user.name
+            data.name
           )
         ),
         _react2.default.createElement(
@@ -8767,22 +8753,22 @@ var User = function (_Component) {
           numTicks,
           _react2.default.createElement('br', null),
           'Pictures taken: ',
-          this.state.user.numImagesCreated,
+          data.numImagesCreated,
           _react2.default.createElement('br', null),
           'Appearance in pictures: ',
-          this.state.user.numImageTags,
+          data.numImageTags,
           _react2.default.createElement('br', null),
           'Videos created: ',
-          this.state.user.numVideosCreated,
+          data.numVideosCreated,
           _react2.default.createElement('br', null),
           'Appearance in videos: ',
-          this.state.user.numVideoTags
+          data.numVideoTags
         ),
         chart,
         _react2.default.createElement(
           _reactBootstrapTable.BootstrapTable,
           {
-            data: this.state.user.ticks,
+            data: data.ticks,
             condensed: true,
             hover: true,
             columnFilter: false },
@@ -9358,6 +9344,7 @@ exports.getGrades = getGrades;
 exports.getMeta = getMeta;
 exports.getProblem = getProblem;
 exports.getSector = getSector;
+exports.getUser = getUser;
 exports.getUserPassword = getUserPassword;
 exports.getUserForgotPassword = getUserForgotPassword;
 exports.postArea = postArea;
@@ -9463,6 +9450,15 @@ function getProblem(id) {
 
 function getSector(id) {
   return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/sectors?id=' + id), { credentials: 'include' }).then(function (data) {
+    return data.json();
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
+function getUser(id) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users?id=' + id), { credentials: 'include' }).then(function (data) {
     return data.json();
   }).catch(function (error) {
     console.warn(error);
