@@ -17,7 +17,7 @@ import SvgEdit from './components/common/svg/svg-edit';
 import User from './components/user';
 import UserEdit from './components/user-edit';
 
-import { getBrowse, getEthics, getFinder, getFrontpage } from './api';
+import { getBrowse, getEthics, getFinder, getFrontpage, getLogin } from './api';
 
 const routes =  [
   {path: '/', exact: true, component: Index, fetchInitialData: (path = '') => getFrontpage()},
@@ -35,7 +35,7 @@ const routes =  [
   {path: '/user', exact: true, component: User},
   {path: '/user/:userId', exact: true, component: User},
   {path: '/user/:userId/edit', exact: true, component: UserEdit},
-  {path: '/login', exact: false, component: Login},
+  {path: '/login', exact: false, component: Login, fetchInitialData: (path = '') => getLogin()},
   {path: '/register', exact: false, component: Register},
   {path: '/recover/:token', exact: true, component: Recover},
   {path: '/logout', exact: false, component: Logout}

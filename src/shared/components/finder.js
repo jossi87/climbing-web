@@ -256,11 +256,11 @@ export default class Finder extends Component {
     return (
       <div>
         <MetaTags>
-          <title>{this.state.data.title}</title>
-          <meta name="description" content={"Search by difficulty"} />
+          <title>{this.state.data.metadata.title}</title>
+          <meta name="description" content={this.state.data.metadata.description} />
         </MetaTags>
         <Breadcrumb>
-          <Link to={`/`}>Home</Link> / <font color='#777'>Finder (problems: {this.state.data.problems.length})</font>
+          <Link to={`/`}>Home</Link> / <font color='#777'>Finder [{this.state.data.grade}] (problems: {this.state.data.problems.length})</font>
         </Breadcrumb>
         {map}
         {table}

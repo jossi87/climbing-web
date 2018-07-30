@@ -1160,7 +1160,10 @@ var routes = [{ path: '/', exact: true, component: _index2.default, fetchInitial
   } }, { path: '/area/:areaId', exact: true, component: _area2.default }, { path: '/area/edit/:areaId', exact: true, component: _areaEdit2.default }, { path: '/sector/:sectorId', exact: true, component: _sector2.default }, { path: '/sector/edit/:sectorId', exact: true, component: _sectorEdit2.default }, { path: '/problem/:problemId', exact: true, component: _problem2.default }, { path: '/problem/edit/:problemId', exact: true, component: _problemEdit2.default }, { path: '/problem/edit/media/:problemId', exact: true, component: _problemEditMedia2.default }, { path: '/problem/svg-edit/:problemId/:mediaId', exact: true, component: _svgEdit2.default }, { path: '/finder/:grade', exact: true, component: _finder2.default, fetchInitialData: function fetchInitialData() {
     var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
     return (0, _api.getFinder)(path.split('/').pop());
-  } }, { path: '/user', exact: true, component: _user2.default }, { path: '/user/:userId', exact: true, component: _user2.default }, { path: '/user/:userId/edit', exact: true, component: _userEdit2.default }, { path: '/login', exact: false, component: _login2.default }, { path: '/register', exact: false, component: _register2.default }, { path: '/recover/:token', exact: true, component: _recover2.default }, { path: '/logout', exact: false, component: _logout2.default }];
+  } }, { path: '/user', exact: true, component: _user2.default }, { path: '/user/:userId', exact: true, component: _user2.default }, { path: '/user/:userId/edit', exact: true, component: _userEdit2.default }, { path: '/login', exact: false, component: _login2.default, fetchInitialData: function fetchInitialData() {
+    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    return (0, _api.getLogin)();
+  } }, { path: '/register', exact: false, component: _register2.default }, { path: '/recover/:token', exact: true, component: _recover2.default }, { path: '/logout', exact: false, component: _logout2.default }];
 
 exports.default = routes;
 
@@ -2705,7 +2708,7 @@ var Browse = function (_Component) {
           _react2.default.createElement(
             'title',
             null,
-            this.state.data.title
+            this.state.data.metadata.title
           ),
           _react2.default.createElement('meta', { name: 'description', content: "Browse areas" })
         ),
@@ -2865,7 +2868,7 @@ var Ethics = function (_Component) {
           this.state.data && _react2.default.createElement(
             'title',
             null,
-            this.state.data.title
+            this.state.data.metadata.title
           ),
           _react2.default.createElement('meta', { name: 'description', content: "Ethics and privacy policy" })
         ),
@@ -3512,9 +3515,9 @@ var Finder = function (_Component) {
           _react2.default.createElement(
             'title',
             null,
-            this.state.data.title
+            this.state.data.metadata.title
           ),
-          _react2.default.createElement('meta', { name: 'description', content: "Search by difficulty" })
+          _react2.default.createElement('meta', { name: 'description', content: this.state.data.metadata.description })
         ),
         _react2.default.createElement(
           _reactBootstrap.Breadcrumb,
@@ -3528,7 +3531,9 @@ var Finder = function (_Component) {
           _react2.default.createElement(
             'font',
             { color: '#777' },
-            'Finder (problems: ',
+            'Finder [',
+            this.state.data.grade,
+            '] (problems: ',
             this.state.data.problems.length,
             ')'
           )
@@ -4170,10 +4175,6 @@ var _reactRouterDom = __webpack_require__(4);
 
 var _reactRouter = __webpack_require__(7);
 
-var _superagent = __webpack_require__(3);
-
-var _superagent2 = _interopRequireDefault(_superagent);
-
 var _reactRouterBootstrap = __webpack_require__(9);
 
 var _reactBootstrap = __webpack_require__(1);
@@ -4182,9 +4183,7 @@ var _auth = __webpack_require__(6);
 
 var _auth2 = _interopRequireDefault(_auth);
 
-var _config = __webpack_require__(2);
-
-var _config2 = _interopRequireDefault(_config);
+var _api = __webpack_require__(62);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4202,15 +4201,31 @@ var Login = function (_Component) {
 
     var _this = _possibleConstructorReturn(this, (Login.__proto__ || Object.getPrototypeOf(Login)).call(this, props));
 
-    _this.state = {
-      message: null,
-      username: '',
-      password: ''
-    };
+    var data = void 0;
+    if (false) {
+      data = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+    } else {
+      data = props.staticContext.data;
+    }
+    _this.state = { data: data, message: null, username: '', password: '' };
     return _this;
   }
 
   _createClass(Login, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      if (!this.state.data) {
+        this.props.fetchInitialData().then(function (data) {
+          return _this2.setState(function () {
+            return { data: data };
+          });
+        });
+      }
+    }
+  }, {
     key: 'validateEmail',
     value: function validateEmail(email) {
       var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -4219,7 +4234,7 @@ var Login = function (_Component) {
   }, {
     key: 'forgotPasswordClick',
     value: function forgotPasswordClick(event) {
-      var _this2 = this;
+      var _this3 = this;
 
       if (!this.state.username) {
         this.setState({ message: _react2.default.createElement(
@@ -4236,42 +4251,43 @@ var Login = function (_Component) {
             '". Contact Jostein (jostein.oygarden@gmail.com) to recover password.'
           ) });
       } else {
-        _superagent2.default.get(_config2.default.getUrl("users/forgotPassword?username=" + this.state.username + "&hostname=" + window.location.hostname)).withCredentials().end(function (err, res) {
-          if (err) {
-            _this2.setState({ message: _react2.default.createElement(
-                _reactBootstrap.Panel,
-                { bsStyle: 'danger' },
-                err.toString()
-              ) });
-          } else {
-            _this2.setState({ message: _react2.default.createElement(
-                _reactBootstrap.Panel,
-                { bsStyle: 'success' },
-                'An e-mail with instructions to reset your password is sent to "',
-                _this2.state.username,
-                '".'
-              ) });
-          }
-        });
+        var successCallback = function successCallback(response) {
+          _this3.setState({ message: _react2.default.createElement(
+              _reactBootstrap.Panel,
+              { bsStyle: 'success' },
+              'An e-mail with instructions to reset your password is sent to "',
+              _this3.state.username,
+              '".'
+            ) });
+        };
+        var errorCallback = function errorCallback(error) {
+          console.warn(error);
+          _this3.setState({ message: _react2.default.createElement(
+              _reactBootstrap.Panel,
+              { bsStyle: 'danger' },
+              error.toString()
+            ) });
+        };
+        (0, _api.getUserForgotPassword)(this.state.username, successCallback, errorCallback);
       }
     }
   }, {
     key: 'login',
     value: function login(event) {
-      var _this3 = this;
+      var _this4 = this;
 
       event.preventDefault();
       _auth2.default.login(this.state.username, this.state.password, function (loggedIn) {
-        var location = _this3.props.location;
+        var location = _this4.props.location;
 
         if (!loggedIn) {
-          return _this3.setState({ message: _react2.default.createElement(
+          return _this4.setState({ message: _react2.default.createElement(
               _reactBootstrap.Panel,
               { bsStyle: 'danger' },
               'Invalid username and/or password.'
             ) });
         } else {
-          return _this3.setState({ message: null, pushUrl: "/" });
+          return _this4.setState({ message: null, pushUrl: "/" });
         }
       });
     }
@@ -4300,9 +4316,9 @@ var Login = function (_Component) {
           _react2.default.createElement(
             'title',
             null,
-            _config2.default.getTitle("Login")
+            this.state.data && this.state.data.metadata.title
           ),
-          _react2.default.createElement('meta', { name: 'description', content: "Log in with username and password" })
+          _react2.default.createElement('meta', { name: 'description', content: this.state.data && this.state.data.metadata.description })
         ),
         _react2.default.createElement(
           _reactBootstrap.Breadcrumb,
@@ -9418,6 +9434,8 @@ exports.getBrowse = getBrowse;
 exports.getEthics = getEthics;
 exports.getFinder = getFinder;
 exports.getFrontpage = getFrontpage;
+exports.getLogin = getLogin;
+exports.getUserForgotPassword = getUserForgotPassword;
 
 var _isomorphicFetch = __webpack_require__(63);
 
@@ -9426,7 +9444,7 @@ var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function getBrowse() {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/browse')).then(function (data) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/browse'), { credentials: 'include' }).then(function (data) {
     return data.json();
   }).catch(function (error) {
     console.warn(error);
@@ -9459,6 +9477,19 @@ function getFrontpage() {
     console.warn(error);
     return null;
   });
+}
+
+function getLogin() {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/login')).then(function (data) {
+    return data.json();
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
+function getUserForgotPassword(username, successCallback, errorCallback) {
+  (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/forgotPassword?username=' + username)).then(successCallback).catch(errorCallback);
 }
 
 /***/ }),

@@ -3,20 +3,28 @@ import MetaTags from 'react-meta-tags';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
-import Request from 'superagent';
 import { LinkContainer } from 'react-router-bootstrap';
 import { FormGroup, ControlLabel, FormControl, ButtonGroup, Button, Panel, Breadcrumb, Well } from 'react-bootstrap';
 import auth from '../utils/auth.js'
-import config from '../utils/config.js';
+import { getUserForgotPassword } from './../api';
 
 export default class Login extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      message: null,
-      username: '',
-      password: ''
-    };
+    let data;
+    if (__isBrowser__) {
+      data = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+    } else {
+      data = props.staticContext.data;
+    }
+    this.state = {data, message: null, username: '', password: ''};
+  }
+
+  componentDidMount () {
+    if (!this.state.data) {
+      this.props.fetchInitialData().then((data) => this.setState(() => ({data})));
+    }
   }
 
   validateEmail(email) {
@@ -30,13 +38,14 @@ export default class Login extends Component {
     } else if (!this.validateEmail(this.state.username)) {
       this.setState({message: <Panel bsStyle='danger'>No email address registered on &quot;{this.state.username}&quot;. Contact Jostein (jostein.oygarden@gmail.com) to recover password.</Panel>});
     } else {
-      Request.get(config.getUrl("users/forgotPassword?username=" + this.state.username + "&hostname=" + window.location.hostname)).withCredentials().end((err, res) => {
-        if (err) {
-          this.setState({message: <Panel bsStyle='danger'>{err.toString()}</Panel>});
-        } else {
-          this.setState({message: <Panel bsStyle='success'>An e-mail with instructions to reset your password is sent to &quot;{this.state.username}&quot;.</Panel>});
-        }
-      });
+      var successCallback = (response) => {
+        this.setState({message: <Panel bsStyle='success'>An e-mail with instructions to reset your password is sent to &quot;{this.state.username}&quot;.</Panel>});
+      };
+      var errorCallback = (error) => {
+        console.warn(error);
+        this.setState({message: <Panel bsStyle='danger'>{error.toString()}</Panel>});
+      }
+      getUserForgotPassword(this.state.username, successCallback, errorCallback);
     }
   }
 
@@ -67,8 +76,8 @@ export default class Login extends Component {
     return (
       <span>
         <MetaTags>
-          <title>{config.getTitle("Login")}</title>
-          <meta name="description" content={"Log in with username and password"} />
+          <title>{this.state.data && this.state.data.metadata.title}</title>
+          <meta name="description" content={this.state.data && this.state.data.metadata.description} />
         </MetaTags>
         <Breadcrumb>
           <Link to={`/`}>Home</Link> / <font color='#777'>Sign in</font>

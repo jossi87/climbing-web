@@ -90,7 +90,7 @@ export default class Browse extends Component {
     return (
       <span>
         <MetaTags>
-          <title>{this.state.data.title}</title>
+          <title>{this.state.data.metadata.title}</title>
           <meta name="description" content={"Browse areas"} />
         </MetaTags>
         <Breadcrumb>

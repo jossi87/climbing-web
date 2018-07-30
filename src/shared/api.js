@@ -1,7 +1,7 @@
-import fetch from 'isomorphic-fetch'
+import fetch from 'isomorphic-fetch';
 
 export function getBrowse() {
-  return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/browse`))
+  return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/browse`), {credentials: 'include'})
     .then((data) => data.json())
     .catch((error) => {
       console.warn(error);
@@ -34,4 +34,19 @@ export function getFrontpage() {
       console.warn(error);
       return null;
     });
+}
+
+export function getLogin() {
+  return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/login`))
+    .then((data) => data.json())
+    .catch((error) => {
+      console.warn(error);
+      return null;
+    });
+}
+
+export function getUserForgotPassword(username, successCallback, errorCallback) {
+  fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/forgotPassword?username=${username}`))
+  .then(successCallback)
+  .catch(errorCallback);
 }
