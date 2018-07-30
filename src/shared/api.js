@@ -89,6 +89,15 @@ export function getProblem(id) {
     });
 }
 
+export function getSector(id) {
+  return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/sectors?id=${id}`), {credentials: 'include'})
+    .then((data) => data.json())
+    .catch((error) => {
+      console.warn(error);
+      return null;
+    });
+}
+
 export function getUserPassword(token, password) {
   return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/password?token=${token}&password=${password}`));
 }

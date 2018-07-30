@@ -1133,7 +1133,10 @@ var routes = [{ path: '/', exact: true, component: _index2.default, fetchInitial
   } }, { path: '/area/edit/:areaId', exact: true, component: _areaEdit2.default, fetchInitialData: function fetchInitialData() {
     var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
     return (0, _api.getAreaEdit)(path.split('/').pop());
-  } }, { path: '/sector/:sectorId', exact: true, component: _sector2.default }, { path: '/sector/edit/:sectorId', exact: true, component: _sectorEdit2.default }, { path: '/problem/:problemId', exact: true, component: _problem2.default, fetchInitialData: function fetchInitialData() {
+  } }, { path: '/sector/:sectorId', exact: true, component: _sector2.default, fetchInitialData: function fetchInitialData() {
+    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    return (0, _api.getSector)(path.split('/').pop());
+  } }, { path: '/sector/edit/:sectorId', exact: true, component: _sectorEdit2.default }, { path: '/problem/:problemId', exact: true, component: _problem2.default, fetchInitialData: function fetchInitialData() {
     var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
     return (0, _api.getProblem)(path.split('/').pop());
   } }, { path: '/problem/edit/:problemId', exact: true, component: _problemEdit2.default }, { path: '/problem/edit/media/:problemId', exact: true, component: _problemEditMedia2.default }, { path: '/problem/svg-edit/:problemId/:mediaId', exact: true, component: _svgEdit2.default }, { path: '/finder/:grade', exact: true, component: _finder2.default, fetchInitialData: function fetchInitialData() {
@@ -6850,10 +6853,6 @@ var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
 var _reactRouterDom = __webpack_require__(4);
 
-var _superagent = __webpack_require__(3);
-
-var _superagent2 = _interopRequireDefault(_superagent);
-
 var _map = __webpack_require__(10);
 
 var _map2 = _interopRequireDefault(_map);
@@ -6869,10 +6868,6 @@ var _reactRouterBootstrap = __webpack_require__(9);
 var _auth = __webpack_require__(6);
 
 var _auth2 = _interopRequireDefault(_auth);
-
-var _config = __webpack_require__(2);
-
-var _config2 = _interopRequireDefault(_config);
 
 var _reactFontawesome = __webpack_require__(5);
 
@@ -7009,7 +7004,7 @@ var TableRow = function (_Component) {
       }
 
       var type;
-      if (!_config2.default.isBouldering()) {
+      if (this.state && this.state.data && !this.state.data.metadata.isBouldering) {
         var typeImg;
         switch (this.props.problem.t.id) {
           case 2:
@@ -7110,9 +7105,14 @@ var Sector = function (_Component2) {
 
     var _this2 = _possibleConstructorReturn(this, (Sector.__proto__ || Object.getPrototypeOf(Sector)).call(this, props));
 
-    _this2.state = {
-      tabIndex: 1
-    };
+    var data = void 0;
+    if (false) {
+      data = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+    } else {
+      data = props.staticContext.data;
+    }
+    _this2.state = { data: data, tabIndex: 1 };
     return _this2;
   }
 
@@ -7121,23 +7121,25 @@ var Sector = function (_Component2) {
     value: function refresh(id) {
       var _this3 = this;
 
-      _superagent2.default.get(_config2.default.getUrl("sectors?id=" + id)).withCredentials().end(function (err, res) {
-        if (err) {
-          _this3.setState({ error: err });
-        } else {
-          _this3.setState(res.body);
-        }
+      this.props.fetchInitialData(id).then(function (data) {
+        return _this3.setState(function () {
+          return { data: data };
+        });
       });
     }
   }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
-      this.refresh(this.props.match.params.sectorId);
+      if (!this.state.data) {
+        this.refresh(this.props.match.params.sectorId);
+      }
     }
   }, {
-    key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(nextProps) {
-      this.refresh(nextProps.match.params.sectorId);
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate(prevProps, prevState) {
+      if (prevProps.match.params.sectorId !== this.props.match.params.sectorId) {
+        this.refresh(this.props.match.params.sectorId);
+      }
     }
   }, {
     key: 'handleTabsSelection',
@@ -7147,7 +7149,7 @@ var Sector = function (_Component2) {
   }, {
     key: 'onRemoveMedia',
     value: function onRemoveMedia(idMediaToRemove) {
-      var allMedia = this.state.media.filter(function (m) {
+      var allMedia = this.state.data.media.filter(function (m) {
         return m.id != idMediaToRemove;
       });
       this.setState({ media: allMedia });
@@ -7155,28 +7157,18 @@ var Sector = function (_Component2) {
   }, {
     key: 'render',
     value: function render() {
-      if (!this.state.areaId) {
+      var data = this.state.data;
+
+      if (!data) {
         return _react2.default.createElement(
           'center',
           null,
           _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'spinner', spin: true, size: '3x' })
         );
       }
-      if (this.state.error) {
-        return _react2.default.createElement(
-          'span',
-          null,
-          _react2.default.createElement(
-            'h3',
-            null,
-            this.state.error.status
-          ),
-          this.state.error.toString()
-        );
-      }
       var problemsInTopo = [];
-      if (this.state.media) {
-        this.state.media.forEach(function (m) {
+      if (data.media) {
+        data.media.forEach(function (m) {
           if (m.svgs) {
             m.svgs.forEach(function (svg) {
               return problemsInTopo.push(svg.problemId);
@@ -7185,11 +7177,11 @@ var Sector = function (_Component2) {
         });
       }
 
-      var rows = this.state.problems.map(function (problem, i) {
+      var rows = data.problems.map(function (problem, i) {
         return _react2.default.createElement(TableRow, { problem: problem, problemsInTopo: problemsInTopo, key: i });
       });
 
-      var markers = this.state.problems.filter(function (p) {
+      var markers = data.problems.filter(function (p) {
         return p.lat != 0 && p.lng != 0;
       }).map(function (p) {
         return {
@@ -7205,23 +7197,23 @@ var Sector = function (_Component2) {
           }
         };
       });
-      if (this.state.lat > 0 && this.state.lng > 0) {
+      if (data.lat > 0 && data.lng > 0) {
         markers.push({
-          lat: this.state.lat,
-          lng: this.state.lng,
+          lat: data.lat,
+          lng: data.lng,
           title: 'Parking',
           icon: {
             url: 'https://maps.google.com/mapfiles/kml/shapes/parking_lot_maps.png',
             scaledSizeW: 32,
             scaledSizeH: 32
           },
-          url: '/sector/' + this.state.id
+          url: '/sector/' + data.id
         });
       }
-      var defaultCenter = this.state.lat && this.state.lat > 0 ? { lat: this.state.lat, lng: this.state.lng } : _config2.default.getDefaultCenter();
-      var defaultZoom = this.state.lat && this.state.lat > 0 ? 15 : _config2.default.getDefaultZoom();
+      var defaultCenter = data.lat && data.lat > 0 ? { lat: data.lat, lng: data.lng } : data.metadata.defaultCenter;
+      var defaultZoom = data.lat && data.lat > 0 ? 15 : data.metadata.defaultZoom;
       var map = markers.length > 0 ? _react2.default.createElement(_map2.default, { markers: markers, defaultCenter: defaultCenter, defaultZoom: defaultZoom }) : null;
-      var gallery = this.state.media && this.state.media.length > 0 ? _react2.default.createElement(_gallery2.default, { alt: this.state.name + " (" + this.state.areaName + ")", media: this.state.media, showThumbnails: this.state.media.length > 1, removeMedia: this.onRemoveMedia.bind(this) }) : null;
+      var gallery = data.media && data.media.length > 0 ? _react2.default.createElement(_gallery2.default, { alt: data.name + " (" + data.areaName + ")", media: data.media, showThumbnails: data.media.length > 1, removeMedia: this.onRemoveMedia.bind(this) }) : null;
       var topoContent = null;
       if (map && gallery) {
         topoContent = _react2.default.createElement(
@@ -7243,7 +7235,7 @@ var Sector = function (_Component2) {
       } else if (gallery) {
         topoContent = gallery;
       }
-      var nextNr = this.state.problems.length > 0 ? this.state.problems[this.state.problems.length - 1].nr + 1 : 1;
+      var nextNr = data.problems.length > 0 ? data.problems[data.problems.length - 1].nr + 1 : 1;
 
       return _react2.default.createElement(
         'span',
@@ -7254,14 +7246,14 @@ var Sector = function (_Component2) {
           _react2.default.createElement(
             'script',
             { type: 'application/ld+json' },
-            JSON.stringify(this.state.metadata.jsonLd)
+            JSON.stringify(data.metadata.jsonLd)
           ),
           _react2.default.createElement(
             'title',
             null,
-            this.state.metadata.title
+            data.metadata.title
           ),
-          _react2.default.createElement('meta', { name: 'description', content: this.state.metadata.description })
+          _react2.default.createElement('meta', { name: 'description', content: data.metadata.description })
         ),
         _react2.default.createElement(
           _reactBootstrap.Breadcrumb,
@@ -7281,7 +7273,7 @@ var Sector = function (_Component2) {
                   ) },
                 _react2.default.createElement(
                   _reactRouterBootstrap.LinkContainer,
-                  { to: { pathname: '/problem/edit/-1', query: { idSector: this.state.id, nr: nextNr, lat: this.state.lat, lng: this.state.lng } } },
+                  { to: { pathname: '/problem/edit/-1', query: { idSector: data.id, nr: nextNr, lat: data.lat, lng: data.lng } } },
                   _react2.default.createElement(
                     _reactBootstrap.Button,
                     { bsStyle: 'primary', bsSize: 'xsmall' },
@@ -7293,12 +7285,12 @@ var Sector = function (_Component2) {
                 _reactBootstrap.OverlayTrigger,
                 { placement: 'top', overlay: _react2.default.createElement(
                     _reactBootstrap.Tooltip,
-                    { id: this.state.id },
+                    { id: data.id },
                     'Edit sector'
                   ) },
                 _react2.default.createElement(
                   _reactRouterBootstrap.LinkContainer,
-                  { to: { pathname: '/sector/edit/' + this.state.id, query: { idArea: this.state.areaId, lat: this.state.lat, lng: this.state.lng } } },
+                  { to: { pathname: '/sector/edit/' + data.id, query: { idArea: data.areaId, lat: data.lat, lng: data.lng } } },
                   _react2.default.createElement(
                     _reactBootstrap.Button,
                     { bsStyle: 'primary', bsSize: 'xsmall' },
@@ -7322,27 +7314,27 @@ var Sector = function (_Component2) {
           ' / ',
           _react2.default.createElement(
             _reactRouterDom.Link,
-            { to: '/area/' + this.state.areaId },
-            this.state.areaName
+            { to: '/area/' + data.areaId },
+            data.areaName
           ),
           ' ',
-          this.state.areaVisibility === 1 && _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'lock' }),
-          this.state.areaVisibility === 2 && _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'user-secret' }),
+          data.areaVisibility === 1 && _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'lock' }),
+          data.areaVisibility === 2 && _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'user-secret' }),
           ' / ',
           _react2.default.createElement(
             'font',
             { color: '#777' },
-            this.state.name
+            data.name
           ),
           ' ',
-          this.state.visibility === 1 && _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'lock' }),
-          this.state.visibility === 2 && _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'user-secret' })
+          data.visibility === 1 && _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'lock' }),
+          data.visibility === 2 && _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'user-secret' })
         ),
         topoContent,
-        this.state.comment ? _react2.default.createElement(
+        data.comment ? _react2.default.createElement(
           _reactBootstrap.Well,
           null,
-          this.state.comment
+          data.comment
         ) : null,
         _react2.default.createElement(
           _reactBootstrap.Table,
@@ -7368,7 +7360,7 @@ var Sector = function (_Component2) {
                 null,
                 'Description'
               ),
-              !_config2.default.isBouldering() && _react2.default.createElement(
+              !data.metadata.isBouldering && _react2.default.createElement(
                 'th',
                 null,
                 'Type'
@@ -9365,6 +9357,7 @@ exports.getFrontpage = getFrontpage;
 exports.getGrades = getGrades;
 exports.getMeta = getMeta;
 exports.getProblem = getProblem;
+exports.getSector = getSector;
 exports.getUserPassword = getUserPassword;
 exports.getUserForgotPassword = getUserForgotPassword;
 exports.postArea = postArea;
@@ -9462,6 +9455,15 @@ function getProblem(id) {
     return data.json();
   }).then(function (json) {
     return json[0];
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
+function getSector(id) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/sectors?id=' + id), { credentials: 'include' }).then(function (data) {
+    return data.json();
   }).catch(function (error) {
     console.warn(error);
     return null;

@@ -17,7 +17,7 @@ import SvgEdit from './components/common/svg/svg-edit';
 import User from './components/user';
 import UserEdit from './components/user-edit';
 
-import { getArea, getAreaEdit, getBrowse, getFinder, getFrontpage, getMeta, getProblem } from './api';
+import { getArea, getAreaEdit, getBrowse, getFinder, getFrontpage, getMeta, getProblem, getSector } from './api';
 
 const routes =  [
   {path: '/', exact: true, component: Index, fetchInitialData: (path = '') => getFrontpage()},
@@ -25,7 +25,7 @@ const routes =  [
   {path: '/ethics', exact: false, component: Ethics, fetchInitialData: (path = '') => getMeta()},
   {path: '/area/:areaId', exact: true, component: Area, fetchInitialData: (path = '') => getArea(path.split('/').pop())},
   {path: '/area/edit/:areaId', exact: true, component: AreaEdit, fetchInitialData: (path = '') => getAreaEdit(path.split('/').pop())},
-  {path: '/sector/:sectorId', exact: true, component: Sector},
+  {path: '/sector/:sectorId', exact: true, component: Sector, fetchInitialData: (path = '') => getSector(path.split('/').pop())},
   {path: '/sector/edit/:sectorId', exact: true, component: SectorEdit},
   {path: '/problem/:problemId', exact: true, component: Problem, fetchInitialData: (path = '') => getProblem(path.split('/').pop())},
   {path: '/problem/edit/:problemId', exact: true, component: ProblemEdit},

@@ -1,13 +1,11 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
-import Request from 'superagent';
 import Map from './common/map/map';
 import Gallery from './common/gallery/gallery';
 import { Tabs, Tab, Well, OverlayTrigger, Tooltip, Popover, ButtonGroup, Button, Table, Breadcrumb } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import auth from '../utils/auth.js';
-import config from '../utils/config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class TableRow extends Component {
@@ -65,7 +63,7 @@ class TableRow extends Component {
     }
 
     var type;
-    if (!config.isBouldering()) {
+    if (this.state && this.state.data && !this.state.data.metadata.isBouldering) {
       var typeImg;
       switch (this.props.problem.t.id) {
         case 2: typeImg = <img height="20" src="/jpg/bolt.jpg"/>; break;
@@ -98,27 +96,30 @@ class TableRow extends Component {
 export default class Sector extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      tabIndex: 1
-    };
+    let data;
+    if (__isBrowser__) {
+      data = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+    } else {
+      data = props.staticContext.data;
+    }
+    this.state = {data, tabIndex: 1};
   }
 
   refresh(id) {
-    Request.get(config.getUrl("sectors?id=" + id)).withCredentials().end((err, res) => {
-      if (err) {
-        this.setState({error: err});
-      } else {
-        this.setState(res.body);
-      }
-    });
+    this.props.fetchInitialData(id).then((data) => this.setState(() => ({data})));
   }
 
   componentDidMount() {
-    this.refresh(this.props.match.params.sectorId);
+    if (!this.state.data) {
+      this.refresh(this.props.match.params.sectorId);
+    }
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.refresh(nextProps.match.params.sectorId);
+  componentDidUpdate (prevProps, prevState) {
+    if (prevProps.match.params.sectorId !== this.props.match.params.sectorId) {
+      this.refresh(this.props.match.params.sectorId);
+    }
   }
 
   handleTabsSelection(key) {
@@ -126,33 +127,31 @@ export default class Sector extends Component {
   }
 
   onRemoveMedia(idMediaToRemove) {
-    const allMedia = this.state.media.filter(m => m.id!=idMediaToRemove);
+    const allMedia = this.state.data.media.filter(m => m.id!=idMediaToRemove);
     this.setState({media: allMedia});
   }
 
   render() {
-    if (!this.state.areaId) {
+    const { data } = this.state;
+    if (!data) {
       return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
-    if (this.state.error) {
-      return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;
-    }
     const problemsInTopo = [];
-    if (this.state.media) {
-      this.state.media.forEach(m => {
+    if (data.media) {
+      data.media.forEach(m => {
         if (m.svgs) {
           m.svgs.forEach(svg => problemsInTopo.push(svg.problemId));
         }
       });
     }
 
-    const rows = this.state.problems.map((problem, i) => {
+    const rows = data.problems.map((problem, i) => {
       return (
         <TableRow problem={problem} problemsInTopo={problemsInTopo} key={i} />
       )
     });
 
-    const markers = this.state.problems.filter(p => p.lat!=0 && p.lng!=0).map(p => {
+    const markers = data.problems.filter(p => p.lat!=0 && p.lng!=0).map(p => {
       return {
           lat: p.lat,
           lng: p.lng,
@@ -166,23 +165,23 @@ export default class Sector extends Component {
           }
         }
     });
-    if (this.state.lat>0 && this.state.lng>0) {
+    if (data.lat>0 && data.lng>0) {
       markers.push({
-        lat: this.state.lat,
-        lng: this.state.lng,
+        lat: data.lat,
+        lng: data.lng,
         title: 'Parking',
         icon: {
           url: 'https://maps.google.com/mapfiles/kml/shapes/parking_lot_maps.png',
           scaledSizeW: 32,
           scaledSizeH: 32
         },
-        url: '/sector/' + this.state.id
+        url: '/sector/' + data.id
       });
     }
-    const defaultCenter = this.state.lat && this.state.lat>0? {lat: this.state.lat, lng: this.state.lng} : config.getDefaultCenter();
-    const defaultZoom = this.state.lat && this.state.lat>0? 15 : config.getDefaultZoom();
+    const defaultCenter = data.lat && data.lat>0? {lat: data.lat, lng: data.lng} : data.metadata.defaultCenter;
+    const defaultZoom = data.lat && data.lat>0? 15 : data.metadata.defaultZoom;
     const map = markers.length>0? <Map markers={markers} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/> : null;
-    const gallery = this.state.media && this.state.media.length>0? <Gallery alt={this.state.name + " (" + this.state.areaName + ")"} media={this.state.media} showThumbnails={this.state.media.length>1} removeMedia={this.onRemoveMedia.bind(this)}/> : null;
+    const gallery = data.media && data.media.length>0? <Gallery alt={data.name + " (" + data.areaName + ")"} media={data.media} showThumbnails={data.media.length>1} removeMedia={this.onRemoveMedia.bind(this)}/> : null;
     var topoContent = null;
     if (map && gallery) {
       topoContent = (
@@ -196,40 +195,40 @@ export default class Sector extends Component {
     } else if (gallery) {
       topoContent = gallery;
     }
-    const nextNr = this.state.problems.length>0? this.state.problems[this.state.problems.length-1].nr+1 : 1;
+    const nextNr = data.problems.length>0? data.problems[data.problems.length-1].nr+1 : 1;
 
     return (
       <span>
         <MetaTags>
-          <script type="application/ld+json">{JSON.stringify(this.state.metadata.jsonLd)}</script>
-          <title>{this.state.metadata.title}</title>
-          <meta name="description" content={this.state.metadata.description} />
+          <script type="application/ld+json">{JSON.stringify(data.metadata.jsonLd)}</script>
+          <title>{data.metadata.title}</title>
+          <meta name="description" content={data.metadata.description} />
         </MetaTags>
         <Breadcrumb>
           {auth.isAdmin()?
             <div style={{float: 'right'}}>
               <ButtonGroup>
                 <OverlayTrigger placement="top" overlay={<Tooltip id={-1}>Add problem</Tooltip>}>
-                  <LinkContainer to={{ pathname: `/problem/edit/-1`, query: { idSector: this.state.id, nr: nextNr, lat: this.state.lat, lng: this.state.lng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="plus-square" inverse={true} /></Button></LinkContainer>
+                  <LinkContainer to={{ pathname: `/problem/edit/-1`, query: { idSector: data.id, nr: nextNr, lat: data.lat, lng: data.lng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="plus-square" inverse={true} /></Button></LinkContainer>
                 </OverlayTrigger>
-                <OverlayTrigger placement="top" overlay={<Tooltip id={this.state.id}>Edit sector</Tooltip>}>
-                  <LinkContainer to={{ pathname: `/sector/edit/${this.state.id}`, query: { idArea: this.state.areaId, lat: this.state.lat, lng: this.state.lng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="edit" inverse={true} /></Button></LinkContainer>
+                <OverlayTrigger placement="top" overlay={<Tooltip id={data.id}>Edit sector</Tooltip>}>
+                  <LinkContainer to={{ pathname: `/sector/edit/${data.id}`, query: { idArea: data.areaId, lat: data.lat, lng: data.lng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="edit" inverse={true} /></Button></LinkContainer>
                 </OverlayTrigger>
               </ButtonGroup>
             </div>:
             null
           }
-          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${this.state.areaId}`}>{this.state.areaName}</Link> {this.state.areaVisibility===1 && <FontAwesomeIcon icon="lock" />}{this.state.areaVisibility===2 && <FontAwesomeIcon icon="user-secret" />} / <font color='#777'>{this.state.name}</font> {this.state.visibility===1 && <FontAwesomeIcon icon="lock" />}{this.state.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
+          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${data.areaId}`}>{data.areaName}</Link> {data.areaVisibility===1 && <FontAwesomeIcon icon="lock" />}{data.areaVisibility===2 && <FontAwesomeIcon icon="user-secret" />} / <font color='#777'>{data.name}</font> {data.visibility===1 && <FontAwesomeIcon icon="lock" />}{data.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
         </Breadcrumb>
         {topoContent}
-        {this.state.comment? <Well>{this.state.comment}</Well> : null}
+        {data.comment? <Well>{data.comment}</Well> : null}
         <Table striped condensed hover>
           <thead>
             <tr>
               <th><FontAwesomeIcon icon="hashtag" /></th>
               <th>Name</th>
               <th>Description</th>
-              {!config.isBouldering() && <th>Type</th>}
+              {!data.metadata.isBouldering && <th>Type</th>}
               <th>Grade</th>
               <th>FA</th>
               <th>Ticks</th>
