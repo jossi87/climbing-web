@@ -17,14 +17,14 @@ import SvgEdit from './components/common/svg/svg-edit';
 import User from './components/user';
 import UserEdit from './components/user-edit';
 
-import { getBrowse, getFinder, getFrontpage, getMeta } from './api';
+import { getArea, getAreaEdit, getBrowse, getFinder, getFrontpage, getMeta } from './api';
 
 const routes =  [
   {path: '/', exact: true, component: Index, fetchInitialData: (path = '') => getFrontpage()},
   {path: '/browse', exact: false, component: Browse, fetchInitialData: (path = '') => getBrowse()},
   {path: '/ethics', exact: false, component: Ethics, fetchInitialData: (path = '') => getMeta()},
-  {path: '/area/:areaId', exact: true, component: Area},
-  {path: '/area/edit/:areaId', exact: true, component: AreaEdit},
+  {path: '/area/:areaId', exact: true, component: Area, fetchInitialData: (path = '') => getArea(path.split('/').pop())},
+  {path: '/area/edit/:areaId', exact: true, component: AreaEdit, fetchInitialData: (path = '') => getAreaEdit(path.split('/').pop())},
   {path: '/sector/:sectorId', exact: true, component: Sector},
   {path: '/sector/edit/:sectorId', exact: true, component: SectorEdit},
   {path: '/problem/:problemId', exact: true, component: Problem},

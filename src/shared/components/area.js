@@ -1,13 +1,11 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
-import Request from 'superagent';
 import { Tabs, Tab, Well, OverlayTrigger, Tooltip, ButtonGroup, Button, Table, Breadcrumb } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import Map from './common/map/map';
 import Gallery from './common/gallery/gallery';
 import auth from '../utils/auth.js';
-import config from '../utils/config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class TableRow extends Component {
@@ -34,37 +32,30 @@ class TableRow extends Component {
 export default class Area extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      tabIndex: 1
-    };
+    let data;
+    if (__isBrowser__) {
+      data = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+    } else {
+      data = props.staticContext.data;
+    }
+    this.state = {data, tabIndex: 1};
   }
 
   refresh(id) {
-    Request.get(config.getUrl("areas?id=" + id)).withCredentials().end((err, res) => {
-      if (err) {
-        this.setState({error: err});
-      } else {
-        this.setState({
-          id: res.body.id,
-          visibility: res.body.visibility,
-          name: res.body.name,
-          media: res.body.media,
-          comment: res.body.comment,
-          lat: res.body.lat,
-          lng: res.body.lng,
-          sectors: res.body.sectors,
-          metadata: res.body.metadata
-        });
-      }
-    });
+    this.props.fetchInitialData(id).then((data) => this.setState(() => ({data})));
   }
 
   componentDidMount() {
-    this.refresh(this.props.match.params.areaId);
+    if (!this.state.data) {
+      this.refresh(this.props.match.params.areaId);
+    }
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.refresh(nextProps.match.params.areaId);
+  componentDidUpdate (prevProps, prevState) {
+    if (prevProps.match.params.areaId !== this.props.match.params.areaId) {
+      this.refresh(this.props.match.params.areaId);
+    }
   }
 
   handleTabsSelection(key) {
@@ -72,23 +63,20 @@ export default class Area extends Component {
   }
 
   onRemoveMedia(idMediaToRemove) {
-    const allMedia = this.state.media.filter(m => m.id!=idMediaToRemove);
+    const allMedia = this.state.data.media.filter(m => m.id!=idMediaToRemove);
     this.setState({media: allMedia});
   }
 
   render() {
-    if (!this.state.id) {
+    if (!this.state.data) {
       return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
-    if (this.state.error) {
-      return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;
-    }
-    const rows = this.state.sectors.map((sector, i) => {
+    const rows = this.state.data.sectors.map((sector, i) => {
       return (
         <TableRow sector={sector} key={i} />
       )
     });
-    const markers = this.state.sectors.filter(s => s.lat!=0 && s.lng!=0).map(s => {
+    const markers = this.state.data.sectors.filter(s => s.lat!=0 && s.lng!=0).map(s => {
       return {
           lat: s.lat,
           lng: s.lng,
@@ -101,7 +89,7 @@ export default class Area extends Component {
           url: '/sector/' + s.id
         }
     });
-    const polygons = this.state.sectors.filter(s => s.polygonCoords).map(s => {
+    const polygons = this.state.data.sectors.filter(s => s.polygonCoords).map(s => {
       const triangleCoords = s.polygonCoords.split(";").map((p, i) => {
         const latLng = p.split(",");
         return {lat: parseFloat(latLng[0]), lng: parseFloat(latLng[1])};
@@ -111,10 +99,10 @@ export default class Area extends Component {
         url: '/sector/' + s.id
       }
     });
-    const defaultCenter = this.state.lat && this.state.lat>0? {lat: this.state.lat, lng: this.state.lng} : config.getDefaultCenter();
-    const defaultZoom = this.state.lat && this.state.lat>0? 14 : config.getDefaultZoom();
+    const defaultCenter = this.state.data.lat && this.state.data.lat>0? {lat: this.state.data.lat, lng: this.state.data.lng} : this.state.data.metadata.defaultCenter;
+    const defaultZoom = this.state.data.lat && this.state.data.lat>0? 14 : this.state.data.metadata.defaultZoom;
     const map = markers.length>0 || polygons.length>0? <Map markers={markers} polygons={polygons} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/> : null;
-    const gallery = this.state.media && this.state.media.length>0? <Gallery alt={this.state.name} media={this.state.media} showThumbnails={this.state.media.length>1} removeMedia={this.onRemoveMedia.bind(this)}/> : null;
+    const gallery = this.state.data.media && this.state.data.media.length>0? <Gallery alt={this.state.data.name} media={this.state.data.media} showThumbnails={this.state.data.media.length>1} removeMedia={this.onRemoveMedia.bind(this)}/> : null;
     var topoContent = null;
     if (map && gallery) {
       topoContent = (
@@ -132,28 +120,28 @@ export default class Area extends Component {
     return (
       <span>
         <MetaTags>
-          <script type="application/ld+json">{JSON.stringify(this.state.metadata.jsonLd)}</script>
-          <title>{this.state.metadata.title}</title>
-          <meta name="description" content={this.state.metadata.description} />
+          <script type="application/ld+json">{JSON.stringify(this.state.data.metadata.jsonLd)}</script>
+          <title>{this.state.data.metadata.title}</title>
+          <meta name="description" content={this.state.data.metadata.description} />
         </MetaTags>
         <Breadcrumb>
           {auth.isAdmin()?
             <div style={{float: 'right'}}>
               <ButtonGroup>
                 <OverlayTrigger placement="top" overlay={<Tooltip id={-1}>Add sector</Tooltip>}>
-                  <LinkContainer to={{ pathname: `/sector/edit/-1`, query: { idArea: this.state.id, lat: this.state.lat, lng: this.state.lng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="plus-square" inverse={true} /></Button></LinkContainer>
+                  <LinkContainer to={{ pathname: `/sector/edit/-1`, query: { idArea: this.state.data.id, lat: this.state.data.lat, lng: this.state.data.lng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="plus-square" inverse={true} /></Button></LinkContainer>
                 </OverlayTrigger>
-                <OverlayTrigger placement="top" overlay={<Tooltip id={this.state.id}>Edit area</Tooltip>}>
-                  <LinkContainer to={{ pathname: `/area/edit/${this.state.id}`, query: { lat: this.state.lat, lng: this.state.lng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="edit" inverse={true} /></Button></LinkContainer>
+                <OverlayTrigger placement="top" overlay={<Tooltip id={this.state.data.id}>Edit area</Tooltip>}>
+                  <LinkContainer to={{ pathname: `/area/edit/${this.state.data.id}`, query: { lat: this.state.data.lat, lng: this.state.data.lng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="edit" inverse={true} /></Button></LinkContainer>
                 </OverlayTrigger>
               </ButtonGroup>
             </div>:
             null
           }
-          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <font color='#777'>{this.state.name}</font> {this.state.visibility===1 && <FontAwesomeIcon icon="lock" />}{this.state.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
+          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <font color='#777'>{this.state.data.name}</font> {this.state.data.visibility===1 && <FontAwesomeIcon icon="lock" />}{this.state.data.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
         </Breadcrumb>
         {topoContent}
-        {this.state.comment? <Well><div dangerouslySetInnerHTML={{ __html: this.state.comment }} /></Well> : null}
+        {this.state.data.comment? <Well><div dangerouslySetInnerHTML={{ __html: this.state.data.comment }} /></Well> : null}
         <Table striped condensed hover>
           <thead>
             <tr>

@@ -1133,7 +1133,13 @@ var routes = [{ path: '/', exact: true, component: _index2.default, fetchInitial
   } }, { path: '/ethics', exact: false, component: _ethics2.default, fetchInitialData: function fetchInitialData() {
     var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
     return (0, _api.getMeta)();
-  } }, { path: '/area/:areaId', exact: true, component: _area2.default }, { path: '/area/edit/:areaId', exact: true, component: _areaEdit2.default }, { path: '/sector/:sectorId', exact: true, component: _sector2.default }, { path: '/sector/edit/:sectorId', exact: true, component: _sectorEdit2.default }, { path: '/problem/:problemId', exact: true, component: _problem2.default }, { path: '/problem/edit/:problemId', exact: true, component: _problemEdit2.default }, { path: '/problem/edit/media/:problemId', exact: true, component: _problemEditMedia2.default }, { path: '/problem/svg-edit/:problemId/:mediaId', exact: true, component: _svgEdit2.default }, { path: '/finder/:grade', exact: true, component: _finder2.default, fetchInitialData: function fetchInitialData() {
+  } }, { path: '/area/:areaId', exact: true, component: _area2.default, fetchInitialData: function fetchInitialData() {
+    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    return (0, _api.getArea)(path.split('/').pop());
+  } }, { path: '/area/edit/:areaId', exact: true, component: _areaEdit2.default, fetchInitialData: function fetchInitialData() {
+    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    return (0, _api.getAreaEdit)(path.split('/').pop());
+  } }, { path: '/sector/:sectorId', exact: true, component: _sector2.default }, { path: '/sector/edit/:sectorId', exact: true, component: _sectorEdit2.default }, { path: '/problem/:problemId', exact: true, component: _problem2.default }, { path: '/problem/edit/:problemId', exact: true, component: _problemEdit2.default }, { path: '/problem/edit/media/:problemId', exact: true, component: _problemEditMedia2.default }, { path: '/problem/svg-edit/:problemId/:mediaId', exact: true, component: _svgEdit2.default }, { path: '/finder/:grade', exact: true, component: _finder2.default, fetchInitialData: function fetchInitialData() {
     var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
     return (0, _api.getFinder)(path.split('/').pop());
   } }, { path: '/user', exact: true, component: _user2.default }, { path: '/user/:userId', exact: true, component: _user2.default }, { path: '/user/:userId/edit', exact: true, component: _userEdit2.default }, { path: '/login', exact: false, component: _login2.default, fetchInitialData: function fetchInitialData() {
@@ -1807,10 +1813,6 @@ var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
 var _reactRouterDom = __webpack_require__(4);
 
-var _superagent = __webpack_require__(3);
-
-var _superagent2 = _interopRequireDefault(_superagent);
-
 var _reactBootstrap = __webpack_require__(1);
 
 var _reactRouterBootstrap = __webpack_require__(9);
@@ -1826,10 +1828,6 @@ var _gallery2 = _interopRequireDefault(_gallery);
 var _auth = __webpack_require__(6);
 
 var _auth2 = _interopRequireDefault(_auth);
-
-var _config = __webpack_require__(2);
-
-var _config2 = _interopRequireDefault(_config);
 
 var _reactFontawesome = __webpack_require__(5);
 
@@ -1914,9 +1912,14 @@ var Area = function (_Component2) {
 
     var _this2 = _possibleConstructorReturn(this, (Area.__proto__ || Object.getPrototypeOf(Area)).call(this, props));
 
-    _this2.state = {
-      tabIndex: 1
-    };
+    var data = void 0;
+    if (false) {
+      data = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+    } else {
+      data = props.staticContext.data;
+    }
+    _this2.state = { data: data, tabIndex: 1 };
     return _this2;
   }
 
@@ -1925,33 +1928,25 @@ var Area = function (_Component2) {
     value: function refresh(id) {
       var _this3 = this;
 
-      _superagent2.default.get(_config2.default.getUrl("areas?id=" + id)).withCredentials().end(function (err, res) {
-        if (err) {
-          _this3.setState({ error: err });
-        } else {
-          _this3.setState({
-            id: res.body.id,
-            visibility: res.body.visibility,
-            name: res.body.name,
-            media: res.body.media,
-            comment: res.body.comment,
-            lat: res.body.lat,
-            lng: res.body.lng,
-            sectors: res.body.sectors,
-            metadata: res.body.metadata
-          });
-        }
+      this.props.fetchInitialData(id).then(function (data) {
+        return _this3.setState(function () {
+          return { data: data };
+        });
       });
     }
   }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
-      this.refresh(this.props.match.params.areaId);
+      if (!this.state.data) {
+        this.refresh(this.props.match.params.areaId);
+      }
     }
   }, {
-    key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(nextProps) {
-      this.refresh(nextProps.match.params.areaId);
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate(prevProps, prevState) {
+      if (prevProps.match.params.areaId !== this.props.match.params.areaId) {
+        this.refresh(this.props.match.params.areaId);
+      }
     }
   }, {
     key: 'handleTabsSelection',
@@ -1961,7 +1956,7 @@ var Area = function (_Component2) {
   }, {
     key: 'onRemoveMedia',
     value: function onRemoveMedia(idMediaToRemove) {
-      var allMedia = this.state.media.filter(function (m) {
+      var allMedia = this.state.data.media.filter(function (m) {
         return m.id != idMediaToRemove;
       });
       this.setState({ media: allMedia });
@@ -1969,29 +1964,17 @@ var Area = function (_Component2) {
   }, {
     key: 'render',
     value: function render() {
-      if (!this.state.id) {
+      if (!this.state.data) {
         return _react2.default.createElement(
           'center',
           null,
           _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'spinner', spin: true, size: '3x' })
         );
       }
-      if (this.state.error) {
-        return _react2.default.createElement(
-          'span',
-          null,
-          _react2.default.createElement(
-            'h3',
-            null,
-            this.state.error.status
-          ),
-          this.state.error.toString()
-        );
-      }
-      var rows = this.state.sectors.map(function (sector, i) {
+      var rows = this.state.data.sectors.map(function (sector, i) {
         return _react2.default.createElement(TableRow, { sector: sector, key: i });
       });
-      var markers = this.state.sectors.filter(function (s) {
+      var markers = this.state.data.sectors.filter(function (s) {
         return s.lat != 0 && s.lng != 0;
       }).map(function (s) {
         return {
@@ -2006,7 +1989,7 @@ var Area = function (_Component2) {
           url: '/sector/' + s.id
         };
       });
-      var polygons = this.state.sectors.filter(function (s) {
+      var polygons = this.state.data.sectors.filter(function (s) {
         return s.polygonCoords;
       }).map(function (s) {
         var triangleCoords = s.polygonCoords.split(";").map(function (p, i) {
@@ -2018,10 +2001,10 @@ var Area = function (_Component2) {
           url: '/sector/' + s.id
         };
       });
-      var defaultCenter = this.state.lat && this.state.lat > 0 ? { lat: this.state.lat, lng: this.state.lng } : _config2.default.getDefaultCenter();
-      var defaultZoom = this.state.lat && this.state.lat > 0 ? 14 : _config2.default.getDefaultZoom();
+      var defaultCenter = this.state.data.lat && this.state.data.lat > 0 ? { lat: this.state.data.lat, lng: this.state.data.lng } : this.state.data.metadata.defaultCenter;
+      var defaultZoom = this.state.data.lat && this.state.data.lat > 0 ? 14 : this.state.data.metadata.defaultZoom;
       var map = markers.length > 0 || polygons.length > 0 ? _react2.default.createElement(_map2.default, { markers: markers, polygons: polygons, defaultCenter: defaultCenter, defaultZoom: defaultZoom }) : null;
-      var gallery = this.state.media && this.state.media.length > 0 ? _react2.default.createElement(_gallery2.default, { alt: this.state.name, media: this.state.media, showThumbnails: this.state.media.length > 1, removeMedia: this.onRemoveMedia.bind(this) }) : null;
+      var gallery = this.state.data.media && this.state.data.media.length > 0 ? _react2.default.createElement(_gallery2.default, { alt: this.state.data.name, media: this.state.data.media, showThumbnails: this.state.data.media.length > 1, removeMedia: this.onRemoveMedia.bind(this) }) : null;
       var topoContent = null;
       if (map && gallery) {
         topoContent = _react2.default.createElement(
@@ -2053,14 +2036,14 @@ var Area = function (_Component2) {
           _react2.default.createElement(
             'script',
             { type: 'application/ld+json' },
-            JSON.stringify(this.state.metadata.jsonLd)
+            JSON.stringify(this.state.data.metadata.jsonLd)
           ),
           _react2.default.createElement(
             'title',
             null,
-            this.state.metadata.title
+            this.state.data.metadata.title
           ),
-          _react2.default.createElement('meta', { name: 'description', content: this.state.metadata.description })
+          _react2.default.createElement('meta', { name: 'description', content: this.state.data.metadata.description })
         ),
         _react2.default.createElement(
           _reactBootstrap.Breadcrumb,
@@ -2080,7 +2063,7 @@ var Area = function (_Component2) {
                   ) },
                 _react2.default.createElement(
                   _reactRouterBootstrap.LinkContainer,
-                  { to: { pathname: '/sector/edit/-1', query: { idArea: this.state.id, lat: this.state.lat, lng: this.state.lng } } },
+                  { to: { pathname: '/sector/edit/-1', query: { idArea: this.state.data.id, lat: this.state.data.lat, lng: this.state.data.lng } } },
                   _react2.default.createElement(
                     _reactBootstrap.Button,
                     { bsStyle: 'primary', bsSize: 'xsmall' },
@@ -2092,12 +2075,12 @@ var Area = function (_Component2) {
                 _reactBootstrap.OverlayTrigger,
                 { placement: 'top', overlay: _react2.default.createElement(
                     _reactBootstrap.Tooltip,
-                    { id: this.state.id },
+                    { id: this.state.data.id },
                     'Edit area'
                   ) },
                 _react2.default.createElement(
                   _reactRouterBootstrap.LinkContainer,
-                  { to: { pathname: '/area/edit/' + this.state.id, query: { lat: this.state.lat, lng: this.state.lng } } },
+                  { to: { pathname: '/area/edit/' + this.state.data.id, query: { lat: this.state.data.lat, lng: this.state.data.lng } } },
                   _react2.default.createElement(
                     _reactBootstrap.Button,
                     { bsStyle: 'primary', bsSize: 'xsmall' },
@@ -2122,17 +2105,17 @@ var Area = function (_Component2) {
           _react2.default.createElement(
             'font',
             { color: '#777' },
-            this.state.name
+            this.state.data.name
           ),
           ' ',
-          this.state.visibility === 1 && _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'lock' }),
-          this.state.visibility === 2 && _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'user-secret' })
+          this.state.data.visibility === 1 && _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'lock' }),
+          this.state.data.visibility === 2 && _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'user-secret' })
         ),
         topoContent,
-        this.state.comment ? _react2.default.createElement(
+        this.state.data.comment ? _react2.default.createElement(
           _reactBootstrap.Well,
           null,
-          _react2.default.createElement('div', { dangerouslySetInnerHTML: { __html: this.state.comment } })
+          _react2.default.createElement('div', { dangerouslySetInnerHTML: { __html: this.state.data.comment } })
         ) : null,
         _react2.default.createElement(
           _reactBootstrap.Table,
@@ -2216,9 +2199,9 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _superagent = __webpack_require__(3);
+var _reactMetaTags = __webpack_require__(8);
 
-var _superagent2 = _interopRequireDefault(_superagent);
+var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
 var _reactRouter = __webpack_require__(7);
 
@@ -2230,15 +2213,13 @@ var _imageUpload2 = _interopRequireDefault(_imageUpload);
 
 var _reactGoogleMaps = __webpack_require__(11);
 
-var _config = __webpack_require__(2);
-
-var _config2 = _interopRequireDefault(_config);
-
 var _auth = __webpack_require__(6);
 
 var _auth2 = _interopRequireDefault(_auth);
 
 var _reactFontawesome = __webpack_require__(5);
+
+var _api = __webpack_require__(62);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2263,10 +2244,20 @@ var GettingStartedGoogleMap = (0, _reactGoogleMaps.withScriptjs)((0, _reactGoogl
 var AreaEdit = function (_Component) {
   _inherits(AreaEdit, _Component);
 
-  function AreaEdit() {
+  function AreaEdit(props) {
     _classCallCheck(this, AreaEdit);
 
-    return _possibleConstructorReturn(this, (AreaEdit.__proto__ || Object.getPrototypeOf(AreaEdit)).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, (AreaEdit.__proto__ || Object.getPrototypeOf(AreaEdit)).call(this, props));
+
+    var data = void 0;
+    if (false) {
+      data = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+    } else {
+      data = props.staticContext.data;
+    }
+    _this.state = { data: data };
+    return _this;
   }
 
   _createClass(AreaEdit, [{
@@ -2281,31 +2272,11 @@ var AreaEdit = function (_Component) {
     value: function componentDidMount() {
       var _this2 = this;
 
-      if (this.props.match.params.areaId == -1) {
-        this.setState({
-          id: -1,
-          visibility: 0,
-          name: "",
-          comment: "",
-          lat: 0,
-          lng: 0,
-          newMedia: []
-        });
-      } else {
-        _superagent2.default.get(_config2.default.getUrl("areas?id=" + this.props.match.params.areaId)).withCredentials().end(function (err, res) {
-          if (err) {
-            _this2.setState({ error: err });
-          } else {
-            _this2.setState({
-              id: res.body.id,
-              visibility: res.body.visibility,
-              name: res.body.name,
-              comment: res.body.comment,
-              lat: res.body.lat,
-              lng: res.body.lng,
-              newMedia: []
-            });
-          }
+      if (!this.state.data) {
+        this.props.fetchInitialData(this.props.match.params.areaId).then(function (data) {
+          return _this2.setState(function () {
+            return { data: data };
+          });
         });
       }
     }
@@ -2336,19 +2307,14 @@ var AreaEdit = function (_Component) {
 
       event.preventDefault();
       this.setState({ isSaving: true });
-      var newMedia = this.state.newMedia.map(function (m) {
+      var newMedia = this.state.data.newMedia.map(function (m) {
         return { name: m.file.name.replace(/[^-a-z0-9.]/ig, '_'), photographer: m.photographer, inPhoto: m.inPhoto };
       });
-      var req = _superagent2.default.post(_config2.default.getUrl("areas")).withCredentials().field('json', JSON.stringify({ id: this.state.id, visibility: this.state.visibility, name: this.state.name, comment: this.state.comment, lat: this.state.lat, lng: this.state.lng, newMedia: newMedia })).set('Accept', 'application/json');
-      this.state.newMedia.forEach(function (m) {
-        return req.attach(m.file.name.replace(/[^-a-z0-9.]/ig, '_'), m.file);
-      });
-      req.end(function (err, res) {
-        if (err) {
-          _this3.setState({ error: err });
-        } else {
-          _this3.setState({ pushUrl: "/area/" + res.body.id });
-        }
+      (0, _api.postArea)(this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, newMedia).then(function (response) {
+        _this3.setState({ pushUrl: "/area/" + response.id });
+      }).catch(function (error) {
+        console.warn(error);
+        _this3.setState({ error: error });
       });
     }
   }, {
@@ -2364,13 +2330,7 @@ var AreaEdit = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
-      if (!this.state) {
-        return _react2.default.createElement(
-          'center',
-          null,
-          _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'spinner', spin: true, size: '3x' })
-        );
-      } else if (this.state.error) {
+      if (this.state.error) {
         return _react2.default.createElement(
           'span',
           null,
@@ -2393,19 +2353,34 @@ var AreaEdit = function (_Component) {
             'Invalid action...'
           )
         );
+      } else if (!this.state.data) {
+        return _react2.default.createElement(
+          'center',
+          null,
+          _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'spinner', spin: true, size: '3x' })
+        );
       }
 
       var visibilityText = 'Visible for everyone';
-      if (this.state.visibility === 1) {
+      if (this.state.data.visibility === 1) {
         visibilityText = 'Only visible for administrators';
-      } else if (this.state.visibility === 2) {
+      } else if (this.state.data.visibility === 2) {
         visibilityText = 'Only visible for super administrators';
       }
-      var defaultCenter = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat) > 0 ? { lat: parseFloat(this.props.location.query.lat), lng: parseFloat(this.props.location.query.lng) } : _config2.default.getDefaultCenter();
-      var defaultZoom = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat) > 0 ? 8 : _config2.default.getDefaultZoom();
+      var defaultCenter = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat) > 0 ? { lat: parseFloat(this.props.location.query.lat), lng: parseFloat(this.props.location.query.lng) } : this.state.data.metadata.defaultCenter;
+      var defaultZoom = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat) > 0 ? 8 : this.state.data.metadata.defaultZoom;
       return _react2.default.createElement(
         'span',
         null,
+        _react2.default.createElement(
+          _reactMetaTags2.default,
+          null,
+          _react2.default.createElement(
+            'title',
+            null,
+            this.state.data.metadata.title
+          )
+        ),
         _react2.default.createElement(
           _reactBootstrap.Well,
           null,
@@ -2420,7 +2395,7 @@ var AreaEdit = function (_Component) {
                 null,
                 'Area name'
               ),
-              _react2.default.createElement(_reactBootstrap.FormControl, { type: 'text', value: this.state.name, placeholder: 'Enter name', onChange: this.onNameChanged.bind(this) })
+              _react2.default.createElement(_reactBootstrap.FormControl, { type: 'text', value: this.state.data.name, placeholder: 'Enter name', onChange: this.onNameChanged.bind(this) })
             ),
             _react2.default.createElement(
               _reactBootstrap.FormGroup,
@@ -2430,7 +2405,7 @@ var AreaEdit = function (_Component) {
                 null,
                 'Comment'
               ),
-              _react2.default.createElement(_reactBootstrap.FormControl, { style: { height: '100px' }, componentClass: 'textarea', placeholder: 'Enter comment', value: this.state.comment, onChange: this.onCommentChanged.bind(this) })
+              _react2.default.createElement(_reactBootstrap.FormControl, { style: { height: '100px' }, componentClass: 'textarea', placeholder: 'Enter comment', value: this.state.data.comment, onChange: this.onCommentChanged.bind(this) })
             ),
             _react2.default.createElement(
               _reactBootstrap.FormGroup,
@@ -2486,7 +2461,7 @@ var AreaEdit = function (_Component) {
                   defaultZoom: defaultZoom,
                   defaultCenter: defaultCenter,
                   onClick: this.onMarkerClick.bind(this),
-                  markers: this.state.lat != 0 && this.state.lng != 0 ? _react2.default.createElement(_reactGoogleMaps.Marker, { position: { lat: this.state.lat, lng: this.state.lng } }) : ""
+                  markers: this.state.data.lat != 0 && this.state.data.lng != 0 ? _react2.default.createElement(_reactGoogleMaps.Marker, { position: { lat: this.state.data.lat, lng: this.state.data.lng } }) : ""
                 })
               )
             ),
@@ -2680,7 +2655,7 @@ var Browse = function (_Component) {
           url: '/area/' + a.id
         };
       });
-      var map = markers.length > 0 ? _react2.default.createElement(_map2.default, { markers: markers, defaultCenter: this.state.data.defaultCenter, defaultZoom: this.state.data.defaultZoom }) : null;
+      var map = markers.length > 0 ? _react2.default.createElement(_map2.default, { markers: markers, defaultCenter: this.state.data.metadata.defaultCenter, defaultZoom: this.state.data.metadata.defaultZoom }) : null;
       return _react2.default.createElement(
         'span',
         null,
@@ -9414,83 +9389,12 @@ exports.default = UserEdit;
 
 /***/ }),
 /* 62 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.getBrowse = getBrowse;
-exports.getFinder = getFinder;
-exports.getFrontpage = getFrontpage;
-exports.getMeta = getMeta;
-exports.getUserPassword = getUserPassword;
-exports.getUserForgotPassword = getUserForgotPassword;
-exports.postUserRegister = postUserRegister;
-
-var _isomorphicFetch = __webpack_require__(63);
-
-var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function getBrowse() {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/browse'), { credentials: 'include' }).then(function (data) {
-    return data.json();
-  }).catch(function (error) {
-    console.warn(error);
-    return null;
-  });
-}
-
-function getFinder(grade) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/finder?grade=' + grade), { credentials: 'include' }).then(function (data) {
-    return data.json();
-  }).catch(function (error) {
-    console.warn(error);
-    return null;
-  });
-}
-
-function getFrontpage() {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/frontpage'), { credentials: 'include' }).then(function (data) {
-    return data.json();
-  }).catch(function (error) {
-    console.warn(error);
-    return null;
-  });
-}
-
-function getMeta() {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta')).then(function (data) {
-    return data.json();
-  }).catch(function (error) {
-    console.warn(error);
-    return null;
-  });
-}
-
-function getUserPassword(token, password) {
-  (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/password?token=' + token + '&password=' + password));
-}
-
-function getUserForgotPassword(username) {
-  (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/forgotPassword?username=' + username));
-}
-
-function postUserRegister(firstname, lastname, username, password) {
-  (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/register'), { method: "POST", body: { firstname: firstname, lastname: lastname, username: username, password: password } });
-}
-
-/***/ }),
-/* 63 */
 /***/ (function(module, exports) {
 
-module.exports = require("isomorphic-fetch");
+throw new Error("Module build failed: SyntaxError: C:/git/buldreinfo-web/src/shared/api.js: `getAreaEdit` has already been exported. Exported identifiers must be unique. (12:0)\n\n\u001b[0m \u001b[90m 10 | \u001b[39m}\n \u001b[90m 11 | \u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 12 | \u001b[39m\u001b[36mexport\u001b[39m \u001b[36mfunction\u001b[39m getAreaEdit(id) {\n \u001b[90m    | \u001b[39m\u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 13 | \u001b[39m  \u001b[36mreturn\u001b[39m fetch(encodeURI(\u001b[32m`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/areas/edit?id=${id}`\u001b[39m)\u001b[33m,\u001b[39m {credentials\u001b[33m:\u001b[39m \u001b[32m'include'\u001b[39m})\n \u001b[90m 14 | \u001b[39m    \u001b[33m.\u001b[39mthen((data) \u001b[33m=>\u001b[39m data\u001b[33m.\u001b[39mjson())\n \u001b[90m 15 | \u001b[39m    \u001b[33m.\u001b[39m\u001b[36mcatch\u001b[39m((error) \u001b[33m=>\u001b[39m {\u001b[0m\n");
 
 /***/ }),
+/* 63 */,
 /* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 

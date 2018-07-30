@@ -86,7 +86,7 @@ export default class Browse extends Component {
           url: '/area/' + a.id
         }
     });
-    const map = markers.length>0? <Map markers={markers} defaultCenter={this.state.data.defaultCenter} defaultZoom={this.state.data.defaultZoom}/> : null;
+    const map = markers.length>0? <Map markers={markers} defaultCenter={this.state.data.metadata.defaultCenter} defaultZoom={this.state.data.metadata.defaultZoom}/> : null;
     return (
       <span>
         <MetaTags>
