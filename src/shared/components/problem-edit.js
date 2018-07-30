@@ -11,6 +11,7 @@ import auth from '../utils/auth.js';
 import Calendar from 'react-input-calendar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { postProblem } from './../api';
+import util from './../utils/util';
 
 const GettingStartedGoogleMap = withScriptjs(withGoogleMap(props => (
   <GoogleMap
@@ -102,7 +103,7 @@ export default class ProblemEdit extends Component {
     this.setState({isSaving: true});
     const newMedia = this.state.data.newMedia.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
     const { data } = this.state;
-    postSector(this.props.location.query.idSector, data.id, data.visibility, data.name, data.comment, data.originalGrade, data.fa, data.faDate, data.nr, (data.typeId? data.types.find(t => t.id === data.typeId) : data.types[0]), data.lat, data.lng, data.sections, newMedia)
+    postProblem(this.props.location.query.idSector, data.id, data.visibility, data.name, data.comment, data.originalGrade, data.fa, data.faDate, data.nr, (data.typeId? data.types.find(t => t.id === data.typeId) : data.types[0]), data.lat, data.lng, data.sections, newMedia)
     .then((response) => {
       this.setState({pushUrl: "/problem/" + response.id});
     })
@@ -196,8 +197,8 @@ export default class ProblemEdit extends Component {
               <ControlLabel>FA date (yyyy-mm-dd)</ControlLabel><br/>
               <Calendar format='YYYY-MM-DD' computableFormat='YYYY-MM-DD' date={data.faDate} onChange={this.onFaDateChanged.bind(this)} />
               <ButtonGroup>
-                <Button onClick={this.onFaDateChanged.bind(this, this.convertFromDateToString(yesterday))}>Yesterday</Button>
-                <Button onClick={this.onFaDateChanged.bind(this, this.convertFromDateToString(new Date()))}>Today</Button>
+                <Button onClick={this.onFaDateChanged.bind(this, util.convertFromDateToString(yesterday))}>Yesterday</Button>
+                <Button onClick={this.onFaDateChanged.bind(this, util.convertFromDateToString(new Date()))}>Today</Button>
               </ButtonGroup>
             </FormGroup>
             <FormGroup controlId="formControlsTypeId">
@@ -260,12 +261,5 @@ export default class ProblemEdit extends Component {
         </Well>
       </span>
     );
-  }
-
-  convertFromDateToString(date) {
-    var d = date.getDate();
-    var m = date.getMonth() + 1;
-    var y = date.getFullYear();
-    return y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
   }
 }

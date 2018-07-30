@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
 import Dropzone from 'react-dropzone';
-import Request from 'superagent';
 import { Grid, Row, Col, Thumbnail, MenuItem, Button, FormControl, FormGroup, ControlLabel } from 'react-bootstrap';
-import config from '../../../utils/config.js';
+import { getUserSearch } from './../../../api';
 
 class Text extends Component {
   constructor(props) {
@@ -18,11 +17,8 @@ class Text extends Component {
     const value = e.target.value;
     this.props.onValueChanged(this.props.m, value);
     if (value.length>0) {
-      Request.get(config.getUrl("users/search?value=" + value)).withCredentials().end((err, res) => {
-        if (err) {
-          console.log(err);
-        }
-        const sr = res.body.filter(u => u.name.toUpperCase() !== value.toUpperCase());
+      getUserSearch(value).then((res) => {
+        const sr = res.filter(u => u.name.toUpperCase() !== value.toUpperCase());
         this.setState({searchResults: sr});
       });
     }

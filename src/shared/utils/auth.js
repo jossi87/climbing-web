@@ -1,5 +1,3 @@
-import Request from 'superagent';
-import config from './config.js';
 import { withCookies, Cookies } from 'react-cookie';
 
 module.exports = {
@@ -33,5 +31,5 @@ module.exports = {
 }
 
 function tryLogin(username, password, cb) {
-  
+
 }

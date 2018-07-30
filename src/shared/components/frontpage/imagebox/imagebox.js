@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { Link } from 'react-router-dom';
 import { Well } from 'react-bootstrap';
-import config from '../../../utils/config.js';
+import util from '../../../utils/util.js';
 
 export default class ImageBox extends Component {
   constructor(props) {
@@ -32,7 +32,7 @@ export default class ImageBox extends Component {
       }}>
         <h4><Link to={`/problem/${this.props.data.idProblem}`}>{this.props.data.problem}</Link> {this.props.data.grade}</h4>
         <Link to={`/problem/${this.props.data.idProblem}`}>
-          <img style={{maxWidth: '100%'}} src={config.getUrl(`images?id=${this.props.data.idMedia}&targetHeight=480`)} alt={this.props.data.problem}/>
+          <img style={{maxWidth: '100%'}} src={util.getImageUrl(this.props.data.idMedia, 480)} alt={this.props.data.problem}/>
         </Link><br/>
         {txt}
       </Well>

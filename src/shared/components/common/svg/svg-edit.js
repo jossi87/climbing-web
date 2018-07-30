@@ -3,65 +3,55 @@ import ReactDOM from 'react-dom';
 import { Link } from 'react-router-dom';
 import { Well, FormGroup, MenuItem, ButtonGroup, Button, DropdownButton, Alert, Breadcrumb } from 'react-bootstrap';
 import {parseSVG, makeAbsolute} from 'svg-path-parser';
-import config from '../../../utils/config.js';
-import Request from 'superagent';
 import { Redirect } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import util from '../../../utils/util.js';
+import { postProblemSvg } from '../../../api';
 
 export default class SvgEdit extends Component {
+  constructor(props) {
+    super(props);
+    let data;
+    if (__isBrowser__) {
+      data = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+    } else {
+      data = props.staticContext.data;
+    }
+    this.state = {data};
+  }
+
+  componentWillMount() {
+    if (!auth.isAdmin()) {
+      this.setState({pushUrl: "/login", error: null});
+    }
+  }
+
   componentDidMount() {
-    Request.get(config.getUrl("problems?id=" + this.props.match.params.problemId)).withCredentials().end((err, res) => {
-      if (err) {
-        this.setState({error: err});
-      } else {
-        const m = res.body[0].media.filter(x => x.id==this.props.match.params.mediaId)[0];
-        const readOnlySvgs = [];
-        var svgId = 0;
-        var points = [];
-        if (m.svgs) {
-          for (let svg of m.svgs) {
-            if (svg.problemId===res.body[0].id) {
-              svgId = svg.id;
-              points = this.parsePath(svg.path);
-            }
-            else {
-              readOnlySvgs.push({ nr: svg.nr, hasAnchor: svg.hasAnchor, path: svg.path });
-            }
-          }
-        }
-        this.setState({
-          mediaId: m.id,
-          nr: res.body[0].nr,
-          w: m.width,
-          h: m.height,
-          ctrl: false,
-          svgId: svgId,
-          points: points,
-          readOnlySvgs: readOnlySvgs,
-          activePoint: 0,
-          draggedPoint: false,
-          draggedCubic: false,
-          hasAnchor: true,
-          areaId: res.body[0].areaId,
-          areaName: res.body[0].areaName,
-          areaVisibility: res.body[0].areaVisibility,
-          sectorId: res.body[0].sectorId,
-          sectorName: res.body[0].sectorName,
-          sectorVisibility: res.body[0].sectorVisibility,
-          id: res.body[0].id,
-          name: res.body[0].name,
-          grade: res.body[0].grade,
-          visibility: res.body[0].visibility
-        });
-      }
-    });
-    document.addEventListener("keydown", this.handleKeyDown.bind(this));
-    document.addEventListener("keyup", this.handleKeyUp.bind(this));
+    if (!this.state.data) {
+      this.refresh(this.props.match.params.problemId, this.props.match.params.mediaId);
+    }
+    if (document) {
+      document.addEventListener("keydown", this.handleKeyDown.bind(this));
+      document.addEventListener("keyup", this.handleKeyUp.bind(this));
+    }
+  }
+
+  componentDidUpdate (prevProps, prevState) {
+    if (prevProps.match.params.problemId !== this.props.match.params.problemId || prevProps.match.params.mediaId !== this.props.match.params.mediaId) {
+      this.refresh(this.props.match.params.problemId, this.props.match.params.mediaId);
+    }
+  }
+
+  refresh(problemId, mediaId) {
+    this.props.fetchInitialData(problemId, mediaId).then((data) => this.setState(() => ({data})));
   }
 
   componentWillUnmount() {
-    document.removeEventListener("keydown", this.handleKeyDown.bind(this));
-    document.removeEventListener("keyup", this.handleKeyUp.bind(this));
+    if (document) {
+      document.removeEventListener("keydown", this.handleKeyDown.bind(this));
+      document.removeEventListener("keyup", this.handleKeyUp.bind(this));
+    }
   }
 
   handleKeyDown(e) {
@@ -82,15 +72,13 @@ export default class SvgEdit extends Component {
 
   save(event) {
     event.preventDefault();
-    Request.post(config.getUrl("problems/svg?problemId=" + this.state.id + "&mediaId=" + this.state.mediaId))
-    .withCredentials()
-    .send({delete: this.state.points.length<2, id: this.state.svgId, path: this.generatePath(), hasAnchor: this.state.hasAnchor})
-    .end((err, res) => {
-      if (err) {
-        this.setState({error: err});
-      } else {
-        this.setState({pushUrl: "/problem/" + this.state.id});
-      }
+    postProblemSvg(this.state.id, this.state.mediaId, this.state.points.length<2, this.state.svgId, this.generatePath(), this.state.hasAnchor)
+    .then((response) => {
+      this.setState({pushUrl: "/problem/" + this.state.id});
+    })
+    .catch((error) => {
+      console.warn(error);
+      this.setState({error});
     });
   }
 
@@ -296,7 +284,7 @@ export default class SvgEdit extends Component {
       return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
     else if (this.state.error) {
-      return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;
+      return <h3>{this.state.error.toString()}</h3>;
     }
     else if (this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
@@ -356,7 +344,7 @@ export default class SvgEdit extends Component {
             </FormGroup>
             <FormGroup controlId="formControlsImage">
               <svg viewBox={"0 0 " + this.state.w + " " + this.state.h} onClick={this.addPoint.bind(this)} onMouseMove={this.handleMouseMove.bind(this)}>
-                <image ref="buldreinfo-svg-edit-img" xlinkHref={config.getUrl(`images?id=${this.state.mediaId}`)} width="100%" height="100%"/>
+                <image ref="buldreinfo-svg-edit-img" xlinkHref={util.getImageUrl(this.state.mediaId)} width="100%" height="100%"/>
                 {this.parseReadOnlySvgs()}
                 <path className="buldreinfo-svg-route" d={path} strokeWidth={0.002*this.state.w}/>
                 {circles}

@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import { Link } from 'react-router-dom';
-import config from '../../../utils/config.js';
 
 export default class LinkBox extends Component {
   constructor(props) {

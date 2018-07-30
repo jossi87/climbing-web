@@ -1,40 +1,44 @@
 import React, {Component} from 'react';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
-import Request from 'superagent';
 import { FormGroup, ControlLabel, FormControl, HelpBlock, ButtonGroup, Button, Panel, Breadcrumb, Well } from 'react-bootstrap';
 import auth from '../utils/auth.js';
-import config from '../utils/config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { postUserEdit } from './../api';
 
 export default class UserEdit extends Component {
   constructor(props) {
     super(props);
+    let data;
+    if (__isBrowser__) {
+      data = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+    } else {
+      data = props.staticContext.data;
+    }
+    this.state = {data};
   }
 
   componentWillMount() {
-    if (!auth.loggedIn()) {
-      this.setState({pushUrl: "/login"});
+    if (!auth.isAdmin()) {
+      this.setState({pushUrl: "/login", error: null});
     }
   }
 
   componentDidMount() {
-    Request.get(config.getUrl("users/edit?id=" + this.props.match.params.userId)).withCredentials().end((err, res) => {
-      if (err) {
-        this.setState({message: <Panel bsStyle='danger'>{err.toString()}</Panel>});
-      } else {
-        this.setState({
-          id: res.body.id,
-          username: res.body.username,
-          firstname: res.body.firstname,
-          lastname: res.body.lastname,
-          currentPassword: null,
-          newPassword: null,
-          newPassword2: null,
-          message: null
-        });
-      }
-    });
+    if (!this.state.data) {
+      this.refresh(this.props.match.params.userId);
+    }
+  }
+
+  componentDidUpdate (prevProps, prevState) {
+    if (prevProps.match.params.userId !== this.props.match.params.userId) {
+      this.refresh(this.props.match.params.userId);
+    }
+  }
+
+  refresh(id) {
+    this.props.fetchInitialData(id).then((data) => this.setState(() => ({data})));
   }
 
   save(event) {
@@ -48,16 +52,13 @@ export default class UserEdit extends Component {
     } else if (this.validateCurrentPassword(null)==='error' || this.validateNewPassword(null)==='error' || this.validateNewPassword2(null)==='error') {
       this.setState({message: <Panel bsStyle='danger'>Invalid password.</Panel>});
     } else {
-      Request.post(config.getUrl("users/edit"))
-      .withCredentials()
-      .send({id: this.state.id, username: this.state.username, firstname: this.state.firstname, lastname: this.state.lastname, currentPassword: this.state.currentPassword, newPassword: this.state.newPassword})
-      .set('Accept', 'application/json')
-      .end((err, res) => {
-        if (err) {
-          this.setState({message: <Panel bsStyle='danger'>{err.toString()}</Panel>});
-        } else {
-          this.setState({pushUrl: "/user"});
-        }
+      postUserEdit(this.state.id, this.state.username, this.state.firstname, this.state.lastname, this.state.currentPassword, this.state.newPassword)
+      .then((response) => {
+        this.setState({pushUrl: "/user"});
+      })
+      .catch((error) => {
+        console.warn(error);
+        this.setState({message: <Panel bsStyle='danger'>{error.toString()}</Panel>});
       });
     }
   }

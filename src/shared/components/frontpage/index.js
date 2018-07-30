@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { Table, Grid, Well, Row, Col, Clearfix } from 'react-bootstrap';
-import Request from 'superagent';
 import TextBox from './textbox/textbox';
 import ImageBox from './imagebox/imagebox';
 import LinkBox from './linkbox/linkbox';
@@ -34,7 +33,7 @@ export default class Index extends Component {
     if (!this.state || !this.state.data) {
       return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
-    
+
     const newestProblems = this.state.data.fas.map((x, i) => {
       return (
         <p key={i}>

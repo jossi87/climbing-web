@@ -17,7 +17,7 @@ import SvgEdit from './components/common/svg/svg-edit';
 import User from './components/user';
 import UserEdit from './components/user-edit';
 
-import { getArea, getAreaEdit, getBrowse, getFinder, getFrontpage, getMeta, getProblem, getProblemEdit, getSector, getSectorEdit, getUser } from './api';
+import { getArea, getAreaEdit, getBrowse, getFinder, getFrontpage, getMeta, getProblem, getProblemEdit, getProblemEditMedia, getSector, getSectorEdit, getUser, getUserEdit, getSvgEdit } from './api';
 
 const routes =  [
   {path: '/', exact: true, component: Index, fetchInitialData: (path = '') => getFrontpage()},
@@ -29,12 +29,12 @@ const routes =  [
   {path: '/sector/edit/:sectorId', exact: true, component: SectorEdit, fetchInitialData: (path = '') => getSectorEdit(path.split('/').pop())},
   {path: '/problem/:problemId', exact: true, component: Problem, fetchInitialData: (path = '') => getProblem(path.split('/').pop())},
   {path: '/problem/edit/:problemId', exact: true, component: ProblemEdit, fetchInitialData: (path = '') => getProblemEdit(path.split('/').pop())},
-  {path: '/problem/edit/media/:problemId', exact: true, component: ProblemEditMedia},
-  {path: '/problem/svg-edit/:problemId/:mediaId', exact: true, component: SvgEdit},
+  {path: '/problem/edit/media/:problemId', exact: true, component: ProblemEditMedia, fetchInitialData: (path = '') => getProblemEditMedia(path.split('/').pop())},
+  {path: '/problem/svg-edit/:problemId/:mediaId', exact: true, component: SvgEdit, fetchInitialData: (path = '') => getSvgEdit(path.split('/').pop().pop(), path.split('/').pop())},
   {path: '/finder/:grade', exact: true, component: Finder, fetchInitialData: (path = '') => getFinder(path.split('/').pop())},
-  {path: '/user', exact: true, component: User},
+  {path: '/user', exact: true, component: User, fetchInitialData: (path = '') => getUser(path.split('/').pop())},
   {path: '/user/:userId', exact: true, component: User, fetchInitialData: (path = '') => getUser(path.split('/').pop())},
-  {path: '/user/:userId/edit', exact: true, component: UserEdit},
+  {path: '/user/:userId/edit', exact: true, component: UserEdit, fetchInitialData: (path = '') => getUserEdit(path.split('/').pop())},
   {path: '/login', exact: false, component: Login, fetchInitialData: (path = '') => getMeta()},
   {path: '/register', exact: false, component: Register, fetchInitialData: (path = '') => getMeta()},
   {path: '/recover/:token', exact: true, component: Recover, fetchInitialData: (path = '') => getMeta()},

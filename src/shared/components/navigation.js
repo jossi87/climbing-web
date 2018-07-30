@@ -1,15 +1,13 @@
 import React, {Component} from 'react';
 import { Navbar, Nav, NavItem, FormGroup, FormControl, MenuItem, NavDropdown } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import Request from 'superagent';
 import auth from '../utils/auth.js';
-import config from '../utils/config.js';
 import Async from 'react-select/lib/Async';
 import { components } from 'react-select';
 import { Redirect } from 'react-router';
 import Avatar from 'react-avatar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { postSearch } from './../api';
+import { getGrades, postSearch } from './../api';
 
 const CustomOption = (props) => {
   var bg = "#4caf50";
@@ -51,12 +49,7 @@ export default class Navigation extends Component {
   }
 
   componentDidMount() {
-    Request.get(config.getUrl("grades")).end((err, res) => {
-      this.setState({
-        error: err? err : null,
-        grades: err? null : res.body
-      });
-    });
+    getGrades().then((res) => this.setState({res}));
   }
 
   hoverImage(hover) {

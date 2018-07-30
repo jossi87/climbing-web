@@ -1,25 +1,45 @@
 import React, {Component} from 'react';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router'
-import Request from 'superagent';
 import { FormGroup, ControlLabel, FormControl, ButtonGroup, Button, DropdownButton, MenuItem, Well } from 'react-bootstrap';
 import ImageUpload from './common/image-upload/image-upload';
-import config from '../utils/config.js';
 import auth from '../utils/auth.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { postProblemMedia } from './../api';
 
 export default class ProblemEditMedia extends Component {
+  constructor(props) {
+    super(props);
+    let data;
+    if (__isBrowser__) {
+      data = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+    } else {
+      data = props.staticContext.data;
+    }
+    this.state = {data};
+  }
+
+  componentWillMount() {
+    if (!auth.isAdmin()) {
+      this.setState({pushUrl: "/login", error: null});
+    }
+  }
+
   componentDidMount() {
-    Request.get(config.getUrl("problems?id=" + this.props.match.params.problemId)).withCredentials().end((err, res) => {
-      if (err) {
-        this.setState({error: err});
-      } else {
-        this.setState({
-          id: res.body[0].id,
-          newMedia: []
-        });
-      }
-    });
+    if (!this.state.data) {
+      this.refresh(this.props.match.params.problemId);
+    }
+  }
+
+  componentDidUpdate (prevProps, prevState) {
+    if (prevProps.match.params.problemId !== this.props.match.params.problemId) {
+      this.refresh(this.props.match.params.problemId);
+    }
+  }
+
+  refresh(id) {
+    this.props.fetchInitialData(id).then((data) => this.setState(() => ({data})));
   }
 
   onNewMediaChanged(newMedia) {
@@ -30,17 +50,13 @@ export default class ProblemEditMedia extends Component {
     event.preventDefault();
     this.setState({isSaving: true});
     const newMedia = this.state.newMedia.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
-    var req = Request.post(config.getUrl("problems/media"))
-    .withCredentials()
-    .field('json', JSON.stringify({id: this.state.id, newMedia: newMedia}))
-    .set('Accept', 'application/json');
-    this.state.newMedia.forEach(m => req.attach(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
-    req.end((err, res) => {
-      if (err) {
-        this.setState({error: err});
-      } else {
-        this.setState({pushUrl: "/problem/" + res.body.id});
-      }
+    postProblemMedia(id, newMedia)
+    .then((response) => {
+      this.setState({pushUrl: "/problem/" + response.id});
+    })
+    .catch((error) => {
+      console.warn(error);
+      this.setState({error});
     });
   }
 
@@ -53,7 +69,7 @@ export default class ProblemEditMedia extends Component {
       return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
     else if (this.state.error) {
-      return <span><h3>{this.state.error.status}</h3>{this.state.error.toString()}</span>;
+      return <h3>{this.state.error.toString()}</h3>;
     }
     else if (this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);

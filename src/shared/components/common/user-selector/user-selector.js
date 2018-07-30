@@ -2,8 +2,7 @@ import React from 'react';
 import createClass from 'create-react-class';
 import PropTypes from 'prop-types';
 import CreatableSelect from 'react-select/lib/Creatable';
-import Request from 'superagent';
-import config from '../../../utils/config.js';
+import { getUserSearch } from './../../../api';
 
 var UserSelector = createClass({
 	displayName: 'UserSelector',
@@ -11,13 +10,7 @@ var UserSelector = createClass({
 		label: PropTypes.string
 	},
 	getInitialState() {
-    Request.get(config.getUrl("users/search?value=")).withCredentials().end((err, res) => {
-      if (err) {
-        console.log(err);
-      } else {
-        this.setState({options: res.body.map(u => {return {value: u.id, label: u.name}})});
-      }
-    });
+		getUserSearch("").then((res) => this.setState({options: res.map(u => {return {value: u.id, label: u.name}})}));
     return {
       multiValue: this.props.users,
       options: []

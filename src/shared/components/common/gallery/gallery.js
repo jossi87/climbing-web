@@ -3,13 +3,13 @@ import ImageGallery from 'react-image-gallery';
 import { Well } from 'react-bootstrap';
 import ReactPlayer from 'react-player'
 import auth from '../../../utils/auth.js';
-import Request from 'superagent';
 import {parseSVG, makeAbsolute} from 'svg-path-parser';
 import { Link } from 'react-router-dom';
-import config from '../../../utils/config.js';
+import util from '../../../utils/util.js';
 import { Redirect } from 'react-router';
 import objectFitImages from 'object-fit-images'; // objectFit does not work on IE and Edge http://caniuse.com/#search=object-fit
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { deleteMedia } from '../../../api';
 
 export default class Gallery extends Component {
   constructor(props) {
@@ -57,17 +57,17 @@ export default class Gallery extends Component {
   onDeleteImage(event) {
     if (confirm('Are you sure you want to delete this image?')) {
       const idMedia = this.props.media[this.state.mediaIndex].id;
-      Request.delete(config.getUrl("media?id=" + idMedia)).withCredentials().end((err, res) => {
-        if (err) {
-          alert(err.toString());
-        } else {
-          if (this.props.media.length>1 && this.state.mediaIndex>=this.props.media.length-1) {
-            const nextMediaIndex = this.state.mediaIndex-1;
-            this.setState({mediaIndex: nextMediaIndex});
-            this.imageGallery.slideToIndex(nextMediaIndex);
-          }
-          this.props.removeMedia(idMedia);
+      deleteMedia(idMedia)
+      .then((response) => {
+        if (this.props.media.length>1 && this.state.mediaIndex>=this.props.media.length-1) {
+          const nextMediaIndex = this.state.mediaIndex-1;
+          this.setState({mediaIndex: nextMediaIndex});
+          this.imageGallery.slideToIndex(nextMediaIndex);
         }
+        this.props.removeMedia(idMedia);
+      })
+      .catch ((error) => {
+        console.warn(error);
       });
     }
   }
@@ -188,7 +188,7 @@ export default class Gallery extends Component {
         <div className='image-gallery-image'>
           <canvas className="buldreinfo-svg-canvas-ie-hack" width={m.width} height={m.height}></canvas>
           <svg className="buldreinfo-svg" viewBox={"0 0 " + m.width + " " + m.height} preserveAspectRatio="xMidYMid meet">
-            <image xlinkHref={config.getUrl(`images?id=${m.id}`)} width="100%" height="100%"/>
+            <image xlinkHref={util.getImageUrl(m.id)} width="100%" height="100%"/>
             {this.generateShapes(m.svgs, m.svgProblemId, m.width, m.height)}
           </svg>
         </div>
@@ -196,7 +196,7 @@ export default class Gallery extends Component {
     }
     return (
       <div className='image-gallery-image'>
-        <img src={config.getUrl(`images?id=${m.id}`)} className="buldreinfo-scale-img" alt={this.props.alt}/>
+        <img src={util.getImageUrl(m.id)} className="buldreinfo-scale-img" alt={this.props.alt}/>
       </div>
     );
   }
@@ -209,8 +209,8 @@ export default class Gallery extends Component {
     const caruselItems = this.props.media.map((m, i) => {
       if (m.idType==1) {
         return {
-          original: config.getUrl(`images?id=${m.id}`),
-          thumbnail: config.getUrl(`images?id=${m.id}`),
+          original: util.getImageUrl(m.id),
+          thumbnail: util.getImageUrl(m.id),
           originalClass: 'featured-slide',
           thumbnailClass: 'featured-thumb',
           originalAlt: 'original-alt',
@@ -220,8 +220,8 @@ export default class Gallery extends Component {
       }
       else {
         return {
-          original: config.getUrl(`images?id=${m.id}`),
-          thumbnail: config.getUrl(`images?id=${m.id}`),
+          original: util.getImageUrl(m.id),
+          thumbnail: util.getImageUrl(m.id),
           originalClass: 'featured-slide',
           thumbnailClass: 'featured-thumb',
           originalAlt: 'original-alt',
