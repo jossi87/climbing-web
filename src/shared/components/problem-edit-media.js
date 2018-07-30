@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router'
 import { FormGroup, ControlLabel, ButtonGroup, Button, Well } from 'react-bootstrap';
 import ImageUpload from './common/image-upload/image-upload';
-import auth from '../utils/auth.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { postProblemMedia } from './../api';
 
@@ -18,12 +17,6 @@ export default class ProblemEditMedia extends Component {
       data = props.staticContext.data;
     }
     this.state = {data};
-  }
-
-  componentWillMount() {
-    if (!auth.isAdmin()) {
-      this.setState({pushUrl: "/login", error: null});
-    }
   }
 
   componentDidMount() {
@@ -67,12 +60,12 @@ export default class ProblemEditMedia extends Component {
   render() {
     if (!this.state || !this.state.id) {
       return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
-    }
-    else if (this.state.error) {
+    } else if (this.state.error) {
       return <h3>{this.state.error.toString()}</h3>;
-    }
-    else if (this.state.pushUrl) {
+    } else if (this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
+    } else if (!this.state.metadata.isAuthenticated) {
+      this.setState({pushUrl: "/login", error: null});
     }
 
     return (

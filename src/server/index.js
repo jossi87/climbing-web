@@ -3,17 +3,14 @@ import cors from "cors";
 import React from "react";
 import { renderToString } from "react-dom/server";
 import { StaticRouter, matchPath } from "react-router-dom";
-import { CookiesProvider } from 'react-cookie';
 import serialize from "serialize-javascript";
 import App from '../shared/App';
 import routes from '../shared/routes';
 
-const cookiesMiddleware = require('universal-cookie-express');
 const app = express();
 
 app.use(cors());
 app.use(express.static("public"));
-app.use(cookiesMiddleware());
 
 app.get("*", (req, res, next) => {
   const activeRoute = routes.find((route) => matchPath(req.url, route)) || {}
@@ -26,11 +23,9 @@ app.get("*", (req, res, next) => {
     const context = { data }
 
     const markup = renderToString(
-      <CookiesProvider cookies={req.universalCookies}>
-        <StaticRouter location={req.url} context={context}>
-          <App />
-        </StaticRouter>
-      </CookiesProvider>
+      <StaticRouter location={req.url} context={context}>
+        <App />
+      </StaticRouter>
     )
 
     res.send(`

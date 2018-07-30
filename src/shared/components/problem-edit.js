@@ -7,7 +7,6 @@ import { withScriptjs, withGoogleMap, GoogleMap, Marker } from "react-google-map
 import UserSelector from './common/user-selector/user-selector';
 import ProblemSection from './common/problem-section/problem-section';
 import ImageUpload from './common/image-upload/image-upload';
-import auth from '../utils/auth.js';
 import Calendar from 'react-input-calendar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { postProblem } from './../api';
@@ -34,12 +33,6 @@ export default class ProblemEdit extends Component {
       data = props.staticContext.data;
     }
     this.state = {data};
-  }
-
-  componentWillMount() {
-    if (!auth.isAdmin()) {
-      this.setState({pushUrl: "/login", error: null});
-    }
   }
 
   componentDidMount() {
@@ -136,15 +129,14 @@ export default class ProblemEdit extends Component {
     const { data } = this.state;
     if (this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
-    }
-    else if (this.state.pushUrl) {
+    } else if (this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
-    }
-    else if (!this.props || !this.props.match || !this.props.match.params || !this.props.match.params.problemId || !this.props.location || !this.props.location.query || !this.props.location.query.idSector) {
+    } else if (!this.props || !this.props.match || !this.props.match.params || !this.props.match.params.problemId || !this.props.location || !this.props.location.query || !this.props.location.query.idSector) {
       return <span><h3>Invalid action...</h3></span>;
-    }
-    else if (!data) {
+    } else if (!data) {
       return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
+    } else if (!data.metadata.isAdmin) {
+      this.setState({pushUrl: "/login", error: null});
     }
 
     const yesterday = new Date();
@@ -222,7 +214,7 @@ export default class ProblemEdit extends Component {
               <DropdownButton title={visibilityText} id="bg-nested-dropdown">
                 <MenuItem eventKey="0" onSelect={this.onVisibilityChanged.bind(this, 0)}>Visible for everyone</MenuItem>
                 <MenuItem eventKey="1" onSelect={this.onVisibilityChanged.bind(this, 1)}>Only visible for administrators</MenuItem>
-                {auth.isSuperAdmin() && <MenuItem eventKey="2" onSelect={this.onVisibilityChanged.bind(this, 2)}>Only visible for super administrators</MenuItem>}
+                {data.metadata.isSuperAdmin && <MenuItem eventKey="2" onSelect={this.onVisibilityChanged.bind(this, 2)}>Only visible for super administrators</MenuItem>}
               </DropdownButton>
             </FormGroup>
             <FormGroup controlId="formControlsSectorNr">

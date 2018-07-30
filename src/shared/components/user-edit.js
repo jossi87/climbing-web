@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import { FormGroup, ControlLabel, FormControl, HelpBlock, ButtonGroup, Button, Panel, Breadcrumb, Well } from 'react-bootstrap';
-import auth from '../utils/auth.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { postUserEdit } from './../api';
 
@@ -17,12 +16,6 @@ export default class UserEdit extends Component {
       data = props.staticContext.data;
     }
     this.state = {data};
-  }
-
-  componentWillMount() {
-    if (!auth.isAdmin()) {
-      this.setState({pushUrl: "/login", error: null});
-    }
   }
 
   componentDidMount() {
@@ -133,10 +126,12 @@ export default class UserEdit extends Component {
   render() {
     if (!this.state) {
       return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
-    }
-    else if (this.state.pushUrl) {
+    } else if (this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
+    } else if (!this.state.metadata.isAuthenticated) {
+      this.setState({pushUrl: "/login", error: null});
     }
+
     return (
       <span>
         <Breadcrumb>

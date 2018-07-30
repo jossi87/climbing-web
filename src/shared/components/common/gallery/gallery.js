@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import ImageGallery from 'react-image-gallery';
 import { Well } from 'react-bootstrap';
 import ReactPlayer from 'react-player'
-import auth from '../../../utils/auth.js';
 import {parseSVG, makeAbsolute} from 'svg-path-parser';
 import { Link } from 'react-router-dom';
 import util from '../../../utils/util.js';
@@ -235,7 +234,7 @@ export default class Gallery extends Component {
 
     var button = "";
     const m = this.props.media[this.state.mediaIndex];
-    if (!this.state.isFullscreen && m.idType==1 && auth.isAdmin()) {
+    if (!this.state.isFullscreen && m.idType==1 && this.props.isAdmin) {
       if (m.svgProblemId>0) {
         button = <span style={{position: 'absolute', zIndex: '4', background: 'rgba(0, 0, 0, 0.4)', padding: '8px 20px'}}><Link to={`/problem/svg-edit/${m.svgProblemId}/${m.id}`} onMouseEnter={this.toggleHoverEdit.bind(this)} onMouseLeave={this.toggleHoverEdit.bind(this)}><FontAwesomeIcon icon="edit" style={this.state.hoverEdit? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}}/></Link></span>;
       } else if (!m.svgs) {

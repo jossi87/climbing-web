@@ -5,7 +5,6 @@ import Map from './common/map/map';
 import Gallery from './common/gallery/gallery';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Tabs, Tab, Well, Panel, ButtonGroup, Button, Breadcrumb, OverlayTrigger, Popover, Tooltip, Table } from 'react-bootstrap';
-import auth from '../utils/auth.js';
 import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -122,7 +121,7 @@ export default class Problem extends Component {
       });
     }
     const map = markers.length>0? <Map markers={markers} defaultCenter={{lat: markers[0].lat, lng: markers[0].lng}} defaultZoom={16}/> : null;
-    const gallery = data.media && data.media.length>0? <Gallery alt={data.name + ' ' + data.grade + ' (' + data.areaName + " - " + data.sectorName + ')'} media={data.media} showThumbnails={false} removeMedia={this.onRemoveMedia.bind(this)} /> : null;
+    const gallery = data.media && data.media.length>0? <Gallery isAdmin={this.state.data.metadata.isAdmin} alt={data.name + ' ' + data.grade + ' (' + data.areaName + " - " + data.sectorName + ')'} media={data.media} showThumbnails={false} removeMedia={this.onRemoveMedia.bind(this)} /> : null;
     var topoContent = null;
     if (map && gallery) {
       topoContent = (
@@ -239,7 +238,7 @@ export default class Problem extends Component {
     };
 
     var headerButtons = null;
-    if (auth.loggedIn()) {
+    if (data.metadata && data.metadata.isAuthenticated) {
       headerButtons = (
         <div style={{float: 'right'}}>
           <ButtonGroup>
@@ -249,12 +248,11 @@ export default class Problem extends Component {
             <OverlayTrigger placement="top" overlay={<Tooltip id={-2}>Add comment</Tooltip>}>
               <Button bsStyle="primary" bsSize="xsmall" onClick={this.openCommentModal.bind(this)}><FontAwesomeIcon icon="comment" inverse={true} /></Button>
             </OverlayTrigger>
-            {auth.isAdmin() &&
+            {data.metadata.isAdmin ?
               <OverlayTrigger placement="top" overlay={<Tooltip id={data.id}>Edit problem</Tooltip>}>
                 <LinkContainer to={{ pathname: `/problem/edit/${data.id}`, query: { idSector: data.sectorId, lat: data.sectorLat, lng: data.sectorLng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="edit" inverse={true} /></Button></LinkContainer>
               </OverlayTrigger>
-            }
-            {!auth.isAdmin() &&
+            :
               <OverlayTrigger placement="top" overlay={<Tooltip id={data.id}>Add image(s)</Tooltip>}>
                 <LinkContainer to={{ pathname: `/problem/edit/media/${data.id}` }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="image" inverse={true} /></Button></LinkContainer>
               </OverlayTrigger>

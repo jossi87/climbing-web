@@ -5,7 +5,6 @@ import { Tabs, Tab, Well, OverlayTrigger, Tooltip, ButtonGroup, Button, Table, B
 import { LinkContainer } from 'react-router-bootstrap';
 import Map from './common/map/map';
 import Gallery from './common/gallery/gallery';
-import auth from '../utils/auth.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class TableRow extends Component {
@@ -102,7 +101,7 @@ export default class Area extends Component {
     const defaultCenter = this.state.data.lat && this.state.data.lat>0? {lat: this.state.data.lat, lng: this.state.data.lng} : this.state.data.metadata.defaultCenter;
     const defaultZoom = this.state.data.lat && this.state.data.lat>0? 14 : this.state.data.metadata.defaultZoom;
     const map = markers.length>0 || polygons.length>0? <Map markers={markers} polygons={polygons} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/> : null;
-    const gallery = this.state.data.media && this.state.data.media.length>0? <Gallery alt={this.state.data.name} media={this.state.data.media} showThumbnails={this.state.data.media.length>1} removeMedia={this.onRemoveMedia.bind(this)}/> : null;
+    const gallery = this.state.data.media && this.state.data.media.length>0? <Gallery isAdmin={this.state.data.metadata.isAdmin} alt={this.state.data.name} media={this.state.data.media} showThumbnails={this.state.data.media.length>1} removeMedia={this.onRemoveMedia.bind(this)}/> : null;
     var topoContent = null;
     if (map && gallery) {
       topoContent = (
@@ -125,7 +124,7 @@ export default class Area extends Component {
           <meta name="description" content={this.state.data.metadata.description} />
         </MetaTags>
         <Breadcrumb>
-          {auth.isAdmin()?
+          {this.state.data.metadata.isAdmin?
             <div style={{float: 'right'}}>
               <ButtonGroup>
                 <OverlayTrigger placement="top" overlay={<Tooltip id={-1}>Add sector</Tooltip>}>

@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
-import auth from '../utils/auth.js';
+import { getLogout } from './../api';
 import { Panel } from 'react-bootstrap';
 
 export default class Logout extends Component {
   componentDidMount() {
-    auth.logout();
+    getLogout();
   }
 
   render() {

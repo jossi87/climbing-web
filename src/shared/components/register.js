@@ -3,7 +3,6 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import { FormGroup, ControlLabel, FormControl, HelpBlock, ButtonGroup, Button, Panel, Breadcrumb, Well } from 'react-bootstrap';
-import auth from '../utils/auth.js';
 import { postUserRegister } from './../api';
 
 export default class Register extends Component {

@@ -21,12 +21,6 @@ export default class SvgEdit extends Component {
     this.state = {data};
   }
 
-  componentWillMount() {
-    if (!auth.isAdmin()) {
-      this.setState({pushUrl: "/login", error: null});
-    }
-  }
-
   componentDidMount() {
     if (!this.state.data) {
       this.refresh(this.props.match.params.problemId, this.props.match.params.mediaId);
@@ -282,12 +276,12 @@ export default class SvgEdit extends Component {
   render() {
     if (!this.state) {
       return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
-    }
-    else if (this.state.error) {
+    } else if (this.state.error) {
       return <h3>{this.state.error.toString()}</h3>;
-    }
-    else if (this.state.pushUrl) {
+    } else if (this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
+    } else if (!this.state.metadata.isAdmin) {
+      this.setState({pushUrl: "/login", error: null});
     }
 
     var circles = this.state.points.map((p, i, a) => {

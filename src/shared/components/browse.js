@@ -5,7 +5,6 @@ import { OverlayTrigger, Tooltip, Button, Table, Breadcrumb } from 'react-bootst
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { LinkContainer } from 'react-router-bootstrap';
 import Map from './common/map/map';
-import auth from '../utils/auth.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default class Browse extends Component {
@@ -94,11 +93,10 @@ export default class Browse extends Component {
           <meta name="description" content={this.state.data.metadata.description} />
         </MetaTags>
         <Breadcrumb>
-          {auth.isAdmin()?
+          {this.state.data.metadata.isAdmin &&
             <OverlayTrigger placement="top" overlay={<Tooltip id={-1}>Add area</Tooltip>}>
               <div style={{float: 'right'}}><LinkContainer to={`/area/edit/-1`}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="plus-square" inverse={true} /></Button></LinkContainer></div>
-            </OverlayTrigger>:
-            null
+            </OverlayTrigger>
           }
           <Link to={`/`}>Home</Link> / <font color='#777'>Browse</font>
         </Breadcrumb>

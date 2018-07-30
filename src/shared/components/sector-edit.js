@@ -5,7 +5,6 @@ import { Redirect } from 'react-router';
 import { FormGroup, ControlLabel, FormControl, ButtonGroup, DropdownButton, MenuItem, Button, Well } from 'react-bootstrap';
 import { withScriptjs, withGoogleMap, GoogleMap, Marker, Polygon } from "react-google-maps";
 import ImageUpload from './common/image-upload/image-upload';
-import auth from '../utils/auth.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { postSector } from './../api';
 
@@ -32,12 +31,6 @@ export default class SectorEdit extends Component {
       data = props.staticContext.data;
     }
     this.state = {data};
-  }
-
-  componentWillMount() {
-    if (!auth.isAdmin()) {
-      this.setState({pushUrl: "/login", error: null});
-    }
   }
 
   componentDidMount() {
@@ -111,16 +104,16 @@ export default class SectorEdit extends Component {
   render() {
     if (this.state.error) {
       return <h3>{this.state.error.toString()}</h3>;
-    }
-    else if (this.state.pushUrl) {
+    } else if (this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
-    }
-    else if (!this.props || !this.props.match || !this.props.match.params || !this.props.match.params.sectorId || !this.props.location || !this.props.location.query || !this.props.location.query.idArea) {
+    } else if (!this.props || !this.props.match || !this.props.match.params || !this.props.match.params.sectorId || !this.props.location || !this.props.location.query || !this.props.location.query.idArea) {
       return <span><h3>Invalid action...</h3></span>;
-    }
-    else if (!this.state.data) {
+    } else if (!this.state.data) {
       return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
+    } else if (!this.state.data.metadata.isAdmin) {
+      this.setState({pushUrl: "/login", error: null});
     }
+
     var triangleCoords = this.state.data.polygonCoords? this.state.data.polygonCoords.split(";").map((p, i) => {
       const latLng = p.split(",");
       return {lat: parseFloat(latLng[0]), lng: parseFloat(latLng[1])};
@@ -160,7 +153,7 @@ export default class SectorEdit extends Component {
               <DropdownButton title={visibilityText} id="bg-nested-dropdown">
                 <MenuItem eventKey="0" onSelect={this.onVisibilityChanged.bind(this, 0)}>Visible for everyone</MenuItem>
                 <MenuItem eventKey="1" onSelect={this.onVisibilityChanged.bind(this, 1)}>Only visible for administrators</MenuItem>
-                {auth.isSuperAdmin() && <MenuItem eventKey="2" onSelect={this.onVisibilityChanged.bind(this, 2)}>Only visible for super administrators</MenuItem>}
+                {this.state.data.metadata.isSuperAdmin && <MenuItem eventKey="2" onSelect={this.onVisibilityChanged.bind(this, 2)}>Only visible for super administrators</MenuItem>}
               </DropdownButton>
             </FormGroup>
             <FormGroup controlId="formControlsMedia">

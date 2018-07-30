@@ -1,12 +1,10 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
-import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import { LinkContainer } from 'react-router-bootstrap';
 import { FormGroup, ControlLabel, FormControl, ButtonGroup, Button, Panel, Breadcrumb, Well } from 'react-bootstrap';
-import auth from '../utils/auth.js'
-import { getUserForgotPassword } from './../api';
+import { getUserLogin } from './../api';
 
 export default class Login extends Component {
   constructor(props) {
@@ -51,13 +49,13 @@ export default class Login extends Component {
 
   login(event) {
     event.preventDefault();
-    auth.login(this.state.username, this.state.password, (loggedIn) => {
-      const { location } = this.props
-      if (!loggedIn) {
-        return this.setState({message: <Panel bsStyle='danger'>Invalid username and/or password.</Panel>});
-      } else {
-        return this.setState({message: null, pushUrl: "/"});
-      }
+    getUserLogin(this.state.username, this.state.password)
+    .then((res) => {
+      return this.setState({message: null, pushUrl: "/"});
+    })
+    .catch((error) => {
+      console.warn(error);
+      return this.setState({message: <Panel bsStyle='danger'>Invalid username and/or password.</Panel>});
     });
   }
 
@@ -103,8 +101,4 @@ export default class Login extends Component {
       </span>
     );
   }
-}
-
-Login.contextTypes = {
-  router: PropTypes.object
 }

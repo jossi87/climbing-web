@@ -79,6 +79,15 @@ export function getGrades() {
     });
 }
 
+export function getLogout() {
+  return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/logout`))
+    .then((data) => data.json())
+    .catch((error) => {
+      console.warn(error);
+      return null;
+    });
+}
+
 export function getMeta() {
   return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta`))
     .then((data) => data.json())
@@ -238,6 +247,40 @@ export function getUserEdit(id) {
       console.warn(error);
       return null;
     });
+}
+
+export function getUserLogin(username = "", password = "") {
+  return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/login`),{
+    mode: 'cors',
+    method: 'POST',
+    credentials: 'include',
+    body: "username=" + encodeURIComponent(username) + "&password=" + encodeURIComponent(password),
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Accept': 'application/json'
+    }
+  })
+  .then((data) => data.json())
+  .then((res) => {
+    const lvl = parseInt(res);
+    var isAuthenticated = false;
+    var isAdmin = false;
+    var isSuperadmin = false;
+    if (lvl>=0) {
+      isAuthenticated = true;
+      isAdmin = lvl>=1;
+      isSuperadmin = lvl===2;
+    }
+    if (isAuthenticated) {
+      return {
+        isAdmin: isAdmin,
+        isSuperadmin: isSuperadmin
+      };
+    }
+    else {
+      throw "Invalid username/password";
+    }
+  });
 }
 
 export function getUserSearch(value) {

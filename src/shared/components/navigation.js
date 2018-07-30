@@ -1,13 +1,12 @@
 import React, {Component} from 'react';
 import { Navbar, Nav, NavItem, FormGroup, FormControl, MenuItem, NavDropdown } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import auth from '../utils/auth.js';
 import Async from 'react-select/lib/Async';
 import { components } from 'react-select';
 import { Redirect } from 'react-router';
 import Avatar from 'react-avatar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { getGrades, postSearch } from './../api';
+import { getGrades, getUserLogin, postSearch } from './../api';
 
 const CustomOption = (props) => {
   var bg = "#4caf50";
@@ -30,13 +29,8 @@ export default class Navigation extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      logo: '/png/buldreinfo_logo_gray.png',
-      loggedIn: auth.loggedIn()
+      logo: '/png/buldreinfo_logo_gray.png'
     };
-  }
-
-  updateAuth(loggedIn) {
-    this.setState({loggedIn: !!loggedIn});
   }
 
   componentWillReceiveProps(nextProps) {
@@ -44,8 +38,7 @@ export default class Navigation extends Component {
   }
 
   componentWillMount() {
-    auth.onChange = this.updateAuth.bind(this);
-    auth.login();
+    getUserLogin().then((permissions) => this.setState(() => ({permissions})));
   }
 
   componentDidMount() {
@@ -94,7 +87,7 @@ export default class Navigation extends Component {
               <NavItem eventKey={1}>Browse</NavItem>
             </LinkContainer>
             <NavDropdown eventKey={2} title="Finder" id='basic-nav-dropdown'>
-              {auth.isSuperAdmin() && <LinkContainer to="/finder/-1"><MenuItem eventKey={2.0}>Grade: <strong>superadmin</strong></MenuItem></LinkContainer>}
+              {this.state.permissions && this.state.permissions.isAdmin && <LinkContainer to="/finder/-1"><MenuItem eventKey={2.0}>Grade: <strong>superadmin</strong></MenuItem></LinkContainer>}
               {this.state && this.state.grades && this.state.grades.map((g, i) => { return <LinkContainer key={"2." + i} to={"/finder/" + g.id}><MenuItem eventKey={"3." + i}>Grade: <strong>{g.grade}</strong></MenuItem></LinkContainer> })}
             </NavDropdown>
           </Nav>
@@ -116,7 +109,7 @@ export default class Navigation extends Component {
           </Navbar.Form>
 
           <Nav pullRight>
-            {this.state.loggedIn?
+            {this.state.permissions?
               <NavDropdown eventKey={4} title="Logged in" id='basic-nav-dropdown'>
                 <LinkContainer to="/user"><MenuItem eventKey={4.1}>My profile</MenuItem></LinkContainer>
                 <MenuItem divider />

@@ -5,7 +5,6 @@ import Map from './common/map/map';
 import Gallery from './common/gallery/gallery';
 import { Tabs, Tab, Well, OverlayTrigger, Tooltip, Popover, ButtonGroup, Button, Table, Breadcrumb } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import auth from '../utils/auth.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class TableRow extends Component {
@@ -181,7 +180,7 @@ export default class Sector extends Component {
     const defaultCenter = data.lat && data.lat>0? {lat: data.lat, lng: data.lng} : data.metadata.defaultCenter;
     const defaultZoom = data.lat && data.lat>0? 15 : data.metadata.defaultZoom;
     const map = markers.length>0? <Map markers={markers} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/> : null;
-    const gallery = data.media && data.media.length>0? <Gallery alt={data.name + " (" + data.areaName + ")"} media={data.media} showThumbnails={data.media.length>1} removeMedia={this.onRemoveMedia.bind(this)}/> : null;
+    const gallery = data.media && data.media.length>0? <Gallery isAdmin={this.state.data.metadata.isAdmin} alt={data.name + " (" + data.areaName + ")"} media={data.media} showThumbnails={data.media.length>1} removeMedia={this.onRemoveMedia.bind(this)}/> : null;
     var topoContent = null;
     if (map && gallery) {
       topoContent = (
@@ -205,7 +204,7 @@ export default class Sector extends Component {
           <meta name="description" content={data.metadata.description} />
         </MetaTags>
         <Breadcrumb>
-          {auth.isAdmin()?
+          {this.state && this.state.data && this.state.data.metadata.isAdmin?
             <div style={{float: 'right'}}>
               <ButtonGroup>
                 <OverlayTrigger placement="top" overlay={<Tooltip id={-1}>Add problem</Tooltip>}>

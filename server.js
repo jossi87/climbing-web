@@ -88,44 +88,7 @@ module.exports = require("react-router-dom");
 module.exports = require("@fortawesome/react-fontawesome");
 
 /***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _reactCookie = __webpack_require__(16);
-
-module.exports = {
-  login: function login(username, password, cb) {},
-
-
-  getToken: function getToken() {
-    return "asd";
-  },
-
-  logout: function logout(cb) {},
-
-  loggedIn: function loggedIn() {
-
-    return false;
-  },
-
-  isAdmin: function isAdmin() {
-
-    return false;
-  },
-
-  isSuperAdmin: function isSuperAdmin() {
-    return false;
-  },
-
-  onChange: function onChange() {}
-};
-
-function tryLogin(username, password, cb) {}
-
-/***/ }),
+/* 4 */,
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -142,6 +105,7 @@ exports.getBrowse = getBrowse;
 exports.getFinder = getFinder;
 exports.getFrontpage = getFrontpage;
 exports.getGrades = getGrades;
+exports.getLogout = getLogout;
 exports.getMeta = getMeta;
 exports.getProblem = getProblem;
 exports.getProblemEditMedia = getProblemEditMedia;
@@ -151,6 +115,7 @@ exports.getSectorEdit = getSectorEdit;
 exports.getSvgEdit = getSvgEdit;
 exports.getUser = getUser;
 exports.getUserEdit = getUserEdit;
+exports.getUserLogin = getUserLogin;
 exports.getUserSearch = getUserSearch;
 exports.getUserPassword = getUserPassword;
 exports.getUserForgotPassword = getUserForgotPassword;
@@ -244,6 +209,15 @@ function getFrontpage() {
 
 function getGrades() {
   return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/grades')).then(function (data) {
+    return data.json();
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
+function getLogout() {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/logout')).then(function (data) {
     return data.json();
   }).catch(function (error) {
     console.warn(error);
@@ -429,6 +403,42 @@ function getUserEdit(id) {
   }).catch(function (error) {
     console.warn(error);
     return null;
+  });
+}
+
+function getUserLogin() {
+  var username = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
+  var password = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
+
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/login'), {
+    mode: 'cors',
+    method: 'POST',
+    credentials: 'include',
+    body: "username=" + encodeURIComponent(username) + "&password=" + encodeURIComponent(password),
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Accept': 'application/json'
+    }
+  }).then(function (data) {
+    return data.json();
+  }).then(function (res) {
+    var lvl = parseInt(res);
+    var isAuthenticated = false;
+    var isAdmin = false;
+    var isSuperadmin = false;
+    if (lvl >= 0) {
+      isAuthenticated = true;
+      isAdmin = lvl >= 1;
+      isSuperadmin = lvl === 2;
+    }
+    if (isAuthenticated) {
+      return {
+        isAdmin: isAdmin,
+        isSuperadmin: isSuperadmin
+      };
+    } else {
+      throw "Invalid username/password";
+    }
   });
 }
 
@@ -1046,10 +1056,6 @@ var _reactPlayer = __webpack_require__(34);
 
 var _reactPlayer2 = _interopRequireDefault(_reactPlayer);
 
-var _auth = __webpack_require__(4);
-
-var _auth2 = _interopRequireDefault(_auth);
-
 var _svgPathParser = __webpack_require__(19);
 
 var _reactRouterDom = __webpack_require__(2);
@@ -1337,7 +1343,7 @@ var Gallery = function (_Component) {
 
       var button = "";
       var m = this.props.media[this.state.mediaIndex];
-      if (!this.state.isFullscreen && m.idType == 1 && _auth2.default.isAdmin()) {
+      if (!this.state.isFullscreen && m.idType == 1 && this.props.isAdmin) {
         if (m.svgProblemId > 0) {
           button = _react2.default.createElement(
             'span',
@@ -1399,12 +1405,7 @@ module.exports = require("react-bootstrap-table");
 module.exports = require("prop-types");
 
 /***/ }),
-/* 16 */
-/***/ (function(module, exports) {
-
-module.exports = require("react-cookie");
-
-/***/ }),
+/* 16 */,
 /* 17 */
 /***/ (function(module, exports) {
 
@@ -1901,8 +1902,6 @@ var _server = __webpack_require__(26);
 
 var _reactRouterDom = __webpack_require__(2);
 
-var _reactCookie = __webpack_require__(16);
-
 var _serializeJavascript = __webpack_require__(27);
 
 var _serializeJavascript2 = _interopRequireDefault(_serializeJavascript);
@@ -1917,12 +1916,10 @@ var _routes2 = _interopRequireDefault(_routes);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var cookiesMiddleware = __webpack_require__(70);
 var app = (0, _express2.default)();
 
 app.use((0, _cors2.default)());
 app.use(_express2.default.static("public"));
-app.use(cookiesMiddleware());
 
 app.get("*", function (req, res, next) {
   var activeRoute = _routes2.default.find(function (route) {
@@ -1935,13 +1932,9 @@ app.get("*", function (req, res, next) {
     var context = { data: data };
 
     var markup = (0, _server.renderToString)(_react2.default.createElement(
-      _reactCookie.CookiesProvider,
-      { cookies: req.universalCookies },
-      _react2.default.createElement(
-        _reactRouterDom.StaticRouter,
-        { location: req.url, context: context },
-        _react2.default.createElement(_App2.default, null)
-      )
+      _reactRouterDom.StaticRouter,
+      { location: req.url, context: context },
+      _react2.default.createElement(_App2.default, null)
     ));
 
     res.send("\n      <!DOCTYPE html>\n      <html>\n        <head>\n          <meta charset=\"utf-8\">\n          <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n          <link rel=\"icon\" href=\"/favicon.ico\">\n          <meta name=\"author\" content=\"Jostein \xD8ygarden\">\n          <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/bootstrap.min.css\">\n          <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/react-input-calendar.css\">\n          <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/image-gallery.css\">\n          <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/react-bootstrap-table.css\">\n          <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/buldreinfo.css\">\n          <script src=\"/bundle.js\" defer></script>\n          <script>window.__INITIAL_DATA__ = " + (0, _serializeJavascript2.default)(data) + "</script>\n        </head>\n\n        <body>\n          <div id=\"app\">" + markup + "</div>\n        </body>\n      </html>\n    ");
@@ -2000,8 +1993,6 @@ var _reactDom = __webpack_require__(17);
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
 var _reactRouterDom = __webpack_require__(2);
-
-var _reactCookie = __webpack_require__(16);
 
 var _loading = __webpack_require__(30);
 
@@ -2111,7 +2102,7 @@ var App = function (_Component) {
   return App;
 }(_react.Component);
 
-exports.default = (0, _reactCookie.withCookies)(App);
+exports.default = App;
 
 /***/ }),
 /* 29 */,
@@ -2200,10 +2191,6 @@ var _map2 = _interopRequireDefault(_map);
 var _gallery = __webpack_require__(13);
 
 var _gallery2 = _interopRequireDefault(_gallery);
-
-var _auth = __webpack_require__(4);
-
-var _auth2 = _interopRequireDefault(_auth);
 
 var _reactFontawesome = __webpack_require__(3);
 
@@ -2380,7 +2367,7 @@ var Area = function (_Component2) {
       var defaultCenter = this.state.data.lat && this.state.data.lat > 0 ? { lat: this.state.data.lat, lng: this.state.data.lng } : this.state.data.metadata.defaultCenter;
       var defaultZoom = this.state.data.lat && this.state.data.lat > 0 ? 14 : this.state.data.metadata.defaultZoom;
       var map = markers.length > 0 || polygons.length > 0 ? _react2.default.createElement(_map2.default, { markers: markers, polygons: polygons, defaultCenter: defaultCenter, defaultZoom: defaultZoom }) : null;
-      var gallery = this.state.data.media && this.state.data.media.length > 0 ? _react2.default.createElement(_gallery2.default, { alt: this.state.data.name, media: this.state.data.media, showThumbnails: this.state.data.media.length > 1, removeMedia: this.onRemoveMedia.bind(this) }) : null;
+      var gallery = this.state.data.media && this.state.data.media.length > 0 ? _react2.default.createElement(_gallery2.default, { isAdmin: this.state.data.metadata.isAdmin, alt: this.state.data.name, media: this.state.data.media, showThumbnails: this.state.data.media.length > 1, removeMedia: this.onRemoveMedia.bind(this) }) : null;
       var topoContent = null;
       if (map && gallery) {
         topoContent = _react2.default.createElement(
@@ -2424,7 +2411,7 @@ var Area = function (_Component2) {
         _react2.default.createElement(
           _reactBootstrap.Breadcrumb,
           null,
-          _auth2.default.isAdmin() ? _react2.default.createElement(
+          this.state.data.metadata.isAdmin ? _react2.default.createElement(
             'div',
             { style: { float: 'right' } },
             _react2.default.createElement(
@@ -2601,10 +2588,6 @@ var _imageUpload2 = _interopRequireDefault(_imageUpload);
 
 var _reactGoogleMaps = __webpack_require__(11);
 
-var _auth = __webpack_require__(4);
-
-var _auth2 = _interopRequireDefault(_auth);
-
 var _reactFontawesome = __webpack_require__(3);
 
 var _api = __webpack_require__(5);
@@ -2649,13 +2632,6 @@ var AreaEdit = function (_Component) {
   }
 
   _createClass(AreaEdit, [{
-    key: 'componentWillMount',
-    value: function componentWillMount() {
-      if (!_auth2.default.isAdmin()) {
-        this.setState({ pushUrl: "/login", error: null });
-      }
-    }
-  }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
       if (!this.state.data) {
@@ -2754,6 +2730,8 @@ var AreaEdit = function (_Component) {
           null,
           _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'spinner', spin: true, size: '3x' })
         );
+      } else if (!this.state.data.metadata.isAdmin) {
+        this.setState({ pushUrl: "/login", error: null });
       }
 
       var visibilityText = 'Visible for everyone';
@@ -2824,7 +2802,7 @@ var AreaEdit = function (_Component) {
                   { eventKey: '1', onSelect: this.onVisibilityChanged.bind(this, 1) },
                   'Only visible for administrators'
                 ),
-                _auth2.default.isSuperAdmin() && _react2.default.createElement(
+                this.state.data.metadata.isSuperAdmin && _react2.default.createElement(
                   _reactBootstrap.MenuItem,
                   { eventKey: '2', onSelect: this.onVisibilityChanged.bind(this, 2) },
                   'Only visible for super administrators'
@@ -2923,10 +2901,6 @@ var _reactRouterBootstrap = __webpack_require__(8);
 var _map = __webpack_require__(10);
 
 var _map2 = _interopRequireDefault(_map);
-
-var _auth = __webpack_require__(4);
-
-var _auth2 = _interopRequireDefault(_auth);
 
 var _reactFontawesome = __webpack_require__(3);
 
@@ -3067,7 +3041,7 @@ var Browse = function (_Component) {
         _react2.default.createElement(
           _reactBootstrap.Breadcrumb,
           null,
-          _auth2.default.isAdmin() ? _react2.default.createElement(
+          this.state.data.metadata.isAdmin && _react2.default.createElement(
             _reactBootstrap.OverlayTrigger,
             { placement: 'top', overlay: _react2.default.createElement(
                 _reactBootstrap.Tooltip,
@@ -3087,7 +3061,7 @@ var Browse = function (_Component) {
                 )
               )
             )
-          ) : null,
+          ),
           _react2.default.createElement(
             _reactRouterDom.Link,
             { to: '/' },
@@ -4507,10 +4481,6 @@ var _reactMetaTags = __webpack_require__(6);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
-var _propTypes = __webpack_require__(15);
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
 var _reactRouterDom = __webpack_require__(2);
 
 var _reactRouter = __webpack_require__(7);
@@ -4518,10 +4488,6 @@ var _reactRouter = __webpack_require__(7);
 var _reactRouterBootstrap = __webpack_require__(8);
 
 var _reactBootstrap = __webpack_require__(1);
-
-var _auth = __webpack_require__(4);
-
-var _auth2 = _interopRequireDefault(_auth);
 
 var _api = __webpack_require__(5);
 
@@ -4591,7 +4557,7 @@ var Login = function (_Component) {
             '". Contact Jostein (jostein.oygarden@gmail.com) to recover password.'
           ) });
       } else {
-        (0, _api.getUserForgotPassword)(this.state.username).then(function (response) {
+        getUserForgotPassword(this.state.username).then(function (response) {
           _this3.setState({ message: _react2.default.createElement(
               _reactBootstrap.Panel,
               { bsStyle: 'success' },
@@ -4615,18 +4581,15 @@ var Login = function (_Component) {
       var _this4 = this;
 
       event.preventDefault();
-      _auth2.default.login(this.state.username, this.state.password, function (loggedIn) {
-        var location = _this4.props.location;
-
-        if (!loggedIn) {
-          return _this4.setState({ message: _react2.default.createElement(
-              _reactBootstrap.Panel,
-              { bsStyle: 'danger' },
-              'Invalid username and/or password.'
-            ) });
-        } else {
-          return _this4.setState({ message: null, pushUrl: "/" });
-        }
+      (0, _api.getUserLogin)(this.state.username, this.state.password).then(function (res) {
+        return _this4.setState({ message: null, pushUrl: "/" });
+      }).catch(function (error) {
+        console.warn(error);
+        return _this4.setState({ message: _react2.default.createElement(
+            _reactBootstrap.Panel,
+            { bsStyle: 'danger' },
+            'Invalid username and/or password.'
+          ) });
       });
     }
   }, {
@@ -4734,11 +4697,6 @@ var Login = function (_Component) {
 
 exports.default = Login;
 
-
-Login.contextTypes = {
-  router: _propTypes2.default.object
-};
-
 /***/ }),
 /* 48 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -4756,9 +4714,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _auth = __webpack_require__(4);
-
-var _auth2 = _interopRequireDefault(_auth);
+var _api = __webpack_require__(5);
 
 var _reactBootstrap = __webpack_require__(1);
 
@@ -4782,7 +4738,7 @@ var Logout = function (_Component) {
   _createClass(Logout, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      _auth2.default.logout();
+      (0, _api.getLogout)();
     }
   }, {
     key: 'render',
@@ -4834,10 +4790,6 @@ var _gallery2 = _interopRequireDefault(_gallery);
 var _reactRouterBootstrap = __webpack_require__(8);
 
 var _reactBootstrap = __webpack_require__(1);
-
-var _auth = __webpack_require__(4);
-
-var _auth2 = _interopRequireDefault(_auth);
 
 var _tickModal = __webpack_require__(20);
 
@@ -5004,7 +4956,7 @@ var Problem = function (_Component) {
         });
       }
       var map = markers.length > 0 ? _react2.default.createElement(_map2.default, { markers: markers, defaultCenter: { lat: markers[0].lat, lng: markers[0].lng }, defaultZoom: 16 }) : null;
-      var gallery = data.media && data.media.length > 0 ? _react2.default.createElement(_gallery2.default, { alt: data.name + ' ' + data.grade + ' (' + data.areaName + " - " + data.sectorName + ')', media: data.media, showThumbnails: false, removeMedia: this.onRemoveMedia.bind(this) }) : null;
+      var gallery = data.media && data.media.length > 0 ? _react2.default.createElement(_gallery2.default, { isAdmin: this.state.data.metadata.isAdmin, alt: data.name + ' ' + data.grade + ' (' + data.areaName + " - " + data.sectorName + ')', media: data.media, showThumbnails: false, removeMedia: this.onRemoveMedia.bind(this) }) : null;
       var topoContent = null;
       if (map && gallery) {
         topoContent = _react2.default.createElement(
@@ -5292,7 +5244,7 @@ var Problem = function (_Component) {
       };
 
       var headerButtons = null;
-      if (_auth2.default.loggedIn()) {
+      if (data.metadata && data.metadata.isAuthenticated) {
         headerButtons = _react2.default.createElement(
           'div',
           { style: { float: 'right' } },
@@ -5325,7 +5277,7 @@ var Problem = function (_Component) {
                 _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'comment', inverse: true })
               )
             ),
-            _auth2.default.isAdmin() && _react2.default.createElement(
+            data.metadata.isAdmin ? _react2.default.createElement(
               _reactBootstrap.OverlayTrigger,
               { placement: 'top', overlay: _react2.default.createElement(
                   _reactBootstrap.Tooltip,
@@ -5341,8 +5293,7 @@ var Problem = function (_Component) {
                   _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'edit', inverse: true })
                 )
               )
-            ),
-            !_auth2.default.isAdmin() && _react2.default.createElement(
+            ) : _react2.default.createElement(
               _reactBootstrap.OverlayTrigger,
               { placement: 'top', overlay: _react2.default.createElement(
                   _reactBootstrap.Tooltip,
@@ -5686,10 +5637,6 @@ var _imageUpload = __webpack_require__(12);
 
 var _imageUpload2 = _interopRequireDefault(_imageUpload);
 
-var _auth = __webpack_require__(4);
-
-var _auth2 = _interopRequireDefault(_auth);
-
 var _reactInputCalendar = __webpack_require__(21);
 
 var _reactInputCalendar2 = _interopRequireDefault(_reactInputCalendar);
@@ -5742,13 +5689,6 @@ var ProblemEdit = function (_Component) {
   }
 
   _createClass(ProblemEdit, [{
-    key: 'componentWillMount',
-    value: function componentWillMount() {
-      if (!_auth2.default.isAdmin()) {
-        this.setState({ pushUrl: "/login", error: null });
-      }
-    }
-  }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
       if (!this.state.data) {
@@ -5894,6 +5834,8 @@ var ProblemEdit = function (_Component) {
           null,
           _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'spinner', spin: true, size: '3x' })
         );
+      } else if (!data.metadata.isAdmin) {
+        this.setState({ pushUrl: "/login", error: null });
       }
 
       var yesterday = new Date();
@@ -6068,7 +6010,7 @@ var ProblemEdit = function (_Component) {
                   { eventKey: '1', onSelect: this.onVisibilityChanged.bind(this, 1) },
                   'Only visible for administrators'
                 ),
-                _auth2.default.isSuperAdmin() && _react2.default.createElement(
+                data.metadata.isSuperAdmin && _react2.default.createElement(
                   _reactBootstrap.MenuItem,
                   { eventKey: '2', onSelect: this.onVisibilityChanged.bind(this, 2) },
                   'Only visible for super administrators'
@@ -6500,10 +6442,6 @@ var _imageUpload = __webpack_require__(12);
 
 var _imageUpload2 = _interopRequireDefault(_imageUpload);
 
-var _auth = __webpack_require__(4);
-
-var _auth2 = _interopRequireDefault(_auth);
-
 var _reactFontawesome = __webpack_require__(3);
 
 var _api = __webpack_require__(5);
@@ -6536,13 +6474,6 @@ var ProblemEditMedia = function (_Component) {
   }
 
   _createClass(ProblemEditMedia, [{
-    key: 'componentWillMount',
-    value: function componentWillMount() {
-      if (!_auth2.default.isAdmin()) {
-        this.setState({ pushUrl: "/login", error: null });
-      }
-    }
-  }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
       if (!this.state.data) {
@@ -6611,6 +6542,8 @@ var ProblemEditMedia = function (_Component) {
         );
       } else if (this.state.pushUrl) {
         return _react2.default.createElement(_reactRouter.Redirect, { to: this.state.pushUrl, push: true });
+      } else if (!this.state.metadata.isAuthenticated) {
+        this.setState({ pushUrl: "/login", error: null });
       }
 
       return _react2.default.createElement(
@@ -6678,10 +6611,6 @@ var _reactRouterDom = __webpack_require__(2);
 var _reactRouter = __webpack_require__(7);
 
 var _reactBootstrap = __webpack_require__(1);
-
-var _auth = __webpack_require__(4);
-
-var _auth2 = _interopRequireDefault(_auth);
 
 var _reactFontawesome = __webpack_require__(3);
 
@@ -6887,10 +6816,6 @@ var _reactRouterDom = __webpack_require__(2);
 var _reactRouter = __webpack_require__(7);
 
 var _reactBootstrap = __webpack_require__(1);
-
-var _auth = __webpack_require__(4);
-
-var _auth2 = _interopRequireDefault(_auth);
 
 var _api = __webpack_require__(5);
 
@@ -7220,10 +7145,6 @@ var _gallery2 = _interopRequireDefault(_gallery);
 var _reactBootstrap = __webpack_require__(1);
 
 var _reactRouterBootstrap = __webpack_require__(8);
-
-var _auth = __webpack_require__(4);
-
-var _auth2 = _interopRequireDefault(_auth);
 
 var _reactFontawesome = __webpack_require__(3);
 
@@ -7569,7 +7490,7 @@ var Sector = function (_Component2) {
       var defaultCenter = data.lat && data.lat > 0 ? { lat: data.lat, lng: data.lng } : data.metadata.defaultCenter;
       var defaultZoom = data.lat && data.lat > 0 ? 15 : data.metadata.defaultZoom;
       var map = markers.length > 0 ? _react2.default.createElement(_map2.default, { markers: markers, defaultCenter: defaultCenter, defaultZoom: defaultZoom }) : null;
-      var gallery = data.media && data.media.length > 0 ? _react2.default.createElement(_gallery2.default, { alt: data.name + " (" + data.areaName + ")", media: data.media, showThumbnails: data.media.length > 1, removeMedia: this.onRemoveMedia.bind(this) }) : null;
+      var gallery = data.media && data.media.length > 0 ? _react2.default.createElement(_gallery2.default, { isAdmin: this.state.data.metadata.isAdmin, alt: data.name + " (" + data.areaName + ")", media: data.media, showThumbnails: data.media.length > 1, removeMedia: this.onRemoveMedia.bind(this) }) : null;
       var topoContent = null;
       if (map && gallery) {
         topoContent = _react2.default.createElement(
@@ -7614,7 +7535,7 @@ var Sector = function (_Component2) {
         _react2.default.createElement(
           _reactBootstrap.Breadcrumb,
           null,
-          _auth2.default.isAdmin() ? _react2.default.createElement(
+          this.state && this.state.data && this.state.data.metadata.isAdmin ? _react2.default.createElement(
             'div',
             { style: { float: 'right' } },
             _react2.default.createElement(
@@ -7806,10 +7727,6 @@ var _imageUpload = __webpack_require__(12);
 
 var _imageUpload2 = _interopRequireDefault(_imageUpload);
 
-var _auth = __webpack_require__(4);
-
-var _auth2 = _interopRequireDefault(_auth);
-
 var _reactFontawesome = __webpack_require__(3);
 
 var _api = __webpack_require__(5);
@@ -7856,13 +7773,6 @@ var SectorEdit = function (_Component) {
   }
 
   _createClass(SectorEdit, [{
-    key: 'componentWillMount',
-    value: function componentWillMount() {
-      if (!_auth2.default.isAdmin()) {
-        this.setState({ pushUrl: "/login", error: null });
-      }
-    }
-  }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
       if (!this.state.data) {
@@ -7977,7 +7887,10 @@ var SectorEdit = function (_Component) {
           null,
           _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'spinner', spin: true, size: '3x' })
         );
+      } else if (!this.state.data.metadata.isAdmin) {
+        this.setState({ pushUrl: "/login", error: null });
       }
+
       var triangleCoords = this.state.data.polygonCoords ? this.state.data.polygonCoords.split(";").map(function (p, i) {
         var latLng = p.split(",");
         return { lat: parseFloat(latLng[0]), lng: parseFloat(latLng[1]) };
@@ -8057,7 +7970,7 @@ var SectorEdit = function (_Component) {
                   { eventKey: '1', onSelect: this.onVisibilityChanged.bind(this, 1) },
                   'Only visible for administrators'
                 ),
-                _auth2.default.isSuperAdmin() && _react2.default.createElement(
+                this.state.data.metadata.isSuperAdmin && _react2.default.createElement(
                   _reactBootstrap.MenuItem,
                   { eventKey: '2', onSelect: this.onVisibilityChanged.bind(this, 2) },
                   'Only visible for super administrators'
@@ -8190,13 +8103,6 @@ var SvgEdit = function (_Component) {
   }
 
   _createClass(SvgEdit, [{
-    key: 'componentWillMount',
-    value: function componentWillMount() {
-      if (!auth.isAdmin()) {
-        this.setState({ pushUrl: "/login", error: null });
-      }
-    }
-  }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
       if (!this.state.data) {
@@ -8528,6 +8434,8 @@ var SvgEdit = function (_Component) {
         );
       } else if (this.state.pushUrl) {
         return _react2.default.createElement(_reactRouter.Redirect, { to: this.state.pushUrl, push: true });
+      } else if (!this.state.metadata.isAdmin) {
+        this.setState({ pushUrl: "/login", error: null });
       }
 
       var circles = this.state.points.map(function (p, i, a) {
@@ -8752,10 +8660,6 @@ var _chart2 = _interopRequireDefault(_chart);
 var _tickModal = __webpack_require__(20);
 
 var _tickModal2 = _interopRequireDefault(_tickModal);
-
-var _auth = __webpack_require__(4);
-
-var _auth2 = _interopRequireDefault(_auth);
 
 var _reactFontawesome = __webpack_require__(3);
 
@@ -9031,7 +8935,7 @@ var User = function (_Component) {
         _react2.default.createElement(
           _reactBootstrap.Breadcrumb,
           null,
-          _auth2.default.loggedIn() && currTick.user.readOnly == false ? _react2.default.createElement(
+          data.metadata.isAuthenticated && currTick.user.readOnly == false ? _react2.default.createElement(
             'div',
             { style: { float: 'right' } },
             _react2.default.createElement(
@@ -9313,10 +9217,6 @@ var _reactRouter = __webpack_require__(7);
 
 var _reactBootstrap = __webpack_require__(1);
 
-var _auth = __webpack_require__(4);
-
-var _auth2 = _interopRequireDefault(_auth);
-
 var _reactFontawesome = __webpack_require__(3);
 
 var _api = __webpack_require__(5);
@@ -9349,13 +9249,6 @@ var UserEdit = function (_Component) {
   }
 
   _createClass(UserEdit, [{
-    key: 'componentWillMount',
-    value: function componentWillMount() {
-      if (!_auth2.default.isAdmin()) {
-        this.setState({ pushUrl: "/login", error: null });
-      }
-    }
-  }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
       if (!this.state.data) {
@@ -9511,7 +9404,10 @@ var UserEdit = function (_Component) {
         );
       } else if (this.state.pushUrl) {
         return _react2.default.createElement(_reactRouter.Redirect, { to: this.state.pushUrl, push: true });
+      } else if (!this.state.metadata.isAuthenticated) {
+        this.setState({ pushUrl: "/login", error: null });
       }
+
       return _react2.default.createElement(
         'span',
         null,
@@ -9669,10 +9565,6 @@ var _reactBootstrap = __webpack_require__(1);
 
 var _reactRouterBootstrap = __webpack_require__(8);
 
-var _auth = __webpack_require__(4);
-
-var _auth2 = _interopRequireDefault(_auth);
-
 var _Async = __webpack_require__(65);
 
 var _Async2 = _interopRequireDefault(_Async);
@@ -9728,18 +9620,12 @@ var Navigation = function (_Component) {
     var _this = _possibleConstructorReturn(this, (Navigation.__proto__ || Object.getPrototypeOf(Navigation)).call(this, props));
 
     _this.state = {
-      logo: '/png/buldreinfo_logo_gray.png',
-      loggedIn: _auth2.default.loggedIn()
+      logo: '/png/buldreinfo_logo_gray.png'
     };
     return _this;
   }
 
   _createClass(Navigation, [{
-    key: 'updateAuth',
-    value: function updateAuth(loggedIn) {
-      this.setState({ loggedIn: !!loggedIn });
-    }
-  }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
       this.setState({ pushUrl: null });
@@ -9747,16 +9633,21 @@ var Navigation = function (_Component) {
   }, {
     key: 'componentWillMount',
     value: function componentWillMount() {
-      _auth2.default.onChange = this.updateAuth.bind(this);
-      _auth2.default.login();
+      var _this2 = this;
+
+      (0, _api.getUserLogin)().then(function (permissions) {
+        return _this2.setState(function () {
+          return { permissions: permissions };
+        });
+      });
     }
   }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
-      var _this2 = this;
+      var _this3 = this;
 
       (0, _api.getGrades)().then(function (grades) {
-        return _this2.setState({ grades: grades });
+        return _this3.setState({ grades: grades });
       });
     }
   }, {
@@ -9831,7 +9722,7 @@ var Navigation = function (_Component) {
             _react2.default.createElement(
               _reactBootstrap.NavDropdown,
               { eventKey: 2, title: 'Finder', id: 'basic-nav-dropdown' },
-              _auth2.default.isSuperAdmin() && _react2.default.createElement(
+              this.state.permissions && this.state.permissions.isAdmin && _react2.default.createElement(
                 _reactRouterBootstrap.LinkContainer,
                 { to: '/finder/-1' },
                 _react2.default.createElement(
@@ -9886,7 +9777,7 @@ var Navigation = function (_Component) {
           _react2.default.createElement(
             _reactBootstrap.Nav,
             { pullRight: true },
-            this.state.loggedIn ? _react2.default.createElement(
+            this.state.permissions ? _react2.default.createElement(
               _reactBootstrap.NavDropdown,
               { eventKey: 4, title: 'Logged in', id: 'basic-nav-dropdown' },
               _react2.default.createElement(
@@ -10013,12 +9904,6 @@ module.exports = require("@fortawesome/fontawesome-svg-core");
 /***/ (function(module, exports) {
 
 module.exports = require("@fortawesome/free-solid-svg-icons");
-
-/***/ }),
-/* 70 */
-/***/ (function(module, exports) {
-
-module.exports = require("universal-cookie-express");
 
 /***/ })
 /******/ ]);

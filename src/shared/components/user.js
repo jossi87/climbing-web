@@ -6,7 +6,6 @@ import { Tabs, Tab, ButtonToolbar, ButtonGroup, Button, OverlayTrigger, Tooltip,
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Chart from './common/chart/chart';
 import TickModal from './common/tick-modal/tick-modal';
-import auth from '../utils/auth.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default class User extends Component {
@@ -156,7 +155,7 @@ export default class User extends Component {
 
         {this.state.currTick? <TickModal idTick={this.state.currTick.id} idProblem={this.state.currTick.idProblem} date={this.state.currTick.date} comment={this.state.currTick.comment} grade={this.state.currTick.grade} grades={data.metadata.grades} stars={this.state.currTick.stars} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/> : ""}
         <Breadcrumb>
-          {auth.loggedIn() && currTick.user.readOnly==false?
+          {data.metadata.isAuthenticated && currTick.user.readOnly==false?
             <div style={{float: 'right'}}>
               <OverlayTrigger placement="top" overlay={<Tooltip id={data.id}>Edit user</Tooltip>}>
                 <LinkContainer to={`/user/${data.id}/edit`}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="edit" inverse={true} /></Button></LinkContainer>
