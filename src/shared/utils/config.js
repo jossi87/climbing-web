@@ -24,31 +24,6 @@ module.exports = {
     }
   },
 
-  getTitle(str) {
-    let base = '';
-    if (typeof window !== 'undefined') {
-        base = window.location.protocol + '//' + window.location.host;
-    } else if (this.props && this.props.serverRequest) {
-        base = this.props.serverRequest.headers.host;
-    }
-
-    if (base=='https://buldring.bergen-klatreklubb.no') {
-      return (str && str + " | ") + "Buldring i Hordaland";
-    } else if (base=='https://buldring.fredrikstadklatreklubb.org') {
-      return (str && str + " | ") + "Buldring i Fredrikstad";
-    } else if (base=='https://brattelinjer.no') {
-      return (str && str + " | ") + "Bratte Linjer";
-    } else if (base=='https://buldring.jotunheimenfjellsport.com') {
-      return (str && str + " | ") + "Buldring i Jotunheimen";
-    } else if (base=='https://klatring.jotunheimenfjellsport.com') {
-      return (str && str + " | ") + "Klatring i Jotunheimen";
-    } else if (base=='https://dev.jossi.org') {
-      return (str && str + " | ") + "dev.jossi.org";
-    } else {
-      return (str && str + " | ") + "Buldreinfo";
-    }
-  },
-
   getDefaultCenter() {
     let base = '';
     if (typeof window !== 'undefined') {

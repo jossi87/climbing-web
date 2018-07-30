@@ -9,15 +9,6 @@ export function getBrowse() {
     });
 }
 
-export function getEthics() {
-  return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/ethics`))
-    .then((data) => data.json())
-    .catch((error) => {
-      console.warn(error);
-      return null;
-    });
-}
-
 export function getFinder(grade) {
   return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/finder?grade=${grade}`), {credentials: 'include'})
     .then((data) => data.json())
@@ -36,17 +27,8 @@ export function getFrontpage() {
     });
 }
 
-export function getLogin() {
-  return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/login`))
-    .then((data) => data.json())
-    .catch((error) => {
-      console.warn(error);
-      return null;
-    });
-}
-
-export function getRecover() {
-  return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/recover`))
+export function getMeta() {
+  return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta`))
     .then((data) => data.json())
     .catch((error) => {
       console.warn(error);
@@ -60,4 +42,8 @@ export function getUserPassword(token, password) {
 
 export function getUserForgotPassword(username) {
   fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/forgotPassword?username=${username}`));
+}
+
+export function postUserRegister(firstname, lastname, username, password) {
+  fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/register`),{method: "POST", body: {firstname, lastname, username, password}});
 }

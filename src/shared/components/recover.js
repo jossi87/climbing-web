@@ -77,8 +77,8 @@ export default class Recover extends Component {
     return (
       <span>
         <MetaTags>
-          <title>{this.state.data && this.state.data.metadata.title}</title>
-          <meta name="description" content={this.state.data && this.state.data.metadata.description} />
+        {this.state.data && <title>{"Recover password | " + this.state.data.metadata.title}</title>}
+        <meta name="description" content={"Recover password"} />
         </MetaTags>
         <Well>
           <form onSubmit={this.recover.bind(this)}>

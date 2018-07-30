@@ -17,12 +17,12 @@ import SvgEdit from './components/common/svg/svg-edit';
 import User from './components/user';
 import UserEdit from './components/user-edit';
 
-import { getBrowse, getEthics, getFinder, getFrontpage, getLogin, getRecover } from './api';
+import { getBrowse, getFinder, getFrontpage, getMeta } from './api';
 
 const routes =  [
   {path: '/', exact: true, component: Index, fetchInitialData: (path = '') => getFrontpage()},
   {path: '/browse', exact: false, component: Browse, fetchInitialData: (path = '') => getBrowse()},
-  {path: '/ethics', exact: false, component: Ethics, fetchInitialData: (path = '') => getEthics()},
+  {path: '/ethics', exact: false, component: Ethics, fetchInitialData: (path = '') => getMeta()},
   {path: '/area/:areaId', exact: true, component: Area},
   {path: '/area/edit/:areaId', exact: true, component: AreaEdit},
   {path: '/sector/:sectorId', exact: true, component: Sector},
@@ -35,9 +35,9 @@ const routes =  [
   {path: '/user', exact: true, component: User},
   {path: '/user/:userId', exact: true, component: User},
   {path: '/user/:userId/edit', exact: true, component: UserEdit},
-  {path: '/login', exact: false, component: Login, fetchInitialData: (path = '') => getLogin()},
-  {path: '/register', exact: false, component: Register},
-  {path: '/recover/:token', exact: true, component: Recover, fetchInitialData: (path = '') => getRecover()},
+  {path: '/login', exact: false, component: Login, fetchInitialData: (path = '') => getMeta()},
+  {path: '/register', exact: false, component: Register, fetchInitialData: (path = '') => getMeta()},
+  {path: '/recover/:token', exact: true, component: Recover, fetchInitialData: (path = '') => getMeta()},
   {path: '/logout', exact: false, component: Logout}
 ]
 

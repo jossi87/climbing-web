@@ -2,22 +2,35 @@ import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
-import Request from 'superagent';
 import { FormGroup, ControlLabel, FormControl, HelpBlock, ButtonGroup, Button, Panel, Breadcrumb, Well } from 'react-bootstrap';
 import auth from '../utils/auth.js';
-import config from '../utils/config.js';
+import { postUserRegister } from './../api';
 
 export default class Register extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      message: null,
-      firstname: '',
-      lastname: '',
-      username: '',
-      password: '',
-      password2: ''
-    };
+    let data;
+    if (__isBrowser__) {
+      data = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+    } else {
+      data = props.staticContext.data;
+    }
+    this.state = {data};
+  }
+
+  componentDidMount() {
+    if (!this.state.data) {
+      this.props.fetchInitialData().then((data) => this.setState(() => ({
+        data,
+        message: null,
+        firstname: '',
+        lastname: '',
+        username: '',
+        password: '',
+        password2: ''
+      })));
+    }
   }
 
   register(event) {
@@ -31,16 +44,13 @@ export default class Register extends Component {
     } else if (this.validatePassword(null)==='error' || this.validatePassword2(null)==='error') {
       this.setState({message: <Panel bsStyle='danger'>Invalid password.</Panel>});
     } else {
-      Request.post(config.getUrl("users/register"))
-      .withCredentials()
-      .send({firstname: this.state.firstname, lastname: this.state.lastname, username: this.state.username, password: this.state.password})
-      .set('Accept', 'application/json')
-      .end((err, res) => {
-        if (err) {
-          this.setState({message: <Panel bsStyle='danger'>{err.toString()}</Panel>});
-        } else {
-          this.setState({message: <Panel bsStyle='success'>User registered</Panel>, pushUrl: "/login"});
-        }
+      postUserRegister(this.state.firstname, this.state.lastname, this.state.username, this.state.password)
+      .then((response) => {
+        this.setState({message: <Panel bsStyle='success'>User registered</Panel>, pushUrl: "/login"});
+      })
+      .catch((error) => {
+        console.warn(error);
+        this.setState({message: <Panel bsStyle='danger'>{error.toString()}</Panel>});
       });
     }
   }
@@ -108,7 +118,7 @@ export default class Register extends Component {
     return (
       <span>
         <MetaTags>
-          <title>{config.getTitle("Register")}</title>
+          {this.state.data && <title>{"Register | " + this.state.data.metadata.title}</title>}
           <meta name="description" content={"Register new user"} />
         </MetaTags>
         <Breadcrumb>

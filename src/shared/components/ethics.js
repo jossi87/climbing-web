@@ -26,7 +26,7 @@ export default class Ethics extends Component {
     return (
       <span>
         <MetaTags>
-          {this.state.data && <title>{this.state.data.metadata.title}</title>}
+          {this.state.data && <title>{"Ethics | " + this.state.data.metadata.title}</title>}
           <meta name="description" content={"Ethics and privacy policy"} />
         </MetaTags>
         <Breadcrumb>

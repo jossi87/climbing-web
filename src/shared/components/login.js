@@ -76,8 +76,8 @@ export default class Login extends Component {
     return (
       <span>
         <MetaTags>
-          <title>{this.state.data && this.state.data.metadata.title}</title>
-          <meta name="description" content={this.state.data && this.state.data.metadata.description} />
+          {this.state.data && <title>{"Sign in | " + this.state.data.metadata.title}</title>}
+          <meta name="description" content={"Sign in using username and password"} />
         </MetaTags>
         <Breadcrumb>
           <Link to={`/`}>Home</Link> / <font color='#777'>Sign in</font>

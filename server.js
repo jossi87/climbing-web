@@ -107,30 +107,6 @@ module.exports = {
       return "https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/" + str;
     }
   },
-  getTitle: function getTitle(str) {
-    var base = '';
-    if (typeof window !== 'undefined') {
-      base = window.location.protocol + '//' + window.location.host;
-    } else if (this.props && this.props.serverRequest) {
-      base = this.props.serverRequest.headers.host;
-    }
-
-    if (base == 'https://buldring.bergen-klatreklubb.no') {
-      return (str && str + " | ") + "Buldring i Hordaland";
-    } else if (base == 'https://buldring.fredrikstadklatreklubb.org') {
-      return (str && str + " | ") + "Buldring i Fredrikstad";
-    } else if (base == 'https://brattelinjer.no') {
-      return (str && str + " | ") + "Bratte Linjer";
-    } else if (base == 'https://buldring.jotunheimenfjellsport.com') {
-      return (str && str + " | ") + "Buldring i Jotunheimen";
-    } else if (base == 'https://klatring.jotunheimenfjellsport.com') {
-      return (str && str + " | ") + "Klatring i Jotunheimen";
-    } else if (base == 'https://dev.jossi.org') {
-      return (str && str + " | ") + "dev.jossi.org";
-    } else {
-      return (str && str + " | ") + "Buldreinfo";
-    }
-  },
   getDefaultCenter: function getDefaultCenter() {
     var base = '';
     if (typeof window !== 'undefined') {
@@ -1156,16 +1132,19 @@ var routes = [{ path: '/', exact: true, component: _index2.default, fetchInitial
     return (0, _api.getBrowse)();
   } }, { path: '/ethics', exact: false, component: _ethics2.default, fetchInitialData: function fetchInitialData() {
     var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    return (0, _api.getEthics)();
+    return (0, _api.getMeta)();
   } }, { path: '/area/:areaId', exact: true, component: _area2.default }, { path: '/area/edit/:areaId', exact: true, component: _areaEdit2.default }, { path: '/sector/:sectorId', exact: true, component: _sector2.default }, { path: '/sector/edit/:sectorId', exact: true, component: _sectorEdit2.default }, { path: '/problem/:problemId', exact: true, component: _problem2.default }, { path: '/problem/edit/:problemId', exact: true, component: _problemEdit2.default }, { path: '/problem/edit/media/:problemId', exact: true, component: _problemEditMedia2.default }, { path: '/problem/svg-edit/:problemId/:mediaId', exact: true, component: _svgEdit2.default }, { path: '/finder/:grade', exact: true, component: _finder2.default, fetchInitialData: function fetchInitialData() {
     var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
     return (0, _api.getFinder)(path.split('/').pop());
   } }, { path: '/user', exact: true, component: _user2.default }, { path: '/user/:userId', exact: true, component: _user2.default }, { path: '/user/:userId/edit', exact: true, component: _userEdit2.default }, { path: '/login', exact: false, component: _login2.default, fetchInitialData: function fetchInitialData() {
     var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    return (0, _api.getLogin)();
-  } }, { path: '/register', exact: false, component: _register2.default }, { path: '/recover/:token', exact: true, component: _recover2.default, fetchInitialData: function fetchInitialData() {
+    return (0, _api.getMeta)();
+  } }, { path: '/register', exact: false, component: _register2.default, fetchInitialData: function fetchInitialData() {
     var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    return (0, _api.getRecover)();
+    return (0, _api.getMeta)();
+  } }, { path: '/recover/:token', exact: true, component: _recover2.default, fetchInitialData: function fetchInitialData() {
+    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    return (0, _api.getMeta)();
   } }, { path: '/logout', exact: false, component: _logout2.default }];
 
 exports.default = routes;
@@ -2871,7 +2850,7 @@ var Ethics = function (_Component) {
           this.state.data && _react2.default.createElement(
             'title',
             null,
-            this.state.data.metadata.title
+            "Ethics | " + this.state.data.metadata.title
           ),
           _react2.default.createElement('meta', { name: 'description', content: "Ethics and privacy policy" })
         ),
@@ -4314,12 +4293,12 @@ var Login = function (_Component) {
         _react2.default.createElement(
           _reactMetaTags2.default,
           null,
-          _react2.default.createElement(
+          this.state.data && _react2.default.createElement(
             'title',
             null,
-            this.state.data && this.state.data.metadata.title
+            "Sign in | " + this.state.data.metadata.title
           ),
-          _react2.default.createElement('meta', { name: 'description', content: this.state.data && this.state.data.metadata.description })
+          _react2.default.createElement('meta', { name: 'description', content: "Sign in using username and password" })
         ),
         _react2.default.createElement(
           _reactBootstrap.Breadcrumb,
@@ -6523,12 +6502,12 @@ var Recover = function (_Component) {
         _react2.default.createElement(
           _reactMetaTags2.default,
           null,
-          _react2.default.createElement(
+          this.state.data && _react2.default.createElement(
             'title',
             null,
-            this.state.data && this.state.data.metadata.title
+            "Recover password | " + this.state.data.metadata.title
           ),
-          _react2.default.createElement('meta', { name: 'description', content: this.state.data && this.state.data.metadata.description })
+          _react2.default.createElement('meta', { name: 'description', content: "Recover password" })
         ),
         _react2.default.createElement(
           _reactBootstrap.Well,
@@ -6613,19 +6592,13 @@ var _reactRouterDom = __webpack_require__(4);
 
 var _reactRouter = __webpack_require__(7);
 
-var _superagent = __webpack_require__(3);
-
-var _superagent2 = _interopRequireDefault(_superagent);
-
 var _reactBootstrap = __webpack_require__(1);
 
 var _auth = __webpack_require__(6);
 
 var _auth2 = _interopRequireDefault(_auth);
 
-var _config = __webpack_require__(2);
-
-var _config2 = _interopRequireDefault(_config);
+var _api = __webpack_require__(62);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -6643,21 +6616,42 @@ var Register = function (_Component) {
 
     var _this = _possibleConstructorReturn(this, (Register.__proto__ || Object.getPrototypeOf(Register)).call(this, props));
 
-    _this.state = {
-      message: null,
-      firstname: '',
-      lastname: '',
-      username: '',
-      password: '',
-      password2: ''
-    };
+    var data = void 0;
+    if (false) {
+      data = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+    } else {
+      data = props.staticContext.data;
+    }
+    _this.state = { data: data };
     return _this;
   }
 
   _createClass(Register, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      if (!this.state.data) {
+        this.props.fetchInitialData().then(function (data) {
+          return _this2.setState(function () {
+            return {
+              data: data,
+              message: null,
+              firstname: '',
+              lastname: '',
+              username: '',
+              password: '',
+              password2: ''
+            };
+          });
+        });
+      }
+    }
+  }, {
     key: 'register',
     value: function register(event) {
-      var _this2 = this;
+      var _this3 = this;
 
       event.preventDefault();
       if (this.validateFirstname(null) === 'error') {
@@ -6685,20 +6679,19 @@ var Register = function (_Component) {
             'Invalid password.'
           ) });
       } else {
-        _superagent2.default.post(_config2.default.getUrl("users/register")).withCredentials().send({ firstname: this.state.firstname, lastname: this.state.lastname, username: this.state.username, password: this.state.password }).set('Accept', 'application/json').end(function (err, res) {
-          if (err) {
-            _this2.setState({ message: _react2.default.createElement(
-                _reactBootstrap.Panel,
-                { bsStyle: 'danger' },
-                err.toString()
-              ) });
-          } else {
-            _this2.setState({ message: _react2.default.createElement(
-                _reactBootstrap.Panel,
-                { bsStyle: 'success' },
-                'User registered'
-              ), pushUrl: "/login" });
-          }
+        (0, _api.postUserRegister)(this.state.firstname, this.state.lastname, this.state.username, this.state.password).then(function (response) {
+          _this3.setState({ message: _react2.default.createElement(
+              _reactBootstrap.Panel,
+              { bsStyle: 'success' },
+              'User registered'
+            ), pushUrl: "/login" });
+        }).catch(function (error) {
+          console.warn(error);
+          _this3.setState({ message: _react2.default.createElement(
+              _reactBootstrap.Panel,
+              { bsStyle: 'danger' },
+              error.toString()
+            ) });
         });
       }
     }
@@ -6780,10 +6773,10 @@ var Register = function (_Component) {
         _react2.default.createElement(
           _reactMetaTags2.default,
           null,
-          _react2.default.createElement(
+          this.state.data && _react2.default.createElement(
             'title',
             null,
-            _config2.default.getTitle("Register")
+            "Register | " + this.state.data.metadata.title
           ),
           _react2.default.createElement('meta', { name: 'description', content: "Register new user" })
         ),
@@ -9430,13 +9423,12 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.getBrowse = getBrowse;
-exports.getEthics = getEthics;
 exports.getFinder = getFinder;
 exports.getFrontpage = getFrontpage;
-exports.getLogin = getLogin;
-exports.getRecover = getRecover;
+exports.getMeta = getMeta;
 exports.getUserPassword = getUserPassword;
 exports.getUserForgotPassword = getUserForgotPassword;
+exports.postUserRegister = postUserRegister;
 
 var _isomorphicFetch = __webpack_require__(63);
 
@@ -9446,15 +9438,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function getBrowse() {
   return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/browse'), { credentials: 'include' }).then(function (data) {
-    return data.json();
-  }).catch(function (error) {
-    console.warn(error);
-    return null;
-  });
-}
-
-function getEthics() {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/ethics')).then(function (data) {
     return data.json();
   }).catch(function (error) {
     console.warn(error);
@@ -9480,17 +9463,8 @@ function getFrontpage() {
   });
 }
 
-function getLogin() {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/login')).then(function (data) {
-    return data.json();
-  }).catch(function (error) {
-    console.warn(error);
-    return null;
-  });
-}
-
-function getRecover() {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/recover')).then(function (data) {
+function getMeta() {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta')).then(function (data) {
     return data.json();
   }).catch(function (error) {
     console.warn(error);
@@ -9504,6 +9478,10 @@ function getUserPassword(token, password) {
 
 function getUserForgotPassword(username) {
   (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/forgotPassword?username=' + username));
+}
+
+function postUserRegister(firstname, lastname, username, password) {
+  (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/register'), { method: "POST", body: { firstname: firstname, lastname: lastname, username: username, password: password } });
 }
 
 /***/ }),
