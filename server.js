@@ -76,21 +76,19 @@ module.exports = require("react");
 module.exports = require("react-bootstrap");
 
 /***/ }),
-/* 2 */,
-/* 3 */,
-/* 4 */
+/* 2 */
 /***/ (function(module, exports) {
 
 module.exports = require("react-router-dom");
 
 /***/ }),
-/* 5 */
+/* 3 */
 /***/ (function(module, exports) {
 
 module.exports = require("@fortawesome/react-fontawesome");
 
 /***/ }),
-/* 6 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -128,6 +126,494 @@ module.exports = {
 function tryLogin(username, password, cb) {}
 
 /***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.deleteMedia = deleteMedia;
+exports.getArea = getArea;
+exports.getAreaEdit = getAreaEdit;
+exports.getBrowse = getBrowse;
+exports.getFinder = getFinder;
+exports.getFrontpage = getFrontpage;
+exports.getGrades = getGrades;
+exports.getMeta = getMeta;
+exports.getProblem = getProblem;
+exports.getProblemEditMedia = getProblemEditMedia;
+exports.getProblemEdit = getProblemEdit;
+exports.getSector = getSector;
+exports.getSectorEdit = getSectorEdit;
+exports.getSvgEdit = getSvgEdit;
+exports.getUser = getUser;
+exports.getUserEdit = getUserEdit;
+exports.getUserSearch = getUserSearch;
+exports.getUserPassword = getUserPassword;
+exports.getUserForgotPassword = getUserForgotPassword;
+exports.postArea = postArea;
+exports.postComment = postComment;
+exports.postProblem = postProblem;
+exports.postProblemMedia = postProblemMedia;
+exports.postProblemSvg = postProblemSvg;
+exports.postSearch = postSearch;
+exports.postSector = postSector;
+exports.postTicks = postTicks;
+exports.postUserEdit = postUserEdit;
+exports.postUserRegister = postUserRegister;
+
+var _isomorphicFetch = __webpack_require__(36);
+
+var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
+
+var _util = __webpack_require__(9);
+
+var _util2 = _interopRequireDefault(_util);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+__webpack_require__(37).polyfill();
+function deleteMedia(id) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/media?id=' + id), {
+    mode: 'cors',
+    method: 'DELETE',
+    credentials: 'include'
+  });
+}
+
+function getArea(id) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/areas?id=' + id), { credentials: 'include' }).then(function (data) {
+    return data.json();
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
+function getAreaEdit(id) {
+  if (id === -1) {
+    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta')).then(function (data) {
+      return data.json();
+    }).then(function (res) {
+      return { id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: { title: 'New area | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter } };
+    }).catch(function (error) {
+      console.warn(error);
+      return null;
+    });
+  } else {
+    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/areas?id=' + id), { credentials: 'include' }).then(function (data) {
+      return data.json();
+    }).then(function (res) {
+      return { id: res.id, visibility: res.visibility, name: res.name, comment: res.comment, lat: res.lat, lng: res.lng, newMedia: [], metadata: res.metadata };
+    }).catch(function (error) {
+      console.warn(error);
+      return null;
+    });
+  }
+}
+
+function getBrowse() {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/browse'), { credentials: 'include' }).then(function (data) {
+    return data.json();
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
+function getFinder(grade) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/finder?grade=' + grade), { credentials: 'include' }).then(function (data) {
+    return data.json();
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
+function getFrontpage() {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/frontpage'), { credentials: 'include' }).then(function (data) {
+    return data.json();
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
+function getGrades() {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/grades')).then(function (data) {
+    return data.json();
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
+function getMeta() {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta')).then(function (data) {
+    return data.json();
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
+function getProblem(id) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/problems?id=' + id), { credentials: 'include' }).then(function (data) {
+    return data.json();
+  }).then(function (json) {
+    return json[0];
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
+function getProblemEditMedia(id) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/problems?id=' + id), { credentials: 'include' }).then(function (data) {
+    return data.json();
+  }).then(function (json) {
+    return json[0];
+  }).then(function (res) {
+    return { id: res.id, newMedia: [] };
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
+function getProblemEdit(id) {
+  if (id === -1) {
+    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta')).then(function (data) {
+      return data.json();
+    }).then(function (res) {
+      return { id: -1, visibility: 0, name: '', comment: '', originalGrade: 'n/a', fa: [], faDate: _util2.default.convertFromDateToString(new Date()), nr: 0, lat: 0, lng: 0, newMedia: [], metadata: { title: 'New problem | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, grades: res.metadata.grades, types: res.metadata.types } };
+    }).catch(function (error) {
+      console.warn(error);
+      return null;
+    });
+  } else {
+    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/problems?id=' + id), { credentials: 'include' }).then(function (data) {
+      return data.json();
+    }).then(function (res) {
+      return { id: res.id, visibility: res.visibility, name: res.name, comment: res.comment, originalGrade: res.originalGrade, fa: res.fa, faDate: res.faDate, nr: res.nr, typeId: res.t.id, lat: res.lat, lng: res.lng, sections: res.sections, metadata: res.metadata };
+    }).catch(function (error) {
+      console.warn(error);
+      return null;
+    });
+  }
+}
+
+function getSector(id) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/sectors?id=' + id), { credentials: 'include' }).then(function (data) {
+    return data.json();
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
+function getSectorEdit(id) {
+  if (id === -1) {
+    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta')).then(function (data) {
+      return data.json();
+    }).then(function (res) {
+      return { id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: { title: 'New sector | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter } };
+    }).catch(function (error) {
+      console.warn(error);
+      return null;
+    });
+  } else {
+    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/sectors?id=' + id), { credentials: 'include' }).then(function (data) {
+      return data.json();
+    }).then(function (res) {
+      return { id: res.id, visibility: res.visibility, name: res.name, comment: res.comment, lat: res.lat, lng: res.lng, newMedia: [], metadata: res.metadata };
+    }).catch(function (error) {
+      console.warn(error);
+      return null;
+    });
+  }
+}
+
+function getSvgEdit(problemId, mediaId) {
+  var _this = this;
+
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/problems?id=' + problemId), { credentials: 'include' }).then(function (data) {
+    return data.json();
+  }).then(function (json) {
+    return json[0];
+  }).then(function (res) {
+    var m = res.body[0].media.filter(function (x) {
+      return x.id == mediaId;
+    })[0];
+    var readOnlySvgs = [];
+    var svgId = 0;
+    var points = [];
+    if (m.svgs) {
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = m.svgs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var svg = _step.value;
+
+          if (svg.problemId === res.body[0].id) {
+            svgId = svg.id;
+            points = _this.parsePath(svg.path);
+          } else {
+            readOnlySvgs.push({ nr: svg.nr, hasAnchor: svg.hasAnchor, path: svg.path });
+          }
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+    }
+    return {
+      mediaId: m.id,
+      nr: res.nr,
+      w: m.width,
+      h: m.height,
+      ctrl: false,
+      svgId: svgId,
+      points: points,
+      readOnlySvgs: readOnlySvgs,
+      activePoint: 0,
+      draggedPoint: false,
+      draggedCubic: false,
+      hasAnchor: true,
+      areaId: res.areaId,
+      areaName: res.areaName,
+      areaVisibility: res.areaVisibility,
+      sectorId: res.sectorId,
+      sectorName: res.sectorName,
+      sectorVisibility: res.sectorVisibility,
+      id: res.id,
+      name: res.name,
+      grade: res.grade,
+      visibility: res.visibility
+    };
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
+function getUser(id) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users?id=' + id), { credentials: 'include' }).then(function (data) {
+    return data.json();
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
+function getUserEdit(id) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/edit?id=' + id), { credentials: 'include' }).then(function (data) {
+    return data.json();
+  }).then(function (res) {
+    return { id: res.id, username: res.username, firstname: res.firstname, lastname: res.lastname, currentPassword: null, newPassword: null, newPassword2: null, message: null };
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
+function getUserSearch(value) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/search?value=' + value)).then(function (data) {
+    return data.json();
+  }).catch(function (error) {
+    console.warn(error);
+    return null;
+  });
+}
+
+function getUserPassword(token, password) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/password?token=' + token + '&password=' + password));
+}
+
+function getUserForgotPassword(username) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/forgotPassword?username=' + username));
+}
+
+function postArea(id, visibility, name, comment, lat, lng, newMedia) {
+  var formData = new FormData();
+  formData.append('json', JSON.stringify({ id: id, visibility: visibility, name: name, comment: comment, lat: lat, lng: lng, newMedia: newMedia }));
+  newMedia.forEach(function (m) {
+    return formData.append(m.file.name.replace(/[^-a-z0-9.]/ig, '_'), m.file);
+  });
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/areas'), {
+    mode: 'cors',
+    method: 'POST',
+    credentials: 'include',
+    body: formData,
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    }
+  }).then(function (data) {
+    return data.json();
+  });
+}
+
+function postComment(idProblem, comment) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/comments'), {
+    mode: 'cors',
+    method: 'POST',
+    credentials: 'include',
+    body: JSON.stringify({ idProblem: idProblem, comment: comment }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
+function postProblem(sectorId, id, visibility, name, comment, originalGrade, fa, faDate, nr, t, lat, lng, sections, newMedia) {
+  var formData = new FormData();
+  formData.append('json', JSON.stringify({ sectorId: sectorId, id: id, visibility: visibility, name: name, comment: comment, originalGrade: originalGrade, fa: fa, faDate: faDate, nr: nr, t: t, lat: lat, lng: lng, sections: sections, newMedia: newMedia }));
+  newMedia.forEach(function (m) {
+    return formData.append(m.file.name.replace(/[^-a-z0-9.]/ig, '_'), m.file);
+  });
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/problems'), {
+    mode: 'cors',
+    method: 'POST',
+    credentials: 'include',
+    body: formData,
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    }
+  }).then(function (data) {
+    return data.json();
+  });
+}
+
+function postProblemMedia(id, newMedia) {
+  var formData = new FormData();
+  formData.append('json', JSON.stringify({ id: id, newMedia: newMedia }));
+  newMedia.forEach(function (m) {
+    return formData.append(m.file.name.replace(/[^-a-z0-9.]/ig, '_'), m.file);
+  });
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/problems/media'), {
+    mode: 'cors',
+    method: 'POST',
+    credentials: 'include',
+    body: formData,
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    }
+  }).then(function (data) {
+    return data.json();
+  });
+}
+
+function postProblemSvg(problemId, mediaId, del, id, path, hasAnchor) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/problems/svg?problemId=' + problemId + '&mediaId=' + mediaId), {
+    mode: 'cors',
+    method: 'POST',
+    credentials: 'include',
+    body: JSON.stringify({ delete: del, id: id, path: path, hasAnchor: hasAnchor }),
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    }
+  }).then(function (data) {
+    return data.json();
+  });
+}
+
+function postSearch(value) {
+  return (0, _isomorphicFetch2.default)("https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/search", {
+    mode: 'cors',
+    method: 'POST',
+    credentials: 'include',
+    body: JSON.stringify({ value: value }),
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    }
+  }).then(function (data) {
+    return data.json();
+  });
+}
+
+function postSector(areaId, id, visibility, name, comment, lat, lng, newMedia) {
+  var formData = new FormData();
+  formData.append('json', JSON.stringify({ areaId: areaId, id: id, visibility: visibility, name: name, comment: comment, lat: lat, lng: lng, newMedia: newMedia }));
+  newMedia.forEach(function (m) {
+    return formData.append(m.file.name.replace(/[^-a-z0-9.]/ig, '_'), m.file);
+  });
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/sectors'), {
+    mode: 'cors',
+    method: 'POST',
+    credentials: 'include',
+    body: formData,
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    }
+  }).then(function (data) {
+    return data.json();
+  });
+}
+
+function postTicks(del, id, idProblem, comment, date, stars, grade) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/ticks'), {
+    mode: 'cors',
+    method: 'POST',
+    credentials: 'include',
+    body: JSON.stringify({ delete: del, id: id, idProblem: idProblem, comment: comment, date: date, stars: stars, grade: grade }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
+function postUserEdit(id, username, firstname, lastname, currentPassword, newPassword) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/edit'), {
+    mode: 'cors',
+    method: 'POST',
+    credentials: 'include',
+    body: JSON.stringify({ id: id, username: username, firstname: firstname, lastname: lastname, currentPassword: currentPassword, newPassword: newPassword }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
+function postUserRegister(firstname, lastname, username, password) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/register'), {
+    mode: 'cors',
+    method: 'POST',
+    credentials: 'include',
+    body: JSON.stringify({ firstname: firstname, lastname: lastname, username: username, password: password }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports) {
+
+module.exports = require("react-meta-tags");
+
+/***/ }),
 /* 7 */
 /***/ (function(module, exports) {
 
@@ -137,13 +623,29 @@ module.exports = require("react-router");
 /* 8 */
 /***/ (function(module, exports) {
 
-module.exports = require("react-meta-tags");
+module.exports = require("react-router-bootstrap");
 
 /***/ }),
 /* 9 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = require("react-router-bootstrap");
+"use strict";
+
+
+module.exports = {
+  getImageUrl: function getImageUrl(id, maxHeight) {
+    if (maxHeight) {
+      return encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/images?id=' + id + '&targetHeight=' + maxHeight);
+    }
+    return encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/images?id=' + id);
+  },
+  convertFromDateToString: function convertFromDateToString(date) {
+    var d = date.getDate();
+    var m = date.getMonth() + 1;
+    var y = date.getFullYear();
+    return y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
+  }
+};
 
 /***/ }),
 /* 10 */
@@ -316,13 +818,13 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactDropzone = __webpack_require__(37);
+var _reactDropzone = __webpack_require__(39);
 
 var _reactDropzone2 = _interopRequireDefault(_reactDropzone);
 
 var _reactBootstrap = __webpack_require__(1);
 
-var _api = __webpack_require__(62);
+var _api = __webpack_require__(5);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -544,15 +1046,15 @@ var _reactPlayer = __webpack_require__(34);
 
 var _reactPlayer2 = _interopRequireDefault(_reactPlayer);
 
-var _auth = __webpack_require__(6);
+var _auth = __webpack_require__(4);
 
 var _auth2 = _interopRequireDefault(_auth);
 
 var _svgPathParser = __webpack_require__(19);
 
-var _reactRouterDom = __webpack_require__(4);
+var _reactRouterDom = __webpack_require__(2);
 
-var _util = __webpack_require__(71);
+var _util = __webpack_require__(9);
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -562,9 +1064,9 @@ var _objectFitImages = __webpack_require__(35);
 
 var _objectFitImages2 = _interopRequireDefault(_objectFitImages);
 
-var _reactFontawesome = __webpack_require__(5);
+var _reactFontawesome = __webpack_require__(3);
 
-var _api = __webpack_require__(62);
+var _api = __webpack_require__(5);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -923,75 +1425,75 @@ var _area = __webpack_require__(31);
 
 var _area2 = _interopRequireDefault(_area);
 
-var _areaEdit = __webpack_require__(36);
+var _areaEdit = __webpack_require__(38);
 
 var _areaEdit2 = _interopRequireDefault(_areaEdit);
 
-var _browse = __webpack_require__(38);
+var _browse = __webpack_require__(40);
 
 var _browse2 = _interopRequireDefault(_browse);
 
-var _ethics = __webpack_require__(39);
+var _ethics = __webpack_require__(41);
 
 var _ethics2 = _interopRequireDefault(_ethics);
 
-var _finder = __webpack_require__(40);
+var _finder = __webpack_require__(42);
 
 var _finder2 = _interopRequireDefault(_finder);
 
-var _index = __webpack_require__(41);
+var _index = __webpack_require__(43);
 
 var _index2 = _interopRequireDefault(_index);
 
-var _login = __webpack_require__(45);
+var _login = __webpack_require__(47);
 
 var _login2 = _interopRequireDefault(_login);
 
-var _logout = __webpack_require__(46);
+var _logout = __webpack_require__(48);
 
 var _logout2 = _interopRequireDefault(_logout);
 
-var _problem = __webpack_require__(47);
+var _problem = __webpack_require__(49);
 
 var _problem2 = _interopRequireDefault(_problem);
 
-var _problemEdit = __webpack_require__(49);
+var _problemEdit = __webpack_require__(51);
 
 var _problemEdit2 = _interopRequireDefault(_problemEdit);
 
-var _problemEditMedia = __webpack_require__(53);
+var _problemEditMedia = __webpack_require__(55);
 
 var _problemEditMedia2 = _interopRequireDefault(_problemEditMedia);
 
-var _recover = __webpack_require__(54);
+var _recover = __webpack_require__(56);
 
 var _recover2 = _interopRequireDefault(_recover);
 
-var _register = __webpack_require__(55);
+var _register = __webpack_require__(57);
 
 var _register2 = _interopRequireDefault(_register);
 
-var _sector = __webpack_require__(56);
+var _sector = __webpack_require__(58);
 
 var _sector2 = _interopRequireDefault(_sector);
 
-var _sectorEdit = __webpack_require__(57);
+var _sectorEdit = __webpack_require__(59);
 
 var _sectorEdit2 = _interopRequireDefault(_sectorEdit);
 
-var _svgEdit = __webpack_require__(58);
+var _svgEdit = __webpack_require__(60);
 
 var _svgEdit2 = _interopRequireDefault(_svgEdit);
 
-var _user = __webpack_require__(59);
+var _user = __webpack_require__(61);
 
 var _user2 = _interopRequireDefault(_user);
 
-var _userEdit = __webpack_require__(61);
+var _userEdit = __webpack_require__(63);
 
 var _userEdit2 = _interopRequireDefault(_userEdit);
 
-var _api = __webpack_require__(62);
+var _api = __webpack_require__(5);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1082,11 +1584,11 @@ var _reactInputCalendar = __webpack_require__(21);
 
 var _reactInputCalendar2 = _interopRequireDefault(_reactInputCalendar);
 
-var _reactFontawesome = __webpack_require__(5);
+var _reactFontawesome = __webpack_require__(3);
 
-var _api = __webpack_require__(62);
+var _api = __webpack_require__(5);
 
-var _util = __webpack_require__(71);
+var _util = __webpack_require__(9);
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -1397,7 +1899,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _server = __webpack_require__(26);
 
-var _reactRouterDom = __webpack_require__(4);
+var _reactRouterDom = __webpack_require__(2);
 
 var _reactCookie = __webpack_require__(16);
 
@@ -1495,7 +1997,7 @@ var _reactDom = __webpack_require__(17);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _reactRouterDom = __webpack_require__(4);
+var _reactRouterDom = __webpack_require__(2);
 
 var _reactLoadable = __webpack_require__(29);
 
@@ -1515,7 +2017,7 @@ var _navigation2 = _interopRequireDefault(_navigation);
 
 var _fontawesomeSvgCore = __webpack_require__(68);
 
-var _reactFontawesome = __webpack_require__(5);
+var _reactFontawesome = __webpack_require__(3);
 
 var _freeSolidSvgIcons = __webpack_require__(69);
 
@@ -1634,7 +2136,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactFontawesome = __webpack_require__(5);
+var _reactFontawesome = __webpack_require__(3);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1686,15 +2188,15 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactMetaTags = __webpack_require__(8);
+var _reactMetaTags = __webpack_require__(6);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
-var _reactRouterDom = __webpack_require__(4);
+var _reactRouterDom = __webpack_require__(2);
 
 var _reactBootstrap = __webpack_require__(1);
 
-var _reactRouterBootstrap = __webpack_require__(9);
+var _reactRouterBootstrap = __webpack_require__(8);
 
 var _map = __webpack_require__(10);
 
@@ -1704,11 +2206,11 @@ var _gallery = __webpack_require__(13);
 
 var _gallery2 = _interopRequireDefault(_gallery);
 
-var _auth = __webpack_require__(6);
+var _auth = __webpack_require__(4);
 
 var _auth2 = _interopRequireDefault(_auth);
 
-var _reactFontawesome = __webpack_require__(5);
+var _reactFontawesome = __webpack_require__(3);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2063,6 +2565,18 @@ module.exports = require("object-fit-images");
 
 /***/ }),
 /* 36 */
+/***/ (function(module, exports) {
+
+module.exports = require("isomorphic-fetch");
+
+/***/ }),
+/* 37 */
+/***/ (function(module, exports) {
+
+module.exports = require("es6-promise");
+
+/***/ }),
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2078,7 +2592,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactMetaTags = __webpack_require__(8);
+var _reactMetaTags = __webpack_require__(6);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
@@ -2092,13 +2606,13 @@ var _imageUpload2 = _interopRequireDefault(_imageUpload);
 
 var _reactGoogleMaps = __webpack_require__(11);
 
-var _auth = __webpack_require__(6);
+var _auth = __webpack_require__(4);
 
 var _auth2 = _interopRequireDefault(_auth);
 
-var _reactFontawesome = __webpack_require__(5);
+var _reactFontawesome = __webpack_require__(3);
 
-var _api = __webpack_require__(62);
+var _api = __webpack_require__(5);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2377,13 +2891,13 @@ var AreaEdit = function (_Component) {
 exports.default = AreaEdit;
 
 /***/ }),
-/* 37 */
+/* 39 */
 /***/ (function(module, exports) {
 
 module.exports = require("react-dropzone");
 
 /***/ }),
-/* 38 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2399,27 +2913,27 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactMetaTags = __webpack_require__(8);
+var _reactMetaTags = __webpack_require__(6);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
-var _reactRouterDom = __webpack_require__(4);
+var _reactRouterDom = __webpack_require__(2);
 
 var _reactBootstrap = __webpack_require__(1);
 
 var _reactBootstrapTable = __webpack_require__(14);
 
-var _reactRouterBootstrap = __webpack_require__(9);
+var _reactRouterBootstrap = __webpack_require__(8);
 
 var _map = __webpack_require__(10);
 
 var _map2 = _interopRequireDefault(_map);
 
-var _auth = __webpack_require__(6);
+var _auth = __webpack_require__(4);
 
 var _auth2 = _interopRequireDefault(_auth);
 
-var _reactFontawesome = __webpack_require__(5);
+var _reactFontawesome = __webpack_require__(3);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2635,7 +3149,7 @@ var Browse = function (_Component) {
 exports.default = Browse;
 
 /***/ }),
-/* 39 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2651,11 +3165,11 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactMetaTags = __webpack_require__(8);
+var _reactMetaTags = __webpack_require__(6);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
-var _reactRouterDom = __webpack_require__(4);
+var _reactRouterDom = __webpack_require__(2);
 
 var _reactBootstrap = __webpack_require__(1);
 
@@ -2812,7 +3326,7 @@ var Ethics = function (_Component) {
 exports.default = Ethics;
 
 /***/ }),
-/* 40 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2828,13 +3342,13 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactMetaTags = __webpack_require__(8);
+var _reactMetaTags = __webpack_require__(6);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
-var _reactRouterDom = __webpack_require__(4);
+var _reactRouterDom = __webpack_require__(2);
 
-var _reactRouterBootstrap = __webpack_require__(9);
+var _reactRouterBootstrap = __webpack_require__(8);
 
 var _map = __webpack_require__(10);
 
@@ -2844,7 +3358,7 @@ var _reactBootstrap = __webpack_require__(1);
 
 var _reactBootstrapTable = __webpack_require__(14);
 
-var _reactFontawesome = __webpack_require__(5);
+var _reactFontawesome = __webpack_require__(3);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3389,7 +3903,7 @@ var Finder = function (_Component) {
 exports.default = Finder;
 
 /***/ }),
-/* 41 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3405,27 +3919,27 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactMetaTags = __webpack_require__(8);
+var _reactMetaTags = __webpack_require__(6);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
-var _reactRouterDom = __webpack_require__(4);
+var _reactRouterDom = __webpack_require__(2);
 
 var _reactBootstrap = __webpack_require__(1);
 
-var _textbox = __webpack_require__(42);
+var _textbox = __webpack_require__(44);
 
 var _textbox2 = _interopRequireDefault(_textbox);
 
-var _imagebox = __webpack_require__(43);
+var _imagebox = __webpack_require__(45);
 
 var _imagebox2 = _interopRequireDefault(_imagebox);
 
-var _linkbox = __webpack_require__(44);
+var _linkbox = __webpack_require__(46);
 
 var _linkbox2 = _interopRequireDefault(_linkbox);
 
-var _reactFontawesome = __webpack_require__(5);
+var _reactFontawesome = __webpack_require__(3);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3664,7 +4178,7 @@ var Index = function (_Component) {
 exports.default = Index;
 
 /***/ }),
-/* 42 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3775,7 +4289,7 @@ var TextBox = function (_Component) {
 exports.default = TextBox;
 
 /***/ }),
-/* 43 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3791,11 +4305,11 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouterDom = __webpack_require__(4);
+var _reactRouterDom = __webpack_require__(2);
 
 var _reactBootstrap = __webpack_require__(1);
 
-var _util = __webpack_require__(71);
+var _util = __webpack_require__(9);
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -3889,7 +4403,7 @@ var ImageBox = function (_Component) {
 exports.default = ImageBox;
 
 /***/ }),
-/* 44 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3905,7 +4419,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouterDom = __webpack_require__(4);
+var _reactRouterDom = __webpack_require__(2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3978,7 +4492,7 @@ var LinkBox = function (_Component) {
 exports.default = LinkBox;
 
 /***/ }),
-/* 45 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3994,7 +4508,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactMetaTags = __webpack_require__(8);
+var _reactMetaTags = __webpack_require__(6);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
@@ -4002,19 +4516,19 @@ var _propTypes = __webpack_require__(15);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _reactRouterDom = __webpack_require__(4);
+var _reactRouterDom = __webpack_require__(2);
 
 var _reactRouter = __webpack_require__(7);
 
-var _reactRouterBootstrap = __webpack_require__(9);
+var _reactRouterBootstrap = __webpack_require__(8);
 
 var _reactBootstrap = __webpack_require__(1);
 
-var _auth = __webpack_require__(6);
+var _auth = __webpack_require__(4);
 
 var _auth2 = _interopRequireDefault(_auth);
 
-var _api = __webpack_require__(62);
+var _api = __webpack_require__(5);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4231,7 +4745,7 @@ Login.contextTypes = {
 };
 
 /***/ }),
-/* 46 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4247,7 +4761,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _auth = __webpack_require__(6);
+var _auth = __webpack_require__(4);
 
 var _auth2 = _interopRequireDefault(_auth);
 
@@ -4292,7 +4806,7 @@ var Logout = function (_Component) {
 exports.default = Logout;
 
 /***/ }),
-/* 47 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4308,11 +4822,11 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactMetaTags = __webpack_require__(8);
+var _reactMetaTags = __webpack_require__(6);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
-var _reactRouterDom = __webpack_require__(4);
+var _reactRouterDom = __webpack_require__(2);
 
 var _map = __webpack_require__(10);
 
@@ -4322,11 +4836,11 @@ var _gallery = __webpack_require__(13);
 
 var _gallery2 = _interopRequireDefault(_gallery);
 
-var _reactRouterBootstrap = __webpack_require__(9);
+var _reactRouterBootstrap = __webpack_require__(8);
 
 var _reactBootstrap = __webpack_require__(1);
 
-var _auth = __webpack_require__(6);
+var _auth = __webpack_require__(4);
 
 var _auth2 = _interopRequireDefault(_auth);
 
@@ -4334,11 +4848,11 @@ var _tickModal = __webpack_require__(20);
 
 var _tickModal2 = _interopRequireDefault(_tickModal);
 
-var _commentModal = __webpack_require__(48);
+var _commentModal = __webpack_require__(50);
 
 var _commentModal2 = _interopRequireDefault(_commentModal);
 
-var _reactFontawesome = __webpack_require__(5);
+var _reactFontawesome = __webpack_require__(3);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -5006,7 +5520,7 @@ var Problem = function (_Component) {
 exports.default = Problem;
 
 /***/ }),
-/* 48 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5024,7 +5538,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactBootstrap = __webpack_require__(1);
 
-var _api = __webpack_require__(62);
+var _api = __webpack_require__(5);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -5137,7 +5651,7 @@ var CommentModal = function (_Component) {
 exports.default = CommentModal;
 
 /***/ }),
-/* 49 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5153,11 +5667,11 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactMetaTags = __webpack_require__(8);
+var _reactMetaTags = __webpack_require__(6);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
-var _reactRouterDom = __webpack_require__(4);
+var _reactRouterDom = __webpack_require__(2);
 
 var _reactRouter = __webpack_require__(7);
 
@@ -5165,11 +5679,11 @@ var _reactBootstrap = __webpack_require__(1);
 
 var _reactGoogleMaps = __webpack_require__(11);
 
-var _userSelector = __webpack_require__(50);
+var _userSelector = __webpack_require__(52);
 
 var _userSelector2 = _interopRequireDefault(_userSelector);
 
-var _problemSection = __webpack_require__(52);
+var _problemSection = __webpack_require__(54);
 
 var _problemSection2 = _interopRequireDefault(_problemSection);
 
@@ -5177,7 +5691,7 @@ var _imageUpload = __webpack_require__(12);
 
 var _imageUpload2 = _interopRequireDefault(_imageUpload);
 
-var _auth = __webpack_require__(6);
+var _auth = __webpack_require__(4);
 
 var _auth2 = _interopRequireDefault(_auth);
 
@@ -5185,11 +5699,11 @@ var _reactInputCalendar = __webpack_require__(21);
 
 var _reactInputCalendar2 = _interopRequireDefault(_reactInputCalendar);
 
-var _reactFontawesome = __webpack_require__(5);
+var _reactFontawesome = __webpack_require__(3);
 
-var _api = __webpack_require__(62);
+var _api = __webpack_require__(5);
 
-var _util = __webpack_require__(71);
+var _util = __webpack_require__(9);
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -5654,7 +6168,7 @@ var ProblemEdit = function (_Component) {
 exports.default = ProblemEdit;
 
 /***/ }),
-/* 50 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5672,11 +6186,11 @@ var _propTypes = __webpack_require__(15);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _Creatable = __webpack_require__(51);
+var _Creatable = __webpack_require__(53);
 
 var _Creatable2 = _interopRequireDefault(_Creatable);
 
-var _api = __webpack_require__(62);
+var _api = __webpack_require__(5);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -5729,13 +6243,13 @@ var UserSelector = (0, _createReactClass2.default)({
 module.exports = UserSelector;
 
 /***/ }),
-/* 51 */
+/* 53 */
 /***/ (function(module, exports) {
 
 module.exports = require("react-select/lib/Creatable");
 
 /***/ }),
-/* 52 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5965,7 +6479,7 @@ var ProblemSection = (0, _createReactClass2.default)({
 module.exports = ProblemSection;
 
 /***/ }),
-/* 53 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5981,7 +6495,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouterDom = __webpack_require__(4);
+var _reactRouterDom = __webpack_require__(2);
 
 var _reactRouter = __webpack_require__(7);
 
@@ -5991,13 +6505,13 @@ var _imageUpload = __webpack_require__(12);
 
 var _imageUpload2 = _interopRequireDefault(_imageUpload);
 
-var _auth = __webpack_require__(6);
+var _auth = __webpack_require__(4);
 
 var _auth2 = _interopRequireDefault(_auth);
 
-var _reactFontawesome = __webpack_require__(5);
+var _reactFontawesome = __webpack_require__(3);
 
-var _api = __webpack_require__(62);
+var _api = __webpack_require__(5);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -6144,7 +6658,7 @@ var ProblemEditMedia = function (_Component) {
 exports.default = ProblemEditMedia;
 
 /***/ }),
-/* 54 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6160,23 +6674,23 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactMetaTags = __webpack_require__(8);
+var _reactMetaTags = __webpack_require__(6);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
-var _reactRouterDom = __webpack_require__(4);
+var _reactRouterDom = __webpack_require__(2);
 
 var _reactRouter = __webpack_require__(7);
 
 var _reactBootstrap = __webpack_require__(1);
 
-var _auth = __webpack_require__(6);
+var _auth = __webpack_require__(4);
 
 var _auth2 = _interopRequireDefault(_auth);
 
-var _reactFontawesome = __webpack_require__(5);
+var _reactFontawesome = __webpack_require__(3);
 
-var _api = __webpack_require__(62);
+var _api = __webpack_require__(5);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -6353,7 +6867,7 @@ var Recover = function (_Component) {
 exports.default = Recover;
 
 /***/ }),
-/* 55 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6369,21 +6883,21 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactMetaTags = __webpack_require__(8);
+var _reactMetaTags = __webpack_require__(6);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
-var _reactRouterDom = __webpack_require__(4);
+var _reactRouterDom = __webpack_require__(2);
 
 var _reactRouter = __webpack_require__(7);
 
 var _reactBootstrap = __webpack_require__(1);
 
-var _auth = __webpack_require__(6);
+var _auth = __webpack_require__(4);
 
 var _auth2 = _interopRequireDefault(_auth);
 
-var _api = __webpack_require__(62);
+var _api = __webpack_require__(5);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -6678,7 +7192,7 @@ var Register = function (_Component) {
 exports.default = Register;
 
 /***/ }),
-/* 56 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6694,11 +7208,11 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactMetaTags = __webpack_require__(8);
+var _reactMetaTags = __webpack_require__(6);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
-var _reactRouterDom = __webpack_require__(4);
+var _reactRouterDom = __webpack_require__(2);
 
 var _map = __webpack_require__(10);
 
@@ -6710,13 +7224,13 @@ var _gallery2 = _interopRequireDefault(_gallery);
 
 var _reactBootstrap = __webpack_require__(1);
 
-var _reactRouterBootstrap = __webpack_require__(9);
+var _reactRouterBootstrap = __webpack_require__(8);
 
-var _auth = __webpack_require__(6);
+var _auth = __webpack_require__(4);
 
 var _auth2 = _interopRequireDefault(_auth);
 
-var _reactFontawesome = __webpack_require__(5);
+var _reactFontawesome = __webpack_require__(3);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -7265,7 +7779,7 @@ var Sector = function (_Component2) {
 exports.default = Sector;
 
 /***/ }),
-/* 57 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7281,11 +7795,11 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactMetaTags = __webpack_require__(8);
+var _reactMetaTags = __webpack_require__(6);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
-var _reactRouterDom = __webpack_require__(4);
+var _reactRouterDom = __webpack_require__(2);
 
 var _reactRouter = __webpack_require__(7);
 
@@ -7297,13 +7811,13 @@ var _imageUpload = __webpack_require__(12);
 
 var _imageUpload2 = _interopRequireDefault(_imageUpload);
 
-var _auth = __webpack_require__(6);
+var _auth = __webpack_require__(4);
 
 var _auth2 = _interopRequireDefault(_auth);
 
-var _reactFontawesome = __webpack_require__(5);
+var _reactFontawesome = __webpack_require__(3);
 
-var _api = __webpack_require__(62);
+var _api = __webpack_require__(5);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -7617,7 +8131,7 @@ var SectorEdit = function (_Component) {
 exports.default = SectorEdit;
 
 /***/ }),
-/* 58 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7637,7 +8151,7 @@ var _reactDom = __webpack_require__(17);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _reactRouterDom = __webpack_require__(4);
+var _reactRouterDom = __webpack_require__(2);
 
 var _reactBootstrap = __webpack_require__(1);
 
@@ -7645,13 +8159,13 @@ var _svgPathParser = __webpack_require__(19);
 
 var _reactRouter = __webpack_require__(7);
 
-var _reactFontawesome = __webpack_require__(5);
+var _reactFontawesome = __webpack_require__(3);
 
-var _util = __webpack_require__(71);
+var _util = __webpack_require__(9);
 
 var _util2 = _interopRequireDefault(_util);
 
-var _api = __webpack_require__(62);
+var _api = __webpack_require__(5);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -8208,7 +8722,7 @@ var SvgEdit = function (_Component) {
 exports.default = SvgEdit;
 
 /***/ }),
-/* 59 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8224,19 +8738,19 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactMetaTags = __webpack_require__(8);
+var _reactMetaTags = __webpack_require__(6);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
-var _reactRouterDom = __webpack_require__(4);
+var _reactRouterDom = __webpack_require__(2);
 
-var _reactRouterBootstrap = __webpack_require__(9);
+var _reactRouterBootstrap = __webpack_require__(8);
 
 var _reactBootstrap = __webpack_require__(1);
 
 var _reactBootstrapTable = __webpack_require__(14);
 
-var _chart = __webpack_require__(60);
+var _chart = __webpack_require__(62);
 
 var _chart2 = _interopRequireDefault(_chart);
 
@@ -8244,11 +8758,11 @@ var _tickModal = __webpack_require__(20);
 
 var _tickModal2 = _interopRequireDefault(_tickModal);
 
-var _auth = __webpack_require__(6);
+var _auth = __webpack_require__(4);
 
 var _auth2 = _interopRequireDefault(_auth);
 
-var _reactFontawesome = __webpack_require__(5);
+var _reactFontawesome = __webpack_require__(3);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -8635,7 +9149,7 @@ var User = function (_Component) {
 exports.default = User;
 
 /***/ }),
-/* 60 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8782,7 +9296,7 @@ var Chart = function (_Component) {
 exports.default = Chart;
 
 /***/ }),
-/* 61 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8798,19 +9312,19 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouterDom = __webpack_require__(4);
+var _reactRouterDom = __webpack_require__(2);
 
 var _reactRouter = __webpack_require__(7);
 
 var _reactBootstrap = __webpack_require__(1);
 
-var _auth = __webpack_require__(6);
+var _auth = __webpack_require__(4);
 
 var _auth2 = _interopRequireDefault(_auth);
 
-var _reactFontawesome = __webpack_require__(5);
+var _reactFontawesome = __webpack_require__(3);
 
-var _api = __webpack_require__(62);
+var _api = __webpack_require__(5);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -9140,494 +9654,6 @@ var UserEdit = function (_Component) {
 exports.default = UserEdit;
 
 /***/ }),
-/* 62 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.deleteMedia = deleteMedia;
-exports.getArea = getArea;
-exports.getAreaEdit = getAreaEdit;
-exports.getBrowse = getBrowse;
-exports.getFinder = getFinder;
-exports.getFrontpage = getFrontpage;
-exports.getGrades = getGrades;
-exports.getMeta = getMeta;
-exports.getProblem = getProblem;
-exports.getProblemEditMedia = getProblemEditMedia;
-exports.getProblemEdit = getProblemEdit;
-exports.getSector = getSector;
-exports.getSectorEdit = getSectorEdit;
-exports.getSvgEdit = getSvgEdit;
-exports.getUser = getUser;
-exports.getUserEdit = getUserEdit;
-exports.getUserSearch = getUserSearch;
-exports.getUserPassword = getUserPassword;
-exports.getUserForgotPassword = getUserForgotPassword;
-exports.postArea = postArea;
-exports.postComment = postComment;
-exports.postProblem = postProblem;
-exports.postProblemMedia = postProblemMedia;
-exports.postProblemSvg = postProblemSvg;
-exports.postSearch = postSearch;
-exports.postSector = postSector;
-exports.postTicks = postTicks;
-exports.postUserEdit = postUserEdit;
-exports.postUserRegister = postUserRegister;
-
-var _isomorphicFetch = __webpack_require__(63);
-
-var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
-
-var _util = __webpack_require__(71);
-
-var _util2 = _interopRequireDefault(_util);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-__webpack_require__(70).polyfill();
-function deleteMedia(id) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/media?id=' + id), {
-    mode: 'cors',
-    method: 'DELETE',
-    credentials: 'include'
-  });
-}
-
-function getArea(id) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/areas?id=' + id), { credentials: 'include' }).then(function (data) {
-    return data.json();
-  }).catch(function (error) {
-    console.warn(error);
-    return null;
-  });
-}
-
-function getAreaEdit(id) {
-  if (id === -1) {
-    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta')).then(function (data) {
-      return data.json();
-    }).then(function (res) {
-      return { id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: { title: 'New area | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter } };
-    }).catch(function (error) {
-      console.warn(error);
-      return null;
-    });
-  } else {
-    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/areas?id=' + id), { credentials: 'include' }).then(function (data) {
-      return data.json();
-    }).then(function (res) {
-      return { id: res.id, visibility: res.visibility, name: res.name, comment: res.comment, lat: res.lat, lng: res.lng, newMedia: [], metadata: res.metadata };
-    }).catch(function (error) {
-      console.warn(error);
-      return null;
-    });
-  }
-}
-
-function getBrowse() {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/browse'), { credentials: 'include' }).then(function (data) {
-    return data.json();
-  }).catch(function (error) {
-    console.warn(error);
-    return null;
-  });
-}
-
-function getFinder(grade) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/finder?grade=' + grade), { credentials: 'include' }).then(function (data) {
-    return data.json();
-  }).catch(function (error) {
-    console.warn(error);
-    return null;
-  });
-}
-
-function getFrontpage() {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/frontpage'), { credentials: 'include' }).then(function (data) {
-    return data.json();
-  }).catch(function (error) {
-    console.warn(error);
-    return null;
-  });
-}
-
-function getGrades() {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/grades')).then(function (data) {
-    return data.json();
-  }).catch(function (error) {
-    console.warn(error);
-    return null;
-  });
-}
-
-function getMeta() {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta')).then(function (data) {
-    return data.json();
-  }).catch(function (error) {
-    console.warn(error);
-    return null;
-  });
-}
-
-function getProblem(id) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/problems?id=' + id), { credentials: 'include' }).then(function (data) {
-    return data.json();
-  }).then(function (json) {
-    return json[0];
-  }).catch(function (error) {
-    console.warn(error);
-    return null;
-  });
-}
-
-function getProblemEditMedia(id) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/problems?id=' + id), { credentials: 'include' }).then(function (data) {
-    return data.json();
-  }).then(function (json) {
-    return json[0];
-  }).then(function (res) {
-    return { id: res.id, newMedia: [] };
-  }).catch(function (error) {
-    console.warn(error);
-    return null;
-  });
-}
-
-function getProblemEdit(id) {
-  if (id === -1) {
-    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta')).then(function (data) {
-      return data.json();
-    }).then(function (res) {
-      return { id: -1, visibility: 0, name: '', comment: '', originalGrade: 'n/a', fa: [], faDate: _util2.default.convertFromDateToString(new Date()), nr: 0, lat: 0, lng: 0, newMedia: [], metadata: { title: 'New problem | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, grades: res.metadata.grades, types: res.metadata.types } };
-    }).catch(function (error) {
-      console.warn(error);
-      return null;
-    });
-  } else {
-    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/problems?id=' + id), { credentials: 'include' }).then(function (data) {
-      return data.json();
-    }).then(function (res) {
-      return { id: res.id, visibility: res.visibility, name: res.name, comment: res.comment, originalGrade: res.originalGrade, fa: res.fa, faDate: res.faDate, nr: res.nr, typeId: res.t.id, lat: res.lat, lng: res.lng, sections: res.sections, metadata: res.metadata };
-    }).catch(function (error) {
-      console.warn(error);
-      return null;
-    });
-  }
-}
-
-function getSector(id) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/sectors?id=' + id), { credentials: 'include' }).then(function (data) {
-    return data.json();
-  }).catch(function (error) {
-    console.warn(error);
-    return null;
-  });
-}
-
-function getSectorEdit(id) {
-  if (id === -1) {
-    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta')).then(function (data) {
-      return data.json();
-    }).then(function (res) {
-      return { id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: { title: 'New sector | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter } };
-    }).catch(function (error) {
-      console.warn(error);
-      return null;
-    });
-  } else {
-    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/sectors?id=' + id), { credentials: 'include' }).then(function (data) {
-      return data.json();
-    }).then(function (res) {
-      return { id: res.id, visibility: res.visibility, name: res.name, comment: res.comment, lat: res.lat, lng: res.lng, newMedia: [], metadata: res.metadata };
-    }).catch(function (error) {
-      console.warn(error);
-      return null;
-    });
-  }
-}
-
-function getSvgEdit(problemId, mediaId) {
-  var _this = this;
-
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/problems?id=' + problemId), { credentials: 'include' }).then(function (data) {
-    return data.json();
-  }).then(function (json) {
-    return json[0];
-  }).then(function (res) {
-    var m = res.body[0].media.filter(function (x) {
-      return x.id == mediaId;
-    })[0];
-    var readOnlySvgs = [];
-    var svgId = 0;
-    var points = [];
-    if (m.svgs) {
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
-
-      try {
-        for (var _iterator = m.svgs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var svg = _step.value;
-
-          if (svg.problemId === res.body[0].id) {
-            svgId = svg.id;
-            points = _this.parsePath(svg.path);
-          } else {
-            readOnlySvgs.push({ nr: svg.nr, hasAnchor: svg.hasAnchor, path: svg.path });
-          }
-        }
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator.return) {
-            _iterator.return();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
-        }
-      }
-    }
-    return {
-      mediaId: m.id,
-      nr: res.nr,
-      w: m.width,
-      h: m.height,
-      ctrl: false,
-      svgId: svgId,
-      points: points,
-      readOnlySvgs: readOnlySvgs,
-      activePoint: 0,
-      draggedPoint: false,
-      draggedCubic: false,
-      hasAnchor: true,
-      areaId: res.areaId,
-      areaName: res.areaName,
-      areaVisibility: res.areaVisibility,
-      sectorId: res.sectorId,
-      sectorName: res.sectorName,
-      sectorVisibility: res.sectorVisibility,
-      id: res.id,
-      name: res.name,
-      grade: res.grade,
-      visibility: res.visibility
-    };
-  }).catch(function (error) {
-    console.warn(error);
-    return null;
-  });
-}
-
-function getUser(id) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users?id=' + id), { credentials: 'include' }).then(function (data) {
-    return data.json();
-  }).catch(function (error) {
-    console.warn(error);
-    return null;
-  });
-}
-
-function getUserEdit(id) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/edit?id=' + id), { credentials: 'include' }).then(function (data) {
-    return data.json();
-  }).then(function (res) {
-    return { id: res.id, username: res.username, firstname: res.firstname, lastname: res.lastname, currentPassword: null, newPassword: null, newPassword2: null, message: null };
-  }).catch(function (error) {
-    console.warn(error);
-    return null;
-  });
-}
-
-function getUserSearch(value) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/search?value=' + value)).then(function (data) {
-    return data.json();
-  }).catch(function (error) {
-    console.warn(error);
-    return null;
-  });
-}
-
-function getUserPassword(token, password) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/password?token=' + token + '&password=' + password));
-}
-
-function getUserForgotPassword(username) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/forgotPassword?username=' + username));
-}
-
-function postArea(id, visibility, name, comment, lat, lng, newMedia) {
-  var formData = new FormData();
-  formData.append('json', JSON.stringify({ id: id, visibility: visibility, name: name, comment: comment, lat: lat, lng: lng, newMedia: newMedia }));
-  newMedia.forEach(function (m) {
-    return formData.append(m.file.name.replace(/[^-a-z0-9.]/ig, '_'), m.file);
-  });
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/areas'), {
-    mode: 'cors',
-    method: 'POST',
-    credentials: 'include',
-    body: formData,
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    }
-  }).then(function (data) {
-    return data.json();
-  });
-}
-
-function postComment(idProblem, comment) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/comments'), {
-    mode: 'cors',
-    method: 'POST',
-    credentials: 'include',
-    body: JSON.stringify({ idProblem: idProblem, comment: comment }),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
-}
-
-function postProblem(sectorId, id, visibility, name, comment, originalGrade, fa, faDate, nr, t, lat, lng, sections, newMedia) {
-  var formData = new FormData();
-  formData.append('json', JSON.stringify({ sectorId: sectorId, id: id, visibility: visibility, name: name, comment: comment, originalGrade: originalGrade, fa: fa, faDate: faDate, nr: nr, t: t, lat: lat, lng: lng, sections: sections, newMedia: newMedia }));
-  newMedia.forEach(function (m) {
-    return formData.append(m.file.name.replace(/[^-a-z0-9.]/ig, '_'), m.file);
-  });
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/problems'), {
-    mode: 'cors',
-    method: 'POST',
-    credentials: 'include',
-    body: formData,
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    }
-  }).then(function (data) {
-    return data.json();
-  });
-}
-
-function postProblemMedia(id, newMedia) {
-  var formData = new FormData();
-  formData.append('json', JSON.stringify({ id: id, newMedia: newMedia }));
-  newMedia.forEach(function (m) {
-    return formData.append(m.file.name.replace(/[^-a-z0-9.]/ig, '_'), m.file);
-  });
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/problems/media'), {
-    mode: 'cors',
-    method: 'POST',
-    credentials: 'include',
-    body: formData,
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    }
-  }).then(function (data) {
-    return data.json();
-  });
-}
-
-function postProblemSvg(problemId, mediaId, del, id, path, hasAnchor) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/problems/svg?problemId=' + problemId + '&mediaId=' + mediaId), {
-    mode: 'cors',
-    method: 'POST',
-    credentials: 'include',
-    body: JSON.stringify({ delete: del, id: id, path: path, hasAnchor: hasAnchor }),
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    }
-  }).then(function (data) {
-    return data.json();
-  });
-}
-
-function postSearch(value) {
-  return (0, _isomorphicFetch2.default)("https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/search", {
-    mode: 'cors',
-    method: 'POST',
-    credentials: 'include',
-    body: JSON.stringify({ value: value }),
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    }
-  }).then(function (data) {
-    return data.json();
-  });
-}
-
-function postSector(areaId, id, visibility, name, comment, lat, lng, newMedia) {
-  var formData = new FormData();
-  formData.append('json', JSON.stringify({ areaId: areaId, id: id, visibility: visibility, name: name, comment: comment, lat: lat, lng: lng, newMedia: newMedia }));
-  newMedia.forEach(function (m) {
-    return formData.append(m.file.name.replace(/[^-a-z0-9.]/ig, '_'), m.file);
-  });
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/sectors'), {
-    mode: 'cors',
-    method: 'POST',
-    credentials: 'include',
-    body: formData,
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    }
-  }).then(function (data) {
-    return data.json();
-  });
-}
-
-function postTicks(del, id, idProblem, comment, date, stars, grade) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/ticks'), {
-    mode: 'cors',
-    method: 'POST',
-    credentials: 'include',
-    body: JSON.stringify({ delete: del, id: id, idProblem: idProblem, comment: comment, date: date, stars: stars, grade: grade }),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
-}
-
-function postUserEdit(id, username, firstname, lastname, currentPassword, newPassword) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/edit'), {
-    mode: 'cors',
-    method: 'POST',
-    credentials: 'include',
-    body: JSON.stringify({ id: id, username: username, firstname: firstname, lastname: lastname, currentPassword: currentPassword, newPassword: newPassword }),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
-}
-
-function postUserRegister(firstname, lastname, username, password) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/register'), {
-    mode: 'cors',
-    method: 'POST',
-    credentials: 'include',
-    body: JSON.stringify({ firstname: firstname, lastname: lastname, username: username, password: password }),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
-}
-
-/***/ }),
-/* 63 */
-/***/ (function(module, exports) {
-
-module.exports = require("isomorphic-fetch");
-
-/***/ }),
 /* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -9646,9 +9672,9 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactBootstrap = __webpack_require__(1);
 
-var _reactRouterBootstrap = __webpack_require__(9);
+var _reactRouterBootstrap = __webpack_require__(8);
 
-var _auth = __webpack_require__(6);
+var _auth = __webpack_require__(4);
 
 var _auth2 = _interopRequireDefault(_auth);
 
@@ -9664,9 +9690,9 @@ var _reactAvatar = __webpack_require__(67);
 
 var _reactAvatar2 = _interopRequireDefault(_reactAvatar);
 
-var _reactFontawesome = __webpack_require__(5);
+var _reactFontawesome = __webpack_require__(3);
 
-var _api = __webpack_require__(62);
+var _api = __webpack_require__(5);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -9992,34 +10018,6 @@ module.exports = require("@fortawesome/fontawesome-svg-core");
 /***/ (function(module, exports) {
 
 module.exports = require("@fortawesome/free-solid-svg-icons");
-
-/***/ }),
-/* 70 */
-/***/ (function(module, exports) {
-
-module.exports = require("es6-promise");
-
-/***/ }),
-/* 71 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = {
-  getImageUrl: function getImageUrl(id, maxHeight) {
-    if (maxHeight) {
-      return encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/images?id=' + id + '&targetHeight=' + maxHeight);
-    }
-    return encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/images?id=' + id);
-  },
-  convertFromDateToString: function convertFromDateToString(date) {
-    var d = date.getDate();
-    var m = date.getMonth() + 1;
-    var y = date.getFullYear();
-    return y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
-  }
-};
 
 /***/ })
 /******/ ]);

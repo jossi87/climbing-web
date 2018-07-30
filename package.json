@@ -67,7 +67,7 @@
     "universal-cookie-express": "^2.2.0"
   },
   "scripts": {
-    "dev1": "webpack -w",
-    "dev2": "nodemon server.js"
+    "dev-build": "webpack -w",
+    "dev-server": "nodemon server.js"
   }
 }
