@@ -6,7 +6,7 @@ import { components } from 'react-select';
 import { Redirect } from 'react-router';
 import Avatar from 'react-avatar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { getGrades, getUserLogin, postSearch } from './../api';
+import { getMeta, postSearch, getUserLogin } from './../api';
 
 const CustomOption = (props) => {
   var bg = "#4caf50";
@@ -31,18 +31,15 @@ export default class Navigation extends Component {
     this.state = {
       logo: '/png/buldreinfo_logo_gray.png'
     };
+    getMeta().then((meta) => this.setState(() => ({grades: meta.metadata.grades})));
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentDidMount(nextProps) {
     this.setState({pushUrl: null});
   }
 
-  componentWillMount() {
-    getUserLogin().then((permissions) => this.setState(() => ({permissions})));
-  }
-
   componentDidMount() {
-    getGrades().then((grades) => this.setState({grades}));
+    getUserLogin().then((permissions) => this.setState(() => ({isAuthenticated: permissions.isAuthenticated}))); // TODO REMOVE
   }
 
   hoverImage(hover) {
@@ -71,6 +68,7 @@ export default class Navigation extends Component {
     if (this.state && this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
     }
+    console.log(this.state);
     return (
       <Navbar inverse>
         <Navbar.Header>
@@ -87,7 +85,7 @@ export default class Navigation extends Component {
               <NavItem eventKey={1}>Browse</NavItem>
             </LinkContainer>
             <NavDropdown eventKey={2} title="Finder" id='basic-nav-dropdown'>
-              {this.state.permissions && this.state.permissions.isAdmin && <LinkContainer to="/finder/-1"><MenuItem eventKey={2.0}>Grade: <strong>superadmin</strong></MenuItem></LinkContainer>}
+              {this.state && this.state.isAuthenticated && <LinkContainer to="/finder/-1"><MenuItem eventKey={2.0}>Grade: <strong>superadmin</strong></MenuItem></LinkContainer>}
               {this.state && this.state.grades && this.state.grades.map((g, i) => { return <LinkContainer key={"2." + i} to={"/finder/" + g.id}><MenuItem eventKey={"3." + i}>Grade: <strong>{g.grade}</strong></MenuItem></LinkContainer> })}
             </NavDropdown>
           </Nav>
@@ -109,7 +107,7 @@ export default class Navigation extends Component {
           </Navbar.Form>
 
           <Nav pullRight>
-            {this.state.permissions?
+            {this.state.isAuthenticated?
               <NavDropdown eventKey={4} title="Logged in" id='basic-nav-dropdown'>
                 <LinkContainer to="/user"><MenuItem eventKey={4.1}>My profile</MenuItem></LinkContainer>
                 <MenuItem divider />

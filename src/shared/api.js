@@ -70,15 +70,6 @@ export function getFrontpage() {
     });
 }
 
-export function getGrades() {
-  return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/grades`))
-    .then((data) => data.json())
-    .catch((error) => {
-      console.warn(error);
-      return null;
-    });
-}
-
 export function getLogout() {
   return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/logout`))
     .then((data) => data.json())
@@ -273,6 +264,7 @@ export function getUserLogin(username = "", password = "") {
     }
     if (isAuthenticated) {
       return {
+        isAuthenticated: isAuthenticated,
         isAdmin: isAdmin,
         isSuperadmin: isSuperadmin
       };
