@@ -4,6 +4,7 @@ import {Route,  Switch} from 'react-router-dom';
 import Loading from './components/common/loading/loading';
 import routes from './routes';
 import Navigation from './components/navigation';
+import ReactGA from 'react-ga';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -25,9 +26,21 @@ library.add(faTrash);
 library.add(faUserSecret);
 library.add(faVideo);
 
+if (__isBrowser__) {
+  ReactGA.initialize('UA-76534258-1');
+}
+
+function Analytics(props) {
+  if (__isBrowser__) {
+    ReactGA.set({ page: props.location.pathname + props.location.search });
+    ReactGA.pageview(props.location.pathname + props.location.search);
+  }
+  return null;
+};
+
 class App extends Component {
-  // Temp fix to collapse nav-button on devices: https://github.com/lefant/react-bootstrap/commit/c68b46baea + https://github.com/react-bootstrap/react-router-bootstrap/issues/112#issuecomment-142599003
   componentDidMount() {
+    // Temp fix to collapse nav-button on devices: https://github.com/lefant/react-bootstrap/commit/c68b46baea + https://github.com/react-bootstrap/react-router-bootstrap/issues/112#issuecomment-142599003
     const navBar = ReactDOM.findDOMNode(this).querySelector('nav.navbar');
     const collapsibleNav = navBar.querySelector('div.navbar-collapse');
     const btnToggle = navBar.querySelector('button.navbar-toggle');
@@ -45,6 +58,7 @@ class App extends Component {
       <span>
         <Navigation/>
         <div className="container">
+          <Route path="/" component={Analytics}/>
           <Switch>
             {routes.map(({ path, exact, component: Component, ...rest }) => (
               <Route key={path} path={path} exact={exact} render={(props) => (

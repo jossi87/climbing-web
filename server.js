@@ -2030,11 +2030,15 @@ var _navigation = __webpack_require__(61);
 
 var _navigation2 = _interopRequireDefault(_navigation);
 
-var _fontawesomeSvgCore = __webpack_require__(65);
+var _reactGa = __webpack_require__(65);
+
+var _reactGa2 = _interopRequireDefault(_reactGa);
+
+var _fontawesomeSvgCore = __webpack_require__(66);
 
 var _reactFontawesome = __webpack_require__(3);
 
-var _freeSolidSvgIcons = __webpack_require__(66);
+var _freeSolidSvgIcons = __webpack_require__(67);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2064,6 +2068,18 @@ _fontawesomeSvgCore.library.add(_freeSolidSvgIcons.faTrash);
 _fontawesomeSvgCore.library.add(_freeSolidSvgIcons.faUserSecret);
 _fontawesomeSvgCore.library.add(_freeSolidSvgIcons.faVideo);
 
+if (false) {
+  _reactGa2.default.initialize('UA-76534258-1');
+}
+
+function Analytics(props) {
+  if (false) {
+    _reactGa2.default.set({ page: props.location.pathname + props.location.search });
+    _reactGa2.default.pageview(props.location.pathname + props.location.search);
+  }
+  return null;
+};
+
 var App = function (_Component) {
   _inherits(App, _Component);
 
@@ -2075,9 +2091,8 @@ var App = function (_Component) {
 
   _createClass(App, [{
     key: 'componentDidMount',
-
-    // Temp fix to collapse nav-button on devices: https://github.com/lefant/react-bootstrap/commit/c68b46baea + https://github.com/react-bootstrap/react-router-bootstrap/issues/112#issuecomment-142599003
     value: function componentDidMount() {
+      // Temp fix to collapse nav-button on devices: https://github.com/lefant/react-bootstrap/commit/c68b46baea + https://github.com/react-bootstrap/react-router-bootstrap/issues/112#issuecomment-142599003
       var navBar = _reactDom2.default.findDOMNode(this).querySelector('nav.navbar');
       var collapsibleNav = navBar.querySelector('div.navbar-collapse');
       var btnToggle = navBar.querySelector('button.navbar-toggle');
@@ -2099,6 +2114,7 @@ var App = function (_Component) {
         _react2.default.createElement(
           'div',
           { className: 'container' },
+          _react2.default.createElement(_reactRouterDom.Route, { path: '/', component: Analytics }),
           _react2.default.createElement(
             _reactRouterDom.Switch,
             null,
@@ -9905,10 +9921,16 @@ module.exports = require("react-avatar");
 /* 65 */
 /***/ (function(module, exports) {
 
-module.exports = require("@fortawesome/fontawesome-svg-core");
+module.exports = require("react-ga");
 
 /***/ }),
 /* 66 */
+/***/ (function(module, exports) {
+
+module.exports = require("@fortawesome/fontawesome-svg-core");
+
+/***/ }),
+/* 67 */
 /***/ (function(module, exports) {
 
 module.exports = require("@fortawesome/free-solid-svg-icons");
