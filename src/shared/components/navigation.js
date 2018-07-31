@@ -6,7 +6,7 @@ import { components } from 'react-select';
 import { Redirect } from 'react-router';
 import Avatar from 'react-avatar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { getMeta, postSearch, getUserLogin } from './../api';
+import { getMeta, postSearch } from './../api';
 
 const CustomOption = (props) => {
   var bg = "#4caf50";
@@ -31,15 +31,11 @@ export default class Navigation extends Component {
     this.state = {
       logo: '/png/buldreinfo_logo_gray.png'
     };
-    getMeta().then((meta) => this.setState(() => ({grades: meta.metadata.grades})));
+    getMeta().then((meta) => this.setState(() => ({grades: meta.metadata.grades, isAuthenticated: meta.metadata.isAuthenticated})));
   }
 
   componentDidMount(nextProps) {
     this.setState({pushUrl: null});
-  }
-
-  componentDidMount() {
-    getUserLogin().then((permissions) => this.setState(() => ({isAuthenticated: permissions.isAuthenticated}))); // TODO REMOVE
   }
 
   hoverImage(hover) {
@@ -68,7 +64,6 @@ export default class Navigation extends Component {
     if (this.state && this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
     }
-    console.log(this.state);
     return (
       <Navbar inverse>
         <Navbar.Header>

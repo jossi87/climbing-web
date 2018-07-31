@@ -157,11 +157,11 @@ function getArea(id) {
 }
 
 function getAreaEdit(id) {
-  if (id === -1) {
+  if (id == -1) {
     return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta')).then(function (data) {
       return data.json();
     }).then(function (res) {
-      return { id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: { title: 'New area | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter } };
+      return { id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: { title: 'New area | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, isAdmin: res.metadata.isAdmin } };
     }).catch(function (error) {
       console.warn(error);
       return null;
@@ -248,11 +248,31 @@ function getProblemEditMedia(id) {
 }
 
 function getProblemEdit(id) {
-  if (id === -1) {
+  if (id == -1) {
     return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta')).then(function (data) {
       return data.json();
     }).then(function (res) {
-      return { id: -1, visibility: 0, name: '', comment: '', originalGrade: 'n/a', fa: [], faDate: _util2.default.convertFromDateToString(new Date()), nr: 0, lat: 0, lng: 0, newMedia: [], metadata: { title: 'New problem | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, grades: res.metadata.grades, types: res.metadata.types } };
+      return {
+        id: -1,
+        visibility: 0,
+        name: '',
+        comment: '',
+        originalGrade: 'n/a',
+        fa: [],
+        faDate: _util2.default.convertFromDateToString(new Date()),
+        nr: 0,
+        lat: 0,
+        lng: 0,
+        newMedia: [],
+        metadata: {
+          title: 'New problem | ' + res.metadata.title,
+          defaultZoom: res.metadata.defaultZoom,
+          defaultCenter: res.metadata.defaultCenter,
+          grades: res.metadata.grades,
+          types: res.metadata.types,
+          isAdmin: res.metadata.isAdmin
+        }
+      };
     }).catch(function (error) {
       console.warn(error);
       return null;
@@ -260,8 +280,24 @@ function getProblemEdit(id) {
   } else {
     return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/problems?id=' + id), { credentials: 'include' }).then(function (data) {
       return data.json();
+    }).then(function (json) {
+      return json[0];
     }).then(function (res) {
-      return { id: res.id, visibility: res.visibility, name: res.name, comment: res.comment, originalGrade: res.originalGrade, fa: res.fa, faDate: res.faDate, nr: res.nr, typeId: res.t.id, lat: res.lat, lng: res.lng, sections: res.sections, metadata: res.metadata };
+      return {
+        id: res.id,
+        visibility: res.visibility,
+        name: res.name,
+        comment: res.comment,
+        originalGrade: res.originalGrade,
+        fa: res.fa,
+        faDate: res.faDate,
+        nr: res.nr,
+        typeId: res.t.id,
+        lat: res.lat,
+        lng: res.lng,
+        sections: res.sections,
+        metadata: res.metadata
+      };
     }).catch(function (error) {
       console.warn(error);
       return null;
@@ -279,11 +315,11 @@ function getSector(id) {
 }
 
 function getSectorEdit(id) {
-  if (id === -1) {
+  if (id == -1) {
     return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta')).then(function (data) {
       return data.json();
     }).then(function (res) {
-      return { id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: { title: 'New sector | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter } };
+      return { id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: { title: 'New sector | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, isAdmin: res.metadata.isAdmin } };
     }).catch(function (error) {
       console.warn(error);
       return null;
@@ -5762,9 +5798,9 @@ var ProblemEdit = function (_Component) {
       });
       var data = this.state.data;
 
-      (0, _api.postProblem)(this.props.location.query.idSector, data.id, data.visibility, data.name, data.comment, data.originalGrade, data.fa, data.faDate, data.nr, data.typeId ? data.types.find(function (t) {
+      (0, _api.postProblem)(this.props.location.query.idSector, data.id, data.visibility, data.name, data.comment, data.originalGrade, data.fa, data.faDate, data.nr, data.typeId ? data.metadata.types.find(function (t) {
         return t.id === data.typeId;
-      }) : data.types[0], data.lat, data.lng, data.sections, newMedia).then(function (response) {
+      }) : data.metadata.types[0], data.lat, data.lng, data.sections, newMedia).then(function (response) {
         _this3.setState({ pushUrl: "/problem/" + response.id });
       }).catch(function (error) {
         console.warn(error);
@@ -5835,9 +5871,9 @@ var ProblemEdit = function (_Component) {
         visibilityText = 'Only visible for super administrators';
       }
 
-      var selectedType = data.typeId ? data.types.find(function (t) {
+      var selectedType = data.typeId ? data.metadata.types.find(function (t) {
         return t.id === data.typeId;
-      }) : data.types[0];
+      }) : data.metadata.types[0];
       var defaultCenter;
       var defaultZoom;
       if (data.lat != 0 && data.lng != 0) {
@@ -5862,7 +5898,7 @@ var ProblemEdit = function (_Component) {
             'Section(s)'
           ),
           _react2.default.createElement('br', null),
-          _react2.default.createElement(_problemSection2.default, { sections: data.sections, grades: data.grades, onSectionsUpdated: this.onSectionsUpdated.bind(this) })
+          _react2.default.createElement(_problemSection2.default, { sections: data.sections, grades: data.metadata.grades, onSectionsUpdated: this.onSectionsUpdated.bind(this) })
         );
       }
       return _react2.default.createElement(
@@ -5930,7 +5966,7 @@ var ProblemEdit = function (_Component) {
               _react2.default.createElement(
                 _reactBootstrap.DropdownButton,
                 { title: selectedType.type + (selectedType.subType ? " - " + selectedType.subType : ""), id: 'bg-nested-dropdown' },
-                data.types.map(function (t, i) {
+                data.metadata.types.map(function (t, i) {
                   return _react2.default.createElement(
                     _reactBootstrap.MenuItem,
                     { key: i, eventKey: i, onSelect: _this4.onTypeIdChanged.bind(_this4, t.id) },
@@ -5953,7 +5989,7 @@ var ProblemEdit = function (_Component) {
               _react2.default.createElement(
                 _reactBootstrap.DropdownButton,
                 { title: data.originalGrade, id: 'bg-nested-dropdown' },
-                data.grades.map(function (g, i) {
+                data.metadata.grades.map(function (g, i) {
                   return _react2.default.createElement(
                     _reactBootstrap.MenuItem,
                     { key: i, eventKey: i, onSelect: _this4.onOriginalGradeChanged.bind(_this4, g.grade) },
@@ -9611,7 +9647,7 @@ var Navigation = function (_Component) {
     };
     (0, _api.getMeta)().then(function (meta) {
       return _this.setState(function () {
-        return { grades: meta.metadata.grades };
+        return { grades: meta.metadata.grades, isAuthenticated: meta.metadata.isAuthenticated };
       });
     });
     return _this;
@@ -9621,17 +9657,6 @@ var Navigation = function (_Component) {
     key: 'componentDidMount',
     value: function componentDidMount(nextProps) {
       this.setState({ pushUrl: null });
-    }
-  }, {
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      var _this2 = this;
-
-      (0, _api.getUserLogin)().then(function (permissions) {
-        return _this2.setState(function () {
-          return { isAuthenticated: permissions.isAuthenticated };
-        });
-      }); // TODO REMOVE
     }
   }, {
     key: 'hoverImage',
@@ -9666,7 +9691,6 @@ var Navigation = function (_Component) {
       if (this.state && this.state.pushUrl) {
         return _react2.default.createElement(_reactRouter.Redirect, { to: this.state.pushUrl, push: true });
       }
-      console.log(this.state);
       return _react2.default.createElement(
         _reactBootstrap.Navbar,
         { inverse: true },

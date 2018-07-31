@@ -20,11 +20,11 @@ export function getArea(id) {
 }
 
 export function getAreaEdit(id) {
-  if (id === -1) {
+  if (id == -1) {
     return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta`))
       .then((data) => data.json())
       .then((res) => {
-        return {id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: {title: 'New area | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter}};
+        return {id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: {title: 'New area | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, isAdmin: res.metadata.isAdmin}};
       })
       .catch((error) => {
         console.warn(error);
@@ -112,11 +112,31 @@ export function getProblemEditMedia(id) {
 }
 
 export function getProblemEdit(id) {
-  if (id === -1) {
+  if (id == -1) {
     return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta`))
       .then((data) => data.json())
       .then((res) => {
-        return {id: -1, visibility: 0, name: '', comment: '', originalGrade: 'n/a', fa: [], faDate: util.convertFromDateToString(new Date()), nr: 0, lat: 0, lng: 0, newMedia: [], metadata: {title: 'New problem | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, grades: res.metadata.grades, types: res.metadata.types}};
+        return {
+          id: -1,
+          visibility: 0,
+          name: '',
+          comment: '',
+          originalGrade: 'n/a',
+          fa: [],
+          faDate: util.convertFromDateToString(new Date()),
+          nr: 0,
+          lat: 0,
+          lng: 0,
+          newMedia: [],
+          metadata: {
+            title: 'New problem | ' + res.metadata.title,
+            defaultZoom: res.metadata.defaultZoom,
+            defaultCenter: res.metadata.defaultCenter,
+            grades: res.metadata.grades,
+            types: res.metadata.types,
+            isAdmin: res.metadata.isAdmin
+          }
+        };
       })
       .catch((error) => {
         console.warn(error);
@@ -125,8 +145,23 @@ export function getProblemEdit(id) {
   } else {
     return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/problems?id=${id}`), {credentials: 'include'})
       .then((data) => data.json())
+      .then((json) => json[0])
       .then((res) => {
-        return {id: res.id, visibility: res.visibility, name: res.name, comment: res.comment, originalGrade: res.originalGrade, fa: res.fa, faDate: res.faDate, nr: res.nr, typeId: res.t.id, lat: res.lat, lng: res.lng, sections: res.sections, metadata: res.metadata};
+        return {
+          id: res.id,
+          visibility: res.visibility,
+          name: res.name,
+          comment: res.comment,
+          originalGrade: res.originalGrade,
+          fa: res.fa,
+          faDate: res.faDate,
+          nr: res.nr,
+          typeId: res.t.id,
+          lat: res.lat,
+          lng: res.lng,
+          sections: res.sections,
+          metadata: res.metadata
+        };
       })
       .catch((error) => {
         console.warn(error);
@@ -145,11 +180,11 @@ export function getSector(id) {
 }
 
 export function getSectorEdit(id) {
-  if (id === -1) {
+  if (id == -1) {
     return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta`))
       .then((data) => data.json())
       .then((res) => {
-        return {id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: {title: 'New sector | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter}};
+        return {id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: {title: 'New sector | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, isAdmin: res.metadata.isAdmin}};
       })
       .catch((error) => {
         console.warn(error);

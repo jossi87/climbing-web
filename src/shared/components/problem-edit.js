@@ -96,7 +96,7 @@ export default class ProblemEdit extends Component {
     this.setState({isSaving: true});
     const newMedia = this.state.data.newMedia.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
     const { data } = this.state;
-    postProblem(this.props.location.query.idSector, data.id, data.visibility, data.name, data.comment, data.originalGrade, data.fa, data.faDate, data.nr, (data.typeId? data.types.find(t => t.id === data.typeId) : data.types[0]), data.lat, data.lng, data.sections, newMedia)
+    postProblem(this.props.location.query.idSector, data.id, data.visibility, data.name, data.comment, data.originalGrade, data.fa, data.faDate, data.nr, (data.typeId? data.metadata.types.find(t => t.id === data.typeId) : data.metadata.types[0]), data.lat, data.lng, data.sections, newMedia)
     .then((response) => {
       this.setState({pushUrl: "/problem/" + response.id});
     })
@@ -149,7 +149,7 @@ export default class ProblemEdit extends Component {
       visibilityText = 'Only visible for super administrators';
     }
 
-    const selectedType = data.typeId? data.types.find(t => t.id === data.typeId) : data.types[0];
+    const selectedType = data.typeId? data.metadata.types.find(t => t.id === data.typeId) : data.metadata.types[0];
     var defaultCenter;
     var defaultZoom;
     if (data.lat!=0 && data.lng!=0) {
@@ -170,7 +170,7 @@ export default class ProblemEdit extends Component {
       sections = (
         <FormGroup controlId="formControlsSections">
           <ControlLabel>Section(s)</ControlLabel><br/>
-          <ProblemSection sections={data.sections} grades={data.grades} onSectionsUpdated={this.onSectionsUpdated.bind(this)} />
+          <ProblemSection sections={data.sections} grades={data.metadata.grades} onSectionsUpdated={this.onSectionsUpdated.bind(this)} />
         </FormGroup>
       );
     }
@@ -196,13 +196,13 @@ export default class ProblemEdit extends Component {
             <FormGroup controlId="formControlsTypeId">
               <ControlLabel>Type</ControlLabel><br/>
               <DropdownButton title={selectedType.type + (selectedType.subType? " - " + selectedType.subType : "")} id="bg-nested-dropdown">
-                {data.types.map((t, i) => { return <MenuItem key={i} eventKey={i} onSelect={this.onTypeIdChanged.bind(this, t.id)}>{t.type} {t.subType? " - " + t.subType : ""}</MenuItem> })}
+                {data.metadata.types.map((t, i) => { return <MenuItem key={i} eventKey={i} onSelect={this.onTypeIdChanged.bind(this, t.id)}>{t.type} {t.subType? " - " + t.subType : ""}</MenuItem> })}
               </DropdownButton>
             </FormGroup>
             <FormGroup controlId="formControlsGrade">
               <ControlLabel>Grade</ControlLabel><br/>
               <DropdownButton title={data.originalGrade} id="bg-nested-dropdown">
-                {data.grades.map((g, i) => { return <MenuItem key={i} eventKey={i} onSelect={this.onOriginalGradeChanged.bind(this, g.grade)}>{g.grade}</MenuItem> })}
+                {data.metadata.grades.map((g, i) => { return <MenuItem key={i} eventKey={i} onSelect={this.onOriginalGradeChanged.bind(this, g.grade)}>{g.grade}</MenuItem> })}
               </DropdownButton>
             </FormGroup>
             <FormGroup controlId="formControlsFA">
