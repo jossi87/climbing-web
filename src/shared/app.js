@@ -56,7 +56,9 @@ class App extends Component {
   render() {
     return (
       <span>
-        <Navigation/>
+        <Route path="/"  render={(props) => (
+          <Navigation {...props}/>
+        )} />
         <div className="container">
           <Route path="/" component={Analytics}/>
           <Switch>

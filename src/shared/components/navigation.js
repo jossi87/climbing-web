@@ -28,13 +28,26 @@ const CustomOption = (props) => {
 export default class Navigation extends Component {
   constructor(props) {
     super(props);
+    let meta;
+    if (__isBrowser__) {
+      meta = window.__INITIAL_META__;
+      delete window.__INITIAL_META__;
+    } else {
+      meta = props.staticContext.meta;
+    }
     this.state = {
+      meta,
       logo: '/png/buldreinfo_logo_gray.png'
     };
-    getMeta().then((meta) => this.setState(() => ({grades: meta.metadata.grades, isAuthenticated: meta.metadata.isAuthenticated})));
   }
 
-  componentDidMount(nextProps) {
+  componentDidMount() {
+    if (!this.state.meta) {
+      getMeta().then((meta) => this.setState(() => ({meta})));
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
     this.setState({pushUrl: null});
   }
 
@@ -61,7 +74,7 @@ export default class Navigation extends Component {
   }
 
   render() {
-    if (this.state && this.state.pushUrl) {
+    if (this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
     }
     return (
@@ -80,8 +93,8 @@ export default class Navigation extends Component {
               <NavItem eventKey={1}>Browse</NavItem>
             </LinkContainer>
             <NavDropdown eventKey={2} title="Finder" id='basic-nav-dropdown'>
-              {this.state && this.state.isAuthenticated && <LinkContainer to="/finder/-1"><MenuItem eventKey={2.0}>Grade: <strong>superadmin</strong></MenuItem></LinkContainer>}
-              {this.state && this.state.grades && this.state.grades.map((g, i) => { return <LinkContainer key={"2." + i} to={"/finder/" + g.id}><MenuItem eventKey={"3." + i}>Grade: <strong>{g.grade}</strong></MenuItem></LinkContainer> })}
+              {this.state.meta && this.state.meta.metadata.isAuthenticated && <LinkContainer to="/finder/-1"><MenuItem eventKey={2.0}>Grade: <strong>superadmin</strong></MenuItem></LinkContainer>}
+              {this.state.meta && this.state.meta.metadata.grades.map((g, i) => { return <LinkContainer key={"2." + i} to={"/finder/" + g.id}><MenuItem eventKey={"3." + i}>Grade: <strong>{g.grade}</strong></MenuItem></LinkContainer> })}
             </NavDropdown>
           </Nav>
           <Navbar.Form pullLeft>
@@ -102,7 +115,7 @@ export default class Navigation extends Component {
           </Navbar.Form>
 
           <Nav pullRight>
-            {this.state.isAuthenticated?
+            {this.state.meta && this.state.meta.metadata.isAuthenticated?
               <NavDropdown eventKey={4} title="Logged in" id='basic-nav-dropdown'>
                 <LinkContainer to="/user"><MenuItem eventKey={4.1}>My profile</MenuItem></LinkContainer>
                 <MenuItem divider />

@@ -1939,6 +1939,8 @@ var _routes = __webpack_require__(15);
 
 var _routes2 = _interopRequireDefault(_routes);
 
+var _api = __webpack_require__(4);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var app = (0, _express2.default)();
@@ -1953,15 +1955,19 @@ app.get("*", function (req, res, next) {
 
   var promise = activeRoute.fetchInitialData ? activeRoute.fetchInitialData(req.path) : Promise.resolve();
 
-  promise.then(function (data) {
-    var context = { data: data };
-    var markup = (0, _server.renderToString)(_react2.default.createElement(
-      _reactRouterDom.StaticRouter,
-      { location: req.url, context: context },
-      _react2.default.createElement(_App2.default, null)
-    ));
+  (0, _api.getMeta)().then(function (meta) {
+    promise.then(function (data) {
+      var context = { data: data, meta: meta };
+      var markup = (0, _server.renderToString)(_react2.default.createElement(
+        _reactRouterDom.StaticRouter,
+        { location: req.url, context: context },
+        _react2.default.createElement(_App2.default, null)
+      ));
 
-    res.send("\n      <!DOCTYPE html>\n      <html>\n        <head>\n          <meta charset=\"utf-8\">\n          <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n          <link rel=\"icon\" href=\"/favicon.ico\">\n          <meta name=\"author\" content=\"Jostein \xD8ygarden\">\n          <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/bootstrap.min.css\">\n          <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/react-input-calendar.css\">\n          <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/image-gallery.css\">\n          <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/react-bootstrap-table.css\">\n          <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/buldreinfo.css\">\n          <script src=\"/bundle.js\" defer></script>\n          <script>window.__INITIAL_DATA__ = " + (0, _serializeJavascript2.default)(data) + "</script>\n        </head>\n\n        <body>\n          <div id=\"app\">" + markup + "</div>\n        </body>\n      </html>\n    ");
+      res.send("\n        <!DOCTYPE html>\n        <html>\n          <head>\n            <meta charset=\"utf-8\">\n            <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n            <link rel=\"icon\" href=\"/favicon.ico\">\n            <meta name=\"author\" content=\"Jostein \xD8ygarden\">\n            <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/bootstrap.min.css\">\n            <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/react-input-calendar.css\">\n            <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/image-gallery.css\">\n            <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/react-bootstrap-table.css\">\n            <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/buldreinfo.css\">\n            <script src=\"/bundle.js\" defer></script>\n            <script>window.__INITIAL_META__ = " + (0, _serializeJavascript2.default)(meta) + "</script>\n            <script>window.__INITIAL_DATA__ = " + (0, _serializeJavascript2.default)(data) + "</script>\n          </head>\n\n          <body>\n            <div id=\"app\">" + markup + "</div>\n          </body>\n        </html>\n      ");
+    }).catch(function (error) {
+      return console.warn(error);
+    });
   }).catch(next);
 });
 
@@ -2110,7 +2116,9 @@ var App = function (_Component) {
       return _react2.default.createElement(
         'span',
         null,
-        _react2.default.createElement(_navigation2.default, null),
+        _react2.default.createElement(_reactRouterDom.Route, { path: '/', render: function render(props) {
+            return _react2.default.createElement(_navigation2.default, props);
+          } }),
         _react2.default.createElement(
           'div',
           { className: 'container' },
@@ -9658,20 +9666,36 @@ var Navigation = function (_Component) {
 
     var _this = _possibleConstructorReturn(this, (Navigation.__proto__ || Object.getPrototypeOf(Navigation)).call(this, props));
 
+    var meta = void 0;
+    if (false) {
+      meta = window.__INITIAL_META__;
+      delete window.__INITIAL_META__;
+    } else {
+      meta = props.staticContext.meta;
+    }
     _this.state = {
+      meta: meta,
       logo: '/png/buldreinfo_logo_gray.png'
     };
-    (0, _api.getMeta)().then(function (meta) {
-      return _this.setState(function () {
-        return { grades: meta.metadata.grades, isAuthenticated: meta.metadata.isAuthenticated };
-      });
-    });
     return _this;
   }
 
   _createClass(Navigation, [{
     key: 'componentDidMount',
-    value: function componentDidMount(nextProps) {
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      if (!this.state.meta) {
+        (0, _api.getMeta)().then(function (meta) {
+          return _this2.setState(function () {
+            return { meta: meta };
+          });
+        });
+      }
+    }
+  }, {
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(nextProps) {
       this.setState({ pushUrl: null });
     }
   }, {
@@ -9704,7 +9728,7 @@ var Navigation = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
-      if (this.state && this.state.pushUrl) {
+      if (this.state.pushUrl) {
         return _react2.default.createElement(_reactRouter.Redirect, { to: this.state.pushUrl, push: true });
       }
       return _react2.default.createElement(
@@ -9746,7 +9770,7 @@ var Navigation = function (_Component) {
             _react2.default.createElement(
               _reactBootstrap.NavDropdown,
               { eventKey: 2, title: 'Finder', id: 'basic-nav-dropdown' },
-              this.state && this.state.isAuthenticated && _react2.default.createElement(
+              this.state.meta && this.state.meta.metadata.isAuthenticated && _react2.default.createElement(
                 _reactRouterBootstrap.LinkContainer,
                 { to: '/finder/-1' },
                 _react2.default.createElement(
@@ -9760,7 +9784,7 @@ var Navigation = function (_Component) {
                   )
                 )
               ),
-              this.state && this.state.grades && this.state.grades.map(function (g, i) {
+              this.state.meta && this.state.meta.metadata.grades.map(function (g, i) {
                 return _react2.default.createElement(
                   _reactRouterBootstrap.LinkContainer,
                   { key: "2." + i, to: "/finder/" + g.id },
@@ -9801,7 +9825,7 @@ var Navigation = function (_Component) {
           _react2.default.createElement(
             _reactBootstrap.Nav,
             { pullRight: true },
-            this.state.isAuthenticated ? _react2.default.createElement(
+            this.state.meta && this.state.meta.metadata.isAuthenticated ? _react2.default.createElement(
               _reactBootstrap.NavDropdown,
               { eventKey: 4, title: 'Logged in', id: 'basic-nav-dropdown' },
               _react2.default.createElement(
