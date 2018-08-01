@@ -53,6 +53,8 @@ class UserEdit extends Component {
     } else if (this.validateCurrentPassword(null)==='error' || this.validateNewPassword(null)==='error' || this.validateNewPassword2(null)==='error') {
       this.setState({message: <Panel bsStyle='danger'>Invalid password.</Panel>});
     } else {
+      const { cookies } = this.props;
+      const accessToken = cookies.get('access_token');
       postUserEdit(this.state.id, this.state.username, this.state.firstname, this.state.lastname, this.state.currentPassword, this.state.newPassword)
       .then((response) => {
         this.setState({pushUrl: "/user"});

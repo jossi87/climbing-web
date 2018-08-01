@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import { instanceOf } from 'prop-types';
+import { withCookies, Cookies } from 'react-cookie';
 import ImageGallery from 'react-image-gallery';
 import { Well } from 'react-bootstrap';
 import ReactPlayer from 'react-player'
@@ -10,7 +12,11 @@ import objectFitImages from 'object-fit-images'; // objectFit does not work on I
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { deleteMedia } from '../../../api';
 
-export default class Gallery extends Component {
+class Gallery extends Component {
+  static propTypes = {
+    cookies: instanceOf(Cookies).isRequired
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -55,8 +61,10 @@ export default class Gallery extends Component {
 
   onDeleteImage(event) {
     if (confirm('Are you sure you want to delete this image?')) {
+      const { cookies } = this.props;
+      const accessToken = cookies.get('access_token');
       const idMedia = this.props.media[this.state.mediaIndex].id;
-      deleteMedia(idMedia)
+      deleteMedia(accessToken, idMedia)
       .then((response) => {
         if (this.props.media.length>1 && this.state.mediaIndex>=this.props.media.length-1) {
           const nextMediaIndex = this.state.mediaIndex-1;
@@ -259,3 +267,5 @@ export default class Gallery extends Component {
     );
   }
 }
+
+export default withCookies(Gallery);

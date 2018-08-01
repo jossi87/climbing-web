@@ -74,7 +74,9 @@ class SvgEdit extends Component {
 
   save(event) {
     event.preventDefault();
-    postProblemSvg(this.state.id, this.state.mediaId, this.state.points.length<2, this.state.svgId, this.generatePath(), this.state.hasAnchor)
+    const { cookies } = this.props;
+    const accessToken = cookies.get('access_token');
+    postProblemSvg(accessToken, this.state.id, this.state.mediaId, this.state.points.length<2, this.state.svgId, this.generatePath(), this.state.hasAnchor)
     .then((response) => {
       this.setState({pushUrl: "/problem/" + this.state.id});
     })

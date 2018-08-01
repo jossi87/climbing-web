@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import { instanceOf } from 'prop-types';
+import { withCookies, Cookies } from 'react-cookie';
 import Dropzone from 'react-dropzone';
 import { Grid, Row, Col, Thumbnail, MenuItem, Button, FormControl, FormGroup, ControlLabel } from 'react-bootstrap';
 import { getUserSearch } from './../../../api';
@@ -17,7 +19,7 @@ class Text extends Component {
     const value = e.target.value;
     this.props.onValueChanged(this.props.m, value);
     if (value.length>0) {
-      getUserSearch(value).then((res) => {
+      getUserSearch(accessToken, value).then((res) => {
         const sr = res.filter(u => u.name.toUpperCase() !== value.toUpperCase());
         this.setState({searchResults: sr});
       });
@@ -56,7 +58,7 @@ class Text extends Component {
   }
 }
 
-export default class ImageUpload extends Component {
+class ImageUpload extends Component {
   constructor(props) {
     super(props);
     this.state = {media: []};
@@ -86,6 +88,8 @@ export default class ImageUpload extends Component {
   }
 
   render() {
+    const { cookies } = this.props;
+    const accessToken = cookies.get('access_token');
     return (
       <FormGroup>
         <ControlLabel>Upload image(s)</ControlLabel><br/>
@@ -101,8 +105,8 @@ export default class ImageUpload extends Component {
               {this.state.media.map((m, i) =>
                 <Col key={i} xs={8} sm={6} md={4} lg={2}>
                   <Thumbnail src={m.file.preview}>
-                    <Text m={m} placeholder='In photo' value={m? m.inPhoto : ''}  onValueChanged={this.onInPhotoChanged.bind(this)} />
-                    <Text m={m} placeholder='Photographer' value={m? m.photographer : ''} onValueChanged={this.onPhotographerChanged.bind(this)} />
+                    <Text accessToken={accessToken} m={m} placeholder='In photo' value={m? m.inPhoto : ''}  onValueChanged={this.onInPhotoChanged.bind(this)} />
+                    <Text accessToken={accessToken} m={m} placeholder='Photographer' value={m? m.photographer : ''} onValueChanged={this.onPhotographerChanged.bind(this)} />
                     <Button style={{width: '100%'}} bsStyle='danger' onClick={this.onRemove.bind(this, m)}>Remove</Button>
                   </Thumbnail>
                 </Col>
@@ -114,3 +118,5 @@ export default class ImageUpload extends Component {
     );
   }
 }
+
+export default withCookies(ImageUpload);

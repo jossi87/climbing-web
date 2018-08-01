@@ -117,7 +117,6 @@ exports.getFinder = getFinder;
 exports.getFrontpage = getFrontpage;
 exports.getMeta = getMeta;
 exports.getProblem = getProblem;
-exports.getProblemEditMedia = getProblemEditMedia;
 exports.getProblemEdit = getProblemEdit;
 exports.getSector = getSector;
 exports.getSectorEdit = getSectorEdit;
@@ -272,24 +271,6 @@ function getProblem(accessToken, id) {
     return data.json();
   }).then(function (json) {
     return json[0];
-  }).catch(function (error) {
-    console.warn(error);
-    return null;
-  });
-}
-
-function getProblemEditMedia(accessToken, id) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/problems?id=' + id), {
-    credentials: 'include',
-    headers: {
-      Authorization: 'Bearer ' + accessToken
-    }
-  }).then(function (data) {
-    return data.json();
-  }).then(function (json) {
-    return json[0];
-  }).then(function (res) {
-    return { id: res.id, newMedia: [] };
   }).catch(function (error) {
     console.warn(error);
     return null;
@@ -1017,6 +998,10 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _propTypes = __webpack_require__(2);
+
+var _reactCookie = __webpack_require__(4);
+
 var _reactDropzone = __webpack_require__(40);
 
 var _reactDropzone2 = _interopRequireDefault(_reactDropzone);
@@ -1058,7 +1043,7 @@ var Text = function (_Component) {
       var value = e.target.value;
       this.props.onValueChanged(this.props.m, value);
       if (value.length > 0) {
-        (0, _api.getUserSearch)(value).then(function (res) {
+        (0, _api.getUserSearch)(accessToken, value).then(function (res) {
           var sr = res.filter(function (u) {
             return u.name.toUpperCase() !== value.toUpperCase();
           });
@@ -1163,6 +1148,9 @@ var ImageUpload = function (_Component2) {
     value: function render() {
       var _this5 = this;
 
+      var cookies = this.props.cookies;
+
+      var accessToken = cookies.get('access_token');
       return _react2.default.createElement(
         _reactBootstrap.FormGroup,
         null,
@@ -1197,8 +1185,8 @@ var ImageUpload = function (_Component2) {
                 _react2.default.createElement(
                   _reactBootstrap.Thumbnail,
                   { src: m.file.preview },
-                  _react2.default.createElement(Text, { m: m, placeholder: 'In photo', value: m ? m.inPhoto : '', onValueChanged: _this5.onInPhotoChanged.bind(_this5) }),
-                  _react2.default.createElement(Text, { m: m, placeholder: 'Photographer', value: m ? m.photographer : '', onValueChanged: _this5.onPhotographerChanged.bind(_this5) }),
+                  _react2.default.createElement(Text, { accessToken: accessToken, m: m, placeholder: 'In photo', value: m ? m.inPhoto : '', onValueChanged: _this5.onInPhotoChanged.bind(_this5) }),
+                  _react2.default.createElement(Text, { accessToken: accessToken, m: m, placeholder: 'Photographer', value: m ? m.photographer : '', onValueChanged: _this5.onPhotographerChanged.bind(_this5) }),
                   _react2.default.createElement(
                     _reactBootstrap.Button,
                     { style: { width: '100%' }, bsStyle: 'danger', onClick: _this5.onRemove.bind(_this5, m) },
@@ -1216,7 +1204,7 @@ var ImageUpload = function (_Component2) {
   return ImageUpload;
 }(_react.Component);
 
-exports.default = ImageUpload;
+exports.default = (0, _reactCookie.withCookies)(ImageUpload);
 
 /***/ }),
 /* 15 */
@@ -1234,6 +1222,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(2);
+
+var _reactCookie = __webpack_require__(4);
 
 var _reactImageGallery = __webpack_require__(32);
 
@@ -1330,8 +1322,11 @@ var Gallery = function (_Component) {
       var _this2 = this;
 
       if (confirm('Are you sure you want to delete this image?')) {
+        var cookies = this.props.cookies;
+
+        var accessToken = cookies.get('access_token');
         var idMedia = this.props.media[this.state.mediaIndex].id;
-        (0, _api.deleteMedia)(idMedia).then(function (response) {
+        (0, _api.deleteMedia)(accessToken, idMedia).then(function (response) {
           if (_this2.props.media.length > 1 && _this2.state.mediaIndex >= _this2.props.media.length - 1) {
             var nextMediaIndex = _this2.state.mediaIndex - 1;
             _this2.setState({ mediaIndex: nextMediaIndex });
@@ -1579,7 +1574,10 @@ var Gallery = function (_Component) {
   return Gallery;
 }(_react.Component);
 
-exports.default = Gallery;
+Gallery.propTypes = {
+  cookies: (0, _propTypes.instanceOf)(_reactCookie.Cookies).isRequired
+};
+exports.default = (0, _reactCookie.withCookies)(Gallery);
 
 /***/ }),
 /* 16 */
@@ -1703,10 +1701,7 @@ var routes = [{ path: '/', exact: true, component: _index2.default, fetchInitial
   } }, { path: '/problem/edit/:problemId', exact: true, component: _problemEdit2.default, fetchInitialData: function fetchInitialData(accessToken) {
     var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
     return (0, _api.getProblemEdit)(accessToken, path.split('/').pop());
-  } }, { path: '/problem/edit/media/:problemId', exact: true, component: _problemEditMedia2.default, fetchInitialData: function fetchInitialData(accessToken) {
-    var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-    return (0, _api.getProblemEditMedia)(accessToken, path.split('/').pop());
-  } }, { path: '/problem/svg-edit/:problemId/:mediaId', exact: true, component: _svgEdit2.default, fetchInitialData: function fetchInitialData(accessToken) {
+  } }, { path: '/problem/edit/media/:problemId', exact: true, component: _problemEditMedia2.default }, { path: '/problem/svg-edit/:problemId/:mediaId', exact: true, component: _svgEdit2.default, fetchInitialData: function fetchInitialData(accessToken) {
     var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
     return (0, _api.getSvgEdit)(accessToken, path.split('/').pop().pop(), path.split('/').pop());
   } }, { path: '/finder/:grade', exact: true, component: _finder2.default, fetchInitialData: function fetchInitialData(accessToken) {
@@ -1747,6 +1742,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(2);
+
+var _reactCookie = __webpack_require__(4);
 
 var _reactBootstrap = __webpack_require__(1);
 
@@ -1836,7 +1835,10 @@ var TickModal = function (_Component) {
     value: function _delete(e) {
       var _this2 = this;
 
-      (0, _api.postTicks)(true, this.state.idTick, this.state.idProblem, this.state.comment, this.state.date, this.state.stars, this.state.grade).then(function (response) {
+      var cookies = this.props.cookies;
+
+      var accessToken = cookies.get('access_token');
+      (0, _api.postTicks)(accessToken, true, this.state.idTick, this.state.idProblem, this.state.comment, this.state.date, this.state.stars, this.state.grade).then(function (response) {
         _this2.props.onHide();
       }).catch(function (error) {
         console.warn(error);
@@ -2034,7 +2036,7 @@ var TickModal = function (_Component) {
   return TickModal;
 }(_react.Component);
 
-exports.default = TickModal;
+exports.default = (0, _reactCookie.withCookies)(TickModal);
 
 /***/ }),
 /* 21 */
@@ -2085,8 +2087,6 @@ var _routes = __webpack_require__(18);
 
 var _routes2 = _interopRequireDefault(_routes);
 
-var _api = __webpack_require__(6);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var app = (0, _express2.default)();
@@ -2100,28 +2100,25 @@ app.get("*", function (req, res, next) {
   var activeRoute = _routes2.default.find(function (route) {
     return (0, _reactRouterDom.matchPath)(req.url, route);
   }) || {};
-  var accessToken = req.universalCookies ? req.universalCookies.get('access_token') : null;
 
-  var promise = activeRoute.fetchInitialData ? activeRoute.fetchInitialData(accessToken, req.path) : Promise.resolve();
+  var promise = activeRoute.fetchInitialData ? activeRoute.fetchInitialData(req.universalCookies.get('access_token'), req.path) : Promise.resolve();
 
-  (0, _api.getMeta)(accessToken).then(function (meta) {
-    promise.then(function (data) {
-      var context = { data: data, meta: meta };
-      var markup = (0, _server.renderToString)(_react2.default.createElement(
-        _reactCookie.CookiesProvider,
-        { cookies: req.universalCookies },
-        _react2.default.createElement(
-          _reactRouterDom.StaticRouter,
-          { location: req.url, context: context },
-          _react2.default.createElement(_App2.default, null)
-        )
-      ));
+  promise.then(function (data) {
+    var context = { data: data };
+    var markup = (0, _server.renderToString)(_react2.default.createElement(
+      _reactCookie.CookiesProvider,
+      { cookies: req.universalCookies },
+      _react2.default.createElement(
+        _reactRouterDom.StaticRouter,
+        { location: req.url, context: context },
+        _react2.default.createElement(_App2.default, null)
+      )
+    ));
 
-      res.send("\n        <!DOCTYPE html>\n        <html>\n          <head>\n            <meta charset=\"utf-8\">\n            <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n            <link rel=\"icon\" href=\"/favicon.ico\">\n            <meta name=\"author\" content=\"Jostein \xD8ygarden\">\n            <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/bootstrap.min.css\">\n            <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/react-input-calendar.css\">\n            <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/image-gallery.css\">\n            <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/react-bootstrap-table.css\">\n            <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/buldreinfo.css\">\n            <script src=\"/bundle.js\" defer></script>\n            <script>window.__INITIAL_META__ = " + (0, _serializeJavascript2.default)(meta) + "</script>\n            <script>window.__INITIAL_DATA__ = " + (0, _serializeJavascript2.default)(data) + "</script>\n          </head>\n\n          <body>\n            <div id=\"app\">" + markup + "</div>\n          </body>\n        </html>\n      ");
-    }).catch(function (error) {
-      return console.warn(error);
-    });
-  }).catch(next);
+    res.send("\n      <!DOCTYPE html>\n      <html>\n        <head>\n          <meta charset=\"utf-8\">\n          <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n          <link rel=\"icon\" href=\"/favicon.ico\">\n          <meta name=\"author\" content=\"Jostein \xD8ygarden\">\n          <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/bootstrap.min.css\">\n          <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/react-input-calendar.css\">\n          <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/image-gallery.css\">\n          <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/react-bootstrap-table.css\">\n          <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/buldreinfo.css\">\n          <script src=\"/bundle.js\" defer></script>\n          <script>window.__INITIAL_DATA__ = " + (0, _serializeJavascript2.default)(data) + "</script>\n        </head>\n\n        <body>\n          <div id=\"app\">" + markup + "</div>\n        </body>\n      </html>\n    ");
+  }).catch(function (error) {
+    return console.warn(error);
+  });
 });
 
 app.listen(3000, function () {
@@ -2269,9 +2266,7 @@ var App = function (_Component) {
       return _react2.default.createElement(
         'span',
         null,
-        _react2.default.createElement(_reactRouterDom.Route, { path: '/', render: function render(props) {
-            return _react2.default.createElement(_navigation2.default, props);
-          } }),
+        _react2.default.createElement(_navigation2.default, null),
         _react2.default.createElement(
           'div',
           { className: 'container' },
@@ -2911,11 +2906,14 @@ var AreaEdit = function (_Component) {
       var _this3 = this;
 
       event.preventDefault();
+      var cookies = this.props.cookies;
+
+      var accessToken = cookies.get('access_token');
       this.setState({ isSaving: true });
       var newMedia = this.state.data.newMedia.map(function (m) {
         return { name: m.file.name.replace(/[^-a-z0-9.]/ig, '_'), photographer: m.photographer, inPhoto: m.inPhoto };
       });
-      (0, _api.postArea)(this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, newMedia).then(function (response) {
+      (0, _api.postArea)(accessToken, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, newMedia).then(function (response) {
         _this3.setState({ pushUrl: "/area/" + response.id });
       }).catch(function (error) {
         console.warn(error);
@@ -3380,7 +3378,7 @@ var _propTypes = __webpack_require__(2);
 
 var _reactCookie = __webpack_require__(4);
 
-var _reactRouter = __webpack_require__(8);
+var _reactBootstrap = __webpack_require__(1);
 
 var _auth = __webpack_require__(13);
 
@@ -3408,15 +3406,16 @@ var Callback = function (_Component) {
 
       (0, _auth.setAccessToken)(cookies);
       (0, _auth.setIdToken)(cookies);
-      this.setState({ pushUrl: '/' });
+      window.location.href = "/";
     }
   }, {
     key: 'render',
     value: function render() {
-      if (this.state && this.state.pushUrl) {
-        return _react2.default.createElement(_reactRouter.Redirect, { to: this.state.pushUrl, push: true });
-      }
-      return null;
+      return _react2.default.createElement(
+        _reactBootstrap.Well,
+        null,
+        'Logging in, please wait'
+      );
     }
   }]);
 
@@ -4884,7 +4883,7 @@ var _propTypes = __webpack_require__(2);
 
 var _reactCookie = __webpack_require__(4);
 
-var _reactRouter = __webpack_require__(8);
+var _reactBootstrap = __webpack_require__(1);
 
 var _auth = __webpack_require__(13);
 
@@ -4911,15 +4910,16 @@ var Logout = function (_Component) {
       var cookies = this.props.cookies;
 
       (0, _auth.logout)(cookies);
-      this.setState({ pushUrl: '/' });
+      window.location.href = "/";
     }
   }, {
     key: 'render',
     value: function render() {
-      if (this.state && this.state.pushUrl) {
-        return _react2.default.createElement(_reactRouter.Redirect, { to: this.state.pushUrl, push: true });
-      }
-      return null;
+      return _react2.default.createElement(
+        _reactBootstrap.Well,
+        null,
+        'Logging out, please wait'
+      );
     }
   }]);
 
@@ -5667,6 +5667,10 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _propTypes = __webpack_require__(2);
+
+var _reactCookie = __webpack_require__(4);
+
 var _reactBootstrap = __webpack_require__(1);
 
 var _api = __webpack_require__(6);
@@ -5717,7 +5721,10 @@ var CommentModal = function (_Component) {
       var _this2 = this;
 
       if (this.state.comment) {
-        (0, _api.postComment)(this.state.idProblem, this.state.comment).then(function (response) {
+        var cookies = this.props.cookies;
+
+        var accessToken = cookies.get('access_token');
+        (0, _api.postComment)(accessToken, this.state.idProblem, this.state.comment).then(function (response) {
           _this2.props.onHide();
         }).catch(function (error) {
           console.warn(error);
@@ -5779,7 +5786,10 @@ var CommentModal = function (_Component) {
   return CommentModal;
 }(_react.Component);
 
-exports.default = CommentModal;
+CommentModal.propTypes = {
+  cookies: (0, _propTypes.instanceOf)(_reactCookie.Cookies).isRequired
+};
+exports.default = (0, _reactCookie.withCookies)(CommentModal);
 
 /***/ }),
 /* 53 */
@@ -5966,8 +5976,10 @@ var ProblemEdit = function (_Component) {
         return { name: m.file.name.replace(/[^-a-z0-9.]/ig, '_'), photographer: m.photographer, inPhoto: m.inPhoto };
       });
       var data = this.state.data;
+      var cookies = this.props.cookies;
 
-      (0, _api.postProblem)(this.props.location.query.idSector, data.id, data.visibility, data.name, data.comment, data.originalGrade, data.fa, data.faDate, data.nr, data.typeId ? data.metadata.types.find(function (t) {
+      var accessToken = cookies.get('access_token');
+      (0, _api.postProblem)(accessToken, this.props.location.query.idSector, data.id, data.visibility, data.name, data.comment, data.originalGrade, data.fa, data.faDate, data.nr, data.typeId ? data.metadata.types.find(function (t) {
         return t.id === data.typeId;
       }) : data.metadata.types[0], data.lat, data.lng, data.sections, newMedia).then(function (response) {
         _this3.setState({ pushUrl: "/problem/" + response.id });
@@ -6318,6 +6330,8 @@ var _propTypes = __webpack_require__(2);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
+var _reactCookie = __webpack_require__(4);
+
 var _Creatable = __webpack_require__(55);
 
 var _Creatable2 = _interopRequireDefault(_Creatable);
@@ -6334,7 +6348,10 @@ var UserSelector = (0, _createReactClass2.default)({
 	getInitialState: function getInitialState() {
 		var _this = this;
 
-		(0, _api.getUserSearch)("").then(function (res) {
+		var cookies = this.props.cookies;
+
+		var accessToken = cookies.get('access_token');
+		(0, _api.getUserSearch)(accessToken, "").then(function (res) {
 			return _this.setState({ options: res.map(function (u) {
 					return { value: u.id, label: u.name };
 				}) });
@@ -6372,7 +6389,7 @@ var UserSelector = (0, _createReactClass2.default)({
 	}
 });
 
-module.exports = UserSelector;
+module.exports = (0, _reactCookie.withCookies)(UserSelector);
 
 /***/ }),
 /* 55 */
@@ -6656,28 +6673,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var ProblemEditMedia = function (_Component) {
   _inherits(ProblemEditMedia, _Component);
 
-  function ProblemEditMedia(props) {
+  function ProblemEditMedia() {
     _classCallCheck(this, ProblemEditMedia);
 
-    var _this = _possibleConstructorReturn(this, (ProblemEditMedia.__proto__ || Object.getPrototypeOf(ProblemEditMedia)).call(this, props));
-
-    var data = void 0;
-    if (false) {
-      data = window.__INITIAL_DATA__;
-      delete window.__INITIAL_DATA__;
-    } else {
-      data = props.staticContext.data;
-    }
-    _this.state = { data: data };
-    return _this;
+    return _possibleConstructorReturn(this, (ProblemEditMedia.__proto__ || Object.getPrototypeOf(ProblemEditMedia)).apply(this, arguments));
   }
 
   _createClass(ProblemEditMedia, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      if (!this.state.data) {
-        this.refresh(this.props.match.params.problemId);
-      }
+      this.refresh(this.props.match.params.problemId);
     }
   }, {
     key: 'componentDidUpdate',
@@ -6694,10 +6699,8 @@ var ProblemEditMedia = function (_Component) {
       var cookies = this.props.cookies;
 
       var accessToken = cookies.get('access_token');
-      this.props.fetchInitialData(accessToken, id).then(function (data) {
-        return _this2.setState(function () {
-          return { data: data };
-        });
+      (0, _api.getProblem)(accessToken, id).then(function (data) {
+        return _this2.setState({ id: data.id, isAuthenticated: data.metadata.isAuthenticated });
       });
     }
   }, {
@@ -6712,14 +6715,16 @@ var ProblemEditMedia = function (_Component) {
 
       event.preventDefault();
       this.setState({ isSaving: true });
+      var cookies = this.props.cookies;
+
+      var accessToken = cookies.get('access_token');
       var newMedia = this.state.newMedia.map(function (m) {
         return { name: m.file.name.replace(/[^-a-z0-9.]/ig, '_'), photographer: m.photographer, inPhoto: m.inPhoto };
       });
-      (0, _api.postProblemMedia)(id, newMedia).then(function (response) {
+      (0, _api.postProblemMedia)(accessToken, this.state.id, newMedia).then(function (response) {
         _this3.setState({ pushUrl: "/problem/" + response.id });
       }).catch(function (error) {
         console.warn(error);
-        _this3.setState({ error: error });
       });
     }
   }, {
@@ -6736,16 +6741,10 @@ var ProblemEditMedia = function (_Component) {
           null,
           _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'spinner', spin: true, size: '3x' })
         );
-      } else if (this.state.error) {
-        return _react2.default.createElement(
-          'h3',
-          null,
-          this.state.error.toString()
-        );
       } else if (this.state.pushUrl) {
         return _react2.default.createElement(_reactRouter.Redirect, { to: this.state.pushUrl, push: true });
-      } else if (!this.state.metadata.isAuthenticated) {
-        this.setState({ pushUrl: "/login", error: null });
+      } else if (!this.state.isAuthenticated) {
+        this.setState({ pushUrl: "/login" });
       }
 
       return _react2.default.createElement(
@@ -7523,7 +7522,10 @@ var SectorEdit = function (_Component) {
       var newMedia = this.state.data.newMedia.map(function (m) {
         return { name: m.file.name.replace(/[^-a-z0-9.]/ig, '_'), photographer: m.photographer, inPhoto: m.inPhoto };
       });
-      (0, _api.postSector)(this.props.location.query.idArea, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, newMedia).then(function (response) {
+      var cookies = this.props.cookies;
+
+      var accessToken = cookies.get('access_token');
+      (0, _api.postSector)(accessToken, this.props.location.query.idArea, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, newMedia).then(function (response) {
         _this3.setState({ pushUrl: "/sector/" + response.id });
       }).catch(function (error) {
         console.warn(error);
@@ -7871,7 +7873,10 @@ var SvgEdit = function (_Component) {
       var _this3 = this;
 
       event.preventDefault();
-      (0, _api.postProblemSvg)(this.state.id, this.state.mediaId, this.state.points.length < 2, this.state.svgId, this.generatePath(), this.state.hasAnchor).then(function (response) {
+      var cookies = this.props.cookies;
+
+      var accessToken = cookies.get('access_token');
+      (0, _api.postProblemSvg)(accessToken, this.state.id, this.state.mediaId, this.state.points.length < 2, this.state.svgId, this.generatePath(), this.state.hasAnchor).then(function (response) {
         _this3.setState({ pushUrl: "/problem/" + _this3.state.id });
       }).catch(function (error) {
         console.warn(error);
@@ -8651,7 +8656,7 @@ var User = function (_Component) {
         _react2.default.createElement(
           _reactBootstrap.Breadcrumb,
           null,
-          data.metadata.isAuthenticated && currTick.user.readOnly == false ? _react2.default.createElement(
+          data.metadata.isAuthenticated && this.state.currTick && this.state.currTick.user.readOnly == false && _react2.default.createElement(
             'div',
             { style: { float: 'right' } },
             _react2.default.createElement(
@@ -8671,7 +8676,7 @@ var User = function (_Component) {
                 )
               )
             )
-          ) : null,
+          ),
           _react2.default.createElement(
             _reactRouterDom.Link,
             { to: '/' },
@@ -9030,6 +9035,9 @@ var UserEdit = function (_Component) {
             'Invalid password.'
           ) });
       } else {
+        var cookies = this.props.cookies;
+
+        var accessToken = cookies.get('access_token');
         (0, _api.postUserEdit)(this.state.id, this.state.username, this.state.firstname, this.state.lastname, this.state.currentPassword, this.state.newPassword).then(function (response) {
           _this3.setState({ pushUrl: "/user" });
         }).catch(function (error) {
@@ -9352,15 +9360,7 @@ var Navigation = function (_Component) {
 
     var _this = _possibleConstructorReturn(this, (Navigation.__proto__ || Object.getPrototypeOf(Navigation)).call(this, props));
 
-    var meta = void 0;
-    if (false) {
-      meta = window.__INITIAL_META__;
-      delete window.__INITIAL_META__;
-    } else {
-      meta = props.staticContext.meta;
-    }
     _this.state = {
-      meta: meta,
       logo: '/png/buldreinfo_logo_gray.png'
     };
     return _this;
@@ -9369,9 +9369,16 @@ var Navigation = function (_Component) {
   _createClass(Navigation, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      if (!this.state.meta) {
-        this.refresh();
-      }
+      var _this2 = this;
+
+      var cookies = this.props.cookies;
+
+      var accessToken = cookies.get('access_token');
+      (0, _api.getMeta)(accessToken).then(function (meta) {
+        return _this2.setState(function () {
+          return { meta: meta };
+        });
+      });
     }
   }, {
     key: 'componentWillReceiveProps',
@@ -9385,32 +9392,13 @@ var Navigation = function (_Component) {
       this.setState({ logo: logo });
     }
   }, {
-    key: 'componentDidUpdate',
-    value: function componentDidUpdate(prevProps, prevState) {
-      var prevPath = prevProps.location.pathname;
-      if (prevPath == '/logout' || prevPath == '/callback') {
-        this.refresh();
-      }
-    }
-  }, {
-    key: 'refresh',
-    value: function refresh() {
-      var _this2 = this;
-
-      var cookies = this.props.cookies;
-
-      var accessToken = cookies.get('access_token');
-      (0, _api.getMeta)(accessToken).then(function (meta) {
-        return _this2.setState(function () {
-          return { meta: meta };
-        });
-      });
-    }
-  }, {
     key: 'search',
     value: function search(input, callback) {
       if (input) {
-        (0, _api.postSearch)(input).then(function (res) {
+        var cookies = this.props.cookies;
+
+        var accessToken = cookies.get('access_token');
+        (0, _api.postSearch)(accessToken, input).then(function (res) {
           var options = res.map(function (s) {
             return { value: s, label: s.value };
           });
@@ -9472,7 +9460,7 @@ var Navigation = function (_Component) {
             _react2.default.createElement(
               _reactBootstrap.NavDropdown,
               { eventKey: 2, title: 'Finder', id: 'basic-nav-dropdown' },
-              this.state.meta && this.state.meta.metadata.isAuthenticated && _react2.default.createElement(
+              this.state.meta && this.state.meta.metadata.isSuperadmin && _react2.default.createElement(
                 _reactRouterBootstrap.LinkContainer,
                 { to: '/finder/-1' },
                 _react2.default.createElement(
@@ -9527,7 +9515,7 @@ var Navigation = function (_Component) {
           _react2.default.createElement(
             _reactBootstrap.Nav,
             { pullRight: true },
-            this.state.meta && this.state.meta.metadata.isAuthenticated ? _react2.default.createElement(
+            this.props.cookies.get("access_token") ? _react2.default.createElement(
               _reactBootstrap.NavDropdown,
               { eventKey: 4, title: 'Logged in', id: 'basic-nav-dropdown' },
               _react2.default.createElement(

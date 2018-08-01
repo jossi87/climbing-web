@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
-import { Redirect } from 'react-router';
+import { Well } from 'react-bootstrap';
 import { logout } from '../utils/auth';
 
 class Logout extends Component {
@@ -12,14 +12,11 @@ class Logout extends Component {
   componentDidMount() {
     const { cookies } = this.props;
     logout(cookies);
-    this.setState({pushUrl: '/'});
+    window.location.href = "/";
   }
 
   render() {
-    if (this.state && this.state.pushUrl) {
-      return (<Redirect to={this.state.pushUrl} push />);
-    }
-    return null;
+    return <Well>Logging out, please wait</Well>;
   }
 }
 

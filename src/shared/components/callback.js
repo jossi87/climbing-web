@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
-import { Redirect } from 'react-router';
+import { Well } from 'react-bootstrap';
 import { setIdToken, setAccessToken } from '../utils/auth';
 
 class Callback extends Component {
@@ -13,14 +13,11 @@ class Callback extends Component {
     const { cookies } = this.props;
     setAccessToken(cookies);
     setIdToken(cookies);
-    this.setState({pushUrl: '/'});
+    window.location.href = "/";
   }
 
   render() {
-    if (this.state && this.state.pushUrl) {
-      return (<Redirect to={this.state.pushUrl} push />);
-    }
-    return null;
+    return <Well>Logging in, please wait</Well>;
   }
 }
 

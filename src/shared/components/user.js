@@ -163,13 +163,12 @@ class User extends Component {
 
         {this.state.currTick? <TickModal idTick={this.state.currTick.id} idProblem={this.state.currTick.idProblem} date={this.state.currTick.date} comment={this.state.currTick.comment} grade={this.state.currTick.grade} grades={data.metadata.grades} stars={this.state.currTick.stars} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/> : ""}
         <Breadcrumb>
-          {data.metadata.isAuthenticated && currTick.user.readOnly==false?
+          {data.metadata.isAuthenticated && this.state.currTick && this.state.currTick.user.readOnly==false &&
             <div style={{float: 'right'}}>
               <OverlayTrigger placement="top" overlay={<Tooltip id={data.id}>Edit user</Tooltip>}>
                 <LinkContainer to={`/user/${data.id}/edit`}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="edit" inverse={true} /></Button></LinkContainer>
               </OverlayTrigger>
-            </div>:
-            null
+            </div>
           }
           <Link to={`/`}>Home</Link> / <font color='#777'>{data.name}</font>
         </Breadcrumb>

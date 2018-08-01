@@ -104,7 +104,9 @@ class ProblemEdit extends Component {
     this.setState({isSaving: true});
     const newMedia = this.state.data.newMedia.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
     const { data } = this.state;
-    postProblem(this.props.location.query.idSector, data.id, data.visibility, data.name, data.comment, data.originalGrade, data.fa, data.faDate, data.nr, (data.typeId? data.metadata.types.find(t => t.id === data.typeId) : data.metadata.types[0]), data.lat, data.lng, data.sections, newMedia)
+    const { cookies } = this.props;
+    const accessToken = cookies.get('access_token');
+    postProblem(accessToken, this.props.location.query.idSector, data.id, data.visibility, data.name, data.comment, data.originalGrade, data.fa, data.faDate, data.nr, (data.typeId? data.metadata.types.find(t => t.id === data.typeId) : data.metadata.types[0]), data.lat, data.lng, data.sections, newMedia)
     .then((response) => {
       this.setState({pushUrl: "/problem/" + response.id});
     })

@@ -1,11 +1,13 @@
 import React, {Component} from 'react';
+import { instanceOf } from 'prop-types';
+import { withCookies, Cookies } from 'react-cookie';
 import { Modal, Button, FormGroup, ControlLabel, FormControl, ButtonGroup, DropdownButton, MenuItem } from 'react-bootstrap';
 import Calendar from 'react-input-calendar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { postTicks } from './../../../api';
 import util from './../../../utils/util';
 
-export default class TickModal extends Component {
+class TickModal extends Component {
   constructor(props) {
     super(props);
   }
@@ -54,7 +56,9 @@ export default class TickModal extends Component {
   }
 
   delete(e) {
-    postTicks(true, this.state.idTick, this.state.idProblem, this.state.comment, this.state.date, this.state.stars, this.state.grade)
+    const { cookies } = this.props;
+    const accessToken = cookies.get('access_token');
+    postTicks(accessToken, true, this.state.idTick, this.state.idProblem, this.state.comment, this.state.date, this.state.stars, this.state.grade)
     .then((response) => {
       this.props.onHide();
     })
@@ -135,3 +139,5 @@ export default class TickModal extends Component {
     );
   }
 }
+
+export default withCookies(TickModal);

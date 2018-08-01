@@ -77,7 +77,9 @@ class SectorEdit extends Component {
     event.preventDefault();
     this.setState({isSaving: true});
     const newMedia = this.state.data.newMedia.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
-    postSector(this.props.location.query.idArea, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, newMedia)
+    const { cookies } = this.props;
+    const accessToken = cookies.get('access_token');
+    postSector(accessToken, this.props.location.query.idArea, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, newMedia)
     .then((response) => {
       this.setState({pushUrl: "/sector/" + response.id});
     })

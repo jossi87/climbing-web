@@ -29,7 +29,7 @@ const routes =  [
   {path: '/sector/edit/:sectorId', exact: true, component: SectorEdit, fetchInitialData: (accessToken, path = '') => getSectorEdit(accessToken, path.split('/').pop())},
   {path: '/problem/:problemId', exact: true, component: Problem, fetchInitialData: (accessToken, path = '') => getProblem(accessToken, path.split('/').pop())},
   {path: '/problem/edit/:problemId', exact: true, component: ProblemEdit, fetchInitialData: (accessToken, path = '') => getProblemEdit(accessToken, path.split('/').pop())},
-  {path: '/problem/edit/media/:problemId', exact: true, component: ProblemEditMedia, fetchInitialData: (accessToken, path = '') => getProblemEditMedia(accessToken, path.split('/').pop())},
+  {path: '/problem/edit/media/:problemId', exact: true, component: ProblemEditMedia},
   {path: '/problem/svg-edit/:problemId/:mediaId', exact: true, component: SvgEdit, fetchInitialData: (accessToken, path = '') => getSvgEdit(accessToken, path.split('/').pop().pop(), path.split('/').pop())},
   {path: '/finder/:grade', exact: true, component: Finder, fetchInitialData: (accessToken, path = '') => getFinder(accessToken, path.split('/').pop())},
   {path: '/user', exact: true, component: User, fetchInitialData: (accessToken, path = '') => getUser(accessToken, path.split('/').pop())},

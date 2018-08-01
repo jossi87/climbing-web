@@ -1,16 +1,19 @@
 import React from 'react';
 import createClass from 'create-react-class';
 import PropTypes from 'prop-types';
+import { withCookies } from 'react-cookie';
 import CreatableSelect from 'react-select/lib/Creatable';
 import { getUserSearch } from './../../../api';
 
 var UserSelector = createClass({
 	displayName: 'UserSelector',
 	propTypes: {
-		label: PropTypes.string
+		label: PropTypes.string,
 	},
 	getInitialState() {
-		getUserSearch("").then((res) => this.setState({options: res.map(u => {return {value: u.id, label: u.name}})}));
+		const { cookies } = this.props;
+    const accessToken = cookies.get('access_token');
+		getUserSearch(accessToken, "").then((res) => this.setState({options: res.map(u => {return {value: u.id, label: u.name}})}));
     return {
       multiValue: this.props.users,
       options: []
@@ -40,4 +43,4 @@ var UserSelector = createClass({
 	}
 });
 
-module.exports = UserSelector;
+module.exports = withCookies(UserSelector);

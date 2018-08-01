@@ -133,24 +133,6 @@ export function getProblem(accessToken, id) {
   });
 }
 
-export function getProblemEditMedia(accessToken, id) {
-  return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/problems?id=${id}`), {
-    credentials: 'include',
-    headers: {
-      Authorization: `Bearer ${accessToken}`
-    }
-  })
-  .then((data) => data.json())
-  .then((json) => json[0])
-  .then((res) => {
-    return {id: res.id, newMedia: []};
-  })
-  .catch((error) => {
-    console.warn(error);
-    return null;
-  });
-}
-
 export function getProblemEdit(accessToken, id) {
   if (id == -1) {
     return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/meta`), {

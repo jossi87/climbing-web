@@ -34,23 +34,15 @@ class Navigation extends Component {
 
   constructor(props) {
     super(props);
-    let meta;
-    if (__isBrowser__) {
-      meta = window.__INITIAL_META__;
-      delete window.__INITIAL_META__;
-    } else {
-      meta = props.staticContext.meta;
-    }
     this.state = {
-      meta,
       logo: '/png/buldreinfo_logo_gray.png'
     };
   }
 
   componentDidMount() {
-    if (!this.state.meta) {
-      this.refresh();
-    }
+    const { cookies } = this.props;
+    const accessToken = cookies.get('access_token');
+    getMeta(accessToken).then((meta) => this.setState(() => ({meta})));
   }
 
   componentWillReceiveProps(nextProps) {
@@ -62,22 +54,11 @@ class Navigation extends Component {
     this.setState({logo: logo});
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const prevPath = prevProps.location.pathname;
-    if (prevPath == '/logout' || prevPath == '/callback') {
-      this.refresh();
-    }
-  }
-
-  refresh() {
-    const { cookies } = this.props;
-    const accessToken = cookies.get('access_token');
-    getMeta(accessToken).then((meta) => this.setState(() => ({meta})));
-  }
-
   search(input, callback) {
     if (input) {
-      postSearch(input).then((res) => {
+      const { cookies } = this.props;
+      const accessToken = cookies.get('access_token');
+      postSearch(accessToken, input).then((res) => {
         var options = res.map(s => {return {value: s, label: s.value}});
         callback(options);
       });
@@ -112,7 +93,7 @@ class Navigation extends Component {
               <NavItem eventKey={1}>Browse</NavItem>
             </LinkContainer>
             <NavDropdown eventKey={2} title="Finder" id='basic-nav-dropdown'>
-              {this.state.meta && this.state.meta.metadata.isAuthenticated && <LinkContainer to="/finder/-1"><MenuItem eventKey={2.0}>Grade: <strong>superadmin</strong></MenuItem></LinkContainer>}
+              {this.state.meta && this.state.meta.metadata.isSuperadmin && <LinkContainer to="/finder/-1"><MenuItem eventKey={2.0}>Grade: <strong>superadmin</strong></MenuItem></LinkContainer>}
               {this.state.meta && this.state.meta.metadata.grades.map((g, i) => { return <LinkContainer key={"2." + i} to={"/finder/" + g.id}><MenuItem eventKey={"3." + i}>Grade: <strong>{g.grade}</strong></MenuItem></LinkContainer> })}
             </NavDropdown>
           </Nav>
@@ -134,7 +115,7 @@ class Navigation extends Component {
           </Navbar.Form>
 
           <Nav pullRight>
-            {this.state.meta && this.state.meta.metadata.isAuthenticated?
+            {this.props.cookies.get("access_token")?
               <NavDropdown eventKey={4} title="Logged in" id='basic-nav-dropdown'>
                 <LinkContainer to="/user"><MenuItem eventKey={4.1}>My profile</MenuItem></LinkContainer>
                 <MenuItem divider />
