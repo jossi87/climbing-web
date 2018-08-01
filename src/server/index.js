@@ -18,12 +18,13 @@ app.use(express.static("public"));
 
 app.get("*", (req, res, next) => {
   const activeRoute = routes.find((route) => matchPath(req.url, route)) || {};
+  const accessToken = req.universalCookies? req.universalCookies.get('access_token') : null;
 
   const promise = activeRoute.fetchInitialData
-    ? activeRoute.fetchInitialData(req.universalCookies.get('access_token'), req.path)
+    ? activeRoute.fetchInitialData(accessToken, req.path)
     : Promise.resolve()
 
-  getMeta().then((meta) => {
+  getMeta(accessToken).then((meta) => {
     promise.then((data) => {
       const context = { data, meta }
       const markup = renderToString(

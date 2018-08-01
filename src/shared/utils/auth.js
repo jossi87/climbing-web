@@ -19,9 +19,9 @@ export function login() {
   });
 }
 
-export function logout() {
-  clearIdToken();
-  clearAccessToken();
+export function logout(cookies) {
+  clearIdToken(cookies);
+  clearAccessToken(cookies);
 }
 
 export function getIdToken(cookies) {

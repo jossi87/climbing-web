@@ -931,9 +931,9 @@ function login() {
   });
 }
 
-function logout() {
-  clearIdToken();
-  clearAccessToken();
+function logout(cookies) {
+  clearIdToken(cookies);
+  clearAccessToken(cookies);
 }
 
 function getIdToken(cookies) {
@@ -2094,10 +2094,11 @@ app.get("*", function (req, res, next) {
   var activeRoute = _routes2.default.find(function (route) {
     return (0, _reactRouterDom.matchPath)(req.url, route);
   }) || {};
+  var accessToken = req.universalCookies ? req.universalCookies.get('access_token') : null;
 
-  var promise = activeRoute.fetchInitialData ? activeRoute.fetchInitialData(req.universalCookies.get('access_token'), req.path) : Promise.resolve();
+  var promise = activeRoute.fetchInitialData ? activeRoute.fetchInitialData(accessToken, req.path) : Promise.resolve();
 
-  (0, _api.getMeta)().then(function (meta) {
+  (0, _api.getMeta)(accessToken).then(function (meta) {
     promise.then(function (data) {
       var context = { data: data, meta: meta };
       var markup = (0, _server.renderToString)(_react2.default.createElement(
