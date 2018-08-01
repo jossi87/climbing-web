@@ -60,43 +60,63 @@ class ProblemEdit extends Component {
   }
 
   onNameChanged(e) {
-    this.setState({name: e.target.value});
+    const { data } = this.state;
+    data.name = e.target.value;
+    this.setState({data});
   }
 
   onNrChanged(e) {
-    this.setState({nr: parseInt(e.target.value)});
+    const { data } = this.state;
+    data.nr = parseInt(e.target.value);
+    this.setState({data});
   }
 
   onLatChanged(e) {
-    this.setState({lat: parseFloat(e.target.value)});
+    const { data } = this.state;
+    data.lat = parseFloat(e.target.value);
+    this.setState({data});
   }
 
   onLngChanged(e) {
-    this.setState({lng: parseFloat(e.target.value)});
+    const { data } = this.state;
+    data.lng = parseFloat(e.target.value);
+    this.setState({data});
   }
 
   onVisibilityChanged(visibility, e) {
-    this.setState({visibility: visibility});
+    const { data } = this.state;
+    data.visibility = visibility;
+    this.setState({data});
   }
 
   onCommentChanged(e) {
-    this.setState({comment: e.target.value});
+    const { data } = this.state;
+    data.comment = e.target.value;
+    this.setState({data});
   }
 
   onFaDateChanged(newFaDate) {
-    this.setState({faDate: newFaDate});
+    const { data } = this.state;
+    data.faDate = newFaDate;
+    this.setState({data});
   }
 
   onOriginalGradeChanged(originalGrade, e) {
-    this.setState({originalGrade: originalGrade});
+    const { data } = this.state;
+    data.originalGrade = originalGrade;
+    this.setState({data});
   }
 
   onTypeIdChanged(typeId, e) {
-    this.setState({typeId: typeId});
+    const { data } = this.state;
+    data.typeId = typeId;
+    this.setState({data});
   }
 
   onNewMediaChanged(newMedia) {
-    this.setState({newMedia: newMedia});
+    const { data } = this.state;
+    data.newMedia = newMedia;
+    this.setState({data});
   }
 
   save(event) {
@@ -117,18 +137,24 @@ class ProblemEdit extends Component {
   }
 
   onMapClick(event) {
-    this.setState({lat: event.latLng.lat(), lng: event.latLng.lng()});
+    const { data } = this.state;
+    data.lat = event.latLng.lat();
+    data.lng = event.latLng.lng();
+    this.setState({data});
   }
 
   onUsersUpdated(newUsers) {
-    const fa = newUsers.map(u => {
+    const { data } = this.state;
+    data.fa = newUsers.map(u => {
       return {id: (typeof u.value === 'string' || u.value instanceof String)? -1 : u.value, firstname: u.label, surname: null};
     });
-    this.setState({fa: fa});
+    this.setState({data});
   }
 
   onSectionsUpdated(sections) {
-    this.setState({sections});
+    const { data } = this.state;
+    data.sections = sections;
+    this.setState({data});
   }
 
   onCancel() {

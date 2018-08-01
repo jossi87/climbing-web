@@ -58,19 +58,27 @@ class SectorEdit extends Component {
   }
 
   onNameChanged(e) {
-    this.setState({name: e.target.value});
+    const { data } = this.state;
+    data.name = e.target.value;
+    this.setState({data});
   }
 
   onVisibilityChanged(visibility, e) {
-    this.setState({visibility: visibility});
+    const { data } = this.state;
+    data.visibility = visibility;
+    this.setState({data});
   }
 
   onCommentChanged(e) {
-    this.setState({comment: e.target.value});
+    const { data } = this.state;
+    data.comment = e.target.value;
+    this.setState({data});
   }
 
   onNewMediaChanged(newMedia) {
-    this.setState({newMedia: newMedia});
+    const { data } = this.state;
+    data.newMedia = newMedia;
+    this.setState({data});
   }
 
   save(event) {
@@ -90,21 +98,27 @@ class SectorEdit extends Component {
   }
 
   onMapClick(event) {
-    this.setState({lat: event.latLng.lat(), lng: event.latLng.lng()});
+    const { data } = this.state;
+    data.lat = event.latLng.lat();
+    data.lng = event.latLng.lng();
+    this.setState({data});
   }
 
   onMapRightClick(event) {
-    if (this.state.data.polygonCoords) {
-      this.setState({
-        polygonCoords: this.state.data.polygonCoords + ";" + event.latLng.lat() + "," + event.latLng.lng()
-      });
+    const { data } = this.state;
+    const coords = event.latLng.lat() + "," + event.latLng.lng();
+    if (data.polygonCoords) {
+      data.polygonCoords = data.polygonCoords + ";" + coords;
     } else {
-      this.setState({polygonCoords: event.latLng.lat() + "," + event.latLng.lng()});
+      data.polygonCoords = coords;
     }
+    this.setState({data});
   }
 
   resetMapPolygon(event) {
-    this.setState({polygonCoords: null});
+    const { data } = this.state;
+    data.polygonCoords = null;
+    this.setState({data});
   }
 
   onCancel() {

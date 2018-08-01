@@ -19,7 +19,7 @@ class Text extends Component {
     const value = e.target.value;
     this.props.onValueChanged(this.props.m, value);
     if (value.length>0) {
-      getUserSearch(accessToken, value).then((res) => {
+      getUserSearch(this.props.accessToken, value).then((res) => {
         const sr = res.filter(u => u.name.toUpperCase() !== value.toUpperCase());
         this.setState({searchResults: sr});
       });

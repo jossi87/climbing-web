@@ -93,7 +93,7 @@ class Navigation extends Component {
               <NavItem eventKey={1}>Browse</NavItem>
             </LinkContainer>
             <NavDropdown eventKey={2} title="Finder" id='basic-nav-dropdown'>
-              {this.state.meta && this.state.meta.metadata.isSuperadmin && <LinkContainer to="/finder/-1"><MenuItem eventKey={2.0}>Grade: <strong>superadmin</strong></MenuItem></LinkContainer>}
+              {this.state.meta && this.state.meta.metadata.isSuperAdmin && <LinkContainer to="/finder/-1"><MenuItem eventKey={2.0}>Grade: <strong>superadmin</strong></MenuItem></LinkContainer>}
               {this.state.meta && this.state.meta.metadata.grades.map((g, i) => { return <LinkContainer key={"2." + i} to={"/finder/" + g.id}><MenuItem eventKey={"3." + i}>Grade: <strong>{g.grade}</strong></MenuItem></LinkContainer> })}
             </NavDropdown>
           </Nav>

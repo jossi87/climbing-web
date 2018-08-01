@@ -55,19 +55,27 @@ class AreaEdit extends Component {
   }
 
   onNameChanged(e) {
-    this.setState({name: e.target.value});
+    const { data } = this.state;
+    data.name = e.target.value;
+    this.setState({data});
   }
 
   onVisibilityChanged(visibility, e) {
-    this.setState({visibility: visibility});
+    const { data } = this.state;
+    data.visibility = visibility;
+    this.setState({data});
   }
 
   onCommentChanged(e) {
-    this.setState({comment: e.target.value});
+    const { data } = this.state;
+    data.comment = e.target.value;
+    this.setState({data});
   }
 
   onNewMediaChanged(newMedia) {
-    this.setState({newMedia: newMedia});
+    const { data } = this.state;
+    data.newMedia = newMedia;
+    this.setState({data});
   }
 
   save(event) {
@@ -87,7 +95,10 @@ class AreaEdit extends Component {
   }
 
   onMarkerClick(event) {
-    this.setState({lat: event.latLng.lat(), lng: event.latLng.lng()});
+    const { data } = this.state;
+    data.lat = event.latLng.lat();
+    data.lng = event.latLng.lng();
+    this.setState({data});
   }
 
   onCancel() {

@@ -38,7 +38,7 @@ export function getAreaEdit(accessToken, id) {
     })
     .then((data) => data.json())
     .then((res) => {
-      return {id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: {title: 'New area | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, isAdmin: res.metadata.isAdmin}};
+      return {id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: {title: 'New area | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, isAdmin: res.metadata.isAdmin, isSuperAdmin: res.metadata.isSuperAdmin}};
     })
     .catch((error) => {
       console.warn(error);
@@ -161,7 +161,8 @@ export function getProblemEdit(accessToken, id) {
           defaultCenter: res.metadata.defaultCenter,
           grades: res.metadata.grades,
           types: res.metadata.types,
-          isAdmin: res.metadata.isAdmin
+          isAdmin: res.metadata.isAdmin,
+          isSuperAdmin: res.metadata.isSuperAdmin
         }
       };
     })
@@ -226,7 +227,7 @@ export function getSectorEdit(accessToken, id) {
     })
     .then((data) => data.json())
     .then((res) => {
-      return {id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: {title: 'New sector | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, isAdmin: res.metadata.isAdmin}};
+      return {id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: {title: 'New sector | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, isAdmin: res.metadata.isAdmin, isSuperAdmin: res.metadata.isSuperAdmin}};
     })
     .catch((error) => {
       console.warn(error);

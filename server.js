@@ -183,7 +183,7 @@ function getAreaEdit(accessToken, id) {
     }).then(function (data) {
       return data.json();
     }).then(function (res) {
-      return { id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: { title: 'New area | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, isAdmin: res.metadata.isAdmin } };
+      return { id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: { title: 'New area | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, isAdmin: res.metadata.isAdmin, isSuperAdmin: res.metadata.isSuperAdmin } };
     }).catch(function (error) {
       console.warn(error);
       return null;
@@ -305,7 +305,8 @@ function getProblemEdit(accessToken, id) {
           defaultCenter: res.metadata.defaultCenter,
           grades: res.metadata.grades,
           types: res.metadata.types,
-          isAdmin: res.metadata.isAdmin
+          isAdmin: res.metadata.isAdmin,
+          isSuperAdmin: res.metadata.isSuperAdmin
         }
       };
     }).catch(function (error) {
@@ -369,7 +370,7 @@ function getSectorEdit(accessToken, id) {
     }).then(function (data) {
       return data.json();
     }).then(function (res) {
-      return { id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: { title: 'New sector | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, isAdmin: res.metadata.isAdmin } };
+      return { id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: { title: 'New sector | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, isAdmin: res.metadata.isAdmin, isSuperAdmin: res.metadata.isSuperAdmin } };
     }).catch(function (error) {
       console.warn(error);
       return null;
@@ -1043,7 +1044,7 @@ var Text = function (_Component) {
       var value = e.target.value;
       this.props.onValueChanged(this.props.m, value);
       if (value.length > 0) {
-        (0, _api.getUserSearch)(accessToken, value).then(function (res) {
+        (0, _api.getUserSearch)(this.props.accessToken, value).then(function (res) {
           var sr = res.filter(function (u) {
             return u.name.toUpperCase() !== value.toUpperCase();
           });
@@ -2886,22 +2887,34 @@ var AreaEdit = function (_Component) {
   }, {
     key: 'onNameChanged',
     value: function onNameChanged(e) {
-      this.setState({ name: e.target.value });
+      var data = this.state.data;
+
+      data.name = e.target.value;
+      this.setState({ data: data });
     }
   }, {
     key: 'onVisibilityChanged',
     value: function onVisibilityChanged(visibility, e) {
-      this.setState({ visibility: visibility });
+      var data = this.state.data;
+
+      data.visibility = visibility;
+      this.setState({ data: data });
     }
   }, {
     key: 'onCommentChanged',
     value: function onCommentChanged(e) {
-      this.setState({ comment: e.target.value });
+      var data = this.state.data;
+
+      data.comment = e.target.value;
+      this.setState({ data: data });
     }
   }, {
     key: 'onNewMediaChanged',
     value: function onNewMediaChanged(newMedia) {
-      this.setState({ newMedia: newMedia });
+      var data = this.state.data;
+
+      data.newMedia = newMedia;
+      this.setState({ data: data });
     }
   }, {
     key: 'save',
@@ -2926,7 +2939,11 @@ var AreaEdit = function (_Component) {
   }, {
     key: 'onMarkerClick',
     value: function onMarkerClick(event) {
-      this.setState({ lat: event.latLng.lat(), lng: event.latLng.lng() });
+      var data = this.state.data;
+
+      data.lat = event.latLng.lat();
+      data.lng = event.latLng.lng();
+      this.setState({ data: data });
     }
   }, {
     key: 'onCancel',
@@ -5921,52 +5938,82 @@ var ProblemEdit = function (_Component) {
   }, {
     key: 'onNameChanged',
     value: function onNameChanged(e) {
-      this.setState({ name: e.target.value });
+      var data = this.state.data;
+
+      data.name = e.target.value;
+      this.setState({ data: data });
     }
   }, {
     key: 'onNrChanged',
     value: function onNrChanged(e) {
-      this.setState({ nr: parseInt(e.target.value) });
+      var data = this.state.data;
+
+      data.nr = parseInt(e.target.value);
+      this.setState({ data: data });
     }
   }, {
     key: 'onLatChanged',
     value: function onLatChanged(e) {
-      this.setState({ lat: parseFloat(e.target.value) });
+      var data = this.state.data;
+
+      data.lat = parseFloat(e.target.value);
+      this.setState({ data: data });
     }
   }, {
     key: 'onLngChanged',
     value: function onLngChanged(e) {
-      this.setState({ lng: parseFloat(e.target.value) });
+      var data = this.state.data;
+
+      data.lng = parseFloat(e.target.value);
+      this.setState({ data: data });
     }
   }, {
     key: 'onVisibilityChanged',
     value: function onVisibilityChanged(visibility, e) {
-      this.setState({ visibility: visibility });
+      var data = this.state.data;
+
+      data.visibility = visibility;
+      this.setState({ data: data });
     }
   }, {
     key: 'onCommentChanged',
     value: function onCommentChanged(e) {
-      this.setState({ comment: e.target.value });
+      var data = this.state.data;
+
+      data.comment = e.target.value;
+      this.setState({ data: data });
     }
   }, {
     key: 'onFaDateChanged',
     value: function onFaDateChanged(newFaDate) {
-      this.setState({ faDate: newFaDate });
+      var data = this.state.data;
+
+      data.faDate = newFaDate;
+      this.setState({ data: data });
     }
   }, {
     key: 'onOriginalGradeChanged',
     value: function onOriginalGradeChanged(originalGrade, e) {
-      this.setState({ originalGrade: originalGrade });
+      var data = this.state.data;
+
+      data.originalGrade = originalGrade;
+      this.setState({ data: data });
     }
   }, {
     key: 'onTypeIdChanged',
     value: function onTypeIdChanged(typeId, e) {
-      this.setState({ typeId: typeId });
+      var data = this.state.data;
+
+      data.typeId = typeId;
+      this.setState({ data: data });
     }
   }, {
     key: 'onNewMediaChanged',
     value: function onNewMediaChanged(newMedia) {
-      this.setState({ newMedia: newMedia });
+      var data = this.state.data;
+
+      data.newMedia = newMedia;
+      this.setState({ data: data });
     }
   }, {
     key: 'save',
@@ -5994,20 +6041,29 @@ var ProblemEdit = function (_Component) {
   }, {
     key: 'onMapClick',
     value: function onMapClick(event) {
-      this.setState({ lat: event.latLng.lat(), lng: event.latLng.lng() });
+      var data = this.state.data;
+
+      data.lat = event.latLng.lat();
+      data.lng = event.latLng.lng();
+      this.setState({ data: data });
     }
   }, {
     key: 'onUsersUpdated',
     value: function onUsersUpdated(newUsers) {
-      var fa = newUsers.map(function (u) {
+      var data = this.state.data;
+
+      data.fa = newUsers.map(function (u) {
         return { id: typeof u.value === 'string' || u.value instanceof String ? -1 : u.value, firstname: u.label, surname: null };
       });
-      this.setState({ fa: fa });
+      this.setState({ data: data });
     }
   }, {
     key: 'onSectionsUpdated',
     value: function onSectionsUpdated(sections) {
-      this.setState({ sections: sections });
+      var data = this.state.data;
+
+      data.sections = sections;
+      this.setState({ data: data });
     }
   }, {
     key: 'onCancel',
@@ -7498,22 +7554,34 @@ var SectorEdit = function (_Component) {
   }, {
     key: 'onNameChanged',
     value: function onNameChanged(e) {
-      this.setState({ name: e.target.value });
+      var data = this.state.data;
+
+      data.name = e.target.value;
+      this.setState({ data: data });
     }
   }, {
     key: 'onVisibilityChanged',
     value: function onVisibilityChanged(visibility, e) {
-      this.setState({ visibility: visibility });
+      var data = this.state.data;
+
+      data.visibility = visibility;
+      this.setState({ data: data });
     }
   }, {
     key: 'onCommentChanged',
     value: function onCommentChanged(e) {
-      this.setState({ comment: e.target.value });
+      var data = this.state.data;
+
+      data.comment = e.target.value;
+      this.setState({ data: data });
     }
   }, {
     key: 'onNewMediaChanged',
     value: function onNewMediaChanged(newMedia) {
-      this.setState({ newMedia: newMedia });
+      var data = this.state.data;
+
+      data.newMedia = newMedia;
+      this.setState({ data: data });
     }
   }, {
     key: 'save',
@@ -7538,23 +7606,32 @@ var SectorEdit = function (_Component) {
   }, {
     key: 'onMapClick',
     value: function onMapClick(event) {
-      this.setState({ lat: event.latLng.lat(), lng: event.latLng.lng() });
+      var data = this.state.data;
+
+      data.lat = event.latLng.lat();
+      data.lng = event.latLng.lng();
+      this.setState({ data: data });
     }
   }, {
     key: 'onMapRightClick',
     value: function onMapRightClick(event) {
-      if (this.state.data.polygonCoords) {
-        this.setState({
-          polygonCoords: this.state.data.polygonCoords + ";" + event.latLng.lat() + "," + event.latLng.lng()
-        });
+      var data = this.state.data;
+
+      var coords = event.latLng.lat() + "," + event.latLng.lng();
+      if (data.polygonCoords) {
+        data.polygonCoords = data.polygonCoords + ";" + coords;
       } else {
-        this.setState({ polygonCoords: event.latLng.lat() + "," + event.latLng.lng() });
+        data.polygonCoords = coords;
       }
+      this.setState({ data: data });
     }
   }, {
     key: 'resetMapPolygon',
     value: function resetMapPolygon(event) {
-      this.setState({ polygonCoords: null });
+      var data = this.state.data;
+
+      data.polygonCoords = null;
+      this.setState({ data: data });
     }
   }, {
     key: 'onCancel',
@@ -9463,7 +9540,7 @@ var Navigation = function (_Component) {
             _react2.default.createElement(
               _reactBootstrap.NavDropdown,
               { eventKey: 2, title: 'Finder', id: 'basic-nav-dropdown' },
-              this.state.meta && this.state.meta.metadata.isSuperadmin && _react2.default.createElement(
+              this.state.meta && this.state.meta.metadata.isSuperAdmin && _react2.default.createElement(
                 _reactRouterBootstrap.LinkContainer,
                 { to: '/finder/-1' },
                 _react2.default.createElement(
