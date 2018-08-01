@@ -352,10 +352,11 @@ export function getUserSearch(accessToken, value) {
   });
 }
 
-export function postArea(accessToken, id, visibility, name, comment, lat, lng, newMedia) {
+export function postArea(accessToken, id, visibility, name, comment, lat, lng, media) {
   const formData = new FormData();
+  const newMedia = media.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
   formData.append('json', JSON.stringify({id, visibility, name, comment, lat, lng, newMedia}));
-  newMedia.forEach(m => formData.append(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
+  media.forEach(m => formData.append(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
   return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/areas`),{
     mode: 'cors',
     method: 'POST',
@@ -382,10 +383,11 @@ export function postComment(accessToken, idProblem, comment) {
   });
 }
 
-export function postProblem(accessToken, sectorId, id, visibility, name, comment, originalGrade, fa, faDate, nr, t, lat, lng, sections, newMedia) {
+export function postProblem(accessToken, sectorId, id, visibility, name, comment, originalGrade, fa, faDate, nr, t, lat, lng, sections, media) {
   const formData = new FormData();
+  const newMedia = media.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
   formData.append('json', JSON.stringify({sectorId, id, visibility, name, comment, originalGrade, fa, faDate, nr, t, lat, lng, sections, newMedia}));
-  newMedia.forEach(m => formData.append(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
+  media.forEach(m => formData.append(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
   return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/problems`),{
     mode: 'cors',
     method: 'POST',
@@ -399,10 +401,11 @@ export function postProblem(accessToken, sectorId, id, visibility, name, comment
   }).then((data) => data.json());
 }
 
-export function postProblemMedia(accessToken, id, newMedia) {
+export function postProblemMedia(accessToken, id, media) {
   const formData = new FormData();
+  const newMedia = media.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
   formData.append('json', JSON.stringify({id, newMedia}));
-  newMedia.forEach(m => formData.append(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
+  media.forEach(m => formData.append(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
   return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/problems/media`),{
     mode: 'cors',
     method: 'POST',
@@ -444,10 +447,11 @@ export function postSearch(accessToken, value) {
   }).then((data) => data.json());
 }
 
-export function postSector(accessToken, areaId, id, visibility, name, comment, lat, lng, newMedia) {
+export function postSector(accessToken, areaId, id, visibility, name, comment, lat, lng, media) {
   const formData = new FormData();
+  const newMedia = media.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
   formData.append('json', JSON.stringify({areaId, id, visibility, name, comment, lat, lng, newMedia}));
-  newMedia.forEach(m => formData.append(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
+  media.forEach(m => formData.append(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
   return fetch(encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/sectors`),{
     mode: 'cors',
     method: 'POST',

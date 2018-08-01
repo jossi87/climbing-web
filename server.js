@@ -73,7 +73,7 @@ module.exports = require("react");
 /* 1 */
 /***/ (function(module, exports) {
 
-module.exports = require("react-bootstrap");
+module.exports = require("react-cookie");
 
 /***/ }),
 /* 2 */
@@ -85,13 +85,13 @@ module.exports = require("prop-types");
 /* 3 */
 /***/ (function(module, exports) {
 
-module.exports = require("react-router-dom");
+module.exports = require("react-bootstrap");
 
 /***/ }),
 /* 4 */
 /***/ (function(module, exports) {
 
-module.exports = require("react-cookie");
+module.exports = require("react-router-dom");
 
 /***/ }),
 /* 5 */
@@ -516,10 +516,13 @@ function getUserSearch(accessToken, value) {
   });
 }
 
-function postArea(accessToken, id, visibility, name, comment, lat, lng, newMedia) {
+function postArea(accessToken, id, visibility, name, comment, lat, lng, media) {
   var formData = new FormData();
+  var newMedia = media.map(function (m) {
+    return { name: m.file.name.replace(/[^-a-z0-9.]/ig, '_'), photographer: m.photographer, inPhoto: m.inPhoto };
+  });
   formData.append('json', JSON.stringify({ id: id, visibility: visibility, name: name, comment: comment, lat: lat, lng: lng, newMedia: newMedia }));
-  newMedia.forEach(function (m) {
+  media.forEach(function (m) {
     return formData.append(m.file.name.replace(/[^-a-z0-9.]/ig, '_'), m.file);
   });
   return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/areas'), {
@@ -550,10 +553,13 @@ function postComment(accessToken, idProblem, comment) {
   });
 }
 
-function postProblem(accessToken, sectorId, id, visibility, name, comment, originalGrade, fa, faDate, nr, t, lat, lng, sections, newMedia) {
+function postProblem(accessToken, sectorId, id, visibility, name, comment, originalGrade, fa, faDate, nr, t, lat, lng, sections, media) {
   var formData = new FormData();
+  var newMedia = media.map(function (m) {
+    return { name: m.file.name.replace(/[^-a-z0-9.]/ig, '_'), photographer: m.photographer, inPhoto: m.inPhoto };
+  });
   formData.append('json', JSON.stringify({ sectorId: sectorId, id: id, visibility: visibility, name: name, comment: comment, originalGrade: originalGrade, fa: fa, faDate: faDate, nr: nr, t: t, lat: lat, lng: lng, sections: sections, newMedia: newMedia }));
-  newMedia.forEach(function (m) {
+  media.forEach(function (m) {
     return formData.append(m.file.name.replace(/[^-a-z0-9.]/ig, '_'), m.file);
   });
   return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/problems'), {
@@ -571,10 +577,13 @@ function postProblem(accessToken, sectorId, id, visibility, name, comment, origi
   });
 }
 
-function postProblemMedia(accessToken, id, newMedia) {
+function postProblemMedia(accessToken, id, media) {
   var formData = new FormData();
+  var newMedia = media.map(function (m) {
+    return { name: m.file.name.replace(/[^-a-z0-9.]/ig, '_'), photographer: m.photographer, inPhoto: m.inPhoto };
+  });
   formData.append('json', JSON.stringify({ id: id, newMedia: newMedia }));
-  newMedia.forEach(function (m) {
+  media.forEach(function (m) {
     return formData.append(m.file.name.replace(/[^-a-z0-9.]/ig, '_'), m.file);
   });
   return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/problems/media'), {
@@ -624,10 +633,13 @@ function postSearch(accessToken, value) {
   });
 }
 
-function postSector(accessToken, areaId, id, visibility, name, comment, lat, lng, newMedia) {
+function postSector(accessToken, areaId, id, visibility, name, comment, lat, lng, media) {
   var formData = new FormData();
+  var newMedia = media.map(function (m) {
+    return { name: m.file.name.replace(/[^-a-z0-9.]/ig, '_'), photographer: m.photographer, inPhoto: m.inPhoto };
+  });
   formData.append('json', JSON.stringify({ areaId: areaId, id: id, visibility: visibility, name: name, comment: comment, lat: lat, lng: lng, newMedia: newMedia }));
-  newMedia.forEach(function (m) {
+  media.forEach(function (m) {
     return formData.append(m.file.name.replace(/[^-a-z0-9.]/ig, '_'), m.file);
   });
   return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/sectors'), {
@@ -1001,13 +1013,13 @@ var _react2 = _interopRequireDefault(_react);
 
 var _propTypes = __webpack_require__(2);
 
-var _reactCookie = __webpack_require__(4);
+var _reactCookie = __webpack_require__(1);
 
 var _reactDropzone = __webpack_require__(40);
 
 var _reactDropzone2 = _interopRequireDefault(_reactDropzone);
 
-var _reactBootstrap = __webpack_require__(1);
+var _reactBootstrap = __webpack_require__(3);
 
 var _api = __webpack_require__(6);
 
@@ -1226,13 +1238,13 @@ var _react2 = _interopRequireDefault(_react);
 
 var _propTypes = __webpack_require__(2);
 
-var _reactCookie = __webpack_require__(4);
+var _reactCookie = __webpack_require__(1);
 
 var _reactImageGallery = __webpack_require__(32);
 
 var _reactImageGallery2 = _interopRequireDefault(_reactImageGallery);
 
-var _reactBootstrap = __webpack_require__(1);
+var _reactBootstrap = __webpack_require__(3);
 
 var _reactPlayer = __webpack_require__(33);
 
@@ -1240,7 +1252,7 @@ var _reactPlayer2 = _interopRequireDefault(_reactPlayer);
 
 var _svgPathParser = __webpack_require__(19);
 
-var _reactRouterDom = __webpack_require__(3);
+var _reactRouterDom = __webpack_require__(4);
 
 var _util = __webpack_require__(10);
 
@@ -1746,9 +1758,9 @@ var _react2 = _interopRequireDefault(_react);
 
 var _propTypes = __webpack_require__(2);
 
-var _reactCookie = __webpack_require__(4);
+var _reactCookie = __webpack_require__(1);
 
-var _reactBootstrap = __webpack_require__(1);
+var _reactBootstrap = __webpack_require__(3);
 
 var _reactInputCalendar = __webpack_require__(21);
 
@@ -2075,13 +2087,13 @@ var _react2 = _interopRequireDefault(_react);
 
 var _server = __webpack_require__(26);
 
-var _reactRouterDom = __webpack_require__(3);
+var _reactRouterDom = __webpack_require__(4);
 
 var _serializeJavascript = __webpack_require__(27);
 
 var _serializeJavascript2 = _interopRequireDefault(_serializeJavascript);
 
-var _reactCookie = __webpack_require__(4);
+var _reactCookie = __webpack_require__(1);
 
 var _App = __webpack_require__(28);
 
@@ -2176,7 +2188,7 @@ var _reactDom = __webpack_require__(17);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _reactRouterDom = __webpack_require__(3);
+var _reactRouterDom = __webpack_require__(4);
 
 var _loading = __webpack_require__(29);
 
@@ -2375,15 +2387,15 @@ var _react2 = _interopRequireDefault(_react);
 
 var _propTypes = __webpack_require__(2);
 
-var _reactCookie = __webpack_require__(4);
+var _reactCookie = __webpack_require__(1);
 
 var _reactMetaTags = __webpack_require__(7);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
-var _reactRouterDom = __webpack_require__(3);
+var _reactRouterDom = __webpack_require__(4);
 
-var _reactBootstrap = __webpack_require__(1);
+var _reactBootstrap = __webpack_require__(3);
 
 var _reactRouterBootstrap = __webpack_require__(9);
 
@@ -2797,7 +2809,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _propTypes = __webpack_require__(2);
 
-var _reactCookie = __webpack_require__(4);
+var _reactCookie = __webpack_require__(1);
 
 var _reactMetaTags = __webpack_require__(7);
 
@@ -2805,7 +2817,7 @@ var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
 var _reactRouter = __webpack_require__(8);
 
-var _reactBootstrap = __webpack_require__(1);
+var _reactBootstrap = __webpack_require__(3);
 
 var _imageUpload = __webpack_require__(14);
 
@@ -2926,9 +2938,6 @@ var AreaEdit = function (_Component) {
 
       var accessToken = cookies.get('access_token');
       this.setState({ isSaving: true });
-      var newMedia = this.state.data.newMedia.map(function (m) {
-        return { name: m.file.name.replace(/[^-a-z0-9.]/ig, '_'), photographer: m.photographer, inPhoto: m.inPhoto };
-      });
       (0, _api.postArea)(accessToken, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, newMedia).then(function (response) {
         _this3.setState({ pushUrl: "/area/" + response.id });
       }).catch(function (error) {
@@ -3138,15 +3147,15 @@ var _react2 = _interopRequireDefault(_react);
 
 var _propTypes = __webpack_require__(2);
 
-var _reactCookie = __webpack_require__(4);
+var _reactCookie = __webpack_require__(1);
 
 var _reactMetaTags = __webpack_require__(7);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
-var _reactRouterDom = __webpack_require__(3);
+var _reactRouterDom = __webpack_require__(4);
 
-var _reactBootstrap = __webpack_require__(1);
+var _reactBootstrap = __webpack_require__(3);
 
 var _reactBootstrapTable = __webpack_require__(16);
 
@@ -3396,9 +3405,9 @@ var _react2 = _interopRequireDefault(_react);
 
 var _propTypes = __webpack_require__(2);
 
-var _reactCookie = __webpack_require__(4);
+var _reactCookie = __webpack_require__(1);
 
-var _reactBootstrap = __webpack_require__(1);
+var _reactBootstrap = __webpack_require__(3);
 
 var _auth = __webpack_require__(13);
 
@@ -3466,15 +3475,15 @@ var _react2 = _interopRequireDefault(_react);
 
 var _propTypes = __webpack_require__(2);
 
-var _reactCookie = __webpack_require__(4);
+var _reactCookie = __webpack_require__(1);
 
 var _reactMetaTags = __webpack_require__(7);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
-var _reactRouterDom = __webpack_require__(3);
+var _reactRouterDom = __webpack_require__(4);
 
-var _reactBootstrap = __webpack_require__(1);
+var _reactBootstrap = __webpack_require__(3);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3653,13 +3662,13 @@ var _react2 = _interopRequireDefault(_react);
 
 var _propTypes = __webpack_require__(2);
 
-var _reactCookie = __webpack_require__(4);
+var _reactCookie = __webpack_require__(1);
 
 var _reactMetaTags = __webpack_require__(7);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
-var _reactRouterDom = __webpack_require__(3);
+var _reactRouterDom = __webpack_require__(4);
 
 var _reactRouterBootstrap = __webpack_require__(9);
 
@@ -3667,7 +3676,7 @@ var _map = __webpack_require__(11);
 
 var _map2 = _interopRequireDefault(_map);
 
-var _reactBootstrap = __webpack_require__(1);
+var _reactBootstrap = __webpack_require__(3);
 
 var _reactBootstrapTable = __webpack_require__(16);
 
@@ -4240,15 +4249,15 @@ var _react2 = _interopRequireDefault(_react);
 
 var _propTypes = __webpack_require__(2);
 
-var _reactCookie = __webpack_require__(4);
+var _reactCookie = __webpack_require__(1);
 
 var _reactMetaTags = __webpack_require__(7);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
-var _reactRouterDom = __webpack_require__(3);
+var _reactRouterDom = __webpack_require__(4);
 
-var _reactBootstrap = __webpack_require__(1);
+var _reactBootstrap = __webpack_require__(3);
 
 var _textbox = __webpack_require__(46);
 
@@ -4634,9 +4643,9 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouterDom = __webpack_require__(3);
+var _reactRouterDom = __webpack_require__(4);
 
-var _reactBootstrap = __webpack_require__(1);
+var _reactBootstrap = __webpack_require__(3);
 
 var _util = __webpack_require__(10);
 
@@ -4748,7 +4757,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouterDom = __webpack_require__(3);
+var _reactRouterDom = __webpack_require__(4);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4839,7 +4848,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _propTypes = __webpack_require__(2);
 
-var _reactCookie = __webpack_require__(4);
+var _reactCookie = __webpack_require__(1);
 
 var _auth = __webpack_require__(13);
 
@@ -4901,9 +4910,9 @@ var _react2 = _interopRequireDefault(_react);
 
 var _propTypes = __webpack_require__(2);
 
-var _reactCookie = __webpack_require__(4);
+var _reactCookie = __webpack_require__(1);
 
-var _reactBootstrap = __webpack_require__(1);
+var _reactBootstrap = __webpack_require__(3);
 
 var _auth = __webpack_require__(13);
 
@@ -4970,13 +4979,13 @@ var _react2 = _interopRequireDefault(_react);
 
 var _propTypes = __webpack_require__(2);
 
-var _reactCookie = __webpack_require__(4);
+var _reactCookie = __webpack_require__(1);
 
 var _reactMetaTags = __webpack_require__(7);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
-var _reactRouterDom = __webpack_require__(3);
+var _reactRouterDom = __webpack_require__(4);
 
 var _map = __webpack_require__(11);
 
@@ -4988,7 +4997,7 @@ var _gallery2 = _interopRequireDefault(_gallery);
 
 var _reactRouterBootstrap = __webpack_require__(9);
 
-var _reactBootstrap = __webpack_require__(1);
+var _reactBootstrap = __webpack_require__(3);
 
 var _tickModal = __webpack_require__(20);
 
@@ -5689,9 +5698,9 @@ var _react2 = _interopRequireDefault(_react);
 
 var _propTypes = __webpack_require__(2);
 
-var _reactCookie = __webpack_require__(4);
+var _reactCookie = __webpack_require__(1);
 
-var _reactBootstrap = __webpack_require__(1);
+var _reactBootstrap = __webpack_require__(3);
 
 var _api = __webpack_require__(6);
 
@@ -5830,17 +5839,17 @@ var _react2 = _interopRequireDefault(_react);
 
 var _propTypes = __webpack_require__(2);
 
-var _reactCookie = __webpack_require__(4);
+var _reactCookie = __webpack_require__(1);
 
 var _reactMetaTags = __webpack_require__(7);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
-var _reactRouterDom = __webpack_require__(3);
+var _reactRouterDom = __webpack_require__(4);
 
 var _reactRouter = __webpack_require__(8);
 
-var _reactBootstrap = __webpack_require__(1);
+var _reactBootstrap = __webpack_require__(3);
 
 var _reactGoogleMaps = __webpack_require__(12);
 
@@ -6389,7 +6398,7 @@ var _propTypes = __webpack_require__(2);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _reactCookie = __webpack_require__(4);
+var _reactCookie = __webpack_require__(1);
 
 var _Creatable = __webpack_require__(55);
 
@@ -6475,7 +6484,7 @@ var _propTypes = __webpack_require__(2);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _reactBootstrap = __webpack_require__(1);
+var _reactBootstrap = __webpack_require__(3);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -6705,13 +6714,13 @@ var _react2 = _interopRequireDefault(_react);
 
 var _propTypes = __webpack_require__(2);
 
-var _reactCookie = __webpack_require__(4);
+var _reactCookie = __webpack_require__(1);
 
-var _reactRouterDom = __webpack_require__(3);
+var _reactRouterDom = __webpack_require__(4);
 
 var _reactRouter = __webpack_require__(8);
 
-var _reactBootstrap = __webpack_require__(1);
+var _reactBootstrap = __webpack_require__(3);
 
 var _imageUpload = __webpack_require__(14);
 
@@ -6777,10 +6786,7 @@ var ProblemEditMedia = function (_Component) {
       var cookies = this.props.cookies;
 
       var accessToken = cookies.get('access_token');
-      var newMedia = this.state.newMedia.map(function (m) {
-        return { name: m.file.name.replace(/[^-a-z0-9.]/ig, '_'), photographer: m.photographer, inPhoto: m.inPhoto };
-      });
-      (0, _api.postProblemMedia)(accessToken, this.state.id, newMedia).then(function (response) {
+      (0, _api.postProblemMedia)(accessToken, this.state.id, this.state.newMedia).then(function (response) {
         _this3.setState({ pushUrl: "/problem/" + response.id });
       }).catch(function (error) {
         console.warn(error);
@@ -6867,13 +6873,13 @@ var _react2 = _interopRequireDefault(_react);
 
 var _propTypes = __webpack_require__(2);
 
-var _reactCookie = __webpack_require__(4);
+var _reactCookie = __webpack_require__(1);
 
 var _reactMetaTags = __webpack_require__(7);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
-var _reactRouterDom = __webpack_require__(3);
+var _reactRouterDom = __webpack_require__(4);
 
 var _map = __webpack_require__(11);
 
@@ -6883,7 +6889,7 @@ var _gallery = __webpack_require__(15);
 
 var _gallery2 = _interopRequireDefault(_gallery);
 
-var _reactBootstrap = __webpack_require__(1);
+var _reactBootstrap = __webpack_require__(3);
 
 var _reactRouterBootstrap = __webpack_require__(9);
 
@@ -7460,17 +7466,17 @@ var _react2 = _interopRequireDefault(_react);
 
 var _propTypes = __webpack_require__(2);
 
-var _reactCookie = __webpack_require__(4);
+var _reactCookie = __webpack_require__(1);
 
 var _reactMetaTags = __webpack_require__(7);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
-var _reactRouterDom = __webpack_require__(3);
+var _reactRouterDom = __webpack_require__(4);
 
 var _reactRouter = __webpack_require__(8);
 
-var _reactBootstrap = __webpack_require__(1);
+var _reactBootstrap = __webpack_require__(3);
 
 var _reactGoogleMaps = __webpack_require__(12);
 
@@ -7838,15 +7844,15 @@ var _react2 = _interopRequireDefault(_react);
 
 var _propTypes = __webpack_require__(2);
 
-var _reactCookie = __webpack_require__(4);
+var _reactCookie = __webpack_require__(1);
 
 var _reactDom = __webpack_require__(17);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _reactRouterDom = __webpack_require__(3);
+var _reactRouterDom = __webpack_require__(4);
 
-var _reactBootstrap = __webpack_require__(1);
+var _reactBootstrap = __webpack_require__(3);
 
 var _svgPathParser = __webpack_require__(19);
 
@@ -8437,17 +8443,17 @@ var _react2 = _interopRequireDefault(_react);
 
 var _propTypes = __webpack_require__(2);
 
-var _reactCookie = __webpack_require__(4);
+var _reactCookie = __webpack_require__(1);
 
 var _reactMetaTags = __webpack_require__(7);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
-var _reactRouterDom = __webpack_require__(3);
+var _reactRouterDom = __webpack_require__(4);
 
 var _reactRouterBootstrap = __webpack_require__(9);
 
-var _reactBootstrap = __webpack_require__(1);
+var _reactBootstrap = __webpack_require__(3);
 
 var _reactBootstrapTable = __webpack_require__(16);
 
@@ -8868,7 +8874,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactBootstrap = __webpack_require__(1);
+var _reactBootstrap = __webpack_require__(3);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -9017,13 +9023,13 @@ var _react2 = _interopRequireDefault(_react);
 
 var _propTypes = __webpack_require__(2);
 
-var _reactCookie = __webpack_require__(4);
+var _reactCookie = __webpack_require__(1);
 
-var _reactRouterDom = __webpack_require__(3);
+var _reactRouterDom = __webpack_require__(4);
 
 var _reactRouter = __webpack_require__(8);
 
-var _reactBootstrap = __webpack_require__(1);
+var _reactBootstrap = __webpack_require__(3);
 
 var _reactFontawesome = __webpack_require__(5);
 
@@ -9380,9 +9386,9 @@ var _react2 = _interopRequireDefault(_react);
 
 var _propTypes = __webpack_require__(2);
 
-var _reactCookie = __webpack_require__(4);
+var _reactCookie = __webpack_require__(1);
 
-var _reactBootstrap = __webpack_require__(1);
+var _reactBootstrap = __webpack_require__(3);
 
 var _reactRouterBootstrap = __webpack_require__(9);
 

@@ -30,7 +30,7 @@ class ProblemEditMedia extends Component {
   }
 
   onNewMediaChanged(newMedia) {
-    this.setState({newMedia: newMedia});
+    this.setState({newMedia});
   }
 
   save(event) {
@@ -38,8 +38,7 @@ class ProblemEditMedia extends Component {
     this.setState({isSaving: true});
     const { cookies } = this.props;
     const accessToken = cookies.get('access_token');
-    const newMedia = this.state.newMedia.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
-    postProblemMedia(accessToken, this.state.id, newMedia)
+    postProblemMedia(accessToken, this.state.id, this.state.newMedia)
     .then((response) => {
       this.setState({pushUrl: "/problem/" + response.id});
     })
