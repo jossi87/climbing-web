@@ -1,9 +1,15 @@
 import React, {Component} from 'react';
+import { instanceOf } from 'prop-types';
+import { withCookies, Cookies } from 'react-cookie';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { Breadcrumb, Well } from 'react-bootstrap';
 
-export default class Ethics extends Component {
+class Ethics extends Component {
+  static propTypes = {
+    cookies: instanceOf(Cookies).isRequired
+  };
+
   constructor(props) {
     super(props);
     let data;
@@ -18,7 +24,9 @@ export default class Ethics extends Component {
 
   componentDidMount() {
     if (!this.state.data) {
-      this.props.fetchInitialData().then((data) => this.setState(() => ({data})));
+      const { cookies } = this.props;
+      const accessToken = cookies.get('access_token');
+      this.props.fetchInitialData(accessToken).then((data) => this.setState(() => ({data})));
     }
   }
 
@@ -54,3 +62,5 @@ export default class Ethics extends Component {
     );
   }
 }
+
+export default withCookies(Ethics);

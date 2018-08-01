@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import { instanceOf } from 'prop-types';
+import { withCookies, Cookies } from 'react-cookie';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { LinkContainer } from 'react-router-bootstrap';
@@ -8,7 +10,11 @@ import Chart from './common/chart/chart';
 import TickModal from './common/tick-modal/tick-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-export default class User extends Component {
+class User extends Component {
+  static propTypes = {
+    cookies: instanceOf(Cookies).isRequired
+  };
+
   constructor(props) {
     super(props);
     let data;
@@ -22,7 +28,9 @@ export default class User extends Component {
   }
 
   refresh(id) {
-    this.props.fetchInitialData(id).then((data) => this.setState(() => ({data})));
+    const { cookies } = this.props;
+    const accessToken = cookies.get('access_token');
+    this.props.fetchInitialData(accessToken, id).then((data) => this.setState(() => ({data})));
   }
 
   componentDidMount() {
@@ -185,3 +193,5 @@ export default class User extends Component {
     );
   }
 }
+
+export default withCookies(User);

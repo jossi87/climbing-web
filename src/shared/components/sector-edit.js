@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import { instanceOf } from 'prop-types';
+import { withCookies, Cookies } from 'react-cookie';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
@@ -20,7 +22,11 @@ const GettingStartedGoogleMap = withScriptjs(withGoogleMap(props => (
   </GoogleMap>
 )));
 
-export default class SectorEdit extends Component {
+class SectorEdit extends Component {
+  static propTypes = {
+    cookies: instanceOf(Cookies).isRequired
+  };
+
   constructor(props) {
     super(props);
     let data;
@@ -46,7 +52,9 @@ export default class SectorEdit extends Component {
   }
 
   refresh(id) {
-    this.props.fetchInitialData(id).then((data) => this.setState(() => ({data})));
+    const { cookies } = this.props;
+    const accessToken = cookies.get('access_token');
+    this.props.fetchInitialData(accessToken, id).then((data) => this.setState(() => ({data})));
   }
 
   onNameChanged(e) {
@@ -187,3 +195,5 @@ export default class SectorEdit extends Component {
     );
   }
 }
+
+export default withCookies(SectorEdit);

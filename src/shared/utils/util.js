@@ -1,9 +1,9 @@
 module.exports = {
   getImageUrl(id, maxHeight) {
     if (maxHeight) {
-      return encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/images?id=${id}&targetHeight=${maxHeight}`);
+      return encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/images?id=${id}&targetHeight=${maxHeight}`);
     }
-    return encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/images?id=${id}`);
+    return encodeURI(`https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/images?id=${id}`);
   },
 
   convertFromDateToString(date) {

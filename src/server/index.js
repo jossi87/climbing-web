@@ -4,29 +4,34 @@ import React from "react";
 import { renderToString } from "react-dom/server";
 import { StaticRouter, matchPath } from "react-router-dom";
 import serialize from "serialize-javascript";
+import { CookiesProvider } from 'react-cookie';
 import App from '../shared/App';
 import routes from '../shared/routes';
 import { getMeta } from '../shared/api';
 
 const app = express();
+const cookiesMiddleware = require('universal-cookie-express')
 
 app.use(cors());
+app.use(cookiesMiddleware());
 app.use(express.static("public"));
 
 app.get("*", (req, res, next) => {
   const activeRoute = routes.find((route) => matchPath(req.url, route)) || {};
 
   const promise = activeRoute.fetchInitialData
-    ? activeRoute.fetchInitialData(req.path)
+    ? activeRoute.fetchInitialData(req.universalCookies.get('access_token'), req.path)
     : Promise.resolve()
 
   getMeta().then((meta) => {
     promise.then((data) => {
       const context = { data, meta }
       const markup = renderToString(
-        <StaticRouter location={req.url} context={context}>
-          <App />
-        </StaticRouter>
+        <CookiesProvider cookies={req.universalCookies}>
+          <StaticRouter location={req.url} context={context}>
+            <App />
+          </StaticRouter>
+        </CookiesProvider>
       )
 
       res.send(`

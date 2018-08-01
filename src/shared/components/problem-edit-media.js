@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import { instanceOf } from 'prop-types';
+import { withCookies, Cookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router'
 import { FormGroup, ControlLabel, ButtonGroup, Button, Well } from 'react-bootstrap';
@@ -6,7 +8,11 @@ import ImageUpload from './common/image-upload/image-upload';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { postProblemMedia } from './../api';
 
-export default class ProblemEditMedia extends Component {
+class ProblemEditMedia extends Component {
+  static propTypes = {
+    cookies: instanceOf(Cookies).isRequired
+  };
+
   constructor(props) {
     super(props);
     let data;
@@ -32,7 +38,9 @@ export default class ProblemEditMedia extends Component {
   }
 
   refresh(id) {
-    this.props.fetchInitialData(id).then((data) => this.setState(() => ({data})));
+    const { cookies } = this.props;
+    const accessToken = cookies.get('access_token');
+    this.props.fetchInitialData(accessToken, id).then((data) => this.setState(() => ({data})));
   }
 
   onNewMediaChanged(newMedia) {
@@ -82,3 +90,5 @@ export default class ProblemEditMedia extends Component {
     );
   }
 }
+
+export default withCookies(ProblemEditMedia);

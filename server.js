@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 21);
+/******/ 	return __webpack_require__(__webpack_require__.s = 22);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -103,7 +103,6 @@ exports.getAreaEdit = getAreaEdit;
 exports.getBrowse = getBrowse;
 exports.getFinder = getFinder;
 exports.getFrontpage = getFrontpage;
-exports.getLogout = getLogout;
 exports.getMeta = getMeta;
 exports.getProblem = getProblem;
 exports.getProblemEditMedia = getProblemEditMedia;
@@ -113,10 +112,7 @@ exports.getSectorEdit = getSectorEdit;
 exports.getSvgEdit = getSvgEdit;
 exports.getUser = getUser;
 exports.getUserEdit = getUserEdit;
-exports.getUserLogin = getUserLogin;
 exports.getUserSearch = getUserSearch;
-exports.getUserPassword = getUserPassword;
-exports.getUserForgotPassword = getUserForgotPassword;
 exports.postArea = postArea;
 exports.postComment = postComment;
 exports.postProblem = postProblem;
@@ -128,7 +124,7 @@ exports.postTicks = postTicks;
 exports.postUserEdit = postUserEdit;
 exports.postUserRegister = postUserRegister;
 
-var _isomorphicFetch = __webpack_require__(33);
+var _isomorphicFetch = __webpack_require__(35);
 
 var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
 
@@ -136,19 +132,29 @@ var _util = __webpack_require__(8);
 
 var _util2 = _interopRequireDefault(_util);
 
+var _auth = __webpack_require__(11);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-__webpack_require__(34).polyfill();
-function deleteMedia(id) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/media?id=' + id), {
+__webpack_require__(38).polyfill();
+function deleteMedia(accessToken, id) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/media?id=' + id), {
     mode: 'cors',
     method: 'DELETE',
-    credentials: 'include'
+    credentials: 'include',
+    headers: {
+      Authorization: 'Bearer ' + accessToken
+    }
   });
 }
 
-function getArea(id) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/areas?id=' + id), { credentials: 'include' }).then(function (data) {
+function getArea(accessToken, id) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/areas?id=' + id), {
+    credentials: 'include',
+    headers: {
+      Authorization: 'Bearer ' + accessToken
+    }
+  }).then(function (data) {
     return data.json();
   }).catch(function (error) {
     console.warn(error);
@@ -156,9 +162,14 @@ function getArea(id) {
   });
 }
 
-function getAreaEdit(id) {
+function getAreaEdit(accessToken, id) {
   if (id == -1) {
-    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta')).then(function (data) {
+    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/meta'), {
+      credentials: 'include',
+      headers: {
+        Authorization: 'Bearer ' + accessToken
+      }
+    }).then(function (data) {
       return data.json();
     }).then(function (res) {
       return { id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: { title: 'New area | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, isAdmin: res.metadata.isAdmin } };
@@ -167,7 +178,12 @@ function getAreaEdit(id) {
       return null;
     });
   } else {
-    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/areas?id=' + id), { credentials: 'include' }).then(function (data) {
+    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/areas?id=' + id), {
+      credentials: 'include',
+      headers: {
+        Authorization: 'Bearer ' + accessToken
+      }
+    }).then(function (data) {
       return data.json();
     }).then(function (res) {
       return { id: res.id, visibility: res.visibility, name: res.name, comment: res.comment, lat: res.lat, lng: res.lng, newMedia: [], metadata: res.metadata };
@@ -178,8 +194,13 @@ function getAreaEdit(id) {
   }
 }
 
-function getBrowse() {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/browse'), { credentials: 'include' }).then(function (data) {
+function getBrowse(accessToken) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/browse'), {
+    credentials: 'include',
+    headers: {
+      Authorization: 'Bearer ' + accessToken
+    }
+  }).then(function (data) {
     return data.json();
   }).catch(function (error) {
     console.warn(error);
@@ -187,8 +208,13 @@ function getBrowse() {
   });
 }
 
-function getFinder(grade) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/finder?grade=' + grade), { credentials: 'include' }).then(function (data) {
+function getFinder(accessToken, grade) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/finder?grade=' + grade), {
+    credentials: 'include',
+    headers: {
+      Authorization: 'Bearer ' + accessToken
+    }
+  }).then(function (data) {
     return data.json();
   }).catch(function (error) {
     console.warn(error);
@@ -196,8 +222,13 @@ function getFinder(grade) {
   });
 }
 
-function getFrontpage() {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/frontpage'), { credentials: 'include' }).then(function (data) {
+function getFrontpage(accessToken) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/frontpage'), {
+    credentials: 'include',
+    headers: {
+      Authorization: 'Bearer ' + accessToken
+    }
+  }).then(function (data) {
     return data.json();
   }).catch(function (error) {
     console.warn(error);
@@ -205,8 +236,13 @@ function getFrontpage() {
   });
 }
 
-function getLogout() {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/logout')).then(function (data) {
+function getMeta(accessToken) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/meta'), {
+    credentials: 'include',
+    headers: {
+      Authorization: 'Bearer ' + accessToken
+    }
+  }).then(function (data) {
     return data.json();
   }).catch(function (error) {
     console.warn(error);
@@ -214,17 +250,13 @@ function getLogout() {
   });
 }
 
-function getMeta() {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta')).then(function (data) {
-    return data.json();
-  }).catch(function (error) {
-    console.warn(error);
-    return null;
-  });
-}
-
-function getProblem(id) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/problems?id=' + id), { credentials: 'include' }).then(function (data) {
+function getProblem(accessToken, id) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/problems?id=' + id), {
+    credentials: 'include',
+    headers: {
+      Authorization: 'Bearer ' + accessToken
+    }
+  }).then(function (data) {
     return data.json();
   }).then(function (json) {
     return json[0];
@@ -234,8 +266,13 @@ function getProblem(id) {
   });
 }
 
-function getProblemEditMedia(id) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/problems?id=' + id), { credentials: 'include' }).then(function (data) {
+function getProblemEditMedia(accessToken, id) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/problems?id=' + id), {
+    credentials: 'include',
+    headers: {
+      Authorization: 'Bearer ' + accessToken
+    }
+  }).then(function (data) {
     return data.json();
   }).then(function (json) {
     return json[0];
@@ -247,9 +284,14 @@ function getProblemEditMedia(id) {
   });
 }
 
-function getProblemEdit(id) {
+function getProblemEdit(accessToken, id) {
   if (id == -1) {
-    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta')).then(function (data) {
+    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/meta'), {
+      credentials: 'include',
+      headers: {
+        Authorization: 'Bearer ' + accessToken
+      }
+    }).then(function (data) {
       return data.json();
     }).then(function (res) {
       return {
@@ -278,7 +320,12 @@ function getProblemEdit(id) {
       return null;
     });
   } else {
-    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/problems?id=' + id), { credentials: 'include' }).then(function (data) {
+    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/problems?id=' + id), {
+      credentials: 'include',
+      headers: {
+        Authorization: 'Bearer ' + accessToken
+      }
+    }).then(function (data) {
       return data.json();
     }).then(function (json) {
       return json[0];
@@ -305,8 +352,13 @@ function getProblemEdit(id) {
   }
 }
 
-function getSector(id) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/sectors?id=' + id), { credentials: 'include' }).then(function (data) {
+function getSector(accessToken, id) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/sectors?id=' + id), {
+    credentials: 'include',
+    headers: {
+      Authorization: 'Bearer ' + accessToken
+    }
+  }).then(function (data) {
     return data.json();
   }).catch(function (error) {
     console.warn(error);
@@ -314,9 +366,14 @@ function getSector(id) {
   });
 }
 
-function getSectorEdit(id) {
+function getSectorEdit(accessToken, id) {
   if (id == -1) {
-    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/meta')).then(function (data) {
+    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/meta'), {
+      credentials: 'include',
+      headers: {
+        Authorization: 'Bearer ' + accessToken
+      }
+    }).then(function (data) {
       return data.json();
     }).then(function (res) {
       return { id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: { title: 'New sector | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, isAdmin: res.metadata.isAdmin } };
@@ -325,7 +382,12 @@ function getSectorEdit(id) {
       return null;
     });
   } else {
-    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/sectors?id=' + id), { credentials: 'include' }).then(function (data) {
+    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/sectors?id=' + id), {
+      credentials: 'include',
+      headers: {
+        Authorization: 'Bearer ' + accessToken
+      }
+    }).then(function (data) {
       return data.json();
     }).then(function (res) {
       return { id: res.id, visibility: res.visibility, name: res.name, comment: res.comment, lat: res.lat, lng: res.lng, newMedia: [], metadata: res.metadata };
@@ -336,10 +398,15 @@ function getSectorEdit(id) {
   }
 }
 
-function getSvgEdit(problemId, mediaId) {
+function getSvgEdit(accessToken, problemId, mediaId) {
   var _this = this;
 
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/problems?id=' + problemId), { credentials: 'include' }).then(function (data) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/problems?id=' + problemId), {
+    credentials: 'include',
+    headers: {
+      Authorization: 'Bearer ' + accessToken
+    }
+  }).then(function (data) {
     return data.json();
   }).then(function (json) {
     return json[0];
@@ -411,8 +478,13 @@ function getSvgEdit(problemId, mediaId) {
   });
 }
 
-function getUser(id) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users?id=' + id), { credentials: 'include' }).then(function (data) {
+function getUser(accessToken, id) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/users?id=' + id), {
+    credentials: 'include',
+    headers: {
+      Authorization: 'Bearer ' + accessToken
+    }
+  }).then(function (data) {
     return data.json();
   }).catch(function (error) {
     console.warn(error);
@@ -420,8 +492,13 @@ function getUser(id) {
   });
 }
 
-function getUserEdit(id) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/edit?id=' + id), { credentials: 'include' }).then(function (data) {
+function getUserEdit(accessToken, id) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/users/edit?id=' + id), {
+    credentials: 'include',
+    headers: {
+      Authorization: 'Bearer ' + accessToken
+    }
+  }).then(function (data) {
     return data.json();
   }).then(function (res) {
     return { id: res.id, username: res.username, firstname: res.firstname, lastname: res.lastname, currentPassword: null, newPassword: null, newPassword2: null, message: null };
@@ -431,45 +508,13 @@ function getUserEdit(id) {
   });
 }
 
-function getUserLogin() {
-  var username = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
-  var password = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
-
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/login'), {
-    mode: 'cors',
-    method: 'POST',
+function getUserSearch(accessToken, value) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/users/search?value=' + value), {
     credentials: 'include',
-    body: "username=" + encodeURIComponent(username) + "&password=" + encodeURIComponent(password),
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Accept': 'application/json'
+      Authorization: 'Bearer ' + accessToken
     }
   }).then(function (data) {
-    return data.json();
-  }).then(function (res) {
-    var lvl = parseInt(res);
-    var isAuthenticated = false;
-    var isAdmin = false;
-    var isSuperadmin = false;
-    if (lvl >= 0) {
-      isAuthenticated = true;
-      isAdmin = lvl >= 1;
-      isSuperadmin = lvl === 2;
-    }
-    if (isAuthenticated) {
-      return {
-        isAuthenticated: isAuthenticated,
-        isAdmin: isAdmin,
-        isSuperadmin: isSuperadmin
-      };
-    } else {
-      throw "Invalid username/password";
-    }
-  });
-}
-
-function getUserSearch(value) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/search?value=' + value)).then(function (data) {
     return data.json();
   }).catch(function (error) {
     console.warn(error);
@@ -477,26 +522,19 @@ function getUserSearch(value) {
   });
 }
 
-function getUserPassword(token, password) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/password?token=' + token + '&password=' + password));
-}
-
-function getUserForgotPassword(username) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/forgotPassword?username=' + username));
-}
-
-function postArea(id, visibility, name, comment, lat, lng, newMedia) {
+function postArea(accessToken, id, visibility, name, comment, lat, lng, newMedia) {
   var formData = new FormData();
   formData.append('json', JSON.stringify({ id: id, visibility: visibility, name: name, comment: comment, lat: lat, lng: lng, newMedia: newMedia }));
   newMedia.forEach(function (m) {
     return formData.append(m.file.name.replace(/[^-a-z0-9.]/ig, '_'), m.file);
   });
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/areas'), {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/areas'), {
     mode: 'cors',
     method: 'POST',
     credentials: 'include',
     body: formData,
     headers: {
+      Authorization: 'Bearer ' + accessToken,
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     }
@@ -505,30 +543,32 @@ function postArea(id, visibility, name, comment, lat, lng, newMedia) {
   });
 }
 
-function postComment(idProblem, comment) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/comments'), {
+function postComment(accessToken, idProblem, comment) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/comments'), {
     mode: 'cors',
     method: 'POST',
     credentials: 'include',
     body: JSON.stringify({ idProblem: idProblem, comment: comment }),
     headers: {
+      Authorization: 'Bearer ' + accessToken,
       'Content-Type': 'application/json'
     }
   });
 }
 
-function postProblem(sectorId, id, visibility, name, comment, originalGrade, fa, faDate, nr, t, lat, lng, sections, newMedia) {
+function postProblem(accessToken, sectorId, id, visibility, name, comment, originalGrade, fa, faDate, nr, t, lat, lng, sections, newMedia) {
   var formData = new FormData();
   formData.append('json', JSON.stringify({ sectorId: sectorId, id: id, visibility: visibility, name: name, comment: comment, originalGrade: originalGrade, fa: fa, faDate: faDate, nr: nr, t: t, lat: lat, lng: lng, sections: sections, newMedia: newMedia }));
   newMedia.forEach(function (m) {
     return formData.append(m.file.name.replace(/[^-a-z0-9.]/ig, '_'), m.file);
   });
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/problems'), {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/problems'), {
     mode: 'cors',
     method: 'POST',
     credentials: 'include',
     body: formData,
     headers: {
+      Authorization: 'Bearer ' + accessToken,
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     }
@@ -537,18 +577,19 @@ function postProblem(sectorId, id, visibility, name, comment, originalGrade, fa,
   });
 }
 
-function postProblemMedia(id, newMedia) {
+function postProblemMedia(accessToken, id, newMedia) {
   var formData = new FormData();
   formData.append('json', JSON.stringify({ id: id, newMedia: newMedia }));
   newMedia.forEach(function (m) {
     return formData.append(m.file.name.replace(/[^-a-z0-9.]/ig, '_'), m.file);
   });
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/problems/media'), {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/problems/media'), {
     mode: 'cors',
     method: 'POST',
     credentials: 'include',
     body: formData,
     headers: {
+      Authorization: 'Bearer ' + accessToken,
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     }
@@ -557,13 +598,14 @@ function postProblemMedia(id, newMedia) {
   });
 }
 
-function postProblemSvg(problemId, mediaId, del, id, path, hasAnchor) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/problems/svg?problemId=' + problemId + '&mediaId=' + mediaId), {
+function postProblemSvg(accessToken, problemId, mediaId, del, id, path, hasAnchor) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/problems/svg?problemId=' + problemId + '&mediaId=' + mediaId), {
     mode: 'cors',
     method: 'POST',
     credentials: 'include',
     body: JSON.stringify({ delete: del, id: id, path: path, hasAnchor: hasAnchor }),
     headers: {
+      Authorization: 'Bearer ' + accessToken,
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     }
@@ -572,13 +614,14 @@ function postProblemSvg(problemId, mediaId, del, id, path, hasAnchor) {
   });
 }
 
-function postSearch(value) {
-  return (0, _isomorphicFetch2.default)("https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/search", {
+function postSearch(accessToken, value) {
+  return (0, _isomorphicFetch2.default)("https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/search", {
     mode: 'cors',
     method: 'POST',
     credentials: 'include',
     body: JSON.stringify({ value: value }),
     headers: {
+      Authorization: 'Bearer ' + accessToken,
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     }
@@ -587,18 +630,19 @@ function postSearch(value) {
   });
 }
 
-function postSector(areaId, id, visibility, name, comment, lat, lng, newMedia) {
+function postSector(accessToken, areaId, id, visibility, name, comment, lat, lng, newMedia) {
   var formData = new FormData();
   formData.append('json', JSON.stringify({ areaId: areaId, id: id, visibility: visibility, name: name, comment: comment, lat: lat, lng: lng, newMedia: newMedia }));
   newMedia.forEach(function (m) {
     return formData.append(m.file.name.replace(/[^-a-z0-9.]/ig, '_'), m.file);
   });
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/sectors'), {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/sectors'), {
     mode: 'cors',
     method: 'POST',
     credentials: 'include',
     body: formData,
     headers: {
+      Authorization: 'Bearer ' + accessToken,
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     }
@@ -607,37 +651,40 @@ function postSector(areaId, id, visibility, name, comment, lat, lng, newMedia) {
   });
 }
 
-function postTicks(del, id, idProblem, comment, date, stars, grade) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/ticks'), {
+function postTicks(accessToken, del, id, idProblem, comment, date, stars, grade) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/ticks'), {
     mode: 'cors',
     method: 'POST',
     credentials: 'include',
     body: JSON.stringify({ delete: del, id: id, idProblem: idProblem, comment: comment, date: date, stars: stars, grade: grade }),
     headers: {
+      Authorization: 'Bearer ' + accessToken,
       'Content-Type': 'application/json'
     }
   });
 }
 
-function postUserEdit(id, username, firstname, lastname, currentPassword, newPassword) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/edit'), {
+function postUserEdit(accessToken, id, username, firstname, lastname, currentPassword, newPassword) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/users/edit'), {
     mode: 'cors',
     method: 'POST',
     credentials: 'include',
     body: JSON.stringify({ id: id, username: username, firstname: firstname, lastname: lastname, currentPassword: currentPassword, newPassword: newPassword }),
     headers: {
+      Authorization: 'Bearer ' + accessToken,
       'Content-Type': 'application/json'
     }
   });
 }
 
-function postUserRegister(firstname, lastname, username, password) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/users/register'), {
+function postUserRegister(accessToken, firstname, lastname, username, password) {
+  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/users/register'), {
     mode: 'cors',
     method: 'POST',
     credentials: 'include',
     body: JSON.stringify({ firstname: firstname, lastname: lastname, username: username, password: password }),
     headers: {
+      Authorization: 'Bearer ' + accessToken,
       'Content-Type': 'application/json'
     }
   });
@@ -671,9 +718,9 @@ module.exports = require("react-router-bootstrap");
 module.exports = {
   getImageUrl: function getImageUrl(id, maxHeight) {
     if (maxHeight) {
-      return encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/images?id=' + id + '&targetHeight=' + maxHeight);
+      return encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/images?id=' + id + '&targetHeight=' + maxHeight);
     }
-    return encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v1/images?id=' + id);
+    return encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/images?id=' + id);
   },
   convertFromDateToString: function convertFromDateToString(date) {
     var d = date.getDate();
@@ -704,7 +751,7 @@ var _reactRouter = __webpack_require__(6);
 
 var _reactGoogleMaps = __webpack_require__(10);
 
-var _MarkerClusterer = __webpack_require__(29);
+var _MarkerClusterer = __webpack_require__(31);
 
 var _MarkerClusterer2 = _interopRequireDefault(_MarkerClusterer);
 
@@ -847,6 +894,110 @@ module.exports = require("react-google-maps");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.login = login;
+exports.logout = logout;
+exports.getIdToken = getIdToken;
+exports.getAccessToken = getAccessToken;
+exports.setAccessToken = setAccessToken;
+exports.setIdToken = setIdToken;
+exports.isLoggedIn = isLoggedIn;
+
+var _jwtDecode = __webpack_require__(36);
+
+var _jwtDecode2 = _interopRequireDefault(_jwtDecode);
+
+var _auth0Js = __webpack_require__(37);
+
+var _auth0Js2 = _interopRequireDefault(_auth0Js);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var ID_TOKEN_KEY = 'id_token';
+var ACCESS_TOKEN_KEY = 'access_token';
+
+var auth = new _auth0Js2.default.WebAuth({
+  domain: 'buldreinfo.auth0.com',
+  clientID: 'zexpFfou6HkgNWH5QVi3zyT1rrw6MXAn'
+});
+
+function login() {
+  auth.authorize({
+    domain: 'buldreinfo.auth0.com',
+    clientID: 'zexpFfou6HkgNWH5QVi3zyT1rrw6MXAn',
+    redirectUri: window.location.origin + '/callback',
+    audience: 'https://buldreinfo.auth0.com/userinfo',
+    responseType: 'token id_token',
+    scope: 'openid'
+  });
+}
+
+function logout() {
+  clearIdToken();
+  clearAccessToken();
+}
+
+function getIdToken(cookies) {
+  return cookies.get(ID_TOKEN_KEY);
+}
+
+function getAccessToken(cookies) {
+  return cookies.get(ACCESS_TOKEN_KEY);
+}
+
+function clearIdToken(cookies) {
+  cookies.remove(ID_TOKEN_KEY);
+}
+
+function clearAccessToken(cookies) {
+  cookies.remove(ACCESS_TOKEN_KEY);
+}
+
+// Helper function that will allow us to extract the access_token and id_token
+function getParameterByName(name) {
+  var match = RegExp('[#&]' + name + '=([^&]*)').exec(window.location.hash);
+  return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+}
+
+function setAccessToken(cookies) {
+  var accessToken = getParameterByName('access_token');
+  cookies.set(ACCESS_TOKEN_KEY, accessToken);
+}
+
+function setIdToken(cookies) {
+  var idToken = getParameterByName('id_token');
+  cookies.set(ID_TOKEN_KEY, idToken);
+}
+
+function isLoggedIn() {
+  var idToken = getIdToken();
+  return !!idToken && !isTokenExpired(idToken);
+}
+
+function getTokenExpirationDate(encodedToken) {
+  var token = (0, _jwtDecode2.default)(encodedToken);
+  if (!token.exp) {
+    return null;
+  }
+  var date = new Date(0);
+  date.setUTCSeconds(token.exp);
+  return date;
+}
+
+function isTokenExpired(token) {
+  var expirationDate = getTokenExpirationDate(token);
+  return expirationDate < new Date();
+}
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -854,7 +1005,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactDropzone = __webpack_require__(36);
+var _reactDropzone = __webpack_require__(40);
 
 var _reactDropzone2 = _interopRequireDefault(_reactDropzone);
 
@@ -1056,7 +1207,7 @@ var ImageUpload = function (_Component2) {
 exports.default = ImageUpload;
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1072,17 +1223,17 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactImageGallery = __webpack_require__(30);
+var _reactImageGallery = __webpack_require__(32);
 
 var _reactImageGallery2 = _interopRequireDefault(_reactImageGallery);
 
 var _reactBootstrap = __webpack_require__(1);
 
-var _reactPlayer = __webpack_require__(31);
+var _reactPlayer = __webpack_require__(33);
 
 var _reactPlayer2 = _interopRequireDefault(_reactPlayer);
 
-var _svgPathParser = __webpack_require__(16);
+var _svgPathParser = __webpack_require__(17);
 
 var _reactRouterDom = __webpack_require__(2);
 
@@ -1092,7 +1243,7 @@ var _util2 = _interopRequireDefault(_util);
 
 var _reactRouter = __webpack_require__(6);
 
-var _objectFitImages = __webpack_require__(32);
+var _objectFitImages = __webpack_require__(34);
 
 var _objectFitImages2 = _interopRequireDefault(_objectFitImages);
 
@@ -1419,19 +1570,19 @@ var Gallery = function (_Component) {
 exports.default = Gallery;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports) {
 
 module.exports = require("react-bootstrap-table");
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports) {
 
 module.exports = require("react-dom");
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1441,75 +1592,71 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _area = __webpack_require__(28);
+var _area = __webpack_require__(30);
 
 var _area2 = _interopRequireDefault(_area);
 
-var _areaEdit = __webpack_require__(35);
+var _areaEdit = __webpack_require__(39);
 
 var _areaEdit2 = _interopRequireDefault(_areaEdit);
 
-var _browse = __webpack_require__(37);
+var _browse = __webpack_require__(41);
 
 var _browse2 = _interopRequireDefault(_browse);
 
-var _ethics = __webpack_require__(38);
+var _callback = __webpack_require__(42);
+
+var _callback2 = _interopRequireDefault(_callback);
+
+var _ethics = __webpack_require__(43);
 
 var _ethics2 = _interopRequireDefault(_ethics);
 
-var _finder = __webpack_require__(39);
+var _finder = __webpack_require__(44);
 
 var _finder2 = _interopRequireDefault(_finder);
 
-var _index = __webpack_require__(40);
+var _index = __webpack_require__(45);
 
 var _index2 = _interopRequireDefault(_index);
 
-var _login = __webpack_require__(44);
+var _login = __webpack_require__(49);
 
 var _login2 = _interopRequireDefault(_login);
 
-var _logout = __webpack_require__(45);
+var _logout = __webpack_require__(50);
 
 var _logout2 = _interopRequireDefault(_logout);
 
-var _problem = __webpack_require__(46);
+var _problem = __webpack_require__(51);
 
 var _problem2 = _interopRequireDefault(_problem);
 
-var _problemEdit = __webpack_require__(48);
+var _problemEdit = __webpack_require__(53);
 
 var _problemEdit2 = _interopRequireDefault(_problemEdit);
 
-var _problemEditMedia = __webpack_require__(52);
+var _problemEditMedia = __webpack_require__(57);
 
 var _problemEditMedia2 = _interopRequireDefault(_problemEditMedia);
 
-var _recover = __webpack_require__(53);
-
-var _recover2 = _interopRequireDefault(_recover);
-
-var _register = __webpack_require__(54);
-
-var _register2 = _interopRequireDefault(_register);
-
-var _sector = __webpack_require__(55);
+var _sector = __webpack_require__(60);
 
 var _sector2 = _interopRequireDefault(_sector);
 
-var _sectorEdit = __webpack_require__(56);
+var _sectorEdit = __webpack_require__(61);
 
 var _sectorEdit2 = _interopRequireDefault(_sectorEdit);
 
-var _svgEdit = __webpack_require__(57);
+var _svgEdit = __webpack_require__(62);
 
 var _svgEdit2 = _interopRequireDefault(_svgEdit);
 
-var _user = __webpack_require__(58);
+var _user = __webpack_require__(63);
 
 var _user2 = _interopRequireDefault(_user);
 
-var _userEdit = __webpack_require__(60);
+var _userEdit = __webpack_require__(65);
 
 var _userEdit2 = _interopRequireDefault(_userEdit);
 
@@ -1517,72 +1664,63 @@ var _api = __webpack_require__(4);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var routes = [{ path: '/', exact: true, component: _index2.default, fetchInitialData: function fetchInitialData() {
-    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    return (0, _api.getFrontpage)();
-  } }, { path: '/browse', exact: false, component: _browse2.default, fetchInitialData: function fetchInitialData() {
-    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    return (0, _api.getBrowse)();
-  } }, { path: '/ethics', exact: false, component: _ethics2.default, fetchInitialData: function fetchInitialData() {
-    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    return (0, _api.getMeta)();
-  } }, { path: '/area/:areaId', exact: true, component: _area2.default, fetchInitialData: function fetchInitialData() {
-    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    return (0, _api.getArea)(path.split('/').pop());
-  } }, { path: '/area/edit/:areaId', exact: true, component: _areaEdit2.default, fetchInitialData: function fetchInitialData() {
-    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    return (0, _api.getAreaEdit)(path.split('/').pop());
-  } }, { path: '/sector/:sectorId', exact: true, component: _sector2.default, fetchInitialData: function fetchInitialData() {
-    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    return (0, _api.getSector)(path.split('/').pop());
-  } }, { path: '/sector/edit/:sectorId', exact: true, component: _sectorEdit2.default, fetchInitialData: function fetchInitialData() {
-    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    return (0, _api.getSectorEdit)(path.split('/').pop());
-  } }, { path: '/problem/:problemId', exact: true, component: _problem2.default, fetchInitialData: function fetchInitialData() {
-    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    return (0, _api.getProblem)(path.split('/').pop());
-  } }, { path: '/problem/edit/:problemId', exact: true, component: _problemEdit2.default, fetchInitialData: function fetchInitialData() {
-    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    return (0, _api.getProblemEdit)(path.split('/').pop());
-  } }, { path: '/problem/edit/media/:problemId', exact: true, component: _problemEditMedia2.default, fetchInitialData: function fetchInitialData() {
-    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    return (0, _api.getProblemEditMedia)(path.split('/').pop());
-  } }, { path: '/problem/svg-edit/:problemId/:mediaId', exact: true, component: _svgEdit2.default, fetchInitialData: function fetchInitialData() {
-    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    return (0, _api.getSvgEdit)(path.split('/').pop().pop(), path.split('/').pop());
-  } }, { path: '/finder/:grade', exact: true, component: _finder2.default, fetchInitialData: function fetchInitialData() {
-    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    return (0, _api.getFinder)(path.split('/').pop());
-  } }, { path: '/user', exact: true, component: _user2.default, fetchInitialData: function fetchInitialData() {
-    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    return (0, _api.getUser)(path.split('/').pop());
-  } }, { path: '/user/:userId', exact: true, component: _user2.default, fetchInitialData: function fetchInitialData() {
-    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    return (0, _api.getUser)(path.split('/').pop());
-  } }, { path: '/user/:userId/edit', exact: true, component: _userEdit2.default, fetchInitialData: function fetchInitialData() {
-    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    return (0, _api.getUserEdit)(path.split('/').pop());
-  } }, { path: '/login', exact: false, component: _login2.default, fetchInitialData: function fetchInitialData() {
-    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    return (0, _api.getMeta)();
-  } }, { path: '/register', exact: false, component: _register2.default, fetchInitialData: function fetchInitialData() {
-    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    return (0, _api.getMeta)();
-  } }, { path: '/recover/:token', exact: true, component: _recover2.default, fetchInitialData: function fetchInitialData() {
-    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    return (0, _api.getMeta)();
-  } }, { path: '/logout', exact: false, component: _logout2.default }];
+var routes = [{ path: '/', exact: true, component: _index2.default, fetchInitialData: function fetchInitialData(accessToken) {
+    var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+    return (0, _api.getFrontpage)(accessToken);
+  } }, { path: '/browse', exact: false, component: _browse2.default, fetchInitialData: function fetchInitialData(accessToken) {
+    var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+    return (0, _api.getBrowse)(accessToken);
+  } }, { path: '/callback', exact: false, component: _callback2.default }, { path: '/ethics', exact: false, component: _ethics2.default, fetchInitialData: function fetchInitialData(accessToken) {
+    var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+    return (0, _api.getMeta)(accessToken);
+  } }, { path: '/area/:areaId', exact: true, component: _area2.default, fetchInitialData: function fetchInitialData(accessToken) {
+    var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+    return (0, _api.getArea)(accessToken, path.split('/').pop());
+  } }, { path: '/area/edit/:areaId', exact: true, component: _areaEdit2.default, fetchInitialData: function fetchInitialData(accessToken) {
+    var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+    return (0, _api.getAreaEdit)(accessToken, path.split('/').pop());
+  } }, { path: '/sector/:sectorId', exact: true, component: _sector2.default, fetchInitialData: function fetchInitialData(accessToken) {
+    var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+    return (0, _api.getSector)(accessToken, path.split('/').pop());
+  } }, { path: '/sector/edit/:sectorId', exact: true, component: _sectorEdit2.default, fetchInitialData: function fetchInitialData(accessToken) {
+    var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+    return (0, _api.getSectorEdit)(accessToken, path.split('/').pop());
+  } }, { path: '/problem/:problemId', exact: true, component: _problem2.default, fetchInitialData: function fetchInitialData(accessToken) {
+    var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+    return (0, _api.getProblem)(accessToken, path.split('/').pop());
+  } }, { path: '/problem/edit/:problemId', exact: true, component: _problemEdit2.default, fetchInitialData: function fetchInitialData(accessToken) {
+    var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+    return (0, _api.getProblemEdit)(accessToken, path.split('/').pop());
+  } }, { path: '/problem/edit/media/:problemId', exact: true, component: _problemEditMedia2.default, fetchInitialData: function fetchInitialData(accessToken) {
+    var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+    return (0, _api.getProblemEditMedia)(accessToken, path.split('/').pop());
+  } }, { path: '/problem/svg-edit/:problemId/:mediaId', exact: true, component: _svgEdit2.default, fetchInitialData: function fetchInitialData(accessToken) {
+    var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+    return (0, _api.getSvgEdit)(accessToken, path.split('/').pop().pop(), path.split('/').pop());
+  } }, { path: '/finder/:grade', exact: true, component: _finder2.default, fetchInitialData: function fetchInitialData(accessToken) {
+    var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+    return (0, _api.getFinder)(accessToken, path.split('/').pop());
+  } }, { path: '/user', exact: true, component: _user2.default, fetchInitialData: function fetchInitialData(accessToken) {
+    var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+    return (0, _api.getUser)(accessToken, path.split('/').pop());
+  } }, { path: '/user/:userId', exact: true, component: _user2.default, fetchInitialData: function fetchInitialData(accessToken) {
+    var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+    return (0, _api.getUser)(accessToken, path.split('/').pop());
+  } }, { path: '/user/:userId/edit', exact: true, component: _userEdit2.default, fetchInitialData: function fetchInitialData(accessToken) {
+    var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+    return (0, _api.getUserEdit)(accessToken, path.split('/').pop());
+  } }, { path: '/login', exact: false, component: _login2.default }, { path: '/logout', exact: false, component: _logout2.default }];
 
 exports.default = routes;
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports) {
 
 module.exports = require("svg-path-parser");
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1600,7 +1738,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactBootstrap = __webpack_require__(1);
 
-var _reactInputCalendar = __webpack_require__(18);
+var _reactInputCalendar = __webpack_require__(19);
 
 var _reactInputCalendar2 = _interopRequireDefault(_reactInputCalendar);
 
@@ -1887,35 +2025,35 @@ var TickModal = function (_Component) {
 exports.default = TickModal;
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports) {
 
 module.exports = require("react-input-calendar");
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports) {
 
 module.exports = require("create-react-class");
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports) {
 
 module.exports = require("prop-types");
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _express = __webpack_require__(22);
+var _express = __webpack_require__(23);
 
 var _express2 = _interopRequireDefault(_express);
 
-var _cors = __webpack_require__(23);
+var _cors = __webpack_require__(24);
 
 var _cors2 = _interopRequireDefault(_cors);
 
@@ -1923,19 +2061,21 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _server = __webpack_require__(24);
+var _server = __webpack_require__(25);
 
 var _reactRouterDom = __webpack_require__(2);
 
-var _serializeJavascript = __webpack_require__(25);
+var _serializeJavascript = __webpack_require__(26);
 
 var _serializeJavascript2 = _interopRequireDefault(_serializeJavascript);
 
-var _App = __webpack_require__(26);
+var _reactCookie = __webpack_require__(27);
+
+var _App = __webpack_require__(28);
 
 var _App2 = _interopRequireDefault(_App);
 
-var _routes = __webpack_require__(15);
+var _routes = __webpack_require__(16);
 
 var _routes2 = _interopRequireDefault(_routes);
 
@@ -1944,8 +2084,10 @@ var _api = __webpack_require__(4);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var app = (0, _express2.default)();
+var cookiesMiddleware = __webpack_require__(73);
 
 app.use((0, _cors2.default)());
+app.use(cookiesMiddleware());
 app.use(_express2.default.static("public"));
 
 app.get("*", function (req, res, next) {
@@ -1953,15 +2095,19 @@ app.get("*", function (req, res, next) {
     return (0, _reactRouterDom.matchPath)(req.url, route);
   }) || {};
 
-  var promise = activeRoute.fetchInitialData ? activeRoute.fetchInitialData(req.path) : Promise.resolve();
+  var promise = activeRoute.fetchInitialData ? activeRoute.fetchInitialData(req.universalCookies.get('access_token'), req.path) : Promise.resolve();
 
   (0, _api.getMeta)().then(function (meta) {
     promise.then(function (data) {
       var context = { data: data, meta: meta };
       var markup = (0, _server.renderToString)(_react2.default.createElement(
-        _reactRouterDom.StaticRouter,
-        { location: req.url, context: context },
-        _react2.default.createElement(_App2.default, null)
+        _reactCookie.CookiesProvider,
+        { cookies: req.universalCookies },
+        _react2.default.createElement(
+          _reactRouterDom.StaticRouter,
+          { location: req.url, context: context },
+          _react2.default.createElement(_App2.default, null)
+        )
       ));
 
       res.send("\n        <!DOCTYPE html>\n        <html>\n          <head>\n            <meta charset=\"utf-8\">\n            <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n            <link rel=\"icon\" href=\"/favicon.ico\">\n            <meta name=\"author\" content=\"Jostein \xD8ygarden\">\n            <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/bootstrap.min.css\">\n            <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/react-input-calendar.css\">\n            <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/image-gallery.css\">\n            <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/react-bootstrap-table.css\">\n            <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/buldreinfo.css\">\n            <script src=\"/bundle.js\" defer></script>\n            <script>window.__INITIAL_META__ = " + (0, _serializeJavascript2.default)(meta) + "</script>\n            <script>window.__INITIAL_DATA__ = " + (0, _serializeJavascript2.default)(data) + "</script>\n          </head>\n\n          <body>\n            <div id=\"app\">" + markup + "</div>\n          </body>\n        </html>\n      ");
@@ -1976,31 +2122,37 @@ app.listen(3000, function () {
 });
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports) {
 
 module.exports = require("express");
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports) {
 
 module.exports = require("cors");
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports) {
 
 module.exports = require("react-dom/server");
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports) {
 
 module.exports = require("serialize-javascript");
 
 /***/ }),
-/* 26 */
+/* 27 */
+/***/ (function(module, exports) {
+
+module.exports = require("react-cookie");
+
+/***/ }),
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2018,33 +2170,33 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactDom = __webpack_require__(14);
+var _reactDom = __webpack_require__(15);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
 var _reactRouterDom = __webpack_require__(2);
 
-var _loading = __webpack_require__(27);
+var _loading = __webpack_require__(29);
 
 var _loading2 = _interopRequireDefault(_loading);
 
-var _routes = __webpack_require__(15);
+var _routes = __webpack_require__(16);
 
 var _routes2 = _interopRequireDefault(_routes);
 
-var _navigation = __webpack_require__(61);
+var _navigation = __webpack_require__(66);
 
 var _navigation2 = _interopRequireDefault(_navigation);
 
-var _reactGa = __webpack_require__(65);
+var _reactGa = __webpack_require__(70);
 
 var _reactGa2 = _interopRequireDefault(_reactGa);
 
-var _fontawesomeSvgCore = __webpack_require__(66);
+var _fontawesomeSvgCore = __webpack_require__(71);
 
 var _reactFontawesome = __webpack_require__(3);
 
-var _freeSolidSvgIcons = __webpack_require__(67);
+var _freeSolidSvgIcons = __webpack_require__(72);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2153,7 +2305,7 @@ var App = function (_Component) {
 exports.default = App;
 
 /***/ }),
-/* 27 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2205,7 +2357,7 @@ var Loading = function (_Component) {
 exports.default = Loading;
 
 /***/ }),
-/* 28 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2221,6 +2373,10 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _propTypes = __webpack_require__(21);
+
+var _reactCookie = __webpack_require__(27);
+
 var _reactMetaTags = __webpack_require__(5);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
@@ -2235,7 +2391,7 @@ var _map = __webpack_require__(9);
 
 var _map2 = _interopRequireDefault(_map);
 
-var _gallery = __webpack_require__(12);
+var _gallery = __webpack_require__(13);
 
 var _gallery2 = _interopRequireDefault(_gallery);
 
@@ -2338,7 +2494,10 @@ var Area = function (_Component2) {
     value: function refresh(id) {
       var _this3 = this;
 
-      this.props.fetchInitialData(id).then(function (data) {
+      var cookies = this.props.cookies;
+
+      var accessToken = cookies.get('access_token');
+      this.props.fetchInitialData(accessToken, id).then(function (data) {
         return _this3.setState(function () {
           return { data: data };
         });
@@ -2566,46 +2725,61 @@ var Area = function (_Component2) {
   return Area;
 }(_react.Component);
 
-exports.default = Area;
-
-/***/ }),
-/* 29 */
-/***/ (function(module, exports) {
-
-module.exports = require("react-google-maps/lib/components/addons/MarkerClusterer");
-
-/***/ }),
-/* 30 */
-/***/ (function(module, exports) {
-
-module.exports = require("react-image-gallery");
+Area.propTypes = {
+  cookies: (0, _propTypes.instanceOf)(_reactCookie.Cookies).isRequired
+};
+exports.default = (0, _reactCookie.withCookies)(Area);
 
 /***/ }),
 /* 31 */
 /***/ (function(module, exports) {
 
-module.exports = require("react-player");
+module.exports = require("react-google-maps/lib/components/addons/MarkerClusterer");
 
 /***/ }),
 /* 32 */
 /***/ (function(module, exports) {
 
-module.exports = require("object-fit-images");
+module.exports = require("react-image-gallery");
 
 /***/ }),
 /* 33 */
 /***/ (function(module, exports) {
 
-module.exports = require("isomorphic-fetch");
+module.exports = require("react-player");
 
 /***/ }),
 /* 34 */
 /***/ (function(module, exports) {
 
-module.exports = require("es6-promise");
+module.exports = require("object-fit-images");
 
 /***/ }),
 /* 35 */
+/***/ (function(module, exports) {
+
+module.exports = require("isomorphic-fetch");
+
+/***/ }),
+/* 36 */
+/***/ (function(module, exports) {
+
+module.exports = require("jwt-decode");
+
+/***/ }),
+/* 37 */
+/***/ (function(module, exports) {
+
+module.exports = require("auth0-js");
+
+/***/ }),
+/* 38 */
+/***/ (function(module, exports) {
+
+module.exports = require("es6-promise");
+
+/***/ }),
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2621,6 +2795,10 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _propTypes = __webpack_require__(21);
+
+var _reactCookie = __webpack_require__(27);
+
 var _reactMetaTags = __webpack_require__(5);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
@@ -2629,7 +2807,7 @@ var _reactRouter = __webpack_require__(6);
 
 var _reactBootstrap = __webpack_require__(1);
 
-var _imageUpload = __webpack_require__(11);
+var _imageUpload = __webpack_require__(12);
 
 var _imageUpload2 = _interopRequireDefault(_imageUpload);
 
@@ -2697,7 +2875,10 @@ var AreaEdit = function (_Component) {
     value: function refresh(id) {
       var _this2 = this;
 
-      this.props.fetchInitialData(id).then(function (data) {
+      var cookies = this.props.cookies;
+
+      var accessToken = cookies.get('access_token');
+      this.props.fetchInitialData(accessToken, id).then(function (data) {
         return _this2.setState(function () {
           return { data: data };
         });
@@ -2908,16 +3089,19 @@ var AreaEdit = function (_Component) {
   return AreaEdit;
 }(_react.Component);
 
-exports.default = AreaEdit;
+AreaEdit.propTypes = {
+  cookies: (0, _propTypes.instanceOf)(_reactCookie.Cookies).isRequired
+};
+exports.default = (0, _reactCookie.withCookies)(AreaEdit);
 
 /***/ }),
-/* 36 */
+/* 40 */
 /***/ (function(module, exports) {
 
 module.exports = require("react-dropzone");
 
 /***/ }),
-/* 37 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2933,6 +3117,10 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _propTypes = __webpack_require__(21);
+
+var _reactCookie = __webpack_require__(27);
+
 var _reactMetaTags = __webpack_require__(5);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
@@ -2941,7 +3129,7 @@ var _reactRouterDom = __webpack_require__(2);
 
 var _reactBootstrap = __webpack_require__(1);
 
-var _reactBootstrapTable = __webpack_require__(13);
+var _reactBootstrapTable = __webpack_require__(14);
 
 var _reactRouterBootstrap = __webpack_require__(7);
 
@@ -2987,7 +3175,10 @@ var Browse = function (_Component) {
         _this2.setState({ currLat: position.coords.latitude, currLng: position.coords.longitude });
       });
       if (!this.state.data) {
-        this.props.fetchInitialData().then(function (data) {
+        var cookies = this.props.cookies;
+
+        var accessToken = cookies.get('access_token');
+        this.props.fetchInitialData(accessToken).then(function (data) {
           return _this2.setState(function () {
             return { data: data };
           });
@@ -3162,10 +3353,13 @@ var Browse = function (_Component) {
   return Browse;
 }(_react.Component);
 
-exports.default = Browse;
+Browse.propTypes = {
+  cookies: (0, _propTypes.instanceOf)(_reactCookie.Cookies).isRequired
+};
+exports.default = (0, _reactCookie.withCookies)(Browse);
 
 /***/ }),
-/* 38 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3180,6 +3374,79 @@ var _createClass = function () { function defineProperties(target, props) { for 
 var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(21);
+
+var _reactCookie = __webpack_require__(27);
+
+var _reactRouter = __webpack_require__(6);
+
+var _auth = __webpack_require__(11);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Callback = function (_Component) {
+  _inherits(Callback, _Component);
+
+  function Callback() {
+    _classCallCheck(this, Callback);
+
+    return _possibleConstructorReturn(this, (Callback.__proto__ || Object.getPrototypeOf(Callback)).apply(this, arguments));
+  }
+
+  _createClass(Callback, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var cookies = this.props.cookies;
+
+      (0, _auth.setAccessToken)(cookies);
+      (0, _auth.setIdToken)(cookies);
+      this.setState({ pushUrl: '/' });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      if (this.state && this.state.pushUrl) {
+        return _react2.default.createElement(_reactRouter.Redirect, { to: this.state.pushUrl, push: true });
+      }
+      return null;
+    }
+  }]);
+
+  return Callback;
+}(_react.Component);
+
+Callback.propTypes = {
+  cookies: (0, _propTypes.instanceOf)(_reactCookie.Cookies).isRequired
+};
+exports.default = (0, _reactCookie.withCookies)(Callback);
+
+/***/ }),
+/* 43 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(21);
+
+var _reactCookie = __webpack_require__(27);
 
 var _reactMetaTags = __webpack_require__(5);
 
@@ -3222,7 +3489,10 @@ var Ethics = function (_Component) {
       var _this2 = this;
 
       if (!this.state.data) {
-        this.props.fetchInitialData().then(function (data) {
+        var cookies = this.props.cookies;
+
+        var accessToken = cookies.get('access_token');
+        this.props.fetchInitialData(accessToken).then(function (data) {
           return _this2.setState(function () {
             return { data: data };
           });
@@ -3339,10 +3609,13 @@ var Ethics = function (_Component) {
   return Ethics;
 }(_react.Component);
 
-exports.default = Ethics;
+Ethics.propTypes = {
+  cookies: (0, _propTypes.instanceOf)(_reactCookie.Cookies).isRequired
+};
+exports.default = (0, _reactCookie.withCookies)(Ethics);
 
 /***/ }),
-/* 39 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3358,6 +3631,10 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _propTypes = __webpack_require__(21);
+
+var _reactCookie = __webpack_require__(27);
+
 var _reactMetaTags = __webpack_require__(5);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
@@ -3372,7 +3649,7 @@ var _map2 = _interopRequireDefault(_map);
 
 var _reactBootstrap = __webpack_require__(1);
 
-var _reactBootstrapTable = __webpack_require__(13);
+var _reactBootstrapTable = __webpack_require__(14);
 
 var _reactFontawesome = __webpack_require__(3);
 
@@ -3432,7 +3709,10 @@ var Finder = function (_Component) {
     value: function refresh(grade) {
       var _this2 = this;
 
-      this.props.fetchInitialData(grade).then(function (data) {
+      var cookies = this.props.cookies;
+
+      var accessToken = cookies.get('access_token');
+      this.props.fetchInitialData(accessToken, grade).then(function (data) {
         return _this2.setState(function () {
           return { data: data };
         });
@@ -3916,10 +4196,13 @@ var Finder = function (_Component) {
   return Finder;
 }(_react.Component);
 
-exports.default = Finder;
+Finder.propTypes = {
+  cookies: (0, _propTypes.instanceOf)(_reactCookie.Cookies).isRequired
+};
+exports.default = (0, _reactCookie.withCookies)(Finder);
 
 /***/ }),
-/* 40 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3935,6 +4218,10 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _propTypes = __webpack_require__(21);
+
+var _reactCookie = __webpack_require__(27);
+
 var _reactMetaTags = __webpack_require__(5);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
@@ -3943,15 +4230,15 @@ var _reactRouterDom = __webpack_require__(2);
 
 var _reactBootstrap = __webpack_require__(1);
 
-var _textbox = __webpack_require__(41);
+var _textbox = __webpack_require__(46);
 
 var _textbox2 = _interopRequireDefault(_textbox);
 
-var _imagebox = __webpack_require__(42);
+var _imagebox = __webpack_require__(47);
 
 var _imagebox2 = _interopRequireDefault(_imagebox);
 
-var _linkbox = __webpack_require__(43);
+var _linkbox = __webpack_require__(48);
 
 var _linkbox2 = _interopRequireDefault(_linkbox);
 
@@ -3993,7 +4280,10 @@ var Index = function (_Component) {
       var _this2 = this;
 
       if (!this.state.data) {
-        this.props.fetchInitialData().then(function (data) {
+        var cookies = this.props.cookies;
+
+        var accessToken = cookies.get('access_token');
+        this.props.fetchInitialData(accessToken).then(function (data) {
           return _this2.setState(function () {
             return { data: data };
           });
@@ -4191,10 +4481,13 @@ var Index = function (_Component) {
   return Index;
 }(_react.Component);
 
-exports.default = Index;
+Index.propTypes = {
+  cookies: (0, _propTypes.instanceOf)(_reactCookie.Cookies).isRequired
+};
+exports.default = (0, _reactCookie.withCookies)(Index);
 
 /***/ }),
-/* 41 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4305,7 +4598,7 @@ var TextBox = function (_Component) {
 exports.default = TextBox;
 
 /***/ }),
-/* 42 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4419,7 +4712,7 @@ var ImageBox = function (_Component) {
 exports.default = ImageBox;
 
 /***/ }),
-/* 43 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4508,7 +4801,7 @@ var LinkBox = function (_Component) {
 exports.default = LinkBox;
 
 /***/ }),
-/* 44 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4524,19 +4817,11 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactMetaTags = __webpack_require__(5);
+var _propTypes = __webpack_require__(21);
 
-var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
+var _reactCookie = __webpack_require__(27);
 
-var _reactRouterDom = __webpack_require__(2);
-
-var _reactRouter = __webpack_require__(6);
-
-var _reactRouterBootstrap = __webpack_require__(7);
-
-var _reactBootstrap = __webpack_require__(1);
-
-var _api = __webpack_require__(4);
+var _auth = __webpack_require__(11);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4549,203 +4834,36 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Login = function (_Component) {
   _inherits(Login, _Component);
 
-  function Login(props) {
+  function Login() {
     _classCallCheck(this, Login);
 
-    var _this = _possibleConstructorReturn(this, (Login.__proto__ || Object.getPrototypeOf(Login)).call(this, props));
-
-    var data = void 0;
-    if (false) {
-      data = window.__INITIAL_DATA__;
-      delete window.__INITIAL_DATA__;
-    } else {
-      data = props.staticContext.data;
-    }
-    _this.state = { data: data, message: null, username: '', password: '' };
-    return _this;
+    return _possibleConstructorReturn(this, (Login.__proto__ || Object.getPrototypeOf(Login)).apply(this, arguments));
   }
 
   _createClass(Login, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      var _this2 = this;
+      var cookies = this.props.cookies;
 
-      if (!this.state.data) {
-        this.props.fetchInitialData().then(function (data) {
-          return _this2.setState(function () {
-            return { data: data };
-          });
-        });
-      }
-    }
-  }, {
-    key: 'validateEmail',
-    value: function validateEmail(email) {
-      var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      return re.test(email);
-    }
-  }, {
-    key: 'forgotPasswordClick',
-    value: function forgotPasswordClick(event) {
-      var _this3 = this;
-
-      if (!this.state.username) {
-        this.setState({ message: _react2.default.createElement(
-            _reactBootstrap.Panel,
-            { bsStyle: 'danger' },
-            'Please fill username and click Forgot password again.'
-          ) });
-      } else if (!this.validateEmail(this.state.username)) {
-        this.setState({ message: _react2.default.createElement(
-            _reactBootstrap.Panel,
-            { bsStyle: 'danger' },
-            'No email address registered on "',
-            this.state.username,
-            '". Contact Jostein (jostein.oygarden@gmail.com) to recover password.'
-          ) });
-      } else {
-        getUserForgotPassword(this.state.username).then(function (response) {
-          _this3.setState({ message: _react2.default.createElement(
-              _reactBootstrap.Panel,
-              { bsStyle: 'success' },
-              'An e-mail with instructions to reset your password is sent to "',
-              _this3.state.username,
-              '".'
-            ) });
-        }).catch(function (error) {
-          console.warn(error);
-          _this3.setState({ message: _react2.default.createElement(
-              _reactBootstrap.Panel,
-              { bsStyle: 'danger' },
-              error.toString()
-            ) });
-        });
-      }
-    }
-  }, {
-    key: 'login',
-    value: function login(event) {
-      var _this4 = this;
-
-      event.preventDefault();
-      (0, _api.getUserLogin)(this.state.username, this.state.password).then(function (res) {
-        return _this4.setState({ message: null, pushUrl: "/" });
-      }).catch(function (error) {
-        console.warn(error);
-        return _this4.setState({ message: _react2.default.createElement(
-            _reactBootstrap.Panel,
-            { bsStyle: 'danger' },
-            'Invalid username and/or password.'
-          ) });
-      });
-    }
-  }, {
-    key: 'onUsernameChanged',
-    value: function onUsernameChanged(e) {
-      this.setState({ username: e.target.value });
-    }
-  }, {
-    key: 'onPasswordChanged',
-    value: function onPasswordChanged(e) {
-      this.setState({ password: e.target.value });
+      (0, _auth.login)(cookies);
     }
   }, {
     key: 'render',
     value: function render() {
-      if (this.state && this.state.pushUrl) {
-        return _react2.default.createElement(_reactRouter.Redirect, { to: this.state.pushUrl, push: true });
-      }
-      return _react2.default.createElement(
-        'span',
-        null,
-        _react2.default.createElement(
-          _reactMetaTags2.default,
-          null,
-          this.state.data && _react2.default.createElement(
-            'title',
-            null,
-            "Sign in | " + this.state.data.metadata.title
-          ),
-          _react2.default.createElement('meta', { name: 'description', content: "Sign in using username and password" })
-        ),
-        _react2.default.createElement(
-          _reactBootstrap.Breadcrumb,
-          null,
-          _react2.default.createElement(
-            _reactRouterDom.Link,
-            { to: '/' },
-            'Home'
-          ),
-          ' / ',
-          _react2.default.createElement(
-            'font',
-            { color: '#777' },
-            'Sign in'
-          )
-        ),
-        _react2.default.createElement(
-          _reactBootstrap.Well,
-          null,
-          this.state.message,
-          _react2.default.createElement(
-            'form',
-            { onSubmit: this.login.bind(this) },
-            _react2.default.createElement(
-              _reactBootstrap.FormGroup,
-              { controlId: 'formControlsText' },
-              _react2.default.createElement(
-                _reactBootstrap.ControlLabel,
-                null,
-                'Username'
-              ),
-              _react2.default.createElement(_reactBootstrap.FormControl, { type: 'text', placeholder: 'Enter username', onChange: this.onUsernameChanged.bind(this) })
-            ),
-            _react2.default.createElement(
-              _reactBootstrap.FormGroup,
-              { controlId: 'formControlsPassword' },
-              _react2.default.createElement(
-                _reactBootstrap.ControlLabel,
-                null,
-                'Password'
-              ),
-              _react2.default.createElement(_reactBootstrap.FormControl, { type: 'password', placeholder: 'Enter password', onChange: this.onPasswordChanged.bind(this) })
-            ),
-            _react2.default.createElement(
-              _reactBootstrap.ButtonGroup,
-              null,
-              _react2.default.createElement(
-                _reactRouterBootstrap.LinkContainer,
-                { to: '/register' },
-                _react2.default.createElement(
-                  _reactBootstrap.Button,
-                  { bsStyle: 'default' },
-                  'Register new user'
-                )
-              ),
-              _react2.default.createElement(
-                _reactBootstrap.Button,
-                { bsStyle: 'default', onClick: this.forgotPasswordClick.bind(this) },
-                'Forgot password'
-              ),
-              _react2.default.createElement(
-                _reactBootstrap.Button,
-                { type: 'submit', bsStyle: 'success' },
-                'Login'
-              )
-            )
-          )
-        )
-      );
+      return null;
     }
   }]);
 
   return Login;
 }(_react.Component);
 
-exports.default = Login;
+Login.propTypes = {
+  cookies: (0, _propTypes.instanceOf)(_reactCookie.Cookies).isRequired
+};
+exports.default = (0, _reactCookie.withCookies)(Login);
 
 /***/ }),
-/* 45 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4761,9 +4879,13 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _api = __webpack_require__(4);
+var _propTypes = __webpack_require__(21);
 
-var _reactBootstrap = __webpack_require__(1);
+var _reactCookie = __webpack_require__(27);
+
+var _reactRouter = __webpack_require__(6);
+
+var _auth = __webpack_require__(11);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4785,26 +4907,31 @@ var Logout = function (_Component) {
   _createClass(Logout, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      (0, _api.getLogout)();
+      var cookies = this.props.cookies;
+
+      (0, _auth.logout)(cookies);
+      this.setState({ pushUrl: '/' });
     }
   }, {
     key: 'render',
     value: function render() {
-      return _react2.default.createElement(
-        _reactBootstrap.Panel,
-        { bsStyle: 'success' },
-        'Logged out'
-      );
+      if (this.state && this.state.pushUrl) {
+        return _react2.default.createElement(_reactRouter.Redirect, { to: this.state.pushUrl, push: true });
+      }
+      return null;
     }
   }]);
 
   return Logout;
 }(_react.Component);
 
-exports.default = Logout;
+Logout.propTypes = {
+  cookies: (0, _propTypes.instanceOf)(_reactCookie.Cookies).isRequired
+};
+exports.default = (0, _reactCookie.withCookies)(Logout);
 
 /***/ }),
-/* 46 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4820,6 +4947,10 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _propTypes = __webpack_require__(21);
+
+var _reactCookie = __webpack_require__(27);
+
 var _reactMetaTags = __webpack_require__(5);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
@@ -4830,7 +4961,7 @@ var _map = __webpack_require__(9);
 
 var _map2 = _interopRequireDefault(_map);
 
-var _gallery = __webpack_require__(12);
+var _gallery = __webpack_require__(13);
 
 var _gallery2 = _interopRequireDefault(_gallery);
 
@@ -4838,11 +4969,11 @@ var _reactRouterBootstrap = __webpack_require__(7);
 
 var _reactBootstrap = __webpack_require__(1);
 
-var _tickModal = __webpack_require__(17);
+var _tickModal = __webpack_require__(18);
 
 var _tickModal2 = _interopRequireDefault(_tickModal);
 
-var _commentModal = __webpack_require__(47);
+var _commentModal = __webpack_require__(52);
 
 var _commentModal2 = _interopRequireDefault(_commentModal);
 
@@ -4885,7 +5016,10 @@ var Problem = function (_Component) {
     value: function refresh(id) {
       var _this2 = this;
 
-      this.props.fetchInitialData(id).then(function (data) {
+      var cookies = this.props.cookies;
+
+      var accessToken = cookies.get('access_token');
+      this.props.fetchInitialData(accessToken, id).then(function (data) {
         return _this2.setState(function () {
           return { data: data };
         });
@@ -5510,10 +5644,13 @@ var Problem = function (_Component) {
   return Problem;
 }(_react.Component);
 
-exports.default = Problem;
+Problem.propTypes = {
+  cookies: (0, _propTypes.instanceOf)(_reactCookie.Cookies).isRequired
+};
+exports.default = (0, _reactCookie.withCookies)(Problem);
 
 /***/ }),
-/* 47 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5644,7 +5781,7 @@ var CommentModal = function (_Component) {
 exports.default = CommentModal;
 
 /***/ }),
-/* 48 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5660,6 +5797,10 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _propTypes = __webpack_require__(21);
+
+var _reactCookie = __webpack_require__(27);
+
 var _reactMetaTags = __webpack_require__(5);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
@@ -5672,19 +5813,19 @@ var _reactBootstrap = __webpack_require__(1);
 
 var _reactGoogleMaps = __webpack_require__(10);
 
-var _userSelector = __webpack_require__(49);
+var _userSelector = __webpack_require__(54);
 
 var _userSelector2 = _interopRequireDefault(_userSelector);
 
-var _problemSection = __webpack_require__(51);
+var _problemSection = __webpack_require__(56);
 
 var _problemSection2 = _interopRequireDefault(_problemSection);
 
-var _imageUpload = __webpack_require__(11);
+var _imageUpload = __webpack_require__(12);
 
 var _imageUpload2 = _interopRequireDefault(_imageUpload);
 
-var _reactInputCalendar = __webpack_require__(18);
+var _reactInputCalendar = __webpack_require__(19);
 
 var _reactInputCalendar2 = _interopRequireDefault(_reactInputCalendar);
 
@@ -5754,7 +5895,10 @@ var ProblemEdit = function (_Component) {
     value: function refresh(id) {
       var _this2 = this;
 
-      this.props.fetchInitialData(id).then(function (data) {
+      var cookies = this.props.cookies;
+
+      var accessToken = cookies.get('access_token');
+      this.props.fetchInitialData(accessToken, id).then(function (data) {
         return _this2.setState(function () {
           return { data: data };
         });
@@ -6149,10 +6293,13 @@ var ProblemEdit = function (_Component) {
   return ProblemEdit;
 }(_react.Component);
 
-exports.default = ProblemEdit;
+ProblemEdit.propTypes = {
+  cookies: (0, _propTypes.instanceOf)(_reactCookie.Cookies).isRequired
+};
+exports.default = (0, _reactCookie.withCookies)(ProblemEdit);
 
 /***/ }),
-/* 49 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6162,15 +6309,15 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _createReactClass = __webpack_require__(19);
+var _createReactClass = __webpack_require__(20);
 
 var _createReactClass2 = _interopRequireDefault(_createReactClass);
 
-var _propTypes = __webpack_require__(20);
+var _propTypes = __webpack_require__(21);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _Creatable = __webpack_require__(50);
+var _Creatable = __webpack_require__(55);
 
 var _Creatable2 = _interopRequireDefault(_Creatable);
 
@@ -6227,13 +6374,13 @@ var UserSelector = (0, _createReactClass2.default)({
 module.exports = UserSelector;
 
 /***/ }),
-/* 50 */
+/* 55 */
 /***/ (function(module, exports) {
 
 module.exports = require("react-select/lib/Creatable");
 
 /***/ }),
-/* 51 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6243,11 +6390,11 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _createReactClass = __webpack_require__(19);
+var _createReactClass = __webpack_require__(20);
 
 var _createReactClass2 = _interopRequireDefault(_createReactClass);
 
-var _propTypes = __webpack_require__(20);
+var _propTypes = __webpack_require__(21);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
@@ -6463,7 +6610,7 @@ var ProblemSection = (0, _createReactClass2.default)({
 module.exports = ProblemSection;
 
 /***/ }),
-/* 52 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6479,13 +6626,17 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _propTypes = __webpack_require__(21);
+
+var _reactCookie = __webpack_require__(27);
+
 var _reactRouterDom = __webpack_require__(2);
 
 var _reactRouter = __webpack_require__(6);
 
 var _reactBootstrap = __webpack_require__(1);
 
-var _imageUpload = __webpack_require__(11);
+var _imageUpload = __webpack_require__(12);
 
 var _imageUpload2 = _interopRequireDefault(_imageUpload);
 
@@ -6539,7 +6690,10 @@ var ProblemEditMedia = function (_Component) {
     value: function refresh(id) {
       var _this2 = this;
 
-      this.props.fetchInitialData(id).then(function (data) {
+      var cookies = this.props.cookies;
+
+      var accessToken = cookies.get('access_token');
+      this.props.fetchInitialData(accessToken, id).then(function (data) {
         return _this2.setState(function () {
           return { data: data };
         });
@@ -6630,10 +6784,15 @@ var ProblemEditMedia = function (_Component) {
   return ProblemEditMedia;
 }(_react.Component);
 
-exports.default = ProblemEditMedia;
+ProblemEditMedia.propTypes = {
+  cookies: (0, _propTypes.instanceOf)(_reactCookie.Cookies).isRequired
+};
+exports.default = (0, _reactCookie.withCookies)(ProblemEditMedia);
 
 /***/ }),
-/* 53 */
+/* 58 */,
+/* 59 */,
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6649,531 +6808,9 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactMetaTags = __webpack_require__(5);
+var _propTypes = __webpack_require__(21);
 
-var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
-
-var _reactRouterDom = __webpack_require__(2);
-
-var _reactRouter = __webpack_require__(6);
-
-var _reactBootstrap = __webpack_require__(1);
-
-var _reactFontawesome = __webpack_require__(3);
-
-var _api = __webpack_require__(4);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Recover = function (_Component) {
-  _inherits(Recover, _Component);
-
-  function Recover(props) {
-    _classCallCheck(this, Recover);
-
-    var _this = _possibleConstructorReturn(this, (Recover.__proto__ || Object.getPrototypeOf(Recover)).call(this, props));
-
-    var data = void 0;
-    if (false) {
-      data = window.__INITIAL_DATA__;
-      delete window.__INITIAL_DATA__;
-    } else {
-      data = props.staticContext.data;
-    }
-    _this.state = { data: data };
-    return _this;
-  }
-
-  _createClass(Recover, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      var _this2 = this;
-
-      if (!this.state.data) {
-        this.props.fetchInitialData().then(function (data) {
-          return _this2.setState(function () {
-            return { data: data, password: '', password2: '' };
-          });
-        });
-      }
-    }
-  }, {
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      this.setState({ token: this.props.match.params.token });
-    }
-  }, {
-    key: 'recover',
-    value: function recover(event) {
-      var _this3 = this;
-
-      event.preventDefault();
-      if (this.validatePassword(null) === 'error' || this.validatePassword2(null) === 'error') {
-        this.setState({ message: _react2.default.createElement(
-            _reactBootstrap.Panel,
-            { bsStyle: 'danger' },
-            'Invalid password.'
-          ) });
-      } else {
-        (0, _api.getUserPassword)(this.state.token, this.state.password).then(function (response) {
-          _this3.setState({ pushUrl: "/login" });
-        }).catch(function (error) {
-          console.warn(error);
-        });
-      }
-    }
-  }, {
-    key: 'onPasswordChanged',
-    value: function onPasswordChanged(e) {
-      this.setState({ password: e.target.value });
-    }
-  }, {
-    key: 'onConfirmPasswordChanged',
-    value: function onConfirmPasswordChanged(e) {
-      this.setState({ password2: e.target.value });
-    }
-  }, {
-    key: 'validatePassword',
-    value: function validatePassword() {
-      if (this.state.password.length < 8) {
-        return 'error';
-      }
-      return 'success';
-    }
-  }, {
-    key: 'validatePassword2',
-    value: function validatePassword2() {
-      if (this.state.password2.length < 8 || this.state.password != this.state.password2) {
-        return 'error';
-      }
-      return 'success';
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      if (!this.state.token) {
-        return _react2.default.createElement(
-          'center',
-          null,
-          _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'spinner', spin: true, size: '3x' })
-        );
-      } else if (this.state.pushUrl) {
-        return _react2.default.createElement(_reactRouter.Redirect, { to: this.state.pushUrl, push: true });
-      }
-      return _react2.default.createElement(
-        'span',
-        null,
-        _react2.default.createElement(
-          _reactMetaTags2.default,
-          null,
-          this.state.data && _react2.default.createElement(
-            'title',
-            null,
-            "Recover password | " + this.state.data.metadata.title
-          ),
-          _react2.default.createElement('meta', { name: 'description', content: "Recover password" })
-        ),
-        _react2.default.createElement(
-          _reactBootstrap.Well,
-          null,
-          _react2.default.createElement(
-            'form',
-            { onSubmit: this.recover.bind(this) },
-            _react2.default.createElement(
-              _reactBootstrap.FormGroup,
-              { controlId: 'formControlsPassword', validationState: this.validatePassword() },
-              _react2.default.createElement(
-                _reactBootstrap.ControlLabel,
-                null,
-                'New password'
-              ),
-              _react2.default.createElement(_reactBootstrap.FormControl, { type: 'password', placeholder: 'Enter new password', onChange: this.onPasswordChanged.bind(this) }),
-              _react2.default.createElement(_reactBootstrap.FormControl.Feedback, null),
-              _react2.default.createElement(
-                _reactBootstrap.HelpBlock,
-                null,
-                'At least 8 characters.'
-              )
-            ),
-            _react2.default.createElement(
-              _reactBootstrap.FormGroup,
-              { controlId: 'formControlsPassword2', validationState: this.validatePassword2() },
-              _react2.default.createElement(
-                _reactBootstrap.ControlLabel,
-                null,
-                'Confirm new password'
-              ),
-              _react2.default.createElement(_reactBootstrap.FormControl, { type: 'password', placeholder: 'Confirm new password', onChange: this.onConfirmPasswordChanged.bind(this) }),
-              _react2.default.createElement(_reactBootstrap.FormControl.Feedback, null),
-              _react2.default.createElement(
-                _reactBootstrap.HelpBlock,
-                null,
-                'Must match password field.'
-              )
-            ),
-            _react2.default.createElement(
-              _reactBootstrap.ButtonGroup,
-              null,
-              _react2.default.createElement(
-                _reactBootstrap.Button,
-                { type: 'submit', bsStyle: 'success' },
-                'Reset password'
-              )
-            )
-          )
-        )
-      );
-    }
-  }]);
-
-  return Recover;
-}(_react.Component);
-
-exports.default = Recover;
-
-/***/ }),
-/* 54 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _reactMetaTags = __webpack_require__(5);
-
-var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
-
-var _reactRouterDom = __webpack_require__(2);
-
-var _reactRouter = __webpack_require__(6);
-
-var _reactBootstrap = __webpack_require__(1);
-
-var _api = __webpack_require__(4);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Register = function (_Component) {
-  _inherits(Register, _Component);
-
-  function Register(props) {
-    _classCallCheck(this, Register);
-
-    var _this = _possibleConstructorReturn(this, (Register.__proto__ || Object.getPrototypeOf(Register)).call(this, props));
-
-    var data = void 0;
-    if (false) {
-      data = window.__INITIAL_DATA__;
-      delete window.__INITIAL_DATA__;
-    } else {
-      data = props.staticContext.data;
-    }
-    _this.state = { data: data };
-    return _this;
-  }
-
-  _createClass(Register, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      var _this2 = this;
-
-      if (!this.state.data) {
-        this.props.fetchInitialData().then(function (data) {
-          return _this2.setState(function () {
-            return {
-              data: data,
-              message: null,
-              firstname: '',
-              lastname: '',
-              username: '',
-              password: '',
-              password2: ''
-            };
-          });
-        });
-      }
-    }
-  }, {
-    key: 'register',
-    value: function register(event) {
-      var _this3 = this;
-
-      event.preventDefault();
-      if (this.validateFirstname(null) === 'error') {
-        this.setState({ message: _react2.default.createElement(
-            _reactBootstrap.Panel,
-            { bsStyle: 'danger' },
-            'Invalid firstname.'
-          ) });
-      } else if (this.validateLastname(null) === 'error') {
-        this.setState({ message: _react2.default.createElement(
-            _reactBootstrap.Panel,
-            { bsStyle: 'danger' },
-            'Invalid lastname.'
-          ) });
-      } else if (this.validateUsername(null) === 'error') {
-        this.setState({ message: _react2.default.createElement(
-            _reactBootstrap.Panel,
-            { bsStyle: 'danger' },
-            'Invalid username.'
-          ) });
-      } else if (this.validatePassword(null) === 'error' || this.validatePassword2(null) === 'error') {
-        this.setState({ message: _react2.default.createElement(
-            _reactBootstrap.Panel,
-            { bsStyle: 'danger' },
-            'Invalid password.'
-          ) });
-      } else {
-        (0, _api.postUserRegister)(this.state.firstname, this.state.lastname, this.state.username, this.state.password).then(function (response) {
-          _this3.setState({ message: _react2.default.createElement(
-              _reactBootstrap.Panel,
-              { bsStyle: 'success' },
-              'User registered'
-            ), pushUrl: "/login" });
-        }).catch(function (error) {
-          console.warn(error);
-          _this3.setState({ message: _react2.default.createElement(
-              _reactBootstrap.Panel,
-              { bsStyle: 'danger' },
-              error.toString()
-            ) });
-        });
-      }
-    }
-  }, {
-    key: 'onFirstnameChanged',
-    value: function onFirstnameChanged(e) {
-      this.setState({ firstname: e.target.value });
-    }
-  }, {
-    key: 'onLastnameChanged',
-    value: function onLastnameChanged(e) {
-      this.setState({ lastname: e.target.value });
-    }
-  }, {
-    key: 'onUsernameChanged',
-    value: function onUsernameChanged(e) {
-      this.setState({ username: e.target.value });
-    }
-  }, {
-    key: 'onPasswordChanged',
-    value: function onPasswordChanged(e) {
-      this.setState({ password: e.target.value });
-    }
-  }, {
-    key: 'onConfirmPasswordChanged',
-    value: function onConfirmPasswordChanged(e) {
-      this.setState({ password2: e.target.value });
-    }
-  }, {
-    key: 'validateFirstname',
-    value: function validateFirstname() {
-      if (this.state.firstname.length < 1) {
-        return 'error';
-      }
-      return 'success';
-    }
-  }, {
-    key: 'validateLastname',
-    value: function validateLastname() {
-      if (this.state.lastname.length < 1) {
-        return 'error';
-      }
-      return 'success';
-    }
-  }, {
-    key: 'validateUsername',
-    value: function validateUsername() {
-      var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      if (!re.test(this.state.username)) {
-        return 'error';
-      }
-      return 'success';
-    }
-  }, {
-    key: 'validatePassword',
-    value: function validatePassword() {
-      if (this.state.password.length < 8) {
-        return 'error';
-      }
-      return 'success';
-    }
-  }, {
-    key: 'validatePassword2',
-    value: function validatePassword2() {
-      if (this.state.password2.length < 8 || this.state.password != this.state.password2) {
-        return 'error';
-      }
-      return 'success';
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      if (this.state && this.state.pushUrl) {
-        return _react2.default.createElement(_reactRouter.Redirect, { to: this.state.pushUrl, push: true });
-      }
-      return _react2.default.createElement(
-        'span',
-        null,
-        _react2.default.createElement(
-          _reactMetaTags2.default,
-          null,
-          this.state.data && _react2.default.createElement(
-            'title',
-            null,
-            "Register | " + this.state.data.metadata.title
-          ),
-          _react2.default.createElement('meta', { name: 'description', content: "Register new user" })
-        ),
-        _react2.default.createElement(
-          _reactBootstrap.Breadcrumb,
-          null,
-          _react2.default.createElement(
-            _reactRouterDom.Link,
-            { to: '/' },
-            'Home'
-          ),
-          ' / ',
-          _react2.default.createElement(
-            'font',
-            { color: '#777' },
-            'Register'
-          )
-        ),
-        _react2.default.createElement(
-          _reactBootstrap.Well,
-          null,
-          this.state.message,
-          _react2.default.createElement(
-            'form',
-            { onSubmit: this.register.bind(this) },
-            _react2.default.createElement(
-              _reactBootstrap.FormGroup,
-              { controlId: 'formControlsFirstname', validationState: this.validateFirstname() },
-              _react2.default.createElement(
-                _reactBootstrap.ControlLabel,
-                null,
-                'Firstname'
-              ),
-              _react2.default.createElement(_reactBootstrap.FormControl, { type: 'text', placeholder: 'Enter firstname', onChange: this.onFirstnameChanged.bind(this) }),
-              _react2.default.createElement(_reactBootstrap.FormControl.Feedback, null)
-            ),
-            _react2.default.createElement(
-              _reactBootstrap.FormGroup,
-              { controlId: 'formControlsLastname', validationState: this.validateLastname() },
-              _react2.default.createElement(
-                _reactBootstrap.ControlLabel,
-                null,
-                'Lastname'
-              ),
-              _react2.default.createElement(_reactBootstrap.FormControl, { type: 'text', placeholder: 'Enter lastname', onChange: this.onLastnameChanged.bind(this) }),
-              _react2.default.createElement(_reactBootstrap.FormControl.Feedback, null)
-            ),
-            _react2.default.createElement(
-              _reactBootstrap.FormGroup,
-              { controlId: 'formControlsUsername', validationState: this.validateUsername() },
-              _react2.default.createElement(
-                _reactBootstrap.ControlLabel,
-                null,
-                'Username'
-              ),
-              _react2.default.createElement(_reactBootstrap.FormControl, { type: 'email', placeholder: 'Enter username', onChange: this.onUsernameChanged.bind(this) }),
-              _react2.default.createElement(_reactBootstrap.FormControl.Feedback, null),
-              _react2.default.createElement(
-                _reactBootstrap.HelpBlock,
-                null,
-                'You must enter a valid email address.'
-              )
-            ),
-            _react2.default.createElement(
-              _reactBootstrap.FormGroup,
-              { controlId: 'formControlsPassword', validationState: this.validatePassword() },
-              _react2.default.createElement(
-                _reactBootstrap.ControlLabel,
-                null,
-                'Password'
-              ),
-              _react2.default.createElement(_reactBootstrap.FormControl, { type: 'password', placeholder: 'Enter password', onChange: this.onPasswordChanged.bind(this) }),
-              _react2.default.createElement(_reactBootstrap.FormControl.Feedback, null),
-              _react2.default.createElement(
-                _reactBootstrap.HelpBlock,
-                null,
-                'At least 8 characters.'
-              )
-            ),
-            _react2.default.createElement(
-              _reactBootstrap.FormGroup,
-              { controlId: 'formControlsPassword2', validationState: this.validatePassword2() },
-              _react2.default.createElement(
-                _reactBootstrap.ControlLabel,
-                null,
-                'Confirm password'
-              ),
-              _react2.default.createElement(_reactBootstrap.FormControl, { type: 'password', placeholder: 'Confirm password', onChange: this.onConfirmPasswordChanged.bind(this) }),
-              _react2.default.createElement(_reactBootstrap.FormControl.Feedback, null),
-              _react2.default.createElement(
-                _reactBootstrap.HelpBlock,
-                null,
-                'Must match password field.'
-              )
-            ),
-            _react2.default.createElement(
-              _reactBootstrap.ButtonGroup,
-              null,
-              _react2.default.createElement(
-                _reactBootstrap.Button,
-                { type: 'submit', bsStyle: 'success' },
-                'Register'
-              )
-            )
-          )
-        )
-      );
-    }
-  }]);
-
-  return Register;
-}(_react.Component);
-
-exports.default = Register;
-
-/***/ }),
-/* 55 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
+var _reactCookie = __webpack_require__(27);
 
 var _reactMetaTags = __webpack_require__(5);
 
@@ -7185,7 +6822,7 @@ var _map = __webpack_require__(9);
 
 var _map2 = _interopRequireDefault(_map);
 
-var _gallery = __webpack_require__(12);
+var _gallery = __webpack_require__(13);
 
 var _gallery2 = _interopRequireDefault(_gallery);
 
@@ -7445,7 +7082,10 @@ var Sector = function (_Component2) {
     value: function refresh(id) {
       var _this3 = this;
 
-      this.props.fetchInitialData(id).then(function (data) {
+      var cookies = this.props.cookies;
+
+      var accessToken = cookies.get('access_token');
+      this.props.fetchInitialData(accessToken, id).then(function (data) {
         return _this3.setState(function () {
           return { data: data };
         });
@@ -7739,10 +7379,13 @@ var Sector = function (_Component2) {
   return Sector;
 }(_react.Component);
 
-exports.default = Sector;
+Sector.propTypes = {
+  cookies: (0, _propTypes.instanceOf)(_reactCookie.Cookies).isRequired
+};
+exports.default = (0, _reactCookie.withCookies)(Sector);
 
 /***/ }),
-/* 56 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7758,6 +7401,10 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _propTypes = __webpack_require__(21);
+
+var _reactCookie = __webpack_require__(27);
+
 var _reactMetaTags = __webpack_require__(5);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
@@ -7770,7 +7417,7 @@ var _reactBootstrap = __webpack_require__(1);
 
 var _reactGoogleMaps = __webpack_require__(10);
 
-var _imageUpload = __webpack_require__(11);
+var _imageUpload = __webpack_require__(12);
 
 var _imageUpload2 = _interopRequireDefault(_imageUpload);
 
@@ -7838,7 +7485,10 @@ var SectorEdit = function (_Component) {
     value: function refresh(id) {
       var _this2 = this;
 
-      this.props.fetchInitialData(id).then(function (data) {
+      var cookies = this.props.cookies;
+
+      var accessToken = cookies.get('access_token');
+      this.props.fetchInitialData(accessToken, id).then(function (data) {
         return _this2.setState(function () {
           return { data: data };
         });
@@ -8083,10 +7733,13 @@ var SectorEdit = function (_Component) {
   return SectorEdit;
 }(_react.Component);
 
-exports.default = SectorEdit;
+SectorEdit.propTypes = {
+  cookies: (0, _propTypes.instanceOf)(_reactCookie.Cookies).isRequired
+};
+exports.default = (0, _reactCookie.withCookies)(SectorEdit);
 
 /***/ }),
-/* 57 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8102,7 +7755,11 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactDom = __webpack_require__(14);
+var _propTypes = __webpack_require__(21);
+
+var _reactCookie = __webpack_require__(27);
+
+var _reactDom = __webpack_require__(15);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
@@ -8110,7 +7767,7 @@ var _reactRouterDom = __webpack_require__(2);
 
 var _reactBootstrap = __webpack_require__(1);
 
-var _svgPathParser = __webpack_require__(16);
+var _svgPathParser = __webpack_require__(17);
 
 var _reactRouter = __webpack_require__(6);
 
@@ -8172,7 +7829,10 @@ var SvgEdit = function (_Component) {
     value: function refresh(problemId, mediaId) {
       var _this2 = this;
 
-      this.props.fetchInitialData(problemId, mediaId).then(function (data) {
+      var cookies = this.props.cookies;
+
+      var accessToken = cookies.get('access_token');
+      this.props.fetchInitialData(accessToken, problemId, mediaId).then(function (data) {
         return _this2.setState(function () {
           return { data: data };
         });
@@ -8669,10 +8329,13 @@ var SvgEdit = function (_Component) {
   return SvgEdit;
 }(_react.Component);
 
-exports.default = SvgEdit;
+SvgEdit.propTypes = {
+  cookies: (0, _propTypes.instanceOf)(_reactCookie.Cookies).isRequired
+};
+exports.default = (0, _reactCookie.withCookies)(SvgEdit);
 
 /***/ }),
-/* 58 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8688,6 +8351,10 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _propTypes = __webpack_require__(21);
+
+var _reactCookie = __webpack_require__(27);
+
 var _reactMetaTags = __webpack_require__(5);
 
 var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
@@ -8698,13 +8365,13 @@ var _reactRouterBootstrap = __webpack_require__(7);
 
 var _reactBootstrap = __webpack_require__(1);
 
-var _reactBootstrapTable = __webpack_require__(13);
+var _reactBootstrapTable = __webpack_require__(14);
 
-var _chart = __webpack_require__(59);
+var _chart = __webpack_require__(64);
 
 var _chart2 = _interopRequireDefault(_chart);
 
-var _tickModal = __webpack_require__(17);
+var _tickModal = __webpack_require__(18);
 
 var _tickModal2 = _interopRequireDefault(_tickModal);
 
@@ -8742,7 +8409,10 @@ var User = function (_Component) {
     value: function refresh(id) {
       var _this2 = this;
 
-      this.props.fetchInitialData(id).then(function (data) {
+      var cookies = this.props.cookies;
+
+      var accessToken = cookies.get('access_token');
+      this.props.fetchInitialData(accessToken, id).then(function (data) {
         return _this2.setState(function () {
           return { data: data };
         });
@@ -9092,10 +8762,13 @@ var User = function (_Component) {
   return User;
 }(_react.Component);
 
-exports.default = User;
+User.propTypes = {
+  cookies: (0, _propTypes.instanceOf)(_reactCookie.Cookies).isRequired
+};
+exports.default = (0, _reactCookie.withCookies)(User);
 
 /***/ }),
-/* 59 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9242,7 +8915,7 @@ var Chart = function (_Component) {
 exports.default = Chart;
 
 /***/ }),
-/* 60 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9257,6 +8930,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(21);
+
+var _reactCookie = __webpack_require__(27);
 
 var _reactRouterDom = __webpack_require__(2);
 
@@ -9314,7 +8991,10 @@ var UserEdit = function (_Component) {
     value: function refresh(id) {
       var _this2 = this;
 
-      this.props.fetchInitialData(id).then(function (data) {
+      var cookies = this.props.cookies;
+
+      var accessToken = cookies.get('access_token');
+      this.props.fetchInitialData(accessToken, id).then(function (data) {
         return _this2.setState(function () {
           return { data: data };
         });
@@ -9589,10 +9269,13 @@ var UserEdit = function (_Component) {
   return UserEdit;
 }(_react.Component);
 
-exports.default = UserEdit;
+UserEdit.propTypes = {
+  cookies: (0, _propTypes.instanceOf)(_reactCookie.Cookies).isRequired
+};
+exports.default = (0, _reactCookie.withCookies)(UserEdit);
 
 /***/ }),
-/* 61 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9612,15 +9295,15 @@ var _reactBootstrap = __webpack_require__(1);
 
 var _reactRouterBootstrap = __webpack_require__(7);
 
-var _Async = __webpack_require__(62);
+var _Async = __webpack_require__(67);
 
 var _Async2 = _interopRequireDefault(_Async);
 
-var _reactSelect = __webpack_require__(63);
+var _reactSelect = __webpack_require__(68);
 
 var _reactRouter = __webpack_require__(6);
 
-var _reactAvatar = __webpack_require__(64);
+var _reactAvatar = __webpack_require__(69);
 
 var _reactAvatar2 = _interopRequireDefault(_reactAvatar);
 
@@ -9924,40 +9607,46 @@ var Navigation = function (_Component) {
 exports.default = Navigation;
 
 /***/ }),
-/* 62 */
+/* 67 */
 /***/ (function(module, exports) {
 
 module.exports = require("react-select/lib/Async");
 
 /***/ }),
-/* 63 */
+/* 68 */
 /***/ (function(module, exports) {
 
 module.exports = require("react-select");
 
 /***/ }),
-/* 64 */
+/* 69 */
 /***/ (function(module, exports) {
 
 module.exports = require("react-avatar");
 
 /***/ }),
-/* 65 */
+/* 70 */
 /***/ (function(module, exports) {
 
 module.exports = require("react-ga");
 
 /***/ }),
-/* 66 */
+/* 71 */
 /***/ (function(module, exports) {
 
 module.exports = require("@fortawesome/fontawesome-svg-core");
 
 /***/ }),
-/* 67 */
+/* 72 */
 /***/ (function(module, exports) {
 
 module.exports = require("@fortawesome/free-solid-svg-icons");
+
+/***/ }),
+/* 73 */
+/***/ (function(module, exports) {
+
+module.exports = require("universal-cookie-express");
 
 /***/ })
 /******/ ]);

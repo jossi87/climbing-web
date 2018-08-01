@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import { instanceOf } from 'prop-types';
+import { withCookies, Cookies } from 'react-cookie';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { LinkContainer } from 'react-router-bootstrap';
@@ -7,7 +9,11 @@ import { Tabs, Tab, Panel, ButtonToolbar, ButtonGroup, Button, OverlayTrigger, T
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-export default class Finder extends Component {
+class Finder extends Component {
+  static propTypes = {
+    cookies: instanceOf(Cookies).isRequired
+  };
+
   constructor(props) {
     super(props);
     let data;
@@ -44,7 +50,9 @@ export default class Finder extends Component {
   }
 
   refresh(grade) {
-    this.props.fetchInitialData(grade).then((data) => this.setState(() => ({data})));
+    const { cookies } = this.props;
+    const accessToken = cookies.get('access_token');
+    this.props.fetchInitialData(accessToken, grade).then((data) => this.setState(() => ({data})));
   }
 
   componentDidMount() {
@@ -267,3 +275,5 @@ export default class Finder extends Component {
     );
   }
 }
+
+export default withCookies(Finder);

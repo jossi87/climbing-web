@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import { instanceOf } from 'prop-types';
+import { withCookies, Cookies } from 'react-cookie';
 import ReactDOM from 'react-dom';
 import { Link } from 'react-router-dom';
 import { Well, FormGroup, MenuItem, ButtonGroup, Button, DropdownButton, Alert, Breadcrumb } from 'react-bootstrap';
@@ -8,7 +10,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import util from '../../../utils/util.js';
 import { postProblemSvg } from '../../../api';
 
-export default class SvgEdit extends Component {
+class SvgEdit extends Component {
+  static propTypes = {
+    cookies: instanceOf(Cookies).isRequired
+  };
+
   constructor(props) {
     super(props);
     let data;
@@ -38,7 +44,9 @@ export default class SvgEdit extends Component {
   }
 
   refresh(problemId, mediaId) {
-    this.props.fetchInitialData(problemId, mediaId).then((data) => this.setState(() => ({data})));
+    const { cookies } = this.props;
+    const accessToken = cookies.get('access_token');
+    this.props.fetchInitialData(accessToken, problemId, mediaId).then((data) => this.setState(() => ({data})));
   }
 
   componentWillUnmount() {
@@ -353,3 +361,5 @@ export default class SvgEdit extends Component {
     )
   }
 }
+
+export default withCookies(SvgEdit);
