@@ -1850,7 +1850,10 @@ var TickModal = function (_Component) {
     value: function save(e) {
       var _this3 = this;
 
-      (0, _api.postTicks)(false, this.state.idTick, this.state.idProblem, this.state.comment, this.state.date, this.state.stars, this.state.grade).then(function (response) {
+      var cookies = this.props.cookies;
+
+      var accessToken = cookies.get('access_token');
+      (0, _api.postTicks)(accessToken, false, this.state.idTick, this.state.idProblem, this.state.comment, this.state.date, this.state.stars, this.state.grade).then(function (response) {
         _this3.props.onHide();
       }).catch(function (error) {
         console.warn(error);
@@ -5506,7 +5509,7 @@ var Problem = function (_Component) {
         }
       }
       if (!tickModal) {
-        tickModal = _react2.default.createElement(_tickModal2.default, { idTick: -1, idProblem: data.id, grade: data.originalGrade, show: this.state.showTickModal, onHide: this.closeTickModal.bind(this) });
+        tickModal = _react2.default.createElement(_tickModal2.default, { idTick: -1, idProblem: data.id, grade: data.originalGrade, grades: data.metadata.grades, show: this.state.showTickModal, onHide: this.closeTickModal.bind(this) });
       }
 
       return _react2.default.createElement(
@@ -8656,7 +8659,7 @@ var User = function (_Component) {
         _react2.default.createElement(
           _reactBootstrap.Breadcrumb,
           null,
-          data.metadata.isAuthenticated && this.state.currTick && this.state.currTick.user.readOnly == false && _react2.default.createElement(
+          data.metadata.isAuthenticated && this.state.currTick && this.state.data.readOnly == false && _react2.default.createElement(
             'div',
             { style: { float: 'right' } },
             _react2.default.createElement(

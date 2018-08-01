@@ -278,7 +278,7 @@ class Problem extends Component {
       }
     }
     if (!tickModal) {
-      tickModal = <TickModal idTick={-1} idProblem={data.id} grade={data.originalGrade} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/>;
+      tickModal = <TickModal idTick={-1} idProblem={data.id} grade={data.originalGrade} grades={data.metadata.grades} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/>;
     }
 
     return (
