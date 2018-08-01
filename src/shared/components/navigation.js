@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import { instanceOf } from 'prop-types';
+import { withCookies, Cookies } from 'react-cookie';
 import { Navbar, Nav, NavItem, FormGroup, FormControl, MenuItem, NavDropdown } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import Async from 'react-select/lib/Async';
@@ -25,7 +27,11 @@ const CustomOption = (props) => {
   );
 };
 
-export default class Navigation extends Component {
+class Navigation extends Component {
+  static propTypes = {
+    cookies: instanceOf(Cookies).isRequired
+  };
+
   constructor(props) {
     super(props);
     let meta;
@@ -43,7 +49,7 @@ export default class Navigation extends Component {
 
   componentDidMount() {
     if (!this.state.meta) {
-      getMeta().then((meta) => this.setState(() => ({meta})));
+      this.refresh();
     }
   }
 
@@ -54,6 +60,19 @@ export default class Navigation extends Component {
   hoverImage(hover) {
     const logo = hover? '/png/buldreinfo_logo_white.png' : '/png/buldreinfo_logo_gray.png';
     this.setState({logo: logo});
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const prevPath = prevProps.location.pathname;
+    if (prevPath == '/logout' || prevPath == '/callback') {
+      this.refresh();
+    }
+  }
+
+  refresh() {
+    const { cookies } = this.props;
+    const accessToken = cookies.get('access_token');
+    getMeta(accessToken).then((meta) => this.setState(() => ({meta})));
   }
 
   search(input, callback) {
@@ -146,3 +165,5 @@ export default class Navigation extends Component {
     );
   }
 }
+
+export default withCookies(Navigation);
