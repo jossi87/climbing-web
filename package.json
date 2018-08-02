@@ -13,7 +13,8 @@
   "babel": {
     "presets": [
       "env",
-      "react"
+      "react",
+      "stage-2"
     ],
     "plugins": [
       "transform-object-rest-spread"
@@ -25,7 +26,6 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
-    "babel-preset-stage-2": "^6.24.1",
     "nodemon": "^1.18.3",
     "webpack": "^4.16.3",
     "webpack-cli": "^3.1.0",
@@ -38,7 +38,6 @@
     "auth0-js": "^9.7.3",
     "babel-polyfill": "^6.26.0",
     "cors": "^2.8.4",
-    "create-react-class": "^15.6.3",
     "es6-promise": "^4.2.4",
     "express": "^4.16.3",
     "isomorphic-fetch": "^2.2.1",
@@ -67,12 +66,11 @@
     "react-router-dom": "^4.3.1",
     "react-select": "^2.0.0",
     "serialize-javascript": "^1.5.0",
-    "svg-path-parser": "^1.1.0",
-    "universal-cookie-express": "^2.2.0"
+    "svg-path-parser": "^1.1.0"
   },
   "scripts": {
     "build": "webpack --mode=production",
     "dev-build": "webpack --watch --mode=development",
-    "dev-server": "nodemon public/js/server.js"
+    "dev-server": "nodemon server.js"
   }
 }
