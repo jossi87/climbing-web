@@ -7,7 +7,7 @@ import serialize from "serialize-javascript";
 import { CookiesProvider } from 'react-cookie';
 import MetaTagsServer from 'react-meta-tags/server';
 import { MetaTagsContext } from 'react-meta-tags';
-import App from '../shared/App';
+import App from '../shared/app';
 import routes from '../shared/routes';
 
 const app = express();
