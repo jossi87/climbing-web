@@ -337,7 +337,8 @@ function getProblemEdit(accessToken, id) {
         lat: res.lat,
         lng: res.lng,
         sections: res.sections,
-        metadata: res.metadata
+        metadata: res.metadata,
+        newMedia: []
       };
     }).catch(function (error) {
       console.warn(error);
@@ -532,7 +533,6 @@ function postArea(accessToken, id, visibility, name, comment, lat, lng, media) {
     body: formData,
     headers: {
       Authorization: 'Bearer ' + accessToken,
-      'Content-Type': 'application/json',
       'Accept': 'application/json'
     }
   }).then(function (data) {
@@ -569,7 +569,6 @@ function postProblem(accessToken, sectorId, id, visibility, name, comment, origi
     body: formData,
     headers: {
       Authorization: 'Bearer ' + accessToken,
-      'Content-Type': 'application/json',
       'Accept': 'application/json'
     }
   }).then(function (data) {
@@ -593,7 +592,6 @@ function postProblemMedia(accessToken, id, media) {
     body: formData,
     headers: {
       Authorization: 'Bearer ' + accessToken,
-      'Content-Type': 'application/json',
       'Accept': 'application/json'
     }
   }).then(function (data) {
@@ -649,7 +647,6 @@ function postSector(accessToken, areaId, id, visibility, name, comment, lat, lng
     body: formData,
     headers: {
       Authorization: 'Bearer ' + accessToken,
-      'Content-Type': 'application/json',
       'Accept': 'application/json'
     }
   }).then(function (data) {
@@ -2938,7 +2935,7 @@ var AreaEdit = function (_Component) {
 
       var accessToken = cookies.get('access_token');
       this.setState({ isSaving: true });
-      (0, _api.postArea)(accessToken, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, newMedia).then(function (response) {
+      (0, _api.postArea)(accessToken, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, this.state.data.newMedia).then(function (response) {
         _this3.setState({ pushUrl: "/area/" + response.id });
       }).catch(function (error) {
         console.warn(error);
@@ -6031,16 +6028,13 @@ var ProblemEdit = function (_Component) {
 
       event.preventDefault();
       this.setState({ isSaving: true });
-      var newMedia = this.state.data.newMedia.map(function (m) {
-        return { name: m.file.name.replace(/[^-a-z0-9.]/ig, '_'), photographer: m.photographer, inPhoto: m.inPhoto };
-      });
       var data = this.state.data;
       var cookies = this.props.cookies;
 
       var accessToken = cookies.get('access_token');
       (0, _api.postProblem)(accessToken, this.props.location.query.idSector, data.id, data.visibility, data.name, data.comment, data.originalGrade, data.fa, data.faDate, data.nr, data.typeId ? data.metadata.types.find(function (t) {
         return t.id === data.typeId;
-      }) : data.metadata.types[0], data.lat, data.lng, data.sections, newMedia).then(function (response) {
+      }) : data.metadata.types[0], data.lat, data.lng, data.sections, data.newMedia).then(function (response) {
         _this3.setState({ pushUrl: "/problem/" + response.id });
       }).catch(function (error) {
         console.warn(error);
@@ -7596,13 +7590,10 @@ var SectorEdit = function (_Component) {
 
       event.preventDefault();
       this.setState({ isSaving: true });
-      var newMedia = this.state.data.newMedia.map(function (m) {
-        return { name: m.file.name.replace(/[^-a-z0-9.]/ig, '_'), photographer: m.photographer, inPhoto: m.inPhoto };
-      });
       var cookies = this.props.cookies;
 
       var accessToken = cookies.get('access_token');
-      (0, _api.postSector)(accessToken, this.props.location.query.idArea, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, newMedia).then(function (response) {
+      (0, _api.postSector)(accessToken, this.props.location.query.idArea, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, this.state.data.newMedia).then(function (response) {
         _this3.setState({ pushUrl: "/sector/" + response.id });
       }).catch(function (error) {
         console.warn(error);

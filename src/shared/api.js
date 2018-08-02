@@ -193,7 +193,8 @@ export function getProblemEdit(accessToken, id) {
         lat: res.lat,
         lng: res.lng,
         sections: res.sections,
-        metadata: res.metadata
+        metadata: res.metadata,
+        newMedia: []
       };
     })
     .catch((error) => {
@@ -364,7 +365,6 @@ export function postArea(accessToken, id, visibility, name, comment, lat, lng, m
     body: formData,
     headers: {
       Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
       'Accept': 'application/json'
     }
   }).then((data) => data.json());
@@ -395,7 +395,6 @@ export function postProblem(accessToken, sectorId, id, visibility, name, comment
     body: formData,
     headers: {
       Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
       'Accept': 'application/json'
     }
   }).then((data) => data.json());
@@ -413,7 +412,6 @@ export function postProblemMedia(accessToken, id, media) {
     body: formData,
     headers: {
       Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
       'Accept': 'application/json'
     }
   }).then((data) => data.json());
@@ -459,7 +457,6 @@ export function postSector(accessToken, areaId, id, visibility, name, comment, l
     body: formData,
     headers: {
       Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
       'Accept': 'application/json'
     }
   }).then((data) => data.json());

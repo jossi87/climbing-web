@@ -83,7 +83,7 @@ class AreaEdit extends Component {
     const { cookies } = this.props;
     const accessToken = cookies.get('access_token');
     this.setState({isSaving: true});
-    postArea(accessToken, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, newMedia)
+    postArea(accessToken, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, this.state.data.newMedia)
     .then((response) => {
       this.setState({pushUrl: "/area/" + response.id});
     })
