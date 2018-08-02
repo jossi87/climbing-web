@@ -4,10 +4,10 @@ import { withCookies, Cookies } from 'react-cookie';
 import ReactDOM from 'react-dom';
 import { Link } from 'react-router-dom';
 import { Well, FormGroup, MenuItem, ButtonGroup, Button, DropdownButton, Alert, Breadcrumb } from 'react-bootstrap';
-import {parseSVG, makeAbsolute} from 'svg-path-parser';
 import { Redirect } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getImageUrl, postProblemSvg } from '../../../api';
+import { parseReadOnlySvgs } from '../../../utils/svg.js';
 
 class SvgEdit extends Component {
   static propTypes = {
@@ -23,12 +23,38 @@ class SvgEdit extends Component {
     } else {
       data = props.staticContext.data;
     }
-    this.state = {data};
+    if (data) {
+      this.state = {
+        mediaId : data.mediaId,
+        nr: data.nr,
+        w: data.w,
+        h: data.h,
+        ctrl: data.ctrl,
+        svgId: data.svgId,
+        points: data.points,
+        readOnlySvgs: data.readOnlySvgs,
+        activePoint: data.activePoint,
+        draggedPoint: data.draggedPoint,
+        draggedCubic: data.draggedCubic,
+        hasAnchor: data.hasAnchor,
+        areaId: data.areaId,
+        areaName: data.areaName,
+        areaVisibility: data.areaVisibility,
+        sectorId: data.sectorId,
+        sectorName: data.sectorName,
+        sectorVisibility: data.sectorVisibility,
+        id: data.id,
+        name: data.name,
+        grade: data.grade,
+        visibility: data.visibility,
+        metadata: data.metadata
+      };
+    }
   }
 
   componentDidMount() {
-    if (!this.state.data) {
-      this.refresh(this.props.match.params.problemId, this.props.match.params.mediaId);
+    if (!this.state || !this.state.id) {
+      this.refresh(this.props.match.params.problemIdMediaId);
     }
     if (document) {
       document.addEventListener("keydown", this.handleKeyDown.bind(this));
@@ -37,15 +63,39 @@ class SvgEdit extends Component {
   }
 
   componentDidUpdate (prevProps, prevState) {
-    if (prevProps.match.params.problemId !== this.props.match.params.problemId || prevProps.match.params.mediaId !== this.props.match.params.mediaId) {
-      this.refresh(this.props.match.params.problemId, this.props.match.params.mediaId);
+    if (prevProps.match.params.problemIdMediaId !== this.props.match.params.problemIdMediaId) {
+      this.refresh(this.props.match.params.problemIdMediaId);
     }
   }
 
-  refresh(problemId, mediaId) {
+  refresh(problemIdMediaId) {
     const { cookies } = this.props;
     const accessToken = cookies.get('access_token');
-    this.props.fetchInitialData(accessToken, problemId, mediaId).then((data) => this.setState(() => ({data})));
+    this.props.fetchInitialData(accessToken, problemIdMediaId).then((data) => this.setState(() => ({
+      mediaId : data.mediaId,
+      nr: data.nr,
+      w: data.w,
+      h: data.h,
+      ctrl: data.ctrl,
+      svgId: data.svgId,
+      points: data.points,
+      readOnlySvgs: data.readOnlySvgs,
+      activePoint: data.activePoint,
+      draggedPoint: data.draggedPoint,
+      draggedCubic: data.draggedCubic,
+      hasAnchor: data.hasAnchor,
+      areaId: data.areaId,
+      areaName: data.areaName,
+      areaVisibility: data.areaVisibility,
+      sectorId: data.sectorId,
+      sectorName: data.sectorName,
+      sectorVisibility: data.sectorVisibility,
+      id: data.id,
+      name: data.name,
+      grade: data.grade,
+      visibility: data.visibility,
+      metadata: data.metadata
+    })));
   }
 
   componentWillUnmount() {
@@ -221,69 +271,8 @@ class SvgEdit extends Component {
     });
   };
 
-  parseReadOnlySvgs() {
-    const shapes = [];
-    for (let svg of this.state.readOnlySvgs) {
-      shapes.push(<path key={shapes.length} d={svg.path} className="buldreinfo-svg-opacity buldreinfo-svg-route" strokeWidth={0.003*this.state.w} strokeDasharray={0.006*this.state.w}/>);
-      const commands = parseSVG(svg.path);
-      makeAbsolute(commands); // Note: mutates the commands in place!
-      shapes.push(this.generateSvgNrAndAnchor(commands, svg.nr, svg.hasAnchor));
-    }
-    return shapes;
-  }
-
-  generateSvgNrAndAnchor(path, nr, hasAnchor) {
-    var ixNr;
-    var maxY = 0;
-    var ixAnchor;
-    var minY = 99999999;
-    for (var i=0, len=path.length; i < len; i++) {
-      if (path[i].y > maxY) {
-        ixNr = i;
-        maxY = path[i].y;
-      }
-      if (path[i].y < minY) {
-        ixAnchor = i;
-        minY = path[i].y;
-      }
-    }
-    var x = path[ixNr].x;
-    var y = path[ixNr].y;
-    const r = 0.012*this.state.w;
-    if (x < r) x = r;
-    if (x > (this.state.w-r)) x = this.state.w-r;
-    if (y < r) y = r;
-    if (y > (this.state.h-r)) y = this.state.h-r;
-    var anchor = null;
-    if (hasAnchor === true) {
-      anchor = <circle className="buldreinfo-svg-ring" cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.006*this.state.w}/>
-    }
-    return (
-      <g className="buldreinfo-svg-opacity">
-        <circle className="buldreinfo-svg-ring" cx={x} cy={y} r={r}/>
-        <text className="buldreinfo-svg-routenr" x={x} y={y} fontSize={0.02*this.state.w}>{nr}</text>
-        {anchor}
-      </g>
-    );
-  }
-
-  parsePath(d) {
-    if (d) {
-      const commands = parseSVG(d);
-      makeAbsolute(commands); // Note: mutates the commands in place!
-      return commands.map(c => {
-        switch (c.code) {
-          case "L": case "M": return { x: Math.round(c.x), y: Math.round(c.y) };
-          case "C": return { x: Math.round(c.x), y: Math.round(c.y), c: [{x: Math.round(c.x1), y: Math.round(c.y1)}, {x: Math.round(c.x2), y: Math.round(c.y2)}] };
-          case "S": return { x: Math.round(c.x), y: Math.round(c.y), c: [{x: Math.round(c.x0), y: Math.round(c.y0)}, {x: Math.round(c.x2), y: Math.round(c.y2)}] };
-        }
-      });
-    }
-    return [];
-  }
-
   render() {
-    if (!this.state) {
+    if (!this.state || !this.state.id) {
       return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     } else if (this.state.error) {
       return <h3>{this.state.error.toString()}</h3>;
@@ -348,7 +337,7 @@ class SvgEdit extends Component {
             <FormGroup controlId="formControlsImage">
               <svg viewBox={"0 0 " + this.state.w + " " + this.state.h} onClick={this.addPoint.bind(this)} onMouseMove={this.handleMouseMove.bind(this)}>
                 <image ref="buldreinfo-svg-edit-img" xlinkHref={getImageUrl(this.state.mediaId)} width="100%" height="100%"/>
-                {this.parseReadOnlySvgs()}
+                {parseReadOnlySvgs(this.state.readOnlySvgs, this.state.w, this.state.h)}
                 <path className="buldreinfo-svg-route" d={path} strokeWidth={0.002*this.state.w}/>
                 {circles}
               </svg>

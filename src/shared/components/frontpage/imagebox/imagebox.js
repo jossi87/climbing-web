@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { Link } from 'react-router-dom';
 import { Well } from 'react-bootstrap';
-import getImageUrl from '../../../api.js';
+import { getImageUrl } from '../../../api.js';
 
 export default class ImageBox extends Component {
   constructor(props) {

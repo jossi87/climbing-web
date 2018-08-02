@@ -141,23 +141,30 @@ var _isomorphicFetch = __webpack_require__(35);
 
 var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
 
+var _svg = __webpack_require__(19);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-__webpack_require__(38).polyfill();
+__webpack_require__(36).polyfill();
 
-function getUrl(str) {
+
+function getUri(str) {
   var uri =  false ? window.origin : global.myOrigin;
   if (uri === 'http://localhost:3000') {
     uri = 'https://brattelinjer.no';
   }
-  return encodeURI(uri + '/com.buldreinfo.jersey.jaxb/v2' + str);
+  return uri + '/com.buldreinfo.jersey.jaxb/v2' + str;
+}
+
+function getUrl(str) {
+  return encodeURI(getUri(str));
 }
 
 function getImageUrl(id, maxHeight) {
   if (maxHeight) {
-    return getUrl('/images?id=' + id + '&targetHeight=' + maxHeight);
+    return getUri('/images?id=' + id + '&targetHeight=' + maxHeight);
   }
-  return getUrl('/images?id=' + id);
+  return getUri('/images?id=' + id);
 }
 
 function convertFromDateToString(date) {
@@ -194,14 +201,7 @@ function getArea(accessToken, id) {
 
 function getAreaEdit(accessToken, id) {
   if (id == -1) {
-    return (0, _isomorphicFetch2.default)(getUrl('/meta'), {
-      credentials: 'include',
-      headers: {
-        Authorization: 'Bearer ' + accessToken
-      }
-    }).then(function (data) {
-      return data.json();
-    }).then(function (res) {
+    getMeta(accessToken).then(function (res) {
       return { id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: { title: 'New area | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, isAdmin: res.metadata.isAdmin, isSuperAdmin: res.metadata.isSuperAdmin } };
     }).catch(function (error) {
       console.warn(error);
@@ -267,7 +267,7 @@ function getFrontpage(accessToken) {
 }
 
 function getMeta(accessToken) {
-  return (0, _isomorphicFetch2.default)(getUrl("/meta"), {
+  return (0, _isomorphicFetch2.default)(getUrl('/meta'), {
     credentials: 'include',
     headers: {
       Authorization: 'Bearer ' + accessToken
@@ -298,14 +298,7 @@ function getProblem(accessToken, id) {
 
 function getProblemEdit(accessToken, id) {
   if (id == -1) {
-    return (0, _isomorphicFetch2.default)(getUrl('/meta'), {
-      credentials: 'include',
-      headers: {
-        Authorization: 'Bearer ' + accessToken
-      }
-    }).then(function (data) {
-      return data.json();
-    }).then(function (res) {
+    getMeta(accessToken).then(function (res) {
       return {
         id: -1,
         visibility: 0,
@@ -382,14 +375,7 @@ function getSector(accessToken, id) {
 
 function getSectorEdit(accessToken, id) {
   if (id == -1) {
-    return (0, _isomorphicFetch2.default)(getUrl('/meta'), {
-      credentials: 'include',
-      headers: {
-        Authorization: 'Bearer ' + accessToken
-      }
-    }).then(function (data) {
-      return data.json();
-    }).then(function (res) {
+    getMeta(accessToken).then(function (res) {
       return { id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: { title: 'New sector | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, isAdmin: res.metadata.isAdmin, isSuperAdmin: res.metadata.isSuperAdmin } };
     }).catch(function (error) {
       console.warn(error);
@@ -412,9 +398,10 @@ function getSectorEdit(accessToken, id) {
   }
 }
 
-function getSvgEdit(accessToken, problemId, mediaId) {
-  var _this = this;
-
+function getSvgEdit(accessToken, problemIdMediaId) {
+  var parts = problemIdMediaId.split("-");
+  var problemId = parts[0];
+  var mediaId = parts[1];
   return (0, _isomorphicFetch2.default)(getUrl('/problems?id=' + problemId), {
     credentials: 'include',
     headers: {
@@ -425,7 +412,7 @@ function getSvgEdit(accessToken, problemId, mediaId) {
   }).then(function (json) {
     return json[0];
   }).then(function (res) {
-    var m = res.body[0].media.filter(function (x) {
+    var m = res.media.filter(function (x) {
       return x.id == mediaId;
     })[0];
     var readOnlySvgs = [];
@@ -440,9 +427,9 @@ function getSvgEdit(accessToken, problemId, mediaId) {
         for (var _iterator = m.svgs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           var svg = _step.value;
 
-          if (svg.problemId === res.body[0].id) {
+          if (svg.problemId === res.id) {
             svgId = svg.id;
-            points = _this.parsePath(svg.path);
+            points = (0, _svg.parsePath)(svg.path);
           } else {
             readOnlySvgs.push({ nr: svg.nr, hasAnchor: svg.hasAnchor, path: svg.path });
           }
@@ -484,7 +471,8 @@ function getSvgEdit(accessToken, problemId, mediaId) {
       id: res.id,
       name: res.name,
       grade: res.grade,
-      visibility: res.visibility
+      visibility: res.visibility,
+      metadata: res.metadata
     };
   }).catch(function (error) {
     console.warn(error);
@@ -629,8 +617,6 @@ function postProblemSvg(accessToken, problemId, mediaId, del, id, path, hasAncho
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     }
-  }).then(function (data) {
-    return data.json();
   });
 }
 
@@ -731,8 +717,7 @@ module.exports = require("react-router");
 module.exports = require("react-router-bootstrap");
 
 /***/ }),
-/* 10 */,
-/* 11 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -750,7 +735,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRouter = __webpack_require__(8);
 
-var _reactGoogleMaps = __webpack_require__(12);
+var _reactGoogleMaps = __webpack_require__(11);
 
 var _MarkerClusterer = __webpack_require__(31);
 
@@ -880,117 +865,13 @@ var Map = function (_Component) {
 exports.default = Map;
 
 /***/ }),
-/* 12 */
+/* 11 */
 /***/ (function(module, exports) {
 
 module.exports = require("react-google-maps");
 
 /***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.login = login;
-exports.logout = logout;
-exports.getIdToken = getIdToken;
-exports.getAccessToken = getAccessToken;
-exports.setAccessToken = setAccessToken;
-exports.setIdToken = setIdToken;
-exports.isLoggedIn = isLoggedIn;
-
-var _jwtDecode = __webpack_require__(36);
-
-var _jwtDecode2 = _interopRequireDefault(_jwtDecode);
-
-var _auth0Js = __webpack_require__(37);
-
-var _auth0Js2 = _interopRequireDefault(_auth0Js);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var ID_TOKEN_KEY = 'id_token';
-var ACCESS_TOKEN_KEY = 'access_token';
-
-var auth = new _auth0Js2.default.WebAuth({
-  domain: 'buldreinfo.auth0.com',
-  clientID: 'zexpFfou6HkgNWH5QVi3zyT1rrw6MXAn'
-});
-
-function login() {
-  auth.authorize({
-    domain: 'buldreinfo.auth0.com',
-    clientID: 'zexpFfou6HkgNWH5QVi3zyT1rrw6MXAn',
-    redirectUri: window.location.origin + '/callback',
-    audience: 'https://buldreinfo.auth0.com/userinfo',
-    responseType: 'token id_token',
-    scope: 'openid'
-  });
-}
-
-function logout(cookies) {
-  clearIdToken(cookies);
-  clearAccessToken(cookies);
-}
-
-function getIdToken(cookies) {
-  return cookies.get(ID_TOKEN_KEY);
-}
-
-function getAccessToken(cookies) {
-  return cookies.get(ACCESS_TOKEN_KEY);
-}
-
-function clearIdToken(cookies) {
-  cookies.remove(ID_TOKEN_KEY);
-}
-
-function clearAccessToken(cookies) {
-  cookies.remove(ACCESS_TOKEN_KEY);
-}
-
-// Helper function that will allow us to extract the access_token and id_token
-function getParameterByName(name) {
-  var match = RegExp('[#&]' + name + '=([^&]*)').exec(window.location.hash);
-  return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
-}
-
-function setAccessToken(cookies) {
-  var accessToken = getParameterByName('access_token');
-  cookies.set(ACCESS_TOKEN_KEY, accessToken);
-}
-
-function setIdToken(cookies) {
-  var idToken = getParameterByName('id_token');
-  cookies.set(ID_TOKEN_KEY, idToken);
-}
-
-function isLoggedIn() {
-  var idToken = getIdToken();
-  return !!idToken && !isTokenExpired(idToken);
-}
-
-function getTokenExpirationDate(encodedToken) {
-  var token = (0, _jwtDecode2.default)(encodedToken);
-  if (!token.exp) {
-    return null;
-  }
-  var date = new Date(0);
-  date.setUTCSeconds(token.exp);
-  return date;
-}
-
-function isTokenExpired(token) {
-  var expirationDate = getTokenExpirationDate(token);
-  return expirationDate < new Date();
-}
-
-/***/ }),
-/* 14 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1010,7 +891,7 @@ var _propTypes = __webpack_require__(2);
 
 var _reactCookie = __webpack_require__(1);
 
-var _reactDropzone = __webpack_require__(40);
+var _reactDropzone = __webpack_require__(38);
 
 var _reactDropzone2 = _interopRequireDefault(_reactDropzone);
 
@@ -1215,7 +1096,7 @@ var ImageUpload = function (_Component2) {
 exports.default = (0, _reactCookie.withCookies)(ImageUpload);
 
 /***/ }),
-/* 15 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1245,7 +1126,7 @@ var _reactPlayer = __webpack_require__(33);
 
 var _reactPlayer2 = _interopRequireDefault(_reactPlayer);
 
-var _svgPathParser = __webpack_require__(19);
+var _svgPathParser = __webpack_require__(18);
 
 var _reactRouterDom = __webpack_require__(4);
 
@@ -1538,7 +1419,7 @@ var Gallery = function (_Component) {
             { style: { position: 'absolute', zIndex: '4', background: 'rgba(0, 0, 0, 0.4)', padding: '8px 20px' } },
             _react2.default.createElement(
               _reactRouterDom.Link,
-              { to: '/problem/svg-edit/' + m.svgProblemId + '/' + m.id, onMouseEnter: this.toggleHoverEdit.bind(this), onMouseLeave: this.toggleHoverEdit.bind(this) },
+              { to: '/problem/svg-edit/' + m.svgProblemId + '-' + m.id, onMouseEnter: this.toggleHoverEdit.bind(this), onMouseLeave: this.toggleHoverEdit.bind(this) },
               _react2.default.createElement(_reactFontawesome.FontAwesomeIcon, { icon: 'edit', style: this.state.hoverEdit ? { transform: 'scale(1.1)', color: '#fff' } : { color: '#fff' } })
             )
           );
@@ -1584,19 +1465,123 @@ Gallery.propTypes = {
 exports.default = (0, _reactCookie.withCookies)(Gallery);
 
 /***/ }),
-/* 16 */
+/* 14 */
 /***/ (function(module, exports) {
 
 module.exports = require("react-bootstrap-table");
 
 /***/ }),
-/* 17 */
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.login = login;
+exports.logout = logout;
+exports.getIdToken = getIdToken;
+exports.getAccessToken = getAccessToken;
+exports.setAccessToken = setAccessToken;
+exports.setIdToken = setIdToken;
+exports.isLoggedIn = isLoggedIn;
+
+var _jwtDecode = __webpack_require__(41);
+
+var _jwtDecode2 = _interopRequireDefault(_jwtDecode);
+
+var _auth0Js = __webpack_require__(42);
+
+var _auth0Js2 = _interopRequireDefault(_auth0Js);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var ID_TOKEN_KEY = 'id_token';
+var ACCESS_TOKEN_KEY = 'access_token';
+
+var auth = new _auth0Js2.default.WebAuth({
+  domain: 'buldreinfo.auth0.com',
+  clientID: 'zexpFfou6HkgNWH5QVi3zyT1rrw6MXAn'
+});
+
+function login() {
+  auth.authorize({
+    domain: 'buldreinfo.auth0.com',
+    clientID: 'zexpFfou6HkgNWH5QVi3zyT1rrw6MXAn',
+    redirectUri: window.location.origin + '/callback',
+    audience: 'https://buldreinfo.auth0.com/userinfo',
+    responseType: 'token id_token',
+    scope: 'openid'
+  });
+}
+
+function logout(cookies) {
+  clearIdToken(cookies);
+  clearAccessToken(cookies);
+}
+
+function getIdToken(cookies) {
+  return cookies.get(ID_TOKEN_KEY);
+}
+
+function getAccessToken(cookies) {
+  return cookies.get(ACCESS_TOKEN_KEY);
+}
+
+function clearIdToken(cookies) {
+  cookies.remove(ID_TOKEN_KEY);
+}
+
+function clearAccessToken(cookies) {
+  cookies.remove(ACCESS_TOKEN_KEY);
+}
+
+// Helper function that will allow us to extract the access_token and id_token
+function getParameterByName(name) {
+  var match = RegExp('[#&]' + name + '=([^&]*)').exec(window.location.hash);
+  return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+}
+
+function setAccessToken(cookies) {
+  var accessToken = getParameterByName('access_token');
+  cookies.set(ACCESS_TOKEN_KEY, accessToken);
+}
+
+function setIdToken(cookies) {
+  var idToken = getParameterByName('id_token');
+  cookies.set(ID_TOKEN_KEY, idToken);
+}
+
+function isLoggedIn() {
+  var idToken = getIdToken();
+  return !!idToken && !isTokenExpired(idToken);
+}
+
+function getTokenExpirationDate(encodedToken) {
+  var token = (0, _jwtDecode2.default)(encodedToken);
+  if (!token.exp) {
+    return null;
+  }
+  var date = new Date(0);
+  date.setUTCSeconds(token.exp);
+  return date;
+}
+
+function isTokenExpired(token) {
+  var expirationDate = getTokenExpirationDate(token);
+  return expirationDate < new Date();
+}
+
+/***/ }),
+/* 16 */
 /***/ (function(module, exports) {
 
 module.exports = require("react-dom");
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1610,15 +1595,15 @@ var _area = __webpack_require__(30);
 
 var _area2 = _interopRequireDefault(_area);
 
-var _areaEdit = __webpack_require__(39);
+var _areaEdit = __webpack_require__(37);
 
 var _areaEdit2 = _interopRequireDefault(_areaEdit);
 
-var _browse = __webpack_require__(41);
+var _browse = __webpack_require__(39);
 
 var _browse2 = _interopRequireDefault(_browse);
 
-var _callback = __webpack_require__(42);
+var _callback = __webpack_require__(40);
 
 var _callback2 = _interopRequireDefault(_callback);
 
@@ -1705,9 +1690,9 @@ var routes = [{ path: '/', exact: true, component: _index2.default, fetchInitial
   } }, { path: '/problem/edit/:problemId', exact: true, component: _problemEdit2.default, fetchInitialData: function fetchInitialData(accessToken) {
     var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
     return (0, _api.getProblemEdit)(accessToken, path.split('/').pop());
-  } }, { path: '/problem/edit/media/:problemId', exact: true, component: _problemEditMedia2.default }, { path: '/problem/svg-edit/:problemId/:mediaId', exact: true, component: _svgEdit2.default, fetchInitialData: function fetchInitialData(accessToken) {
+  } }, { path: '/problem/edit/media/:problemId', exact: true, component: _problemEditMedia2.default }, { path: '/problem/svg-edit/:problemIdMediaId', exact: true, component: _svgEdit2.default, fetchInitialData: function fetchInitialData(accessToken) {
     var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-    return (0, _api.getSvgEdit)(accessToken, path.split('/').pop().pop(), path.split('/').pop());
+    return (0, _api.getSvgEdit)(accessToken, path.split('/').pop());
   } }, { path: '/finder/:grade', exact: true, component: _finder2.default, fetchInitialData: function fetchInitialData(accessToken) {
     var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
     return (0, _api.getFinder)(accessToken, path.split('/').pop());
@@ -1725,10 +1710,121 @@ var routes = [{ path: '/', exact: true, component: _index2.default, fetchInitial
 exports.default = routes;
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, exports) {
 
 module.exports = require("svg-path-parser");
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.parsePath = parsePath;
+exports.parseReadOnlySvgs = parseReadOnlySvgs;
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _svgPathParser = __webpack_require__(18);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function generateSvgNrAndAnchor(path, nr, hasAnchor, w, h) {
+  var ixNr;
+  var maxY = 0;
+  var ixAnchor;
+  var minY = 99999999;
+  for (var i = 0, len = path.length; i < len; i++) {
+    if (path[i].y > maxY) {
+      ixNr = i;
+      maxY = path[i].y;
+    }
+    if (path[i].y < minY) {
+      ixAnchor = i;
+      minY = path[i].y;
+    }
+  }
+  var x = path[ixNr].x;
+  var y = path[ixNr].y;
+  var r = 0.012 * w;
+  if (x < r) x = r;
+  if (x > w - r) x = w - r;
+  if (y < r) y = r;
+  if (y > h - r) y = h - r;
+  var anchor = null;
+  if (hasAnchor === true) {
+    anchor = _react2.default.createElement('circle', { className: 'buldreinfo-svg-ring', cx: path[ixAnchor].x, cy: path[ixAnchor].y, r: 0.006 * w });
+  }
+  return _react2.default.createElement(
+    'g',
+    { className: 'buldreinfo-svg-opacity' },
+    _react2.default.createElement('circle', { className: 'buldreinfo-svg-ring', cx: x, cy: y, r: r }),
+    _react2.default.createElement(
+      'text',
+      { className: 'buldreinfo-svg-routenr', x: x, y: y, fontSize: 0.02 * w },
+      nr
+    ),
+    anchor
+  );
+}
+
+function parsePath(d) {
+  if (d) {
+    var commands = (0, _svgPathParser.parseSVG)(d);
+    (0, _svgPathParser.makeAbsolute)(commands); // Note: mutates the commands in place!
+    return commands.map(function (c) {
+      switch (c.code) {
+        case "L":case "M":
+          return { x: Math.round(c.x), y: Math.round(c.y) };
+        case "C":
+          return { x: Math.round(c.x), y: Math.round(c.y), c: [{ x: Math.round(c.x1), y: Math.round(c.y1) }, { x: Math.round(c.x2), y: Math.round(c.y2) }] };
+        case "S":
+          return { x: Math.round(c.x), y: Math.round(c.y), c: [{ x: Math.round(c.x0), y: Math.round(c.y0) }, { x: Math.round(c.x2), y: Math.round(c.y2) }] };
+      }
+    });
+  }
+  return [];
+}
+
+function parseReadOnlySvgs(readOnlySvgs, w, h) {
+  var shapes = [];
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = readOnlySvgs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var svg = _step.value;
+
+      shapes.push(_react2.default.createElement('path', { key: shapes.length, d: svg.path, className: 'buldreinfo-svg-opacity buldreinfo-svg-route', strokeWidth: 0.003 * w, strokeDasharray: 0.006 * w }));
+      var commands = (0, _svgPathParser.parseSVG)(svg.path);
+      (0, _svgPathParser.makeAbsolute)(commands); // Note: mutates the commands in place!
+      shapes.push(generateSvgNrAndAnchor(commands, svg.nr, svg.hasAnchor, w, h));
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
+
+  return shapes;
+}
 
 /***/ }),
 /* 20 */
@@ -2086,7 +2182,7 @@ var _App = __webpack_require__(28);
 
 var _App2 = _interopRequireDefault(_App);
 
-var _routes = __webpack_require__(18);
+var _routes = __webpack_require__(17);
 
 var _routes2 = _interopRequireDefault(_routes);
 
@@ -2172,7 +2268,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactDom = __webpack_require__(17);
+var _reactDom = __webpack_require__(16);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
@@ -2182,7 +2278,7 @@ var _loading = __webpack_require__(29);
 
 var _loading2 = _interopRequireDefault(_loading);
 
-var _routes = __webpack_require__(18);
+var _routes = __webpack_require__(17);
 
 var _routes2 = _interopRequireDefault(_routes);
 
@@ -2387,11 +2483,11 @@ var _reactBootstrap = __webpack_require__(3);
 
 var _reactRouterBootstrap = __webpack_require__(9);
 
-var _map = __webpack_require__(11);
+var _map = __webpack_require__(10);
 
 var _map2 = _interopRequireDefault(_map);
 
-var _gallery = __webpack_require__(15);
+var _gallery = __webpack_require__(13);
 
 var _gallery2 = _interopRequireDefault(_gallery);
 
@@ -2764,22 +2860,10 @@ module.exports = require("isomorphic-fetch");
 /* 36 */
 /***/ (function(module, exports) {
 
-module.exports = require("jwt-decode");
-
-/***/ }),
-/* 37 */
-/***/ (function(module, exports) {
-
-module.exports = require("auth0-js");
-
-/***/ }),
-/* 38 */
-/***/ (function(module, exports) {
-
 module.exports = require("es6-promise");
 
 /***/ }),
-/* 39 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2807,11 +2891,11 @@ var _reactRouter = __webpack_require__(8);
 
 var _reactBootstrap = __webpack_require__(3);
 
-var _imageUpload = __webpack_require__(14);
+var _imageUpload = __webpack_require__(12);
 
 var _imageUpload2 = _interopRequireDefault(_imageUpload);
 
-var _reactGoogleMaps = __webpack_require__(12);
+var _reactGoogleMaps = __webpack_require__(11);
 
 var _reactFontawesome = __webpack_require__(5);
 
@@ -3111,13 +3195,13 @@ AreaEdit.propTypes = {
 exports.default = (0, _reactCookie.withCookies)(AreaEdit);
 
 /***/ }),
-/* 40 */
+/* 38 */
 /***/ (function(module, exports) {
 
 module.exports = require("react-dropzone");
 
 /***/ }),
-/* 41 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3145,11 +3229,11 @@ var _reactRouterDom = __webpack_require__(4);
 
 var _reactBootstrap = __webpack_require__(3);
 
-var _reactBootstrapTable = __webpack_require__(16);
+var _reactBootstrapTable = __webpack_require__(14);
 
 var _reactRouterBootstrap = __webpack_require__(9);
 
-var _map = __webpack_require__(11);
+var _map = __webpack_require__(10);
 
 var _map2 = _interopRequireDefault(_map);
 
@@ -3375,7 +3459,7 @@ Browse.propTypes = {
 exports.default = (0, _reactCookie.withCookies)(Browse);
 
 /***/ }),
-/* 42 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3397,7 +3481,7 @@ var _reactCookie = __webpack_require__(1);
 
 var _reactBootstrap = __webpack_require__(3);
 
-var _auth = __webpack_require__(13);
+var _auth = __webpack_require__(15);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3443,6 +3527,18 @@ Callback.propTypes = {
   cookies: (0, _propTypes.instanceOf)(_reactCookie.Cookies).isRequired
 };
 exports.default = (0, _reactCookie.withCookies)(Callback);
+
+/***/ }),
+/* 41 */
+/***/ (function(module, exports) {
+
+module.exports = require("jwt-decode");
+
+/***/ }),
+/* 42 */
+/***/ (function(module, exports) {
+
+module.exports = require("auth0-js");
 
 /***/ }),
 /* 43 */
@@ -3660,13 +3756,13 @@ var _reactRouterDom = __webpack_require__(4);
 
 var _reactRouterBootstrap = __webpack_require__(9);
 
-var _map = __webpack_require__(11);
+var _map = __webpack_require__(10);
 
 var _map2 = _interopRequireDefault(_map);
 
 var _reactBootstrap = __webpack_require__(3);
 
-var _reactBootstrapTable = __webpack_require__(16);
+var _reactBootstrapTable = __webpack_require__(14);
 
 var _reactFontawesome = __webpack_require__(5);
 
@@ -4637,8 +4733,6 @@ var _reactBootstrap = __webpack_require__(3);
 
 var _api = __webpack_require__(6);
 
-var _api2 = _interopRequireDefault(_api);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -4715,7 +4809,7 @@ var ImageBox = function (_Component) {
         _react2.default.createElement(
           _reactRouterDom.Link,
           { to: '/problem/' + this.props.data.idProblem },
-          _react2.default.createElement('img', { style: { maxWidth: '100%' }, src: (0, _api2.default)(this.props.data.idMedia, 480), alt: this.props.data.problem })
+          _react2.default.createElement('img', { style: { maxWidth: '100%' }, src: (0, _api.getImageUrl)(this.props.data.idMedia, 480), alt: this.props.data.problem })
         ),
         _react2.default.createElement('br', null),
         txt
@@ -4838,7 +4932,7 @@ var _propTypes = __webpack_require__(2);
 
 var _reactCookie = __webpack_require__(1);
 
-var _auth = __webpack_require__(13);
+var _auth = __webpack_require__(15);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4902,7 +4996,7 @@ var _reactCookie = __webpack_require__(1);
 
 var _reactBootstrap = __webpack_require__(3);
 
-var _auth = __webpack_require__(13);
+var _auth = __webpack_require__(15);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4975,11 +5069,11 @@ var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
 var _reactRouterDom = __webpack_require__(4);
 
-var _map = __webpack_require__(11);
+var _map = __webpack_require__(10);
 
 var _map2 = _interopRequireDefault(_map);
 
-var _gallery = __webpack_require__(15);
+var _gallery = __webpack_require__(13);
 
 var _gallery2 = _interopRequireDefault(_gallery);
 
@@ -5839,7 +5933,7 @@ var _reactRouter = __webpack_require__(8);
 
 var _reactBootstrap = __webpack_require__(3);
 
-var _reactGoogleMaps = __webpack_require__(12);
+var _reactGoogleMaps = __webpack_require__(11);
 
 var _userSelector = __webpack_require__(54);
 
@@ -5849,7 +5943,7 @@ var _problemSection = __webpack_require__(56);
 
 var _problemSection2 = _interopRequireDefault(_problemSection);
 
-var _imageUpload = __webpack_require__(14);
+var _imageUpload = __webpack_require__(12);
 
 var _imageUpload2 = _interopRequireDefault(_imageUpload);
 
@@ -6703,7 +6797,7 @@ var _reactRouter = __webpack_require__(8);
 
 var _reactBootstrap = __webpack_require__(3);
 
-var _imageUpload = __webpack_require__(14);
+var _imageUpload = __webpack_require__(12);
 
 var _imageUpload2 = _interopRequireDefault(_imageUpload);
 
@@ -6862,11 +6956,11 @@ var _reactMetaTags2 = _interopRequireDefault(_reactMetaTags);
 
 var _reactRouterDom = __webpack_require__(4);
 
-var _map = __webpack_require__(11);
+var _map = __webpack_require__(10);
 
 var _map2 = _interopRequireDefault(_map);
 
-var _gallery = __webpack_require__(15);
+var _gallery = __webpack_require__(13);
 
 var _gallery2 = _interopRequireDefault(_gallery);
 
@@ -7459,9 +7553,9 @@ var _reactRouter = __webpack_require__(8);
 
 var _reactBootstrap = __webpack_require__(3);
 
-var _reactGoogleMaps = __webpack_require__(12);
+var _reactGoogleMaps = __webpack_require__(11);
 
-var _imageUpload = __webpack_require__(14);
+var _imageUpload = __webpack_require__(12);
 
 var _imageUpload2 = _interopRequireDefault(_imageUpload);
 
@@ -7824,7 +7918,7 @@ var _propTypes = __webpack_require__(2);
 
 var _reactCookie = __webpack_require__(1);
 
-var _reactDom = __webpack_require__(17);
+var _reactDom = __webpack_require__(16);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
@@ -7832,13 +7926,13 @@ var _reactRouterDom = __webpack_require__(4);
 
 var _reactBootstrap = __webpack_require__(3);
 
-var _svgPathParser = __webpack_require__(19);
-
 var _reactRouter = __webpack_require__(8);
 
 var _reactFontawesome = __webpack_require__(5);
 
 var _api = __webpack_require__(6);
+
+var _svg = __webpack_require__(19);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -7863,15 +7957,41 @@ var SvgEdit = function (_Component) {
     } else {
       data = props.staticContext.data;
     }
-    _this.state = { data: data };
+    if (data) {
+      _this.state = {
+        mediaId: data.mediaId,
+        nr: data.nr,
+        w: data.w,
+        h: data.h,
+        ctrl: data.ctrl,
+        svgId: data.svgId,
+        points: data.points,
+        readOnlySvgs: data.readOnlySvgs,
+        activePoint: data.activePoint,
+        draggedPoint: data.draggedPoint,
+        draggedCubic: data.draggedCubic,
+        hasAnchor: data.hasAnchor,
+        areaId: data.areaId,
+        areaName: data.areaName,
+        areaVisibility: data.areaVisibility,
+        sectorId: data.sectorId,
+        sectorName: data.sectorName,
+        sectorVisibility: data.sectorVisibility,
+        id: data.id,
+        name: data.name,
+        grade: data.grade,
+        visibility: data.visibility,
+        metadata: data.metadata
+      };
+    }
     return _this;
   }
 
   _createClass(SvgEdit, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      if (!this.state.data) {
-        this.refresh(this.props.match.params.problemId, this.props.match.params.mediaId);
+      if (!this.state || !this.state.id) {
+        this.refresh(this.props.match.params.problemIdMediaId);
       }
       if (document) {
         document.addEventListener("keydown", this.handleKeyDown.bind(this));
@@ -7881,21 +8001,45 @@ var SvgEdit = function (_Component) {
   }, {
     key: 'componentDidUpdate',
     value: function componentDidUpdate(prevProps, prevState) {
-      if (prevProps.match.params.problemId !== this.props.match.params.problemId || prevProps.match.params.mediaId !== this.props.match.params.mediaId) {
-        this.refresh(this.props.match.params.problemId, this.props.match.params.mediaId);
+      if (prevProps.match.params.problemIdMediaId !== this.props.match.params.problemIdMediaId) {
+        this.refresh(this.props.match.params.problemIdMediaId);
       }
     }
   }, {
     key: 'refresh',
-    value: function refresh(problemId, mediaId) {
+    value: function refresh(problemIdMediaId) {
       var _this2 = this;
 
       var cookies = this.props.cookies;
 
       var accessToken = cookies.get('access_token');
-      this.props.fetchInitialData(accessToken, problemId, mediaId).then(function (data) {
+      this.props.fetchInitialData(accessToken, problemIdMediaId).then(function (data) {
         return _this2.setState(function () {
-          return { data: data };
+          return {
+            mediaId: data.mediaId,
+            nr: data.nr,
+            w: data.w,
+            h: data.h,
+            ctrl: data.ctrl,
+            svgId: data.svgId,
+            points: data.points,
+            readOnlySvgs: data.readOnlySvgs,
+            activePoint: data.activePoint,
+            draggedPoint: data.draggedPoint,
+            draggedCubic: data.draggedCubic,
+            hasAnchor: data.hasAnchor,
+            areaId: data.areaId,
+            areaName: data.areaName,
+            areaVisibility: data.areaVisibility,
+            sectorId: data.sectorId,
+            sectorName: data.sectorName,
+            sectorVisibility: data.sectorVisibility,
+            id: data.id,
+            name: data.name,
+            grade: data.grade,
+            visibility: data.visibility,
+            metadata: data.metadata
+          };
         });
       });
     }
@@ -8094,104 +8238,11 @@ var SvgEdit = function (_Component) {
       });
     }
   }, {
-    key: 'parseReadOnlySvgs',
-    value: function parseReadOnlySvgs() {
-      var shapes = [];
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
-
-      try {
-        for (var _iterator = this.state.readOnlySvgs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var svg = _step.value;
-
-          shapes.push(_react2.default.createElement('path', { key: shapes.length, d: svg.path, className: 'buldreinfo-svg-opacity buldreinfo-svg-route', strokeWidth: 0.003 * this.state.w, strokeDasharray: 0.006 * this.state.w }));
-          var commands = (0, _svgPathParser.parseSVG)(svg.path);
-          (0, _svgPathParser.makeAbsolute)(commands); // Note: mutates the commands in place!
-          shapes.push(this.generateSvgNrAndAnchor(commands, svg.nr, svg.hasAnchor));
-        }
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator.return) {
-            _iterator.return();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
-        }
-      }
-
-      return shapes;
-    }
-  }, {
-    key: 'generateSvgNrAndAnchor',
-    value: function generateSvgNrAndAnchor(path, nr, hasAnchor) {
-      var ixNr;
-      var maxY = 0;
-      var ixAnchor;
-      var minY = 99999999;
-      for (var i = 0, len = path.length; i < len; i++) {
-        if (path[i].y > maxY) {
-          ixNr = i;
-          maxY = path[i].y;
-        }
-        if (path[i].y < minY) {
-          ixAnchor = i;
-          minY = path[i].y;
-        }
-      }
-      var x = path[ixNr].x;
-      var y = path[ixNr].y;
-      var r = 0.012 * this.state.w;
-      if (x < r) x = r;
-      if (x > this.state.w - r) x = this.state.w - r;
-      if (y < r) y = r;
-      if (y > this.state.h - r) y = this.state.h - r;
-      var anchor = null;
-      if (hasAnchor === true) {
-        anchor = _react2.default.createElement('circle', { className: 'buldreinfo-svg-ring', cx: path[ixAnchor].x, cy: path[ixAnchor].y, r: 0.006 * this.state.w });
-      }
-      return _react2.default.createElement(
-        'g',
-        { className: 'buldreinfo-svg-opacity' },
-        _react2.default.createElement('circle', { className: 'buldreinfo-svg-ring', cx: x, cy: y, r: r }),
-        _react2.default.createElement(
-          'text',
-          { className: 'buldreinfo-svg-routenr', x: x, y: y, fontSize: 0.02 * this.state.w },
-          nr
-        ),
-        anchor
-      );
-    }
-  }, {
-    key: 'parsePath',
-    value: function parsePath(d) {
-      if (d) {
-        var commands = (0, _svgPathParser.parseSVG)(d);
-        (0, _svgPathParser.makeAbsolute)(commands); // Note: mutates the commands in place!
-        return commands.map(function (c) {
-          switch (c.code) {
-            case "L":case "M":
-              return { x: Math.round(c.x), y: Math.round(c.y) };
-            case "C":
-              return { x: Math.round(c.x), y: Math.round(c.y), c: [{ x: Math.round(c.x1), y: Math.round(c.y1) }, { x: Math.round(c.x2), y: Math.round(c.y2) }] };
-            case "S":
-              return { x: Math.round(c.x), y: Math.round(c.y), c: [{ x: Math.round(c.x0), y: Math.round(c.y0) }, { x: Math.round(c.x2), y: Math.round(c.y2) }] };
-          }
-        });
-      }
-      return [];
-    }
-  }, {
     key: 'render',
     value: function render() {
       var _this4 = this;
 
-      if (!this.state) {
+      if (!this.state || !this.state.id) {
         return _react2.default.createElement(
           'center',
           null,
@@ -8374,7 +8425,7 @@ var SvgEdit = function (_Component) {
                 'svg',
                 { viewBox: "0 0 " + this.state.w + " " + this.state.h, onClick: this.addPoint.bind(this), onMouseMove: this.handleMouseMove.bind(this) },
                 _react2.default.createElement('image', { ref: 'buldreinfo-svg-edit-img', xlinkHref: (0, _api.getImageUrl)(this.state.mediaId), width: '100%', height: '100%' }),
-                this.parseReadOnlySvgs(),
+                (0, _svg.parseReadOnlySvgs)(this.state.readOnlySvgs, this.state.w, this.state.h),
                 _react2.default.createElement('path', { className: 'buldreinfo-svg-route', d: path, strokeWidth: 0.002 * this.state.w }),
                 circles
               )
@@ -8429,7 +8480,7 @@ var _reactRouterBootstrap = __webpack_require__(9);
 
 var _reactBootstrap = __webpack_require__(3);
 
-var _reactBootstrapTable = __webpack_require__(16);
+var _reactBootstrapTable = __webpack_require__(14);
 
 var _chart = __webpack_require__(62);
 

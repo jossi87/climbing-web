@@ -1,19 +1,24 @@
 import fetch from 'isomorphic-fetch';
 require('es6-promise').polyfill();
+import { parsePath } from './utils/svg.js';
 
-function getUrl(str) {
+function getUri(str) {
   var uri = __isBrowser__? window.origin : global.myOrigin;
   if (uri === 'http://localhost:3000') {
     uri = 'https://brattelinjer.no';
   }
-  return encodeURI(`${uri}/com.buldreinfo.jersey.jaxb/v2${str}`);
+  return `${uri}/com.buldreinfo.jersey.jaxb/v2${str}`;
+}
+
+function getUrl(str) {
+  return encodeURI(getUri(str));
 }
 
 export function getImageUrl(id, maxHeight) {
   if (maxHeight) {
-    return getUrl(`/images?id=${id}&targetHeight=${maxHeight}`);
+    return getUri(`/images?id=${id}&targetHeight=${maxHeight}`);
   }
-  return getUrl(`/images?id=${id}`);
+  return getUri(`/images?id=${id}`);
 }
 
 export function convertFromDateToString(date) {
@@ -50,13 +55,7 @@ export function getArea(accessToken, id) {
 
 export function getAreaEdit(accessToken, id) {
   if (id == -1) {
-    return fetch(getUrl(`/meta`), {
-      credentials: 'include',
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
-    .then((data) => data.json())
+    getMeta(accessToken)
     .then((res) => {
       return {id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: {title: 'New area | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, isAdmin: res.metadata.isAdmin, isSuperAdmin: res.metadata.isSuperAdmin}};
     })
@@ -125,7 +124,7 @@ export function getFrontpage(accessToken) {
 }
 
 export function getMeta(accessToken) {
-  return fetch(getUrl("/meta"), {
+  return fetch(getUrl(`/meta`), {
     credentials: 'include',
     headers: {
       Authorization: `Bearer ${accessToken}`
@@ -155,13 +154,7 @@ export function getProblem(accessToken, id) {
 
 export function getProblemEdit(accessToken, id) {
   if (id == -1) {
-    return fetch(getUrl(`/meta`), {
-      credentials: 'include',
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
-    .then((data) => data.json())
+    getMeta(accessToken)
     .then((res) => {
       return {
         id: -1,
@@ -240,13 +233,7 @@ export function getSector(accessToken, id) {
 
 export function getSectorEdit(accessToken, id) {
   if (id == -1) {
-    return fetch(getUrl(`/meta`), {
-      credentials: 'include',
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
-    .then((data) => data.json())
+    getMeta(accessToken)
     .then((res) => {
       return {id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: {title: 'New sector | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, isAdmin: res.metadata.isAdmin, isSuperAdmin: res.metadata.isSuperAdmin}};
     })
@@ -272,7 +259,10 @@ export function getSectorEdit(accessToken, id) {
   }
 }
 
-export function getSvgEdit(accessToken, problemId, mediaId) {
+export function getSvgEdit(accessToken, problemIdMediaId) {
+  const parts = problemIdMediaId.split("-");
+  const problemId = parts[0];
+  const mediaId = parts[1];
   return fetch(getUrl(`/problems?id=${problemId}`), {
     credentials: 'include',
     headers: {
@@ -282,15 +272,15 @@ export function getSvgEdit(accessToken, problemId, mediaId) {
   .then((data) => data.json())
   .then((json) => json[0])
   .then((res) => {
-    const m = res.body[0].media.filter(x => x.id==mediaId)[0];
+    const m = res.media.filter(x => x.id==mediaId)[0];
     const readOnlySvgs = [];
     var svgId = 0;
     var points = [];
     if (m.svgs) {
       for (let svg of m.svgs) {
-        if (svg.problemId===res.body[0].id) {
+        if (svg.problemId===res.id) {
           svgId = svg.id;
-          points = this.parsePath(svg.path);
+          points = parsePath(svg.path);
         }
         else {
           readOnlySvgs.push({ nr: svg.nr, hasAnchor: svg.hasAnchor, path: svg.path });
@@ -319,7 +309,8 @@ export function getSvgEdit(accessToken, problemId, mediaId) {
       id: res.id,
       name: res.name,
       grade: res.grade,
-      visibility: res.visibility
+      visibility: res.visibility,
+      metadata: res.metadata
     };
   })
   .catch((error) => {
@@ -448,7 +439,7 @@ export function postProblemSvg(accessToken, problemId, mediaId, del, id, path, h
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     }
-  }).then((data) => data.json());
+  });
 }
 
 export function postSearch(accessToken, value) {
