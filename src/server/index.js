@@ -5,6 +5,8 @@ import { renderToString } from "react-dom/server";
 import { StaticRouter, matchPath } from "react-router-dom";
 import serialize from "serialize-javascript";
 import { CookiesProvider } from 'react-cookie';
+import MetaTagsServer from 'react-meta-tags/server';
+import { MetaTagsContext } from 'react-meta-tags';
 import App from '../shared/App';
 import routes from '../shared/routes';
 
@@ -16,6 +18,7 @@ app.use(cookiesMiddleware());
 app.use(express.static("public"));
 
 app.get("*", (req, res, next) => {
+  const metaTagsInstance = MetaTagsServer();
   global.myOrigin = req.protocol + "://" + req.headers.host;
   const activeRoute = routes.find((route) => matchPath(req.url, route)) || {};
 
@@ -27,17 +30,22 @@ app.get("*", (req, res, next) => {
     const context = { data }
     const markup = renderToString(
       <CookiesProvider cookies={req.universalCookies}>
-        <StaticRouter location={req.url} context={context}>
-          <App />
-        </StaticRouter>
+        <MetaTagsContext extract = {metaTagsInstance.extract}>
+          <StaticRouter location={req.url} context={context}>
+            <App />
+          </StaticRouter>
+        </MetaTagsContext>
       </CookiesProvider>
     )
+    const meta = metaTagsInstance.renderToString();
+    console.log(meta);
 
     res.send(`
       <!DOCTYPE html>
       <html>
         <head>
           <meta charset="utf-8">
+          ${meta}
           <meta name="viewport" content="width=device-width, initial-scale=1">
           <link rel="icon" href="/favicon.ico">
           <meta name="author" content="Jostein Øygarden">

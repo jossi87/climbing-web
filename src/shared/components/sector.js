@@ -207,7 +207,7 @@ class Sector extends Component {
     return (
       <span>
         <MetaTags>
-          <script type="application/ld+json">{JSON.stringify(data.metadata.jsonLd)}</script>
+          <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(data.metadata.jsonLd)}} />
           <title>{data.metadata.title}</title>
           <meta name="description" content={data.metadata.description} />
         </MetaTags>

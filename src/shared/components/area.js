@@ -127,7 +127,7 @@ class Area extends Component {
     return (
       <span>
         <MetaTags>
-          <script type="application/ld+json">{JSON.stringify(this.state.data.metadata.jsonLd)}</script>
+          <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(this.state.data.metadata.jsonLd)}} />
           <title>{this.state.data.metadata.title}</title>
           <meta name="description" content={this.state.data.metadata.description} />
         </MetaTags>
