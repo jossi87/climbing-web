@@ -7,8 +7,7 @@ import { Well, FormGroup, MenuItem, ButtonGroup, Button, DropdownButton, Alert, 
 import {parseSVG, makeAbsolute} from 'svg-path-parser';
 import { Redirect } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import util from '../../../utils/util.js';
-import { postProblemSvg } from '../../../api';
+import { getImageUrl, postProblemSvg } from '../../../api';
 
 class SvgEdit extends Component {
   static propTypes = {
@@ -348,7 +347,7 @@ class SvgEdit extends Component {
             </FormGroup>
             <FormGroup controlId="formControlsImage">
               <svg viewBox={"0 0 " + this.state.w + " " + this.state.h} onClick={this.addPoint.bind(this)} onMouseMove={this.handleMouseMove.bind(this)}>
-                <image ref="buldreinfo-svg-edit-img" xlinkHref={util.getImageUrl(this.state.mediaId)} width="100%" height="100%"/>
+                <image ref="buldreinfo-svg-edit-img" xlinkHref={getImageUrl(this.state.mediaId)} width="100%" height="100%"/>
                 {this.parseReadOnlySvgs()}
                 <path className="buldreinfo-svg-route" d={path} strokeWidth={0.002*this.state.w}/>
                 {circles}

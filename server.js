@@ -109,6 +109,8 @@ module.exports = require("@fortawesome/react-fontawesome");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.getImageUrl = getImageUrl;
+exports.convertFromDateToString = convertFromDateToString;
 exports.deleteMedia = deleteMedia;
 exports.getArea = getArea;
 exports.getAreaEdit = getAreaEdit;
@@ -139,17 +141,34 @@ var _isomorphicFetch = __webpack_require__(35);
 
 var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
 
-var _util = __webpack_require__(10);
-
-var _util2 = _interopRequireDefault(_util);
-
-var _auth = __webpack_require__(13);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 __webpack_require__(38).polyfill();
+
+function getUrl(str) {
+  var uri =  false ? window.origin : global.myOrigin;
+  if (uri === 'http://localhost:3000') {
+    uri = 'https://brattelinjer.no';
+  }
+  return encodeURI(uri + '/com.buldreinfo.jersey.jaxb/v2' + str);
+}
+
+function getImageUrl(id, maxHeight) {
+  if (maxHeight) {
+    return getUrl('/images?id=' + id + '&targetHeight=' + maxHeight);
+  }
+  return getUrl('/images?id=' + id);
+}
+
+function convertFromDateToString(date) {
+  var d = date.getDate();
+  var m = date.getMonth() + 1;
+  var y = date.getFullYear();
+  return y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
+}
+
 function deleteMedia(accessToken, id) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/media?id=' + id), {
+  return (0, _isomorphicFetch2.default)(getUrl('/media?id=' + id), {
     mode: 'cors',
     method: 'DELETE',
     credentials: 'include',
@@ -160,7 +179,7 @@ function deleteMedia(accessToken, id) {
 }
 
 function getArea(accessToken, id) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/areas?id=' + id), {
+  return (0, _isomorphicFetch2.default)(getUrl('/areas?id=' + id), {
     credentials: 'include',
     headers: {
       Authorization: 'Bearer ' + accessToken
@@ -175,7 +194,7 @@ function getArea(accessToken, id) {
 
 function getAreaEdit(accessToken, id) {
   if (id == -1) {
-    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/meta'), {
+    return (0, _isomorphicFetch2.default)(getUrl('/meta'), {
       credentials: 'include',
       headers: {
         Authorization: 'Bearer ' + accessToken
@@ -189,7 +208,7 @@ function getAreaEdit(accessToken, id) {
       return null;
     });
   } else {
-    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/areas?id=' + id), {
+    return (0, _isomorphicFetch2.default)(getUrl('/areas?id=' + id), {
       credentials: 'include',
       headers: {
         Authorization: 'Bearer ' + accessToken
@@ -206,7 +225,7 @@ function getAreaEdit(accessToken, id) {
 }
 
 function getBrowse(accessToken) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/browse'), {
+  return (0, _isomorphicFetch2.default)(getUrl('/browse'), {
     credentials: 'include',
     headers: {
       Authorization: 'Bearer ' + accessToken
@@ -220,7 +239,7 @@ function getBrowse(accessToken) {
 }
 
 function getFinder(accessToken, grade) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/finder?grade=' + grade), {
+  return (0, _isomorphicFetch2.default)(getUrl('/finder?grade=' + grade), {
     credentials: 'include',
     headers: {
       Authorization: 'Bearer ' + accessToken
@@ -234,7 +253,7 @@ function getFinder(accessToken, grade) {
 }
 
 function getFrontpage(accessToken) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/frontpage'), {
+  return (0, _isomorphicFetch2.default)(getUrl('/frontpage'), {
     credentials: 'include',
     headers: {
       Authorization: 'Bearer ' + accessToken
@@ -248,7 +267,7 @@ function getFrontpage(accessToken) {
 }
 
 function getMeta(accessToken) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/meta'), {
+  return (0, _isomorphicFetch2.default)(getUrl("/meta"), {
     credentials: 'include',
     headers: {
       Authorization: 'Bearer ' + accessToken
@@ -262,7 +281,7 @@ function getMeta(accessToken) {
 }
 
 function getProblem(accessToken, id) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/problems?id=' + id), {
+  return (0, _isomorphicFetch2.default)(getUrl('/problems?id=' + id), {
     credentials: 'include',
     headers: {
       Authorization: 'Bearer ' + accessToken
@@ -279,7 +298,7 @@ function getProblem(accessToken, id) {
 
 function getProblemEdit(accessToken, id) {
   if (id == -1) {
-    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/meta'), {
+    return (0, _isomorphicFetch2.default)(getUrl('/meta'), {
       credentials: 'include',
       headers: {
         Authorization: 'Bearer ' + accessToken
@@ -294,7 +313,7 @@ function getProblemEdit(accessToken, id) {
         comment: '',
         originalGrade: 'n/a',
         fa: [],
-        faDate: _util2.default.convertFromDateToString(new Date()),
+        faDate: convertFromDateToString(new Date()),
         nr: 0,
         lat: 0,
         lng: 0,
@@ -314,7 +333,7 @@ function getProblemEdit(accessToken, id) {
       return null;
     });
   } else {
-    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/problems?id=' + id), {
+    return (0, _isomorphicFetch2.default)(getUrl('/problems?id=' + id), {
       credentials: 'include',
       headers: {
         Authorization: 'Bearer ' + accessToken
@@ -348,7 +367,7 @@ function getProblemEdit(accessToken, id) {
 }
 
 function getSector(accessToken, id) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/sectors?id=' + id), {
+  return (0, _isomorphicFetch2.default)(getUrl('/sectors?id=' + id), {
     credentials: 'include',
     headers: {
       Authorization: 'Bearer ' + accessToken
@@ -363,7 +382,7 @@ function getSector(accessToken, id) {
 
 function getSectorEdit(accessToken, id) {
   if (id == -1) {
-    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/meta'), {
+    return (0, _isomorphicFetch2.default)(getUrl('/meta'), {
       credentials: 'include',
       headers: {
         Authorization: 'Bearer ' + accessToken
@@ -377,7 +396,7 @@ function getSectorEdit(accessToken, id) {
       return null;
     });
   } else {
-    return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/sectors?id=' + id), {
+    return (0, _isomorphicFetch2.default)(getUrl('/sectors?id=' + id), {
       credentials: 'include',
       headers: {
         Authorization: 'Bearer ' + accessToken
@@ -396,7 +415,7 @@ function getSectorEdit(accessToken, id) {
 function getSvgEdit(accessToken, problemId, mediaId) {
   var _this = this;
 
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/problems?id=' + problemId), {
+  return (0, _isomorphicFetch2.default)(getUrl('/problems?id=' + problemId), {
     credentials: 'include',
     headers: {
       Authorization: 'Bearer ' + accessToken
@@ -474,7 +493,7 @@ function getSvgEdit(accessToken, problemId, mediaId) {
 }
 
 function getUser(accessToken, id) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/users?id=' + id), {
+  return (0, _isomorphicFetch2.default)(getUrl('/users?id=' + id), {
     credentials: 'include',
     headers: {
       Authorization: 'Bearer ' + accessToken
@@ -488,7 +507,7 @@ function getUser(accessToken, id) {
 }
 
 function getUserEdit(accessToken, id) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/users/edit?id=' + id), {
+  return (0, _isomorphicFetch2.default)(getUrl('/users/edit?id=' + id), {
     credentials: 'include',
     headers: {
       Authorization: 'Bearer ' + accessToken
@@ -504,7 +523,7 @@ function getUserEdit(accessToken, id) {
 }
 
 function getUserSearch(accessToken, value) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/users/search?value=' + value), {
+  return (0, _isomorphicFetch2.default)(getUrl('/users/search?value=' + value), {
     credentials: 'include',
     headers: {
       Authorization: 'Bearer ' + accessToken
@@ -526,7 +545,7 @@ function postArea(accessToken, id, visibility, name, comment, lat, lng, media) {
   media.forEach(function (m) {
     return formData.append(m.file.name.replace(/[^-a-z0-9.]/ig, '_'), m.file);
   });
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/areas'), {
+  return (0, _isomorphicFetch2.default)(getUrl('/areas'), {
     mode: 'cors',
     method: 'POST',
     credentials: 'include',
@@ -541,7 +560,7 @@ function postArea(accessToken, id, visibility, name, comment, lat, lng, media) {
 }
 
 function postComment(accessToken, idProblem, comment) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/comments'), {
+  return (0, _isomorphicFetch2.default)(getUrl('/comments'), {
     mode: 'cors',
     method: 'POST',
     credentials: 'include',
@@ -562,7 +581,7 @@ function postProblem(accessToken, sectorId, id, visibility, name, comment, origi
   media.forEach(function (m) {
     return formData.append(m.file.name.replace(/[^-a-z0-9.]/ig, '_'), m.file);
   });
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/problems'), {
+  return (0, _isomorphicFetch2.default)(getUrl('/problems'), {
     mode: 'cors',
     method: 'POST',
     credentials: 'include',
@@ -585,7 +604,7 @@ function postProblemMedia(accessToken, id, media) {
   media.forEach(function (m) {
     return formData.append(m.file.name.replace(/[^-a-z0-9.]/ig, '_'), m.file);
   });
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/problems/media'), {
+  return (0, _isomorphicFetch2.default)(getUrl('/problems/media'), {
     mode: 'cors',
     method: 'POST',
     credentials: 'include',
@@ -600,7 +619,7 @@ function postProblemMedia(accessToken, id, media) {
 }
 
 function postProblemSvg(accessToken, problemId, mediaId, del, id, path, hasAnchor) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/problems/svg?problemId=' + problemId + '&mediaId=' + mediaId), {
+  return (0, _isomorphicFetch2.default)(getUrl('/problems/svg?problemId=' + problemId + '&mediaId=' + mediaId), {
     mode: 'cors',
     method: 'POST',
     credentials: 'include',
@@ -616,7 +635,7 @@ function postProblemSvg(accessToken, problemId, mediaId, del, id, path, hasAncho
 }
 
 function postSearch(accessToken, value) {
-  return (0, _isomorphicFetch2.default)("https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/search", {
+  return (0, _isomorphicFetch2.default)(getUrl("/search"), {
     mode: 'cors',
     method: 'POST',
     credentials: 'include',
@@ -640,7 +659,7 @@ function postSector(accessToken, areaId, id, visibility, name, comment, lat, lng
   media.forEach(function (m) {
     return formData.append(m.file.name.replace(/[^-a-z0-9.]/ig, '_'), m.file);
   });
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/sectors'), {
+  return (0, _isomorphicFetch2.default)(getUrl('/sectors'), {
     mode: 'cors',
     method: 'POST',
     credentials: 'include',
@@ -655,7 +674,7 @@ function postSector(accessToken, areaId, id, visibility, name, comment, lat, lng
 }
 
 function postTicks(accessToken, del, id, idProblem, comment, date, stars, grade) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/ticks'), {
+  return (0, _isomorphicFetch2.default)(getUrl('/ticks'), {
     mode: 'cors',
     method: 'POST',
     credentials: 'include',
@@ -668,7 +687,7 @@ function postTicks(accessToken, del, id, idProblem, comment, date, stars, grade)
 }
 
 function postUserEdit(accessToken, id, username, firstname, lastname, currentPassword, newPassword) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/users/edit'), {
+  return (0, _isomorphicFetch2.default)(getUrl('/users/edit'), {
     mode: 'cors',
     method: 'POST',
     credentials: 'include',
@@ -681,7 +700,7 @@ function postUserEdit(accessToken, id, username, firstname, lastname, currentPas
 }
 
 function postUserRegister(accessToken, firstname, lastname, username, password) {
-  return (0, _isomorphicFetch2.default)(encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/users/register'), {
+  return (0, _isomorphicFetch2.default)(getUrl('/users/register'), {
     mode: 'cors',
     method: 'POST',
     credentials: 'include',
@@ -712,28 +731,7 @@ module.exports = require("react-router");
 module.exports = require("react-router-bootstrap");
 
 /***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = {
-  getImageUrl: function getImageUrl(id, maxHeight) {
-    if (maxHeight) {
-      return encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/images?id=' + id + '&targetHeight=' + maxHeight);
-    }
-    return encodeURI('https://buldreinfo.com/com.buldreinfo.jersey.jaxb/v2/images?id=' + id);
-  },
-  convertFromDateToString: function convertFromDateToString(date) {
-    var d = date.getDate();
-    var m = date.getMonth() + 1;
-    var y = date.getFullYear();
-    return y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
-  }
-};
-
-/***/ }),
+/* 10 */,
 /* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1251,10 +1249,6 @@ var _svgPathParser = __webpack_require__(19);
 
 var _reactRouterDom = __webpack_require__(4);
 
-var _util = __webpack_require__(10);
-
-var _util2 = _interopRequireDefault(_util);
-
 var _reactRouter = __webpack_require__(8);
 
 var _objectFitImages = __webpack_require__(34);
@@ -1489,7 +1483,7 @@ var Gallery = function (_Component) {
           _react2.default.createElement(
             'svg',
             { className: 'buldreinfo-svg', viewBox: "0 0 " + m.width + " " + m.height, preserveAspectRatio: 'xMidYMid meet' },
-            _react2.default.createElement('image', { xlinkHref: _util2.default.getImageUrl(m.id), width: '100%', height: '100%' }),
+            _react2.default.createElement('image', { xlinkHref: (0, _api.getImageUrl)(m.id), width: '100%', height: '100%' }),
             this.generateShapes(m.svgs, m.svgProblemId, m.width, m.height)
           )
         );
@@ -1497,7 +1491,7 @@ var Gallery = function (_Component) {
       return _react2.default.createElement(
         'div',
         { className: 'image-gallery-image' },
-        _react2.default.createElement('img', { src: _util2.default.getImageUrl(m.id), className: 'buldreinfo-scale-img', alt: this.props.alt })
+        _react2.default.createElement('img', { src: (0, _api.getImageUrl)(m.id), className: 'buldreinfo-scale-img', alt: this.props.alt })
       );
     }
   }, {
@@ -1512,8 +1506,8 @@ var Gallery = function (_Component) {
       var caruselItems = this.props.media.map(function (m, i) {
         if (m.idType == 1) {
           return {
-            original: _util2.default.getImageUrl(m.id),
-            thumbnail: _util2.default.getImageUrl(m.id),
+            original: (0, _api.getImageUrl)(m.id),
+            thumbnail: (0, _api.getImageUrl)(m.id),
             originalClass: 'featured-slide',
             thumbnailClass: 'featured-thumb',
             originalAlt: 'original-alt',
@@ -1522,8 +1516,8 @@ var Gallery = function (_Component) {
           };
         } else {
           return {
-            original: _util2.default.getImageUrl(m.id),
-            thumbnail: _util2.default.getImageUrl(m.id),
+            original: (0, _api.getImageUrl)(m.id),
+            thumbnail: (0, _api.getImageUrl)(m.id),
             originalClass: 'featured-slide',
             thumbnailClass: 'featured-thumb',
             originalAlt: 'original-alt',
@@ -1767,10 +1761,6 @@ var _reactFontawesome = __webpack_require__(5);
 
 var _api = __webpack_require__(6);
 
-var _util = __webpack_require__(10);
-
-var _util2 = _interopRequireDefault(_util);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -1797,7 +1787,7 @@ var TickModal = function (_Component) {
       if (props.date) {
         date = props.date;
       } else if (props.idTick == -1) {
-        date = _util2.default.convertFromDateToString(new Date());
+        date = (0, _api.convertFromDateToString)(new Date());
       }
 
       this.setState({
@@ -1937,12 +1927,12 @@ var TickModal = function (_Component) {
               null,
               _react2.default.createElement(
                 _reactBootstrap.Button,
-                { onClick: this.onDateChanged.bind(this, _util2.default.convertFromDateToString(yesterday)) },
+                { onClick: this.onDateChanged.bind(this, (0, _api.convertFromDateToString)(yesterday)) },
                 'Yesterday'
               ),
               _react2.default.createElement(
                 _reactBootstrap.Button,
-                { onClick: this.onDateChanged.bind(this, _util2.default.convertFromDateToString(new Date())) },
+                { onClick: this.onDateChanged.bind(this, (0, _api.convertFromDateToString)(new Date())) },
                 'Today'
               )
             )
@@ -2110,6 +2100,7 @@ app.use(cookiesMiddleware());
 app.use(_express2.default.static("public"));
 
 app.get("*", function (req, res, next) {
+  global.myOrigin = req.protocol + "://" + req.headers.host;
   var activeRoute = _routes2.default.find(function (route) {
     return (0, _reactRouterDom.matchPath)(req.url, route);
   }) || {};
@@ -4644,9 +4635,9 @@ var _reactRouterDom = __webpack_require__(4);
 
 var _reactBootstrap = __webpack_require__(3);
 
-var _util = __webpack_require__(10);
+var _api = __webpack_require__(6);
 
-var _util2 = _interopRequireDefault(_util);
+var _api2 = _interopRequireDefault(_api);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4724,7 +4715,7 @@ var ImageBox = function (_Component) {
         _react2.default.createElement(
           _reactRouterDom.Link,
           { to: '/problem/' + this.props.data.idProblem },
-          _react2.default.createElement('img', { style: { maxWidth: '100%' }, src: _util2.default.getImageUrl(this.props.data.idMedia, 480), alt: this.props.data.problem })
+          _react2.default.createElement('img', { style: { maxWidth: '100%' }, src: (0, _api2.default)(this.props.data.idMedia, 480), alt: this.props.data.problem })
         ),
         _react2.default.createElement('br', null),
         txt
@@ -5870,10 +5861,6 @@ var _reactFontawesome = __webpack_require__(5);
 
 var _api = __webpack_require__(6);
 
-var _util = __webpack_require__(10);
-
-var _util2 = _interopRequireDefault(_util);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -6187,12 +6174,12 @@ var ProblemEdit = function (_Component) {
                 null,
                 _react2.default.createElement(
                   _reactBootstrap.Button,
-                  { onClick: this.onFaDateChanged.bind(this, _util2.default.convertFromDateToString(yesterday)) },
+                  { onClick: this.onFaDateChanged.bind(this, (0, _api.convertFromDateToString)(yesterday)) },
                   'Yesterday'
                 ),
                 _react2.default.createElement(
                   _reactBootstrap.Button,
-                  { onClick: this.onFaDateChanged.bind(this, _util2.default.convertFromDateToString(new Date())) },
+                  { onClick: this.onFaDateChanged.bind(this, (0, _api.convertFromDateToString)(new Date())) },
                   'Today'
                 )
               )
@@ -7851,10 +7838,6 @@ var _reactRouter = __webpack_require__(8);
 
 var _reactFontawesome = __webpack_require__(5);
 
-var _util = __webpack_require__(10);
-
-var _util2 = _interopRequireDefault(_util);
-
 var _api = __webpack_require__(6);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -8390,7 +8373,7 @@ var SvgEdit = function (_Component) {
               _react2.default.createElement(
                 'svg',
                 { viewBox: "0 0 " + this.state.w + " " + this.state.h, onClick: this.addPoint.bind(this), onMouseMove: this.handleMouseMove.bind(this) },
-                _react2.default.createElement('image', { ref: 'buldreinfo-svg-edit-img', xlinkHref: _util2.default.getImageUrl(this.state.mediaId), width: '100%', height: '100%' }),
+                _react2.default.createElement('image', { ref: 'buldreinfo-svg-edit-img', xlinkHref: (0, _api.getImageUrl)(this.state.mediaId), width: '100%', height: '100%' }),
                 this.parseReadOnlySvgs(),
                 _react2.default.createElement('path', { className: 'buldreinfo-svg-route', d: path, strokeWidth: 0.002 * this.state.w }),
                 circles

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { Link } from 'react-router-dom';
-import util from '../../../utils/util.js';
+import getImageUrl from '../../../api.js';
 
 export default class ImageBox extends Component {
   constructor(props) {

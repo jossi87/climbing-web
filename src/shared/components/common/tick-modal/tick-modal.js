@@ -4,8 +4,7 @@ import { withCookies, Cookies } from 'react-cookie';
 import { Modal, Button, FormGroup, ControlLabel, FormControl, ButtonGroup, DropdownButton, MenuItem } from 'react-bootstrap';
 import Calendar from 'react-input-calendar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { postTicks } from './../../../api';
-import util from './../../../utils/util';
+import { convertFromDateToString, postTicks } from './../../../api';
 
 class TickModal extends Component {
   constructor(props) {
@@ -17,7 +16,7 @@ class TickModal extends Component {
     if (props.date) {
       date = props.date;
     } else if (props.idTick==-1) {
-      date = util.convertFromDateToString(new Date());
+      date = convertFromDateToString(new Date());
     }
 
     this.setState({
@@ -106,8 +105,8 @@ class TickModal extends Component {
             <ControlLabel>Date (yyyy-mm-dd)</ControlLabel><br/>
             <Calendar format='YYYY-MM-DD' computableFormat='YYYY-MM-DD' date={this.state && this.state.date} onChange={this.onDateChanged.bind(this)} />
             <ButtonGroup>
-              <Button onClick={this.onDateChanged.bind(this, util.convertFromDateToString(yesterday))}>Yesterday</Button>
-              <Button onClick={this.onDateChanged.bind(this, util.convertFromDateToString(new Date()))}>Today</Button>
+              <Button onClick={this.onDateChanged.bind(this, convertFromDateToString(yesterday))}>Yesterday</Button>
+              <Button onClick={this.onDateChanged.bind(this, convertFromDateToString(new Date()))}>Today</Button>
             </ButtonGroup>
           </FormGroup>
           <FormGroup>

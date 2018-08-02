@@ -6,11 +6,10 @@ import { Well } from 'react-bootstrap';
 import ReactPlayer from 'react-player'
 import {parseSVG, makeAbsolute} from 'svg-path-parser';
 import { Link } from 'react-router-dom';
-import util from '../../../utils/util.js';
 import { Redirect } from 'react-router';
 import objectFitImages from 'object-fit-images'; // objectFit does not work on IE and Edge http://caniuse.com/#search=object-fit
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { deleteMedia } from '../../../api';
+import { getImageUrl, deleteMedia } from '../../../api';
 
 class Gallery extends Component {
   static propTypes = {
@@ -195,7 +194,7 @@ class Gallery extends Component {
         <div className='image-gallery-image'>
           <canvas className="buldreinfo-svg-canvas-ie-hack" width={m.width} height={m.height}></canvas>
           <svg className="buldreinfo-svg" viewBox={"0 0 " + m.width + " " + m.height} preserveAspectRatio="xMidYMid meet">
-            <image xlinkHref={util.getImageUrl(m.id)} width="100%" height="100%"/>
+            <image xlinkHref={getImageUrl(m.id)} width="100%" height="100%"/>
             {this.generateShapes(m.svgs, m.svgProblemId, m.width, m.height)}
           </svg>
         </div>
@@ -203,7 +202,7 @@ class Gallery extends Component {
     }
     return (
       <div className='image-gallery-image'>
-        <img src={util.getImageUrl(m.id)} className="buldreinfo-scale-img" alt={this.props.alt}/>
+        <img src={getImageUrl(m.id)} className="buldreinfo-scale-img" alt={this.props.alt}/>
       </div>
     );
   }
@@ -216,8 +215,8 @@ class Gallery extends Component {
     const caruselItems = this.props.media.map((m, i) => {
       if (m.idType==1) {
         return {
-          original: util.getImageUrl(m.id),
-          thumbnail: util.getImageUrl(m.id),
+          original: getImageUrl(m.id),
+          thumbnail: getImageUrl(m.id),
           originalClass: 'featured-slide',
           thumbnailClass: 'featured-thumb',
           originalAlt: 'original-alt',
@@ -227,8 +226,8 @@ class Gallery extends Component {
       }
       else {
         return {
-          original: util.getImageUrl(m.id),
-          thumbnail: util.getImageUrl(m.id),
+          original: getImageUrl(m.id),
+          thumbnail: getImageUrl(m.id),
           originalClass: 'featured-slide',
           thumbnailClass: 'featured-thumb',
           originalAlt: 'original-alt',

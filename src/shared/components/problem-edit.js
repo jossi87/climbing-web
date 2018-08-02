@@ -11,8 +11,7 @@ import ProblemSection from './common/problem-section/problem-section';
 import ImageUpload from './common/image-upload/image-upload';
 import Calendar from 'react-input-calendar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { postProblem } from './../api';
-import util from './../utils/util';
+import { convertFromDateToString, postProblem } from './../api';
 
 const GettingStartedGoogleMap = withScriptjs(withGoogleMap(props => (
   <GoogleMap
@@ -239,8 +238,8 @@ class ProblemEdit extends Component {
               <ControlLabel>FA date (yyyy-mm-dd)</ControlLabel><br/>
               <Calendar format='YYYY-MM-DD' computableFormat='YYYY-MM-DD' date={data.faDate} onChange={this.onFaDateChanged.bind(this)} />
               <ButtonGroup>
-                <Button onClick={this.onFaDateChanged.bind(this, util.convertFromDateToString(yesterday))}>Yesterday</Button>
-                <Button onClick={this.onFaDateChanged.bind(this, util.convertFromDateToString(new Date()))}>Today</Button>
+                <Button onClick={this.onFaDateChanged.bind(this, convertFromDateToString(yesterday))}>Yesterday</Button>
+                <Button onClick={this.onFaDateChanged.bind(this, convertFromDateToString(new Date()))}>Today</Button>
               </ButtonGroup>
             </FormGroup>
             <FormGroup controlId="formControlsTypeId">

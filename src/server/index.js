@@ -16,6 +16,7 @@ app.use(cookiesMiddleware());
 app.use(express.static("public"));
 
 app.get("*", (req, res, next) => {
+  global.myOrigin = req.protocol + "://" + req.headers.host;
   const activeRoute = routes.find((route) => matchPath(req.url, route)) || {};
 
   const promise = activeRoute.fetchInitialData
