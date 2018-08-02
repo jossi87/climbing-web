@@ -68,7 +68,7 @@
   },
   "scripts": {
     "build": "webpack --mode=production",
-    "dev-build": "webpack -p --mode=development",
+    "dev-build": "webpack --watch --mode=development",
     "dev-server": "nodemon server.js"
   }
 }
