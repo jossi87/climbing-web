@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom'; // Used for navbar hack
 import {Route,  Switch} from 'react-router-dom';
-import Loading from './components/common/loading/loading';
 import routes from './routes';
 import Navigation from './components/navigation';
 import ReactGA from 'react-ga';

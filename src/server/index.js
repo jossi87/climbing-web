@@ -38,7 +38,6 @@ app.get("*", (req, res, next) => {
       </CookiesProvider>
     )
     const meta = metaTagsInstance.renderToString();
-    console.log(meta);
 
     res.send(`
       <!DOCTYPE html>
