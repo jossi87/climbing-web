@@ -55,7 +55,7 @@ export function getArea(accessToken, id) {
 
 export function getAreaEdit(accessToken, id) {
   if (id == -1) {
-    getMeta(accessToken)
+    return getMeta(accessToken)
     .then((res) => {
       return {id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: {title: 'New area | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, isAdmin: res.metadata.isAdmin, isSuperAdmin: res.metadata.isSuperAdmin}};
     })
@@ -154,7 +154,7 @@ export function getProblem(accessToken, id) {
 
 export function getProblemEdit(accessToken, id) {
   if (id == -1) {
-    getMeta(accessToken)
+    return getMeta(accessToken)
     .then((res) => {
       return {
         id: -1,
@@ -233,7 +233,7 @@ export function getSector(accessToken, id) {
 
 export function getSectorEdit(accessToken, id) {
   if (id == -1) {
-    getMeta(accessToken)
+    return getMeta(accessToken)
     .then((res) => {
       return {id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: {title: 'New sector | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, isAdmin: res.metadata.isAdmin, isSuperAdmin: res.metadata.isSuperAdmin}};
     })
@@ -334,15 +334,18 @@ export function getUser(accessToken, id) {
 }
 
 export function getUserEdit(accessToken, id) {
-  return fetch(getUrl(`/users/edit?id=${id}`), {
-    credentials: 'include',
-    headers: {
-      Authorization: `Bearer ${accessToken}`
-    }
-  })
-  .then((data) => data.json())
+  return getUser(accessToken, id)
   .then((res) => {
-    return {id: res.id, username: res.username, firstname: res.firstname, lastname: res.lastname, currentPassword: null, newPassword: null, newPassword2: null, message: null};
+    return {
+      id: res.id,
+      username: res.username,
+      firstname: res.firstname,
+      lastname: res.lastname,
+      metadata: {title: 'Edit user: ' + res.metadata.title, isAuthenticated: res.metadata.isAuthenticated},
+      currentPassword: null,
+      newPassword: null,
+      newPassword2: null,
+      message: null};
   })
   .catch((error) => {
     console.warn(error);

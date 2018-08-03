@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import MetaTags from 'react-meta-tags';
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
@@ -53,9 +54,10 @@ class UserEdit extends Component {
     } else if (this.validateCurrentPassword(null)==='error' || this.validateNewPassword(null)==='error' || this.validateNewPassword2(null)==='error') {
       this.setState({message: <Panel bsStyle='danger'>Invalid password.</Panel>});
     } else {
+      const { data } = this.state;
       const { cookies } = this.props;
       const accessToken = cookies.get('access_token');
-      postUserEdit(this.state.id, this.state.username, this.state.firstname, this.state.lastname, this.state.currentPassword, this.state.newPassword)
+      postUserEdit(accessToken, data.id, data.username, data.firstname, data.lastname, data.currentPassword, data.newPassword)
       .then((response) => {
         this.setState({pushUrl: "/user"});
       })
@@ -71,38 +73,50 @@ class UserEdit extends Component {
   }
 
   onFirstnameChanged(e) {
-    this.setState({firstname: e.target.value});
+    const { data } = this.state;
+    data.firstname = e.target.value;
+    this.setState({data});
   }
 
   onLastnameChanged(e) {
-    this.setState({lastname: e.target.value});
+    const { data } = this.state;
+    data.lastname = e.target.value;
+    this.setState({data});
   }
 
   onUsernameChanged(e) {
-    this.setState({username: e.target.value});
+    const { data } = this.state;
+    data.username = e.target.value;
+    this.setState({data});
   }
 
   onCurrentPasswordChanged(e) {
-    this.setState({currentPassword: e.target.value});
+    const { data } = this.state;
+    data.currentPassword = e.target.value;
+    this.setState({data});
   }
 
   onNewPasswordChanged(e) {
-    this.setState({newPassword: e.target.value});
+    const { data } = this.state;
+    data.newPassword = e.target.value;
+    this.setState({data});
   }
 
   onConfirmNewPasswordChanged(e) {
-    this.setState({newPassword2: e.target.value});
+    const { data } = this.state;
+    data.newPassword2 = e.target.value;
+    this.setState({data});
   }
 
   validateFirstname() {
-    if (this.state.firstname.length < 1) {
+    if (this.state.data.firstname.length < 1) {
       return 'error';
     }
     return 'success';
   }
 
   validateLastname() {
-    if (this.state.lastname.length < 1) {
+    if (this.state.data.lastname.length < 1) {
       return 'error';
     }
     return 'success';
@@ -110,7 +124,7 @@ class UserEdit extends Component {
 
   validateUsername() {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    if (!re.test(this.state.username)) {
+    if (!re.test(this.state.data.username)) {
       return 'error';
     }
     return 'success';
@@ -121,29 +135,33 @@ class UserEdit extends Component {
   }
 
   validateNewPassword() {
-    if ((this.state.currentPassword || this.state.newPassword2) && !this.state.newPassword) return 'error';
-    else if (this.state.newPassword && this.state.newPassword.length < 8) return 'error';
+    if ((this.state.data.currentPassword || this.state.data.newPassword2) && !this.state.data.newPassword) return 'error';
+    else if (this.state.data.newPassword && this.state.data.newPassword.length < 8) return 'error';
     return 'success';
   }
 
   validateNewPassword2() {
-    if ((this.state.currentPassword || this.state.newPassword) && !this.state.newPassword2) return 'error';
-    else if (this.state.newPassword2 && this.state.newPassword2.length < 8) return 'error';
-    else if (this.state.newPassword2 && this.state.newPassword!=this.state.newPassword2) return 'error';
+    if ((this.state.data.currentPassword || this.state.data.newPassword) && !this.state.data.newPassword2) return 'error';
+    else if (this.state.data.newPassword2 && this.state.data.newPassword2.length < 8) return 'error';
+    else if (this.state.data.newPassword2 && this.state.data.newPassword!=this.state.data.newPassword2) return 'error';
     return 'success';
   }
 
   render() {
-    if (!this.state) {
+    const { data } = this.state;
+    if (!data) {
       return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     } else if (this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
-    } else if (!this.state.metadata.isAuthenticated) {
+    } else if (!data.metadata.isAuthenticated) {
       this.setState({pushUrl: "/login", error: null});
     }
 
     return (
       <span>
+        <MetaTags>
+          <title>{data.metadata.title}</title>
+        </MetaTags>
         <Breadcrumb>
           <Link to={`/`}>Home</Link> / <font color='#777'>User edit</font>
         </Breadcrumb>
@@ -152,17 +170,17 @@ class UserEdit extends Component {
           <form onSubmit={this.save.bind(this)}>
             <FormGroup controlId="formControlsFirstname" validationState={this.validateFirstname()}>
               <ControlLabel>Firstname</ControlLabel>
-              <FormControl type="text" value={this.state.firstname} placeholder="Enter firstname" onChange={this.onFirstnameChanged.bind(this)} />
+              <FormControl type="text" value={data.firstname} placeholder="Enter firstname" onChange={this.onFirstnameChanged.bind(this)} />
               <FormControl.Feedback />
             </FormGroup>
             <FormGroup controlId="formControlsLastname" validationState={this.validateLastname()}>
               <ControlLabel>Lastname</ControlLabel>
-              <FormControl type="text" value={this.state.lastname} placeholder="Enter lastname" onChange={this.onLastnameChanged.bind(this)} />
+              <FormControl type="text" value={data.lastname} placeholder="Enter lastname" onChange={this.onLastnameChanged.bind(this)} />
               <FormControl.Feedback />
             </FormGroup>
             <FormGroup controlId="formControlsUsername" validationState={this.validateUsername()}>
               <ControlLabel>Username</ControlLabel>
-              <FormControl type="email" value={this.state.username} placeholder="Enter username" onChange={this.onUsernameChanged.bind(this)} />
+              <FormControl type="email" value={data.username} placeholder="Enter username" onChange={this.onUsernameChanged.bind(this)} />
               <FormControl.Feedback />
               <HelpBlock>You must enter a valid email address.</HelpBlock>
             </FormGroup>
