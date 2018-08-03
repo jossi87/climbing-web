@@ -22,6 +22,7 @@ app.get("*", (req, res, next) => {
   global.myOrigin = req.protocol + "://" + req.headers.host;
   const activeRoute = routes.find((route) => matchPath(req.url, route)) || {};
 
+console.log(global.myOrigin);
 
   const promise = activeRoute.fetchInitialData
     ? activeRoute.fetchInitialData(req.universalCookies.get('access_token'), req.path)
