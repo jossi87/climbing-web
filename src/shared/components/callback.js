@@ -17,7 +17,7 @@ class Callback extends Component {
   }
 
   render() {
-    return <Well>Logging in, please wait</Well>;
+    return <Well>Logging in, please wait...</Well>;
   }
 }
 

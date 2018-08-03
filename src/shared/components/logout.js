@@ -16,7 +16,7 @@ class Logout extends Component {
   }
 
   render() {
-    return <Well>Logging out, please wait</Well>;
+    return <Well>Logging out, please wait...</Well>;
   }
 }
 
