@@ -19,10 +19,8 @@ app.use(express.static("public"));
 
 app.get("*", (req, res, next) => {
   const metaTagsInstance = MetaTagsServer();
-  global.myOrigin = req.protocol + "://" + req.headers.host;
+  global.myOrigin = "https://" + req.headers.host;
   const activeRoute = routes.find((route) => matchPath(req.url, route)) || {};
-
-console.log(global.myOrigin);
 
   const promise = activeRoute.fetchInitialData
     ? activeRoute.fetchInitialData(req.universalCookies.get('access_token'), req.path)
