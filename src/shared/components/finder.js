@@ -265,6 +265,12 @@ class Finder extends Component {
         <MetaTags>
           <title>{this.state.data.metadata.title}</title>
           <meta name="description" content={this.state.data.metadata.description} />
+          <meta property="og:type" content="website" />
+          <meta property="og:url" content={this.state.data.metadata.og.url} />
+          <meta property="og:title" content={this.state.data.metadata.title} />
+          <meta property="og:image" content={this.state.data.metadata.og.image} />
+          <meta property="og:image:width" content={this.state.data.metadata.og.imageWidth} />
+          <meta property="og:image:height" content={this.state.data.metadata.og.imageHeight} />
         </MetaTags>
         <Breadcrumb>
           <Link to={`/`}>Home</Link> / <font color='#777'>Finder [{this.state.data.grade}] (problems: {this.state.data.problems.length})</font>

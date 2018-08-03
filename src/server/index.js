@@ -15,11 +15,11 @@ const cookiesMiddleware = require('universal-cookie-express')
 
 app.use(cors());
 app.use(cookiesMiddleware());
-app.use(express.static("public"));
+app.use(express.static("build"));
 
 app.get("*", (req, res, next) => {
   const metaTagsInstance = MetaTagsServer();
-  global.myOrigin = "https://" + req.headers.host;
+  global.myOrigin = req.headers.host==='localhost:3000'? "http://localhost:3000" : "https://" + req.headers.host;
   const activeRoute = routes.find((route) => matchPath(req.url, route)) || {};
 
   const promise = activeRoute.fetchInitialData

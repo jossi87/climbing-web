@@ -287,6 +287,12 @@ class Problem extends Component {
           <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(data.metadata.jsonLd)}} />
           <title>{data.metadata.title}</title>
           <meta name="description" content={data.metadata.description} />
+          <meta property="og:type" content="website" />
+          <meta property="og:url" content={data.metadata.og.url} />
+          <meta property="og:title" content={data.metadata.title} />
+          <meta property="og:image" content={data.metadata.og.image} />
+          <meta property="og:image:width" content={data.metadata.og.imageWidth} />
+          <meta property="og:image:height" content={data.metadata.og.imageHeight} />
         </MetaTags>
 
         {tickModal}

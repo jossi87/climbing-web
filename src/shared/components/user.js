@@ -159,6 +159,12 @@ class User extends Component {
         <MetaTags>
           <title>{data.metadata.title}</title>
           <meta name="description" content={data.metadata.description} />
+          <meta property="og:type" content="website" />
+          <meta property="og:url" content={data.metadata.og.url} />
+          <meta property="og:title" content={data.metadata.title} />
+          <meta property="og:image" content={data.metadata.og.image} />
+          <meta property="og:image:width" content={data.metadata.og.imageWidth} />
+          <meta property="og:image:height" content={data.metadata.og.imageHeight} />
         </MetaTags>
 
         {this.state.currTick? <TickModal idTick={this.state.currTick.id} idProblem={this.state.currTick.idProblem} date={this.state.currTick.date} comment={this.state.currTick.comment} grade={this.state.currTick.grade} grades={data.metadata.grades} stars={this.state.currTick.stars} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/> : ""}

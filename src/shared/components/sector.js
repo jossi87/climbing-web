@@ -210,6 +210,12 @@ class Sector extends Component {
           <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(data.metadata.jsonLd)}} />
           <title>{data.metadata.title}</title>
           <meta name="description" content={data.metadata.description} />
+          <meta property="og:type" content="website" />
+          <meta property="og:url" content={this.state.data.metadata.og.url} />
+          <meta property="og:title" content={this.state.data.metadata.title} />
+          <meta property="og:image" content={this.state.data.metadata.og.image} />
+          <meta property="og:image:width" content={this.state.data.metadata.og.imageWidth} />
+          <meta property="og:image:height" content={this.state.data.metadata.og.imageHeight} />
         </MetaTags>
         <Breadcrumb>
           {this.state && this.state.data && this.state.data.metadata.isAdmin?
