@@ -37,7 +37,6 @@ const routes =  [
   {path: '/user', exact: true, component: User, fetchInitialData: (accessToken, path = '') => getUser(accessToken, path.split('/').pop())},
   {path: '/user/:userId', exact: true, component: User, fetchInitialData: (accessToken, path = '') => getUser(accessToken, path.split('/').pop())},
   {path: '/user/edit/:userId', exact: true, component: UserEdit, fetchInitialData: (accessToken, path = '') => getUserEdit(accessToken, path.split('/').pop())},
-  {path: '/user/register', exact: true, component: UserRegister},
   {path: '/login', exact: false, component: Login},
   {path: '/logout', exact: false, component: Logout},
   {path: '*', status: 404, component: NoMatch}

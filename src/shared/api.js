@@ -501,16 +501,3 @@ export function postUserEdit(accessToken, id, username, firstname, lastname, cur
     }
   });
 }
-
-export function postUserRegister(accessToken, firstname, lastname, username, password) {
-  return fetch(getUrl(`/users/register`),{
-    mode: 'cors',
-    method: 'POST',
-    credentials: 'include',
-    body: JSON.stringify({firstname, lastname, username, password}),
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json'
-    }
-  });
-}
