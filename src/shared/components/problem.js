@@ -288,6 +288,7 @@ class Problem extends Component {
           <title>{data.metadata.title}</title>
           <meta name="description" content={data.metadata.description} />
           <meta property="og:type" content="website" />
+          <meta property="og:description" content={data.metadata.description} />
           <meta property="og:url" content={data.metadata.og.url} />
           <meta property="og:title" content={data.metadata.title} />
           <meta property="og:image" content={data.metadata.og.image} />

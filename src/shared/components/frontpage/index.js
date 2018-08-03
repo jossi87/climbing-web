@@ -83,6 +83,7 @@ class Index extends Component {
           <title>{this.state.data.metadata.title}</title>
           <meta name="description" content={this.state.data.metadata.description} />
           <meta property="og:type" content="website" />
+          <meta property="og:description" content={this.state.data.metadata.description} />
           <meta property="og:url" content={this.state.data.metadata.og.url} />
           <meta property="og:title" content={this.state.data.metadata.title} />
           <meta property="og:image" content={this.state.data.metadata.og.image} />
