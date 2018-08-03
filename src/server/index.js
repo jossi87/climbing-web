@@ -22,6 +22,7 @@ app.get("*", (req, res, next) => {
   global.myOrigin = req.protocol + "://" + req.headers.host;
   const activeRoute = routes.find((route) => matchPath(req.url, route)) || {};
 
+
   const promise = activeRoute.fetchInitialData
     ? activeRoute.fetchInitialData(req.universalCookies.get('access_token'), req.path)
     : Promise.resolve()
@@ -39,7 +40,7 @@ app.get("*", (req, res, next) => {
     )
     const meta = metaTagsInstance.renderToString();
 
-    res.send(`
+    const response = `
       <!DOCTYPE html>
       <html>
         <head>
@@ -61,7 +62,11 @@ app.get("*", (req, res, next) => {
           <div id="app">${markup}</div>
         </body>
       </html>
-    `)
+    `;
+    if (activeRoute.status) {
+      res.status(activeRoute.status).send(response);
+    }
+    res.send(response);
   }).catch((error)=>console.warn(error))
 });
 

@@ -15,6 +15,7 @@ import SectorEdit from './components/sector-edit';
 import SvgEdit from './components/common/svg/svg-edit';
 import User from './components/user';
 import UserEdit from './components/user-edit';
+import NoMatch from './components/no-match';
 
 import { getArea, getAreaEdit, getBrowse, getFinder, getFrontpage, getMeta, getProblem, getProblemEdit, getProblemEditMedia, getSector, getSectorEdit, getUser, getUserEdit, getSvgEdit } from './api';
 
@@ -36,7 +37,8 @@ const routes =  [
   {path: '/user/:userId', exact: true, component: User, fetchInitialData: (accessToken, path = '') => getUser(accessToken, path.split('/').pop())},
   {path: '/user/:userId/edit', exact: true, component: UserEdit, fetchInitialData: (accessToken, path = '') => getUserEdit(accessToken, path.split('/').pop())},
   {path: '/login', exact: false, component: Login},
-  {path: '/logout', exact: false, component: Logout}
+  {path: '/logout', exact: false, component: Logout},
+  {path: '*', status: 404, component: NoMatch}
 ]
 
 export default routes
