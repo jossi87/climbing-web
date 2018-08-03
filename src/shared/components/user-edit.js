@@ -49,6 +49,8 @@ class UserEdit extends Component {
       this.setState({message: <Panel bsStyle='danger'>Invalid firstname.</Panel>});
     } else if (this.validateLastname(null)==='error') {
       this.setState({message: <Panel bsStyle='danger'>Invalid lastname.</Panel>});
+    } else if (this.validateEmail(null)==='error') {
+      this.setState({message: <Panel bsStyle='danger'>Invalid email.</Panel>});
     } else if (this.validateUsername(null)==='error') {
       this.setState({message: <Panel bsStyle='danger'>Invalid username.</Panel>});
     } else if (this.validateCurrentPassword(null)==='error' || this.validateNewPassword(null)==='error' || this.validateNewPassword2(null)==='error') {
@@ -57,7 +59,7 @@ class UserEdit extends Component {
       const { data } = this.state;
       const { cookies } = this.props;
       const accessToken = cookies.get('access_token');
-      postUserEdit(accessToken, data.id, data.username, data.firstname, data.lastname, data.currentPassword, data.newPassword)
+      postUserEdit(accessToken, data.id, data.username, data.email, data.firstname, data.lastname, data.currentPassword, data.newPassword)
       .then((response) => {
         this.setState({pushUrl: "/user"});
       })
@@ -81,6 +83,12 @@ class UserEdit extends Component {
   onLastnameChanged(e) {
     const { data } = this.state;
     data.lastname = e.target.value;
+    this.setState({data});
+  }
+
+  onEmailChanged(e) {
+    const { data } = this.state;
+    data.email = e.target.value;
     this.setState({data});
   }
 
@@ -122,9 +130,16 @@ class UserEdit extends Component {
     return 'success';
   }
 
-  validateUsername() {
+  validateEmail() {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    if (!re.test(this.state.data.username)) {
+    if (!re.test(this.state.data.email)) {
+      return 'error';
+    }
+    return 'success';
+  }
+
+  validateUsername() {
+    if (this.state.data.username.length < 1) {
       return 'error';
     }
     return 'success';
@@ -178,11 +193,16 @@ class UserEdit extends Component {
               <FormControl type="text" value={data.lastname} placeholder="Enter lastname" onChange={this.onLastnameChanged.bind(this)} />
               <FormControl.Feedback />
             </FormGroup>
-            <FormGroup controlId="formControlsUsername" validationState={this.validateUsername()}>
-              <ControlLabel>Username</ControlLabel>
-              <FormControl type="email" value={data.username} placeholder="Enter username" onChange={this.onUsernameChanged.bind(this)} />
+            <FormGroup controlId="formControlsEmail" validationState={this.validateEmail()}>
+              <ControlLabel>Email</ControlLabel>
+              <FormControl type="email" value={data.email} placeholder="Enter email" onChange={this.onEmailChanged.bind(this)} />
               <FormControl.Feedback />
               <HelpBlock>You must enter a valid email address.</HelpBlock>
+            </FormGroup>
+            <FormGroup controlId="formControlsUsername" validationState={this.validateUsername()}>
+              <ControlLabel>Username</ControlLabel>
+              <FormControl type="text" value={data.username} placeholder="Enter username" onChange={this.onUsernameChanged.bind(this)} />
+              <FormControl.Feedback />
             </FormGroup>
             <hr/>
             <h4>Only fill following fields if you want to change your password</h4>

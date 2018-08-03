@@ -15,7 +15,6 @@ import SectorEdit from './components/sector-edit';
 import SvgEdit from './components/common/svg/svg-edit';
 import User from './components/user';
 import UserEdit from './components/user-edit';
-import UserRegister from './components/user-register';
 import NoMatch from './components/no-match';
 
 import { getArea, getAreaEdit, getBrowse, getFinder, getFrontpage, getMeta, getProblem, getProblemEdit, getProblemEditMedia, getSector, getSectorEdit, getUser, getUserEdit, getSvgEdit } from './api';

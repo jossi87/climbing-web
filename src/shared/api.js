@@ -339,6 +339,7 @@ export function getUserEdit(accessToken, id) {
     return {
       id: res.id,
       username: res.username,
+      email: res.email,
       firstname: res.firstname,
       lastname: res.lastname,
       metadata: {title: 'Edit user: ' + res.metadata.title, isAuthenticated: res.metadata.isAuthenticated},
@@ -489,12 +490,12 @@ export function postTicks(accessToken, del, id, idProblem, comment, date, stars,
   });
 }
 
-export function postUserEdit(accessToken, id, username, firstname, lastname, currentPassword, newPassword) {
+export function postUserEdit(accessToken, id, username, email, firstname, lastname, currentPassword, newPassword) {
   return fetch(getUrl(`/users/edit`),{
     mode: 'cors',
     method: 'POST',
     credentials: 'include',
-    body: JSON.stringify({id, username, firstname, lastname, currentPassword, newPassword}),
+    body: JSON.stringify({id, username, email, firstname, lastname, currentPassword, newPassword}),
     headers: {
       Authorization: `Bearer ${accessToken}`,
       'Content-Type': 'application/json'
