@@ -66,8 +66,9 @@ console.log(global.myOrigin);
     `;
     if (activeRoute.status) {
       res.status(activeRoute.status).send(response);
+    } else {
+      res.send(response);
     }
-    res.send(response);
   }).catch((error)=>console.warn(error))
 });
 
