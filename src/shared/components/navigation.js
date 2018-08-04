@@ -35,15 +35,22 @@ class Navigation extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      logo: '/png/buldreinfo_logo_gray.png'
-    };
+    let metadata;
+    if (__isBrowser__) {
+      metadata = window.__INITIAL_METADATA__;
+      delete window.__INITIAL_METADATA__;
+    } else {
+      metadata = props.staticContext.metadata;
+    }
+    this.state = {metadata, logo: '/png/buldreinfo_logo_gray.png'};
   }
 
   componentDidMount() {
     const { cookies } = this.props;
     const accessToken = cookies.get('access_token');
-    getMeta(accessToken).then((meta) => this.setState(() => ({meta})));
+    if (!this.state.metadata) {
+      getMeta(accessToken).then((data) => this.setState(() => ({metadata: data.metadata})));
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -94,8 +101,8 @@ class Navigation extends Component {
               <NavItem eventKey={1}>Browse</NavItem>
             </LinkContainer>
             <NavDropdown eventKey={2} title="Finder" id='basic-nav-dropdown'>
-              {this.state.meta && this.state.meta.metadata.isSuperAdmin && <LinkContainer to="/finder/-1"><MenuItem eventKey={2.0}>Grade: <strong>superadmin</strong></MenuItem></LinkContainer>}
-              {this.state.meta && this.state.meta.metadata.grades.map((g, i) => { return <LinkContainer key={"2." + i} to={"/finder/" + g.id}><MenuItem eventKey={"3." + i}>Grade: <strong>{g.grade}</strong></MenuItem></LinkContainer> })}
+              {this.state.metadata && this.state.metadata.isSuperAdmin && <LinkContainer to="/finder/-1"><MenuItem eventKey={2.0}>Grade: <strong>superadmin</strong></MenuItem></LinkContainer>}
+              {this.state.metadata && this.state.metadata.grades && this.state.metadata.grades.map((g, i) => { return <LinkContainer key={"2." + i} to={"/finder/" + g.id}><MenuItem eventKey={"3." + i}>Grade: <strong>{g.grade}</strong></MenuItem></LinkContainer> })}
             </NavDropdown>
           </Nav>
           <Navbar.Form pullLeft>

@@ -54,6 +54,7 @@ app.get("*", (req, res, next) => {
           <link rel="stylesheet" type="text/css" href="/css/react-bootstrap-table.css">
           <link rel="stylesheet" type="text/css" href="/css/buldreinfo.css">
           <script src="/js/bundle.js" defer></script>
+          <script>window.__INITIAL_METADATA__ = ${serialize(data? data.metadata : null)}</script>
           <script>window.__INITIAL_DATA__ = ${serialize(data)}</script>
         </head>
 
