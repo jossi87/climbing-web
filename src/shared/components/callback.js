@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { Well } from 'react-bootstrap';
-import { setIdToken, setAccessToken } from '../utils/auth';
+import { setCookies } from '../utils/auth';
 
 class Callback extends Component {
   static propTypes = {
