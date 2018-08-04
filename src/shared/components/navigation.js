@@ -9,7 +9,7 @@ import { Redirect } from 'react-router';
 import Avatar from 'react-avatar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { getMeta, postSearch } from './../api';
-import { isLoggedIn } from './../utils/auth';
+import { isLoggedIn } from '../utils/auth';
 
 const CustomOption = (props) => {
   var bg = "#4caf50";
@@ -116,7 +116,7 @@ class Navigation extends Component {
           </Navbar.Form>
 
           <Nav pullRight>
-            {isLoggedIn()?
+            {isLoggedIn(this.props.cookies)?
               <NavDropdown eventKey={4} title="Logged in" id='basic-nav-dropdown'>
                 <LinkContainer to="/user"><MenuItem eventKey={4.1}>My profile</MenuItem></LinkContainer>
                 <MenuItem divider />

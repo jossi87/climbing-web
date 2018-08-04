@@ -55,8 +55,8 @@ export function setCookies(cookies) {
   cookies.set(ID_TOKEN_KEY, idToken, options);
 }
 
-export function isLoggedIn() {
-  const idToken = getIdToken();
+export function isLoggedIn(cookies) {
+  const idToken = getIdToken(cookies);
   return !!idToken && !isTokenExpired(idToken);
 }
 
