@@ -46,14 +46,13 @@ function getParameterByName(name) {
   return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
 }
 
-export function setAccessToken(cookies) {
+export function setCookies(cookies) {
   let accessToken = getParameterByName('access_token');
-  cookies.set(ACCESS_TOKEN_KEY, accessToken);
-}
-
-export function setIdToken(cookies) {
   let idToken = getParameterByName('id_token');
-  cookies.set(ID_TOKEN_KEY, idToken);
+  const expirationDate = getTokenExpirationDate(idToken);
+  const options = [{path: '/', expires: expirationDate, secure: true, httpOnly: true}];
+  cookies.set(ACCESS_TOKEN_KEY, accessToken, options);
+  cookies.set(ID_TOKEN_KEY, idToken, options);
 }
 
 export function isLoggedIn() {

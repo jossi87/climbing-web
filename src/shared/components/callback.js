@@ -11,8 +11,7 @@ class Callback extends Component {
 
   componentDidMount() {
     const { cookies } = this.props;
-    setAccessToken(cookies);
-    setIdToken(cookies);
+    setCookies(cookies);
     window.location.href = "/";
   }
 
