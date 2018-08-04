@@ -64,7 +64,7 @@ class TableRow extends Component {
     }
 
     var type;
-    if (this.state && this.state.data && !this.state.data.metadata.isBouldering) {
+    if (!this.props.isBouldering) {
       var typeImg;
       switch (this.props.problem.t.id) {
         case 2: typeImg = <img height="20" src="/jpg/bolt.jpg"/>; break;
@@ -154,7 +154,7 @@ class Sector extends Component {
 
     const rows = data.problems.map((problem, i) => {
       return (
-        <TableRow problem={problem} problemsInTopo={problemsInTopo} key={i} />
+        <TableRow isBouldering={data.metadata.isBouldering} problem={problem} problemsInTopo={problemsInTopo} key={i} />
       )
     });
 
