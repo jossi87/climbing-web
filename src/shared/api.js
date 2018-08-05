@@ -15,7 +15,6 @@ function makeAuthenticatedRequest(cookies, urlSuffix, opts) {
   opts = opts || {};
   opts.headers = opts.headers || {};
   opts.mode = 'cors';
-  console.log(opts);
   if (isLoggedIn(cookies)) {
     opts.headers.Authorization = `Bearer ${getAccessToken(cookies)}`;
   }
