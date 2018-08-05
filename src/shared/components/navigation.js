@@ -46,10 +46,9 @@ class Navigation extends Component {
   }
 
   componentDidMount() {
-    const { cookies } = this.props;
-    const accessToken = cookies.get('access_token');
     if (!this.state.metadata) {
-      getMeta(accessToken).then((data) => this.setState(() => ({metadata: data.metadata})));
+      const { cookies } = this.props;
+      getMeta(cookies).then((data) => this.setState(() => ({metadata: data.metadata})));
     }
   }
 
@@ -65,8 +64,7 @@ class Navigation extends Component {
   search(input, callback) {
     if (input) {
       const { cookies } = this.props;
-      const accessToken = cookies.get('access_token');
-      postSearch(accessToken, input).then((res) => {
+      postSearch(cookies, input).then((res) => {
         var options = res.map(s => {return {value: s, label: s.value}});
         callback(options);
       });

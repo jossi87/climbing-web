@@ -35,8 +35,7 @@ class Problem extends Component {
 
   refresh(id) {
     const { cookies } = this.props;
-    const accessToken = cookies.get('access_token');
-    this.props.fetchInitialData(accessToken, id).then((data) => this.setState(() => ({data})));
+    this.props.fetchInitialData(cookies, id).then((data) => this.setState(() => ({data})));
   }
 
   componentDidMount() {

@@ -25,8 +25,7 @@ class ProblemEditMedia extends Component {
 
   refresh(id) {
     const { cookies } = this.props;
-    const accessToken = cookies.get('access_token');
-    getProblem(accessToken, id).then((data) => this.setState({id: data.id, isAuthenticated: data.metadata.isAuthenticated}));
+    getProblem(cookies, id).then((data) => this.setState({id: data.id, isAuthenticated: data.metadata.isAuthenticated}));
   }
 
   onNewMediaChanged(newMedia) {
@@ -37,8 +36,7 @@ class ProblemEditMedia extends Component {
     event.preventDefault();
     this.setState({isSaving: true});
     const { cookies } = this.props;
-    const accessToken = cookies.get('access_token');
-    postProblemMedia(accessToken, this.state.id, this.state.newMedia)
+    postProblemMedia(cookies, this.state.id, this.state.newMedia)
     .then((response) => {
       this.setState({pushUrl: "/problem/" + response.id});
     })

@@ -32,8 +32,7 @@ class Index extends Component {
   componentDidMount() {
     if (!this.state.data) {
       const { cookies } = this.props;
-      const accessToken = cookies.get('access_token');
-      this.props.fetchInitialData(accessToken).then((data) => this.setState(() => ({data})));
+      this.props.fetchInitialData(cookies).then((data) => this.setState(() => ({data})));
     }
   }
 

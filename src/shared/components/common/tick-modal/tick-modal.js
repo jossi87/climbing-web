@@ -56,8 +56,7 @@ class TickModal extends Component {
 
   delete(e) {
     const { cookies } = this.props;
-    const accessToken = cookies.get('access_token');
-    postTicks(accessToken, true, this.state.idTick, this.state.idProblem, this.state.comment, this.state.date, this.state.stars, this.state.grade)
+    postTicks(cookies, true, this.state.idTick, this.state.idProblem, this.state.comment, this.state.date, this.state.stars, this.state.grade)
     .then((response) => {
       this.props.onHide();
     })
@@ -69,8 +68,7 @@ class TickModal extends Component {
 
   save(e) {
     const { cookies } = this.props;
-    const accessToken = cookies.get('access_token');
-    postTicks(accessToken, false, this.state.idTick, this.state.idProblem, this.state.comment, this.state.date, this.state.stars, this.state.grade)
+    postTicks(cookies, false, this.state.idTick, this.state.idProblem, this.state.comment, this.state.date, this.state.stars, this.state.grade)
     .then((response) => {
       this.props.onHide();
     })

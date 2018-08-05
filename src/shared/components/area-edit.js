@@ -50,8 +50,7 @@ class AreaEdit extends Component {
 
   refresh(id) {
     const { cookies } = this.props;
-    const accessToken = cookies.get('access_token');
-    this.props.fetchInitialData(accessToken, id).then((data) => this.setState(() => ({data})));
+    this.props.fetchInitialData(cookies, id).then((data) => this.setState(() => ({data})));
   }
 
   onNameChanged(e) {
@@ -81,9 +80,8 @@ class AreaEdit extends Component {
   save(event) {
     event.preventDefault();
     const { cookies } = this.props;
-    const accessToken = cookies.get('access_token');
     this.setState({isSaving: true});
-    postArea(accessToken, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, this.state.data.newMedia)
+    postArea(cookies, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, this.state.data.newMedia)
     .then((response) => {
       this.setState({pushUrl: "/area/" + response.id});
     })

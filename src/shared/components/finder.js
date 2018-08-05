@@ -51,8 +51,7 @@ class Finder extends Component {
 
   refresh(grade) {
     const { cookies } = this.props;
-    const accessToken = cookies.get('access_token');
-    this.props.fetchInitialData(accessToken, grade).then((data) => this.setState(() => ({data})));
+    this.props.fetchInitialData(cookies, grade).then((data) => this.setState(() => ({data})));
   }
 
   componentDidMount() {

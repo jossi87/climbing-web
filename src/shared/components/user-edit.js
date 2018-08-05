@@ -39,8 +39,7 @@ class UserEdit extends Component {
 
   refresh(id) {
     const { cookies } = this.props;
-    const accessToken = cookies.get('access_token');
-    this.props.fetchInitialData(accessToken, id).then((data) => this.setState(() => ({data})));
+    this.props.fetchInitialData(cookies, id).then((data) => this.setState(() => ({data})));
   }
 
   save(event) {
@@ -58,8 +57,7 @@ class UserEdit extends Component {
     } else {
       const { data } = this.state;
       const { cookies } = this.props;
-      const accessToken = cookies.get('access_token');
-      postUserEdit(accessToken, data.id, data.username, data.email, data.firstname, data.lastname, data.currentPassword, data.newPassword)
+      postUserEdit(cookies, data.id, data.username, data.email, data.firstname, data.lastname, data.currentPassword, data.newPassword)
       .then((response) => {
         this.setState({pushUrl: "/user"});
       })

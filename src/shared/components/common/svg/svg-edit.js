@@ -70,8 +70,7 @@ class SvgEdit extends Component {
 
   refresh(problemIdMediaId) {
     const { cookies } = this.props;
-    const accessToken = cookies.get('access_token');
-    this.props.fetchInitialData(accessToken, problemIdMediaId).then((data) => this.setState(() => ({
+    this.props.fetchInitialData(cookies, problemIdMediaId).then((data) => this.setState(() => ({
       mediaId : data.mediaId,
       nr: data.nr,
       w: data.w,
@@ -124,8 +123,7 @@ class SvgEdit extends Component {
   save(event) {
     event.preventDefault();
     const { cookies } = this.props;
-    const accessToken = cookies.get('access_token');
-    postProblemSvg(accessToken, this.state.id, this.state.mediaId, this.state.points.length<2, this.state.svgId, this.generatePath(), this.state.hasAnchor)
+    postProblemSvg(cookies, this.state.id, this.state.mediaId, this.state.points.length<2, this.state.svgId, this.generatePath(), this.state.hasAnchor)
     .then((response) => {
       this.setState({pushUrl: "/problem/" + this.state.id});
     })

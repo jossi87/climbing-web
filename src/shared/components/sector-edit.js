@@ -53,8 +53,7 @@ class SectorEdit extends Component {
 
   refresh(id) {
     const { cookies } = this.props;
-    const accessToken = cookies.get('access_token');
-    this.props.fetchInitialData(accessToken, id).then((data) => this.setState(() => ({data})));
+    this.props.fetchInitialData(cookies, id).then((data) => this.setState(() => ({data})));
   }
 
   onNameChanged(e) {
@@ -85,8 +84,7 @@ class SectorEdit extends Component {
     event.preventDefault();
     this.setState({isSaving: true});
     const { cookies } = this.props;
-    const accessToken = cookies.get('access_token');
-    postSector(accessToken, this.props.location.query.idArea, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, this.state.data.newMedia)
+    postSector(cookies, this.props.location.query.idArea, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, this.state.data.newMedia)
     .then((response) => {
       this.setState({pushUrl: "/sector/" + response.id});
     })

@@ -35,8 +35,7 @@ class CommentModal extends Component {
   save(e) {
     if (this.state.comment) {
       const { cookies } = this.props;
-      const accessToken = cookies.get('access_token');
-      postComment(accessToken, this.state.idProblem, this.state.comment)
+      postComment(cookies, this.state.idProblem, this.state.comment)
       .then((response) => {
         this.props.onHide();
       })

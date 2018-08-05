@@ -61,9 +61,8 @@ class Gallery extends Component {
   onDeleteImage(event) {
     if (confirm('Are you sure you want to delete this image?')) {
       const { cookies } = this.props;
-      const accessToken = cookies.get('access_token');
       const idMedia = this.props.media[this.state.mediaIndex].id;
-      deleteMedia(accessToken, idMedia)
+      deleteMedia(cookies, idMedia)
       .then((response) => {
         if (this.props.media.length>1 && this.state.mediaIndex>=this.props.media.length-1) {
           const nextMediaIndex = this.state.mediaIndex-1;

@@ -54,8 +54,7 @@ class ProblemEdit extends Component {
 
   refresh(id) {
     const { cookies } = this.props;
-    const accessToken = cookies.get('access_token');
-    this.props.fetchInitialData(accessToken, id).then((data) => this.setState(() => ({data})));
+    this.props.fetchInitialData(cookies, id).then((data) => this.setState(() => ({data})));
   }
 
   onNameChanged(e) {
@@ -123,9 +122,8 @@ class ProblemEdit extends Component {
     this.setState({isSaving: true});
     const { data } = this.state;
     const { cookies } = this.props;
-    const accessToken = cookies.get('access_token');
     postProblem(
-      accessToken,
+      cookies,
       this.props.location.query.idSector,
       data.id,
       data.visibility,

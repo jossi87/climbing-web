@@ -23,7 +23,7 @@ app.get("*", (req, res, next) => {
   const activeRoute = routes.find((route) => matchPath(req.url, route)) || {};
 
   const promise = activeRoute.fetchInitialData
-    ? activeRoute.fetchInitialData(req.universalCookies.get('access_token'), req.path)
+    ? activeRoute.fetchInitialData(req.universalCookies, req.path)
     : Promise.resolve()
 
   promise.then((data) => {

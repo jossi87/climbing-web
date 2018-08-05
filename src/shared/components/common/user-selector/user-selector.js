@@ -12,8 +12,7 @@ var UserSelector = createClass({
 	},
 	getInitialState() {
 		const { cookies } = this.props;
-    const accessToken = cookies.get('access_token');
-		getUserSearch(accessToken, "").then((res) => this.setState({options: res.map(u => {return {value: u.id, label: u.name}})}));
+		getUserSearch(cookies, "").then((res) => this.setState({options: res.map(u => {return {value: u.id, label: u.name}})}));
     return {
       multiValue: this.props.users,
       options: []
