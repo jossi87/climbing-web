@@ -53,6 +53,7 @@ app.get("*", (req, res, next) => {
           <link rel="stylesheet" type="text/css" href="/css/image-gallery.css">
           <link rel="stylesheet" type="text/css" href="/css/react-bootstrap-table.css">
           <link rel="stylesheet" type="text/css" href="/css/buldreinfo.css">
+          <script async src="https://www.googletagmanager.com/gtag/js?id=UA-76534258-1"></script>
           <script src="/js/bundle.js" defer></script>
           <script>window.__INITIAL_METADATA__ = ${serialize(data? data.metadata : null)}</script>
           <script>window.__INITIAL_DATA__ = ${serialize(data)}</script>
