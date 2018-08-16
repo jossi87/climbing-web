@@ -91,10 +91,12 @@ class Finder extends Component {
 
   formatType(cell, row) {
     var typeImg;
+    const subtype = row.t.subtype;
     switch (row.t.id) {
-      case 2: typeImg = <img height="20" src="/jpg/bolt.jpg" alt="Bolt"/>; break;
-      case 3: typeImg = <img height="20" src="/jpg/trad.jpg" alt="Trad"/>; break;
-      case 4: typeImg = <img height="20" src="/jpg/mixed.jpg" alt="Mixed"/>; break;
+      case 2: typeImg = <img height="20" src="/jpg/bolt.jpg" alt={subtype}/>; break;
+      case 3: typeImg = <img height="20" src="/jpg/trad.jpg" alt={subtype}/>; break;
+      case 4: typeImg = <img height="20" src="/jpg/mixed.jpg" alt={subtype}/>; break;
+      case 5: typeImg = <img height="20" src="/jpg/toprope.jpg" alt={subtype}/>; break;
     }
     return <OverlayTrigger placement="top" overlay={<Popover id={row.t.id} title="Type"> {row.t.type + " - " + row.t.subType}</Popover>}>
         {typeImg}

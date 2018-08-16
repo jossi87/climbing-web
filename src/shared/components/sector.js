@@ -66,10 +66,12 @@ class TableRow extends Component {
     var type;
     if (!this.props.isBouldering) {
       var typeImg;
+      const subtype = this.props.problem.t.subtype;
       switch (this.props.problem.t.id) {
-        case 2: typeImg = <img height="20" src="/jpg/bolt.jpg"/>; break;
-        case 3: typeImg = <img height="20" src="/jpg/trad.jpg"/>; break;
-        case 4: typeImg = <img height="20" src="/jpg/mixed.jpg"/>; break;
+        case 2: typeImg = <img height="20" src="/jpg/bolt.jpg" alt={subtype}/>; break;
+        case 3: typeImg = <img height="20" src="/jpg/trad.jpg" alt={subtype}/>; break;
+        case 4: typeImg = <img height="20" src="/jpg/mixed.jpg" alt={subtype}/>; break;
+        case 5: typeImg = <img height="20" src="/jpg/toprope.jpg" alt={subtype}/>; break;
       }
       type = <td><OverlayTrigger placement="top" overlay={<Popover id={this.props.problem.t.id} title="Type">
           {this.props.problem.t.type + " - " + this.props.problem.t.subType}
