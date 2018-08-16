@@ -379,10 +379,10 @@ export function postSearch(cookies, value) {
   }).then((data) => data.json());
 }
 
-export function postSector(cookies, areaId, id, visibility, name, comment, lat, lng, media) {
+export function postSector(cookies, areaId, id, visibility, name, comment, lat, lng, polygonCoords, media) {
   const formData = new FormData();
   const newMedia = media.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
-  formData.append('json', JSON.stringify({areaId, id, visibility, name, comment, lat, lng, newMedia}));
+  formData.append('json', JSON.stringify({areaId, id, visibility, name, comment, lat, lng, polygonCoords, newMedia}));
   media.forEach(m => formData.append(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
   return makeAuthenticatedRequest(cookies, `/sectors`,{
     method: 'POST',

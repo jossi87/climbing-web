@@ -84,7 +84,7 @@ class SectorEdit extends Component {
     event.preventDefault();
     this.setState({isSaving: true});
     const { cookies } = this.props;
-    postSector(cookies, this.props.location.query.idArea, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, this.state.data.newMedia)
+    postSector(cookies, this.props.location.query.idArea, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, this.state.data.polygonCoords, this.state.data.newMedia)
     .then((response) => {
       this.setState({pushUrl: "/sector/" + response.id});
     })
