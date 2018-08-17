@@ -274,27 +274,6 @@ export function getUser(accessToken, id) {
   });
 }
 
-export function getUserEdit(accessToken, id) {
-  return getUser(accessToken, id)
-  .then((res) => {
-    return {
-      id: res.id,
-      username: res.username,
-      email: res.email,
-      firstname: res.firstname,
-      lastname: res.lastname,
-      metadata: {title: 'Edit user: ' + res.metadata.title, isAuthenticated: res.metadata.isAuthenticated},
-      currentPassword: null,
-      newPassword: null,
-      newPassword2: null,
-      message: null};
-  })
-  .catch((error) => {
-    console.warn(error);
-    return null;
-  });
-}
-
 export function getUserSearch(accessToken, value) {
   return makeAuthenticatedRequest(accessToken, `/users/search?value=${value}`)
   .then((data) => data.json())
@@ -396,16 +375,6 @@ export function postTicks(accessToken, del, id, idProblem, comment, date, stars,
   return makeAuthenticatedRequest(accessToken, `/ticks`,{
     method: 'POST',
     body: JSON.stringify({delete: del, id, idProblem, comment, date, stars, grade}),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
-}
-
-export function postUserEdit(accessToken, id, username, email, firstname, lastname, currentPassword, newPassword) {
-  return makeAuthenticatedRequest(accessToken, `/users/edit`,{
-    method: 'POST',
-    body: JSON.stringify({id, username, email, firstname, lastname, currentPassword, newPassword}),
     headers: {
       'Content-Type': 'application/json'
     }
