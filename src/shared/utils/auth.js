@@ -8,8 +8,7 @@ export default class Auth {
   auth0 = new auth0.WebAuth({
     domain: 'buldreinfo.auth0.com',
     clientID: 'zexpFfou6HkgNWH5QVi3zyT1rrw6MXAn',
-    // TODO redirectUri: `${window.location.origin}/callback`,
-    redirectUri: `http://localhost:3000/callback`,
+    redirectUri: `${__isBrowser__? window.origin : global.myOrigin}/callback`,
     responseType: 'token id_token',
     scope: 'openid'
   });
