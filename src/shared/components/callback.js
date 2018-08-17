@@ -1,18 +1,12 @@
 import React, {Component} from 'react';
-import { instanceOf } from 'prop-types';
-import { withCookies, Cookies } from 'react-cookie';
 import { Well } from 'react-bootstrap';
-import { setCookies } from '../utils/auth';
+
 
 class Callback extends Component {
-  static propTypes = {
-    cookies: instanceOf(Cookies).isRequired
-  };
-
   componentDidMount() {
-    const { cookies } = this.props;
-    setCookies(cookies);
-    window.location.href = "/";
+    if (/access_token|id_token|error/.test(window.location.hash)) {
+      this.props.auth.handleAuthentication();
+    }
   }
 
   render() {
@@ -20,4 +14,4 @@ class Callback extends Component {
   }
 }
 
-export default withCookies(Callback);
+export default Callback;

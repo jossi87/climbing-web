@@ -1,6 +1,4 @@
 import React, {Component} from 'react';
-import { instanceOf } from 'prop-types';
-import { withCookies, Cookies } from 'react-cookie';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
@@ -23,10 +21,6 @@ const GettingStartedGoogleMap = withScriptjs(withGoogleMap(props => (
 )));
 
 class SectorEdit extends Component {
-  static propTypes = {
-    cookies: instanceOf(Cookies).isRequired
-  };
-
   constructor(props) {
     super(props);
     let data;
@@ -52,8 +46,7 @@ class SectorEdit extends Component {
   }
 
   refresh(id) {
-    const { cookies } = this.props;
-    this.props.fetchInitialData(cookies, id).then((data) => this.setState(() => ({data})));
+    this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
   }
 
   onNameChanged(e) {
@@ -83,8 +76,7 @@ class SectorEdit extends Component {
   save(event) {
     event.preventDefault();
     this.setState({isSaving: true});
-    const { cookies } = this.props;
-    postSector(cookies, this.props.location.query.idArea, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, this.state.data.polygonCoords, this.state.data.newMedia)
+    postSector(this.props.auth.getAccessToken(), this.props.location.query.idArea, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, this.state.data.polygonCoords, this.state.data.newMedia)
     .then((response) => {
       this.setState({pushUrl: "/sector/" + response.id});
     })
@@ -178,7 +170,7 @@ class SectorEdit extends Component {
               </DropdownButton>
             </FormGroup>
             <FormGroup controlId="formControlsMedia">
-              <ImageUpload onMediaChanged={this.onNewMediaChanged.bind(this)} />
+              <ImageUpload auth={this.props.auth} onMediaChanged={this.onNewMediaChanged.bind(this)} />
             </FormGroup>
             <FormGroup controlId="formControlsMap">
               <ControlLabel>Left mouse button to position parking coordinate, right mouse button to add polygon points (sector outline)</ControlLabel><br/>
@@ -209,4 +201,4 @@ class SectorEdit extends Component {
   }
 }
 
-export default withCookies(SectorEdit);
+export default SectorEdit;

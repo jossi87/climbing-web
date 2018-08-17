@@ -22,8 +22,9 @@ app.get("*", (req, res, next) => {
   global.myOrigin = req.headers.host==='localhost:3000'? "http://localhost:3000" : "https://" + req.headers.host;
   const activeRoute = routes.find((route) => matchPath(req.url, route)) || {};
 
+  const accessToken = req.universalCookies.get('access_token');
   const promise = activeRoute.fetchInitialData
-    ? activeRoute.fetchInitialData(req.universalCookies, req.path)
+    ? activeRoute.fetchInitialData(accessToken, req.path)
     : Promise.resolve()
 
   promise.then((data) => {

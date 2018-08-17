@@ -1,19 +1,13 @@
 import React, {Component} from 'react';
-import { instanceOf } from 'prop-types';
-import { withCookies, Cookies } from 'react-cookie';
 import ReactDOM from 'react-dom';
 import { Link } from 'react-router-dom';
 import { Well, FormGroup, MenuItem, ButtonGroup, Button, DropdownButton, Alert, Breadcrumb } from 'react-bootstrap';
 import { Redirect } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { getImageUrl, postProblemSvg } from '../../../api';
-import { parseReadOnlySvgs } from '../../../utils/svg.js';
+import { getImageUrl, postProblemSvg } from '../api';
+import { parseReadOnlySvgs } from '../utils/svg.js';
 
 class SvgEdit extends Component {
-  static propTypes = {
-    cookies: instanceOf(Cookies).isRequired
-  };
-
   constructor(props) {
     super(props);
     let data;
@@ -69,8 +63,7 @@ class SvgEdit extends Component {
   }
 
   refresh(problemIdMediaId) {
-    const { cookies } = this.props;
-    this.props.fetchInitialData(cookies, problemIdMediaId).then((data) => this.setState(() => ({
+    this.props.fetchInitialData(this.props.auth.getAccessToken(), problemIdMediaId).then((data) => this.setState(() => ({
       mediaId : data.mediaId,
       nr: data.nr,
       w: data.w,
@@ -122,8 +115,7 @@ class SvgEdit extends Component {
 
   save(event) {
     event.preventDefault();
-    const { cookies } = this.props;
-    postProblemSvg(cookies, this.state.id, this.state.mediaId, this.state.points.length<2, this.state.svgId, this.generatePath(), this.state.hasAnchor)
+    postProblemSvg(this.props.auth.getAccessToken(), this.state.id, this.state.mediaId, this.state.points.length<2, this.state.svgId, this.generatePath(), this.state.hasAnchor)
     .then((response) => {
       this.setState({pushUrl: "/problem/" + this.state.id});
     })
@@ -284,7 +276,7 @@ class SvgEdit extends Component {
       var anchors = [];
       if (p.c) {
         anchors.push(
-          <g className="buldreinfo-svg-edit-opacity">
+          <g key={anchors.length} className="buldreinfo-svg-edit-opacity">
             <line className="buldreinfo-svg-pointer buldreinfo-svg-route" x1={a[i-1].x} y1={a[i-1].y} x2={p.c[0].x} y2={p.c[0].y} strokeWidth={0.0026*this.state.w} strokeDasharray={0.003*this.state.w}/>
             <line className="buldreinfo-svg-pointer buldreinfo-svg-route" x1={p.x} y1={p.y} x2={p.c[1].x} y2={p.c[1].y} strokeWidth={0.0026*this.state.w} strokeDasharray={0.003*this.state.w}/>
             <circle className="buldreinfo-svg-pointer buldreinfo-svg-ring" cx={p.c[0].x} cy={p.c[0].y} r={0.003*this.state.w} onMouseDown={this.setDraggedCubic.bind(this, i, 0)}/>
@@ -293,7 +285,7 @@ class SvgEdit extends Component {
         );
       }
       return (
-        <g className={"buldreinfo-svg-ring-group" + (this.state.activePoint === i ? "  is-active" : "")}>
+        <g key={i} className={"buldreinfo-svg-ring-group" + (this.state.activePoint === i ? "  is-active" : "")}>
           {anchors}
           <circle className="buldreinfo-svg-pointer buldreinfo-svg-ring" cx={p.x} cy={p.y} r={0.003*this.state.w} onMouseDown={this.setDraggedPoint.bind(this, i)}/>
         </g>
@@ -350,4 +342,4 @@ class SvgEdit extends Component {
   }
 }
 
-export default withCookies(SvgEdit);
+export default SvgEdit;

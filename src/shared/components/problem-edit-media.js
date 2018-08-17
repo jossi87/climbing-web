@@ -1,6 +1,4 @@
 import React, {Component} from 'react';
-import { instanceOf } from 'prop-types';
-import { withCookies, Cookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router'
 import { FormGroup, ControlLabel, ButtonGroup, Button, Well } from 'react-bootstrap';
@@ -9,10 +7,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getProblem, postProblemMedia } from './../api';
 
 class ProblemEditMedia extends Component {
-  static propTypes = {
-    cookies: instanceOf(Cookies).isRequired
-  };
-
   componentDidMount() {
     this.refresh(this.props.match.params.problemId);
   }
@@ -24,8 +18,7 @@ class ProblemEditMedia extends Component {
   }
 
   refresh(id) {
-    const { cookies } = this.props;
-    getProblem(cookies, id).then((data) => this.setState({id: data.id, isAuthenticated: data.metadata.isAuthenticated}));
+    getProblem(this.props.auth.getAccessToken(), id).then((data) => this.setState({id: data.id, isAuthenticated: data.metadata.isAuthenticated}));
   }
 
   onNewMediaChanged(newMedia) {
@@ -35,8 +28,7 @@ class ProblemEditMedia extends Component {
   save(event) {
     event.preventDefault();
     this.setState({isSaving: true});
-    const { cookies } = this.props;
-    postProblemMedia(cookies, this.state.id, this.state.newMedia)
+    postProblemMedia(this.props.auth.getAccessToken(), this.state.id, this.state.newMedia)
     .then((response) => {
       this.setState({pushUrl: "/problem/" + response.id});
     })
@@ -63,7 +55,7 @@ class ProblemEditMedia extends Component {
         <Well>
           <form onSubmit={this.save.bind(this)}>
             <FormGroup controlId="formControlsMedia">
-              <ImageUpload onMediaChanged={this.onNewMediaChanged.bind(this)} />
+              <ImageUpload auth={this.props.auth} onMediaChanged={this.onNewMediaChanged.bind(this)} />
             </FormGroup>
             <ButtonGroup><Button bsStyle="danger" onClick={this.onCancel.bind(this)}>Cancel</Button><Button type="submit" bsStyle="success" disabled={this.state.isSaving}>{this.state.isSaving? 'Saving...' : 'Save'}</Button></ButtonGroup>
           </form>
@@ -73,4 +65,4 @@ class ProblemEditMedia extends Component {
   }
 }
 
-export default withCookies(ProblemEditMedia);
+export default ProblemEditMedia;

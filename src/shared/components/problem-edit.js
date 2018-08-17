@@ -1,6 +1,4 @@
 import React, {Component} from 'react';
-import { instanceOf } from 'prop-types';
-import { withCookies, Cookies } from 'react-cookie';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router'
@@ -24,10 +22,6 @@ const GettingStartedGoogleMap = withScriptjs(withGoogleMap(props => (
 )));
 
 class ProblemEdit extends Component {
-  static propTypes = {
-    cookies: instanceOf(Cookies).isRequired
-  };
-
   constructor(props) {
     super(props);
     let data;
@@ -53,8 +47,7 @@ class ProblemEdit extends Component {
   }
 
   refresh(id) {
-    const { cookies } = this.props;
-    this.props.fetchInitialData(cookies, id).then((data) => this.setState(() => ({data})));
+    this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
   }
 
   onNameChanged(e) {
@@ -121,9 +114,8 @@ class ProblemEdit extends Component {
     event.preventDefault();
     this.setState({isSaving: true});
     const { data } = this.state;
-    const { cookies } = this.props;
     postProblem(
-      cookies,
+      this.props.auth.getAccessToken(),
       this.props.location.query.idSector,
       data.id,
       data.visibility,
@@ -254,7 +246,7 @@ class ProblemEdit extends Component {
             </FormGroup>
             <FormGroup controlId="formControlsFA">
               <ControlLabel>FA</ControlLabel><br/>
-              <UserSelector users={data.fa? data.fa.map(u => {return {value: u.id, label: u.firstname + " " + u.surname}}) : []} onUsersUpdated={this.onUsersUpdated.bind(this)} />
+              <UserSelector auth={this.props.auth} users={data.fa? data.fa.map(u => {return {value: u.id, label: u.firstname + " " + u.surname}}) : []} onUsersUpdated={this.onUsersUpdated.bind(this)} />
             </FormGroup>
             <FormGroup controlId="formControlsVisibility">
               <ControlLabel>Visibility</ControlLabel><br/>
@@ -274,7 +266,7 @@ class ProblemEdit extends Component {
             </FormGroup>
             {sections}
             <FormGroup controlId="formControlsMedia">
-              <ImageUpload onMediaChanged={this.onNewMediaChanged.bind(this)} />
+              <ImageUpload auth={this.props.auth} onMediaChanged={this.onNewMediaChanged.bind(this)} />
             </FormGroup>
             <FormGroup controlId="formControlsMap">
               <ControlLabel>Click to mark problem on map</ControlLabel><br/>
@@ -303,4 +295,4 @@ class ProblemEdit extends Component {
   }
 }
 
-export default withCookies(ProblemEdit);
+export default ProblemEdit;

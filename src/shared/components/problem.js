@@ -1,6 +1,4 @@
 import React, {Component} from 'react';
-import { instanceOf } from 'prop-types';
-import { withCookies, Cookies } from 'react-cookie';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Map from './common/map/map';
@@ -12,10 +10,6 @@ import CommentModal from './common/comment-modal/comment-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class Problem extends Component {
-  static propTypes = {
-    cookies: instanceOf(Cookies).isRequired
-  };
-
   constructor(props) {
     super(props);
     let data;
@@ -34,8 +28,7 @@ class Problem extends Component {
   }
 
   refresh(id) {
-    const { cookies } = this.props;
-    this.props.fetchInitialData(cookies, id).then((data) => this.setState(() => ({data})));
+    this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
   }
 
   componentDidMount() {
@@ -128,7 +121,7 @@ class Problem extends Component {
       });
     }
     const map = markers.length>0? <Map markers={markers} defaultCenter={{lat: markers[0].lat, lng: markers[0].lng}} defaultZoom={16}/> : null;
-    const gallery = data.media && data.media.length>0? <Gallery isAdmin={this.state.data.metadata.isAdmin} alt={data.name + ' ' + data.grade + ' (' + data.areaName + " - " + data.sectorName + ')'} media={data.media} showThumbnails={false} removeMedia={this.onRemoveMedia.bind(this)} /> : null;
+    const gallery = data.media && data.media.length>0? <Gallery auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} alt={data.name + ' ' + data.grade + ' (' + data.areaName + " - " + data.sectorName + ')'} media={data.media} showThumbnails={false} removeMedia={this.onRemoveMedia.bind(this)} /> : null;
     var topoContent = null;
     if (map && gallery) {
       topoContent = (
@@ -269,15 +262,16 @@ class Problem extends Component {
       );
     }
 
+    const accessToken = this.props.auth.getAccessToken();
     var tickModal = null;
     if (data.ticks) {
       const userTicks = data.ticks.filter(t => t.writable);
       if (userTicks && userTicks.length>0) {
-        tickModal = <TickModal idTick={userTicks[0].id} idProblem={data.id} date={userTicks[0].date} comment={userTicks[0].comment} grade={userTicks[0].suggestedGrade} grades={data.metadata.grades} stars={userTicks[0].stars} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/>
+        tickModal = <TickModal auth={this.props.auth} idTick={userTicks[0].id} idProblem={data.id} date={userTicks[0].date} comment={userTicks[0].comment} grade={userTicks[0].suggestedGrade} grades={data.metadata.grades} stars={userTicks[0].stars} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/>
       }
     }
     if (!tickModal) {
-      tickModal = <TickModal idTick={-1} idProblem={data.id} grade={data.originalGrade} grades={data.metadata.grades} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/>;
+      tickModal = <TickModal auth={this.props.auth} idTick={-1} idProblem={data.id} grade={data.originalGrade} grades={data.metadata.grades} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/>;
     }
 
     return (
@@ -297,7 +291,7 @@ class Problem extends Component {
         </MetaTags>
 
         {tickModal}
-        <CommentModal idProblem={data.id} show={this.state.showCommentModal} onHide={this.closeCommentModal.bind(this)}/>
+        <CommentModal auth={this.props.auth} idProblem={data.id} show={this.state.showCommentModal} onHide={this.closeCommentModal.bind(this)}/>
 
         <Breadcrumb>
           {headerButtons}
@@ -321,4 +315,4 @@ class Problem extends Component {
   }
 }
 
-export default withCookies(Problem);
+export default Problem;

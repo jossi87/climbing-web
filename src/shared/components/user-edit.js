@@ -1,7 +1,5 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
-import { instanceOf } from 'prop-types';
-import { withCookies, Cookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import { FormGroup, ControlLabel, FormControl, HelpBlock, ButtonGroup, Button, Panel, Breadcrumb, Well } from 'react-bootstrap';
@@ -9,10 +7,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { postUserEdit } from './../api';
 
 class UserEdit extends Component {
-  static propTypes = {
-    cookies: instanceOf(Cookies).isRequired
-  };
-
   constructor(props) {
     super(props);
     let data;
@@ -38,8 +32,7 @@ class UserEdit extends Component {
   }
 
   refresh(id) {
-    const { cookies } = this.props;
-    this.props.fetchInitialData(cookies, id).then((data) => this.setState(() => ({data})));
+    this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
   }
 
   save(event) {
@@ -56,8 +49,7 @@ class UserEdit extends Component {
       this.setState({message: <Panel bsStyle='danger'>Invalid password.</Panel>});
     } else {
       const { data } = this.state;
-      const { cookies } = this.props;
-      postUserEdit(cookies, data.id, data.username, data.email, data.firstname, data.lastname, data.currentPassword, data.newPassword)
+      postUserEdit(this.props.auth.getAccessToken(), data.id, data.username, data.email, data.firstname, data.lastname, data.currentPassword, data.newPassword)
       .then((response) => {
         this.setState({pushUrl: "/user"});
       })
@@ -232,4 +224,4 @@ class UserEdit extends Component {
   }
 }
 
-export default withCookies(UserEdit);
+export default UserEdit;

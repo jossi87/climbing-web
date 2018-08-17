@@ -1,6 +1,4 @@
 import React, {Component} from 'react';
-import { instanceOf } from 'prop-types';
-import { withCookies, Cookies } from 'react-cookie';
 import ImageGallery from 'react-image-gallery';
 import { Well } from 'react-bootstrap';
 import ReactPlayer from 'react-player'
@@ -12,10 +10,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getImageUrl, deleteMedia } from '../../../api';
 
 class Gallery extends Component {
-  static propTypes = {
-    cookies: instanceOf(Cookies).isRequired
-  };
-
   constructor(props) {
     super(props);
     this.state = {
@@ -60,9 +54,8 @@ class Gallery extends Component {
 
   onDeleteImage(event) {
     if (confirm('Are you sure you want to delete this image?')) {
-      const { cookies } = this.props;
       const idMedia = this.props.media[this.state.mediaIndex].id;
-      deleteMedia(cookies, idMedia)
+      deleteMedia(this.props.auth.getAccessToken(), idMedia)
       .then((response) => {
         if (this.props.media.length>1 && this.state.mediaIndex>=this.props.media.length-1) {
           const nextMediaIndex = this.state.mediaIndex-1;
@@ -266,4 +259,4 @@ class Gallery extends Component {
   }
 }
 
-export default withCookies(Gallery);
+export default Gallery;

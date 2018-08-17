@@ -1,6 +1,4 @@
 import React, {Component} from 'react';
-import { instanceOf } from 'prop-types';
-import { withCookies, Cookies } from 'react-cookie';
 import { Modal, Button, FormGroup, ControlLabel, FormControl, ButtonGroup, DropdownButton, MenuItem } from 'react-bootstrap';
 import Calendar from 'react-input-calendar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -55,8 +53,7 @@ class TickModal extends Component {
   }
 
   delete(e) {
-    const { cookies } = this.props;
-    postTicks(cookies, true, this.state.idTick, this.state.idProblem, this.state.comment, this.state.date, this.state.stars, this.state.grade)
+    postTicks(this.props.auth.getAccessToken(), true, this.state.idTick, this.state.idProblem, this.state.comment, this.state.date, this.state.stars, this.state.grade)
     .then((response) => {
       this.props.onHide();
     })
@@ -67,8 +64,7 @@ class TickModal extends Component {
   }
 
   save(e) {
-    const { cookies } = this.props;
-    postTicks(cookies, false, this.state.idTick, this.state.idProblem, this.state.comment, this.state.date, this.state.stars, this.state.grade)
+    postTicks(this.props.auth.getAccessToken(), false, this.state.idTick, this.state.idProblem, this.state.comment, this.state.date, this.state.stars, this.state.grade)
     .then((response) => {
       this.props.onHide();
     })
@@ -139,4 +135,4 @@ class TickModal extends Component {
   }
 }
 
-export default withCookies(TickModal);
+export default TickModal;

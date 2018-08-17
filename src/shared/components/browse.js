@@ -1,6 +1,4 @@
 import React, {Component} from 'react';
-import { instanceOf } from 'prop-types';
-import { withCookies, Cookies } from 'react-cookie';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { OverlayTrigger, Tooltip, Button, Table, Breadcrumb } from 'react-bootstrap';
@@ -10,10 +8,6 @@ import Map from './common/map/map';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class Browse extends Component {
-  static propTypes = {
-    cookies: instanceOf(Cookies).isRequired
-  };
-
   constructor(props) {
     super(props);
     let data;
@@ -31,8 +25,7 @@ class Browse extends Component {
       this.setState({currLat: position.coords.latitude, currLng: position.coords.longitude});
     });
     if (!this.state.data) {
-      const { cookies } = this.props;
-      this.props.fetchInitialData(cookies).then((data) => this.setState(() => ({data})));
+      this.props.fetchInitialData(this.props.auth.getAccessToken()).then((data) => this.setState(() => ({data})));
     }
   }
 
@@ -131,4 +124,4 @@ class Browse extends Component {
   }
 }
 
-export default withCookies(Browse);
+export default Browse;

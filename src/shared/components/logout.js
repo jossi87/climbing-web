@@ -1,18 +1,10 @@
 import React, {Component} from 'react';
-import { instanceOf } from 'prop-types';
-import { withCookies, Cookies } from 'react-cookie';
 import { Well } from 'react-bootstrap';
 import { logout } from '../utils/auth';
 
 class Logout extends Component {
-  static propTypes = {
-    cookies: instanceOf(Cookies).isRequired
-  };
-
   componentDidMount() {
-    const { cookies } = this.props;
-    logout(cookies);
-    window.location.href = "/";
+    this.props.auth.logout();
   }
 
   render() {
@@ -20,4 +12,4 @@ class Logout extends Component {
   }
 }
 
-export default withCookies(Logout);
+export default Logout;

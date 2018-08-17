@@ -1,6 +1,4 @@
 import React, {Component} from 'react';
-import { instanceOf } from 'prop-types';
-import { withCookies, Cookies } from 'react-cookie';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { Tabs, Tab, Well, OverlayTrigger, Tooltip, ButtonGroup, Button, Table, Breadcrumb } from 'react-bootstrap';
@@ -31,10 +29,6 @@ class TableRow extends Component {
 }
 
 class Area extends Component {
-  static propTypes = {
-    cookies: instanceOf(Cookies).isRequired
-  };
-
   constructor(props) {
     super(props);
     let data;
@@ -48,8 +42,7 @@ class Area extends Component {
   }
 
   refresh(id) {
-    const { cookies } = this.props;
-    this.props.fetchInitialData(cookies, id).then((data) => this.setState(() => ({data})));
+    this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
   }
 
   componentDidMount() {
@@ -108,7 +101,7 @@ class Area extends Component {
     const defaultCenter = this.state.data.lat && this.state.data.lat>0? {lat: this.state.data.lat, lng: this.state.data.lng} : this.state.data.metadata.defaultCenter;
     const defaultZoom = this.state.data.lat && this.state.data.lat>0? 14 : this.state.data.metadata.defaultZoom;
     const map = markers.length>0 || polygons.length>0? <Map markers={markers} polygons={polygons} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/> : null;
-    const gallery = this.state.data.media && this.state.data.media.length>0? <Gallery isAdmin={this.state.data.metadata.isAdmin} alt={this.state.data.name} media={this.state.data.media} showThumbnails={this.state.data.media.length>1} removeMedia={this.onRemoveMedia.bind(this)}/> : null;
+    const gallery = this.state.data.media && this.state.data.media.length>0? <Gallery auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} alt={this.state.data.name} media={this.state.data.media} showThumbnails={this.state.data.media.length>1} removeMedia={this.onRemoveMedia.bind(this)}/> : null;
     var topoContent = null;
     if (map && gallery) {
       topoContent = (
@@ -173,4 +166,4 @@ class Area extends Component {
   }
 }
 
-export default withCookies(Area);
+export default Area;

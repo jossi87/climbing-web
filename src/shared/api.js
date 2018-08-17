@@ -1,7 +1,6 @@
 import fetch from 'isomorphic-fetch';
 require('es6-promise').polyfill();
 import { parsePath } from './utils/svg.js';
-import { isLoggedIn, getAccessToken } from './utils/auth';
 
 function getUrl(urlSuffix) {
   var uri = __isBrowser__? window.origin : global.myOrigin;
@@ -11,12 +10,12 @@ function getUrl(urlSuffix) {
   return encodeURI(`${uri}/com.buldreinfo.jersey.jaxb/v2${urlSuffix}`);
 }
 
-function makeAuthenticatedRequest(cookies, urlSuffix, opts) {
+function makeAuthenticatedRequest(accessToken, urlSuffix, opts) {
   opts = opts || {};
   opts.headers = opts.headers || {};
   opts.mode = 'cors';
-  if (isLoggedIn(cookies)) {
-    opts.headers.Authorization = `Bearer ${getAccessToken(cookies)}`;
+  if (accessToken) {
+    opts.headers.Authorization = `Bearer ${accessToken}`;
   }
   return fetch(getUrl(urlSuffix), opts);
 }
@@ -35,14 +34,14 @@ export function convertFromDateToString(date) {
   return y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
 }
 
-export function deleteMedia(cookies, id) {
-  return makeAuthenticatedRequest(cookies, `/media?id=${id}`, {
+export function deleteMedia(accessToken, id) {
+  return makeAuthenticatedRequest(accessToken, `/media?id=${id}`, {
     method: 'DELETE'
   });
 }
 
-export function getArea(cookies, id) {
-  return makeAuthenticatedRequest(cookies, `/areas?id=${id}`)
+export function getArea(accessToken, id) {
+  return makeAuthenticatedRequest(accessToken, `/areas?id=${id}`)
   .then((data) => data.json())
   .catch((error) => {
     console.warn(error);
@@ -50,9 +49,9 @@ export function getArea(cookies, id) {
   });
 }
 
-export function getAreaEdit(cookies, id) {
+export function getAreaEdit(accessToken, id) {
   if (id == -1) {
-    return getMeta(cookies)
+    return getMeta(accessToken)
     .then((res) => {
       return {id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: {title: 'New area | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, isAdmin: res.metadata.isAdmin, isSuperAdmin: res.metadata.isSuperAdmin}};
     })
@@ -61,7 +60,7 @@ export function getAreaEdit(cookies, id) {
       return null;
     });
   } else {
-    return makeAuthenticatedRequest(cookies, `/areas?id=${id}`)
+    return makeAuthenticatedRequest(accessToken, `/areas?id=${id}`)
     .then((data) => data.json())
     .then((res) => {
       return {id: res.id, visibility: res.visibility, name: res.name, comment: res.comment, lat: res.lat, lng: res.lng, newMedia: [], metadata: res.metadata};
@@ -73,8 +72,8 @@ export function getAreaEdit(cookies, id) {
   }
 }
 
-export function getBrowse(cookies) {
-  return makeAuthenticatedRequest(cookies, `/browse`)
+export function getBrowse(accessToken) {
+  return makeAuthenticatedRequest(accessToken, `/browse`)
   .then((data) => data.json())
   .catch((error) => {
     console.warn(error);
@@ -82,8 +81,8 @@ export function getBrowse(cookies) {
   });
 }
 
-export function getFinder(cookies, grade) {
-  return makeAuthenticatedRequest(cookies, `/finder?grade=${grade}`)
+export function getFinder(accessToken, grade) {
+  return makeAuthenticatedRequest(accessToken, `/finder?grade=${grade}`)
   .then((data) => data.json())
   .catch((error) => {
     console.warn(error);
@@ -91,8 +90,8 @@ export function getFinder(cookies, grade) {
   });
 }
 
-export function getFrontpage(cookies) {
-  return makeAuthenticatedRequest(cookies, `/frontpage`)
+export function getFrontpage(accessToken) {
+  return makeAuthenticatedRequest(accessToken, `/frontpage`)
   .then((data) => data.json())
   .catch((error) => {
     console.warn(error);
@@ -100,8 +99,8 @@ export function getFrontpage(cookies) {
   });
 }
 
-export function getMeta(cookies) {
-  return makeAuthenticatedRequest(cookies, `/meta`)
+export function getMeta(accessToken) {
+  return makeAuthenticatedRequest(accessToken, `/meta`)
   .then((data) => data.json())
   .catch((error) => {
     console.warn(error);
@@ -109,8 +108,8 @@ export function getMeta(cookies) {
   });
 }
 
-export function getProblem(cookies, id) {
-  return makeAuthenticatedRequest(cookies, `/problems?id=${id}`)
+export function getProblem(accessToken, id) {
+  return makeAuthenticatedRequest(accessToken, `/problems?id=${id}`)
   .then((data) => data.json())
   .then((json) => json[0])
   .catch((error) => {
@@ -119,9 +118,9 @@ export function getProblem(cookies, id) {
   });
 }
 
-export function getProblemEdit(cookies, id) {
+export function getProblemEdit(accessToken, id) {
   if (id == -1) {
-    return getMeta(cookies)
+    return getMeta(accessToken)
     .then((res) => {
       return {
         id: -1,
@@ -151,7 +150,7 @@ export function getProblemEdit(cookies, id) {
       return null;
     });
   } else {
-    return makeAuthenticatedRequest(cookies, `/problems?id=${id}`)
+    return makeAuthenticatedRequest(accessToken, `/problems?id=${id}`)
     .then((data) => data.json())
     .then((json) => json[0])
     .then((res) => {
@@ -179,8 +178,8 @@ export function getProblemEdit(cookies, id) {
   }
 }
 
-export function getSector(cookies, id) {
-  return makeAuthenticatedRequest(cookies, `/sectors?id=${id}`)
+export function getSector(accessToken, id) {
+  return makeAuthenticatedRequest(accessToken, `/sectors?id=${id}`)
   .then((data) => data.json())
   .catch((error) => {
     console.warn(error);
@@ -188,9 +187,9 @@ export function getSector(cookies, id) {
   });
 }
 
-export function getSectorEdit(cookies, id) {
+export function getSectorEdit(accessToken, id) {
   if (id == -1) {
-    return getMeta(cookies)
+    return getMeta(accessToken)
     .then((res) => {
       return {id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: {title: 'New sector | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, isAdmin: res.metadata.isAdmin, isSuperAdmin: res.metadata.isSuperAdmin}};
     })
@@ -199,7 +198,7 @@ export function getSectorEdit(cookies, id) {
       return null;
     });
   } else {
-    return makeAuthenticatedRequest(cookies, `/sectors?id=${id}`)
+    return makeAuthenticatedRequest(accessToken, `/sectors?id=${id}`)
     .then((data) => data.json())
     .then((res) => {
       return {id: res.id, visibility: res.visibility, name: res.name, comment: res.comment, lat: res.lat, lng: res.lng, newMedia: [], metadata: res.metadata};
@@ -211,11 +210,11 @@ export function getSectorEdit(cookies, id) {
   }
 }
 
-export function getSvgEdit(cookies, problemIdMediaId) {
+export function getSvgEdit(accessToken, problemIdMediaId) {
   const parts = problemIdMediaId.split("-");
   const problemId = parts[0];
   const mediaId = parts[1];
-  return makeAuthenticatedRequest(cookies, `/problems?id=${problemId}`)
+  return makeAuthenticatedRequest(accessToken, `/problems?id=${problemId}`)
   .then((data) => data.json())
   .then((json) => json[0])
   .then((res) => {
@@ -266,8 +265,8 @@ export function getSvgEdit(cookies, problemIdMediaId) {
   });
 }
 
-export function getUser(cookies, id) {
-  return makeAuthenticatedRequest(cookies, `/users?id=${id}`)
+export function getUser(accessToken, id) {
+  return makeAuthenticatedRequest(accessToken, `/users?id=${id}`)
   .then((data) => data.json())
   .catch((error) => {
     console.warn(error);
@@ -275,8 +274,8 @@ export function getUser(cookies, id) {
   });
 }
 
-export function getUserEdit(cookies, id) {
-  return getUser(cookies, id)
+export function getUserEdit(accessToken, id) {
+  return getUser(accessToken, id)
   .then((res) => {
     return {
       id: res.id,
@@ -296,8 +295,8 @@ export function getUserEdit(cookies, id) {
   });
 }
 
-export function getUserSearch(cookies, value) {
-  return makeAuthenticatedRequest(cookies, `/users/search?value=${value}`)
+export function getUserSearch(accessToken, value) {
+  return makeAuthenticatedRequest(accessToken, `/users/search?value=${value}`)
   .then((data) => data.json())
   .catch((error) => {
     console.warn(error);
@@ -305,12 +304,12 @@ export function getUserSearch(cookies, value) {
   });
 }
 
-export function postArea(cookies, id, visibility, name, comment, lat, lng, media) {
+export function postArea(accessToken, id, visibility, name, comment, lat, lng, media) {
   const formData = new FormData();
   const newMedia = media.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
   formData.append('json', JSON.stringify({id, visibility, name, comment, lat, lng, newMedia}));
   media.forEach(m => formData.append(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
-  return makeAuthenticatedRequest(cookies, `/areas`,{
+  return makeAuthenticatedRequest(accessToken, `/areas`,{
     method: 'POST',
     body: formData,
     headers: {
@@ -319,8 +318,8 @@ export function postArea(cookies, id, visibility, name, comment, lat, lng, media
   }).then((data) => data.json());
 }
 
-export function postComment(cookies, idProblem, comment) {
-  return makeAuthenticatedRequest(cookies, `/comments`,{
+export function postComment(accessToken, idProblem, comment) {
+  return makeAuthenticatedRequest(accessToken, `/comments`,{
     method: 'POST',
     body: JSON.stringify({idProblem, comment}),
     headers: {
@@ -329,12 +328,12 @@ export function postComment(cookies, idProblem, comment) {
   });
 }
 
-export function postProblem(cookies, sectorId, id, visibility, name, comment, originalGrade, fa, faDate, nr, t, lat, lng, sections, media) {
+export function postProblem(accessToken, sectorId, id, visibility, name, comment, originalGrade, fa, faDate, nr, t, lat, lng, sections, media) {
   const formData = new FormData();
   const newMedia = media.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
   formData.append('json', JSON.stringify({sectorId, id, visibility, name, comment, originalGrade, fa, faDate, nr, t, lat, lng, sections, newMedia}));
   media.forEach(m => formData.append(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
-  return makeAuthenticatedRequest(cookies, `/problems`,{
+  return makeAuthenticatedRequest(accessToken, `/problems`,{
     method: 'POST',
     body: formData,
     headers: {
@@ -343,12 +342,12 @@ export function postProblem(cookies, sectorId, id, visibility, name, comment, or
   }).then((data) => data.json());
 }
 
-export function postProblemMedia(cookies, id, media) {
+export function postProblemMedia(accessToken, id, media) {
   const formData = new FormData();
   const newMedia = media.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
   formData.append('json', JSON.stringify({id, newMedia}));
   media.forEach(m => formData.append(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
-  return makeAuthenticatedRequest(cookies, `/problems/media`,{
+  return makeAuthenticatedRequest(accessToken, `/problems/media`,{
     method: 'POST',
     body: formData,
     headers: {
@@ -357,8 +356,8 @@ export function postProblemMedia(cookies, id, media) {
   }).then((data) => data.json());
 }
 
-export function postProblemSvg(cookies, problemId, mediaId, del, id, path, hasAnchor) {
-  return makeAuthenticatedRequest(cookies, `/problems/svg?problemId=${problemId}&mediaId=${mediaId}`,{
+export function postProblemSvg(accessToken, problemId, mediaId, del, id, path, hasAnchor) {
+  return makeAuthenticatedRequest(accessToken, `/problems/svg?problemId=${problemId}&mediaId=${mediaId}`,{
     method: 'POST',
     body: JSON.stringify({delete: del, id, path, hasAnchor}),
     headers: {
@@ -368,8 +367,8 @@ export function postProblemSvg(cookies, problemId, mediaId, del, id, path, hasAn
   });
 }
 
-export function postSearch(cookies, value) {
-  return makeAuthenticatedRequest(cookies, `/search`, {
+export function postSearch(accessToken, value) {
+  return makeAuthenticatedRequest(accessToken, `/search`, {
     method: 'POST',
     body: JSON.stringify({value}),
     headers: {
@@ -379,12 +378,12 @@ export function postSearch(cookies, value) {
   }).then((data) => data.json());
 }
 
-export function postSector(cookies, areaId, id, visibility, name, comment, lat, lng, polygonCoords, media) {
+export function postSector(accessToken, areaId, id, visibility, name, comment, lat, lng, polygonCoords, media) {
   const formData = new FormData();
   const newMedia = media.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
   formData.append('json', JSON.stringify({areaId, id, visibility, name, comment, lat, lng, polygonCoords, newMedia}));
   media.forEach(m => formData.append(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
-  return makeAuthenticatedRequest(cookies, `/sectors`,{
+  return makeAuthenticatedRequest(accessToken, `/sectors`,{
     method: 'POST',
     body: formData,
     headers: {
@@ -393,8 +392,8 @@ export function postSector(cookies, areaId, id, visibility, name, comment, lat, 
   }).then((data) => data.json());
 }
 
-export function postTicks(cookies, del, id, idProblem, comment, date, stars, grade) {
-  return makeAuthenticatedRequest(cookies, `/ticks`,{
+export function postTicks(accessToken, del, id, idProblem, comment, date, stars, grade) {
+  return makeAuthenticatedRequest(accessToken, `/ticks`,{
     method: 'POST',
     body: JSON.stringify({delete: del, id, idProblem, comment, date, stars, grade}),
     headers: {
@@ -403,8 +402,8 @@ export function postTicks(cookies, del, id, idProblem, comment, date, stars, gra
   });
 }
 
-export function postUserEdit(cookies, id, username, email, firstname, lastname, currentPassword, newPassword) {
-  return makeAuthenticatedRequest(cookies, `/users/edit`,{
+export function postUserEdit(accessToken, id, username, email, firstname, lastname, currentPassword, newPassword) {
+  return makeAuthenticatedRequest(accessToken, `/users/edit`,{
     method: 'POST',
     body: JSON.stringify({id, username, email, firstname, lastname, currentPassword, newPassword}),
     headers: {

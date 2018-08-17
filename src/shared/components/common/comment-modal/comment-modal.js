@@ -1,18 +1,8 @@
 import React, {Component} from 'react';
-import { instanceOf } from 'prop-types';
-import { withCookies, Cookies } from 'react-cookie';
 import { Modal, Button, FormGroup, ControlLabel, FormControl, ButtonGroup } from 'react-bootstrap';
 import { postComment } from './../../../api';
 
 class CommentModal extends Component {
-  static propTypes = {
-    cookies: instanceOf(Cookies).isRequired
-  };
-
-  constructor(props) {
-    super(props);
-  }
-
   refresh(props) {
     this.setState({
       idProblem: props.idProblem,
@@ -34,8 +24,7 @@ class CommentModal extends Component {
 
   save(e) {
     if (this.state.comment) {
-      const { cookies } = this.props;
-      postComment(cookies, this.state.idProblem, this.state.comment)
+      postComment(this.props.auth.getAccessToken(), this.state.idProblem, this.state.comment)
       .then((response) => {
         this.props.onHide();
       })
@@ -69,4 +58,4 @@ class CommentModal extends Component {
   }
 }
 
-export default withCookies(CommentModal);
+export default CommentModal;

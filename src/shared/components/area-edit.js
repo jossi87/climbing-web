@@ -1,6 +1,4 @@
 import React, {Component} from 'react';
-import { instanceOf } from 'prop-types';
-import { withCookies, Cookies } from 'react-cookie';
 import MetaTags from 'react-meta-tags';
 import { Redirect } from 'react-router';
 import { FormGroup, ControlLabel, FormControl, Checkbox, ButtonGroup, DropdownButton, MenuItem, Button, Well } from 'react-bootstrap';
@@ -20,10 +18,6 @@ const GettingStartedGoogleMap = withScriptjs(withGoogleMap(props => (
 )));
 
 class AreaEdit extends Component {
-  static propTypes = {
-    cookies: instanceOf(Cookies).isRequired
-  };
-
   constructor(props) {
     super(props);
     let data;
@@ -49,8 +43,7 @@ class AreaEdit extends Component {
   }
 
   refresh(id) {
-    const { cookies } = this.props;
-    this.props.fetchInitialData(cookies, id).then((data) => this.setState(() => ({data})));
+    this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
   }
 
   onNameChanged(e) {
@@ -79,9 +72,8 @@ class AreaEdit extends Component {
 
   save(event) {
     event.preventDefault();
-    const { cookies } = this.props;
     this.setState({isSaving: true});
-    postArea(cookies, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, this.state.data.newMedia)
+    postArea(this.props.auth.getAccessToken(), this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, this.state.data.newMedia)
     .then((response) => {
       this.setState({pushUrl: "/area/" + response.id});
     })
@@ -147,7 +139,7 @@ class AreaEdit extends Component {
               </DropdownButton>
             </FormGroup>
             <FormGroup controlId="formControlsMedia">
-              <ImageUpload onMediaChanged={this.onNewMediaChanged.bind(this)} />
+              <ImageUpload auth={this.props.auth} onMediaChanged={this.onNewMediaChanged.bind(this)} />
             </FormGroup>
             <FormGroup controlId="formControlsMap">
               <ControlLabel>Click to mark area center on map</ControlLabel><br/>
@@ -173,4 +165,4 @@ class AreaEdit extends Component {
   }
 }
 
-export default withCookies(AreaEdit);
+export default AreaEdit;

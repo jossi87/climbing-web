@@ -1,74 +1,128 @@
-import decode from 'jwt-decode';
 import auth0 from 'auth0-js';
-const ID_TOKEN_KEY = 'id_token';
-const ACCESS_TOKEN_KEY = 'access_token';
 
-var auth = new auth0.WebAuth({
-  domain: 'buldreinfo.auth0.com',
-  clientID: 'zexpFfou6HkgNWH5QVi3zyT1rrw6MXAn',
-});
+export default class Auth {
+  cookies;
+  userProfile;
+  tokenRenewalTimeout;
 
-export function login() {
-  auth.authorize({
+  auth0 = new auth0.WebAuth({
     domain: 'buldreinfo.auth0.com',
     clientID: 'zexpFfou6HkgNWH5QVi3zyT1rrw6MXAn',
-    redirectUri: `${window.location.origin}/callback`,
-    audience: 'https://buldreinfo.auth0.com/userinfo',
+    // TODO redirectUri: `${window.location.origin}/callback`,
+    redirectUri: `http://localhost:3000/callback`,
     responseType: 'token id_token',
     scope: 'openid'
   });
-}
 
-export function logout(cookies) {
-  clearIdToken(cookies);
-  clearAccessToken(cookies);
-}
+  constructor(cookies) {
+    this.cookies = cookies;
+    this.login = this.login.bind(this);
+    this.logout = this.logout.bind(this);
+    this.handleAuthentication = this.handleAuthentication.bind(this);
+    this.isAuthenticated = this.isAuthenticated.bind(this);
+    this.getAccessToken = this.getAccessToken.bind(this);
+    this.getProfile = this.getProfile.bind(this);
+    this.scheduleRenewal();
+  }
 
-export function getIdToken(cookies) {
-  return cookies.get(ID_TOKEN_KEY);
-}
+  login() {
+    this.auth0.authorize();
+  }
 
-export function getAccessToken(cookies) {
-  return cookies.get(ACCESS_TOKEN_KEY);
-}
+  handleAuthentication() {
+    this.auth0.parseHash((err, authResult) => {
+      if (authResult && authResult.accessToken && authResult.idToken) {
+        this.setCookies(authResult);
+      } else if (err) {
+        console.log(err);
+        alert(`Error: ${err.error}. Check the console for further details.`);
+      }
+    });
+  }
 
-function clearIdToken(cookies) {
-  cookies.remove(ID_TOKEN_KEY);
-}
+  setCookies(authResult) {
+    // Set the time that the access token will expire at
+    let expiresAt = JSON.stringify(
+      authResult.expiresIn * 1000 + new Date().getTime()
+    );
 
-function clearAccessToken(cookies) {
-  cookies.remove(ACCESS_TOKEN_KEY);
-}
+    const options = [{path: '/', secure: true, httpOnly: true}];
+    this.cookies.set('access_token', authResult.accessToken, options);
+    this.cookies.set('id_token', authResult.idToken, options);
+    this.cookies.set('expires_at', expiresAt, options);
 
-// Helper function that will allow us to extract the access_token and id_token
-function getParameterByName(name) {
-  let match = RegExp('[#&]' + name + '=([^&]*)').exec(window.location.hash);
-  return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
-}
+    // schedule a token renewal
+    this.scheduleRenewal();
 
-export function setCookies(cookies) {
-  let accessToken = getParameterByName('access_token');
-  let idToken = getParameterByName('id_token');
-  const expirationDate = getTokenExpirationDate(idToken);
-  const options = [{path: '/', expires: expirationDate, secure: true, httpOnly: true}];
-  cookies.set(ACCESS_TOKEN_KEY, accessToken, options);
-  cookies.set(ID_TOKEN_KEY, idToken, options);
-}
+    // navigate to the home route
+    window.location.href = "/";
+  }
 
-export function isLoggedIn(cookies) {
-  const idToken = getIdToken(cookies);
-  return !!idToken && !isTokenExpired(idToken);
-}
+  getAccessToken() {
+    const accessToken = this.cookies.get('access_token');
+    if (!accessToken) {
+      return null;
+    }
+    return accessToken;
+  }
 
-function getTokenExpirationDate(encodedToken) {
-  const token = decode(encodedToken);
-  if (!token.exp) { return null; }
-  const date = new Date(0);
-  date.setUTCSeconds(token.exp);
-  return date;
-}
+  getProfile(cb) {
+    let accessToken = this.getAccessToken();
+    this.auth0.client.userInfo(accessToken, (err, profile) => {
+      if (profile) {
+        this.userProfile = profile;
+      }
+      cb(err, profile);
+    });
+  }
 
-function isTokenExpired(token) {
-  const expirationDate = getTokenExpirationDate(token);
-  return expirationDate < new Date();
+  logout() {
+    // Clear access token and ID token from cookies
+    this.cookies.remove('access_token');
+    this.cookies.remove('id_token');
+    this.cookies.remove('expires_at');
+    this.cookies.remove('scopes');
+    this.userProfile = null;
+    clearTimeout(this.tokenRenewalTimeout);
+    // navigate to the home route
+    window.location.href = "/";
+  }
+
+  isAuthenticated() {
+    // Check whether the current time is past the
+    // access token's expiry time
+    const cookie = this.cookies.get('expires_at');
+    if (!cookie) {
+      return false;
+    }
+    let expiresAt = JSON.parse(cookie);
+    return new Date().getTime() < expiresAt;
+  }
+
+  renewToken() {
+    this.auth0.checkSession({},
+      (err, result) => {
+        if (err) {
+          alert(
+            `Could not get a new token (${err.error}: ${err.error_description}).`
+          );
+        } else {
+          this.setCookies(result);
+        }
+      }
+    );
+  }
+
+  scheduleRenewal() {
+    const cookie = this.cookies.get('expires_at');
+    if (cookie) {
+      const expiresAt = JSON.parse(cookie);
+      const delay = expiresAt - Date.now();
+      if (delay > 0) {
+        this.tokenRenewalTimeout = setTimeout(() => {
+          this.renewToken();
+        }, delay);
+      }
+    }
+  }
 }

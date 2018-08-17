@@ -1,16 +1,8 @@
 import React, {Component} from 'react';
-import { instanceOf } from 'prop-types';
-import { withCookies, Cookies } from 'react-cookie';
-import { login } from '../utils/auth';
 
 class Login extends Component {
-  static propTypes = {
-    cookies: instanceOf(Cookies).isRequired
-  };
-
   componentDidMount() {
-    const { cookies } = this.props;
-    login(cookies);
+    this.props.auth.login();
   }
 
   render() {
@@ -18,4 +10,4 @@ class Login extends Component {
   }
 }
 
-export default withCookies(Login);
+export default Login;

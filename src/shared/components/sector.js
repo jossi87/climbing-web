@@ -1,6 +1,4 @@
 import React, {Component} from 'react';
-import { instanceOf } from 'prop-types';
-import { withCookies, Cookies } from 'react-cookie';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Map from './common/map/map';
@@ -97,10 +95,6 @@ class TableRow extends Component {
 }
 
 class Sector extends Component {
-  static propTypes = {
-    cookies: instanceOf(Cookies).isRequired
-  };
-
   constructor(props) {
     super(props);
     let data;
@@ -114,8 +108,7 @@ class Sector extends Component {
   }
 
   refresh(id) {
-    const { cookies } = this.props;
-    this.props.fetchInitialData(cookies, id).then((data) => this.setState(() => ({data})));
+    this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
   }
 
   componentDidMount() {
@@ -189,7 +182,7 @@ class Sector extends Component {
     const defaultCenter = data.lat && data.lat>0? {lat: data.lat, lng: data.lng} : data.metadata.defaultCenter;
     const defaultZoom = data.lat && data.lat>0? 15 : data.metadata.defaultZoom;
     const map = markers.length>0? <Map markers={markers} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/> : null;
-    const gallery = data.media && data.media.length>0? <Gallery isAdmin={this.state.data.metadata.isAdmin} alt={data.name + " (" + data.areaName + ")"} media={data.media} showThumbnails={data.media.length>1} removeMedia={this.onRemoveMedia.bind(this)}/> : null;
+    const gallery = data.media && data.media.length>0? <Gallery auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} alt={data.name + " (" + data.areaName + ")"} media={data.media} showThumbnails={data.media.length>1} removeMedia={this.onRemoveMedia.bind(this)}/> : null;
     var topoContent = null;
     if (map && gallery) {
       topoContent = (
@@ -263,4 +256,4 @@ class Sector extends Component {
   }
 }
 
-export default withCookies(Sector);
+export default Sector;

@@ -1,6 +1,4 @@
 import React, {Component} from 'react';
-import { instanceOf } from 'prop-types';
-import { withCookies, Cookies } from 'react-cookie';
 import { Navbar, Nav, NavItem, FormGroup, FormControl, MenuItem, NavDropdown } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import Async from 'react-select/lib/Async';
@@ -9,7 +7,6 @@ import { Redirect } from 'react-router';
 import Avatar from 'react-avatar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { getMeta, postSearch } from './../api';
-import { isLoggedIn } from '../utils/auth';
 
 const CustomOption = (props) => {
   var bg = "#4caf50";
@@ -29,10 +26,6 @@ const CustomOption = (props) => {
 };
 
 class Navigation extends Component {
-  static propTypes = {
-    cookies: instanceOf(Cookies).isRequired
-  };
-
   constructor(props) {
     super(props);
     let metadata;
@@ -47,8 +40,7 @@ class Navigation extends Component {
 
   componentDidMount() {
     if (!this.state.metadata) {
-      const { cookies } = this.props;
-      getMeta(cookies).then((data) => this.setState(() => ({metadata: data.metadata})));
+      getMeta(this.props.auth.getAccessToken()).then((data) => this.setState(() => ({metadata: data.metadata})));
     }
   }
 
@@ -63,8 +55,7 @@ class Navigation extends Component {
 
   search(input, callback) {
     if (input) {
-      const { cookies } = this.props;
-      postSearch(cookies, input).then((res) => {
+      postSearch(this.props.auth.getAccessToken(), input).then((res) => {
         var options = res.map(s => {return {value: s, label: s.value}});
         callback(options);
       });
@@ -83,6 +74,7 @@ class Navigation extends Component {
     if (this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
     }
+    const { isAuthenticated } = this.props.auth;
     return (
       <Navbar inverse>
         <Navbar.Header>
@@ -121,7 +113,7 @@ class Navigation extends Component {
           </Navbar.Form>
 
           <Nav pullRight>
-            {isLoggedIn(this.props.cookies)?
+            {isAuthenticated()?
               <NavDropdown eventKey={4} title="Logged in" id='basic-nav-dropdown'>
                 <LinkContainer to="/user"><MenuItem eventKey={4.1}>My profile</MenuItem></LinkContainer>
                 <MenuItem divider />
@@ -153,4 +145,4 @@ class Navigation extends Component {
   }
 }
 
-export default withCookies(Navigation);
+export default Navigation;

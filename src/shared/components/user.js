@@ -1,6 +1,4 @@
 import React, {Component} from 'react';
-import { instanceOf } from 'prop-types';
-import { withCookies, Cookies } from 'react-cookie';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { LinkContainer } from 'react-router-bootstrap';
@@ -11,10 +9,6 @@ import TickModal from './common/tick-modal/tick-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class User extends Component {
-  static propTypes = {
-    cookies: instanceOf(Cookies).isRequired
-  };
-
   constructor(props) {
     super(props);
     let data;
@@ -28,8 +22,7 @@ class User extends Component {
   }
 
   refresh(id) {
-    const { cookies } = this.props;
-    this.props.fetchInitialData(cookies, id).then((data) => this.setState(() => ({data})));
+    this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
   }
 
   componentDidMount() {
@@ -167,7 +160,7 @@ class User extends Component {
           <meta property="og:image:height" content={data.metadata.og.imageHeight} />
         </MetaTags>
 
-        {this.state.currTick? <TickModal idTick={this.state.currTick.id} idProblem={this.state.currTick.idProblem} date={this.state.currTick.date} comment={this.state.currTick.comment} grade={this.state.currTick.grade} grades={data.metadata.grades} stars={this.state.currTick.stars} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/> : ""}
+        {this.state.currTick? <TickModal auth={this.props.auth} idTick={this.state.currTick.id} idProblem={this.state.currTick.idProblem} date={this.state.currTick.date} comment={this.state.currTick.comment} grade={this.state.currTick.grade} grades={data.metadata.grades} stars={this.state.currTick.stars} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/> : ""}
         <Breadcrumb>
           {data.metadata.isAuthenticated && this.state.data.readOnly==false &&
             <div style={{float: 'right'}}>
@@ -199,4 +192,4 @@ class User extends Component {
   }
 }
 
-export default withCookies(User);
+export default User;
