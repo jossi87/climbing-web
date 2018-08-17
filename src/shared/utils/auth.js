@@ -2,15 +2,14 @@ import auth0 from 'auth0-js';
 
 export default class Auth {
   cookies;
-  userProfile;
   tokenRenewalTimeout;
 
   auth0 = new auth0.WebAuth({
-    domain: 'buldreinfo.auth0.com',
-    clientID: 'zexpFfou6HkgNWH5QVi3zyT1rrw6MXAn',
+    domain: 'climbing.eu.auth0.com',
+    clientID: 'DNJNVzhxbF7PtaBFh7H6iBSNLh2UJWHt',
     redirectUri: `${__isBrowser__? window.origin : global.myOrigin}/callback`,
     responseType: 'token id_token',
-    scope: 'openid'
+    scope: 'openid email profile'
   });
 
   constructor(cookies) {
@@ -20,7 +19,6 @@ export default class Auth {
     this.handleAuthentication = this.handleAuthentication.bind(this);
     this.isAuthenticated = this.isAuthenticated.bind(this);
     this.getAccessToken = this.getAccessToken.bind(this);
-    this.getProfile = this.getProfile.bind(this);
     this.scheduleRenewal();
   }
 
@@ -65,23 +63,12 @@ export default class Auth {
     return accessToken;
   }
 
-  getProfile(cb) {
-    let accessToken = this.getAccessToken();
-    this.auth0.client.userInfo(accessToken, (err, profile) => {
-      if (profile) {
-        this.userProfile = profile;
-      }
-      cb(err, profile);
-    });
-  }
-
   logout() {
     // Clear access token and ID token from cookies
     this.cookies.remove('access_token');
     this.cookies.remove('id_token');
     this.cookies.remove('expires_at');
     this.cookies.remove('scopes');
-    this.userProfile = null;
     clearTimeout(this.tokenRenewalTimeout);
     // navigate to the home route
     window.location.href = "/";
