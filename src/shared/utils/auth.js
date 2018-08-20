@@ -43,7 +43,7 @@ export default class Auth {
       authResult.expiresIn * 1000 + new Date().getTime()
     );
     const expires = new Date(parseInt(expiresAt));
-    const options = [{path: '/', secure: true, expires: expires}];
+    const options = {path: '/', expires: expires, maxAge: authResult.expiresIn};
     this.cookies.set('access_token', authResult.accessToken, options);
     this.cookies.set('id_token', authResult.idToken, options);
     this.cookies.set('expires_at', expiresAt, options);
