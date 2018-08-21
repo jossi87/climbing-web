@@ -42,8 +42,8 @@ export default class Auth {
     let expiresAt = JSON.stringify(
       authResult.expiresIn * 1000 + new Date().getTime()
     );
-    const expires = new Date(parseInt(expiresAt));
-    const options = {path: '/', expires: expires, maxAge: authResult.expiresIn};
+    const expiryDate = new Date(parseInt(expiresAt));
+    const options = {path: '/', expires: expiryDate};
     this.cookies.set('access_token', authResult.accessToken, options);
     this.cookies.set('id_token', authResult.idToken, options);
     this.cookies.set('expires_at', expiresAt, options);
@@ -68,7 +68,6 @@ export default class Auth {
     this.cookies.remove('access_token');
     this.cookies.remove('id_token');
     this.cookies.remove('expires_at');
-    this.cookies.remove('scopes');
     clearTimeout(this.tokenRenewalTimeout);
     // navigate to the home route
     window.location.href = "/";
@@ -89,7 +88,7 @@ export default class Auth {
     this.auth0.checkSession({},
       (err, result) => {
         if (err) {
-          alert(
+          console.log(
             `Could not get a new token (${err.error}: ${err.error_description}).`
           );
         } else {
