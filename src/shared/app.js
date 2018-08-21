@@ -68,7 +68,7 @@ class App extends Component {
 
   render() {
     return (
-      <span>
+      <div>
         <Route path="/" render={(props) => (
             <Navigation auth={this.auth} {...props}/>
         )} />
@@ -85,7 +85,7 @@ class App extends Component {
             buldreinfo.com &amp; brattelinjer.no &copy; 2006-2018
           </footer>
         </div>
-      </span>
+      </div>
     );
   }
 }

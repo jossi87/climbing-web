@@ -214,7 +214,7 @@ class ProblemEdit extends Component {
       );
     }
     return (
-      <span>
+      <React.Fragment>
         <MetaTags>
           <title>{data.metadata.title}</title>
         </MetaTags>
@@ -290,7 +290,7 @@ class ProblemEdit extends Component {
             <ButtonGroup><Button bsStyle="danger" onClick={this.onCancel.bind(this)}>Cancel</Button><Button type="submit" bsStyle="success" disabled={this.state.isSaving}>{this.state.isSaving? 'Saving...' : 'Save problem'}</Button></ButtonGroup>
           </form>
         </Well>
-      </span>
+      </React.Fragment>
     );
   }
 }

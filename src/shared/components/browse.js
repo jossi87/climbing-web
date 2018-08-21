@@ -87,7 +87,7 @@ class Browse extends Component {
     });
     const map = markers.length>0? <Map markers={markers} defaultCenter={this.state.data.metadata.defaultCenter} defaultZoom={this.state.data.metadata.defaultZoom}/> : null;
     return (
-      <span>
+      <React.Fragment>
         <MetaTags>
           <title>{this.state.data.metadata.title}</title>
           <meta name="description" content={this.state.data.metadata.description} />
@@ -119,7 +119,7 @@ class Browse extends Component {
           <TableHeaderColumn dataField="numProblems" dataSort={true} dataAlign="center" width="50">#problems</TableHeaderColumn>
           <TableHeaderColumn dataField="distance" dataSort={true} dataFormat={this.formatDistance.bind(this)} sortFunc={this.sortDistance.bind(this)} dataAlign="center" width="60"><FontAwesomeIcon icon="plane" /></TableHeaderColumn>
         </BootstrapTable>
-      </span>
+      </React.Fragment>
     );
   }
 }

@@ -117,7 +117,7 @@ class Area extends Component {
     }
 
     return (
-      <span>
+      <React.Fragment>
         <MetaTags>
           {this.state.data.metadata.canonical && <link rel="canonical" href={this.state.data.metadata.canonical} />}
           <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(this.state.data.metadata.jsonLd)}} />
@@ -161,7 +161,7 @@ class Area extends Component {
             {rows}
           </tbody>
         </Table>
-      </span>
+      </React.Fragment>
     );
   }
 }

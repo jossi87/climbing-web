@@ -275,7 +275,7 @@ class Problem extends Component {
     }
 
     return (
-      <span>
+      <React.Fragment>
         <MetaTags>
           {data.metadata.canonical && <link rel="canonical" href={data.metadata.canonical} />}
           <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(data.metadata.jsonLd)}} />
@@ -310,7 +310,7 @@ class Problem extends Component {
         </Well>
         {table}
         {comment}
-      </span>
+      </React.Fragment>
     );
   }
 }

@@ -147,7 +147,7 @@ class SectorEdit extends Component {
     const defaultCenter = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? {lat: parseFloat(this.props.location.query.lat), lng: parseFloat(this.props.location.query.lng)} : this.state.data.metadata.defaultCenter;
     const defaultZoom = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? 14 : this.state.data.metadata.defaultZoom;
     return (
-      <span>
+      <React.Fragment>
         <MetaTags>
           <title>{this.state.data.metadata.title}</title>
         </MetaTags>
@@ -196,7 +196,7 @@ class SectorEdit extends Component {
             </ButtonGroup>
           </form>
         </Well>
-      </span>
+      </React.Fragment>
     );
   }
 }

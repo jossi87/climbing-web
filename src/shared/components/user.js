@@ -147,7 +147,7 @@ class User extends Component {
     const chart = data.ticks.length>0? <Chart data={data.ticks}/> : null;
 
     return (
-      <span>
+      <React.Fragment>
         <MetaTags>
           <title>{data.metadata.title}</title>
           <meta name="description" content={data.metadata.description} />
@@ -180,7 +180,7 @@ class User extends Component {
           <TableHeaderColumn dataField="fa" dataSort={true} dataFormat={this.formatFa.bind(this)} dataAlign="center" width="50">FA</TableHeaderColumn>
           <TableHeaderColumn dataField="edit" dataFormat={this.formatEdit.bind(this)} dataAlign="center" width="30"> </TableHeaderColumn>
         </BootstrapTable>
-      </span>
+      </React.Fragment>
     );
   }
 }

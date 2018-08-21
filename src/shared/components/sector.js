@@ -199,7 +199,7 @@ class Sector extends Component {
     const nextNr = data.problems.length>0? data.problems[data.problems.length-1].nr+1 : 1;
 
     return (
-      <span>
+      <React.Fragment>
         <MetaTags>
           {data.metadata.canonical && <link rel="canonical" href={data.metadata.canonical} />}
           <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(data.metadata.jsonLd)}} />
@@ -251,7 +251,7 @@ class Sector extends Component {
             {rows}
           </tbody>
         </Table>
-      </span>
+      </React.Fragment>
     );
   }
 }

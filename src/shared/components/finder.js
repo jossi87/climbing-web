@@ -255,7 +255,7 @@ class Finder extends Component {
     }
 
     return (
-      <div>
+      <React.Fragment>
         <MetaTags>
           <title>{this.state.data.metadata.title}</title>
           <meta name="description" content={this.state.data.metadata.description} />
@@ -272,7 +272,7 @@ class Finder extends Component {
         </Breadcrumb>
         {map}
         {table}
-      </div>
+      </React.Fragment>
     );
   }
 }

@@ -51,16 +51,14 @@ class ProblemEditMedia extends Component {
     }
 
     return (
-      <span>
-        <Well>
-          <form onSubmit={this.save.bind(this)}>
-            <FormGroup controlId="formControlsMedia">
-              <ImageUpload auth={this.props.auth} onMediaChanged={this.onNewMediaChanged.bind(this)} />
-            </FormGroup>
-            <ButtonGroup><Button bsStyle="danger" onClick={this.onCancel.bind(this)}>Cancel</Button><Button type="submit" bsStyle="success" disabled={this.state.isSaving}>{this.state.isSaving? 'Saving...' : 'Save'}</Button></ButtonGroup>
-          </form>
-        </Well>
-      </span>
+      <Well>
+        <form onSubmit={this.save.bind(this)}>
+          <FormGroup controlId="formControlsMedia">
+            <ImageUpload auth={this.props.auth} onMediaChanged={this.onNewMediaChanged.bind(this)} />
+          </FormGroup>
+          <ButtonGroup><Button bsStyle="danger" onClick={this.onCancel.bind(this)}>Cancel</Button><Button type="submit" bsStyle="success" disabled={this.state.isSaving}>{this.state.isSaving? 'Saving...' : 'Save'}</Button></ButtonGroup>
+        </form>
+      </Well>
     );
   }
 }

@@ -116,7 +116,7 @@ class AreaEdit extends Component {
     const defaultCenter = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? {lat: parseFloat(this.props.location.query.lat), lng: parseFloat(this.props.location.query.lng)} : this.state.data.metadata.defaultCenter;
     const defaultZoom = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? 8 : this.state.data.metadata.defaultZoom;
     return (
-      <span>
+      <React.Fragment>
         <MetaTags>
           <title>{this.state.data.metadata.title}</title>
         </MetaTags>
@@ -160,7 +160,7 @@ class AreaEdit extends Component {
             <ButtonGroup><Button bsStyle="danger" onClick={this.onCancel.bind(this)}>Cancel</Button><Button type="submit" bsStyle="success" disabled={this.state.isSaving}>{this.state.isSaving? 'Saving...' : 'Save area'}</Button></ButtonGroup>
           </form>
         </Well>
-      </span>
+      </React.Fragment>
     );
   }
 }

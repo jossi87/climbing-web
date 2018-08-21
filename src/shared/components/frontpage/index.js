@@ -70,7 +70,7 @@ class Index extends Component {
     });
 
     return (
-      <span>
+      <React.Fragment>
         <MetaTags>
           <title>{this.state.data.metadata.title}</title>
           <meta name="description" content={this.state.data.metadata.description} />
@@ -112,7 +112,7 @@ class Index extends Component {
             </Col>
           </Row>
         </Grid>
-      </span>
+      </React.Fragment>
     );
   }
 }

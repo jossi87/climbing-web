@@ -5,7 +5,7 @@ import { Well } from 'react-bootstrap';
 export default class NoMatch extends Component {
   render() {
     return (
-      <div>
+      <React.Fragment>
         <MetaTags>
           <title>Page not found</title>
         </MetaTags>
@@ -13,7 +13,7 @@ export default class NoMatch extends Component {
           <h1>404</h1>
           Page not found
         </Well>
-      </div>
+      </React.Fragment>
     );
   }
 }

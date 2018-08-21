@@ -293,7 +293,7 @@ class SvgEdit extends Component {
     });
     const path = this.generatePath();
     return (
-      <span>
+      <React.Fragment>
         <Breadcrumb>
           <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${this.state.areaId}`}>{this.state.areaName}</Link> {this.state.areaVisibility===1 && <FontAwesomeIcon icon="lock" />}{this.state.areaVisibility===2 && <FontAwesomeIcon icon="user-secret" />} / <Link to={`/sector/${this.state.sectorId}`}>{this.state.sectorName}</Link> {this.state.sectorVisibility===1 && <FontAwesomeIcon icon="lock" />}{this.state.sectorVisibility===2 && <FontAwesomeIcon icon="user-secret" />} / <Link to={`/problem/${this.state.id}`}>{this.state.nr} {this.state.name} {this.state.grade}</Link> {this.state.visibility===1 && <FontAwesomeIcon icon="lock" />}{this.state.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
         </Breadcrumb>
@@ -337,7 +337,7 @@ class SvgEdit extends Component {
             </FormGroup>
           </form>
         </Well>
-      </span>
+      </React.Fragment>
     )
   }
 }
