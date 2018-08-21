@@ -70,6 +70,11 @@ class Navigation extends Component {
     }
   }
 
+  login() {
+    localStorage.setItem('redirect', this.props.location.pathname);
+    this.props.auth.login();
+  }
+
   render() {
     if (this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
@@ -120,7 +125,7 @@ class Navigation extends Component {
                 <LinkContainer to="/logout"><MenuItem eventKey={4.2}>Log out</MenuItem></LinkContainer>
               </NavDropdown>
               :
-              <LinkContainer to="/login"><NavItem eventKey={5}>Sign in</NavItem></LinkContainer>
+              <NavItem eventKey={5} onClick={this.login.bind(this)}>Sign in</NavItem>
             }
             <NavDropdown eventKey={6} title="More" id='basic-nav-dropdown'>
               <LinkContainer to="/ethics">

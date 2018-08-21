@@ -51,8 +51,14 @@ export default class Auth {
     // schedule a token renewal
     this.scheduleRenewal();
 
-    // navigate to the home route
-    window.location.href = "/";
+    // navigate
+    let redirect = localStorage.getItem('redirect');
+    if (redirect) {
+      localStorage.removeItem('redirect');
+      window.location.href = redirect;
+    } else {
+      window.location.href = "/";
+    }
   }
 
   getAccessToken() {
