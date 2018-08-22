@@ -64,6 +64,8 @@ class App extends Component {
       }
       btnToggle.click();
     }, false);
+
+    this.auth.silentAuthentication();
   }
 
   render() {

@@ -19,6 +19,7 @@ export default class Auth {
     this.handleAuthentication = this.handleAuthentication.bind(this);
     this.isAuthenticated = this.isAuthenticated.bind(this);
     this.getAccessToken = this.getAccessToken.bind(this);
+    this.silentAuthentication = this.silentAuthentication.bind(this);
     this.scheduleRenewal();
   }
 
@@ -42,7 +43,7 @@ export default class Auth {
     let expiresAt = JSON.stringify(
       authResult.expiresIn * 1000 + new Date().getTime()
     );
-    const expiryDate = new Date(parseInt(expiresAt));
+    const expiryDate = new Date(new Date().getTime() + (7*24*60*60*1000));
     const options = {path: '/', expires: expiryDate};
     this.cookies.set('access_token', authResult.accessToken, options);
     this.cookies.set('id_token', authResult.idToken, options);
@@ -84,6 +85,7 @@ export default class Auth {
       (err, result) => {
         if (err) {
           console.log(`Could not get a new token (${err.error}: ${err.error_description}).`);
+          this.logout();
         } else {
           this.setCookies(result);
         }
@@ -101,6 +103,13 @@ export default class Auth {
           this.renewToken();
         }, delay);
       }
+    }
+  }
+
+  silentAuthentication() {
+    const cookie = this.cookies.get('expires_at');
+    if (cookie && !this.isAuthenticated()) {
+      this.renewToken();
     }
   }
 }
