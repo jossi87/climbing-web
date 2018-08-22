@@ -50,15 +50,6 @@ export default class Auth {
 
     // schedule a token renewal
     this.scheduleRenewal();
-
-    // navigate
-    let redirect = localStorage.getItem('redirect');
-    if (redirect) {
-      localStorage.removeItem('redirect');
-      window.location.href = redirect;
-    } else {
-      window.location.href = "/";
-    }
   }
 
   getAccessToken() {
@@ -75,8 +66,6 @@ export default class Auth {
     this.cookies.remove('id_token');
     this.cookies.remove('expires_at');
     clearTimeout(this.tokenRenewalTimeout);
-    // navigate to the home route
-    window.location.href = "/";
   }
 
   isAuthenticated() {

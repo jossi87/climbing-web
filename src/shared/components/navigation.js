@@ -40,11 +40,18 @@ class Navigation extends Component {
 
   componentDidMount() {
     if (!this.state.metadata) {
-      getMeta(this.props.auth.getAccessToken()).then((data) => this.setState(() => ({metadata: data.metadata})));
+      this.refresh();
     }
   }
 
+  refresh() {
+    getMeta(this.props.auth.getAccessToken()).then((data) => this.setState(() => ({metadata: data.metadata})));
+  }
+
   componentWillReceiveProps(nextProps) {
+    if (!this.state.metadata || (this.state.metadata.isAuthenticated!==this.props.auth.isAuthenticated())) {
+      this.refresh();
+    }
     this.setState({pushUrl: null});
   }
 
