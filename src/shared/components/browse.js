@@ -5,6 +5,7 @@ import { OverlayTrigger, Tooltip, Button, Table, Breadcrumb } from 'react-bootst
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { LinkContainer } from 'react-router-bootstrap';
 import Map from './common/map/map';
+import { LockSymbol } from './common/lock-symbol/lock-symbol';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class Browse extends Component {
@@ -30,7 +31,7 @@ class Browse extends Component {
   }
 
   formatName(cell, row) {
-    return <span><Link to={`/area/${row.id}`}>{row.name}</Link> {row.visibility===1 && <FontAwesomeIcon icon="lock" />}{row.visibility===2 && <FontAwesomeIcon icon="user-secret" />}</span>;
+    return <span><Link to={`/area/${row.id}`}>{row.name}</Link> <LockSymbol visibility={row.visibility}/></span>;
   }
 
   toRad(value) {

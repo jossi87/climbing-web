@@ -6,6 +6,7 @@ import { Redirect } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getImageUrl, postProblemSvg } from '../api';
 import { parseReadOnlySvgs } from '../utils/svg.js';
+import { LockSymbol } from './common/lock-symbol/lock-symbol';
 
 class SvgEdit extends Component {
   constructor(props) {
@@ -295,7 +296,7 @@ class SvgEdit extends Component {
     return (
       <React.Fragment>
         <Breadcrumb>
-          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${this.state.areaId}`}>{this.state.areaName}</Link> {this.state.areaVisibility===1 && <FontAwesomeIcon icon="lock" />}{this.state.areaVisibility===2 && <FontAwesomeIcon icon="user-secret" />} / <Link to={`/sector/${this.state.sectorId}`}>{this.state.sectorName}</Link> {this.state.sectorVisibility===1 && <FontAwesomeIcon icon="lock" />}{this.state.sectorVisibility===2 && <FontAwesomeIcon icon="user-secret" />} / <Link to={`/problem/${this.state.id}`}>{this.state.nr} {this.state.name} {this.state.grade}</Link> {this.state.visibility===1 && <FontAwesomeIcon icon="lock" />}{this.state.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
+          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${this.state.areaId}`}>{this.state.areaName}</Link> <LockSymbol visibility={this.state.areaVisibility}/> / <Link to={`/sector/${this.state.sectorId}`}>{this.state.sectorName}</Link> <LockSymbol visibility={this.state.sectorVisibility}/> / <Link to={`/problem/${this.state.id}`}>{this.state.nr} {this.state.name} {this.state.grade}</Link> <LockSymbol visibility={this.state.visibility}/>
         </Breadcrumb>
         <Well bsSize="small" onMouseUp={this.cancelDragging.bind(this)} onMouseLeave={this.cancelDragging.bind(this)}>
           <form onSubmit={this.save.bind(this)}>

@@ -7,6 +7,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 import { Tabs, Tab, Well, Panel, ButtonGroup, Button, Breadcrumb, OverlayTrigger, Popover, Tooltip, Table } from 'react-bootstrap';
 import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
+import { LockSymbol } from './common/lock-symbol/lock-symbol';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class Problem extends Component {
@@ -295,7 +296,7 @@ class Problem extends Component {
 
         <Breadcrumb>
           {headerButtons}
-          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${data.areaId}`}>{data.areaName}</Link> {data.areaVisibility===1 && <FontAwesomeIcon icon="lock" />}{data.areaVisibility===2 && <FontAwesomeIcon icon="user-secret" />} / <Link to={`/sector/${data.sectorId}`}>{data.sectorName}</Link> {data.sectorVisibility===1 && <FontAwesomeIcon icon="lock" />}{data.sectorVisibility===2 && <FontAwesomeIcon icon="user-secret" />} / {data.nr} <font color='#777'>{data.name}</font> {data.grade} {data.visibility===1 && <FontAwesomeIcon icon="lock" />}{data.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
+          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${data.areaId}`}>{data.areaName}</Link> <LockSymbol visibility={data.areaVisibility}/> / <Link to={`/sector/${data.sectorId}`}>{data.sectorName}</Link> <LockSymbol visibility={data.sectorVisibility}/> / {data.nr} <font color='#777'>{data.name}</font> {data.grade} <LockSymbol visibility={data.visibility}/>
         </Breadcrumb>
         {topoContent}
         <Well bsSize="small">

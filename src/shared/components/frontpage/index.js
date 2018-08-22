@@ -5,6 +5,7 @@ import { Table, Grid, Well, Row, Col, Clearfix } from 'react-bootstrap';
 import TextBox from './textbox/textbox';
 import ImageBox from './imagebox/imagebox';
 import LinkBox from './linkbox/linkbox';
+import { LockSymbol } from './../common/lock-symbol/lock-symbol';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const style = {padding: 0, textAlign: 'left'};
@@ -47,8 +48,8 @@ class Index extends Component {
     const newestProblems = this.state.data.fas.map((x, i) => {
       return (
         <p key={i}>
-          <Link to={`/problem/${x.idProblem}`}>{x.problem}</Link> {x.grade}<br/>
-          <small style={{color: '#777'}}><Link to={`/area/${x.idArea}`} style={{color: '#777'}}>{x.area}</Link> / <Link to={`/sector/${x.idSector}`} style={{color: '#777'}}>{x.sector}</Link> {x.date}</small>
+          <Link to={`/problem/${x.idProblem}`}>{x.problem}</Link> {x.grade} <LockSymbol visibility={x.visibility}/><br/>
+          <small style={{color: '#777'}}><Link to={`/area/${x.idArea}`} style={{color: '#777'}}>{x.area}</Link> <LockSymbol visibility={x.areaVisibility}/> / <Link to={`/sector/${x.idSector}`} style={{color: '#777'}}>{x.sector}</Link> <LockSymbol visibility={x.sectorVisibility}/> {x.date}</small>
         </p>
       )
     });
@@ -56,7 +57,7 @@ class Index extends Component {
     const latestAscents = this.state.data.ascents.map((x, i) => {
       return (
         <p key={i}>
-          <Link to={`/problem/${x.idProblem}`}>{x.problem}</Link> {x.grade}<br/>
+          <Link to={`/problem/${x.idProblem}`}>{x.problem}</Link> {x.grade} <LockSymbol visibility={x.visibility}/><br/>
           <small style={{color: '#777'}}><Link to={`/user/${x.idUser}`} style={{color: '#777'}}>{x.user}</Link> {x.date}</small>
         </p>
       )
@@ -66,7 +67,7 @@ class Index extends Component {
       const icon = x.type === 'image'? <FontAwesomeIcon icon="camera" /> : <FontAwesomeIcon icon="video" />;
       return (
         <p key={i}>
-          <Link to={`/problem/${x.idProblem}`}>{x.problem}</Link> <small>{x.grade}</small> {icon}
+          <Link to={`/problem/${x.idProblem}`}>{x.problem}</Link> <small>{x.grade}</small> {icon}<LockSymbol visibility={x.visibility}/>
         </p>
       )
     });
@@ -74,7 +75,7 @@ class Index extends Component {
     const latestComments = this.state.data.comments.map((x, i) => {
       return (
         <p key={i}>
-          <small>{x.date}</small> <Link to={`/problem/${x.idProblem}`}>{x.problem}</Link>
+          <small>{x.date}</small> <Link to={`/problem/${x.idProblem}`}>{x.problem}</Link> <LockSymbol visibility={x.visibility}/>
         </p>
       )
     });

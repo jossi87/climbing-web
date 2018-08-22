@@ -3,6 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Map from './common/map/map';
 import Gallery from './common/gallery/gallery';
+import { LockSymbol } from './common/lock-symbol/lock-symbol';
 import { Tabs, Tab, Well, OverlayTrigger, Tooltip, Popover, ButtonGroup, Button, Table, Breadcrumb } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -79,7 +80,7 @@ class TableRow extends Component {
     return (
       <tr className={isTickedClassName}>
         <td>{this.props.problem.nr}</td>
-        <td><Link to={`/problem/${this.props.problem.id}`}>{this.props.problem.name}</Link> {this.props.problem.visibility===1 && <FontAwesomeIcon icon="lock" />}{this.props.problem.visibility===2 && <FontAwesomeIcon icon="user-secret" />}</td>
+        <td><Link to={`/problem/${this.props.problem.id}`}>{this.props.problem.name}</Link> <LockSymbol visibility={this.props.problem.visibility}/></td>
         <td>{comment}</td>
         {type}
         <td>{this.props.problem.grade}</td>
@@ -227,7 +228,7 @@ class Sector extends Component {
             </div>:
             null
           }
-          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${data.areaId}`}>{data.areaName}</Link> {data.areaVisibility===1 && <FontAwesomeIcon icon="lock" />}{data.areaVisibility===2 && <FontAwesomeIcon icon="user-secret" />} / <font color='#777'>{data.name}</font> {data.visibility===1 && <FontAwesomeIcon icon="lock" />}{data.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
+          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${data.areaId}`}>{data.areaName}</Link> <LockSymbol visibility={data.areaVisibility}/> / <font color='#777'>{data.name}</font> <LockSymbol visibility={data.visibility}/>
         </Breadcrumb>
         {topoContent}
         {data.comment? <Well>{data.comment}</Well> : null}

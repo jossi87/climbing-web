@@ -6,6 +6,7 @@ import { Tabs, Tab, ButtonToolbar, ButtonGroup, Button, OverlayTrigger, Tooltip,
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Chart from './common/chart/chart';
 import TickModal from './common/tick-modal/tick-modal';
+import { LockSymbol } from './common/lock-symbol/lock-symbol';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class User extends Component {
@@ -47,7 +48,7 @@ class User extends Component {
   }
 
   formatName(cell, row) {
-    return <span><Link to={`/problem/${row.idProblem}`}>{row.name}</Link> {row.visibility===1 && <FontAwesomeIcon icon="lock" />}{row.visibility===2 && <FontAwesomeIcon icon="user-secret" />}</span>;
+    return <span><Link to={`/problem/${row.idProblem}`}>{row.name}</Link> <LockSymbol visibility={row.visibility}/></span>;
   }
 
   formatComment(cell, row) {

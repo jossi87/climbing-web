@@ -3,8 +3,8 @@ import Async from 'react-select/lib/Async';
 import { components } from 'react-select';
 import { Redirect } from 'react-router';
 import Avatar from 'react-avatar';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { postSearch } from './../../../api';
+import { LockSymbol } from '../lock-symbol/lock-symbol';
 
 const CustomOption = (props) => {
   var bg = "#4caf50";
@@ -17,7 +17,7 @@ const CustomOption = (props) => {
     <components.Option {...props}>
       <div>
         <Avatar value={props.value.avatar? props.value.avatar : "7A"} size={25} color={bg} round={true} textSizeRatio={2.25} style={{marginRight: '10px'}} />
-        {props.label} {props.value.visibility===1 && <FontAwesomeIcon icon="lock" />}{props.value.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
+        {props.label} <LockSymbol visibility={props.value.visibility}/>
       </div>
     </components.Option>
   );

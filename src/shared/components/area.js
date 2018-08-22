@@ -5,6 +5,7 @@ import { Tabs, Tab, Well, OverlayTrigger, Tooltip, ButtonGroup, Button, Table, B
 import { LinkContainer } from 'react-router-bootstrap';
 import Map from './common/map/map';
 import Gallery from './common/gallery/gallery';
+import { LockSymbol } from './common/lock-symbol/lock-symbol';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class TableRow extends Component {
@@ -20,7 +21,7 @@ class TableRow extends Component {
     }
     return (
       <tr>
-        <td><Link to={`/sector/${this.props.sector.id}`}>{this.props.sector.name}</Link> {this.props.sector.visibility===1 && <FontAwesomeIcon icon="lock" />}{this.props.sector.visibility===2 && <FontAwesomeIcon icon="user-secret" />}</td>
+        <td><Link to={`/sector/${this.props.sector.id}`}>{this.props.sector.name}</Link> <LockSymbol visibility={this.props.sector.visibility}/></td>
         <td>{comment}</td>
         <td>{this.props.sector.numProblems}</td>
       </tr>
@@ -145,7 +146,7 @@ class Area extends Component {
             </div>:
             null
           }
-          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <font color='#777'>{this.state.data.name}</font> {this.state.data.visibility===1 && <FontAwesomeIcon icon="lock" />}{this.state.data.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
+          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <font color='#777'>{this.state.data.name}</font> <LockSymbol visibility={this.state.data.visibility}/>
         </Breadcrumb>
         {topoContent}
         {this.state.data.comment? <Well><div dangerouslySetInnerHTML={{ __html: this.state.data.comment }} /></Well> : null}

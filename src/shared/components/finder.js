@@ -3,6 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { LinkContainer } from 'react-router-bootstrap';
 import Map from './common/map/map';
+import { LockSymbol } from './common/lock-symbol/lock-symbol';
 import { Tabs, Tab, Panel, ButtonToolbar, ButtonGroup, Button, OverlayTrigger, Tooltip, Popover, Breadcrumb } from 'react-bootstrap';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -71,15 +72,15 @@ class Finder extends Component {
   }
 
   formatAreaName(cell, row) {
-    return <span><Link to={`/area/${row.areaId}`}>{row.areaName}</Link> {row.areaVisibility===1 && <FontAwesomeIcon icon="lock" />}{row.areaVisibility===2 && <FontAwesomeIcon icon="user-secret" />}</span>;
+    return <span><Link to={`/area/${row.areaId}`}>{row.areaName}</Link> <LockSymbol visibility={row.areaVisibility}/></span>;
   }
 
   formatSectorName(cell, row) {
-    return <span><Link to={`/sector/${row.sectorId}`}>{row.sectorName}</Link> {row.sectorVisibility===1 && <FontAwesomeIcon icon="lock" />}{row.sectorVisibility===2 && <FontAwesomeIcon icon="user-secret" />}</span>;
+    return <span><Link to={`/sector/${row.sectorId}`}>{row.sectorName}</Link> <LockSymbol visibility={row.sectorVisibility}/></span>;
   }
 
   formatName(cell, row) {
-    return <span><Link to={`/problem/${row.id}`}>{row.name}</Link> {row.visibility===1 && <FontAwesomeIcon icon="lock" />}{row.visibility===2 && <FontAwesomeIcon icon="user-secret" />}</span>
+    return <span><Link to={`/problem/${row.id}`}>{row.name}</Link> <LockSymbol visibility={row.visibility}/></span>
   }
 
   formatType(cell, row) {
