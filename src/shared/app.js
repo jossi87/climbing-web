@@ -68,24 +68,22 @@ class App extends Component {
 
   render() {
     return (
-      <div>
-        <Route path="/" render={(props) => (
-            <Navigation auth={this.auth} {...props}/>
-        )} />
-        <div className="container">
-          <Route path="/" component={Analytics}/>
-          <Switch>
-            {routes.map(({ path, exact, component: Component, ...rest }) => (
-              <Route key={path} path={path} exact={exact} render={(props) => (
+      <Switch>
+        {routes.map(({ path, exact, component: Component, ...rest }) => (
+          <Route key={path} path={path} exact={exact} render={(props) => (
+            <div>
+              <Analytics {...props}/>
+              <Navigation auth={this.auth} {...props}/>
+              <div className="container">
                 <Component auth={this.auth} {...props} {...rest} />
-              )} />
-            ))}
-          </Switch>
-          <footer style={{paddingTop: '10px', marginTop: '40px', color: '#777', textAlign: 'center', borderTop: '1px solid #e5e5e5'}}>
-            Buldreinfo &amp; Bratte Linjer &copy; 2006-2018
-          </footer>
-        </div>
-      </div>
+              </div>
+              <footer style={{paddingTop: '10px', marginTop: '40px', color: '#777', textAlign: 'center', borderTop: '1px solid #e5e5e5'}}>
+                Buldreinfo &amp; Bratte Linjer &copy; 2006-2018
+              </footer>
+            </div>
+          )} />
+        ))}
+      </Switch>
     );
   }
 }

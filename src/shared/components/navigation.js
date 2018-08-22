@@ -1,29 +1,8 @@
 import React, {Component} from 'react';
 import { Navbar, Nav, NavItem, FormGroup, FormControl, MenuItem, NavDropdown } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import Async from 'react-select/lib/Async';
-import { components } from 'react-select';
-import { Redirect } from 'react-router';
-import Avatar from 'react-avatar';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { getMeta, postSearch } from './../api';
-
-const CustomOption = (props) => {
-  var bg = "#4caf50";
-  if (props.value.avatar==='A') {
-    bg = "#ff5722";
-  } else if (props.value.avatar==='S') {
-    bg = "#673ab7";
-  }
-  return (
-    <components.Option {...props}>
-      <div>
-        <Avatar value={props.value.avatar? props.value.avatar : "7A"} size={25} color={bg} round={true} textSizeRatio={2.25} style={{marginRight: '10px'}} />
-        {props.label} {props.value.visibility===1 && <FontAwesomeIcon icon="lock" />}{props.value.visibility===2 && <FontAwesomeIcon icon="user-secret" />}
-      </div>
-    </components.Option>
-  );
-};
+import Search from './common/search/search';
+import { getMeta } from './../api';
 
 class Navigation extends Component {
   constructor(props) {
@@ -40,41 +19,13 @@ class Navigation extends Component {
 
   componentDidMount() {
     if (!this.state.metadata) {
-      this.refresh();
+      getMeta(this.props.auth.getAccessToken()).then((data) => this.setState(() => ({metadata: data.metadata})));
     }
-  }
-
-  refresh() {
-    getMeta(this.props.auth.getAccessToken()).then((data) => this.setState(() => ({metadata: data.metadata})));
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (!this.state.metadata || (this.state.metadata.isAuthenticated!==this.props.auth.isAuthenticated())) {
-      this.refresh();
-    }
-    this.setState({pushUrl: null});
   }
 
   hoverImage(hover) {
     const logo = hover? '/png/buldreinfo_logo_white.png' : '/png/buldreinfo_logo_gray.png';
     this.setState({logo: logo});
-  }
-
-  search(input, callback) {
-    if (input) {
-      postSearch(this.props.auth.getAccessToken(), input).then((res) => {
-        var options = res.map(s => {return {value: s, label: s.value}});
-        callback(options);
-      });
-    } else {
-      callback(null);
-    }
-  }
-
-  onChange(props) {
-    if (props && props.value && props.value.url) {
-      this.setState({pushUrl: props.value.url});
-    }
   }
 
   login() {
@@ -83,9 +34,6 @@ class Navigation extends Component {
   }
 
   render() {
-    if (this.state.pushUrl) {
-      return (<Redirect to={this.state.pushUrl} push />);
-    }
     const { isAuthenticated } = this.props.auth;
     return (
       <Navbar inverse>
@@ -109,18 +57,7 @@ class Navigation extends Component {
           </Nav>
           <Navbar.Form pullLeft>
             <FormGroup style={{width: '350px'}}>
-              <Async
-                instanceId="buldreinfo-navigation-search"
-                placeholder="Search"
-                loadOptions={this.search.bind(this)}
-                filterOptions={(options, filter, currentValues) => {
-                  // Do no filtering, just return all options
-                  return options;
-                }}
-                ignoreAccents={false} // Keep special characters ae, oe, aa. Don't substitute...
-                onChange={this.onChange.bind(this)}
-                components={{ Option: CustomOption }}
-              />
+              <Search auth={this.props.auth}/>
             </FormGroup>
           </Navbar.Form>
 
