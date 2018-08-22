@@ -56,8 +56,8 @@ class SvgEdit extends Component {
     }
   }
 
-  componentDidUpdate (prevProps, prevState) {
-    if (prevProps.match.params.problemIdMediaId !== this.props.match.params.problemIdMediaId) {
+  componentDidUpdate(prevProps) {
+    if (this.props.isAuthenticated !== prevProps.isAuthenticated || prevProps.match.params.problemIdMediaId !== this.props.match.params.problemIdMediaId) {
       this.refresh(this.props.match.params.problemIdMediaId);
     }
   }

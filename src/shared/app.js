@@ -67,15 +67,16 @@ class App extends Component {
   }
 
   render() {
+    const isAuthenticated = this.auth.isAuthenticated();
     return (
       <Switch>
         {routes.map(({ path, exact, component: Component, ...rest }) => (
           <Route key={path} path={path} exact={exact} render={(props) => (
             <div>
               <Analytics {...props}/>
-              <Navigation auth={this.auth} {...props}/>
+              <Navigation isAuthenticated={isAuthenticated} auth={this.auth} {...props}/>
               <div className="container">
-                <Component auth={this.auth} {...props} {...rest} />
+                <Component isAuthenticated={isAuthenticated} auth={this.auth} {...props} {...rest} />
               </div>
               <footer style={{paddingTop: '10px', marginTop: '40px', color: '#777', textAlign: 'center', borderTop: '1px solid #e5e5e5'}}>
                 Buldreinfo &amp; Bratte Linjer &copy; 2006-2018

@@ -43,10 +43,6 @@ class Finder extends Component {
     return d;
   }
 
-  refresh(grade) {
-    this.props.fetchInitialData(this.props.auth.getAccessToken(), grade).then((data) => this.setState(() => ({data})));
-  }
-
   componentDidMount() {
     if (!this.state.data) {
       this.refresh(this.props.match.params.grade);
@@ -56,10 +52,14 @@ class Finder extends Component {
     });
   }
 
-  componentDidUpdate (prevProps, prevState) {
-    if (prevProps.match.params.grade !== this.props.match.params.grade) {
+  componentDidUpdate(prevProps) {
+    if (this.props.isAuthenticated !== prevProps.isAuthenticated || prevProps.match.params.grade !== this.props.match.params.grade) {
       this.refresh(this.props.match.params.grade);
     }
+  }
+
+  refresh(grade) {
+    this.props.fetchInitialData(this.props.auth.getAccessToken(), grade).then((data) => this.setState(() => ({data})));
   }
 
   handleTabsSelection(key) {

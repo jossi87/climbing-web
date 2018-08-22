@@ -39,8 +39,8 @@ class SectorEdit extends Component {
     }
   }
 
-  componentDidUpdate (prevProps, prevState) {
-    if (prevProps.match.params.sectorId !== this.props.match.params.sectorId) {
+  componentDidUpdate(prevProps) {
+    if (this.props.isAuthenticated !== prevProps.isAuthenticated || prevProps.match.params.sectorId !== this.props.match.params.sectorId) {
       this.refresh(this.props.match.params.sectorId);
     }
   }

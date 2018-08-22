@@ -11,8 +11,8 @@ class ProblemEditMedia extends Component {
     this.refresh(this.props.match.params.problemId);
   }
 
-  componentDidUpdate (prevProps, prevState) {
-    if (prevProps.match.params.problemId !== this.props.match.params.problemId) {
+  componentDidUpdate(prevProps) {
+    if (this.props.isAuthenticated !== prevProps.isAuthenticated || prevProps.match.params.problemId !== this.props.match.params.problemId) {
       this.refresh(this.props.match.params.problemId);
     }
   }

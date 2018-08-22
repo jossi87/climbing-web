@@ -21,20 +21,20 @@ class User extends Component {
     this.state = {data, showTickModal: false};
   }
 
-  refresh(id) {
-    this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
-  }
-
   componentDidMount() {
     if (!this.state.data) {
       this.refresh(this.props.match.params.userId);
     }
   }
 
-  componentDidUpdate (prevProps, prevState) {
-    if (prevProps.match.params.userId !== this.props.match.params.userId) {
+  componentDidUpdate(prevProps) {
+    if (this.props.isAuthenticated !== prevProps.isAuthenticated || prevProps.match.params.userId !== this.props.match.params.userId) {
       this.refresh(this.props.match.params.userId);
     }
+  }
+
+  refresh(id) {
+    this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
   }
 
   closeTickModal(event) {

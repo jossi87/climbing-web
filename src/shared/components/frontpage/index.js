@@ -25,8 +25,18 @@ class Index extends Component {
 
   componentDidMount() {
     if (!this.state.data) {
-      this.props.fetchInitialData(this.props.auth.getAccessToken()).then((data) => this.setState(() => ({data})));
+      this.refresh();
     }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.isAuthenticated !== prevProps.isAuthenticated) {
+      this.refresh();
+    }
+  }
+
+  refresh() {
+    this.props.fetchInitialData(this.props.auth.getAccessToken()).then((data) => this.setState(() => ({data})));
   }
 
   render() {

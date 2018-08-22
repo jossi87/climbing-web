@@ -36,8 +36,8 @@ class AreaEdit extends Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.match.params.areaId !== this.props.match.params.areaId) {
+  componentDidUpdate(prevProps) {
+    if (this.props.isAuthenticated !== prevProps.isAuthenticated || prevProps.match.params.areaId !== this.props.match.params.areaId) {
       this.refresh(this.props.match.params.areaId);
     }
   }

@@ -19,8 +19,18 @@ class Navigation extends Component {
 
   componentDidMount() {
     if (!this.state.metadata) {
-      getMeta(this.props.auth.getAccessToken()).then((data) => this.setState(() => ({metadata: data.metadata})));
+      this.refresh();
     }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.isAuthenticated !== prevProps.isAuthenticated) {
+      this.refresh();
+    }
+  }
+
+  refresh() {
+    getMeta(this.props.auth.getAccessToken()).then((data) => this.setState(() => ({metadata: data.metadata})));
   }
 
   hoverImage(hover) {
@@ -34,7 +44,6 @@ class Navigation extends Component {
   }
 
   render() {
-    const { isAuthenticated } = this.props.auth;
     return (
       <Navbar inverse>
         <Navbar.Header>
@@ -62,7 +71,7 @@ class Navigation extends Component {
           </Navbar.Form>
 
           <Nav pullRight>
-            {isAuthenticated()?
+            {this.props.isAuthenticated?
               <NavDropdown eventKey={4} title="Logged in" id='basic-nav-dropdown'>
                 <LinkContainer to="/user"><MenuItem eventKey={4.1}>My profile</MenuItem></LinkContainer>
                 <MenuItem divider />

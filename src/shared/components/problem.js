@@ -27,20 +27,20 @@ class Problem extends Component {
     };
   }
 
-  refresh(id) {
-    this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
-  }
-
   componentDidMount() {
     if (!this.state.data) {
       this.refresh(this.props.match.params.problemId);
     }
   }
 
-  componentDidUpdate (prevProps, prevState) {
-    if (prevProps.match.params.problemId !== this.props.match.params.problemId) {
+  componentDidUpdate(prevProps) {
+    if (this.props.isAuthenticated !== prevProps.isAuthenticated || prevProps.match.params.problemId !== this.props.match.params.problemId) {
       this.refresh(this.props.match.params.problemId);
     }
+  }
+
+  refresh(id) {
+    this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
   }
 
   handleTabsSelection(key) {

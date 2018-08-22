@@ -107,20 +107,20 @@ class Sector extends Component {
     this.state = {data, tabIndex: 1};
   }
 
-  refresh(id) {
-    this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
-  }
-
   componentDidMount() {
     if (!this.state.data) {
       this.refresh(this.props.match.params.sectorId);
     }
   }
 
-  componentDidUpdate (prevProps, prevState) {
-    if (prevProps.match.params.sectorId !== this.props.match.params.sectorId) {
+  componentDidUpdate(prevProps) {
+    if (this.props.isAuthenticated !== prevProps.isAuthenticated || prevProps.match.params.sectorId !== this.props.match.params.sectorId) {
       this.refresh(this.props.match.params.sectorId);
     }
+  }
+
+  refresh(id) {
+    this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
   }
 
   handleTabsSelection(key) {

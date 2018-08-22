@@ -41,20 +41,20 @@ class Area extends Component {
     this.state = {data, tabIndex: 1};
   }
 
-  refresh(id) {
-    this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
-  }
-
   componentDidMount() {
     if (!this.state.data) {
       this.refresh(this.props.match.params.areaId);
     }
   }
 
-  componentDidUpdate (prevProps, prevState) {
-    if (prevProps.match.params.areaId !== this.props.match.params.areaId) {
+  componentDidUpdate(prevProps) {
+    if (this.props.isAuthenticated !== prevProps.isAuthenticated || prevProps.match.params.areaId !== this.props.match.params.areaId) {
       this.refresh(this.props.match.params.areaId);
     }
+  }
+
+  refresh(id) {
+    this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
   }
 
   handleTabsSelection(key) {
