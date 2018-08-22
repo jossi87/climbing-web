@@ -5,7 +5,7 @@ import { parsePath } from './utils/svg.js';
 function getUrl(urlSuffix) {
   var uri = __isBrowser__? window.origin : global.myOrigin;
   if (uri === 'http://localhost:3000') {
-    uri = 'https://brattelinjer.no';
+    uri = 'https://buldreinfo.com';
   }
   return encodeURI(`${uri}/com.buldreinfo.jersey.jaxb/v2${urlSuffix}`);
 }
