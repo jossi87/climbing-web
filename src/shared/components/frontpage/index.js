@@ -67,7 +67,7 @@ class Index extends Component {
       const icon = x.type === 'image'? <FontAwesomeIcon icon="camera" /> : <FontAwesomeIcon icon="video" />;
       return (
         <p key={i}>
-          <Link to={`/problem/${x.idProblem}`}>{x.problem}</Link> <small>{x.grade}</small> {icon}<LockSymbol visibility={x.visibility}/>
+          {icon} <Link to={`/problem/${x.idProblem}`}>{x.problem}</Link> <small>{x.grade}</small> <LockSymbol visibility={x.visibility}/>
         </p>
       )
     });
