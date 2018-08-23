@@ -43,8 +43,8 @@ class Navigation extends Component {
     this.props.auth.login();
   }
 
-  const logoTitle = (this.state && this.state.metadata)? this.state.metadata.title : "Logo";
   render() {
+    const logoTitle = (this.state && this.state.metadata)? this.state.metadata.title : "Logo";
     return (
       <Navbar inverse>
         <Navbar.Header>
