@@ -44,13 +44,12 @@ class Navigation extends Component {
   }
 
   render() {
-    const logoTitle = (this.state && this.state.metadata)? this.state.metadata.title : "Logo";
     return (
       <Navbar inverse>
         <Navbar.Header>
           <Navbar.Brand>
             <LinkContainer to="/">
-              <a href="/" onMouseOver={this.hoverImage.bind(this, true)} onMouseOut={this.hoverImage.bind(this, false)}><img src={this.state.logo} alt={logoTitle}/></a>
+              <a href="/" onMouseOver={this.hoverImage.bind(this, true)} onMouseOut={this.hoverImage.bind(this, false)}><img src={this.state.logo} alt="Logo"/></a>
             </LinkContainer>
           </Navbar.Brand>
           <Navbar.Toggle />
