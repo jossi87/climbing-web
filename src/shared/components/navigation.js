@@ -43,13 +43,14 @@ class Navigation extends Component {
     this.props.auth.login();
   }
 
+  const logoTitle = (this.state && this.state.metadata)? this.state.metadata.title : "Logo";
   render() {
     return (
       <Navbar inverse>
         <Navbar.Header>
           <Navbar.Brand>
             <LinkContainer to="/">
-              <a href="/" onMouseOver={this.hoverImage.bind(this, true)} onMouseOut={this.hoverImage.bind(this, false)}><img src={this.state.logo}/></a>
+              <a href="/" onMouseOver={this.hoverImage.bind(this, true)} onMouseOut={this.hoverImage.bind(this, false)}><img src={this.state.logo} alt={logoTitle}/></a>
             </LinkContainer>
           </Navbar.Brand>
           <Navbar.Toggle />
