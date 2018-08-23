@@ -13,10 +13,16 @@ const CustomOption = (props) => {
   } else if (props.value.avatar==='S') {
     bg = "#673ab7";
   }
+  let avatar;
+  if (props.value.avatar==='U') {
+    avatar = <Avatar name={props.label} size={25} round={true} textSizeRatio={2.25} style={{marginRight: '10px'}} />
+  } else {
+    avatar = <Avatar value={props.value.avatar} size={25} color={bg} round={true} textSizeRatio={2.25} style={{marginRight: '10px'}} />
+  }
   return (
     <components.Option {...props}>
       <div>
-        <Avatar value={props.value.avatar? props.value.avatar : "7A"} size={25} color={bg} round={true} textSizeRatio={2.25} style={{marginRight: '10px'}} />
+        {avatar}
         {props.label} <LockSymbol visibility={props.value.visibility}/>
       </div>
     </components.Option>
