@@ -33,7 +33,7 @@ export default class ImageBox extends Component {
           letterSpacing: '1px',
         }}>{this.props.title}</div>
         <h4><Link to={`/problem/${this.props.data.idProblem}`}>{this.props.data.problem}</Link> {this.props.data.grade}</h4>
-        <img style={{maxWidth: '100%', maxHeight: '40vh'}} src={util.getImageUrl(this.props.data.idMedia)} alt={this.props.data.problem}/><br/>
+        <img style={{maxWidth: '100%', maxHeight: '40vh'}} src={getImageUrl(this.props.data.idMedia)} alt={this.props.data.problem}/><br/>
         <i>Photographer: <Link to={`/user/${this.props.data.idCreator}`}>{this.props.data.creator}</Link></i>
       </div>
     );

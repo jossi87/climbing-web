@@ -9,8 +9,12 @@ var browserConfig = {
     filename: 'bundle.js',
     publicPath: '/'
   },
+  resolve: {
+    extensions: [".ts", ".tsx", ".js", ".json"]
+  },
   module: {
     rules: [
+      { test: /\.tsx?$/, use: 'ts-loader' },
       { test: /\.(js|jsx)$/, exclude: /node_modules/, use: ['babel-loader'] },
     ]
   },
@@ -30,8 +34,12 @@ var serverConfig = {
     filename: 'server.js',
     publicPath: '/'
   },
+  resolve: {
+    extensions: [".ts", ".tsx", ".js", ".json"]
+  },
   module: {
     rules: [
+      { test: /\.tsx?$/, loader: "awesome-typescript-loader" },
       { test: /\.(js|jsx)$/, exclude: /node_modules/, use: ['babel-loader'] },
     ]
   },

@@ -8,7 +8,6 @@ import Navigation from './components/navigation';
 import ReactGA from 'react-ga';
 import Auth from './utils/auth';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCamera, faCheck, faComment, faEdit, faHashtag, faImage, faLock, faMapMarker, faPlane, faPlusSquare, faSpinner, faStar, faStarHalf, faTrash, faUserSecret, faVideo } from '@fortawesome/free-solid-svg-icons';
 library.add(faCamera);
 library.add(faCheck);

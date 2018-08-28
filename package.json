@@ -21,6 +21,12 @@
     ]
   },
   "devDependencies": {
+    "@types/googlemaps": "^3.30.12",
+    "@types/markerclustererplus": "^2.1.33",
+    "@types/react": "^16.4.12",
+    "@types/react-dom": "^16.0.7",
+    "@types/react-router": "^4.0.30",
+    "@types/react-router-dom": "^4.3.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.5",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
@@ -28,6 +34,9 @@
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
     "nodemon": "^1.18.3",
+    "source-map-loader": "^0.2.4",
+    "ts-loader": "^4.5.0",
+    "typescript": "^3.0.1",
     "webpack": "^4.16.5",
     "webpack-cli": "^3.1.0",
     "webpack-node-externals": "^1.7.2"
