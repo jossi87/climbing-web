@@ -1,9 +1,9 @@
 import express from "express";
 import cors from "cors";
+import compression from 'compression';
 import React from "react";
 import { renderToString } from "react-dom/server";
 import { StaticRouter, matchPath } from "react-router-dom";
-import compression from "compression";
 import serialize from "serialize-javascript";
 import { CookiesProvider } from 'react-cookie';
 import MetaTagsServer from 'react-meta-tags/server';
@@ -33,7 +33,7 @@ app.get("*", (req, res, next) => {
     const context = { data }
     const markup = renderToString(
       <CookiesProvider cookies={req.universalCookies}>
-        <MetaTagsContext extract = {metaTagsInstance.extract}>
+        <MetaTagsContext extract={metaTagsInstance.extract}>
           <StaticRouter location={req.url} context={context}>
             <App />
           </StaticRouter>
