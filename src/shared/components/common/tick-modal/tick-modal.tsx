@@ -4,7 +4,7 @@ import Calendar from 'react-input-calendar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { convertFromDateToString, postTicks } from './../../../api';
 
-class TickModal extends Component {
+class TickModal extends Component<any, any> {
   constructor(props) {
     super(props);
   }
@@ -78,7 +78,7 @@ class TickModal extends Component {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate()-1);
 
-    var stars = "No stars";
+    var stars: any = "No stars";
     if (this.state) {
       if (this.state.stars===1) {
         stars = <span><FontAwesomeIcon icon="star" /> Nice</span>
@@ -120,7 +120,7 @@ class TickModal extends Component {
           </FormGroup>
           <FormGroup>
             <ControlLabel>Comment</ControlLabel>
-            <FormControl componentClass="textarea" placeholder="textarea" style={{height: '100px'}} value={this.state && this.state.comment} onChange={this.onCommentChanged.bind(this)} placeholder='Comment' />
+            <FormControl componentClass="textarea" placeholder="textarea" style={{height: '100px'}} value={this.state && this.state.comment} onChange={this.onCommentChanged.bind(this)} />
           </FormGroup>
         </Modal.Body>
         <Modal.Footer>

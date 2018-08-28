@@ -3,7 +3,7 @@ import Dropzone from 'react-dropzone';
 import { Grid, Row, Col, Thumbnail, MenuItem, Button, FormControl, FormGroup, ControlLabel } from 'react-bootstrap';
 import { getUserSearch } from './../../../api';
 
-class Text extends Component {
+class Text extends Component<any, any> {
   constructor(props) {
     super(props);
     this.state = {searchResults: [], value: ''};
@@ -56,7 +56,7 @@ class Text extends Component {
   }
 }
 
-class ImageUpload extends Component {
+class ImageUpload extends Component<any, any> {
   constructor(props) {
     super(props);
     this.state = {media: []};

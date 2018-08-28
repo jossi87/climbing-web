@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 const style = {padding: 0, textAlign: 'left'};
 const styleNw = {padding: 0, textAlign: 'left', whiteSpace: 'nowrap'};
 
-class Index extends Component {
+class Index extends Component<any, any> {
   constructor(props) {
     super(props);
     let data;

@@ -9,7 +9,10 @@ import objectFitImages from 'object-fit-images'; // objectFit does not work on I
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getImageUrl, deleteMedia } from '../../../api';
 
-class Gallery extends Component {
+class Gallery extends Component<any, any> {
+  imageGallery: any;
+  player: any;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -109,6 +112,7 @@ class Gallery extends Component {
   }
 
   renderVideo(item) {
+    const seekTo : number = parseFloat(item.seekTo)/parseFloat(this.state.duration);
     return (
       <div className='image-gallery-image'>
         {
@@ -122,7 +126,7 @@ class Gallery extends Component {
                 height='100%'
                 url={item.embedUrl}
                 onDuration={duration => this.setState({ duration })}
-                onStart={() => this.player.seekTo(parseFloat(item.seekTo/this.state.duration))}
+                onStart={() => this.player.seekTo(seekTo)}
                 controls={true}
                 playing={true} />
             </span>
@@ -186,7 +190,7 @@ class Gallery extends Component {
         <div className='image-gallery-image'>
           <canvas className="buldreinfo-svg-canvas-ie-hack" width={m.width} height={m.height}></canvas>
           <svg className="buldreinfo-svg" viewBox={"0 0 " + m.width + " " + m.height} preserveAspectRatio="xMidYMid meet">
-            <image xlinkHref={getImageUrl(m.id)} width="100%" height="100%"/>
+            <image xlinkHref={getImageUrl(m.id, null)} width="100%" height="100%"/>
             {this.generateShapes(m.svgs, m.svgProblemId, m.width, m.height)}
           </svg>
         </div>
@@ -194,7 +198,7 @@ class Gallery extends Component {
     }
     return (
       <div className='image-gallery-image'>
-        <img src={getImageUrl(m.id)} className="buldreinfo-scale-img" alt={this.props.alt}/>
+        <img src={getImageUrl(m.id, null)} className="buldreinfo-scale-img" alt={this.props.alt}/>
       </div>
     );
   }
@@ -207,8 +211,8 @@ class Gallery extends Component {
     const caruselItems = this.props.media.map((m, i) => {
       if (m.idType==1) {
         return {
-          original: getImageUrl(m.id),
-          thumbnail: getImageUrl(m.id),
+          original: getImageUrl(m.id, null),
+          thumbnail: getImageUrl(m.id, null),
           originalClass: 'featured-slide',
           thumbnailClass: 'featured-thumb',
           originalAlt: 'original-alt',
@@ -218,8 +222,8 @@ class Gallery extends Component {
       }
       else {
         return {
-          original: getImageUrl(m.id),
-          thumbnail: getImageUrl(m.id),
+          original: getImageUrl(m.id, null),
+          thumbnail: getImageUrl(m.id, null),
           originalClass: 'featured-slide',
           thumbnailClass: 'featured-thumb',
           originalAlt: 'original-alt',
@@ -231,13 +235,13 @@ class Gallery extends Component {
       }
     });
 
-    var button = "";
+    var button = null;
     const m = this.props.media[this.state.mediaIndex];
     if (!this.state.isFullscreen && m.idType==1 && this.props.isAdmin) {
       if (m.svgProblemId>0) {
-        button = <span style={{position: 'absolute', zIndex: '4', background: 'rgba(0, 0, 0, 0.4)', padding: '8px 20px'}}><Link to={`/problem/svg-edit/${m.svgProblemId}-${m.id}`} onMouseEnter={this.toggleHoverEdit.bind(this)} onMouseLeave={this.toggleHoverEdit.bind(this)}><FontAwesomeIcon icon="edit" style={this.state.hoverEdit? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}}/></Link></span>;
+        button = <span style={{position: 'absolute', zIndex: 4, background: 'rgba(0, 0, 0, 0.4)', padding: '8px 20px'}}><Link to={`/problem/svg-edit/${m.svgProblemId}-${m.id}`} onMouseEnter={this.toggleHoverEdit.bind(this)} onMouseLeave={this.toggleHoverEdit.bind(this)}><FontAwesomeIcon icon="edit" style={this.state.hoverEdit? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}}/></Link></span>;
       } else if (!m.svgs) {
-        button = <span style={{position: 'absolute', zIndex: '4', background: 'rgba(0, 0, 0, 0.4)', padding: '8px 20px'}}><a href="#" onMouseEnter={this.toggleHoverTrash.bind(this)} onMouseLeave={this.toggleHoverTrash.bind(this)}><FontAwesomeIcon icon="trash" style={this.state.hoverTrash? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}} onClick={this.onDeleteImage.bind(this)}/></a></span>;
+        button = <span style={{position: 'absolute', zIndex: 4, background: 'rgba(0, 0, 0, 0.4)', padding: '8px 20px'}}><a href="#" onMouseEnter={this.toggleHoverTrash.bind(this)} onMouseLeave={this.toggleHoverTrash.bind(this)} onClick={this.onDeleteImage.bind(this)}><FontAwesomeIcon icon="trash" style={this.state.hoverTrash? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}}/></a></span>;
       }
     }
 

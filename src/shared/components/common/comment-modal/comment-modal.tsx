@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { Modal, Button, FormGroup, ControlLabel, FormControl, ButtonGroup } from 'react-bootstrap';
 import { postComment } from './../../../api';
 
-class CommentModal extends Component {
+class CommentModal extends Component<any, any> {
   refresh(props) {
     this.setState({
       idProblem: props.idProblem,

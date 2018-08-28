@@ -1,28 +1,26 @@
-import React from 'react';
-import createClass from 'create-react-class';
+import React, {Component} from 'react';
 import CreatableSelect from 'react-select/lib/Creatable';
-import PropTypes from 'prop-types';
 import { getUserSearch } from './../../../api';
 
-var UserSelector = createClass({
-	displayName: 'UserSelector',
-	propTypes: {
-		label: PropTypes.string,
-	},
-	getInitialState() {
+class UserSelector extends Component<any, any> {
+  constructor(props) {
+		super(props);
+		this.state = {multiValue: props.users, options: []};
+	}
+	
+	componentDidMount() {
 		getUserSearch(this.props.auth.getAccessToken(), "").then((res) => this.setState({options: res.map(u => {return {value: u.id, label: u.name}})}));
-    return {
-      multiValue: this.props.users,
-      options: []
-    };
-	},
+	}
+
 	handleOnChange(value) {
     this.props.onUsersUpdated(value);
 		this.setState({multiValue: value});
-	},
+	}
+
 	isValidNewOption(inputValue) {
-		return this.state.options.filter(u => inputValue.toLowerCase() === u.label.toLowerCase()).length == 0;
-	},
+		return this.state.options.filter(u => u.label && inputValue.toLowerCase() === u.label.toLowerCase()).length == 0;
+	}
+
 	render() {
 		return (
       <div style={{position: 'relative', width: '100%'}}>
@@ -30,14 +28,14 @@ var UserSelector = createClass({
   				<CreatableSelect
   					isMulti
   					options={this.state.options}
-  					onChange={this.handleOnChange}
-						isValidNewOption={this.isValidNewOption}
+  					onChange={this.handleOnChange.bind(this)}
+						isValidNewOption={this.isValidNewOption.bind(this)}
   					value={this.state.multiValue}
   				/>
 				</div>
 			</div>
 		);
 	}
-});
+}
 
-module.exports = UserSelector;
+export default UserSelector;

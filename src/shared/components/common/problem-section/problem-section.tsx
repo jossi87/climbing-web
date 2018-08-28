@@ -1,19 +1,12 @@
-import React from 'react';
-import createClass from 'create-react-class';
-import PropTypes from 'prop-types';
+import React, {Component} from 'react';
 import { Form, FormGroup, FormControl, DropdownButton, MenuItem, Well } from 'react-bootstrap';
 
-var ProblemSection = createClass({
-	displayName: 'ProblemSection',
-	propTypes: {
-		label: PropTypes.string
-	},
-	getInitialState() {
-    return {
-      sections: this.props.sections,
-      grades: this.props.grades
-    };
-	},
+class ProblemSection extends Component<any, any> {
+  constructor(props) {
+    super(props);
+    this.state = {sections: props.sections, grades: props.grades};
+  }
+  
   onNumberOfSectionsChange(num) {
     var sections = null;
     if (num > 1) {
@@ -27,28 +20,32 @@ var ProblemSection = createClass({
     }
     this.props.onSectionsUpdated(sections);
     this.setState({sections});
-  },
+  }
+
   onNrChanged(id, e) {
     const sections = this.state.sections;
     const section = sections.find(s => s.id === id);
     section.nr = e.target.value;
     this.props.onSectionsUpdated(sections);
     this.setState({sections});
-  },
+  }
+
   onGradeChanged(id, grade) {
     const sections = this.state.sections;
     const section = sections.find(s => s.id === id);
     section.grade = grade;
     this.props.onSectionsUpdated(sections);
     this.setState({sections});
-  },
+  }
+
   onDescriptionChanged(id, e) {
     const sections = this.state.sections;
     const section = sections.find(s => s.id === id);
     section.description = e.target.value;
     this.props.onSectionsUpdated(sections);
     this.setState({sections});
-  },
+  }
+
 	render() {
     const sections = this.state.sections && this.state.sections.length > 1 && this.state.sections.map((s, i) => {
       return (
@@ -98,6 +95,6 @@ var ProblemSection = createClass({
       </Well>
 		);
 	}
-});
+}
 
-module.exports = ProblemSection;
+export default ProblemSection;

@@ -26,8 +26,6 @@ library.add(faTrash);
 library.add(faUserSecret);
 library.add(faVideo);
 
-var auth;
-
 if (__isBrowser__) {
   ReactGA.initialize('UA-76534258-1');
 }
@@ -41,6 +39,7 @@ function Analytics(props) {
 };
 
 class App extends Component {
+  auth;
   static propTypes = {
     cookies: instanceOf(Cookies).isRequired
   };

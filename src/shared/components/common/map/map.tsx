@@ -3,7 +3,7 @@ import { Redirect } from 'react-router';
 import { withScriptjs, withGoogleMap, GoogleMap, Marker, Polygon } from "react-google-maps";
 import { default as MarkerClusterer } from 'react-google-maps/lib/components/addons/MarkerClusterer';
 
-export default class Map extends Component {
+export default class Map extends Component<any, any> {
   constructor(props) {
     super(props);
   }
@@ -65,7 +65,7 @@ export default class Map extends Component {
             <Polygon
               key={i}
               paths={p.triangleCoords}
-              options={{strokeColor: '#FF3300', strokeOpacity: '0.5', strokeWeight: '2', fillColor: '#FF3300', fillOpacity: '0.15'}}
+              options={{strokeColor: '#FF3300', strokeOpacity: 0.5, strokeWeight: 2, fillColor: '#FF3300', fillOpacity: 0.15}}
               onClick={this.handleOnClick.bind(this, p.url)}/>
           );
         });

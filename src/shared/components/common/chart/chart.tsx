@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { Table } from 'react-bootstrap';
 
-export default class Chart extends Component {
+export default class Chart extends Component<any, any> {
   constructor(props) {
     super(props);
   }
@@ -26,13 +26,12 @@ export default class Chart extends Component {
     const rows = data.map((d, i) => {
       const faWidth = (d.fa/maxValue*100) + '%';
       const tickWidth = (d.tick/maxValue*100) + '%';
-      const style = {padding: 0, textAlign: 'center'};
       return (
         <tr key={i}>
-          <td style={style}>{d.grade}</td>
-          <td style={style}>{d.fa}</td>
-          <td style={style}>{d.tick}</td>
-          <td style={style}><strong>{d.fa+d.tick}</strong></td>
+          <td style={{padding: 0, textAlign: 'center'}}>{d.grade}</td>
+          <td style={{padding: 0, textAlign: 'center'}}>{d.fa}</td>
+          <td style={{padding: 0, textAlign: 'center'}}>{d.tick}</td>
+          <td style={{padding: 0, textAlign: 'center'}}><strong>{d.fa+d.tick}</strong></td>
           <td style={{width: '100%', verticalAlign: 'middle'}}>
             <div style={{width: faWidth, height: '10px', backgroundColor: '#3182bd', float: 'left'}}></div>
             <div style={{width: tickWidth, height: '10px', backgroundColor: '#6baed6', marginLeft: faWidth}}></div>

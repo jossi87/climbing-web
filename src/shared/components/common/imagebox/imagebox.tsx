@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { Link } from 'react-router-dom';
 import { getImageUrl } from '../../../api.js';
 
-export default class ImageBox extends Component {
+export default class ImageBox extends Component<any, any> {
   constructor(props) {
     super(props);
   }
@@ -27,13 +27,12 @@ export default class ImageBox extends Component {
           top: '15px',
           left: '15px',
           fontSize: '12px',
-          fontWeight: '700',
           color: '#959595',
           textTransform: 'uppercase',
           letterSpacing: '1px',
         }}>{this.props.title}</div>
         <h4><Link to={`/problem/${this.props.data.idProblem}`}>{this.props.data.problem}</Link> {this.props.data.grade}</h4>
-        <img style={{maxWidth: '100%', maxHeight: '40vh'}} src={getImageUrl(this.props.data.idMedia)} alt={this.props.data.problem}/><br/>
+        <img style={{maxWidth: '100%', maxHeight: '40vh'}} src={getImageUrl(this.props.data.idMedia, null)} alt={this.props.data.problem}/><br/>
         <i>Photographer: <Link to={`/user/${this.props.data.idCreator}`}>{this.props.data.creator}</Link></i>
       </div>
     );

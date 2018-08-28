@@ -15,9 +15,9 @@ const CustomOption = (props) => {
   }
   let avatar;
   if (props.value.avatar==='U') {
-    avatar = <Avatar name={props.label} size={25} round={true} textSizeRatio={2.25} style={{marginRight: '10px'}} />
+    avatar = <Avatar name={props.label} size="25" round={true} textSizeRatio={2.25} style={{marginRight: '10px'}} />
   } else {
-    avatar = <Avatar value={props.value.avatar} size={25} color={bg} round={true} textSizeRatio={2.25} style={{marginRight: '10px'}} />
+    avatar = <Avatar value={props.value.avatar} size="25" color={bg} round={true} textSizeRatio={2.25} style={{marginRight: '10px'}} />
   }
   return (
     <components.Option {...props}>
@@ -29,7 +29,7 @@ const CustomOption = (props) => {
   );
 };
 
-class Search extends Component {
+class Search extends Component<any, any> {
   componentDidUpdate(prevProps) {
     if (this.state && this.state.pushUrl) {
       this.setState({pushUrl: null});
