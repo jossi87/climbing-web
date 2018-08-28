@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import compression from 'compression';
 import React from "react";
 import { renderToString } from "react-dom/server";
 import { StaticRouter, matchPath } from "react-router-dom";
@@ -14,7 +13,6 @@ import routes from '../shared/routes';
 const app = express();
 const cookiesMiddleware = require('universal-cookie-express')
 
-app.use(compression());
 app.use(cors());
 app.use(cookiesMiddleware());
 app.use(express.static("build"));
