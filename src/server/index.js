@@ -50,7 +50,6 @@ app.get("*", (req, res, next) => {
           <link rel="icon" href="/favicon.ico">
           <meta name="author" content="Jostein Øygarden">
           <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
-          <link rel="stylesheet" type="text/css" href="/css/react-input-calendar.css">
           <link rel="stylesheet" type="text/css" href="/css/image-gallery.css">
           <link rel="stylesheet" type="text/css" href="/css/buldreinfo.css">
           <script async src="/js/bundle.js" defer></script>
