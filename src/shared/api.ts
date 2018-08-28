@@ -2,7 +2,7 @@ import fetch from 'isomorphic-fetch';
 require('es6-promise').polyfill();
 import { parsePath } from './utils/svg';
 
-function getUrl(urlSuffix) {
+function getUrl(urlSuffix: string): string {
   var uri = __isBrowser__? window.origin : (global as any).myOrigin;
   if (uri === 'http://localhost:3000') {
     uri = 'https://buldreinfo.com';
@@ -10,7 +10,7 @@ function getUrl(urlSuffix) {
   return encodeURI(`${uri}/com.buldreinfo.jersey.jaxb/v2${urlSuffix}`);
 }
 
-function makeAuthenticatedRequest(accessToken, urlSuffix, opts) {
+function makeAuthenticatedRequest(accessToken: string, urlSuffix: string, opts: any) {
   opts = opts || {};
   opts.headers = opts.headers || {};
   opts.mode = 'cors';
@@ -20,27 +20,27 @@ function makeAuthenticatedRequest(accessToken, urlSuffix, opts) {
   return fetch(getUrl(urlSuffix), opts);
 }
 
-export function getImageUrl(id: number, maxHeight: number) {
+export function getImageUrl(id: number, maxHeight: number): string {
   if (maxHeight) {
     return getUrl(`/images?id=${id}&targetHeight=${maxHeight}`);
   }
   return getUrl(`/images?id=${id}`);
 }
 
-export function convertFromDateToString(date) {
+export function convertFromDateToString(date: Date): string {
   var d = date.getDate();
   var m = date.getMonth() + 1;
   var y = date.getFullYear();
   return y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
 }
 
-export function deleteMedia(accessToken, id) {
+export function deleteMedia(accessToken: string, id: number): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/media?id=${id}`, {
     method: 'DELETE'
   });
 }
 
-export function getArea(accessToken, id) {
+export function getArea(accessToken: string, id: number): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/areas?id=${id}`, null)
   .then((data) => data.json())
   .catch((error) => {
@@ -49,7 +49,7 @@ export function getArea(accessToken, id) {
   });
 }
 
-export function getAreaEdit(accessToken, id) {
+export function getAreaEdit(accessToken: string, id: number): Promise<any> {
   if (id == -1) {
     return getMeta(accessToken)
     .then((res) => {
@@ -72,7 +72,7 @@ export function getAreaEdit(accessToken, id) {
   }
 }
 
-export function getBrowse(accessToken) {
+export function getBrowse(accessToken: string): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/browse`, null)
   .then((data) => data.json())
   .catch((error) => {
@@ -81,7 +81,7 @@ export function getBrowse(accessToken) {
   });
 }
 
-export function getFinder(accessToken, grade) {
+export function getFinder(accessToken: string, grade: string): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/finder?grade=${grade}`, null)
   .then((data) => data.json())
   .catch((error) => {
@@ -90,7 +90,7 @@ export function getFinder(accessToken, grade) {
   });
 }
 
-export function getFrontpage(accessToken) {
+export function getFrontpage(accessToken: string): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/frontpage`, null)
   .then((data) => data.json())
   .catch((error) => {
@@ -99,7 +99,7 @@ export function getFrontpage(accessToken) {
   });
 }
 
-export function getMeta(accessToken) {
+export function getMeta(accessToken: string): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/meta`, null)
   .then((data) => data.json())
   .catch((error) => {
@@ -108,7 +108,7 @@ export function getMeta(accessToken) {
   });
 }
 
-export function getProblem(accessToken, id) {
+export function getProblem(accessToken: string, id: number): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/problems?id=${id}`, null)
   .then((data) => data.json())
   .then((json) => json[0])
@@ -118,8 +118,8 @@ export function getProblem(accessToken, id) {
   });
 }
 
-export function getProblemEdit(accessToken, id) {
-  if (id == -1) {
+export function getProblemEdit(accessToken: string, id: number): Promise<any> {
+  if (id === -1) {
     return getMeta(accessToken)
     .then((res) => {
       return {
@@ -178,7 +178,7 @@ export function getProblemEdit(accessToken, id) {
   }
 }
 
-export function getSector(accessToken, id) {
+export function getSector(accessToken: string, id: number): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/sectors?id=${id}`, null)
   .then((data) => data.json())
   .catch((error) => {
@@ -187,8 +187,8 @@ export function getSector(accessToken, id) {
   });
 }
 
-export function getSectorEdit(accessToken, id) {
-  if (id == -1) {
+export function getSectorEdit(accessToken: string, id: number): Promise<any> {
+  if (id === -1) {
     return getMeta(accessToken)
     .then((res) => {
       return {
@@ -219,7 +219,7 @@ export function getSectorEdit(accessToken, id) {
   }
 }
 
-export function getSvgEdit(accessToken, problemIdMediaId) {
+export function getSvgEdit(accessToken: string, problemIdMediaId: string): Promise<any> {
   const parts = problemIdMediaId.split("-");
   const problemId = parts[0];
   const mediaId = parts[1];
@@ -274,7 +274,7 @@ export function getSvgEdit(accessToken, problemIdMediaId) {
   });
 }
 
-export function getUser(accessToken, id) {
+export function getUser(accessToken: string, id: number): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/users?id=${id}`, null)
   .then((data) => data.json())
   .catch((error) => {
@@ -283,7 +283,7 @@ export function getUser(accessToken, id) {
   });
 }
 
-export function getUserSearch(accessToken, value) {
+export function getUserSearch(accessToken: string, value: string): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/users/search?value=${value}`, null)
   .then((data) => data.json())
   .catch((error) => {
@@ -292,7 +292,7 @@ export function getUserSearch(accessToken, value) {
   });
 }
 
-export function postArea(accessToken, id, visibility, name, comment, lat, lng, media) {
+export function postArea(accessToken: string, id: number, visibility: number, name: string, comment: string, lat: number, lng: number, media: any): Promise<any> {
   const formData = new FormData();
   const newMedia = media.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
   formData.append('json', JSON.stringify({id, visibility, name, comment, lat, lng, newMedia}));
@@ -306,7 +306,7 @@ export function postArea(accessToken, id, visibility, name, comment, lat, lng, m
   }).then((data) => data.json());
 }
 
-export function postComment(accessToken, idProblem, comment) {
+export function postComment(accessToken: string, idProblem: number, comment: string): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/comments`,{
     method: 'POST',
     body: JSON.stringify({idProblem, comment}),
@@ -316,7 +316,7 @@ export function postComment(accessToken, idProblem, comment) {
   });
 }
 
-export function postProblem(accessToken, sectorId, id, visibility, name, comment, originalGrade, fa, faDate, nr, t, lat, lng, sections, media) {
+export function postProblem(accessToken: string, sectorId: number, id: number, visibility: number, name: string, comment: string, originalGrade: string, fa: any, faDate: string, nr: number, t: any, lat: number, lng: number, sections: any, media: any): Promise<any> {
   const formData = new FormData();
   const newMedia = media.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
   formData.append('json', JSON.stringify({sectorId, id, visibility, name, comment, originalGrade, fa, faDate, nr, t, lat, lng, sections, newMedia}));
@@ -330,7 +330,7 @@ export function postProblem(accessToken, sectorId, id, visibility, name, comment
   }).then((data) => data.json());
 }
 
-export function postProblemMedia(accessToken, id, media) {
+export function postProblemMedia(accessToken: string, id: number, media: any): Promise<any> {
   const formData = new FormData();
   const newMedia = media.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
   formData.append('json', JSON.stringify({id, newMedia}));
@@ -344,7 +344,7 @@ export function postProblemMedia(accessToken, id, media) {
   }).then((data) => data.json());
 }
 
-export function postProblemSvg(accessToken, problemId, mediaId, del, id, path, hasAnchor) {
+export function postProblemSvg(accessToken: string, problemId: number, mediaId: number, del: boolean, id: number, path: string, hasAnchor: boolean): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/problems/svg?problemId=${problemId}&mediaId=${mediaId}`,{
     method: 'POST',
     body: JSON.stringify({delete: del, id, path, hasAnchor}),
@@ -355,7 +355,7 @@ export function postProblemSvg(accessToken, problemId, mediaId, del, id, path, h
   });
 }
 
-export function postSearch(accessToken, value) {
+export function postSearch(accessToken: string, value: string): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/search`, {
     method: 'POST',
     body: JSON.stringify({value}),
@@ -366,7 +366,7 @@ export function postSearch(accessToken, value) {
   }).then((data) => data.json());
 }
 
-export function postSector(accessToken, areaId, id, visibility, name, comment, lat, lng, polygonCoords, media) {
+export function postSector(accessToken: string, areaId: number, id: number, visibility: number, name: string, comment: string, lat: number, lng: number, polygonCoords: any, media: any): Promise<any> {
   const formData = new FormData();
   const newMedia = media.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
   formData.append('json', JSON.stringify({areaId, id, visibility, name, comment, lat, lng, polygonCoords, newMedia}));
@@ -380,7 +380,7 @@ export function postSector(accessToken, areaId, id, visibility, name, comment, l
   }).then((data) => data.json());
 }
 
-export function postTicks(accessToken, del, id, idProblem, comment, date, stars, grade) {
+export function postTicks(accessToken: string, del: boolean, id: number, idProblem: number, comment: string, date: string, stars: number, grade: string): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/ticks`,{
     method: 'POST',
     body: JSON.stringify({delete: del, id, idProblem, comment, date, stars, grade}),
