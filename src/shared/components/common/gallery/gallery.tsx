@@ -112,7 +112,6 @@ class Gallery extends Component<any, any> {
   }
 
   renderVideo(item) {
-    const seekTo : number = parseFloat(item.seekTo)/parseFloat(this.state.duration);
     return (
       <div className='image-gallery-image'>
         {
@@ -126,7 +125,7 @@ class Gallery extends Component<any, any> {
                 height='100%'
                 url={item.embedUrl}
                 onDuration={duration => this.setState({ duration })}
-                onStart={() => this.player.seekTo(seekTo)}
+                onStart={() => this.player.seekTo(parseFloat(item.seekTo)/this.state.duration.toFixed(1))}
                 controls={true}
                 playing={true} />
             </span>
