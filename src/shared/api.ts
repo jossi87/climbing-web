@@ -141,7 +141,8 @@ export function getProblemEdit(accessToken: string, id: number): Promise<any> {
           grades: res.metadata.grades,
           types: res.metadata.types,
           isAdmin: res.metadata.isAdmin,
-          isSuperAdmin: res.metadata.isSuperAdmin
+          isSuperAdmin: res.metadata.isSuperAdmin,
+          isBouldering: res.metadata.isBouldering
         }
       };
     })
