@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { OverlayTrigger, Tooltip, Button, Table, Breadcrumb } from 'react-bootstrap';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { LinkContainer } from 'react-router-bootstrap';
 import Map from './common/map/map';
 import { LockSymbol } from './common/lock-symbol/lock-symbol';
@@ -30,10 +29,6 @@ class Browse extends Component<any, any> {
     }
   }
 
-  formatName(cell, row) {
-    return <span><Link to={`/area/${row.id}`}>{row.name}</Link> <LockSymbol visibility={row.visibility}/></span>;
-  }
-
   toRad(value) {
     return value * Math.PI / 180;
   }
@@ -52,27 +47,6 @@ class Browse extends Component<any, any> {
     return d;
   }
 
-  formatDistance(cell, row) {
-    if (this.state.currLat>0 && this.state.currLng>0 && row.lat>0 && row.lng>0) {
-      return this.calcCrow(this.state.currLat, this.state.currLng, row.lat, row.lng).toFixed(1) + " km";
-    }
-    return "";
-  }
-
-  sortDistance(a, b, order) {
-    const x = this.state.currLat>0 && this.state.currLng>0 && a.lat>0 && a.lng>0? this.calcCrow(this.state.currLat, this.state.currLng, a.lat, a.lng) : 0;
-    const y = this.state.currLat>0 && this.state.currLng>0 && b.lat>0 && b.lng>0? this.calcCrow(this.state.currLat, this.state.currLng, b.lat, b.lng) : 0;
-    if (order==='asc') {
-      if (x<y) return -1;
-      else if (x>y) return 1;
-      return 0;
-    } else {
-      if (x<y) return 1;
-      else if (x>y) return -1;
-      return 0;
-    }
-  }
-
   render() {
     if (!this.state || !this.state.data) {
       return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
@@ -87,6 +61,20 @@ class Browse extends Component<any, any> {
         }
     });
     const map = markers.length>0? <Map markers={markers} defaultCenter={this.state.data.metadata.defaultCenter} defaultZoom={this.state.data.metadata.defaultZoom}/> : null;
+    const rows = this.state.data.areas.map((area, i) => {
+      var distance = null;
+      if (this.state.currLat>0 && this.state.currLng>0 && area.lat>0 && area.lng>0) {
+        distance = this.calcCrow(this.state.currLat, this.state.currLng, area.lat, area.lng).toFixed(1) + " km";
+      }
+      return (
+        <tr key={i}>
+          <td><Link to={`/area/${area.id}`}>{area.name}</Link> <LockSymbol visibility={area.visibility}/></td>
+          <td>{area.numSectors}</td>
+          <td>{area.numProblems}</td>
+          <td>{distance}</td>
+        </tr>
+      )
+    });
     return (
       <React.Fragment>
         <MetaTags>
@@ -109,17 +97,19 @@ class Browse extends Component<any, any> {
           <Link to={`/`}>Home</Link> / Browse
         </Breadcrumb>
         {map}
-        <BootstrapTable
-          data={this.state.data.areas}
-          condensed={true}
-          hover={true}
-          columnFilter={false}>
-          <TableHeaderColumn dataField="id" isKey={true} hidden={true}>id</TableHeaderColumn>
-          <TableHeaderColumn dataField="name" dataSort={true} dataFormat={this.formatName.bind(this)} width="150" filter={{type: "TextFilter", placeholder: "Filter"}}>Name</TableHeaderColumn>
-          <TableHeaderColumn dataField="numSectors" dataSort={true} dataAlign="center" width="50">#sectors</TableHeaderColumn>
-          <TableHeaderColumn dataField="numProblems" dataSort={true} dataAlign="center" width="50">#problems</TableHeaderColumn>
-          <TableHeaderColumn dataField="distance" dataSort={true} dataFormat={this.formatDistance.bind(this)} sortFunc={this.sortDistance.bind(this)} dataAlign="center" width="60"><FontAwesomeIcon icon="plane" /></TableHeaderColumn>
-        </BootstrapTable>
+        <Table striped condensed hover>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>#sectors</th>
+              <th>#problems</th>
+              <th><FontAwesomeIcon icon="plane" /></th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows}
+          </tbody>
+        </Table>
       </React.Fragment>
     );
   }
