@@ -39,7 +39,7 @@ var serverConfig = {
   },
   module: {
     rules: [
-      { test: /\.tsx?$/, loader: "awesome-typescript-loader" },
+      { test: /\.tsx?$/, loader: "ts-loader" },
       { test: /\.(js|jsx)$/, exclude: /node_modules/, use: ['babel-loader'] },
     ]
   },
