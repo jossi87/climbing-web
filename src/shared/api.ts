@@ -275,7 +275,7 @@ export function getSvgEdit(accessToken: string, problemIdMediaId: string): Promi
   });
 }
 
-export function getUser(accessToken: string, id: number): Promise<any> {
+export function getUser(accessToken: string, id: string): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/users?id=${id}`, null)
   .then((data) => data.json())
   .catch((error) => {

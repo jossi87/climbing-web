@@ -31,8 +31,8 @@ const routes =  [
   {path: '/problem/edit/media/:problemId', exact: true, component: ProblemEditMedia},
   {path: '/problem/svg-edit/:problemIdMediaId', exact: true, component: SvgEdit, fetchInitialData: (accessToken, path = '') => getSvgEdit(accessToken, path.split('/').pop())},
   {path: '/finder/:grade', exact: true, component: Finder, fetchInitialData: (accessToken, path = '') => getFinder(accessToken, path.split('/').pop())},
-  {path: '/user', exact: true, component: User, fetchInitialData: (accessToken, path = '') => getUser(accessToken, parseInt(path.split('/').pop()))},
-  {path: '/user/:userId', exact: true, component: User, fetchInitialData: (accessToken, path = '') => getUser(accessToken, parseInt(path.split('/').pop()))},
+  {path: '/user', exact: true, component: User, fetchInitialData: (accessToken, path = '') => getUser(accessToken, path.split('/').pop())},
+  {path: '/user/:userId', exact: true, component: User, fetchInitialData: (accessToken, path = '') => getUser(accessToken, path.split('/').pop())},
   {path: '/logout', exact: false, component: Logout},
   {path: '*', status: 404, component: NoMatch}
 ]
