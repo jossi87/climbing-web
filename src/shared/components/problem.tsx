@@ -159,7 +159,7 @@ class Problem extends Component<any, any> {
         }
         if (stars) {
           stars = <OverlayTrigger placement="top" overlay={
-            <Popover title="Guidelines">
+            <Popover id="Guidelines" title="Guidelines">
               <FontAwesomeIcon icon="star" /> Nice<br/>
               <FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Very nice<br/>
               <FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Fantastic!
@@ -243,10 +243,10 @@ class Problem extends Component<any, any> {
       headerButtons = (
         <div style={{float: 'right'}}>
           <ButtonGroup>
-            <OverlayTrigger placement="top" overlay={<Tooltip>Tick problem</Tooltip>}>
+            <OverlayTrigger placement="top" overlay={<Tooltip id="Tick problem">Tick problem</Tooltip>}>
               <Button bsStyle="primary" bsSize="xsmall" onClick={this.openTickModal.bind(this)}>Tick</Button>
             </OverlayTrigger>
-            <OverlayTrigger placement="top" overlay={<Tooltip>Add comment</Tooltip>}>
+            <OverlayTrigger placement="top" overlay={<Tooltip id="Add comment">Add comment</Tooltip>}>
               <Button bsStyle="primary" bsSize="xsmall" onClick={this.openCommentModal.bind(this)}><FontAwesomeIcon icon="comment" inverse={true} /></Button>
             </OverlayTrigger>
             {data.metadata.isAdmin ?

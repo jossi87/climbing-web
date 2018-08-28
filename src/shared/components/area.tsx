@@ -136,7 +136,7 @@ class Area extends Component<any, any> {
           {this.state.data.metadata.isAdmin?
             <div style={{float: 'right'}}>
               <ButtonGroup>
-                <OverlayTrigger placement="top" overlay={<Tooltip>Add sector</Tooltip>}>
+                <OverlayTrigger placement="top" overlay={<Tooltip id="Add sector">Add sector</Tooltip>}>
                   <LinkContainer to={{ pathname: `/sector/edit/-1`, query: { idArea: this.state.data.id, lat: this.state.data.lat, lng: this.state.data.lng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="plus-square" inverse={true} /></Button></LinkContainer>
                 </OverlayTrigger>
                 <OverlayTrigger placement="top" overlay={<Tooltip id={this.state.data.id}>Edit area</Tooltip>}>

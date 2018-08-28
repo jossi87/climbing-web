@@ -123,7 +123,7 @@ class Finder extends Component<any, any> {
       return "";
     }
     return <OverlayTrigger placement="top" overlay={
-          <Popover title="Guidelines">
+          <Popover id="Guidelines" title="Guidelines">
             <FontAwesomeIcon icon="star" /> Nice<br/>
             <FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Very nice<br/>
             <FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Fantastic!

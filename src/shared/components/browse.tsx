@@ -102,7 +102,7 @@ class Browse extends Component<any, any> {
         </MetaTags>
         <Breadcrumb>
           {this.state.data.metadata.isAdmin &&
-            <OverlayTrigger placement="top" overlay={<Tooltip>Add area</Tooltip>}>
+            <OverlayTrigger placement="top" overlay={<Tooltip id="Add area">Add area</Tooltip>}>
               <div style={{float: 'right'}}><LinkContainer to={`/area/edit/-1`}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="plus-square" inverse={true} /></Button></LinkContainer></div>
             </OverlayTrigger>
           }

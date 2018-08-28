@@ -54,7 +54,7 @@ class TableRow extends Component<any, any> {
     }
     if (stars) {
       stars = <OverlayTrigger placement="top" overlay={
-        <Popover title="Guidelines">
+        <Popover id="Guidelines" title="Guidelines">
           <FontAwesomeIcon icon="star" /> Nice<br/>
           <FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Very nice<br/>
           <FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Fantastic!
@@ -218,7 +218,7 @@ class Sector extends Component<any, any> {
           {this.state && this.state.data && this.state.data.metadata.isAdmin?
             <div style={{float: 'right'}}>
               <ButtonGroup>
-                <OverlayTrigger placement="top" overlay={<Tooltip>Add problem</Tooltip>}>
+                <OverlayTrigger placement="top" overlay={<Tooltip id="Add problem">Add problem</Tooltip>}>
                   <LinkContainer to={{ pathname: `/problem/edit/-1`, query: { idSector: data.id, nr: nextNr, lat: data.lat, lng: data.lng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="plus-square" inverse={true} /></Button></LinkContainer>
                 </OverlayTrigger>
                 <OverlayTrigger placement="top" overlay={<Tooltip id={data.id}>Edit sector</Tooltip>}>
