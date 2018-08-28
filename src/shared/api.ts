@@ -7,7 +7,7 @@ function getUrl(urlSuffix: string): string {
   if (uri === 'http://localhost:3000') {
     uri = 'https://buldreinfo.com';
   }
-  return encodeURI(`${uri}/com.buldreinfo.jersey.jaxb/v2${urlSuffix}`);
+  return encodeURI(`${uri || ""}/com.buldreinfo.jersey.jaxb/v2${urlSuffix}`);
 }
 
 function makeAuthenticatedRequest(accessToken: string, urlSuffix: string, opts: any) {
