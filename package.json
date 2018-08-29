@@ -12,15 +12,18 @@
   },
   "babel": {
     "presets": [
-      "env",
-      "react",
-      "stage-2"
+      "@babel/preset-env",
+      "@babel/preset-react"
     ],
     "plugins": [
-      "transform-object-rest-spread"
+      "@babel/plugin-proposal-class-properties"
     ]
   },
   "devDependencies": {
+    "@babel/core": "^7.0.0",
+    "@babel/plugin-proposal-class-properties": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-react": "^7.0.0",
     "@types/googlemaps": "^3.30.12",
     "@types/markerclustererplus": "^2.1.33",
     "@types/react": "^16.4.12",
@@ -28,16 +31,11 @@
     "@types/react-fontawesome": "^1.6.4",
     "@types/react-router": "^4.0.30",
     "@types/react-router-dom": "^4.3.0",
-    "babel-core": "^6.26.3",
-    "babel-loader": "^7.1.5",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-react": "^6.24.1",
-    "babel-preset-stage-2": "^6.24.1",
+    "babel-loader": "^8.0.0",
     "nodemon": "^1.18.3",
     "ts-loader": "^4.5.0",
     "typescript": "^3.0.1",
-    "webpack": "^4.16.5",
+    "webpack": "^4.17.1",
     "webpack-cli": "^3.1.0",
     "webpack-node-externals": "^1.7.2"
   },
@@ -46,7 +44,6 @@
     "@fortawesome/free-solid-svg-icons": "^5.2.0",
     "@fortawesome/react-fontawesome": "^0.1.2",
     "auth0-js": "^9.7.3",
-    "babel-polyfill": "^6.26.0",
     "cors": "^2.8.4",
     "es6-promise": "^4.2.4",
     "express": "^4.16.3",

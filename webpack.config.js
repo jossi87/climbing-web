@@ -15,7 +15,7 @@ var browserConfig = {
   module: {
     rules: [
       { test: /\.tsx?$/, use: 'ts-loader' },
-      { test: /\.(js|jsx)$/, exclude: /node_modules/, use: ['babel-loader'] },
+      { test: /\.jsx?$/, exclude: /node_modules/, use: {loader: 'babel-loader'} },
     ]
   },
   plugins: [
@@ -40,7 +40,7 @@ var serverConfig = {
   module: {
     rules: [
       { test: /\.tsx?$/, loader: "ts-loader" },
-      { test: /\.(js|jsx)$/, exclude: /node_modules/, use: ['babel-loader'] },
+      { test: /\.jsx?$/, exclude: /node_modules/, use: {loader: 'babel-loader'} },
     ]
   },
   plugins: [
