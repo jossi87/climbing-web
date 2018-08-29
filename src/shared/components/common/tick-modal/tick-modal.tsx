@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import { Modal, Button, FormGroup, ControlLabel, FormControl, ButtonGroup, DropdownButton, MenuItem } from 'react-bootstrap';
-import Calendar from 'react-input-calendar';
+import DayPickerInput from 'react-day-picker/DayPickerInput';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { convertFromDateToString, postTicks } from './../../../api';
+import { convertFromDateToString, convertFromStringToDate, postTicks } from './../../../api';
 
 class TickModal extends Component<any, any> {
   constructor(props) {
@@ -37,7 +37,7 @@ class TickModal extends Component<any, any> {
   }
 
   onDateChanged(newDate) {
-    this.setState({date: newDate});
+    this.setState({date: newDate? convertFromDateToString(newDate) : null});
   }
 
   onCommentChanged(e) {
@@ -97,10 +97,10 @@ class TickModal extends Component<any, any> {
         <Modal.Body>
           <FormGroup>
             <ControlLabel>Date (yyyy-mm-dd)</ControlLabel><br/>
-            <Calendar format='YYYY-MM-DD' computableFormat='YYYY-MM-DD' date={this.state && this.state.date} onChange={this.onDateChanged.bind(this)} />
+            <DayPickerInput onDayChange={this.onDateChanged.bind(this)} value={this.state && this.state.date && convertFromStringToDate(this.state.date)} /><br/>
             <ButtonGroup>
-              <Button onClick={this.onDateChanged.bind(this, convertFromDateToString(yesterday))}>Yesterday</Button>
-              <Button onClick={this.onDateChanged.bind(this, convertFromDateToString(new Date()))}>Today</Button>
+              <Button onClick={this.onDateChanged.bind(this, yesterday)}>Yesterday</Button>
+              <Button onClick={this.onDateChanged.bind(this, new Date())}>Today</Button>
             </ButtonGroup>
           </FormGroup>
           <FormGroup>

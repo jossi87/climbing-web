@@ -19,8 +19,7 @@ var browserConfig = {
     ]
   },
   plugins: [
-    new webpack.DefinePlugin({__isBrowser__: "true"}),
-    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
+    new webpack.DefinePlugin({__isBrowser__: "true"})
   ]
 }
 
@@ -43,8 +42,7 @@ var serverConfig = {
     ]
   },
   plugins: [
-    new webpack.DefinePlugin({__isBrowser__: "false"}),
-    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
+    new webpack.DefinePlugin({__isBrowser__: "false"})
   ]
 }
 

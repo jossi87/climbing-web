@@ -6,9 +6,9 @@ import { withScriptjs, withGoogleMap, GoogleMap, Marker } from "react-google-map
 import UserSelector from './common/user-selector/user-selector';
 import ProblemSection from './common/problem-section/problem-section';
 import ImageUpload from './common/image-upload/image-upload';
-import Calendar from 'react-input-calendar';
+import DayPickerInput from 'react-day-picker/DayPickerInput';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { convertFromDateToString, postProblem } from './../api';
+import { convertFromDateToString, convertFromStringToDate, postProblem } from './../api';
 
 interface googleMapProps {
   googleMapURL: string,
@@ -97,7 +97,7 @@ class ProblemEdit extends Component<any, any> {
 
   onFaDateChanged(newFaDate) {
     const { data } = this.state;
-    data.faDate = newFaDate;
+    data.faDate = newFaDate? convertFromDateToString(newFaDate) : null;
     this.setState({data});
   }
 
@@ -235,10 +235,10 @@ class ProblemEdit extends Component<any, any> {
             </FormGroup>
             <FormGroup controlId="formControlsFaDate">
               <ControlLabel>FA date (yyyy-mm-dd)</ControlLabel><br/>
-              <Calendar format='YYYY-MM-DD' computableFormat='YYYY-MM-DD' date={data.faDate} onChange={this.onFaDateChanged.bind(this)} />
+              <DayPickerInput onDayChange={this.onFaDateChanged.bind(this)} value={convertFromStringToDate(data.faDate)} /><br/>
               <ButtonGroup>
-                <Button onClick={this.onFaDateChanged.bind(this, convertFromDateToString(yesterday))}>Yesterday</Button>
-                <Button onClick={this.onFaDateChanged.bind(this, convertFromDateToString(new Date()))}>Today</Button>
+                <Button onClick={this.onFaDateChanged.bind(this, yesterday)}>Yesterday</Button>
+                <Button onClick={this.onFaDateChanged.bind(this, new Date())}>Today</Button>
               </ButtonGroup>
             </FormGroup>
             <FormGroup controlId="formControlsTypeId">

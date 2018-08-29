@@ -28,10 +28,23 @@ export function getImageUrl(id: number, maxHeight: number): string {
 }
 
 export function convertFromDateToString(date: Date): string {
+  if (!date) {
+    return null;
+  }
   var d = date.getDate();
   var m = date.getMonth() + 1;
   var y = date.getFullYear();
   return y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
+}
+
+export function convertFromStringToDate(yyyy_MM_dd: string): Date {
+  if (!yyyy_MM_dd) {
+    return null;
+  }
+  var year = parseInt(yyyy_MM_dd.substring(0,4));
+  var month = parseInt(yyyy_MM_dd.substring(5,7));
+  var day = parseInt(yyyy_MM_dd.substring(8,10));
+  return new Date(year, month-1, day);
 }
 
 export function deleteMedia(accessToken: string, id: number): Promise<any> {
