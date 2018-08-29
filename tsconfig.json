@@ -5,7 +5,9 @@
         "jsx": "react",
         "allowSyntheticDefaultImports": true,
         "module": "ESNext",
-        "moduleResolution": "node"
+        "moduleResolution": "node",
+        "forceConsistentCasingInFileNames": true,
+        "listEmittedFiles": true
     },
     "include": [
         "./src/**/*"
