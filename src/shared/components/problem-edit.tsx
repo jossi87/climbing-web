@@ -235,7 +235,11 @@ class ProblemEdit extends Component<any, any> {
             </FormGroup>
             <FormGroup controlId="formControlsFaDate">
               <ControlLabel>FA date (yyyy-mm-dd)</ControlLabel><br/>
-              <DayPickerInput onDayChange={this.onFaDateChanged.bind(this)} value={convertFromStringToDate(data.faDate)} /><br/>
+              <DayPickerInput
+                format="LL"
+                onDayChange={this.onFaDateChanged.bind(this)}
+                value={convertFromStringToDate(data.faDate)}
+              /><br/>
               <ButtonGroup>
                 <Button onClick={this.onFaDateChanged.bind(this, yesterday)}>Yesterday</Button>
                 <Button onClick={this.onFaDateChanged.bind(this, new Date())}>Today</Button>

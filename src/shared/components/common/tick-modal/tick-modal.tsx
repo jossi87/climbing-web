@@ -97,7 +97,11 @@ class TickModal extends Component<any, any> {
         <Modal.Body>
           <FormGroup>
             <ControlLabel>Date (yyyy-mm-dd)</ControlLabel><br/>
-            <DayPickerInput onDayChange={this.onDateChanged.bind(this)} value={this.state && this.state.date && convertFromStringToDate(this.state.date)} /><br/>
+            <DayPickerInput
+              format="LL"
+              onDayChange={this.onDateChanged.bind(this)}
+              value={this.state && this.state.date && convertFromStringToDate(this.state.date)}
+            /><br/>
             <ButtonGroup>
               <Button onClick={this.onDateChanged.bind(this, yesterday)}>Yesterday</Button>
               <Button onClick={this.onDateChanged.bind(this, new Date())}>Today</Button>
