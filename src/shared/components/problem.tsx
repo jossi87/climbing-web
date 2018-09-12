@@ -9,6 +9,7 @@ import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
 import { LockSymbol } from './common/lock-symbol/lock-symbol';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { postComment } from './../api';
 
 class Problem extends Component<any, any> {
   constructor(props) {
@@ -86,9 +87,24 @@ class Problem extends Component<any, any> {
     this.setState({media: allMedia});
   }
 
+  flagAsDangerous(id) {
+    if (confirm('Are you sure you want to flag this comment?')) {
+      this.setState({isSaving: true});
+      postComment(this.props.auth.getAccessToken(), id, -1, null, true, false)
+        .then((response) => {
+          this.setState({isSaving: false});
+          this.refresh(this.props.match.params.problemId);
+        })
+        .catch((error) => {
+          console.warn(error);
+          alert(error.toString());
+        });
+    }
+  }
+
   render() {
     const { data } = this.state;
-    if (!data) {
+    if (!data || this.state.isSaving) {
       return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
 
@@ -197,9 +213,20 @@ class Problem extends Component<any, any> {
     var comment = null;
     if (data.comments) {
       const comments = data.comments.map((c, i) => {
-        const header = <span><Link to={`/user/${c.idUser}`}>{c.name}</Link> <small><i>{c.date}</i></small></span>;
+        var extra = null;
+        var bsStyle = "default";
+        if (c.danger) {
+          extra = " | Flagged as dangerous";
+          bsStyle = "danger";
+        } else if (c.resolved) {
+          extra = " | Flagged as safe";
+          bsStyle = "success";
+        } else if (data.metadata && data.metadata.isAuthenticated) {
+          extra = <Button bsStyle="warning" bsSize="xsmall" onClick={this.flagAsDangerous.bind(this, c.id)}>Flag as dangerous</Button>;
+        }
+        const header = <span><Link to={`/user/${c.idUser}`}>{c.name}</Link> <small><i>{c.date}</i></small> {extra}</span>;
         return (
-          <Panel key={i}>
+          <Panel key={i} bsStyle={bsStyle}>
       			<Panel.Heading>{header}</Panel.Heading>
       			<Panel.Body>{c.message}</Panel.Body>
       		</Panel>
@@ -263,7 +290,6 @@ class Problem extends Component<any, any> {
       );
     }
 
-    const accessToken = this.props.auth.getAccessToken();
     var tickModal = null;
     if (data.ticks) {
       const userTicks = data.ticks.filter(t => t.writable);

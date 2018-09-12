@@ -36,7 +36,12 @@ class TableRow extends Component<any, any> {
     }
     var fa = this.props.problem.fa? this.props.problem.fa.map((u, i) => {return (<Link key={i} to={`/user/${u.id}`}>{u.firstname} {u.surname}</Link>)}) : [];
     fa = this.intersperse(fa, ", ");
-    const isTickedClassName = this.props.problem.ticked? 'success' : '';
+    var bsStyle = '';
+    if (this.props.problem.ticked) {
+      bsStyle = 'success';
+    } else if (this.props.problem.danger) {
+      bsStyle = 'danger';
+    }
 
     var stars = null;
     if (this.props.problem.stars===0.5) {
@@ -78,7 +83,7 @@ class TableRow extends Component<any, any> {
     }
 
     return (
-      <tr className={isTickedClassName}>
+      <tr className={bsStyle}>
         <td>{this.props.problem.nr}</td>
         <td><Link to={`/problem/${this.props.problem.id}`}>{this.props.problem.name}</Link> <LockSymbol visibility={this.props.problem.visibility}/></td>
         <td>{comment}</td>

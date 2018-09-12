@@ -1,12 +1,14 @@
 import React, {Component} from 'react';
-import { Modal, Button, FormGroup, ControlLabel, FormControl, ButtonGroup } from 'react-bootstrap';
+import { Modal, Button, FormGroup, ControlLabel, FormControl, ButtonGroup, ButtonToolbar, ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
 import { postComment } from './../../../api';
 
 class CommentModal extends Component<any, any> {
   refresh(props) {
     this.setState({
       idProblem: props.idProblem,
-      comment: ''
+      comment: '',
+      danger: false,
+      resolved: false
     });
   }
 
@@ -22,9 +24,15 @@ class CommentModal extends Component<any, any> {
     this.setState({comment: e.target.value});
   }
 
+  onFlagged(e) {
+    const danger = e==1;
+    const resolved = e==2;
+    this.setState({danger, resolved});
+  }
+
   save(e) {
     if (this.state.comment) {
-      postComment(this.props.auth.getAccessToken(), this.state.idProblem, this.state.comment)
+      postComment(this.props.auth.getAccessToken(), -1, this.state.idProblem, this.state.comment, this.state.danger, this.state.resolved)
       .then((response) => {
         this.props.onHide();
       })
@@ -46,6 +54,13 @@ class CommentModal extends Component<any, any> {
             <ControlLabel>Comment</ControlLabel>
             <FormControl style={{height: '100px'}} componentClass="textarea" placeholder="Comment" value={this.state && this.state.comment} onChange={this.onCommentChanged.bind(this)} />
           </FormGroup>
+          <ButtonToolbar>
+            <ToggleButtonGroup type="radio" name="flag" onChange={this.onFlagged.bind(this)} defaultValue={0}>
+              <ToggleButton value={0}>Default comment</ToggleButton>
+              <ToggleButton bsStyle={this.state && this.state.danger? "danger" : "default"} value={1}>Flag as dangerous</ToggleButton>
+              <ToggleButton bsStyle={this.state && this.state.resolved? "success" : "default"} value={2}>Flag as safe</ToggleButton>
+            </ToggleButtonGroup>
+          </ButtonToolbar>
         </Modal.Body>
         <Modal.Footer>
           <ButtonGroup>

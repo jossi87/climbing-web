@@ -320,10 +320,10 @@ export function postArea(accessToken: string, id: number, visibility: number, na
   }).then((data) => data.json());
 }
 
-export function postComment(accessToken: string, idProblem: number, comment: string): Promise<any> {
+export function postComment(accessToken: string, id: number, idProblem: number, comment: string, danger: boolean, resolved: boolean): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/comments`,{
     method: 'POST',
-    body: JSON.stringify({idProblem, comment}),
+    body: JSON.stringify({id, idProblem, comment, danger, resolved}),
     headers: {
       'Content-Type': 'application/json'
     }
