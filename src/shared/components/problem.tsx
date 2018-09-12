@@ -335,7 +335,7 @@ class Problem extends Component<any, any> {
             <span><a href={`http://maps.google.com/maps?q=loc:${data.sectorLat},${data.sectorLng}&navigate=yes`} rel="noopener" target="_blank">Start navigation</a><br/></span>}
           {section}
         </Well>
-        {table}
+        {table}<br/>
         {comment}
       </React.Fragment>
     );

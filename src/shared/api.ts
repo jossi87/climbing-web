@@ -5,7 +5,7 @@ import { parsePath } from './utils/svg';
 function getUrl(urlSuffix: string): string {
   var uri = __isBrowser__? window.origin : (global as any).myOrigin;
   if (uri === 'http://localhost:3000') {
-    uri = 'https://buldreinfo.com';
+    uri = 'https://brattelinjer.no';
   }
   return encodeURI(`${uri || ""}/com.buldreinfo.jersey.jaxb/v2${urlSuffix}`);
 }
@@ -114,6 +114,15 @@ export function getFrontpage(accessToken: string): Promise<any> {
 
 export function getMeta(accessToken: string): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/meta`, null)
+  .then((data) => data.json())
+  .catch((error) => {
+    console.warn(error);
+    return null;
+  });
+}
+
+export function getProblemHse(accessToken: string): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/problems/hse`, null)
   .then((data) => data.json())
   .catch((error) => {
     console.warn(error);

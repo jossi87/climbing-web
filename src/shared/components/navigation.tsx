@@ -81,20 +81,23 @@ class Navigation extends Component<any, any> {
               <NavItem eventKey={5} onClick={this.login.bind(this)}>Sign in</NavItem>
             }
             <NavDropdown eventKey={6} title="More" id='basic-nav-dropdown'>
+              <LinkContainer to="/hse">
+                <NavItem eventKey={6.0}>Flagged as dangerous (HSE)</NavItem>
+              </LinkContainer>
               <LinkContainer to="/ethics">
-                <NavItem eventKey={6.0}>Ethics</NavItem>
+                <NavItem eventKey={6.1}>Ethics</NavItem>
               </LinkContainer>
               <MenuItem divider />
-              <MenuItem eventKey={6.1} href="mailto:jostein.oygarden@gmail.com">Contact</MenuItem>
-              <MenuItem eventKey={6.2} href="/gpl-3.0.txt" rel="noopener" target="_blank">GNU Public License</MenuItem>
+              <MenuItem eventKey={6.2} href="mailto:jostein.oygarden@gmail.com">Contact</MenuItem>
+              <MenuItem eventKey={6.3} href="/gpl-3.0.txt" rel="noopener" target="_blank">GNU Public License</MenuItem>
               <MenuItem divider />
-              <MenuItem eventKey={6.3} href="https://buldreinfo.com" rel="noopener" target="_blank">buldreinfo.com</MenuItem>
-              <MenuItem eventKey={6.4} href="https://buldring.bergen-klatreklubb.no" rel="noopener" target="_blank">buldring.bergen-klatreklubb.no</MenuItem>
-              <MenuItem eventKey={6.5} href="https://buldring.fredrikstadklatreklubb.org" rel="noopener" target="_blank">buldring.fredrikstadklatreklubb.org</MenuItem>
-              <MenuItem eventKey={6.6} href="https://buldring.jotunheimenfjellsport.com" rel="noopener" target="_blank">buldring.jotunheimenfjellsport.com</MenuItem>
+              <MenuItem eventKey={6.4} href="https://buldreinfo.com" rel="noopener" target="_blank">buldreinfo.com</MenuItem>
+              <MenuItem eventKey={6.5} href="https://buldring.bergen-klatreklubb.no" rel="noopener" target="_blank">buldring.bergen-klatreklubb.no</MenuItem>
+              <MenuItem eventKey={6.6} href="https://buldring.fredrikstadklatreklubb.org" rel="noopener" target="_blank">buldring.fredrikstadklatreklubb.org</MenuItem>
+              <MenuItem eventKey={6.7} href="https://buldring.jotunheimenfjellsport.com" rel="noopener" target="_blank">buldring.jotunheimenfjellsport.com</MenuItem>
               <MenuItem divider />
-              <MenuItem eventKey={6.7} href="https://brattelinjer.no" rel="noopener" target="_blank">brattelinjer.no</MenuItem>
-              <MenuItem eventKey={6.7} href="https://klatring.jotunheimenfjellsport.com" rel="noopener" target="_blank">klatring.jotunheimenfjellsport.com</MenuItem>
+              <MenuItem eventKey={6.8} href="https://brattelinjer.no" rel="noopener" target="_blank">brattelinjer.no</MenuItem>
+              <MenuItem eventKey={6.9} href="https://klatring.jotunheimenfjellsport.com" rel="noopener" target="_blank">klatring.jotunheimenfjellsport.com</MenuItem>
             </NavDropdown>
           </Nav>
         </Navbar.Collapse>
