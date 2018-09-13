@@ -221,7 +221,7 @@ class Problem extends Component<any, any> {
         } else if (c.resolved) {
           extra = " | Flagged as safe";
           bsStyle = "success";
-        } else if (data.metadata && data.metadata.isAuthenticated) {
+        } else if (data.metadata && data.metadata.isAuthenticated && !data.metadata.isBouldering) {
           extra = <Button bsStyle="warning" bsSize="xsmall" onClick={this.flagAsDangerous.bind(this, c.id)}>Flag as dangerous</Button>;
         }
         const header = <span><Link to={`/user/${c.idUser}`}>{c.name}</Link> <small><i>{c.date}</i></small> {extra}</span>;
@@ -318,7 +318,7 @@ class Problem extends Component<any, any> {
         </MetaTags>
 
         {tickModal}
-        <CommentModal auth={this.props.auth} idProblem={data.id} show={this.state.showCommentModal} onHide={this.closeCommentModal.bind(this)}/>
+        <CommentModal auth={this.props.auth} idProblem={data.id} show={this.state.showCommentModal} onHide={this.closeCommentModal.bind(this)} isBouldering={data.metadata.isBouldering}/>
 
         <Breadcrumb>
           {headerButtons}

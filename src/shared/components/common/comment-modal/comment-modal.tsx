@@ -54,13 +54,15 @@ class CommentModal extends Component<any, any> {
             <ControlLabel>Comment</ControlLabel>
             <FormControl style={{height: '100px'}} componentClass="textarea" placeholder="Comment" value={this.state && this.state.comment} onChange={this.onCommentChanged.bind(this)} />
           </FormGroup>
-          <ButtonToolbar>
-            <ToggleButtonGroup type="radio" name="flag" onChange={this.onFlagged.bind(this)} defaultValue={0}>
-              <ToggleButton value={0}>Default comment</ToggleButton>
-              <ToggleButton bsStyle={this.state && this.state.danger? "danger" : "default"} value={1}>Flag as dangerous</ToggleButton>
-              <ToggleButton bsStyle={this.state && this.state.resolved? "success" : "default"} value={2}>Flag as safe</ToggleButton>
-            </ToggleButtonGroup>
-          </ButtonToolbar>
+          {!this.props.isBouldering &&
+            <ButtonToolbar>
+              <ToggleButtonGroup type="radio" name="flag" onChange={this.onFlagged.bind(this)} defaultValue={0}>
+                <ToggleButton value={0}>Default comment</ToggleButton>
+                <ToggleButton bsStyle={this.state && this.state.danger? "danger" : "default"} value={1}>Flag as dangerous</ToggleButton>
+                <ToggleButton bsStyle={this.state && this.state.resolved? "success" : "default"} value={2}>Flag as safe</ToggleButton>
+              </ToggleButtonGroup>
+            </ButtonToolbar>
+          }
         </Modal.Body>
         <Modal.Footer>
           <ButtonGroup>

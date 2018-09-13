@@ -81,9 +81,11 @@ class Navigation extends Component<any, any> {
               <NavItem eventKey={5} onClick={this.login.bind(this)}>Sign in</NavItem>
             }
             <NavDropdown eventKey={6} title="More" id='basic-nav-dropdown'>
-              <LinkContainer to="/hse">
-                <NavItem eventKey={6.0}>Flagged as dangerous (HSE)</NavItem>
-              </LinkContainer>
+              {this.state.metadata && !this.state.metadata.isBouldering &&
+                <LinkContainer to="/hse">
+                  <NavItem eventKey={6.0}>Flagged as dangerous (HSE)</NavItem>
+                </LinkContainer>
+              }
               <LinkContainer to="/ethics">
                 <NavItem eventKey={6.1}>Ethics</NavItem>
               </LinkContainer>
