@@ -3,29 +3,9 @@ import MetaTags from 'react-meta-tags';
 import { Redirect } from 'react-router';
 import { FormGroup, ControlLabel, FormControl, ButtonGroup, DropdownButton, MenuItem, Button, Well } from 'react-bootstrap';
 import ImageUpload from './common/image-upload/image-upload';
-import { withScriptjs, withGoogleMap, GoogleMap, Marker } from "react-google-maps";
+import Leaflet from './common/leaflet/leaflet';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { postArea } from './../api';
-
-interface googleMapProps {
-  googleMapURL: string,
-  loadingElement: any,
-  containerElement: any,
-  mapElement: any,
-  defaultZoom: number,
-  defaultCenter: any,
-  onClick: any,
-  markers: any
-}
-const GettingStartedGoogleMap = withScriptjs(withGoogleMap((props: googleMapProps) => (
-  <GoogleMap
-    defaultZoom={props.defaultZoom}
-    defaultCenter={props.defaultCenter}
-    defaultMapTypeId={google.maps.MapTypeId.TERRAIN}
-    onClick={props.onClick.bind(this)}>
-    {props.markers}
-  </GoogleMap>
-)));
 
 class AreaEdit extends Component<any, any> {
   constructor(props) {
@@ -95,8 +75,8 @@ class AreaEdit extends Component<any, any> {
 
   onMarkerClick(event) {
     const { data } = this.state;
-    data.lat = event.latLng.lat();
-    data.lng = event.latLng.lng();
+    data.lat = event.latlng.lat;
+    data.lng = event.latlng.lng;
     this.setState({data});
   }
 
@@ -153,18 +133,13 @@ class AreaEdit extends Component<any, any> {
             </FormGroup>
             <FormGroup controlId="formControlsMap">
               <ControlLabel>Click to mark area center on map</ControlLabel><br/>
-              <section style={{height: '600px'}}>
-                <GettingStartedGoogleMap
-                  googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyCpaVd5518yMB-oiIyP5JnTVWMfrOv4sAI&v=3.exp"
-                  loadingElement={<div style={{ height: `100%` }} />}
-                  containerElement={<div style={{ height: `100%` }} />}
-                  mapElement={<div style={{ height: `100%` }} />}
-                  defaultZoom={defaultZoom}
-                  defaultCenter={defaultCenter}
-                  onClick={this.onMarkerClick.bind(this)}
-                  markers={this.state.data.lat!=0 && this.state.data.lng!=0? <Marker position={{lat: this.state.data.lat, lng: this.state.data.lng}}/> : ""}
-                />
-              </section>
+              <Leaflet
+                useOpenStreetMap={true}
+                markers={this.state.data.lat!=0 && this.state.data.lng!=0 && [{lat: this.state.data.lat, lng: this.state.data.lng}]}
+                defaultCenter={defaultCenter}
+                defaultZoom={defaultZoom}
+                onClick={this.onMarkerClick.bind(this)}
+              />
             </FormGroup>
 
             <ButtonGroup><Button bsStyle="danger" onClick={this.onCancel.bind(this)}>Cancel</Button><Button type="submit" bsStyle="success" disabled={this.state.isSaving}>{this.state.isSaving? 'Saving...' : 'Save area'}</Button></ButtonGroup>

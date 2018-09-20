@@ -2,33 +2,13 @@ import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Redirect } from 'react-router'
 import { FormGroup, ControlLabel, FormControl, ButtonGroup, Button, DropdownButton, MenuItem, Well } from 'react-bootstrap';
-import { withScriptjs, withGoogleMap, GoogleMap, Marker } from "react-google-maps";
 import UserSelector from './common/user-selector/user-selector';
 import ProblemSection from './common/problem-section/problem-section';
 import ImageUpload from './common/image-upload/image-upload';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Leaflet from './common/leaflet/leaflet';
 import { convertFromDateToString, convertFromStringToDate, postProblem } from './../api';
-
-interface googleMapProps {
-  googleMapURL: string,
-  loadingElement: any,
-  containerElement: any,
-  mapElement: any,
-  defaultZoom: number,
-  defaultCenter: any,
-  onClick: any,
-  markers: any
-}
-const GettingStartedGoogleMap = withScriptjs(withGoogleMap((props: googleMapProps) => (
-  <GoogleMap
-    defaultZoom={props.defaultZoom}
-    defaultCenter={props.defaultCenter}
-    defaultMapTypeId={google.maps.MapTypeId.TERRAIN}
-    onClick={props.onClick.bind(this)}>
-    {props.markers}
-  </GoogleMap>
-)));
 
 class ProblemEdit extends Component<any, any> {
   constructor(props) {
@@ -150,8 +130,8 @@ class ProblemEdit extends Component<any, any> {
 
   onMapClick(event) {
     const { data } = this.state;
-    data.lat = event.latLng.lat();
-    data.lng = event.latLng.lng();
+    data.lat = event.latlng.lat;
+    data.lng = event.latlng.lng;
     this.setState({data});
   }
 
@@ -283,18 +263,12 @@ class ProblemEdit extends Component<any, any> {
             </FormGroup>
             <FormGroup controlId="formControlsMap">
               <ControlLabel>Click to mark problem on map</ControlLabel><br/>
-              <section style={{height: '600px'}}>
-                <GettingStartedGoogleMap
-                  googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyCpaVd5518yMB-oiIyP5JnTVWMfrOv4sAI&v=3.exp"
-                  loadingElement={<div style={{ height: `100%` }} />}
-                  containerElement={<div style={{ height: `100%` }} />}
-                  mapElement={<div style={{ height: `100%` }} />}
-                  defaultZoom={defaultZoom}
-                  defaultCenter={defaultCenter}
-                  onClick={this.onMapClick.bind(this)}
-                  markers={data.lat!=0 && data.lng!=0? <Marker position={{lat: data.lat, lng: data.lng}}/> : ""}
-                />
-              </section>
+              <Leaflet
+                markers={data.lat!=0 && data.lng!=0 && [{lat: data.lat, lng: data.lng}]}
+                defaultCenter={defaultCenter}
+                defaultZoom={defaultZoom}
+                onClick={this.onMapClick.bind(this)}
+              />
               <ControlLabel>Latitude</ControlLabel>
               <FormControl type="text" value={data.lat} placeholder="Latitude" onChange={this.onLatChanged.bind(this)} />
               <ControlLabel>Longitude</ControlLabel>

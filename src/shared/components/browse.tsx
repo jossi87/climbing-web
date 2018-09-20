@@ -3,7 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { OverlayTrigger, Tooltip, Button, Table, Breadcrumb } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import Map from './common/map/map';
+import Leaflet from './common/leaflet/leaflet';
 import { LockSymbol } from './common/lock-symbol/lock-symbol';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -55,12 +55,11 @@ class Browse extends Component<any, any> {
       return {
           lat: a.lat,
           lng: a.lng,
-          title: a.name,
-          label: a.name.charAt(0),
+          label: a.name,
           url: '/area/' + a.id
         }
     });
-    const map = markers.length>0? <Map markers={markers} defaultCenter={this.state.data.metadata.defaultCenter} defaultZoom={this.state.data.metadata.defaultZoom}/> : null;
+    const map = markers.length>0? <Leaflet useOpenStreetMap={true} markers={markers} defaultCenter={this.state.data.metadata.defaultCenter} defaultZoom={this.state.data.metadata.defaultZoom}/> : null;
     const rows = this.state.data.areas.map((area, i) => {
       var distance = null;
       if (this.state.currLat>0 && this.state.currLng>0 && area.lat>0 && area.lng>0) {

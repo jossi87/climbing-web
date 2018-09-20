@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { LinkContainer } from 'react-router-bootstrap';
-import Map from './common/map/map';
+import Leaflet from './common/leaflet/leaflet';
 import { LockSymbol } from './common/lock-symbol/lock-symbol';
 import { ButtonToolbar, ButtonGroup, Button, OverlayTrigger, Tooltip, Popover, Breadcrumb } from 'react-bootstrap';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
@@ -201,19 +201,13 @@ class Finder extends Component<any, any> {
     }
     const markers = this.state.data.problems.filter(p => p.lat!=0 && p.lng!=0).map(p => {
       return {
-          lat: p.lat,
-          lng: p.lng,
-          title: p.nr + " - " + p.name + " [" + p.grade + "]",
-          label: p.name.charAt(0),
-          url: '/problem/' + p.id,
-          icon: {
-            url: p.ticked? 'https://mt.google.com/vt/icon?name=icons/spotlight/spotlight-waypoint-a.png' : 'https://mt.google.com/vt/icon?name=icons/spotlight/spotlight-waypoint-b.png',
-            labelOriginX: 11,
-            labelOriginY: 13
-          }
+        lat: p.lat,
+        lng: p.lng,
+        label: p.name,
+        url: '/problem/' + p.id
         }
     });
-    const map = markers.length>0? <Map markers={markers} defaultCenter={this.state.data.metadata.defaultCenter} defaultZoom={7}/> : null;
+    const map = markers.length>0? <Leaflet useOpenStreetMap={true} markers={markers} defaultCenter={this.state.data.metadata.defaultCenter} defaultZoom={7}/> : null;
     var table = null;
     if (!this.state.data.metadata.isBouldering) {
       table = <BootstrapTable

@@ -52,6 +52,7 @@ app.get("*", (req, res, next) => {
           <meta name="author" content="Jostein Øygarden">
           <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
           <link rel="stylesheet" type="text/css" href="/css/image-gallery.css">
+          <link rel="stylesheet" type="text/css" href="/css/leaflet.css">
           <link rel="stylesheet" type="text/css" href="/css/buldreinfo.css">
           <script async src="/js/bundle.js" defer></script>
           <script>window.__INITIAL_METADATA__ = ${serialize(data? data.metadata : null)}</script>

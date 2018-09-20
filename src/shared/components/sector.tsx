@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
-import Map from './common/map/map';
+import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
 import { LockSymbol } from './common/lock-symbol/lock-symbol';
 import { Tabs, Tab, Well, OverlayTrigger, Tooltip, Popover, ButtonGroup, Button, Table, Breadcrumb } from 'react-bootstrap';
@@ -162,32 +162,20 @@ class Sector extends Component<any, any> {
       return {
           lat: p.lat,
           lng: p.lng,
-          title: p.nr + " - " + p.name + " [" + p.grade + "]",
-          label: p.name.charAt(0),
-          url: '/problem/' + p.id,
-          icon: {
-            url: p.ticked? 'https://mt.google.com/vt/icon?name=icons/spotlight/spotlight-waypoint-a.png' : 'https://mt.google.com/vt/icon?name=icons/spotlight/spotlight-waypoint-b.png',
-            labelOriginX: 11,
-            labelOriginY: 13
-          }
+          label: p.nr + " - " + p.name + " [" + p.grade + "]",
+          url: '/problem/' + p.id
         }
     });
     if (data.lat>0 && data.lng>0) {
       markers.push({
         lat: data.lat,
         lng: data.lng,
-        title: 'Parking',
-        icon: {
-          url: 'https://maps.google.com/mapfiles/kml/shapes/parking_lot_maps.png',
-          scaledSizeW: 32,
-          scaledSizeH: 32
-        },
-        url: '/sector/' + data.id
+        isParking: true
       });
     }
     const defaultCenter = data.lat && data.lat>0? {lat: data.lat, lng: data.lng} : data.metadata.defaultCenter;
     const defaultZoom = data.lat && data.lat>0? 15 : data.metadata.defaultZoom;
-    const map = markers.length>0? <Map markers={markers} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/> : null;
+    const map = markers.length>0? <Leaflet markers={markers} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/> : null;
     const gallery = data.media && data.media.length>0? <Gallery auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} alt={data.name + " (" + data.areaName + ")"} media={data.media} showThumbnails={data.media.length>1} removeMedia={this.onRemoveMedia.bind(this)}/> : null;
     var topoContent = null;
     if (map && gallery) {

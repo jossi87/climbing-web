@@ -3,7 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { Tabs, Tab, Well, OverlayTrigger, Tooltip, ButtonGroup, Button, Table, Breadcrumb } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import Map from './common/map/map';
+import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
 import { LockSymbol } from './common/lock-symbol/lock-symbol';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -80,28 +80,20 @@ class Area extends Component<any, any> {
       return {
           lat: s.lat,
           lng: s.lng,
-          title: s.name,
-          icon: {
-            url: 'https://maps.google.com/mapfiles/kml/shapes/parking_lot_maps.png',
-            scaledSizeW: 32,
-            scaledSizeH: 32
-          },
-          url: '/sector/' + s.id
+          url: '/sector/' + s.id,
+          isParking: true
         }
     });
-    const polygons = this.state.data.sectors.filter(s => s.polygonCoords).map(s => {
-      const triangleCoords = s.polygonCoords.split(";").map((p, i) => {
-        const latLng = p.split(",");
-        return {lat: parseFloat(latLng[0]), lng: parseFloat(latLng[1])};
+    const outlines = this.state.data.sectors.filter(s => s.polygonCoords).map(s => {
+      const polygon = s.polygonCoords.split(";").map((c, i) => {
+        const latLng = c.split(",");
+        return ([parseFloat(latLng[0]), parseFloat(latLng[1])]);
       });
-      return {
-        triangleCoords: triangleCoords,
-        url: '/sector/' + s.id
-      }
+      return {url: '/sector/' + s.id, label: s.name, polygon: polygon}
     });
     const defaultCenter = this.state.data.lat && this.state.data.lat>0? {lat: this.state.data.lat, lng: this.state.data.lng} : this.state.data.metadata.defaultCenter;
     const defaultZoom = this.state.data.lat && this.state.data.lat>0? 14 : this.state.data.metadata.defaultZoom;
-    const map = markers.length>0 || polygons.length>0? <Map markers={markers} polygons={polygons} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/> : null;
+    const map = markers.length>0 || outlines.length>0? <Leaflet useOpenStreetMap={true} markers={markers} outlines={outlines} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/> : null;
     const gallery = this.state.data.media && this.state.data.media.length>0? <Gallery auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} alt={this.state.data.name} media={this.state.data.media} showThumbnails={this.state.data.media.length>1} removeMedia={this.onRemoveMedia.bind(this)}/> : null;
     var topoContent = null;
     if (map && gallery) {

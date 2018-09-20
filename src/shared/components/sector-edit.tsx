@@ -2,40 +2,10 @@ import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Redirect } from 'react-router';
 import { FormGroup, ControlLabel, FormControl, ButtonGroup, DropdownButton, MenuItem, Button, Well } from 'react-bootstrap';
-import { withScriptjs, withGoogleMap, GoogleMap, Marker, Polygon } from "react-google-maps";
 import ImageUpload from './common/image-upload/image-upload';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { postSector } from './../api';
-
-interface googleMapProps {
-  googleMapURL: string,
-  loadingElement: any,
-  containerElement: any,
-  mapElement: any,
-  defaultZoom: number,
-  defaultCenter: any,
-  onClick: any,
-  onRightClick: any,
-  parkingMarkerLat: number,
-  parkingMarkerLng: number,
-  outline: any
-}
-const GettingStartedGoogleMap = withScriptjs(withGoogleMap((props: googleMapProps) => {
-  var marker = null;
-  if (props.parkingMarkerLat!=0 && props.parkingMarkerLng!=0) {
-    marker = <Marker position={{lat: props.parkingMarkerLat, lng: props.parkingMarkerLng}} icon={{url: 'https://maps.google.com/mapfiles/kml/shapes/parking_lot_maps.png', scaledSize: new google.maps.Size(32, 32)}} />;
-  }
-  return (
-    <GoogleMap
-      defaultZoom={props.defaultZoom}
-      defaultCenter={props.defaultCenter}
-      defaultMapTypeId={google.maps.MapTypeId.TERRAIN}
-      onClick={props.onClick.bind(this)}
-      onRightClick={props.onRightClick.bind(this)}>
-      {marker}
-      {props.outline}
-    </GoogleMap>);
-}));
+import Leaflet from './common/leaflet/leaflet';
 
 class SectorEdit extends Component<any, any> {
   constructor(props) {
@@ -47,14 +17,33 @@ class SectorEdit extends Component<any, any> {
     } else {
       data = props.staticContext.data;
     }
-    this.state = {data};
+    this.state = {data, ctrl: false};
   }
 
   componentDidMount() {
     if (!this.state.data) {
       this.refresh(this.props.match.params.sectorId);
     }
+    if (document) {
+      document.addEventListener("keydown", this.handleKeyDown.bind(this));
+      document.addEventListener("keyup", this.handleKeyUp.bind(this));
+    }
   }
+
+  componentWillUnmount() {
+    if (document) {
+      document.removeEventListener("keydown", this.handleKeyDown.bind(this));
+      document.removeEventListener("keyup", this.handleKeyUp.bind(this));
+    }
+  }
+
+  handleKeyDown(e) {
+    if (e.ctrlKey) this.setState({ctrl: true});
+  };
+
+  handleKeyUp(e) {
+    if (!e.ctrlKey) this.setState({ctrl: false});
+  };
 
   componentDidUpdate(prevProps) {
     if (this.props.isAuthenticated !== prevProps.isAuthenticated || prevProps.match.params.sectorId !== this.props.match.params.sectorId) {
@@ -104,19 +93,17 @@ class SectorEdit extends Component<any, any> {
   }
 
   onMapClick(event) {
-    const { data } = this.state;
-    data.lat = event.latLng.lat();
-    data.lng = event.latLng.lng();
-    this.setState({data});
-  }
-
-  onMapRightClick(event) {
-    const { data } = this.state;
-    const coords = event.latLng.lat() + "," + event.latLng.lng();
-    if (data.polygonCoords) {
-      data.polygonCoords = data.polygonCoords + ";" + coords;
+    const { data, ctrl } = this.state;
+    if (ctrl) {
+      const coords = event.latlng.lat + "," + event.latlng.lng;
+      if (data.polygonCoords) {
+        data.polygonCoords = data.polygonCoords + ";" + coords;
+      } else {
+        data.polygonCoords = coords;
+      }
     } else {
-      data.polygonCoords = coords;
+      data.lat = event.latlng.lat;
+      data.lng = event.latlng.lng;
     }
     this.setState({data});
   }
@@ -144,16 +131,10 @@ class SectorEdit extends Component<any, any> {
       this.setState({pushUrl: "/login", error: null});
     }
 
-    var triangleCoords = this.state.data.polygonCoords? this.state.data.polygonCoords.split(";").map((p, i) => {
-      const latLng = p.split(",");
-      return {lat: parseFloat(latLng[0]), lng: parseFloat(latLng[1])};
-    }) : [];
-    var outline = null;
-    if (triangleCoords.length==1) {
-      outline = <Marker position={{lat: triangleCoords[0].lat, lng: triangleCoords[0].lng}}/>;
-    } else if (triangleCoords.length>1) {
-      outline = <Polygon paths={triangleCoords} options={{strokeColor: '#FF3300', strokeOpacity: 0.5, strokeWeight: 2, fillColor: '#FF3300', fillOpacity: 0.15}} onClick={this.onMapClick.bind(this)} onRightClick={this.onMapRightClick.bind(this)}/>;
-    }
+    const polygon = this.state.data.polygonCoords && this.state.data.polygonCoords.split(";").map((c, i) => {
+      const latLng = c.split(",");
+      return ([parseFloat(latLng[0]), parseFloat(latLng[1])]);
+    });
 
     var visibilityText = 'Visible for everyone';
     if (this.state.data.visibility===1) {
@@ -190,22 +171,14 @@ class SectorEdit extends Component<any, any> {
               <ImageUpload auth={this.props.auth} onMediaChanged={this.onNewMediaChanged.bind(this)} />
             </FormGroup>
             <FormGroup controlId="formControlsMap">
-              <ControlLabel>Left mouse button to position parking coordinate, right mouse button to add polygon points (sector outline)</ControlLabel><br/>
-              <section style={{height: '600px'}}>
-                <GettingStartedGoogleMap
-                  googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyCpaVd5518yMB-oiIyP5JnTVWMfrOv4sAI&v=3.exp"
-                  loadingElement={<div style={{ height: `100%` }} />}
-                  containerElement={<div style={{ height: `100%` }} />}
-                  mapElement={<div style={{ height: `100%` }} />}
-                  defaultZoom={defaultZoom}
-                  defaultCenter={defaultCenter}
-                  onClick={this.onMapClick.bind(this)}
-                  onRightClick={this.onMapRightClick.bind(this)}
-                  parkingMarkerLat={this.state.data.lat}
-                  parkingMarkerLng={this.state.data.lng}
-                  outline={outline}
-                />
-              </section>
+              <ControlLabel>Left mouse button to position parking coordinate, press and hold ctrl-key to add polygon points (sector outline)</ControlLabel><br/>
+              <Leaflet
+                markers={this.state.data.lat!=0 && this.state.data.lng!=0 && [{lat: this.state.data.lat, lng: this.state.data.lng, isParking: true}]}
+                outlines={polygon && [{polygon: polygon}]}
+                defaultCenter={defaultCenter}
+                defaultZoom={defaultZoom}
+                onClick={this.onMapClick.bind(this)}
+              />
             </FormGroup>
             <ButtonGroup>
               <Button bsStyle="warning" onClick={this.resetMapPolygon.bind(this)}>Clear polygon</Button>
