@@ -110,8 +110,9 @@ export default class Leaflet extends Component<LeafletProps, any> {
               maxNativeZoom={15}
               minZoom={0}
               maxZoom={15}
-              attribution='&copy; <a href="http://osm.org/copyright" rel="noopener" target="_blank">OpenStreetMap</a> contributors'
-              url='https://opencache2.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}'
+              subdomains='23'
+              attribution='&copy; <a href="https://wiki.openstreetmap.org/wiki/No:Kartverket_import" rel="noopener" target="_blank">Kartverket</a>'
+              url='https://opencache{s}.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}'
             />
           </LayersControl.BaseLayer>
 
@@ -134,6 +135,7 @@ export default class Leaflet extends Component<LeafletProps, any> {
                 format={"image/png"}
                 layers={"all"}
                 version={"1.3.0"}
+                uppercase={true}
                 url="https://openwms.statkart.no/skwms1/wms.vegnett"
               />
           </LayersControl.Overlay>
