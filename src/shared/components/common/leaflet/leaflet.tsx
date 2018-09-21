@@ -126,6 +126,20 @@ export default class Leaflet extends Component<LeafletProps, any> {
             />
           </LayersControl.BaseLayer>
 
+          <LayersControl.Overlay checked={!this.props.useOpenStreetMap} name="Stedsnavn">
+            <WMSTileLayer
+                maxNativeZoom={maxZoom}
+                minZoom={0}
+                maxZoom={maxZoom}
+                transparent={true}
+                format={"image/png"}
+                layers={"Stedsnavn"}
+                version={"1.3.0"}
+                uppercase={true}
+                url="https://openwms.statkart.no/skwms1/wms.topo4"
+              />
+          </LayersControl.Overlay>
+
           <LayersControl.Overlay checked={!this.props.useOpenStreetMap} name="Vegnett">
             <WMSTileLayer
                 maxNativeZoom={maxZoom}
