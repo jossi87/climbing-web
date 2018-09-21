@@ -125,7 +125,7 @@ export default class Leaflet extends Component<LeafletProps, any> {
             />
           </LayersControl.BaseLayer>
 
-          <LayersControl.Overlay checked={!this.props.useOpenStreetMap} name="Vegnavn">
+          <LayersControl.Overlay checked={!this.props.useOpenStreetMap} name="Vegnett">
             <WMSTileLayer
                 maxNativeZoom={maxZoom}
                 minZoom={0}
