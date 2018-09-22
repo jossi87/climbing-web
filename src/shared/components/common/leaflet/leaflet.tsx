@@ -12,7 +12,7 @@ interface Marker {
   lng: number,
   url?: string,
   label?: string,
-  isParking?: boolean
+  isParking?: boolean,
 }
 
 interface Outline {
@@ -43,6 +43,12 @@ export default class Leaflet extends Component<LeafletProps, any> {
     }
   }
 
+  updatePosition(id, e) {
+    const lat = e.target._latlng.lat;
+    const lng = e.target._latlng.lng;
+    console.log("UPDATE problem SET latitude=" + lat + ", longitude=" + lng + " WHERE id=" + id + ";");
+  }
+
   render() {
     if (this.state && this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
@@ -68,7 +74,12 @@ export default class Leaflet extends Component<LeafletProps, any> {
         )
       } else {
         return (
-          <Marker position={[m.lat, m.lng]} key={i} onClick={() => {this.setState({pushUrl: m.url})}}>
+          <Marker
+            position={[m.lat, m.lng]}
+            key={i}
+            onClick={() => {this.setState({pushUrl: m.url})}}
+            draggable={false}
+            onDragend={this.updatePosition.bind(this, parseInt(m.url.split('/').pop()))}>
             {m.label && (
               <Tooltip opacity={opacity} permanent>
                 {m.label}
