@@ -43,10 +43,10 @@ export default class Leaflet extends Component<LeafletProps, any> {
     }
   }
 
-  updatePosition(id, e) {
+  updatePosition(url, e) {
     const lat = e.target._latlng.lat;
     const lng = e.target._latlng.lng;
-    console.log("UPDATE problem SET latitude=" + lat + ", longitude=" + lng + " WHERE id=" + id + ";");
+    console.log("UPDATE problem SET latitude=" + lat + ", longitude=" + lng + " WHERE id=" + url.split('/').pop() + ";");
   }
 
   render() {
@@ -79,7 +79,7 @@ export default class Leaflet extends Component<LeafletProps, any> {
             key={i}
             onClick={() => {this.setState({pushUrl: m.url})}}
             draggable={false}
-            onDragend={this.updatePosition.bind(this, parseInt(m.url.split('/').pop()))}>
+            onDragend={this.updatePosition.bind(this, m.url)}>
             {m.label && (
               <Tooltip opacity={opacity} permanent>
                 {m.label}
