@@ -44,9 +44,11 @@ export default class Leaflet extends Component<LeafletProps, any> {
   }
 
   updatePosition(url, e) {
-    const lat = e.target._latlng.lat;
-    const lng = e.target._latlng.lng;
-    console.log("UPDATE problem SET latitude=" + lat + ", longitude=" + lng + " WHERE id=" + url.split('/').pop() + ";");
+    if (url && e) {
+      const lat = e.target._latlng.lat;
+      const lng = e.target._latlng.lng;
+      console.log("UPDATE problem SET latitude=" + lat + ", longitude=" + lng + " WHERE id=" + url.split('/').pop() + ";");
+    }
   }
 
   render() {
