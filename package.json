@@ -27,6 +27,7 @@
     "@types/react": "^16.4.14",
     "@types/react-dom": "^16.0.7",
     "@types/react-fontawesome": "^1.6.4",
+    "@types/react-leaflet": "^1.1.6",
     "@types/react-router": "^4.0.31",
     "@types/react-router-dom": "^4.3.1",
     "babel-loader": "^8.0.2",
@@ -75,6 +76,7 @@
   "scripts": {
     "build": "webpack --mode=production",
     "dev-build": "webpack --watch --mode=development",
-    "dev-server": "nodemon server.js"
+    "dev-server": "nodemon server.js",
+    "environment": "npm install -g typescript"
   }
 }
