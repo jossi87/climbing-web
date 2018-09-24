@@ -76,7 +76,6 @@
   "scripts": {
     "build": "webpack --mode=production",
     "dev-build": "webpack --watch --mode=development",
-    "dev-server": "nodemon server.js",
-    "environment": "npm install -g typescript"
+    "dev-server": "nodemon server.js"
   }
 }
