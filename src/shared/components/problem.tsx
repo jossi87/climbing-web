@@ -315,6 +315,7 @@ class Problem extends Component<any, any> {
         {topoContent}
         <Well bsSize="small">
           {!data.metadata.isBouldering && <span><strong>Type:</strong> {data.t.type + " - " + data.t.subType}<br/></span>}
+          <strong>Nr:</strong> {data.nr}<br/>
           <strong>Comment:</strong> {data.comment}<br/>
           <strong>FA:</strong> {fa}<br/>
           <strong>FA date:</strong> {data.faDateHr}<br/>
