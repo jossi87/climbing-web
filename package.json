@@ -35,7 +35,7 @@
     "nodemon": "^1.18.4",
     "ts-loader": "^5.2.0",
     "typescript": "^3.0.3",
-    "webpack": "^4.19.1",
+    "webpack": "^4.20.0",
     "webpack-cli": "^3.1.1",
     "webpack-node-externals": "^1.7.2"
   },
@@ -52,7 +52,7 @@
     "object-fit-images": "^3.2.4",
     "prop-types": "^15.6.2",
     "react": "^16.5.2",
-    "react-avatar": "^3.4.3",
+    "react-avatar": "^3.4.4",
     "react-bootstrap": "^0.32.4",
     "react-bootstrap-table": "^4.3.1",
     "react-cookie": "^3.0.3",
