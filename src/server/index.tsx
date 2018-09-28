@@ -31,7 +31,7 @@ app.get("*", (req: any, res: any, next) => {
   promise.then((data) => {
     const context: any = { data }
     const markup = renderToString(
-      <CookiesProvider cookies={req.universalCookies}>
+      <CookiesProvider cookies={req.universalCookies} allCookies={null}>
         <MetaTagsContext extract={metaTagsInstance.extract}>
           <StaticRouter location={req.url} context={context}>
             <App />
