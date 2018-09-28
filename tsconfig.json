@@ -2,6 +2,7 @@
     "compilerOptions": {
         "outDir": "./dist/",
         "target": "es5",
+        "lib": ["es5", "es6", "dom"],
         "jsx": "react",
         "allowSyntheticDefaultImports": true,
         "module": "ESNext",

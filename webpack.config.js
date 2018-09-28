@@ -10,12 +10,11 @@ var browserConfig = {
     publicPath: '/'
   },
   resolve: {
-    extensions: [".ts", ".tsx", ".js", ".json"]
+    extensions: [".ts", ".tsx", ".json", ".js"]
   },
   module: {
     rules: [
-      { test: /\.tsx?$/, use: 'ts-loader' },
-      { test: /\.jsx?$/, exclude: /node_modules/, use: {loader: 'babel-loader'} },
+      { test: /\.tsx?$/, exclude: /node_modules/, use: 'ts-loader' },
     ]
   },
   plugins: [
@@ -24,7 +23,7 @@ var browserConfig = {
 }
 
 var serverConfig = {
-  entry: './src/server/index.js',
+  entry: './src/server/index.tsx',
   target: 'node',
   externals: [nodeExternals()],
   output: {
@@ -33,12 +32,11 @@ var serverConfig = {
     publicPath: '/'
   },
   resolve: {
-    extensions: [".ts", ".tsx", ".js", ".json"]
+    extensions: [".ts", ".tsx", ".json", ".js"]
   },
   module: {
     rules: [
-      { test: /\.tsx?$/, loader: "ts-loader" },
-      { test: /\.jsx?$/, exclude: /node_modules/, use: {loader: 'babel-loader'} },
+      { test: /\.tsx?$/, exclude: /node_modules/, use: 'ts-loader' },
     ]
   },
   plugins: [

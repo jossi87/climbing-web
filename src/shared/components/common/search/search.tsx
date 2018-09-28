@@ -62,6 +62,7 @@ class Search extends Component<any, any> {
         instanceId="buldreinfo-navigation-search"
         placeholder="Search"
         loadOptions={this.search.bind(this)}
+        // @ts-ignore
         filterOptions={(options, filter, currentValues) => {
           // Do no filtering, just return all options
           return options;

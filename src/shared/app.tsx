@@ -52,7 +52,7 @@ class App extends Component {
 
   componentDidMount() {
     // Temp fix to collapse nav-button on devices: https://github.com/lefant/react-bootstrap/commit/c68b46baea + https://github.com/react-bootstrap/react-router-bootstrap/issues/112#issuecomment-142599003
-    const navBar = ReactDOM.findDOMNode(this).querySelector('nav.navbar');
+    const navBar = (ReactDOM.findDOMNode(this) as any).querySelector('nav.navbar');
     const collapsibleNav = navBar.querySelector('div.navbar-collapse');
     const btnToggle = navBar.querySelector('button.navbar-toggle');
 
@@ -67,22 +67,27 @@ class App extends Component {
   }
 
   render() {
-    const isAuthenticated = this.auth.isAuthenticated();
+    const thisAuth = this.auth;
+    const isAuthenticated = thisAuth.isAuthenticated();
     return (
       <Switch>
         {routes.map(({ path, exact, component: Component, ...rest }) => (
-          <Route key={path} path={path} exact={exact} render={(props) => (
-            <div>
-              <Analytics {...props}/>
-              <Navigation isAuthenticated={isAuthenticated} auth={this.auth} {...props}/>
-              <div className="container">
-                <Component isAuthenticated={isAuthenticated} auth={this.auth} {...props} {...rest} />
+          <Route key={path} path={path} exact={exact} render={(props: any) => {
+            props.isAuthenticated = isAuthenticated;
+            props.auth = thisAuth;
+            return (
+              <div>
+                <Analytics {...props}/>
+                <Navigation {...props}/>
+                <div className="container">
+                  <Component {...props} {...rest} />
+                </div>
+                <footer style={{paddingTop: '10px', marginTop: '40px', color: '#777', textAlign: 'center', borderTop: '1px solid #e5e5e5'}}>
+                  Buldreinfo &amp; Bratte Linjer &copy; 2006-2018
+                </footer>
               </div>
-              <footer style={{paddingTop: '10px', marginTop: '40px', color: '#777', textAlign: 'center', borderTop: '1px solid #e5e5e5'}}>
-                Buldreinfo &amp; Bratte Linjer &copy; 2006-2018
-              </footer>
-            </div>
-          )} />
+            )
+          }} />
         ))}
       </Switch>
     );

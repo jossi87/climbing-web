@@ -17,10 +17,10 @@ app.use(cors());
 app.use(cookiesMiddleware());
 app.use(express.static("build"));
 
-app.get("*", (req, res, next) => {
-  const css = new Set(); // CSS for all rendered React components
+app.get("*", (req: any, res: any, next) => {
   const metaTagsInstance = MetaTagsServer();
-  global.myOrigin = req.headers.host==='localhost:3000'? "http://localhost:3000" : "https://" + req.headers.host;
+  (global as any).myOrigin = req.headers.host==='localhost:3000'? "http://localhost:3000" : "https://" + req.headers.host;
+  // @ts-ignore
   const activeRoute = routes.find((route) => matchPath(req.url, route)) || {};
 
   const accessToken = req.universalCookies.get('access_token');
@@ -29,7 +29,7 @@ app.get("*", (req, res, next) => {
     : Promise.resolve()
 
   promise.then((data) => {
-    const context = { data, insertCss: (...styles) => styles.forEach(style => css.add(style._getCss())) }
+    const context: any = { data }
     const markup = renderToString(
       <CookiesProvider cookies={req.universalCookies}>
         <MetaTagsContext extract={metaTagsInstance.extract}>
@@ -57,7 +57,6 @@ app.get("*", (req, res, next) => {
           <script async src="/js/bundle.js" defer></script>
           <script>window.__INITIAL_METADATA__ = ${serialize(data? data.metadata : null)}</script>
           <script>window.__INITIAL_DATA__ = ${serialize(data)}</script>
-          <style type="text/css">${[...css].join('')}</style>
         </head>
 
         <body>

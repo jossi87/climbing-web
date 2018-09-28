@@ -8,7 +8,7 @@ class Navigation extends Component<any, any> {
   constructor(props) {
     super(props);
     let metadata;
-    if (__isBrowser__) {
+    if (__isBrowser__ && window) {
       metadata = window.__INITIAL_METADATA__;
       delete window.__INITIAL_METADATA__;
     } else {
