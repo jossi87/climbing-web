@@ -1,15 +1,12 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
-import { Table, Grid, Well, Row, Col, Clearfix } from 'react-bootstrap';
+import { Grid, Well, Row, Col, Clearfix } from 'react-bootstrap';
 import TextBox from './textbox/textbox';
 import ImageBox from './imagebox/imagebox';
 import LinkBox from './linkbox/linkbox';
-import { LockSymbol } from './../common/lock-symbol/lock-symbol';
+import { LockSymbol } from './../common/widgets/widgets';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
-const style = {padding: 0, textAlign: 'left'};
-const styleNw = {padding: 0, textAlign: 'left', whiteSpace: 'nowrap'};
 
 class Index extends Component<any, any> {
   constructor(props) {

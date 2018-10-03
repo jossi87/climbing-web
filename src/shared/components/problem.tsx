@@ -4,10 +4,10 @@ import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
 import { LinkContainer } from 'react-router-bootstrap';
-import { Tabs, Tab, Well, Panel, ButtonGroup, Button, Breadcrumb, OverlayTrigger, Popover, Tooltip, Table } from 'react-bootstrap';
+import { Tabs, Tab, Well, Panel, ButtonGroup, Button, Breadcrumb, OverlayTrigger, Tooltip, Table } from 'react-bootstrap';
 import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
-import { LockSymbol } from './common/lock-symbol/lock-symbol';
+import { LockSymbol, Stars } from './common/widgets/widgets';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { postComment } from './../api';
 
@@ -147,36 +147,13 @@ class Problem extends Component<any, any> {
     if (data.ticks) {
       const rows = data.ticks.map((t, i) => {
         const isTickedClassName = t.writable? 'success' : '';
-        var stars = null;
-        if (t.stars===0.5) {
-          stars = <FontAwesomeIcon icon="star-half" />;
-        } else if (t.stars===1.0) {
-          stars = <div style={{whiteSpace: 'nowrap'}}><FontAwesomeIcon icon="star" /></div>;
-        } else if (t.stars===1.5) {
-          stars = <div style={{whiteSpace: 'nowrap'}}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star-half" /></div>;
-        } else if (t.stars===2.0) {
-          stars = <div style={{whiteSpace: 'nowrap'}}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /></div>;
-        } else if (t.stars===2.5) {
-          stars = <div style={{whiteSpace: 'nowrap'}}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star-half" /></div>;
-        } else if (t.stars===3.0) {
-          stars = <div style={{whiteSpace: 'nowrap'}}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /></div>;
-        }
-        if (stars) {
-          stars = <OverlayTrigger placement="top" overlay={
-            <Popover id="Guidelines" title="Guidelines">
-              <FontAwesomeIcon icon="star" /> Nice<br/>
-              <FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Very nice<br/>
-              <FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Fantastic!
-            </Popover>
-          }>{stars}</OverlayTrigger>;
-        }
         return (
           <tr className={isTickedClassName} key={i}>
             <td>{t.date}</td>
             <td><Link to={`/user/${t.idUser}`}>{t.name}</Link></td>
             <td>{t.suggestedGrade}</td>
             <td>{t.comment}</td>
-            <td>{stars}</td>
+            <td><Stars numStars={t.stars}/></td>
           </tr>
         );
       });

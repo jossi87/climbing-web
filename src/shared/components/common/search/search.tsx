@@ -4,7 +4,7 @@ import { components } from 'react-select';
 import { Redirect } from 'react-router';
 import Avatar from 'react-avatar';
 import { postSearch } from './../../../api';
-import { LockSymbol } from '../lock-symbol/lock-symbol';
+import { LockSymbol } from '../widgets/widgets';
 
 const CustomOption = (props) => {
   var bg = "#4caf50";

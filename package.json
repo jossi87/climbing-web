@@ -15,6 +15,7 @@
     "ts-loader": "^5.2.1",
     "typescript": "^3.1.1",
     "webpack": "^4.20.2",
+    "webpack-bundle-analyzer": "^3.0.2",
     "webpack-cli": "^3.1.2",
     "webpack-node-externals": "^1.7.2"
   },
@@ -30,7 +31,6 @@
     "@types/prop-types": "^15.5.6",
     "@types/react": "^16.4.14",
     "@types/react-bootstrap": "^0.32.14",
-    "@types/react-bootstrap-table": "^4.3.5",
     "@types/react-dom": "^16.0.8",
     "@types/react-dropzone": "^4.2.2",
     "@types/react-fontawesome": "^1.6.4",
@@ -52,7 +52,6 @@
     "react": "^16.5.2",
     "react-avatar": "^3.4.4",
     "react-bootstrap": "^0.32.4",
-    "react-bootstrap-table": "^4.3.1",
     "react-cookie": "^3.0.3",
     "react-day-picker": "^7.2.4",
     "react-dom": "^16.5.2",
@@ -73,6 +72,7 @@
   },
   "scripts": {
     "build": "webpack --mode=production",
+    "bundle-analyzer": "webpack --mode=production --config webpack.config.webpackbundleanalyzer.js",
     "dev-build": "webpack --watch --mode=development",
     "dev-server": "nodemon server.js"
   }

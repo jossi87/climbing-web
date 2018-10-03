@@ -5,29 +5,8 @@ import { Tabs, Tab, Well, OverlayTrigger, Tooltip, ButtonGroup, Button, Table, B
 import { LinkContainer } from 'react-router-bootstrap';
 import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
-import { LockSymbol } from './common/lock-symbol/lock-symbol';
+import { CroppedText, LockSymbol } from './common/widgets/widgets';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
-class TableRow extends Component<any, any> {
-  render() {
-    var comment: any = "";
-    if (this.props.sector.comment) {
-      if (this.props.sector.comment.length>100) {
-        const tooltip = (<Tooltip id={this.props.sector.id}>{this.props.sector.comment}</Tooltip>);
-        comment = <OverlayTrigger key={this.props.sector.id} placement="top" overlay={tooltip}><span>{this.props.sector.comment.substring(0,100) + "..."}</span></OverlayTrigger>;
-      } else {
-        comment = this.props.sector.comment;
-      }
-    }
-    return (
-      <tr>
-        <td><Link to={`/sector/${this.props.sector.id}`}>{this.props.sector.name}</Link> <LockSymbol visibility={this.props.sector.visibility}/></td>
-        <td>{comment}</td>
-        <td>{this.props.sector.numProblems}</td>
-      </tr>
-    )
-  }
-}
 
 class Area extends Component<any, any> {
   constructor(props) {
@@ -71,11 +50,13 @@ class Area extends Component<any, any> {
     if (!this.state.data) {
       return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
     }
-    const rows = this.state.data.sectors.map((sector, i) => {
-      return (
-        <TableRow sector={sector} key={i} />
-      )
-    });
+    const rows = this.state.data.sectors.map((sector, i) => (
+      <tr>
+        <td><Link to={`/sector/${sector.id}`}>{sector.name}</Link> <LockSymbol visibility={sector.visibility}/></td>
+        <td><CroppedText text={sector.comment} i={i} maxLength={100}/></td>
+        <td>{sector.numProblems}</td>
+      </tr>
+    ));
     const markers = this.state.data.sectors.filter(s => s.lat!=0 && s.lng!=0).map(s => {
       return {
           lat: s.lat,

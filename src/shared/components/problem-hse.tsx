@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
-import { LockSymbol } from './common/lock-symbol/lock-symbol';
-import { Breadcrumb, OverlayTrigger, Tooltip, Table } from 'react-bootstrap';
+import { LockSymbol } from './common/widgets/widgets';
+import { Breadcrumb, Table } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class ProblemHse extends Component<any, any> {

@@ -5,7 +5,7 @@ import { Redirect } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getImageUrl, postProblemSvg } from '../api';
 import { parseReadOnlySvgs } from '../utils/svg';
-import { LockSymbol } from './common/lock-symbol/lock-symbol';
+import { LockSymbol } from './common/widgets/widgets';
 
 class SvgEdit extends Component<any, any> {
   constructor(props) {

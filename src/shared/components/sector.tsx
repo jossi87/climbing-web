@@ -3,8 +3,8 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
-import { LockSymbol } from './common/lock-symbol/lock-symbol';
-import { Tabs, Tab, Well, OverlayTrigger, Tooltip, Popover, ButtonGroup, Button, Table, Breadcrumb } from 'react-bootstrap';
+import { CroppedText, LockSymbol, Stars, TypeImage } from './common/widgets/widgets';
+import { Tabs, Tab, Well, OverlayTrigger, Tooltip, ButtonGroup, Button, Table, Breadcrumb } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -25,15 +25,6 @@ class TableRow extends Component<any, any> {
   }
 
   render() {
-    var comment: any = "";
-    if (this.props.problem.comment) {
-      if (this.props.problem.comment.length>40) {
-        const tooltip = (<Tooltip id={this.props.problem.id}>{this.props.problem.comment}</Tooltip>);
-        comment = <OverlayTrigger key={this.props.problem.id} placement="top" overlay={tooltip}><span>{this.props.problem.comment.substring(0,40) + "..."}</span></OverlayTrigger>;
-      } else {
-        comment = this.props.problem.comment;
-      }
-    }
     var fa = this.props.problem.fa? this.props.problem.fa.map((u, i) => {return (<Link key={i} to={`/user/${u.id}`}>{u.firstname} {u.surname}</Link>)}) : [];
     fa = this.intersperse(fa, ", ");
     var bsStyle = '';
@@ -43,55 +34,16 @@ class TableRow extends Component<any, any> {
       bsStyle = 'danger';
     }
 
-    var stars = null;
-    if (this.props.problem.stars===0.5) {
-      stars = <FontAwesomeIcon icon="star-half" />;
-    } else if (this.props.problem.stars===1.0) {
-      stars = <div style={{whiteSpace: 'nowrap'}}><FontAwesomeIcon icon="star" /></div>;
-    } else if (this.props.problem.stars===1.5) {
-      stars = <div style={{whiteSpace: 'nowrap'}}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star-half" /></div>;
-    } else if (this.props.problem.stars===2.0) {
-      stars = <div style={{whiteSpace: 'nowrap'}}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /></div>;
-    } else if (this.props.problem.stars===2.5) {
-      stars = <div style={{whiteSpace: 'nowrap'}}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star-half" /></div>;
-    } else if (this.props.problem.stars===3.0) {
-      stars = <div style={{whiteSpace: 'nowrap'}}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /></div>;
-    }
-    if (stars) {
-      stars = <OverlayTrigger placement="top" overlay={
-        <Popover id="Guidelines" title="Guidelines">
-          <FontAwesomeIcon icon="star" /> Nice<br/>
-          <FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Very nice<br/>
-          <FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Fantastic!
-        </Popover>
-      }>{stars}</OverlayTrigger>;
-    }
-
-    var type;
-    if (!this.props.isBouldering) {
-      var typeImg;
-      const subtype = this.props.problem.t.subtype;
-      switch (this.props.problem.t.id) {
-        case 2: typeImg = <img height="20" src="/jpg/bolt.jpg" alt={subtype}/>; break;
-        case 3: typeImg = <img height="20" src="/jpg/trad.jpg" alt={subtype}/>; break;
-        case 4: typeImg = <img height="20" src="/jpg/mixed.jpg" alt={subtype}/>; break;
-        case 5: typeImg = <img height="20" src="/jpg/toprope.jpg" alt={subtype}/>; break;
-      }
-      type = <td><OverlayTrigger placement="top" overlay={<Popover id={this.props.problem.t.id} title="Type">
-          {this.props.problem.t.type + " - " + this.props.problem.t.subType}
-        </Popover>}>{typeImg}</OverlayTrigger></td>;
-    }
-
     return (
       <tr className={bsStyle}>
         <td>{this.props.problem.nr}</td>
         <td><Link to={`/problem/${this.props.problem.id}`}>{this.props.problem.name}</Link> <LockSymbol visibility={this.props.problem.visibility}/></td>
-        <td>{comment}</td>
-        {type}
+        <td><CroppedText text={this.props.problem.comment} i={this.props.problem.id} maxLength={40} /></td>
+        {this.state && this.state.data && !this.state.data.metadata.isBouldering && <td><TypeImage t={this.props.problem.t}/></td>}
         <td>{this.props.problem.grade}</td>
         <td>{fa}</td>
         <td>{this.props.problem.numTicks}</td>
-        <td>{stars}</td>
+        <td><Stars numStars={this.props.problem.stars}/></td>
         <td>{this.props.problem.numImages}</td>
         <td>{this.props.problem.numMovies}</td>
         <td>{( (this.props.problem.lat>0 && this.props.problem.lng>0) || (this.props.problemsInTopo.indexOf(this.props.problem.id)>=0) ) && <FontAwesomeIcon icon="check" />}</td>

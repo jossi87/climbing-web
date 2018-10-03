@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
-import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router'
-import { FormGroup, ControlLabel, ButtonGroup, Button, Well } from 'react-bootstrap';
+import { FormGroup, ButtonGroup, Button, Well } from 'react-bootstrap';
 import ImageUpload from './common/image-upload/image-upload';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getProblem, postProblemMedia } from './../api';

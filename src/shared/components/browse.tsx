@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { OverlayTrigger, Tooltip, Button, Table, Breadcrumb } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import Leaflet from './common/leaflet/leaflet';
-import { LockSymbol } from './common/lock-symbol/lock-symbol';
+import { LockSymbol } from './common/widgets/widgets';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class Browse extends Component<any, any> {
