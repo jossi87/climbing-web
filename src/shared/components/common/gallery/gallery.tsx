@@ -145,7 +145,7 @@ class Gallery extends Component<any, any> {
 
   generateShapes(svgs, svgProblemId, w, h) {
     return svgs.map((svg, key) => {
-      const path = parseSVG(svg.path);
+      const path: any = parseSVG(svg.path);
       makeAbsolute(path); // Note: mutates the commands in place!
       var ixNr;
       var maxY = 0;

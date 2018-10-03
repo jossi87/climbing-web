@@ -84,7 +84,7 @@ export default class Auth {
     this.auth0.checkSession({},
       (err, result) => {
         if (err) {
-          console.log(`Could not get a new token (${err.error}: ${err.error_description}).`);
+          console.log(`Could not get a new token (${err.error}: ${err.errorDescription}).`);
           this.logout();
         } else {
           this.setCookies(result);

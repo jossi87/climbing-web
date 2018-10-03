@@ -38,7 +38,7 @@ function generateSvgNrAndAnchor(path, nr, hasAnchor, w, h) {
 
 export function parsePath(d) {
   if (d) {
-    const commands = parseSVG(d);
+    const commands: any = parseSVG(d);
     makeAbsolute(commands); // Note: mutates the commands in place!
     return commands.map(c => {
       switch (c.code) {
