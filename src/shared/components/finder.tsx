@@ -73,7 +73,7 @@ class Finder extends Component<any, any> {
         <Breadcrumb>
           <Link to={`/`}>Home</Link> / Finder [{this.state.data.grade}] (problems: {this.state.data.problems.length})
         </Breadcrumb>
-        {map}<br/>
+        {map}
         <Table striped condensed hover>
           <thead>
             <tr>
