@@ -134,8 +134,8 @@ export default class Leaflet extends Component<LeafletProps, any> {
               maxNativeZoom={maxZoom}
               minZoom={0}
               maxZoom={maxZoom}
-              attribution='&copy; <a href="http://osm.org/copyright" rel="noopener" target="_blank">OpenStreetMap</a> contributors'
-              url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
+              attribution='&copy; <a href="https://osm.org/copyright" rel="noopener" target="_blank">OpenStreetMap</a> contributors'
+              url='https://{s}.tile.osm.org/{z}/{x}/{y}.png'
             />
           </LayersControl.BaseLayer>
 

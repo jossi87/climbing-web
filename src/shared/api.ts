@@ -1,5 +1,4 @@
 import fetch from 'isomorphic-fetch';
-require('es6-promise').polyfill();
 import { parsePath } from './utils/svg';
 
 function getUrl(urlSuffix: string): string {
