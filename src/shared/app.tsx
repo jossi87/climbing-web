@@ -65,7 +65,7 @@ class App extends Component {
               <div>
                 <Analytics {...props}/>
                 <Navigation {...props}/>
-                <Container text style={{ marginTop: '7em' }}>
+                <Container style={{ marginTop: '5em' }}>
                   <Component {...props} {...rest} />
                 </Container>
 

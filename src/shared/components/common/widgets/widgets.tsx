@@ -44,7 +44,7 @@ export function Stars({numStars}) {
   return null;
 }
 
-export function CroppedText({text, maxLength, i}) {
+export function CroppedText({text, maxLength}) {
   if (text) {
     if (text.length>maxLength) {
       return <Popup trigger={text.substring(0,maxLength) + "..."} content={text} />

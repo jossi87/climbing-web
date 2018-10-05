@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
-import { Breadcrumb, Loader, Table, Button, Icon, Item } from 'semantic-ui-react';
+import { Loader, Button, Icon, Card } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
 import { LockSymbol } from './common/widgets/widgets';
 
@@ -36,7 +36,7 @@ class Browse extends Component<any, any> {
           url: '/area/' + a.id
         }
     });
-    const map = markers.length>0? <Leaflet useOpenStreetMap={true} markers={markers} defaultCenter={this.state.data.metadata.defaultCenter} defaultZoom={this.state.data.metadata.defaultZoom}/> : null;
+    const map = markers.length>0 && <span><Leaflet useOpenStreetMap={true} markers={markers} defaultCenter={this.state.data.metadata.defaultCenter} defaultZoom={this.state.data.metadata.defaultZoom}/><br/></span>;
     return (
       <React.Fragment>
         <MetaTags>
@@ -50,33 +50,25 @@ class Browse extends Component<any, any> {
           <meta property="og:image:width" content={this.state.data.metadata.og.imageWidth} />
           <meta property="og:image:height" content={this.state.data.metadata.og.imageHeight} />
         </MetaTags>
-
-        <Button animated='fade' floated="right">
-          <Button.Content visible><Icon name="plus square" /></Button.Content>
-          <Button.Content hidden>Add area</Button.Content>
-        </Button>
-
-        <Breadcrumb>
-          <Breadcrumb.Section link as={Link} to='/'>Home</Breadcrumb.Section>
-          <Breadcrumb.Divider />
-          <Breadcrumb.Section active>Browse</Breadcrumb.Section>
-        </Breadcrumb>
+        {this.state && this.state.data && this.state.data.metadata.isAdmin &&
+          <span><Button fluid size="mini">Add area</Button><br/></span>
+        }
         {map}
-        <Item.Group>
+        <Card.Group itemsPerRow={3} stackable>
           {this.state.data.areas.map((area, i) => (
-            <Item as={Link} to={`/area/${area.id}`} key={i}>
-              <Item.Content>
-                <Item.Header>{area.name}  <LockSymbol visibility={area.visibility}/></Item.Header>
-                <Item.Meta>
+            <Card as={Link} to={`/area/${area.id}`} key={i}>
+              <Card.Content>
+                <Card.Header>{area.name}  <LockSymbol visibility={area.visibility}/></Card.Header>
+                <Card.Meta>
                   {`${area.numSectors} sector(s), ${area.numProblems} problem(s)`}
-                </Item.Meta>
-                <Item.Description>
-                  {area.comment}
-                </Item.Description>
-              </Item.Content>
-            </Item>
+                </Card.Meta>
+                <Card.Description>
+                  {area.comment && area.comment.length>50? area.comment.substring(0,50) + "..." : area.comment}
+                </Card.Description>
+              </Card.Content>
+            </Card>
           ))}
-        </Item.Group>
+        </Card.Group>
       </React.Fragment>
     );
   }
