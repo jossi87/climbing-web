@@ -2,11 +2,10 @@ import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { Tabs, Tab, Well, OverlayTrigger, Tooltip, ButtonGroup, Button, Table, Breadcrumb } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
 import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
 import { CroppedText, LockSymbol } from './common/widgets/widgets';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Loader, Image } from 'semantic-ui-react';
 
 class Area extends Component<any, any> {
   constructor(props) {
@@ -48,7 +47,7 @@ class Area extends Component<any, any> {
 
   render() {
     if (!this.state.data) {
-      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
+      return <Loader active inline='centered' />;
     }
     const rows = this.state.data.sectors.map((sector, i) => (
       <tr>
@@ -110,10 +109,10 @@ class Area extends Component<any, any> {
             <div style={{float: 'right'}}>
               <ButtonGroup>
                 <OverlayTrigger placement="top" overlay={<Tooltip id="Add sector">Add sector</Tooltip>}>
-                  <LinkContainer to={{ pathname: `/sector/edit/-1`, query: { idArea: this.state.data.id, lat: this.state.data.lat, lng: this.state.data.lng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="plus-square" inverse={true} /></Button></LinkContainer>
+                  <LinkContainer to={{ pathname: `/sector/edit/-1`, query: { idArea: this.state.data.id, lat: this.state.data.lat, lng: this.state.data.lng } }}><Button bsStyle="primary" bsSize="xsmall"><Image name="plus square" inverse={true} /></Button></LinkContainer>
                 </OverlayTrigger>
                 <OverlayTrigger placement="top" overlay={<Tooltip id={this.state.data.id}>Edit area</Tooltip>}>
-                  <LinkContainer to={{ pathname: `/area/edit/${this.state.data.id}`, query: { lat: this.state.data.lat, lng: this.state.data.lng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="edit" inverse={true} /></Button></LinkContainer>
+                  <LinkContainer to={{ pathname: `/area/edit/${this.state.data.id}`, query: { lat: this.state.data.lat, lng: this.state.data.lng } }}><Button bsStyle="primary" bsSize="xsmall"><Image name="edit" inverse={true} /></Button></LinkContainer>
                 </OverlayTrigger>
               </ButtonGroup>
             </div>:

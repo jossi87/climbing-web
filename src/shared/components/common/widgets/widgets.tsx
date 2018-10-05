@@ -1,13 +1,12 @@
 import React from 'react';
-import { LinkContainer } from 'react-router-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { ButtonToolbar, ButtonGroup, Button, OverlayTrigger, Popover, Tooltip } from 'react-bootstrap';
+import { Button, Icon, Popup } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
 
 export function LockSymbol({visibility}) {
   if (visibility===1) {
-    return <FontAwesomeIcon icon="lock" />
+    return <Icon name="lock" />
   } else if (visibility===2) {
-    return <FontAwesomeIcon icon="user-secret" />
+    return <Icon name="user secret" />
   }
   return null;
 }
@@ -15,27 +14,31 @@ export function LockSymbol({visibility}) {
 export function Stars({numStars}) {
   var stars = null;
   if (numStars===0.5) {
-    stars = <FontAwesomeIcon icon="star-half" />;
+    stars = <Icon name="star half" />;
   } else if (numStars===1.0) {
-    stars = <div style={{whiteSpace: 'nowrap'}}><FontAwesomeIcon icon="star" /></div>;
+    stars = <div style={{whiteSpace: 'nowrap'}}><Icon name="star" /></div>;
   } else if (numStars===1.5) {
-    stars = <div style={{whiteSpace: 'nowrap'}}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star-half" /></div>;
+    stars = <div style={{whiteSpace: 'nowrap'}}><Icon name="star" /><Icon name="star half" /></div>;
   } else if (numStars===2.0) {
-    stars = <div style={{whiteSpace: 'nowrap'}}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /></div>;
+    stars = <div style={{whiteSpace: 'nowrap'}}><Icon name="star" /><Icon name="star" /></div>;
   } else if (numStars===2.5) {
-    stars = <div style={{whiteSpace: 'nowrap'}}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star-half" /></div>;
+    stars = <div style={{whiteSpace: 'nowrap'}}><Icon name="star" /><Icon name="star" /><Icon name="star half" /></div>;
   } else if (numStars===3.0) {
-    stars = <div style={{whiteSpace: 'nowrap'}}><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /></div>;
+    stars = <div style={{whiteSpace: 'nowrap'}}><Icon name="star" /><Icon name="star" /><Icon name="star" /></div>;
   }
   if (stars) {
     return (
-      <OverlayTrigger placement="top" overlay={
-        <Popover id="Guidelines" title="Guidelines">
-          <FontAwesomeIcon icon="star" /> Nice<br/>
-          <FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Very nice<br/>
-          <FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /><FontAwesomeIcon icon="star" /> Fantastic!
-        </Popover>
-      }>{stars}</OverlayTrigger>
+      <Popup
+        trigger={stars}
+        header="Guidelines"
+        content={
+          <div>
+            <Icon name="star" /> Nice<br/>
+            <Icon name="star" /><Icon name="star" /> Very nice<br/>
+            <Icon name="star" /><Icon name="star" /><Icon name="star" /> Fantastic!
+          </div>
+        }
+      />
     );
   }
   return null;
@@ -44,8 +47,7 @@ export function Stars({numStars}) {
 export function CroppedText({text, maxLength, i}) {
   if (text) {
     if (text.length>maxLength) {
-      const tooltip = (<Tooltip id={i}>{text}</Tooltip>);
-      return <OverlayTrigger key={i} placement="top" overlay={tooltip}><span>{text.substring(0,maxLength) + "..."}</span></OverlayTrigger>;
+      return <Popup trigger={text.substring(0,maxLength) + "..."} content={text} />
     } else {
       return text;
     }
@@ -62,20 +64,13 @@ export function TypeImage({t}) {
     case 4: typeImg = <img height="20" src="/jpg/mixed.jpg" alt={subtype}/>; break;
     case 5: typeImg = <img height="20" src="/jpg/toprope.jpg" alt={subtype}/>; break;
   }
-  return (
-    <OverlayTrigger placement="top" overlay={<Popover id={t.id} title="Type"> {t.type + " - " + t.subType}</Popover>}>
-      {typeImg}
-    </OverlayTrigger>
-  );
+  return <Popup trigger={typeImg} content={t.type + " - " + t.subType} />
 }
 
 export function FaButtons({fa}) {
   if (fa) {
-    const faButtons = fa? fa.map((u, i) => {
-      const tooltip = (<Tooltip id={i}>{u.firstname} {u.surname}</Tooltip>);
-      return (<OverlayTrigger key={i} placement="top" overlay={tooltip}><LinkContainer key={i} to={`/user/${u.id}`}><Button key={i} bsStyle="default">{u.initials}</Button></LinkContainer></OverlayTrigger>)
-    }) : [];
-    return <ButtonToolbar><ButtonGroup bsSize="xsmall">{faButtons}</ButtonGroup></ButtonToolbar>;
+    const faButtons = fa.map((u, i) => (<Popup key={i} trigger={<Button size="mini" as={Link} to={`/user/${u.id}`}>{u.initials}</Button>} content={u.firstname + " " + u.surname} />));
+    return <Button.Group size="mini">{faButtons}</Button.Group>;
   }
   return null;
 }

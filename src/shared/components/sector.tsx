@@ -5,8 +5,7 @@ import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
 import { CroppedText, LockSymbol, Stars, TypeImage } from './common/widgets/widgets';
 import { Tabs, Tab, Well, OverlayTrigger, Tooltip, ButtonGroup, Button, Table, Breadcrumb } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Loader, Image } from 'semantic-ui-react';
 
 class TableRow extends Component<any, any> {
   /* intersperse: Return an array with the separator interspersed between
@@ -46,7 +45,7 @@ class TableRow extends Component<any, any> {
         <td><Stars numStars={this.props.problem.stars}/></td>
         <td>{this.props.problem.numImages}</td>
         <td>{this.props.problem.numMovies}</td>
-        <td>{( (this.props.problem.lat>0 && this.props.problem.lng>0) || (this.props.problemsInTopo.indexOf(this.props.problem.id)>=0) ) && <FontAwesomeIcon icon="check" />}</td>
+        <td>{( (this.props.problem.lat>0 && this.props.problem.lng>0) || (this.props.problemsInTopo.indexOf(this.props.problem.id)>=0) ) && <Image name="check" />}</td>
       </tr>
     )
   }
@@ -93,7 +92,7 @@ class Sector extends Component<any, any> {
   render() {
     const { data } = this.state;
     if (!data) {
-      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
+      return <Loader active inline='centered' />;
     }
     const problemsInTopo = [];
     if (data.media) {
@@ -164,10 +163,10 @@ class Sector extends Component<any, any> {
             <div style={{float: 'right'}}>
               <ButtonGroup>
                 <OverlayTrigger placement="top" overlay={<Tooltip id="Add problem">Add problem</Tooltip>}>
-                  <LinkContainer to={{ pathname: `/problem/edit/-1`, query: { idSector: data.id, nr: nextNr, lat: data.lat, lng: data.lng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="plus-square" inverse={true} /></Button></LinkContainer>
+                  <LinkContainer to={{ pathname: `/problem/edit/-1`, query: { idSector: data.id, nr: nextNr, lat: data.lat, lng: data.lng } }}><Button bsStyle="primary" bsSize="xsmall"><Image name="plus square" inverse={true} /></Button></LinkContainer>
                 </OverlayTrigger>
                 <OverlayTrigger placement="top" overlay={<Tooltip id={data.id}>Edit sector</Tooltip>}>
-                  <LinkContainer to={{ pathname: `/sector/edit/${data.id}`, query: { idArea: data.areaId, lat: data.lat, lng: data.lng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="edit" inverse={true} /></Button></LinkContainer>
+                  <LinkContainer to={{ pathname: `/sector/edit/${data.id}`, query: { idArea: data.areaId, lat: data.lat, lng: data.lng } }}><Button bsStyle="primary" bsSize="xsmall"><Image name="edit" inverse={true} /></Button></LinkContainer>
                 </OverlayTrigger>
               </ButtonGroup>
             </div>:
@@ -180,7 +179,7 @@ class Sector extends Component<any, any> {
         <Table striped condensed hover>
           <thead>
             <tr>
-              <th><FontAwesomeIcon icon="hashtag" /></th>
+              <th><Image name="hashtag" /></th>
               <th>Name</th>
               <th>Description</th>
               {!data.metadata.isBouldering && <th>Type</th>}
@@ -188,9 +187,9 @@ class Sector extends Component<any, any> {
               <th>FA</th>
               <th>Ticks</th>
               <th>Stars</th>
-              <th><FontAwesomeIcon icon="camera" /></th>
-              <th><FontAwesomeIcon icon="video" /></th>
-              <th><FontAwesomeIcon icon="map-marker" /></th>
+              <th><Image name="camera" /></th>
+              <th><Image name="video" /></th>
+              <th><Image name="map marker" /></th>
             </tr>
           </thead>
           <tbody>

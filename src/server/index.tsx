@@ -50,7 +50,7 @@ app.get("*", (req: any, res: any, next) => {
           <meta name="viewport" content="width=device-width, initial-scale=1">
           <link rel="icon" href="/favicon.ico">
           <meta name="author" content="Jostein Øygarden">
-          <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+          <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.3/semantic.min.css"></link>
           <link rel="stylesheet" type="text/css" href="/css/image-gallery.css">
           <link rel="stylesheet" type="text/css" href="/css/leaflet.css">
           <link rel="stylesheet" type="text/css" href="/css/buldreinfo.css">

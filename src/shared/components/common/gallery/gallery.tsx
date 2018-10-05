@@ -5,8 +5,8 @@ import ReactPlayer from 'react-player'
 import {parseSVG, makeAbsolute} from 'svg-path-parser';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
+import { Image } from 'semantic-ui-react';
 import objectFitImages from 'object-fit-images'; // objectFit does not work on IE and Edge http://caniuse.com/#search=object-fit
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getImageUrl, deleteMedia } from '../../../api';
 
 class Gallery extends Component<any, any> {
@@ -238,9 +238,9 @@ class Gallery extends Component<any, any> {
     const m = this.props.media[this.state.mediaIndex];
     if (!this.state.isFullscreen && m.idType==1 && this.props.isAdmin) {
       if (m.svgProblemId>0) {
-        button = <span style={{position: 'absolute', zIndex: 4, background: 'rgba(0, 0, 0, 0.4)', padding: '8px 20px'}}><Link to={`/problem/svg-edit/${m.svgProblemId}-${m.id}`} onMouseEnter={this.toggleHoverEdit.bind(this)} onMouseLeave={this.toggleHoverEdit.bind(this)}><FontAwesomeIcon icon="edit" style={this.state.hoverEdit? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}}/></Link></span>;
+        button = <span style={{position: 'absolute', zIndex: 4, background: 'rgba(0, 0, 0, 0.4)', padding: '8px 20px'}}><Link to={`/problem/svg-edit/${m.svgProblemId}-${m.id}`} onMouseEnter={this.toggleHoverEdit.bind(this)} onMouseLeave={this.toggleHoverEdit.bind(this)}><Image name="edit" style={this.state.hoverEdit? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}}/></Link></span>;
       } else if (!m.svgs) {
-        button = <span style={{position: 'absolute', zIndex: 4, background: 'rgba(0, 0, 0, 0.4)', padding: '8px 20px'}}><a href="#" onMouseEnter={this.toggleHoverTrash.bind(this)} onMouseLeave={this.toggleHoverTrash.bind(this)} onClick={this.onDeleteImage.bind(this)}><FontAwesomeIcon icon="trash" style={this.state.hoverTrash? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}}/></a></span>;
+        button = <span style={{position: 'absolute', zIndex: 4, background: 'rgba(0, 0, 0, 0.4)', padding: '8px 20px'}}><a href="#" onMouseEnter={this.toggleHoverTrash.bind(this)} onMouseLeave={this.toggleHoverTrash.bind(this)} onClick={this.onDeleteImage.bind(this)}><Image name="trash" style={this.state.hoverTrash? {transform: 'scale(1.1)', color: '#fff'} : {color: '#fff'}}/></a></span>;
       }
     }
 

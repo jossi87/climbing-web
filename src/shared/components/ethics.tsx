@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
-import { Breadcrumb, Well } from 'react-bootstrap';
+import { Breadcrumb, Container } from 'semantic-ui-react';
 
 class Ethics extends Component<any, any> {
   constructor(props) {
@@ -30,10 +30,12 @@ class Ethics extends Component<any, any> {
           <meta name="description" content={"Ethics and privacy policy"} />
         </MetaTags>
         <Breadcrumb>
-          <Link to={`/`}>Home</Link> / Ethics
+          <Breadcrumb.Section link as={Link} to='/'>Home</Breadcrumb.Section>
+          <Breadcrumb.Divider />
+          <Breadcrumb.Section active>Ethics</Breadcrumb.Section>
         </Breadcrumb>
-        <Well>
-          If you&#39;re going out climbing, we ask you to please follow these guidelines for the best possible bouldering experience now, and for the future generations of climbers.<br/><br/>
+          <Container>
+          If you&#39;re going out climbing, we ask you to please follow these guidelines for the best possible bouldering experience now, and for the future generations of climbers.<br/>
           <ul>
             <li>Show respect for the landowners, issue care and be polite.</li>
             <li>Follow paths where possible, and do not cross cultivated land.</li>
@@ -45,11 +47,9 @@ class Ethics extends Component<any, any> {
             <li>Remember climbing can be dangerous and always involves risk. Your safety is your own responsibility.</li>
             <li>Use common sense!</li>
           </ul>
-        </Well>
-        <Well>
-          <h3>Privacy Policy</h3>
-          We respect your privacy and handle your data with the care that we would expect our own data to be handled. We will never sell or pass on your information to any third party. You can delete any of your profile information at any time, <a href="mailto:jostein.oygarden@gmail.com">send us an e-mail</a> with the data you want to delete. The Android app requests permissions like accounts and camera. Accounts are used to give you correct data according to your permissions in buldreinfo. The camera can be used inside the app to append new images to existing bouldering problems (pending approval by an administrator).
-        </Well>
+        </Container>
+        <h3>Privacy Policy</h3>
+        We respect your privacy and handle your data with the care that we would expect our own data to be handled. We will never sell or pass on your information to any third party. You can delete any of your profile information at any time, <a href="mailto:jostein.oygarden@gmail.com">send us an e-mail</a> with the data you want to delete. The Android app requests permissions like accounts and camera. Accounts are used to give you correct data according to your permissions in buldreinfo. The camera can be used inside the app to append new images to existing bouldering problems (pending approval by an administrator).
       </React.Fragment>
     );
   }

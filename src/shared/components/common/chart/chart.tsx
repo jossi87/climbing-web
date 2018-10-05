@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import { Table } from 'react-bootstrap';
 
 export default class Chart extends Component<any, any> {
   constructor(props) {
@@ -41,7 +40,7 @@ export default class Chart extends Component<any, any> {
     });
 
     return (
-      <Table responsive>
+      <table>
         <thead>
           <tr>
             <th>Grade</th>
@@ -54,7 +53,7 @@ export default class Chart extends Component<any, any> {
         <tbody>
           {rows}
         </tbody>
-      </Table>
+      </table>
     );
   }
 }

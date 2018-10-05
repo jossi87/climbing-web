@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { Link } from 'react-router-dom';
 import { Well, FormGroup, MenuItem, ButtonGroup, Button, DropdownButton, Alert, Breadcrumb } from 'react-bootstrap';
 import { Redirect } from 'react-router';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Loader } from 'semantic-ui-react';
 import { getImageUrl, postProblemSvg } from '../api';
 import { parseReadOnlySvgs } from '../utils/svg';
 import { LockSymbol } from './common/widgets/widgets';
@@ -263,7 +263,7 @@ class SvgEdit extends Component<any, any> {
 
   render() {
     if (!this.state || !this.state.id) {
-      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
+      return <Loader active inline='centered' />;
     } else if (this.state.error) {
       return <h3>{this.state.error.toString()}</h3>;
     } else if (this.state.pushUrl) {

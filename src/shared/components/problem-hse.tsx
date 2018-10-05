@@ -3,7 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { LockSymbol } from './common/widgets/widgets';
 import { Breadcrumb, Table } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Loader } from 'semantic-ui-react';
 
 class ProblemHse extends Component<any, any> {
   constructor(props) {
@@ -27,7 +27,7 @@ class ProblemHse extends Component<any, any> {
   render() {
     const { data } = this.state;
     if (!data) {
-      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
+      return <Loader active inline='centered' />;
     }
 
     const rows = data.map((hse, i) => {

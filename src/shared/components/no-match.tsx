@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
-import { Well } from 'react-bootstrap';
 
 export default class NoMatch extends Component {
   render() {
@@ -9,10 +8,8 @@ export default class NoMatch extends Component {
         <MetaTags>
           <title>Page not found</title>
         </MetaTags>
-        <Well>
-          <h1>404</h1>
-          Page not found
-        </Well>
+        <h1>404</h1>
+        Page not found
       </React.Fragment>
     );
   }

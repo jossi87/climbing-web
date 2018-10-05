@@ -3,7 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { Redirect } from 'react-router';
 import { FormGroup, ControlLabel, FormControl, ButtonGroup, DropdownButton, MenuItem, Button, Well } from 'react-bootstrap';
 import ImageUpload from './common/image-upload/image-upload';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Loader } from 'semantic-ui-react';
 import { postSector } from './../api';
 import Leaflet from './common/leaflet/leaflet';
 
@@ -126,7 +126,7 @@ class SectorEdit extends Component<any, any> {
     } else if (!this.props || !this.props.match || !this.props.match.params || !this.props.match.params.sectorId || !this.props.location || !this.props.location.query || !this.props.location.query.idArea) {
       return <span><h3>Invalid action...</h3></span>;
     } else if (!this.state.data) {
-      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
+      return <Loader active inline='centered' />;
     } else if (!this.state.data.metadata.isAdmin) {
       this.setState({pushUrl: "/login", error: null});
     }

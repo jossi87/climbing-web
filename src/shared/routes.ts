@@ -4,7 +4,7 @@ import Browse from './components/browse';
 import Callback from './components/callback';
 import Ethics from './components/ethics';
 import Finder from './components/finder';
-import Index from './components/frontpage';
+import Frontpage from './components/frontpage';
 import Logout from './components/logout';
 import Problem from './components/problem';
 import ProblemEdit from './components/problem-edit';
@@ -19,7 +19,7 @@ import NoMatch from './components/no-match';
 import { getArea, getAreaEdit, getBrowse, getFinder, getFrontpage, getMeta, getProblem, getProblemEdit, getProblemHse, getSector, getSectorEdit, getUser, getSvgEdit } from './api';
 
 const routes =  [
-  {path: '/', exact: true, component: Index, fetchInitialData: (accessToken, path = '') => getFrontpage(accessToken)},
+  {path: '/', exact: true, component: Frontpage, fetchInitialData: (accessToken, path = '') => getFrontpage(accessToken)},
   {path: '/browse', exact: false, component: Browse, fetchInitialData: (accessToken, path = '') => getBrowse(accessToken)},
   {path: '/callback', exact: false, component: Callback},
   {path: '/ethics', exact: false, component: Ethics, fetchInitialData: (accessToken, path = '') => getMeta(accessToken)},

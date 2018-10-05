@@ -3,12 +3,11 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
-import { LinkContainer } from 'react-router-bootstrap';
+import { Loader, Image } from 'semantic-ui-react';
 import { Tabs, Tab, Well, Panel, ButtonGroup, Button, Breadcrumb, OverlayTrigger, Tooltip, Table } from 'react-bootstrap';
 import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
 import { LockSymbol, Stars } from './common/widgets/widgets';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { postComment } from './../api';
 
 class Problem extends Component<any, any> {
@@ -105,7 +104,7 @@ class Problem extends Component<any, any> {
   render() {
     const { data } = this.state;
     if (!data || this.state.isSaving) {
-      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
+      return <Loader active inline='centered' />;
     }
 
     const markers = [];
@@ -239,15 +238,15 @@ class Problem extends Component<any, any> {
               <Button bsStyle="primary" bsSize="xsmall" onClick={this.openTickModal.bind(this)}>Tick</Button>
             </OverlayTrigger>
             <OverlayTrigger placement="top" overlay={<Tooltip id="Add comment">Add comment</Tooltip>}>
-              <Button bsStyle="primary" bsSize="xsmall" onClick={this.openCommentModal.bind(this)}><FontAwesomeIcon icon="comment" inverse={true} /></Button>
+              <Button bsStyle="primary" bsSize="xsmall" onClick={this.openCommentModal.bind(this)}><Image name="comment" inverse={true} /></Button>
             </OverlayTrigger>
             {data.metadata.isAdmin ?
               <OverlayTrigger placement="top" overlay={<Tooltip id={data.id}>Edit problem</Tooltip>}>
-                <LinkContainer to={{ pathname: `/problem/edit/${data.id}`, query: { idSector: data.sectorId, lat: data.sectorLat, lng: data.sectorLng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="edit" inverse={true} /></Button></LinkContainer>
+                <LinkContainer to={{ pathname: `/problem/edit/${data.id}`, query: { idSector: data.sectorId, lat: data.sectorLat, lng: data.sectorLng } }}><Button bsStyle="primary" bsSize="xsmall"><Image name="edit" inverse={true} /></Button></LinkContainer>
               </OverlayTrigger>
             :
               <OverlayTrigger placement="top" overlay={<Tooltip id={data.id}>Add image(s)</Tooltip>}>
-                <LinkContainer to={{ pathname: `/problem/edit/media/${data.id}` }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="image" inverse={true} /></Button></LinkContainer>
+                <LinkContainer to={{ pathname: `/problem/edit/media/${data.id}` }}><Button bsStyle="primary" bsSize="xsmall"><Image name="image" inverse={true} /></Button></LinkContainer>
               </OverlayTrigger>
             }
           </ButtonGroup>

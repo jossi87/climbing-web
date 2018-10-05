@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { Redirect } from 'react-router'
 import { FormGroup, ButtonGroup, Button, Well } from 'react-bootstrap';
 import ImageUpload from './common/image-upload/image-upload';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Loader } from 'semantic-ui-react';
 import { getProblem, postProblemMedia } from './../api';
 
 class ProblemEditMedia extends Component<any, any> {
@@ -42,7 +42,7 @@ class ProblemEditMedia extends Component<any, any> {
 
   render() {
     if (!this.state || !this.state.id) {
-      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
+      return <Loader active inline='centered' />;
     } else if (this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
     } else if (!this.state.isAuthenticated) {

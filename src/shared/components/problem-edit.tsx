@@ -6,7 +6,7 @@ import UserSelector from './common/user-selector/user-selector';
 import ProblemSection from './common/problem-section/problem-section';
 import ImageUpload from './common/image-upload/image-upload';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Loader } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
 import { convertFromDateToString, convertFromStringToDate, postProblem } from './../api';
 
@@ -162,7 +162,7 @@ class ProblemEdit extends Component<any, any> {
     } else if (!this.props || !this.props.match || !this.props.match.params || !this.props.match.params.problemId || !this.props.location || !this.props.location.query || !this.props.location.query.idSector) {
       return <span><h3>Invalid action...</h3></span>;
     } else if (!data) {
-      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
+      return <Loader active inline='centered' />;
     } else if (!data.metadata.isAdmin) {
       this.setState({pushUrl: "/login", error: null});
     }

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import { FaButtons, LockSymbol, Stars, TypeImage } from './common/widgets/widgets';
 import { Breadcrumb, Table } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Loader, Image } from 'semantic-ui-react';
 
 class Finder extends Component<any, any> {
   constructor(props) {
@@ -46,7 +46,7 @@ class Finder extends Component<any, any> {
 
   render() {
     if (!this.state.data || !this.state.data.problems) {
-      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
+      return <Loader active inline='centered' />;
     }
     const markers = this.state.data.problems.filter(p => p.lat!=0 && p.lng!=0).map(p => {
       return {
@@ -84,8 +84,8 @@ class Finder extends Component<any, any> {
               <th>FA</th>
               <th>Ticks</th>
               <th>Stars</th>
-              <th><FontAwesomeIcon icon="camera" /></th>
-              <th><FontAwesomeIcon icon="video" /></th>
+              <th><Image name="camera" /></th>
+              <th><Image name="video" /></th>
             </tr>
           </thead>
           <tbody>
