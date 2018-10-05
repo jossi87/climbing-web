@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
-import { Breadcrumb, Loader, Table, Button, Icon } from 'semantic-ui-react';
+import { Breadcrumb, Loader, Table, Button, Icon, Item } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
 import { LockSymbol } from './common/widgets/widgets';
 
@@ -62,24 +62,21 @@ class Browse extends Component<any, any> {
           <Breadcrumb.Section active>Browse</Breadcrumb.Section>
         </Breadcrumb>
         {map}
-        <Table>
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell>Name</Table.HeaderCell>
-              <Table.HeaderCell>#sectors</Table.HeaderCell>
-              <Table.HeaderCell>#problems</Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {this.state.data.areas.map((area, i) => (
-              <Table.Row>
-                <Table.Cell><Link to={`/area/${area.id}`}>{area.name}</Link> <LockSymbol visibility={area.visibility}/></Table.Cell>
-                <Table.Cell>{area.numSectors}</Table.Cell>
-                <Table.Cell>{area.numProblems}</Table.Cell>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
+        <Item.Group>
+          {this.state.data.areas.map((area, i) => (
+            <Item as={Link} to={`/area/${area.id}`} key={i}>
+              <Item.Content>
+                <Item.Header>{area.name}  <LockSymbol visibility={area.visibility}/></Item.Header>
+                <Item.Meta>
+                  {`${area.numSectors} sector(s), ${area.numProblems} problem(s)`}
+                </Item.Meta>
+                <Item.Description>
+                  {area.comment}
+                </Item.Description>
+              </Item.Content>
+            </Item>
+          ))}
+        </Item.Group>
       </React.Fragment>
     );
   }
