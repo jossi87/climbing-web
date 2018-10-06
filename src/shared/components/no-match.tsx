@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
+import { Container, Header } from 'semantic-ui-react';
 
 export default class NoMatch extends Component {
   render() {
@@ -8,8 +9,10 @@ export default class NoMatch extends Component {
         <MetaTags>
           <title>Page not found</title>
         </MetaTags>
-        <h1>404</h1>
-        Page not found
+        <Container>
+          <Header as="h1">404</Header>
+          Page not found
+        </Container>
       </React.Fragment>
     );
   }

@@ -1,11 +1,10 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
-import { Tabs, Tab, Well, Table } from 'react-bootstrap';
 import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
 import { CroppedText, LockSymbol } from './common/widgets/widgets';
-import { Loader, Button } from 'semantic-ui-react';
+import { Loader, Button, Table, Container } from 'semantic-ui-react';
 
 class Area extends Component<any, any> {
   constructor(props) {
@@ -50,11 +49,11 @@ class Area extends Component<any, any> {
       return <Loader active inline='centered' />;
     }
     const rows = this.state.data.sectors.map((sector, i) => (
-      <tr>
-        <td><Link to={`/sector/${sector.id}`}>{sector.name}</Link> <LockSymbol visibility={sector.visibility}/></td>
-        <td><CroppedText text={sector.comment} i={i} maxLength={100}/></td>
-        <td>{sector.numProblems}</td>
-      </tr>
+      <Table.Row>
+        <Table.Cell><Link to={`/sector/${sector.id}`}>{sector.name}</Link> <LockSymbol visibility={sector.visibility}/></Table.Cell>
+        <Table.Cell><CroppedText text={sector.comment} i={i} maxLength={100}/></Table.Cell>
+        <Table.Cell>{sector.numProblems}</Table.Cell>
+      </Table.Row>
     ));
     const markers = this.state.data.sectors.filter(s => s.lat!=0 && s.lng!=0).map(s => {
       return {
@@ -111,18 +110,18 @@ class Area extends Component<any, any> {
           </Button.Group><br/></span>
         }
         {topoContent}
-        {this.state.data.comment? <Well><div dangerouslySetInnerHTML={{ __html: this.state.data.comment }} /></Well> : null}
-        <Table striped condensed hover>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Description</th>
-              <th>#problems</th>
-            </tr>
-          </thead>
-          <tbody>
+        {this.state.data.comment? <Container><div dangerouslySetInnerHTML={{ __html: this.state.data.comment }} /></Container> : null}
+        <Table celled>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell>Name</Table.HeaderCell>
+              <Table.HeaderCell>Description</Table.HeaderCell>
+              <Table.HeaderCell>#problems</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
             {rows}
-          </tbody>
+          </Table.Body>
         </Table>
       </React.Fragment>
     );

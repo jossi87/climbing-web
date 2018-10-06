@@ -1,11 +1,10 @@
 import React, {Component} from 'react';
 import ImageGallery from 'react-image-gallery';
-import { Well } from 'react-bootstrap';
 import ReactPlayer from 'react-player'
 import {parseSVG, makeAbsolute} from 'svg-path-parser';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
-import { Icon } from 'semantic-ui-react';
+import { Icon, Container } from 'semantic-ui-react';
 import objectFitImages from 'object-fit-images'; // objectFit does not work on IE and Edge http://caniuse.com/#search=object-fit
 import { getImageUrl, deleteMedia } from '../../../api';
 
@@ -245,7 +244,7 @@ class Gallery extends Component<any, any> {
     }
 
     return (
-      <Well className='app'>
+      <Container>
         {button}
         <ImageGallery
           ref={i => this.imageGallery = i}
@@ -257,7 +256,7 @@ class Gallery extends Component<any, any> {
           showIndex={this.state.showFullscreenButton && this.state.showGalleryFullscreenButton}
           showPlayButton={false}
           showFullscreenButton={this.state.showFullscreenButton && this.state.showGalleryFullscreenButton}/>
-      </Well>
+      </Container>
     );
   }
 }

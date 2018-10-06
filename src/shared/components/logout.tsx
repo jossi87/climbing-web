@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Well } from 'react-bootstrap';
+import { Container } from 'semantic-ui-react';
 import { Redirect } from 'react-router';
 
 class Logout extends Component<any, any> {
@@ -12,7 +12,7 @@ class Logout extends Component<any, any> {
     if (this.state && this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
     }
-    return <Well>Logging out, please wait...</Well>;
+    return <Container>Logging out, please wait...</Container>;
   }
 }
 

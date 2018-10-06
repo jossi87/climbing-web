@@ -1,11 +1,10 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
-import { Button, OverlayTrigger, Tooltip, Well, Breadcrumb, Table } from 'react-bootstrap';
 import Chart from './common/chart/chart';
 import TickModal from './common/tick-modal/tick-modal';
 import { CroppedText, LockSymbol, Stars } from './common/widgets/widgets';
-import { Loader, Icon } from 'semantic-ui-react';
+import { Loader, Icon, Table, Container } from 'semantic-ui-react';
 
 class User extends Component<any, any> {
   constructor(props) {
@@ -71,36 +70,33 @@ class User extends Component<any, any> {
         </MetaTags>
 
         {this.state.currTick? <TickModal auth={this.props.auth} idTick={this.state.currTick.id} idProblem={this.state.currTick.idProblem} date={this.state.currTick.date} comment={this.state.currTick.comment} grade={this.state.currTick.grade} grades={data.metadata.grades} stars={this.state.currTick.stars} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/> : ""}
-        <Breadcrumb>
-          <Link to={`/`}>Home</Link> / {data.name}
-        </Breadcrumb>
-        <Well bsSize="small">First ascents: {numFas}<br/>Public ascents: {numTicks}<br/>Pictures taken: {data.numImagesCreated}<br/>Appearance in pictures: {data.numImageTags}<br/>Videos created: {data.numVideosCreated}<br/>Appearance in videos: {data.numVideoTags}</Well>
+        <Container>First ascents: {numFas}<br/>Public ascents: {numTicks}<br/>Pictures taken: {data.numImagesCreated}<br/>Appearance in pictures: {data.numImageTags}<br/>Videos created: {data.numVideosCreated}<br/>Appearance in videos: {data.numVideoTags}</Container>
         {chart}<br/>
-        <Table striped condensed hover>
-          <thead>
-            <tr>
-              <th>When</th>
-              <th>Name</th>
-              <th>Grade</th>
-              <th>Comment</th>
-              <th>Stars</th>
-              <th>FA</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
+        <Table celled>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell>When</Table.HeaderCell>
+              <Table.HeaderCell>Name</Table.HeaderCell>
+              <Table.HeaderCell>Grade</Table.HeaderCell>
+              <Table.HeaderCell>Comment</Table.HeaderCell>
+              <Table.HeaderCell>Stars</Table.HeaderCell>
+              <Table.HeaderCell>FA</Table.HeaderCell>
+              <Table.HeaderCell></Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
             {data.ticks.map((t, i) => (
-              <tr key={i}>
-                <td>{t.dateHr}</td>
-                <td><Link to={`/problem/${t.idProblem}`}>{t.name}</Link> <LockSymbol visibility={t.visibility}/></td>
-                <td>{t.grade}</td>
-                <td><CroppedText text={t.comment} i={t.idProblem} maxLength={40}/></td>
-                <td><Stars numStars={t.stars}/></td>
-                <td>{t.fa && <Icon name="check" />}</td>
-                <td>{this.state.data.readOnly==false && t.id!=0 && <OverlayTrigger placement="top" overlay={<Tooltip id={i}>Edit tick</Tooltip>}><Button bsSize="xsmall" bsStyle="primary" onClick={this.openTickModal.bind(this, t)}><Icon name="edit" inverse={true} /></Button></OverlayTrigger>}</td>
-              </tr>
+              <Table.Row key={i}>
+                <Table.Cell>{t.dateHr}</Table.Cell>
+                <Table.Cell><Link to={`/problem/${t.idProblem}`}>{t.name}</Link> <LockSymbol visibility={t.visibility}/></Table.Cell>
+                <Table.Cell>{t.grade}</Table.Cell>
+                <Table.Cell><CroppedText text={t.comment} i={t.idProblem} maxLength={40}/></Table.Cell>
+                <Table.Cell><Stars numStars={t.stars}/></Table.Cell>
+                <Table.Cell>{t.fa && <Icon name="check" />}</Table.Cell>
+                <Table.Cell>{this.state.data.readOnly==false && t.id!=0 && <OverlayTrigger placement="top" overlay={<Tooltip id={i}>Edit tick</Tooltip>}><Button bsSize="xsmall" bsStyle="primary" onClick={this.openTickModal.bind(this, t)}><Icon name="edit" inverse={true} /></Button></OverlayTrigger>}</Table.Cell>
+              </Table.Row>
             ))}
-          </tbody>
+          </Table.Body>
         </Table>
       </React.Fragment>
     );

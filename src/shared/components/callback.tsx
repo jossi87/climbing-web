@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import { Well } from 'react-bootstrap';
 import { Redirect } from 'react-router';
+import { Container } from 'semantic-ui-react';
 
 class Callback extends Component<any, any> {
   componentDidMount() {
@@ -16,7 +16,7 @@ class Callback extends Component<any, any> {
     if (this.state && this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
     }
-    return <Well>Signing in, please wait...</Well>;
+    return <Container>Signing in, please wait...</Container>;
   }
 }
 

@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import { Modal, Button, FormGroup, ControlLabel, FormControl, ButtonGroup, ButtonToolbar, ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
 import { postComment } from './../../../api';
 
 class CommentModal extends Component<any, any> {

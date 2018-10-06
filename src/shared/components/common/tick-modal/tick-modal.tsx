@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import { Modal, Button, FormGroup, ControlLabel, FormControl, ButtonGroup, DropdownButton, MenuItem } from 'react-bootstrap';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import { convertFromDateToString, convertFromStringToDate, postTicks } from './../../../api';
 import { Icon } from 'semantic-ui-react';

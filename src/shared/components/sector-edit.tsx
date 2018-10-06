@@ -1,9 +1,8 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Redirect } from 'react-router';
-import { FormGroup, ControlLabel, FormControl, ButtonGroup, DropdownButton, MenuItem, Button, Well } from 'react-bootstrap';
 import ImageUpload from './common/image-upload/image-upload';
-import { Loader } from 'semantic-ui-react';
+import { Loader, Container } from 'semantic-ui-react';
 import { postSector } from './../api';
 import Leaflet from './common/leaflet/leaflet';
 
@@ -149,7 +148,7 @@ class SectorEdit extends Component<any, any> {
         <MetaTags>
           <title>{this.state.data.metadata.title}</title>
         </MetaTags>
-        <Well>
+        <Container>
           <form onSubmit={this.save.bind(this)}>
             <FormGroup controlId="formControlsName">
               <ControlLabel>Sector name</ControlLabel>
@@ -186,7 +185,7 @@ class SectorEdit extends Component<any, any> {
               <Button type="submit" bsStyle="success" disabled={this.state.isSaving}>{this.state.isSaving? 'Saving...' : 'Save sector'}</Button>
             </ButtonGroup>
           </form>
-        </Well>
+        </Container>
       </React.Fragment>
     );
   }

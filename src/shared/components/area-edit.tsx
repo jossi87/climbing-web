@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Redirect } from 'react-router';
-import { FormGroup, ControlLabel, FormControl, ButtonGroup, DropdownButton, MenuItem, Button, Well } from 'react-bootstrap';
 import ImageUpload from './common/image-upload/image-upload';
 import Leaflet from './common/leaflet/leaflet';
-import { Loader } from 'semantic-ui-react';
+import { Loader, Container } from 'semantic-ui-react';
 import { postArea } from './../api';
 
 class AreaEdit extends Component<any, any> {
@@ -110,7 +109,7 @@ class AreaEdit extends Component<any, any> {
         <MetaTags>
           <title>{this.state.data.metadata.title}</title>
         </MetaTags>
-        <Well>
+        <Container>
           <form onSubmit={this.save.bind(this)}>
             <FormGroup controlId="formControlsName">
               <ControlLabel>Area name</ControlLabel>
@@ -144,7 +143,7 @@ class AreaEdit extends Component<any, any> {
 
             <ButtonGroup><Button bsStyle="danger" onClick={this.onCancel.bind(this)}>Cancel</Button><Button type="submit" bsStyle="success" disabled={this.state.isSaving}>{this.state.isSaving? 'Saving...' : 'Save area'}</Button></ButtonGroup>
           </form>
-        </Well>
+        </Container>
       </React.Fragment>
     );
   }

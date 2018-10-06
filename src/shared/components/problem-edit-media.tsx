@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import { Redirect } from 'react-router'
-import { FormGroup, ButtonGroup, Button, Well } from 'react-bootstrap';
 import ImageUpload from './common/image-upload/image-upload';
 import { Loader } from 'semantic-ui-react';
 import { getProblem, postProblemMedia } from './../api';
+import { Container, Button } from 'semantic-ui-react';
 
 class ProblemEditMedia extends Component<any, any> {
   componentDidMount() {
@@ -50,14 +50,16 @@ class ProblemEditMedia extends Component<any, any> {
     }
 
     return (
-      <Well>
+      <Container>
         <form onSubmit={this.save.bind(this)}>
-          <FormGroup controlId="formControlsMedia">
-            <ImageUpload auth={this.props.auth} onMediaChanged={this.onNewMediaChanged.bind(this)} />
-          </FormGroup>
-          <ButtonGroup><Button bsStyle="danger" onClick={this.onCancel.bind(this)}>Cancel</Button><Button type="submit" bsStyle="success" disabled={this.state.isSaving}>{this.state.isSaving? 'Saving...' : 'Save'}</Button></ButtonGroup>
+          <ImageUpload auth={this.props.auth} onMediaChanged={this.onNewMediaChanged.bind(this)} />
+          <Button.Group>
+            <Button onClick={this.onCancel.bind(this)}>Cancel</Button>
+            <Button.Or />
+            <Button type="submit" positive loading={this.state.isSaving}>Save</Button>
+          </Button.Group>
         </form>
-      </Well>
+      </Container>
     );
   }
 }

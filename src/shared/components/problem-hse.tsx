@@ -2,8 +2,7 @@ import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { LockSymbol } from './common/widgets/widgets';
-import { Breadcrumb, Table } from 'react-bootstrap';
-import { Loader } from 'semantic-ui-react';
+import { Loader, Table } from 'semantic-ui-react';
 
 class ProblemHse extends Component<any, any> {
   constructor(props) {
@@ -32,12 +31,12 @@ class ProblemHse extends Component<any, any> {
 
     const rows = data.map((hse, i) => {
       return (
-        <tr key={i}>
-          <td><Link to={`/area/${hse.areaId}`}>{hse.areaName}</Link> <LockSymbol visibility={hse.areaVisibility}/></td>
-          <td><Link to={`/sector/${hse.sectorId}`}>{hse.sectorName}</Link> <LockSymbol visibility={hse.sectorVisibility}/></td>
-          <td><Link to={`/problem/${hse.problemId}`}>{hse.problemName}</Link> <LockSymbol visibility={hse.problemVisibility}/></td>
-          <td>{hse.comment}</td>
-        </tr>
+        <Table.Row key={i}>
+          <Table.Cell><Link to={`/area/${hse.areaId}`}>{hse.areaName}</Link> <LockSymbol visibility={hse.areaVisibility}/></Table.Cell>
+          <Table.Cell><Link to={`/sector/${hse.sectorId}`}>{hse.sectorName}</Link> <LockSymbol visibility={hse.sectorVisibility}/></Table.Cell>
+          <Table.Cell><Link to={`/problem/${hse.problemId}`}>{hse.problemName}</Link> <LockSymbol visibility={hse.problemVisibility}/></Table.Cell>
+          <Table.Cell>{hse.comment}</Table.Cell>
+        </Table.Row>
       )
     });
 
@@ -47,21 +46,18 @@ class ProblemHse extends Component<any, any> {
           <title>Flagged as dangerous</title>
           <meta name="description" content={"HSE"} />
         </MetaTags>
-        <Breadcrumb>
-          <Link to={`/`}>Home</Link> / Flagged as dangerous (HSE)
-        </Breadcrumb>
-        <Table striped condensed hover>
-          <thead>
-            <tr>
-              <th>Area</th>
-              <th>Sector</th>
-              <th>Problem</th>
-              <th>Comment</th>
-            </tr>
-          </thead>
-          <tbody>
+        <Table celled>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell>Area</Table.HeaderCell>
+              <Table.HeaderCell>Sector</Table.HeaderCell>
+              <Table.HeaderCell>Problem</Table.HeaderCell>
+              <Table.HeaderCell>Comment</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
             {rows}
-          </tbody>
+          </Table.Body>
         </Table>
       </React.Fragment>
     );

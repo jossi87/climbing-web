@@ -4,8 +4,7 @@ import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
 import { CroppedText, LockSymbol, Stars, TypeImage } from './common/widgets/widgets';
-import { Tabs, Tab, Well, Table } from 'react-bootstrap';
-import { Loader, Icon, Button } from 'semantic-ui-react';
+import { Loader, Icon, Button, Table, Container } from 'semantic-ui-react';
 
 class TableRow extends Component<any, any> {
   /* intersperse: Return an array with the separator interspersed between
@@ -34,19 +33,19 @@ class TableRow extends Component<any, any> {
     }
 
     return (
-      <tr className={bsStyle}>
-        <td>{this.props.problem.nr}</td>
-        <td><Link to={`/problem/${this.props.problem.id}`}>{this.props.problem.name}</Link> <LockSymbol visibility={this.props.problem.visibility}/></td>
-        <td><CroppedText text={this.props.problem.comment} i={this.props.problem.id} maxLength={40} /></td>
-        {this.state && this.state.data && !this.state.data.metadata.isBouldering && <td><TypeImage t={this.props.problem.t}/></td>}
-        <td>{this.props.problem.grade}</td>
-        <td>{fa}</td>
-        <td>{this.props.problem.numTicks}</td>
-        <td><Stars numStars={this.props.problem.stars}/></td>
-        <td>{this.props.problem.numImages}</td>
-        <td>{this.props.problem.numMovies}</td>
-        <td>{( (this.props.problem.lat>0 && this.props.problem.lng>0) || (this.props.problemsInTopo.indexOf(this.props.problem.id)>=0) ) && <Icon name="check" />}</td>
-      </tr>
+      <Table.Row>
+        <Table.Cell>{this.props.problem.nr}</Table.Cell>
+        <Table.Cell><Link to={`/problem/${this.props.problem.id}`}>{this.props.problem.name}</Link> <LockSymbol visibility={this.props.problem.visibility}/></Table.Cell>
+        <Table.Cell><CroppedText text={this.props.problem.comment} i={this.props.problem.id} maxLength={40} /></Table.Cell>
+        {this.state && this.state.data && !this.state.data.metadata.isBouldering && <Table.Cell><TypeImage t={this.props.problem.t}/></Table.Cell>}
+        <Table.Cell>{this.props.problem.grade}</Table.Cell>
+        <Table.Cell>{fa}</Table.Cell>
+        <Table.Cell>{this.props.problem.numTicks}</Table.Cell>
+        <Table.Cell><Stars numStars={this.props.problem.stars}/></Table.Cell>
+        <Table.Cell>{this.props.problem.numImages}</Table.Cell>
+        <Table.Cell>{this.props.problem.numMovies}</Table.Cell>
+        <Table.Cell>{( (this.props.problem.lat>0 && this.props.problem.lng>0) || (this.props.problemsInTopo.indexOf(this.props.problem.id)>=0) ) && <Icon name="check" />}</Table.Cell>
+      </Table.Row>
     )
   }
 }
@@ -165,26 +164,26 @@ class Sector extends Component<any, any> {
           </Button.Group><br/></span>
         }
         {topoContent}
-        {data.comment? <Well>{data.comment}</Well> : null}
-        <Table striped condensed hover>
-          <thead>
-            <tr>
-              <th><Icon name="hashtag" /></th>
-              <th>Name</th>
-              <th>Description</th>
-              {!data.metadata.isBouldering && <th>Type</th>}
-              <th>Grade</th>
-              <th>FA</th>
-              <th>Ticks</th>
-              <th>Stars</th>
-              <th><Icon name="camera" /></th>
-              <th><Icon name="video" /></th>
-              <th><Icon name="map marker" /></th>
-            </tr>
-          </thead>
-          <tbody>
+        {data.comment? <Container>{data.comment}</Container> : null}
+        <Table celled>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell><Icon name="hashtag" /></Table.HeaderCell>
+              <Table.HeaderCell>Name</Table.HeaderCell>
+              <Table.HeaderCell>Description</Table.HeaderCell>
+              {!data.metadata.isBouldering && <Table.HeaderCell>Type</Table.HeaderCell>}
+              <Table.HeaderCell>Grade</Table.HeaderCell>
+              <Table.HeaderCell>FA</Table.HeaderCell>
+              <Table.HeaderCell>Ticks</Table.HeaderCell>
+              <Table.HeaderCell>Stars</Table.HeaderCell>
+              <Table.HeaderCell><Icon name="camera" /></Table.HeaderCell>
+              <Table.HeaderCell><Icon name="video" /></Table.HeaderCell>
+              <Table.HeaderCell><Icon name="map marker" /></Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
             {rows}
-          </tbody>
+          </Table.Body>
         </Table>
       </React.Fragment>
     );

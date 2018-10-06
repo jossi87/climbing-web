@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
 import { Link } from 'react-router-dom';
-import { Well, FormGroup, MenuItem, ButtonGroup, Button, DropdownButton, Alert, Breadcrumb } from 'react-bootstrap';
 import { Redirect } from 'react-router';
-import { Loader } from 'semantic-ui-react';
+import { Loader, Container } from 'semantic-ui-react';
 import { getImageUrl, postProblemSvg } from '../api';
 import { parseReadOnlySvgs } from '../utils/svg';
 import { LockSymbol } from './common/widgets/widgets';
@@ -294,10 +293,7 @@ class SvgEdit extends Component<any, any> {
     const path = this.generatePath();
     return (
       <React.Fragment>
-        <Breadcrumb>
-          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${this.state.areaId}`}>{this.state.areaName}</Link> <LockSymbol visibility={this.state.areaVisibility}/> / <Link to={`/sector/${this.state.sectorId}`}>{this.state.sectorName}</Link> <LockSymbol visibility={this.state.sectorVisibility}/> / <Link to={`/problem/${this.state.id}`}>{this.state.nr} {this.state.name} {this.state.grade}</Link> <LockSymbol visibility={this.state.visibility}/>
-        </Breadcrumb>
-        <Well bsSize="small" onMouseUp={this.cancelDragging.bind(this)} onMouseLeave={this.cancelDragging.bind(this)}>
+        <Container bsSize="small" onMouseUp={this.cancelDragging.bind(this)} onMouseLeave={this.cancelDragging.bind(this)}>
           <form onSubmit={this.save.bind(this)}>
             <FormGroup controlId="formControlsInfo">
               <Alert bsStyle="info">
@@ -336,7 +332,7 @@ class SvgEdit extends Component<any, any> {
               {path}
             </FormGroup>
           </form>
-        </Well>
+        </Container>
       </React.Fragment>
     )
   }

@@ -3,8 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import { FaButtons, LockSymbol, Stars, TypeImage } from './common/widgets/widgets';
-import { Breadcrumb, Table } from 'react-bootstrap';
-import { Loader, Icon } from 'semantic-ui-react';
+import { Table, Loader, Icon } from 'semantic-ui-react';
 
 class Finder extends Component<any, any> {
   constructor(props) {
@@ -70,39 +69,36 @@ class Finder extends Component<any, any> {
           <meta property="og:image:width" content={this.state.data.metadata.og.imageWidth} />
           <meta property="og:image:height" content={this.state.data.metadata.og.imageHeight} />
         </MetaTags>
-        <Breadcrumb>
-          <Link to={`/`}>Home</Link> / Finder [{this.state.data.grade}] (problems: {this.state.data.problems.length})
-        </Breadcrumb>
         {map}
-        <Table striped condensed hover>
-          <thead>
-            <tr>
-              <th>Area</th>
-              <th>Sector</th>
-              <th>Name</th>
-              {!this.state.data.metadata.isBouldering && <th>Type</th>}
-              <th>FA</th>
-              <th>Ticks</th>
-              <th>Stars</th>
-              <th><Icon name="camera" /></th>
-              <th><Icon name="video" /></th>
-            </tr>
-          </thead>
-          <tbody>
+        <Table celled>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell>Area</Table.HeaderCell>
+              <Table.HeaderCell>Sector</Table.HeaderCell>
+              <Table.HeaderCell>Name</Table.HeaderCell>
+              {!this.state.data.metadata.isBouldering && <Table.HeaderCell>Type</Table.HeaderCell>}
+              <Table.HeaderCell>FA</Table.HeaderCell>
+              <Table.HeaderCell>Ticks</Table.HeaderCell>
+              <Table.HeaderCell>Stars</Table.HeaderCell>
+              <Table.HeaderCell><Icon name="camera" /></Table.HeaderCell>
+              <Table.HeaderCell><Icon name="video" /></Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
             {this.state.data.problems.map((p, i) => (
-              <tr key={i} className={p.ticked? 'success' : ''}>
-                <td><Link to={`/area/${p.areaId}`}>{p.areaName}</Link> <LockSymbol visibility={p.areaVisibility}/></td>
-                <td><Link to={`/sector/${p.sectorId}`}>{p.sectorName}</Link> <LockSymbol visibility={p.sectorVisibility}/></td>
-                <td><Link to={`/problem/${p.id}`}>{p.name}</Link> <LockSymbol visibility={p.visibility}/></td>
-                {!this.state.data.metadata.isBouldering && <td><TypeImage t={p.t}/></td>}
-                <td><FaButtons fa={p.fa}/></td>
-                <td>{p.numTicks}</td>
-                <td><Stars numStars={p.stars}/></td>
-                <td>{p.media? p.media.filter(m => {return m.idType===1}).length : 0}</td>
-                <td>{p.media? p.media.filter(m => {return m.idType===2}).length : 0}</td>
-              </tr>
+              <Table.Row>
+                <Table.Cell>{p.ticked} TODO <Link to={`/area/${p.areaId}`}>{p.areaName}</Link> <LockSymbol visibility={p.areaVisibility}/></Table.Cell>
+                <Table.Cell><Link to={`/sector/${p.sectorId}`}>{p.sectorName}</Link> <LockSymbol visibility={p.sectorVisibility}/></Table.Cell>
+                <Table.Cell><Link to={`/problem/${p.id}`}>{p.name}</Link> <LockSymbol visibility={p.visibility}/></Table.Cell>
+                {!this.state.data.metadata.isBouldering && <Table.Cell><TypeImage t={p.t}/></Table.Cell>}
+                <Table.Cell><FaButtons fa={p.fa}/></Table.Cell>
+                <Table.Cell>{p.numTicks}</Table.Cell>
+                <Table.Cell><Stars numStars={p.stars}/></Table.Cell>
+                <Table.Cell>{p.media? p.media.filter(m => {return m.idType===1}).length : 0}</Table.Cell>
+                <Table.Cell>{p.media? p.media.filter(m => {return m.idType===2}).length : 0}</Table.Cell>
+              </Table.Row>
             ))}
-          </tbody>
+          </Table.Body>
         </Table>
       </React.Fragment>
     );

@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
-import { Link } from 'react-router-dom';
-import { Breadcrumb, Container } from 'semantic-ui-react';
+import { Container } from 'semantic-ui-react';
 
 class Ethics extends Component<any, any> {
   constructor(props) {
@@ -29,12 +28,7 @@ class Ethics extends Component<any, any> {
           {this.state.data && <title>{"Ethics | " + this.state.data.metadata.title}</title>}
           <meta name="description" content={"Ethics and privacy policy"} />
         </MetaTags>
-        <Breadcrumb>
-          <Breadcrumb.Section link as={Link} to='/'>Home</Breadcrumb.Section>
-          <Breadcrumb.Divider />
-          <Breadcrumb.Section active>Ethics</Breadcrumb.Section>
-        </Breadcrumb>
-          <Container>
+        <Container>
           If you&#39;re going out climbing, we ask you to please follow these guidelines for the best possible bouldering experience now, and for the future generations of climbers.<br/>
           <ul>
             <li>Show respect for the landowners, issue care and be polite.</li>

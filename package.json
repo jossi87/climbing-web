@@ -44,7 +44,6 @@
     "prop-types": "^15.6.2",
     "react": "^16.5.2",
     "react-avatar": "^3.4.4",
-    "react-bootstrap": "^0.32.4",
     "react-cookie": "^3.0.3",
     "react-day-picker": "^7.2.4",
     "react-dom": "^16.5.2",

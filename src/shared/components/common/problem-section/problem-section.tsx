@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Form, FormGroup, FormControl, DropdownButton, MenuItem, Well } from 'react-bootstrap';
+import { Container } from 'semantic-ui-react';
 
 class ProblemSection extends Component<any, any> {
   constructor(props) {
@@ -66,7 +66,7 @@ class ProblemSection extends Component<any, any> {
     });
 
 		return (
-      <Well>
+      <Container>
         <FormGroup controlId="formControlsNumSections">
           <DropdownButton title={this.state.sections? this.state.sections.length : 1} id="bg-nested-dropdown">
             <MenuItem key={1} eventKey={1} onSelect={this.onNumberOfSectionsChange.bind(this, 1)}>1</MenuItem>
@@ -92,7 +92,7 @@ class ProblemSection extends Component<any, any> {
           </DropdownButton>
         </FormGroup>
         {sections}
-      </Well>
+      </Container>
 		);
 	}
 }

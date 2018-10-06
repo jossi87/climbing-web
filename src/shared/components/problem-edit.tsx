@@ -1,12 +1,11 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Redirect } from 'react-router'
-import { FormGroup, ControlLabel, FormControl, ButtonGroup, Button, DropdownButton, MenuItem, Well } from 'react-bootstrap';
 import UserSelector from './common/user-selector/user-selector';
 import ProblemSection from './common/problem-section/problem-section';
 import ImageUpload from './common/image-upload/image-upload';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
-import { Loader } from 'semantic-ui-react';
+import { Loader, Container } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
 import { convertFromDateToString, convertFromStringToDate, postProblem } from './../api';
 
@@ -207,7 +206,7 @@ class ProblemEdit extends Component<any, any> {
         <MetaTags>
           <title>{data.metadata.title}</title>
         </MetaTags>
-        <Well>
+        <Container>
           <form onSubmit={this.save.bind(this)}>
             <FormGroup controlId="formControlsName">
               <ControlLabel>Problem name</ControlLabel>
@@ -276,7 +275,7 @@ class ProblemEdit extends Component<any, any> {
             </FormGroup>
             <ButtonGroup><Button bsStyle="danger" onClick={this.onCancel.bind(this)}>Cancel</Button><Button type="submit" bsStyle="success" disabled={this.state.isSaving}>{this.state.isSaving? 'Saving...' : 'Save problem'}</Button></ButtonGroup>
           </form>
-        </Well>
+        </Container>
       </React.Fragment>
     );
   }

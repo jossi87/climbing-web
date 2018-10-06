@@ -3,8 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
-import { Loader, Button } from 'semantic-ui-react';
-import { Tabs, Tab, Well, Panel, Table } from 'react-bootstrap';
+import { Loader, Button, Table, Container } from 'semantic-ui-react';
 import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
 import { Stars } from './common/widgets/widgets';
@@ -147,29 +146,29 @@ class Problem extends Component<any, any> {
       const rows = data.ticks.map((t, i) => {
         const isTickedClassName = t.writable? 'success' : '';
         return (
-          <tr className={isTickedClassName} key={i}>
-            <td>{t.date}</td>
-            <td><Link to={`/user/${t.idUser}`}>{t.name}</Link></td>
-            <td>{t.suggestedGrade}</td>
-            <td>{t.comment}</td>
-            <td><Stars numStars={t.stars}/></td>
-          </tr>
+          <Table.Row key={i}>
+            <Table.Cell>{t.date}</Table.Cell>
+            <Table.Cell><Link to={`/user/${t.idUser}`}>{t.name}</Link></Table.Cell>
+            <Table.Cell>{t.suggestedGrade}</Table.Cell>
+            <Table.Cell>{t.comment}</Table.Cell>
+            <Table.Cell><Stars numStars={t.stars}/></Table.Cell>
+          </Table.Row>
         );
       });
       table = (
-        <Table striped condensed hover>
-          <thead>
-            <tr>
-              <th>When</th>
-              <th>Name</th>
-              <th>Grade</th>
-              <th>Comment</th>
-              <th>Stars</th>
-            </tr>
-          </thead>
-          <tbody>
+        <Table celled>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell>When</Table.HeaderCell>
+              <Table.HeaderCell>Name</Table.HeaderCell>
+              <Table.HeaderCell>Grade</Table.HeaderCell>
+              <Table.HeaderCell>Comment</Table.HeaderCell>
+              <Table.HeaderCell>Stars</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
             {rows}
-          </tbody>
+          </Table.Body>
         </Table>
       );
     }
@@ -204,26 +203,27 @@ class Problem extends Component<any, any> {
       const sections = data.sections.map((s, i) => {
         return (
           <tr key={i}>
-            <td>{s.nr}</td>
-            <td>{s.grade}</td>
-            <td>{s.description}</td>
+            <Table.Cell>{s.nr}</Table.Cell>
+            <Table.Cell>{s.grade}</Table.Cell>
+            <Table.Cell>{s.description}</Table.Cell>
           </tr>
         );
       });
       section = (
         <span>
           <strong>Sections:</strong><br/>
-          <Table striped bordered condensed hover>
-            <thead>
-              <tr>
-                <td>#</td>
-                <td>Grade</td>
-                <td>Description</td>
-              </tr>
-            </thead>
-            <tbody>
+          <Table celled>
+            <Table.Header>
+              <Table.Row>
+                <Table.HeaderCell>#</Table.HeaderCell>
+                <Table.HeaderCell>Grade</Table.HeaderCell>
+                <Table.HeaderCell>Description</Table.HeaderCell>
+              </Table.Row>
+            </Table.Header>
+
+            <Table.Body>
               {sections}
-            </tbody>
+            </Table.Body>
           </Table>
         </span>
       );
@@ -270,7 +270,7 @@ class Problem extends Component<any, any> {
           </Button.Group><br/></span>
         }
         {topoContent}
-        <Well bsSize="small">
+        <Container>
           {!data.metadata.isBouldering && <span><strong>Type:</strong> {data.t.type + " - " + data.t.subType}<br/></span>}
           <strong>Nr:</strong> {data.nr}<br/>
           <strong>Comment:</strong> {data.comment}<br/>
@@ -280,7 +280,7 @@ class Problem extends Component<any, any> {
           {data.sectorLat>0 && data.sectorLng>0 &&
             <span><a href={`http://maps.google.com/maps?q=loc:${data.sectorLat},${data.sectorLng}&navigate=yes`} rel="noopener" target="_blank">Start navigation</a><br/></span>}
           {section}
-        </Well>
+        </Container>
         {table}<br/>
         {comment}
       </React.Fragment>
