@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
 import { CroppedText, LockSymbol, LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { Button, Table, Tab } from 'semantic-ui-react';
+import { Button, Tab, Card, Message, Icon, Image } from 'semantic-ui-react';
+import { getImageUrl } from '../api';
 
 class Area extends Component<any, any> {
   constructor(props) {
@@ -90,25 +91,34 @@ class Area extends Component<any, any> {
           </Button.Group><br/></span>
         }
         <Tab panes={panes} />
-        {this.state.data.comment && <div dangerouslySetInnerHTML={{ __html: this.state.data.comment }} />}
-        <Table celled>
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell>Name</Table.HeaderCell>
-              <Table.HeaderCell>Description</Table.HeaderCell>
-              <Table.HeaderCell>#problems</Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
+        {this.state.data.comment &&
+          <Message icon>
+            <Icon name="info" />
+            <Message.Content>
+              <div dangerouslySetInnerHTML={{ __html: this.state.data.comment }} />
+            </Message.Content>
+          </Message>
+        }
+        {this.state.data.sectors &&
+          <Card.Group stackable centered>
             {this.state.data.sectors.map((sector, i) => (
-              <Table.Row key={i}>
-                <Table.Cell><Link to={`/sector/${sector.id}`}>{sector.name}</Link> <LockSymbol visibility={sector.visibility}/></Table.Cell>
-                <Table.Cell><CroppedText text={sector.comment} maxLength={100}/></Table.Cell>
-                <Table.Cell>{sector.numProblems}</Table.Cell>
-              </Table.Row>
+              <Card as={Link} to={`/sector/${sector.id}`} key={i}>
+                {sector.randomMediaId && <Image size='medium' style={{maxHeight: '200px', objectFit: 'cover'}} src={getImageUrl(sector.randomMediaId, 480)} />}
+                <Card.Content>
+                  <Card.Header>
+                    {sector.name} <LockSymbol visibility={sector.visibility}/>
+                  </Card.Header>
+                  <Card.Meta>
+                    {sector.numProblems} problems
+                  </Card.Meta>
+                  <Card.Description>
+                    <CroppedText text={sector.comment} maxLength={100}/>
+                  </Card.Description>
+                </Card.Content>
+              </Card>
             ))}
-          </Table.Body>
-        </Table>
+          </Card.Group>
+        }
       </div>
     );
   }
