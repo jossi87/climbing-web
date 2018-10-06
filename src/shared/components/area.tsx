@@ -103,7 +103,7 @@ class Area extends Component<any, any> {
           <Card.Group stackable centered>
             {this.state.data.sectors.map((sector, i) => (
               <Card as={Link} to={`/sector/${sector.id}`} key={i}>
-                {sector.randomMediaId && <Image size='medium' style={{maxHeight: '200px', objectFit: 'cover'}} src={getImageUrl(sector.randomMediaId, 480)} />}
+                {sector.randomMediaId>0 && <Image size='medium' style={{maxHeight: '200px', objectFit: 'cover'}} src={getImageUrl(sector.randomMediaId, 480)} />}
                 <Card.Content>
                   <Card.Header>
                     {sector.name} <LockSymbol visibility={sector.visibility}/>
