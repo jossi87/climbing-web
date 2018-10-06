@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
 import { CroppedText, LockSymbol, LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { Button, Tab, Card, Message, Icon, Image } from 'semantic-ui-react';
+import { Button, Tab, Item, Message, Icon, Image, Header } from 'semantic-ui-react';
 import { getImageUrl } from '../api';
 
 class Area extends Component<any, any> {
@@ -90,6 +90,7 @@ class Area extends Component<any, any> {
             <Button as={Link} to={{ pathname: `/area/edit/${this.state.data.id}`, query: { lat: this.state.data.lat, lng: this.state.data.lng } }}>Edit area</Button>
           </Button.Group><br/></span>
         }
+        <Header as="h1">{this.state.data.name}</Header>
         <Tab panes={panes} />
         {this.state.data.comment &&
           <Message icon>
@@ -100,24 +101,27 @@ class Area extends Component<any, any> {
           </Message>
         }
         {this.state.data.sectors &&
-          <Card.Group stackable itemsPerRow={4}>
-            {this.state.data.sectors.map((sector, i) => (
-              <Card as={Link} to={`/sector/${sector.id}`} key={i}>
-                {sector.randomMediaId>0 && <Image style={{maxHeight: '150px', objectFit: 'cover'}} src={getImageUrl(sector.randomMediaId, 460)} />}
-                <Card.Content>
-                  <Card.Header>
-                    {sector.name} <LockSymbol visibility={sector.visibility}/>
-                  </Card.Header>
-                  <Card.Meta>
-                    {sector.numProblems} problems
-                  </Card.Meta>
-                  <Card.Description>
-                    <CroppedText text={sector.comment} maxLength={100}/>
-                  </Card.Description>
-                </Card.Content>
-              </Card>
-            ))}
-          </Card.Group>
+          <span>
+            <Header as="h2">Sectors</Header>
+            <Item.Group link unstackable>
+              {this.state.data.sectors.map((sector, i) => (
+                <Item as={Link} to={`/sector/${sector.id}`} key={i}>
+                  {sector.randomMediaId>0 && <Image size="small" style={{maxHeight: '150px', objectFit: 'cover'}}  src={getImageUrl(sector.randomMediaId, 240)} />}
+                  <Item.Content>
+                    <Item.Header>
+                      {sector.name} <LockSymbol visibility={sector.visibility}/>
+                    </Item.Header>
+                    <Item.Meta>
+                      {sector.numProblems} problems
+                    </Item.Meta>
+                    <Item.Description>
+                      <CroppedText text={sector.comment} maxLength={150}/>
+                    </Item.Description>
+                  </Item.Content>
+                </Item>
+              ))}
+            </Item.Group>
+          </span>
         }
       </div>
     );
