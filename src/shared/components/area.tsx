@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
 import { CroppedText, LockSymbol, LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { Button, Table, Container } from 'semantic-ui-react';
+import { Button, Table, Tab } from 'semantic-ui-react';
 
 class Area extends Component<any, any> {
   constructor(props) {
@@ -16,7 +16,7 @@ class Area extends Component<any, any> {
     } else {
       data = props.staticContext.data;
     }
-    this.state = {data, tabIndex: 1};
+    this.state = {data};
   }
 
   componentDidMount() {
@@ -35,10 +35,6 @@ class Area extends Component<any, any> {
     this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
   }
 
-  handleTabsSelection(key) {
-    this.setState({tabIndex: key});
-  }
-
   onRemoveMedia(idMediaToRemove) {
     const allMedia = this.state.data.media.filter(m => m.id!=idMediaToRemove);
     this.setState({media: allMedia});
@@ -48,13 +44,6 @@ class Area extends Component<any, any> {
     if (!this.state.data) {
       return <LoadingAndRestoreScroll />;
     }
-    const rows = this.state.data.sectors.map((sector, i) => (
-      <Table.Row>
-        <Table.Cell><Link to={`/sector/${sector.id}`}>{sector.name}</Link> <LockSymbol visibility={sector.visibility}/></Table.Cell>
-        <Table.Cell><CroppedText text={sector.comment} i={i} maxLength={100}/></Table.Cell>
-        <Table.Cell>{sector.numProblems}</Table.Cell>
-      </Table.Row>
-    ));
     const markers = this.state.data.sectors.filter(s => s.lat!=0 && s.lng!=0).map(s => {
       return {
           lat: s.lat,
@@ -70,26 +59,17 @@ class Area extends Component<any, any> {
       });
       return {url: '/sector/' + s.id, label: s.name, polygon: polygon}
     });
-    const defaultCenter = this.state.data.lat && this.state.data.lat>0? {lat: this.state.data.lat, lng: this.state.data.lng} : this.state.data.metadata.defaultCenter;
-    const defaultZoom = this.state.data.lat && this.state.data.lat>0? 14 : this.state.data.metadata.defaultZoom;
-    const map = markers.length>0 || outlines.length>0? <Leaflet useOpenStreetMap={true} markers={markers} outlines={outlines} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/> : null;
-    const gallery = this.state.data.media && this.state.data.media.length>0? <Gallery auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} alt={this.state.data.name} media={this.state.data.media} showThumbnails={this.state.data.media.length>1} removeMedia={this.onRemoveMedia.bind(this)}/> : null;
-    var topoContent = null;
-    if (map && gallery) {
-      topoContent = (
-        <Tabs activeKey={this.state.tabIndex} animation={false} onSelect={this.handleTabsSelection.bind(this)} id="area_tab" unmountOnExit={true}>
-          <Tab eventKey={1} title="Topo">{this.state.tabIndex==1? gallery : false}</Tab>
-          <Tab eventKey={2} title="Map">{this.state.tabIndex==2? map : false}</Tab>
-        </Tabs>
-      );
-    } else if (map) {
-      topoContent = map;
-    } else if (gallery) {
-      topoContent = gallery;
+    const panes = [];
+    if (markers.length>0 || outlines.length>0) {
+      const defaultCenter = this.state.data.lat && this.state.data.lat>0? {lat: this.state.data.lat, lng: this.state.data.lng} : this.state.data.metadata.defaultCenter;
+      const defaultZoom = this.state.data.lat && this.state.data.lat>0? 14 : this.state.data.metadata.defaultZoom;
+      panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Leaflet useOpenStreetMap={true} markers={markers} outlines={outlines} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/></Tab.Pane> });
     }
-
+    if (this.state.data.media && this.state.data.media.length>0) {
+      panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Gallery auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} alt={this.state.data.name} media={this.state.data.media} showThumbnails={this.state.data.media.length>1} removeMedia={this.onRemoveMedia.bind(this)}/></Tab.Pane> });
+    }
     return (
-      <React.Fragment>
+      <div>
         <MetaTags>
           {this.state.data.metadata.canonical && <link rel="canonical" href={this.state.data.metadata.canonical} />}
           <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(this.state.data.metadata.jsonLd)}} />
@@ -109,8 +89,8 @@ class Area extends Component<any, any> {
             <Button as={Link} to={{ pathname: `/area/edit/${this.state.data.id}`, query: { lat: this.state.data.lat, lng: this.state.data.lng } }}>Edit area</Button>
           </Button.Group><br/></span>
         }
-        {topoContent}
-        {this.state.data.comment? <Container><div dangerouslySetInnerHTML={{ __html: this.state.data.comment }} /></Container> : null}
+        <Tab panes={panes} />
+        {this.state.data.comment && <div dangerouslySetInnerHTML={{ __html: this.state.data.comment }} />}
         <Table celled>
           <Table.Header>
             <Table.Row>
@@ -120,10 +100,16 @@ class Area extends Component<any, any> {
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {rows}
+            {this.state.data.sectors.map((sector, i) => (
+              <Table.Row key={i}>
+                <Table.Cell><Link to={`/sector/${sector.id}`}>{sector.name}</Link> <LockSymbol visibility={sector.visibility}/></Table.Cell>
+                <Table.Cell><CroppedText text={sector.comment} maxLength={100}/></Table.Cell>
+                <Table.Cell>{sector.numProblems}</Table.Cell>
+              </Table.Row>
+            ))}
           </Table.Body>
         </Table>
-      </React.Fragment>
+      </div>
     );
   }
 }

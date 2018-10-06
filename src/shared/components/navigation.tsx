@@ -53,7 +53,7 @@ class Navigation extends Component<any, any> {
           </Menu.Item>
           <Menu.Item as={Link} to='/browse'>Browse</Menu.Item>
 
-          <Menu.Item as={SearchBox} {...this.props}/>
+          <Menu.Item as={SearchBox} {...this.props.isAuthenticated}/>
 
           <Dropdown item simple text='Finder'>
             <Dropdown.Menu>
