@@ -2,8 +2,8 @@ import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
-import { FaButtons, LockSymbol, Stars, TypeImage } from './common/widgets/widgets';
-import { Table, Loader, Icon } from 'semantic-ui-react';
+import { FaButtons, LockSymbol, Stars, TypeImage, LoadingAndRestoreScroll } from './common/widgets/widgets';
+import { Table, Icon } from 'semantic-ui-react';
 
 class Finder extends Component<any, any> {
   constructor(props) {
@@ -45,7 +45,7 @@ class Finder extends Component<any, any> {
 
   render() {
     if (!this.state.data || !this.state.data.problems) {
-      return <Loader active inline='centered' />;
+      return <LoadingAndRestoreScroll />;
     }
     const markers = this.state.data.problems.filter(p => p.lat!=0 && p.lng!=0).map(p => {
       return {

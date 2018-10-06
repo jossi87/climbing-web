@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
-import { LockSymbol } from './common/widgets/widgets';
-import { Loader, Table } from 'semantic-ui-react';
+import { LockSymbol, LoadingAndRestoreScroll } from './common/widgets/widgets';
+import { Table } from 'semantic-ui-react';
 
 class ProblemHse extends Component<any, any> {
   constructor(props) {
@@ -26,7 +26,7 @@ class ProblemHse extends Component<any, any> {
   render() {
     const { data } = this.state;
     if (!data) {
-      return <Loader active inline='centered' />;
+      return <LoadingAndRestoreScroll />;
     }
 
     const rows = data.map((hse, i) => {

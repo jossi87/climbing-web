@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
-import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
-import { Loader, Container } from 'semantic-ui-react';
+import { Container } from 'semantic-ui-react';
 import { getImageUrl, postProblemSvg } from '../api';
 import { parseReadOnlySvgs } from '../utils/svg';
-import { LockSymbol } from './common/widgets/widgets';
+import { LoadingAndRestoreScroll } from './common/widgets/widgets';
 
 class SvgEdit extends Component<any, any> {
   constructor(props) {
@@ -262,7 +261,7 @@ class SvgEdit extends Component<any, any> {
 
   render() {
     if (!this.state || !this.state.id) {
-      return <Loader active inline='centered' />;
+      return <LoadingAndRestoreScroll />;
     } else if (this.state.error) {
       return <h3>{this.state.error.toString()}</h3>;
     } else if (this.state.pushUrl) {

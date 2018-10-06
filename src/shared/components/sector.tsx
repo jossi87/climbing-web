@@ -3,8 +3,8 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
-import { CroppedText, LockSymbol, Stars, TypeImage } from './common/widgets/widgets';
-import { Loader, Icon, Button, Table, Container } from 'semantic-ui-react';
+import { CroppedText, LockSymbol, Stars, TypeImage, LoadingAndRestoreScroll } from './common/widgets/widgets';
+import { Icon, Button, Table, Container } from 'semantic-ui-react';
 
 class TableRow extends Component<any, any> {
   /* intersperse: Return an array with the separator interspersed between
@@ -91,7 +91,7 @@ class Sector extends Component<any, any> {
   render() {
     const { data } = this.state;
     if (!data) {
-      return <Loader active inline='centered' />;
+      return <LoadingAndRestoreScroll />;
     }
     const problemsInTopo = [];
     if (data.media) {

@@ -5,9 +5,10 @@ import UserSelector from './common/user-selector/user-selector';
 import ProblemSection from './common/problem-section/problem-section';
 import ImageUpload from './common/image-upload/image-upload';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
-import { Loader, Container } from 'semantic-ui-react';
+import { Container } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
 import { convertFromDateToString, convertFromStringToDate, postProblem } from './../api';
+import { LoadingAndRestoreScroll } from './common/widgets/widgets';
 
 class ProblemEdit extends Component<any, any> {
   constructor(props) {
@@ -161,7 +162,7 @@ class ProblemEdit extends Component<any, any> {
     } else if (!this.props || !this.props.match || !this.props.match.params || !this.props.match.params.problemId || !this.props.location || !this.props.location.query || !this.props.location.query.idSector) {
       return <span><h3>Invalid action...</h3></span>;
     } else if (!data) {
-      return <Loader active inline='centered' />;
+      return <LoadingAndRestoreScroll />;
     } else if (!data.metadata.isAdmin) {
       this.setState({pushUrl: "/login", error: null});
     }

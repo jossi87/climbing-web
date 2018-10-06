@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
-import { List, Grid, Loader, Statistic, Card, Icon, Image } from 'semantic-ui-react';
+import { List, Grid, Statistic, Card, Icon, Image } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { getImageUrl } from '../api';
+import { LoadingAndRestoreScroll } from './common/widgets/widgets';
 
 class Frontpage extends Component<any, any> {
   constructor(props) {
@@ -39,7 +40,7 @@ class Frontpage extends Component<any, any> {
 
   render() {
     if (!this.state || !this.state.data) {
-      return <Loader active inline='centered' />;
+      return <LoadingAndRestoreScroll />;
     }
 
     return (

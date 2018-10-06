@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
-import { Loader, Button, Card } from 'semantic-ui-react';
+import { Button, Card } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
-import { LockSymbol } from './common/widgets/widgets';
+import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 
 class Browse extends Component<any, any> {
   constructor(props) {
@@ -26,7 +26,7 @@ class Browse extends Component<any, any> {
 
   render() {
     if (!this.state || !this.state.data) {
-      return <Loader active inline='centered' />;
+      return <LoadingAndRestoreScroll />;
     }
     const markers = this.state.data.areas.filter(a => a.lat!=0 && a.lng!=0).map(a => {
       return {

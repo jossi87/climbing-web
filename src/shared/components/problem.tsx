@@ -3,10 +3,10 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
-import { Loader, Button, Table, Container } from 'semantic-ui-react';
+import { Button, Table, Container } from 'semantic-ui-react';
 import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
-import { Stars } from './common/widgets/widgets';
+import { Stars, LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { postComment } from './../api';
 
 class Problem extends Component<any, any> {
@@ -103,7 +103,7 @@ class Problem extends Component<any, any> {
   render() {
     const { data } = this.state;
     if (!data || this.state.isSaving) {
-      return <Loader active inline='centered' />;
+      return <LoadingAndRestoreScroll />;
     }
 
     const markers = [];

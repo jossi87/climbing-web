@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import { Redirect } from 'react-router'
 import ImageUpload from './common/image-upload/image-upload';
-import { Loader } from 'semantic-ui-react';
 import { getProblem, postProblemMedia } from './../api';
+import { LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Container, Button } from 'semantic-ui-react';
 
 class ProblemEditMedia extends Component<any, any> {
@@ -42,7 +42,7 @@ class ProblemEditMedia extends Component<any, any> {
 
   render() {
     if (!this.state || !this.state.id) {
-      return <Loader active inline='centered' />;
+      return <LoadingAndRestoreScroll />;
     } else if (this.state.pushUrl) {
       return (<Redirect to={this.state.pushUrl} push />);
     } else if (!this.state.isAuthenticated) {

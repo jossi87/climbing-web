@@ -3,8 +3,8 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
-import { CroppedText, LockSymbol } from './common/widgets/widgets';
-import { Loader, Button, Table, Container } from 'semantic-ui-react';
+import { CroppedText, LockSymbol, LoadingAndRestoreScroll } from './common/widgets/widgets';
+import { Button, Table, Container } from 'semantic-ui-react';
 
 class Area extends Component<any, any> {
   constructor(props) {
@@ -46,7 +46,7 @@ class Area extends Component<any, any> {
 
   render() {
     if (!this.state.data) {
-      return <Loader active inline='centered' />;
+      return <LoadingAndRestoreScroll />;
     }
     const rows = this.state.data.sectors.map((sector, i) => (
       <Table.Row>

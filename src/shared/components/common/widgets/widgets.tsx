@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Icon, Popup } from 'semantic-ui-react';
+import { Loader, Button, Icon, Popup } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 
 export function LockSymbol({visibility}) {
@@ -73,4 +73,9 @@ export function FaButtons({fa}) {
     return <Button.Group size="mini">{faButtons}</Button.Group>;
   }
   return null;
+}
+
+export function LoadingAndRestoreScroll() {
+  if (window) window.scrollTo(0, 0);
+  return <Loader active inline='centered' />;
 }

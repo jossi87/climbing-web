@@ -3,8 +3,9 @@ import MetaTags from 'react-meta-tags';
 import { Redirect } from 'react-router';
 import ImageUpload from './common/image-upload/image-upload';
 import Leaflet from './common/leaflet/leaflet';
-import { Loader, Container } from 'semantic-ui-react';
+import { Container } from 'semantic-ui-react';
 import { postArea } from './../api';
+import { LoadingAndRestoreScroll } from './common/widgets/widgets';
 
 class AreaEdit extends Component<any, any> {
   constructor(props) {
@@ -91,7 +92,7 @@ class AreaEdit extends Component<any, any> {
     } else if (!this.props || !this.props.match || !this.props.match.params || !this.props.match.params.areaId) {
       return <span><h3>Invalid action...</h3></span>;
     } else if (!this.state.data) {
-      return <Loader active inline='centered' />;
+      return <LoadingAndRestoreScroll />;
     } else if (!this.state.data.metadata.isAdmin) {
       this.setState({pushUrl: "/login", error: null});
     }
