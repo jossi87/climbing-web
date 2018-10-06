@@ -106,7 +106,7 @@ class Area extends Component<any, any> {
             <Item.Group link unstackable>
               {this.state.data.sectors.map((sector, i) => (
                 <Item as={Link} to={`/sector/${sector.id}`} key={i}>
-                  {sector.randomMediaId>0 && <Image size="small" style={{maxHeight: '150px', objectFit: 'cover'}}  src={getImageUrl(sector.randomMediaId, 240)} />}
+                  {sector.randomMediaId>0 && <Image size="small" style={{maxHeight: '150px', objectFit: 'cover'}}  src={getImageUrl(sector.randomMediaId, 280)} />}
                   <Item.Content>
                     <Item.Header>
                       {sector.name} <LockSymbol visibility={sector.visibility}/>
