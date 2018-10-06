@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { Modal, Button, FormGroup, ControlLabel, FormControl, ButtonGroup, DropdownButton, MenuItem } from 'react-bootstrap';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import { convertFromDateToString, convertFromStringToDate, postTicks } from './../../../api';
-import { Image } from 'semantic-ui-react';
+import { Icon } from 'semantic-ui-react';
 
 class TickModal extends Component<any, any> {
   constructor(props) {
@@ -81,11 +81,11 @@ class TickModal extends Component<any, any> {
     var stars: any = "No stars";
     if (this.state) {
       if (this.state.stars===1) {
-        stars = <span><Image name="star" /> Nice</span>
+        stars = <span><Icon name="star" /> Nice</span>
       } else if (this.state.stars===2) {
-        stars = <span><Image name="star" /><Image name="star" /> Very nice</span>
+        stars = <span><Icon name="star" /><Icon name="star" /> Very nice</span>
       } else if (this.state.stars===3) {
-        stars = <span><Image name="star" /><Image name="star" /><Image name="star" /> Fantastic!</span>
+        stars = <span><Icon name="star" /><Icon name="star" /><Icon name="star" /> Fantastic!</span>
       }
     }
 
@@ -117,9 +117,9 @@ class TickModal extends Component<any, any> {
             <ControlLabel>Stars</ControlLabel><br/>
             <DropdownButton title={stars} id="bg-nested-dropdown">
               <MenuItem eventKey="0" onSelect={this.onStarsChanged.bind(this, 0)}>No stars</MenuItem>
-              <MenuItem eventKey="1" onSelect={this.onStarsChanged.bind(this, 1)}><Image name="star" /> Nice</MenuItem>
-              <MenuItem eventKey="2" onSelect={this.onStarsChanged.bind(this, 2)}><Image name="star" /><Image name="star" /> Very nice</MenuItem>
-              <MenuItem eventKey="3" onSelect={this.onStarsChanged.bind(this, 3)}><Image name="star" /><Image name="star" /><Image name="star" /> Fantastic!</MenuItem>
+              <MenuItem eventKey="1" onSelect={this.onStarsChanged.bind(this, 1)}><Icon name="star" /> Nice</MenuItem>
+              <MenuItem eventKey="2" onSelect={this.onStarsChanged.bind(this, 2)}><Icon name="star" /><Icon name="star" /> Very nice</MenuItem>
+              <MenuItem eventKey="3" onSelect={this.onStarsChanged.bind(this, 3)}><Icon name="star" /><Icon name="star" /><Icon name="star" /> Fantastic!</MenuItem>
             </DropdownButton>
           </FormGroup>
           <FormGroup>

@@ -59,7 +59,7 @@ class Navigation extends Component<any, any> {
             <Dropdown.Menu>
               {this.state.metadata && !this.state.metadata.isBouldering && <Dropdown.Item as={Link} to="/hse">Flagged as dangerous (HSE)</Dropdown.Item>}
               {this.state.metadata && this.state.metadata.isSuperAdmin && <Dropdown.Item as={Link} to="/finder/-1">Grade: <strong>superadmin</strong></Dropdown.Item>}
-              {this.state.metadata && this.state.metadata.grades && this.state.metadata.grades.map(g => (<Dropdown.Item as={Link} to={"/finder/" + g.id}>Grade: <strong>{g.grade}</strong></Dropdown.Item>))}
+              {this.state.metadata && this.state.metadata.grades && this.state.metadata.grades.map((g, i) => (<Dropdown.Item key={i} as={Link} to={"/finder/" + g.id}>Grade: <strong>{g.grade}</strong></Dropdown.Item>))}
             </Dropdown.Menu>
           </Dropdown>
 

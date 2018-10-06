@@ -3,11 +3,11 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
-import { Loader, Image } from 'semantic-ui-react';
-import { Tabs, Tab, Well, Panel, ButtonGroup, Button, Breadcrumb, OverlayTrigger, Tooltip, Table } from 'react-bootstrap';
+import { Loader, Button } from 'semantic-ui-react';
+import { Tabs, Tab, Well, Panel, Table } from 'react-bootstrap';
 import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
-import { LockSymbol, Stars } from './common/widgets/widgets';
+import { Stars } from './common/widgets/widgets';
 import { postComment } from './../api';
 
 class Problem extends Component<any, any> {
@@ -229,31 +229,6 @@ class Problem extends Component<any, any> {
       );
     };
 
-    var headerButtons = null;
-    if (data.metadata && data.metadata.isAuthenticated) {
-      headerButtons = (
-        <div style={{float: 'right'}}>
-          <ButtonGroup>
-            <OverlayTrigger placement="top" overlay={<Tooltip id="Tick problem">Tick problem</Tooltip>}>
-              <Button bsStyle="primary" bsSize="xsmall" onClick={this.openTickModal.bind(this)}>Tick</Button>
-            </OverlayTrigger>
-            <OverlayTrigger placement="top" overlay={<Tooltip id="Add comment">Add comment</Tooltip>}>
-              <Button bsStyle="primary" bsSize="xsmall" onClick={this.openCommentModal.bind(this)}><Image name="comment" inverse={true} /></Button>
-            </OverlayTrigger>
-            {data.metadata.isAdmin ?
-              <OverlayTrigger placement="top" overlay={<Tooltip id={data.id}>Edit problem</Tooltip>}>
-                <LinkContainer to={{ pathname: `/problem/edit/${data.id}`, query: { idSector: data.sectorId, lat: data.sectorLat, lng: data.sectorLng } }}><Button bsStyle="primary" bsSize="xsmall"><Image name="edit" inverse={true} /></Button></LinkContainer>
-              </OverlayTrigger>
-            :
-              <OverlayTrigger placement="top" overlay={<Tooltip id={data.id}>Add image(s)</Tooltip>}>
-                <LinkContainer to={{ pathname: `/problem/edit/media/${data.id}` }}><Button bsStyle="primary" bsSize="xsmall"><Image name="image" inverse={true} /></Button></LinkContainer>
-              </OverlayTrigger>
-            }
-          </ButtonGroup>
-        </div>
-      );
-    }
-
     var tickModal = null;
     if (data.ticks) {
       const userTicks = data.ticks.filter(t => t.writable);
@@ -283,11 +258,17 @@ class Problem extends Component<any, any> {
 
         {tickModal}
         <CommentModal auth={this.props.auth} idProblem={data.id} show={this.state.showCommentModal} onHide={this.closeCommentModal.bind(this)} isBouldering={data.metadata.isBouldering}/>
-
-        <Breadcrumb>
-          {headerButtons}
-          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${data.areaId}`}>{data.areaName}</Link> <LockSymbol visibility={data.areaVisibility}/> / <Link to={`/sector/${data.sectorId}`}>{data.sectorName}</Link> <LockSymbol visibility={data.sectorVisibility}/> / {data.name} {data.grade} <LockSymbol visibility={data.visibility}/>
-        </Breadcrumb>
+        {data.metadata && data.metadata.isAuthenticated &&
+          <span><Button.Group fluid size="mini">
+            <Button onClick={this.openTickModal.bind(this)}>Tick</Button>
+            <Button onClick={this.openCommentModal.bind(this)}>Add comment</Button>
+            {data.metadata.isAdmin?
+              <Button as={Link} to={{ pathname: `/problem/edit/${data.id}`, query: { idSector: data.sectorId, lat: data.sectorLat, lng: data.sectorLng } }}>Edit problem</Button>
+              :
+              <Button as={Link} to={`/problem/edit/media/${data.id}`}>Add image(s)</Button>
+            }
+          </Button.Group><br/></span>
+        }
         {topoContent}
         <Well bsSize="small">
           {!data.metadata.isBouldering && <span><strong>Type:</strong> {data.t.type + " - " + data.t.subType}<br/></span>}

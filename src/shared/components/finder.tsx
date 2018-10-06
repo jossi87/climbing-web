@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import { FaButtons, LockSymbol, Stars, TypeImage } from './common/widgets/widgets';
 import { Breadcrumb, Table } from 'react-bootstrap';
-import { Loader, Image } from 'semantic-ui-react';
+import { Loader, Icon } from 'semantic-ui-react';
 
 class Finder extends Component<any, any> {
   constructor(props) {
@@ -84,8 +84,8 @@ class Finder extends Component<any, any> {
               <th>FA</th>
               <th>Ticks</th>
               <th>Stars</th>
-              <th><Image name="camera" /></th>
-              <th><Image name="video" /></th>
+              <th><Icon name="camera" /></th>
+              <th><Icon name="video" /></th>
             </tr>
           </thead>
           <tbody>

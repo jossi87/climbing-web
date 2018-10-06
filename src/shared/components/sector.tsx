@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
 import { CroppedText, LockSymbol, Stars, TypeImage } from './common/widgets/widgets';
-import { Tabs, Tab, Well, OverlayTrigger, Tooltip, ButtonGroup, Button, Table, Breadcrumb } from 'react-bootstrap';
-import { Loader, Image } from 'semantic-ui-react';
+import { Tabs, Tab, Well, Table } from 'react-bootstrap';
+import { Loader, Icon, Button } from 'semantic-ui-react';
 
 class TableRow extends Component<any, any> {
   /* intersperse: Return an array with the separator interspersed between
@@ -45,7 +45,7 @@ class TableRow extends Component<any, any> {
         <td><Stars numStars={this.props.problem.stars}/></td>
         <td>{this.props.problem.numImages}</td>
         <td>{this.props.problem.numMovies}</td>
-        <td>{( (this.props.problem.lat>0 && this.props.problem.lng>0) || (this.props.problemsInTopo.indexOf(this.props.problem.id)>=0) ) && <Image name="check" />}</td>
+        <td>{( (this.props.problem.lat>0 && this.props.problem.lng>0) || (this.props.problemsInTopo.indexOf(this.props.problem.id)>=0) ) && <Icon name="check" />}</td>
       </tr>
     )
   }
@@ -158,28 +158,18 @@ class Sector extends Component<any, any> {
           <meta property="og:image:width" content={data.metadata.og.imageWidth} />
           <meta property="og:image:height" content={data.metadata.og.imageHeight} />
         </MetaTags>
-        <Breadcrumb>
-          {this.state && this.state.data && this.state.data.metadata.isAdmin?
-            <div style={{float: 'right'}}>
-              <ButtonGroup>
-                <OverlayTrigger placement="top" overlay={<Tooltip id="Add problem">Add problem</Tooltip>}>
-                  <LinkContainer to={{ pathname: `/problem/edit/-1`, query: { idSector: data.id, nr: nextNr, lat: data.lat, lng: data.lng } }}><Button bsStyle="primary" bsSize="xsmall"><Image name="plus square" inverse={true} /></Button></LinkContainer>
-                </OverlayTrigger>
-                <OverlayTrigger placement="top" overlay={<Tooltip id={data.id}>Edit sector</Tooltip>}>
-                  <LinkContainer to={{ pathname: `/sector/edit/${data.id}`, query: { idArea: data.areaId, lat: data.lat, lng: data.lng } }}><Button bsStyle="primary" bsSize="xsmall"><Image name="edit" inverse={true} /></Button></LinkContainer>
-                </OverlayTrigger>
-              </ButtonGroup>
-            </div>:
-            null
-          }
-          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${data.areaId}`}>{data.areaName}</Link> <LockSymbol visibility={data.areaVisibility}/> / {data.name} <LockSymbol visibility={data.visibility}/>
-        </Breadcrumb>
+        {this.state && this.state.data && this.state.data.metadata.isAdmin &&
+          <span><Button.Group fluid size="mini">
+            <Button as={Link} to={{ pathname: `/problem/edit/-1`, query: { idSector: data.id, nr: nextNr, lat: data.lat, lng: data.lng } }}>Add problem</Button>
+            <Button as={Link} to={{ pathname: `/sector/edit/${data.id}`, query: { idArea: data.areaId, lat: data.lat, lng: data.lng } }}>Edit sector</Button>
+          </Button.Group><br/></span>
+        }
         {topoContent}
         {data.comment? <Well>{data.comment}</Well> : null}
         <Table striped condensed hover>
           <thead>
             <tr>
-              <th><Image name="hashtag" /></th>
+              <th><Icon name="hashtag" /></th>
               <th>Name</th>
               <th>Description</th>
               {!data.metadata.isBouldering && <th>Type</th>}
@@ -187,9 +177,9 @@ class Sector extends Component<any, any> {
               <th>FA</th>
               <th>Ticks</th>
               <th>Stars</th>
-              <th><Image name="camera" /></th>
-              <th><Image name="video" /></th>
-              <th><Image name="map marker" /></th>
+              <th><Icon name="camera" /></th>
+              <th><Icon name="video" /></th>
+              <th><Icon name="map marker" /></th>
             </tr>
           </thead>
           <tbody>

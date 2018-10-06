@@ -5,7 +5,7 @@ import { Button, OverlayTrigger, Tooltip, Well, Breadcrumb, Table } from 'react-
 import Chart from './common/chart/chart';
 import TickModal from './common/tick-modal/tick-modal';
 import { CroppedText, LockSymbol, Stars } from './common/widgets/widgets';
-import { Loader, Image } from 'semantic-ui-react';
+import { Loader, Icon } from 'semantic-ui-react';
 
 class User extends Component<any, any> {
   constructor(props) {
@@ -96,8 +96,8 @@ class User extends Component<any, any> {
                 <td>{t.grade}</td>
                 <td><CroppedText text={t.comment} i={t.idProblem} maxLength={40}/></td>
                 <td><Stars numStars={t.stars}/></td>
-                <td>{t.fa && <Image name="check" />}</td>
-                <td>{this.state.data.readOnly==false && t.id!=0 && <OverlayTrigger placement="top" overlay={<Tooltip id={i}>Edit tick</Tooltip>}><Button bsSize="xsmall" bsStyle="primary" onClick={this.openTickModal.bind(this, t)}><Image name="edit" inverse={true} /></Button></OverlayTrigger>}</td>
+                <td>{t.fa && <Icon name="check" />}</td>
+                <td>{this.state.data.readOnly==false && t.id!=0 && <OverlayTrigger placement="top" overlay={<Tooltip id={i}>Edit tick</Tooltip>}><Button bsSize="xsmall" bsStyle="primary" onClick={this.openTickModal.bind(this, t)}><Icon name="edit" inverse={true} /></Button></OverlayTrigger>}</td>
               </tr>
             ))}
           </tbody>

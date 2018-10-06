@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
-import { Loader, Button, Icon, Card } from 'semantic-ui-react';
+import { Loader, Button, Card } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
 import { LockSymbol } from './common/widgets/widgets';
 
@@ -51,7 +51,7 @@ class Browse extends Component<any, any> {
           <meta property="og:image:height" content={this.state.data.metadata.og.imageHeight} />
         </MetaTags>
         {this.state && this.state.data && this.state.data.metadata.isAdmin &&
-          <span><Button fluid size="mini">Add area</Button><br/></span>
+          <span><Button fluid size="mini" as={Link} to={`/area/edit/-1`}>Add area</Button><br/></span>
         }
         {map}
         <Card.Group itemsPerRow={3} stackable>

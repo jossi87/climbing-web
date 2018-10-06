@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
-import { Tabs, Tab, Well, OverlayTrigger, Tooltip, ButtonGroup, Button, Table, Breadcrumb } from 'react-bootstrap';
+import { Tabs, Tab, Well, Table } from 'react-bootstrap';
 import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
 import { CroppedText, LockSymbol } from './common/widgets/widgets';
-import { Loader, Image } from 'semantic-ui-react';
+import { Loader, Button } from 'semantic-ui-react';
 
 class Area extends Component<any, any> {
   constructor(props) {
@@ -104,22 +104,12 @@ class Area extends Component<any, any> {
           <meta property="og:image:width" content={this.state.data.metadata.og.imageWidth} />
           <meta property="og:image:height" content={this.state.data.metadata.og.imageHeight} />
         </MetaTags>
-        <Breadcrumb>
-          {this.state.data.metadata.isAdmin?
-            <div style={{float: 'right'}}>
-              <ButtonGroup>
-                <OverlayTrigger placement="top" overlay={<Tooltip id="Add sector">Add sector</Tooltip>}>
-                  <LinkContainer to={{ pathname: `/sector/edit/-1`, query: { idArea: this.state.data.id, lat: this.state.data.lat, lng: this.state.data.lng } }}><Button bsStyle="primary" bsSize="xsmall"><Image name="plus square" inverse={true} /></Button></LinkContainer>
-                </OverlayTrigger>
-                <OverlayTrigger placement="top" overlay={<Tooltip id={this.state.data.id}>Edit area</Tooltip>}>
-                  <LinkContainer to={{ pathname: `/area/edit/${this.state.data.id}`, query: { lat: this.state.data.lat, lng: this.state.data.lng } }}><Button bsStyle="primary" bsSize="xsmall"><Image name="edit" inverse={true} /></Button></LinkContainer>
-                </OverlayTrigger>
-              </ButtonGroup>
-            </div>:
-            null
-          }
-          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / {this.state.data.name} <LockSymbol visibility={this.state.data.visibility}/>
-        </Breadcrumb>
+        {this.state.data.metadata.isAdmin &&
+          <span><Button.Group fluid size="mini">
+            <Button as={Link} to={{ pathname: `/sector/edit/-1`, query: { idArea: this.state.data.id, lat: this.state.data.lat, lng: this.state.data.lng } }}>Add sector</Button>
+            <Button as={Link} to={{ pathname: `/area/edit/${this.state.data.id}`, query: { lat: this.state.data.lat, lng: this.state.data.lng } }}>Edit area</Button>
+          </Button.Group><br/></span>
+        }
         {topoContent}
         {this.state.data.comment? <Well><div dangerouslySetInnerHTML={{ __html: this.state.data.comment }} /></Well> : null}
         <Table striped condensed hover>
