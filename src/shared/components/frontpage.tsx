@@ -102,7 +102,7 @@ class Frontpage extends Component<any, any> {
                     <Link to={`/problem/${this.state.data.randomMedia.idProblem}`}>{this.state.data.randomMedia.problem}</Link> {this.state.data.randomMedia.grade}
                   </Card.Header>
                   <Card.Meta>
-                    <Link to={`/area/${this.state.data.randomMedia.idArea}`}>{this.state.data.randomMedia.area}</Link>/ <Link to={`/area/${this.state.data.randomMedia.idSector}`}>{this.state.data.randomMedia.sector}</Link>
+                    <Link to={`/area/${this.state.data.randomMedia.idArea}`}>{this.state.data.randomMedia.area}</Link>/ <Link to={`/sector/${this.state.data.randomMedia.idSector}`}>{this.state.data.randomMedia.sector}</Link>
                   </Card.Meta>
                   <Card.Description>
                     <Icon name='user' />

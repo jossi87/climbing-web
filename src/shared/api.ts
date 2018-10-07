@@ -26,6 +26,21 @@ export function getImageUrl(id: number, maxHeight: number): string {
   return getUrl(`/images?id=${id}`);
 }
 
+export function getGradeColor(grade: string) {
+  console.log(grade.substring(0, 1))
+  switch(grade.substring(0, 1)) {
+    case "n": return "brown";
+    case "3": return "yellow";
+    case "4": return "olive";
+    case "5": return "green";
+    case "6": return "teal";
+    case "7": return "blue";
+    case "8": return "violet";
+    case "9": return "purple";
+    default: return "pink";
+  }
+}
+
 export function convertFromDateToString(date: Date): string {
   if (!date) {
     return null;

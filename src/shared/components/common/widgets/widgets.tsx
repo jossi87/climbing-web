@@ -76,6 +76,8 @@ export function FaButtons({fa}) {
 }
 
 export function LoadingAndRestoreScroll() {
-  if (window) window.scrollTo(0, 0);
+  if (window) {
+    window.scrollTo(0, 0);
+  }
   return <Loader active inline='centered' />;
 }
