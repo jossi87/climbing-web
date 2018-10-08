@@ -1,56 +1,48 @@
 import React, {Component} from 'react';
 import Dropzone from 'react-dropzone';
 import { getUserSearch } from './../../../api';
+import { Button, Card, Image, Search } from 'semantic-ui-react';
 
 class Text extends Component<any, any> {
-  constructor(props) {
-    super(props);
-    this.state = {searchResults: [], value: ''};
+  componentWillMount() {
+    this.resetComponent()
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({value: nextProps.value});
+    this.resetComponent()
   }
 
-  inputChange(e) {
-    const value = e.target.value;
+  resetComponent = () => this.setState({ isLoading: false, results: [], value: '' })
+
+  handleResultSelect = (e, { result }) => {
+    this.setState({ value: result.title });
+    this.props.onValueChanged(this.props.m, result.title);
+  }
+
+  handleSearchChange = (e, { value }) => {
+    if (value.length < 1) return this.resetComponent()
+    this.setState({ isLoading: true, value })
     this.props.onValueChanged(this.props.m, value);
-    if (value.length>0) {
-      getUserSearch(this.props.accessToken, value).then((res) => {
-        const sr = res.filter(u => u.name.toUpperCase() !== value.toUpperCase());
-        this.setState({searchResults: sr});
+    getUserSearch(this.props.accessToken, value)
+    .then((res) => {
+      this.setState({
+        isLoading: false,
+        results: res.map(u => ({title: u.name}))
       });
-    }
-    else {
-      this.setState({searchResults: []});
-    }
-  }
-
-  menuItemSelect(user, event) {
-    this.setState({searchResults: []});
-    this.props.onValueChanged(this.props.m, user.name);
+    });
   }
 
   render() {
-    var searchResults = null;
-    if (this.state.searchResults.length>0) {
-      const rows = this.state.searchResults.map((u, i) => <MenuItem key={i} href="#" onSelect={this.menuItemSelect.bind(this, u)}>{u.name}</MenuItem>);
-      searchResults=(
-        <div>
-          <ul className="dropdown-menu open" style={{position: 'absolute', display: 'inline'}}>
-            {rows}
-          </ul>
-        </div>
-      );
-    }
-
+    const { isLoading, value, results } = this.state;
     return (
-      <div style={{position: 'relative', width: '100%'}}>
-        <div style={{width: '100%'}}>
-          <FormControl style={{display: 'inline-block'}} type="text" placeholder={this.props.placeholder} value={this.state.value} onChange={this.inputChange.bind(this)} />
-        </div>
-        {searchResults}
-      </div>
+      <Search
+        loading={isLoading}
+        onResultSelect={this.handleResultSelect}
+        onSearchChange={this.handleSearchChange}
+        results={results}
+        value={value}
+        {...this.props}
+      />
     )
   }
 }
@@ -87,30 +79,30 @@ class ImageUpload extends Component<any, any> {
   render() {
     const accessToken = this.props.auth.getAccessToken();
     return (
-      <FormGroup>
-        <ControlLabel>Upload image(s)</ControlLabel><br/>
+      <>
         <Dropzone
           onDrop={this.onDrop.bind(this)}
           style={{width: '220px', height: '75px', padding: '15px', borderWidth: '1px', borderColor: '#666', borderStyle: 'dashed', borderRadius: '5px'}}
           accept={'image/*'}>
           <i>Drop JPG-image(s) here or click to select files to upload.</i>
-        </Dropzone>
-        {this.state.media.length > 0 ?
-          <Grid>
-            <Row>
-              {this.state.media.map((m, i) =>
-                <Col key={i} xs={8} sm={6} md={4} lg={2}>
-                  <Thumbnail src={m.file.preview}>
-                    <Text accessToken={accessToken} m={m} placeholder='In photo' value={m? m.inPhoto : ''}  onValueChanged={this.onInPhotoChanged.bind(this)} />
-                    <Text accessToken={accessToken} m={m} placeholder='Photographer' value={m? m.photographer : ''} onValueChanged={this.onPhotographerChanged.bind(this)} />
-                    <Button style={{width: '100%'}} bsStyle='danger' onClick={this.onRemove.bind(this, m)}>Remove</Button>
-                  </Thumbnail>
-                </Col>
-              )}
-            </Row>
-          </Grid>
-          : null}
-      </FormGroup>
+        </Dropzone><br/>
+        {this.state.media.length > 0 &&
+          <Card.Group itemsPerRow={4} stackable>
+            {this.state.media.map((m, i) =>
+              <Card>
+                <Image src={m.file.preview} />
+                <Card.Content>
+                  <Text accessToken={accessToken} m={m} placeholder='In photo' value={m? m.inPhoto : ''}  onValueChanged={this.onInPhotoChanged.bind(this)} />
+                  <Text accessToken={accessToken} m={m} placeholder='Photographer' value={m? m.photographer : ''} onValueChanged={this.onPhotographerChanged.bind(this)} />
+                </Card.Content>
+                <Card.Content extra>
+                  <Button fluid basic negative onClick={this.onRemove.bind(this, m)}>Remove</Button>
+                </Card.Content>
+              </Card>
+            )}
+          </Card.Group>
+        }
+      </>
     );
   }
 }

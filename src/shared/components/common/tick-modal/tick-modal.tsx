@@ -104,7 +104,7 @@ class TickModal extends Component<any, any> {
                 <label>Stars</label>
                 <Dropdown selection value={this.state && this.state.stars} onChange={this.onStarsChanged.bind(this)} 
                   options={[
-                    {key: 0, value: 0, text: "No stars", content: <>No stars</>},
+                    {key: 0, value: 0, text: "No stars"},
                     {key: 1, value: 1, text: <><Icon name="star" /> Nice</>},
                     {key: 2, value: 2, text: <><Icon name="star" /><Icon name="star" /> Very nice</>},
                     {key: 3, value: 3, text: <><Icon name="star" /><Icon name="star" /><Icon name="star" /> Fantastic!</>}

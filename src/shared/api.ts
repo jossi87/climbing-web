@@ -27,7 +27,6 @@ export function getImageUrl(id: number, maxHeight: number): string {
 }
 
 export function getGradeColor(grade: string) {
-  console.log(grade.substring(0, 1))
   switch(grade.substring(0, 1)) {
     case "n": return "brown";
     case "3": return "yellow";
