@@ -3,7 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import { FaButtons, LockSymbol, Stars, TypeImage, LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { Table, Icon } from 'semantic-ui-react';
+import { Table, Icon, Label } from 'semantic-ui-react';
 
 class Finder extends Component<any, any> {
   constructor(props) {
@@ -75,7 +75,7 @@ class Finder extends Component<any, any> {
             <Table.Row>
               <Table.HeaderCell>Area</Table.HeaderCell>
               <Table.HeaderCell>Sector</Table.HeaderCell>
-              <Table.HeaderCell>Name</Table.HeaderCell>
+              <Table.HeaderCell>Name <Label size="mini">{this.state.data.problems.length}</Label></Table.HeaderCell>
               {!this.state.data.metadata.isBouldering && <Table.HeaderCell>Type</Table.HeaderCell>}
               <Table.HeaderCell>FA</Table.HeaderCell>
               <Table.HeaderCell>Ticks</Table.HeaderCell>
@@ -86,8 +86,8 @@ class Finder extends Component<any, any> {
           </Table.Header>
           <Table.Body>
             {this.state.data.problems.map((p, i) => (
-              <Table.Row>
-                <Table.Cell>{p.ticked} TODO <Link to={`/area/${p.areaId}`}>{p.areaName}</Link> <LockSymbol visibility={p.areaVisibility}/></Table.Cell>
+              <Table.Row key={i}>
+                <Table.Cell><Link to={`/area/${p.areaId}`}>{p.areaName}</Link> <LockSymbol visibility={p.areaVisibility}/></Table.Cell>
                 <Table.Cell><Link to={`/sector/${p.sectorId}`}>{p.sectorName}</Link> <LockSymbol visibility={p.sectorVisibility}/></Table.Cell>
                 <Table.Cell><Link to={`/problem/${p.id}`}>{p.name}</Link> <LockSymbol visibility={p.visibility}/></Table.Cell>
                 {!this.state.data.metadata.isBouldering && <Table.Cell><TypeImage t={p.t}/></Table.Cell>}

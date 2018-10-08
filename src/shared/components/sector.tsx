@@ -163,6 +163,7 @@ class Sector extends Component<any, any> {
                       ))}
                     </Label.Group>
                   </Card.Content>
+                  {problem.danger? <Label size='mini' attached='bottom right' icon='warning sign' color='red' /> : problem.ticked && <Label size='mini' attached='bottom right' icon='check' color='green' />}
                 </Card>
               ))}
             </Card.Group>

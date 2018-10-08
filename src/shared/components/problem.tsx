@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
 import Avatar from 'react-avatar';
-import { Button, Table, Message, Grid, Breadcrumb, Tab, Label, Icon, Card, Feed, Image, Modal } from 'semantic-ui-react';
+import { Button, Table, Message, Grid, Breadcrumb, Tab, Label, Icon, Card, Feed, Image } from 'semantic-ui-react';
 import { Stars, LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 import { postComment, getGradeColor } from './../api';
 import TickModal from './common/tick-modal/tick-modal';
@@ -279,6 +279,26 @@ class Problem extends Component<any, any> {
             {section}
           </Message.Content>
         </Message>
+        {data.sections && 
+          <Table celled>
+            <Table.Header>
+              <Table.Row>
+                <Table.HeaderCell>#</Table.HeaderCell>
+                <Table.HeaderCell>Grade</Table.HeaderCell>
+                <Table.HeaderCell>Description</Table.HeaderCell>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
+              {data.sections.map((s, i) => (
+                <Table.Row key={i}>
+                  <Table.Cell>{s.nr}</Table.Cell>
+                  <Table.Cell>{s.grade}</Table.Cell>
+                  <Table.Cell>{s.description}</Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </Table>
+        }
         {ticks && (
           <Card fluid>
             <Card.Content>

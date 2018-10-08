@@ -3,8 +3,8 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Chart from './common/chart/chart';
 import TickModal from './common/tick-modal/tick-modal';
-import { CroppedText, LockSymbol, Stars } from './common/widgets/widgets';
-import { Loader, Icon, Table, Container } from 'semantic-ui-react';
+import { LoadingAndRestoreScroll, CroppedText, LockSymbol, Stars } from './common/widgets/widgets';
+import { Icon, Table, Container } from 'semantic-ui-react';
 
 class User extends Component<any, any> {
   constructor(props) {
@@ -47,7 +47,7 @@ class User extends Component<any, any> {
   render() {
     const { data } = this.state;
     if (!data) {
-      return <Loader active inline='centered' />;
+      return <LoadingAndRestoreScroll />;
     }
 
     var numTicks = data.ticks.filter(t => !t.fa).length;
