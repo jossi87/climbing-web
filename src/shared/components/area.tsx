@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
 import { CroppedText, LockSymbol, LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { Button, Tab, Item, Message, Icon, Image, Header } from 'semantic-ui-react';
+import { Button, Tab, Item, Message, Icon, Image, Breadcrumb } from 'semantic-ui-react';
 import { getImageUrl } from '../api';
 
 class Area extends Component<any, any> {
@@ -61,16 +61,16 @@ class Area extends Component<any, any> {
       return {url: '/sector/' + s.id, label: s.name, polygon: polygon}
     });
     const panes = [];
+    if (this.state.data.media && this.state.data.media.length>0) {
+      panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Gallery auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} alt={this.state.data.name} media={this.state.data.media} showThumbnails={this.state.data.media.length>1} removeMedia={this.onRemoveMedia.bind(this)}/></Tab.Pane> });
+    }
     if (markers.length>0 || outlines.length>0) {
       const defaultCenter = this.state.data.lat && this.state.data.lat>0? {lat: this.state.data.lat, lng: this.state.data.lng} : this.state.data.metadata.defaultCenter;
       const defaultZoom = this.state.data.lat && this.state.data.lat>0? 14 : this.state.data.metadata.defaultZoom;
       panes.push({ menuItem: 'Map', render: () => <Tab.Pane><Leaflet useOpenStreetMap={true} markers={markers} outlines={outlines} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/></Tab.Pane> });
     }
-    if (this.state.data.media && this.state.data.media.length>0) {
-      panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Gallery auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} alt={this.state.data.name} media={this.state.data.media} showThumbnails={this.state.data.media.length>1} removeMedia={this.onRemoveMedia.bind(this)}/></Tab.Pane> });
-    }
     return (
-      <React.Fragment>
+      <>
         <MetaTags>
           {this.state.data.metadata.canonical && <link rel="canonical" href={this.state.data.metadata.canonical} />}
           <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(this.state.data.metadata.jsonLd)}} />
@@ -85,12 +85,14 @@ class Area extends Component<any, any> {
           <meta property="og:image:height" content={this.state.data.metadata.og.imageHeight} />
         </MetaTags>
         {this.state.data.metadata.isAdmin &&
-          <span><Button.Group fluid size="mini">
+          <><Button.Group fluid size="mini">
             <Button as={Link} to={{ pathname: `/sector/edit/-1`, query: { idArea: this.state.data.id, lat: this.state.data.lat, lng: this.state.data.lng } }}>Add sector</Button>
             <Button as={Link} to={{ pathname: `/area/edit/${this.state.data.id}`, query: { lat: this.state.data.lat, lng: this.state.data.lng } }}>Edit area</Button>
-          </Button.Group><br/></span>
+          </Button.Group><br/></>
         }
-        <Header as="h1">{this.state.data.name}</Header>
+        <Breadcrumb>
+          <Breadcrumb.Section active>{this.state.data.name} <LockSymbol visibility={this.state.data.visibility}/></Breadcrumb.Section>
+        </Breadcrumb><br/><br/>
         <Tab panes={panes} /><br/>
         {this.state.data.comment &&
           <Message icon>
@@ -101,7 +103,7 @@ class Area extends Component<any, any> {
           </Message>
         }
         {this.state.data.sectors &&
-          <span>
+          <>
             <br/>
             <Item.Group link unstackable>
               {this.state.data.sectors.map((sector, i) => (
@@ -121,9 +123,9 @@ class Area extends Component<any, any> {
                 </Item>
               ))}
             </Item.Group>
-          </span>
+          </>
         }
-      </React.Fragment>
+      </>
     );
   }
 }

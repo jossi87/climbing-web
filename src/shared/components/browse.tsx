@@ -36,9 +36,9 @@ class Browse extends Component<any, any> {
           url: '/area/' + a.id
         }
     });
-    const map = markers.length>0 && <span><Leaflet useOpenStreetMap={true} markers={markers} defaultCenter={this.state.data.metadata.defaultCenter} defaultZoom={this.state.data.metadata.defaultZoom}/><br/></span>;
+    const map = markers.length>0 && <><Leaflet useOpenStreetMap={true} markers={markers} defaultCenter={this.state.data.metadata.defaultCenter} defaultZoom={this.state.data.metadata.defaultZoom}/><br/></>;
     return (
-      <React.Fragment>
+      <>
         <MetaTags>
           <title>{this.state.data.metadata.title}</title>
           <meta name="description" content={this.state.data.metadata.description} />
@@ -51,7 +51,7 @@ class Browse extends Component<any, any> {
           <meta property="og:image:height" content={this.state.data.metadata.og.imageHeight} />
         </MetaTags>
         {this.state && this.state.data && this.state.data.metadata.isAdmin &&
-          <span><Button fluid size="mini" as={Link} to={`/area/edit/-1`}>Add area</Button><br/></span>
+          <><Button fluid size="mini" as={Link} to={`/area/edit/-1`}>Add area</Button><br/></>
         }
         {map}
         <Card.Group itemsPerRow={3} stackable>
@@ -69,7 +69,7 @@ class Browse extends Component<any, any> {
             </Card>
           ))}
         </Card.Group>
-      </React.Fragment>
+      </>
     );
   }
 }

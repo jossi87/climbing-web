@@ -3,11 +3,11 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
-import { Button, Table, Container } from 'semantic-ui-react';
+import { Button, Table, Message, Breadcrumb, Tab, Label, Icon, Card, Feed } from 'semantic-ui-react';
 import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
-import { Stars, LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { postComment } from './../api';
+import { Stars, LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
+import { postComment, getGradeColor } from './../api';
 
 class Problem extends Component<any, any> {
   constructor(props) {
@@ -41,25 +41,6 @@ class Problem extends Component<any, any> {
 
   refresh(id) {
     this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
-  }
-
-  handleTabsSelection(key) {
-    this.setState({tabIndex: key});
-  }
-
-  /* intersperse: Return an array with the separator interspersed between
-   * each element of the input array.
-   *
-   * > _([1,2,3]).intersperse(0)
-   * [1,0,2,0,3]
-  */
-  intersperse(arr, sep) {
-    if (arr.length === 0) {
-      return [];
-    }
-    return arr.slice(1).reduce((xs, x, i) => {
-      return (xs.concat([sep, x]));
-    }, [arr[0]]);
   }
 
   closeTickModal(event) {
@@ -123,81 +104,14 @@ class Problem extends Component<any, any> {
         isParking: true
       });
     }
-    const map = markers.length>0 && <Leaflet markers={markers} defaultCenter={{lat: markers[0].lat, lng: markers[0].lng}} defaultZoom={16}/>;
-    const gallery = data.media && data.media.length>0? <Gallery auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} alt={data.name + ' ' + data.grade + ' (' + data.areaName + " - " + data.sectorName + ')'} media={data.media} showThumbnails={false} removeMedia={this.onRemoveMedia.bind(this)} /> : null;
-    var topoContent = null;
-    if (map && gallery) {
-      topoContent = (
-        <Tabs activeKey={this.state.tabIndex} animation={false} onSelect={this.handleTabsSelection.bind(this)} id="problem_tab" unmountOnExit={true}>
-          <Tab eventKey={1} title="Media">{this.state.tabIndex==1? gallery : false}</Tab>
-          <Tab eventKey={2} title="Map">{this.state.tabIndex==2? map : false}</Tab>
-        </Tabs>
-      );
-    } else if (map) {
-      topoContent = map;
-    } else if (gallery) {
-      topoContent = gallery;
+    const panes = [];
+    if (data.media && data.media.length>0) {
+      panes.push({ menuItem: 'Media', render: () => <Tab.Pane><Gallery auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} alt={data.name + ' ' + data.grade + ' (' + data.areaName + " - " + data.sectorName + ')'} media={data.media} showThumbnails={false} removeMedia={this.onRemoveMedia.bind(this)} /></Tab.Pane> });
     }
-    var fa = data.fa? data.fa.map((u, i) => {return (<Link key={i} to={`/user/${u.id}`}>{u.firstname} {u.surname}</Link>)}) : [];
-    fa = this.intersperse(fa, ", ");
-
-    var table = null;
-    if (data.ticks) {
-      const rows = data.ticks.map((t, i) => {
-        const isTickedClassName = t.writable? 'success' : '';
-        return (
-          <Table.Row key={i}>
-            <Table.Cell>{t.date}</Table.Cell>
-            <Table.Cell><Link to={`/user/${t.idUser}`}>{t.name}</Link></Table.Cell>
-            <Table.Cell>{t.suggestedGrade}</Table.Cell>
-            <Table.Cell>{t.comment}</Table.Cell>
-            <Table.Cell><Stars numStars={t.stars}/></Table.Cell>
-          </Table.Row>
-        );
-      });
-      table = (
-        <Table celled>
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell>When</Table.HeaderCell>
-              <Table.HeaderCell>Name</Table.HeaderCell>
-              <Table.HeaderCell>Grade</Table.HeaderCell>
-              <Table.HeaderCell>Comment</Table.HeaderCell>
-              <Table.HeaderCell>Stars</Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {rows}
-          </Table.Body>
-        </Table>
-      );
+    if (markers.length>0) {
+      panes.push({ menuItem: 'Map', render: () => <Tab.Pane><Leaflet markers={markers} defaultCenter={{lat: markers[0].lat, lng: markers[0].lng}} defaultZoom={16}/></Tab.Pane> });
     }
-
-    var comment = null;
-    if (data.comments) {
-      const comments = data.comments.map((c, i) => {
-        var extra = null;
-        var bsStyle = "default";
-        if (c.danger) {
-          extra = " | Flagged as dangerous";
-          bsStyle = "danger";
-        } else if (c.resolved) {
-          extra = " | Flagged as safe";
-          bsStyle = "success";
-        } else if (data.metadata && data.metadata.isAuthenticated && !data.metadata.isBouldering) {
-          extra = <Button bsStyle="warning" bsSize="xsmall" onClick={this.flagAsDangerous.bind(this, c.id)}>Flag as dangerous</Button>;
-        }
-        const header = <span><Link to={`/user/${c.idUser}`}>{c.name}</Link> <small><i>{c.date}</i></small> {extra}</span>;
-        return (
-          <Panel key={i} bsStyle={bsStyle}>
-      			<Panel.Heading>{header}</Panel.Heading>
-      			<Panel.Body>{c.message}</Panel.Body>
-      		</Panel>
-        );
-      });
-      comment = <span>{comments}</span>;
-    };
-
+    
     var section = null;
     if (data.sections) {
       const sections = data.sections.map((s, i) => {
@@ -210,7 +124,7 @@ class Problem extends Component<any, any> {
         );
       });
       section = (
-        <span>
+        <>
           <strong>Sections:</strong><br/>
           <Table celled>
             <Table.Header>
@@ -220,28 +134,41 @@ class Problem extends Component<any, any> {
                 <Table.HeaderCell>Description</Table.HeaderCell>
               </Table.Row>
             </Table.Header>
-
             <Table.Body>
               {sections}
             </Table.Body>
           </Table>
-        </span>
+        </>
       );
     };
-
-    var tickModal = null;
-    if (data.ticks) {
-      const userTicks = data.ticks.filter(t => t.writable);
-      if (userTicks && userTicks.length>0) {
-        tickModal = <TickModal auth={this.props.auth} idTick={userTicks[0].id} idProblem={data.id} date={userTicks[0].date} comment={userTicks[0].comment} grade={userTicks[0].suggestedGrade} grades={data.metadata.grades} stars={userTicks[0].stars} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/>
-      }
-    }
-    if (!tickModal) {
-      tickModal = <TickModal auth={this.props.auth} idTick={-1} idProblem={data.id} grade={data.originalGrade} grades={data.metadata.grades} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/>;
-    }
-
+    const ticks = data.ticks && data.ticks.map((t, i) => (
+      <Feed.Event key={i}>
+        <Feed.Label image='https://lh6.googleusercontent.com/-s_VyX0LiBvQ/AAAAAAAAAAI/AAAAAAABcLk/VYX29AjXHAw/photo.jpg' />
+        <Feed.Content>
+          <Feed.Summary>
+            <Feed.User as={Link} to={`/user/${t.idUser}`}>{t.name}</Feed.User>
+            <Feed.Date>{t.date}</Feed.Date>
+            <Label size="tiny" color={getGradeColor(t.suggestedGrade)} circular>{t.suggestedGrade}</Label>
+          </Feed.Summary>
+          <Feed.Content>{t.comment}</Feed.Content>
+          <Feed.Label><Stars numStars={t.stars}/></Feed.Label>
+        </Feed.Content>
+      </Feed.Event>
+    ));
+    const comments = data.comments && data.comments.map((c, i) => (
+      <Feed.Event key={i}>
+        <Feed.Label image='https://lh6.googleusercontent.com/-s_VyX0LiBvQ/AAAAAAAAAAI/AAAAAAABcLk/VYX29AjXHAw/photo.jpg' />
+        <Feed.Content>
+          <Feed.Summary>
+            <Feed.User as={Link} to={`/user/${c.idUser}`}>{c.name}</Feed.User>
+            <Feed.Date>{c.date}</Feed.Date>
+          </Feed.Summary>
+          <Feed.Content>{c.message}</Feed.Content>
+        </Feed.Content>
+      </Feed.Event>
+    ));
     return (
-      <React.Fragment>
+      <>
         <MetaTags>
           {data.metadata.canonical && <link rel="canonical" href={data.metadata.canonical} />}
           <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(data.metadata.jsonLd)}} />
@@ -255,35 +182,54 @@ class Problem extends Component<any, any> {
           <meta property="og:image:width" content={data.metadata.og.imageWidth} />
           <meta property="og:image:height" content={data.metadata.og.imageHeight} />
         </MetaTags>
-
-        {tickModal}
-        <CommentModal auth={this.props.auth} idProblem={data.id} show={this.state.showCommentModal} onHide={this.closeCommentModal.bind(this)} isBouldering={data.metadata.isBouldering}/>
-        {data.metadata && data.metadata.isAuthenticated &&
-          <span><Button.Group fluid size="mini">
-            <Button onClick={this.openTickModal.bind(this)}>Tick</Button>
-            <Button onClick={this.openCommentModal.bind(this)}>Add comment</Button>
-            {data.metadata.isAdmin?
-              <Button as={Link} to={{ pathname: `/problem/edit/${data.id}`, query: { idSector: data.sectorId, lat: data.sectorLat, lng: data.sectorLng } }}>Edit problem</Button>
-              :
-              <Button as={Link} to={`/problem/edit/media/${data.id}`}>Add image(s)</Button>
-            }
-          </Button.Group><br/></span>
-        }
-        {topoContent}
-        <Container>
-          {!data.metadata.isBouldering && <span><strong>Type:</strong> {data.t.type + " - " + data.t.subType}<br/></span>}
-          <strong>Nr:</strong> {data.nr}<br/>
-          <strong>Comment:</strong> {data.comment}<br/>
-          <strong>FA:</strong> {fa}<br/>
-          <strong>FA date:</strong> {data.faDateHr}<br/>
-          <strong>Original grade:</strong> {data.originalGrade}<br/>
-          {data.sectorLat>0 && data.sectorLng>0 &&
-            <span><a href={`http://maps.google.com/maps?q=loc:${data.sectorLat},${data.sectorLng}&navigate=yes`} rel="noopener" target="_blank">Start navigation</a><br/></span>}
-          {section}
-        </Container>
-        {table}<br/>
-        {comment}
-      </React.Fragment>
+        <Breadcrumb>
+          <Breadcrumb.Section><Link to={`/area/${data.areaId}`}>{data.areaName}</Link> <LockSymbol visibility={data.areaVisibility}/></Breadcrumb.Section>
+          <Breadcrumb.Divider icon='right angle' />
+          <Breadcrumb.Section><Link to={`/sector/${data.sectorId}`}>{data.sectorName}</Link> <LockSymbol visibility={data.sectorVisibility}/></Breadcrumb.Section>
+          <Breadcrumb.Divider icon='right angle' />
+          <Breadcrumb.Section active>{data.name} <Label color={getGradeColor(data.grade)} circular>{data.grade}</Label> <LockSymbol visibility={data.visibility}/></Breadcrumb.Section>
+        </Breadcrumb><br/><br/>
+        <Tab panes={panes} />
+        <Message icon>
+            <Icon name="info" />
+            <Message.Content>
+              {!data.metadata.isBouldering && <><strong>Type:</strong> {data.t.type + " - " + data.t.subType}<br/></>}
+              <strong>Nr:</strong> {data.nr}<br/>
+              <strong>Comment:</strong> {data.comment}<br/>
+              <strong>FA:</strong> {data.fa && data.fa.map(u => (<Label as={Link} to={`/user/${u.id}`}>{u.firstname} {u.surname}</Label>))}<br/>
+              <strong>FA date:</strong> {data.faDateHr}<br/>
+              <strong>Original grade:</strong> {data.originalGrade}<br/>
+              {data.sectorLat>0 && data.sectorLng>0 &&
+                <Label as={Link} to={`http://maps.google.com/maps?q=loc:${data.sectorLat},${data.sectorLng}&navigate=yes`} rel="noopener" target="_blank">Start navigation</Label>}
+              {section}
+            </Message.Content>
+        </Message>
+        {ticks && (
+          <Card fluid>
+            <Card.Content>
+              <Card.Header>Ticks</Card.Header>
+            </Card.Content>
+            <Card.Content>
+              <Feed>
+                {ticks}
+              </Feed>
+            </Card.Content>
+          </Card>
+        )}
+        {comments && (
+          <Card fluid>
+            <Card.Content>
+              <Card.Header>Comments</Card.Header>
+            </Card.Content>
+            <Card.Content>
+              <Feed>
+                {comments}
+              </Feed>
+            </Card.Content>
+          </Card>
+        )}
+        TODO HSE
+      </>
     );
   }
 }
