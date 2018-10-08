@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
 import { CroppedText, LockSymbol, Stars, LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { Label, Image, Icon, Button, Card, Tab, Breadcrumb, Message } from 'semantic-ui-react';
+import { Label, Image, Icon, Button, Card, Tab, Breadcrumb, Grid, Message } from 'semantic-ui-react';
 import { getImageUrl, getGradeColor } from '../api';
 
 class Sector extends Component<any, any> {
@@ -95,17 +95,37 @@ class Sector extends Component<any, any> {
           <meta property="og:image:width" content={data.metadata.og.imageWidth} />
           <meta property="og:image:height" content={data.metadata.og.imageHeight} />
         </MetaTags>
-        {this.state && this.state.data && this.state.data.metadata.isAdmin &&
-          <><Button.Group fluid size="mini">
-            <Button as={Link} to={{ pathname: `/problem/edit/-1`, query: { idSector: data.id, nr: nextNr, lat: data.lat, lng: data.lng } }}>Add problem</Button>
-            <Button as={Link} to={{ pathname: `/sector/edit/${data.id}`, query: { idArea: data.areaId, lat: data.lat, lng: data.lng } }}>Edit sector</Button>
-          </Button.Group><br/></>
-        }
-        <Breadcrumb>
-          <Breadcrumb.Section><Link to={`/area/${data.areaId}`}>{data.areaName}</Link> <LockSymbol visibility={data.areaVisibility}/></Breadcrumb.Section>
-          <Breadcrumb.Divider icon='right angle' />
-          <Breadcrumb.Section active>{data.name} <LockSymbol visibility={data.visibility}/></Breadcrumb.Section>
-        </Breadcrumb><br/><br/>
+        <Grid divided='vertically'>
+          <Grid.Row columns={2}>
+            <Grid.Column>
+            <Breadcrumb>
+              <Breadcrumb.Section><Link to='/browse'>Browse</Link></Breadcrumb.Section>
+              <Breadcrumb.Divider icon='right angle' />
+              <Breadcrumb.Section><Link to={`/area/${data.areaId}`}>{data.areaName}</Link> <LockSymbol visibility={data.areaVisibility}/></Breadcrumb.Section>
+              <Breadcrumb.Divider icon='right angle' />
+              <Breadcrumb.Section active>{data.name} <LockSymbol visibility={data.visibility}/></Breadcrumb.Section>
+            </Breadcrumb>
+            </Grid.Column>
+            <Grid.Column textAlign="right">
+              {this.state && this.state.data && this.state.data.metadata.isAdmin &&
+                <Button.Group>
+                  <Button animated='fade' as={Link} to={{ pathname: `/problem/edit/-1`, query: { idSector: data.id, nr: nextNr, lat: data.lat, lng: data.lng } }}>
+                    <Button.Content hidden>Add</Button.Content>
+                    <Button.Content visible>
+                      <Icon name='plus' />
+                    </Button.Content>
+                  </Button>
+                  <Button animated='fade' as={Link} to={{ pathname: `/sector/edit/${data.id}`, query: { idArea: data.areaId, lat: data.lat, lng: data.lng } }}>
+                    <Button.Content hidden>Edit</Button.Content>
+                    <Button.Content visible>
+                      <Icon name='edit' />
+                    </Button.Content>
+                  </Button>
+                </Button.Group>
+              }
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
         <Tab panes={panes} />
         {data.comment &&
           <Message icon>
@@ -124,7 +144,7 @@ class Sector extends Component<any, any> {
                   <Card.Content>
                     {problem.randomMediaId>0 && <Image floated='right' size='tiny' style={{maxHeight: '65px', objectFit: 'cover'}}  src={getImageUrl(problem.randomMediaId, 130)} />}
                     <Card.Header>
-                      {problem.nr}. {problem.name} <Label color={getGradeColor(problem.grade)} circular>{problem.grade}</Label> <LockSymbol visibility={problem.visibility}/>
+                      <Label floating size="mini">#{problem.nr}</Label> {problem.name} <Label color={getGradeColor(problem.grade)} circular>{problem.grade}</Label> <LockSymbol visibility={problem.visibility}/>
                     </Card.Header>
                     <Card.Meta>
                       <Stars numStars={problem.stars}/>

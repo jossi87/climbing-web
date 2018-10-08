@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import { postComment } from './../../../api';
+import { Button, Modal, Form, TextArea } from 'semantic-ui-react';
 
 class CommentModal extends Component<any, any> {
   refresh(props) {
@@ -19,8 +20,8 @@ class CommentModal extends Component<any, any> {
     this.refresh(nextProps);
   }
 
-  onCommentChanged(e) {
-    this.setState({comment: e.target.value});
+  onCommentChanged(e, data) {
+    this.setState({comment: data.value});
   }
 
   onFlagged(e) {
@@ -33,7 +34,7 @@ class CommentModal extends Component<any, any> {
     if (this.state.comment) {
       postComment(this.props.auth.getAccessToken(), -1, this.state.idProblem, this.state.comment, this.state.danger, this.state.resolved)
       .then((response) => {
-        this.props.onHide();
+        this.props.onClose();
       })
       .catch((error) => {
         console.warn(error);
@@ -44,31 +45,39 @@ class CommentModal extends Component<any, any> {
 
   render() {
     return (
-      <Modal show={this.props.show} onHide={this.props.onHide.bind(this)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Add comment</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <FormGroup controlId="formControlsTextArea">
-            <ControlLabel>Comment</ControlLabel>
-            <FormControl style={{height: '100px'}} componentClass="textarea" placeholder="Comment" value={this.state && this.state.comment} onChange={this.onCommentChanged.bind(this)} />
-          </FormGroup>
-          {!this.props.isBouldering &&
-            <ButtonToolbar>
-              <ToggleButtonGroup type="radio" name="flag" onChange={this.onFlagged.bind(this)} defaultValue={0}>
-                <ToggleButton value={0}>Default comment</ToggleButton>
-                <ToggleButton bsStyle={this.state && this.state.danger? "danger" : "default"} value={1}>Flag as dangerous</ToggleButton>
-                <ToggleButton bsStyle={this.state && this.state.resolved? "success" : "default"} value={2}>Flag as safe</ToggleButton>
-              </ToggleButtonGroup>
-            </ButtonToolbar>
-          }
-        </Modal.Body>
-        <Modal.Footer>
-          <ButtonGroup>
-            <Button onClick={this.save.bind(this)} bsStyle="success">Save</Button>
-            <Button onClick={this.props.onHide.bind(this)}>Close</Button>
-          </ButtonGroup>
-        </Modal.Footer>
+      <Modal open={this.props.open} onClose={this.props.onClose.bind(this)}>
+        <Modal.Header>Add comment</Modal.Header>
+        <Modal.Content>
+          <Modal.Description>
+            <Form>
+              <Form.Field>
+                <label>Comment</label>
+                <TextArea placeholder='Comment' style={{ minHeight: 100 }} value={this.state && this.state.comment} onChange={this.onCommentChanged.bind(this)} />
+              </Form.Field>
+              {!this.props.isBouldering &&
+                <Button.Group size="mini" compact>
+                  <Button onClick={this.onFlagged.bind(this, 0)} active={this.state && !this.state.danger && !this.state.resolved}>Default comment</Button>
+                  <Button.Or />
+                  <Button onClick={this.onFlagged.bind(this, 1)} negative={this.state && this.state.danger && !this.state.resolved} active={this.state && this.state.danger && !this.state.resolved}>Flag as dangerous</Button>
+                  <Button.Or />
+                  <Button onClick={this.onFlagged.bind(this, 2)} positive={this.state && !this.state.danger && this.state.resolved} active={this.state && !this.state.danger && this.state.resolved}>Flag as safe</Button>
+                </Button.Group>
+              }
+            </Form>
+          </Modal.Description>
+        </Modal.Content>
+        <Modal.Actions>
+          <Button color='black' onClick={this.props.onClose.bind(this)}>
+            Cancel
+          </Button>
+          <Button
+            positive
+            icon='checkmark'
+            labelPosition='right'
+            content="Save"
+            onClick={this.save.bind(this)}
+          />
+        </Modal.Actions>
       </Modal>
     );
   }

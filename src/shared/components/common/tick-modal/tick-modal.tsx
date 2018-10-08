@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import { convertFromDateToString, convertFromStringToDate, postTicks } from './../../../api';
-import { Icon } from 'semantic-ui-react';
+import { Button, Dropdown, Icon, Modal, Form, TextArea } from 'semantic-ui-react';
 
 class TickModal extends Component<any, any> {
   constructor(props) {
@@ -39,22 +39,22 @@ class TickModal extends Component<any, any> {
     this.setState({date: newDate? convertFromDateToString(newDate) : null});
   }
 
-  onCommentChanged(e) {
-    this.setState({comment: e.target.value});
+  onCommentChanged(e, data) {
+    this.setState({comment: data.value});
   }
 
-  onStarsChanged(stars, e) {
-    this.setState({stars: stars});
+  onStarsChanged(e, data) {
+    this.setState({stars: data.value});
   }
 
-  onGradeChanged(grade, e) {
-    this.setState({grade: grade});
+  onGradeChanged(e, data) {
+    this.setState({grade: data.value});
   }
 
   delete(e) {
     postTicks(this.props.auth.getAccessToken(), true, this.state.idTick, this.state.idProblem, this.state.comment, this.state.date, this.state.stars, this.state.grade)
     .then((response) => {
-      this.props.onHide();
+      this.props.onClose();
     })
     .catch((error) => {
       console.warn(error);
@@ -65,7 +65,7 @@ class TickModal extends Component<any, any> {
   save(e) {
     postTicks(this.props.auth.getAccessToken(), false, this.state.idTick, this.state.idProblem, this.state.comment, this.state.date, this.state.stars, this.state.grade)
     .then((response) => {
-      this.props.onHide();
+      this.props.onClose();
     })
     .catch((error) => {
       console.warn(error);
@@ -76,63 +76,69 @@ class TickModal extends Component<any, any> {
   render() {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate()-1);
-
-    var stars: any = "No stars";
-    if (this.state) {
-      if (this.state.stars===1) {
-        stars = <span><Icon name="star" /> Nice</span>
-      } else if (this.state.stars===2) {
-        stars = <span><Icon name="star" /><Icon name="star" /> Very nice</span>
-      } else if (this.state.stars===3) {
-        stars = <span><Icon name="star" /><Icon name="star" /><Icon name="star" /> Fantastic!</span>
-      }
-    }
-
     return (
-      <Modal show={this.props.show} onHide={this.props.onHide.bind(this)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Tick</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <FormGroup>
-            <ControlLabel>Date (yyyy-mm-dd)</ControlLabel><br/>
-            <DayPickerInput
-              format="LL"
-              onDayChange={this.onDateChanged.bind(this)}
-              value={this.state && this.state.date && convertFromStringToDate(this.state.date)}
-            /><br/>
-            <ButtonGroup>
-              <Button onClick={this.onDateChanged.bind(this, yesterday)}>Yesterday</Button>
-              <Button onClick={this.onDateChanged.bind(this, new Date())}>Today</Button>
-            </ButtonGroup>
-          </FormGroup>
-          <FormGroup>
-            <ControlLabel>Grade</ControlLabel><br/>
-            <DropdownButton title={this.state? this.state.grade : "Loading"} id="bg-nested-dropdown">
-              {this.state && this.state.grades && this.state.grades.map((g, i) => { return <MenuItem key={i} eventKey={i} onSelect={this.onGradeChanged.bind(this, g.grade)}>{g.grade}</MenuItem> })}
-            </DropdownButton>
-          </FormGroup>
-          <FormGroup>
-            <ControlLabel>Stars</ControlLabel><br/>
-            <DropdownButton title={stars} id="bg-nested-dropdown">
-              <MenuItem eventKey="0" onSelect={this.onStarsChanged.bind(this, 0)}>No stars</MenuItem>
-              <MenuItem eventKey="1" onSelect={this.onStarsChanged.bind(this, 1)}><Icon name="star" /> Nice</MenuItem>
-              <MenuItem eventKey="2" onSelect={this.onStarsChanged.bind(this, 2)}><Icon name="star" /><Icon name="star" /> Very nice</MenuItem>
-              <MenuItem eventKey="3" onSelect={this.onStarsChanged.bind(this, 3)}><Icon name="star" /><Icon name="star" /><Icon name="star" /> Fantastic!</MenuItem>
-            </DropdownButton>
-          </FormGroup>
-          <FormGroup>
-            <ControlLabel>Comment</ControlLabel>
-            <FormControl componentClass="textarea" placeholder="textarea" style={{height: '100px'}} value={this.state && this.state.comment} onChange={this.onCommentChanged.bind(this)} />
-          </FormGroup>
-        </Modal.Body>
-        <Modal.Footer>
-          <ButtonGroup>
-            <Button onClick={this.save.bind(this)} bsStyle="success">Save</Button>
-            {this.state && this.state.idTick>1? <Button onClick={this.delete.bind(this)} bsStyle="warning">Delete tick</Button> : ""}
-            <Button onClick={this.props.onHide.bind(this)}>Close</Button>
-          </ButtonGroup>
-        </Modal.Footer>
+      <Modal open={this.props.open} onClose={this.props.onClose.bind(this)}>
+        <Modal.Header>Tick</Modal.Header>
+        <Modal.Content>
+          <Modal.Description>
+            <Form>
+              <Form.Field>
+                <label>Date (yyyy-mm-dd)</label>
+                <DayPickerInput
+                  format="LL"
+                  onDayChange={this.onDateChanged.bind(this)}
+                  value={this.state && this.state.date && convertFromStringToDate(this.state.date)}
+                /><br/>
+                <Button.Group>
+                  <Button onClick={this.onDateChanged.bind(this, yesterday)}>Yesterday</Button>
+                  <Button onClick={this.onDateChanged.bind(this, new Date())}>Today</Button>
+                </Button.Group>
+              </Form.Field>
+              <Form.Field>
+                <label>Grade</label>
+                <Dropdown selection value={this.state && this.state.grade} onChange={this.onGradeChanged.bind(this)} 
+                  options={this.state && this.state.grades && this.state.grades.map((g, i) => ({key: i, text: g.grade, value: g.grade}))}
+                />
+              </Form.Field>
+              <Form.Field>
+                <label>Stars</label>
+                <Dropdown selection value={this.state && this.state.stars} onChange={this.onStarsChanged.bind(this)} 
+                  options={[
+                    {key: 0, value: 0, text: "No stars", content: <>No stars</>},
+                    {key: 1, value: 1, text: <><Icon name="star" /> Nice</>},
+                    {key: 2, value: 2, text: <><Icon name="star" /><Icon name="star" /> Very nice</>},
+                    {key: 3, value: 3, text: <><Icon name="star" /><Icon name="star" /><Icon name="star" /> Fantastic!</>}
+                  ]}
+                />
+              </Form.Field>
+              <Form.Field>
+                <label>Comment</label>
+                <TextArea placeholder='Comment' style={{ minHeight: 100 }} value={this.state && this.state.comment} onChange={this.onCommentChanged.bind(this)} />
+              </Form.Field>
+            </Form>
+          </Modal.Description>
+        </Modal.Content>
+        <Modal.Actions>
+          <Button color='black' onClick={this.props.onClose.bind(this)}>
+            Cancel
+          </Button>
+          {this.state && this.state.idTick>1 &&
+            <Button
+              negative
+              icon='delete'
+              labelPosition='right'
+              content="Delete tick"
+              onClick={this.delete.bind(this)}
+            />
+          }
+          <Button
+            positive
+            icon='checkmark'
+            labelPosition='right'
+            content="Save"
+            onClick={this.save.bind(this)}
+          />
+        </Modal.Actions>
       </Modal>
     );
   }

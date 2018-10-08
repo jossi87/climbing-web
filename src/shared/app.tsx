@@ -63,13 +63,13 @@ class App extends Component {
               props.isAuthenticated = isAuthenticated;
               props.auth = thisAuth;
               return (
-                <div>
+                <>
                   <Analytics {...props}/>
                   <Navigation {...props}/>
                   <Container style={{ marginTop: '5em' }}>
                     <Component {...props} {...rest} />
                   </Container>
-                </div>
+                </>
               )
             }} />
           ))}

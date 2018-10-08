@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
 import { CroppedText, LockSymbol, LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { Button, Tab, Item, Message, Icon, Image, Breadcrumb } from 'semantic-ui-react';
+import { Button, Tab, Item, Message, Icon, Image, Breadcrumb, Grid } from 'semantic-ui-react';
 import { getImageUrl } from '../api';
 
 class Area extends Component<any, any> {
@@ -84,15 +84,35 @@ class Area extends Component<any, any> {
           <meta property="og:image:width" content={this.state.data.metadata.og.imageWidth} />
           <meta property="og:image:height" content={this.state.data.metadata.og.imageHeight} />
         </MetaTags>
-        {this.state.data.metadata.isAdmin &&
-          <><Button.Group fluid size="mini">
-            <Button as={Link} to={{ pathname: `/sector/edit/-1`, query: { idArea: this.state.data.id, lat: this.state.data.lat, lng: this.state.data.lng } }}>Add sector</Button>
-            <Button as={Link} to={{ pathname: `/area/edit/${this.state.data.id}`, query: { lat: this.state.data.lat, lng: this.state.data.lng } }}>Edit area</Button>
-          </Button.Group><br/></>
-        }
-        <Breadcrumb>
-          <Breadcrumb.Section active>{this.state.data.name} <LockSymbol visibility={this.state.data.visibility}/></Breadcrumb.Section>
-        </Breadcrumb><br/><br/>
+        <Grid divided='vertically'>
+          <Grid.Row columns={2}>
+            <Grid.Column>
+            <Breadcrumb>
+              <Breadcrumb.Section><Link to='/browse'>Browse</Link></Breadcrumb.Section>
+              <Breadcrumb.Divider icon='right angle' />
+              <Breadcrumb.Section active>{this.state.data.name} <LockSymbol visibility={this.state.data.visibility}/></Breadcrumb.Section>
+            </Breadcrumb>
+            </Grid.Column>
+            <Grid.Column textAlign="right">
+              {this.state.data.metadata.isAdmin &&
+                <Button.Group>
+                  <Button animated='fade' as={Link} to={{ pathname: `/sector/edit/-1`, query: { idArea: this.state.data.id, lat: this.state.data.lat, lng: this.state.data.lng } }}>
+                    <Button.Content hidden>Add</Button.Content>
+                    <Button.Content visible>
+                      <Icon name='plus' />
+                    </Button.Content>
+                  </Button>
+                  <Button animated='fade' as={Link} to={{ pathname: `/area/edit/${this.state.data.id}`, query: { lat: this.state.data.lat, lng: this.state.data.lng } }}>
+                    <Button.Content hidden>Edit</Button.Content>
+                    <Button.Content visible>
+                      <Icon name='edit' />
+                    </Button.Content>
+                  </Button>
+                </Button.Group>
+              }
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
         <Tab panes={panes} /><br/>
         {this.state.data.comment &&
           <Message icon>

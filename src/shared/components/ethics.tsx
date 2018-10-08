@@ -43,7 +43,7 @@ class Ethics extends Component<any, any> {
           </ul>
         </Container>
         <h3>Privacy Policy</h3>
-        We respect your privacy and handle your data with the care that we would expect our own data to be handled. We will never sell or pass on your information to any third party. You can delete any of your profile information at any time, <a href="mailto:jostein.oygarden@gmail.com">send us an e-mail</a> with the data you want to delete. The Android app requests permissions like accounts and camera. Accounts are used to give you correct data according to your permissions in buldreinfo. The camera can be used inside the app to append new images to existing bouldering problems (pending approval by an administrator).
+        We respect your privacy and handle your data with the care that we would expect our own data to be handled. We will never sell or pass on your information to any third party. You can delete any of your profile information at any time, <a href="mailto:jostein.oygarden@gmail.com">send us an e-mail</a> with the data you want to delete.
       </React.Fragment>
     );
   }

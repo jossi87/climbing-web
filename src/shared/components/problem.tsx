@@ -3,11 +3,12 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
-import { Button, Table, Message, Breadcrumb, Tab, Label, Icon, Card, Feed } from 'semantic-ui-react';
-import TickModal from './common/tick-modal/tick-modal';
-import CommentModal from './common/comment-modal/comment-modal';
+import Avatar from 'react-avatar';
+import { Button, Table, Message, Grid, Breadcrumb, Tab, Label, Icon, Card, Feed, Image, Modal } from 'semantic-ui-react';
 import { Stars, LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 import { postComment, getGradeColor } from './../api';
+import TickModal from './common/tick-modal/tick-modal';
+import CommentModal from './common/comment-modal/comment-modal';
 
 class Problem extends Component<any, any> {
   constructor(props) {
@@ -21,7 +22,6 @@ class Problem extends Component<any, any> {
     }
     this.state = {
       data,
-      tabIndex: 1,
       showTickModal: false,
       showCommentModal: false
     };
@@ -43,23 +43,7 @@ class Problem extends Component<any, any> {
     this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
   }
 
-  closeTickModal(event) {
-    this.setState({ showTickModal: false });
-    this.refresh(this.props.match.params.problemId);
-  }
 
-  openTickModal(event) {
-    this.setState({ showTickModal: true });
-  }
-
-  closeCommentModal(event) {
-    this.setState({ showCommentModal: false });
-    this.refresh(this.props.match.params.problemId);
-  }
-
-  openCommentModal(event) {
-    this.setState({ showCommentModal: true });
-  }
 
   onRemoveMedia(idMediaToRemove) {
     const allMedia = this.state.data.media.filter(m => m.id!=idMediaToRemove);
@@ -79,6 +63,24 @@ class Problem extends Component<any, any> {
           alert(error.toString());
         });
     }
+  }
+
+  closeTickModal() {
+    this.setState({ showTickModal: false });
+    this.refresh(this.props.match.params.problemId);
+  }
+
+  openTickModal() {
+    this.setState({ showTickModal: true });
+  }
+
+  closeCommentModal() {
+    this.setState({ showCommentModal: false });
+    this.refresh(this.props.match.params.problemId);
+  }
+
+  openCommentModal() {
+    this.setState({ showCommentModal: true });
   }
 
   render() {
@@ -106,10 +108,16 @@ class Problem extends Component<any, any> {
     }
     const panes = [];
     if (data.media && data.media.length>0) {
-      panes.push({ menuItem: 'Media', render: () => <Tab.Pane><Gallery auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} alt={data.name + ' ' + data.grade + ' (' + data.areaName + " - " + data.sectorName + ')'} media={data.media} showThumbnails={false} removeMedia={this.onRemoveMedia.bind(this)} /></Tab.Pane> });
+      panes.push({
+        menuItem: { key: 'media', icon: 'images', content: 'Media' },
+        render: () => <Tab.Pane><Gallery auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} alt={data.name + ' ' + data.grade + ' (' + data.areaName + " - " + data.sectorName + ')'} media={data.media} showThumbnails={false} removeMedia={this.onRemoveMedia.bind(this)} /></Tab.Pane>
+      });
     }
     if (markers.length>0) {
-      panes.push({ menuItem: 'Map', render: () => <Tab.Pane><Leaflet markers={markers} defaultCenter={{lat: markers[0].lat, lng: markers[0].lng}} defaultZoom={16}/></Tab.Pane> });
+      panes.push({
+        menuItem: { key: 'map', icon: 'map', content: 'Map' },
+        render: () => <Tab.Pane><Leaflet markers={markers} defaultCenter={{lat: markers[0].lat, lng: markers[0].lng}} defaultZoom={16}/></Tab.Pane>
+      });
     }
     
     var section = null;
@@ -143,7 +151,9 @@ class Problem extends Component<any, any> {
     };
     const ticks = data.ticks && data.ticks.map((t, i) => (
       <Feed.Event key={i}>
-        <Feed.Label image='https://lh6.googleusercontent.com/-s_VyX0LiBvQ/AAAAAAAAAAI/AAAAAAABcLk/VYX29AjXHAw/photo.jpg' />
+        <Feed.Label>
+          {t.picture? <Image src={t.picture}/> : <Avatar round name={t.name} size="35" />}
+        </Feed.Label>
         <Feed.Content>
           <Feed.Summary>
             <Feed.User as={Link} to={`/user/${t.idUser}`}>{t.name}</Feed.User>
@@ -155,18 +165,40 @@ class Problem extends Component<any, any> {
         </Feed.Content>
       </Feed.Event>
     ));
-    const comments = data.comments && data.comments.map((c, i) => (
-      <Feed.Event key={i}>
-        <Feed.Label image='https://lh6.googleusercontent.com/-s_VyX0LiBvQ/AAAAAAAAAAI/AAAAAAABcLk/VYX29AjXHAw/photo.jpg' />
-        <Feed.Content>
-          <Feed.Summary>
-            <Feed.User as={Link} to={`/user/${c.idUser}`}>{c.name}</Feed.User>
-            <Feed.Date>{c.date}</Feed.Date>
-          </Feed.Summary>
-          <Feed.Content>{c.message}</Feed.Content>
-        </Feed.Content>
-      </Feed.Event>
-    ));
+    const comments = data.comments && data.comments.map((c, i) => {
+      var extra = null;
+      if (c.danger) {
+        extra = <Label color="red">Flagged as dangerous</Label>;
+      } else if (c.resolved) {
+        extra = <Label color="green">Flagged as safe</Label>;
+      } else if (data.metadata && data.metadata.isAuthenticated && !data.metadata.isBouldering) {
+        extra = <Button negative compact onClick={this.flagAsDangerous.bind(this, c.id)}>Flag as dangerous</Button>;
+      }
+      return (
+        <Feed.Event key={i}>
+          <Feed.Label>
+            {c.picture? <Image src={c.picture}/> : <Avatar round name={c.name} size="35" />}
+          </Feed.Label>
+          <Feed.Content>
+            <Feed.Summary>
+              <Feed.User as={Link} to={`/user/${c.idUser}`}>{c.name}</Feed.User>
+              <Feed.Date>{c.date}</Feed.Date>
+            </Feed.Summary>
+            <Feed.Content>{c.message}</Feed.Content>
+          </Feed.Content>
+          {extra && <Feed.Extra>{extra}</Feed.Extra>}
+        </Feed.Event>
+    )});
+    var tickModal = null;
+    if (data.ticks) {
+      const userTicks = data.ticks.filter(t => t.writable);
+      if (userTicks && userTicks.length>0) {
+        tickModal = <TickModal auth={this.props.auth} idTick={userTicks[0].id} idProblem={data.id} date={userTicks[0].date} comment={userTicks[0].comment} grade={userTicks[0].suggestedGrade} grades={data.metadata.grades} stars={userTicks[0].stars} open={this.state.showTickModal} onClose={this.closeTickModal.bind(this)}/>
+      }
+    }
+    if (!tickModal) {
+      tickModal = <TickModal auth={this.props.auth} idTick={-1} idProblem={data.id} grade={data.originalGrade} grades={data.metadata.grades} open={this.state.showTickModal} onClose={this.closeTickModal.bind(this)}/>;
+    }
     return (
       <>
         <MetaTags>
@@ -182,27 +214,70 @@ class Problem extends Component<any, any> {
           <meta property="og:image:width" content={data.metadata.og.imageWidth} />
           <meta property="og:image:height" content={data.metadata.og.imageHeight} />
         </MetaTags>
-        <Breadcrumb>
-          <Breadcrumb.Section><Link to={`/area/${data.areaId}`}>{data.areaName}</Link> <LockSymbol visibility={data.areaVisibility}/></Breadcrumb.Section>
-          <Breadcrumb.Divider icon='right angle' />
-          <Breadcrumb.Section><Link to={`/sector/${data.sectorId}`}>{data.sectorName}</Link> <LockSymbol visibility={data.sectorVisibility}/></Breadcrumb.Section>
-          <Breadcrumb.Divider icon='right angle' />
-          <Breadcrumb.Section active>{data.name} <Label color={getGradeColor(data.grade)} circular>{data.grade}</Label> <LockSymbol visibility={data.visibility}/></Breadcrumb.Section>
-        </Breadcrumb><br/><br/>
+        {tickModal}
+        <CommentModal auth={this.props.auth} idProblem={data.id} open={this.state.showCommentModal} onClose={this.closeCommentModal.bind(this)} isBouldering={data.metadata.isBouldering}/>
+        <Grid divided='vertically'>
+          <Grid.Row columns={2}>
+            <Grid.Column>
+            <Breadcrumb>
+              <Breadcrumb.Section><Link to='/browse'>Browse</Link></Breadcrumb.Section>
+              <Breadcrumb.Divider icon='right angle' />
+              <Breadcrumb.Section><Link to={`/area/${data.areaId}`}>{data.areaName}</Link> <LockSymbol visibility={data.areaVisibility}/></Breadcrumb.Section>
+              <Breadcrumb.Divider icon='right angle' />
+              <Breadcrumb.Section><Link to={`/sector/${data.sectorId}`}>{data.sectorName}</Link> <LockSymbol visibility={data.sectorVisibility}/></Breadcrumb.Section>
+              <Breadcrumb.Divider icon='right angle' />
+              <Breadcrumb.Section active>{data.name} <Label color={getGradeColor(data.grade)} circular>{data.grade}</Label> <LockSymbol visibility={data.visibility}/></Breadcrumb.Section>
+            </Breadcrumb>
+            </Grid.Column>
+            <Grid.Column textAlign="right">
+              {data.metadata && data.metadata.isAuthenticated &&
+                <Button.Group>
+                  <Button animated='fade' onClick={this.openTickModal.bind(this)}>
+                    <Button.Content hidden>Tick</Button.Content>
+                    <Button.Content visible>
+                      <Icon name='check' />
+                    </Button.Content>
+                  </Button>
+                  <Button animated='fade' onClick={this.openCommentModal.bind(this)}>
+                    <Button.Content hidden>Comment</Button.Content>
+                    <Button.Content visible>
+                      <Icon name='comment' />
+                    </Button.Content>
+                  </Button>
+                  {data.metadata.isAdmin?
+                    <Button animated='fade' as={Link} to={{ pathname: `/problem/edit/${data.id}`, query: { idSector: data.sectorId, lat: data.sectorLat, lng: data.sectorLng } }}>
+                      <Button.Content hidden>Edit</Button.Content>
+                      <Button.Content visible>
+                        <Icon name='edit' />
+                      </Button.Content>
+                    </Button>
+                  :
+                    <Button animated='fade' as={Link} to={`/problem/edit/media/${data.id}`}>
+                      <Button.Content hidden>Image</Button.Content>
+                      <Button.Content visible>
+                        <Icon name='edit' />
+                      </Button.Content>
+                    </Button>
+                  }
+                </Button.Group>
+              }
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
         <Tab panes={panes} />
         <Message icon>
-            <Icon name="info" />
-            <Message.Content>
-              {!data.metadata.isBouldering && <><strong>Type:</strong> {data.t.type + " - " + data.t.subType}<br/></>}
-              <strong>Nr:</strong> {data.nr}<br/>
-              <strong>Comment:</strong> {data.comment}<br/>
-              <strong>FA:</strong> {data.fa && data.fa.map(u => (<Label as={Link} to={`/user/${u.id}`}>{u.firstname} {u.surname}</Label>))}<br/>
-              <strong>FA date:</strong> {data.faDateHr}<br/>
-              <strong>Original grade:</strong> {data.originalGrade}<br/>
-              {data.sectorLat>0 && data.sectorLng>0 &&
-                <Label as={Link} to={`http://maps.google.com/maps?q=loc:${data.sectorLat},${data.sectorLng}&navigate=yes`} rel="noopener" target="_blank">Start navigation</Label>}
-              {section}
-            </Message.Content>
+          <Icon name="info" />
+          <Message.Content>
+            {!data.metadata.isBouldering && <><strong>Type:</strong> {data.t.type + " - " + data.t.subType}<br/></>}
+            <strong>Nr:</strong> {data.nr}<br/>
+            <strong>Comment:</strong> {data.comment}<br/>
+            <strong>FA:</strong> {data.fa && data.fa.map(u => (<Label as={Link} to={`/user/${u.id}`}>{u.firstname} {u.surname}</Label>))}<br/>
+            <strong>FA date:</strong> {data.faDateHr}<br/>
+            <strong>Original grade:</strong> {data.originalGrade}<br/>
+            {data.sectorLat>0 && data.sectorLng>0 &&
+              <Label as="a" href={`http://maps.google.com/maps?q=loc:${data.sectorLat},${data.sectorLng}&navigate=yes`} rel="noopener" target="_blank">Start navigation</Label>}
+            {section}
+          </Message.Content>
         </Message>
         {ticks && (
           <Card fluid>
@@ -228,7 +303,6 @@ class Problem extends Component<any, any> {
             </Card.Content>
           </Card>
         )}
-        TODO HSE
       </>
     );
   }
