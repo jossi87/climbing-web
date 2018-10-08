@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
+import Avatar from 'react-avatar';
 import Chart from './common/chart/chart';
 import TickModal from './common/tick-modal/tick-modal';
 import { LoadingAndRestoreScroll, CroppedText, LockSymbol, Stars } from './common/widgets/widgets';
-import { Icon, Table, Container } from 'semantic-ui-react';
+import { Icon, Table, Statistic, Button, Header, Segment, Divider, Image } from 'semantic-ui-react';
 
 class User extends Component<any, any> {
   constructor(props) {
@@ -44,6 +45,10 @@ class User extends Component<any, any> {
     this.setState({ currTick: t, showTickModal: true });
   }
 
+  numberWithCommas = (x) => {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
   render() {
     const { data } = this.state;
     if (!data) {
@@ -68,10 +73,41 @@ class User extends Component<any, any> {
           <meta property="og:image:width" content={data.metadata.og.imageWidth} />
           <meta property="og:image:height" content={data.metadata.og.imageHeight} />
         </MetaTags>
-
-        {this.state.currTick? <TickModal auth={this.props.auth} idTick={this.state.currTick.id} idProblem={this.state.currTick.idProblem} date={this.state.currTick.date} comment={this.state.currTick.comment} grade={this.state.currTick.grade} grades={data.metadata.grades} stars={this.state.currTick.stars} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/> : ""}
-        <Container>First ascents: {numFas}<br/>Public ascents: {numTicks}<br/>Pictures taken: {data.numImagesCreated}<br/>Appearance in pictures: {data.numImageTags}<br/>Videos created: {data.numVideosCreated}<br/>Appearance in videos: {data.numVideoTags}</Container>
-        {chart}<br/>
+        <Header>
+        {data.picture? <Image circular src={data.picture}/> : <Avatar round name={data.name} size="35" />}
+          {data.name}
+        </Header>
+        {this.state.currTick && <TickModal auth={this.props.auth} idTick={this.state.currTick.id} idProblem={this.state.currTick.idProblem} date={this.state.currTick.date} comment={this.state.currTick.comment} grade={this.state.currTick.grade} grades={data.metadata.grades} stars={this.state.currTick.stars} open={this.state.showTickModal} onClose={this.closeTickModal.bind(this)}/>}
+        <Segment>
+          <Statistic.Group size='small'>
+            <Statistic>
+              <Statistic.Value>{this.numberWithCommas(numFas)}</Statistic.Value>
+              <Statistic.Label>First ascents</Statistic.Label>
+            </Statistic>
+            <Statistic>
+              <Statistic.Value>{this.numberWithCommas(numTicks)}</Statistic.Value>
+              <Statistic.Label>Public ascents</Statistic.Label>
+            </Statistic>
+            <Statistic>
+              <Statistic.Value>{this.numberWithCommas(data.numImagesCreated)}</Statistic.Value>
+              <Statistic.Label>Pictures taken</Statistic.Label>
+            </Statistic>
+            <Statistic>
+              <Statistic.Value>{this.numberWithCommas(data.numImageTags)}</Statistic.Value>
+              <Statistic.Label>Appearance in pictures</Statistic.Label>
+            </Statistic>
+            <Statistic>
+              <Statistic.Value>{this.numberWithCommas(data.numVideosCreated)}</Statistic.Value>
+              <Statistic.Label>Videos created</Statistic.Label>
+            </Statistic>
+            <Statistic>
+              <Statistic.Value>{this.numberWithCommas(data.numVideoTags)}</Statistic.Value>
+              <Statistic.Label>Appearance in videos</Statistic.Label>
+            </Statistic>
+          </Statistic.Group>
+          <Divider />
+          {chart}
+        </Segment>
         <Table celled>
           <Table.Header>
             <Table.Row>
@@ -81,7 +117,7 @@ class User extends Component<any, any> {
               <Table.HeaderCell>Comment</Table.HeaderCell>
               <Table.HeaderCell>Stars</Table.HeaderCell>
               <Table.HeaderCell>FA</Table.HeaderCell>
-              <Table.HeaderCell></Table.HeaderCell>
+              {this.state.data.readOnly==false && <Table.HeaderCell></Table.HeaderCell>}
             </Table.Row>
           </Table.Header>
           <Table.Body>
@@ -93,7 +129,18 @@ class User extends Component<any, any> {
                 <Table.Cell><CroppedText text={t.comment} i={t.idProblem} maxLength={40}/></Table.Cell>
                 <Table.Cell><Stars numStars={t.stars}/></Table.Cell>
                 <Table.Cell>{t.fa && <Icon name="check" />}</Table.Cell>
-                <Table.Cell>{this.state.data.readOnly==false && t.id!=0 && <OverlayTrigger placement="top" overlay={<Tooltip id={i}>Edit tick</Tooltip>}><Button bsSize="xsmall" bsStyle="primary" onClick={this.openTickModal.bind(this, t)}><Icon name="edit" inverse={true} /></Button></OverlayTrigger>}</Table.Cell>
+                {this.state.data.readOnly==false &&
+                  <Table.Cell>
+                    {t.id!=0 &&
+                      <Button compact size="mini" animated='fade' onClick={this.openTickModal.bind(this, t)}>
+                        <Button.Content hidden>Edit tick</Button.Content>
+                        <Button.Content visible>
+                          <Icon name='edit' />
+                        </Button.Content>
+                      </Button>
+                    }
+                  </Table.Cell>
+                }
               </Table.Row>
             ))}
           </Table.Body>
