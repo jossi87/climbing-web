@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Container, Popup, Dropdown, Image, Menu } from 'semantic-ui-react';
+import { Container, Dropdown, Image, Menu } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import SearchBox from './common/search-box/search-box';
 import { getMeta } from './../api';
