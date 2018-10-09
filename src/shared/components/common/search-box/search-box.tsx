@@ -43,6 +43,8 @@ class SearchBox extends Component<any, any> {
       this.setState({pushUrl: null})
       return (<Redirect to={pushUrl} push />);
     }
+    const { children, ...searchProps} = this.props;
+    console.log(searchProps)
     return (
       <Search
         category
@@ -53,7 +55,7 @@ class SearchBox extends Component<any, any> {
         minCharacters={1}
         results={results}
         value={value}
-        {...this.props}
+        {...searchProps}
       />
     );
   }
