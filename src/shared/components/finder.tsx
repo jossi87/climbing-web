@@ -70,7 +70,7 @@ class Finder extends Component<any, any> {
           <meta property="og:image:height" content={this.state.data.metadata.og.imageHeight} />
         </MetaTags>
         {map}
-        <Table celled>
+        <Table celled unstackable compact>
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell>Area</Table.HeaderCell>

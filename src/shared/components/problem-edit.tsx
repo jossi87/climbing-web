@@ -5,7 +5,7 @@ import UserSelector from './common/user-selector/user-selector';
 import ProblemSection from './common/problem-section/problem-section';
 import ImageUpload from './common/image-upload/image-upload';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
-import { Container } from 'semantic-ui-react';
+import { Form, Button, Input, Dropdown } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
 import { convertFromDateToString, convertFromStringToDate, postProblem } from './../api';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
@@ -39,39 +39,39 @@ class ProblemEdit extends Component<any, any> {
     this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
   }
 
-  onNameChanged(e) {
+  onNameChanged(e, { value }) {
     const { data } = this.state;
-    data.name = e.target.value;
+    data.name = value;
     this.setState({data});
   }
 
-  onNrChanged(e) {
+  onNrChanged(e, { value }) {
     const { data } = this.state;
-    data.nr = parseInt(e.target.value);
+    data.nr = parseInt(value);
     this.setState({data});
   }
 
-  onLatChanged(e) {
+  onLatChanged(e, { value }) {
     const { data } = this.state;
-    data.lat = parseFloat(e.target.value);
+    data.lat = parseFloat(value);
     this.setState({data});
   }
 
-  onLngChanged(e) {
+  onLngChanged(e, { value }) {
     const { data } = this.state;
-    data.lng = parseFloat(e.target.value);
+    data.lng = parseFloat(value);
     this.setState({data});
   }
 
-  onVisibilityChanged(visibility, e) {
+  onVisibilityChanged(e, { value }) {
     const { data } = this.state;
-    data.visibility = visibility;
+    data.visibility = value;
     this.setState({data});
   }
 
-  onCommentChanged(e) {
+  onCommentChanged(e, { value }) {
     const { data } = this.state;
-    data.comment = e.target.value;
+    data.comment = value;
     this.setState({data});
   }
 
@@ -81,15 +81,15 @@ class ProblemEdit extends Component<any, any> {
     this.setState({data});
   }
 
-  onOriginalGradeChanged(originalGrade, e) {
+  onOriginalGradeChanged(e, { value }) {
     const { data } = this.state;
-    data.originalGrade = originalGrade;
+    data.originalGrade = value;
     this.setState({data});
   }
 
-  onTypeIdChanged(typeId, e) {
+  onTypeIdChanged(e, { value }) {
     const { data } = this.state;
-    data.typeId = typeId;
+    data.typeId = parseInt(value);
     this.setState({data});
   }
 
@@ -169,15 +169,6 @@ class ProblemEdit extends Component<any, any> {
 
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate()-1);
-
-    var visibilityText = 'Visible for everyone';
-    if (data.visibility===1) {
-      visibilityText = 'Only visible for administrators';
-    } else if (data.visibility===2) {
-      visibilityText = 'Only visible for super administrators';
-    }
-
-    const selectedType = data.typeId? data.metadata.types.find(t => t.id === data.typeId) : data.metadata.types[0];
     var defaultCenter;
     var defaultZoom: number;
     if (data.lat!=0 && data.lng!=0) {
@@ -192,92 +183,99 @@ class ProblemEdit extends Component<any, any> {
       defaultCenter = data.metadata.defaultCenter;
       defaultZoom = data.metadata.defaultZoom;
     }
-
-    var sections = null;
-    if (!data.metadata.isBouldering) {
-      sections = (
-        <FormGroup controlId="formControlsSections">
-          <ControlLabel>Section(s)</ControlLabel><br/>
-          <ProblemSection sections={data.sections} grades={data.metadata.grades} onSectionsUpdated={this.onSectionsUpdated.bind(this)} />
-        </FormGroup>
-      );
+    const visibilityOptions = [
+      {key: 0, value: 0, text: "Visible for everyone"},
+      {key: 1, value: 1, text: "Only visible for administrators"}
+    ];
+    if (data.metadata.isSuperAdmin) {
+      visibilityOptions.push({key: 2, value: 2, text: "Only visible for super administrators"})
     }
     return (
-      <React.Fragment>
+      <>
         <MetaTags>
           <title>{data.metadata.title}</title>
         </MetaTags>
-        <Container>
-          <form onSubmit={this.save.bind(this)}>
-            <FormGroup controlId="formControlsName">
-              <ControlLabel>Problem name</ControlLabel>
-              <FormControl type="text" value={data.name} placeholder="Enter name" onChange={this.onNameChanged.bind(this)} />
-            </FormGroup>
-            <FormGroup controlId="formControlsFaDate">
-              <ControlLabel>FA date (yyyy-mm-dd)</ControlLabel><br/>
-              <DayPickerInput
-                format="LL"
-                onDayChange={this.onFaDateChanged.bind(this)}
-                value={convertFromStringToDate(data.faDate)}
-              /><br/>
-              <ButtonGroup>
-                <Button onClick={this.onFaDateChanged.bind(this, yesterday)}>Yesterday</Button>
-                <Button onClick={this.onFaDateChanged.bind(this, new Date())}>Today</Button>
-              </ButtonGroup>
-            </FormGroup>
-            <FormGroup controlId="formControlsTypeId">
-              <ControlLabel>Type</ControlLabel><br/>
-              <DropdownButton title={selectedType.type + (selectedType.subType? " - " + selectedType.subType : "")} id="bg-nested-dropdown">
-                {data.metadata.types.map((t, i) => { return <MenuItem key={i} eventKey={i} onSelect={this.onTypeIdChanged.bind(this, t.id)}>{t.type} {t.subType? " - " + t.subType : ""}</MenuItem> })}
-              </DropdownButton>
-            </FormGroup>
-            <FormGroup controlId="formControlsGrade">
-              <ControlLabel>Grade</ControlLabel><br/>
-              <DropdownButton title={data.originalGrade} id="bg-nested-dropdown">
-                {data.metadata.grades.map((g, i) => { return <MenuItem key={i} eventKey={i} onSelect={this.onOriginalGradeChanged.bind(this, g.grade)}>{g.grade}</MenuItem> })}
-              </DropdownButton>
-            </FormGroup>
-            <FormGroup controlId="formControlsFA">
-              <ControlLabel>FA</ControlLabel><br/>
-              <UserSelector auth={this.props.auth} users={data.fa? data.fa.map(u => {return {value: u.id, label: u.firstname + " " + u.surname}}) : []} onUsersUpdated={this.onUsersUpdated.bind(this)} />
-            </FormGroup>
-            <FormGroup controlId="formControlsVisibility">
-              <ControlLabel>Visibility</ControlLabel><br/>
-              <DropdownButton title={visibilityText} id="bg-nested-dropdown">
-                <MenuItem eventKey="0" onSelect={this.onVisibilityChanged.bind(this, 0)}>Visible for everyone</MenuItem>
-                <MenuItem eventKey="1" onSelect={this.onVisibilityChanged.bind(this, 1)}>Only visible for administrators</MenuItem>
-                {data.metadata.isSuperAdmin && <MenuItem eventKey="2" onSelect={this.onVisibilityChanged.bind(this, 2)}>Only visible for super administrators</MenuItem>}
-              </DropdownButton>
-            </FormGroup>
-            <FormGroup controlId="formControlsSectorNr">
-              <ControlLabel>Sector number</ControlLabel>
-              <FormControl type="text" value={data.nr} placeholder="Enter sector number" onChange={this.onNrChanged.bind(this)} />
-            </FormGroup>
-            <FormGroup controlId="formControlsComment">
-              <ControlLabel>Comment</ControlLabel>
-              <FormControl style={{height: '100px'}} componentClass="textarea" placeholder="Enter comment" value={data.comment} onChange={this.onCommentChanged.bind(this)} />
-            </FormGroup>
-            {sections}
-            <FormGroup controlId="formControlsMedia">
-              <ImageUpload auth={this.props.auth} onMediaChanged={this.onNewMediaChanged.bind(this)} />
-            </FormGroup>
-            <FormGroup controlId="formControlsMap">
-              <ControlLabel>Click to mark problem on map</ControlLabel><br/>
-              <Leaflet
-                markers={data.lat!=0 && data.lng!=0 && [{lat: data.lat, lng: data.lng}]}
-                defaultCenter={defaultCenter}
-                defaultZoom={defaultZoom}
-                onClick={this.onMapClick.bind(this)}
-              />
-              <ControlLabel>Latitude</ControlLabel>
-              <FormControl type="text" value={data.lat} placeholder="Latitude" onChange={this.onLatChanged.bind(this)} />
-              <ControlLabel>Longitude</ControlLabel>
-              <FormControl type="text" value={data.lng} placeholder="Longitude" onChange={this.onLngChanged.bind(this)} />
-            </FormGroup>
-            <ButtonGroup><Button bsStyle="danger" onClick={this.onCancel.bind(this)}>Cancel</Button><Button type="submit" bsStyle="success" disabled={this.state.isSaving}>{this.state.isSaving? 'Saving...' : 'Save problem'}</Button></ButtonGroup>
-          </form>
-        </Container>
-      </React.Fragment>
+        <Form>
+          <Form.Field>
+            <label>Name</label>
+            <Input placeholder='Enter name' value={data.name} onChange={this.onNameChanged.bind(this)} />
+          </Form.Field>
+          <Form.Field>
+            <label>FA date (yyyy-mm-dd)</label>
+            <DayPickerInput
+              format="LL"
+              onDayChange={this.onFaDateChanged.bind(this)}
+              value={convertFromStringToDate(data.faDate)}
+            /><br/>
+            <Button.Group>
+              <Button onClick={this.onFaDateChanged.bind(this, yesterday)}>Yesterday</Button>
+              <Button onClick={this.onFaDateChanged.bind(this, new Date())}>Today</Button>
+            </Button.Group>
+          </Form.Field>
+          {data.metadata.types.length > 1 &&
+            <Form.Field>
+              <label>Type</label>
+              <Dropdown selection value={data.typeId} onChange={this.onTypeIdChanged.bind(this)}
+                options={data.metadata.types.map((t, i) => {
+                  const text = t.type + (t.subType? " - " + t.subType : "")
+                  return ({key: i, value: t.id, text: text});
+                })}/>
+            </Form.Field>
+          }
+          <Form.Field>
+            <label>Grade</label>
+            <Dropdown selection value={data.originalGrade} onChange={this.onOriginalGradeChanged.bind(this)}
+              options={data.metadata.grades.map((g, i) => ({key: i, value: g.grade, text: g.grade}))}/>
+          </Form.Field>
+          <Form.Field>
+            <label>FA</label>
+            <UserSelector auth={this.props.auth} users={data.fa? data.fa.map(u => {return {value: u.id, label: u.firstname + " " + u.surname}}) : []} onUsersUpdated={this.onUsersUpdated.bind(this)} />
+          </Form.Field>
+          <Form.Field>
+            <label>Visibility</label>
+            <Dropdown selection value={this.state.data.visibility} onChange={this.onVisibilityChanged.bind(this)} options={visibilityOptions}/>
+          </Form.Field>
+          <Form.Field>
+            <label>Sector number</label>
+            <Input placeholder='Enter number' value={data.nr} onChange={this.onNrChanged.bind(this)} />
+          </Form.Field>
+          <Form.Field>
+            <label>Comment</label>
+            <Input placeholder='Enter comment' value={data.comment} onChange={this.onCommentChanged.bind(this)} />
+          </Form.Field>
+          {!data.metadata.isBouldering &&
+            <Form.Field>
+              <label>Section(s)</label>
+              <ProblemSection sections={data.sections} grades={data.metadata.grades} onSectionsUpdated={this.onSectionsUpdated.bind(this)} />
+            </Form.Field>
+          }
+          <Form.Field>
+            <ImageUpload auth={this.props.auth} onMediaChanged={this.onNewMediaChanged.bind(this)} />
+          </Form.Field>
+          <Form.Field>
+            <label>Click to mark problem on map</label><br/>
+            <Leaflet
+              markers={data.lat!=0 && data.lng!=0 && [{lat: data.lat, lng: data.lng}]}
+              defaultCenter={defaultCenter}
+              defaultZoom={defaultZoom}
+              onClick={this.onMapClick.bind(this)}
+            />
+          </Form.Field>
+          <Form.Field>
+            <label>Latitude</label>
+            <Input placeholder='Latitude' value={data.lat} onChange={this.onLatChanged.bind(this)} />
+          </Form.Field>
+          <Form.Field>
+            <label>Longitude</label>
+            <Input placeholder='Longitude' value={data.lng} onChange={this.onLngChanged.bind(this)} />
+          </Form.Field>
+          <Button.Group>
+            <Button negative onClick={this.onCancel.bind(this)}>Cancel</Button>
+            <Button.Or />
+            <Button positive disabled={this.state.isSaving} onClick={this.save.bind(this)}>{this.state.isSaving? 'Saving...' : 'Save'}</Button>
+          </Button.Group>
+        </Form>
+      </>
     );
   }
 }

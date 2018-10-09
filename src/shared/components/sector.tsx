@@ -3,7 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
-import { CroppedText, LockSymbol, Stars, LoadingAndRestoreScroll } from './common/widgets/widgets';
+import { CroppedText, LockSymbol, Stars, LoadingAndRestoreScroll, TypeImage } from './common/widgets/widgets';
 import { Label, Image, Icon, Button, Card, Tab, Breadcrumb, Grid, Message } from 'semantic-ui-react';
 import { getImageUrl, getGradeColor } from '../api';
 
@@ -158,6 +158,7 @@ class Sector extends Component<any, any> {
                       <Label><Icon name='check' /> {problem.numTicks}</Label>
                       <Label><Icon name='photo' /> {problem.numImages}</Label>
                       <Label><Icon name='video' /> {problem.numMovies}</Label>
+                      {this.state && this.state.data && !this.state.data.metadata.isBouldering && <Label>{problem.t.type + " - " + problem.t.subType}</Label>}
                       {problem.fa && problem.fa.map((u, i) => (
                         <Label as={Link} to={`/user/${u.id}`}><Icon name='at' />{u.firstname} {u.surname}</Label>
                       ))}

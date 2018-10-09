@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
 import Avatar from 'react-avatar';
-import { Button, Table, Message, Grid, Breadcrumb, Tab, Label, Icon, Card, Feed, Image } from 'semantic-ui-react';
+import { Button, Message, Grid, Breadcrumb, Tab, Label, Icon, Card, Feed, Image, List } from 'semantic-ui-react';
 import { Stars, LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 import { postComment, getGradeColor } from './../api';
 import TickModal from './common/tick-modal/tick-modal';
@@ -120,35 +120,6 @@ class Problem extends Component<any, any> {
       });
     }
     
-    var section = null;
-    if (data.sections) {
-      const sections = data.sections.map((s, i) => {
-        return (
-          <tr key={i}>
-            <Table.Cell>{s.nr}</Table.Cell>
-            <Table.Cell>{s.grade}</Table.Cell>
-            <Table.Cell>{s.description}</Table.Cell>
-          </tr>
-        );
-      });
-      section = (
-        <>
-          <strong>Sections:</strong><br/>
-          <Table celled>
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell>#</Table.HeaderCell>
-                <Table.HeaderCell>Grade</Table.HeaderCell>
-                <Table.HeaderCell>Description</Table.HeaderCell>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {sections}
-            </Table.Body>
-          </Table>
-        </>
-      );
-    };
     const ticks = data.ticks && data.ticks.map((t, i) => (
       <Feed.Event key={i}>
         <Feed.Label>
@@ -172,7 +143,7 @@ class Problem extends Component<any, any> {
       } else if (c.resolved) {
         extra = <Label color="green">Flagged as safe</Label>;
       } else if (data.metadata && data.metadata.isAuthenticated && !data.metadata.isBouldering) {
-        extra = <Button negative compact onClick={this.flagAsDangerous.bind(this, c.id)}>Flag as dangerous</Button>;
+        extra = <Button basic size="tiny" compact onClick={this.flagAsDangerous.bind(this, c.id)}>Flag as dangerous</Button>;
       }
       return (
         <Feed.Event key={i}>
@@ -275,30 +246,32 @@ class Problem extends Component<any, any> {
             <strong>FA date:</strong> {data.faDateHr}<br/>
             <strong>Original grade:</strong> {data.originalGrade}<br/>
             {data.sectorLat>0 && data.sectorLng>0 &&
-              <Label as="a" href={`http://maps.google.com/maps?q=loc:${data.sectorLat},${data.sectorLng}&navigate=yes`} rel="noopener" target="_blank">Start navigation</Label>}
-            {section}
+              <>
+                <strong>Navigation:</strong> 
+                <Label as="a" href={`http://maps.google.com/maps?q=loc:${data.sectorLat},${data.sectorLng}&navigate=yes`} rel="noopener" target="_blank"><Icon name="map" />Google Maps</Label>
+                <br/>
+              </>
+            }
+            {data.sections &&
+              <>
+                <strong>Sections:</strong><br/>
+                <List divided relaxed>
+                  {data.sections.map((s, i) => (
+                    <List.Item>
+                      <List.Icon verticalAlign='middle'>
+                        <Label color={getGradeColor(s.grade)} circular>{s.grade}</Label>
+                      </List.Icon>
+                      <List.Content>
+                        <List.Header>#{s.nr}</List.Header>
+                        <List.Description>{s.description}</List.Description>
+                      </List.Content>
+                    </List.Item>
+                  ))}
+                </List>
+              </>
+            }
           </Message.Content>
         </Message>
-        {data.sections && 
-          <Table celled>
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell>#</Table.HeaderCell>
-                <Table.HeaderCell>Grade</Table.HeaderCell>
-                <Table.HeaderCell>Description</Table.HeaderCell>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {data.sections.map((s, i) => (
-                <Table.Row key={i}>
-                  <Table.Cell>{s.nr}</Table.Cell>
-                  <Table.Cell>{s.grade}</Table.Cell>
-                  <Table.Cell>{s.description}</Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table>
-        }
         {ticks && (
           <Card fluid>
             <Card.Content>

@@ -46,7 +46,7 @@ class ProblemHse extends Component<any, any> {
           <title>Flagged as dangerous</title>
           <meta name="description" content={"HSE"} />
         </MetaTags>
-        <Table celled>
+        <Table celled compact unstackable>
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell>Area</Table.HeaderCell>

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Container } from 'semantic-ui-react';
+import { Form, Segment, Input, Dropdown } from 'semantic-ui-react';
 
 class ProblemSection extends Component<any, any> {
   constructor(props) {
@@ -7,7 +7,8 @@ class ProblemSection extends Component<any, any> {
     this.state = {sections: props.sections, grades: props.grades};
   }
   
-  onNumberOfSectionsChange(num) {
+  onNumberOfSectionsChange(e, { value }) {
+    const num = parseInt(value);
     var sections = null;
     if (num > 1) {
       sections = this.state.sections? this.state.sections : [];
@@ -22,77 +23,70 @@ class ProblemSection extends Component<any, any> {
     this.setState({sections});
   }
 
-  onNrChanged(id, e) {
+  onNrChanged(id, e, { value }) {
     const sections = this.state.sections;
     const section = sections.find(s => s.id === id);
-    section.nr = e.target.value;
+    section.nr = parseInt(value);
     this.props.onSectionsUpdated(sections);
     this.setState({sections});
   }
 
-  onGradeChanged(id, grade) {
+  onGradeChanged(id, e, { value }) {
     const sections = this.state.sections;
     const section = sections.find(s => s.id === id);
-    section.grade = grade;
+    section.grade = value;
     this.props.onSectionsUpdated(sections);
     this.setState({sections});
   }
 
-  onDescriptionChanged(id, e) {
+  onDescriptionChanged(id, e, { value }) {
     const sections = this.state.sections;
     const section = sections.find(s => s.id === id);
-    section.description = e.target.value;
+    section.description = value;
     this.props.onSectionsUpdated(sections);
     this.setState({sections});
   }
 
 	render() {
-    const sections = this.state.sections && this.state.sections.length > 1 && this.state.sections.map((s, i) => {
-      return (
-        <Form componentClass="fieldset" inline key={i}>
-          <FormGroup controlId="formNr">
-            <FormControl type="number" value={s.nr} onChange={this.onNrChanged.bind(this, s.id)} style={{width: '50px'}} />
-          </FormGroup>{' '}
-          <FormGroup controlId="formGrade">
-            <DropdownButton title={s.grade} id="bg-nested-dropdown">
-              {this.state.grades.map((g, i) => { return <MenuItem key={i} eventKey={i} onSelect={this.onGradeChanged.bind(this, s.id, g.grade)}>{g.grade}</MenuItem> })}
-            </DropdownButton>
-          </FormGroup>{' '}
-          <FormGroup controlId="formDescription">
-            <FormControl type="text" value={s.description? s.description : ""} onChange={this.onDescriptionChanged.bind(this, s.id)} style={{width: '500px'}} />
-          </FormGroup>
-        </Form>
-      )
-    });
-
 		return (
-      <Container>
-        <FormGroup controlId="formControlsNumSections">
-          <DropdownButton title={this.state.sections? this.state.sections.length : 1} id="bg-nested-dropdown">
-            <MenuItem key={1} eventKey={1} onSelect={this.onNumberOfSectionsChange.bind(this, 1)}>1</MenuItem>
-            <MenuItem key={2} eventKey={2} onSelect={this.onNumberOfSectionsChange.bind(this, 2)}>2</MenuItem>
-            <MenuItem key={3} eventKey={3} onSelect={this.onNumberOfSectionsChange.bind(this, 3)}>3</MenuItem>
-            <MenuItem key={4} eventKey={4} onSelect={this.onNumberOfSectionsChange.bind(this, 4)}>4</MenuItem>
-            <MenuItem key={5} eventKey={5} onSelect={this.onNumberOfSectionsChange.bind(this, 5)}>5</MenuItem>
-            <MenuItem key={6} eventKey={6} onSelect={this.onNumberOfSectionsChange.bind(this, 6)}>6</MenuItem>
-            <MenuItem key={7} eventKey={7} onSelect={this.onNumberOfSectionsChange.bind(this, 7)}>7</MenuItem>
-            <MenuItem key={8} eventKey={8} onSelect={this.onNumberOfSectionsChange.bind(this, 8)}>8</MenuItem>
-            <MenuItem key={9} eventKey={9} onSelect={this.onNumberOfSectionsChange.bind(this, 9)}>9</MenuItem>
-            <MenuItem key={10} eventKey={10} onSelect={this.onNumberOfSectionsChange.bind(this, 10)}>10</MenuItem>
-            <MenuItem key={11} eventKey={11} onSelect={this.onNumberOfSectionsChange.bind(this, 11)}>11</MenuItem>
-            <MenuItem key={12} eventKey={12} onSelect={this.onNumberOfSectionsChange.bind(this, 12)}>12</MenuItem>
-            <MenuItem key={13} eventKey={13} onSelect={this.onNumberOfSectionsChange.bind(this, 13)}>13</MenuItem>
-            <MenuItem key={14} eventKey={14} onSelect={this.onNumberOfSectionsChange.bind(this, 14)}>14</MenuItem>
-            <MenuItem key={15} eventKey={15} onSelect={this.onNumberOfSectionsChange.bind(this, 15)}>15</MenuItem>
-            <MenuItem key={16} eventKey={16} onSelect={this.onNumberOfSectionsChange.bind(this, 16)}>16</MenuItem>
-            <MenuItem key={17} eventKey={17} onSelect={this.onNumberOfSectionsChange.bind(this, 17)}>17</MenuItem>
-            <MenuItem key={18} eventKey={18} onSelect={this.onNumberOfSectionsChange.bind(this, 18)}>18</MenuItem>
-            <MenuItem key={19} eventKey={19} onSelect={this.onNumberOfSectionsChange.bind(this, 19)}>19</MenuItem>
-            <MenuItem key={20} eventKey={20} onSelect={this.onNumberOfSectionsChange.bind(this, 20)}>20</MenuItem>
-          </DropdownButton>
-        </FormGroup>
-        {sections}
-      </Container>
+      <Segment>
+        <Dropdown selection value={this.state.sections? this.state.sections.length : 1} onChange={this.onNumberOfSectionsChange.bind(this)} options={[
+          {key: 1, value: 1, text: 1},
+          {key: 2, value: 2, text: 2},
+          {key: 3, value: 3, text: 3},
+          {key: 4, value: 4, text: 4},
+          {key: 5, value: 5, text: 5},
+          {key: 6, value: 6, text: 6},
+          {key: 7, value: 7, text: 7},
+          {key: 8, value: 8, text: 8},
+          {key: 9, value: 9, text: 9},
+          {key: 10, value: 10, text: 10},
+          {key: 11, value: 11, text: 11},
+          {key: 12, value: 12, text: 12},
+          {key: 13, value: 13, text: 13},
+          {key: 14, value: 14, text: 14},
+          {key: 15, value: 15, text: 15},
+          {key: 16, value: 16, text: 16},
+          {key: 17, value: 17, text: 17},
+          {key: 18, value: 18, text: 18},
+          {key: 19, value: 19, text: 19},
+          {key: 20, value: 20, text: 20},
+        ]}/>
+        {this.state.sections && this.state.sections.length > 1 && this.state.sections.map((s, i) => (
+          <Form.Group widths='equal' key={i} inline>
+            <Form.Field>
+              <Input size="tiny" icon="hashtag" iconPosition="left" fluid placeholder='Number' value={s.nr} onChange={this.onNrChanged.bind(this, s.id)} />
+            </Form.Field>
+            <Form.Field>
+              <Dropdown size="tiny" icon="dropdown" fluid selection value={s.grade} onChange={this.onGradeChanged.bind(this, s.id)}
+                options={this.state.grades.map((g, i) => ({key: i, value: g.grade, text: g.grade}))}/>
+            </Form.Field>
+            <Form.Field>
+              <Input size="tiny" icon="info" iconPosition="left" fluid placeholder='Description' value={s.description? s.description : ""} onChange={this.onDescriptionChanged.bind(this, s.id)} />
+            </Form.Field>
+          </Form.Group>
+        ))}
+      </Segment>
 		);
 	}
 }
