@@ -46,7 +46,6 @@ class SearchBox extends Component<any, any> {
     const { children, ...searchProps} = this.props;
     return (
       <Search
-        category
         loading={isLoading}
         onResultSelect={this.handleResultSelect}
         onSearchChange={this.handleSearchChange}
