@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Container, Dropdown, Image, Menu } from 'semantic-ui-react';
+import { Container, Popup, Dropdown, Image, Menu } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import SearchBox from './common/search-box/search-box';
 import { getMeta } from './../api';
@@ -40,31 +40,36 @@ class Navigation extends Component<any, any> {
 
   render() {
     return (
-      <Menu fixed='top' inverted>
+      <Menu fixed='top' inverted size="tiny" compact borderless>
         <Container>
           <Menu.Item header as={Link} to='/'>
             <Image size='mini' src='/png/buldreinfo.png' />
           </Menu.Item>
-          <Menu.Item as={SearchBox} auth={this.props.auth}/>
-          <Menu.Item as={Link} to='/browse'>Browse</Menu.Item>
-          <Dropdown item simple text='Finder'>
-            <Dropdown.Menu>
-              {this.state.metadata && !this.state.metadata.isBouldering && <Dropdown.Item as={Link} to="/hse">Flagged as dangerous (HSE)</Dropdown.Item>}
-              {this.state.metadata && this.state.metadata.isSuperAdmin && <Dropdown.Item as={Link} to="/finder/-1">Grade: <strong>superadmin</strong></Dropdown.Item>}
-              {this.state.metadata && this.state.metadata.grades && this.state.metadata.grades.map((g, i) => (<Dropdown.Item key={i} as={Link} to={"/finder/" + g.id}>Grade: <strong>{g.grade}</strong></Dropdown.Item>))}
-            </Dropdown.Menu>
-          </Dropdown>
-
-          {this.props.isAuthenticated?
-            <Dropdown item simple text='Logged in'>
+          <Menu.Item as={SearchBox} auth={this.props.auth} />
+          <Menu.Menu position='right'>
+            <Menu.Item as={Link} to='/browse' icon='list' />
+            <Dropdown item simple icon='filter'>
               <Dropdown.Menu>
-                <Dropdown.Item as={Link} to="/user">My profile</Dropdown.Item>
-                <Dropdown.Item as={Link} to="/logout">Sign out</Dropdown.Item>
+                {this.state.metadata && !this.state.metadata.isBouldering && <Dropdown.Item as={Link} to="/hse">Flagged as dangerous (HSE)</Dropdown.Item>}
+                {this.state.metadata && this.state.metadata.isSuperAdmin && <Dropdown.Item as={Link} to="/finder/-1">Grade: <strong>superadmin</strong></Dropdown.Item>}
+                {this.state.metadata && this.state.metadata.grades && this.state.metadata.grades.map((g, i) => (<Dropdown.Item key={i} as={Link} to={"/finder/" + g.id}>Grade: <strong>{g.grade}</strong></Dropdown.Item>))}
               </Dropdown.Menu>
             </Dropdown>
+            {this.props.isAuthenticated?
+              <Dropdown item simple icon='user'>
+                <Dropdown.Menu>
+                    <Dropdown.Item as={Link} to="/user">My profile</Dropdown.Item>
+                    <Dropdown.Item as={Link} to="/logout">Sign out</Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
             :
-            <Menu.Item as="a" onClick={this.login.bind(this)}>Sign in</Menu.Item>
-          }
+              <Dropdown item simple icon='users'>
+                <Dropdown.Menu>
+                  <Dropdown.Item onClick={this.login.bind(this)}>Sign in</Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            }
+          </Menu.Menu>
         </Container>
       </Menu>
     );
