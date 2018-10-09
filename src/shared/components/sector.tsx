@@ -3,7 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
-import { CroppedText, LockSymbol, Stars, LoadingAndRestoreScroll, TypeImage } from './common/widgets/widgets';
+import { CroppedText, LockSymbol, Stars, LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Label, Image, Icon, Button, Card, Tab, Breadcrumb, Grid, Message } from 'semantic-ui-react';
 import { getImageUrl, getGradeColor } from '../api';
 

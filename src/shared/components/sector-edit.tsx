@@ -109,7 +109,6 @@ class SectorEdit extends Component<any, any> {
   }
 
   resetMapPolygon() {
-    console.log("JADA")
     const { data } = this.state;
     data.polygonCoords = null;
     this.setState({data});

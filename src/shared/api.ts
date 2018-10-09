@@ -266,12 +266,14 @@ export function getSvgEdit(accessToken: string, problemIdMediaId: string): Promi
     const m = res.media.filter(x => x.id==mediaId)[0];
     const readOnlySvgs = [];
     var svgId = 0;
+    var hasAnchor = true;
     var points = [];
     if (m.svgs) {
       for (let svg of m.svgs) {
         if (svg.problemId===res.id) {
           svgId = svg.id;
           points = parsePath(svg.path);
+          hasAnchor = svg.hasAnchor;
         }
         else {
           readOnlySvgs.push({ nr: svg.nr, hasAnchor: svg.hasAnchor, path: svg.path });
@@ -290,7 +292,7 @@ export function getSvgEdit(accessToken: string, problemIdMediaId: string): Promi
       activePoint: 0,
       draggedPoint: false,
       draggedCubic: false,
-      hasAnchor: true,
+      hasAnchor: hasAnchor,
       areaId: res.areaId,
       areaName: res.areaName,
       areaVisibility: res.areaVisibility,

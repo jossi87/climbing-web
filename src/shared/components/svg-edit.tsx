@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { Redirect } from 'react-router';
-import { Container } from 'semantic-ui-react';
+import { Container, Form, Button, Message, Dropdown } from 'semantic-ui-react';
 import { getImageUrl, postProblemSvg } from '../api';
 import { parseReadOnlySvgs } from '../utils/svg';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
@@ -103,8 +103,8 @@ class SvgEdit extends Component<any, any> {
     if (!e.ctrlKey) this.setState({ctrl: false});
   };
 
-  setHasAnchor(anchor) {
-    this.setState({hasAnchor: anchor});
+  setHasAnchor(e, { value }) {
+    this.setState({hasAnchor: value});
   }
 
   onCancel() {
@@ -210,11 +210,11 @@ class SvgEdit extends Component<any, any> {
     }
   };
 
-  setPointType(v) {
+  setPointType(e, { value }) {
     const points = this.state.points;
     const active = this.state.activePoint;
     if (active !== 0) { // not the first point
-      switch (v) {
+      switch (value) {
         case "L":
           points[active] = {x: points[active].x, y: points[active].y};
           break;
@@ -291,48 +291,44 @@ class SvgEdit extends Component<any, any> {
     });
     const path = this.generatePath();
     return (
-      <React.Fragment>
-        <Container bsSize="small" onMouseUp={this.cancelDragging.bind(this)} onMouseLeave={this.cancelDragging.bind(this)}>
-          <form onSubmit={this.save.bind(this)}>
-            <FormGroup controlId="formControlsInfo">
-              <Alert bsStyle="info">
-                <center>
-                  <strong>CTRL + CLICK</strong> to add a point | <strong>CLICK</strong> to select a point | <strong>CLICK AND DRAG</strong> to move a point<br/>
-                  <ButtonGroup>
-                    {this.state.activePoint !== 0 && (
-                      <DropdownButton title={!!this.state.points[this.state.activePoint].c? "Selected point: Curve to" : "Selected point: Line to"} id="bg-nested-dropdown">
-                        <MenuItem eventKey="0" onSelect={this.setPointType.bind(this, "L")}>Selected point: Line to</MenuItem>
-                        <MenuItem eventKey="1" onSelect={this.setPointType.bind(this, "C")}>Selected point: Curve to</MenuItem>
-                      </DropdownButton>
-                    )}
-                    {this.state.activePoint !== 0 && (
-                      <Button onClick={this.removeActivePoint.bind(this)}>Remove this point</Button>
-                    )}
-                    <DropdownButton title={this.state.hasAnchor === true? "Route has anchor" : "No anchor on route"} disabled={this.state.points.length===0} id="bg-nested-dropdown">
-                      <MenuItem eventKey="0" onSelect={this.setHasAnchor.bind(this, false)}>No anchor on route</MenuItem>
-                      <MenuItem eventKey="1" onSelect={this.setHasAnchor.bind(this, true)}>Route has anchor</MenuItem>
-                    </DropdownButton>
-                    <Button bsStyle="warning" disabled={this.state.points.length===0} onClick={this.reset.bind(this)}>Reset path</Button>
-                    <Button bsStyle="danger" onClick={this.onCancel.bind(this)}>Cancel</Button>
-                    <Button type="submit" bsStyle="success">{this.state.points.length>=2? 'Save' : 'Delete path'}</Button>
-                  </ButtonGroup>
-                </center>
-              </Alert>
-            </FormGroup>
-            <FormGroup controlId="formControlsImage">
-              <svg viewBox={"0 0 " + this.state.w + " " + this.state.h} onClick={this.addPoint.bind(this)} onMouseMove={this.handleMouseMove.bind(this)}>
-                <image ref="buldreinfo-svg-edit-img" xlinkHref={getImageUrl(this.state.mediaId, null)} width="100%" height="100%"/>
-                {parseReadOnlySvgs(this.state.readOnlySvgs, this.state.w, this.state.h)}
-                <path className="buldreinfo-svg-route" d={path} strokeWidth={0.002*this.state.w}/>
-                {circles}
-              </svg>
-            </FormGroup>
-            <FormGroup controlId="formControlsPath">
-              {path}
-            </FormGroup>
-          </form>
-        </Container>
-      </React.Fragment>
+      <Container onMouseUp={this.cancelDragging.bind(this)} onMouseLeave={this.cancelDragging.bind(this)}>
+        <Form>
+          <Form.Group>
+            <Message>
+              <Message.Content>
+                <strong>CTRL + CLICK</strong> to add a point | <strong>CLICK</strong> to select a point | <strong>CLICK AND DRAG</strong> to move a point<br/>
+                <Dropdown selection value={this.state.hasAnchor} disabled={this.state.points.length===0} onChange={this.setHasAnchor.bind(this)} options={[
+                  {key: 1, value: false, text: 'No anchor on route'},
+                  {key: 2, value: true, text: 'Route has anchor'}
+                ]}/>
+                {this.state.activePoint !== 0 && (
+                  <Dropdown selection value={!!this.state.points[this.state.activePoint].c? "C" : "L"} onChange={this.setPointType.bind(this)} options={[
+                    {key: 1, value: "L", text: 'Selected point: Line to'},
+                    {key: 2, value: "C", text: 'Selected point: Curve to'}
+                  ]}/>
+                )}
+                <Button.Group>
+                  <Button disabled={this.state.activePoint===0} onClick={this.removeActivePoint.bind(this)}>Remove this point</Button>
+                  <Button disabled={this.state.points.length===0} onClick={this.reset.bind(this)}>Reset path</Button>
+                  <Button negative onClick={this.onCancel.bind(this)}>Cancel</Button>
+                  <Button positive onClick={this.save.bind(this)}>{this.state.points.length>=2? 'Save' : 'Delete path'}</Button>
+                </Button.Group>
+              </Message.Content>
+            </Message>
+          </Form.Group>
+          <Form.Group>
+            <svg viewBox={"0 0 " + this.state.w + " " + this.state.h} onClick={this.addPoint.bind(this)} onMouseMove={this.handleMouseMove.bind(this)} width="100%" height="100%">
+              <image ref="buldreinfo-svg-edit-img" xlinkHref={getImageUrl(this.state.mediaId, null)} width="100%" height="100%"/>
+              {parseReadOnlySvgs(this.state.readOnlySvgs, this.state.w, this.state.h)}
+              <path className="buldreinfo-svg-route" d={path} strokeWidth={0.002*this.state.w}/>
+              {circles}
+            </svg>
+          </Form.Group>
+          <Form.Group>
+            {path}
+          </Form.Group>
+        </Form>
+      </Container>
     )
   }
 }
