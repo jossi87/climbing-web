@@ -142,7 +142,7 @@ class Sector extends Component<any, any> {
               {data.problems.map((problem, i) => (
                 <Card as={Link} to={`/problem/${problem.id}`} key={i}>
                   <Card.Content>
-                    {problem.randomMediaId>0 && <Image floated='right' size='tiny' style={{maxHeight: '65px', objectFit: 'cover'}}  src={getImageUrl(problem.randomMediaId, 130)} />}
+                    {problem.randomMediaId>0 && <Image floated='right' size='tiny' style={{maxHeight: '65px', objectFit: 'cover'}} src={getImageUrl(problem.randomMediaId, 130)} />}
                     <Card.Header>
                       <Label floating size="mini">#{problem.nr}</Label> {problem.name} <Label color={getGradeColor(problem.grade)} circular>{problem.grade}</Label> <LockSymbol visibility={problem.visibility}/>
                     </Card.Header>

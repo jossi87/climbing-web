@@ -1,53 +1,56 @@
 import React, {Component} from 'react';
-import { Search } from 'semantic-ui-react'
-import { Link } from 'react-router-dom';
-import Avatar from 'react-avatar';
-import { postSearch } from './../../../api';
+import { Redirect } from 'react-router';
+import { Search, Image } from 'semantic-ui-react'
+import { getImageUrl, postFind } from './../../../api';
 import { LockSymbol } from '../widgets/widgets';
 
 class SearchBox extends Component<any, any> {
-  state = { isLoading: false, results: [], value: '' };
+  state = { isLoading: false, results: [], value: '', pushUrl: null };
 
-  handleResultSelect = (e, { result }) => console.log(result.title);
+  handleResultSelect = (e, { result }) => this.setState({pushUrl: result.url})
 
   handleSearchChange = (e, { value }) => {
     this.setState({ isLoading: true, value })
-    postSearch(this.props.auth.getAccessToken(), value).then((res) => {
-      var results = res.map(s => ({value: s, label: s.value}));
-      this.setState({ isLoading: false, results });
+    postFind(this.props.auth.getAccessToken(), value).then((res) => {
+      this.setState({ isLoading: false, results: res });
     });
   }
 
-  resultRenderer = ({ label, value }) => {
-    var bg = "#4caf50";
-    if (value.avatar==='A') {
-      bg = "#ff5722";
-    } else if (value.avatar==='S') {
-      bg = "#673ab7";
+  resultRenderer = ({ mediaId, mediaUrl, title, description, visibility }) => {
+    var imageSrc = null;
+    if (mediaId > 0) {
+      imageSrc = getImageUrl(mediaId, 130);
+    } else if (mediaUrl) {
+      imageSrc = mediaUrl;
     }
-    let avatar;
-    if (value.avatar==='U') {
-      avatar = <Avatar name={label} size="25" round={true} textSizeRatio={2.25} style={{marginRight: '10px'}} />
-    } else {
-      avatar = <Avatar value={value.avatar} size="25" color={bg} round={true} textSizeRatio={2.25} style={{marginRight: '10px'}} />
-    }
+    const image = imageSrc && <Image style={{objectFit: 'cover', width: '100%', height: '100%'}} src={imageSrc} />;
     return (
-      <Link to={value.url}>
-        {avatar}
-        {label} <LockSymbol visibility={value.visibility}/>
-      </Link>
-    );
+      <>
+        <div key='image' className='image'>
+          {image}
+        </div>
+        <div key='content' className='content'>
+          {title && <div className='title'>{title} <LockSymbol visibility={visibility} /></div>}
+          {description && <div className='description'>{description}</div>}
+        </div>
+      </>
+    )
   }
 
   render() {
-    const { isLoading, value, results } = this.state;
+    const { isLoading, value, results, pushUrl } = this.state;
+    if (pushUrl) {
+      this.setState({pushUrl: null})
+      return (<Redirect to={pushUrl} push />);
+    }
     return (
       <Search
+        category
         loading={isLoading}
         onResultSelect={this.handleResultSelect}
         onSearchChange={this.handleSearchChange}
+        resultRenderer={this.resultRenderer}
         minCharacters={1}
-        resultRenderer={this.resultRenderer as any}
         results={results}
         value={value}
         {...this.props}

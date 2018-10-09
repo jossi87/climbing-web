@@ -354,6 +354,17 @@ export function postComment(accessToken: string, id: number, idProblem: number, 
   });
 }
 
+export function postFind(accessToken: string, value: string): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/find`, {
+    method: 'POST',
+    body: JSON.stringify({value}),
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    }
+  }).then((data) => data.json());
+}
+
 export function postProblem(accessToken: string, sectorId: number, id: number, visibility: number, name: string, comment: string, originalGrade: string, fa: any, faDate: string, nr: number, t: any, lat: number, lng: number, sections: any, media: any): Promise<any> {
   const formData = new FormData();
   const newMedia = media.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
@@ -391,17 +402,6 @@ export function postProblemSvg(accessToken: string, problemId: number, mediaId: 
       'Accept': 'application/json'
     }
   });
-}
-
-export function postSearch(accessToken: string, value: string): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/search`, {
-    method: 'POST',
-    body: JSON.stringify({value}),
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    }
-  }).then((data) => data.json());
 }
 
 export function postSector(accessToken: string, areaId: number, id: number, visibility: number, name: string, comment: string, lat: number, lng: number, polygonCoords: any, media: any): Promise<any> {
