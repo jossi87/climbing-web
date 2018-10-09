@@ -45,7 +45,7 @@ class Navigation extends Component<any, any> {
           <Menu.Item header as={Link} to='/'>
             <Image size='mini' src='/png/buldreinfo.png' />
           </Menu.Item>
-          <Menu.Item style={{maxWidth: '120px'}} as={SearchBox} auth={this.props.auth} />
+          <Menu.Item as={SearchBox} auth={this.props.auth} />
           <Menu.Menu position='right'>
             <Menu.Item as={Link} to='/browse' icon='list' />
             <Dropdown item simple icon='filter'>
