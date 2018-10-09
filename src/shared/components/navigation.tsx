@@ -14,7 +14,7 @@ class Navigation extends Component<any, any> {
     } else {
       metadata = props.staticContext.metadata;
     }
-    this.state = {metadata, logo: '/png/buldreinfo_logo_gray.png'};
+    this.state = {metadata};
   }
 
   componentDidMount() {
@@ -33,11 +33,6 @@ class Navigation extends Component<any, any> {
     getMeta(this.props.auth.getAccessToken()).then((data) => this.setState(() => ({metadata: data.metadata})));
   }
 
-  hoverImage(hover) {
-    const logo = hover? '/png/buldreinfo_logo_white.png' : '/png/buldreinfo_logo_gray.png';
-    this.setState({logo: logo});
-  }
-
   login() {
     localStorage.setItem('redirect', this.props.location.pathname);
     this.props.auth.login();
@@ -48,13 +43,10 @@ class Navigation extends Component<any, any> {
       <Menu fixed='top' inverted>
         <Container>
           <Menu.Item header as={Link} to='/'>
-            <Image size='mini' src={this.state.logo} style={{ marginRight: '1.5em' }} />
-            Buldreinfo
+            <Image size='mini' src='/png/buldreinfo.png' />
           </Menu.Item>
-          <Menu.Item as={Link} to='/browse'>Browse</Menu.Item>
-
           <Menu.Item as={SearchBox} auth={this.props.auth}/>
-
+          <Menu.Item as={Link} to='/browse'>Browse</Menu.Item>
           <Dropdown item simple text='Finder'>
             <Dropdown.Menu>
               {this.state.metadata && !this.state.metadata.isBouldering && <Dropdown.Item as={Link} to="/hse">Flagged as dangerous (HSE)</Dropdown.Item>}
