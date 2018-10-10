@@ -107,15 +107,6 @@ export function getBrowse(accessToken: string): Promise<any> {
   });
 }
 
-export function getFinder(accessToken: string, grade: string): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/finder?grade=${grade}`, null)
-  .then((data) => data.json())
-  .catch((error) => {
-    console.warn(error);
-    return null;
-  });
-}
-
 export function getFrontpage(accessToken: string): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/frontpage`, null)
   .then((data) => data.json())
