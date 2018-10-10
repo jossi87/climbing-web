@@ -71,6 +71,7 @@ class CommentModal extends Component<any, any> {
             <Button color='black' onClick={this.props.onClose.bind(this)}>
               Cancel
             </Button>
+            <Button.Or />
             <Button
               positive
               icon='checkmark'

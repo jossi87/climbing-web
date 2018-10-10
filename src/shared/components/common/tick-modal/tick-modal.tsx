@@ -123,14 +123,18 @@ class TickModal extends Component<any, any> {
             <Button color='black' onClick={this.props.onClose.bind(this)}>
               Cancel
             </Button>
+            <Button.Or />
             {this.state && this.state.idTick>1 &&
-              <Button
-                negative
-                icon='delete'
-                labelPosition='right'
-                content="Delete tick"
-                onClick={this.delete.bind(this)}
-              />
+              <>
+                <Button
+                  negative
+                  icon='delete'
+                  labelPosition='right'
+                  content="Delete tick"
+                  onClick={this.delete.bind(this)}
+                />
+                <Button.Or />
+              </>
             }
             <Button
               positive
