@@ -1,6 +1,5 @@
 import React from 'react';
-import { Loader, Button, Icon, Popup } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
+import { Loader, Icon, Popup } from 'semantic-ui-react';
 
 export function LockSymbol({visibility}) {
   if (visibility===1) {
@@ -65,14 +64,6 @@ export function TypeImage({t}) {
     case 5: typeImg = <img height="20" src="/jpg/toprope.jpg" alt={subtype}/>; break;
   }
   return <Popup trigger={typeImg} content={t.type + " - " + t.subType} />
-}
-
-export function FaButtons({fa}) {
-  if (fa) {
-    const faButtons = fa.map((u, i) => (<Popup key={i} trigger={<Button size="mini" as={Link} to={`/user/${u.id}`}>{u.initials}</Button>} content={u.firstname + " " + u.surname} />));
-    return <Button.Group size="mini">{faButtons}</Button.Group>;
-  }
-  return null;
 }
 
 export function LoadingAndRestoreScroll() {
