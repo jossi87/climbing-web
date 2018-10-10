@@ -5,7 +5,8 @@ import Avatar from 'react-avatar';
 import Chart from './common/chart/chart';
 import TickModal from './common/tick-modal/tick-modal';
 import { LoadingAndRestoreScroll, CroppedText, LockSymbol, Stars } from './common/widgets/widgets';
-import { Icon, Table, Statistic, Button, Header, Segment, Divider, Image } from 'semantic-ui-react';
+import { Icon, Table, Label, Button, Header, Segment, Divider, Image } from 'semantic-ui-react';
+import { numberWithCommas } from './../api';
 
 class User extends Component<any, any> {
   constructor(props) {
@@ -45,10 +46,6 @@ class User extends Component<any, any> {
     this.setState({ currTick: t, showTickModal: true });
   }
 
-  numberWithCommas = (x) => {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  }
-
   render() {
     const { data } = this.state;
     if (!data) {
@@ -79,32 +76,14 @@ class User extends Component<any, any> {
         </Header>
         {this.state.currTick && <TickModal auth={this.props.auth} idTick={this.state.currTick.id} idProblem={this.state.currTick.idProblem} date={this.state.currTick.date} comment={this.state.currTick.comment} grade={this.state.currTick.grade} grades={data.metadata.grades} stars={this.state.currTick.stars} open={this.state.showTickModal} onClose={this.closeTickModal.bind(this)}/>}
         <Segment>
-          <Statistic.Group size='mini'>
-            <Statistic>
-              <Statistic.Value>{this.numberWithCommas(numFas)}</Statistic.Value>
-              <Statistic.Label>First ascents</Statistic.Label>
-            </Statistic>
-            <Statistic>
-              <Statistic.Value>{this.numberWithCommas(numTicks)}</Statistic.Value>
-              <Statistic.Label>Public ascents</Statistic.Label>
-            </Statistic>
-            <Statistic>
-              <Statistic.Value>{this.numberWithCommas(data.numImagesCreated)}</Statistic.Value>
-              <Statistic.Label>Pictures taken</Statistic.Label>
-            </Statistic>
-            <Statistic>
-              <Statistic.Value>{this.numberWithCommas(data.numImageTags)}</Statistic.Value>
-              <Statistic.Label>Appearance in pictures</Statistic.Label>
-            </Statistic>
-            <Statistic>
-              <Statistic.Value>{this.numberWithCommas(data.numVideosCreated)}</Statistic.Value>
-              <Statistic.Label>Videos created</Statistic.Label>
-            </Statistic>
-            <Statistic>
-              <Statistic.Value>{this.numberWithCommas(data.numVideoTags)}</Statistic.Value>
-              <Statistic.Label>Appearance in videos</Statistic.Label>
-            </Statistic>
-          </Statistic.Group>
+          <Label.Group size="small">
+            <Label color='orange' image><Icon name='check' />{numberWithCommas(numFas)}<Label.Detail>FA</Label.Detail></Label>
+            <Label color='olive' image><Icon name='check' />{numberWithCommas(numTicks)}<Label.Detail>Tick</Label.Detail></Label>
+            <Label color='green' image><Icon name='photo' />{numberWithCommas(data.numImageTags)}<Label.Detail>Tag</Label.Detail></Label>
+            <Label color='teal' image><Icon name='photo' />{numberWithCommas(data.numImagesCreated)}<Label.Detail>Created</Label.Detail></Label>
+            <Label color='blue' image><Icon name='video' />{numberWithCommas(data.numVideoTags)}<Label.Detail>Tag</Label.Detail></Label>
+            <Label color='violet' image><Icon name='video' />{numberWithCommas(data.numVideosCreated)}<Label.Detail>Created</Label.Detail></Label>
+          </Label.Group>
           <Divider />
           {chart}
         </Segment>

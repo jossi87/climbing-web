@@ -26,6 +26,10 @@ export function getImageUrl(id: number, maxHeight: number): string {
   return getUrl(`/images?id=${id}`);
 }
 
+export function numberWithCommas(number: number) {
+  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 export function getGradeColor(grade: string) {
   switch(grade.substring(0, 1)) {
     case "n": return "brown";

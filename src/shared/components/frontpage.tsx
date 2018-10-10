@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { List, Grid, Statistic, Card, Icon, Image } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
-import { getImageUrl } from '../api';
+import { getImageUrl, numberWithCommas } from '../api';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
 
 class Frontpage extends Component<any, any> {
@@ -34,10 +34,6 @@ class Frontpage extends Component<any, any> {
     this.props.fetchInitialData(this.props.auth.getAccessToken()).then((data) => this.setState(() => ({data})));
   }
 
-  numberWithCommas = (x) => {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  }
-
   render() {
     if (!this.state || !this.state.data) {
       return <LoadingAndRestoreScroll />;
@@ -64,29 +60,29 @@ class Frontpage extends Component<any, any> {
                 <Card.Description>
                   <Statistic.Group horizontal size='small'>
                     <Statistic>
-                      <Statistic.Value>{this.numberWithCommas(this.state.data.numProblems)}</Statistic.Value>
+                      <Statistic.Value>{numberWithCommas(this.state.data.numProblems)}</Statistic.Value>
                       <Statistic.Label>Problems</Statistic.Label>
                     </Statistic>
                     <Statistic>
-                      <Statistic.Value>{this.numberWithCommas(this.state.data.numProblemsWithCoordinates)}</Statistic.Value>
+                      <Statistic.Value>{numberWithCommas(this.state.data.numProblemsWithCoordinates)}</Statistic.Value>
                       <Statistic.Label>Coordinates</Statistic.Label>
                     </Statistic>
                     {!this.state.data.metadata.isBouldering &&
                       <Statistic>
-                        <Statistic.Value>{this.numberWithCommas(this.state.data.numProblemsWithTopo)}</Statistic.Value>
+                        <Statistic.Value>{numberWithCommas(this.state.data.numProblemsWithTopo)}</Statistic.Value>
                         <Statistic.Label>On topo</Statistic.Label>
                       </Statistic>
                     }
                     <Statistic>
-                      <Statistic.Value>{this.numberWithCommas(this.state.data.numTicks)}</Statistic.Value>
+                      <Statistic.Value>{numberWithCommas(this.state.data.numTicks)}</Statistic.Value>
                       <Statistic.Label>Public ascents</Statistic.Label>
                     </Statistic>
                     <Statistic>
-                      <Statistic.Value>{this.numberWithCommas(this.state.data.numImages)}</Statistic.Value>
+                      <Statistic.Value>{numberWithCommas(this.state.data.numImages)}</Statistic.Value>
                       <Statistic.Label>Images</Statistic.Label>
                     </Statistic>
                     <Statistic>
-                      <Statistic.Value>{this.numberWithCommas(this.state.data.numMovies)}</Statistic.Value>
+                      <Statistic.Value>{numberWithCommas(this.state.data.numMovies)}</Statistic.Value>
                       <Statistic.Label>Ascents on video</Statistic.Label>
                     </Statistic>
                   </Statistic.Group>
