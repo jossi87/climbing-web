@@ -54,18 +54,6 @@ export function CroppedText({text, maxLength}) {
   return null;
 }
 
-export function TypeImage({t}) {
-  var typeImg;
-  const subtype = t.subtype;
-  switch (t.id) {
-    case 2: typeImg = <img height="20" src="/jpg/bolt.jpg" alt={subtype}/>; break;
-    case 3: typeImg = <img height="20" src="/jpg/trad.jpg" alt={subtype}/>; break;
-    case 4: typeImg = <img height="20" src="/jpg/mixed.jpg" alt={subtype}/>; break;
-    case 5: typeImg = <img height="20" src="/jpg/toprope.jpg" alt={subtype}/>; break;
-  }
-  return <Popup trigger={typeImg} content={t.type + " - " + t.subType} />
-}
-
 export function LoadingAndRestoreScroll() {
   if (window) {
     window.scrollTo(0, 0);
