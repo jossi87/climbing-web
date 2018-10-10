@@ -242,7 +242,7 @@ class Problem extends Component<any, any> {
             {!data.metadata.isBouldering && <><strong>Type:</strong> {data.t.type + " - " + data.t.subType}<br/></>}
             <strong>Nr:</strong> {data.nr}<br/>
             <strong>Comment:</strong> {data.comment}<br/>
-            <strong>FA:</strong> {data.fa && data.fa.map(u => (<Label as={Link} to={`/user/${u.id}`}>{u.firstname} {u.surname}</Label>))}<br/>
+            <strong>FA:</strong> {data.fa && data.fa.map((u, i) => (<Label key={i} as={Link} to={`/user/${u.id}`}>{u.firstname} {u.surname}</Label>))}<br/>
             <strong>FA date:</strong> {data.faDateHr}<br/>
             <strong>Original grade:</strong> {data.originalGrade}<br/>
             {data.sectorLat>0 && data.sectorLng>0 &&
@@ -257,7 +257,7 @@ class Problem extends Component<any, any> {
                 <strong>Sections:</strong><br/>
                 <List divided relaxed>
                   {data.sections.map((s, i) => (
-                    <List.Item>
+                    <List.Item key={i}>
                       <List.Icon verticalAlign='middle'>
                         <Label color={getGradeColor(s.grade)} circular>{s.grade}</Label>
                       </List.Icon>

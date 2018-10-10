@@ -79,7 +79,7 @@ class User extends Component<any, any> {
         </Header>
         {this.state.currTick && <TickModal auth={this.props.auth} idTick={this.state.currTick.id} idProblem={this.state.currTick.idProblem} date={this.state.currTick.date} comment={this.state.currTick.comment} grade={this.state.currTick.grade} grades={data.metadata.grades} stars={this.state.currTick.stars} open={this.state.showTickModal} onClose={this.closeTickModal.bind(this)}/>}
         <Segment>
-          <Statistic.Group size='tiny'>
+          <Statistic.Group size='mini'>
             <Statistic>
               <Statistic.Value>{this.numberWithCommas(numFas)}</Statistic.Value>
               <Statistic.Label>First ascents</Statistic.Label>

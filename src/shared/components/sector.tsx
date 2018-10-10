@@ -138,7 +138,7 @@ class Sector extends Component<any, any> {
         {data.problems &&
           <>
             <br/>
-            <Card.Group link stackable itemsPerRow={3}>
+            <Card.Group stackable itemsPerRow={3}>
               {data.problems.map((problem, i) => (
                 <Card as={Link} to={`/problem/${problem.id}`} key={i}>
                   <Card.Content>
@@ -160,7 +160,7 @@ class Sector extends Component<any, any> {
                       <Label><Icon name='video' /> {problem.numMovies}</Label>
                       {this.state && this.state.data && !this.state.data.metadata.isBouldering && <Label>{problem.t.type + " - " + problem.t.subType}</Label>}
                       {problem.fa && problem.fa.map((u, i) => (
-                        <Label as={Link} to={`/user/${u.id}`}><Icon name='at' />{u.firstname} {u.surname}</Label>
+                        <Label as={Link} to={`/user/${u.id}`} key={i}><Icon name='at' />{u.firstname} {u.surname}</Label>
                       ))}
                     </Label.Group>
                   </Card.Content>
