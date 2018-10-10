@@ -3,10 +3,9 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Avatar from 'react-avatar';
 import Chart from './common/chart/chart';
-import TickModal from './common/tick-modal/tick-modal';
-import { LoadingAndRestoreScroll, CroppedText, LockSymbol, Stars } from './common/widgets/widgets';
-import { Icon, Table, Label, Button, Header, Segment, Divider, Image } from 'semantic-ui-react';
-import { numberWithCommas } from './../api';
+import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
+import { Icon, List, Label, Header, Segment, Divider, Image, Rating } from 'semantic-ui-react';
+import { numberWithCommas, getGradeColor } from './../api';
 
 class User extends Component<any, any> {
   constructor(props) {
@@ -18,7 +17,7 @@ class User extends Component<any, any> {
     } else {
       data = props.staticContext.data;
     }
-    this.state = {data, showTickModal: false};
+    this.state = {data};
   }
 
   componentDidMount() {
@@ -35,15 +34,6 @@ class User extends Component<any, any> {
 
   refresh(id) {
     this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
-  }
-
-  closeTickModal(event) {
-    this.setState({ showTickModal: false });
-    this.refresh(this.props.match.params.userId);
-  }
-
-  openTickModal(t, event) {
-    this.setState({ currTick: t, showTickModal: true });
   }
 
   render() {
@@ -74,7 +64,6 @@ class User extends Component<any, any> {
         {data.picture? <Image circular src={data.picture}/> : <Avatar round name={data.name} size="35" />}
           {data.name}
         </Header>
-        {this.state.currTick && <TickModal auth={this.props.auth} idTick={this.state.currTick.id} idProblem={this.state.currTick.idProblem} date={this.state.currTick.date} comment={this.state.currTick.comment} grade={this.state.currTick.grade} grades={data.metadata.grades} stars={this.state.currTick.stars} open={this.state.showTickModal} onClose={this.closeTickModal.bind(this)}/>}
         <Segment>
           <Label.Group size="small">
             <Label color='orange' image><Icon name='check' />{numberWithCommas(numFas)}<Label.Detail>FA</Label.Detail></Label>
@@ -87,43 +76,24 @@ class User extends Component<any, any> {
           <Divider />
           {chart}
         </Segment>
-        <Table celled compact unstackable>
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell>When</Table.HeaderCell>
-              <Table.HeaderCell>Name</Table.HeaderCell>
-              <Table.HeaderCell>Grade</Table.HeaderCell>
-              <Table.HeaderCell>Comment</Table.HeaderCell>
-              <Table.HeaderCell>Stars</Table.HeaderCell>
-              <Table.HeaderCell>FA</Table.HeaderCell>
-              {this.state.data.readOnly==false && <Table.HeaderCell></Table.HeaderCell>}
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
+        <Segment>
+          <List divided relaxed>
             {data.ticks.map((t, i) => (
-              <Table.Row key={i}>
-                <Table.Cell>{t.dateHr}</Table.Cell>
-                <Table.Cell><Link to={`/problem/${t.idProblem}`}>{t.name}</Link> <LockSymbol visibility={t.visibility}/></Table.Cell>
-                <Table.Cell>{t.grade}</Table.Cell>
-                <Table.Cell><CroppedText text={t.comment} i={t.idProblem} maxLength={40}/></Table.Cell>
-                <Table.Cell><Stars numStars={t.stars}/></Table.Cell>
-                <Table.Cell>{t.fa && <Icon name="check" />}</Table.Cell>
-                {this.state.data.readOnly==false &&
-                  <Table.Cell>
-                    {t.id!=0 &&
-                      <Button compact size="mini" animated='fade' onClick={this.openTickModal.bind(this, t)}>
-                        <Button.Content hidden>Edit tick</Button.Content>
-                        <Button.Content visible>
-                          <Icon name='edit' />
-                        </Button.Content>
-                      </Button>
-                    }
-                  </Table.Cell>
-                }
-              </Table.Row>
+              <List.Item key={i}>
+                <List.Content>
+                  <List.Header>
+                    <Link to={`/problem/${t.idProblem}`}>{t.name}</Link> <LockSymbol visibility={t.visibility}/> <Label size="mini" color={getGradeColor(t.grade)} circular>{t.grade}</Label> {t.fa && <Label color="red" size="mini" content="FA"/>}
+                  </List.Header>
+                  <List.Description>
+                    <Rating defaultRating={t.stars} maxRating={3} disabled /><br/>
+                    {t.dateHr && <small>{t.dateHr}<br/></small>}
+                    {t.comment}
+                  </List.Description>
+                </List.Content>
+              </List.Item>
             ))}
-          </Table.Body>
-        </Table>
+          </List>
+        </Segment>
       </React.Fragment>
     );
   }
