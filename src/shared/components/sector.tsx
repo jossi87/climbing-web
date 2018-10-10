@@ -108,7 +108,7 @@ class Sector extends Component<any, any> {
             </Grid.Column>
             <Grid.Column textAlign="right">
               {this.state && this.state.data && this.state.data.metadata.isAdmin &&
-                <Button.Group>
+                <Button.Group size="mini" compact>
                   <Button animated='fade' as={Link} to={{ pathname: `/problem/edit/-1`, query: { idSector: data.id, nr: nextNr, lat: data.lat, lng: data.lng } }}>
                     <Button.Content hidden>Add</Button.Content>
                     <Button.Content visible>

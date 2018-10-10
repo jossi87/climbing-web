@@ -67,16 +67,18 @@ class CommentModal extends Component<any, any> {
           </Modal.Description>
         </Modal.Content>
         <Modal.Actions>
-          <Button color='black' onClick={this.props.onClose.bind(this)}>
-            Cancel
-          </Button>
-          <Button
-            positive
-            icon='checkmark'
-            labelPosition='right'
-            content="Save"
-            onClick={this.save.bind(this)}
-          />
+          <Button.Group>
+            <Button color='black' onClick={this.props.onClose.bind(this)}>
+              Cancel
+            </Button>
+            <Button
+              positive
+              icon='checkmark'
+              labelPosition='right'
+              content="Save"
+              onClick={this.save.bind(this)}
+            />
+          </Button.Group>
         </Modal.Actions>
       </Modal>
     );

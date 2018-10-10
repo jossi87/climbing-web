@@ -95,7 +95,7 @@ class Area extends Component<any, any> {
             </Grid.Column>
             <Grid.Column textAlign="right">
               {this.state.data.metadata.isAdmin &&
-                <Button.Group>
+                <Button.Group size="mini" compact>
                   <Button animated='fade' as={Link} to={{ pathname: `/sector/edit/-1`, query: { idArea: this.state.data.id, lat: this.state.data.lat, lng: this.state.data.lng } }}>
                     <Button.Content hidden>Add</Button.Content>
                     <Button.Content visible>

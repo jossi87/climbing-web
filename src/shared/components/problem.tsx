@@ -202,7 +202,7 @@ class Problem extends Component<any, any> {
             </Grid.Column>
             <Grid.Column textAlign="right">
               {data.metadata && data.metadata.isAuthenticated &&
-                <Button.Group>
+                <Button.Group size="mini" compact>
                   <Button positive={data.ticks && data.ticks.filter(t => t.writable).length>0} animated='fade' onClick={this.openTickModal.bind(this)}>
                     <Button.Content hidden>Tick</Button.Content>
                     <Button.Content visible>

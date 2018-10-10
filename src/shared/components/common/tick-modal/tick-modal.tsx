@@ -119,25 +119,27 @@ class TickModal extends Component<any, any> {
           </Modal.Description>
         </Modal.Content>
         <Modal.Actions>
-          <Button color='black' onClick={this.props.onClose.bind(this)}>
-            Cancel
-          </Button>
-          {this.state && this.state.idTick>1 &&
+          <Button.Group>
+            <Button color='black' onClick={this.props.onClose.bind(this)}>
+              Cancel
+            </Button>
+            {this.state && this.state.idTick>1 &&
+              <Button
+                negative
+                icon='delete'
+                labelPosition='right'
+                content="Delete tick"
+                onClick={this.delete.bind(this)}
+              />
+            }
             <Button
-              negative
-              icon='delete'
+              positive
+              icon='checkmark'
               labelPosition='right'
-              content="Delete tick"
-              onClick={this.delete.bind(this)}
+              content="Save"
+              onClick={this.save.bind(this)}
             />
-          }
-          <Button
-            positive
-            icon='checkmark'
-            labelPosition='right'
-            content="Save"
-            onClick={this.save.bind(this)}
-          />
+          </Button.Group>
         </Modal.Actions>
       </Modal>
     );
