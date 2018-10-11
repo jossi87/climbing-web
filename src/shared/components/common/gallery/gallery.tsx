@@ -194,9 +194,10 @@ class Gallery extends Component<any, any> {
         </div>
       );
     }
+    const style = !this.state.isFullscreen && {height: this.props.height};
     return (
       <div className='image-gallery-image'>
-        <img style={{height: this.props.height}} src={getImageUrl(m.id, null)} className="buldreinfo-scale-img" alt={this.props.alt}/>
+        <img style={style} src={getImageUrl(m.id, null)} className="buldreinfo-scale-img" alt={this.props.alt}/>
       </div>
     );
   }
