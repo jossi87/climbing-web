@@ -40,7 +40,7 @@ class Navigation extends Component<any, any> {
 
   render() {
     return (
-      <Menu fixed='top' inverted compact borderless>
+      <Menu attached='top' inverted compact borderless>
         <Container>
           <Menu.Item header as={Link} to='/'><Image size='mini' src='/png/buldreinfo.png' /></Menu.Item>
           <Menu.Item as={SearchBox} auth={this.props.auth} style={{maxWidth: '35vw'}} />

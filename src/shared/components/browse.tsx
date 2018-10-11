@@ -54,12 +54,12 @@ class Browse extends Component<any, any> {
           <Grid.Row columns={2}>
             <Grid.Column>
             <Breadcrumb>
-              <Breadcrumb.Section active>Browse</Breadcrumb.Section>
+              <Breadcrumb.Section active>Browse areas</Breadcrumb.Section>
             </Breadcrumb>
             </Grid.Column>
             <Grid.Column textAlign="right">
               {this.state && this.state.data && this.state.data.metadata.isAdmin &&
-                <Button.Group>
+                <Button.Group size="mini" compact>
                   <Button animated='fade' as={Link} to={`/area/edit/-1`}>
                     <Button.Content hidden>Add</Button.Content>
                     <Button.Content visible>
