@@ -23,6 +23,7 @@ interface Outline {
 
 interface LeafletProps {
   useOpenStreetMap?: boolean,
+  height?: string,
   defaultZoom: number,
   defaultCenter: Coordinates,
   markers?: Array<Marker>,
@@ -101,8 +102,10 @@ export default class Leaflet extends Component<LeafletProps, any> {
       </Polygon>
     ))
     const maxZoom = 21;
+    const height = this.props.height? this.props.height : '500px';
     return (
       <Map
+        style={{height: height, width: '100%', zIndex: 0}}
         center={this.props.defaultCenter}
         zoom={this.props.defaultZoom}
         onClick={this.props.onClick? this.props.onClick.bind(this) : null}

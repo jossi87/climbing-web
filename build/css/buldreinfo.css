@@ -323,10 +323,3 @@
   background: white;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
-
-/* Leaflet */
-.leaflet-container {
-  height: 600px;
-  width: 100%;
-  z-index: 0;
-}

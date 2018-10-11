@@ -61,13 +61,14 @@ class Area extends Component<any, any> {
       return {url: '/sector/' + s.id, label: s.name, polygon: polygon}
     });
     const panes = [];
+    const height = '40vh';
     if (this.state.data.media && this.state.data.media.length>0) {
-      panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Gallery auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} alt={this.state.data.name} media={this.state.data.media} showThumbnails={this.state.data.media.length>1} removeMedia={this.onRemoveMedia.bind(this)}/></Tab.Pane> });
+      panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Gallery height={height} auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} alt={this.state.data.name} media={this.state.data.media} showThumbnails={this.state.data.media.length>1} removeMedia={this.onRemoveMedia.bind(this)}/></Tab.Pane> });
     }
     if (markers.length>0 || outlines.length>0) {
       const defaultCenter = this.state.data.lat && this.state.data.lat>0? {lat: this.state.data.lat, lng: this.state.data.lng} : this.state.data.metadata.defaultCenter;
       const defaultZoom = this.state.data.lat && this.state.data.lat>0? 14 : this.state.data.metadata.defaultZoom;
-      panes.push({ menuItem: 'Map', render: () => <Tab.Pane><Leaflet useOpenStreetMap={true} markers={markers} outlines={outlines} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/></Tab.Pane> });
+      panes.push({ menuItem: 'Map', render: () => <Tab.Pane><Leaflet height={height} useOpenStreetMap={true} markers={markers} outlines={outlines} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/></Tab.Pane> });
     }
     return (
       <>

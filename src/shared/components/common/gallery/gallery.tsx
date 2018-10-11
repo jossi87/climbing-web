@@ -196,7 +196,7 @@ class Gallery extends Component<any, any> {
     }
     return (
       <div className='image-gallery-image'>
-        <img src={getImageUrl(m.id, null)} className="buldreinfo-scale-img" alt={this.props.alt}/>
+        <img style={{height: this.props.height}} src={getImageUrl(m.id, null)} className="buldreinfo-scale-img" alt={this.props.alt}/>
       </div>
     );
   }

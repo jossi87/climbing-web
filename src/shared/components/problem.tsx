@@ -107,16 +107,17 @@ class Problem extends Component<any, any> {
       });
     }
     const panes = [];
+    const height = '40vh';
     if (data.media && data.media.length>0) {
       panes.push({
         menuItem: { key: 'media', icon: 'images', content: 'Media' },
-        render: () => <Tab.Pane><Gallery auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} alt={data.name + ' ' + data.grade + ' (' + data.areaName + " - " + data.sectorName + ')'} media={data.media} showThumbnails={false} removeMedia={this.onRemoveMedia.bind(this)} /></Tab.Pane>
+        render: () => <Tab.Pane><Gallery height={height} auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} alt={data.name + ' ' + data.grade + ' (' + data.areaName + " - " + data.sectorName + ')'} media={data.media} showThumbnails={false} removeMedia={this.onRemoveMedia.bind(this)} /></Tab.Pane>
       });
     }
     if (markers.length>0) {
       panes.push({
         menuItem: { key: 'map', icon: 'map', content: 'Map' },
-        render: () => <Tab.Pane><Leaflet markers={markers} defaultCenter={{lat: markers[0].lat, lng: markers[0].lng}} defaultZoom={16}/></Tab.Pane>
+        render: () => <Tab.Pane><Leaflet height={height} markers={markers} defaultCenter={{lat: markers[0].lat, lng: markers[0].lng}} defaultZoom={16}/></Tab.Pane>
       });
     }
     
