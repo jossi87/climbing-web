@@ -58,31 +58,31 @@ class Frontpage extends Component<any, any> {
             <Card>
               <Card.Content>
                 <Card.Description>
-                  <Statistic.Group horizontal size='small'>
-                    <Statistic>
-                      <Statistic.Value>{numberWithCommas(this.state.data.numProblems)}</Statistic.Value>
+                  <Statistic.Group size="mini" horizontal>
+                    <Statistic color='olive'>
+                      <Statistic.Value><Icon name='list' /> {numberWithCommas(this.state.data.numProblems)}</Statistic.Value>
                       <Statistic.Label>Problems</Statistic.Label>
                     </Statistic>
-                    <Statistic>
-                      <Statistic.Value>{numberWithCommas(this.state.data.numProblemsWithCoordinates)}</Statistic.Value>
-                      <Statistic.Label>Coordinates</Statistic.Label>
+                    <Statistic color='green'>
+                      <Statistic.Value><Icon name='map marker' /> {numberWithCommas(this.state.data.numProblemsWithCoordinates)}</Statistic.Value>
+                      <Statistic.Label>With coordinates</Statistic.Label>
                     </Statistic>
                     {!this.state.data.metadata.isBouldering &&
-                      <Statistic>
-                        <Statistic.Value>{numberWithCommas(this.state.data.numProblemsWithTopo)}</Statistic.Value>
-                        <Statistic.Label>On topo</Statistic.Label>
+                      <Statistic color='teal'>
+                        <Statistic.Value><Icon name='image outline' /> {numberWithCommas(this.state.data.numProblemsWithTopo)}</Statistic.Value>
+                        <Statistic.Label>With topo</Statistic.Label>
                       </Statistic>
                     }
-                    <Statistic>
-                      <Statistic.Value>{numberWithCommas(this.state.data.numTicks)}</Statistic.Value>
+                    <Statistic color='blue'>
+                      <Statistic.Value><Icon name='check' /> {numberWithCommas(this.state.data.numTicks)}</Statistic.Value>
                       <Statistic.Label>Public ascents</Statistic.Label>
                     </Statistic>
-                    <Statistic>
-                      <Statistic.Value>{numberWithCommas(this.state.data.numImages)}</Statistic.Value>
+                    <Statistic color='violet'>
+                      <Statistic.Value><Icon name='image' /> {numberWithCommas(this.state.data.numImages)}</Statistic.Value>
                       <Statistic.Label>Images</Statistic.Label>
                     </Statistic>
-                    <Statistic>
-                      <Statistic.Value>{numberWithCommas(this.state.data.numMovies)}</Statistic.Value>
+                    <Statistic color='purple'>
+                      <Statistic.Value><Icon name='film' /> {numberWithCommas(this.state.data.numMovies)}</Statistic.Value>
                       <Statistic.Label>Ascents on video</Statistic.Label>
                     </Statistic>
                   </Statistic.Group>
