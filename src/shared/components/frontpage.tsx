@@ -106,7 +106,7 @@ class Frontpage extends Component<any, any> {
               <List selection>
                 {data.fas.map((fa, i) => (
                   <List.Item key={i} as={Link} to={`/problem/${fa.idProblem}`}>
-                    <Image size="mini" style={{maxHeight: '30px', objectFit: 'cover'}} src={fa.randomMediaId? getImageUrl(fa.randomMediaId, 50) : '/png/image.png'} />
+                    <Image size="tiny" style={{maxHeight: '60px', objectFit: 'cover'}} src={fa.randomMediaId? getImageUrl(fa.randomMediaId, 120) : '/png/image.png'} />
                     <List.Content>
                       <List.Header>
                         {fa.problem} <Label size="mini" color={getGradeColor(fa.grade)} circular>{fa.grade}</Label> <LockSymbol visibility={fa.problemVisibility}/>
@@ -120,11 +120,26 @@ class Frontpage extends Component<any, any> {
               </List>
             </Grid.Column>
             <Grid.Column mobile={16} tablet={8} computer={4}>
-            <Header>Ticks</Header>
+              <Header>Media</Header>
+              <List selection>
+                {data.medias.map((m, i) => (
+                  <List.Item key={i} as={Link} to={`/problem/${m.idProblem}`}>
+                    <Image size="tiny" style={{maxHeight: '60px', objectFit: 'cover'}} src={getImageUrl(m.idMedia, 120)} />
+                    <List.Content>
+                      <List.Header>
+                        {m.problem} <Label size="mini" color={getGradeColor(m.grade)} circular>{m.grade}</Label> <LockSymbol visibility={m.visibility}/>
+                      </List.Header>
+                    </List.Content>
+                  </List.Item>
+                ))}
+              </List>
+            </Grid.Column>
+            <Grid.Column mobile={16} tablet={8} computer={4}>
+              <Header>Ticks</Header>
               <List selection>
                 {data.ascents.map((t, i) => (
                   <List.Item key={i} as={Link} to={`/problem/${t.idProblem}`}>
-                    <Image size="mini" style={{maxHeight: '30px', objectFit: 'cover'}} src={t.picture? t.picture : '/png/image.png'}/>
+                    <Image avatar size="mini" style={{maxHeight: '30px', objectFit: 'cover'}} src={t.picture? t.picture : '/png/image.png'}/>
                     <List.Content>
                       <List.Header>
                         {t.problem} <Label size="mini" color={getGradeColor(t.grade)} circular>{t.grade}</Label> <LockSymbol visibility={t.visibility}/>
@@ -138,26 +153,11 @@ class Frontpage extends Component<any, any> {
               </List>
             </Grid.Column>
             <Grid.Column mobile={16} tablet={8} computer={4}>
-              <Header>Media</Header>
-              <List selection>
-                {data.medias.map((m, i) => (
-                  <List.Item key={i} as={Link} to={`/problem/${m.idProblem}`}>
-                    <Image size="mini" style={{maxHeight: '30px', objectFit: 'cover'}} src={getImageUrl(m.idMedia, 50)} />
-                    <List.Content>
-                      <List.Header>
-                        {m.problem} <Label size="mini" color={getGradeColor(m.grade)} circular>{m.grade}</Label> <LockSymbol visibility={m.visibility}/>
-                      </List.Header>
-                    </List.Content>
-                  </List.Item>
-                ))}
-              </List>
-            </Grid.Column>
-            <Grid.Column mobile={16} tablet={8} computer={4}>
               <Header>Comments</Header>
               <List selection>
                 {data.comments.map((c, i) => (
                   <List.Item key={i} as={Link} to={`/problem/${c.idProblem}`}>
-                    <Image size="mini" style={{maxHeight: '30px', objectFit: 'cover'}} src={c.picture? c.picture : '/png/image.png'}/>
+                    <Image avatar size="mini" style={{maxHeight: '30px', objectFit: 'cover'}} src={c.picture? c.picture : '/png/image.png'}/>
                     <List.Content>
                       <List.Header>
                         {c.problem} <Label size="mini" color={getGradeColor(c.grade)} circular>{c.grade}</Label> <LockSymbol visibility={c.visibility}/>
