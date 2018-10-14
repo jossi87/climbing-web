@@ -86,7 +86,7 @@ class Frontpage extends Component<any, any> {
             </Grid.Column>
             <Grid.Column mobile={16} tablet={8} computer={8}>
               <Card as={Link} to={`/problem/${data.randomMedia.idProblem}`}>
-                <Image size="medium" src={getImageUrl(data.randomMedia.idMedia, 480)} />
+                <Image size="medium" style={{maxHeight: '250px', objectFit: 'cover'}} src={getImageUrl(data.randomMedia.idMedia, 800)} />
                 <Card.Content>
                   <Card.Header>
                     {data.randomMedia.problem} <Label color={getGradeColor(data.randomMedia.grade)} circular>{data.randomMedia.grade}</Label>
@@ -102,10 +102,10 @@ class Frontpage extends Component<any, any> {
           </Grid.Row>
           <Grid.Row>
             <Grid.Column mobile={16} tablet={8} computer={4}>
-              <Header>Newest</Header>
+              <Header>Newest:</Header>
               <List selection>
                 {data.fas.map((fa, i) => (
-                  <List.Item key={i} as={Link} to={`/problem/${fa.idProblem}`}>
+                  <List.Item key={i} as={Link} to={`/problem/${fa.idProblem}`} >
                     <Image size="tiny" style={{maxHeight: '60px', objectFit: 'cover'}} src={fa.randomMediaId? getImageUrl(fa.randomMediaId, 120) : '/png/image.png'} />
                     <List.Content>
                       <List.Header>
@@ -120,7 +120,7 @@ class Frontpage extends Component<any, any> {
               </List>
             </Grid.Column>
             <Grid.Column mobile={16} tablet={8} computer={4}>
-              <Header>Media</Header>
+              <Header>Media:</Header>
               <List selection>
                 {data.medias.map((m, i) => (
                   <List.Item key={i} as={Link} to={`/problem/${m.idProblem}`}>
@@ -135,7 +135,7 @@ class Frontpage extends Component<any, any> {
               </List>
             </Grid.Column>
             <Grid.Column mobile={16} tablet={8} computer={4}>
-              <Header>Ticks</Header>
+              <Header>Ticks:</Header>
               <List selection>
                 {data.ascents.map((t, i) => (
                   <List.Item key={i} as={Link} to={`/problem/${t.idProblem}`}>
@@ -153,7 +153,7 @@ class Frontpage extends Component<any, any> {
               </List>
             </Grid.Column>
             <Grid.Column mobile={16} tablet={8} computer={4}>
-              <Header>Comments</Header>
+              <Header>Comments:</Header>
               <List selection>
                 {data.comments.map((c, i) => (
                   <List.Item key={i} as={Link} to={`/problem/${c.idProblem}`}>
