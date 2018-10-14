@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
-import { List, Grid, Statistic, Card, Icon, Image } from 'semantic-ui-react';
+import { Label, List, Grid, Statistic, Icon, Image, Header, Card } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
-import { getImageUrl, numberWithCommas } from '../api';
-import { LoadingAndRestoreScroll } from './common/widgets/widgets';
+import { getImageUrl, numberWithCommas, getGradeColor } from '../api';
+import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 
 class Frontpage extends Component<any, any> {
   constructor(props) {
@@ -35,101 +35,139 @@ class Frontpage extends Component<any, any> {
   }
 
   render() {
-    if (!this.state || !this.state.data) {
+    const { data } = this.state;
+    if (!data) {
       return <LoadingAndRestoreScroll />;
     }
-
     return (
       <React.Fragment>
         <MetaTags>
-          <title>{this.state.data.metadata.title}</title>
-          <meta name="description" content={this.state.data.metadata.description} />
+          <title>{data.metadata.title}</title>
+          <meta name="description" content={data.metadata.description} />
           <meta property="og:type" content="website" />
-          <meta property="og:description" content={this.state.data.metadata.description} />
-          <meta property="og:url" content={this.state.data.metadata.og.url} />
-          <meta property="og:title" content={this.state.data.metadata.title} />
-          <meta property="og:image" content={this.state.data.metadata.og.image} />
-          <meta property="og:image:width" content={this.state.data.metadata.og.imageWidth} />
-          <meta property="og:image:height" content={this.state.data.metadata.og.imageHeight} />
+          <meta property="og:description" content={data.metadata.description} />
+          <meta property="og:url" content={data.metadata.og.url} />
+          <meta property="og:title" content={data.metadata.title} />
+          <meta property="og:image" content={data.metadata.og.image} />
+          <meta property="og:image:width" content={data.metadata.og.imageWidth} />
+          <meta property="og:image:height" content={data.metadata.og.imageHeight} />
         </MetaTags>
-        <Grid divided inverted stackable>
+        <Grid>
           <Grid.Row>
-            <Grid.Column width={6}>
-            <Card>
-              <Card.Content>
-                <Card.Description>
-                  <Statistic.Group size="mini" horizontal>
-                    <Statistic color='olive'>
-                      <Statistic.Value><Icon name='list' /> {numberWithCommas(this.state.data.numProblems)}</Statistic.Value>
-                      <Statistic.Label>Problems</Statistic.Label>
-                    </Statistic>
-                    <Statistic color='green'>
-                      <Statistic.Value><Icon name='map marker' /> {numberWithCommas(this.state.data.numProblemsWithCoordinates)}</Statistic.Value>
-                      <Statistic.Label>With coordinates</Statistic.Label>
-                    </Statistic>
-                    {!this.state.data.metadata.isBouldering &&
-                      <Statistic color='teal'>
-                        <Statistic.Value><Icon name='image outline' /> {numberWithCommas(this.state.data.numProblemsWithTopo)}</Statistic.Value>
-                        <Statistic.Label>With topo</Statistic.Label>
-                      </Statistic>
-                    }
-                    <Statistic color='blue'>
-                      <Statistic.Value><Icon name='check' /> {numberWithCommas(this.state.data.numTicks)}</Statistic.Value>
-                      <Statistic.Label>Public ascents</Statistic.Label>
-                    </Statistic>
-                    <Statistic color='violet'>
-                      <Statistic.Value><Icon name='image' /> {numberWithCommas(this.state.data.numImages)}</Statistic.Value>
-                      <Statistic.Label>Images</Statistic.Label>
-                    </Statistic>
-                    <Statistic color='purple'>
-                      <Statistic.Value><Icon name='film' /> {numberWithCommas(this.state.data.numMovies)}</Statistic.Value>
-                      <Statistic.Label>Ascents on video</Statistic.Label>
-                    </Statistic>
-                  </Statistic.Group>
-                </Card.Description>
-              </Card.Content>
-            </Card>
+            <Grid.Column mobile={16} tablet={8} computer={8}>
+              <Statistic.Group size="mini" horizontal>
+                <Statistic color='olive'>
+                  <Statistic.Value><Icon name='list' /> {numberWithCommas(data.numProblems)}</Statistic.Value>
+                  <Statistic.Label>Problems</Statistic.Label>
+                </Statistic>
+                <Statistic color='green'>
+                  <Statistic.Value><Icon name='map marker' /> {numberWithCommas(data.numProblemsWithCoordinates)}</Statistic.Value>
+                  <Statistic.Label>With coordinates</Statistic.Label>
+                </Statistic>
+                {!data.metadata.isBouldering &&
+                  <Statistic color='teal'>
+                    <Statistic.Value><Icon name='image outline' /> {numberWithCommas(data.numProblemsWithTopo)}</Statistic.Value>
+                    <Statistic.Label>With topo</Statistic.Label>
+                  </Statistic>
+                }
+                <Statistic color='blue'>
+                  <Statistic.Value><Icon name='check' /> {numberWithCommas(data.numTicks)}</Statistic.Value>
+                  <Statistic.Label>Public ascents</Statistic.Label>
+                </Statistic>
+                <Statistic color='violet'>
+                  <Statistic.Value><Icon name='image' /> {numberWithCommas(data.numImages)}</Statistic.Value>
+                  <Statistic.Label>Images</Statistic.Label>
+                </Statistic>
+                <Statistic color='purple'>
+                  <Statistic.Value><Icon name='film' /> {numberWithCommas(data.numMovies)}</Statistic.Value>
+                  <Statistic.Label>Ascents on video</Statistic.Label>
+                </Statistic>
+              </Statistic.Group>
             </Grid.Column>
-            <Grid.Column width={8}>
-              <Card>
-                <Image style={{maxWidth: '100%'}} src={getImageUrl(this.state.data.randomMedia.idMedia, 480)} />
+            <Grid.Column mobile={16} tablet={8} computer={8}>
+              <Card as={Link} to={`/problem/${data.randomMedia.idProblem}`}>
+                <Image size="medium" src={getImageUrl(data.randomMedia.idMedia, 480)} />
                 <Card.Content>
                   <Card.Header>
-                    <Link to={`/problem/${this.state.data.randomMedia.idProblem}`}>{this.state.data.randomMedia.problem}</Link> {this.state.data.randomMedia.grade}
+                    {data.randomMedia.problem} <Label color={getGradeColor(data.randomMedia.grade)} circular>{data.randomMedia.grade}</Label>
                   </Card.Header>
-                  <Card.Meta>
-                    <Link to={`/area/${this.state.data.randomMedia.idArea}`}>{this.state.data.randomMedia.area}</Link>/ <Link to={`/sector/${this.state.data.randomMedia.idSector}`}>{this.state.data.randomMedia.sector}</Link>
-                  </Card.Meta>
-                  <Card.Description>
-                    <Icon name='user' />
-                    {this.state.data.randomMedia.inPhoto? this.state.data.randomMedia.inPhoto : "Unknown"}
-                  </Card.Description>
-                </Card.Content>
-                <Card.Content extra>
-                  <Link to={`/user/${this.state.data.randomMedia.idCreator}`}>
-                    <Icon name='camera' />
-                    {this.state.data.randomMedia.creator}
-                  </Link>
+                  <Card.Description><small>
+                    <Link to={`/area/${data.randomMedia.idArea}`}>{data.randomMedia.area}</Link> / <Link to={`/sector/${data.randomMedia.idSector}`}>{data.randomMedia.sector}</Link><br/>
+                    <Icon name='user' /> {data.randomMedia.inPhoto? data.randomMedia.inPhoto : "Unknown"}<br/>
+                    <Icon name='camera' /> <Link to={`/user/${data.randomMedia.idCreator}`}>{data.randomMedia.creator}</Link>
+                  </small></Card.Description>
                 </Card.Content>
               </Card>
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>
-            <Grid.Column>
-              <List>
-                <List.Item>
-                  <Image avatar src='https://react.semantic-ui.com/images/avatar/small/rachel.png' />
-                  <List.Content>
-                    <List.Header as='a'>Rachel</List.Header>
-                    <List.Description>
-                      Last seen watching{' '}
-                      <a>
-                        <b>Arrested Development</b>
-                      </a>{' '}
-                      just now.
-                    </List.Description>
-                  </List.Content>
-                </List.Item>
+            <Grid.Column mobile={16} tablet={8} computer={4}>
+              <Header>Newest</Header>
+              <List selection>
+                {data.fas.map((fa, i) => (
+                  <List.Item key={i} as={Link} to={`/problem/${fa.idProblem}`}>
+                    <Image size="mini" style={{maxHeight: '30px', objectFit: 'cover'}} src={fa.randomMediaId? getImageUrl(fa.randomMediaId, 50) : '/png/image.png'} />
+                    <List.Content>
+                      <List.Header>
+                        {fa.problem} <Label size="mini" color={getGradeColor(fa.grade)} circular>{fa.grade}</Label> <LockSymbol visibility={fa.problemVisibility}/>
+                      </List.Header>
+                      <List.Description>
+                        {fa.date}
+                      </List.Description>
+                    </List.Content>
+                  </List.Item>
+                ))}
+              </List>
+            </Grid.Column>
+            <Grid.Column mobile={16} tablet={8} computer={4}>
+            <Header>Ticks</Header>
+              <List selection>
+                {data.ascents.map((t, i) => (
+                  <List.Item key={i} as={Link} to={`/problem/${t.idProblem}`}>
+                    <Image size="mini" style={{maxHeight: '30px', objectFit: 'cover'}} src={t.picture? t.picture : '/png/image.png'}/>
+                    <List.Content>
+                      <List.Header>
+                        {t.problem} <Label size="mini" color={getGradeColor(t.grade)} circular>{t.grade}</Label> <LockSymbol visibility={t.visibility}/>
+                      </List.Header>
+                      <List.Description>
+                        {t.user} ({t.date})
+                      </List.Description>
+                    </List.Content>
+                  </List.Item>
+                ))}
+              </List>
+            </Grid.Column>
+            <Grid.Column mobile={16} tablet={8} computer={4}>
+              <Header>Media</Header>
+              <List selection>
+                {data.medias.map((m, i) => (
+                  <List.Item key={i} as={Link} to={`/problem/${m.idProblem}`}>
+                    <Image size="mini" style={{maxHeight: '30px', objectFit: 'cover'}} src={getImageUrl(m.idMedia, 50)} />
+                    <List.Content>
+                      <List.Header>
+                        {m.problem} <Label size="mini" color={getGradeColor(m.grade)} circular>{m.grade}</Label> <LockSymbol visibility={m.visibility}/>
+                      </List.Header>
+                    </List.Content>
+                  </List.Item>
+                ))}
+              </List>
+            </Grid.Column>
+            <Grid.Column mobile={16} tablet={8} computer={4}>
+              <Header>Comments</Header>
+              <List selection>
+                {data.comments.map((c, i) => (
+                  <List.Item key={i} as={Link} to={`/problem/${c.idProblem}`}>
+                    <Image size="mini" style={{maxHeight: '30px', objectFit: 'cover'}} src={c.picture? c.picture : '/png/image.png'}/>
+                    <List.Content>
+                      <List.Header>
+                        {c.problem} <Label size="mini" color={getGradeColor(c.grade)} circular>{c.grade}</Label> <LockSymbol visibility={c.visibility}/>
+                      </List.Header>
+                      <List.Description>
+                        {c.date}
+                      </List.Description>
+                    </List.Content>
+                  </List.Item>
+                ))}
               </List>
             </Grid.Column>
           </Grid.Row>

@@ -17,7 +17,7 @@ class Sector extends Component<any, any> {
     } else {
       data = props.staticContext.data;
     }
-    this.state = {data, tabIndex: 1};
+    this.state = {data};
   }
 
   componentDidMount() {

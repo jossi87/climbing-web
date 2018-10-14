@@ -47,7 +47,7 @@
     "react-cookie": "^3.0.3",
     "react-day-picker": "^7.2.4",
     "react-dom": "^16.5.2",
-    "react-dropzone": "^6.0.4",
+    "react-dropzone": "^6.2.2",
     "react-ga": "^2.5.3",
     "react-image-gallery": "^0.8.12",
     "react-leaflet": "^2.1.0",
