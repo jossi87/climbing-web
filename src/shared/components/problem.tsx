@@ -3,9 +3,8 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
-import Avatar from 'react-avatar';
-import { Button, Message, Grid, Breadcrumb, Tab, Label, Icon, Card, Feed, Image, List } from 'semantic-ui-react';
-import { Stars, LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
+import { Button, Message, Grid, Breadcrumb, Tab, Label, Icon, List, Comment, Header, Rating } from 'semantic-ui-react';
+import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 import { postComment, getGradeColor } from './../api';
 import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
@@ -121,46 +120,60 @@ class Problem extends Component<any, any> {
       });
     }
     
-    const ticks = data.ticks && data.ticks.map((t, i) => (
-      <Feed.Event key={i}>
-        <Feed.Label>
-          {t.picture? <Image src={t.picture}/> : <Avatar round name={t.name} size="35" />}
-        </Feed.Label>
-        <Feed.Content>
-          <Feed.Summary>
-            <Feed.User as={Link} to={`/user/${t.idUser}`}>{t.name}</Feed.User>
-            <Feed.Date>{t.date}</Feed.Date>
-            <Label size="tiny" color={getGradeColor(t.suggestedGrade)} circular>{t.suggestedGrade}</Label>
-          </Feed.Summary>
-          <Feed.Content>{t.comment}</Feed.Content>
-          <Feed.Label><Stars numStars={t.stars}/></Feed.Label>
-        </Feed.Content>
-      </Feed.Event>
-    ));
-    const comments = data.comments && data.comments.map((c, i) => {
-      var extra = null;
-      if (c.danger) {
-        extra = <Label color="red">Flagged as dangerous</Label>;
-      } else if (c.resolved) {
-        extra = <Label color="green">Flagged as safe</Label>;
-      } else if (data.metadata && data.metadata.isAuthenticated && !data.metadata.isBouldering) {
-        extra = <Button basic size="tiny" compact onClick={this.flagAsDangerous.bind(this, c.id)}>Flag as dangerous</Button>;
-      }
-      return (
-        <Feed.Event key={i}>
-          <Feed.Label>
-            {c.picture? <Image src={c.picture}/> : <Avatar round name={c.name} size="35" />}
-          </Feed.Label>
-          <Feed.Content>
-            <Feed.Summary>
-              <Feed.User as={Link} to={`/user/${c.idUser}`}>{c.name}</Feed.User>
-              <Feed.Date>{c.date}</Feed.Date>
-            </Feed.Summary>
-            <Feed.Content>{c.message}</Feed.Content>
-          </Feed.Content>
-          {extra && <Feed.Extra>{extra}</Feed.Extra>}
-        </Feed.Event>
-    )});
+    const ticks = data.ticks && (
+      <Comment.Group>
+        <Header as="h3" dividing>Ticks</Header>
+        {data.ticks.map((t, i) => (
+          <Comment key={i}>
+            <Comment.Avatar src={t.picture? t.picture : '/png/image.png'} />
+            <Comment.Content>
+              <Comment.Author as={Link} to={`/user/${t.idUser}`}>{t.name}</Comment.Author>
+              <Comment.Metadata>{t.date}</Comment.Metadata>
+              <Comment.Text><Rating defaultRating={t.stars} maxRating={3} disabled /><Label size="tiny" color={getGradeColor(t.suggestedGrade)} circular>{t.suggestedGrade}</Label><br/>{t.comment}</Comment.Text>
+            </Comment.Content>
+          </Comment>
+        ))}
+      </Comment.Group>
+    );
+    const comments = data.comments && (
+      <Comment.Group>
+        <Header as="h3" dividing>Comments</Header>
+        {data.comments.map((c, i) => {
+          var extra = null;
+          if (c.danger) {
+            extra = <Label color="red">Flagged as dangerous</Label>;
+          } else if (c.resolved) {
+            extra = <Label color="green">Flagged as safe</Label>;
+          } else if (data.metadata && data.metadata.isAuthenticated && !data.metadata.isBouldering) {
+            extra = <Button basic size="tiny" compact onClick={this.flagAsDangerous.bind(this, c.id)}>Flag as dangerous</Button>;
+          }
+          return (
+            <Comment key={i}>
+              <Comment.Avatar src={c.picture? c.picture : '/png/image.png'} />
+              <Comment.Content>
+                <Comment.Author as={Link} to={`/user/${c.idUser}`}>{c.name}</Comment.Author>
+                <Comment.Metadata>{c.date}</Comment.Metadata>
+                <Comment.Text>{c.message}</Comment.Text>
+                {extra && <Comment.Actions>{extra}</Comment.Actions>}
+              </Comment.Content>
+            </Comment>
+        )})}
+      </Comment.Group>
+    );
+    var footer;
+    if (ticks && comments) {
+      footer = (
+        <Grid>
+          <Grid.Column mobile={16} tablet={8} computer={8}>{ticks}</Grid.Column>
+          <Grid.Column mobile={16} tablet={8} computer={8}>{comments}</Grid.Column>
+        </Grid>
+      )
+    } else if (ticks) {
+      footer = ticks;
+    } else if (comments) {
+      footer = comments;
+    }
+    
     var tickModal = null;
     if (data.ticks) {
       const userTicks = data.ticks.filter(t => t.writable);
@@ -273,30 +286,7 @@ class Problem extends Component<any, any> {
             }
           </Message.Content>
         </Message>
-        {ticks && (
-          <Card fluid>
-            <Card.Content>
-              <Card.Header>Ticks</Card.Header>
-            </Card.Content>
-            <Card.Content>
-              <Feed>
-                {ticks}
-              </Feed>
-            </Card.Content>
-          </Card>
-        )}
-        {comments && (
-          <Card fluid>
-            <Card.Content>
-              <Card.Header>Comments</Card.Header>
-            </Card.Content>
-            <Card.Content>
-              <Feed>
-                {comments}
-              </Feed>
-            </Card.Content>
-          </Card>
-        )}
+        {footer}
       </>
     );
   }

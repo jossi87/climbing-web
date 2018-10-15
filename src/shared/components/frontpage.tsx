@@ -94,7 +94,7 @@ class Frontpage extends Component<any, any> {
                   </Card.Description>
                 </Card.Content>
                 <Card.Content extra>
-                  <Label.Group size="tiny">
+                  <Label.Group size="mini">
                     {data.randomMedia.tagged && data.randomMedia.tagged.map((x, i) => (
                       <Label key={i} as={Link} to={`/user/${x.id}`} image>
                         {x.picture && <img src={x.picture} />}<Icon name="user"/>{x.name}
@@ -117,7 +117,7 @@ class Frontpage extends Component<any, any> {
                     return (
                       <Feed.Event key={i}>
                         <Feed.Label>
-                          {a.problemRandomMediaId>0 && <img style={{height: '35px', objectFit: 'cover'}}  src={getImageUrl(a.problemRandomMediaId, 50)} />}
+                          {a.problemRandomMediaId>0 && <img style={{height: '35px', objectFit: 'cover'}} src={getImageUrl(a.problemRandomMediaId, 50)} />}
                         </Feed.Label>
                         <Feed.Content>
                           <Feed.Summary>
