@@ -89,11 +89,23 @@ class Frontpage extends Component<any, any> {
                   <Card.Header>
                     {data.randomMedia.problem} <Label color={getGradeColor(data.randomMedia.grade)} circular>{data.randomMedia.grade}</Label>
                   </Card.Header>
-                  <Card.Description><small>
-                    <Link to={`/area/${data.randomMedia.idArea}`}>{data.randomMedia.area}</Link> / <Link to={`/sector/${data.randomMedia.idSector}`}>{data.randomMedia.sector}</Link><br/>
-                    <Icon name='user' /> {data.randomMedia.inPhoto? data.randomMedia.inPhoto : "Unknown"}<br/>
-                    <Icon name='camera' /> <Link to={`/user/${data.randomMedia.idCreator}`}>{data.randomMedia.creator}</Link>
-                  </small></Card.Description>
+                  <Card.Description>
+                    <Link to={`/area/${data.randomMedia.idArea}`}>{data.randomMedia.area}</Link> / <Link to={`/sector/${data.randomMedia.idSector}`}>{data.randomMedia.sector}</Link>
+                  </Card.Description>
+                </Card.Content>
+                <Card.Content extra>
+                  <Label.Group size="tiny">
+                    {data.randomMedia.tagged.map((x, i) => (
+                      <Label key={i} as={Link} to={`/user/${x.id}`} image>
+                        {x.picture && <img src={x.picture} />}<Icon name="user"/>{x.name}
+                      </Label>
+                    ))}
+                    {data.randomMedia.photographer &&
+                      <Label as={Link} to={`/user/${data.randomMedia.photographer.id}`} image>
+                        {data.randomMedia.photographer.picture && <img src={data.randomMedia.photographer.picture} />}<Icon name="photo"/>{data.randomMedia.photographer.name}
+                      </Label>
+                    }
+                  </Label.Group>
                 </Card.Content>
               </Card><br/>
             </Grid.Column>
@@ -108,9 +120,8 @@ class Frontpage extends Component<any, any> {
                           {a.problemRandomMediaId>0 && <img src={getImageUrl(a.problemRandomMediaId, 50)} />}
                         </Feed.Label>
                         <Feed.Content>
-                          <Feed.Date>{a.timeAgo}</Feed.Date>
                           <Feed.Summary>
-                            New problem <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> <Label size="mini" color={getGradeColor(a.grade)} circular>{a.grade}</Label>  <LockSymbol visibility={a.problemVisibility}/>
+                            New problem <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> <Label size="mini" color={getGradeColor(a.grade)} circular>{a.grade}</Label><LockSymbol visibility={a.problemVisibility}/><Feed.Date>{a.timeAgo}</Feed.Date>
                           </Feed.Summary>
                           <Feed.Extra text>
                             {a.description}
@@ -148,9 +159,8 @@ class Frontpage extends Component<any, any> {
                           {a.problemRandomMediaId>0 && <img src={getImageUrl(a.problemRandomMediaId, 50)} />}
                         </Feed.Label>
                         <Feed.Content>
-                          <Feed.Date>{a.timeAgo}</Feed.Date>
                           <Feed.Summary>
-                            {summary}on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> <Label size="mini" color={getGradeColor(a.grade)} circular>{a.grade}</Label>  <LockSymbol visibility={a.problemVisibility}/>
+                            {summary}on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> <Label size="mini" color={getGradeColor(a.grade)} circular>{a.grade}</Label><LockSymbol visibility={a.problemVisibility}/><Feed.Date>{a.timeAgo}</Feed.Date>
                           </Feed.Summary>
                           <Feed.Extra images>
                             {a.media.map((m, i) => (<img key={i} src={getImageUrl(m.id, 120)}/>))}
@@ -167,9 +177,8 @@ class Frontpage extends Component<any, any> {
                           {a.picture && <img src={a.picture} />}
                         </Feed.Label>
                         <Feed.Content>
-                          <Feed.Date>{a.timeAgo}</Feed.Date>
                           <Feed.Summary>
-                            <Feed.User as={Link} to={`/user/${a.id}`}>{a.name}</Feed.User> posted a comment on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> <Label size="mini" color={getGradeColor(a.grade)} circular>{a.grade}</Label>  <LockSymbol visibility={a.problemVisibility}/>
+                            <Feed.User as={Link} to={`/user/${a.id}`}>{a.name}</Feed.User> posted a comment on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> <Label size="mini" color={getGradeColor(a.grade)} circular>{a.grade}</Label><LockSymbol visibility={a.problemVisibility}/><Feed.Date>{a.timeAgo}</Feed.Date>
                           </Feed.Summary>
                           <Feed.Extra text>
                             {a.message}
@@ -186,9 +195,8 @@ class Frontpage extends Component<any, any> {
                           {a.picture && <img src={a.picture} />}
                         </Feed.Label>
                         <Feed.Content>
-                          <Feed.Date>{a.timeAgo}</Feed.Date>
                           <Feed.Summary>
-                            <Feed.User as={Link} to={`/user/${a.id}`}>{a.name}</Feed.User> ticked <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> <Label size="mini" color={getGradeColor(a.grade)} circular>{a.grade}</Label>  <LockSymbol visibility={a.problemVisibility}/>
+                            <Feed.User as={Link} to={`/user/${a.id}`}>{a.name}</Feed.User> ticked <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> <Label size="mini" color={getGradeColor(a.grade)} circular>{a.grade}</Label><LockSymbol visibility={a.problemVisibility}/><Feed.Date>{a.timeAgo}</Feed.Date>
                           </Feed.Summary>
                           <Feed.Extra text>{a.description}</Feed.Extra>
                           <Feed.Meta><Rating defaultRating={a.stars} maxRating={3} disabled /></Feed.Meta>
