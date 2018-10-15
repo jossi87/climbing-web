@@ -126,6 +126,11 @@ class Frontpage extends Component<any, any> {
                           <Feed.Extra text>
                             {a.description}
                           </Feed.Extra>
+                          {a.media &&
+                            <Feed.Extra images>
+                              {a.media.map((m, i) => (<img key={i} src={getImageUrl(m.id, 120)}/>))}
+                            </Feed.Extra>
+                          }
                           {a.users &&
                             <Feed.Meta>
                               {a.users.map((u, i) => (
