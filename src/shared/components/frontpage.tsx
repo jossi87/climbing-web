@@ -95,7 +95,7 @@ class Frontpage extends Component<any, any> {
                 </Card.Content>
                 <Card.Content extra>
                   <Label.Group size="tiny">
-                    {data.randomMedia.tagged.map((x, i) => (
+                    {data.randomMedia.tagged && data.randomMedia.tagged.map((x, i) => (
                       <Label key={i} as={Link} to={`/user/${x.id}`} image>
                         {x.picture && <img src={x.picture} />}<Icon name="user"/>{x.name}
                       </Label>
