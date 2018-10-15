@@ -3,7 +3,15 @@ import Dropzone from 'react-dropzone';
 import { getUserSearch } from './../../../api';
 import { Button, Card, Image, Search } from 'semantic-ui-react';
 
-class Text extends Component<any, any> {
+interface TextProps {
+  accessToken: string,
+  m: any,
+  placeholder: string,
+  value: string,
+  onValueChanged: Function
+}
+
+class Text extends Component<TextProps, any> {
   componentWillMount() {
     this.resetComponent()
   }
@@ -89,7 +97,7 @@ class ImageUpload extends Component<any, any> {
         {this.state.media.length > 0 &&
           <Card.Group itemsPerRow={4} stackable>
             {this.state.media.map((m, i) =>
-              <Card>
+              <Card key={i}>
                 <Image src={m.file.preview} />
                 <Card.Content>
                   <Text accessToken={accessToken} m={m} placeholder='In photo' value={m? m.inPhoto : ''}  onValueChanged={this.onInPhotoChanged.bind(this)} />

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
-import { Label, List, Grid, Statistic, Icon, Image, Header, Card } from 'semantic-ui-react';
+import { Label, Grid, Statistic, Icon, Image, Card, Feed, Rating } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { getImageUrl, numberWithCommas, getGradeColor } from '../api';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
@@ -54,7 +54,7 @@ class Frontpage extends Component<any, any> {
         </MetaTags>
         <Grid>
           <Grid.Row>
-            <Grid.Column mobile={16} tablet={8} computer={8}>
+            <Grid.Column mobile={16} tablet={8} computer={4}>
               <Statistic.Group size="mini" horizontal>
                 <Statistic color='olive'>
                   <Statistic.Value><Icon name='list' /> {numberWithCommas(data.numProblems)}</Statistic.Value>
@@ -83,8 +83,6 @@ class Frontpage extends Component<any, any> {
                   <Statistic.Label>Ascents on video</Statistic.Label>
                 </Statistic>
               </Statistic.Group>
-            </Grid.Column>
-            <Grid.Column mobile={16} tablet={8} computer={8}>
               <Card as={Link} to={`/problem/${data.randomMedia.idProblem}`}>
                 <Image size="medium" style={{maxHeight: '250px', objectFit: 'cover'}} src={getImageUrl(data.randomMedia.idMedia, 800)} />
                 <Card.Content>
@@ -97,78 +95,109 @@ class Frontpage extends Component<any, any> {
                     <Icon name='camera' /> <Link to={`/user/${data.randomMedia.idCreator}`}>{data.randomMedia.creator}</Link>
                   </small></Card.Description>
                 </Card.Content>
-              </Card>
+              </Card><br/>
             </Grid.Column>
-          </Grid.Row>
-          <Grid.Row>
-            <Grid.Column mobile={16} tablet={8} computer={4}>
-              <Header>Newest:</Header>
-              <List selection>
-                {data.fas.map((fa, i) => (
-                  <List.Item key={i} as={Link} to={`/problem/${fa.idProblem}`} >
-                    <Image size="tiny" style={{maxHeight: '60px', objectFit: 'cover'}} src={fa.randomMediaId? getImageUrl(fa.randomMediaId, 120) : '/png/image.png'} />
-                    <List.Content>
-                      <List.Header>
-                        {fa.problem} <Label size="mini" color={getGradeColor(fa.grade)} circular>{fa.grade}</Label> <LockSymbol visibility={fa.problemVisibility}/>
-                      </List.Header>
-                      <List.Description>
-                        {fa.date}
-                      </List.Description>
-                    </List.Content>
-                  </List.Item>
-                ))}
-              </List>
-            </Grid.Column>
-            <Grid.Column mobile={16} tablet={8} computer={4}>
-              <Header>Media:</Header>
-              <List selection>
-                {data.medias.map((m, i) => (
-                  <List.Item key={i} as={Link} to={`/problem/${m.idProblem}`}>
-                    <Image size="tiny" style={{maxHeight: '60px', objectFit: 'cover'}} src={getImageUrl(m.idMedia, 120)} />
-                    <List.Content>
-                      <List.Header>
-                        {m.problem} <Label size="mini" color={getGradeColor(m.grade)} circular>{m.grade}</Label> <LockSymbol visibility={m.visibility}/>
-                      </List.Header>
-                    </List.Content>
-                  </List.Item>
-                ))}
-              </List>
-            </Grid.Column>
-            <Grid.Column mobile={16} tablet={8} computer={4}>
-              <Header>Ticks:</Header>
-              <List selection>
-                {data.ascents.map((t, i) => (
-                  <List.Item key={i} as={Link} to={`/problem/${t.idProblem}`}>
-                    <Image avatar size="mini" style={{maxHeight: '30px', objectFit: 'cover'}} src={t.picture? t.picture : '/png/image.png'}/>
-                    <List.Content>
-                      <List.Header>
-                        {t.problem} <Label size="mini" color={getGradeColor(t.grade)} circular>{t.grade}</Label> <LockSymbol visibility={t.visibility}/>
-                      </List.Header>
-                      <List.Description>
-                        {t.user} ({t.date})
-                      </List.Description>
-                    </List.Content>
-                  </List.Item>
-                ))}
-              </List>
-            </Grid.Column>
-            <Grid.Column mobile={16} tablet={8} computer={4}>
-              <Header>Comments:</Header>
-              <List selection>
-                {data.comments.map((c, i) => (
-                  <List.Item key={i} as={Link} to={`/problem/${c.idProblem}`}>
-                    <Image avatar size="mini" style={{maxHeight: '30px', objectFit: 'cover'}} src={c.picture? c.picture : '/png/image.png'}/>
-                    <List.Content>
-                      <List.Header>
-                        {c.problem} <Label size="mini" color={getGradeColor(c.grade)} circular>{c.grade}</Label> <LockSymbol visibility={c.visibility}/>
-                      </List.Header>
-                      <List.Description>
-                        {c.date}
-                      </List.Description>
-                    </List.Content>
-                  </List.Item>
-                ))}
-              </List>
+            <Grid.Column mobile={16} tablet={8} computer={12}>
+              <Feed>
+                {data.activity.map((a, i) => {
+                  // FA
+                  if (a.users) {
+                    return (
+                      <Feed.Event key={i}>
+                        <Feed.Label>
+                          {a.problemRandomMediaId>0 && <img src={getImageUrl(a.problemRandomMediaId, 50)} />}
+                        </Feed.Label>
+                        <Feed.Content>
+                          <Feed.Date>{a.timestamp}</Feed.Date>
+                          <Feed.Summary>
+                            New problem <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> <Label size="mini" color={getGradeColor(a.grade)} circular>{a.grade}</Label>  <LockSymbol visibility={a.problemVisibility}/>
+                          </Feed.Summary>
+                          <Feed.Extra text>
+                            {a.description}
+                          </Feed.Extra>
+                          {a.users &&
+                            <Feed.Meta>
+                              {a.users.map((u, i) => (
+                                <Label key={i} as={Link} to={`/user/${u.id}`} image>
+                                  {u.picture?  <img src={u.picture} /> : <Icon name="user"/>} {u.name}
+                                </Label>
+                              ))}
+                            </Feed.Meta>
+                          }
+                        </Feed.Content>
+                      </Feed.Event>
+                    )
+                  }
+                  // Media
+                  else if (a.media) {
+                    const numImg = a.media.filter(m => !m.isMovie).length;
+                    const img = (numImg>0 && <>{numImg} new <Icon name="photo"/></>);
+                    const numMov = a.media.filter(m => m.isMovie).length;
+                    const mov = (numMov>0 && <>{numMov} new <Icon name="film"/></>);
+                    var summary;
+                    if (img && mov) {
+                      summary = <>{img}and {mov}</>;
+                    } else if (mov) {
+                      summary = mov;
+                    } else {
+                      summary = img;
+                    }
+                    return (
+                      <Feed.Event key={i}>
+                        <Feed.Label>
+                          {a.problemRandomMediaId>0 && <img src={getImageUrl(a.problemRandomMediaId, 50)} />}
+                        </Feed.Label>
+                        <Feed.Content>
+                          <Feed.Date>{a.timestamp}</Feed.Date>
+                          <Feed.Summary>
+                            {summary}on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> <Label size="mini" color={getGradeColor(a.grade)} circular>{a.grade}</Label>  <LockSymbol visibility={a.problemVisibility}/>
+                          </Feed.Summary>
+                          <Feed.Extra images>
+                            {a.media.map((m, i) => (<img key={i} src={getImageUrl(m.id, 120)}/>))}
+                          </Feed.Extra>
+                        </Feed.Content>
+                      </Feed.Event>
+                    )
+                  }
+                  // Guestbook
+                  else if (a.message) {
+                    return (
+                      <Feed.Event key={i}>
+                        <Feed.Label>
+                          {a.picture && <img src={a.picture} />}
+                        </Feed.Label>
+                        <Feed.Content>
+                          <Feed.Date>{a.timestamp}</Feed.Date>
+                          <Feed.Summary>
+                            <Feed.User as={Link} to={`/user/${a.id}`}>{a.name}</Feed.User> posted a comment on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> <Label size="mini" color={getGradeColor(a.grade)} circular>{a.grade}</Label>  <LockSymbol visibility={a.problemVisibility}/>
+                          </Feed.Summary>
+                          <Feed.Extra text>
+                            {a.message}
+                          </Feed.Extra>
+                        </Feed.Content>
+                      </Feed.Event>
+                    )
+                  }
+                  // Tick
+                  else {
+                    return (
+                      <Feed.Event key={i}>
+                        <Feed.Label>
+                          {a.picture && <img src={a.picture} />}
+                        </Feed.Label>
+                        <Feed.Content>
+                          <Feed.Date>{a.timestamp}</Feed.Date>
+                          <Feed.Summary>
+                            <Feed.User as={Link} to={`/user/${a.id}`}>{a.name}</Feed.User> ticked <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> <Label size="mini" color={getGradeColor(a.grade)} circular>{a.grade}</Label>  <LockSymbol visibility={a.problemVisibility}/>
+                          </Feed.Summary>
+                          <Feed.Extra text>{a.description}</Feed.Extra>
+                          <Feed.Meta><Rating defaultRating={a.stars} maxRating={3} disabled /></Feed.Meta>
+                        </Feed.Content>
+                      </Feed.Event>
+                    )
+                  }
+                })}
+              </Feed>
             </Grid.Column>
           </Grid.Row>
         </Grid>
