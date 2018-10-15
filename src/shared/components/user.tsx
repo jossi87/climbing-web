@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
-import Avatar from 'react-avatar';
 import Chart from './common/chart/chart';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 import { Icon, List, Label, Header, Segment, Divider, Image, Rating } from 'semantic-ui-react';
@@ -61,8 +60,7 @@ class User extends Component<any, any> {
           <meta property="og:image:height" content={data.metadata.og.imageHeight} />
         </MetaTags>
         <Header>
-        {data.picture? <Image circular src={data.picture}/> : <Avatar round name={data.name} size="35" />}
-          {data.name}
+          {data.picture && <Image circular src={data.picture}/>} {data.name}
         </Header>
         <Segment>
           <Label.Group size="small">

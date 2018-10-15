@@ -2,37 +2,8 @@ import React, {Component} from 'react';
 import { Container, Dropdown, Image, Menu } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import SearchBox from './common/search-box/search-box';
-import { getMeta } from './../api';
 
 class Navigation extends Component<any, any> {
-  constructor(props) {
-    super(props);
-    let metadata;
-    if (__isBrowser__ && window) {
-      metadata = window.__INITIAL_METADATA__;
-      delete window.__INITIAL_METADATA__;
-    } else {
-      metadata = props.staticContext.metadata;
-    }
-    this.state = {metadata};
-  }
-
-  componentDidMount() {
-    if (!this.state.metadata) {
-      this.refresh();
-    }
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.isAuthenticated !== prevProps.isAuthenticated) {
-      this.refresh();
-    }
-  }
-
-  refresh() {
-    getMeta(this.props.auth.getAccessToken()).then((data) => this.setState(() => ({metadata: data.metadata})));
-  }
-
   login() {
     localStorage.setItem('redirect', this.props.location.pathname);
     this.props.auth.login();

@@ -43,7 +43,6 @@
     "object-fit-images": "^3.2.4",
     "prop-types": "^15.6.2",
     "react": "^16.5.2",
-    "react-avatar": "^3.4.6",
     "react-cookie": "^3.0.3",
     "react-day-picker": "^7.2.4",
     "react-dom": "^16.5.2",

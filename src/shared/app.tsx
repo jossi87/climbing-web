@@ -105,6 +105,7 @@ class App extends Component {
             <Divider inverted section />
             <List horizontal inverted divided link>
               <List.Item as={Link} to='/ethics'>Ethics</List.Item>
+              <List.Item as={Link} to='/hse'>HSE</List.Item>
               <List.Item as='a' href='mailto:jostein.oygarden@gmail.com'>Contact</List.Item>
               <List.Item as='a' href='/gpl-3.0.txt' rel='noopener' target='_blank'>GNU Public License</List.Item>
             </List>

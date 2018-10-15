@@ -19,15 +19,14 @@ class SearchBox extends Component<any, any> {
   resultRenderer = ({ mediaId, mediaUrl, title, description, visibility }) => {
     var imageSrc = null;
     if (mediaId > 0) {
-      imageSrc = getImageUrl(mediaId, 130);
+      imageSrc = getImageUrl(mediaId, 45);
     } else if (mediaUrl) {
       imageSrc = mediaUrl;
     }
-    const image = imageSrc && <Image style={{objectFit: 'cover', width: '100%', height: '100%'}} src={imageSrc} />;
     return (
       <>
         <div key='image' className='image'>
-          {image}
+          {imageSrc && <Image style={{objectFit: 'cover', width: '45px', height: '45px'}} src={imageSrc} />}
         </div>
         <div key='content' className='content'>
           {title && <div className='title'>{title} <LockSymbol visibility={visibility} /></div>}

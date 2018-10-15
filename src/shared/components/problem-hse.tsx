@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { LockSymbol, LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { Table } from 'semantic-ui-react';
+import { Table, Header } from 'semantic-ui-react';
 
 class ProblemHse extends Component<any, any> {
   constructor(props) {
@@ -46,6 +46,7 @@ class ProblemHse extends Component<any, any> {
           <title>Flagged as dangerous</title>
           <meta name="description" content={"HSE"} />
         </MetaTags>
+        <Header>Health and Safety Executive (HSE)</Header>
         <Table celled compact unstackable>
           <Table.Header>
             <Table.Row>
