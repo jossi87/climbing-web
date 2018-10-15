@@ -118,7 +118,7 @@ class Frontpage extends Component<any, any> {
                           {a.users &&
                             <Feed.Meta>
                               {a.users.map((u, i) => (
-                                <Label key={i} as={Link} to={`/user/${u.id}`} image>
+                                <Label key={i} as={Link} to={`/user/${u.id}`}>
                                   {u.picture?  <img src={u.picture} /> : <Icon name="user"/>} {u.name}
                                 </Label>
                               ))}

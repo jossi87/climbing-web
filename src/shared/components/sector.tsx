@@ -160,9 +160,7 @@ class Sector extends Component<any, any> {
                       <Label><Icon name='photo' /> {problem.numImages}</Label>
                       <Label><Icon name='video' /> {problem.numMovies}</Label>
                       {this.state && this.state.data && !this.state.data.metadata.isBouldering && <Label>{problem.t.type + " - " + problem.t.subType}</Label>}
-                      {problem.fa && problem.fa.map((u, i) => (
-                        <Label as={Link} to={`/user/${u.id}`} key={i}><Icon name='at' />{u.firstname} {u.surname}</Label>
-                      ))}
+                      {problem.fa && problem.fa.map((u, i) => (<Label as={Link} to={`/user/${u.id}`} key={i}><Icon name='user' />{u.firstname} {u.surname}</Label>))}
                     </Label.Group>
                   </Card.Content>
                   {problem.danger? <Label size='mini' attached='bottom right' icon='warning sign' color='red' /> : problem.ticked && <Label size='mini' attached='bottom right' icon='check' color='green' />}
