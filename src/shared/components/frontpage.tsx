@@ -108,7 +108,7 @@ class Frontpage extends Component<any, any> {
                           {a.problemRandomMediaId>0 && <img src={getImageUrl(a.problemRandomMediaId, 50)} />}
                         </Feed.Label>
                         <Feed.Content>
-                          <Feed.Date>{a.timestamp}</Feed.Date>
+                          <Feed.Date>{a.timeAgo}</Feed.Date>
                           <Feed.Summary>
                             New problem <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> <Label size="mini" color={getGradeColor(a.grade)} circular>{a.grade}</Label>  <LockSymbol visibility={a.problemVisibility}/>
                           </Feed.Summary>
@@ -118,7 +118,7 @@ class Frontpage extends Component<any, any> {
                           {a.users &&
                             <Feed.Meta>
                               {a.users.map((u, i) => (
-                                <Label key={i} as={Link} to={`/user/${u.id}`}>
+                                <Label key={i} as={Link} to={`/user/${u.id}`} image>
                                   {u.picture?  <img src={u.picture} /> : <Icon name="user"/>} {u.name}
                                 </Label>
                               ))}
@@ -148,7 +148,7 @@ class Frontpage extends Component<any, any> {
                           {a.problemRandomMediaId>0 && <img src={getImageUrl(a.problemRandomMediaId, 50)} />}
                         </Feed.Label>
                         <Feed.Content>
-                          <Feed.Date>{a.timestamp}</Feed.Date>
+                          <Feed.Date>{a.timeAgo}</Feed.Date>
                           <Feed.Summary>
                             {summary}on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> <Label size="mini" color={getGradeColor(a.grade)} circular>{a.grade}</Label>  <LockSymbol visibility={a.problemVisibility}/>
                           </Feed.Summary>
@@ -167,7 +167,7 @@ class Frontpage extends Component<any, any> {
                           {a.picture && <img src={a.picture} />}
                         </Feed.Label>
                         <Feed.Content>
-                          <Feed.Date>{a.timestamp}</Feed.Date>
+                          <Feed.Date>{a.timeAgo}</Feed.Date>
                           <Feed.Summary>
                             <Feed.User as={Link} to={`/user/${a.id}`}>{a.name}</Feed.User> posted a comment on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> <Label size="mini" color={getGradeColor(a.grade)} circular>{a.grade}</Label>  <LockSymbol visibility={a.problemVisibility}/>
                           </Feed.Summary>
@@ -186,7 +186,7 @@ class Frontpage extends Component<any, any> {
                           {a.picture && <img src={a.picture} />}
                         </Feed.Label>
                         <Feed.Content>
-                          <Feed.Date>{a.timestamp}</Feed.Date>
+                          <Feed.Date>{a.timeAgo}</Feed.Date>
                           <Feed.Summary>
                             <Feed.User as={Link} to={`/user/${a.id}`}>{a.name}</Feed.User> ticked <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> <Label size="mini" color={getGradeColor(a.grade)} circular>{a.grade}</Label>  <LockSymbol visibility={a.problemVisibility}/>
                           </Feed.Summary>
