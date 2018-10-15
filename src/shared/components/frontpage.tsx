@@ -117,7 +117,7 @@ class Frontpage extends Component<any, any> {
                     return (
                       <Feed.Event key={i}>
                         <Feed.Label>
-                          {a.problemRandomMediaId>0 && <img src={getImageUrl(a.problemRandomMediaId, 50)} />}
+                          {a.problemRandomMediaId>0 && <img style={{maxHeight: '35px', objectFit: 'cover'}}  src={getImageUrl(a.problemRandomMediaId, 50)} />}
                         </Feed.Label>
                         <Feed.Content>
                           <Feed.Summary>
@@ -156,7 +156,7 @@ class Frontpage extends Component<any, any> {
                     return (
                       <Feed.Event key={i}>
                         <Feed.Label>
-                          {a.problemRandomMediaId>0 && <img src={getImageUrl(a.problemRandomMediaId, 50)} />}
+                          {a.problemRandomMediaId>0 && <img style={{maxHeight: '35px', objectFit: 'cover'}} src={getImageUrl(a.problemRandomMediaId, 50)} />}
                         </Feed.Label>
                         <Feed.Content>
                           <Feed.Summary>
