@@ -5,7 +5,7 @@ import UserSelector from './common/user-selector/user-selector';
 import ProblemSection from './common/problem-section/problem-section';
 import ImageUpload from './common/image-upload/image-upload';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
-import { Form, Button, Input, Dropdown } from 'semantic-ui-react';
+import { Form, Button, Input, Dropdown, TextArea } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
 import { convertFromDateToString, convertFromStringToDate, postProblem } from './../api';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
@@ -241,7 +241,7 @@ class ProblemEdit extends Component<any, any> {
           </Form.Field>
           <Form.Field>
             <label>Comment</label>
-            <Input placeholder='Enter comment' value={data.comment} onChange={this.onCommentChanged.bind(this)} />
+            <TextArea placeholder='Enter comment' style={{ minHeight: 100 }} value={data.comment} onChange={this.onCommentChanged.bind(this)} />
           </Form.Field>
           {!data.metadata.isBouldering &&
             <Form.Field>

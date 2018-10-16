@@ -3,7 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { Redirect } from 'react-router';
 import ImageUpload from './common/image-upload/image-upload';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { Form, Button, Input, Dropdown } from 'semantic-ui-react';
+import { Form, Button, Input, Dropdown, TextArea } from 'semantic-ui-react';
 import { postSector } from './../api';
 import Leaflet from './common/leaflet/leaflet';
 
@@ -155,7 +155,7 @@ class SectorEdit extends Component<any, any> {
           </Form.Field>
           <Form.Field>
             <label>Comment</label>
-            <Input placeholder='Enter comment' value={this.state.data.comment} onChange={this.onCommentChanged.bind(this)} />
+            <TextArea placeholder='Enter comment' style={{ minHeight: 100 }} value={this.state.data.comment} onChange={this.onCommentChanged.bind(this)} />
           </Form.Field>
           <Form.Field>
             <label>Visibility</label>
