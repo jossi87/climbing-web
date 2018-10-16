@@ -20,11 +20,11 @@ class ProblemEditMedia extends Component<any, any> {
     getProblem(this.props.auth.getAccessToken(), id).then((data) => this.setState({id: data.id, isAuthenticated: data.metadata.isAuthenticated}));
   }
 
-  onNewMediaChanged(newMedia) {
+  onNewMediaChanged = (newMedia) => {
     this.setState({newMedia});
   }
 
-  save(event) {
+  save = (event) => {
     event.preventDefault();
     this.setState({isSaving: true});
     postProblemMedia(this.props.auth.getAccessToken(), this.state.id, this.state.newMedia)
@@ -36,7 +36,7 @@ class ProblemEditMedia extends Component<any, any> {
     });
   }
 
-  onCancel() {
+  onCancel = () => {
     window.history.back();
   }
 
@@ -51,10 +51,10 @@ class ProblemEditMedia extends Component<any, any> {
 
     return (
       <Container>
-        <form onSubmit={this.save.bind(this)}>
-          <ImageUpload auth={this.props.auth} onMediaChanged={this.onNewMediaChanged.bind(this)} />
+        <form onSubmit={this.save}>
+          <ImageUpload auth={this.props.auth} onMediaChanged={this.onNewMediaChanged} />
           <Button.Group>
-            <Button onClick={this.onCancel.bind(this)}>Cancel</Button>
+            <Button onClick={this.onCancel}>Cancel</Button>
             <Button.Or />
             <Button type="submit" positive loading={this.state.isSaving}>Save</Button>
           </Button.Group>

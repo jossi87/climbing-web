@@ -39,67 +39,67 @@ class ProblemEdit extends Component<any, any> {
     this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
   }
 
-  onNameChanged(e, { value }) {
+  onNameChanged = (e, { value }) => {
     const { data } = this.state;
     data.name = value;
     this.setState({data});
   }
 
-  onNrChanged(e, { value }) {
+  onNrChanged = (e, { value }) => {
     const { data } = this.state;
     data.nr = parseInt(value);
     this.setState({data});
   }
 
-  onLatChanged(e, { value }) {
+  onLatChanged = (e, { value }) => {
     const { data } = this.state;
     data.lat = parseFloat(value);
     this.setState({data});
   }
 
-  onLngChanged(e, { value }) {
+  onLngChanged = (e, { value }) => {
     const { data } = this.state;
     data.lng = parseFloat(value);
     this.setState({data});
   }
 
-  onVisibilityChanged(e, { value }) {
+  onVisibilityChanged = (e, { value }) => {
     const { data } = this.state;
     data.visibility = value;
     this.setState({data});
   }
 
-  onCommentChanged(e, { value }) {
+  onCommentChanged = (e, { value }) => {
     const { data } = this.state;
     data.comment = value;
     this.setState({data});
   }
 
-  onFaDateChanged(newFaDate) {
+  onFaDateChanged = (newFaDate) => {
     const { data } = this.state;
     data.faDate = newFaDate? convertFromDateToString(newFaDate) : null;
     this.setState({data});
   }
 
-  onOriginalGradeChanged(e, { value }) {
+  onOriginalGradeChanged = (e, { value }) => {
     const { data } = this.state;
     data.originalGrade = value;
     this.setState({data});
   }
 
-  onTypeIdChanged(e, { value }) {
+  onTypeIdChanged = (e, { value }) => {
     const { data } = this.state;
     data.typeId = parseInt(value);
     this.setState({data});
   }
 
-  onNewMediaChanged(newMedia) {
+  onNewMediaChanged = (newMedia) => {
     const { data } = this.state;
     data.newMedia = newMedia;
     this.setState({data});
   }
 
-  save(event) {
+  save = (event) => {
     event.preventDefault();
     this.setState({isSaving: true});
     const { data } = this.state;
@@ -128,14 +128,14 @@ class ProblemEdit extends Component<any, any> {
     });
   }
 
-  onMapClick(event) {
+  onMapClick = (event) => {
     const { data } = this.state;
     data.lat = event.latlng.lat;
     data.lng = event.latlng.lng;
     this.setState({data});
   }
 
-  onUsersUpdated(newUsers) {
+  onUsersUpdated = (newUsers) => {
     const { data } = this.state;
     data.fa = newUsers.map(u => {
       return {id: (typeof u.value === 'string' || u.value instanceof String)? -1 : u.value, firstname: u.label, surname: null};
@@ -143,13 +143,13 @@ class ProblemEdit extends Component<any, any> {
     this.setState({data});
   }
 
-  onSectionsUpdated(sections) {
+  onSectionsUpdated = (sections) => {
     const { data } = this.state;
     data.sections = sections;
     this.setState({data});
   }
 
-  onCancel() {
+  onCancel = () => {
     window.history.back();
   }
 
@@ -198,24 +198,24 @@ class ProblemEdit extends Component<any, any> {
         <Form>
           <Form.Field>
             <label>Name</label>
-            <Input placeholder='Enter name' value={data.name} onChange={this.onNameChanged.bind(this)} />
+            <Input placeholder='Enter name' value={data.name} onChange={this.onNameChanged} />
           </Form.Field>
           <Form.Field>
             <label>FA date (yyyy-mm-dd)</label>
             <DayPickerInput
               format="LL"
-              onDayChange={this.onFaDateChanged.bind(this)}
+              onDayChange={this.onFaDateChanged}
               value={convertFromStringToDate(data.faDate)}
             /><br/>
             <Button.Group>
-              <Button onClick={this.onFaDateChanged.bind(this, yesterday)}>Yesterday</Button>
-              <Button onClick={this.onFaDateChanged.bind(this, new Date())}>Today</Button>
+              <Button onClick={() => this.onFaDateChanged(yesterday)}>Yesterday</Button>
+              <Button onClick={() => this.onFaDateChanged(new Date())}>Today</Button>
             </Button.Group>
           </Form.Field>
           {data.metadata.types.length > 1 &&
             <Form.Field>
               <label>Type</label>
-              <Dropdown selection value={data.typeId} onChange={this.onTypeIdChanged.bind(this)}
+              <Dropdown selection value={data.typeId} onChange={this.onTypeIdChanged}
                 options={data.metadata.types.map((t, i) => {
                   const text = t.type + (t.subType? " - " + t.subType : "")
                   return ({key: i, value: t.id, text: text});
@@ -224,33 +224,33 @@ class ProblemEdit extends Component<any, any> {
           }
           <Form.Field>
             <label>Grade</label>
-            <Dropdown selection value={data.originalGrade} onChange={this.onOriginalGradeChanged.bind(this)}
+            <Dropdown selection value={data.originalGrade} onChange={this.onOriginalGradeChanged}
               options={data.metadata.grades.map((g, i) => ({key: i, value: g.grade, text: g.grade}))}/>
           </Form.Field>
           <Form.Field>
             <label>FA</label>
-            <UserSelector auth={this.props.auth} users={data.fa? data.fa.map(u => {return {value: u.id, label: u.firstname + " " + u.surname}}) : []} onUsersUpdated={this.onUsersUpdated.bind(this)} />
+            <UserSelector auth={this.props.auth} users={data.fa? data.fa.map(u => {return {value: u.id, label: u.firstname + " " + u.surname}}) : []} onUsersUpdated={this.onUsersUpdated} />
           </Form.Field>
           <Form.Field>
             <label>Visibility</label>
-            <Dropdown selection value={this.state.data.visibility} onChange={this.onVisibilityChanged.bind(this)} options={visibilityOptions}/>
+            <Dropdown selection value={this.state.data.visibility} onChange={this.onVisibilityChanged} options={visibilityOptions}/>
           </Form.Field>
           <Form.Field>
             <label>Sector number</label>
-            <Input placeholder='Enter number' value={data.nr} onChange={this.onNrChanged.bind(this)} />
+            <Input placeholder='Enter number' value={data.nr} onChange={this.onNrChanged} />
           </Form.Field>
           <Form.Field>
             <label>Comment</label>
-            <TextArea placeholder='Enter comment' style={{ minHeight: 100 }} value={data.comment} onChange={this.onCommentChanged.bind(this)} />
+            <TextArea placeholder='Enter comment' style={{ minHeight: 100 }} value={data.comment} onChange={this.onCommentChanged} />
           </Form.Field>
           {!data.metadata.isBouldering &&
             <Form.Field>
               <label>Section(s)</label>
-              <ProblemSection sections={data.sections} grades={data.metadata.grades} onSectionsUpdated={this.onSectionsUpdated.bind(this)} />
+              <ProblemSection sections={data.sections} grades={data.metadata.grades} onSectionsUpdated={this.onSectionsUpdated} />
             </Form.Field>
           }
           <Form.Field>
-            <ImageUpload auth={this.props.auth} onMediaChanged={this.onNewMediaChanged.bind(this)} />
+            <ImageUpload auth={this.props.auth} onMediaChanged={this.onNewMediaChanged} />
           </Form.Field>
           <Form.Field>
             <label>Click to mark problem on map</label><br/>
@@ -258,21 +258,21 @@ class ProblemEdit extends Component<any, any> {
               markers={data.lat!=0 && data.lng!=0 && [{lat: data.lat, lng: data.lng}]}
               defaultCenter={defaultCenter}
               defaultZoom={defaultZoom}
-              onClick={this.onMapClick.bind(this)}
+              onClick={this.onMapClick}
             />
           </Form.Field>
           <Form.Field>
             <label>Latitude</label>
-            <Input placeholder='Latitude' value={data.lat} onChange={this.onLatChanged.bind(this)} />
+            <Input placeholder='Latitude' value={data.lat} onChange={this.onLatChanged} />
           </Form.Field>
           <Form.Field>
             <label>Longitude</label>
-            <Input placeholder='Longitude' value={data.lng} onChange={this.onLngChanged.bind(this)} />
+            <Input placeholder='Longitude' value={data.lng} onChange={this.onLngChanged} />
           </Form.Field>
           <Button.Group>
-            <Button negative onClick={this.onCancel.bind(this)}>Cancel</Button>
+            <Button negative onClick={this.onCancel}>Cancel</Button>
             <Button.Or />
-            <Button positive disabled={this.state.isSaving} onClick={this.save.bind(this)}>{this.state.isSaving? 'Saving...' : 'Save'}</Button>
+            <Button positive disabled={this.state.isSaving} onClick={this.save}>{this.state.isSaving? 'Saving...' : 'Save'}</Button>
           </Button.Group>
         </Form>
       </>

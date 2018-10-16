@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import SearchBox from './common/search-box/search-box';
 
 class Navigation extends Component<any, any> {
-  login() {
+  login = () => {
     localStorage.setItem('redirect', this.props.location.pathname);
     this.props.auth.login();
   }
@@ -26,7 +26,7 @@ class Navigation extends Component<any, any> {
           :
             <Dropdown item simple icon='users'>
               <Dropdown.Menu>
-                <Dropdown.Item onClick={this.login.bind(this)}>Sign in</Dropdown.Item>
+                <Dropdown.Item onClick={this.login}>Sign in</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           }

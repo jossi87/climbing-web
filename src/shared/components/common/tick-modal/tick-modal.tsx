@@ -35,23 +35,23 @@ class TickModal extends Component<any, any> {
     this.refresh(nextProps);
   }
 
-  onDateChanged(newDate) {
+  onDateChanged = (newDate) => {
     this.setState({date: newDate? convertFromDateToString(newDate) : null});
   }
 
-  onCommentChanged(e, data) {
+  onCommentChanged = (e, data) => {
     this.setState({comment: data.value});
   }
 
-  onStarsChanged(e, data) {
+  onStarsChanged = (e, data) => {
     this.setState({stars: data.value});
   }
 
-  onGradeChanged(e, data) {
+  onGradeChanged = (e, data) => {
     this.setState({grade: data.value});
   }
 
-  delete(e) {
+  delete = (e) => {
     postTicks(this.props.auth.getAccessToken(), true, this.state.idTick, this.state.idProblem, this.state.comment, this.state.date, this.state.stars, this.state.grade)
     .then((response) => {
       this.props.onClose();
@@ -62,7 +62,7 @@ class TickModal extends Component<any, any> {
     });
   }
 
-  save(e) {
+  save = (e) => {
     postTicks(this.props.auth.getAccessToken(), false, this.state.idTick, this.state.idProblem, this.state.comment, this.state.date, this.state.stars, this.state.grade)
     .then((response) => {
       this.props.onClose();
@@ -77,7 +77,7 @@ class TickModal extends Component<any, any> {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate()-1);
     return (
-      <Modal open={this.props.open} onClose={this.props.onClose.bind(this)}>
+      <Modal open={this.props.open} onClose={this.props.onClose}>
         <Modal.Header>Tick</Modal.Header>
         <Modal.Content>
           <Modal.Description>
@@ -86,23 +86,23 @@ class TickModal extends Component<any, any> {
                 <label>Date (yyyy-mm-dd)</label>
                 <DayPickerInput
                   format="LL"
-                  onDayChange={this.onDateChanged.bind(this)}
+                  onDayChange={this.onDateChanged}
                   value={this.state && this.state.date && convertFromStringToDate(this.state.date)}
                 /><br/>
                 <Button.Group>
-                  <Button onClick={this.onDateChanged.bind(this, yesterday)}>Yesterday</Button>
-                  <Button onClick={this.onDateChanged.bind(this, new Date())}>Today</Button>
+                  <Button onClick={() => this.onDateChanged(yesterday)}>Yesterday</Button>
+                  <Button onClick={() => this.onDateChanged(new Date())}>Today</Button>
                 </Button.Group>
               </Form.Field>
               <Form.Field>
                 <label>Grade</label>
-                <Dropdown selection value={this.state && this.state.grade} onChange={this.onGradeChanged.bind(this)} 
+                <Dropdown selection value={this.state && this.state.grade} onChange={this.onGradeChanged} 
                   options={this.state && this.state.grades && this.state.grades.map((g, i) => ({key: i, text: g.grade, value: g.grade}))}
                 />
               </Form.Field>
               <Form.Field>
                 <label>Stars</label>
-                <Dropdown selection value={this.state && this.state.stars} onChange={this.onStarsChanged.bind(this)} 
+                <Dropdown selection value={this.state && this.state.stars} onChange={this.onStarsChanged} 
                   options={[
                     {key: 0, value: 0, text: "No stars"},
                     {key: 1, value: 1, text: <><Icon name="star" /> Nice</>},
@@ -113,14 +113,14 @@ class TickModal extends Component<any, any> {
               </Form.Field>
               <Form.Field>
                 <label>Comment</label>
-                <TextArea placeholder='Comment' style={{ minHeight: 100 }} value={this.state && this.state.comment} onChange={this.onCommentChanged.bind(this)} />
+                <TextArea placeholder='Comment' style={{ minHeight: 100 }} value={this.state && this.state.comment} onChange={this.onCommentChanged} />
               </Form.Field>
             </Form>
           </Modal.Description>
         </Modal.Content>
         <Modal.Actions>
           <Button.Group compact size="tiny">
-            <Button color='black' onClick={this.props.onClose.bind(this)}>
+            <Button color='black' onClick={this.props.onClose}>
               Cancel
             </Button>
             <Button.Or />
@@ -131,7 +131,7 @@ class TickModal extends Component<any, any> {
                   icon='delete'
                   labelPosition='right'
                   content="Delete tick"
-                  onClick={this.delete.bind(this)}
+                  onClick={this.delete}
                 />
                 <Button.Or />
               </>
@@ -141,7 +141,7 @@ class TickModal extends Component<any, any> {
               icon='checkmark'
               labelPosition='right'
               content="Save"
-              onClick={this.save.bind(this)}
+              onClick={this.save}
             />
           </Button.Group>
         </Modal.Actions>

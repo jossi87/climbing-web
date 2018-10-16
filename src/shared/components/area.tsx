@@ -36,7 +36,7 @@ class Area extends Component<any, any> {
     this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
   }
 
-  onRemoveMedia(idMediaToRemove) {
+  onRemoveMedia = (idMediaToRemove) => {
     const allMedia = this.state.data.media.filter(m => m.id!=idMediaToRemove);
     this.setState({media: allMedia});
   }
@@ -63,7 +63,7 @@ class Area extends Component<any, any> {
     const panes = [];
     const height = '40vh';
     if (this.state.data.media && this.state.data.media.length>0) {
-      panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Gallery height={height} auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} alt={this.state.data.name} media={this.state.data.media} showThumbnails={this.state.data.media.length>1} removeMedia={this.onRemoveMedia.bind(this)}/></Tab.Pane> });
+      panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Gallery height={height} auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} alt={this.state.data.name} media={this.state.data.media} showThumbnails={this.state.data.media.length>1} removeMedia={this.onRemoveMedia}/></Tab.Pane> });
     }
     if (markers.length>0 || outlines.length>0) {
       const defaultCenter = this.state.data.lat && this.state.data.lat>0? {lat: this.state.data.lat, lng: this.state.data.lng} : this.state.data.metadata.defaultCenter;

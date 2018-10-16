@@ -44,7 +44,7 @@ export default class Leaflet extends Component<LeafletProps, any> {
     }
   }
 
-  updatePosition(url, e) {
+  updatePosition = (url, e) => {
     if (url && e) {
       const lat = e.target._latlng.lat;
       const lng = e.target._latlng.lng;
@@ -82,7 +82,7 @@ export default class Leaflet extends Component<LeafletProps, any> {
             key={i}
             onClick={() => {this.setState({pushUrl: m.url})}}
             draggable={false}
-            onDragend={this.updatePosition.bind(this, m.url)}>
+            onDragend={() => this.updatePosition(m.url, this)}>
             {m.label && (
               <Tooltip opacity={opacity} permanent>
                 {m.label}
@@ -108,7 +108,7 @@ export default class Leaflet extends Component<LeafletProps, any> {
         style={{height: height, width: '100%', zIndex: 0}}
         center={this.props.defaultCenter}
         zoom={this.props.defaultZoom}
-        onClick={this.props.onClick? this.props.onClick.bind(this) : null}
+        onClick={this.props.onClick? this.props.onClick : null}
       >
         <LayersControl position="topright">
           <LayersControl.BaseLayer checked={!this.props.useOpenStreetMap} name="Norge i Bilder">

@@ -36,31 +36,31 @@ class AreaEdit extends Component<any, any> {
     this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
   }
 
-  onNameChanged(e, { value }) {
+  onNameChanged = (e, { value }) => {
     const { data } = this.state;
     data.name = value;
     this.setState({data});
   }
 
-  onVisibilityChanged(e, { value }) {
+  onVisibilityChanged = (e, { value }) => {
     const { data } = this.state;
     data.visibility = value;
     this.setState({data});
   }
 
-  onCommentChanged(e, { value }) {
+  onCommentChanged = (e, { value }) => {
     const { data } = this.state;
     data.comment = value;
     this.setState({data});
   }
 
-  onNewMediaChanged(newMedia) {
+  onNewMediaChanged = (newMedia) => {
     const { data } = this.state;
     data.newMedia = newMedia;
     this.setState({data});
   }
 
-  save(event) {
+  save = (event) => {
     event.preventDefault();
     this.setState({isSaving: true});
     postArea(this.props.auth.getAccessToken(), this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, this.state.data.newMedia)
@@ -73,14 +73,14 @@ class AreaEdit extends Component<any, any> {
     });
   }
 
-  onMarkerClick(event) {
+  onMarkerClick = (event) => {
     const { data } = this.state;
     data.lat = event.latlng.lat;
     data.lng = event.latlng.lng;
     this.setState({data});
   }
 
-  onCancel() {
+  onCancel = () => {
     window.history.back();
   }
 
@@ -113,19 +113,19 @@ class AreaEdit extends Component<any, any> {
         <Form>
           <Form.Field>
             <label>Area name</label>
-            <Input placeholder='Enter name' value={this.state.data.name} onChange={this.onNameChanged.bind(this)} />
+            <Input placeholder='Enter name' value={this.state.data.name} onChange={this.onNameChanged} />
           </Form.Field>
           <Form.Field>
             <label>Comment</label>
-            <TextArea placeholder='Enter comment' style={{ minHeight: 100 }} value={this.state.data.comment} onChange={this.onCommentChanged.bind(this)} />
+            <TextArea placeholder='Enter comment' style={{ minHeight: 100 }} value={this.state.data.comment} onChange={this.onCommentChanged} />
           </Form.Field>
           <Form.Field>
             <label>Visibility</label>
-            <Dropdown selection value={this.state.data.visibility} onChange={this.onVisibilityChanged.bind(this)} options={visibilityOptions}/>
+            <Dropdown selection value={this.state.data.visibility} onChange={this.onVisibilityChanged} options={visibilityOptions}/>
           </Form.Field>
           <Form.Field>
             <label>Upload image(s)</label>
-            <ImageUpload auth={this.props.auth} onMediaChanged={this.onNewMediaChanged.bind(this)} />
+            <ImageUpload auth={this.props.auth} onMediaChanged={this.onNewMediaChanged} />
           </Form.Field>
           <Form.Field>
             <label>Click to mark area center on map</label>
@@ -134,13 +134,13 @@ class AreaEdit extends Component<any, any> {
               markers={this.state.data.lat!=0 && this.state.data.lng!=0 && [{lat: this.state.data.lat, lng: this.state.data.lng}]}
               defaultCenter={defaultCenter}
               defaultZoom={defaultZoom}
-              onClick={this.onMarkerClick.bind(this)}
+              onClick={this.onMarkerClick}
             />
           </Form.Field>
           <Button.Group>
-            <Button negative onClick={this.onCancel.bind(this)}>Cancel</Button>
+            <Button negative onClick={this.onCancel}>Cancel</Button>
             <Button.Or />
-            <Button positive disabled={this.state.isSaving} onClick={this.save.bind(this)}>{this.state.isSaving? 'Saving...' : 'Save area'}</Button>
+            <Button positive disabled={this.state.isSaving} onClick={this.save}>{this.state.isSaving? 'Saving...' : 'Save area'}</Button>
           </Button.Group>
         </Form>
       </>

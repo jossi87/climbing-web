@@ -25,23 +25,23 @@ class SectorEdit extends Component<any, any> {
       this.refresh(this.props.match.params.sectorId);
     }
     if (document) {
-      document.addEventListener("keydown", this.handleKeyDown.bind(this));
-      document.addEventListener("keyup", this.handleKeyUp.bind(this));
+      document.addEventListener("keydown", this.handleKeyDown);
+      document.addEventListener("keyup", this.handleKeyUp);
     }
   }
 
   componentWillUnmount() {
     if (document) {
-      document.removeEventListener("keydown", this.handleKeyDown.bind(this));
-      document.removeEventListener("keyup", this.handleKeyUp.bind(this));
+      document.removeEventListener("keydown", this.handleKeyDown);
+      document.removeEventListener("keyup", this.handleKeyUp);
     }
   }
 
-  handleKeyDown(e) {
+  handleKeyDown = (e) => {
     if (e.ctrlKey) this.setState({ctrl: true});
   };
 
-  handleKeyUp(e) {
+  handleKeyUp = (e) => {
     if (!e.ctrlKey) this.setState({ctrl: false});
   };
 
@@ -55,31 +55,31 @@ class SectorEdit extends Component<any, any> {
     this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
   }
 
-  onNameChanged(e, { value }) {
+  onNameChanged = (e, { value }) => {
     const { data } = this.state;
     data.name = value;
     this.setState({data});
   }
 
-  onVisibilityChanged(e, { value }) {
+  onVisibilityChanged = (e, { value }) => {
     const { data } = this.state;
     data.visibility = value;
     this.setState({data});
   }
 
-  onCommentChanged(e, { value }) {
+  onCommentChanged = (e, { value }) => {
     const { data } = this.state;
     data.comment = value;
     this.setState({data});
   }
 
-  onNewMediaChanged(newMedia) {
+  onNewMediaChanged = (newMedia) => {
     const { data } = this.state;
     data.newMedia = newMedia;
     this.setState({data});
   }
 
-  save(event) {
+  save = (event) => {
     event.preventDefault();
     this.setState({isSaving: true});
     postSector(this.props.auth.getAccessToken(), this.props.location.query.idArea, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, this.state.data.polygonCoords, this.state.data.newMedia)
@@ -92,7 +92,7 @@ class SectorEdit extends Component<any, any> {
     });
   }
 
-  onMapClick(event) {
+  onMapClick = (event) => {
     const { data, ctrl } = this.state;
     if (ctrl) {
       const coords = event.latlng.lat + "," + event.latlng.lng;
@@ -108,13 +108,13 @@ class SectorEdit extends Component<any, any> {
     this.setState({data});
   }
 
-  resetMapPolygon() {
+  resetMapPolygon = () => {
     const { data } = this.state;
     data.polygonCoords = null;
     this.setState({data});
   }
 
-  onCancel() {
+  onCancel = () => {
     window.history.back();
   }
 
@@ -151,19 +151,19 @@ class SectorEdit extends Component<any, any> {
         <Form>
           <Form.Field>
             <label>Sector name</label>
-            <Input placeholder='Enter name' value={this.state.data.name} onChange={this.onNameChanged.bind(this)} />
+            <Input placeholder='Enter name' value={this.state.data.name} onChange={this.onNameChanged} />
           </Form.Field>
           <Form.Field>
             <label>Comment</label>
-            <TextArea placeholder='Enter comment' style={{ minHeight: 100 }} value={this.state.data.comment} onChange={this.onCommentChanged.bind(this)} />
+            <TextArea placeholder='Enter comment' style={{ minHeight: 100 }} value={this.state.data.comment} onChange={this.onCommentChanged} />
           </Form.Field>
           <Form.Field>
             <label>Visibility</label>
-            <Dropdown selection value={this.state.data.visibility} onChange={this.onVisibilityChanged.bind(this)} options={visibilityOptions}/>
+            <Dropdown selection value={this.state.data.visibility} onChange={this.onVisibilityChanged} options={visibilityOptions}/>
           </Form.Field>
           <Form.Field>
             <label>Upload image(s)</label>
-            <ImageUpload auth={this.props.auth} onMediaChanged={this.onNewMediaChanged.bind(this)} />
+            <ImageUpload auth={this.props.auth} onMediaChanged={this.onNewMediaChanged} />
           </Form.Field>
           <Form.Field>
             <label>Left mouse button to position parking coordinate, press and hold ctrl-key to add polygon points (sector outline)</label>
@@ -172,15 +172,15 @@ class SectorEdit extends Component<any, any> {
                 outlines={polygon && [{polygon: polygon}]}
                 defaultCenter={defaultCenter}
                 defaultZoom={defaultZoom}
-                onClick={this.onMapClick.bind(this)}
+                onClick={this.onMapClick}
               />
           </Form.Field>
           <Button.Group>
-            <Button onClick={this.resetMapPolygon.bind(this)}>Clear polygon</Button>
+            <Button onClick={this.resetMapPolygon}>Clear polygon</Button>
             <Button.Or />
-            <Button negative onClick={this.onCancel.bind(this)}>Cancel</Button>
+            <Button negative onClick={this.onCancel}>Cancel</Button>
             <Button.Or />
-            <Button positive disabled={this.state.isSaving} onClick={this.save.bind(this)}>{this.state.isSaving? 'Saving...' : 'Save sector'}</Button>
+            <Button positive disabled={this.state.isSaving} onClick={this.save}>{this.state.isSaving? 'Saving...' : 'Save sector'}</Button>
           </Button.Group>
         </Form>
       </>

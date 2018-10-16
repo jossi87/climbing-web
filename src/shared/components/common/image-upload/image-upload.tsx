@@ -61,24 +61,24 @@ class ImageUpload extends Component<any, any> {
     this.state = {media: []};
   }
 
-  onDrop(files) {
+  onDrop = (files) => {
     const allMedia = this.state.media;
     files.forEach(f => allMedia.push({file: f}));
     this.setState({media: allMedia});
     this.props.onMediaChanged(allMedia);
   }
 
-  onPhotographerChanged(m, name) {
+  onPhotographerChanged = (m, name) => {
     m.photographer=name;
     this.props.onMediaChanged(this.state.media);
   }
 
-  onInPhotoChanged(m, name) {
+  onInPhotoChanged = (m, name) => {
     m.inPhoto=name;
     this.props.onMediaChanged(this.state.media);
   }
 
-  onRemove(toRemove) {
+  onRemove = (toRemove) => {
     const allMedia = this.state.media.filter(m => m!=toRemove);
     this.setState({media: allMedia});
     this.props.onMediaChanged(allMedia);
@@ -89,7 +89,7 @@ class ImageUpload extends Component<any, any> {
     return (
       <>
         <Dropzone
-          onDrop={this.onDrop.bind(this)}
+          onDrop={this.onDrop}
           style={{width: '220px', height: '75px', padding: '15px', borderWidth: '1px', borderColor: '#666', borderStyle: 'dashed', borderRadius: '5px'}}
           accept={'image/*'}>
           <i>Drop JPG-image(s) here or click to select files to upload.</i>
@@ -100,11 +100,11 @@ class ImageUpload extends Component<any, any> {
               <Card key={i}>
                 <Image src={m.file.preview} />
                 <Card.Content>
-                  <Text accessToken={accessToken} m={m} placeholder='In photo' value={m? m.inPhoto : ''}  onValueChanged={this.onInPhotoChanged.bind(this)} />
-                  <Text accessToken={accessToken} m={m} placeholder='Photographer' value={m? m.photographer : ''} onValueChanged={this.onPhotographerChanged.bind(this)} />
+                  <Text accessToken={accessToken} m={m} placeholder='In photo' value={m? m.inPhoto : ''}  onValueChanged={this.onInPhotoChanged} />
+                  <Text accessToken={accessToken} m={m} placeholder='Photographer' value={m? m.photographer : ''} onValueChanged={this.onPhotographerChanged} />
                 </Card.Content>
                 <Card.Content extra>
-                  <Button fluid basic negative onClick={this.onRemove.bind(this, m)}>Remove</Button>
+                  <Button fluid basic negative onClick={() => this.onRemove(m)}>Remove</Button>
                 </Card.Content>
               </Card>
             )}

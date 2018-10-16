@@ -20,17 +20,17 @@ class CommentModal extends Component<any, any> {
     this.refresh(nextProps);
   }
 
-  onCommentChanged(e, data) {
+  onCommentChanged = (e, data) => {
     this.setState({comment: data.value});
   }
 
-  onFlagged(e) {
+  onFlagged = (e) => {
     const danger = e==1;
     const resolved = e==2;
     this.setState({danger, resolved});
   }
 
-  save(e) {
+  save = () => {
     if (this.state.comment) {
       postComment(this.props.auth.getAccessToken(), -1, this.state.idProblem, this.state.comment, this.state.danger, this.state.resolved)
       .then((response) => {
@@ -45,22 +45,22 @@ class CommentModal extends Component<any, any> {
 
   render() {
     return (
-      <Modal open={this.props.open} onClose={this.props.onClose.bind(this)}>
+      <Modal open={this.props.open} onClose={this.props.onClose}>
         <Modal.Header>Add comment</Modal.Header>
         <Modal.Content>
           <Modal.Description>
             <Form>
               <Form.Field>
                 <label>Comment</label>
-                <TextArea placeholder='Comment' style={{ minHeight: 100 }} value={this.state && this.state.comment} onChange={this.onCommentChanged.bind(this)} />
+                <TextArea placeholder='Comment' style={{ minHeight: 100 }} value={this.state && this.state.comment} onChange={this.onCommentChanged} />
               </Form.Field>
               {!this.props.isBouldering &&
                 <Button.Group size="mini" compact>
-                  <Button onClick={this.onFlagged.bind(this, 0)} active={this.state && !this.state.danger && !this.state.resolved}>Default comment</Button>
+                  <Button onClick={() => this.onFlagged(0)} active={this.state && !this.state.danger && !this.state.resolved}>Default comment</Button>
                   <Button.Or />
-                  <Button onClick={this.onFlagged.bind(this, 1)} negative={this.state && this.state.danger && !this.state.resolved} active={this.state && this.state.danger && !this.state.resolved}>Flag as dangerous</Button>
+                  <Button onClick={() => this.onFlagged(1)} negative={this.state && this.state.danger && !this.state.resolved} active={this.state && this.state.danger && !this.state.resolved}>Flag as dangerous</Button>
                   <Button.Or />
-                  <Button onClick={this.onFlagged.bind(this, 2)} positive={this.state && !this.state.danger && this.state.resolved} active={this.state && !this.state.danger && this.state.resolved}>Flag as safe</Button>
+                  <Button onClick={() => this.onFlagged(2)} positive={this.state && !this.state.danger && this.state.resolved} active={this.state && !this.state.danger && this.state.resolved}>Flag as safe</Button>
                 </Button.Group>
               }
             </Form>
@@ -68,7 +68,7 @@ class CommentModal extends Component<any, any> {
         </Modal.Content>
         <Modal.Actions>
           <Button.Group compact size="tiny">
-            <Button color='black' onClick={this.props.onClose.bind(this)}>
+            <Button color='black' onClick={this.props.onClose}>
               Cancel
             </Button>
             <Button.Or />
@@ -77,7 +77,7 @@ class CommentModal extends Component<any, any> {
               icon='checkmark'
               labelPosition='right'
               content="Save"
-              onClick={this.save.bind(this)}
+              onClick={this.save}
             />
           </Button.Group>
         </Modal.Actions>

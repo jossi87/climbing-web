@@ -14,20 +14,22 @@ export default class Auth {
 
   constructor(cookies) {
     this.cookies = cookies;
-    this.login = this.login.bind(this);
-    this.logout = this.logout.bind(this);
-    this.handleAuthentication = this.handleAuthentication.bind(this);
-    this.isAuthenticated = this.isAuthenticated.bind(this);
-    this.getAccessToken = this.getAccessToken.bind(this);
-    this.silentAuthentication = this.silentAuthentication.bind(this);
     this.scheduleRenewal();
   }
 
-  login() {
+  login = () => {
     this.auth0.authorize();
   }
 
-  handleAuthentication() {
+  logout = () => {
+    // Clear access token and ID token from cookies
+    this.cookies.remove('access_token');
+    this.cookies.remove('id_token');
+    this.cookies.remove('expires_at');
+    clearTimeout(this.tokenRenewalTimeout);
+  }
+
+  handleAuthentication = () => {
     this.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setCookies(authResult);
@@ -36,6 +38,32 @@ export default class Auth {
         alert(`Error: ${err.error}. Check the console for further details.`);
       }
     });
+  }
+
+  isAuthenticated = () => {
+    // Check whether the current time is past the
+    // access token's expiry time
+    const cookie = this.cookies.get('expires_at');
+    if (!cookie) {
+      return false;
+    }
+    let expiresAt = JSON.parse(cookie);
+    return new Date().getTime() < expiresAt;
+  }
+
+  getAccessToken = () => {
+    const accessToken = this.cookies.get('access_token');
+    if (!accessToken) {
+      return null;
+    }
+    return accessToken;
+  }
+
+  silentAuthentication = () => {
+    const cookie = this.cookies.get('expires_at');
+    if (cookie && !this.isAuthenticated()) {
+      this.renewToken();
+    }
   }
 
   setCookies(authResult) {
@@ -51,33 +79,6 @@ export default class Auth {
 
     // schedule a token renewal
     this.scheduleRenewal();
-  }
-
-  getAccessToken() {
-    const accessToken = this.cookies.get('access_token');
-    if (!accessToken) {
-      return null;
-    }
-    return accessToken;
-  }
-
-  logout() {
-    // Clear access token and ID token from cookies
-    this.cookies.remove('access_token');
-    this.cookies.remove('id_token');
-    this.cookies.remove('expires_at');
-    clearTimeout(this.tokenRenewalTimeout);
-  }
-
-  isAuthenticated() {
-    // Check whether the current time is past the
-    // access token's expiry time
-    const cookie = this.cookies.get('expires_at');
-    if (!cookie) {
-      return false;
-    }
-    let expiresAt = JSON.parse(cookie);
-    return new Date().getTime() < expiresAt;
   }
 
   renewToken() {
@@ -103,13 +104,6 @@ export default class Auth {
           this.renewToken();
         }, delay);
       }
-    }
-  }
-
-  silentAuthentication() {
-    const cookie = this.cookies.get('expires_at');
-    if (cookie && !this.isAuthenticated()) {
-      this.renewToken();
     }
   }
 }

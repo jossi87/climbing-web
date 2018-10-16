@@ -12,12 +12,12 @@ class UserSelector extends Component<any, any> {
 		getUserSearch(this.props.auth.getAccessToken(), "").then((res) => this.setState({options: res.map(u => {return {value: u.id, label: u.name}})}));
 	}
 
-	handleOnChange(value) {
+	handleOnChange = (value) => {
     this.props.onUsersUpdated(value);
 		this.setState({multiValue: value});
 	}
 
-	isValidNewOption(inputValue) {
+	isValidNewOption = (inputValue) => {
 		return this.state.options.filter(u => u.label && inputValue.toLowerCase() === u.label.toLowerCase()).length == 0;
 	}
 
@@ -28,8 +28,8 @@ class UserSelector extends Component<any, any> {
   				<CreatableSelect
   					isMulti
   					options={this.state.options}
-  					onChange={this.handleOnChange.bind(this)}
-						isValidNewOption={this.isValidNewOption.bind(this)}
+  					onChange={this.handleOnChange}
+						isValidNewOption={this.isValidNewOption}
   					value={this.state.multiValue}
   				/>
 				</div>

@@ -36,7 +36,7 @@ class Sector extends Component<any, any> {
     this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
   }
 
-  onRemoveMedia(idMediaToRemove) {
+  onRemoveMedia = (idMediaToRemove) => {
     const allMedia = this.state.data.media.filter(m => m.id!=idMediaToRemove);
     this.setState({media: allMedia});
   }
@@ -73,7 +73,7 @@ class Sector extends Component<any, any> {
     const panes = [];
     const height = '40vh';
     if (data.media && data.media.length>0) {
-      panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Gallery height={height} auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} alt={data.name + " (" + data.areaName + ")"} media={data.media} showThumbnails={data.media.length>1} removeMedia={this.onRemoveMedia.bind(this)}/></Tab.Pane> });
+      panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Gallery height={height} auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} alt={data.name + " (" + data.areaName + ")"} media={data.media} showThumbnails={data.media.length>1} removeMedia={this.onRemoveMedia}/></Tab.Pane> });
     }
     if (markers.length>0) {
       const defaultCenter = data.lat && data.lat>0? {lat: data.lat, lng: data.lng} : data.metadata.defaultCenter;

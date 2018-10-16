@@ -49,8 +49,8 @@ class SvgEdit extends Component<any, any> {
       this.refresh(this.props.match.params.problemIdMediaId);
     }
     if (document) {
-      document.addEventListener("keydown", this.handleKeyDown.bind(this));
-      document.addEventListener("keyup", this.handleKeyUp.bind(this));
+      document.addEventListener("keydown", this.handleKeyDown);
+      document.addEventListener("keyup", this.handleKeyUp);
     }
   }
 
@@ -90,28 +90,28 @@ class SvgEdit extends Component<any, any> {
 
   componentWillUnmount() {
     if (document) {
-      document.removeEventListener("keydown", this.handleKeyDown.bind(this));
-      document.removeEventListener("keyup", this.handleKeyUp.bind(this));
+      document.removeEventListener("keydown", this.handleKeyDown);
+      document.removeEventListener("keyup", this.handleKeyUp);
     }
   }
 
-  handleKeyDown(e) {
+  handleKeyDown = (e) => {
     if (e.ctrlKey) this.setState({ctrl: true});
   };
 
-  handleKeyUp(e) {
+  handleKeyUp = (e) => {
     if (!e.ctrlKey) this.setState({ctrl: false});
   };
 
-  setHasAnchor(e, { value }) {
+  setHasAnchor = (e, { value }) => {
     this.setState({hasAnchor: value});
   }
 
-  onCancel() {
+  onCancel = () => {
     window.history.back();
   }
 
-  save(event) {
+  save = (event) => {
     event.preventDefault();
     postProblemSvg(this.props.auth.getAccessToken(), this.state.id, this.state.mediaId, this.state.points.length<2, this.state.svgId, this.generatePath(), this.state.hasAnchor)
     .then((response) => {
@@ -123,7 +123,7 @@ class SvgEdit extends Component<any, any> {
     });
   }
 
-  cancelDragging(e) {
+  cancelDragging = (e) => {
     this.setState({
       draggedPoint: false,
       draggedCubic: false
@@ -139,7 +139,7 @@ class SvgEdit extends Component<any, any> {
     return {x, y};
   };
 
-  addPoint(e) {
+  addPoint = (e) => {
     if (this.state.ctrl) {
       let coords = this.getMouseCoords(e);
       let points = this.state.points;
@@ -170,7 +170,7 @@ class SvgEdit extends Component<any, any> {
     return d;
   }
 
-  handleMouseMove(e) {
+  handleMouseMove = (e) => {
     e.preventDefault();
     if (!this.state.ctrl) {
       if (this.state.draggedPoint) {
@@ -198,19 +198,19 @@ class SvgEdit extends Component<any, any> {
     this.setState({ points });
   };
 
-  setDraggedPoint(index) {
+  setDraggedPoint = (index) => {
     if (!this.state.ctrl) {
       this.setState({activePoint: index, draggedPoint: true});
     }
   };
 
-  setDraggedCubic(index, anchor) {
+  setDraggedCubic = (index, anchor) => {
     if (!this.state.ctrl) {
       this.setState({activePoint: index, draggedCubic: anchor});
     }
   };
 
-  setPointType(e, { value }) {
+  setPointType = (e, { value }) => {
     const points = this.state.points;
     const active = this.state.activePoint;
     if (active !== 0) { // not the first point
@@ -239,7 +239,7 @@ class SvgEdit extends Component<any, any> {
     }
   };
 
-  removeActivePoint(e) {
+  removeActivePoint = (e) => {
     let points = this.state.points;
     let active = this.state.activePoint;
     if (points.length > 1 && active !== 0) {
@@ -248,7 +248,7 @@ class SvgEdit extends Component<any, any> {
     }
   };
 
-  reset(e) {
+  reset = (e) => {
     this.setState({
       ctrl: false,
       points: [],
@@ -277,47 +277,47 @@ class SvgEdit extends Component<any, any> {
           <g key={anchors.length} className="buldreinfo-svg-edit-opacity">
             <line className="buldreinfo-svg-pointer buldreinfo-svg-route" x1={a[i-1].x} y1={a[i-1].y} x2={p.c[0].x} y2={p.c[0].y} strokeWidth={0.0026*this.state.w} strokeDasharray={0.003*this.state.w}/>
             <line className="buldreinfo-svg-pointer buldreinfo-svg-route" x1={p.x} y1={p.y} x2={p.c[1].x} y2={p.c[1].y} strokeWidth={0.0026*this.state.w} strokeDasharray={0.003*this.state.w}/>
-            <circle className="buldreinfo-svg-pointer buldreinfo-svg-ring" cx={p.c[0].x} cy={p.c[0].y} r={0.003*this.state.w} onMouseDown={this.setDraggedCubic.bind(this, i, 0)}/>
-            <circle className="buldreinfo-svg-pointer buldreinfo-svg-ring" cx={p.c[1].x} cy={p.c[1].y} r={0.003*this.state.w} onMouseDown={this.setDraggedCubic.bind(this, i, 1)}/>
+            <circle className="buldreinfo-svg-pointer buldreinfo-svg-ring" cx={p.c[0].x} cy={p.c[0].y} r={0.003*this.state.w} onMouseDown={() => this.setDraggedCubic(i, 0)}/>
+            <circle className="buldreinfo-svg-pointer buldreinfo-svg-ring" cx={p.c[1].x} cy={p.c[1].y} r={0.003*this.state.w} onMouseDown={() => this.setDraggedCubic(i, 1)}/>
           </g>
         );
       }
       return (
         <g key={i} className={"buldreinfo-svg-ring-group" + (this.state.activePoint === i ? "  is-active" : "")}>
           {anchors}
-          <circle className="buldreinfo-svg-pointer buldreinfo-svg-ring" cx={p.x} cy={p.y} r={0.003*this.state.w} onMouseDown={this.setDraggedPoint.bind(this, i)}/>
+          <circle className="buldreinfo-svg-pointer buldreinfo-svg-ring" cx={p.x} cy={p.y} r={0.003*this.state.w} onMouseDown={() => this.setDraggedPoint(i)}/>
         </g>
       );
     });
     const path = this.generatePath();
     return (
-      <Container onMouseUp={this.cancelDragging.bind(this)} onMouseLeave={this.cancelDragging.bind(this)}>
+      <Container onMouseUp={this.cancelDragging} onMouseLeave={this.cancelDragging}>
         <Form>
           <Form.Group>
             <Message>
               <Message.Content>
                 <strong>CTRL + CLICK</strong> to add a point | <strong>CLICK</strong> to select a point | <strong>CLICK AND DRAG</strong> to move a point<br/>
-                <Dropdown selection value={this.state.hasAnchor} disabled={this.state.points.length===0} onChange={this.setHasAnchor.bind(this)} options={[
+                <Dropdown selection value={this.state.hasAnchor} disabled={this.state.points.length===0} onChange={this.setHasAnchor} options={[
                   {key: 1, value: false, text: 'No anchor on route'},
                   {key: 2, value: true, text: 'Route has anchor'}
                 ]}/>
                 {this.state.activePoint !== 0 && (
-                  <Dropdown selection value={!!this.state.points[this.state.activePoint].c? "C" : "L"} onChange={this.setPointType.bind(this)} options={[
+                  <Dropdown selection value={!!this.state.points[this.state.activePoint].c? "C" : "L"} onChange={this.setPointType} options={[
                     {key: 1, value: "L", text: 'Selected point: Line to'},
                     {key: 2, value: "C", text: 'Selected point: Curve to'}
                   ]}/>
                 )}
                 <Button.Group>
-                  <Button disabled={this.state.activePoint===0} onClick={this.removeActivePoint.bind(this)}>Remove this point</Button>
-                  <Button disabled={this.state.points.length===0} onClick={this.reset.bind(this)}>Reset path</Button>
-                  <Button negative onClick={this.onCancel.bind(this)}>Cancel</Button>
-                  <Button positive onClick={this.save.bind(this)}>{this.state.points.length>=2? 'Save' : 'Delete path'}</Button>
+                  <Button disabled={this.state.activePoint===0} onClick={this.removeActivePoint}>Remove this point</Button>
+                  <Button disabled={this.state.points.length===0} onClick={this.reset}>Reset path</Button>
+                  <Button negative onClick={this.onCancel}>Cancel</Button>
+                  <Button positive onClick={this.save}>{this.state.points.length>=2? 'Save' : 'Delete path'}</Button>
                 </Button.Group>
               </Message.Content>
             </Message>
           </Form.Group>
           <Form.Group>
-            <svg viewBox={"0 0 " + this.state.w + " " + this.state.h} onClick={this.addPoint.bind(this)} onMouseMove={this.handleMouseMove.bind(this)} width="100%" height="100%">
+            <svg viewBox={"0 0 " + this.state.w + " " + this.state.h} onClick={this.addPoint} onMouseMove={this.handleMouseMove} width="100%" height="100%">
               <image ref="buldreinfo-svg-edit-img" xlinkHref={getImageUrl(this.state.mediaId, null)} width="100%" height="100%"/>
               {parseReadOnlySvgs(this.state.readOnlySvgs, this.state.w, this.state.h)}
               <path className="buldreinfo-svg-route" d={path} strokeWidth={0.002*this.state.w}/>

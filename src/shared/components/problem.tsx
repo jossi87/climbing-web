@@ -42,14 +42,12 @@ class Problem extends Component<any, any> {
     this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
   }
 
-
-
-  onRemoveMedia(idMediaToRemove) {
+  onRemoveMedia = (idMediaToRemove) => {
     const allMedia = this.state.data.media.filter(m => m.id!=idMediaToRemove);
     this.setState({media: allMedia});
   }
 
-  flagAsDangerous(id) {
+  flagAsDangerous = (id) => {
     if (confirm('Are you sure you want to flag this comment?')) {
       this.setState({isSaving: true});
       postComment(this.props.auth.getAccessToken(), id, -1, null, true, false)
@@ -64,21 +62,21 @@ class Problem extends Component<any, any> {
     }
   }
 
-  closeTickModal() {
+  closeTickModal = () => {
     this.setState({ showTickModal: false });
     this.refresh(this.props.match.params.problemId);
   }
 
-  openTickModal() {
+  openTickModal = () => {
     this.setState({ showTickModal: true });
   }
 
-  closeCommentModal() {
+  closeCommentModal = () => {
     this.setState({ showCommentModal: false });
     this.refresh(this.props.match.params.problemId);
   }
 
-  openCommentModal() {
+  openCommentModal = () => {
     this.setState({ showCommentModal: true });
   }
 
@@ -110,7 +108,7 @@ class Problem extends Component<any, any> {
     if (data.media && data.media.length>0) {
       panes.push({
         menuItem: { key: 'media', icon: 'images', content: 'Media' },
-        render: () => <Tab.Pane><Gallery height={height} auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} alt={data.name + ' ' + data.grade + ' (' + data.areaName + " - " + data.sectorName + ')'} media={data.media} showThumbnails={false} removeMedia={this.onRemoveMedia.bind(this)} /></Tab.Pane>
+        render: () => <Tab.Pane><Gallery height={height} auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} alt={data.name + ' ' + data.grade + ' (' + data.areaName + " - " + data.sectorName + ')'} media={data.media} showThumbnails={false} removeMedia={this.onRemoveMedia} /></Tab.Pane>
       });
     }
     if (markers.length>0) {
@@ -145,7 +143,7 @@ class Problem extends Component<any, any> {
           } else if (c.resolved) {
             extra = <Label color="green">Flagged as safe</Label>;
           } else if (data.metadata && data.metadata.isAuthenticated && !data.metadata.isBouldering) {
-            extra = <Button basic size="tiny" compact onClick={this.flagAsDangerous.bind(this, c.id)}>Flag as dangerous</Button>;
+            extra = <Button basic size="tiny" compact onClick={() => this.flagAsDangerous(c.id)}>Flag as dangerous</Button>;
           }
           return (
             <Comment key={i}>
@@ -178,11 +176,11 @@ class Problem extends Component<any, any> {
     if (data.ticks) {
       const userTicks = data.ticks.filter(t => t.writable);
       if (userTicks && userTicks.length>0) {
-        tickModal = <TickModal auth={this.props.auth} idTick={userTicks[0].id} idProblem={data.id} date={userTicks[0].date} comment={userTicks[0].comment} grade={userTicks[0].suggestedGrade} grades={data.metadata.grades} stars={userTicks[0].stars} open={this.state.showTickModal} onClose={this.closeTickModal.bind(this)}/>
+        tickModal = <TickModal auth={this.props.auth} idTick={userTicks[0].id} idProblem={data.id} date={userTicks[0].date} comment={userTicks[0].comment} grade={userTicks[0].suggestedGrade} grades={data.metadata.grades} stars={userTicks[0].stars} open={this.state.showTickModal} onClose={this.closeTickModal}/>
       }
     }
     if (!tickModal) {
-      tickModal = <TickModal auth={this.props.auth} idTick={-1} idProblem={data.id} grade={data.originalGrade} grades={data.metadata.grades} open={this.state.showTickModal} onClose={this.closeTickModal.bind(this)}/>;
+      tickModal = <TickModal auth={this.props.auth} idTick={-1} idProblem={data.id} grade={data.originalGrade} grades={data.metadata.grades} open={this.state.showTickModal} onClose={this.closeTickModal}/>;
     }
     return (
       <>
@@ -200,7 +198,7 @@ class Problem extends Component<any, any> {
           <meta property="og:image:height" content={data.metadata.og.imageHeight} />
         </MetaTags>
         {tickModal}
-        <CommentModal auth={this.props.auth} idProblem={data.id} open={this.state.showCommentModal} onClose={this.closeCommentModal.bind(this)} isBouldering={data.metadata.isBouldering}/>
+        <CommentModal auth={this.props.auth} idProblem={data.id} open={this.state.showCommentModal} onClose={this.closeCommentModal} isBouldering={data.metadata.isBouldering}/>
         <Grid divided='vertically'>
           <Grid.Row columns={2}>
             <Grid.Column>
@@ -217,13 +215,13 @@ class Problem extends Component<any, any> {
             <Grid.Column textAlign="right">
               {data.metadata && data.metadata.isAuthenticated &&
                 <Button.Group size="mini" compact>
-                  <Button positive={data.ticks && data.ticks.filter(t => t.writable).length>0} animated='fade' onClick={this.openTickModal.bind(this)}>
+                  <Button positive={data.ticks && data.ticks.filter(t => t.writable).length>0} animated='fade' onClick={this.openTickModal}>
                     <Button.Content hidden>Tick</Button.Content>
                     <Button.Content visible>
                       <Icon name='check' />
                     </Button.Content>
                   </Button>
-                  <Button animated='fade' onClick={this.openCommentModal.bind(this)}>
+                  <Button animated='fade' onClick={this.openCommentModal}>
                     <Button.Content hidden>Comment</Button.Content>
                     <Button.Content visible>
                       <Icon name='comment' />
