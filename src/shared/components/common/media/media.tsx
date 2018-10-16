@@ -11,12 +11,55 @@ interface Props {
 }
 
 class Media extends Component<Props, any> {
-  openModal = (m) => {
+  componentDidMount() {
+    document.addEventListener('keydown', this.handleKeyPress);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.handleKeyPress);
+  }
+
+  handleKeyPress = (e) => {
+    if (this.state && this.state.m) {
+      if (e.keyCode === 27) {
+        this.closeModal();
+      } else if (e.keyCode === 37) {
+        this.gotoPrev();
+      } else if (e.keyCode === 39) {
+        this.gotoNext();
+      }
+    }
+  }
+
+  openModal = (m, autoPlayVideo) => {
+    m.autoPlayVideo = autoPlayVideo;
     this.setState({ m });
   }
 
   closeModal = () => {
     this.setState({m: null});
+  }
+
+  gotoPrev = () => {
+    if (this.state && this.state.m && this.props.media.length > 1) {
+      var ix = this.props.media.indexOf(this.state.m)-1;
+      if (ix < 0) ix = this.props.media.length-1;
+      this.openModal(this.props.media[ix], false);
+    }
+  }
+
+  gotoNext = () => {
+    if (this.state && this.state.m && this.props.media.length > 1) {
+      var ix = this.props.media.indexOf(this.state.m)+1;
+      if (ix > this.props.media.length-1) ix = 0;
+      this.openModal(this.props.media[ix], false);
+    }
+  }
+
+  playVideo = () => {
+    if (this.state && this.state.m) {
+      this.openModal(this.state.m, true);
+    }
   }
 
   onDeleteImage = () => {
@@ -36,10 +79,20 @@ class Media extends Component<Props, any> {
   render() {
     return (
       <>
-        {this.state && this.state.m && <MediaModal isAdmin={this.props.isAdmin} onClose={this.closeModal} m={this.state.m} onDelete={this.onDeleteImage} />}
+        {this.state && this.state.m &&
+          <MediaModal
+            isAdmin={this.props.isAdmin}
+            onClose={this.closeModal}
+            m={this.state.m}
+            onDelete={this.onDeleteImage}
+            length={this.props.media.length}
+            gotoPrev={this.gotoPrev}
+            gotoNext={this.gotoNext}
+            playVideo={this.playVideo} />
+        }
         <Card.Group itemsPerRow={5} doubling>
           {this.props.media.map((m, i) => (
-            <Card as="a" onClick={() => this.openModal(m)} key={i} raised>
+            <Card as="a" onClick={() => this.openModal(m, true)} key={i} raised>
               <Image key={i} style={{height: '180px', width: '100%', objectFit: 'cover'}} src={getImageUrl(m.id, 400)} />
             </Card>
           ))}
