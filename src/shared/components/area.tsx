@@ -37,8 +37,9 @@ class Area extends Component<any, any> {
   }
 
   onRemoveMedia = (idMediaToRemove) => {
-    const allMedia = this.state.data.media.filter(m => m.id!=idMediaToRemove);
-    this.setState({media: allMedia});
+    const { data } = this.state;
+    data.media = data.media.filter(m => m.id!=idMediaToRemove);
+    this.setState({data});
   }
 
   render() {

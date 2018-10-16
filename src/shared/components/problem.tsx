@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
-import Gallery from './common/gallery/gallery';
+import Media from './common/media/media';
 import { Button, Message, Grid, Breadcrumb, Tab, Label, Icon, List, Comment, Header, Rating } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 import { postComment, getGradeColor } from './../api';
@@ -43,8 +43,9 @@ class Problem extends Component<any, any> {
   }
 
   onRemoveMedia = (idMediaToRemove) => {
-    const allMedia = this.state.data.media.filter(m => m.id!=idMediaToRemove);
-    this.setState({media: allMedia});
+    const { data } = this.state;
+    data.media = data.media.filter(m => m.id!=idMediaToRemove);
+    this.setState({data});
   }
 
   flagAsDangerous = (id) => {
@@ -108,7 +109,7 @@ class Problem extends Component<any, any> {
     if (data.media && data.media.length>0) {
       panes.push({
         menuItem: { key: 'media', icon: 'images', content: 'Media' },
-        render: () => <Tab.Pane><Gallery height={height} auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} alt={data.name + ' ' + data.grade + ' (' + data.areaName + " - " + data.sectorName + ')'} media={data.media} showThumbnails={false} removeMedia={this.onRemoveMedia} /></Tab.Pane>
+        render: () => <Tab.Pane><Media auth={this.props.auth} isAdmin={data.metadata.isAdmin} removeMedia={this.onRemoveMedia} media={data.media} /></Tab.Pane>
       });
     }
     if (markers.length>0) {
