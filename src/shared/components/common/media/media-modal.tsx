@@ -68,7 +68,7 @@ const MediaModal: React.SFC<Props> = props => {
   let myPlayer;
   return (
     <Dimmer active={true} onClickOutside={props.onClose} page>
-      {props.isAdmin && props.m.idType===1 && !props.m.svgProblemId &&
+      {props.isAdmin && props.m.idType===1 && !props.m.svgProblemId && !props.m.svgs &&
         <Button inverted circular style={style.delete} icon="trash" onClick={props.onDelete} />
       }
       <Button inverted circular style={style.close} icon="close" onClick={props.onClose} />
