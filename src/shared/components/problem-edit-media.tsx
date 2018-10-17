@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Redirect } from 'react-router'
+import { withRouter } from 'react-router'
 import ImageUpload from './common/image-upload/image-upload';
 import { getProblem, postProblemMedia } from './../api';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
@@ -29,7 +29,7 @@ class ProblemEditMedia extends Component<any, any> {
     this.setState({isSaving: true});
     postProblemMedia(this.props.auth.getAccessToken(), this.state.id, this.state.newMedia)
     .then((response) => {
-      this.setState({pushUrl: "/problem/" + response.id});
+      this.props.history.push("/problem/" + response.id);
     })
     .catch((error) => {
       console.warn(error);
@@ -43,10 +43,8 @@ class ProblemEditMedia extends Component<any, any> {
   render() {
     if (!this.state || !this.state.id) {
       return <LoadingAndRestoreScroll />;
-    } else if (this.state.pushUrl) {
-      return (<Redirect to={this.state.pushUrl} push />);
     } else if (!this.state.isAuthenticated) {
-      this.setState({pushUrl: "/login"});
+      this.props.history.push("/login");
     }
 
     return (
@@ -64,4 +62,4 @@ class ProblemEditMedia extends Component<any, any> {
   }
 }
 
-export default ProblemEditMedia;
+export default withRouter(ProblemEditMedia);

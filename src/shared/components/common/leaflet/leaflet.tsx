@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Redirect } from 'react-router';
+import { RouteComponentProps, withRouter } from 'react-router';
 let parkingIcon, Map, TileLayer, LayersControl, Marker, Polygon, Tooltip, WMSTileLayer;
 
 interface Coordinates {
@@ -21,7 +21,7 @@ interface Outline {
   label?: string
 }
 
-interface LeafletProps {
+interface LeafletProps extends RouteComponentProps<any> {
   useOpenStreetMap?: boolean,
   height?: string,
   defaultZoom: number,
@@ -31,7 +31,7 @@ interface LeafletProps {
   onClick?: Function
 }
 
-export default class Leaflet extends Component<LeafletProps, any> {
+class Leaflet extends Component<LeafletProps> {
   componentDidMount() {
     Map = require('react-leaflet').Map
     TileLayer = require('react-leaflet').TileLayer
@@ -52,9 +52,6 @@ export default class Leaflet extends Component<LeafletProps, any> {
   }
 
   render() {
-    if (this.state && this.state.pushUrl) {
-      return (<Redirect to={this.state.pushUrl} push />);
-    }
     if (!Map) {
       return null;
     }
@@ -66,7 +63,7 @@ export default class Leaflet extends Component<LeafletProps, any> {
           parkingIcon = new L.icon({ iconUrl: '/png/parking_lot_maps.png', iconAnchor: [15, 15] })
         }
         return (
-          <Marker position={[m.lat, m.lng]} key={i} onClick={() => {this.setState({pushUrl: m.url})}} icon={parkingIcon}>
+          <Marker position={[m.lat, m.lng]} key={i} onClick={() => this.props.history.push(m.url)} icon={parkingIcon}>
             {m.label && (
               <Tooltip opacity={opacity} permanent>
                 {m.label}
@@ -79,7 +76,7 @@ export default class Leaflet extends Component<LeafletProps, any> {
           <Marker
             position={[m.lat, m.lng]}
             key={i}
-            onClick={() => {this.setState({pushUrl: m.url})}}
+            onClick={() => this.props.history.push(m.url)}
             draggable={false}
             onDragend={() => this.updatePosition(m.url, this)}>
             {m.label && (
@@ -92,7 +89,7 @@ export default class Leaflet extends Component<LeafletProps, any> {
       }
     })
     const polygons = this.props.outlines && this.props.outlines.map((o, i) => (
-      <Polygon key={i} positions={o.polygon} onClick={() => {this.setState({pushUrl: o.url})}}>
+      <Polygon key={i} positions={o.polygon} onClick={() => this.props.history.push(o.url)}>
         {o.label && (
           <Tooltip opacity={opacity} permanent>
             {o.label}
@@ -176,3 +173,5 @@ export default class Leaflet extends Component<LeafletProps, any> {
     );
   }
 }
+
+export default withRouter(Leaflet);

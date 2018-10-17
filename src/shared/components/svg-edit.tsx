@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Redirect } from 'react-router';
+import { withRouter } from 'react-router';
 import { Container, Form, Button, Message, Dropdown } from 'semantic-ui-react';
 import { getImageUrl, postProblemSvg } from '../api';
 import { parseReadOnlySvgs } from '../utils/svg';
@@ -115,7 +115,7 @@ class SvgEdit extends Component<any, any> {
     event.preventDefault();
     postProblemSvg(this.props.auth.getAccessToken(), this.state.id, this.state.mediaId, this.state.points.length<2, this.state.svgId, this.generatePath(), this.state.hasAnchor)
     .then((response) => {
-      this.setState({pushUrl: "/problem/" + this.state.id});
+      this.props.history.push("/problem/" + this.state.id);
     })
     .catch((error) => {
       console.warn(error);
@@ -264,10 +264,8 @@ class SvgEdit extends Component<any, any> {
       return <LoadingAndRestoreScroll />;
     } else if (this.state.error) {
       return <h3>{this.state.error.toString()}</h3>;
-    } else if (this.state.pushUrl) {
-      return (<Redirect to={this.state.pushUrl} push />);
     } else if (!this.state.metadata.isAdmin) {
-      this.setState({pushUrl: "/login", error: null});
+      this.props.history.push("/login");
     }
 
     var circles = this.state.points.map((p, i, a) => {
@@ -333,4 +331,4 @@ class SvgEdit extends Component<any, any> {
   }
 }
 
-export default SvgEdit;
+export default withRouter(SvgEdit);

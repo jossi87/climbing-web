@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
-import { Redirect } from 'react-router';
+import { withRouter } from 'react-router';
 import ImageUpload from './common/image-upload/image-upload';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Form, Button, Input, Dropdown, TextArea } from 'semantic-ui-react';
@@ -84,7 +84,7 @@ class SectorEdit extends Component<any, any> {
     this.setState({isSaving: true});
     postSector(this.props.auth.getAccessToken(), this.props.location.query.idArea, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, this.state.data.polygonCoords, this.state.data.newMedia)
     .then((response) => {
-      this.setState({pushUrl: "/sector/" + response.id});
+      this.props.history.push("/sector/" + response.id);
     })
     .catch((error) => {
       console.warn(error);
@@ -121,14 +121,12 @@ class SectorEdit extends Component<any, any> {
   render() {
     if (this.state.error) {
       return <h3>{this.state.error.toString()}</h3>;
-    } else if (this.state.pushUrl) {
-      return (<Redirect to={this.state.pushUrl} push />);
     } else if (!this.props || !this.props.match || !this.props.match.params || !this.props.match.params.sectorId || !this.props.location || !this.props.location.query || !this.props.location.query.idArea) {
       return <span><h3>Invalid action...</h3></span>;
     } else if (!this.state.data) {
       return <LoadingAndRestoreScroll />;
     } else if (!this.state.data.metadata.isAdmin) {
-      this.setState({pushUrl: "/login", error: null});
+      this.props.history.push("/login");
     }
     const polygon = this.state.data.polygonCoords && this.state.data.polygonCoords.split(";").map((c, i) => {
       const latLng = c.split(",");
@@ -188,4 +186,4 @@ class SectorEdit extends Component<any, any> {
   }
 }
 
-export default SectorEdit;
+export default withRouter(SectorEdit);

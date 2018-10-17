@@ -1,9 +1,15 @@
 import React from 'react';
-import {parseSVG, makeAbsolute} from 'svg-path-parser';
+import { parseSVG, makeAbsolute } from 'svg-path-parser';
 import { getImageUrl } from '../../../api';
-import { withRouter } from 'react-router';
+import { RouteComponentProps, withRouter } from 'react-router';
 
-const Svg: React.SFC<any> = props => {
+interface SvgProps extends RouteComponentProps<any> {
+  style: any,
+  close?: Function,
+  m: any
+}
+
+const Svg: React.SFC<SvgProps> = props => {
   function generateShapes(svgs, svgProblemId, w, h) {
     return svgs.map((svg, key) => {
       const path: any = parseSVG(svg.path);
@@ -60,4 +66,4 @@ const Svg: React.SFC<any> = props => {
   )
 }
 
-export default withRouter<any>(Svg);
+export default withRouter(Svg);

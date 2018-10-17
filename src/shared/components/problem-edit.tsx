@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
-import { Redirect } from 'react-router'
+import { withRouter } from 'react-router'
 import UserSelector from './common/user-selector/user-selector';
 import ProblemSection from './common/problem-section/problem-section';
 import ImageUpload from './common/image-upload/image-upload';
@@ -120,7 +120,7 @@ class ProblemEdit extends Component<any, any> {
       data.sections,
       data.newMedia)
     .then((response) => {
-      this.setState({pushUrl: "/problem/" + response.id});
+      this.props.history.push("/problem/" + response.id);
     })
     .catch((error) => {
       console.warn(error);
@@ -155,16 +155,12 @@ class ProblemEdit extends Component<any, any> {
 
   render() {
     const { data } = this.state;
-    if (this.state.pushUrl) {
-      return (<Redirect to={this.state.pushUrl} push />);
-    } else if (this.state.pushUrl) {
-      return (<Redirect to={this.state.pushUrl} push />);
-    } else if (!this.props || !this.props.match || !this.props.match.params || !this.props.match.params.problemId || !this.props.location || !this.props.location.query || !this.props.location.query.idSector) {
+    if (!this.props || !this.props.match || !this.props.match.params || !this.props.match.params.problemId || !this.props.location || !this.props.location.query || !this.props.location.query.idSector) {
       return <span><h3>Invalid action...</h3></span>;
     } else if (!data) {
       return <LoadingAndRestoreScroll />;
     } else if (!data.metadata.isAdmin) {
-      this.setState({pushUrl: "/login", error: null});
+      this.props.history.push("/login");
     }
 
     const yesterday = new Date();
@@ -280,4 +276,4 @@ class ProblemEdit extends Component<any, any> {
   }
 }
 
-export default ProblemEdit;
+export default withRouter(ProblemEdit);
