@@ -93,7 +93,9 @@ class Media extends Component<Props, any> {
         <Card.Group itemsPerRow={5} doubling>
           {this.props.media.map((m, i) => (
             <Card as="a" onClick={() => this.openModal(m, true)} key={i} raised>
-              <Image key={i} style={{height: '180px', width: '100%', objectFit: 'cover'}} src={getImageUrl(m.id, 400)} />
+              <div style={{paddingTop: '75%'}}>
+                <Image key={i} style={{objectFit: 'cover', position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, width: '100%', height: '100%'}} src={getImageUrl(m.id, 400)} />
+              </div>
             </Card>
           ))}
         </Card.Group>
