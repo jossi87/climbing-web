@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimmer, Button, Image } from 'semantic-ui-react';
+import { Dimmer, Button, Icon, Image } from 'semantic-ui-react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { getImageUrl } from '../../../api';
 import ReactPlayer from 'react-player';
@@ -15,7 +15,7 @@ const style = {
     maxHeight: '720px',
     maxWidth: '1280px'
   },
-  delete: {
+  buttonEdit: {
     zIndex: 2,
     position: 'fixed',
     top: '2px',
@@ -32,16 +32,16 @@ const style = {
     position: 'fixed',
     top: '50%',
     left: '2px',
-    height: '36px',
-    marginTop: '-18px' /* 1/2 the hight of the button */
+    height: '40px',
+    marginTop: '-20px' /* 1/2 the hight of the button */
   },
   next: {
     zIndex: 2,
     position: 'fixed',
     top: '50%',
     right: '2px',
-    height: '36px',
-    marginTop: '-18px' /* 1/2 the hight of the button */
+    height: '40px',
+    marginTop: '-20px' /* 1/2 the hight of the button */
   },
   play: {
     zIndex: 2,
@@ -70,19 +70,19 @@ const MediaModal: React.SFC<Props> = props => {
   var topLeftButton;
   if (props.isAdmin && props.m.idType===1) {
     if (props.m.svgProblemId>0) {
-      topLeftButton = <Button inverted circular style={style.delete} icon="edit" onClick={() => props.history.push(`/problem/svg-edit/${props.m.svgProblemId}-${props.m.id}`)} />
+      topLeftButton = <Icon style={style.buttonEdit} size="large" color="red" name="edit" link onClick={() => props.history.push(`/problem/svg-edit/${props.m.svgProblemId}-${props.m.id}`)} />
     } else if (!props.m.svgs) {
-      topLeftButton = <Button inverted circular style={style.delete} icon="trash" onClick={props.onDelete} />
+      topLeftButton = <Icon style={style.buttonEdit} size="large" color="red" name="trash" link onClick={props.onDelete} />
     }
   }
   return (
     <Dimmer active={true} onClickOutside={props.onClose} page>
       {topLeftButton}
-      <Button inverted circular style={style.close} icon="close" onClick={props.onClose} />
+      <Icon style={style.close} size="big" name="close" link onClick={props.onClose} />
       {props.length > 1 &&
         <>
-          <Button inverted circular style={style.prev} icon="angle left" onClick={props.gotoPrev} />
-          <Button inverted circular style={style.next} icon="angle right" onClick={props.gotoNext} />
+          <Icon style={style.prev} size="big" name="angle left" link onClick={props.gotoPrev} />
+          <Icon style={style.next} size="big" name="angle right" link onClick={props.gotoNext} />
         </>
       }
       {props.m.idType===1?
