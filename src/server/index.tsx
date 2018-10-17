@@ -50,13 +50,13 @@ app.get("*", (req: any, res: any, next) => {
           <meta name="viewport" content="width=device-width, initial-scale=1">
           <link rel="icon" href="/favicon.ico">
           <meta name="author" content="Jostein Øygarden">
+          <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
           <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.3/semantic.min.css"/>
           <link rel="stylesheet" type="text/css" href="/css/leaflet.css">
           <link rel="stylesheet" type="text/css" href="/css/buldreinfo.css">
           <script async src="/js/bundle.js" defer></script>
           <script>window.__INITIAL_DATA__ = ${serialize(data)}</script>
         </head>
-
         <body>
           <div id="app">${markup}</div>
         </body>
