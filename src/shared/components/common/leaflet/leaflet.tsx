@@ -32,16 +32,15 @@ interface LeafletProps {
 }
 
 export default class Leaflet extends Component<LeafletProps, any> {
-  componentWillMount() {
-    if (__isBrowser__) {
-      Map = require('react-leaflet').Map
-      TileLayer = require('react-leaflet').TileLayer
-      LayersControl = require('react-leaflet').LayersControl
-      Marker = require('react-leaflet').Marker
-      Polygon = require('react-leaflet').Polygon
-      Tooltip = require('react-leaflet').Tooltip
-      WMSTileLayer = require('react-leaflet').WMSTileLayer
-    }
+  componentDidMount() {
+    Map = require('react-leaflet').Map
+    TileLayer = require('react-leaflet').TileLayer
+    LayersControl = require('react-leaflet').LayersControl
+    Marker = require('react-leaflet').Marker
+    Polygon = require('react-leaflet').Polygon
+    Tooltip = require('react-leaflet').Tooltip
+    WMSTileLayer = require('react-leaflet').WMSTileLayer
+    this.setState({render: true});
   }
 
   updatePosition = (url, e) => {
