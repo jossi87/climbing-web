@@ -72,14 +72,13 @@ class Sector extends Component<any, any> {
       });
     }
     const panes = [];
-    const height = '40vh';
     if (data.media && data.media.length>0) {
       panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Media auth={this.props.auth} isAdmin={data.metadata.isAdmin} removeMedia={this.onRemoveMedia} media={data.media} /></Tab.Pane> });
     }
     if (markers.length>0) {
       const defaultCenter = data.lat && data.lat>0? {lat: data.lat, lng: data.lng} : data.metadata.defaultCenter;
       const defaultZoom = data.lat && data.lat>0? 15 : data.metadata.defaultZoom;
-      panes.push({ menuItem: 'Map', render: () => <Tab.Pane><Leaflet height={height} markers={markers} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/></Tab.Pane> });
+      panes.push({ menuItem: 'Map', render: () => <Tab.Pane><Leaflet height='40vh' markers={markers} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/></Tab.Pane> });
     }
     const nextNr = data.problems.length>0? data.problems[data.problems.length-1].nr+1 : 1;
     return (

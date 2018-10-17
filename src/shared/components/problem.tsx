@@ -105,7 +105,6 @@ class Problem extends Component<any, any> {
       });
     }
     const panes = [];
-    const height = '40vh';
     if (data.media && data.media.length>0) {
       panes.push({
         menuItem: { key: 'media', icon: 'images', content: 'Media' },
@@ -115,7 +114,7 @@ class Problem extends Component<any, any> {
     if (markers.length>0) {
       panes.push({
         menuItem: { key: 'map', icon: 'map', content: 'Map' },
-        render: () => <Tab.Pane><Leaflet height={height} markers={markers} defaultCenter={{lat: markers[0].lat, lng: markers[0].lng}} defaultZoom={16}/></Tab.Pane>
+        render: () => <Tab.Pane><Leaflet height='40vh' markers={markers} defaultCenter={{lat: markers[0].lat, lng: markers[0].lng}} defaultZoom={16}/></Tab.Pane>
       });
     }
     
