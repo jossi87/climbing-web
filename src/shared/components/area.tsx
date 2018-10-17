@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
-import Gallery from './common/gallery/gallery';
+import Media from './common/media/media';
 import { CroppedText, LockSymbol, LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Button, Tab, Item, Message, Icon, Image, Breadcrumb } from 'semantic-ui-react';
 import { getImageUrl } from '../api';
@@ -64,7 +64,7 @@ class Area extends Component<any, any> {
     const panes = [];
     const height = '40vh';
     if (this.state.data.media && this.state.data.media.length>0) {
-      panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Gallery height={height} auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} alt={this.state.data.name} media={this.state.data.media} showThumbnails={this.state.data.media.length>1} removeMedia={this.onRemoveMedia}/></Tab.Pane> });
+      panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Media auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} removeMedia={this.onRemoveMedia} media={this.state.data.media} /></Tab.Pane> });
     }
     if (markers.length>0 || outlines.length>0) {
       const defaultCenter = this.state.data.lat && this.state.data.lat>0? {lat: this.state.data.lat, lng: this.state.data.lng} : this.state.data.metadata.defaultCenter;

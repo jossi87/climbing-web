@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
-import Gallery from './common/gallery/gallery';
+import Media from './common/media/media';
 import { CroppedText, LockSymbol, Stars, LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Label, Image, Icon, Button, Card, Tab, Breadcrumb, Message } from 'semantic-ui-react';
 import { getImageUrl, getGradeColor } from '../api';
@@ -74,7 +74,7 @@ class Sector extends Component<any, any> {
     const panes = [];
     const height = '40vh';
     if (data.media && data.media.length>0) {
-      panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Gallery height={height} auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} alt={data.name + " (" + data.areaName + ")"} media={data.media} showThumbnails={data.media.length>1} removeMedia={this.onRemoveMedia}/></Tab.Pane> });
+      panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Media auth={this.props.auth} isAdmin={data.metadata.isAdmin} removeMedia={this.onRemoveMedia} media={data.media} /></Tab.Pane> });
     }
     if (markers.length>0) {
       const defaultCenter = data.lat && data.lat>0? {lat: data.lat, lng: data.lng} : data.metadata.defaultCenter;
