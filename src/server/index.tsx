@@ -55,7 +55,6 @@ app.get("*", (req: any, res: any, next) => {
           <link rel="stylesheet" type="text/css" href="/css/leaflet.css">
           <link rel="stylesheet" type="text/css" href="/css/buldreinfo.css">
           <script async src="/js/bundle.js" defer></script>
-          <script>window.__INITIAL_METADATA__ = ${serialize(data? data.metadata : null)}</script>
           <script>window.__INITIAL_DATA__ = ${serialize(data)}</script>
         </head>
 
