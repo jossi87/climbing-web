@@ -316,7 +316,7 @@ class SvgEdit extends Component<any, any> {
           </Form.Group>
           <Form.Group>
             <svg viewBox={"0 0 " + this.state.w + " " + this.state.h} onClick={this.addPoint} onMouseMove={this.handleMouseMove} width="100%" height="100%">
-              <image ref="buldreinfo-svg-edit-img" xlinkHref={getImageUrl(this.state.mediaId, null)} width="100%" height="100%"/>
+              <image ref="buldreinfo-svg-edit-img" xlinkHref={getImageUrl(this.state.mediaId)} width="100%" height="100%"/>
               {parseReadOnlySvgs(this.state.readOnlySvgs, this.state.w, this.state.h)}
               <path className="buldreinfo-svg-route" d={path} strokeWidth={0.002*this.state.w}/>
               {circles}
