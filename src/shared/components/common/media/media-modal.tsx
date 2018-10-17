@@ -1,5 +1,6 @@
 import React from 'react';
 import { Dimmer, Button, Image } from 'semantic-ui-react';
+import { RouteComponentProps, withRouter } from 'react-router';
 import { getImageUrl } from '../../../api';
 import ReactPlayer from 'react-player';
 import Svg from './svg';
@@ -54,7 +55,7 @@ const style = {
   },
 }
 
-interface Props {
+interface Props extends RouteComponentProps<any> {
   isAdmin: boolean,
   onClose: any,
   onDelete: any,
@@ -66,11 +67,17 @@ interface Props {
 }
 const MediaModal: React.SFC<Props> = props => {
   let myPlayer;
+  var topLeftButton;
+  if (props.isAdmin && props.m.idType===1) {
+    if (props.m.svgProblemId>0) {
+      topLeftButton = <Button inverted circular style={style.delete} icon="edit" onClick={() => props.history.push(`/problem/svg-edit/${props.m.svgProblemId}-${props.m.id}`)} />
+    } else if (!props.m.svgs) {
+      topLeftButton = <Button inverted circular style={style.delete} icon="trash" onClick={props.onDelete} />
+    }
+  }
   return (
     <Dimmer active={true} onClickOutside={props.onClose} page>
-      {props.isAdmin && props.m.idType===1 && !props.m.svgProblemId && !props.m.svgs &&
-        <Button inverted circular style={style.delete} icon="trash" onClick={props.onDelete} />
-      }
+      {topLeftButton}
       <Button inverted circular style={style.close} icon="close" onClick={props.onClose} />
       {props.length > 1 &&
         <>
@@ -104,4 +111,4 @@ const MediaModal: React.SFC<Props> = props => {
   )
 }
 
-export default MediaModal;
+export default withRouter(MediaModal);
