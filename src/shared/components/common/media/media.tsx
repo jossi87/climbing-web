@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { getImageUrl, deleteMedia } from '../../../api';
 import { Card, Image } from 'semantic-ui-react';
 import MediaModal from './media-modal';
+import Svg from './svg';
 
 interface Props {
   removeMedia: any,
@@ -9,6 +10,7 @@ interface Props {
   isAdmin: boolean,
   media: Array<any>
 }
+const style = {objectFit: 'cover', position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, width: '100%', height: '100%'};
 
 class Media extends Component<Props, any> {
   componentDidMount() {
@@ -88,13 +90,14 @@ class Media extends Component<Props, any> {
             length={this.props.media.length}
             gotoPrev={this.gotoPrev}
             gotoNext={this.gotoNext}
-            playVideo={this.playVideo} />
+            playVideo={this.playVideo}
+          />
         }
         <Card.Group itemsPerRow={5} doubling>
           {this.props.media.map((m, i) => (
             <Card as="a" onClick={() => this.openModal(m, true)} key={i} raised>
               <div style={{paddingTop: '75%'}}>
-                <Image key={i} style={{objectFit: 'cover', position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, width: '100%', height: '100%'}} src={getImageUrl(m.id, 400)} />
+                {m.svgs? <Svg m={m} key={i} style={style}/> : <Image key={i} style={style} src={getImageUrl(m.id, 400)} />}
               </div>
             </Card>
           ))}

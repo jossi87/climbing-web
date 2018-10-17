@@ -2,6 +2,7 @@ import React from 'react';
 import { Dimmer, Button, Image } from 'semantic-ui-react';
 import { getImageUrl } from '../../../api';
 import ReactPlayer from 'react-player';
+import Svg from './svg';
 
 const style = {
   img: {
@@ -53,13 +54,6 @@ const style = {
   },
 }
 
-interface Media {
-  id: number,
-  idType: number,
-  svgProblemId: number,
-  t: number,
-  autoPlayVideo: boolean
-}
 interface Props {
   isAdmin: boolean,
   onClose: any,
@@ -85,7 +79,7 @@ const MediaModal: React.SFC<Props> = props => {
         </>
       }
       {props.m.idType===1?
-        <Image style={style.img} src={getImageUrl(props.m.id, 720)} />
+        (props.m.svgs? <Image style={style.img}><Svg style={{}} m={props.m} close={props.onClose}/></Image> : <Image style={style.img} src={getImageUrl(props.m.id, 720)} />)
       :
         (props.m.autoPlayVideo?
           <ReactPlayer

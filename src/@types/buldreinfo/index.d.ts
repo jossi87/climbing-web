@@ -10,3 +10,14 @@ declare namespace JSX {
         center: any
     }
 }
+
+interface Media {
+  width: number,
+  height: number,
+  id: number,
+  svgProblemId: number,
+  svgs: any,
+  idType: number,
+  t: number,
+  autoPlayVideo: boolean,
+}
