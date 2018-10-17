@@ -84,7 +84,7 @@ class Frontpage extends Component<any, any> {
                 </Statistic>
               </Statistic.Group>
               <Card as={Link} to={`/problem/${data.randomMedia.idProblem}`}>
-                <Image size="medium" style={{maxHeight: '250px', objectFit: 'cover'}} src={getImageUrl(data.randomMedia.idMedia, 800)} />
+                <Image size="medium" style={{maxHeight: '250px', objectFit: 'cover'}} src={getImageUrl(data.randomMedia.idMedia, 275)} />
                 <Card.Content>
                   <Card.Header>
                     {data.randomMedia.problem} <Label color={getGradeColor(data.randomMedia.grade)} circular>{data.randomMedia.grade}</Label>
@@ -117,7 +117,7 @@ class Frontpage extends Component<any, any> {
                     return (
                       <Feed.Event key={i}>
                         <Feed.Label>
-                          {a.problemRandomMediaId>0 && <img style={{height: '35px', objectFit: 'cover'}} src={getImageUrl(a.problemRandomMediaId, 50)} />}
+                          {a.problemRandomMediaId>0 && <img style={{height: '35px', objectFit: 'cover'}} src={getImageUrl(a.problemRandomMediaId, 35)} />}
                         </Feed.Label>
                         <Feed.Content>
                           <Feed.Summary>
@@ -128,7 +128,7 @@ class Frontpage extends Component<any, any> {
                           </Feed.Extra>
                           {a.media &&
                             <Feed.Extra images>
-                              {a.media.map((m, i) => (<img key={i} src={getImageUrl(m.id, 120)}/>))}
+                              {a.media.map((m, i) => (<img key={i} src={getImageUrl(m.id, 115)}/>))}
                             </Feed.Extra>
                           }
                           {a.users &&
@@ -161,14 +161,14 @@ class Frontpage extends Component<any, any> {
                     return (
                       <Feed.Event key={i}>
                         <Feed.Label>
-                          {a.problemRandomMediaId>0 && <img style={{height: '35px', objectFit: 'cover'}} src={getImageUrl(a.problemRandomMediaId, 50)} />}
+                          {a.problemRandomMediaId>0 && <img style={{height: '35px', objectFit: 'cover'}} src={getImageUrl(a.problemRandomMediaId, 35)} />}
                         </Feed.Label>
                         <Feed.Content>
                           <Feed.Summary>
                             {summary}on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> <Label size="mini" color={getGradeColor(a.grade)} circular>{a.grade}</Label><LockSymbol visibility={a.problemVisibility}/><Feed.Date>{a.timeAgo}</Feed.Date>
                           </Feed.Summary>
                           <Feed.Extra images>
-                            {a.media.map((m, i) => (<img key={i} src={getImageUrl(m.id, 120)}/>))}
+                            {a.media.map((m, i) => (<img key={i} src={getImageUrl(m.id, 115)}/>))}
                           </Feed.Extra>
                         </Feed.Content>
                       </Feed.Event>

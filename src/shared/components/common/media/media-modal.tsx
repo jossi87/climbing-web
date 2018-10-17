@@ -103,7 +103,7 @@ const MediaModal: React.SFC<Props> = props => {
         :
           <>
             <Button size="massive" color="youtube" circular style={style.play} icon="play" onClick={props.playVideo} />
-            <Image as="a" style={style.img} src={getImageUrl(props.m.id, 480)} />
+            <Image as="a" style={style.img} src={getImageUrl(props.m.id)} />
           </>
         )
       }

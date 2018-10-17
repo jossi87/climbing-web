@@ -59,7 +59,7 @@ const Svg: React.SFC<SvgProps> = props => {
     <>
       <canvas className="buldreinfo-svg-canvas-ie-hack" width={props.m.width} height={props.m.height} style={props.style}></canvas>
       <svg className="buldreinfo-svg" viewBox={"0 0 " + props.m.width + " " + props.m.height} preserveAspectRatio="xMidYMid meet">
-        <image xlinkHref={getImageUrl(props.m.id, null)} width="100%" height="100%"/>
+        <image xlinkHref={getImageUrl(props.m.id)} width="100%" height="100%"/>
         {generateShapes(props.m.svgs, props.m.svgProblemId, props.m.width, props.m.height)}
       </svg>
     </>

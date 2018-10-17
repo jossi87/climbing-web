@@ -4,7 +4,7 @@ import { parsePath } from './utils/svg';
 function getUrl(urlSuffix: string): string {
   var uri = __isBrowser__? window.origin : (global as any).myOrigin;
   if (uri === 'http://localhost:3000') {
-    uri = 'https://brattelinjer.no';
+    uri = 'https://buldreinfo.com';
   }
   return encodeURI(`${uri || ""}/com.buldreinfo.jersey.jaxb/v2${urlSuffix}`);
 }
@@ -19,9 +19,9 @@ function makeAuthenticatedRequest(accessToken: string, urlSuffix: string, opts: 
   return fetch(getUrl(urlSuffix), opts);
 }
 
-export function getImageUrl(id: number, maxHeight: number): string {
-  if (maxHeight) {
-    return getUrl(`/images?id=${id}&targetHeight=${maxHeight}`);
+export function getImageUrl(id: number, minDimention?: number): string {
+  if (minDimention) {
+    return getUrl(`/images?id=${id}&minDimention=${minDimention}`);
   }
   return getUrl(`/images?id=${id}`);
 }
