@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Gallery from './common/gallery/gallery';
 import { CroppedText, LockSymbol, Stars, LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { Label, Image, Icon, Button, Card, Tab, Breadcrumb, Grid, Message } from 'semantic-ui-react';
+import { Label, Image, Icon, Button, Card, Tab, Breadcrumb, Message } from 'semantic-ui-react';
 import { getImageUrl, getGradeColor } from '../api';
 
 class Sector extends Component<any, any> {
@@ -97,9 +97,8 @@ class Sector extends Component<any, any> {
           <meta property="og:image:width" content={data.metadata.og.imageWidth} />
           <meta property="og:image:height" content={data.metadata.og.imageHeight} />
         </MetaTags>
-        <Grid divided='vertically'>
-          <Grid.Row columns={2}>
-            <Grid.Column>
+        <section style={{display: 'flex'}}>
+          <div style={{flex: 1}}>
             <Breadcrumb>
               <Breadcrumb.Section><Link to='/browse'>Browse</Link></Breadcrumb.Section>
               <Breadcrumb.Divider icon='right angle' />
@@ -107,27 +106,26 @@ class Sector extends Component<any, any> {
               <Breadcrumb.Divider icon='right angle' />
               <Breadcrumb.Section active>{data.name} <LockSymbol visibility={data.visibility}/></Breadcrumb.Section>
             </Breadcrumb>
-            </Grid.Column>
-            <Grid.Column textAlign="right">
-              {this.state && this.state.data && this.state.data.metadata.isAdmin &&
-                <Button.Group size="mini" compact>
-                  <Button animated='fade' as={Link} to={{ pathname: `/problem/edit/-1`, query: { idSector: data.id, nr: nextNr, lat: data.lat, lng: data.lng } }}>
-                    <Button.Content hidden>Add</Button.Content>
-                    <Button.Content visible>
-                      <Icon name='plus' />
-                    </Button.Content>
-                  </Button>
-                  <Button animated='fade' as={Link} to={{ pathname: `/sector/edit/${data.id}`, query: { idArea: data.areaId, lat: data.lat, lng: data.lng } }}>
-                    <Button.Content hidden>Edit</Button.Content>
-                    <Button.Content visible>
-                      <Icon name='edit' />
-                    </Button.Content>
-                  </Button>
-                </Button.Group>
-              }
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
+          </div>
+          <div style={{flex: 0}}>
+            {this.state && this.state.data && this.state.data.metadata.isAdmin &&
+              <Button.Group size="mini" compact>
+                <Button animated='fade' as={Link} to={{ pathname: `/problem/edit/-1`, query: { idSector: data.id, nr: nextNr, lat: data.lat, lng: data.lng } }}>
+                  <Button.Content hidden>Add</Button.Content>
+                  <Button.Content visible>
+                    <Icon name='plus' />
+                  </Button.Content>
+                </Button>
+                <Button animated='fade' as={Link} to={{ pathname: `/sector/edit/${data.id}`, query: { idArea: data.areaId, lat: data.lat, lng: data.lng } }}>
+                  <Button.Content hidden>Edit</Button.Content>
+                  <Button.Content visible>
+                    <Icon name='edit' />
+                  </Button.Content>
+                </Button>
+              </Button.Group>
+            }
+          </div>
+        </section>
         <Tab panes={panes} />
         {data.comment &&
           <Message icon>

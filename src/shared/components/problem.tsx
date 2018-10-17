@@ -200,9 +200,8 @@ class Problem extends Component<any, any> {
         </MetaTags>
         {tickModal}
         <CommentModal auth={this.props.auth} idProblem={data.id} open={this.state.showCommentModal} onClose={this.closeCommentModal} isBouldering={data.metadata.isBouldering}/>
-        <Grid divided='vertically'>
-          <Grid.Row columns={2}>
-            <Grid.Column>
+        <section style={{display: 'flex'}}>
+          <div style={{flex: 1}}>
             <Breadcrumb>
               <Breadcrumb.Section><Link to='/browse'>Browse</Link></Breadcrumb.Section>
               <Breadcrumb.Divider icon='right angle' />
@@ -212,42 +211,41 @@ class Problem extends Component<any, any> {
               <Breadcrumb.Divider icon='right angle' />
               <Breadcrumb.Section active>{data.name} <Label color={getGradeColor(data.grade)} circular>{data.grade}</Label> <LockSymbol visibility={data.visibility}/></Breadcrumb.Section>
             </Breadcrumb>
-            </Grid.Column>
-            <Grid.Column textAlign="right">
-              {data.metadata && data.metadata.isAuthenticated &&
-                <Button.Group size="mini" compact>
-                  <Button positive={data.ticks && data.ticks.filter(t => t.writable).length>0} animated='fade' onClick={this.openTickModal}>
-                    <Button.Content hidden>Tick</Button.Content>
+          </div>
+          <div style={{flex: 0}}>
+            {data.metadata && data.metadata.isAuthenticated &&
+              <Button.Group size="mini" compact>
+                <Button positive={data.ticks && data.ticks.filter(t => t.writable).length>0} animated='fade' onClick={this.openTickModal}>
+                  <Button.Content hidden>Tick</Button.Content>
+                  <Button.Content visible>
+                    <Icon name='check' />
+                  </Button.Content>
+                </Button>
+                <Button animated='fade' onClick={this.openCommentModal}>
+                  <Button.Content hidden>Comment</Button.Content>
+                  <Button.Content visible>
+                    <Icon name='comment' />
+                  </Button.Content>
+                </Button>
+                {data.metadata.isAdmin?
+                  <Button animated='fade' as={Link} to={{ pathname: `/problem/edit/${data.id}`, query: { idSector: data.sectorId, lat: data.sectorLat, lng: data.sectorLng } }}>
+                    <Button.Content hidden>Edit</Button.Content>
                     <Button.Content visible>
-                      <Icon name='check' />
+                      <Icon name='edit' />
                     </Button.Content>
                   </Button>
-                  <Button animated='fade' onClick={this.openCommentModal}>
-                    <Button.Content hidden>Comment</Button.Content>
+                :
+                  <Button animated='fade' as={Link} to={`/problem/edit/media/${data.id}`}>
+                    <Button.Content hidden>Image</Button.Content>
                     <Button.Content visible>
-                      <Icon name='comment' />
+                      <Icon name='edit' />
                     </Button.Content>
                   </Button>
-                  {data.metadata.isAdmin?
-                    <Button animated='fade' as={Link} to={{ pathname: `/problem/edit/${data.id}`, query: { idSector: data.sectorId, lat: data.sectorLat, lng: data.sectorLng } }}>
-                      <Button.Content hidden>Edit</Button.Content>
-                      <Button.Content visible>
-                        <Icon name='edit' />
-                      </Button.Content>
-                    </Button>
-                  :
-                    <Button animated='fade' as={Link} to={`/problem/edit/media/${data.id}`}>
-                      <Button.Content hidden>Image</Button.Content>
-                      <Button.Content visible>
-                        <Icon name='edit' />
-                      </Button.Content>
-                    </Button>
-                  }
-                </Button.Group>
-              }
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
+                }
+              </Button.Group>
+            }
+          </div>
+        </section>
         <Tab panes={panes} />
         <Message icon>
           <Icon name="info" />
