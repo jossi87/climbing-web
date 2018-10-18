@@ -6,7 +6,8 @@ import { RouteComponentProps, withRouter } from 'react-router';
 interface SvgProps extends RouteComponentProps<any> {
   style: any,
   close?: Function,
-  m: any
+  m: any,
+  thumb: boolean
 }
 
 const Svg: React.SFC<SvgProps> = props => {
@@ -39,14 +40,22 @@ const Svg: React.SFC<SvgProps> = props => {
       if (svg.hasAnchor) {
         anchor = <circle className="buldreinfo-svg-ring" cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.006*w}/>
       }
+      var gClassName = "buldreinfo-svg-pointer buldreinfo-svg-hover";
+      if (!(svgProblemId===0 || svg.problemId===svgProblemId)) {
+        gClassName += " buldreinfo-svg-opacity";
+      }
       return (
-        <g className={"buldreinfo-svg-pointer buldreinfo-svg-hover" + ((svgProblemId===0 || svg.problemId===svgProblemId)? "" : " buldreinfo-svg-opacity")} key={key} style={props.style} onClick={() => {
+        <g className={gClassName} key={key} style={props.style} onClick={() => {
           if (props.close) {
             props.history.push("/problem/" + svg.problemId);
             props.close();
           }
         }}>
-          <path d={svg.path} className="buldreinfo-svg-route" strokeWidth={0.003*w} strokeDasharray={0.006*w}/>
+          {props.thumb?
+            <path d={svg.path} className="buldreinfo-svg-route" strokeWidth={0.003*w*8}/>
+          :
+            <path d={svg.path} className="buldreinfo-svg-route" strokeWidth={0.003*w} strokeDasharray={0.006*w}/>
+          }
           <circle className="buldreinfo-svg-ring" cx={x} cy={y} r={r}/>
           <text className="buldreinfo-svg-routenr" x={x} y={y} fontSize={0.02*w} dy=".3em">{svg.nr}</text>
           {anchor}
