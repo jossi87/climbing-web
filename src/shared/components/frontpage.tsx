@@ -168,7 +168,7 @@ class Frontpage extends Component<any, any> {
                           {a.problemRandomMediaId>0 && <img style={{height: '35px', objectFit: 'cover'}} src={getImageUrl(a.problemRandomMediaId, 35)} />}
                         </Feed.Label>
                         <Feed.Content>
-                          <Feed.Summary>
+                          <Feed.Summary style={{marginBottom: '3px'}}>
                             {summary}on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> <Label size="mini" color={getGradeColor(a.grade)} circular>{a.grade}</Label><LockSymbol visibility={a.problemVisibility}/><Feed.Date>{a.timeAgo}</Feed.Date>
                           </Feed.Summary>
                           <Feed.Extra images as={Link} to={`/problem/${a.problemId}`}>
