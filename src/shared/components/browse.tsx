@@ -28,6 +28,7 @@ class Browse extends Component<any, any> {
     if (!this.state || !this.state.data) {
       return <LoadingAndRestoreScroll />;
     }
+    const typeDescription = this.state.data.metadata.isBouldering? "problem(s)" : "routes(s)";
     const markers = this.state.data.areas.filter(a => a.lat!=0 && a.lng!=0).map(a => {
       return {
           lat: a.lat,
@@ -78,7 +79,7 @@ class Browse extends Component<any, any> {
               <Card.Content>
                 <Card.Header>{area.name}  <LockSymbol visibility={area.visibility}/></Card.Header>
                 <Card.Meta>
-                  {`${area.numSectors} sector(s), ${area.numProblems} problem(s)`}
+                  {`${area.numSectors} sector(s), ${area.numProblems} ${typeDescription}`}
                 </Card.Meta>
                 <Card.Description>
                   {area.comment && area.comment.length>50? area.comment.substring(0,50) + "..." : area.comment}

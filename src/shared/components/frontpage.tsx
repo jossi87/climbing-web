@@ -58,7 +58,7 @@ class Frontpage extends Component<any, any> {
               <Statistic.Group size="mini" horizontal>
                 <Statistic color='olive'>
                   <Statistic.Value><Icon name='list' /> {numberWithCommas(data.numProblems)}</Statistic.Value>
-                  <Statistic.Label>Problems</Statistic.Label>
+                  <Statistic.Label>{data.metadata.isBouldering? "Problems" : "Routes"}</Statistic.Label>
                 </Statistic>
                 <Statistic color='green'>
                   <Statistic.Value><Icon name='map marker' /> {numberWithCommas(data.numProblemsWithCoordinates)}</Statistic.Value>
@@ -114,6 +114,7 @@ class Frontpage extends Component<any, any> {
                 {data.activity.map((a, i) => {
                   // FA
                   if (a.users) {
+                    const typeDescription = data.metadata.isBouldering? "problem" : "route";
                     return (
                       <Feed.Event key={i}>
                         <Feed.Label>
@@ -121,7 +122,7 @@ class Frontpage extends Component<any, any> {
                         </Feed.Label>
                         <Feed.Content>
                           <Feed.Summary>
-                            New problem <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> <Label size="mini" color={getGradeColor(a.grade)} circular>{a.grade}</Label><LockSymbol visibility={a.problemVisibility}/><Feed.Date>{a.timeAgo}</Feed.Date>
+                            New {typeDescription} <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> <Label size="mini" color={getGradeColor(a.grade)} circular>{a.grade}</Label><LockSymbol visibility={a.problemVisibility}/><Feed.Date>{a.timeAgo}</Feed.Date>
                           </Feed.Summary>
                           <Feed.Extra text>
                             {a.description}

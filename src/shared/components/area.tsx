@@ -134,7 +134,7 @@ class Area extends Component<any, any> {
                       {sector.name} <LockSymbol visibility={sector.visibility}/>
                     </Item.Header>
                     <Item.Meta>
-                      {sector.numProblems} problems
+                      {sector.numProblems} {this.state.data.metadata.isBouldering? "problem(s)" : "route(s)"}
                     </Item.Meta>
                     <Item.Description>
                       <CroppedText text={sector.comment} maxLength={150}/>
