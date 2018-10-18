@@ -55,7 +55,7 @@ export function CroppedText({text, maxLength}) {
 }
 
 export function LoadingAndRestoreScroll() {
-  if (window) {
+  if (__isBrowser__ && window) {
     window.scrollTo(0, 0);
   }
   return <Loader active inline='centered' />;
