@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { withRouter } from 'react-router';
 import { Search, Image } from 'semantic-ui-react'
-import { getImageUrl, postFind } from './../../../api';
+import { getImageUrl, postSearch } from './../../../api';
 import { LockSymbol } from '../widgets/widgets';
 
 class SearchBox extends Component<any, any> {
@@ -11,7 +11,7 @@ class SearchBox extends Component<any, any> {
 
   handleSearchChange = (e, { value }) => {
     this.setState({ isLoading: true, value })
-    postFind(this.props.auth.getAccessToken(), value).then((res) => {
+    postSearch(this.props.auth.getAccessToken(), value).then((res) => {
       this.setState({ isLoading: false, results: res });
     });
   }

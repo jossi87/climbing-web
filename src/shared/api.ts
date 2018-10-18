@@ -141,7 +141,6 @@ export function getProblemHse(accessToken: string): Promise<any> {
 export function getProblem(accessToken: string, id: number): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/problems?id=${id}`, null)
   .then((data) => data.json())
-  .then((json) => json[0])
   .catch((error) => {
     console.warn(error);
     return null;
@@ -349,17 +348,6 @@ export function postComment(accessToken: string, id: number, idProblem: number, 
   });
 }
 
-export function postFind(accessToken: string, value: string): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/find`, {
-    method: 'POST',
-    body: JSON.stringify({value}),
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    }
-  }).then((data) => data.json());
-}
-
 export function postProblem(accessToken: string, sectorId: number, id: number, visibility: number, name: string, comment: string, originalGrade: string, fa: any, faDate: string, nr: number, t: any, lat: number, lng: number, sections: any, media: any): Promise<any> {
   const formData = new FormData();
   const newMedia = media.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
@@ -383,6 +371,17 @@ export function postProblemMedia(accessToken: string, id: number, media: any): P
     method: 'POST',
     body: formData,
     headers: {
+      'Accept': 'application/json'
+    }
+  }).then((data) => data.json());
+}
+
+export function postSearch(accessToken: string, value: string): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/search`, {
+    method: 'POST',
+    body: JSON.stringify({value}),
+    headers: {
+      'Content-Type': 'application/json',
       'Accept': 'application/json'
     }
   }).then((data) => data.json());
