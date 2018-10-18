@@ -1,11 +1,10 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
-import { Button, OverlayTrigger, Tooltip, Well, Breadcrumb, Table } from 'react-bootstrap';
 import Chart from './common/chart/chart';
-import TickModal from './common/tick-modal/tick-modal';
-import { CroppedText, LockSymbol, Stars } from './common/widgets/widgets';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
+import { Icon, List, Label, Header, Segment, Divider, Image, Rating } from 'semantic-ui-react';
+import { numberWithCommas, getGradeColor } from './../api';
 
 class User extends Component<any, any> {
   constructor(props) {
@@ -17,7 +16,7 @@ class User extends Component<any, any> {
     } else {
       data = props.staticContext.data;
     }
-    this.state = {data, showTickModal: false};
+    this.state = {data};
   }
 
   componentDidMount() {
@@ -36,19 +35,10 @@ class User extends Component<any, any> {
     this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
   }
 
-  closeTickModal(event) {
-    this.setState({ showTickModal: false });
-    this.refresh(this.props.match.params.userId);
-  }
-
-  openTickModal(t, event) {
-    this.setState({ currTick: t, showTickModal: true });
-  }
-
   render() {
     const { data } = this.state;
     if (!data) {
-      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
+      return <LoadingAndRestoreScroll />;
     }
 
     var numTicks = data.ticks.filter(t => !t.fa).length;
@@ -69,39 +59,39 @@ class User extends Component<any, any> {
           <meta property="og:image:width" content={data.metadata.og.imageWidth} />
           <meta property="og:image:height" content={data.metadata.og.imageHeight} />
         </MetaTags>
-
-        {this.state.currTick? <TickModal auth={this.props.auth} idTick={this.state.currTick.id} idProblem={this.state.currTick.idProblem} date={this.state.currTick.date} comment={this.state.currTick.comment} grade={this.state.currTick.grade} grades={data.metadata.grades} stars={this.state.currTick.stars} show={this.state.showTickModal} onHide={this.closeTickModal.bind(this)}/> : ""}
-        <Breadcrumb>
-          <Link to={`/`}>Home</Link> / {data.name}
-        </Breadcrumb>
-        <Well bsSize="small">First ascents: {numFas}<br/>Public ascents: {numTicks}<br/>Pictures taken: {data.numImagesCreated}<br/>Appearance in pictures: {data.numImageTags}<br/>Videos created: {data.numVideosCreated}<br/>Appearance in videos: {data.numVideoTags}</Well>
-        {chart}<br/>
-        <Table striped condensed hover>
-          <thead>
-            <tr>
-              <th>When</th>
-              <th>Name</th>
-              <th>Grade</th>
-              <th>Comment</th>
-              <th>Stars</th>
-              <th>FA</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
+        <Header>
+          {data.picture && <Image circular src={data.picture}/>} {data.name}
+        </Header>
+        <Segment>
+          <Label.Group size="small">
+            <Label color='orange' image><Icon name='check' />{numberWithCommas(numFas)}<Label.Detail>FA</Label.Detail></Label>
+            <Label color='olive' image><Icon name='check' />{numberWithCommas(numTicks)}<Label.Detail>Tick</Label.Detail></Label>
+            <Label color='green' image><Icon name='photo' />{numberWithCommas(data.numImageTags)}<Label.Detail>Tag</Label.Detail></Label>
+            <Label color='teal' image><Icon name='photo' />{numberWithCommas(data.numImagesCreated)}<Label.Detail>Created</Label.Detail></Label>
+            <Label color='blue' image><Icon name='video' />{numberWithCommas(data.numVideoTags)}<Label.Detail>Tag</Label.Detail></Label>
+            <Label color='violet' image><Icon name='video' />{numberWithCommas(data.numVideosCreated)}<Label.Detail>Created</Label.Detail></Label>
+          </Label.Group>
+          <Divider />
+          {chart}
+        </Segment>
+        <Segment>
+          <List divided relaxed>
             {data.ticks.map((t, i) => (
-              <tr key={i}>
-                <td>{t.dateHr}</td>
-                <td><Link to={`/problem/${t.idProblem}`}>{t.name}</Link> <LockSymbol visibility={t.visibility}/></td>
-                <td>{t.grade}</td>
-                <td><CroppedText text={t.comment} i={t.idProblem} maxLength={40}/></td>
-                <td><Stars numStars={t.stars}/></td>
-                <td>{t.fa && <FontAwesomeIcon icon="check" />}</td>
-                <td>{this.state.data.readOnly==false && t.id!=0 && <OverlayTrigger placement="top" overlay={<Tooltip id={i}>Edit tick</Tooltip>}><Button bsSize="xsmall" bsStyle="primary" onClick={this.openTickModal.bind(this, t)}><FontAwesomeIcon icon="edit" inverse={true} /></Button></OverlayTrigger>}</td>
-              </tr>
+              <List.Item key={i}>
+                <List.Content>
+                  <List.Header>
+                    <Link to={`/problem/${t.idProblem}`}>{t.name}</Link> <LockSymbol visibility={t.visibility}/> <Label size="mini" color={getGradeColor(t.grade)} circular>{t.grade}</Label> {t.fa && <Label color="red" size="mini" content="FA"/>}
+                  </List.Header>
+                  <List.Description>
+                    <Rating defaultRating={t.stars} maxRating={3} disabled /><br/>
+                    {t.dateHr && <small>{t.dateHr}<br/></small>}
+                    {t.comment}
+                  </List.Description>
+                </List.Content>
+              </List.Item>
             ))}
-          </tbody>
-        </Table>
+          </List>
+        </Segment>
       </React.Fragment>
     );
   }

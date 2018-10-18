@@ -1,11 +1,9 @@
 import React, {Component} from 'react';
-import { Link } from 'react-router-dom';
-import { Well, FormGroup, MenuItem, ButtonGroup, Button, DropdownButton, Alert, Breadcrumb } from 'react-bootstrap';
-import { Redirect } from 'react-router';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { withRouter } from 'react-router';
+import { Container, Form, Button, Message, Dropdown } from 'semantic-ui-react';
 import { getImageUrl, postProblemSvg } from '../api';
 import { parseReadOnlySvgs } from '../utils/svg';
-import { LockSymbol } from './common/widgets/widgets';
+import { LoadingAndRestoreScroll } from './common/widgets/widgets';
 
 class SvgEdit extends Component<any, any> {
   constructor(props) {
@@ -51,8 +49,8 @@ class SvgEdit extends Component<any, any> {
       this.refresh(this.props.match.params.problemIdMediaId);
     }
     if (document) {
-      document.addEventListener("keydown", this.handleKeyDown.bind(this));
-      document.addEventListener("keyup", this.handleKeyUp.bind(this));
+      document.addEventListener("keydown", this.handleKeyDown);
+      document.addEventListener("keyup", this.handleKeyUp);
     }
   }
 
@@ -92,32 +90,32 @@ class SvgEdit extends Component<any, any> {
 
   componentWillUnmount() {
     if (document) {
-      document.removeEventListener("keydown", this.handleKeyDown.bind(this));
-      document.removeEventListener("keyup", this.handleKeyUp.bind(this));
+      document.removeEventListener("keydown", this.handleKeyDown);
+      document.removeEventListener("keyup", this.handleKeyUp);
     }
   }
 
-  handleKeyDown(e) {
+  handleKeyDown = (e) => {
     if (e.ctrlKey) this.setState({ctrl: true});
   };
 
-  handleKeyUp(e) {
+  handleKeyUp = (e) => {
     if (!e.ctrlKey) this.setState({ctrl: false});
   };
 
-  setHasAnchor(anchor) {
-    this.setState({hasAnchor: anchor});
+  setHasAnchor = (e, { value }) => {
+    this.setState({hasAnchor: value});
   }
 
-  onCancel() {
+  onCancel = () => {
     window.history.back();
   }
 
-  save(event) {
+  save = (event) => {
     event.preventDefault();
     postProblemSvg(this.props.auth.getAccessToken(), this.state.id, this.state.mediaId, this.state.points.length<2, this.state.svgId, this.generatePath(), this.state.hasAnchor)
     .then((response) => {
-      this.setState({pushUrl: "/problem/" + this.state.id});
+      this.props.history.push("/problem/" + this.state.id);
     })
     .catch((error) => {
       console.warn(error);
@@ -125,7 +123,7 @@ class SvgEdit extends Component<any, any> {
     });
   }
 
-  cancelDragging(e) {
+  cancelDragging = (e) => {
     this.setState({
       draggedPoint: false,
       draggedCubic: false
@@ -141,7 +139,7 @@ class SvgEdit extends Component<any, any> {
     return {x, y};
   };
 
-  addPoint(e) {
+  addPoint = (e) => {
     if (this.state.ctrl) {
       let coords = this.getMouseCoords(e);
       let points = this.state.points;
@@ -172,7 +170,7 @@ class SvgEdit extends Component<any, any> {
     return d;
   }
 
-  handleMouseMove(e) {
+  handleMouseMove = (e) => {
     e.preventDefault();
     if (!this.state.ctrl) {
       if (this.state.draggedPoint) {
@@ -200,23 +198,23 @@ class SvgEdit extends Component<any, any> {
     this.setState({ points });
   };
 
-  setDraggedPoint(index) {
+  setDraggedPoint = (index) => {
     if (!this.state.ctrl) {
       this.setState({activePoint: index, draggedPoint: true});
     }
   };
 
-  setDraggedCubic(index, anchor) {
+  setDraggedCubic = (index, anchor) => {
     if (!this.state.ctrl) {
       this.setState({activePoint: index, draggedCubic: anchor});
     }
   };
 
-  setPointType(v) {
+  setPointType = (e, { value }) => {
     const points = this.state.points;
     const active = this.state.activePoint;
     if (active !== 0) { // not the first point
-      switch (v) {
+      switch (value) {
         case "L":
           points[active] = {x: points[active].x, y: points[active].y};
           break;
@@ -241,7 +239,7 @@ class SvgEdit extends Component<any, any> {
     }
   };
 
-  removeActivePoint(e) {
+  removeActivePoint = (e) => {
     let points = this.state.points;
     let active = this.state.activePoint;
     if (points.length > 1 && active !== 0) {
@@ -250,7 +248,7 @@ class SvgEdit extends Component<any, any> {
     }
   };
 
-  reset(e) {
+  reset = (e) => {
     this.setState({
       ctrl: false,
       points: [],
@@ -263,13 +261,11 @@ class SvgEdit extends Component<any, any> {
 
   render() {
     if (!this.state || !this.state.id) {
-      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
+      return <LoadingAndRestoreScroll />;
     } else if (this.state.error) {
       return <h3>{this.state.error.toString()}</h3>;
-    } else if (this.state.pushUrl) {
-      return (<Redirect to={this.state.pushUrl} push />);
     } else if (!this.state.metadata.isAdmin) {
-      this.setState({pushUrl: "/login", error: null});
+      this.props.history.push("/login");
     }
 
     var circles = this.state.points.map((p, i, a) => {
@@ -279,67 +275,60 @@ class SvgEdit extends Component<any, any> {
           <g key={anchors.length} className="buldreinfo-svg-edit-opacity">
             <line className="buldreinfo-svg-pointer buldreinfo-svg-route" x1={a[i-1].x} y1={a[i-1].y} x2={p.c[0].x} y2={p.c[0].y} strokeWidth={0.0026*this.state.w} strokeDasharray={0.003*this.state.w}/>
             <line className="buldreinfo-svg-pointer buldreinfo-svg-route" x1={p.x} y1={p.y} x2={p.c[1].x} y2={p.c[1].y} strokeWidth={0.0026*this.state.w} strokeDasharray={0.003*this.state.w}/>
-            <circle className="buldreinfo-svg-pointer buldreinfo-svg-ring" cx={p.c[0].x} cy={p.c[0].y} r={0.003*this.state.w} onMouseDown={this.setDraggedCubic.bind(this, i, 0)}/>
-            <circle className="buldreinfo-svg-pointer buldreinfo-svg-ring" cx={p.c[1].x} cy={p.c[1].y} r={0.003*this.state.w} onMouseDown={this.setDraggedCubic.bind(this, i, 1)}/>
+            <circle className="buldreinfo-svg-pointer buldreinfo-svg-ring" cx={p.c[0].x} cy={p.c[0].y} r={0.003*this.state.w} onMouseDown={() => this.setDraggedCubic(i, 0)}/>
+            <circle className="buldreinfo-svg-pointer buldreinfo-svg-ring" cx={p.c[1].x} cy={p.c[1].y} r={0.003*this.state.w} onMouseDown={() => this.setDraggedCubic(i, 1)}/>
           </g>
         );
       }
       return (
         <g key={i} className={"buldreinfo-svg-ring-group" + (this.state.activePoint === i ? "  is-active" : "")}>
           {anchors}
-          <circle className="buldreinfo-svg-pointer buldreinfo-svg-ring" cx={p.x} cy={p.y} r={0.003*this.state.w} onMouseDown={this.setDraggedPoint.bind(this, i)}/>
+          <circle className="buldreinfo-svg-pointer buldreinfo-svg-ring" cx={p.x} cy={p.y} r={0.003*this.state.w} onMouseDown={() => this.setDraggedPoint(i)}/>
         </g>
       );
     });
     const path = this.generatePath();
     return (
-      <React.Fragment>
-        <Breadcrumb>
-          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${this.state.areaId}`}>{this.state.areaName}</Link> <LockSymbol visibility={this.state.areaVisibility}/> / <Link to={`/sector/${this.state.sectorId}`}>{this.state.sectorName}</Link> <LockSymbol visibility={this.state.sectorVisibility}/> / <Link to={`/problem/${this.state.id}`}>{this.state.nr} {this.state.name} {this.state.grade}</Link> <LockSymbol visibility={this.state.visibility}/>
-        </Breadcrumb>
-        <Well bsSize="small" onMouseUp={this.cancelDragging.bind(this)} onMouseLeave={this.cancelDragging.bind(this)}>
-          <form onSubmit={this.save.bind(this)}>
-            <FormGroup controlId="formControlsInfo">
-              <Alert bsStyle="info">
-                <center>
-                  <strong>CTRL + CLICK</strong> to add a point | <strong>CLICK</strong> to select a point | <strong>CLICK AND DRAG</strong> to move a point<br/>
-                  <ButtonGroup>
-                    {this.state.activePoint !== 0 && (
-                      <DropdownButton title={!!this.state.points[this.state.activePoint].c? "Selected point: Curve to" : "Selected point: Line to"} id="bg-nested-dropdown">
-                        <MenuItem eventKey="0" onSelect={this.setPointType.bind(this, "L")}>Selected point: Line to</MenuItem>
-                        <MenuItem eventKey="1" onSelect={this.setPointType.bind(this, "C")}>Selected point: Curve to</MenuItem>
-                      </DropdownButton>
-                    )}
-                    {this.state.activePoint !== 0 && (
-                      <Button onClick={this.removeActivePoint.bind(this)}>Remove this point</Button>
-                    )}
-                    <DropdownButton title={this.state.hasAnchor === true? "Route has anchor" : "No anchor on route"} disabled={this.state.points.length===0} id="bg-nested-dropdown">
-                      <MenuItem eventKey="0" onSelect={this.setHasAnchor.bind(this, false)}>No anchor on route</MenuItem>
-                      <MenuItem eventKey="1" onSelect={this.setHasAnchor.bind(this, true)}>Route has anchor</MenuItem>
-                    </DropdownButton>
-                    <Button bsStyle="warning" disabled={this.state.points.length===0} onClick={this.reset.bind(this)}>Reset path</Button>
-                    <Button bsStyle="danger" onClick={this.onCancel.bind(this)}>Cancel</Button>
-                    <Button type="submit" bsStyle="success">{this.state.points.length>=2? 'Save' : 'Delete path'}</Button>
-                  </ButtonGroup>
-                </center>
-              </Alert>
-            </FormGroup>
-            <FormGroup controlId="formControlsImage">
-              <svg viewBox={"0 0 " + this.state.w + " " + this.state.h} onClick={this.addPoint.bind(this)} onMouseMove={this.handleMouseMove.bind(this)}>
-                <image ref="buldreinfo-svg-edit-img" xlinkHref={getImageUrl(this.state.mediaId, null)} width="100%" height="100%"/>
-                {parseReadOnlySvgs(this.state.readOnlySvgs, this.state.w, this.state.h)}
-                <path className="buldreinfo-svg-route" d={path} strokeWidth={0.002*this.state.w}/>
-                {circles}
-              </svg>
-            </FormGroup>
-            <FormGroup controlId="formControlsPath">
-              {path}
-            </FormGroup>
-          </form>
-        </Well>
-      </React.Fragment>
+      <Container onMouseUp={this.cancelDragging} onMouseLeave={this.cancelDragging}>
+        <Form>
+          <Form.Group>
+            <Message>
+              <Message.Content>
+                <strong>CTRL + CLICK</strong> to add a point | <strong>CLICK</strong> to select a point | <strong>CLICK AND DRAG</strong> to move a point<br/>
+                <Dropdown selection value={this.state.hasAnchor} disabled={this.state.points.length===0} onChange={this.setHasAnchor} options={[
+                  {key: 1, value: false, text: 'No anchor on route'},
+                  {key: 2, value: true, text: 'Route has anchor'}
+                ]}/>
+                {this.state.activePoint !== 0 && (
+                  <Dropdown selection value={!!this.state.points[this.state.activePoint].c? "C" : "L"} onChange={this.setPointType} options={[
+                    {key: 1, value: "L", text: 'Selected point: Line to'},
+                    {key: 2, value: "C", text: 'Selected point: Curve to'}
+                  ]}/>
+                )}
+                <Button.Group>
+                  <Button disabled={this.state.activePoint===0} onClick={this.removeActivePoint}>Remove this point</Button>
+                  <Button disabled={this.state.points.length===0} onClick={this.reset}>Reset path</Button>
+                  <Button negative onClick={this.onCancel}>Cancel</Button>
+                  <Button positive onClick={this.save}>{this.state.points.length>=2? 'Save' : 'Delete path'}</Button>
+                </Button.Group>
+              </Message.Content>
+            </Message>
+          </Form.Group>
+          <Form.Group>
+            <svg viewBox={"0 0 " + this.state.w + " " + this.state.h} onClick={this.addPoint} onMouseMove={this.handleMouseMove} width="100%" height="100%">
+              <image ref="buldreinfo-svg-edit-img" xlinkHref={getImageUrl(this.state.mediaId)} width="100%" height="100%"/>
+              {parseReadOnlySvgs(this.state.readOnlySvgs, this.state.w, this.state.h)}
+              <path className="buldreinfo-svg-route" d={path} strokeWidth={0.002*this.state.w}/>
+              {circles}
+            </svg>
+          </Form.Group>
+          <Form.Group>
+            {path}
+          </Form.Group>
+        </Form>
+      </Container>
     )
   }
 }
 
-export default SvgEdit;
+export default withRouter(SvgEdit);

@@ -4,7 +4,7 @@ import { parsePath } from './utils/svg';
 function getUrl(urlSuffix: string): string {
   var uri = __isBrowser__? window.origin : (global as any).myOrigin;
   if (uri === 'http://localhost:3000') {
-    uri = 'https://buldreinfo.com';
+    uri = 'https://brattelinjer.no';
   }
   return encodeURI(`${uri || ""}/com.buldreinfo.jersey.jaxb/v2${urlSuffix}`);
 }
@@ -19,11 +19,29 @@ function makeAuthenticatedRequest(accessToken: string, urlSuffix: string, opts: 
   return fetch(getUrl(urlSuffix), opts);
 }
 
-export function getImageUrl(id: number, maxHeight: number): string {
-  if (maxHeight) {
-    return getUrl(`/images?id=${id}&targetHeight=${maxHeight}`);
+export function getImageUrl(id: number, minDimention?: number): string {
+  if (minDimention) {
+    return getUrl(`/images?id=${id}&minDimention=${minDimention}`);
   }
   return getUrl(`/images?id=${id}`);
+}
+
+export function numberWithCommas(number: number) {
+  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+export function getGradeColor(grade: string) {
+  switch(grade.substring(0, 1)) {
+    case "n": return "brown";
+    case "3": return "yellow";
+    case "4": return "olive";
+    case "5": return "green";
+    case "6": return "teal";
+    case "7": return "blue";
+    case "8": return "violet";
+    case "9": return "purple";
+    default: return "pink";
+  }
 }
 
 export function convertFromDateToString(date: Date): string {
@@ -86,15 +104,6 @@ export function getAreaEdit(accessToken: string, id: number): Promise<any> {
 
 export function getBrowse(accessToken: string): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/browse`, null)
-  .then((data) => data.json())
-  .catch((error) => {
-    console.warn(error);
-    return null;
-  });
-}
-
-export function getFinder(accessToken: string, grade: string): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/finder?grade=${grade}`, null)
   .then((data) => data.json())
   .catch((error) => {
     console.warn(error);
@@ -252,12 +261,14 @@ export function getSvgEdit(accessToken: string, problemIdMediaId: string): Promi
     const m = res.media.filter(x => x.id==mediaId)[0];
     const readOnlySvgs = [];
     var svgId = 0;
+    var hasAnchor = true;
     var points = [];
     if (m.svgs) {
       for (let svg of m.svgs) {
         if (svg.problemId===res.id) {
           svgId = svg.id;
           points = parsePath(svg.path);
+          hasAnchor = svg.hasAnchor;
         }
         else {
           readOnlySvgs.push({ nr: svg.nr, hasAnchor: svg.hasAnchor, path: svg.path });
@@ -276,7 +287,7 @@ export function getSvgEdit(accessToken: string, problemIdMediaId: string): Promi
       activePoint: 0,
       draggedPoint: false,
       draggedCubic: false,
-      hasAnchor: true,
+      hasAnchor: hasAnchor,
       areaId: res.areaId,
       areaName: res.areaName,
       areaVisibility: res.areaVisibility,
@@ -338,6 +349,17 @@ export function postComment(accessToken: string, id: number, idProblem: number, 
   });
 }
 
+export function postFind(accessToken: string, value: string): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/find`, {
+    method: 'POST',
+    body: JSON.stringify({value}),
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    }
+  }).then((data) => data.json());
+}
+
 export function postProblem(accessToken: string, sectorId: number, id: number, visibility: number, name: string, comment: string, originalGrade: string, fa: any, faDate: string, nr: number, t: any, lat: number, lng: number, sections: any, media: any): Promise<any> {
   const formData = new FormData();
   const newMedia = media.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
@@ -375,17 +397,6 @@ export function postProblemSvg(accessToken: string, problemId: number, mediaId: 
       'Accept': 'application/json'
     }
   });
-}
-
-export function postSearch(accessToken: string, value: string): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/search`, {
-    method: 'POST',
-    body: JSON.stringify({value}),
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    }
-  }).then((data) => data.json());
 }
 
 export function postSector(accessToken: string, areaId: number, id: number, visibility: number, name: string, comment: string, lat: number, lng: number, polygonCoords: any, media: any): Promise<any> {

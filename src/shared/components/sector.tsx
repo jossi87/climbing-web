@@ -2,55 +2,10 @@ import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
-import Gallery from './common/gallery/gallery';
-import { CroppedText, LockSymbol, Stars, TypeImage } from './common/widgets/widgets';
-import { Tabs, Tab, Well, OverlayTrigger, Tooltip, ButtonGroup, Button, Table, Breadcrumb } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
-class TableRow extends Component<any, any> {
-  /* intersperse: Return an array with the separator interspersed between
-   * each element of the input array.
-   *
-   * > _([1,2,3]).intersperse(0)
-   * [1,0,2,0,3]
-  */
-  intersperse(arr, sep) {
-    if (arr.length === 0) {
-      return [];
-    }
-    return arr.slice(1).reduce((xs, x, i) => {
-      return (xs.concat([sep, x]));
-    }, [arr[0]]);
-  }
-
-  render() {
-    var fa = this.props.problem.fa? this.props.problem.fa.map((u, i) => {return (<Link key={i} to={`/user/${u.id}`}>{u.firstname} {u.surname}</Link>)}) : [];
-    fa = this.intersperse(fa, ", ");
-    var bsStyle = '';
-    if (this.props.problem.ticked) {
-      bsStyle = 'success';
-    } else if (this.props.problem.danger) {
-      bsStyle = 'danger';
-    }
-
-    return (
-      <tr className={bsStyle}>
-        <td>{this.props.problem.nr}</td>
-        <td><Link to={`/problem/${this.props.problem.id}`}>{this.props.problem.name}</Link> <LockSymbol visibility={this.props.problem.visibility}/></td>
-        <td><CroppedText text={this.props.problem.comment} i={this.props.problem.id} maxLength={40} /></td>
-        {this.state && this.state.data && !this.state.data.metadata.isBouldering && <td><TypeImage t={this.props.problem.t}/></td>}
-        <td>{this.props.problem.grade}</td>
-        <td>{fa}</td>
-        <td>{this.props.problem.numTicks}</td>
-        <td><Stars numStars={this.props.problem.stars}/></td>
-        <td>{this.props.problem.numImages}</td>
-        <td>{this.props.problem.numMovies}</td>
-        <td>{( (this.props.problem.lat>0 && this.props.problem.lng>0) || (this.props.problemsInTopo.indexOf(this.props.problem.id)>=0) ) && <FontAwesomeIcon icon="check" />}</td>
-      </tr>
-    )
-  }
-}
+import Media from './common/media/media';
+import { CroppedText, LockSymbol, Stars, LoadingAndRestoreScroll } from './common/widgets/widgets';
+import { Label, Image, Icon, Button, Card, Tab, Breadcrumb, Message } from 'semantic-ui-react';
+import { getImageUrl, getGradeColor } from '../api';
 
 class Sector extends Component<any, any> {
   constructor(props) {
@@ -62,7 +17,7 @@ class Sector extends Component<any, any> {
     } else {
       data = props.staticContext.data;
     }
-    this.state = {data, tabIndex: 1};
+    this.state = {data};
   }
 
   componentDidMount() {
@@ -81,19 +36,16 @@ class Sector extends Component<any, any> {
     this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
   }
 
-  handleTabsSelection(key) {
-    this.setState({tabIndex: key});
-  }
-
-  onRemoveMedia(idMediaToRemove) {
-    const allMedia = this.state.data.media.filter(m => m.id!=idMediaToRemove);
-    this.setState({media: allMedia});
+  onRemoveMedia = (idMediaToRemove) => {
+    const { data } = this.state;
+    data.media = data.media.filter(m => m.id!=idMediaToRemove);
+    this.setState({data});
   }
 
   render() {
     const { data } = this.state;
     if (!data) {
-      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
+      return <LoadingAndRestoreScroll />;
     }
     const problemsInTopo = [];
     if (data.media) {
@@ -103,12 +55,6 @@ class Sector extends Component<any, any> {
         }
       });
     }
-
-    const rows = data.problems.map((problem, i) => {
-      return (
-        <TableRow isBouldering={data.metadata.isBouldering} problem={problem} problemsInTopo={problemsInTopo} key={i} />
-      )
-    });
 
     const markers = data.problems.filter(p => p.lat!=0 && p.lng!=0).map(p => {
       return {
@@ -125,27 +71,18 @@ class Sector extends Component<any, any> {
         isParking: true
       });
     }
-    const defaultCenter = data.lat && data.lat>0? {lat: data.lat, lng: data.lng} : data.metadata.defaultCenter;
-    const defaultZoom = data.lat && data.lat>0? 15 : data.metadata.defaultZoom;
-    const map = markers.length>0? <Leaflet markers={markers} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/> : null;
-    const gallery = data.media && data.media.length>0? <Gallery auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} alt={data.name + " (" + data.areaName + ")"} media={data.media} showThumbnails={data.media.length>1} removeMedia={this.onRemoveMedia.bind(this)}/> : null;
-    var topoContent = null;
-    if (map && gallery) {
-      topoContent = (
-        <Tabs activeKey={this.state.tabIndex} animation={false} onSelect={this.handleTabsSelection.bind(this)} id="sector_tab" unmountOnExit={true}>
-          <Tab eventKey={1} title="Topo">{this.state.tabIndex==1? gallery : false}</Tab>
-          <Tab eventKey={2} title="Map">{this.state.tabIndex==2? map : false}</Tab>
-        </Tabs>
-      );
-    } else if (map) {
-      topoContent = map;
-    } else if (gallery) {
-      topoContent = gallery;
+    const panes = [];
+    if (data.media && data.media.length>0) {
+      panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Media auth={this.props.auth} isAdmin={data.metadata.isAdmin} removeMedia={this.onRemoveMedia} media={data.media} /></Tab.Pane> });
+    }
+    if (markers.length>0) {
+      const defaultCenter = data.lat && data.lat>0? {lat: data.lat, lng: data.lng} : data.metadata.defaultCenter;
+      const defaultZoom = data.lat && data.lat>0? 15 : data.metadata.defaultZoom;
+      panes.push({ menuItem: 'Map', render: () => <Tab.Pane><Leaflet height='40vh' markers={markers} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/></Tab.Pane> });
     }
     const nextNr = data.problems.length>0? data.problems[data.problems.length-1].nr+1 : 1;
-
     return (
-      <React.Fragment>
+      <>
         <MetaTags>
           {data.metadata.canonical && <link rel="canonical" href={data.metadata.canonical} />}
           <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(data.metadata.jsonLd)}} />
@@ -159,45 +96,76 @@ class Sector extends Component<any, any> {
           <meta property="og:image:width" content={data.metadata.og.imageWidth} />
           <meta property="og:image:height" content={data.metadata.og.imageHeight} />
         </MetaTags>
-        <Breadcrumb>
-          {this.state && this.state.data && this.state.data.metadata.isAdmin?
-            <div style={{float: 'right'}}>
-              <ButtonGroup>
-                <OverlayTrigger placement="top" overlay={<Tooltip id="Add problem">Add problem</Tooltip>}>
-                  <LinkContainer to={{ pathname: `/problem/edit/-1`, query: { idSector: data.id, nr: nextNr, lat: data.lat, lng: data.lng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="plus-square" inverse={true} /></Button></LinkContainer>
-                </OverlayTrigger>
-                <OverlayTrigger placement="top" overlay={<Tooltip id={data.id}>Edit sector</Tooltip>}>
-                  <LinkContainer to={{ pathname: `/sector/edit/${data.id}`, query: { idArea: data.areaId, lat: data.lat, lng: data.lng } }}><Button bsStyle="primary" bsSize="xsmall"><FontAwesomeIcon icon="edit" inverse={true} /></Button></LinkContainer>
-                </OverlayTrigger>
-              </ButtonGroup>
-            </div>:
-            null
-          }
-          <Link to={`/`}>Home</Link> / <Link to={`/browse`}>Browse</Link> / <Link to={`/area/${data.areaId}`}>{data.areaName}</Link> <LockSymbol visibility={data.areaVisibility}/> / {data.name} <LockSymbol visibility={data.visibility}/>
-        </Breadcrumb>
-        {topoContent}
-        {data.comment? <Well>{data.comment}</Well> : null}
-        <Table striped condensed hover>
-          <thead>
-            <tr>
-              <th><FontAwesomeIcon icon="hashtag" /></th>
-              <th>Name</th>
-              <th>Description</th>
-              {!data.metadata.isBouldering && <th>Type</th>}
-              <th>Grade</th>
-              <th>FA</th>
-              <th>Ticks</th>
-              <th>Stars</th>
-              <th><FontAwesomeIcon icon="camera" /></th>
-              <th><FontAwesomeIcon icon="video" /></th>
-              <th><FontAwesomeIcon icon="map-marker" /></th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows}
-          </tbody>
-        </Table>
-      </React.Fragment>
+        <div style={{marginBottom: '5px'}}>
+          <div style={{float: 'right'}}>
+            {this.state && this.state.data && this.state.data.metadata.isAdmin &&
+              <Button.Group size="mini" compact>
+                <Button animated='fade' as={Link} to={{ pathname: `/problem/edit/-1`, query: { idSector: data.id, nr: nextNr, lat: data.lat, lng: data.lng } }}>
+                  <Button.Content hidden>Add</Button.Content>
+                  <Button.Content visible>
+                    <Icon name='plus' />
+                  </Button.Content>
+                </Button>
+                <Button animated='fade' as={Link} to={{ pathname: `/sector/edit/${data.id}`, query: { idArea: data.areaId, lat: data.lat, lng: data.lng } }}>
+                  <Button.Content hidden>Edit</Button.Content>
+                  <Button.Content visible>
+                    <Icon name='edit' />
+                  </Button.Content>
+                </Button>
+              </Button.Group>
+            }
+          </div>
+          <Breadcrumb>
+            <Breadcrumb.Section><Link to='/browse'>Browse</Link></Breadcrumb.Section>
+            <Breadcrumb.Divider icon='right angle' />
+            <Breadcrumb.Section><Link to={`/area/${data.areaId}`}>{data.areaName}</Link> <LockSymbol visibility={data.areaVisibility}/></Breadcrumb.Section>
+            <Breadcrumb.Divider icon='right angle' />
+            <Breadcrumb.Section active>{data.name} <LockSymbol visibility={data.visibility}/></Breadcrumb.Section>
+          </Breadcrumb>
+        </div>
+        <Tab panes={panes} />
+        {data.comment &&
+          <Message icon>
+            <Icon name="info" />
+            <Message.Content>
+              {data.comment}
+            </Message.Content>
+          </Message>
+        }
+        {data.problems &&
+          <>
+            <br/>
+            <Card.Group stackable itemsPerRow={3}>
+              {data.problems.map((problem, i) => (
+                <Card as={Link} to={`/problem/${problem.id}`} key={i}>
+                  <Card.Content>
+                    {problem.randomMediaId>0 && <Image floated='right' size='tiny' style={{maxHeight: '65px', objectFit: 'cover'}} src={getImageUrl(problem.randomMediaId, 80)} />}
+                    <Card.Header>
+                      <Label floating size="mini">#{problem.nr}</Label> {problem.name} <Label color={getGradeColor(problem.grade)} circular>{problem.grade}</Label> <LockSymbol visibility={problem.visibility}/>
+                    </Card.Header>
+                    <Card.Meta>
+                      <Stars numStars={problem.stars}/>
+                    </Card.Meta>
+                    <Card.Description>
+                      <CroppedText text={problem.comment} maxLength={150}/>
+                    </Card.Description>
+                  </Card.Content>
+                  <Card.Content extra>
+                    <Label.Group>
+                      <Label><Icon name='check' /> {problem.numTicks}</Label>
+                      <Label><Icon name='photo' /> {problem.numImages}</Label>
+                      <Label><Icon name='video' /> {problem.numMovies}</Label>
+                      {this.state && this.state.data && !this.state.data.metadata.isBouldering && <Label>{problem.t.type + " - " + problem.t.subType}</Label>}
+                      {problem.fa && problem.fa.map((u, i) => (<Label as={Link} to={`/user/${u.id}`} key={i}><Icon name='user' />{u.firstname} {u.surname}</Label>))}
+                    </Label.Group>
+                  </Card.Content>
+                  {problem.danger? <Label size='mini' attached='bottom right' icon='warning sign' color='red' /> : problem.ticked && <Label size='mini' attached='bottom right' icon='check' color='green' />}
+                </Card>
+              ))}
+            </Card.Group>
+          </>
+        }
+      </>
     );
   }
 }

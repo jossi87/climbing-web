@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
-import { Redirect } from 'react-router'
-import { FormGroup, ButtonGroup, Button, Well } from 'react-bootstrap';
+import { withRouter } from 'react-router'
 import ImageUpload from './common/image-upload/image-upload';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getProblem, postProblemMedia } from './../api';
+import { LoadingAndRestoreScroll } from './common/widgets/widgets';
+import { Container, Button } from 'semantic-ui-react';
 
 class ProblemEditMedia extends Component<any, any> {
   componentDidMount() {
@@ -20,46 +20,46 @@ class ProblemEditMedia extends Component<any, any> {
     getProblem(this.props.auth.getAccessToken(), id).then((data) => this.setState({id: data.id, isAuthenticated: data.metadata.isAuthenticated}));
   }
 
-  onNewMediaChanged(newMedia) {
+  onNewMediaChanged = (newMedia) => {
     this.setState({newMedia});
   }
 
-  save(event) {
+  save = (event) => {
     event.preventDefault();
     this.setState({isSaving: true});
     postProblemMedia(this.props.auth.getAccessToken(), this.state.id, this.state.newMedia)
     .then((response) => {
-      this.setState({pushUrl: "/problem/" + response.id});
+      this.props.history.push("/problem/" + response.id);
     })
     .catch((error) => {
       console.warn(error);
     });
   }
 
-  onCancel() {
+  onCancel = () => {
     window.history.back();
   }
 
   render() {
     if (!this.state || !this.state.id) {
-      return <center><FontAwesomeIcon icon="spinner" spin size="3x" /></center>;
-    } else if (this.state.pushUrl) {
-      return (<Redirect to={this.state.pushUrl} push />);
+      return <LoadingAndRestoreScroll />;
     } else if (!this.state.isAuthenticated) {
-      this.setState({pushUrl: "/login"});
+      this.props.history.push("/login");
     }
 
     return (
-      <Well>
-        <form onSubmit={this.save.bind(this)}>
-          <FormGroup controlId="formControlsMedia">
-            <ImageUpload auth={this.props.auth} onMediaChanged={this.onNewMediaChanged.bind(this)} />
-          </FormGroup>
-          <ButtonGroup><Button bsStyle="danger" onClick={this.onCancel.bind(this)}>Cancel</Button><Button type="submit" bsStyle="success" disabled={this.state.isSaving}>{this.state.isSaving? 'Saving...' : 'Save'}</Button></ButtonGroup>
+      <Container>
+        <form onSubmit={this.save}>
+          <ImageUpload auth={this.props.auth} onMediaChanged={this.onNewMediaChanged} />
+          <Button.Group>
+            <Button onClick={this.onCancel}>Cancel</Button>
+            <Button.Or />
+            <Button type="submit" positive loading={this.state.isSaving}>Save</Button>
+          </Button.Group>
         </form>
-      </Well>
+      </Container>
     );
   }
 }
 
-export default ProblemEditMedia;
+export default withRouter(ProblemEditMedia);

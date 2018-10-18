@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Redirect } from 'react-router';
+import { RouteComponentProps, withRouter } from 'react-router';
 let parkingIcon, Map, TileLayer, LayersControl, Marker, Polygon, Tooltip, WMSTileLayer;
 
 interface Coordinates {
@@ -21,8 +21,9 @@ interface Outline {
   label?: string
 }
 
-interface LeafletProps {
+interface LeafletProps extends RouteComponentProps<any> {
   useOpenStreetMap?: boolean,
+  height?: string,
   defaultZoom: number,
   defaultCenter: Coordinates,
   markers?: Array<Marker>,
@@ -30,20 +31,19 @@ interface LeafletProps {
   onClick?: Function
 }
 
-export default class Leaflet extends Component<LeafletProps, any> {
-  componentWillMount() {
-    if (__isBrowser__) {
-      Map = require('react-leaflet').Map
-      TileLayer = require('react-leaflet').TileLayer
-      LayersControl = require('react-leaflet').LayersControl
-      Marker = require('react-leaflet').Marker
-      Polygon = require('react-leaflet').Polygon
-      Tooltip = require('react-leaflet').Tooltip
-      WMSTileLayer = require('react-leaflet').WMSTileLayer
-    }
+class Leaflet extends Component<LeafletProps> {
+  componentDidMount() {
+    Map = require('react-leaflet').Map
+    TileLayer = require('react-leaflet').TileLayer
+    LayersControl = require('react-leaflet').LayersControl
+    Marker = require('react-leaflet').Marker
+    Polygon = require('react-leaflet').Polygon
+    Tooltip = require('react-leaflet').Tooltip
+    WMSTileLayer = require('react-leaflet').WMSTileLayer
+    this.setState({render: true});
   }
 
-  updatePosition(url, e) {
+  updatePosition = (url, e) => {
     if (url && e) {
       const lat = e.target._latlng.lat;
       const lng = e.target._latlng.lng;
@@ -52,9 +52,6 @@ export default class Leaflet extends Component<LeafletProps, any> {
   }
 
   render() {
-    if (this.state && this.state.pushUrl) {
-      return (<Redirect to={this.state.pushUrl} push />);
-    }
     if (!Map) {
       return null;
     }
@@ -66,7 +63,7 @@ export default class Leaflet extends Component<LeafletProps, any> {
           parkingIcon = new L.icon({ iconUrl: '/png/parking_lot_maps.png', iconAnchor: [15, 15] })
         }
         return (
-          <Marker position={[m.lat, m.lng]} key={i} onClick={() => {this.setState({pushUrl: m.url})}} icon={parkingIcon}>
+          <Marker position={[m.lat, m.lng]} key={i} onClick={() => this.props.history.push(m.url)} icon={parkingIcon}>
             {m.label && (
               <Tooltip opacity={opacity} permanent>
                 {m.label}
@@ -79,9 +76,9 @@ export default class Leaflet extends Component<LeafletProps, any> {
           <Marker
             position={[m.lat, m.lng]}
             key={i}
-            onClick={() => {this.setState({pushUrl: m.url})}}
+            onClick={() => this.props.history.push(m.url)}
             draggable={false}
-            onDragend={this.updatePosition.bind(this, m.url)}>
+            onDragend={() => this.updatePosition(m.url, this)}>
             {m.label && (
               <Tooltip opacity={opacity} permanent>
                 {m.label}
@@ -92,7 +89,7 @@ export default class Leaflet extends Component<LeafletProps, any> {
       }
     })
     const polygons = this.props.outlines && this.props.outlines.map((o, i) => (
-      <Polygon key={i} positions={o.polygon} onClick={() => {this.setState({pushUrl: o.url})}}>
+      <Polygon key={i} positions={o.polygon} onClick={() => this.props.history.push(o.url)}>
         {o.label && (
           <Tooltip opacity={opacity} permanent>
             {o.label}
@@ -101,11 +98,13 @@ export default class Leaflet extends Component<LeafletProps, any> {
       </Polygon>
     ))
     const maxZoom = 21;
+    const height = this.props.height? this.props.height : '500px';
     return (
       <Map
+        style={{height: height, width: '100%', zIndex: 0}}
         center={this.props.defaultCenter}
         zoom={this.props.defaultZoom}
-        onClick={this.props.onClick? this.props.onClick.bind(this) : null}
+        onClick={this.props.onClick? this.props.onClick : null}
       >
         <LayersControl position="topright">
           <LayersControl.BaseLayer checked={!this.props.useOpenStreetMap} name="Norge i Bilder">
@@ -174,3 +173,5 @@ export default class Leaflet extends Component<LeafletProps, any> {
     );
   }
 }
+
+export default withRouter(Leaflet);

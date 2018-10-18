@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import { Well } from 'react-bootstrap';
-import { Redirect } from 'react-router';
+import { withRouter } from 'react-router';
+import { Container } from 'semantic-ui-react';
 
 class Callback extends Component<any, any> {
   componentDidMount() {
@@ -8,16 +8,13 @@ class Callback extends Component<any, any> {
       this.props.auth.handleAuthentication();
       let redirect = localStorage.getItem('redirect') || '/';
       localStorage.removeItem('redirect');
-      this.setState({pushUrl: redirect});
+      this.props.history.push(redirect);
     }
   }
 
   render() {
-    if (this.state && this.state.pushUrl) {
-      return (<Redirect to={this.state.pushUrl} push />);
-    }
-    return <Well>Signing in, please wait...</Well>;
+    return <Container>Signing in, please wait...</Container>;
   }
 }
 
-export default Callback;
+export default withRouter(Callback);

@@ -3,8 +3,7 @@ import AreaEdit from './components/area-edit';
 import Browse from './components/browse';
 import Callback from './components/callback';
 import Ethics from './components/ethics';
-import Finder from './components/finder';
-import Index from './components/frontpage';
+import Frontpage from './components/frontpage';
 import Logout from './components/logout';
 import Problem from './components/problem';
 import ProblemEdit from './components/problem-edit';
@@ -16,10 +15,10 @@ import SvgEdit from './components/svg-edit';
 import User from './components/user';
 import NoMatch from './components/no-match';
 
-import { getArea, getAreaEdit, getBrowse, getFinder, getFrontpage, getMeta, getProblem, getProblemEdit, getProblemHse, getSector, getSectorEdit, getUser, getSvgEdit } from './api';
+import { getArea, getAreaEdit, getBrowse, getFrontpage, getMeta, getProblem, getProblemEdit, getProblemHse, getSector, getSectorEdit, getUser, getSvgEdit } from './api';
 
 const routes =  [
-  {path: '/', exact: true, component: Index, fetchInitialData: (accessToken, path = '') => getFrontpage(accessToken)},
+  {path: '/', exact: true, component: Frontpage, fetchInitialData: (accessToken, path = '') => getFrontpage(accessToken)},
   {path: '/browse', exact: false, component: Browse, fetchInitialData: (accessToken, path = '') => getBrowse(accessToken)},
   {path: '/callback', exact: false, component: Callback},
   {path: '/ethics', exact: false, component: Ethics, fetchInitialData: (accessToken, path = '') => getMeta(accessToken)},
@@ -32,7 +31,6 @@ const routes =  [
   {path: '/problem/edit/media/:problemId', exact: true, component: ProblemEditMedia},
   {path: '/hse', exact: true, component: ProblemHse, fetchInitialData: (accessToken, path = '') => getProblemHse(accessToken)},
   {path: '/problem/svg-edit/:problemIdMediaId', exact: true, component: SvgEdit, fetchInitialData: (accessToken, path = '') => getSvgEdit(accessToken, path.split('/').pop())},
-  {path: '/finder/:grade', exact: true, component: Finder, fetchInitialData: (accessToken, path = '') => getFinder(accessToken, path.split('/').pop())},
   {path: '/user', exact: true, component: User, fetchInitialData: (accessToken, path = '') => getUser(accessToken, path.split('/').pop())},
   {path: '/user/:userId', exact: true, component: User, fetchInitialData: (accessToken, path = '') => getUser(accessToken, path.split('/').pop())},
   {path: '/logout', exact: false, component: Logout},
