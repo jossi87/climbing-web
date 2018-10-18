@@ -40,12 +40,12 @@ const Svg: React.SFC<SvgProps> = props => {
       if (svg.hasAnchor) {
         anchor = <circle className="buldreinfo-svg-ring" cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.006*w}/>
       }
-      var huge = false;
+      var factor = 1;
       var gClassName = "buldreinfo-svg-pointer buldreinfo-svg-hover";
       if (!(svgProblemId===0 || svg.problemId===svgProblemId)) {
         gClassName += " buldreinfo-svg-opacity";
       } else if (props.thumb) {
-        huge = true;
+        factor = 2;
       }
       return (
         <g className={gClassName} key={key} style={props.style} onClick={() => {
@@ -54,11 +54,7 @@ const Svg: React.SFC<SvgProps> = props => {
             props.close();
           }
         }}>
-          {huge?
-            <path d={svg.path} className="buldreinfo-svg-route" strokeWidth={0.003*w*8}/>
-          :
-            <path d={svg.path} className="buldreinfo-svg-route" strokeWidth={0.003*w} strokeDasharray={0.006*w}/>
-          }
+          <path d={svg.path} className="buldreinfo-svg-route" strokeWidth={0.003*w*factor} strokeDasharray={factor>1? null : 0.006*w}/>
           <circle className="buldreinfo-svg-ring" cx={x} cy={y} r={r}/>
           <text className="buldreinfo-svg-routenr" x={x} y={y} fontSize={0.02*w} dy=".3em">{svg.nr}</text>
           {anchor}
