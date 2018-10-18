@@ -86,15 +86,8 @@ class Area extends Component<any, any> {
           <meta property="og:image:width" content={this.state.data.metadata.og.imageWidth} />
           <meta property="og:image:height" content={this.state.data.metadata.og.imageHeight} />
         </MetaTags>
-        <section style={{display: 'flex'}}>
-          <div style={{flex: 1}}>
-            <Breadcrumb>
-              <Breadcrumb.Section><Link to='/browse'>Browse</Link></Breadcrumb.Section>
-              <Breadcrumb.Divider icon='right angle' />
-              <Breadcrumb.Section active>{this.state.data.name} <LockSymbol visibility={this.state.data.visibility}/></Breadcrumb.Section>
-            </Breadcrumb>
-          </div>
-          <div style={{flex: 0}}>
+        <div style={{marginBottom: '5px'}}>
+          <div style={{float: 'right'}}>
             {this.state.data.metadata.isAdmin &&
               <Button.Group size="mini" compact>
                 <Button animated='fade' as={Link} to={{ pathname: `/sector/edit/-1`, query: { idArea: this.state.data.id, lat: this.state.data.lat, lng: this.state.data.lng } }}>
@@ -112,7 +105,12 @@ class Area extends Component<any, any> {
               </Button.Group>
             }
           </div>
-        </section>
+          <Breadcrumb>
+            <Breadcrumb.Section><Link to='/browse'>Browse</Link></Breadcrumb.Section>
+            <Breadcrumb.Divider icon='right angle' />
+            <Breadcrumb.Section active>{this.state.data.name} <LockSymbol visibility={this.state.data.visibility}/></Breadcrumb.Section>
+          </Breadcrumb>
+        </div>
         <Tab panes={panes} /><br/>
         {this.state.data.comment &&
           <Message icon>

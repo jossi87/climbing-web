@@ -96,17 +96,8 @@ class Sector extends Component<any, any> {
           <meta property="og:image:width" content={data.metadata.og.imageWidth} />
           <meta property="og:image:height" content={data.metadata.og.imageHeight} />
         </MetaTags>
-        <section style={{display: 'flex'}}>
-          <div style={{flex: 1}}>
-            <Breadcrumb>
-              <Breadcrumb.Section><Link to='/browse'>Browse</Link></Breadcrumb.Section>
-              <Breadcrumb.Divider icon='right angle' />
-              <Breadcrumb.Section><Link to={`/area/${data.areaId}`}>{data.areaName}</Link> <LockSymbol visibility={data.areaVisibility}/></Breadcrumb.Section>
-              <Breadcrumb.Divider icon='right angle' />
-              <Breadcrumb.Section active>{data.name} <LockSymbol visibility={data.visibility}/></Breadcrumb.Section>
-            </Breadcrumb>
-          </div>
-          <div style={{flex: 0}}>
+        <div style={{marginBottom: '5px'}}>
+          <div style={{float: 'right'}}>
             {this.state && this.state.data && this.state.data.metadata.isAdmin &&
               <Button.Group size="mini" compact>
                 <Button animated='fade' as={Link} to={{ pathname: `/problem/edit/-1`, query: { idSector: data.id, nr: nextNr, lat: data.lat, lng: data.lng } }}>
@@ -124,7 +115,14 @@ class Sector extends Component<any, any> {
               </Button.Group>
             }
           </div>
-        </section>
+          <Breadcrumb>
+            <Breadcrumb.Section><Link to='/browse'>Browse</Link></Breadcrumb.Section>
+            <Breadcrumb.Divider icon='right angle' />
+            <Breadcrumb.Section><Link to={`/area/${data.areaId}`}>{data.areaName}</Link> <LockSymbol visibility={data.areaVisibility}/></Breadcrumb.Section>
+            <Breadcrumb.Divider icon='right angle' />
+            <Breadcrumb.Section active>{data.name} <LockSymbol visibility={data.visibility}/></Breadcrumb.Section>
+          </Breadcrumb>
+        </div>
         <Tab panes={panes} />
         {data.comment &&
           <Message icon>

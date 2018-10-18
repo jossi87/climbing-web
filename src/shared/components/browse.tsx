@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
-import { Button, Card, Breadcrumb, Grid, Icon } from 'semantic-ui-react';
+import { Button, Card, Breadcrumb, Icon } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 
@@ -51,27 +51,23 @@ class Browse extends Component<any, any> {
           <meta property="og:image:width" content={this.state.data.metadata.og.imageWidth} />
           <meta property="og:image:height" content={this.state.data.metadata.og.imageHeight} />
         </MetaTags>
-        <Grid divided='vertically'>
-          <Grid.Row columns={2}>
-            <Grid.Column>
-            <Breadcrumb>
-              <Breadcrumb.Section active>Browse areas</Breadcrumb.Section>
-            </Breadcrumb>
-            </Grid.Column>
-            <Grid.Column textAlign="right">
-              {this.state && this.state.data && this.state.data.metadata.isAdmin &&
-                <Button.Group size="mini" compact>
-                  <Button animated='fade' as={Link} to={`/area/edit/-1`}>
-                    <Button.Content hidden>Add</Button.Content>
-                    <Button.Content visible>
-                      <Icon name='plus' />
-                    </Button.Content>
-                  </Button>
-                </Button.Group>
-              }
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
+        <div style={{marginBottom: '5px'}}>
+          <div style={{float: 'right'}}>
+            {this.state && this.state.data && this.state.data.metadata.isAdmin &&
+              <Button.Group size="mini" compact>
+                <Button animated='fade' as={Link} to={`/area/edit/-1`}>
+                  <Button.Content hidden>Add</Button.Content>
+                  <Button.Content visible>
+                    <Icon name='plus' />
+                  </Button.Content>
+                </Button>
+              </Button.Group>
+            }
+          </div>
+          <Breadcrumb>
+            <Breadcrumb.Section active>Browse areas</Breadcrumb.Section>
+          </Breadcrumb>
+        </div>
         {map}
         <Card.Group itemsPerRow={3} stackable>
           {this.state.data.areas.map((area, i) => (

@@ -199,19 +199,8 @@ class Problem extends Component<any, any> {
         </MetaTags>
         {tickModal}
         <CommentModal auth={this.props.auth} idProblem={data.id} open={this.state.showCommentModal} onClose={this.closeCommentModal} isBouldering={data.metadata.isBouldering}/>
-        <section style={{display: 'flex'}}>
-          <div style={{flex: 1}}>
-            <Breadcrumb>
-              <Breadcrumb.Section><Link to='/browse'>Browse</Link></Breadcrumb.Section>
-              <Breadcrumb.Divider icon='right angle' />
-              <Breadcrumb.Section><Link to={`/area/${data.areaId}`}>{data.areaName}</Link> <LockSymbol visibility={data.areaVisibility}/></Breadcrumb.Section>
-              <Breadcrumb.Divider icon='right angle' />
-              <Breadcrumb.Section><Link to={`/sector/${data.sectorId}`}>{data.sectorName}</Link> <LockSymbol visibility={data.sectorVisibility}/></Breadcrumb.Section>
-              <Breadcrumb.Divider icon='right angle' />
-              <Breadcrumb.Section active>{data.name} <Label color={getGradeColor(data.grade)} circular>{data.grade}</Label> <LockSymbol visibility={data.visibility}/></Breadcrumb.Section>
-            </Breadcrumb>
-          </div>
-          <div style={{flex: 0}}>
+        <div style={{marginBottom: '5px'}}>
+          <div style={{float: 'right'}}>
             {data.metadata && data.metadata.isAuthenticated &&
               <Button.Group size="mini" compact>
                 <Button positive={data.ticks && data.ticks.filter(t => t.writable).length>0} animated='fade' onClick={this.openTickModal}>
@@ -244,7 +233,16 @@ class Problem extends Component<any, any> {
               </Button.Group>
             }
           </div>
-        </section>
+          <Breadcrumb>
+            <Breadcrumb.Section><Link to='/browse'>Browse</Link></Breadcrumb.Section>
+            <Breadcrumb.Divider icon='right angle' />
+            <Breadcrumb.Section><Link to={`/area/${data.areaId}`}>{data.areaName}</Link> <LockSymbol visibility={data.areaVisibility}/></Breadcrumb.Section>
+            <Breadcrumb.Divider icon='right angle' />
+            <Breadcrumb.Section><Link to={`/sector/${data.sectorId}`}>{data.sectorName}</Link> <LockSymbol visibility={data.sectorVisibility}/></Breadcrumb.Section>
+            <Breadcrumb.Divider icon='right angle' />
+            <Breadcrumb.Section active>{data.name} <Label color={getGradeColor(data.grade)} circular>{data.grade}</Label> <LockSymbol visibility={data.visibility}/></Breadcrumb.Section>
+          </Breadcrumb>
+        </div>
         <Tab panes={panes} />
         <Message icon>
           <Icon name="info" />
