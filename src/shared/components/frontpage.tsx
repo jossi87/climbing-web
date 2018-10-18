@@ -128,9 +128,12 @@ class Frontpage extends Component<any, any> {
                             {a.description}
                           </Feed.Extra>
                           {a.media &&
-                            <Feed.Extra images>
-                              {a.media.map((m, i) => (<img key={i} src={getImageUrl(m.id, 115)}/>))}
-                            </Feed.Extra>
+                            <>
+                              <Feed.Extra images as={Link} to={`/problem/${a.problemId}`}>
+                                {a.media.map((m, i) => (<img key={i} src={getImageUrl(m.id, 115)}/>))}
+                              </Feed.Extra>
+                              <br/>
+                            </>
                           }
                           {a.users &&
                             <Feed.Meta>
@@ -168,7 +171,7 @@ class Frontpage extends Component<any, any> {
                           <Feed.Summary>
                             {summary}on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> <Label size="mini" color={getGradeColor(a.grade)} circular>{a.grade}</Label><LockSymbol visibility={a.problemVisibility}/><Feed.Date>{a.timeAgo}</Feed.Date>
                           </Feed.Summary>
-                          <Feed.Extra images>
+                          <Feed.Extra images as={Link} to={`/problem/${a.problemId}`}>
                             {a.media.map((m, i) => (<img key={i} src={getImageUrl(m.id, 115)}/>))}
                           </Feed.Extra>
                         </Feed.Content>
