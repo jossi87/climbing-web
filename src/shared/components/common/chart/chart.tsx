@@ -26,7 +26,7 @@ const Chart: React.SFC<Props> = props => {
     const tickWidth = (d.tick/maxValue*100) + '%';
     return (
       <tr key={i}>
-        <td style={{padding: 0, textAlign: 'center'}}>{d.grade}</td>
+        <td style={{padding: 0, textAlign: 'center', whiteSpace: 'nowrap'}}>{d.grade}</td>
         <td style={{padding: 0, textAlign: 'center'}}>{d.fa}</td>
         <td style={{padding: 0, textAlign: 'center'}}>{d.tick}</td>
         <td style={{padding: 0, textAlign: 'center'}}><strong>{d.fa+d.tick}</strong></td>
