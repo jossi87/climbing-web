@@ -86,7 +86,7 @@ const MediaModal: React.SFC<Props> = props => {
         </>
       }
       {props.m.idType===1?
-        (props.m.svgs? <Image style={style.img}><Svg style={{}} m={props.m} close={props.onClose}/></Image> : <Image style={style.img} src={getImageUrl(props.m.id, 720)} />)
+        (props.m.svgs? <Image style={style.img}><Svg style={{}} m={props.m} close={props.onClose}/></Image> : <Image style={style.img} alt={props.m.description} src={getImageUrl(props.m.id, 720)} />)
       :
         (props.m.autoPlayVideo?
           <ReactPlayer
@@ -103,7 +103,7 @@ const MediaModal: React.SFC<Props> = props => {
         :
           <>
             <Button size="massive" color="youtube" circular style={style.play} icon="play" onClick={props.playVideo} />
-            <Image as="a" style={style.img} src={getImageUrl(props.m.id)} />
+            <Image as="a" style={style.img} alt={props.m.description} src={getImageUrl(props.m.id)} />
           </>
         )
       }

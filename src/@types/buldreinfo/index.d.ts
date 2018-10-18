@@ -20,4 +20,5 @@ interface Media {
   idType: number,
   t: number,
   autoPlayVideo: boolean,
+  description: string
 }
