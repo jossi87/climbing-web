@@ -111,7 +111,7 @@ class Area extends Component<any, any> {
             <Breadcrumb.Section active>{this.state.data.name} <LockSymbol visibility={this.state.data.visibility}/></Breadcrumb.Section>
           </Breadcrumb>
         </div>
-        <Tab panes={panes} /><br/>
+        <Tab panes={panes} />
         {this.state.data.comment &&
           <Message icon>
             <Icon name="info" />
@@ -122,8 +122,8 @@ class Area extends Component<any, any> {
         }
         {this.state.data.sectors &&
           <>
-            <br/>
             <Item.Group link unstackable>
+              <Item.Header>Sector(s):</Item.Header>
               {this.state.data.sectors.map((sector, i) => (
                 <Item as={Link} to={`/sector/${sector.id}`} key={i}>
                   <Image size="small" style={{maxHeight: '150px', objectFit: 'cover'}} src={sector.randomMediaId? getImageUrl(sector.randomMediaId, 150) : '/png/image.png'} />

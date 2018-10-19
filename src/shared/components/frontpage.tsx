@@ -83,35 +83,39 @@ class Frontpage extends Component<any, any> {
                   <Statistic.Label>Ascents on video</Statistic.Label>
                 </Statistic>
               </Statistic.Group>
-              <Card as={Link} to={`/problem/${data.randomMedia.idProblem}`}>
-                <Image size="medium" style={{maxHeight: '250px', objectFit: 'cover'}} src={getImageUrl(data.randomMedia.idMedia, 275)} />
-                <Card.Content>
-                  <Card.Header>
-                    {data.randomMedia.problem} <Label color={getGradeColor(data.randomMedia.grade)} circular>{data.randomMedia.grade}</Label>
-                  </Card.Header>
-                  <Card.Description>
-                    <Link to={`/area/${data.randomMedia.idArea}`}>{data.randomMedia.area}</Link> / <Link to={`/sector/${data.randomMedia.idSector}`}>{data.randomMedia.sector}</Link>
-                  </Card.Description>
-                </Card.Content>
-                <Card.Content extra>
-                  <Label.Group size="mini">
-                    {data.randomMedia.tagged && data.randomMedia.tagged.map((x, i) => (
-                      <Label key={i} as={Link} to={`/user/${x.id}`} image>
-                        {x.picture && <img src={x.picture} />}<Icon name="user"/>{x.name}
-                      </Label>
-                    ))}
-                    {data.randomMedia.photographer &&
-                      <Label as={Link} to={`/user/${data.randomMedia.photographer.id}`} image>
-                        {data.randomMedia.photographer.picture && <img src={data.randomMedia.photographer.picture} />}<Icon name="photo"/>{data.randomMedia.photographer.name}
-                      </Label>
-                    }
-                  </Label.Group>
-                </Card.Content>
-              </Card><br/>
+              {data.randomMedia &&
+                <>
+                  <Card as={Link} to={`/problem/${data.randomMedia.idProblem}`}>
+                    <Image size="medium" style={{maxHeight: '250px', objectFit: 'cover'}} src={getImageUrl(data.randomMedia.idMedia, 275)} />
+                    <Card.Content>
+                      <Card.Header>
+                        {data.randomMedia.problem} <Label color={getGradeColor(data.randomMedia.grade)} circular>{data.randomMedia.grade}</Label>
+                      </Card.Header>
+                      <Card.Description>
+                        <Link to={`/area/${data.randomMedia.idArea}`}>{data.randomMedia.area}</Link> / <Link to={`/sector/${data.randomMedia.idSector}`}>{data.randomMedia.sector}</Link>
+                      </Card.Description>
+                    </Card.Content>
+                    <Card.Content extra>
+                      <Label.Group size="mini">
+                        {data.randomMedia.tagged && data.randomMedia.tagged.map((x, i) => (
+                          <Label key={i} as={Link} to={`/user/${x.id}`} image>
+                            {x.picture && <img src={x.picture} />}<Icon name="user"/>{x.name}
+                          </Label>
+                        ))}
+                        {data.randomMedia.photographer &&
+                          <Label as={Link} to={`/user/${data.randomMedia.photographer.id}`} image>
+                            {data.randomMedia.photographer.picture && <img src={data.randomMedia.photographer.picture} />}<Icon name="photo"/>{data.randomMedia.photographer.name}
+                          </Label>
+                        }
+                      </Label.Group>
+                    </Card.Content>
+                  </Card><br/>
+                </>
+              }
             </Grid.Column>
             <Grid.Column mobile={16} tablet={8} computer={12}>
               <Feed>
-                {data.activity.map((a, i) => {
+                {data.activity && data.activity.map((a, i) => {
                   // FA
                   if (a.users) {
                     const typeDescription = data.metadata.isBouldering? "problem" : "route";
