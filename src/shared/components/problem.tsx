@@ -252,7 +252,7 @@ class Problem extends Component<any, any> {
             <strong>Comment:</strong> {data.comment}<br/>
             <strong>FA:</strong> {data.fa && data.fa.map((u, i) => (
               <Label key={i} as={Link} to={`/user/${u.id}`} image>
-                {u.picture && <img src={u.picture} />}<Icon name="user"/>{u.name}
+                {u.picture ? <img src={u.picture} /> : <Icon name="user"/>}{u.name}
               </Label>
             ))}<br/>
             <strong>FA date:</strong> {data.faDateHr}<br/>

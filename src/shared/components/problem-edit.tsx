@@ -138,7 +138,7 @@ class ProblemEdit extends Component<any, any> {
   onUsersUpdated = (newUsers) => {
     const { data } = this.state;
     data.fa = newUsers.map(u => {
-      return {id: (typeof u.value === 'string' || u.value instanceof String)? -1 : u.value, firstname: u.label, surname: null};
+      return {id: (typeof u.value === 'string' || u.value instanceof String)? -1 : u.value, name: u.label};
     });
     this.setState({data});
   }
