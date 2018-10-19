@@ -182,7 +182,6 @@ export function getProblemEdit(accessToken: string, id: number): Promise<any> {
   } else {
     return makeAuthenticatedRequest(accessToken, `/problems?id=${id}`, null)
     .then((data) => data.json())
-    .then((json) => json[0])
     .then((res) => {
       return {
         id: res.id,
