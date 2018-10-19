@@ -151,14 +151,14 @@ class Sector extends Component<any, any> {
                     </Card.Description>
                   </Card.Content>
                   <Card.Content extra>
-                    <Label.Group>
+                    <Label.Group size="mini">
                       <Label><Icon name='check' /> {problem.numTicks}</Label>
                       <Label><Icon name='photo' /> {problem.numImages}</Label>
                       <Label><Icon name='video' /> {problem.numMovies}</Label>
                       {this.state && this.state.data && !this.state.data.metadata.isBouldering && <Label>{problem.t.type + " - " + problem.t.subType}</Label>}
                       {problem.fa && problem.fa.map((u, i) => (
                         <Label key={i} as={Link} to={`/user/${u.id}`} image>
-                          {u.picture ? <img src={u.picture} /> : <Icon name="user"/>}{u.name}
+                          {u.picture ? <Image src={u.picture} /> : <Icon name="user"/>}{u.name}
                         </Label>
                       ))}
                     </Label.Group>
