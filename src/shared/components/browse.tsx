@@ -28,7 +28,7 @@ class Browse extends Component<any, any> {
     if (!this.state || !this.state.data) {
       return <LoadingAndRestoreScroll />;
     }
-    const typeDescription = this.state.data.metadata.isBouldering? "problem(s)" : "routes(s)";
+    const typeDescription = this.state.data.metadata.isBouldering? "problem(s)" : "route(s)";
     const markers = this.state.data.areas.filter(a => a.lat!=0 && a.lng!=0).map(a => {
       return {
           lat: a.lat,
