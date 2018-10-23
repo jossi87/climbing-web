@@ -17,7 +17,7 @@ class Filter extends Component<any, any> {
       data = props.staticContext.data;
     }
     const hideTicked = data && data.metadata && data.metadata.isAuthenticated? true : false;
-    this.state = {data, hideTicked, onlyWithMedia: false};
+    this.state = {data, hideTicked, onlyWithMedia: false, isLoading: false, filterDisabled: true};
   }
 
   componentDidMount() {
@@ -26,19 +26,19 @@ class Filter extends Component<any, any> {
     }
   }
 
-  onChangeGrades = (e, { value }) => this.setState({grades: value})
+  onChangeGrades = (e, { value }) => this.setState({grades: value, filterDisabled: value.length==0})
   toggleHideTicked = () => this.setState({hideTicked: !this.state.hideTicked})
   toggleOnlyWithMedia = () => this.setState({onlyWithMedia: !this.state.onlyWithMedia})
 
   filter = () => {
-    this.setState( {isLoading: true} );
+    this.setState( {isLoading: true, filterDisabled: true} );
     postFilter(this.props.auth.getAccessToken(), this.state.grades).then((res) => {
       this.setState({ results: res, isLoading: false });
     });
   }
 
   render() {
-    const { data, results, grades, hideTicked, onlyWithMedia, isLoading } = this.state;
+    const { data, results, filterDisabled, hideTicked, onlyWithMedia, isLoading } = this.state;
     if (!data) {
       return <LoadingAndRestoreScroll />;
     }
@@ -58,7 +58,7 @@ class Filter extends Component<any, any> {
             <Form.Field>
               <Checkbox label="Only with images/videos" onChange={this.toggleOnlyWithMedia} checked={this.state.onlyWithMedia} />
             </Form.Field>
-            <Button icon labelPosition='left' onClick={this.filter} disabled={!grades || grades.length==0} loading={isLoading}>
+            <Button icon labelPosition='left' onClick={this.filter} disabled={filterDisabled} loading={isLoading}>
               <Icon name='filter' />
               Filter
             </Button>
