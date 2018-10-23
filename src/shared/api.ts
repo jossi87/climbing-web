@@ -347,6 +347,17 @@ export function postComment(accessToken: string, id: number, idProblem: number, 
   });
 }
 
+export function postFilter(accessToken: string, grades: Array<number>): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/filter`, {
+    method: 'POST',
+    body: JSON.stringify({grades}),
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    }
+  }).then((data) => data.json());
+}
+
 export function postProblem(accessToken: string, sectorId: number, id: number, visibility: number, name: string, comment: string, originalGrade: string, fa: any, faDate: string, nr: number, t: any, lat: number, lng: number, sections: any, media: any): Promise<any> {
   const formData = new FormData();
   const newMedia = media.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});

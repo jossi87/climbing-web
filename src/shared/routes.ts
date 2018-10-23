@@ -4,6 +4,7 @@ import Browse from './components/browse';
 import Callback from './components/callback';
 import Ethics from './components/ethics';
 import Frontpage from './components/frontpage';
+import Filter from './components/filter';
 import Logout from './components/logout';
 import Problem from './components/problem';
 import ProblemEdit from './components/problem-edit';
@@ -24,6 +25,7 @@ const routes =  [
   {path: '/ethics', exact: false, component: Ethics, fetchInitialData: (accessToken, path = '') => getMeta(accessToken)},
   {path: '/area/:areaId', exact: true, component: Area, fetchInitialData: (accessToken, path = '') => getArea(accessToken, parseInt(path.split('/').pop()))},
   {path: '/area/edit/:areaId', exact: true, component: AreaEdit, fetchInitialData: (accessToken, path = '') => getAreaEdit(accessToken, parseInt(path.split('/').pop()))},
+  {path: '/filter', exact: false, component: Filter, fetchInitialData: (accessToken, path = '') => getMeta(accessToken)},
   {path: '/sector/:sectorId', exact: true, component: Sector, fetchInitialData: (accessToken, path = '') => getSector(accessToken, parseInt(path.split('/').pop()))},
   {path: '/sector/edit/:sectorId', exact: true, component: SectorEdit, fetchInitialData: (accessToken, path = '') => getSectorEdit(accessToken, parseInt(path.split('/').pop()))},
   {path: '/problem/:problemId', exact: true, component: Problem, fetchInitialData: (accessToken, path = '') => getProblem(accessToken, parseInt(path.split('/').pop()))},

@@ -16,6 +16,7 @@ class Navigation extends Component<any, any> {
           <Menu.Item header as={Link} to='/'><Image size='mini' src='/png/buldreinfo.png' /></Menu.Item>
           <Menu.Item as={SearchBox} auth={this.props.auth} style={{maxWidth: '35vw'}} />
           <Menu.Item as={Link} to='/browse' icon='list' />
+          <Menu.Item as={Link} to='/filter' icon='filter' />
           {this.props.isAuthenticated?
             <Dropdown item simple icon='user'>
               <Dropdown.Menu>

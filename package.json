@@ -46,7 +46,7 @@
     "react-dom": "^16.5.2",
     "react-dropzone": "^6.2.4",
     "react-ga": "^2.5.3",
-    "react-leaflet": "^2.1.0",
+    "react-leaflet": "^2.1.1",
     "react-meta-tags": "^0.7.1",
     "react-player": "^1.6.6",
     "react-router": "^4.3.1",
