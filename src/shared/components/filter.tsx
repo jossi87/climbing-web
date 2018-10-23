@@ -50,7 +50,7 @@ class Filter extends Component<any, any> {
         <Segment>
           <Form>
             <Form.Field>
-              <Dropdown placeholder="Select grades" fluid multiple selection options={gradeOptions} onChange={this.onChangeGrades} />
+              <Dropdown placeholder="Select grade(s)" fluid multiple selection options={gradeOptions} onChange={this.onChangeGrades} />
             </Form.Field>
             <Form.Field>
               <Checkbox label="Hide ticked" onChange={this.toggleHideTicked} checked={this.state.hideTicked} disabled={!data.metadata.isAuthenticated} />
