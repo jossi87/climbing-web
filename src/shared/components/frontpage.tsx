@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Label, Grid, Statistic, Icon, Image, Card, Feed, Rating } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
-import { getImageUrl, numberWithCommas, getGradeColor } from '../api';
+import { getImageUrl, numberWithCommas } from '../api';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 
 class Frontpage extends Component<any, any> {
@@ -56,29 +56,29 @@ class Frontpage extends Component<any, any> {
           <Grid.Row>
             <Grid.Column mobile={16} tablet={8} computer={4}>
               <Statistic.Group size="mini" horizontal>
-                <Statistic color='olive'>
+                <Statistic>
                   <Statistic.Value><Icon name='list' /> {numberWithCommas(data.numProblems)}</Statistic.Value>
                   <Statistic.Label>{data.metadata.isBouldering? "Problems" : "Routes"}</Statistic.Label>
                 </Statistic>
-                <Statistic color='green'>
+                <Statistic>
                   <Statistic.Value><Icon name='map marker' /> {numberWithCommas(data.numProblemsWithCoordinates)}</Statistic.Value>
                   <Statistic.Label>With coordinates</Statistic.Label>
                 </Statistic>
                 {!data.metadata.isBouldering &&
-                  <Statistic color='teal'>
+                  <Statistic>
                     <Statistic.Value><Icon name='image outline' /> {numberWithCommas(data.numProblemsWithTopo)}</Statistic.Value>
                     <Statistic.Label>With topo</Statistic.Label>
                   </Statistic>
                 }
-                <Statistic color='blue'>
+                <Statistic>
                   <Statistic.Value><Icon name='check' /> {numberWithCommas(data.numTicks)}</Statistic.Value>
                   <Statistic.Label>Public ascents</Statistic.Label>
                 </Statistic>
-                <Statistic color='violet'>
+                <Statistic>
                   <Statistic.Value><Icon name='image' /> {numberWithCommas(data.numImages)}</Statistic.Value>
                   <Statistic.Label>Images</Statistic.Label>
                 </Statistic>
-                <Statistic color='purple'>
+                <Statistic>
                   <Statistic.Value><Icon name='film' /> {numberWithCommas(data.numMovies)}</Statistic.Value>
                   <Statistic.Label>Ascents on video</Statistic.Label>
                 </Statistic>
@@ -89,7 +89,7 @@ class Frontpage extends Component<any, any> {
                     <Image size="medium" style={{maxHeight: '250px', objectFit: 'cover'}} src={getImageUrl(data.randomMedia.idMedia, 275)} />
                     <Card.Content>
                       <Card.Header>
-                        {data.randomMedia.problem} <Label color={getGradeColor(data.randomMedia.grade)} circular>{data.randomMedia.grade}</Label>
+                        {data.randomMedia.problem} {data.randomMedia.grade}
                       </Card.Header>
                       <Card.Description>
                         <Link to={`/area/${data.randomMedia.idArea}`}>{data.randomMedia.area}</Link> / <Link to={`/sector/${data.randomMedia.idSector}`}>{data.randomMedia.sector}</Link>
@@ -126,7 +126,7 @@ class Frontpage extends Component<any, any> {
                         </Feed.Label>
                         <Feed.Content>
                           <Feed.Summary>
-                            New {typeDescription} <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> <Label size="mini" color={getGradeColor(a.grade)} circular>{a.grade}</Label><LockSymbol visibility={a.problemVisibility}/><Feed.Date>{a.timeAgo}</Feed.Date>
+                            New {typeDescription} <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}<LockSymbol visibility={a.problemVisibility}/><Feed.Date>{a.timeAgo}</Feed.Date>
                           </Feed.Summary>
                           <Feed.Extra text>
                             {a.description}
@@ -173,7 +173,7 @@ class Frontpage extends Component<any, any> {
                         </Feed.Label>
                         <Feed.Content>
                           <Feed.Summary style={{marginBottom: '3px'}}>
-                            {summary}on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> <Label size="mini" color={getGradeColor(a.grade)} circular>{a.grade}</Label><LockSymbol visibility={a.problemVisibility}/><Feed.Date>{a.timeAgo}</Feed.Date>
+                            {summary}on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}<LockSymbol visibility={a.problemVisibility}/><Feed.Date>{a.timeAgo}</Feed.Date>
                           </Feed.Summary>
                           <Feed.Extra images as={Link} to={`/problem/${a.problemId}`}>
                             {a.media.map((m, i) => (<img key={i} src={getImageUrl(m.id, 115)}/>))}
@@ -191,7 +191,7 @@ class Frontpage extends Component<any, any> {
                         </Feed.Label>
                         <Feed.Content>
                           <Feed.Summary>
-                            <Feed.User as={Link} to={`/user/${a.id}`}>{a.name}</Feed.User> posted a comment on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> <Label size="mini" color={getGradeColor(a.grade)} circular>{a.grade}</Label><LockSymbol visibility={a.problemVisibility}/><Feed.Date>{a.timeAgo}</Feed.Date>
+                            <Feed.User as={Link} to={`/user/${a.id}`}>{a.name}</Feed.User> posted a comment on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}<LockSymbol visibility={a.problemVisibility}/><Feed.Date>{a.timeAgo}</Feed.Date>
                           </Feed.Summary>
                           <Feed.Extra text>
                             {a.message}
@@ -209,7 +209,7 @@ class Frontpage extends Component<any, any> {
                         </Feed.Label>
                         <Feed.Content>
                           <Feed.Summary>
-                            <Feed.User as={Link} to={`/user/${a.id}`}>{a.name}</Feed.User> ticked <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> <Label size="mini" color={getGradeColor(a.grade)} circular>{a.grade}</Label><LockSymbol visibility={a.problemVisibility}/><Feed.Date>{a.timeAgo}</Feed.Date>
+                            <Feed.User as={Link} to={`/user/${a.id}`}>{a.name}</Feed.User> ticked <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}<LockSymbol visibility={a.problemVisibility}/><Feed.Date>{a.timeAgo}</Feed.Date>
                           </Feed.Summary>
                           <Feed.Extra text>{a.description}</Feed.Extra>
                           <Feed.Meta><Rating defaultRating={a.stars} maxRating={3} disabled /></Feed.Meta>
