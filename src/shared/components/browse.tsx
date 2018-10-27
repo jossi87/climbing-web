@@ -76,7 +76,7 @@ class Browse extends Component<any, any> {
                 <List.Header as={Link} to={`/area/${area.id}`}>{area.name} <LockSymbol visibility={area.visibility}/></List.Header>
                 <List.Description>
                   <i>{`${area.numSectors} sector(s), ${area.numProblems} ${typeDescription}`}</i><br/>
-                  {area.comment && area.comment.length>250? area.comment.substring(0,250) + "..." : area.comment}
+                  {area.comment && area.comment.length>350? area.comment.substring(0,350) + "..." : area.comment}
                 </List.Description>
               </List.Content>
             </List.Item>
