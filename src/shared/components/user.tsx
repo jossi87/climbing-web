@@ -3,7 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Chart from './common/chart/chart';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
-import { Icon, List, Label, Header, Segment, Divider, Image, Rating } from 'semantic-ui-react';
+import { Icon, List, Label, Header, Segment, Divider, Image, Rating, Button } from 'semantic-ui-react';
 import { numberWithCommas } from './../api';
 
 class User extends Component<any, any> {
@@ -16,7 +16,7 @@ class User extends Component<any, any> {
     } else {
       data = props.staticContext.data;
     }
-    this.state = {data};
+    this.state = {data, orderByGrade: false};
   }
 
   componentDidMount() {
@@ -33,6 +33,17 @@ class User extends Component<any, any> {
 
   refresh(id) {
     this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
+  }
+
+  order = () => {
+    const orderByGrade = !this.state.orderByGrade;
+    this.state.data.ticks.sort((a, b) => {
+      if (orderByGrade && a.gradeNumber != b.gradeNumber) {
+        return b.gradeNumber-a.gradeNumber;
+      }
+      return a.num-b.num;
+    });
+    this.setState({orderByGrade});
   }
 
   render() {
@@ -75,6 +86,10 @@ class User extends Component<any, any> {
           {chart}
         </Segment>
         <Segment>
+          <Button icon labelPosition="left" onClick={this.order}>
+            <Icon name="filter"/>
+            {this.state.orderByGrade? "Order by date" : "Order by grade"}
+          </Button>
           <List divided relaxed>
             {data.ticks.map((t, i) => (
               <List.Item key={i}>
