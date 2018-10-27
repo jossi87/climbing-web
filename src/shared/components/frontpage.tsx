@@ -56,7 +56,7 @@ class Frontpage extends Component<any, any> {
           <Grid.Row>
             <Grid.Column mobile={16} tablet={8} computer={4}>
               <Statistic.Group size="mini" horizontal>
-                <Statistic>
+                <Statistic as={Link} to="/browse">
                   <Statistic.Value><Icon name='list' /> {numberWithCommas(data.numProblems)}</Statistic.Value>
                   <Statistic.Label>{data.metadata.isBouldering? "Problems" : "Routes"}</Statistic.Label>
                 </Statistic>
