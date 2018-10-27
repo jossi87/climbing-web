@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Chart from './common/chart/chart';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 import { Icon, List, Label, Header, Segment, Divider, Image, Rating } from 'semantic-ui-react';
-import { numberWithCommas, getGradeColor } from './../api';
+import { numberWithCommas } from './../api';
 
 class User extends Component<any, any> {
   constructor(props) {
@@ -80,7 +80,7 @@ class User extends Component<any, any> {
               <List.Item key={i}>
                 <List.Content>
                   <List.Header>
-                    <Link to={`/problem/${t.idProblem}`}>{t.name}</Link> <LockSymbol visibility={t.visibility}/> <Label size="mini" color={getGradeColor(t.grade)} circular>{t.grade}</Label> {t.fa && <Label color="red" size="mini" content="FA"/>}
+                    <Link to={`/problem/${t.idProblem}`}>{t.name}</Link> <LockSymbol visibility={t.visibility}/> {t.grade} {t.fa && <Label color="red" size="mini" content="FA"/>}
                   </List.Header>
                   <List.Description>
                     <Rating defaultRating={t.stars} maxRating={3} disabled /><br/>

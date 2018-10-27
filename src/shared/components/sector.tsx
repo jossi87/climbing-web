@@ -5,7 +5,7 @@ import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
 import { CroppedText, LockSymbol, Stars, LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Label, Image, Icon, Button, Card, Tab, Breadcrumb, Message } from 'semantic-ui-react';
-import { getImageUrl, getGradeColor } from '../api';
+import { getImageUrl } from '../api';
 
 class Sector extends Component<any, any> {
   constructor(props) {
@@ -141,7 +141,7 @@ class Sector extends Component<any, any> {
                   <Card.Content>
                     {problem.randomMediaId>0 && <Image floated='right' size='tiny' style={{maxHeight: '65px', objectFit: 'cover'}} src={getImageUrl(problem.randomMediaId, 80)} />}
                     <Card.Header>
-                      <Label floating size="mini">#{problem.nr}</Label> {problem.name} <Label color={getGradeColor(problem.grade)} circular>{problem.grade}</Label> <LockSymbol visibility={problem.visibility}/>
+                      <Label floating size="mini">#{problem.nr}</Label> {problem.name} {problem.grade} <LockSymbol visibility={problem.visibility}/>
                     </Card.Header>
                     <Card.Meta>
                       <Stars numStars={problem.stars}/>
