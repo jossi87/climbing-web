@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
-import { Button, Card, Breadcrumb, Icon } from 'semantic-ui-react';
+import { Button, List, Breadcrumb, Icon } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 
@@ -37,7 +37,7 @@ class Browse extends Component<any, any> {
           url: '/area/' + a.id
         }
     });
-    const map = markers.length>0 && <><Leaflet height='40vh' useOpenStreetMap={true} markers={markers} defaultCenter={this.state.data.metadata.defaultCenter} defaultZoom={this.state.data.metadata.defaultZoom}/><br/></>;
+    const map = markers.length>0 && <><Leaflet height='75vh' useOpenStreetMap={true} markers={markers} defaultCenter={this.state.data.metadata.defaultCenter} defaultZoom={this.state.data.metadata.defaultZoom}/><br/></>;
     return (
       <>
         <MetaTags>
@@ -69,21 +69,19 @@ class Browse extends Component<any, any> {
           </Breadcrumb>
         </div>
         {map}
-        <Card.Group itemsPerRow={3} stackable>
+        <List divided relaxed>
           {this.state.data.areas.map((area, i) => (
-            <Card as={Link} to={`/area/${area.id}`} key={i}>
-              <Card.Content>
-                <Card.Header>{area.name}  <LockSymbol visibility={area.visibility}/></Card.Header>
-                <Card.Meta>
-                  {`${area.numSectors} sector(s), ${area.numProblems} ${typeDescription}`}
-                </Card.Meta>
-                <Card.Description>
-                  {area.comment && area.comment.length>50? area.comment.substring(0,50) + "..." : area.comment}
-                </Card.Description>
-              </Card.Content>
-            </Card>
+            <List.Item key={i}>
+              <List.Content as={Link} to={`/area/${area.id}`}>
+                <List.Header as={Link} to={`/area/${area.id}`}>{area.name} <LockSymbol visibility={area.visibility}/></List.Header>
+                <List.Description>
+                  <i>{`${area.numSectors} sector(s), ${area.numProblems} ${typeDescription}`}</i><br/>
+                  {area.comment && area.comment.length>250? area.comment.substring(0,250) + "..." : area.comment}
+                </List.Description>
+              </List.Content>
+            </List.Item>
           ))}
-        </Card.Group>
+        </List>
       </>
     );
   }
