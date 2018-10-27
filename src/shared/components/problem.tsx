@@ -5,7 +5,7 @@ import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
 import { Button, Message, Grid, Breadcrumb, Tab, Label, Icon, List, Comment, Header, Rating } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
-import { postComment, getGradeColor } from './../api';
+import { postComment } from './../api';
 import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
 
@@ -127,7 +127,7 @@ class Problem extends Component<any, any> {
             <Comment.Content>
               <Comment.Author as={Link} to={`/user/${t.idUser}`}>{t.name}</Comment.Author>
               <Comment.Metadata>{t.date}</Comment.Metadata>
-              <Comment.Text><Rating defaultRating={t.stars} maxRating={3} disabled /><Label size="tiny" color={getGradeColor(t.suggestedGrade)} circular>{t.suggestedGrade}</Label><br/>{t.comment}</Comment.Text>
+              <Comment.Text><Rating defaultRating={t.stars} maxRating={3} disabled /> {t.suggestedGrade}<br/>{t.comment}</Comment.Text>
             </Comment.Content>
           </Comment>
         ))}
@@ -240,7 +240,7 @@ class Problem extends Component<any, any> {
             <Breadcrumb.Divider icon='right angle' />
             <Breadcrumb.Section><Link to={`/sector/${data.sectorId}`}>{data.sectorName}</Link> <LockSymbol visibility={data.sectorVisibility}/></Breadcrumb.Section>
             <Breadcrumb.Divider icon='right angle' />
-            <Breadcrumb.Section active>{data.name} <Label color={getGradeColor(data.grade)} circular>{data.grade}</Label> <LockSymbol visibility={data.visibility}/></Breadcrumb.Section>
+            <Breadcrumb.Section active>{data.name} {data.grade} <LockSymbol visibility={data.visibility}/></Breadcrumb.Section>
           </Breadcrumb>
         </div>
         <Tab panes={panes} />
@@ -271,7 +271,7 @@ class Problem extends Component<any, any> {
                   {data.sections.map((s, i) => (
                     <List.Item key={i}>
                       <List.Icon verticalAlign='middle'>
-                        <Label color={getGradeColor(s.grade)} circular>{s.grade}</Label>
+                        {s.grade}
                       </List.Icon>
                       <List.Content>
                         <List.Header>#{s.nr}</List.Header>
