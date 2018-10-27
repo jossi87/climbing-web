@@ -56,7 +56,7 @@ class App extends Component {
       backgroundColor: '#FFFFFF'
     };
     return (
-      <div>
+      <div style={{background: "#F5F5F5"}}>
         <Switch>
           {routes.map(({ path, exact, component: Component, ...rest }) => (
             <Route key={path} path={path} exact={exact} render={(props: any) => {
