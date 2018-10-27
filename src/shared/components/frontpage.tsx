@@ -56,7 +56,7 @@ class Frontpage extends Component<any, any> {
           <Grid.Row>
             <Grid.Column mobile={16} tablet={8} computer={4}>
               <Statistic.Group size="mini" horizontal>
-                <Statistic as={Link} to="/browse">
+                <Statistic as={Link} to="/browse" color="blue">
                   <Statistic.Value><Icon name='list' /> {numberWithCommas(data.numProblems)}</Statistic.Value>
                   <Statistic.Label>{data.metadata.isBouldering? "Problems" : "Routes"}</Statistic.Label>
                 </Statistic>
@@ -209,7 +209,7 @@ class Frontpage extends Component<any, any> {
                         </Feed.Label>
                         <Feed.Content>
                           <Feed.Summary>
-                            <Feed.User as={Link} to={`/user/${a.id}`}>{a.name}</Feed.User> ticked <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}<LockSymbol visibility={a.problemVisibility}/><Feed.Date>{a.timeAgo}</Feed.Date>
+                            <Feed.User as={Link} to={`/user/${a.id}`} style={{color: "black"}}>{a.name}</Feed.User> ticked <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}<LockSymbol visibility={a.problemVisibility}/><Feed.Date>{a.timeAgo}</Feed.Date>
                           </Feed.Summary>
                           <Feed.Extra text>{a.description}</Feed.Extra>
                           <Feed.Meta><Rating defaultRating={a.stars} maxRating={3} disabled /></Feed.Meta>
