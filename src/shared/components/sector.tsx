@@ -135,7 +135,7 @@ class Sector extends Component<any, any> {
         {data.problems &&
           <>
             <br/>
-            <Card.Group stackable itemsPerRow={3}>
+            <Card.Group stackable itemsPerRow={1}>
               {data.problems.map((problem, i) => (
                 <Card as={Link} to={`/problem/${problem.id}`} key={i}>
                   <Card.Content>

@@ -2,8 +2,8 @@ import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Chart from './common/chart/chart';
-import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
-import { Icon, List, Label, Header, Segment, Divider, Image, Rating, Button } from 'semantic-ui-react';
+import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
+import { Icon, List, Label, Header, Segment, Divider, Image, Button } from 'semantic-ui-react';
 import { numberWithCommas } from './../api';
 
 class User extends Component<any, any> {
@@ -98,9 +98,9 @@ class User extends Component<any, any> {
                     <Link to={`/problem/${t.idProblem}`}>{t.name}</Link> <LockSymbol visibility={t.visibility}/> {t.grade} {t.fa && <Label color="red" size="mini" content="FA"/>}
                   </List.Header>
                   <List.Description>
-                    <Rating defaultRating={t.stars} maxRating={3} disabled /><br/>
-                    {t.dateHr && <small>{t.dateHr}<br/></small>}
-                    {t.comment}
+                    {t.stars>0 && <Stars numStars={t.stars} />}
+                    {t.dateHr && <small>{t.dateHr}</small>}
+                    {t.comment && <><br/>{t.comment}</>}
                   </List.Description>
                 </List.Content>
               </List.Item>
