@@ -85,10 +85,14 @@ class User extends Component<any, any> {
             <Label color='blue' image><Icon name='video' />{numberWithCommas(data.numVideoTags)}<Label.Detail>Tag</Label.Detail></Label>
             <Label color='violet' image><Icon name='video' />{numberWithCommas(data.numVideosCreated)}<Label.Detail>Captured</Label.Detail></Label>
           </Label.Group>
-          <Divider />
-          {chart}
+          {chart && 
+            <>
+              <Divider/>
+              {chart}
+            </>
+          }
         </Segment>
-        {data.ticks &&
+        {data.ticks.length>0 &&
           <Segment>
             <div style={{marginBottom: '5px'}}>
               <div style={{float: 'right'}}>

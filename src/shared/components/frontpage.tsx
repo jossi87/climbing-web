@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
-import { Label, Grid, Statistic, Icon, Image, Card, Feed, Rating } from 'semantic-ui-react';
+import { Label, Grid, Statistic, Icon, Image, Card, Feed, Rating, Segment } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { getImageUrl, numberWithCommas } from '../api';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
@@ -55,7 +55,7 @@ class Frontpage extends Component<any, any> {
         <Grid>
           <Grid.Row>
             <Grid.Column mobile={16} tablet={8} computer={4}>
-              <Statistic.Group size="mini" horizontal>
+              <Statistic.Group size="mini" horizontal as={Segment}>
                 <Statistic as={Link} to="/browse" color="blue">
                   <Statistic.Value><Icon name='list' /> {numberWithCommas(data.numProblems)}</Statistic.Value>
                   <Statistic.Label>{data.metadata.isBouldering? "Problems" : "Routes"}</Statistic.Label>
@@ -114,7 +114,7 @@ class Frontpage extends Component<any, any> {
               }
             </Grid.Column>
             <Grid.Column mobile={16} tablet={8} computer={12}>
-              <Feed>
+              <Feed as={Segment}>
                 {data.activity && data.activity.map((a, i) => {
                   // FA
                   if (a.users) {

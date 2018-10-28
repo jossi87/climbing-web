@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
 import { CroppedText, LockSymbol, LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { Button, Tab, Item, Message, Icon, Image, Breadcrumb } from 'semantic-ui-react';
+import { Button, Tab, Item, Message, Icon, Image, Breadcrumb, Segment, Header } from 'semantic-ui-react';
 import { getImageUrl } from '../api';
 
 class Area extends Component<any, any> {
@@ -121,9 +121,9 @@ class Area extends Component<any, any> {
           </Message>
         }
         {this.state.data.sectors &&
-          <>
+          <Segment>
+            <Header as="h2">Sectors:</Header>
             <Item.Group link unstackable>
-              <Item.Header>Sector(s):</Item.Header>
               {this.state.data.sectors.map((sector, i) => (
                 <Item as={Link} to={`/sector/${sector.id}`} key={i}>
                   <Image size="small" style={{maxHeight: '150px', objectFit: 'cover'}} src={sector.randomMediaId? getImageUrl(sector.randomMediaId, 150) : '/png/image.png'} />
@@ -141,7 +141,7 @@ class Area extends Component<any, any> {
                 </Item>
               ))}
             </Item.Group>
-          </>
+          </Segment>
         }
       </>
     );
