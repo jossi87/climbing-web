@@ -4,8 +4,7 @@ import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
 import { LockSymbol, Stars, LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { Label, Image, Segment, Icon, Button, List, Tab, Breadcrumb, Message } from 'semantic-ui-react';
-import { getImageUrl } from './../api';
+import { Segment, Icon, Button, List, Tab, Breadcrumb, Message } from 'semantic-ui-react';
 
 class Sector extends Component<any, any> {
   constructor(props) {
@@ -159,7 +158,7 @@ class Sector extends Component<any, any> {
                       <a>{problem.name}</a>
                       {' '}{problem.grade}
                       {' '}<Stars numStars={problem.stars}/>
-                      {problem.fa && <i style={{color: "gray"}}>{problem.fa}</i>}
+                      {problem.fa && <i style={{color: "gray"}}>{problem.fa} </i>}
                       {problem.hasImages>0 && <Icon color="black" name="photo"/>}
                       {problem.hasMovies>0 && <Icon color="black" name="film"/>}
                       <LockSymbol visibility={problem.visibility}/>
