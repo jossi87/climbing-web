@@ -2,9 +2,9 @@ import React, {Component} from 'react';
 import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { Header, Segment, Form, Dropdown, Button, Checkbox, Icon, List, Image, Rating } from 'semantic-ui-react';
+import { Header, Segment, Form, Dropdown, Button, Checkbox, Icon, List, Image } from 'semantic-ui-react';
 import { getImageUrl, postFilter } from '../api';
-import { LockSymbol } from './common/widgets/widgets';
+import { Stars, LockSymbol } from './common/widgets/widgets';
 
 class Filter extends Component<any, any> {
   constructor(props) {
@@ -46,8 +46,8 @@ class Filter extends Component<any, any> {
     var res = results && results.filter(p => ( (!hideTicked || !p.ticked) && (!onlyWithMedia || p.randomMediaId>0) ))
     return (
       <>
-        <Header>Filter</Header>
         <Segment>
+          <Header>Filter</Header>
           <Form>
             <Form.Field>
               <Dropdown placeholder="Select grade(s)" fluid multiple selection options={gradeOptions} onChange={this.onChangeGrades} />
@@ -65,7 +65,7 @@ class Filter extends Component<any, any> {
           </Form>
         </Segment>
         {res && (
-          <>
+          <Segment>
             <Header as="h3">{res.length} {data.metadata.isBouldering? "Problems" : "Routes"}</Header>
             <Leaflet
               height='40vh'
@@ -78,7 +78,7 @@ class Filter extends Component<any, any> {
                   <Image avatar src={p.randomMediaId>0? getImageUrl(p.randomMediaId, 28) : '/png/image.png'} />
                   <List.Content>
                     <List.Header>
-                      {p.problemName} {p.grade} <LockSymbol visibility={p.problemVisibility}/> <Rating defaultRating={p.stars} maxRating={p.stars} disabled />
+                      {p.problemName} {p.grade} <LockSymbol visibility={p.problemVisibility}/> <Stars numStars={p.stars} />
                     </List.Header>
                     <List.Description>
                       {p.areaName} <LockSymbol visibility={p.areaVisibility}/> / {p.sectorName} <LockSymbol visibility={p.sectorVisibility}/>
@@ -87,7 +87,7 @@ class Filter extends Component<any, any> {
                 </List.Item>
               ))}
             </List>
-          </>
+          </Segment>
         )}
       </>
     )

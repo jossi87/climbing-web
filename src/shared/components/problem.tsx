@@ -3,8 +3,8 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
-import { Button, Message, Grid, Breadcrumb, Tab, Label, Icon, List, Comment, Header, Rating, Segment } from 'semantic-ui-react';
-import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
+import { Button, Message, Grid, Breadcrumb, Tab, Label, Icon, List, Comment, Header, Segment } from 'semantic-ui-react';
+import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
 import { postComment } from './../api';
 import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
@@ -127,7 +127,7 @@ class Problem extends Component<any, any> {
             <Comment.Content>
               <Comment.Author as={Link} to={`/user/${t.idUser}`}>{t.name}</Comment.Author>
               <Comment.Metadata>{t.date}</Comment.Metadata>
-              <Comment.Text><Rating defaultRating={t.stars} maxRating={3} disabled /> {t.suggestedGrade}<br/>{t.comment}</Comment.Text>
+              <Comment.Text><Stars numStars={t.stars} /> {t.suggestedGrade}<br/>{t.comment}</Comment.Text>
             </Comment.Content>
           </Comment>
         ))}

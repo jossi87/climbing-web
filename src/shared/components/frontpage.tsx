@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
-import { Label, Grid, Statistic, Icon, Image, Card, Feed, Rating, Segment } from 'semantic-ui-react';
+import { Label, Grid, Statistic, Icon, Image, Card, Feed, Segment } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { getImageUrl, numberWithCommas } from '../api';
-import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
+import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
 
 class Frontpage extends Component<any, any> {
   constructor(props) {
@@ -212,7 +212,7 @@ class Frontpage extends Component<any, any> {
                             <Feed.User as={Link} to={`/user/${a.id}`} style={{color: "black"}}>{a.name}</Feed.User> ticked <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}<LockSymbol visibility={a.problemVisibility}/><Feed.Date>{a.timeAgo}</Feed.Date>
                           </Feed.Summary>
                           <Feed.Extra text>{a.description}</Feed.Extra>
-                          <Feed.Meta><Rating defaultRating={a.stars} maxRating={3} disabled /></Feed.Meta>
+                          <Feed.Meta><Stars numStars={a.stars} /></Feed.Meta>
                         </Feed.Content>
                       </Feed.Event>
                     )
