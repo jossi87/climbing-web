@@ -3,9 +3,9 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
-import { CroppedText, LockSymbol, Stars, LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { Label, Image, Icon, Button, Card, Tab, Breadcrumb, Message } from 'semantic-ui-react';
-import { getImageUrl } from '../api';
+import { LockSymbol, Stars, LoadingAndRestoreScroll } from './common/widgets/widgets';
+import { Label, Image, Segment, Icon, Button, List, Tab, Breadcrumb, Message } from 'semantic-ui-react';
+import { getImageUrl } from './../api';
 
 class Sector extends Component<any, any> {
   constructor(props) {
@@ -17,7 +17,7 @@ class Sector extends Component<any, any> {
     } else {
       data = props.staticContext.data;
     }
-    this.state = {data};
+    this.state = {data, orderByGrade: true};
   }
 
   componentDidMount() {
@@ -42,8 +42,19 @@ class Sector extends Component<any, any> {
     this.setState({data});
   }
 
+  order = () => {
+    const orderByGrade = !this.state.orderByGrade;
+    this.state.data.problems.sort((a, b) => {
+      if (orderByGrade && a.gradeNumber != b.gradeNumber) {
+        return b.gradeNumber-a.gradeNumber;
+      }
+      return a.nr-b.nr;
+    });
+    this.setState({orderByGrade});
+  }
+
   render() {
-    const { data } = this.state;
+    const { data, orderByGrade } = this.state;
     if (!data) {
       return <LoadingAndRestoreScroll />;
     }
@@ -98,7 +109,7 @@ class Sector extends Component<any, any> {
         </MetaTags>
         <div style={{marginBottom: '5px'}}>
           <div style={{float: 'right'}}>
-            {this.state && this.state.data && this.state.data.metadata.isAdmin &&
+            {data && data.metadata.isAdmin &&
               <Button.Group size="mini" compact>
                 <Button animated='fade' as={Link} to={{ pathname: `/problem/edit/-1`, query: { idSector: data.id, nr: nextNr, lat: data.lat, lng: data.lng } }}>
                   <Button.Content hidden>Add</Button.Content>
@@ -133,41 +144,37 @@ class Sector extends Component<any, any> {
           </Message>
         }
         {data.problems &&
-          <>
-            <br/>
-            <Card.Group stackable itemsPerRow={1}>
+          <Segment>
+            <Button primary icon labelPosition="left" onClick={this.order}>
+              <Icon name="filter"/>
+              {orderByGrade? "Order by number" : "Order by grade"}
+            </Button>  
+            <List selection>
               {data.problems.map((problem, i) => (
-                <Card as={Link} to={`/problem/${problem.id}`} key={i}>
-                  <Card.Content>
-                    {problem.randomMediaId>0 && <Image floated='right' size='tiny' style={{maxHeight: '65px', objectFit: 'cover'}} src={getImageUrl(problem.randomMediaId, 80)} />}
-                    <Card.Header>
-                      <Label floating size="mini">#{problem.nr}</Label> {problem.name} {problem.grade} <LockSymbol visibility={problem.visibility}/>
-                    </Card.Header>
-                    <Card.Meta>
-                      <Stars numStars={problem.stars}/>
-                    </Card.Meta>
-                    <Card.Description>
-                      <CroppedText text={problem.comment} maxLength={150}/>
-                    </Card.Description>
-                  </Card.Content>
-                  <Card.Content extra>
-                    <Label.Group size="mini">
-                      <Label><Icon name='check' /> {problem.numTicks}</Label>
-                      <Label><Icon name='photo' /> {problem.numImages}</Label>
-                      <Label><Icon name='video' /> {problem.numMovies}</Label>
-                      {this.state && this.state.data && !this.state.data.metadata.isBouldering && <Label>{problem.t.type + " - " + problem.t.subType}</Label>}
-                      {problem.fa && problem.fa.map((u, i) => (
-                        <Label key={i} as={Link} to={`/user/${u.id}`} image>
-                          {u.picture ? <Image src={u.picture} /> : <Icon name="user"/>}{u.name}
-                        </Label>
-                      ))}
-                    </Label.Group>
-                  </Card.Content>
-                  {problem.danger? <Label size='mini' attached='bottom right' icon='warning sign' color='red' /> : problem.ticked && <Label size='mini' attached='bottom right' icon='check' color='green' />}
-                </Card>
+                <List.Item key={i} as={Link} to={`/problem/${problem.id}`}>
+                  <List.Content floated="left">
+                    <List.Header>
+                      {problem.danger && <Icon color="red" name="warning"/>}
+                      {!orderByGrade && `#${problem.nr} `}
+                      <a>{problem.name}</a>
+                      {' '}{problem.grade}
+                      {' '}<Stars numStars={problem.stars}/>
+                      {problem.fa && <i style={{color: "gray"}}>{problem.fa}</i>}
+                      {problem.hasImages>0 && <Icon color="black" name="photo"/>}
+                      {problem.hasMovies>0 && <Icon color="black" name="film"/>}
+                      <LockSymbol visibility={problem.visibility}/>
+                      {problem.ticked && <Icon color="green" name="check"/>}
+                    </List.Header>
+                  </List.Content>
+                  <List.Content floated="right">
+                    <List.Description>
+                      {!data.metadata.isBouldering && ` ${problem.t.type} - ${problem.t.subType}`}
+                    </List.Description>
+                  </List.Content>
+                </List.Item>
               ))}
-            </Card.Group>
-          </>
+            </List>
+          </Segment>
         }
       </>
     );

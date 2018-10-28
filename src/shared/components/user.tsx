@@ -86,7 +86,7 @@ class User extends Component<any, any> {
           {chart}
         </Segment>
         <Segment>
-          <Button icon labelPosition="left" onClick={this.order}>
+          <Button primary icon labelPosition="left" onClick={this.order}>
             <Icon name="filter"/>
             {this.state.orderByGrade? "Order by date" : "Order by grade"}
           </Button>
@@ -95,10 +95,9 @@ class User extends Component<any, any> {
               <List.Item key={i}>
                 <List.Content>
                   <List.Header>
-                    <Link to={`/problem/${t.idProblem}`}>{t.name}</Link> <LockSymbol visibility={t.visibility}/> {t.grade} {t.fa && <Label color="red" size="mini" content="FA"/>}
+                    <Link to={`/problem/${t.idProblem}`}>{t.name}</Link> <LockSymbol visibility={t.visibility}/> {t.grade} {t.stars>0 && <Stars numStars={t.stars} />} {t.fa && <Label color="red" size="mini" content="FA"/>}
                   </List.Header>
                   <List.Description>
-                    {t.stars>0 && <Stars numStars={t.stars} />}
                     {t.dateHr && <small>{t.dateHr}</small>}
                     {t.comment && <><br/>{t.comment}</>}
                   </List.Description>
