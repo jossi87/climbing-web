@@ -147,14 +147,14 @@ class Sector extends Component<any, any> {
         }
         {data.problems &&
           <Segment>
-            <div style={{marginBottom: '5px'}}>
+            <div>
               <div style={{float: 'right'}}>
                 <Button icon labelPosition="left" onClick={this.order} size="mini">
                   <Icon name="filter"/>
                   {orderByGrade? "Order by number" : "Order by grade"}
                 </Button>  
               </div>
-              <Header as="h2">{data.metadata.isBouldering? "Problems:" : "Routes:"}</Header>
+              <Header as="h3">{data.metadata.isBouldering? "Problems:" : "Routes:"}</Header>
             </div>
             <List selection>
               {data.problems.map((problem, i) => (

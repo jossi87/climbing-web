@@ -122,7 +122,7 @@ class Area extends Component<any, any> {
         }
         {this.state.data.sectors &&
           <Segment>
-            <Header as="h2">Sectors:</Header>
+            <Header as="h3">Sectors:</Header>
             <Item.Group link unstackable>
               {this.state.data.sectors.map((sector, i) => (
                 <Item as={Link} to={`/sector/${sector.id}`} key={i}>

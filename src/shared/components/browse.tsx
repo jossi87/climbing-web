@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
-import { Button, List, Breadcrumb, Icon } from 'semantic-ui-react';
+import { Button, List, Breadcrumb, Icon, Segment } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 
@@ -69,7 +69,7 @@ class Browse extends Component<any, any> {
           </Breadcrumb>
         </div>
         {map}
-        <List divided relaxed>
+        <List divided relaxed as={Segment}>
           {this.state.data.areas.map((area, i) => (
             <List.Item key={i}>
               <List.Content as={Link} to={`/area/${area.id}`}>

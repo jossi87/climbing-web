@@ -3,7 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
-import { Button, Message, Grid, Breadcrumb, Tab, Label, Icon, List, Comment, Header, Rating } from 'semantic-ui-react';
+import { Button, Message, Grid, Breadcrumb, Tab, Label, Icon, List, Comment, Header, Rating, Segment } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 import { postComment } from './../api';
 import TickModal from './common/tick-modal/tick-modal';
@@ -119,7 +119,7 @@ class Problem extends Component<any, any> {
     }
     
     const ticks = data.ticks && (
-      <Comment.Group>
+      <Comment.Group as={Segment}>
         <Header as="h3" dividing>Ticks</Header>
         {data.ticks.map((t, i) => (
           <Comment key={i}>
@@ -134,7 +134,7 @@ class Problem extends Component<any, any> {
       </Comment.Group>
     );
     const comments = data.comments && (
-      <Comment.Group>
+      <Comment.Group as={Segment}>
         <Header as="h3" dividing>Comments</Header>
         {data.comments.map((c, i) => {
           var extra = null;

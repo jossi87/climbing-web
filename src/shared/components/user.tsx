@@ -73,10 +73,10 @@ class User extends Component<any, any> {
           <meta property="og:image:width" content={data.metadata.og.imageWidth} />
           <meta property="og:image:height" content={data.metadata.og.imageHeight} />
         </MetaTags>
-        <Header>
-          {data.picture && <Image circular src={data.picture}/>} {data.name}
-        </Header>
         <Segment>
+          <Header as="h2">
+            {data.picture && <Image circular src={data.picture}/>} {data.name}
+          </Header>  
           <Label.Group size="small">
             <Label color='orange' image><Icon name='check' />{numberWithCommas(numFas)}<Label.Detail>FA</Label.Detail></Label>
             <Label color='olive' image><Icon name='check' />{numberWithCommas(numTicks)}<Label.Detail>Tick</Label.Detail></Label>
@@ -94,14 +94,14 @@ class User extends Component<any, any> {
         </Segment>
         {data.ticks.length>0 &&
           <Segment>
-            <div style={{marginBottom: '5px'}}>
+            <div>
               <div style={{float: 'right'}}>
                 <Button icon labelPosition="left" onClick={this.order} size="mini">
                   <Icon name="filter"/>
                   {this.state.orderByGrade? "Order by date" : "Order by grade"}
                 </Button>  
               </div>
-              <Header as="h2">Ticks:</Header>
+              <Header as="h3">Public ascents:</Header>
             </div>
             <List selection>
               {data.ticks.map((t, i) => (
