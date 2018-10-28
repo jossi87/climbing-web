@@ -44,8 +44,11 @@ class Sector extends Component<any, any> {
   order = () => {
     const orderByGrade = !this.state.orderByGrade;
     this.state.data.problems.sort((a, b) => {
-      if (orderByGrade && a.gradeNumber != b.gradeNumber) {
-        return b.gradeNumber-a.gradeNumber;
+      if (orderByGrade) {
+        if (a.gradeNumber != b.gradeNumber) {
+          return b.gradeNumber-a.gradeNumber;
+        }
+        return a.name.localeCompare(b.name);
       }
       return a.nr-b.nr;
     });

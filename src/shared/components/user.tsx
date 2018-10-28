@@ -38,8 +38,11 @@ class User extends Component<any, any> {
   order = () => {
     const orderByGrade = !this.state.orderByGrade;
     this.state.data.ticks.sort((a, b) => {
-      if (orderByGrade && a.gradeNumber != b.gradeNumber) {
-        return b.gradeNumber-a.gradeNumber;
+      if (orderByGrade) {
+        if (a.gradeNumber != b.gradeNumber) {
+          return b.gradeNumber-a.gradeNumber;
+        }
+        return a.name.localeCompare(b.name);
       }
       return a.num-b.num;
     });
@@ -96,18 +99,18 @@ class User extends Component<any, any> {
               </div>
               <Header as="h2">Ticks:</Header>
             </div>
-            <List divided relaxed>
+            <List selection>
               {data.ticks.map((t, i) => (
                 <List.Item key={i}>
-                  <List.Content>
-                    <List.Header>
-                      <Link to={`/problem/${t.idProblem}`}>{t.name}</Link> <LockSymbol visibility={t.visibility}/> {t.grade} {t.stars>0 && <Stars numStars={t.stars} />} {t.fa && <Label color="red" size="mini" content="FA"/>}
-                    </List.Header>
-                    <List.Description>
-                      {t.dateHr && <small>{t.dateHr}</small>}
-                      {t.comment && <><br/>{t.comment}</>}
-                    </List.Description>
-                  </List.Content>
+                  <List.Header>
+                    <small>{t.dateHr}</small>
+                    {' '}<Link to={`/problem/${t.idProblem}`}>{t.name}</Link>
+                    {' '}{t.grade}
+                    <LockSymbol visibility={t.visibility}/>
+                    {t.stars>0 && <>{' '}<Stars numStars={t.stars} /></>}
+                    {t.fa && <>{' '}<Label color="red" size="mini" content="FA"/></>}
+                    {t.comment && <small style={{color: 'gray'}}> {t.comment}</small>}
+                  </List.Header>
                 </List.Item>
               ))}
             </List>
