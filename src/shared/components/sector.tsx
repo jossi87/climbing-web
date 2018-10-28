@@ -146,7 +146,7 @@ class Sector extends Component<any, any> {
           <Segment>
             <div style={{marginBottom: '5px'}}>
               <div style={{float: 'right'}}>
-                <Button secondary icon labelPosition="left" onClick={this.order} size="tiny">
+                <Button icon labelPosition="left" onClick={this.order} size="mini">
                   <Icon name="filter"/>
                   {orderByGrade? "Order by number" : "Order by grade"}
                 </Button>  
@@ -156,25 +156,19 @@ class Sector extends Component<any, any> {
             <List selection>
               {data.problems.map((problem, i) => (
                 <List.Item key={i} as={Link} to={`/problem/${problem.id}`}>
-                  <List.Content floated="left">
-                    <List.Header>
-                      {problem.danger && <Icon color="red" name="warning"/>}
-                      {!orderByGrade && `#${problem.nr} `}
-                      <a>{problem.name}</a>
-                      {' '}{problem.grade}
-                      {' '}<Stars numStars={problem.stars}/>
-                      {problem.fa && <i style={{color: "gray"}}>{problem.fa} </i>}
-                      {problem.hasImages>0 && <Icon color="black" name="photo"/>}
-                      {problem.hasMovies>0 && <Icon color="black" name="film"/>}
-                      <LockSymbol visibility={problem.visibility}/>
-                      {problem.ticked && <Icon color="green" name="check"/>}
-                    </List.Header>
-                  </List.Content>
-                  <List.Content floated="right">
-                    <List.Description>
-                      {!data.metadata.isBouldering && ` ${problem.t.type} - ${problem.t.subType}`}
-                    </List.Description>
-                  </List.Content>
+                  <List.Header>
+                    {problem.danger && <Icon color="red" name="warning"/>}
+                    {!orderByGrade && `#${problem.nr} `}
+                    <a>{problem.name}</a>
+                    {' '}{problem.grade}
+                    {' '}<Stars numStars={problem.stars}/>
+                    {problem.fa && <small><i style={{color: "gray"}}>{problem.fa} </i></small>}
+                    {problem.hasImages>0 && <Icon color="black" name="photo"/>}
+                    {problem.hasMovies>0 && <Icon color="black" name="film"/>}
+                    <LockSymbol visibility={problem.visibility}/>
+                    {problem.ticked && <Icon color="green" name="check"/>}
+                    {!data.metadata.isBouldering && <small style={{color: 'gray'}}>{` ${problem.t.type} - ${problem.t.subType}`}</small>}
+                  </List.Header>
                 </List.Item>
               ))}
             </List>

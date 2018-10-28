@@ -85,27 +85,34 @@ class User extends Component<any, any> {
           <Divider />
           {chart}
         </Segment>
-        <Segment>
-          <Button primary icon labelPosition="left" onClick={this.order}>
-            <Icon name="filter"/>
-            {this.state.orderByGrade? "Order by date" : "Order by grade"}
-          </Button>
-          <List divided relaxed>
-            {data.ticks.map((t, i) => (
-              <List.Item key={i}>
-                <List.Content>
-                  <List.Header>
-                    <Link to={`/problem/${t.idProblem}`}>{t.name}</Link> <LockSymbol visibility={t.visibility}/> {t.grade} {t.stars>0 && <Stars numStars={t.stars} />} {t.fa && <Label color="red" size="mini" content="FA"/>}
-                  </List.Header>
-                  <List.Description>
-                    {t.dateHr && <small>{t.dateHr}</small>}
-                    {t.comment && <><br/>{t.comment}</>}
-                  </List.Description>
-                </List.Content>
-              </List.Item>
-            ))}
-          </List>
-        </Segment>
+        {data.ticks &&
+          <Segment>
+            <div style={{marginBottom: '5px'}}>
+              <div style={{float: 'right'}}>
+                <Button icon labelPosition="left" onClick={this.order} size="mini">
+                  <Icon name="filter"/>
+                  {this.state.orderByGrade? "Order by date" : "Order by grade"}
+                </Button>  
+              </div>
+              <Header as="h2">Ticks:</Header>
+            </div>
+            <List divided relaxed>
+              {data.ticks.map((t, i) => (
+                <List.Item key={i}>
+                  <List.Content>
+                    <List.Header>
+                      <Link to={`/problem/${t.idProblem}`}>{t.name}</Link> <LockSymbol visibility={t.visibility}/> {t.grade} {t.stars>0 && <Stars numStars={t.stars} />} {t.fa && <Label color="red" size="mini" content="FA"/>}
+                    </List.Header>
+                    <List.Description>
+                      {t.dateHr && <small>{t.dateHr}</small>}
+                      {t.comment && <><br/>{t.comment}</>}
+                    </List.Description>
+                  </List.Content>
+                </List.Item>
+              ))}
+            </List>
+          </Segment>
+        }
       </React.Fragment>
     );
   }
