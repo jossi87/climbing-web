@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
 import { LockSymbol, Stars, LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { Segment, Icon, Button, List, Tab, Breadcrumb, Message } from 'semantic-ui-react';
+import { Segment, Icon, Button, List, Tab, Breadcrumb, Message, Header } from 'semantic-ui-react';
 
 class Sector extends Component<any, any> {
   constructor(props) {
@@ -144,10 +144,15 @@ class Sector extends Component<any, any> {
         }
         {data.problems &&
           <Segment>
-            <Button primary icon labelPosition="left" onClick={this.order}>
-              <Icon name="filter"/>
-              {orderByGrade? "Order by number" : "Order by grade"}
-            </Button>  
+            <div style={{marginBottom: '5px'}}>
+              <div style={{float: 'right'}}>
+                <Button secondary icon labelPosition="left" onClick={this.order} size="tiny">
+                  <Icon name="filter"/>
+                  {orderByGrade? "Order by number" : "Order by grade"}
+                </Button>  
+              </div>
+              <Header as="h2">{data.metadata.isBouldering? "Problems:" : "Routes:"}</Header>
+            </div>
             <List selection>
               {data.problems.map((problem, i) => (
                 <List.Item key={i} as={Link} to={`/problem/${problem.id}`}>
