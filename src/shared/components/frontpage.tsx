@@ -191,7 +191,7 @@ class Frontpage extends Component<any, any> {
                         </Feed.Label>
                         <Feed.Content>
                           <Feed.Summary>
-                            <Feed.User as={Link} to={`/user/${a.id}`}>{a.name}</Feed.User> posted a comment on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}<LockSymbol visibility={a.problemVisibility}/><Feed.Date>{a.timeAgo}</Feed.Date>
+                            <Feed.User as={Link} to={`/user/${a.id}`} style={{color: "black"}}>{a.name}</Feed.User> posted a comment on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}<LockSymbol visibility={a.problemVisibility}/><Feed.Date>{a.timeAgo}</Feed.Date>
                           </Feed.Summary>
                           <Feed.Extra text>
                             {a.message}
