@@ -3,7 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
-import { Button, Message, Grid, Breadcrumb, Tab, Label, Icon, List, Comment, Header, Segment } from 'semantic-ui-react';
+import { Button, Message, Grid, Breadcrumb, Tab, Label, Icon, List, Comment, Header, Segment, Container } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
 import { postComment } from './../api';
 import TickModal from './common/tick-modal/tick-modal';
@@ -118,59 +118,54 @@ class Problem extends Component<any, any> {
       });
     }
     
-    const ticks = data.ticks && (
+    const ticks = (
       <Comment.Group as={Segment}>
-        <Header as="h3" dividing>Ticks</Header>
-        {data.ticks.map((t, i) => (
-          <Comment key={i}>
-            <Comment.Avatar src={t.picture? t.picture : '/png/image.png'} />
-            <Comment.Content>
-              <Comment.Author as={Link} to={`/user/${t.idUser}`}>{t.name}</Comment.Author>
-              <Comment.Metadata>{t.date}</Comment.Metadata>
-              <Comment.Text><Stars numStars={t.stars} /> {t.suggestedGrade}<br/>{t.comment}</Comment.Text>
-            </Comment.Content>
-          </Comment>
-        ))}
-      </Comment.Group>
-    );
-    const comments = data.comments && (
-      <Comment.Group as={Segment}>
-        <Header as="h3" dividing>Comments</Header>
-        {data.comments.map((c, i) => {
-          var extra = null;
-          if (c.danger) {
-            extra = <Label color="red">Flagged as dangerous</Label>;
-          } else if (c.resolved) {
-            extra = <Label color="green">Flagged as safe</Label>;
-          } else if (data.metadata && data.metadata.isAuthenticated && !data.metadata.isBouldering) {
-            extra = <Button basic size="tiny" compact onClick={() => this.flagAsDangerous(c.id)}>Flag as dangerous</Button>;
-          }
-          return (
+        <Header as="h3" dividing>Ticks:</Header>
+        {data.ticks?
+          data.ticks.map((t, i) => (
             <Comment key={i}>
-              <Comment.Avatar src={c.picture? c.picture : '/png/image.png'} />
+              <Comment.Avatar src={t.picture? t.picture : '/png/image.png'} />
               <Comment.Content>
-                <Comment.Author as={Link} to={`/user/${c.idUser}`}>{c.name}</Comment.Author>
-                <Comment.Metadata>{c.date}</Comment.Metadata>
-                <Comment.Text>{c.message}</Comment.Text>
-                {extra && <Comment.Actions>{extra}</Comment.Actions>}
+                <Comment.Author as={Link} to={`/user/${t.idUser}`}>{t.name}</Comment.Author>
+                <Comment.Metadata>{t.date}</Comment.Metadata>
+                <Comment.Text><Stars numStars={t.stars} /> {t.suggestedGrade}<br/>{t.comment}</Comment.Text>
               </Comment.Content>
             </Comment>
-        )})}
+          ))
+        :
+          <i>No ticks</i>
+        }
       </Comment.Group>
     );
-    var footer;
-    if (ticks && comments) {
-      footer = (
-        <Grid>
-          <Grid.Column mobile={16} tablet={8} computer={8}>{ticks}</Grid.Column>
-          <Grid.Column mobile={16} tablet={8} computer={8}>{comments}</Grid.Column>
-        </Grid>
-      )
-    } else if (ticks) {
-      footer = ticks;
-    } else if (comments) {
-      footer = comments;
-    }
+    const comments = (
+      <Comment.Group as={Segment}>
+        <Header as="h3" dividing>Comments:</Header>
+        {data.comments?
+          data.comments.map((c, i) => {
+            var extra = null;
+            if (c.danger) {
+              extra = <Label color="red">Flagged as dangerous</Label>;
+            } else if (c.resolved) {
+              extra = <Label color="green">Flagged as safe</Label>;
+            } else if (data.metadata && data.metadata.isAuthenticated && !data.metadata.isBouldering) {
+              extra = <Button basic size="tiny" compact onClick={() => this.flagAsDangerous(c.id)}>Flag as dangerous</Button>;
+            }
+            return (
+              <Comment key={i}>
+                <Comment.Avatar src={c.picture? c.picture : '/png/image.png'} />
+                <Comment.Content>
+                  <Comment.Author as={Link} to={`/user/${c.idUser}`}>{c.name}</Comment.Author>
+                  <Comment.Metadata>{c.date}</Comment.Metadata>
+                  <Comment.Text>{c.message}</Comment.Text>
+                  {extra && <Comment.Actions>{extra}</Comment.Actions>}
+                </Comment.Content>
+              </Comment>
+          )})
+        :
+          <i>No comments</i>
+        }
+      </Comment.Group>
+    );
     
     var tickModal = null;
     if (data.ticks) {
@@ -284,7 +279,10 @@ class Problem extends Component<any, any> {
             }
           </Message.Content>
         </Message>
-        {footer}
+        <Grid>
+          <Grid.Column mobile={16} tablet={8} computer={8}>{ticks}</Grid.Column>
+          <Grid.Column mobile={16} tablet={8} computer={8}>{comments}</Grid.Column>
+        </Grid>
       </>
     );
   }
