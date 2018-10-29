@@ -16,7 +16,7 @@ class Sector extends Component<any, any> {
     } else {
       data = props.staticContext.data;
     }
-    this.state = {data, orderByGrade: true};
+    this.state = {data};
   }
 
   componentDidMount() {
@@ -42,9 +42,10 @@ class Sector extends Component<any, any> {
   }
 
   order = () => {
-    const orderByGrade = !this.state.orderByGrade;
+    const { data } = this.state;
+    data.orderByGrade = !data.orderByGrade;
     this.state.data.problems.sort((a, b) => {
-      if (orderByGrade) {
+      if (data.orderByGrade) {
         if (a.gradeNumber != b.gradeNumber) {
           return b.gradeNumber-a.gradeNumber;
         }
@@ -52,11 +53,11 @@ class Sector extends Component<any, any> {
       }
       return a.nr-b.nr;
     });
-    this.setState({orderByGrade});
+    this.setState({data});
   }
 
   render() {
-    const { data, orderByGrade } = this.state;
+    const { data } = this.state;
     if (!data) {
       return <LoadingAndRestoreScroll />;
     }
@@ -151,7 +152,7 @@ class Sector extends Component<any, any> {
               <div style={{float: 'right'}}>
                 <Button icon labelPosition="left" onClick={this.order} size="mini">
                   <Icon name="filter"/>
-                  {orderByGrade? "Order by number" : "Order by grade"}
+                  {data.orderByGrade? "Order by number" : "Order by grade"}
                 </Button>  
               </div>
               <Header as="h3">{data.metadata.isBouldering? "Problems:" : "Routes:"}</Header>
@@ -161,7 +162,7 @@ class Sector extends Component<any, any> {
                 <List.Item key={i} as={Link} to={`/problem/${problem.id}`}>
                   <List.Header>
                     {problem.danger && <Icon color="red" name="warning"/>}
-                    {!orderByGrade && `#${problem.nr} `}
+                    {!data.orderByGrade && `#${problem.nr} `}
                     <a>{problem.name}</a>
                     {' '}{problem.grade}
                     {' '}<Stars numStars={problem.stars}/>

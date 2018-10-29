@@ -3,7 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
-import { Button, Message, Grid, Breadcrumb, Tab, Label, Icon, List, Comment, Header, Segment, Container } from 'semantic-ui-react';
+import { Button, Message, Grid, Breadcrumb, Tab, Label, Icon, List, Comment, Header, Segment } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
 import { postComment } from './../api';
 import TickModal from './common/tick-modal/tick-modal';
