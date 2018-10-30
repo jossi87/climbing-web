@@ -240,7 +240,6 @@ export function getSvgEdit(accessToken: string, problemIdMediaId: string): Promi
   const mediaId = parts[1];
   return makeAuthenticatedRequest(accessToken, `/problems?id=${problemId}`, null)
   .then((data) => data.json())
-  .then((json) => json[0])
   .then((res) => {
     const m = res.media.filter(x => x.id==mediaId)[0];
     const readOnlySvgs = [];
