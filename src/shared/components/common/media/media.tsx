@@ -43,17 +43,17 @@ class Media extends Component<Props, any> {
   }
 
   gotoPrev = () => {
-    if (this.state && this.state.m && this.props.media.length > 1) {
-      var ix = this.props.media.indexOf(this.state.m)-1;
-      if (ix < 0) ix = this.props.media.length-1;
+    const { media } = this.props;
+    if (this.state && this.state.m && media.length > 1) {
+      let ix = (media.indexOf(this.state.m) - 1 + media.length) % media.length;
       this.openModal(this.props.media[ix], false);
     }
   }
 
   gotoNext = () => {
-    if (this.state && this.state.m && this.props.media.length > 1) {
-      var ix = this.props.media.indexOf(this.state.m)+1;
-      if (ix > this.props.media.length-1) ix = 0;
+    const { media } = this.props;
+    if (this.state && this.state.m && media.length > 1) {
+      let ix = (media.indexOf(this.state.m) + 1) % media.length;
       this.openModal(this.props.media[ix], false);
     }
   }
