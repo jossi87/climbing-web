@@ -12,8 +12,8 @@ const style = {
     objectFit: 'scale-down'
   },
   video: {
-    maxHeight: '720px',
-    maxWidth: '1280px'
+    maxHeight: '100vh',
+    maxWidth: '100vw'
   },
   buttonEdit: {
     zIndex: 2,
@@ -75,6 +75,7 @@ function MediaModal({isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext, 
       topLeftButton = <Icon style={style.buttonEdit} size="large" color="red" name="trash" link onClick={onDelete} />
     }
   }
+  console.log(m)
   return (
     <Dimmer active={true} onClickOutside={onClose} page>
       {topLeftButton}
@@ -92,9 +93,6 @@ function MediaModal({isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext, 
           <ReactPlayer
             style={style.video}
             ref={player => myPlayer = player }
-            className='react-player'
-            width='100%'
-            height='100%'
             url={'https://buldreinfo.com/buldreinfo_media/mp4/' + (Math.floor(m.id/100)*100) + "/" + m.id + '.mp4'}
             controls={true}
             playing={true}
@@ -102,8 +100,8 @@ function MediaModal({isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext, 
           />
         :
           <>
+            <Image style={style.img} alt={m.description} src={getImageUrl(m.id)} />
             <Button size="massive" color="youtube" circular style={style.play} icon="play" onClick={playVideo} />
-            <Image as="a" style={style.img} alt={m.description} src={getImageUrl(m.id)} />
           </>
         )
       }
@@ -111,5 +109,4 @@ function MediaModal({isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext, 
   )
 }
 
-// @ts-ignore TODO remove ignore when @types/React includes React 16.6
-export default withRouter<Props>(React.memo(MediaModal))
+export default withRouter<Props>(MediaModal)
