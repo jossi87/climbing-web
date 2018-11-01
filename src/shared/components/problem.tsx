@@ -255,21 +255,17 @@ class Problem extends Component<any, any> {
             {data.sectorLat>0 && data.sectorLng>0 &&
               <>
                 <strong>Navigation:</strong> 
-                <Label as="a" href={`http://maps.google.com/maps?q=loc:${data.sectorLat},${data.sectorLng}&navigate=yes`} rel="noopener" target="_blank"><Icon name="map" />Google Maps</Label>
-                <br/>
+                <Label as="a" href={`http://maps.google.com/maps?q=loc:${data.sectorLat},${data.sectorLng}&navigate=yes`} rel="noopener" target="_blank"><Icon name="map" />Google Maps</Label><br/>
               </>
             }
             {data.sections &&
               <>
-                <strong>Sections:</strong><br/>
-                <List divided relaxed>
+                <strong>Sections:</strong>
+                <List ordered>
                   {data.sections.map((s, i) => (
                     <List.Item key={i}>
-                      <List.Icon verticalAlign='middle'>
-                        {s.grade}
-                      </List.Icon>
                       <List.Content>
-                        <List.Header>#{s.nr}</List.Header>
+                        <List.Header>{s.grade}</List.Header>
                         <List.Description>{s.description}</List.Description>
                       </List.Content>
                     </List.Item>

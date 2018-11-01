@@ -65,45 +65,45 @@ interface Props extends RouteComponentProps<any> {
   gotoNext: any,
   playVideo: any
 }
-const MediaModal: React.SFC<Props> = props => {
+function MediaModal({isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext, playVideo, history}) {
   let myPlayer;
   var topLeftButton;
-  if (props.isAdmin && props.m.idType===1) {
-    if (props.m.svgProblemId>0) {
-      topLeftButton = <Icon style={style.buttonEdit} size="large" color="red" name="edit" link onClick={() => props.history.push(`/problem/svg-edit/${props.m.svgProblemId}-${props.m.id}`)} />
-    } else if (!props.m.svgs) {
-      topLeftButton = <Icon style={style.buttonEdit} size="large" color="red" name="trash" link onClick={props.onDelete} />
+  if (isAdmin && m.idType===1) {
+    if (m.svgProblemId>0) {
+      topLeftButton = <Icon style={style.buttonEdit} size="large" color="red" name="edit" link onClick={() => history.push(`/problem/svg-edit/${m.svgProblemId}-${m.id}`)} />
+    } else if (!m.svgs) {
+      topLeftButton = <Icon style={style.buttonEdit} size="large" color="red" name="trash" link onClick={onDelete} />
     }
   }
   return (
-    <Dimmer active={true} onClickOutside={props.onClose} page>
+    <Dimmer active={true} onClickOutside={onClose} page>
       {topLeftButton}
-      <Icon style={style.close} size="big" name="close" link onClick={props.onClose} />
-      {props.length > 1 &&
+      <Icon style={style.close} size="big" name="close" link onClick={onClose} />
+      {length > 1 &&
         <>
-          <Icon style={style.prev} size="big" name="angle left" link onClick={props.gotoPrev} />
-          <Icon style={style.next} size="big" name="angle right" link onClick={props.gotoNext} />
+          <Icon style={style.prev} size="big" name="angle left" link onClick={gotoPrev} />
+          <Icon style={style.next} size="big" name="angle right" link onClick={gotoNext} />
         </>
       }
-      {props.m.idType===1?
-        (props.m.svgs? <Image style={style.img}><Svg thumb={false} style={{}} m={props.m} close={props.onClose}/></Image> : <Image style={style.img} alt={props.m.description} src={getImageUrl(props.m.id, 720)} />)
+      {m.idType===1?
+        (m.svgs? <Image style={style.img}><Svg thumb={false} style={{}} m={m} close={onClose}/></Image> : <Image style={style.img} alt={m.description} src={getImageUrl(m.id, 720)} />)
       :
-        (props.m.autoPlayVideo?
+        (m.autoPlayVideo?
           <ReactPlayer
             style={style.video}
             ref={player => myPlayer = player }
             className='react-player'
             width='100%'
             height='100%'
-            url={'https://buldreinfo.com/buldreinfo_media/mp4/' + (Math.floor(props.m.id/100)*100) + "/" + props.m.id + '.mp4'}
+            url={'https://buldreinfo.com/buldreinfo_media/mp4/' + (Math.floor(m.id/100)*100) + "/" + m.id + '.mp4'}
             controls={true}
             playing={true}
-            onDuration={duration => myPlayer.seekTo(props.m.t/duration)}
+            onDuration={duration => myPlayer.seekTo(m.t/duration)}
           />
         :
           <>
-            <Button size="massive" color="youtube" circular style={style.play} icon="play" onClick={props.playVideo} />
-            <Image as="a" style={style.img} alt={props.m.description} src={getImageUrl(props.m.id)} />
+            <Button size="massive" color="youtube" circular style={style.play} icon="play" onClick={playVideo} />
+            <Image as="a" style={style.img} alt={m.description} src={getImageUrl(m.id)} />
           </>
         )
       }
@@ -111,4 +111,5 @@ const MediaModal: React.SFC<Props> = props => {
   )
 }
 
-export default withRouter(MediaModal);
+// @ts-ignore TODO remove ignore when @types/React includes React 16.6
+export default withRouter<Props>(React.memo(MediaModal))

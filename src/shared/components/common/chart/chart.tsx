@@ -1,15 +1,11 @@
 import React from 'react';
 
-interface Props {
-  data: any
-}
-
-const Chart: React.SFC<Props> = props => {
-  var data = [];
-  props.data.map(t => {
-    var d = data.filter(val => {return val.gradeNumber===t.gradeNumber})
+function Chart({data}) {
+  var grades = [];
+  data.map(t => {
+    var d = grades.filter(val => {return val.gradeNumber===t.gradeNumber})
     if (!d[0]) {
-      data.push({gradeNumber: t.gradeNumber, grade: t.grade, fa: (t.fa? 1 : 0), tick: (t.fa? 0 : 1)});
+      grades.push({gradeNumber: t.gradeNumber, grade: t.grade, fa: (t.fa? 1 : 0), tick: (t.fa? 0 : 1)});
     } else {
       if (t.fa) {
         d[0].fa++;
@@ -18,18 +14,17 @@ const Chart: React.SFC<Props> = props => {
       }
     }
   });
-  data.sort((a,b) => {return b.gradeNumber-a.gradeNumber});
-  const maxValue = Math.max.apply(Math, data.map(d => {return d.fa+d.tick}));
-
-  const rows = data.map((d, i) => {
-    const faWidth = (d.fa/maxValue*100) + '%';
-    const tickWidth = (d.tick/maxValue*100) + '%';
+  grades.sort((a,b) => {return b.gradeNumber-a.gradeNumber});
+  const maxValue = Math.max.apply(Math, grades.map(d => {return d.fa+d.tick}));
+  const rows = grades.map((g, i) => {
+    const faWidth = (g.fa/maxValue*100) + '%';
+    const tickWidth = (g.tick/maxValue*100) + '%';
     return (
       <tr key={i}>
-        <td style={{padding: 0, textAlign: 'center', whiteSpace: 'nowrap'}}>{d.grade}</td>
-        <td style={{padding: 0, textAlign: 'center'}}>{d.fa}</td>
-        <td style={{padding: 0, textAlign: 'center'}}>{d.tick}</td>
-        <td style={{padding: 0, textAlign: 'center'}}><strong>{d.fa+d.tick}</strong></td>
+        <td style={{padding: 0, textAlign: 'center', whiteSpace: 'nowrap'}}>{g.grade}</td>
+        <td style={{padding: 0, textAlign: 'center'}}>{g.fa}</td>
+        <td style={{padding: 0, textAlign: 'center'}}>{g.tick}</td>
+        <td style={{padding: 0, textAlign: 'center'}}><strong>{g.fa+g.tick}</strong></td>
         <td style={{width: '100%', verticalAlign: 'middle'}}>
           <div style={{width: faWidth, height: '10px', backgroundColor: '#3182bd', float: 'left'}}></div>
           <div style={{width: tickWidth, height: '10px', backgroundColor: '#6baed6', marginLeft: faWidth}}></div>
@@ -56,4 +51,5 @@ const Chart: React.SFC<Props> = props => {
   );
 }
 
-export default Chart
+// @ts-ignore TODO remove ignore when @types/React includes React 16.6
+export default React.memo(Chart)

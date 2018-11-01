@@ -3,7 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
-import { CroppedText, LockSymbol, LoadingAndRestoreScroll } from './common/widgets/widgets';
+import { LockSymbol, LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Button, Tab, Item, Message, Icon, Image, Breadcrumb, Segment, Header } from 'semantic-ui-react';
 import { getImageUrl } from '../api';
 
@@ -135,7 +135,7 @@ class Area extends Component<any, any> {
                       {sector.numProblems} {this.state.data.metadata.isBouldering? "problem(s)" : "route(s)"}
                     </Item.Meta>
                     <Item.Description>
-                      <CroppedText text={sector.comment} maxLength={150}/>
+                      {sector.comment}
                     </Item.Description>
                   </Item.Content>
                 </Item>

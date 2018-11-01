@@ -43,17 +43,6 @@ export function Stars({numStars}) {
   return null;
 }
 
-export function CroppedText({text, maxLength}) {
-  if (text) {
-    if (text.length>maxLength) {
-      return <Popup trigger={<p>{text.substring(0,maxLength)}...</p>} content={text} />
-    } else {
-      return text;
-    }
-  }
-  return null;
-}
-
 export function LoadingAndRestoreScroll() {
   if (__isBrowser__ && window) {
     window.scrollTo(0, 0);

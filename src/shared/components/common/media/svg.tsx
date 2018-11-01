@@ -10,7 +10,7 @@ interface SvgProps extends RouteComponentProps<any> {
   thumb: boolean
 }
 
-const Svg: React.SFC<SvgProps> = props => {
+function Svg({style, close, m, thumb, history}) {
   function generateShapes(svgs, svgProblemId, w, h) {
     return svgs.map((svg, key) => {
       const path: any = parseSVG(svg.path);
@@ -44,14 +44,14 @@ const Svg: React.SFC<SvgProps> = props => {
       var gClassName = "buldreinfo-svg-pointer buldreinfo-svg-hover";
       if (!(svgProblemId===0 || svg.problemId===svgProblemId)) {
         gClassName += " buldreinfo-svg-opacity";
-      } else if (props.thumb) {
+      } else if (thumb) {
         factor = 2;
       }
       return (
-        <g className={gClassName} key={key} style={props.style} onClick={() => {
-          if (props.close) {
-            props.history.push("/problem/" + svg.problemId);
-            props.close();
+        <g className={gClassName} key={key} style={style} onClick={() => {
+          if (close) {
+            history.push("/problem/" + svg.problemId);
+            close();
           }
         }}>
           <path d={svg.path} className="buldreinfo-svg-route" strokeWidth={0.003*w*factor} strokeDasharray={factor>1? null : 0.006*w}/>
@@ -65,13 +65,14 @@ const Svg: React.SFC<SvgProps> = props => {
 
   return (
     <>
-      <canvas className="buldreinfo-svg-canvas-ie-hack" width={props.m.width} height={props.m.height} style={props.style}></canvas>
-      <svg className="buldreinfo-svg" viewBox={"0 0 " + props.m.width + " " + props.m.height} preserveAspectRatio="xMidYMid meet">
-        <image xlinkHref={getImageUrl(props.m.id)} width="100%" height="100%"/>
-        {generateShapes(props.m.svgs, props.m.svgProblemId, props.m.width, props.m.height)}
+      <canvas className="buldreinfo-svg-canvas-ie-hack" width={m.width} height={m.height} style={style}></canvas>
+      <svg className="buldreinfo-svg" viewBox={"0 0 " + m.width + " " + m.height} preserveAspectRatio="xMidYMid meet">
+        <image xlinkHref={getImageUrl(m.id)} width="100%" height="100%"/>
+        {generateShapes(m.svgs, m.svgProblemId, m.width, m.height)}
       </svg>
     </>
   )
 }
 
-export default withRouter(Svg);
+// @ts-ignore TODO remove ignore when @types/React includes React 16.6
+export default withRouter<SvgProps>(React.memo(Svg))

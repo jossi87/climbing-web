@@ -13,7 +13,7 @@
   "devDependencies": {
     "nodemon": "^1.18.5",
     "ts-loader": "^5.3.0",
-    "typescript": "^3.1.4",
+    "typescript": "^3.1.5",
     "webpack": "^4.23.1",
     "webpack-bundle-analyzer": "^3.0.3",
     "webpack-cli": "^3.1.2",
@@ -30,7 +30,7 @@
     "@types/react-dom": "^16.0.9",
     "@types/react-dropzone": "^4.2.2",
     "@types/react-leaflet": "^1.1.6",
-    "@types/react-router": "^4.0.32",
+    "@types/react-router": "^4.4.0",
     "@types/react-router-dom": "^4.3.1",
     "@types/serialize-javascript": "^1.5.0",
     "@types/svg-path-parser": "^1.1.0",
