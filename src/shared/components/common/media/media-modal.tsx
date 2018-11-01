@@ -99,7 +99,7 @@ function MediaModal({isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext, 
           />
         :
           <>
-            <Image style={style.img} alt={m.description} src={getImageUrl(m.id)} />
+            <Image style={style.img} alt={m.description} src={getImageUrl(m.id, 360)} />
             <Button size="massive" color="youtube" circular style={style.play} icon="play" onClick={playVideo} />
           </>
         )
