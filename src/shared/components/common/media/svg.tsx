@@ -66,7 +66,11 @@ function Svg({style, close, m, thumb, history}) {
   return (
     <>
       <canvas className="buldreinfo-svg-canvas-ie-hack" width={m.width} height={m.height} style={style}></canvas>
-      <svg className="buldreinfo-svg" viewBox={"0 0 " + m.width + " " + m.height} preserveAspectRatio="xMidYMid meet">
+      <svg className="buldreinfo-svg" viewBox={"0 0 " + m.width + " " + m.height} preserveAspectRatio="xMidYMid meet" onClick={(e: React.MouseEvent<SVGSVGElement>) => {
+        if (e.target instanceof SVGSVGElement) {
+          close();
+        }
+      }}>
         <image xlinkHref={getImageUrl(m.id)} width="100%" height="100%"/>
         {generateShapes(m.svgs, m.svgProblemId, m.width, m.height)}
       </svg>
