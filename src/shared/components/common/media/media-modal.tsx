@@ -75,7 +75,6 @@ function MediaModal({isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext, 
       topLeftButton = <Icon style={style.buttonEdit} size="large" color="red" name="trash" link onClick={onDelete} />
     }
   }
-  console.log(m)
   return (
     <Dimmer active={true} onClickOutside={onClose} page>
       {topLeftButton}
