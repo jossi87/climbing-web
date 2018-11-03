@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
-import { List, Segment, Header, Pagination, Loader, Feed } from 'semantic-ui-react';
+import { Segment, Header, Pagination, Loader, Feed } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 import { Link, withRouter } from 'react-router-dom';
 
