@@ -290,6 +290,15 @@ export function getSvgEdit(accessToken: string, problemIdMediaId: string): Promi
   });
 }
 
+export function getTicks(accessToken: string, page: string): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/ticks?page=${page}`, null)
+  .then((data) => data.json())
+  .catch((error) => {
+    console.warn(error);
+    return null;
+  });
+}
+
 export function getUser(accessToken: string, id: string): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/users?id=${id}`, null)
   .then((data) => data.json())

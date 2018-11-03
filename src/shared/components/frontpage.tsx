@@ -70,7 +70,7 @@ class Frontpage extends Component<any, any> {
                     <Statistic.Label>With topo</Statistic.Label>
                   </Statistic>
                 }
-                <Statistic>
+                <Statistic as={Link} to="/ticks/1" color="blue">
                   <Statistic.Value><Icon name='check' /> {numberWithCommas(data.numTicks)}</Statistic.Value>
                   <Statistic.Label>Public ascents</Statistic.Label>
                 </Statistic>

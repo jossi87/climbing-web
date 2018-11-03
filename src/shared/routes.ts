@@ -13,10 +13,11 @@ import ProblemHse from './components/problem-hse';
 import Sector from './components/sector';
 import SectorEdit from './components/sector-edit';
 import SvgEdit from './components/svg-edit';
+import Ticks from './components/ticks';
 import User from './components/user';
 import NoMatch from './components/no-match';
 
-import { getArea, getAreaEdit, getBrowse, getFrontpage, getMeta, getProblem, getProblemEdit, getProblemHse, getSector, getSectorEdit, getUser, getSvgEdit } from './api';
+import { getArea, getAreaEdit, getBrowse, getFrontpage, getMeta, getProblem, getProblemEdit, getProblemHse, getSector, getSectorEdit, getTicks, getUser, getSvgEdit } from './api';
 
 const routes =  [
   {path: '/', exact: true, component: Frontpage, fetchInitialData: (accessToken, path = '') => getFrontpage(accessToken)},
@@ -33,6 +34,7 @@ const routes =  [
   {path: '/problem/edit/media/:problemId', exact: true, component: ProblemEditMedia},
   {path: '/hse', exact: true, component: ProblemHse, fetchInitialData: (accessToken, path = '') => getProblemHse(accessToken)},
   {path: '/problem/svg-edit/:problemIdMediaId', exact: true, component: SvgEdit, fetchInitialData: (accessToken, path = '') => getSvgEdit(accessToken, path.split('/').pop())},
+  {path: '/ticks/:page', exact: true, component: Ticks, fetchInitialData: (accessToken, path = '') => getTicks(accessToken, path.split('/').pop())},
   {path: '/user', exact: true, component: User, fetchInitialData: (accessToken, path = '') => getUser(accessToken, path.split('/').pop())},
   {path: '/user/:userId', exact: true, component: User, fetchInitialData: (accessToken, path = '') => getUser(accessToken, path.split('/').pop())},
   {path: '/logout', exact: false, component: Logout},
