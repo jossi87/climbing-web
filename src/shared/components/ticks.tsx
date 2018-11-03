@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
-import { List, Segment, Header, Pagination, Loader } from 'semantic-ui-react';
+import { List, Segment, Header, Pagination, Loader, Feed } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 import { Link, withRouter } from 'react-router-dom';
 
@@ -64,19 +64,19 @@ class Ticks extends Component<any, any> {
           {loading?
             <><Loader active inline style={{marginTop: '20px', marginBottom: '20px'}} /><br/></>
           :
-            <List>
+            <Feed>
               {data.ticks.map((t, i) => (
-                <List.Item key={i} as={Link} to={`/problem/${t.problemId}`}>
-                  <List.Description>
-                    {t.date}
-                    {' '}{t.areaName} <LockSymbol visibility={t.areaVisibility}/> / {t.sectorName} <LockSymbol visibility={t.sectorVisibility}/> / <a>{t.problemName} <LockSymbol visibility={t.problemVisibility}/></a>
-                    {' '}| {t.name}
-                    {' '} {t.problemGrade}
-                    {t.fa && <b> FA</b>}
-                  </List.Description>
-                </List.Item>
+                <Feed.Event key={i} as={Link} to={`/problem/${t.problemId}`}>
+                  <Feed.Content>
+                    <Feed.Summary>
+                      <Feed.Date>{t.date}</Feed.Date>
+                      {' '}{t.areaName} <LockSymbol visibility={t.areaVisibility}/> / {t.sectorName} <LockSymbol visibility={t.sectorVisibility}/> / <a>{t.problemName} <LockSymbol visibility={t.problemVisibility}/></a>
+                      <Feed.Meta>{t.name}{' '} {t.problemGrade}</Feed.Meta>
+                    </Feed.Summary>
+                  </Feed.Content>
+                </Feed.Event>
               ))}
-            </List>
+            </Feed>
           }
           <Pagination defaultActivePage={data.currPage} totalPages={data.numPages} onPageChange={this.onPageChange} />
         </Segment>
