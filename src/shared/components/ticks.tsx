@@ -78,7 +78,7 @@ class Ticks extends Component<any, any> {
               ))}
             </Feed>
           }
-          <Pagination defaultActivePage={data.currPage} totalPages={data.numPages} onPageChange={this.onPageChange} />
+          <Pagination size="tiny" siblingRange={0} boundaryRange={0} defaultActivePage={data.currPage} totalPages={data.numPages} onPageChange={this.onPageChange} />
         </Segment>
       </>
     );
