@@ -63,7 +63,10 @@ class ImageUpload extends Component<any, any> {
 
   onDrop = (files) => {
     const allMedia = this.state.media;
-    files.forEach(f => allMedia.push({file: f}));
+    files.forEach(f => {
+      f.preview = URL.createObjectURL(f);
+      allMedia.push({file: f})
+    });
     this.setState({media: allMedia});
     this.props.onMediaChanged(allMedia);
   }
@@ -86,6 +89,7 @@ class ImageUpload extends Component<any, any> {
 
   render() {
     const accessToken = this.props.auth.getAccessToken();
+    console.log(this.state.media);
     return (
       <>
         <Dropzone
