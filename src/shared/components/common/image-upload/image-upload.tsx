@@ -89,7 +89,6 @@ class ImageUpload extends Component<any, any> {
 
   render() {
     const accessToken = this.props.auth.getAccessToken();
-    console.log(this.state.media);
     return (
       <>
         <Dropzone
