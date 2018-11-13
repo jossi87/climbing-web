@@ -51,5 +51,4 @@ function Chart({data}) {
   );
 }
 
-// @ts-ignore TODO remove ignore when @types/React includes React 16.6
 export default React.memo(Chart)
