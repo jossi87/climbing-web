@@ -241,7 +241,7 @@ class ProblemEdit extends Component<any, any> {
           </Form.Field>
           {!data.metadata.isBouldering &&
             <Form.Field>
-              <label>Section(s)</label>
+              <label>Pitches</label>
               <ProblemSection sections={data.sections} grades={data.metadata.grades} onSectionsUpdated={this.onSectionsUpdated} />
             </Form.Field>
           }

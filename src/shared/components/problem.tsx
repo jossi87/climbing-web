@@ -260,7 +260,7 @@ class Problem extends Component<any, any> {
             }
             {data.sections &&
               <>
-                <strong>Sections:</strong>
+                <strong>Pitches:</strong>
                 <List ordered>
                   {data.sections.map((s, i) => (
                     <List.Item key={i}>

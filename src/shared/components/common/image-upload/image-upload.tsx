@@ -93,9 +93,12 @@ class ImageUpload extends Component<any, any> {
       <>
         <Dropzone
           onDrop={this.onDrop}
-          style={{width: '220px', height: '75px', padding: '15px', borderWidth: '1px', borderColor: '#666', borderStyle: 'dashed', borderRadius: '5px'}}
           accept={'image/*'}>
-          <i>Drop JPG-image(s) here or click to select files to upload.</i>
+          {({getRootProps}) => (
+            <div {...getRootProps()} style={{width: '220px', height: '75px', padding: '15px', borderWidth: '1px', borderColor: '#666', borderStyle: 'dashed', borderRadius: '5px'}}>
+              <i>Drop JPG-image(s) here or click to select files to upload.</i>
+            </div>
+          )}
         </Dropzone><br/>
         {this.state.media.length > 0 &&
           <Card.Group itemsPerRow={4} stackable>

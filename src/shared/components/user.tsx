@@ -42,6 +42,13 @@ class User extends Component<any, any> {
         if (a.gradeNumber != b.gradeNumber) {
           return b.gradeNumber-a.gradeNumber;
         }
+        if (a.date && !b.date) {
+          return -1;
+        } else if (!a.date && b.date) {
+          return 1;
+        } else if (a.date != b.date) {
+          return b.date.localeCompare(a.date);
+        }
         return a.name.localeCompare(b.name);
       }
       return a.num-b.num;
