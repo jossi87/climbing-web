@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import Dropzone from 'react-dropzone';
 import { getUserSearch } from './../../../api';
 import { Button, Card, Image, Search } from 'semantic-ui-react';
+import classNames from 'classnames';
 
 interface TextProps {
   accessToken: string,
@@ -91,14 +92,22 @@ class ImageUpload extends Component<any, any> {
     const accessToken = this.props.auth.getAccessToken();
     return (
       <>
-        <Dropzone
-          onDrop={this.onDrop}
-          accept={'image/*'}>
-          {({getRootProps}) => (
-            <div {...getRootProps()} style={{width: '220px', height: '75px', padding: '15px', borderWidth: '1px', borderColor: '#666', borderStyle: 'dashed', borderRadius: '5px'}}>
-              <i>Drop JPG-image(s) here or click to select files to upload.</i>
-            </div>
-          )}
+        <Dropzone onDrop={this.onDrop} accept={'image/*'}>
+          {({getRootProps, getInputProps, isDragActive}) => {
+            return (
+              <div
+                {...getRootProps()}
+                className={classNames('dropzone', {'dropzone--isActive': isDragActive})}
+              >
+                <input {...getInputProps()} />
+                {
+                  isDragActive ?
+                    <p>Drop files here...</p> :
+                    <p>Try dropping some files here, or click to select files to upload.</p>
+                }
+              </div>
+            )
+          }}
         </Dropzone><br/>
         {this.state.media.length > 0 &&
           <Card.Group itemsPerRow={4} stackable>
