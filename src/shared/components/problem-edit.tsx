@@ -246,6 +246,7 @@ class ProblemEdit extends Component<any, any> {
             </Form.Field>
           }
           <Form.Field>
+            <label>New media</label><br/>
             <ImageUpload auth={this.props.auth} onMediaChanged={this.onNewMediaChanged} />
           </Form.Field>
           <Form.Field>

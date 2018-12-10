@@ -98,13 +98,13 @@ class ImageUpload extends Component<any, any> {
               <div
                 {...getRootProps()}
                 className={classNames('dropzone', {'dropzone--isActive': isDragActive})}
-                style={{width: '220px', height: '75px', padding: '15px', borderWidth: '1px', borderColor: '#666', borderStyle: 'dashed', borderRadius: '5px'}}
+                style={{padding: '15px', borderWidth: '1px', borderColor: '#666', borderStyle: 'dashed', borderRadius: '5px', backgroundColor: 'white'}}
               >
                 <input {...getInputProps()}/>
                 {
                   isDragActive ?
                     <p>Drop files here...</p> :
-                    <p>Try dropping some files here, or click to select files to upload.</p>
+                    <p>Drop images here, or click to select files to upload.</p>
                 }
               </div>
             )
