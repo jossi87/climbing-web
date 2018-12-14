@@ -14,10 +14,11 @@ import Sector from './components/sector';
 import SectorEdit from './components/sector-edit';
 import SvgEdit from './components/svg-edit';
 import Ticks from './components/ticks';
+import Todo from './components/todo';
 import User from './components/user';
 import NoMatch from './components/no-match';
 
-import { getArea, getAreaEdit, getBrowse, getFrontpage, getMeta, getProblem, getProblemEdit, getProblemHse, getSector, getSectorEdit, getTicks, getUser, getSvgEdit } from './api';
+import { getArea, getAreaEdit, getBrowse, getFrontpage, getMeta, getProblem, getProblemEdit, getProblemHse, getSector, getSectorEdit, getTicks, getUser, getSvgEdit, getTodo } from './api';
 
 const routes =  [
   {path: '/', exact: true, component: Frontpage, fetchInitialData: (accessToken, path = '') => getFrontpage(accessToken)},
@@ -35,8 +36,10 @@ const routes =  [
   {path: '/hse', exact: true, component: ProblemHse, fetchInitialData: (accessToken, path = '') => getProblemHse(accessToken)},
   {path: '/problem/svg-edit/:problemIdMediaId', exact: true, component: SvgEdit, fetchInitialData: (accessToken, path = '') => getSvgEdit(accessToken, path.split('/').pop())},
   {path: '/ticks/:page', exact: true, component: Ticks, fetchInitialData: (accessToken, path = '') => getTicks(accessToken, path.split('/').pop())},
-  {path: '/user', exact: true, component: User, fetchInitialData: (accessToken, path = '') => getUser(accessToken, path.split('/').pop())},
+  {path: '/user', exact: true, component: User, fetchInitialData: (accessToken, path = '') => getUser(accessToken, "-1")},
   {path: '/user/:userId', exact: true, component: User, fetchInitialData: (accessToken, path = '') => getUser(accessToken, path.split('/').pop())},
+  {path: '/todo', exact: true, component: Todo, fetchInitialData: (accessToken, path = '') => getTodo(accessToken, "-1")},
+  {path: '/todo/:userId', exact: true, component: Todo, fetchInitialData: (accessToken, path = '') => getTodo(accessToken, path.split('/').pop())},
   {path: '/logout', exact: false, component: Logout},
   {path: '*', status: 404, component: NoMatch}
 ]

@@ -20,7 +20,8 @@ class Navigation extends Component<any, any> {
           {this.props.isAuthenticated?
             <Dropdown item simple icon='user'>
               <Dropdown.Menu>
-                  <Dropdown.Item as={Link} to="/user">My profile</Dropdown.Item>
+                  <Dropdown.Item as={Link} to="/user">Profile</Dropdown.Item>
+                  <Dropdown.Item as={Link} to="/todo">To-do list</Dropdown.Item>
                   <Dropdown.Item as={Link} to="/logout">Sign out</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>

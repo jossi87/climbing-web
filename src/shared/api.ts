@@ -299,6 +299,15 @@ export function getTicks(accessToken: string, page: string): Promise<any> {
   });
 }
 
+export function getTodo(accessToken: string, id: string): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/todo?id=${id}`, null)
+  .then((data) => data.json())
+  .catch((error) => {
+    console.warn(error);
+    return null;
+  });
+}
+
 export function getUser(accessToken: string, id: string): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/users?id=${id}`, null)
   .then((data) => data.json())
@@ -420,6 +429,16 @@ export function postTicks(accessToken: string, del: boolean, id: number, idProbl
   return makeAuthenticatedRequest(accessToken, `/ticks`,{
     method: 'POST',
     body: JSON.stringify({delete: del, id, idProblem, comment, date, stars, grade}),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
+export function postTodo(accessToken: string, id: number, problemId: number, priority: number, isDelete: boolean): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/todo`,{
+    method: 'POST',
+    body: JSON.stringify({id, problemId, priority, isDelete}),
     headers: {
       'Content-Type': 'application/json'
     }

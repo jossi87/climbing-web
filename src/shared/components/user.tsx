@@ -81,6 +81,12 @@ class User extends Component<any, any> {
           <meta property="og:image:height" content={data.metadata.og.imageHeight} />
         </MetaTags>
         <Segment>
+          <div style={{float: 'right'}}>
+            <Button icon labelPosition="left" size="mini" as={Link} to={`/todo/${data.id}`}>
+              <Icon name="list"/>
+              To-do list
+            </Button>
+          </div>
           <Header as="h2">
             {data.picture && <Image circular src={data.picture}/>} {data.name}
           </Header>  
@@ -106,7 +112,7 @@ class User extends Component<any, any> {
                 <Button icon labelPosition="left" onClick={this.order} size="mini">
                   <Icon name="filter"/>
                   {this.state.orderByGrade? "Order by date" : "Order by grade"}
-                </Button>  
+                </Button>
               </div>
               <Header as="h3">Public ascents:</Header>
             </div>

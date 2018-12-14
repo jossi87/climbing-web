@@ -5,7 +5,7 @@ import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
 import { Button, Message, Grid, Breadcrumb, Tab, Label, Icon, List, Comment, Header, Segment } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
-import { postComment } from './../api';
+import { getTodo, postComment, postTodo } from './../api';
 import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
 
@@ -61,6 +61,35 @@ class Problem extends Component<any, any> {
           alert(error.toString());
         });
     }
+  }
+
+  toggleTodo = (problemId : number) => {
+    this.setState({isSaving: true});
+    getTodo(this.props.auth.getAccessToken(), "-1")
+    .then((data) => {
+      const todo = data.todo.filter(x => x.problemId==problemId);
+      let id = -1;
+      let priority = 1;
+      let isDelete = false;
+      if (todo.length === 1) {
+        id = todo[0].id;
+        priority = todo[0].priority;
+        isDelete = true;
+      }
+      postTodo(this.props.auth.getAccessToken(), id, problemId, priority, isDelete)
+      .then((response) => {
+        this.setState({isSaving: false});
+        this.refresh(this.props.match.params.problemId);
+      })
+      .catch((error) => {
+        console.warn(error);
+        alert(error.toString());
+      });
+    })
+    .catch((error) => {
+      console.warn(error);
+      alert(error.toString());
+    });
   }
 
   closeTickModal = () => {
@@ -198,6 +227,12 @@ class Problem extends Component<any, any> {
           <div style={{float: 'right'}}>
             {data.metadata && data.metadata.isAuthenticated &&
               <Button.Group size="mini" compact>
+                <Button positive={data.todo} animated='fade' onClick={() => this.toggleTodo(data.id)}>
+                  <Button.Content hidden>To-do</Button.Content>
+                  <Button.Content visible>
+                    <Icon name='bookmark' />
+                  </Button.Content>
+                </Button>
                 <Button positive={data.ticks && data.ticks.filter(t => t.writable).length>0} animated='fade' onClick={this.openTickModal}>
                   <Button.Content hidden>Tick</Button.Content>
                   <Button.Content visible>
