@@ -35,17 +35,17 @@ class Filter extends Component<any, any> {
   filter = () => {
     this.setState( {isLoading: true, filterDisabled: true} );
     postFilter(this.props.auth.getAccessToken(), this.state.grades).then((res) => {
-      this.setState({ filterResponse: res, isLoading: false });
+      this.setState({ result: res, isLoading: false });
     });
   }
 
   render() {
-    const { data, response, filterDisabled, hideTicked, onlyWithMedia, onlyAdmin, onlySuperAdmin, isLoading } = this.state;
+    const { data, result, filterDisabled, hideTicked, onlyWithMedia, onlyAdmin, onlySuperAdmin, isLoading } = this.state;
     if (!data) {
       return <LoadingAndRestoreScroll />;
     }
     const gradeOptions = data.metadata.grades.map(g => ({key: g.id, value: g.id, text: g.grade}));
-    var res = response && response.filter(p => ( (!hideTicked || !p.ticked) && (!onlyWithMedia || p.randomMediaId>0) && (!onlyAdmin || p.problemVisibility===1) && (!onlySuperAdmin || p.problemVisibility===2) ))
+    var res = result && result.filter(p => ( (!hideTicked || !p.ticked) && (!onlyWithMedia || p.randomMediaId>0) && (!onlyAdmin || p.problemVisibility===1) && (!onlySuperAdmin || p.problemVisibility===2) ))
     return (
       <>
         <Segment>
