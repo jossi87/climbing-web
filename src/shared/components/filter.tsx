@@ -17,7 +17,7 @@ class Filter extends Component<any, any> {
       data = props.staticContext.data;
     }
     const hideTicked = data && data.metadata && data.metadata.isAuthenticated? true : false;
-    this.state = {data, hideTicked, onlyWithMedia: false, isLoading: false, filterDisabled: true};
+    this.state = {data, hideTicked, onlyWithMedia: false, onlyAdmin: false, onlySuperAdmin: false, isLoading: false, filterDisabled: true};
   }
 
   componentDidMount() {
@@ -29,6 +29,8 @@ class Filter extends Component<any, any> {
   onChangeGrades = (e, { value }) => this.setState({grades: value, filterDisabled: value.length==0})
   toggleHideTicked = () => this.setState({hideTicked: !this.state.hideTicked})
   toggleOnlyWithMedia = () => this.setState({onlyWithMedia: !this.state.onlyWithMedia})
+  toggleOnlyAdmin = () => this.setState({onlyAdmin: !this.state.onlyAdmin, onlySuperAdmin: false})
+  toggleOnlySuperAdmin = () => this.setState({onlySuperAdmin: !this.state.onlySuperAdmin, onlyAdmin: false})
 
   filter = () => {
     this.setState( {isLoading: true, filterDisabled: true} );
@@ -38,12 +40,12 @@ class Filter extends Component<any, any> {
   }
 
   render() {
-    const { data, filterResponse, filterDisabled, hideTicked, onlyWithMedia, isLoading } = this.state;
+    const { data, filterResponse, filterDisabled, hideTicked, onlyWithMedia, onlyAdmin, onlySuperAdmin, isLoading } = this.state;
     if (!data) {
       return <LoadingAndRestoreScroll />;
     }
     const gradeOptions = data.metadata.grades.map(g => ({key: g.id, value: g.id, text: g.grade}));
-    var res = filterResponse && filterResponse.rows.filter(p => ( (!hideTicked || !p.ticked) && (!onlyWithMedia || p.randomMediaId>0) ))
+    var res = filterResponse && filterResponse.rows.filter(p => ( (!hideTicked || !p.ticked) && (!onlyWithMedia || p.randomMediaId>0) && (!onlyAdmin || p.problemVisibility===1) && (!onlySuperAdmin || p.problemVisibility===2) ))
     return (
       <>
         <Segment>
@@ -58,6 +60,16 @@ class Filter extends Component<any, any> {
             <Form.Field>
               <Checkbox label="Only with images/videos" onChange={this.toggleOnlyWithMedia} checked={this.state.onlyWithMedia} />
             </Form.Field>
+            {data.metadata.isAdmin &&
+              <Form.Field>
+                <Checkbox label="Only admin" onChange={this.toggleOnlyAdmin} checked={this.state.onlyAdmin} />
+              </Form.Field>
+            }
+            {data.metadata.isSuperAdmin &&
+              <Form.Field>
+                <Checkbox label="Only superadmin" onChange={this.toggleOnlySuperAdmin} checked={this.state.onlySuperAdmin} />
+              </Form.Field>
+            }
             <Button icon labelPosition='left' onClick={this.filter} disabled={filterDisabled} loading={isLoading}>
               <Icon name='filter' />
               Filter
