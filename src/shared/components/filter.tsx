@@ -33,17 +33,17 @@ class Filter extends Component<any, any> {
   filter = () => {
     this.setState( {isLoading: true, filterDisabled: true} );
     postFilter(this.props.auth.getAccessToken(), this.state.grades).then((res) => {
-      this.setState({ results: res, isLoading: false });
+      this.setState({ filterResponse: res, isLoading: false });
     });
   }
 
   render() {
-    const { data, results, filterDisabled, hideTicked, onlyWithMedia, isLoading } = this.state;
+    const { data, filterResponse, filterDisabled, hideTicked, onlyWithMedia, isLoading } = this.state;
     if (!data) {
       return <LoadingAndRestoreScroll />;
     }
     const gradeOptions = data.metadata.grades.map(g => ({key: g.id, value: g.id, text: g.grade}));
-    var res = results && results.filter(p => ( (!hideTicked || !p.ticked) && (!onlyWithMedia || p.randomMediaId>0) ))
+    var res = filterResponse && filterResponse.rows.filter(p => ( (!hideTicked || !p.ticked) && (!onlyWithMedia || p.randomMediaId>0) ))
     return (
       <>
         <Segment>
