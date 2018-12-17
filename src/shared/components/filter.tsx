@@ -40,12 +40,12 @@ class Filter extends Component<any, any> {
   }
 
   render() {
-    const { data, filterResponse, filterDisabled, hideTicked, onlyWithMedia, onlyAdmin, onlySuperAdmin, isLoading } = this.state;
+    const { data, response, filterDisabled, hideTicked, onlyWithMedia, onlyAdmin, onlySuperAdmin, isLoading } = this.state;
     if (!data) {
       return <LoadingAndRestoreScroll />;
     }
     const gradeOptions = data.metadata.grades.map(g => ({key: g.id, value: g.id, text: g.grade}));
-    var res = filterResponse && filterResponse.rows.filter(p => ( (!hideTicked || !p.ticked) && (!onlyWithMedia || p.randomMediaId>0) && (!onlyAdmin || p.problemVisibility===1) && (!onlySuperAdmin || p.problemVisibility===2) ))
+    var res = response && response.filter(p => ( (!hideTicked || !p.ticked) && (!onlyWithMedia || p.randomMediaId>0) && (!onlyAdmin || p.problemVisibility===1) && (!onlySuperAdmin || p.problemVisibility===2) ))
     return (
       <>
         <Segment>
