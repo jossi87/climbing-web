@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
 import { Link } from 'react-router-dom';
+import Leaflet from './common/leaflet/leaflet';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 import { Image, Button, List, Header, Segment } from 'semantic-ui-react';
-import { postTodo } from './../api';
+import { getImageUrl, postTodo } from './../api';
 
 class Todo extends Component<any, any> {
   constructor(props) {
@@ -79,24 +80,36 @@ class Todo extends Component<any, any> {
         </Segment>
         <Segment>
           {data.todo.length>0?
-            <List selection>
-              {data.todo.map((p, i) => (
-                <List.Item key={i}>
-                  <List.Header>
-                    {!data.readOnly &&
-                      <>
-                        <Button icon="arrow up" size="mini" disabled={i===0 || this.state.isSaving} onClick={() => this.move(true, i)} />
-                        <Button icon="arrow down" size="mini" disabled={i===data.todo.length-1 || this.state.isSaving} onClick={() => this.move(false, i)} />
-                      </>
-                    }
-                    {' '}<Link to={`/problem/${p.problemId}`}>{p.problemName}</Link>
-                    {' '}{p.problemGrade}
-                    {' '}<LockSymbol visibility={p.problemVisibility}/>
-                    {' '}<small>({p.areaName} / {p.sectorName})</small>
-                  </List.Header>
-                </List.Item>
-              ))}
-            </List>
+            <>
+              <Leaflet
+                height='40vh'
+                markers={data.todo.filter(p => p.problemLat!=0 && p.problemLng!=0).map(p => ({lat: p.problemLat, lng: p.problemLng, label: p.problemName, url: '/problem/' + p.problemId}))}
+                defaultCenter={data.metadata.defaultCenter}
+                defaultZoom={data.metadata.defaultZoom}/>
+              <List selection>
+                {data.todo.map((p, i) => (
+                  <List.Item key={i}>
+                    <Image size="tiny" style={{maxHeight: '80px', objectFit: 'cover'}} src={p.randomMediaId? getImageUrl(p.randomMediaId, 80) : '/png/image.png'} />
+                    <List.Content>
+                      {!data.readOnly &&
+                        <>
+                          <Button icon="arrow up" size="mini" disabled={i===0 || this.state.isSaving} onClick={() => this.move(true, i)} />
+                          <Button icon="arrow down" size="mini" disabled={i===data.todo.length-1 || this.state.isSaving} onClick={() => this.move(false, i)} />
+                        </>
+                      }
+                      <List.Header>
+                        {' '}<Link to={`/problem/${p.problemId}`}>{p.problemName}</Link>
+                        {' '}{p.problemGrade}
+                        {' '}<LockSymbol visibility={p.problemVisibility}/>
+                      </List.Header>
+                      <List.Content>
+                        {p.areaName} / {p.sectorName}
+                      </List.Content>
+                    </List.Content>
+                  </List.Item>
+                ))}
+              </List>
+            </>
             :
             <i>Empty list</i>
           }
