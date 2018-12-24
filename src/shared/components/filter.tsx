@@ -17,7 +17,7 @@ class Filter extends Component<any, any> {
       data = props.staticContext.data;
     }
     const hideTicked = data && data.metadata && data.metadata.isAuthenticated? true : false;
-    this.state = {data, hideTicked, onlyWithMedia: false, onlyAdmin: false, onlySuperAdmin: false, isLoading: false, filterDisabled: true};
+    this.state = {data, hideTicked, onlyWithMedia: false, onlyAdmin: false, onlySuperAdmin: false, isLoading: false, filterDisabled: true, orderByStars: false};
   }
 
   componentDidMount() {
@@ -37,6 +37,17 @@ class Filter extends Component<any, any> {
     postFilter(this.props.auth.getAccessToken(), this.state.grades).then((res) => {
       this.setState({ result: res, isLoading: false });
     });
+  }
+
+  order = () => {
+    const orderByStars = !this.state.orderByStars;
+    this.state.result.sort((a, b) => {
+      if (orderByStars && a.stars != b.stars) {
+        return b.stars-a.stars;
+      }
+      return a.problemName.localeCompare(b.problemName);
+    });
+    this.setState({orderByStars});
   }
 
   render() {
@@ -78,7 +89,15 @@ class Filter extends Component<any, any> {
         </Segment>
         {res && (
           <Segment>
-            <Header as="h3">{res.length} {data.metadata.isBouldering? "Problems" : "Routes"}</Header>
+            <div style={{paddingBottom: '10px'}}>
+              <div style={{float: 'right'}}>
+                <Button icon labelPosition="left" onClick={this.order} size="mini">
+                  <Icon name="filter"/>
+                  {!this.state.orderByStars? "Order by stars" : "Order by name"}
+                </Button>
+              </div>
+              <Header as="h3">{res.length} {data.metadata.isBouldering? "Problems" : "Routes"}</Header>
+            </div>
             <Leaflet
               height='40vh'
               markers={res.filter(p => p.latitude!=0 && p.longitude!=0).map(p => ({lat: p.latitude, lng: p.longitude, label: p.problemName, url: '/problem/' + p.problemId}))}
