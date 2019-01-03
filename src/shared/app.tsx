@@ -110,7 +110,7 @@ class App extends Component {
               <List.Item as='a' href='/gpl-3.0.txt' rel='noopener' target='_blank'>GNU Public License</List.Item>
             </List>
             <p>
-              Buldreinfo &amp; Bratte Linjer &copy; 2006-2018
+              Buldreinfo &amp; Bratte Linjer &copy; 2006-2019
             </p>
           </Container>
         </Segment>
