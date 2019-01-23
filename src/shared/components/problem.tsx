@@ -290,7 +290,7 @@ class Problem extends Component<any, any> {
             {data.sectorLat>0 && data.sectorLng>0 &&
               <>
                 <strong>Navigation:</strong> 
-                <Label as="a" href={`http://maps.google.com/maps?q=loc:${data.sectorLat},${data.sectorLng}&navigate=yes`} rel="noopener" target="_blank"><Icon name="map" />Google Maps</Label><br/>
+                <Label as="a" href={`https://maps.google.com/maps?q=loc:${data.sectorLat},${data.sectorLng}&navigate=yes`} rel="noopener" target="_blank"><Icon name="map" />Google Maps</Label><br/>
               </>
             }
             {data.sections &&
