@@ -85,6 +85,7 @@ class App extends Component {
                     <List.Item as='a' href='https://buldring.bergen-klatreklubb.no' rel='noopener' target='_blank'>buldring.bergen-klatreklubb.no</List.Item>
                     <List.Item as='a' href='https://buldring.fredrikstadklatreklubb.org' rel='noopener' target='_blank'>buldring.fredrikstadklatreklubb.org</List.Item>
                     <List.Item as='a' href='https://buldring.jotunheimenfjellsport.com' rel='noopener' target='_blank'>buldring.jotunheimenfjellsport.com</List.Item>
+                    <List.Item as='a' href='https://buldreforer.tromsoklatring.no' rel='noopener' target='_blank'>buldreforer.tromsoklatring.no</List.Item>
                   </List>
                 </Grid.Column>
                 <Grid.Column width={6}>
@@ -92,6 +93,7 @@ class App extends Component {
                   <List link inverted>
                   <List.Item as='a' href='https://brattelinjer.no' rel='noopener' target='_blank'>brattelinjer.no</List.Item>
                   <List.Item as='a' href='https://klatring.jotunheimenfjellsport.com' rel='noopener' target='_blank'>klatring.jotunheimenfjellsport.com</List.Item>
+                  <List.Item as='a' href='https://klatreforer.tromsoklatring.no' rel='noopener' target='_blank'>klatreforer.tromsoklatring.no</List.Item>
                   </List>
                 </Grid.Column>
                 <Grid.Column width={4}>
