@@ -75,14 +75,14 @@ class ProblemSection extends Component<any, any> {
         {this.state.sections && this.state.sections.length > 1 && this.state.sections.map((s, i) => (
           <Form.Group widths='equal' key={i} inline>
             <Form.Field>
-              <Input size="tiny" icon="hashtag" iconPosition="left" fluid placeholder='Number' value={s.nr} onChange={this.onNrChanged.bind(this, s.id)} />
+              <Input size="mini" icon="hashtag" iconPosition="left" fluid placeholder='Number' value={s.nr} onChange={this.onNrChanged.bind(this, s.id)} />
             </Form.Field>
             <Form.Field>
-              <Dropdown size="tiny" icon="dropdown" fluid selection value={s.grade} onChange={this.onGradeChanged.bind(this, s.id)}
+              <Dropdown size="mini" icon="dropdown" fluid selection value={s.grade} onChange={this.onGradeChanged.bind(this, s.id)}
                 options={this.state.grades.map((g, i) => ({key: i, value: g.grade, text: g.grade}))}/>
             </Form.Field>
             <Form.Field>
-              <Input size="tiny" icon="info" iconPosition="left" fluid placeholder='Description' value={s.description? s.description : ""} onChange={this.onDescriptionChanged.bind(this, s.id)} />
+              <Input size="mini" icon="info" iconPosition="left" fluid placeholder='Description' value={s.description? s.description : ""} onChange={this.onDescriptionChanged.bind(this, s.id)} />
             </Form.Field>
           </Form.Group>
         ))}
