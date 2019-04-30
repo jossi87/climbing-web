@@ -295,10 +295,12 @@ class SvgEdit extends Component<any, any> {
             <Message>
               <Message.Content>
                 <strong>CTRL + CLICK</strong> to add a point | <strong>CLICK</strong> to select a point | <strong>CLICK AND DRAG</strong> to move a point<br/>
-                <Dropdown selection value={this.state.hasAnchor} disabled={this.state.points.length===0} onChange={this.setHasAnchor} options={[
-                  {key: 1, value: false, text: 'No anchor on route'},
-                  {key: 2, value: true, text: 'Route has anchor'}
-                ]}/>
+                {!this.state.metadata.isBouldering &&
+                  <Dropdown selection value={this.state.hasAnchor} disabled={this.state.points.length===0} onChange={this.setHasAnchor} options={[
+                    {key: 1, value: false, text: 'No anchor on route'},
+                    {key: 2, value: true, text: 'Route has anchor'}
+                  ]}/>
+                }
                 {this.state.activePoint !== 0 && (
                   <Dropdown selection value={!!this.state.points[this.state.activePoint].c? "C" : "L"} onChange={this.setPointType} options={[
                     {key: 1, value: "L", text: 'Selected point: Line to'},
