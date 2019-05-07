@@ -171,7 +171,7 @@ class Sector extends Component<any, any> {
                     {problem.hasMovies>0 && <Icon color="black" name="film"/>}
                     <LockSymbol visibility={problem.visibility}/>
                     {problem.ticked && <Icon color="green" name="check"/>}
-                    {!data.metadata.isBouldering && <small>{` ${problem.t.type} - ${problem.t.subType}`}</small>}
+                    {!data.metadata.isBouldering && <small>{problem.t.subType}</small>}
                   </List.Header>
                 </List.Item>
               ))}

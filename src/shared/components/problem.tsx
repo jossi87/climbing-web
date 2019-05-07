@@ -277,7 +277,7 @@ class Problem extends Component<any, any> {
         <Message icon>
           <Icon name="info" />
           <Message.Content>
-            {!data.metadata.isBouldering && <><strong>Type:</strong> {data.t.type + " - " + data.t.subType}<br/></>}
+            {!data.metadata.isBouldering && <><strong>Type:</strong> {data.t.subType}<br/></>}
             <strong>Nr:</strong> {data.nr}<br/>
             <strong>Comment:</strong> {data.comment}<br/>
             <strong>FA:</strong> {data.fa && data.fa.map((u, i) => (
