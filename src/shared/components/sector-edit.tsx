@@ -17,33 +17,14 @@ class SectorEdit extends Component<any, any> {
     } else {
       data = props.staticContext.data;
     }
-    this.state = {data, ctrl: false};
+    this.state = {data, leafletMode: 'PARKING'};
   }
 
   componentDidMount() {
     if (!this.state.data) {
       this.refresh(this.props.match.params.sectorId);
     }
-    if (document) {
-      document.addEventListener("keydown", this.handleKeyDown);
-      document.addEventListener("keyup", this.handleKeyUp);
-    }
   }
-
-  componentWillUnmount() {
-    if (document) {
-      document.removeEventListener("keydown", this.handleKeyDown);
-      document.removeEventListener("keyup", this.handleKeyUp);
-    }
-  }
-
-  handleKeyDown = (e) => {
-    if (e.ctrlKey) this.setState({ctrl: true});
-  };
-
-  handleKeyUp = (e) => {
-    if (!e.ctrlKey) this.setState({ctrl: false});
-  };
 
   componentDidUpdate(prevProps) {
     if (this.props.isAuthenticated !== prevProps.isAuthenticated || prevProps.match.params.sectorId !== this.props.match.params.sectorId) {
@@ -82,7 +63,7 @@ class SectorEdit extends Component<any, any> {
   save = (event) => {
     event.preventDefault();
     this.setState({isSaving: true});
-    postSector(this.props.auth.getAccessToken(), this.props.location.query.idArea, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, this.state.data.polygonCoords, this.state.data.newMedia)
+    postSector(this.props.auth.getAccessToken(), this.props.location.query.idArea, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, this.state.data.polygonCoords, this.state.data.polyline, this.state.data.newMedia)
     .then((response) => {
       this.props.history.push("/sector/" + response.id);
     })
@@ -93,29 +74,47 @@ class SectorEdit extends Component<any, any> {
   }
 
   onMapClick = (event) => {
-    const { data, ctrl } = this.state;
-    if (ctrl) {
+    const { data, leafletMode } = this.state;
+    if (leafletMode == 'PARKING') {
+      data.lat = event.latlng.lat;
+      data.lng = event.latlng.lng;
+    } else if (leafletMode == 'POLYGON') {
       const coords = event.latlng.lat + "," + event.latlng.lng;
       if (data.polygonCoords) {
         data.polygonCoords = data.polygonCoords + ";" + coords;
       } else {
         data.polygonCoords = coords;
       }
-    } else {
-      data.lat = event.latlng.lat;
-      data.lng = event.latlng.lng;
+    } else if (leafletMode == 'POLYLINE') {
+      const coords = event.latlng.lat + "," + event.latlng.lng;
+      if (data.polyline) {
+        data.polyline = data.polyline + ";" + coords;
+      } else {
+        data.polyline = coords;
+      }
     }
     this.setState({data});
   }
 
-  resetMapPolygon = () => {
-    const { data } = this.state;
-    data.polygonCoords = null;
+  clearDrawing = () => {
+    const { data, leafletMode } = this.state;
+    if (leafletMode == 'PARKING') {
+      data.lat = 0;
+      data.lng = 0;
+    } else if (leafletMode == 'POLYGON') {
+      data.polygonCoords = null;
+    } else if (leafletMode == 'POLYLINE') {
+      data.polyline = null;
+    }
     this.setState({data});
   }
 
   onCancel = () => {
     window.history.back();
+  }
+
+  setMode = (mode) => {
+    this.setState({leafletMode: mode});
   }
 
   render() {
@@ -131,6 +130,9 @@ class SectorEdit extends Component<any, any> {
     const polygon = this.state.data.polygonCoords && this.state.data.polygonCoords.split(";").map((c, i) => {
       const latLng = c.split(",");
       return ([parseFloat(latLng[0]), parseFloat(latLng[1])]);
+    });
+    const polyline = this.state.data.polyline && this.state.data.polyline.split(";").map(e => {
+      return e.split(",").map(Number);
     });
     const defaultCenter = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? {lat: parseFloat(this.props.location.query.lat), lng: parseFloat(this.props.location.query.lng)} : this.state.data.metadata.defaultCenter;
     const defaultZoom: number = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? 14 : this.state.data.metadata.defaultZoom;
@@ -164,18 +166,24 @@ class SectorEdit extends Component<any, any> {
             <ImageUpload auth={this.props.auth} onMediaChanged={this.onNewMediaChanged} />
           </Form.Field>
           <Form.Field>
-            <label>Left mouse button to position parking coordinate, press and hold ctrl-key to add polygon points (sector outline)</label>
-              <Leaflet
-                markers={this.state.data.lat!=0 && this.state.data.lng!=0 && [{lat: this.state.data.lat, lng: this.state.data.lng, isParking: true}]}
-                outlines={polygon && [{polygon: polygon}]}
-                defaultCenter={defaultCenter}
-                defaultZoom={defaultZoom}
-                onClick={this.onMapClick}
-              />
+            <label>Draw mode (click on map to draw)</label>
+            <Button.Group>
+              <Button positive={this.state.leafletMode=='PARKING'} onClick={() => this.setMode("PARKING")}>Parking</Button>
+              <Button positive={this.state.leafletMode=='POLYGON'} onClick={() => this.setMode("POLYGON")}>Sector outline (polygon)</Button>
+              <Button positive={this.state.leafletMode=='POLYLINE'} onClick={() => this.setMode("POLYLINE")}>Path to sector (polyline)</Button>
+              <Button negative onClick={this.clearDrawing}>Remove parking/polygon/polyline</Button>
+            </Button.Group>
+            <br/><br/>
+            <Leaflet
+              markers={this.state.data.lat!=0 && this.state.data.lng!=0 && [{lat: this.state.data.lat, lng: this.state.data.lng, isParking: true}]}
+              outlines={polygon && [{polygon: polygon}]}
+              polyline={polyline}
+              defaultCenter={defaultCenter}
+              defaultZoom={defaultZoom}
+              onClick={this.onMapClick}
+            />
           </Form.Field>
           <Button.Group>
-            <Button onClick={this.resetMapPolygon}>Clear polygon</Button>
-            <Button.Or />
             <Button negative onClick={this.onCancel}>Cancel</Button>
             <Button.Or />
             <Button positive disabled={this.state.isSaving} onClick={this.save}>{this.state.isSaving? 'Saving...' : 'Save sector'}</Button>

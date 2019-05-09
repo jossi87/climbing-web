@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-let parkingIcon, Map, TileLayer, LayersControl, Marker, Polygon, Tooltip, WMSTileLayer;
+let parkingIcon, Circle, Map, TileLayer, LayersControl, Marker, Polygon, Polyline, Tooltip, WMSTileLayer;
 
 interface Coordinates {
   lat: number,
@@ -28,16 +28,18 @@ interface LeafletProps extends RouteComponentProps<any> {
   defaultCenter: Coordinates,
   markers?: Array<Marker>,
   outlines?: Array<Outline>,
+  polyline?: Array<Array<number>>,
   onClick?: Function
 }
-
 class Leaflet extends Component<LeafletProps> {
   componentDidMount() {
     Map = require('react-leaflet').Map
+    Circle = require('react-leaflet').Circle
     TileLayer = require('react-leaflet').TileLayer
     LayersControl = require('react-leaflet').LayersControl
     Marker = require('react-leaflet').Marker
     Polygon = require('react-leaflet').Polygon
+    Polyline = require('react-leaflet').Polyline
     Tooltip = require('react-leaflet').Tooltip
     WMSTileLayer = require('react-leaflet').WMSTileLayer
     this.setState({render: true});
@@ -63,7 +65,7 @@ class Leaflet extends Component<LeafletProps> {
           parkingIcon = new L.icon({ iconUrl: '/png/parking_lot_maps.png', iconAnchor: [15, 15] })
         }
         return (
-          <Marker position={[m.lat, m.lng]} key={i} onClick={() => this.props.history.push(m.url)} icon={parkingIcon}>
+          <Marker position={[m.lat, m.lng]} key={i} onClick={() => this.props.onClick? null : this.props.history.push(m.url)} icon={parkingIcon}>
             {m.label && (
               <Tooltip opacity={opacity} permanent>
                 {m.label}
@@ -88,8 +90,9 @@ class Leaflet extends Component<LeafletProps> {
         )
       }
     })
+
     const polygons = this.props.outlines && this.props.outlines.map((o, i) => (
-      <Polygon key={i} positions={o.polygon} onClick={() => this.props.history.push(o.url)}>
+      <Polygon key={i} positions={o.polygon} onClick={() => this.props.onClick? null : this.props.history.push(o.url)}>
         {o.label && (
           <Tooltip opacity={opacity} permanent>
             {o.label}
@@ -97,6 +100,15 @@ class Leaflet extends Component<LeafletProps> {
         )}
       </Polygon>
     ))
+    var polyline;
+    if (this.props.polyline) {
+      if (this.props.polyline.length == 1) {
+        polyline = <Circle center={this.props.polyline[0]} radius={0.5} />
+      }
+      else {
+        polyline = <Polyline color="lime" positions={this.props.polyline} />;
+      }
+    }
     const maxZoom = 21;
     const height = this.props.height? this.props.height : '500px';
     return (
@@ -169,6 +181,7 @@ class Leaflet extends Component<LeafletProps> {
         </LayersControl>
         {markers}
         {polygons}
+        {polyline}
       </Map>
     );
   }
