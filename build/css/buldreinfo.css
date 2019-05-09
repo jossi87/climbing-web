@@ -23,12 +23,19 @@
   max-width: 100vw;
   max-height: 100vh;
 }
-.buldreinfo-svg-route {
+.buldreinfo-svg-route-red {
   fill: none;
   stroke: #E2011A;
 }
-.buldreinfo-svg-ring {
+.buldreinfo-svg-route-blue {
+  fill: none;
+  stroke: #0000FF;
+}
+.buldreinfo-svg-ring-red {
   fill: #E2011A;
+}
+.buldreinfo-svg-ring-blue {
+  fill: #0000FF;
 }
 .buldreinfo-svg-routenr {
   fill: #FFFFFF;

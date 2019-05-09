@@ -3,8 +3,8 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Chart from './common/chart/chart';
 import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
-import { Icon, List, Label, Header, Segment, Divider, Image, Button } from 'semantic-ui-react';
-import { numberWithCommas } from './../api';
+import { Icon, List, Label, Header, Segment, Divider, Image, Button, Checkbox } from 'semantic-ui-react';
+import { numberWithCommas, postUser } from './../api';
 
 class User extends Component<any, any> {
   constructor(props) {
@@ -56,6 +56,17 @@ class User extends Component<any, any> {
     this.setState({orderByGrade});
   }
 
+  toggleUseBlueNotRed = () => {
+    const data = this.state.data;
+    data.metadata.useBlueNotRed = !data.metadata.useBlueNotRed;
+    this.setState({data});
+    postUser(this.props.auth.getAccessToken(), data.metadata.useBlueNotRed)
+    .catch((error) => {
+      console.warn(error);
+      this.setState({error});
+    });
+  }
+
   render() {
     const { data } = this.state;
     if (!data) {
@@ -98,6 +109,13 @@ class User extends Component<any, any> {
             <Label color='blue' image><Icon name='video' />{numberWithCommas(data.numVideoTags)}<Label.Detail>Tag</Label.Detail></Label>
             <Label color='violet' image><Icon name='video' />{numberWithCommas(data.numVideosCreated)}<Label.Detail>Captured</Label.Detail></Label>
           </Label.Group>
+          {this.props.isAuthenticated &&
+            <Checkbox
+              checked={data.metadata.useBlueNotRed}
+              label='Use blue instead of red lines on schematics'
+              onClick={this.toggleUseBlueNotRed}
+            />
+          }
           {chart && 
             <>
               <Divider/>

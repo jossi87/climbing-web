@@ -87,7 +87,7 @@ class Sector extends Component<any, any> {
     }
     const panes = [];
     if (data.media && data.media.length>0) {
-      panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Media auth={this.props.auth} isAdmin={data.metadata.isAdmin} removeMedia={this.onRemoveMedia} media={data.media} /></Tab.Pane> });
+      panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Media auth={this.props.auth} isAdmin={data.metadata.isAdmin} removeMedia={this.onRemoveMedia} media={data.media} useBlueNotRed={data.metadata.useBlueNotRed} /></Tab.Pane> });
     }
     if (markers.length>0) {
       const defaultCenter = data.lat && data.lat>0? {lat: data.lat, lng: data.lng} : data.metadata.defaultCenter;

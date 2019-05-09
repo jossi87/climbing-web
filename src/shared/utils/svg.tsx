@@ -1,7 +1,7 @@
 import React from 'react';
 import { parseSVG, makeAbsolute } from 'svg-path-parser';
 
-function generateSvgNrAndAnchor(path, nr, hasAnchor, w, h) {
+function generateSvgNrAndAnchor(path, nr, hasAnchor, w, h, useBlueNotRed) {
   var ixNr;
   var maxY = 0;
   var ixAnchor;
@@ -25,11 +25,11 @@ function generateSvgNrAndAnchor(path, nr, hasAnchor, w, h) {
   if (y > (h-r)) y = h-r;
   var anchor = null;
   if (hasAnchor === true) {
-    anchor = <circle className="buldreinfo-svg-ring" cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.006*w}/>
+    anchor = <circle className={useBlueNotRed? "buldreinfo-svg-ring-blue" : "buldreinfo-svg-ring-red"} cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.006*w}/>
   }
   return (
     <g className="buldreinfo-svg-opacity">
-      <circle className="buldreinfo-svg-ring" cx={x} cy={y} r={r}/>
+      <circle className={useBlueNotRed? "buldreinfo-svg-ring-blue" : "buldreinfo-svg-ring-red"} cx={x} cy={y} r={r}/>
       <text className="buldreinfo-svg-routenr" x={x} y={y} fontSize={0.02*w}>{nr}</text>
       {anchor}
     </g>
@@ -51,13 +51,13 @@ export function parsePath(d) {
   return [];
 }
 
-export function parseReadOnlySvgs(readOnlySvgs, w, h) {
+export function parseReadOnlySvgs(readOnlySvgs, w, h, useBlueNotRed) {
   const shapes = [];
   for (let svg of readOnlySvgs) {
-    shapes.push(<path key={shapes.length} d={svg.path} className="buldreinfo-svg-opacity buldreinfo-svg-route" strokeWidth={0.003*w} strokeDasharray={0.006*w}/>);
+    shapes.push(<path key={shapes.length} d={svg.path} className={useBlueNotRed? "buldreinfo-svg-opacity buldreinfo-svg-route-blue" : "buldreinfo-svg-opacity buldreinfo-svg-route-red"} strokeWidth={0.003*w} strokeDasharray={0.006*w}/>);
     const commands = parseSVG(svg.path);
     makeAbsolute(commands); // Note: mutates the commands in place!
-    shapes.push(generateSvgNrAndAnchor(commands, svg.nr, svg.hasAnchor, w, h));
+    shapes.push(generateSvgNrAndAnchor(commands, svg.nr, svg.hasAnchor, w, h, useBlueNotRed));
   }
   return shapes;
 }

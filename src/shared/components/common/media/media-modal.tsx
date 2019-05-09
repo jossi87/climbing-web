@@ -63,9 +63,10 @@ interface Props extends RouteComponentProps<any> {
   length: number,
   gotoPrev: any,
   gotoNext: any,
-  playVideo: any
+  playVideo: any,
+  useBlueNotRed: boolean
 }
-function MediaModal({isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext, playVideo, history}) {
+function MediaModal({isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext, playVideo, history, useBlueNotRed}) {
   let myPlayer;
   var topLeftButton;
   if (isAdmin && m.idType===1) {
@@ -86,7 +87,7 @@ function MediaModal({isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext, 
         </>
       }
       {m.idType===1?
-        (m.svgs? <Image style={style.img}><Svg thumb={false} style={{}} m={m} close={onClose}/></Image> : <Image style={style.img} alt={m.description} src={getImageUrl(m.id, 720)} />)
+        (m.svgs? <Image style={style.img}><Svg useBlueNotRed={useBlueNotRed} thumb={false} style={{}} m={m} close={onClose}/></Image> : <Image style={style.img} alt={m.description} src={getImageUrl(m.id, 720)} />)
       :
         (m.autoPlayVideo?
           <ReactPlayer

@@ -64,7 +64,7 @@ class Area extends Component<any, any> {
     const panes = [];
     const height = '40vh';
     if (this.state.data.media && this.state.data.media.length>0) {
-      panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Media auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} removeMedia={this.onRemoveMedia} media={this.state.data.media} /></Tab.Pane> });
+      panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Media auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} removeMedia={this.onRemoveMedia} media={this.state.data.media} useBlueNotRed={this.state.data.metadata.useBlueNotRed} /></Tab.Pane> });
     }
     if (markers.length>0 || outlines.length>0) {
       const defaultCenter = this.state.data.lat && this.state.data.lat>0? {lat: this.state.data.lat, lng: this.state.data.lng} : this.state.data.metadata.defaultCenter;
