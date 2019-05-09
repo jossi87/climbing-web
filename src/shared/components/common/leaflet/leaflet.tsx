@@ -28,7 +28,7 @@ interface LeafletProps extends RouteComponentProps<any> {
   defaultCenter: Coordinates,
   markers?: Array<Marker>,
   outlines?: Array<Outline>,
-  polyline?: Array<Array<number>>,
+  polylines?: Array<Array<Array<number>>>,
   onClick?: Function
 }
 class Leaflet extends Component<LeafletProps> {
@@ -100,14 +100,16 @@ class Leaflet extends Component<LeafletProps> {
         )}
       </Polygon>
     ))
-    var polyline;
-    if (this.props.polyline) {
-      if (this.props.polyline.length == 1) {
-        polyline = <Circle center={this.props.polyline[0]} radius={0.5} />
-      }
-      else {
-        polyline = <Polyline color="lime" positions={this.props.polyline} />;
-      }
+    var polylines;
+    if (this.props.polylines) {
+      polylines = this.props.polylines.map((polyline, i) => {
+        if (polyline.length == 1) {
+          return <Circle key={i} center={polyline[0]} radius={0.5} />
+        }
+        else {
+          return <Polyline key={i} color="lime" positions={polyline} />;
+        }
+      })
     }
     const maxZoom = 21;
     const height = this.props.height? this.props.height : '500px';
@@ -181,7 +183,7 @@ class Leaflet extends Component<LeafletProps> {
         </LayersControl>
         {markers}
         {polygons}
-        {polyline}
+        {polylines}
       </Map>
     );
   }

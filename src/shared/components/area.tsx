@@ -61,6 +61,12 @@ class Area extends Component<any, any> {
       });
       return {url: '/sector/' + s.id, label: s.name, polygon: polygon}
     });
+    const polylines = this.state.data.sectors.filter(s => s.polyline).map(s => {
+      console.log(s);
+      return s.polyline.split(";").map(e => {
+        return e.split(",").map(Number);
+      });
+    });
     const panes = [];
     const height = '40vh';
     if (this.state.data.media && this.state.data.media.length>0) {
@@ -69,7 +75,7 @@ class Area extends Component<any, any> {
     if (markers.length>0 || outlines.length>0) {
       const defaultCenter = this.state.data.lat && this.state.data.lat>0? {lat: this.state.data.lat, lng: this.state.data.lng} : this.state.data.metadata.defaultCenter;
       const defaultZoom = this.state.data.lat && this.state.data.lat>0? 14 : this.state.data.metadata.defaultZoom;
-      panes.push({ menuItem: 'Map', render: () => <Tab.Pane><Leaflet height={height} useOpenStreetMap={true} markers={markers} outlines={outlines} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/></Tab.Pane> });
+      panes.push({ menuItem: 'Map', render: () => <Tab.Pane><Leaflet height={height} useOpenStreetMap={true} markers={markers} outlines={outlines} polylines={polylines} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/></Tab.Pane> });
     }
     return (
       <>

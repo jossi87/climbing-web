@@ -177,7 +177,7 @@ class SectorEdit extends Component<any, any> {
             <Leaflet
               markers={this.state.data.lat!=0 && this.state.data.lng!=0 && [{lat: this.state.data.lat, lng: this.state.data.lng, isParking: true}]}
               outlines={polygon && [{polygon: polygon}]}
-              polyline={polyline}
+              polylines={polyline && [polyline]}
               defaultCenter={defaultCenter}
               defaultZoom={defaultZoom}
               onClick={this.onMapClick}

@@ -58,7 +58,6 @@ class Sector extends Component<any, any> {
 
   render() {
     const { data } = this.state;
-    console.log(data);
     if (!data) {
       return <LoadingAndRestoreScroll />;
     }
@@ -93,10 +92,10 @@ class Sector extends Component<any, any> {
     if (markers.length>0) {
       const defaultCenter = data.lat && data.lat>0? {lat: data.lat, lng: data.lng} : data.metadata.defaultCenter;
       const defaultZoom = data.lat && data.lat>0? 15 : data.metadata.defaultZoom;
-      const polyline = data.polyline && this.state.data.polyline.split(";").map(e => {
+      const polyline = data.polyline && data.polyline.split(";").map(e => {
         return e.split(",").map(Number);
       });
-      panes.push({ menuItem: 'Map', render: () => <Tab.Pane><Leaflet height='40vh' markers={markers} polyline={polyline} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/></Tab.Pane> });
+      panes.push({ menuItem: 'Map', render: () => <Tab.Pane><Leaflet height='40vh' markers={markers} polylines={polyline && [polyline]} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/></Tab.Pane> });
     }
     const nextNr = data.problems.length>0? data.problems[data.problems.length-1].nr+1 : 1;
     return (
