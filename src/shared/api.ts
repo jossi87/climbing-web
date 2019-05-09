@@ -447,9 +447,6 @@ export function postTodo(accessToken: string, id: number, problemId: number, pri
 
 export function postUser(accessToken: string, useBlueNotRed: boolean): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/user?useBlueNotRed=${useBlueNotRed}`,{
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    }
+    method: 'POST'
   });
 }

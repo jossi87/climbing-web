@@ -110,11 +110,11 @@ class User extends Component<any, any> {
             <Label color='violet' image><Icon name='video' />{numberWithCommas(data.numVideosCreated)}<Label.Detail>Captured</Label.Detail></Label>
           </Label.Group>
           {this.props.isAuthenticated &&
-            <Checkbox
+            <><br/><Checkbox
               checked={data.metadata.useBlueNotRed}
               label='Use blue instead of red lines on schematics'
               onClick={this.toggleUseBlueNotRed}
-            />
+            /></>
           }
           {chart && 
             <>
