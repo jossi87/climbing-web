@@ -225,7 +225,7 @@ export function getSectorEdit(accessToken: string, id: number): Promise<any> {
     return makeAuthenticatedRequest(accessToken, `/sectors?id=${id}`, null)
     .then((data) => data.json())
     .then((res) => {
-      return {id: res.id, visibility: res.visibility, name: res.name, comment: res.comment, lat: res.lat, lng: res.lng, polygonCoords: res.polygonCoords, newMedia: [], metadata: res.metadata};
+      return {id: res.id, visibility: res.visibility, name: res.name, comment: res.comment, lat: res.lat, lng: res.lng, polygonCoords: res.polygonCoords, polyline: res.polyline, newMedia: [], metadata: res.metadata};
     })
     .catch((error) => {
       console.warn(error);
