@@ -92,13 +92,21 @@ class Sector extends Component<any, any> {
     if (markers.length>0) {
       const defaultCenter = data.lat && data.lat>0? {lat: data.lat, lng: data.lng} : data.metadata.defaultCenter;
       const defaultZoom = data.lat && data.lat>0? 15 : data.metadata.defaultZoom;
+      var outlines;
+      if (data.polygonCoords && markers.filter(m => !m.isParking).length===0) {
+        const polygon = data.polygonCoords.split(";").map(c => {
+          const latLng = c.split(",");
+          return ([parseFloat(latLng[0]), parseFloat(latLng[1])]);
+        });
+        outlines = [{url: '/sector/' + data.id, label: data.name, polygon: polygon}];
+      }
       const polyline = data.polyline && {
         label: data.name,
         polyline: data.polyline.split(";").map(e => {
           return e.split(",").map(Number);
         })
       };
-      panes.push({ menuItem: 'Map', render: () => <Tab.Pane><Leaflet height='40vh' markers={markers} polylines={polyline && [polyline]} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/></Tab.Pane> });
+      panes.push({ menuItem: 'Map', render: () => <Tab.Pane><Leaflet height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/></Tab.Pane> });
     }
     const nextNr = data.problems.length>0? data.problems[data.problems.length-1].nr+1 : 1;
     return (

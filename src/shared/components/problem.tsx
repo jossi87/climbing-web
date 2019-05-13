@@ -141,6 +141,14 @@ class Problem extends Component<any, any> {
       });
     }
     if (markers.length>0) {
+      var outlines;
+      if (data.sectorPolygonCoords && markers.filter(m => !m.isParking).length===0) {
+        const polygon = data.sectorPolygonCoords.split(";").map(c => {
+          const latLng = c.split(",");
+          return ([parseFloat(latLng[0]), parseFloat(latLng[1])]);
+        });
+        outlines = [{url: '/sector/' + data.sectorId, label: data.sectorName, polygon: polygon}];
+      }
       const polyline = data.sectorPolyline && {
         label: data.sectorName,
         polyline: data.sectorPolyline.split(";").map(e => {
@@ -149,7 +157,7 @@ class Problem extends Component<any, any> {
       };
       panes.push({
         menuItem: { key: 'map', icon: 'map', content: 'Map' },
-        render: () => <Tab.Pane><Leaflet height='40vh' markers={markers} polylines={polyline && [polyline]} defaultCenter={{lat: markers[0].lat, lng: markers[0].lng}} defaultZoom={16}/></Tab.Pane>
+        render: () => <Tab.Pane><Leaflet height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={{lat: markers[0].lat, lng: markers[0].lng}} defaultZoom={16}/></Tab.Pane>
       });
     }
     
