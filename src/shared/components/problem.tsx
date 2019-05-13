@@ -141,9 +141,12 @@ class Problem extends Component<any, any> {
       });
     }
     if (markers.length>0) {
-      const polyline = data.sectorPolyline && data.sectorPolyline.split(";").map(e => {
-        return e.split(",").map(Number);
-      });
+      const polyline = data.sectorPolyline && {
+        label: data.sectorName,
+        polyline: data.sectorPolyline.split(";").map(e => {
+          return e.split(",").map(Number);
+        })
+      };
       panes.push({
         menuItem: { key: 'map', icon: 'map', content: 'Map' },
         render: () => <Tab.Pane><Leaflet height='40vh' markers={markers} polylines={polyline && [polyline]} defaultCenter={{lat: markers[0].lat, lng: markers[0].lng}} defaultZoom={16}/></Tab.Pane>

@@ -131,9 +131,12 @@ class SectorEdit extends Component<any, any> {
       const latLng = c.split(",");
       return ([parseFloat(latLng[0]), parseFloat(latLng[1])]);
     });
-    const polyline = this.state.data.polyline && this.state.data.polyline.split(";").map(e => {
-      return e.split(",").map(Number);
-    });
+    const polyline = this.state.data.polyline && {
+      label: "",
+      polyline: this.state.data.polyline.split(";").map(e => {
+        return e.split(",").map(Number);
+      })
+    };
     const defaultCenter = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? {lat: parseFloat(this.props.location.query.lat), lng: parseFloat(this.props.location.query.lng)} : this.state.data.metadata.defaultCenter;
     const defaultZoom: number = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? 14 : this.state.data.metadata.defaultZoom;
     const visibilityOptions = [

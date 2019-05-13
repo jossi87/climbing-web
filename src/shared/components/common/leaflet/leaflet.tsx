@@ -21,6 +21,11 @@ interface Outline {
   label?: string
 }
 
+interface Polyline {
+  polyline: Array<Array<number>>,
+  label: string
+}
+
 interface LeafletProps extends RouteComponentProps<any> {
   useOpenStreetMap?: boolean,
   height?: string,
@@ -28,7 +33,7 @@ interface LeafletProps extends RouteComponentProps<any> {
   defaultCenter: Coordinates,
   markers?: Array<Marker>,
   outlines?: Array<Outline>,
-  polylines?: Array<Array<Array<number>>>,
+  polylines?: Array<Polyline>,
   onClick?: Function
 }
 class Leaflet extends Component<LeafletProps> {
@@ -90,7 +95,6 @@ class Leaflet extends Component<LeafletProps> {
     if (!Map) {
       return null;
     }
-    const opacity = 0.5;
     const markers = this.props.markers && this.props.markers.map((m, i) => {
       if (m.isParking) {
         if (parkingIcon == null) {
@@ -100,7 +104,7 @@ class Leaflet extends Component<LeafletProps> {
         return (
           <Marker position={[m.lat, m.lng]} key={i} onClick={() => this.props.onClick? null : this.props.history.push(m.url)} icon={parkingIcon}>
             {m.label && (
-              <Tooltip opacity={opacity} permanent>
+              <Tooltip opacity={0.5} permanent>
                 {m.label}
               </Tooltip>
             )}
@@ -115,7 +119,7 @@ class Leaflet extends Component<LeafletProps> {
             draggable={false}
             onDragend={() => this.updatePosition(m.url, this)}>
             {m.label && (
-              <Tooltip opacity={opacity} permanent>
+              <Tooltip opacity={0.5} permanent>
                 {m.label}
               </Tooltip>
             )}
@@ -127,7 +131,7 @@ class Leaflet extends Component<LeafletProps> {
     const polygons = this.props.outlines && this.props.outlines.map((o, i) => (
       <Polygon key={i} positions={o.polygon} onClick={() => this.props.onClick? null : this.props.history.push(o.url)}>
         {o.label && (
-          <Tooltip opacity={opacity} permanent>
+          <Tooltip opacity={0.9} permanent>
             {o.label}
           </Tooltip>
         )}
@@ -135,16 +139,16 @@ class Leaflet extends Component<LeafletProps> {
     ))
     var polylines;
     if (this.props.polylines) {
-      polylines = this.props.polylines.map((polyline, i) => {
-        if (polyline.length == 1) {
-          return <Circle key={i} center={polyline[0]} radius={0.5} />
+      polylines = this.props.polylines.map((p, i) => {
+        if (p.polyline.length == 1) {
+          return <Circle key={i} center={p.polyline[0]} radius={0.5} />
         }
         else {
-          const distance = this.calculateDistance(polyline);
+          const distance = this.calculateDistance(p.polyline);
           return (
-          <Polyline key={i} color="lime" positions={polyline}>
-            <Tooltip opacity={opacity} permanent>
-              {distance}
+          <Polyline key={i} color="lime" positions={p.polyline}>
+            <Tooltip opacity={0.5} permanent>
+              {this.props.polylines.length>1 && p.label + ": "}{distance}
             </Tooltip>
           </Polyline>);
         }

@@ -62,10 +62,12 @@ class Area extends Component<any, any> {
       return {url: '/sector/' + s.id, label: s.name, polygon: polygon}
     });
     const polylines = this.state.data.sectors.filter(s => s.polyline).map(s => {
-      console.log(s);
-      return s.polyline.split(";").map(e => {
-        return e.split(",").map(Number);
-      });
+      return {
+        label: s.name,
+        polyline: s.polyline.split(";").map(e => {
+          return e.split(",").map(Number);
+        })
+      }
     });
     const panes = [];
     const height = '40vh';
