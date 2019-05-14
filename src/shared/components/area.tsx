@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
+import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
 import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
 import { LockSymbol, LoadingAndRestoreScroll } from './common/widgets/widgets';
@@ -78,6 +79,9 @@ class Area extends Component<any, any> {
       const defaultCenter = this.state.data.lat && this.state.data.lat>0? {lat: this.state.data.lat, lng: this.state.data.lng} : this.state.data.metadata.defaultCenter;
       const defaultZoom = this.state.data.lat && this.state.data.lat>0? 14 : this.state.data.metadata.defaultZoom;
       panes.push({ menuItem: 'Map', render: () => <Tab.Pane><Leaflet height={height} useOpenStreetMap={true} markers={markers} outlines={outlines} polylines={polylines} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/></Tab.Pane> });
+    }
+    if (this.state.data.sectors.length!=0) {
+      panes.push({ menuItem: 'Distribution', render: () => <Tab.Pane><ChartGradeDistribution auth={this.props.auth} idArea={this.state.data.id} idSector={0}/></Tab.Pane> });
     }
     return (
       <>

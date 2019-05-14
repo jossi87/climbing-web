@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
+import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
 import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
 import { LockSymbol, Stars, LoadingAndRestoreScroll } from './common/widgets/widgets';
@@ -44,7 +45,7 @@ class Sector extends Component<any, any> {
   order = () => {
     const { data } = this.state;
     data.orderByGrade = !data.orderByGrade;
-    this.state.data.problems.sort((a, b) => {
+    data.problems.sort((a, b) => {
       if (data.orderByGrade) {
         if (a.gradeNumber != b.gradeNumber) {
           return b.gradeNumber-a.gradeNumber;
@@ -107,6 +108,9 @@ class Sector extends Component<any, any> {
         })
       };
       panes.push({ menuItem: 'Map', render: () => <Tab.Pane><Leaflet height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/></Tab.Pane> });
+    }
+    if (data.problems.length!=0) {
+      panes.push({ menuItem: 'Distribution', render: () => <Tab.Pane><ChartGradeDistribution auth={this.props.auth} idArea={0} idSector={data.id}/></Tab.Pane> });
     }
     const nextNr = data.problems.length>0? data.problems[data.problems.length-1].nr+1 : 1;
     return (
