@@ -4,6 +4,14 @@ import { getGradeDistribution } from './../../../api';
 
 class ChartGradeDistribution extends Component<any, any> {
   componentDidMount() {
+    this.refresh();
+  }
+
+  componentDidUpdate() {
+    this.refresh();
+  }
+  
+  refresh() {
     getGradeDistribution(this.props.auth.getAccessToken(), this.props.idArea, this.props.idSector).then((res) => {
       this.setState({ gradeDistribution: res });
     });
@@ -30,7 +38,7 @@ class ChartGradeDistribution extends Component<any, any> {
           {cols}
         </tr>
         <tr>
-          {gradeDistribution.map((g, i) => <td style={{width: '30px', textAlign: 'center'}} key={i}><strong>{g.grade}</strong></td>)}
+          {gradeDistribution.map((g, i) => <td style={{width: '40px', textAlign: 'center'}} key={i}><strong>{g.grade}</strong></td>)}
         </tr>
       </table>
     )
