@@ -177,11 +177,11 @@ class Sector extends Component<any, any> {
             </div>
             <List selection>
               {data.problems.map((problem, i) => {
-                var ascents = problem.numTicks>0 && problem.numTicks + (problem.numTicks==1? " ascent" : " ascents");
+                var ascents = problem.numTicks>0 && (problem.numTicks + (problem.numTicks==1? " ascent" : " ascents"));
                 var typeAscents;
                 if (data.metadata.isBouldering && ascents) {
                   typeAscents = " (" + ascents + ") ";
-                } else {
+                } else if (!data.metadata.isBouldering) {
                   if (ascents) {
                     typeAscents = " (" + problem.t.subType + ", " + ascents + ") ";
                   } else {
