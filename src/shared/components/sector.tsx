@@ -176,27 +176,36 @@ class Sector extends Component<any, any> {
               <Header as="h3">{data.metadata.isBouldering? "Problems:" : "Routes:"}</Header>
             </div>
             <List selection>
-              {data.problems.map((problem, i) => (
-                <List.Item key={i} as={Link} to={`/problem/${problem.id}`}>
-                  <List.Header>
-                    {problem.danger && <Icon color="red" name="warning"/>}
-                    {!data.orderByGrade && `#${problem.nr} `}
-                    <a>{problem.name}</a>
-                    {' '}{problem.grade}
-                    {' '}<Stars numStars={problem.stars}/>
-                    {problem.numTicks>0 && <small>({problem.numTicks} {problem.numTicks==1? "ascent" : "ascents"}) </small>}
-                    {problem.fa && <small><i style={{color: "gray"}}>{problem.fa} </i></small>}
-                    {problem.hasImages>0 && <Icon color="black" name="photo"/>}
-                    {problem.hasMovies>0 && <Icon color="black" name="film"/>}
-                    <LockSymbol visibility={problem.visibility}/>
-                    {problem.ticked && <Icon color="green" name="check"/>}
-                    {!data.metadata.isBouldering && <small>{problem.t.subType}</small>}
-                  </List.Header>
-                  <List.Content>
-                    <small><i>{problem.comment}</i></small>
-                  </List.Content>
-                </List.Item>
-              ))}
+              {data.problems.map((problem, i) => {
+                var ascents = problem.numTicks>0 && problem.numTicks + (problem.numTicks==1? " ascent" : " ascents");
+                var typeAscents;
+                if (data.metadata.isBouldering && ascents) {
+                  typeAscents = " (" + ascents + ") ";
+                } else {
+                  if (ascents) {
+                    typeAscents = " (" + problem.t.subType + ", " + ascents + ") ";
+                  } else {
+                    typeAscents = " (" + problem.t.subType + ") ";
+                  }
+                }
+                return (
+                  <List.Item key={i} as={Link} to={`/problem/${problem.id}`}>
+                    <List.Header>
+                      {problem.danger && <Icon color="red" name="warning"/>}
+                      {!data.orderByGrade && `#${problem.nr} `}
+                      <a>{problem.name}</a>
+                      {' '}{problem.grade}
+                      {' '}<Stars numStars={problem.stars}/>
+                      {problem.fa && <small>{problem.fa}</small>}
+                      <small>{typeAscents}</small>
+                      {problem.comment && <small><i style={{color: "gray"}}>{' '}{problem.comment}{' '}</i></small>}
+                      {problem.hasImages>0 && <Icon color="black" name="photo"/>}
+                      {problem.hasMovies>0 && <Icon color="black" name="film"/>}
+                      <LockSymbol visibility={problem.visibility}/>
+                      {problem.ticked && <Icon color="green" name="check"/>}
+                    </List.Header>
+                  </List.Item>
+                )})}
             </List>
           </Segment>
         }
