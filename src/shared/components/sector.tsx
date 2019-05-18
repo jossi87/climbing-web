@@ -192,6 +192,9 @@ class Sector extends Component<any, any> {
                     {problem.ticked && <Icon color="green" name="check"/>}
                     {!data.metadata.isBouldering && <small>{problem.t.subType}</small>}
                   </List.Header>
+                  <List.Content>
+                    <small>{problem.comment}</small>
+                  </List.Content>
                 </List.Item>
               ))}
             </List>
