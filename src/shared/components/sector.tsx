@@ -197,7 +197,7 @@ class Sector extends Component<any, any> {
                       {' '}{problem.grade}
                       {' '}<Stars numStars={problem.stars}/>
                       {problem.fa && <small>{problem.fa}</small>}
-                      <small>{typeAscents}</small>
+                      {typeAscents && <small>{typeAscents}</small>}
                       {problem.comment && <small><i style={{color: "gray"}}>{' '}{problem.comment}{' '}</i></small>}
                       {problem.hasImages>0 && <Icon color="black" name="photo"/>}
                       {problem.hasMovies>0 && <Icon color="black" name="film"/>}
