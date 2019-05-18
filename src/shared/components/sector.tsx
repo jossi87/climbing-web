@@ -193,7 +193,7 @@ class Sector extends Component<any, any> {
                     {!data.metadata.isBouldering && <small>{problem.t.subType}</small>}
                   </List.Header>
                   <List.Content>
-                    <small>{problem.comment}</small>
+                    <small><i>{problem.comment}</i></small>
                   </List.Content>
                 </List.Item>
               ))}
