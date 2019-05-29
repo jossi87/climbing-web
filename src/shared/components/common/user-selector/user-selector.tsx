@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import CreatableSelect from 'react-select/lib/Creatable';
+import CreatableSelect from 'react-select/creatable';
 import { getUserSearch } from './../../../api';
 
 class UserSelector extends Component<any, any> {
@@ -12,9 +12,12 @@ class UserSelector extends Component<any, any> {
 		getUserSearch(this.props.auth.getAccessToken(), "").then((res) => this.setState({options: res.map(u => {return {value: u.id, label: u.name}})}));
 	}
 
-	handleOnChange = (value) => {
-    this.props.onUsersUpdated(value);
-		this.setState({multiValue: value});
+	handleChange = (newValue: any, actionMeta: any) => {
+		if (!newValue) {
+			newValue = [];
+		}
+    this.props.onUsersUpdated(newValue);
+		this.setState({multiValue: newValue});
 	}
 
 	isValidNewOption = (inputValue) => {
@@ -28,7 +31,7 @@ class UserSelector extends Component<any, any> {
   				<CreatableSelect
   					isMulti
   					options={this.state.options}
-  					onChange={this.handleOnChange}
+  					onChange={this.handleChange}
 						isValidNewOption={this.isValidNewOption}
   					value={this.state.multiValue}
   				/>
