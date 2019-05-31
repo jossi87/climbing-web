@@ -2,7 +2,19 @@ import React, {Component} from 'react';
 import CreatableSelect from 'react-select/creatable';
 import { getUserSearch } from './../../../api';
 
-class UserSelector extends Component<any, any> {
+interface User {
+	value: number,
+	label: string
+}
+
+interface Props {
+	isMulti: boolean,
+  auth: any,
+	onUsersUpdated: Function,
+	users?: Array<User>
+}
+
+class UserSelector extends Component<Props, any> {
   constructor(props) {
 		super(props);
 		this.state = {multiValue: props.users, options: []};
@@ -29,7 +41,7 @@ class UserSelector extends Component<any, any> {
       <div style={{position: 'relative', width: '100%'}}>
         <div style={{width: '100%'}}>
   				<CreatableSelect
-  					isMulti
+  					isMulti={this.props.isMulti}
   					options={this.state.options}
   					onChange={this.handleChange}
 						isValidNewOption={this.isValidNewOption}
