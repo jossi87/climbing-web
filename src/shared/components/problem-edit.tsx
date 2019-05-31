@@ -225,7 +225,7 @@ class ProblemEdit extends Component<any, any> {
           </Form.Field>
           <Form.Field>
             <label>FA</label>
-            <UserSelector isMulti={true} auth={this.props.auth} users={data.fa? data.fa.map(u => {return {value: u.id, label: u.name}}) : []} onUsersUpdated={this.onUsersUpdated} />
+            <UserSelector isMulti={true} placeholder="Select user(s)" auth={this.props.auth} users={data.fa? data.fa.map(u => {return {value: u.id, label: u.name}}) : []} onUsersUpdated={this.onUsersUpdated} />
           </Form.Field>
           <Form.Field>
             <label>Visibility</label>

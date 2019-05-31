@@ -1,60 +1,8 @@
 import React, {Component} from 'react';
 import Dropzone from 'react-dropzone';
-import { getUserSearch } from './../../../api';
-import { Button, Card, Image, Search } from 'semantic-ui-react';
+import { Button, Card, Image } from 'semantic-ui-react';
 import classNames from 'classnames';
-
-interface TextProps {
-  accessToken: string,
-  m: any,
-  placeholder: string,
-  value: string,
-  onValueChanged: Function
-}
-
-class Text extends Component<TextProps, any> {
-  componentWillMount() {
-    this.resetComponent()
-  }
-
-  componentWillReceiveProps(nextProps) {
-    this.resetComponent()
-  }
-
-  resetComponent = () => this.setState({ isLoading: false, results: [], value: '' })
-
-  handleResultSelect = (e, { result }) => {
-    this.setState({ value: result.title });
-    this.props.onValueChanged(this.props.m, result.title);
-  }
-
-  handleSearchChange = (e, { value }) => {
-    if (value.length < 1) return this.resetComponent()
-    this.setState({ isLoading: true, value })
-    this.props.onValueChanged(this.props.m, value);
-    getUserSearch(this.props.accessToken, value)
-    .then((res) => {
-      this.setState({
-        isLoading: false,
-        results: res.map(u => ({title: u.name}))
-      });
-    });
-  }
-
-  render() {
-    const { isLoading, value, results } = this.state;
-    return (
-      <Search
-        loading={isLoading}
-        onResultSelect={this.handleResultSelect}
-        onSearchChange={this.handleSearchChange}
-        results={results}
-        value={value}
-        {...this.props}
-      />
-    )
-  }
-}
+import UserSelector from '../user-selector/user-selector';
 
 class ImageUpload extends Component<any, any> {
   constructor(props) {
@@ -72,13 +20,13 @@ class ImageUpload extends Component<any, any> {
     this.props.onMediaChanged(allMedia);
   }
 
-  onPhotographerChanged = (m, name) => {
-    m.photographer=name;
+  onPhotographerChanged = (u, m) => {
+    m.photographer = u.label;
     this.props.onMediaChanged(this.state.media);
   }
 
-  onInPhotoChanged = (m, name) => {
-    m.inPhoto=name;
+  onInPhotoChanged = (u, m) => {
+    m.inPhoto = u.label;
     this.props.onMediaChanged(this.state.media);
   }
 
@@ -89,7 +37,6 @@ class ImageUpload extends Component<any, any> {
   }
 
   render() {
-    const accessToken = this.props.auth.getAccessToken();
     return (
       <>
         <Dropzone onDrop={this.onDrop} accept={'image/*'}>
@@ -116,8 +63,8 @@ class ImageUpload extends Component<any, any> {
               <Card key={i}>
                 <Image src={m.file.preview} />
                 <Card.Content>
-                  <Text accessToken={accessToken} m={m} placeholder='In photo' value={m? m.inPhoto : ''}  onValueChanged={this.onInPhotoChanged} />
-                  <Text accessToken={accessToken} m={m} placeholder='Photographer' value={m? m.photographer : ''} onValueChanged={this.onPhotographerChanged} />
+                  <UserSelector isMulti={false} placeholder="In photo" auth={this.props.auth} onUsersUpdated={this.onInPhotoChanged} identity={m} />
+                  <UserSelector isMulti={false} placeholder="Photographer" auth={this.props.auth} onUsersUpdated={this.onPhotographerChanged}  identity={m} />
                 </Card.Content>
                 <Card.Content extra>
                   <Button fluid basic negative onClick={() => this.onRemove(m)}>Remove</Button>

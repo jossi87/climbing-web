@@ -9,7 +9,9 @@ interface User {
 
 interface Props {
 	isMulti: boolean,
-  auth: any,
+	auth: any,
+	placeholder: string,
+	identity?: any,
 	onUsersUpdated: Function,
 	users?: Array<User>
 }
@@ -28,7 +30,7 @@ class UserSelector extends Component<Props, any> {
 		if (!newValue) {
 			newValue = [];
 		}
-    this.props.onUsersUpdated(newValue);
+    this.props.onUsersUpdated(newValue, this.props.identity);
 		this.setState({multiValue: newValue});
 	}
 
@@ -41,6 +43,8 @@ class UserSelector extends Component<Props, any> {
       <div style={{position: 'relative', width: '100%'}}>
         <div style={{width: '100%'}}>
   				<CreatableSelect
+						isClearable
+						placeholder={this.props.placeholder}
   					isMulti={this.props.isMulti}
   					options={this.state.options}
   					onChange={this.handleChange}
