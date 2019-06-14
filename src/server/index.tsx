@@ -20,12 +20,12 @@ app.use(express.static("build"));
 app.get("*", (req: any, res: any, next) => {
   const metaTagsInstance = MetaTagsServer();
   (global as any).myOrigin = req.headers.host==='localhost:3000'? "http://localhost:3000" : "https://" + req.headers.host;
-  // @ts-ignore
+
   const activeRoute = routes.find((route) => matchPath(req.url, route)) || {};
 
   const accessToken = req.universalCookies.get('access_token');
-  const promise = activeRoute.fetchInitialData
-    ? activeRoute.fetchInitialData(accessToken, req.path)
+  const promise = (activeRoute as any).fetchInitialData
+    ? (activeRoute as any).fetchInitialData(accessToken, req.path)
     : Promise.resolve()
 
   promise.then((data) => {
@@ -62,8 +62,8 @@ app.get("*", (req: any, res: any, next) => {
         </body>
       </html>
     `;
-    if (activeRoute.status) {
-      res.status(activeRoute.status).send(response);
+    if ((activeRoute as any).status) {
+      res.status((activeRoute as any).status).send(response);
     } else {
       res.send(response);
     }
