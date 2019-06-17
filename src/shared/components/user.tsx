@@ -142,12 +142,12 @@ class User extends Component<any, any> {
                 <List.Item key={i}>
                   <List.Header>
                     <small>{t.dateHr}</small>
+                    {' '}<small style={{color: 'gray'}}>{t.areaName} <LockSymbol visibility={t.areaVisibility}/> / {t.sectorName}<LockSymbol visibility={t.sectorVisibility}/> /</small>
                     {' '}<Link to={`/problem/${t.idProblem}`}>{t.name}</Link>
-                    {' '}{t.grade}
-                    <LockSymbol visibility={t.visibility}/>
+                    {' '}{t.grade}<LockSymbol visibility={t.visibility}/>
                     {t.stars>0 && <>{' '}<Stars numStars={t.stars} /></>}
                     {t.fa && <>{' '}<Label color="red" size="mini" content="FA"/></>}
-                    {t.comment && <small style={{color: 'gray'}}> {t.comment}</small>}
+                    {' '}{t.comment && <small style={{color: 'gray'}}><i>{t.comment}</i></small>}
                   </List.Header>
                 </List.Item>
               ))}
