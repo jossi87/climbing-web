@@ -16,9 +16,7 @@ class Filter extends Component<any, any> {
     } else {
       data = props.staticContext.data;
     }
-    const hideTicked = data && data.metadata && data.metadata.isAuthenticated? true : false;
-    const types = data && data.metadata && data.metadata.types.map(t => t.id);
-    this.state = {data, hideTicked, onlyWithMedia: false, onlyAdmin: false, onlySuperAdmin: false, isLoading: false, filterDisabled: true, orderByStars: false, types};
+    this.state = {data, onlyWithMedia: false, onlyAdmin: false, onlySuperAdmin: false, isLoading: false, filterDisabled: true, orderByStars: false};
   }
 
   componentDidMount() {
@@ -27,8 +25,8 @@ class Filter extends Component<any, any> {
     }
   }
 
-  onChangeGrades = (e, { value }) => this.setState({grades: value, filterDisabled: value.length==0})
-  onChangeTypes = (e, { value }) => this.setState({types: value, filterDisabled: value.length==0})
+  onChangeGrades = (e, { value }) => this.setState({grades: value, filterDisabled: value.length==0 || (!this.state.data.metadata.isBouldering && (!this.state.types || this.state.types.length==0)) })
+  onChangeTypes = (e, { value }) => this.setState({types: value, filterDisabled: value.length==0 || (!this.state.grades || this.state.grades.length==0) })
   toggleHideTicked = () => this.setState({hideTicked: !this.state.hideTicked})
   toggleOnlyWithMedia = () => this.setState({onlyWithMedia: !this.state.onlyWithMedia})
   toggleOnlyAdmin = () => this.setState({onlyAdmin: !this.state.onlyAdmin, onlySuperAdmin: false})
@@ -36,7 +34,8 @@ class Filter extends Component<any, any> {
   
   filter = () => {
     this.setState( {isLoading: true, filterDisabled: true} );
-    postFilter(this.props.auth.getAccessToken(), this.state.grades, this.state.types).then((res) => {
+    const types = this.state.data.metadata.isBouldering? [1] : this.state.types;
+    postFilter(this.props.auth.getAccessToken(), this.state.grades, types).then((res) => {
       this.setState({ result: res, isLoading: false });
     });
   }
@@ -69,7 +68,7 @@ class Filter extends Component<any, any> {
             <Form.Field>
               <Dropdown placeholder="Select grade(s)" fluid multiple selection options={gradeOptions} onChange={this.onChangeGrades} />
             </Form.Field>
-            {data.metadata.types && data.metadata.types.length>1 &&
+            {!data.metadata.isBouldering &&
               <Form.Field>
                 <Dropdown placeholder="Select type(s)" fluid multiple selection options={typeOptions} onChange={this.onChangeTypes} value={types} />
               </Form.Field>
