@@ -34,7 +34,7 @@
     "@types/react-router-dom": "^4.3.4",
     "@types/serialize-javascript": "^1.5.0",
     "@types/svg-path-parser": "^1.1.0",
-    "auth0-js": "^9.11.1",
+    "auth0-js": "^9.10.4",
     "classnames": "^2.2.6",
     "cors": "^2.8.5",
     "express": "^4.17.1",
