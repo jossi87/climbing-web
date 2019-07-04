@@ -17,7 +17,8 @@ class Filter extends Component<any, any> {
       data = props.staticContext.data;
     }
     const hideTicked = data && data.metadata && data.metadata.isAuthenticated? true : false;
-    this.state = {data, hideTicked, onlyWithMedia: false, onlyAdmin: false, onlySuperAdmin: false, isLoading: false, filterDisabled: true, orderByStars: false};
+    const types = data && data.metadata && data.metadata.types.map(t => t.id);
+    this.state = {data, hideTicked, onlyWithMedia: false, onlyAdmin: false, onlySuperAdmin: false, isLoading: false, filterDisabled: true, orderByStars: false, types};
   }
 
   componentDidMount() {
@@ -27,14 +28,15 @@ class Filter extends Component<any, any> {
   }
 
   onChangeGrades = (e, { value }) => this.setState({grades: value, filterDisabled: value.length==0})
+  onChangeTypes = (e, { value }) => this.setState({types: value, filterDisabled: value.length==0})
   toggleHideTicked = () => this.setState({hideTicked: !this.state.hideTicked})
   toggleOnlyWithMedia = () => this.setState({onlyWithMedia: !this.state.onlyWithMedia})
   toggleOnlyAdmin = () => this.setState({onlyAdmin: !this.state.onlyAdmin, onlySuperAdmin: false})
   toggleOnlySuperAdmin = () => this.setState({onlySuperAdmin: !this.state.onlySuperAdmin, onlyAdmin: false})
-
+  
   filter = () => {
     this.setState( {isLoading: true, filterDisabled: true} );
-    postFilter(this.props.auth.getAccessToken(), this.state.grades).then((res) => {
+    postFilter(this.props.auth.getAccessToken(), this.state.grades, this.state.types).then((res) => {
       this.setState({ result: res, isLoading: false });
     });
   }
@@ -51,11 +53,13 @@ class Filter extends Component<any, any> {
   }
 
   render() {
-    const { data, result, filterDisabled, hideTicked, onlyWithMedia, onlyAdmin, onlySuperAdmin, isLoading } = this.state;
+    console.log(this.state.types)
+    const { data, result, filterDisabled, hideTicked, onlyWithMedia, onlyAdmin, onlySuperAdmin, isLoading, types } = this.state;
     if (!data) {
       return <LoadingAndRestoreScroll />;
     }
     const gradeOptions = data.metadata.grades.map(g => ({key: g.id, value: g.id, text: g.grade}));
+    const typeOptions = data.metadata.types.map(t => ({key: t.id, value: t.id, text: t.subType}));
     var res = result && result.filter(p => ( (!hideTicked || !p.ticked) && (!onlyWithMedia || p.randomMediaId>0) && (!onlyAdmin || p.problemVisibility===1) && (!onlySuperAdmin || p.problemVisibility===2) ))
     return (
       <>
@@ -65,6 +69,11 @@ class Filter extends Component<any, any> {
             <Form.Field>
               <Dropdown placeholder="Select grade(s)" fluid multiple selection options={gradeOptions} onChange={this.onChangeGrades} />
             </Form.Field>
+            {data.metadata.types && data.metadata.types.length>1 &&
+              <Form.Field>
+                <Dropdown placeholder="Select type(s)" fluid multiple selection options={typeOptions} onChange={this.onChangeTypes} value={types} />
+              </Form.Field>
+            }
             <Form.Field>
               <Checkbox label="Hide ticked" onChange={this.toggleHideTicked} checked={this.state.hideTicked} disabled={!data.metadata.isAuthenticated} />
             </Form.Field>

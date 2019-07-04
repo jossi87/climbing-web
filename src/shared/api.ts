@@ -4,7 +4,7 @@ import { parsePath } from './utils/svg';
 function getUrl(urlSuffix: string): string {
   var uri = __isBrowser__? window.origin : (global as any).myOrigin;
   if (uri === 'http://localhost:3000') {
-    uri = 'https://buldreinfo.com';
+    uri = 'https://brattelinjer.no';
   }
   return encodeURI(`${uri || ""}/com.buldreinfo.jersey.jaxb/v2${urlSuffix}`);
 }
@@ -359,10 +359,10 @@ export function postComment(accessToken: string, id: number, idProblem: number, 
   });
 }
 
-export function postFilter(accessToken: string, grades: Array<number>): Promise<any> {
+export function postFilter(accessToken: string, grades: Array<number>, types: Array<number>): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/filter`, {
     method: 'POST',
-    body: JSON.stringify({grades}),
+    body: JSON.stringify({grades, types}),
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
