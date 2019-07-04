@@ -52,13 +52,12 @@ class Filter extends Component<any, any> {
   }
 
   render() {
-    console.log(this.state.types)
     const { data, result, filterDisabled, hideTicked, onlyWithMedia, onlyAdmin, onlySuperAdmin, isLoading, types } = this.state;
     if (!data) {
       return <LoadingAndRestoreScroll />;
     }
     const gradeOptions = data.metadata.grades.map(g => ({key: g.id, value: g.id, text: g.grade}));
-    const typeOptions = data.metadata.types.map(t => ({key: t.id, value: t.id, text: t.subType}));
+    const typeOptions = data.metadata.types.sort((a, b) => a.subType.localeCompare(b.subType)).map(t => ({key: t.id, value: t.id, text: t.subType}));
     var res = result && result.filter(p => ( (!hideTicked || !p.ticked) && (!onlyWithMedia || p.randomMediaId>0) && (!onlyAdmin || p.problemVisibility===1) && (!onlySuperAdmin || p.problemVisibility===2) ))
     return (
       <>
