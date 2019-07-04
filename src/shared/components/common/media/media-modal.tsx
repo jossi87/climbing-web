@@ -109,4 +109,4 @@ function MediaModal({isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext, 
   )
 }
 
-export default withRouter<Props>(MediaModal)
+export default withRouter<Props, any>(MediaModal)

@@ -79,4 +79,4 @@ function Svg(props: SvgProps) {
   )
 }
 
-export default withRouter<SvgProps>(Svg)
+export default withRouter<SvgProps, any>(Svg)
