@@ -36,6 +36,10 @@ class TickModal extends Component<any, any> {
   }
 
   onDateChanged = (newDate) => {
+    var now = new Date();
+    if (newDate > now) {
+      newDate = now;
+    }
     this.setState({date: newDate? convertFromDateToString(newDate) : null});
   }
 
