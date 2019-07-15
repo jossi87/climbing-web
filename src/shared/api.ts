@@ -4,7 +4,7 @@ import { parsePath } from './utils/svg';
 function getUrl(urlSuffix: string): string {
   var uri = __isBrowser__? window.origin : (global as any).myOrigin;
   if (uri === 'http://localhost:3000') {
-    uri = 'https://brattelinjer.no';
+    uri = 'https://buldreinfo.com';
   }
   return encodeURI(`${uri || ""}/com.buldreinfo.jersey.jaxb/v2${urlSuffix}`);
 }
@@ -108,6 +108,15 @@ export function getFrontpage(accessToken: string): Promise<any> {
 
 export function getGradeDistribution(accessToken: string, idArea: number, idSector: number): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/grade/distribution?idArea=${idArea}&idSector=${idSector}`, null)
+  .then((data) => data.json())
+  .catch((error) => {
+    console.warn(error);
+    return null;
+  });
+}
+
+export function getManagementUsers(accessToken: string): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/management/users`, null)
   .then((data) => data.json())
   .catch((error) => {
     console.warn(error);
@@ -368,6 +377,16 @@ export function postFilter(accessToken: string, grades: Array<number>, types: Ar
       'Accept': 'application/json'
     }
   }).then((data) => data.json());
+}
+
+export function postManagementUsers(accessToken: string, userId: number, write: number): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/management/users`,{
+    method: 'POST',
+    body: JSON.stringify({userId, write}),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
 }
 
 export function postProblem(accessToken: string, sectorId: number, id: number, visibility: number, name: string, comment: string, originalGrade: string, fa: any, faDate: string, nr: number, t: any, lat: number, lng: number, sections: any, media: any): Promise<any> {
