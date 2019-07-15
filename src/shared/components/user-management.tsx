@@ -23,7 +23,7 @@ const UserManagement = ({auth}) => {
         <meta name="description" content={"User management"} />
       </MetaTags>
       <Header as="h2">User management</Header>
-      <List>
+      <List divided>
         {userManagement.map((u, key) => (
           <List.Item key={key}>
             <Image avatar src={u.picture? u.picture : '/png/image.png'} />
