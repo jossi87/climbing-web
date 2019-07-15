@@ -19,8 +19,8 @@ const UserManagement = ({auth}) => {
   return (
     <Segment>
       <MetaTags>
-        <title>Data management</title>
-        <meta name="description" content={"Data management"} />
+        <title>User management</title>
+        <meta name="description" content={"User management"} />
       </MetaTags>
       <Breadcrumb>
         <Breadcrumb.Section active>User management</Breadcrumb.Section>
