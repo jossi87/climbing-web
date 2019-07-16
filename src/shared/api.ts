@@ -115,8 +115,8 @@ export function getGradeDistribution(accessToken: string, idArea: number, idSect
   });
 }
 
-export function getManagementUsers(accessToken: string): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/management/users`, null)
+export function getMeta(accessToken: string): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/meta`, null)
   .then((data) => data.json())
   .catch((error) => {
     console.warn(error);
@@ -124,8 +124,8 @@ export function getManagementUsers(accessToken: string): Promise<any> {
   });
 }
 
-export function getMeta(accessToken: string): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/meta`, null)
+export function getPermissions(accessToken: string): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/permissions`, null)
   .then((data) => data.json())
   .catch((error) => {
     console.warn(error);
@@ -379,8 +379,8 @@ export function postFilter(accessToken: string, grades: Array<number>, types: Ar
   }).then((data) => data.json());
 }
 
-export function postManagementUsers(accessToken: string, userId: number, write: number): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/management/users`,{
+export function postPermissions(accessToken: string, userId: number, write: number): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/permissions`,{
     method: 'POST',
     body: JSON.stringify({userId, write}),
     headers: {

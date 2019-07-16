@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
@@ -72,7 +73,18 @@ class Todo extends Component<any, any> {
       return <LoadingAndRestoreScroll />;
     }
     return (
-      <React.Fragment>
+      <>
+        <MetaTags>
+          <title>{data.metadata.title}</title>
+          <meta name="description" content={data.metadata.description} />
+          <meta property="og:type" content="website" />
+          <meta property="og:description" content={data.metadata.description} />
+          <meta property="og:url" content={data.metadata.og.url} />
+          <meta property="og:title" content={data.metadata.title} />
+          <meta property="og:image" content={data.metadata.og.image} />
+          <meta property="og:image:width" content={data.metadata.og.imageWidth} />
+          <meta property="og:image:height" content={data.metadata.og.imageHeight} />
+        </MetaTags>
         <Segment>
           <Header as="h2">
             {data.picture && <Image circular src={data.picture}/>} {data.name} (To-do list)
@@ -114,7 +126,7 @@ class Todo extends Component<any, any> {
             <i>Empty list</i>
           }
         </Segment>
-      </React.Fragment>
+      </>
     );
   }
 }

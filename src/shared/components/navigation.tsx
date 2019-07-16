@@ -22,7 +22,7 @@ class Navigation extends Component<any, any> {
               <Dropdown.Menu>
                   <Dropdown.Item as={Link} to="/user">Profile</Dropdown.Item>
                   <Dropdown.Item as={Link} to="/todo">To-do list</Dropdown.Item>
-                  <Dropdown.Item as={Link} to="/management/user">User management</Dropdown.Item>
+                  <Dropdown.Item as={Link} to="/permissions">Permissions</Dropdown.Item>
                   <Dropdown.Item as={Link} to="/logout">Sign out</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>

@@ -16,10 +16,10 @@ import SvgEdit from './components/svg-edit';
 import Ticks from './components/ticks';
 import Todo from './components/todo';
 import User from './components/user';
-import UserManagement from './components/user-management';
+import Permissions from './components/permissions';
 import NoMatch from './components/no-match';
 
-import { getArea, getAreaEdit, getBrowse, getFrontpage, getManagementUsers, getMeta, getProblem, getProblemEdit, getProblemHse, getSector, getSectorEdit, getTicks, getUser, getSvgEdit, getTodo } from './api';
+import { getArea, getAreaEdit, getBrowse, getFrontpage, getMeta, getPermissions, getProblem, getProblemEdit, getProblemHse, getSector, getSectorEdit, getTicks, getUser, getSvgEdit, getTodo } from './api';
 
 const routes =  [
   {path: '/', exact: true, component: Frontpage, fetchInitialData: (accessToken, path = '') => getFrontpage(accessToken)},
@@ -30,7 +30,7 @@ const routes =  [
   {path: '/area/edit/:areaId', exact: true, component: AreaEdit, fetchInitialData: (accessToken, path = '') => getAreaEdit(accessToken, parseInt(path.split('/').pop()))},
   {path: '/filter', exact: false, component: Filter, fetchInitialData: (accessToken, path = '') => getMeta(accessToken)},
   {path: '/hse', exact: true, component: ProblemHse, fetchInitialData: (accessToken, path = '') => getProblemHse(accessToken)},
-  {path: '/management/user', exact: true, component: UserManagement, fetchInitialData: (accessToken, path = '') => getManagementUsers(accessToken)},
+  {path: '/permissions', exact: true, component: Permissions, fetchInitialData: (accessToken, path = '') => getPermissions(accessToken)},
   {path: '/problem/:problemId', exact: true, component: Problem, fetchInitialData: (accessToken, path = '') => getProblem(accessToken, parseInt(path.split('/').pop()))},
   {path: '/problem/edit/:problemId', exact: true, component: ProblemEdit, fetchInitialData: (accessToken, path = '') => getProblemEdit(accessToken, parseInt(path.split('/').pop()))},
   {path: '/problem/edit/media/:problemId', exact: true, component: ProblemEditMedia},
