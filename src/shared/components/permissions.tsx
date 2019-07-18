@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 import { getPermissions, postPermissions } from '../api';
-import { Segment, Header, List, Image, Dropdown } from 'semantic-ui-react';
+import { Header, Image, Dropdown, Card } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 
 const Permissions = ({auth}) => {
@@ -18,7 +18,7 @@ const Permissions = ({auth}) => {
     return <LoadingAndRestoreScroll />;
   }
   return (
-    <Segment>
+    <>
       <MetaTags>
         <title>{data.metadata.title}</title>
         <meta name="description" content={data.metadata.description} />
@@ -31,42 +31,51 @@ const Permissions = ({auth}) => {
         <meta property="og:image:height" content={data.metadata.og.imageHeight} />
       </MetaTags>
       <Header as="h2">Permissions</Header>
-      <List divided>
-        {data.users.length == 0?
-          <i>No data</i>
-        :
-        data.users.map((u, key) => (
-          <List.Item key={key}>
-            <Image avatar src={u.picture? u.picture : '/png/image.png'} />
-            <List.Content>
-              <List.Header as={Link} to={`/user/${u.userId}`}>{u.name} <LockSymbol visibility={u.write}/></List.Header>
-              <List.Description>
-                <Dropdown value={u.write}
-                  disabled={u.readOnly}
-                  options={[
-                    {key: 0, value: 0, icon: "user", text: "Default user"},
-                    {key: 1, value: 1, icon: "lock", text: "Administrator"},
-                    {key: 2, value: 2, icon: "user secret", text: "Super administrator (change permissions)"}
-                  ]}
-                  onChange={(e, data) => {
-                    u.write=data.value;
-                    postPermissions(auth.getAccessToken(), u.userId, u.write)
-                    .then((response) => {
-                      window.location.reload();
-                    })
-                    .catch((error) => {
-                      console.warn(error);
-                      alert(error.toString());
-                    });
-                  }}
-                /><br/>
-                <i>Last seen {u.lastLogin}</i>
-              </List.Description>
-            </List.Content>
-          </List.Item>
-        ))}
-      </List>
-    </Segment>
+      {data.users.length == 0?
+        <i>No data</i>
+      :
+        <Card.Group doubling stackable itemsPerRow={4}>
+          {data.users.map((u, key) => {
+            var color : any = 'white';
+            if (u.write == 2) {
+              color = 'black';
+            } else if (u.write == 1) {
+              color = 'yellow';
+            }
+            return (
+              <Card color={color} key={key} raised>
+                <Card.Content>
+                  <Image floated='right' size='mini' src={u.picture? u.picture : '/png/image.png'} />
+                  <Card.Header as={Link} to={`/user/${u.userId}`}>{u.name} <LockSymbol visibility={u.write}/></Card.Header>
+                  <Card.Meta>Last seen {u.lastLogin}</Card.Meta>
+                  <Card.Description>
+                    <Dropdown value={u.write}
+                      disabled={u.readOnly}
+                      options={[
+                        {key: 0, value: 0, icon: "user", text: "Default user"},
+                        {key: 1, value: 1, icon: "lock", text: "Administrator"},
+                        {key: 2, value: 2, icon: "user secret", text: "Super administrator"}
+                      ]}
+                      onChange={(e, data) => {
+                        u.write=data.value;
+                        postPermissions(auth.getAccessToken(), u.userId, u.write)
+                        .then((response) => {
+                          window.location.reload();
+                        })
+                        .catch((error) => {
+                          console.warn(error);
+                          alert(error.toString());
+                        });
+                      }}
+                    />
+                  </Card.Description>
+                </Card.Content>
+              </Card>
+            );
+          })}
+        </Card.Group>
+      }
+    </>
   )
 }
 
