@@ -30,7 +30,7 @@ const Permissions = ({auth}) => {
         <meta property="og:image:width" content={data.metadata.og.imageWidth} />
         <meta property="og:image:height" content={data.metadata.og.imageHeight} />
       </MetaTags>
-      <Header as="h2">Permissions</Header>
+      <Header as="h2">Permissions ({data.users.length} users)</Header>
       {data.users.length == 0?
         <i>No data</i>
       :
@@ -40,6 +40,10 @@ const Permissions = ({auth}) => {
             if (u.write == 2) {
               color = 'black';
             } else if (u.write == 1) {
+              color = 'red';
+            } else if (u.write == 0) {
+              color = 'green';
+            } else {
               color = 'yellow';
             }
             return (
@@ -52,9 +56,10 @@ const Permissions = ({auth}) => {
                     <Dropdown value={u.write}
                       disabled={u.readOnly}
                       options={[
-                        {key: 0, value: 0, icon: "user", text: "Default user"},
-                        {key: 1, value: 1, icon: "lock", text: "Administrator"},
-                        {key: 2, value: 2, icon: "user secret", text: "Super administrator"}
+                        {key: -1, value: -1, icon: "user", text: "Default user"},
+                        {key: 0, value: 0, icon: "user plus", text: "Read hidden data"},
+                        {key: 1, value: 1, icon: "lock", text: "Admin (write+read hidden data)"},
+                        {key: 2, value: 2, icon: "user secret", text: "Admin + manage users"}
                       ]}
                       onChange={(e, data) => {
                         u.write=data.value;
