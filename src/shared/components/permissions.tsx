@@ -58,7 +58,7 @@ const Permissions = ({auth}) => {
                       options={[
                         {key: -1, value: -1, icon: "user", text: "Default user"},
                         {key: 0, value: 0, icon: "user plus", text: "Read hidden data"},
-                        {key: 1, value: 1, icon: "lock", text: "Admin (write+read hidden data)"},
+                        {key: 1, value: 1, icon: "lock", text: "Admin (read+write hidden data)"},
                         {key: 2, value: 2, icon: "user secret", text: "Admin + manage users"}
                       ]}
                       onChange={(e, data) => {
