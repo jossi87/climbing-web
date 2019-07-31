@@ -58,6 +58,9 @@ export function parseReadOnlySvgs(readOnlySvgs, w, h, useBlueNotRed) {
     const commands = parseSVG(svg.path);
     makeAbsolute(commands); // Note: mutates the commands in place!
     shapes.push(generateSvgNrAndAnchor(commands, svg.nr, svg.hasAnchor, w, h, useBlueNotRed));
+    svg.anchors.map((a, i) => {
+      shapes.push(<circle key={i} className={useBlueNotRed? "buldreinfo-svg-opacity buldreinfo-svg-ring-blue" : "buldreinfo-svg-opacity buldreinfo-svg-ring-red"} cx={a.x} cy={a.y} r={0.006*w} />);
+    });
   }
   return shapes;
 }

@@ -37,10 +37,16 @@ function Svg(props: SvgProps) {
       if (x > (w-r)) x = w-r;
       if (y < r) y = r;
       if (y > (h-r)) y = h-r;
-      var anchor = null;
+      let anchors = [];
       if (svg.hasAnchor) {
-        anchor = <circle className={props.useBlueNotRed? "buldreinfo-svg-ring-blue" : "buldreinfo-svg-ring-red"} cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.006*w}/>
+        anchors.push(<circle className={props.useBlueNotRed? "buldreinfo-svg-ring-blue" : "buldreinfo-svg-ring-red"} cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.006*w}/>);
       }
+      if (svg.anchors) {
+        JSON.parse(svg.anchors).map((a, i) => {
+          anchors.push(<circle key={i} className={props.useBlueNotRed? "buldreinfo-svg-ring-blue" : "buldreinfo-svg-ring-red"} cx={a.x} cy={a.y} r={0.006*w} />);
+        });
+      }
+      let texts = svg.texts && JSON.parse(svg.texts).map((t, i) => (<text key={i} x={t.x} y={t.y} fontSize="8em" fill={props.useBlueNotRed? "blue" : "red"}>{t.txt}</text>));
       var factor = 1;
       var gClassName = "buldreinfo-svg-pointer buldreinfo-svg-hover";
       if (!(svgProblemId===0 || svg.problemId===svgProblemId)) {
@@ -58,7 +64,8 @@ function Svg(props: SvgProps) {
           <path d={svg.path} className={props.useBlueNotRed? "buldreinfo-svg-route-blue" : "buldreinfo-svg-route-red"} strokeWidth={0.003*w*factor} strokeDasharray={factor>1? null : 0.006*w}/>
           <circle className={props.useBlueNotRed? "buldreinfo-svg-ring-blue" : "buldreinfo-svg-ring-red"} cx={x} cy={y} r={r}/>
           <text className="buldreinfo-svg-routenr" x={x} y={y} fontSize={0.02*w} dy=".3em">{svg.nr}</text>
-          {anchor}
+          {anchors}
+          {texts}
         </g>
       );
     });

@@ -264,15 +264,19 @@ export function getSvgEdit(accessToken: string, problemIdMediaId: string): Promi
     var svgId = 0;
     var hasAnchor = true;
     var points = [];
+    var anchors = [];
+    var texts = [];
     if (m.svgs) {
       for (let svg of m.svgs) {
         if (svg.problemId===res.id) {
           svgId = svg.id;
           points = parsePath(svg.path);
           hasAnchor = svg.hasAnchor;
+          anchors = svg.anchors? JSON.parse(svg.anchors) : [];
+          texts = svg.texts? JSON.parse(svg.texts) : [];
         }
         else {
-          readOnlySvgs.push({ nr: svg.nr, hasAnchor: svg.hasAnchor, path: svg.path });
+          readOnlySvgs.push({ nr: svg.nr, hasAnchor: svg.hasAnchor, path: svg.path, anchors: svg.anchors? JSON.parse(svg.anchors) : [], texts: svg.texts? JSON.parse(svg.texts) : [] });
         }
       }
     }
@@ -284,6 +288,8 @@ export function getSvgEdit(accessToken: string, problemIdMediaId: string): Promi
       ctrl: false,
       svgId: svgId,
       points: points,
+      anchors: anchors,
+      texts: texts,
       readOnlySvgs: readOnlySvgs,
       activePoint: 0,
       draggedPoint: false,
@@ -428,10 +434,10 @@ export function postSearch(accessToken: string, value: string): Promise<any> {
   }).then((data) => data.json());
 }
 
-export function postProblemSvg(accessToken: string, problemId: number, mediaId: number, del: boolean, id: number, path: string, hasAnchor: boolean): Promise<any> {
+export function postProblemSvg(accessToken: string, problemId: number, mediaId: number, del: boolean, id: number, path: string, hasAnchor: boolean, anchors: string, texts: string): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/problems/svg?problemId=${problemId}&mediaId=${mediaId}`,{
     method: 'POST',
-    body: JSON.stringify({delete: del, id, path, hasAnchor}),
+    body: JSON.stringify({delete: del, id, path, hasAnchor, anchors, texts}),
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
