@@ -197,7 +197,7 @@ class SvgEdit extends Component<any, any> {
 
   handleMouseMove = (e) => {
     e.preventDefault();
-    if (!this.state.ctrl) {
+    if (!this.state.ctrl && !this.state.addAnchor && !this.state.addText) {
       if (this.state.draggedPoint) {
         this.setPointCoords(this.getMouseCoords(e));
       } else if (this.state.draggedCubic !== false) {
@@ -224,13 +224,13 @@ class SvgEdit extends Component<any, any> {
   };
 
   setDraggedPoint = (index) => {
-    if (!this.state.ctrl) {
+    if (!this.state.ctrl && !this.state.addAnchor && !this.state.addText) {
       this.setState({activePoint: index, draggedPoint: true});
     }
   };
 
   setDraggedCubic = (index, anchor) => {
-    if (!this.state.ctrl) {
+    if (!this.state.ctrl && !this.state.addAnchor && !this.state.addText) {
       this.setState({activePoint: index, draggedCubic: anchor});
     }
   };
