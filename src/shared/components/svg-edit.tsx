@@ -317,7 +317,7 @@ class SvgEdit extends Component<any, any> {
       circles.push(<circle key={i} className={this.state.metadata.useBlueNotRed? "buldreinfo-svg-ring-blue" : "buldreinfo-svg-ring-red"} cx={a.x} cy={a.y} r={0.006*this.state.w} />);
     });
     const path = this.generatePath();
-    const texts = this.state.texts.map((t, i) => (<text key={i} x={t.x} y={t.y} fontSize="8em" fill={this.state.metadata.useBlueNotRed? "blue" : "red"}>{t.txt}</text>));
+    const texts = this.state.texts.map((t, i) => (<text key={i} x={t.x} y={t.y} fontSize="5em" fill={this.state.metadata.useBlueNotRed? "blue" : "red"}>{t.txt}</text>));
     return (
       <Container onMouseUp={this.cancelDragging} onMouseLeave={this.cancelDragging}>
         <Segment>

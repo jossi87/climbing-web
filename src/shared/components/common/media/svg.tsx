@@ -46,7 +46,7 @@ function Svg(props: SvgProps) {
           anchors.push(<circle key={i} className={props.useBlueNotRed? "buldreinfo-svg-ring-blue" : "buldreinfo-svg-ring-red"} cx={a.x} cy={a.y} r={0.006*w} />);
         });
       }
-      let texts = svg.texts && JSON.parse(svg.texts).map((t, i) => (<text key={i} x={t.x} y={t.y} fontSize="8em" fill={props.useBlueNotRed? "blue" : "red"}>{t.txt}</text>));
+      let texts = svg.texts && JSON.parse(svg.texts).map((t, i) => (<text key={i} x={t.x} y={t.y} fontSize="5em" fill={props.useBlueNotRed? "blue" : "red"}>{t.txt}</text>));
       var factor = 1;
       var gClassName = "buldreinfo-svg-pointer buldreinfo-svg-hover";
       if (!(svgProblemId===0 || svg.problemId===svgProblemId)) {
