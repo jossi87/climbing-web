@@ -117,12 +117,12 @@ class SvgEdit extends Component<any, any> {
 
   onAddAnchor = () => {
     const addAnchor = !this.state.addAnchor;
-    this.setState({addAnchor});
+    this.setState({addAnchor, addText: false});
   }
 
   onAddText = () => {
     const addText = !this.state.addText;
-    this.setState({addText});
+    this.setState({addText, addAnchor: false});
   }
 
   save = (event) => {
@@ -320,27 +320,35 @@ class SvgEdit extends Component<any, any> {
     const texts = this.state.texts.map((t, i) => (<text key={i} x={t.x} y={t.y} fontSize="5em" fill={this.state.metadata.useBlueNotRed? "blue" : "red"}>{t.txt}</text>));
     return (
       <Container onMouseUp={this.cancelDragging} onMouseLeave={this.cancelDragging}>
-        <Segment>
-          <div style={{float: 'right'}}>
-            <Button.Group>
-              <Button negative disabled={this.state.points.length===0 && this.state.anchors.length===0 && this.state.texts.length===0} onClick={this.reset}>Reset</Button>
-              <Button.Or />
-              <Button onClick={this.onCancel}>Cancel</Button>
-              <Button.Or />
-              <Button positive onClick={this.save}>Save</Button>
-            </Button.Group>
-          </div>
-          <strong>CTRL + CLICK</strong> to add a point | <strong>CLICK</strong> to select a point | <strong>CLICK AND DRAG</strong> to move a point<br/>
+        <Segment style={{minHeight: '130px'}}>
+          <Button.Group floated="right">
+            <Button negative disabled={this.state.points.length===0 && this.state.anchors.length===0 && this.state.texts.length===0} onClick={this.reset}>Reset</Button>
+            <Button.Or />
+            <Button onClick={this.onCancel}>Cancel</Button>
+            <Button.Or />
+            <Button positive onClick={this.save}>Save</Button>
+          </Button.Group>
           {!this.state.metadata.isBouldering &&
             <>
-              <Button onClick={this.onAddText}>{this.state.addText? "Click on image to add text" : "Add text"}</Button>
-              <Button onClick={this.onAddAnchor}>{this.state.addAnchor? "Click on image to add anchor" : "Add extra anchor"}</Button>
+              <Button.Group size="tiny">
+                <Button onClick={this.onAddText}>{this.state.addText? "Click on image to add text" : "Add text"}</Button>
+                <Button.Or />
+                <Button disabled={this.state.texts.length===0} onClick={() => this.setState({texts: []})}>Remove all texts</Button>
+              </Button.Group>
+              {' '}
+              <Button.Group size="tiny">
+                <Button onClick={this.onAddAnchor}>{this.state.addAnchor? "Click on image to add extra anchor" : "Add extra anchor"}</Button>
+                <Button.Or />
+                <Button disabled={this.state.anchors.length===0} onClick={() => this.setState({anchors: []})}>Remove all extra anchors</Button>
+              </Button.Group>
+              {' '}
               <Dropdown selection value={this.state.hasAnchor} disabled={this.state.points.length===0} onChange={this.setHasAnchor} options={[
                 {key: 1, value: false, text: 'No anchor on route'},
                 {key: 2, value: true, text: 'Route has anchor'}
               ]}/>
             </>
-          }
+          }<br/>
+          <strong>CTRL + CLICK</strong> to add a point | <strong>CLICK</strong> to select a point | <strong>CLICK AND DRAG</strong> to move a point<br/>
           {this.state.activePoint !== 0 && (
             <Dropdown selection value={!!this.state.points[this.state.activePoint].c? "C" : "L"} onChange={this.setPointType} options={[
               {key: 1, value: "L", text: 'Selected point: Line to'},
