@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch';
+import { saveAs } from 'file-saver';
 import { parsePath } from './utils/svg';
 
 function getUrl(urlSuffix: string): string {
@@ -348,6 +349,22 @@ export function getUserSearch(accessToken: string, value: string): Promise<any> 
     console.warn(error);
     return null;
   });
+}
+
+export function getUsersTicks(accessToken: string): Promise<any> {
+  let filename = "ticks.xlsx";
+  return makeAuthenticatedRequest(accessToken, `/users/ticks`, {
+    expose:  ['Content-Disposition']
+  })
+  .then(response => {
+    filename = response.headers.get("content-disposition").substring(22,42);
+    return response.blob()
+  })
+  .then(blob => saveAs(blob, filename))
+  .catch((error) => {
+    console.warn(error);
+    return null;
+  });;
 }
 
 export function postArea(accessToken: string, id: number, visibility: number, name: string, comment: string, lat: number, lng: number, media: any): Promise<any> {

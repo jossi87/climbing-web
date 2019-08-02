@@ -3,8 +3,8 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import Chart from './common/chart/chart';
 import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
-import { Icon, List, Label, Header, Segment, Divider, Image, Button, Checkbox } from 'semantic-ui-react';
-import { numberWithCommas, postUser } from './../api';
+import { Icon, List, Label, Header, Segment, Divider, Image, Button, Checkbox, ButtonGroup } from 'semantic-ui-react';
+import { getUsersTicks, numberWithCommas, postUser } from './../api';
 
 class User extends Component<any, any> {
   constructor(props) {
@@ -92,12 +92,18 @@ class User extends Component<any, any> {
           <meta property="og:image:height" content={data.metadata.og.imageHeight} />
         </MetaTags>
         <Segment>
-          <div style={{float: 'right'}}>
+          <ButtonGroup floated="right">
+            {this.props.isAuthenticated && !this.props.match.params.userId &&
+              <Button icon labelPosition="left" size="mini" onClick={() => getUsersTicks(this.props.auth.getAccessToken())}>
+                <Icon name="file excel"/>
+                Download
+              </Button>
+            }
             <Button icon labelPosition="left" size="mini" as={Link} to={`/todo/${data.id}`}>
               <Icon name="list"/>
               To-do list
             </Button>
-          </div>
+          </ButtonGroup>
           <Header as="h2">
             {data.picture && <Image circular src={data.picture}/>} {data.name}
           </Header>  
