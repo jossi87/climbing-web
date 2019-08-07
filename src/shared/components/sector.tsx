@@ -182,10 +182,12 @@ class Sector extends Component<any, any> {
                 if (data.metadata.isBouldering && ascents) {
                   typeAscents = " (" + ascents + ") ";
                 } else if (!data.metadata.isBouldering) {
+                  let t = problem.t.subType;
+                  if (problem.numPitches>1) t += ", " + problem.numPitches + " pitches";
                   if (ascents) {
-                    typeAscents = " (" + problem.t.subType + ", " + ascents + ") ";
+                    typeAscents = " (" + t + ", " + ascents + ") ";
                   } else {
-                    typeAscents = " (" + problem.t.subType + ") ";
+                    typeAscents = " (" + t + ") ";
                   }
                 }
                 return (
