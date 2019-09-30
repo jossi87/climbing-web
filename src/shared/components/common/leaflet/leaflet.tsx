@@ -174,7 +174,7 @@ class Leaflet extends Component<LeafletProps> {
             />
           </LayersControl.BaseLayer>
 
-          <LayersControl.BaseLayer checked={!this.props.useFlightPhoto} name="Kartverket N50 topo">
+          <LayersControl.BaseLayer checked={this.props.useFlightPhoto} name="Kartverket N50 topo">
             <TileLayer
               maxNativeZoom={15}
               minZoom={0}
