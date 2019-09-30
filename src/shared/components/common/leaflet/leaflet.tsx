@@ -27,7 +27,7 @@ interface Polyline {
 }
 
 interface LeafletProps extends RouteComponentProps<any> {
-  useOpenStreetMap?: boolean,
+  useFlightPhoto?: boolean,
   height?: string,
   defaultZoom: number,
   defaultCenter: Coordinates,
@@ -164,7 +164,7 @@ class Leaflet extends Component<LeafletProps> {
         onClick={this.props.onClick? this.props.onClick : null}
       >
         <LayersControl position="topright">
-          <LayersControl.BaseLayer checked={!this.props.useOpenStreetMap} name="Norge i Bilder">
+          <LayersControl.BaseLayer checked={!this.props.useFlightPhoto} name="Norge i Bilder">
             <TileLayer
               maxNativeZoom={maxZoom}
               minZoom={0}
@@ -174,7 +174,7 @@ class Leaflet extends Component<LeafletProps> {
             />
           </LayersControl.BaseLayer>
 
-          <LayersControl.BaseLayer name="Kartverket N50 topo">
+          <LayersControl.BaseLayer checked={!this.props.useFlightPhoto} name="Kartverket N50 topo">
             <TileLayer
               maxNativeZoom={15}
               minZoom={0}
@@ -185,7 +185,7 @@ class Leaflet extends Component<LeafletProps> {
             />
           </LayersControl.BaseLayer>
 
-          <LayersControl.BaseLayer checked={this.props.useOpenStreetMap} name="OpenStreetMap">
+          <LayersControl.BaseLayer name="OpenStreetMap">
             <TileLayer
               maxNativeZoom={maxZoom}
               minZoom={0}
@@ -195,7 +195,7 @@ class Leaflet extends Component<LeafletProps> {
             />
           </LayersControl.BaseLayer>
 
-          <LayersControl.Overlay checked={!this.props.useOpenStreetMap} name="Stedsnavn">
+          <LayersControl.Overlay checked={this.props.useFlightPhoto} name="Stedsnavn">
             <WMSTileLayer
                 maxNativeZoom={maxZoom}
                 minZoom={0}
@@ -209,7 +209,7 @@ class Leaflet extends Component<LeafletProps> {
               />
           </LayersControl.Overlay>
 
-          <LayersControl.Overlay checked={!this.props.useOpenStreetMap} name="Vegnett">
+          <LayersControl.Overlay checked={this.props.useFlightPhoto} name="Vegnett">
             <WMSTileLayer
                 maxNativeZoom={maxZoom}
                 minZoom={0}
