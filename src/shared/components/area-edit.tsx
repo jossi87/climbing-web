@@ -128,7 +128,6 @@ class AreaEdit extends Component<any, any> {
           <Form.Field>
             <label>Click to mark area center on map</label>
             <Leaflet
-              useFlightPhoto={false}
               markers={this.state.data.lat!=0 && this.state.data.lng!=0 && [{lat: this.state.data.lat, lng: this.state.data.lng}]}
               defaultCenter={defaultCenter}
               defaultZoom={defaultZoom}

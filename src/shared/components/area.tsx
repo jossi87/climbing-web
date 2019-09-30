@@ -78,7 +78,7 @@ class Area extends Component<any, any> {
     if (markers.length>0 || outlines.length>0) {
       const defaultCenter = this.state.data.lat && this.state.data.lat>0? {lat: this.state.data.lat, lng: this.state.data.lng} : this.state.data.metadata.defaultCenter;
       const defaultZoom = this.state.data.lat && this.state.data.lat>0? 14 : this.state.data.metadata.defaultZoom;
-      panes.push({ menuItem: 'Map', render: () => <Tab.Pane><Leaflet height={height} useFlightPhoto={false} markers={markers} outlines={outlines} polylines={polylines} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/></Tab.Pane> });
+      panes.push({ menuItem: 'Map', render: () => <Tab.Pane><Leaflet height={height} markers={markers} outlines={outlines} polylines={polylines} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/></Tab.Pane> });
     }
     if (this.state.data.sectors.length!=0) {
       panes.push({ menuItem: 'Distribution', render: () => <Tab.Pane><ChartGradeDistribution auth={this.props.auth} idArea={this.state.data.id} idSector={0}/></Tab.Pane> });

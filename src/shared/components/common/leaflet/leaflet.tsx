@@ -27,7 +27,6 @@ interface Polyline {
 }
 
 interface LeafletProps extends RouteComponentProps<any> {
-  useFlightPhoto?: boolean,
   height?: string,
   defaultZoom: number,
   defaultCenter: Coordinates,
@@ -164,24 +163,13 @@ class Leaflet extends Component<LeafletProps> {
         onClick={this.props.onClick? this.props.onClick : null}
       >
         <LayersControl position="topright">
-          <LayersControl.BaseLayer checked={!this.props.useFlightPhoto} name="Norge i Bilder">
+          <LayersControl.BaseLayer checked={true} name="Norge i Bilder">
             <TileLayer
               maxNativeZoom={maxZoom}
               minZoom={0}
               maxZoom={maxZoom}
               attribution='&copy; <a href="https://www.norgeibilder.no/" rel="noopener" target="_blank">Geovekst</a>'
               url='https://waapi.webatlas.no/maptiles/tiles/webatlas-orto-newup/wa_grid/{z}/{x}/{y}.jpeg?api_key=b8e36d51-119a-423b-b156-d744d54123d5'
-            />
-          </LayersControl.BaseLayer>
-
-          <LayersControl.BaseLayer checked={this.props.useFlightPhoto} name="Kartverket N50 topo">
-            <TileLayer
-              maxNativeZoom={15}
-              minZoom={0}
-              maxZoom={15}
-              subdomains='23'
-              attribution='&copy; <a href="https://wiki.openstreetmap.org/wiki/No:Kartverket_import" rel="noopener" target="_blank">Kartverket</a>'
-              url='https://opencache{s}.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}'
             />
           </LayersControl.BaseLayer>
 
@@ -195,7 +183,18 @@ class Leaflet extends Component<LeafletProps> {
             />
           </LayersControl.BaseLayer>
 
-          <LayersControl.Overlay checked={this.props.useFlightPhoto} name="Stedsnavn">
+          <LayersControl.BaseLayer name="Kartverket N50 topo">
+            <TileLayer
+              maxNativeZoom={15}
+              minZoom={0}
+              maxZoom={15}
+              subdomains='23'
+              attribution='&copy; <a href="https://wiki.openstreetmap.org/wiki/No:Kartverket_import" rel="noopener" target="_blank">Kartverket</a>'
+              url='https://opencache{s}.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}'
+            />
+          </LayersControl.BaseLayer>
+
+          <LayersControl.Overlay checked={true} name="Stedsnavn">
             <WMSTileLayer
                 maxNativeZoom={maxZoom}
                 minZoom={0}
@@ -209,7 +208,7 @@ class Leaflet extends Component<LeafletProps> {
               />
           </LayersControl.Overlay>
 
-          <LayersControl.Overlay checked={this.props.useFlightPhoto} name="Vegnett">
+          <LayersControl.Overlay checked={true} name="Vegnett">
             <WMSTileLayer
                 maxNativeZoom={maxZoom}
                 minZoom={0}

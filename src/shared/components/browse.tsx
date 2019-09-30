@@ -37,7 +37,7 @@ class Browse extends Component<any, any> {
           url: '/area/' + a.id
         }
     });
-    const map = markers.length>0 && <><Leaflet height='75vh' useFlightPhoto={false} markers={markers} defaultCenter={this.state.data.metadata.defaultCenter} defaultZoom={this.state.data.metadata.defaultZoom}/><br/></>;
+    const map = markers.length>0 && <><Leaflet height='75vh' markers={markers} defaultCenter={this.state.data.metadata.defaultCenter} defaultZoom={this.state.data.metadata.defaultZoom}/><br/></>;
     return (
       <>
         <MetaTags>
