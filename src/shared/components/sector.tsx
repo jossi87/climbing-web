@@ -156,15 +156,13 @@ class Sector extends Component<any, any> {
           </Breadcrumb>
         </div>
         <Tab panes={panes} />
-        {data.comment &&
-          <Message icon>
-            <Icon name="info" />
-            <Message.Content>
-              {data.comment}
-              <strong>Views (since 2019.10.09):</strong> {data.hits}<br/>
-            </Message.Content>
-          </Message>
-        }
+        <Message icon>
+          <Icon name="info" />
+          <Message.Content>
+            <strong>Page views (since 2019.10.09):</strong> {data.hits}<br/>
+            {data.comment}
+          </Message.Content>
+        </Message>
         {data.problems &&
           <Segment>
             <div>

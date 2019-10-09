@@ -124,15 +124,13 @@ class Area extends Component<any, any> {
           </Breadcrumb>
         </div>
         <Tab panes={panes} />
-        {this.state.data.comment &&
-          <Message icon>
-            <Icon name="info" />
-            <Message.Content>
-              <div dangerouslySetInnerHTML={{ __html: this.state.data.comment }} />
-              <strong>Views (since 2019.10.09):</strong> {this.state.data.hits}<br/>
-            </Message.Content>
-          </Message>
-        }
+        <Message icon>
+          <Icon name="info" />
+          <Message.Content>
+            <strong>Page views (since 2019.10.09):</strong> {this.state.data.hits}<br/>
+            {this.state.data.comment && <div dangerouslySetInnerHTML={{ __html: this.state.data.comment }} />}
+          </Message.Content>
+        </Message>
         {this.state.data.sectors &&
           <Segment>
             <Header as="h3">Sectors:</Header>
