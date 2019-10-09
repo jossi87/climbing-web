@@ -161,6 +161,7 @@ class Sector extends Component<any, any> {
             <Icon name="info" />
             <Message.Content>
               {data.comment}
+              <strong>Views (since 2019.10.09):</strong> {data.hits}<br/>
             </Message.Content>
           </Message>
         }

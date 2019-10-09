@@ -307,6 +307,7 @@ class Problem extends Component<any, any> {
                 <Label as="a" href={`https://maps.google.com/maps?q=loc:${data.sectorLat},${data.sectorLng}&navigate=yes`} rel="noopener" target="_blank"><Icon name="map" />Google Maps</Label><br/>
               </>
             }
+            <strong>Views (since 2019.10.09):</strong> {data.hits}<br/>
             {data.sections &&
               <>
                 <strong>Pitches:</strong>

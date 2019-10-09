@@ -129,6 +129,7 @@ class Area extends Component<any, any> {
             <Icon name="info" />
             <Message.Content>
               <div dangerouslySetInnerHTML={{ __html: this.state.data.comment }} />
+              <strong>Views (since 2019.10.09):</strong> {this.state.data.hits}<br/>
             </Message.Content>
           </Message>
         }
