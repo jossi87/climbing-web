@@ -146,9 +146,9 @@ class User extends Component<any, any> {
           <Segment>
             <div>
               <ButtonGroup floated="right" size="mini">
-                <Button icon labelPosition="left" onClick={() => this.order('date')}><Icon name="sort content ascending"/>Date</Button>
-                <Button icon labelPosition="left" onClick={() => this.order('grade')}><Icon name="sort numeric descending"/>Grade</Button>
-                <Button icon labelPosition="left" onClick={() => this.order('name')}><Icon name="sort alphabet down"/>Name</Button>
+                <Button icon labelPosition="left" onClick={() => this.order('date')} active={this.state.orderBy==='date'}><Icon name="sort content ascending"/>Date</Button>
+                <Button icon labelPosition="left" onClick={() => this.order('grade')} active={this.state.orderBy==='grade'}><Icon name="sort numeric descending"/>Grade</Button>
+                <Button icon labelPosition="left" onClick={() => this.order('name')} active={this.state.orderBy==='name'}><Icon name="sort alphabet down"/>Name</Button>
               </ButtonGroup>
               <Header as="h3">Public ascents:</Header>
             </div>
