@@ -16,7 +16,7 @@ class User extends Component<any, any> {
     } else {
       data = props.staticContext.data;
     }
-    this.state = {data, orderByGrade: false};
+    this.state = {data, orderBy: 'date'};
   }
 
   componentDidMount() {
@@ -35,10 +35,9 @@ class User extends Component<any, any> {
     this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
   }
 
-  order = () => {
-    const orderByGrade = !this.state.orderByGrade;
+  order(type: string) {
     this.state.data.ticks.sort((a, b) => {
-      if (orderByGrade) {
+      if (type == 'grade') {
         if (a.gradeNumber != b.gradeNumber) {
           return b.gradeNumber-a.gradeNumber;
         }
@@ -50,10 +49,21 @@ class User extends Component<any, any> {
           return b.date.localeCompare(a.date);
         }
         return a.name.localeCompare(b.name);
+      } else if (type == 'date') {
+        return a.num-b.num;
+      } else if (type == 'name') {
+        if (a.areaName > b.areaName) return 1;
+        else if (a.areaName < b.areaName) return -1;
+        else if (a.sectorName > b.sectorName) return 1;
+        else if (a.sectorName < b.sectorName) return -1;
+        else if (a.name > b.name) return 1;
+        else if (a.name < b.name) return -1;
+        return 0;
+      } else {
+        console.log("Wrong type: " + type);
       }
-      return a.num-b.num;
     });
-    this.setState({orderByGrade});
+    this.setState({orderBy: type});
   }
 
   toggleUseBlueNotRed = () => {
@@ -135,12 +145,11 @@ class User extends Component<any, any> {
         {data.ticks.length>0 &&
           <Segment>
             <div>
-              <div style={{float: 'right'}}>
-                <Button icon labelPosition="left" onClick={this.order} size="mini">
-                  <Icon name="filter"/>
-                  {this.state.orderByGrade? "Order by date" : "Order by grade"}
-                </Button>
-              </div>
+              <ButtonGroup floated="right" size="mini">
+                <Button icon labelPosition="left" onClick={() => this.order('date')}><Icon name="sort content ascending"/>Date</Button>
+                <Button icon labelPosition="left" onClick={() => this.order('grade')}><Icon name="sort numeric descending"/>Grade</Button>
+                <Button icon labelPosition="left" onClick={() => this.order('name')}><Icon name="sort alphabet down"/>Name</Button>
+              </ButtonGroup>
               <Header as="h3">Public ascents:</Header>
             </div>
             <List selection>

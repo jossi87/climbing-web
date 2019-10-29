@@ -168,7 +168,7 @@ class Sector extends Component<any, any> {
             <div>
               <div style={{float: 'right'}}>
                 <Button icon labelPosition="left" onClick={this.order} size="mini">
-                  <Icon name="filter"/>
+                  <Icon name="sort"/>
                   {data.orderByGrade? "Order by number" : "Order by grade"}
                 </Button>  
               </div>
