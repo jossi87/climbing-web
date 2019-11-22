@@ -71,6 +71,16 @@ class ProblemSection extends Component<any, any> {
           {key: 18, value: 18, text: 18},
           {key: 19, value: 19, text: 19},
           {key: 20, value: 20, text: 20},
+          {key: 21, value: 21, text: 21},
+          {key: 22, value: 22, text: 22},
+          {key: 23, value: 23, text: 23},
+          {key: 24, value: 24, text: 24},
+          {key: 25, value: 25, text: 25},
+          {key: 26, value: 26, text: 26},
+          {key: 27, value: 27, text: 27},
+          {key: 28, value: 28, text: 28},
+          {key: 29, value: 29, text: 29},
+          {key: 30, value: 30, text: 30},
         ]}/>
         {this.state.sections && this.state.sections.length > 1 && this.state.sections.map((s, i) => (
           <Form.Group widths='equal' key={i} inline>
