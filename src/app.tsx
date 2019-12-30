@@ -68,7 +68,7 @@ const App = (props) => {
     maxWidth: '170px',
     backgroundColor: '#FFFFFF'
   };
-  if (loading) {
+  if (loading || (isAuthenticated && !accessToken)) {
     return <LoadingAndRestoreScroll />;
   }
   return (
