@@ -20,7 +20,7 @@ class Todo extends Component<any, any> {
   }
 
   refresh(id) {
-    getTodo(this.props.accessToken, id? id : "").then((data) => this.setState(() => ({data})));
+    getTodo(this.props.accessToken, id? id : "-1").then((data) => this.setState(() => ({data})));
   }
 
   move = (up: boolean, ix : number) => {
