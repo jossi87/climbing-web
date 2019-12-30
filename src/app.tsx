@@ -39,7 +39,7 @@ const PropsRoute = ({ component, ...rest }) => {
 }
 
 const App = (props) => {
-  const { isAuthenticated, loginWithRedirect, logout, getTokenSilently } = useAuth0();
+  const { isAuthenticated, loginWithRedirect, getTokenSilently } = useAuth0();
   const [accessToken, setAccessToken] = useState(null);
   useEffect(() => {
     const fetchToken = async () => {
