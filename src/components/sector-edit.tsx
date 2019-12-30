@@ -159,7 +159,7 @@ class SectorEdit extends Component<any, any> {
           </Form.Field>
           <Form.Field>
             <label>Upload image(s)</label>
-            <ImageUpload auth={this.props.auth} onMediaChanged={this.onNewMediaChanged} />
+            <ImageUpload accessToken={this.props.accessToken} onMediaChanged={this.onNewMediaChanged} />
           </Form.Field>
           <Form.Field>
             <label>Draw mode (click on map to draw)</label>

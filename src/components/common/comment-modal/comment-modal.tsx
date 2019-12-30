@@ -32,7 +32,7 @@ class CommentModal extends Component<any, any> {
 
   save = () => {
     if (this.state.comment) {
-      postComment(this.props.auth.getAccessToken(), -1, this.state.idProblem, this.state.comment, this.state.danger, this.state.resolved)
+      postComment(this.props.accessToken, -1, this.state.idProblem, this.state.comment, this.state.danger, this.state.resolved)
       .then((response) => {
         this.props.onClose();
       })

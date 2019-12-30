@@ -50,7 +50,7 @@ class ProblemEditMedia extends Component<any, any> {
     return (
       <Container>
         <form onSubmit={this.save}>
-          <ImageUpload auth={this.props.auth} onMediaChanged={this.onNewMediaChanged} />
+          <ImageUpload accessToken={this.props.accessToken} onMediaChanged={this.onNewMediaChanged} />
           <Button.Group>
             <Button onClick={this.onCancel}>Cancel</Button>
             <Button.Or />

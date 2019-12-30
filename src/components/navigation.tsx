@@ -4,11 +4,6 @@ import { Link } from 'react-router-dom';
 import SearchBox from './common/search-box/search-box';
 
 class Navigation extends Component<any, any> {
-  login = () => {
-    localStorage.setItem('redirect', this.props.location.pathname);
-    this.props.auth.login();
-  }
-
   render() {
     return (
       <Menu attached='top' inverted compact borderless>
@@ -27,7 +22,7 @@ class Navigation extends Component<any, any> {
               </Dropdown.Menu>
             </Dropdown>
           :
-            <Menu.Item as="a" onClick={this.login} icon="sign in" />
+            <Menu.Item as="a" onClick={() => this.props.loginWithRedirect({})} icon="sign in" />
           }
         </Container>
       </Menu>

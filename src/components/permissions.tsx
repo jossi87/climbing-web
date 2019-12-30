@@ -5,14 +5,14 @@ import { getPermissions, postPermissions } from '../api';
 import { Header, Image, Dropdown, Card } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 
-const Permissions = ({auth}) => {
+const Permissions = ({accessToken}) => {
   const [data, setPermission] = useState();
 
   useEffect(() => {
-    getPermissions(auth.getAccessToken()).then((res) => {
+    getPermissions(accessToken).then((res) => {
       setPermission(res);
     });
-  }, [auth]);
+  }, [accessToken]);
 
   if (!data) {
     return <LoadingAndRestoreScroll />;
@@ -63,7 +63,7 @@ const Permissions = ({auth}) => {
                       ]}
                       onChange={(e, data) => {
                         u.write=data.value;
-                        postPermissions(auth.getAccessToken(), u.userId, u.write)
+                        postPermissions(accessToken, u.userId, u.write)
                         .then((response) => {
                           window.location.reload();
                         })
