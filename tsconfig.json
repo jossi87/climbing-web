@@ -12,6 +12,6 @@
         "noUnusedLocals": true
     },
     "include": [
-        "./src/**/*"
+        "./src/**/*", "server.js"
     ]
 }
