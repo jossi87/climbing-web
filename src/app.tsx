@@ -3,6 +3,7 @@ import { useAuth0 } from "./utils/react-auth0-spa";
 import { Container, Divider, Grid, Header, List, Segment } from 'semantic-ui-react'
 import { Link, Route, Switch } from 'react-router-dom';
 import { withRouter } from 'react-router';
+import PrivateRoute from "./components/private-route";
 import { LoadingAndRestoreScroll } from './components/common/widgets/widgets';
 
 import Navigation from './components/navigation';
@@ -91,9 +92,9 @@ const App = (props) => {
           <PropsRoute exact path='/sector/:sectorId' component={Sector} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
           <PropsRoute exact path='/sector/edit/:sectorId' component={SectorEdit} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
           <PropsRoute path='/ticks/:page' component={Ticks} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-          <PropsRoute exact path='/user' component={User} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
+          <PrivateRoute exact path='/user' component={User} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
           <PropsRoute exact path='/user/:userId' component={User} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-          <PropsRoute exact path='/todo' component={Todo} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
+          <PrivateRoute exact path='/todo' component={Todo} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
           <PropsRoute exact path='/todo/:userId' component={Todo} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
           <PropsRoute path='*' status={404} component={NoMatch} />
         </Switch>

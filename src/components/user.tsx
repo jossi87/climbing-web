@@ -71,7 +71,6 @@ class User extends Component<any, any> {
   }
 
   render() {
-    console.log(this.props.match.params)
     if (!this.state || !this.state.data) {
       return <LoadingAndRestoreScroll />;
     }
