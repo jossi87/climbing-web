@@ -25,7 +25,7 @@ class User extends Component<any, any> {
   }
 
   refresh(id) {
-    getUser(this.props.accessToken, id).then((data) => this.setState(() => ({data})));
+    getUser(this.props.accessToken, id? id : "").then((data) => this.setState(() => ({data})));
   }
 
   order(type: string) {
