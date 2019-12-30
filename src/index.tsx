@@ -1,22 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import ReactGA from 'react-ga';
-import { createBrowserHistory } from 'history';
+import { BrowserRouter } from 'react-router-dom';
 import { Auth0Provider } from "./utils/react-auth0-spa";
 import App from './app';
-import { Router } from 'react-router-dom';
 
-const history = createBrowserHistory();
-
-// Initialize google analytics page view tracking
 ReactGA.initialize("UA-76534258-1");
-history.listen(location => {
-  ReactGA.set({ page: location.pathname }); // Update the user's current page
-  ReactGA.pageview(location.pathname); // Record a pageview for the given page
-});
 
 const onRedirectCallback = appState => {
-  history.push(
+  window.history.replaceState(
+    {},
+    document.title,
     appState && appState.targetUrl
       ? appState.targetUrl
       : window.location.pathname
@@ -30,9 +24,9 @@ const Index = () => (
       redirect_uri={window.location.origin}
       onRedirectCallback={() => {onRedirectCallback}}
     >
-    <Router history={history}>
+    <BrowserRouter>
       <App />
-    </Router>
+    </BrowserRouter>
   </Auth0Provider>
 );
 
