@@ -3,8 +3,9 @@ import { useAuth0 } from "./utils/react-auth0-spa";
 import { Container, Divider, Grid, Header, List, Segment } from 'semantic-ui-react'
 import { Link, Route, Switch } from 'react-router-dom';
 import { withRouter } from 'react-router';
-import Navigation from './components/navigation';
+import { LoadingAndRestoreScroll } from './components/common/widgets/widgets';
 
+import Navigation from './components/navigation';
 import Area from './components/area';
 import AreaEdit from './components/area-edit';
 import Browse from './components/browse';
@@ -39,7 +40,7 @@ const PropsRoute = ({ component, ...rest }) => {
 }
 
 const App = (props) => {
-  const { isAuthenticated, loginWithRedirect, logout, getTokenSilently } = useAuth0();
+  const { loading, isAuthenticated, loginWithRedirect, logout, getTokenSilently } = useAuth0();
   const [accessToken, setAccessToken] = useState(null);
   useEffect(() => {
     const fetchToken = async () => {
@@ -67,6 +68,9 @@ const App = (props) => {
     maxWidth: '170px',
     backgroundColor: '#FFFFFF'
   };
+  if (loading) {
+    return <LoadingAndRestoreScroll />;
+  }
   return (
     <div style={{background: "#F5F5F5"}}>
       <Navigation accessToken={accessToken} isAuthenticated={isAuthenticated} logout={logout} loginWithRedirect={loginWithRedirect} />
