@@ -14,7 +14,7 @@ class Todo extends Component<any, any> {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.isAuthenticated !== prevProps.isAuthenticated || prevProps.match.params.userId !== this.props.match.params.userId) {
+    if (this.props.accessToken !== prevProps.accessToken || prevProps.match.params.userId !== this.props.match.params.userId) {
       this.refresh(this.props.match.params.userId);
     }
   }
