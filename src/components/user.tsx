@@ -19,13 +19,15 @@ class User extends Component<any, any> {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.isAuthenticated !== prevProps.isAuthenticated || prevProps.match.params.userId !== this.props.match.params.userId) {
+    if (this.props.isAuthenticated !== prevProps.isAuthenticated || this.props.accessToken !== prevProps.accessToken || prevProps.match.params.userId !== this.props.match.params.userId) {
       this.refresh(this.props.match.params.userId);
     }
   }
 
   refresh(id) {
-    getUser(this.props.accessToken, id? id : "-1").then((data) => this.setState(() => ({data})));
+    if (id || this.props.accessToken) {
+      getUser(this.props.accessToken, id? id : "-1").then((data) => this.setState(() => ({data})));
+    }
   }
 
   order(type: string) {
