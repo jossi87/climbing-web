@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { Container, Dropdown, Image, Menu } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import SearchBox from './common/search-box/search-box';
+import { getBaseUrl } from '../api';
 
 class Navigation extends Component<any, any> {
   render() {
@@ -18,7 +19,7 @@ class Navigation extends Component<any, any> {
                   <Dropdown.Item as={Link} to="/user">Profile</Dropdown.Item>
                   <Dropdown.Item as={Link} to="/todo">To-do list</Dropdown.Item>
                   <Dropdown.Item as={Link} to="/permissions">Permissions</Dropdown.Item>
-                  <Dropdown.Item as={Link} to="/logout">Sign out</Dropdown.Item>
+                  <Dropdown.Item as="a" onClick={() => this.props.logout({returnTo: getBaseUrl()})}>Sign out</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           :

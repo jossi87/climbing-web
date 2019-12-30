@@ -5,7 +5,6 @@ import { Link, Route, Switch } from 'react-router-dom';
 import { withRouter } from 'react-router';
 import Navigation from './components/navigation';
 import ReactGA from 'react-ga';
-import { getBaseUrl } from './api';
 
 import Area from './components/area';
 import AreaEdit from './components/area-edit';
@@ -73,7 +72,7 @@ const App = (props) => {
   };
   return (
     <div style={{background: "#F5F5F5"}}>
-      <Navigation accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
+      <Navigation accessToken={accessToken} isAuthenticated={isAuthenticated} logout={logout} loginWithRedirect={loginWithRedirect} />
       <Container style={{ marginTop: '1em' }}>
         <Switch>
           <PropsRoute exact path='/' component={Frontpage} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
@@ -95,7 +94,6 @@ const App = (props) => {
           <PropsRoute exact path='/user/:userId' component={User} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
           <PropsRoute exact path='/todo' component={Todo} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
           <PropsRoute exact path='/todo/:userId' component={Todo} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-          <Route path='/logout' onEnter={() => logout({returnTo: getBaseUrl()})} />
           <PropsRoute path='*' status={404} component={NoMatch} />
         </Switch>
       </Container>
