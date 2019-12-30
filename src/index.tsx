@@ -1,11 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import ReactGA from 'react-ga';
+import Analytics from 'react-router-ga';
 import { BrowserRouter } from 'react-router-dom';
 import { Auth0Provider } from "./utils/react-auth0-spa";
 import App from './app';
-
-ReactGA.initialize("UA-76534258-1");
 
 const onRedirectCallback = appState => {
   window.history.replaceState(
@@ -25,7 +23,9 @@ const Index = () => (
       onRedirectCallback={() => {onRedirectCallback}}
     >
     <BrowserRouter>
-      <App />
+      <Analytics id="UA-76534258-1">
+        <App />
+      </Analytics>
     </BrowserRouter>
   </Auth0Provider>
 );

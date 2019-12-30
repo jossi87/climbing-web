@@ -4,7 +4,6 @@ import { Container, Divider, Grid, Header, List, Segment } from 'semantic-ui-rea
 import { Link, Route, Switch } from 'react-router-dom';
 import { withRouter } from 'react-router';
 import Navigation from './components/navigation';
-import ReactGA from 'react-ga';
 
 import Area from './components/area';
 import AreaEdit from './components/area-edit';
@@ -24,8 +23,6 @@ import Todo from './components/todo';
 import User from './components/user';
 import Permissions from './components/permissions';
 import NoMatch from './components/no-match';
-
-ReactGA.initialize('UA-76534258-1');
 
 const renderMergedProps = (component, ...rest) => {
   const finalProps = Object.assign({}, ...rest);
