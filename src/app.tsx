@@ -39,7 +39,7 @@ const PropsRoute = ({ component, ...rest }) => {
 }
 
 const App = (props) => {
-  const { isAuthenticated, loginWithRedirect, getTokenSilently } = useAuth0();
+  const { isAuthenticated, loginWithRedirect, logout, getTokenSilently } = useAuth0();
   const [accessToken, setAccessToken] = useState(null);
   useEffect(() => {
     const fetchToken = async () => {
@@ -69,7 +69,7 @@ const App = (props) => {
   };
   return (
     <div style={{background: "#F5F5F5"}}>
-      <Navigation />
+      <Navigation accessToken={accessToken} isAuthenticated={isAuthenticated} logout={logout} loginWithRedirect={loginWithRedirect} />
       <Container style={{ marginTop: '1em' }}>
         <Switch>
           <PropsRoute exact path='/' component={Frontpage} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
