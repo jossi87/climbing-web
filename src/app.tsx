@@ -69,7 +69,7 @@ const App = (props) => {
   };
   return (
     <div style={{background: "#F5F5F5"}}>
-      <Navigation accessToken={accessToken} isAuthenticated={isAuthenticated} logout={logout} loginWithRedirect={loginWithRedirect} />
+      <Navigation />
       <Container style={{ marginTop: '1em' }}>
         <Switch>
           <PropsRoute exact path='/' component={Frontpage} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
