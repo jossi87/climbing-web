@@ -11,7 +11,7 @@ class SearchBox extends Component<any, any> {
 
   handleSearchChange = (e, { value }) => {
     this.setState({ isLoading: true, value })
-    postSearch(this.props.auth.getAccessToken(), value).then((res) => {
+    postSearch(this.props.accessToken, value).then((res) => {
       this.setState({ isLoading: false, results: res });
     });
   }

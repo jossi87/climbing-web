@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Label, Grid, Statistic, Icon, Image, Card, Feed, Segment } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
-import { getImageUrl, numberWithCommas } from '../api';
+import { getFrontpage, getImageUrl, numberWithCommas } from '../api';
 import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
 
 class Frontpage extends Component<any, any> {
@@ -19,7 +19,7 @@ class Frontpage extends Component<any, any> {
   }
 
   refresh() {
-    this.props.fetchInitialData(this.props.auth.getAccessToken()).then((data) => this.setState(() => ({data})));
+    getFrontpage(this.props.accessToken).then((data) => this.setState(() => ({data})));
   }
 
   render() {

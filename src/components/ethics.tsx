@@ -2,11 +2,12 @@ import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Container } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
+import { getMeta } from '../api';
 
 class Ethics extends Component<any, any> {
   componentDidMount() {
     if (!this.state || !this.state.data) {
-      this.props.fetchInitialData(this.props.auth.getAccessToken()).then((data) => this.setState(() => ({data})));
+      getMeta(this.props.accessToken).then((data) => this.setState(() => ({data})));
     }
   }
 

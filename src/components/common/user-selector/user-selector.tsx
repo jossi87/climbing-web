@@ -9,7 +9,7 @@ interface User {
 
 interface Props {
 	isMulti: boolean,
-	auth: any,
+	accessToken: string,
 	placeholder: string,
 	identity?: any,
 	onUsersUpdated: Function,
@@ -23,7 +23,7 @@ class UserSelector extends Component<Props, any> {
 	}
 	
 	componentDidMount() {
-		getUserSearch(this.props.auth.getAccessToken(), "").then((res) => this.setState({options: res.map(u => {return {value: u.id, label: u.name}})}));
+		getUserSearch(this.props.accessToken, "").then((res) => this.setState({options: res.map(u => {return {value: u.id, label: u.name}})}));
 	}
 
 	handleChange = (newValue: any, actionMeta: any) => {

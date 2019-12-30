@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { LoadingAndRestoreScroll } from '../widgets/widgets';
 import { getGradeDistribution } from './../../../api';
 
-const ChartGradeDistribution = ({auth, idArea, idSector}) => {
+const ChartGradeDistribution = ({accessToken, idArea, idSector}) => {
   const [gradeDistribution, setGradeDistribution] = useState([]);
 
   useEffect(() => {
-    getGradeDistribution(auth.getAccessToken(), idArea, idSector).then((res) => {
+    getGradeDistribution(accessToken, idArea, idSector).then((res) => {
       setGradeDistribution(res);
     });
-  }, [auth, idArea, idSector]);
+  }, [accessToken, idArea, idSector]);
 
   if (!gradeDistribution) {
     return <LoadingAndRestoreScroll />;

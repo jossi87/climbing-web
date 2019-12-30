@@ -63,8 +63,8 @@ class ImageUpload extends Component<any, any> {
               <Card key={i}>
                 <Image src={m.file.preview} />
                 <Card.Content>
-                  <UserSelector isMulti={false} placeholder="In photo" auth={this.props.auth} onUsersUpdated={this.onInPhotoChanged} identity={m} />
-                  <UserSelector isMulti={false} placeholder="Photographer" auth={this.props.auth} onUsersUpdated={this.onPhotographerChanged}  identity={m} />
+                  <UserSelector isMulti={false} placeholder="In photo" accessToken={this.props.accessToken} onUsersUpdated={this.onInPhotoChanged} identity={m} />
+                  <UserSelector isMulti={false} placeholder="Photographer" accessToken={this.props.accessToken} onUsersUpdated={this.onPhotographerChanged}  identity={m} />
                 </Card.Content>
                 <Card.Content extra>
                   <Button fluid basic negative onClick={() => this.onRemove(m)}>Remove</Button>

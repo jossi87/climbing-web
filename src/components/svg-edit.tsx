@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { withRouter } from 'react-router';
 import { Container, Button, Segment, Dropdown } from 'semantic-ui-react';
-import { getImageUrl, postProblemSvg } from '../api';
+import { getSvgEdit, getImageUrl, postProblemSvg } from '../api';
 import { parseReadOnlySvgs } from '../utils/svg';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
 
@@ -23,7 +23,7 @@ class SvgEdit extends Component<any, any> {
   }
 
   refresh(problemIdMediaId) {
-    this.props.fetchInitialData(this.props.auth.getAccessToken(), problemIdMediaId).then((data) => this.setState(() => ({
+    getSvgEdit(this.props.accessToken, problemIdMediaId).then((data) => this.setState(() => ({
       mediaId : data.mediaId,
       nr: data.nr,
       w: data.w,
@@ -87,7 +87,7 @@ class SvgEdit extends Component<any, any> {
 
   save = (event) => {
     event.preventDefault();
-    postProblemSvg(this.props.auth.getAccessToken(), this.state.id, this.state.mediaId, this.state.points.length<2, this.state.svgId, this.generatePath(), this.state.hasAnchor, JSON.stringify(this.state.anchors), JSON.stringify(this.state.texts))
+    postProblemSvg(this.props.accessToken, this.state.id, this.state.mediaId, this.state.points.length<2, this.state.svgId, this.generatePath(), this.state.hasAnchor, JSON.stringify(this.state.anchors), JSON.stringify(this.state.texts))
     .then((response) => {
       this.props.history.push("/problem/" + this.state.id);
     })

@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Header, Segment, Form, Dropdown, Button, Checkbox, Icon, List, Image } from 'semantic-ui-react';
-import { getImageUrl, postFilter } from '../api';
+import { getMeta, getImageUrl, postFilter } from '../api';
 import { Stars, LockSymbol } from './common/widgets/widgets';
 
 class Filter extends Component<any, any> {
   componentDidMount() {
     if (!this.state || !this.state.data) {
-      this.props.fetchInitialData(this.props.auth.getAccessToken()).then((data) => this.setState(() => ({data})));
+      getMeta(this.props.accessToken).then((data) => this.setState(() => ({data})));
     }
   }
 
@@ -23,7 +23,7 @@ class Filter extends Component<any, any> {
   filter = () => {
     this.setState( {isLoading: true, filterDisabled: true} );
     const types = this.state.data.metadata.isBouldering? [1] : this.state.types;
-    postFilter(this.props.auth.getAccessToken(), this.state.grades, types).then((res) => {
+    postFilter(this.props.accessToken, this.state.grades, types).then((res) => {
       this.setState({ result: res, isLoading: false });
     });
   }

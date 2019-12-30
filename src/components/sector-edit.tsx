@@ -4,7 +4,7 @@ import { withRouter } from 'react-router';
 import ImageUpload from './common/image-upload/image-upload';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Form, Button, Input, Dropdown, TextArea } from 'semantic-ui-react';
-import { postSector } from './../api';
+import { getSectorEdit, postSector } from './../api';
 import Leaflet from './common/leaflet/leaflet';
 
 class SectorEdit extends Component<any, any> {
@@ -26,7 +26,7 @@ class SectorEdit extends Component<any, any> {
   }
 
   refresh(id) {
-    this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
+    getSectorEdit(this.props.accessToken, id).then((data) => this.setState(() => ({data})));
   }
 
   onNameChanged = (e, { value }) => {
@@ -56,7 +56,7 @@ class SectorEdit extends Component<any, any> {
   save = (event) => {
     event.preventDefault();
     this.setState({isSaving: true});
-    postSector(this.props.auth.getAccessToken(), this.props.location.query.idArea, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, this.state.data.polygonCoords, this.state.data.polyline, this.state.data.newMedia)
+    postSector(this.props.accessToken, this.props.location.query.idArea, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, this.state.data.polygonCoords, this.state.data.polyline, this.state.data.newMedia)
     .then((response) => {
       this.props.history.push("/sector/" + response.id);
     })

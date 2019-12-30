@@ -17,7 +17,7 @@ class ProblemEditMedia extends Component<any, any> {
   }
 
   refresh(id) {
-    getProblem(this.props.auth.getAccessToken(), id).then((data) => this.setState({id: data.id, isAuthenticated: data.metadata.isAuthenticated}));
+    getProblem(this.props.accessToken, id).then((data) => this.setState({id: data.id, isAuthenticated: data.metadata.isAuthenticated}));
   }
 
   onNewMediaChanged = (newMedia) => {
@@ -27,7 +27,7 @@ class ProblemEditMedia extends Component<any, any> {
   save = (event) => {
     event.preventDefault();
     this.setState({isSaving: true});
-    postProblemMedia(this.props.auth.getAccessToken(), this.state.id, this.state.newMedia)
+    postProblemMedia(this.props.accessToken, this.state.id, this.state.newMedia)
     .then((response) => {
       this.props.history.push("/problem/" + response.id);
     })

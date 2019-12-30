@@ -6,6 +6,7 @@ import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
 import { LockSymbol, Stars, LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Segment, Icon, Button, List, Tab, Breadcrumb, Message, Header } from 'semantic-ui-react';
+import { getSector } from '../api';
 
 class Sector extends Component<any, any> {
   componentDidMount() {
@@ -21,7 +22,7 @@ class Sector extends Component<any, any> {
   }
 
   refresh(id) {
-    this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
+    getSector(this.props.accessToken, id).then((data) => this.setState(() => ({data})));
   }
 
   onRemoveMedia = (idMediaToRemove) => {
@@ -76,7 +77,7 @@ class Sector extends Component<any, any> {
     }
     const panes = [];
     if (data.media && data.media.length>0) {
-      panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Media auth={this.props.auth} isAdmin={data.metadata.isAdmin} removeMedia={this.onRemoveMedia} media={data.media} useBlueNotRed={data.metadata.useBlueNotRed} /></Tab.Pane> });
+      panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Media accessToken={this.props.accessToken} isAdmin={data.metadata.isAdmin} removeMedia={this.onRemoveMedia} media={data.media} useBlueNotRed={data.metadata.useBlueNotRed} /></Tab.Pane> });
     }
     if (markers.length>0) {
       const defaultCenter = data.lat && data.lat>0? {lat: data.lat, lng: data.lng} : data.metadata.defaultCenter;
@@ -98,7 +99,7 @@ class Sector extends Component<any, any> {
       panes.push({ menuItem: 'Map', render: () => <Tab.Pane><Leaflet height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/></Tab.Pane> });
     }
     if (data.problems.length!=0) {
-      panes.push({ menuItem: 'Distribution', render: () => <Tab.Pane><ChartGradeDistribution auth={this.props.auth} idArea={0} idSector={data.id}/></Tab.Pane> });
+      panes.push({ menuItem: 'Distribution', render: () => <Tab.Pane><ChartGradeDistribution accessToken={this.props.accessToken} idArea={0} idSector={data.id}/></Tab.Pane> });
     }
     const nextNr = data.problems.length>0? data.problems[data.problems.length-1].nr+1 : 1;
     return (

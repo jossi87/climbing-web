@@ -6,7 +6,7 @@ import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
 import { LockSymbol, LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Button, Tab, Item, Message, Icon, Image, Breadcrumb, Segment, Header } from 'semantic-ui-react';
-import { getImageUrl } from '../api';
+import { getArea, getImageUrl } from '../api';
 
 class Area extends Component<any, any> {
   componentDidMount() {
@@ -22,7 +22,7 @@ class Area extends Component<any, any> {
   }
 
   refresh(id) {
-    this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
+    getArea(this.props.accessToken, id).then((data) => this.setState(() => ({data})));
   }
 
   onRemoveMedia = (idMediaToRemove) => {
@@ -61,7 +61,7 @@ class Area extends Component<any, any> {
     const panes = [];
     const height = '40vh';
     if (this.state.data.media && this.state.data.media.length>0) {
-      panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Media auth={this.props.auth} isAdmin={this.state.data.metadata.isAdmin} removeMedia={this.onRemoveMedia} media={this.state.data.media} useBlueNotRed={this.state.data.metadata.useBlueNotRed} /></Tab.Pane> });
+      panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Media accessToken={this.props.accessToken} isAdmin={this.state.data.metadata.isAdmin} removeMedia={this.onRemoveMedia} media={this.state.data.media} useBlueNotRed={this.state.data.metadata.useBlueNotRed} /></Tab.Pane> });
     }
     if (markers.length>0 || outlines.length>0) {
       const defaultCenter = this.state.data.lat && this.state.data.lat>0? {lat: this.state.data.lat, lng: this.state.data.lng} : this.state.data.metadata.defaultCenter;
@@ -69,7 +69,7 @@ class Area extends Component<any, any> {
       panes.push({ menuItem: 'Map', render: () => <Tab.Pane><Leaflet height={height} markers={markers} outlines={outlines} polylines={polylines} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/></Tab.Pane> });
     }
     if (this.state.data.sectors.length!=0) {
-      panes.push({ menuItem: 'Distribution', render: () => <Tab.Pane><ChartGradeDistribution auth={this.props.auth} idArea={this.state.data.id} idSector={0}/></Tab.Pane> });
+      panes.push({ menuItem: 'Distribution', render: () => <Tab.Pane><ChartGradeDistribution accessToken={this.props.accessToken} idArea={this.state.data.id} idSector={0}/></Tab.Pane> });
     }
     return (
       <>

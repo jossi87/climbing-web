@@ -4,7 +4,7 @@ import { withRouter } from 'react-router';
 import ImageUpload from './common/image-upload/image-upload';
 import Leaflet from './common/leaflet/leaflet';
 import { Form, Button, Input, Dropdown, TextArea } from 'semantic-ui-react';
-import { postArea } from '../api';
+import { getAreaEdit, postArea } from '../api';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
 
 class AreaEdit extends Component<any, any> {
@@ -21,7 +21,7 @@ class AreaEdit extends Component<any, any> {
   }
 
   refresh(id) {
-    this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
+    getAreaEdit(this.props.accessToken, id).then((data) => this.setState(() => ({data})));
   }
 
   onNameChanged = (e, { value }) => {
@@ -51,7 +51,7 @@ class AreaEdit extends Component<any, any> {
   save = (event) => {
     event.preventDefault();
     this.setState({isSaving: true});
-    postArea(this.props.auth.getAccessToken(), this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, this.state.data.newMedia)
+    postArea(this.props.accessToken, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, this.state.data.newMedia)
     .then((response) => {
       this.props.history.push("/area/" + response.id);
     })

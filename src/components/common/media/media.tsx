@@ -6,7 +6,7 @@ import Svg from './svg';
 
 interface Props {
   removeMedia: any,
-  auth: any,
+  accessToken: string,
   isAdmin: boolean,
   media: Array<any>,
   useBlueNotRed: boolean
@@ -68,7 +68,7 @@ class Media extends Component<Props, any> {
   onDeleteImage = () => {
     if (confirm('Are you sure you want to delete this image?')) {
       const id = this.state.m.id;
-      deleteMedia(this.props.auth.getAccessToken(), id)
+      deleteMedia(this.props.accessToken, id)
       .then((response) => {
         this.props.removeMedia(id);
         this.closeModal();

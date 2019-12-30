@@ -56,7 +56,7 @@ class TickModal extends Component<any, any> {
   }
 
   delete = (e) => {
-    postTicks(this.props.auth.getAccessToken(), true, this.state.idTick, this.state.idProblem, this.state.comment, this.state.date, this.state.stars, this.state.grade)
+    postTicks(this.props.accessToken, true, this.state.idTick, this.state.idProblem, this.state.comment, this.state.date, this.state.stars, this.state.grade)
     .then((response) => {
       this.props.onClose();
     })
@@ -67,7 +67,7 @@ class TickModal extends Component<any, any> {
   }
 
   save = (e) => {
-    postTicks(this.props.auth.getAccessToken(), false, this.state.idTick, this.state.idProblem, this.state.comment, this.state.date, this.state.stars, this.state.grade)
+    postTicks(this.props.accessToken, false, this.state.idTick, this.state.idProblem, this.state.comment, this.state.date, this.state.stars, this.state.grade)
     .then((response) => {
       this.props.onClose();
     })

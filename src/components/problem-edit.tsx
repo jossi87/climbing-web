@@ -7,7 +7,7 @@ import ImageUpload from './common/image-upload/image-upload';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import { Form, Button, Input, Dropdown, TextArea } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
-import { convertFromDateToString, convertFromStringToDate, postProblem } from './../api';
+import { getProblemEdit, convertFromDateToString, convertFromStringToDate, postProblem } from './../api';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
 
 class ProblemEdit extends Component<any, any> {
@@ -24,7 +24,7 @@ class ProblemEdit extends Component<any, any> {
   }
 
   refresh(id) {
-    this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
+    getProblemEdit(this.props.accessToken, id).then((data) => this.setState(() => ({data})));
   }
 
   onNameChanged = (e, { value }) => {
@@ -92,7 +92,7 @@ class ProblemEdit extends Component<any, any> {
     this.setState({isSaving: true});
     const { data } = this.state;
     postProblem(
-      this.props.auth.getAccessToken(),
+      this.props.accessToken,
       this.props.location.query.idSector,
       data.id,
       data.visibility,
@@ -214,7 +214,7 @@ class ProblemEdit extends Component<any, any> {
           </Form.Field>
           <Form.Field>
             <label>FA</label>
-            <UserSelector isMulti={true} placeholder="Select user(s)" auth={this.props.auth} users={data.fa? data.fa.map(u => {return {value: u.id, label: u.name}}) : []} onUsersUpdated={this.onUsersUpdated} />
+            <UserSelector isMulti={true} placeholder="Select user(s)" accessToken={this.props.accessToken} users={data.fa? data.fa.map(u => {return {value: u.id, label: u.name}}) : []} onUsersUpdated={this.onUsersUpdated} />
           </Form.Field>
           <Form.Field>
             <label>Visibility</label>

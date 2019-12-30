@@ -3,6 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { Segment, Header, Pagination, Loader, Feed } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 import { Link, withRouter } from 'react-router-dom';
+import { getTicks } from '../api';
 
 class Ticks extends Component<any, any> {
   componentDidMount() {
@@ -18,7 +19,7 @@ class Ticks extends Component<any, any> {
   }
 
   refresh(page) {
-    this.props.fetchInitialData(this.props.auth.getAccessToken(), page).then((data) => this.setState(() => ({data, loading: false})));
+    getTicks(this.props.accessToken, page).then((data) => this.setState(() => ({data, loading: false})));
   }
 
   onPageChange = (e, data) => {

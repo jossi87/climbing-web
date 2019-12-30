@@ -4,11 +4,12 @@ import { Link } from 'react-router-dom';
 import { Button, List, Breadcrumb, Icon, Segment } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
+import { getBrowse } from '../api';
 
 class Browse extends Component<any, any> {
   componentDidMount() {
     if (!this.state || !this.state.data) {
-      this.props.fetchInitialData(this.props.auth.getAccessToken()).then((data) => this.setState(() => ({data})));
+      getBrowse(this.props.accessToken).then((data) => this.setState(() => ({data})));
     }
   }
 

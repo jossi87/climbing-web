@@ -3,11 +3,12 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { LockSymbol, LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Table, Header } from 'semantic-ui-react';
+import { getProblemHse } from '../api';
 
 class ProblemHse extends Component<any, any> {
   componentDidMount() {
     if (!this.state || !this.state.data) {
-      this.props.fetchInitialData(this.props.auth.getAccessToken()).then((data) => this.setState(() => ({data})));
+      getProblemHse(this.props.accessToken).then((data) => this.setState(() => ({data})));
     }
   }
 

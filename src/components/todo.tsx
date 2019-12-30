@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 import { Image, Button, List, Header, Segment } from 'semantic-ui-react';
-import { getImageUrl, postTodo } from './../api';
+import { getTodo, getImageUrl, postTodo } from './../api';
 
 class Todo extends Component<any, any> {
   componentDidMount() {
@@ -20,7 +20,7 @@ class Todo extends Component<any, any> {
   }
 
   refresh(id) {
-    this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
+    getTodo(this.props.accessToken, id).then((data) => this.setState(() => ({data})));
   }
 
   move = (up: boolean, ix : number) => {
@@ -37,9 +37,9 @@ class Todo extends Component<any, any> {
     }
     a.priority = a.priority+1;
     b.priority = b.priority-1;
-    postTodo(this.props.auth.getAccessToken(), a.id, a.problemId, a.priority, false)
+    postTodo(this.props.accessToken, a.id, a.problemId, a.priority, false)
     .then((response) => {
-      postTodo(this.props.auth.getAccessToken(), b.id, b.problemId, b.priority, false)
+      postTodo(this.props.accessToken, b.id, b.problemId, b.priority, false)
       .then((response) => {
         data.todo.sort((a, b) => a.priority-b.priority);
         this.setState({isSaving: false, data});

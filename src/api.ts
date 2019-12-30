@@ -2,12 +2,16 @@ import fetch from 'isomorphic-fetch';
 import { saveAs } from 'file-saver';
 import { parsePath } from './utils/svg';
 
-function getUrl(urlSuffix: string): string {
-  var uri = window.origin;
-  if (uri === 'http://localhost:3000') {
-    uri = 'https://brattelinjer.no';
+export function getBaseUrl(): string {
+  var origin = window.origin;
+  if (origin === 'http://localhost:3000') {
+    origin = 'https://brattelinjer.no';
   }
-  return encodeURI(`${uri || ""}/com.buldreinfo.jersey.jaxb/v2${urlSuffix}`);
+  return origin;
+}
+
+function getUrl(urlSuffix: string): string {
+  return encodeURI(`${getBaseUrl()}/com.buldreinfo.jersey.jaxb/v2${urlSuffix}`);
 }
 
 function makeAuthenticatedRequest(accessToken: string, urlSuffix: string, opts: any) {

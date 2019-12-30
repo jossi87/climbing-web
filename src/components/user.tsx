@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Chart from './common/chart/chart';
 import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
 import { Icon, List, Label, Header, Segment, Divider, Image, Button, Checkbox, ButtonGroup } from 'semantic-ui-react';
-import { getUsersTicks, numberWithCommas, postUser } from './../api';
+import { getUser, getUsersTicks, numberWithCommas, postUser } from './../api';
 
 class User extends Component<any, any> {
   constructor(props) {
@@ -25,7 +25,7 @@ class User extends Component<any, any> {
   }
 
   refresh(id) {
-    this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
+    getUser(this.props.accessToken, id).then((data) => this.setState(() => ({data})));
   }
 
   order(type: string) {
@@ -63,7 +63,7 @@ class User extends Component<any, any> {
     const data = this.state.data;
     data.metadata.useBlueNotRed = !data.metadata.useBlueNotRed;
     this.setState({data});
-    postUser(this.props.auth.getAccessToken(), data.metadata.useBlueNotRed)
+    postUser(this.props.accessToken, data.metadata.useBlueNotRed)
     .catch((error) => {
       console.warn(error);
       this.setState({error});
@@ -71,6 +71,7 @@ class User extends Component<any, any> {
   }
 
   render() {
+    console.log(this.props.match.params)
     if (!this.state || !this.state.data) {
       return <LoadingAndRestoreScroll />;
     }
@@ -96,7 +97,7 @@ class User extends Component<any, any> {
         <Segment>
           <ButtonGroup floated="right">
             {this.props.isAuthenticated && !this.props.match.params.userId &&
-              <Button icon labelPosition="left" size="mini" onClick={() => getUsersTicks(this.props.auth.getAccessToken())}>
+              <Button icon labelPosition="left" size="mini" onClick={() => getUsersTicks(this.props.accessToken)}>
                 <Icon name="file excel"/>
                 Download
               </Button>

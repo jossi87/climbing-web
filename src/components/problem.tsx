@@ -5,7 +5,7 @@ import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
 import { Button, Message, Grid, Breadcrumb, Tab, Label, Icon, List, Comment, Header, Segment } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
-import { getTodo, postComment, postTodo } from './../api';
+import { getProblem, getTodo, postComment, postTodo } from './../api';
 import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
 
@@ -31,7 +31,7 @@ class Problem extends Component<any, any> {
   }
 
   refresh(id) {
-    this.props.fetchInitialData(this.props.auth.getAccessToken(), id).then((data) => this.setState(() => ({data})));
+    getProblem(this.props.accessToken, id).then((data) => this.setState(() => ({data})));
   }
 
   onRemoveMedia = (idMediaToRemove) => {
@@ -43,7 +43,7 @@ class Problem extends Component<any, any> {
   flagAsDangerous = (id) => {
     if (confirm('Are you sure you want to flag this comment?')) {
       this.setState({isSaving: true});
-      postComment(this.props.auth.getAccessToken(), id, -1, null, true, false)
+      postComment(this.props.accessToken, id, -1, null, true, false)
         .then((response) => {
           this.setState({isSaving: false});
           this.refresh(this.props.match.params.problemId);
@@ -57,7 +57,7 @@ class Problem extends Component<any, any> {
 
   toggleTodo = (problemId : number) => {
     this.setState({isSaving: true});
-    getTodo(this.props.auth.getAccessToken(), "-1")
+    getTodo(this.props.accessToken, "-1")
     .then((data) => {
       const todo = data.todo.filter(x => x.problemId==problemId);
       let id = -1;
@@ -68,7 +68,7 @@ class Problem extends Component<any, any> {
         priority = todo[0].priority;
         isDelete = true;
       }
-      postTodo(this.props.auth.getAccessToken(), id, problemId, priority, isDelete)
+      postTodo(this.props.accessToken, id, problemId, priority, isDelete)
       .then((response) => {
         this.setState({isSaving: false});
         this.refresh(this.props.match.params.problemId);
@@ -129,7 +129,7 @@ class Problem extends Component<any, any> {
     if (data.media && data.media.length>0) {
       panes.push({
         menuItem: { key: 'media', icon: 'images', content: 'Media' },
-        render: () => <Tab.Pane><Media auth={this.props.auth} isAdmin={data.metadata.isAdmin} removeMedia={this.onRemoveMedia} media={data.media} useBlueNotRed={data.metadata.useBlueNotRed} /></Tab.Pane>
+        render: () => <Tab.Pane><Media accessToken={this.props.accessToken} isAdmin={data.metadata.isAdmin} removeMedia={this.onRemoveMedia} media={data.media} useBlueNotRed={data.metadata.useBlueNotRed} /></Tab.Pane>
       });
     }
     if (markers.length>0) {
