@@ -16,9 +16,7 @@ history.listen(location => {
 });
 
 const onRedirectCallback = appState => {
-  window.history.replaceState(
-    {},
-    document.title,
+  history.push(
     appState && appState.targetUrl
       ? appState.targetUrl
       : window.location.pathname
