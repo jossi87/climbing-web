@@ -134,7 +134,7 @@ const App = (props) => {
             <List.Item as='a' href='/gpl-3.0.txt' rel='noopener' target='_blank'>GNU Public License</List.Item>
           </List>
           <p>
-            Buldreinfo &amp; Bratte Linjer © 2006-2020
+            Buldreinfo &amp; Bratte Linjer &copy; 2006-2020
           </p>
         </Container>
       </Segment>
