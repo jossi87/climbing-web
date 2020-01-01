@@ -6,10 +6,6 @@ import { Auth0Provider } from "./utils/react-auth0-spa";
 import App from './app';
 
 const onRedirectCallback = (appState : any) => {
-  if (appState) {
-    console.log(appState.targetUrl);
-    console.log("window.location.pathname=" + window.location.pathname);
-  }
   window.history.replaceState(
     {},
     document.title,
