@@ -1,8 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Analytics from 'react-router-ga';
 import history from "./utils/history";
-import { Router } from 'react-router-dom';
 import { Auth0Provider } from "./utils/react-auth0-spa";
 import App from './app';
 
@@ -21,11 +19,7 @@ const Index = () => (
       redirect_uri={window.location.origin}
       onRedirectCallback={() => {onRedirectCallback}}
     >
-    <Router history={history}>
-      <Analytics id="UA-76534258-1">
-        <App />
-      </Analytics>
-    </Router>
+    <App />
   </Auth0Provider>
 );
 

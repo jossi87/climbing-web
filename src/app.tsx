@@ -3,6 +3,9 @@ import { useAuth0 } from "./utils/react-auth0-spa";
 import { Container, Divider, Grid, Header, List, Segment } from 'semantic-ui-react'
 import { Link, Route, Switch } from 'react-router-dom';
 import { withRouter } from 'react-router';
+import Analytics from 'react-router-ga';
+import history from "./utils/history";
+import { Router } from 'react-router-dom';
 import { LoadingAndRestoreScroll } from './components/common/widgets/widgets';
 
 import Navigation from './components/navigation';
@@ -75,28 +78,32 @@ const App = (props) => {
     <div style={{background: "#F5F5F5"}}>
       <Navigation accessToken={accessToken} isAuthenticated={isAuthenticated} logout={logout} loginWithRedirect={loginWithRedirect} />
       <Container style={{ marginTop: '1em' }}>
-        <Switch>
-          <PropsRoute exact path='/' component={Frontpage} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-          <PropsRoute path='/browse' component={Browse} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-          <PropsRoute path='/ethics' component={Ethics} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-          <PropsRoute exact path='/area/:areaId' component={Area} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-          <PropsRoute exact path='/area/edit/:areaId' component={AreaEdit} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-          <PropsRoute path='/filter' component={Filter} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-          <PropsRoute path='/hse' component={ProblemHse} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-          <PropsRoute path='/permissions' component={Permissions} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-          <PropsRoute exact path='/problem/:problemId' component={Problem} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-          <PropsRoute exact path='/problem/edit/:problemId' component={ProblemEdit} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-          <PropsRoute exact path='/problem/edit/media/:problemId' component={ProblemEditMedia} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-          <PropsRoute exact path='/problem/svg-edit/:problemIdMediaId' component={SvgEdit} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-          <PropsRoute exact path='/sector/:sectorId' component={Sector} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-          <PropsRoute exact path='/sector/edit/:sectorId' component={SectorEdit} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-          <PropsRoute path='/ticks/:page' component={Ticks} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-          <PropsRoute exact path='/user' component={User} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-          <PropsRoute exact path='/user/:userId' component={User} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-          <PropsRoute exact path='/todo' component={Todo} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-          <PropsRoute exact path='/todo/:userId' component={Todo} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-          <PropsRoute path='*' status={404} component={NoMatch} />
-        </Switch>
+        <Router history={history}>
+          <Analytics id="UA-76534258-1">
+            <Switch>
+              <PropsRoute exact path='/' component={Frontpage} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
+              <PropsRoute path='/browse' component={Browse} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
+              <PropsRoute path='/ethics' component={Ethics} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
+              <PropsRoute exact path='/area/:areaId' component={Area} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
+              <PropsRoute exact path='/area/edit/:areaId' component={AreaEdit} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
+              <PropsRoute path='/filter' component={Filter} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
+              <PropsRoute path='/hse' component={ProblemHse} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
+              <PropsRoute path='/permissions' component={Permissions} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
+              <PropsRoute exact path='/problem/:problemId' component={Problem} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
+              <PropsRoute exact path='/problem/edit/:problemId' component={ProblemEdit} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
+              <PropsRoute exact path='/problem/edit/media/:problemId' component={ProblemEditMedia} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
+              <PropsRoute exact path='/problem/svg-edit/:problemIdMediaId' component={SvgEdit} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
+              <PropsRoute exact path='/sector/:sectorId' component={Sector} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
+              <PropsRoute exact path='/sector/edit/:sectorId' component={SectorEdit} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
+              <PropsRoute path='/ticks/:page' component={Ticks} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
+              <PropsRoute exact path='/user' component={User} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
+              <PropsRoute exact path='/user/:userId' component={User} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
+              <PropsRoute exact path='/todo' component={Todo} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
+              <PropsRoute exact path='/todo/:userId' component={Todo} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
+              <PropsRoute path='*' status={404} component={NoMatch} />
+            </Switch>
+          </Analytics>
+        </Router>
       </Container>
       <Segment inverted vertical style={{ margin: '5em 0em 0em', padding: '5em 0em' }}>
         <Container textAlign='center'>
