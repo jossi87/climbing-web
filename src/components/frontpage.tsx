@@ -39,6 +39,7 @@ class Frontpage extends Component<any, any> {
           <meta property="og:image" content={data.metadata.og.image} />
           <meta property="og:image:width" content={data.metadata.og.imageWidth} />
           <meta property="og:image:height" content={data.metadata.og.imageHeight} />
+          <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
         </MetaTags>
         <Grid>
           <Grid.Row>

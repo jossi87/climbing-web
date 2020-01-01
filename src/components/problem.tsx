@@ -226,6 +226,7 @@ class Problem extends Component<any, any> {
           <meta property="og:image" content={data.metadata.og.image} />
           <meta property="og:image:width" content={data.metadata.og.imageWidth} />
           <meta property="og:image:height" content={data.metadata.og.imageHeight} />
+          <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
         </MetaTags>
         {tickModal}
         <CommentModal accessToken={this.props.accessToken} idProblem={data.id} open={this.state.showCommentModal} onClose={this.closeCommentModal} isBouldering={data.metadata.isBouldering}/>

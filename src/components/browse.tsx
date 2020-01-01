@@ -39,6 +39,7 @@ class Browse extends Component<any, any> {
           <meta property="og:image" content={this.state.data.metadata.og.image} />
           <meta property="og:image:width" content={this.state.data.metadata.og.imageWidth} />
           <meta property="og:image:height" content={this.state.data.metadata.og.imageHeight} />
+          <meta property="fb:app_id" content={this.state.data.metadata.og.fbAppId} />
         </MetaTags>
         <div style={{marginBottom: '5px'}}>
           <div style={{float: 'right'}}>

@@ -29,6 +29,7 @@ const Permissions = ({accessToken}) => {
         <meta property="og:image" content={data.metadata.og.image} />
         <meta property="og:image:width" content={data.metadata.og.imageWidth} />
         <meta property="og:image:height" content={data.metadata.og.imageHeight} />
+        <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
       </MetaTags>
       <Header as="h2">Permissions ({data.users.length} users)</Header>
       {data.users.length == 0?
