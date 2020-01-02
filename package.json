@@ -54,7 +54,7 @@
   "scripts": {
     "start": "webpack --watch --mode=development",
     "server": "nodemon server.js",
-    "build": "webpack --mode=production",
+    "build": "webpack --mode=development",
     "bundle-analyzer": "webpack --mode=production --config webpack.config.webpackbundleanalyzer.js"
   }
 }
