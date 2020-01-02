@@ -1,20 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Analytics from 'react-router-ga';
-import { BrowserRouter } from 'react-router-dom';
-import { Auth0Provider } from "./utils/react-auth0-spa";
+import { Auth0Provider } from './utils/react-auth0-spa';
+import history from './utils/history';
 import App from './app';
 
-const onRedirectCallback = (appState : any) => {
-  window.history.replaceState(
-    {},
-    document.title,
+const onRedirectCallback = appState => {
+  history.push(
     appState && appState.targetUrl
       ? appState.targetUrl
       : window.location.pathname
   );
 };
-
 
 const Index = () => (
   <Auth0Provider
@@ -23,11 +19,7 @@ const Index = () => (
       redirect_uri={window.location.origin}
       onRedirectCallback={onRedirectCallback}
     >
-    <BrowserRouter>
-      <Analytics id="UA-76534258-1">
-        <App />
-      </Analytics>
-    </BrowserRouter>
+    <App />
   </Auth0Provider>
 );
 

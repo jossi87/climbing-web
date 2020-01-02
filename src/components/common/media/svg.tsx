@@ -1,9 +1,9 @@
 import React from 'react';
 import { parseSVG, makeAbsolute } from 'svg-path-parser';
 import { getImageUrl } from '../../../api';
-import { RouteComponentProps, withRouter } from 'react-router';
+import history from '../../../utils/history';
 
-interface SvgProps extends RouteComponentProps<any> {
+interface SvgProps {
   style: any,
   close?: Function,
   m: any,
@@ -57,7 +57,7 @@ function Svg(props: SvgProps) {
       return (
         <g className={gClassName} key={key} style={props.style} onClick={() => {
           if (props.close) {
-            props.history.push("/problem/" + svg.problemId);
+            history.push("/problem/" + svg.problemId);
             props.close();
           }
         }}>
@@ -86,4 +86,4 @@ function Svg(props: SvgProps) {
   )
 }
 
-export default withRouter<SvgProps, any>(Svg)
+export default Svg

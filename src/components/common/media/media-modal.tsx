@@ -1,9 +1,9 @@
 import React from 'react';
 import { Dimmer, Button, Icon, Image } from 'semantic-ui-react';
-import { RouteComponentProps, withRouter } from 'react-router';
 import { getImageUrl } from '../../../api';
 import ReactPlayer from 'react-player';
 import Svg from './svg';
+import history from '../../../utils/history';
 
 const style = {
   img: {
@@ -55,7 +55,7 @@ const style = {
   },
 }
 
-interface Props extends RouteComponentProps<any> {
+interface MediaModalProps {
   isAdmin: boolean,
   onClose: any,
   onDelete: any,
@@ -66,7 +66,8 @@ interface Props extends RouteComponentProps<any> {
   playVideo: any,
   useBlueNotRed: boolean
 }
-function MediaModal({isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext, playVideo, history, useBlueNotRed}) {
+function MediaModal(props: MediaModalProps) {
+  const {isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext, playVideo, useBlueNotRed} = props;
   let myPlayer;
   var topLeftButton;
   if (isAdmin && m.idType===1) {
@@ -109,4 +110,4 @@ function MediaModal({isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext, 
   )
 }
 
-export default withRouter<Props, any>(MediaModal)
+export default MediaModal

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { RouteComponentProps, withRouter } from 'react-router';
+import history from '../../../utils/history';
 let parkingIcon, Circle, Map, TileLayer, LayersControl, Marker, Polygon, Polyline, Tooltip, WMSTileLayer;
 
 interface Coordinates {
@@ -26,7 +26,7 @@ interface Polyline {
   label: string
 }
 
-interface LeafletProps extends RouteComponentProps<any> {
+interface LeafletProps {
   height?: string,
   defaultZoom: number,
   defaultCenter: Coordinates,
@@ -101,7 +101,7 @@ class Leaflet extends Component<LeafletProps> {
           parkingIcon = new L.icon({ iconUrl: '/png/parking_lot_maps.png', iconAnchor: [15, 15] })
         }
         return (
-          <Marker position={[m.lat, m.lng]} key={i} onClick={() => this.props.onClick? null : this.props.history.push(m.url)} icon={parkingIcon}>
+          <Marker position={[m.lat, m.lng]} key={i} onClick={() => this.props.onClick? null : history.push(m.url)} icon={parkingIcon}>
             {m.label && (
               <Tooltip opacity={0.5} permanent>
                 {m.label}
@@ -114,7 +114,7 @@ class Leaflet extends Component<LeafletProps> {
           <Marker
             position={[m.lat, m.lng]}
             key={i}
-            onClick={() => this.props.history.push(m.url)}
+            onClick={() => history.push(m.url)}
             draggable={false}
             onDragend={() => this.updatePosition(m.url, this)}>
             {m.label && (
@@ -128,7 +128,7 @@ class Leaflet extends Component<LeafletProps> {
     })
 
     const polygons = this.props.outlines && this.props.outlines.map((o, i) => (
-      <Polygon key={i} positions={o.polygon} onClick={() => this.props.onClick? null : this.props.history.push(o.url)}>
+      <Polygon key={i} positions={o.polygon} onClick={() => this.props.onClick? null : history.push(o.url)}>
         {o.label && (
           <Tooltip opacity={0.9} permanent>
             {o.label}
@@ -231,4 +231,4 @@ class Leaflet extends Component<LeafletProps> {
   }
 }
 
-export default withRouter(Leaflet);
+export default Leaflet;

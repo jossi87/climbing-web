@@ -2,8 +2,9 @@ import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
 import { Segment, Header, Pagination, Loader, Feed } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
-import { Link, withRouter } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { getTicks } from '../api';
+import history from '../utils/history';
 
 class Ticks extends Component<any, any> {
   componentDidMount() {
@@ -25,7 +26,7 @@ class Ticks extends Component<any, any> {
   onPageChange = (e, data) => {
     const page = data.activePage;
     this.setState({loading: true});
-    this.props.history.push("/ticks/" + page);
+    history.push("/ticks/" + page);
   }
 
   render() {
@@ -75,4 +76,4 @@ class Ticks extends Component<any, any> {
   }
 }
 
-export default withRouter(Ticks);
+export default Ticks;

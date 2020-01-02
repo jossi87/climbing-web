@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
-import { withRouter } from 'react-router';
 import { Search, Image } from 'semantic-ui-react'
 import { getImageUrl, postSearch } from './../../../api';
 import { LockSymbol } from '../widgets/widgets';
+import history from '../../../utils/history';
 
 class SearchBox extends Component<any, any> {
   state = { isLoading: false, results: [], value: '' };
 
-  handleResultSelect = (e, { result }) => this.props.history.push(result.url)
+  handleResultSelect = (e, { result }) => history.push(result.url)
 
   handleSearchChange = (e, { value }) => {
     this.setState({ isLoading: true, value })
@@ -54,4 +54,4 @@ class SearchBox extends Component<any, any> {
   }
 }
 
-export default withRouter(SearchBox);
+export default SearchBox;

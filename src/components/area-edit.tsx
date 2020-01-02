@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
-import { withRouter } from 'react-router';
 import ImageUpload from './common/image-upload/image-upload';
 import Leaflet from './common/leaflet/leaflet';
 import { Form, Button, Input, Dropdown, TextArea } from 'semantic-ui-react';
 import { getAreaEdit, postArea } from '../api';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
+import history from '../utils/history';
 
 class AreaEdit extends Component<any, any> {
   componentDidMount() {
@@ -53,7 +53,7 @@ class AreaEdit extends Component<any, any> {
     this.setState({isSaving: true});
     postArea(this.props.accessToken, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, this.state.data.newMedia)
     .then((response) => {
-      this.props.history.push("/area/" + response.id);
+      history.push("/area/" + response.id);
     })
     .catch((error) => {
       console.warn(error);
@@ -83,7 +83,7 @@ class AreaEdit extends Component<any, any> {
     } else if (!this.state.data) {
       return <LoadingAndRestoreScroll />;
     } else if (!this.state.data.metadata.isAdmin) {
-      this.props.history.push("/login");
+      history.push("/login");
     }
     const defaultCenter = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? {lat: parseFloat(this.props.location.query.lat), lng: parseFloat(this.props.location.query.lng)} : this.state.data.metadata.defaultCenter;
     const defaultZoom: number = this.props && this.props.location && this.props.location.query && this.props.location.query.lat && parseFloat(this.props.location.query.lat)>0? 8 : this.state.data.metadata.defaultZoom;
@@ -136,4 +136,4 @@ class AreaEdit extends Component<any, any> {
   }
 }
 
-export default withRouter(AreaEdit);
+export default AreaEdit;

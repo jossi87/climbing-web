@@ -210,7 +210,7 @@ class Problem extends Component<any, any> {
       }
     }
     if (!tickModal) {
-      tickModal = <TickModal accessToken={this.props.accessToken} idTick={-1} idProblem={data.id} grade={data.originalGrade} grades={data.metadata.grades} open={this.state.showTickModal} onClose={this.closeTickModal}/>;
+      tickModal = <TickModal accessToken={this.props.accessToken} idTick={-1} idProblem={data.id} grade={data.originalGrade} grades={data.metadata.grades} open={this.state.showTickModal} onClose={this.closeTickModal} comment={null} stars={null} date={null} />;
     }
     return (
       <>

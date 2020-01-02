@@ -157,7 +157,7 @@ export function getProblem(accessToken: string, id: number): Promise<any> {
 }
 
 export function getProblemEdit(accessToken: string, id: number): Promise<any> {
-  if (id === -1) {
+  if (id == -1) {
     return getMeta(accessToken)
     .then((res) => {
       return {
@@ -226,7 +226,7 @@ export function getSector(accessToken: string, id: number): Promise<any> {
 }
 
 export function getSectorEdit(accessToken: string, id: number): Promise<any> {
-  if (id === -1) {
+  if (id == -1) {
     return getMeta(accessToken)
     .then((res) => {
       return {

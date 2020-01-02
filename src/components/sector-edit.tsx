@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import MetaTags from 'react-meta-tags';
-import { withRouter } from 'react-router';
 import ImageUpload from './common/image-upload/image-upload';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Form, Button, Input, Dropdown, TextArea } from 'semantic-ui-react';
 import { getSectorEdit, postSector } from './../api';
 import Leaflet from './common/leaflet/leaflet';
+import history from '../utils/history';
 
 class SectorEdit extends Component<any, any> {
   constructor(props) {
@@ -58,7 +58,7 @@ class SectorEdit extends Component<any, any> {
     this.setState({isSaving: true});
     postSector(this.props.accessToken, this.props.location.query.idArea, this.state.data.id, this.state.data.visibility, this.state.data.name, this.state.data.comment, this.state.data.lat, this.state.data.lng, this.state.data.polygonCoords, this.state.data.polyline, this.state.data.newMedia)
     .then((response) => {
-      this.props.history.push("/sector/" + response.id);
+      history.push("/sector/" + response.id);
     })
     .catch((error) => {
       console.warn(error);
@@ -118,7 +118,7 @@ class SectorEdit extends Component<any, any> {
     } else if (!this.props || !this.props.match || !this.props.match.params || !this.props.match.params.sectorId || !this.props.location || !this.props.location.query || !this.props.location.query.idArea) {
       return <span><h3>Invalid action...</h3></span>;
     } else if (!this.state.data.metadata.isAdmin) {
-      this.props.history.push("/login");
+      return <span><h3>Not logged in</h3></span>;
     }
     const polygon = this.state.data.polygonCoords && this.state.data.polygonCoords.split(";").map((c, i) => {
       const latLng = c.split(",");
@@ -190,4 +190,4 @@ class SectorEdit extends Component<any, any> {
   }
 }
 
-export default withRouter(SectorEdit);
+export default SectorEdit;

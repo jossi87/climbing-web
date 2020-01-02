@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
-import { withRouter } from 'react-router'
 import ImageUpload from './common/image-upload/image-upload';
 import { getProblem, postProblemMedia } from './../api';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Container, Button } from 'semantic-ui-react';
+import history from '../utils/history';
 
 class ProblemEditMedia extends Component<any, any> {
   componentDidMount() {
@@ -29,7 +29,7 @@ class ProblemEditMedia extends Component<any, any> {
     this.setState({isSaving: true});
     postProblemMedia(this.props.accessToken, this.state.id, this.state.newMedia)
     .then((response) => {
-      this.props.history.push("/problem/" + response.id);
+      history.push("/problem/" + response.id);
     })
     .catch((error) => {
       console.warn(error);
@@ -44,7 +44,7 @@ class ProblemEditMedia extends Component<any, any> {
     if (!this.state || !this.state.id) {
       return <LoadingAndRestoreScroll />;
     } else if (!this.state.isAuthenticated) {
-      this.props.history.push("/login");
+      history.push("/login");
     }
 
     return (
@@ -62,4 +62,4 @@ class ProblemEditMedia extends Component<any, any> {
   }
 }
 
-export default withRouter(ProblemEditMedia);
+export default ProblemEditMedia;

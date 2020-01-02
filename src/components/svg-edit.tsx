@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
-import { withRouter } from 'react-router';
 import { Container, Button, Segment, Dropdown } from 'semantic-ui-react';
 import { getSvgEdit, getImageUrl, postProblemSvg } from '../api';
 import { parseReadOnlySvgs } from '../utils/svg';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
+import history from '../utils/history';
 
 class SvgEdit extends Component<any, any> {
   componentDidMount() {
@@ -89,7 +89,7 @@ class SvgEdit extends Component<any, any> {
     event.preventDefault();
     postProblemSvg(this.props.accessToken, this.state.id, this.state.mediaId, this.state.points.length<2, this.state.svgId, this.generatePath(), this.state.hasAnchor, JSON.stringify(this.state.anchors), JSON.stringify(this.state.texts))
     .then((response) => {
-      this.props.history.push("/problem/" + this.state.id);
+      history.push("/problem/" + this.state.id);
     })
     .catch((error) => {
       console.warn(error);
@@ -252,7 +252,7 @@ class SvgEdit extends Component<any, any> {
     } else if (this.state.error) {
       return <h3>{this.state.error.toString()}</h3>;
     } else if (!this.state.metadata.isAdmin) {
-      this.props.history.push("/login");
+      history.push("/login");
     }
     var circles = this.state.points.map((p, i, a) => {
       var anchors = [];
@@ -329,4 +329,4 @@ class SvgEdit extends Component<any, any> {
   }
 }
 
-export default withRouter(SvgEdit);
+export default SvgEdit;
