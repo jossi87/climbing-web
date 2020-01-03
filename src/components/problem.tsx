@@ -11,16 +11,18 @@ import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
 
 const Problem = ({ match }) => {
-  const { accessToken } = useAuth0();
+  const { loading, accessToken } = useAuth0();
   const [data, setData] = useState();
   const [forceUpdate, setForceUpdate] = useState(1);
   const [showTickModal, setShowTickModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(false);
   const [saving, setSaving] = useState(false);
   useEffect(() => {
-    const id = match.params.problemId;
-    getProblem(accessToken, id).then((data) => setData(data));
-  }, [accessToken, match, forceUpdate]);
+    if (!loading) {
+      const id = match.params.problemId;
+      getProblem(accessToken, id).then((data) => setData(data));
+    }
+  }, [loading, accessToken, match, forceUpdate]);
 
   function onRemoveMedia(idMediaToRemove) {
     data.media = data.media.filter(m => m.id!=idMediaToRemove);

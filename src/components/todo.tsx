@@ -8,13 +8,15 @@ import { useAuth0 } from '../utils/react-auth0-spa';
 import { getTodo, getImageUrl, postTodo } from '../api';
 
 const Todo = ({ match }) => {
-  const { accessToken } = useAuth0();
+  const { loading, accessToken } = useAuth0();
   const [data, setData] = useState();
   const [saving, setSaving] = useState(false);
   useEffect(() => {
-    const id = match.params.userId? match.params.userId : "-1";
-    getTodo(accessToken, id).then((data) => setData(data));
-  }, [accessToken]);
+    if (!loading) {
+      const id = match.params.userId? match.params.userId : "-1";
+      getTodo(accessToken, id).then((data) => setData(data));
+    }
+  }, [loading, accessToken]);
 
   function move(up: boolean, ix : number) {
     setSaving(true);

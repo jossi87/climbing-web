@@ -10,13 +10,15 @@ import { useAuth0 } from '../utils/react-auth0-spa';
 import { getArea, getImageUrl } from '../api';
 
 const Area = ({ match }) => {
-  const { accessToken } = useAuth0();
+  const { loading, accessToken } = useAuth0();
   const [data, setData] = useState();
   const [forceUpdate, setForceUpdate] = useState(1);
   useEffect(() => {
-    const id = match.params.areaId;
-    getArea(accessToken, id).then((data) => setData(data));
-  }, [accessToken, match]);
+    if (!loading) {
+      const id = match.params.areaId;
+      getArea(accessToken, id).then((data) => setData(data));
+    }
+  }, [loading, accessToken, match]);
 
   if (!data) {
     return <LoadingAndRestoreScroll />;

@@ -8,11 +8,13 @@ import { useAuth0 } from '../utils/react-auth0-spa';
 import { getBrowse } from '../api';
 
 const Browse = () => {
-  const { accessToken } = useAuth0();
+  const { loading, accessToken } = useAuth0();
   const [data, setData] = useState();
   useEffect(() => {
-    getBrowse(accessToken).then((data) => setData(data));
-  }, [accessToken]);
+    if (!loading) {
+      getBrowse(accessToken).then((data) => setData(data));
+    }
+  }, [loading, accessToken]);
 
   if (!data) {
     return <LoadingAndRestoreScroll />;

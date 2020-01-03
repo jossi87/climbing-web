@@ -8,12 +8,12 @@ import { useAuth0 } from '../utils/react-auth0-spa';
 import { Stars, LockSymbol } from './common/widgets/widgets';
 
 const Filter = () => {
-  const { accessToken } = useAuth0();
+  const { loading, accessToken } = useAuth0();
   const [meta, setMeta] = useState(null);
   const [grades, setGrades] = useState(null);
   const [types, setTypes] = useState(null);
   const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [filterDisabled, setFilterDisabled] = useState(false);
   const [hideTicked, setHideTicked] = useState(false);
   const [onlyWithMedia, setOnlyWithMedia] = useState(false);
@@ -21,8 +21,10 @@ const Filter = () => {
   const [onlySuperAdmin, setOnlySuperAdmin] = useState(false);
   const [orderByStars, setOrderByStars] = useState(false);
   useEffect(() => {
-    getMeta(accessToken).then((meta) => setMeta(meta));
-  }, [accessToken]);
+    if (!loading) {
+      getMeta(accessToken).then((meta) => setMeta(meta));
+    }
+  }, [loading, accessToken]);
   
   if (!meta) {
     return <LoadingAndRestoreScroll />;
@@ -71,13 +73,13 @@ const Filter = () => {
               }} />
             </Form.Field>
           }
-          <Button icon labelPosition='left' disabled={filterDisabled} loading={loading} onClick={() => {
-            setLoading(true);
+          <Button icon labelPosition='left' disabled={filterDisabled} loading={refreshing} onClick={() => {
+            setRefreshing(true);
             setFilterDisabled(true);
             const myTypes = meta.metadata.isBouldering? [1] : types;
             postFilter(accessToken, grades, myTypes).then((res) => {
               setResult(res);
-              setLoading(false);
+              setRefreshing(false);
             });
           }} >
             <Icon name='filter' />

@@ -9,12 +9,14 @@ import { getUser, getUsersTicks, numberWithCommas, postUser } from '../api';
 
 const User = ({ match }) => {
   const id = match.params.userId;
-  const { isAuthenticated, accessToken } = useAuth0();
+  const { loading, isAuthenticated, accessToken } = useAuth0();
   const [data, setData] = useState(null);
   const [orderBy, setOrderBy] = useState('date');
   useEffect(() => {
-    getUser(accessToken, id? id : "-1").then((data) => setData(data));
-  }, [accessToken]);
+    if (!loading) {
+      getUser(accessToken, id? id : "-1").then((data) => setData(data));
+    }
+  }, [loading, accessToken]);
 
   if (!data) {
     return <LoadingAndRestoreScroll />;

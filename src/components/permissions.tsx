@@ -7,14 +7,16 @@ import { Link } from 'react-router-dom';
 import { useAuth0 } from '../utils/react-auth0-spa';
 
 const Permissions = () => {
-  const { accessToken } = useAuth0();
+  const { loading, accessToken } = useAuth0();
   const [data, setPermission] = useState();
 
   useEffect(() => {
-    getPermissions(accessToken).then((res) => {
-      setPermission(res);
-    });
-  }, [accessToken]);
+    if (!loading) {
+      getPermissions(accessToken).then((res) => {
+        setPermission(res);
+      });
+    }
+  }, [loading, accessToken]);
 
   if (!data) {
     return <LoadingAndRestoreScroll />;

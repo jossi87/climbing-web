@@ -7,11 +7,13 @@ import { useAuth0 } from '../utils/react-auth0-spa';
 import { getProblemHse } from '../api';
 
 const ProblemHse = () => {
-  const { accessToken } = useAuth0();
+  const { loading, accessToken } = useAuth0();
   const [data, setData] = useState();
   useEffect(() => {
-    getProblemHse(accessToken).then((data) => setData(data));
-  }, [accessToken]);
+    if (!loading) {
+      getProblemHse(accessToken).then((data) => setData(data));
+    }
+  }, [loading, accessToken]);
 
   if (!data) {
     return <LoadingAndRestoreScroll />;
