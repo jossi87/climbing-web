@@ -79,25 +79,25 @@ const App = () => {
           <Analytics id="UA-76534258-1">
             <Switch>
               <Suspense fallback={<LoadingAndRestoreScroll />}>
-                <PropsRoute exact path='/' component={Frontpage} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-                <PropsRoute path='/browse' component={Browse} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-                <PropsRoute path='/ethics' component={Ethics} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-                <PropsRoute exact path='/area/:areaId' component={Area} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-                <PropsRoute exact path='/area/edit/:areaId' component={AreaEdit} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-                <PropsRoute path='/filter' component={Filter} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-                <PropsRoute path='/hse' component={ProblemHse} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-                <PropsRoute path='/permissions' component={Permissions} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-                <PropsRoute exact path='/problem/:problemId' component={Problem} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-                <PropsRoute exact path='/problem/edit/:problemId' component={ProblemEdit} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-                <PropsRoute exact path='/problem/edit/media/:problemId' component={ProblemEditMedia} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-                <PropsRoute exact path='/problem/svg-edit/:problemIdMediaId' component={SvgEdit} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-                <PropsRoute exact path='/sector/:sectorId' component={Sector} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-                <PropsRoute exact path='/sector/edit/:sectorId' component={SectorEdit} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-                <PropsRoute path='/ticks/:page' component={Ticks} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-                <PropsRoute exact path='/user' component={User} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-                <PropsRoute exact path='/user/:userId' component={User} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-                <PropsRoute exact path='/todo' component={Todo} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
-                <PropsRoute exact path='/todo/:userId' component={Todo} accessToken={accessToken} isAuthenticated={isAuthenticated} loginWithRedirect={loginWithRedirect} />
+                <PropsRoute exact path='/' component={Frontpage} accessToken={accessToken} isAuthenticated={isAuthenticated} />
+                <PropsRoute path='/browse' component={Browse} accessToken={accessToken} isAuthenticated={isAuthenticated} />
+                <PropsRoute path='/ethics' component={Ethics} accessToken={accessToken} isAuthenticated={isAuthenticated} />
+                <PropsRoute exact path='/area/:areaId' component={Area} accessToken={accessToken} isAuthenticated={isAuthenticated} />
+                <PropsRoute exact path='/area/edit/:areaId' component={AreaEdit} accessToken={accessToken} isAuthenticated={isAuthenticated} />
+                <PropsRoute path='/filter' component={Filter} accessToken={accessToken} isAuthenticated={isAuthenticated} />
+                <PropsRoute path='/hse' component={ProblemHse} accessToken={accessToken} isAuthenticated={isAuthenticated} />
+                <PropsRoute path='/permissions' component={Permissions} accessToken={accessToken} isAuthenticated={isAuthenticated} />
+                <PropsRoute exact path='/problem/:problemId' component={Problem} accessToken={accessToken} isAuthenticated={isAuthenticated} />
+                <PropsRoute exact path='/problem/edit/:problemId' component={ProblemEdit} accessToken={accessToken} isAuthenticated={isAuthenticated} />
+                <PropsRoute exact path='/problem/edit/media/:problemId' component={ProblemEditMedia} accessToken={accessToken} isAuthenticated={isAuthenticated} />
+                <PropsRoute exact path='/problem/svg-edit/:problemIdMediaId' component={SvgEdit} accessToken={accessToken} isAuthenticated={isAuthenticated} />
+                <PropsRoute exact path='/sector/:sectorId' component={Sector} accessToken={accessToken} isAuthenticated={isAuthenticated} />
+                <PropsRoute exact path='/sector/edit/:sectorId' component={SectorEdit} accessToken={accessToken} isAuthenticated={isAuthenticated} />
+                <PropsRoute path='/ticks/:page' component={Ticks} accessToken={accessToken} isAuthenticated={isAuthenticated} />
+                <PropsRoute exact path='/user' component={User} accessToken={accessToken} isAuthenticated={isAuthenticated} />
+                <PropsRoute exact path='/user/:userId' component={User} accessToken={accessToken} isAuthenticated={isAuthenticated} />
+                <PropsRoute exact path='/todo' component={Todo} accessToken={accessToken} isAuthenticated={isAuthenticated} />
+                <PropsRoute exact path='/todo/:userId' component={Todo} accessToken={accessToken} isAuthenticated={isAuthenticated} />
               </Suspense>
             </Switch>
           </Analytics>
