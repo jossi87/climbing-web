@@ -7,14 +7,16 @@ import { getFrontpage, getImageUrl, numberWithCommas } from '../api';
 import { LockSymbol, Stars } from './common/widgets/widgets';
 
 const Frontpage = () => {
-  const { accessToken } = useAuth0();
+  const { loading, accessToken } = useAuth0();
   const [data, setData] = useState();
 
   useEffect(() => {
-    getFrontpage(accessToken).then((res) => {
-      setData(res);
-    });
-  }, [accessToken]);
+    if (!loading) {
+      getFrontpage(accessToken).then((res) => {
+        setData(res);
+      });
+    }
+  }, [loading, accessToken]);
 
   if (!data) {
     return (
