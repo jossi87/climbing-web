@@ -1,5 +1,4 @@
-import React, { useEffect, useState, Suspense, lazy } from 'react';
-import { useAuth0 } from './utils/react-auth0-spa';
+import React, { Suspense, lazy } from 'react';
 import history from './utils/history';
 import { Container, Divider, Grid, Header, List, Segment } from 'semantic-ui-react'
 import { Router, Switch, Route, Link } from 'react-router-dom';
@@ -25,33 +24,7 @@ const Todo = lazy(() => import('./components/todo'));
 const User = lazy(() => import('./components/user'));
 const Permissions = lazy(() => import('./components/permissions'));
 
-const renderMergedProps = (component, ...rest) => {
-  const finalProps = Object.assign({}, ...rest);
-  return (
-    React.createElement(component, finalProps)
-  );
-}
-const PropsRoute = ({ component, ...rest }) => {
-  return (
-    <Route {...rest} render={routeProps => {
-      return renderMergedProps(component, routeProps, rest);
-    }}/>
-  );
-}
-
 const App = () => {
-  const { loading, isAuthenticated, loginWithRedirect, logout, getTokenSilently } = useAuth0();
-  const [accessToken, setAccessToken] = useState(null);
-  useEffect(() => {
-    const fetchToken = async () => {
-      const token = await getTokenSilently();
-      setAccessToken(token);
-    };
-    if (isAuthenticated) {
-      fetchToken();
-    }
-  }, [isAuthenticated, getTokenSilently]);
-  
   const styleGoogle = {
     width: '200px',
     marginTop: '-10px',
@@ -68,36 +41,33 @@ const App = () => {
     maxWidth: '170px',
     backgroundColor: '#FFFFFF'
   };
-  if (loading || (isAuthenticated && !accessToken)) {
-    return <LoadingAndRestoreScroll />;
-  }
   return (
     <Router history={history}>
       <div style={{background: "#F5F5F5"}}>
-        <Navigation accessToken={accessToken} isAuthenticated={isAuthenticated} logout={logout} loginWithRedirect={loginWithRedirect} />
+        <Navigation />
         <Container style={{ marginTop: '1em' }}>
           <Analytics id="UA-76534258-1">
             <Switch>
               <Suspense fallback={<LoadingAndRestoreScroll />}>
-                <PropsRoute exact path='/' component={Frontpage} accessToken={accessToken} isAuthenticated={isAuthenticated} />
-                <PropsRoute path='/browse' component={Browse} accessToken={accessToken} isAuthenticated={isAuthenticated} />
-                <PropsRoute path='/ethics' component={Ethics} accessToken={accessToken} isAuthenticated={isAuthenticated} />
-                <PropsRoute exact path='/area/:areaId' component={Area} accessToken={accessToken} isAuthenticated={isAuthenticated} />
-                <PropsRoute exact path='/area/edit/:areaId' component={AreaEdit} accessToken={accessToken} isAuthenticated={isAuthenticated} />
-                <PropsRoute path='/filter' component={Filter} accessToken={accessToken} isAuthenticated={isAuthenticated} />
-                <PropsRoute path='/hse' component={ProblemHse} accessToken={accessToken} isAuthenticated={isAuthenticated} />
-                <PropsRoute path='/permissions' component={Permissions} accessToken={accessToken} isAuthenticated={isAuthenticated} />
-                <PropsRoute exact path='/problem/:problemId' component={Problem} accessToken={accessToken} isAuthenticated={isAuthenticated} />
-                <PropsRoute exact path='/problem/edit/:problemId' component={ProblemEdit} accessToken={accessToken} isAuthenticated={isAuthenticated} />
-                <PropsRoute exact path='/problem/edit/media/:problemId' component={ProblemEditMedia} accessToken={accessToken} isAuthenticated={isAuthenticated} />
-                <PropsRoute exact path='/problem/svg-edit/:problemIdMediaId' component={SvgEdit} accessToken={accessToken} isAuthenticated={isAuthenticated} />
-                <PropsRoute exact path='/sector/:sectorId' component={Sector} accessToken={accessToken} isAuthenticated={isAuthenticated} />
-                <PropsRoute exact path='/sector/edit/:sectorId' component={SectorEdit} accessToken={accessToken} isAuthenticated={isAuthenticated} />
-                <PropsRoute path='/ticks/:page' component={Ticks} accessToken={accessToken} isAuthenticated={isAuthenticated} />
-                <PropsRoute exact path='/user' component={User} accessToken={accessToken} isAuthenticated={isAuthenticated} />
-                <PropsRoute exact path='/user/:userId' component={User} accessToken={accessToken} isAuthenticated={isAuthenticated} />
-                <PropsRoute exact path='/todo' component={Todo} accessToken={accessToken} isAuthenticated={isAuthenticated} />
-                <PropsRoute exact path='/todo/:userId' component={Todo} accessToken={accessToken} isAuthenticated={isAuthenticated} />
+              <Route exact path='/' component={Frontpage} />
+                <Route path='/browse' component={Browse} />
+                <Route path='/ethics' component={Ethics} />
+                <Route exact path='/area/:areaId' component={Area} />
+                <Route exact path='/area/edit/:areaId' component={AreaEdit} />
+                <Route path='/filter' component={Filter} />
+                <Route path='/hse' component={ProblemHse} />
+                <Route path='/permissions' component={Permissions} />
+                <Route exact path='/problem/:problemId' component={Problem} />
+                <Route exact path='/problem/edit/:problemId' component={ProblemEdit} />
+                <Route exact path='/problem/edit/media/:problemId' component={ProblemEditMedia} />
+                <Route exact path='/problem/svg-edit/:problemIdMediaId' component={SvgEdit} />
+                <Route exact path='/sector/:sectorId' component={Sector} />
+                <Route exact path='/sector/edit/:sectorId' component={SectorEdit} />
+                <Route path='/ticks/:page' component={Ticks} />
+                <Route exact path='/user' component={User} />
+                <Route exact path='/user/:userId' component={User} />
+                <Route exact path='/todo' component={Todo} />
+                <Route exact path='/todo/:userId' component={Todo} />
               </Suspense>
             </Switch>
           </Analytics>

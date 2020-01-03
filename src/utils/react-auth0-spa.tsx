@@ -4,6 +4,7 @@ import Auth0Client from "@auth0/auth0-spa-js/dist/typings/Auth0Client";
 
 interface Auth0Context {
   isAuthenticated: boolean;
+  accessToken: string;
   user: any;
   loading: boolean;
   popupOpen: boolean;
@@ -31,6 +32,7 @@ export const Auth0Provider = ({
   ...initOptions
 }: Auth0ProviderOptions & Auth0ClientOptions) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [accessToken, setAccessToken] = useState(null);
   const [user, setUser] = useState();
   const [auth0Client, setAuth0] = useState<Auth0Client>();
   const [loading, setLoading] = useState(true);
@@ -47,10 +49,11 @@ export const Auth0Provider = ({
       }
 
       const isAuthenticated = await auth0FromHook.isAuthenticated();
-
       setIsAuthenticated(isAuthenticated);
 
       if (isAuthenticated) {
+        const accessToken = await auth0FromHook.getTokenSilently();
+        setAccessToken(accessToken);
         const user = await auth0FromHook.getUser();
         setUser(user);
       }
@@ -70,7 +73,9 @@ export const Auth0Provider = ({
     } finally {
       setPopupOpen(false);
     }
+    const accessToken = await auth0Client!.getTokenSilently();
     const user = await auth0Client!.getUser();
+    setAccessToken(accessToken);
     setUser(user);
     setIsAuthenticated(true);
   };
@@ -78,9 +83,11 @@ export const Auth0Provider = ({
   const handleRedirectCallback = async () => {
     setLoading(true);
     const result = await auth0Client!.handleRedirectCallback();
+    const accessToken = await auth0Client!.getTokenSilently();
     const user = await auth0Client!.getUser();
     setLoading(false);
     setIsAuthenticated(true);
+    setAccessToken(accessToken);
     setUser(user);
     return result;
   };
@@ -88,6 +95,7 @@ export const Auth0Provider = ({
     <Auth0Context.Provider
       value={{
         isAuthenticated,
+        accessToken,
         user,
         loading,
         popupOpen,

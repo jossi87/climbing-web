@@ -4,8 +4,10 @@ import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 import { getPermissions, postPermissions } from '../api';
 import { Header, Image, Dropdown, Card } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+import { useAuth0 } from '../utils/react-auth0-spa';
 
-const Permissions = ({accessToken}) => {
+const Permissions = () => {
+  const { accessToken } = useAuth0();
   const [data, setPermission] = useState();
 
   useEffect(() => {

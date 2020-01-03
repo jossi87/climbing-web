@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import { Label, Grid, Statistic, Icon, Image, Card, Feed, Segment, Placeholder } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+import { useAuth0 } from '../utils/react-auth0-spa';
 import { getFrontpage, getImageUrl, numberWithCommas } from '../api';
 import { LockSymbol, Stars } from './common/widgets/widgets';
 
-const Frontpage = ({ accessToken }) => {
+const Frontpage = () => {
+  const { accessToken } = useAuth0();
   const [data, setData] = useState();
 
   useEffect(() => {
