@@ -156,12 +156,17 @@ export function getProblem(accessToken: string, id: number): Promise<any> {
   });
 }
 
-export function getProblemEdit(accessToken: string, id: number): Promise<any> {
-  if (id == -1) {
-    return getMeta(accessToken)
+export function getProblemEdit(accessToken: string, sectorIdProblemId: string): Promise<any> {
+  const parts = sectorIdProblemId.split("-");
+  const sectorId = parseInt(parts[0]);
+  const problemId = parseInt(parts[1]);
+  if (problemId === 0) {
+    return getSector(accessToken, sectorId)
     .then((res) => {
+      const defaultCenter = res.lat && res.lng && parseFloat(res.lat)>0? {lat: parseFloat(res.lat), lng: parseFloat(res.lng)} : res.metadata.defaultCenter;
       return {
         id: -1,
+        sectorId: res.id,
         visibility: 0,
         name: '',
         comment: '',
@@ -175,7 +180,7 @@ export function getProblemEdit(accessToken: string, id: number): Promise<any> {
         metadata: {
           title: 'New problem | ' + res.metadata.title,
           defaultZoom: res.metadata.defaultZoom,
-          defaultCenter: res.metadata.defaultCenter,
+          defaultCenter: defaultCenter,
           grades: res.metadata.grades,
           types: res.metadata.types,
           isAdmin: res.metadata.isAdmin,
@@ -189,11 +194,11 @@ export function getProblemEdit(accessToken: string, id: number): Promise<any> {
       return null;
     });
   } else {
-    return makeAuthenticatedRequest(accessToken, `/problems?id=${id}`, null)
-    .then((data) => data.json())
+    return getProblem(accessToken, problemId)
     .then((res) => {
       return {
         id: res.id,
+        sectorId: res.sectorId,
         visibility: res.visibility,
         name: res.name,
         comment: res.comment,
@@ -225,11 +230,16 @@ export function getSector(accessToken: string, id: number): Promise<any> {
   });
 }
 
-export function getSectorEdit(accessToken: string, id: number): Promise<any> {
-  if (id == -1) {
-    return getMeta(accessToken)
+export function getSectorEdit(accessToken: string, areaIdSectorId: string): Promise<any> {
+  const parts = areaIdSectorId.split("-");
+  const areaId = parseInt(parts[0]);
+  const sectorId = parseInt(parts[1]);
+  if (sectorId === 0) {
+    return getArea(accessToken, areaId)
     .then((res) => {
+      const defaultCenter = res.lat && res.lng && parseFloat(res.lat)>0? {lat: parseFloat(res.lat), lng: parseFloat(res.lng)} : res.metadata.defaultCenter;
       return {
+        areaId: res.id,
         id: -1,
         visibility: 0,
         name: '',
@@ -237,7 +247,7 @@ export function getSectorEdit(accessToken: string, id: number): Promise<any> {
         lat: 0,
         lng: 0,
         newMedia: [],
-        metadata: {title: 'New sector | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, isAdmin: res.metadata.isAdmin, isSuperAdmin: res.metadata.isSuperAdmin}
+        metadata: {title: 'New sector | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: defaultCenter, isAdmin: res.metadata.isAdmin, isSuperAdmin: res.metadata.isSuperAdmin}
       };
     })
     .catch((error) => {
@@ -245,10 +255,9 @@ export function getSectorEdit(accessToken: string, id: number): Promise<any> {
       return null;
     });
   } else {
-    return makeAuthenticatedRequest(accessToken, `/sectors?id=${id}`, null)
-    .then((data) => data.json())
+    return getSector(accessToken, sectorId)
     .then((res) => {
-      return {id: res.id, visibility: res.visibility, name: res.name, comment: res.comment, lat: res.lat, lng: res.lng, polygonCoords: res.polygonCoords, polyline: res.polyline, newMedia: [], metadata: res.metadata};
+      return {id: res.id, areaId: res.areaId, visibility: res.visibility, name: res.name, comment: res.comment, lat: res.lat, lng: res.lng, polygonCoords: res.polygonCoords, polyline: res.polyline, newMedia: [], metadata: res.metadata};
     })
     .catch((error) => {
       console.warn(error);

@@ -6,12 +6,14 @@ import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 import { Image, Button, List, Header, Segment } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getTodo, getImageUrl, postTodo } from '../api';
+import { useHistory } from 'react-router-dom';
 
 const Todo = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState();
   const [saving, setSaving] = useState(false);
   let { userId } = useParams();
+  let history = useHistory();
   useEffect(() => {
     if (!loading) {
       const id = userId? parseInt(userId) : -1;
@@ -80,7 +82,9 @@ const Todo = () => {
               height='40vh'
               markers={data.todo.filter(p => p.problemLat!=0 && p.problemLng!=0).map(p => ({lat: p.problemLat, lng: p.problemLng, label: p.problemName, url: '/problem/' + p.problemId}))}
               defaultCenter={data.metadata.defaultCenter}
-              defaultZoom={data.metadata.defaultZoom}/>
+              defaultZoom={data.metadata.defaultZoom}
+              history={history}
+              />
             <List selection>
               {data.todo.map((p, i) => (
                 <List.Item key={i}>

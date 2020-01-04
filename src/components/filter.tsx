@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Header, Segment, Form, Dropdown, Button, Checkbox, Icon, List, Image } from 'semantic-ui-react';
@@ -9,6 +9,7 @@ import { Stars, LockSymbol } from './common/widgets/widgets';
 
 const Filter = () => {
   const { loading, accessToken } = useAuth0();
+  let history = useHistory();
   const [meta, setMeta] = useState(null);
   const [grades, setGrades] = useState(null);
   const [types, setTypes] = useState(null);
@@ -111,7 +112,9 @@ const Filter = () => {
             height='40vh'
             markers={res.filter(p => p.latitude!=0 && p.longitude!=0).map(p => ({lat: p.latitude, lng: p.longitude, label: p.problemName, url: '/problem/' + p.problemId}))}
             defaultCenter={meta.metadata.defaultCenter}
-            defaultZoom={meta.metadata.defaultZoom}/>
+            defaultZoom={meta.metadata.defaultZoom}
+            history={history}
+            />
           <List selection verticalAlign='middle'>
             {res.map((p, i) => (
               <List.Item key={i} as={Link} to={`/problem/${p.problemId}`}>

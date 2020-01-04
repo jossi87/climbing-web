@@ -9,6 +9,7 @@ import { useAuth0 } from '../utils/react-auth0-spa';
 import { getProblem, getTodo, postComment, postTodo } from '../api';
 import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
+import { useHistory } from 'react-router-dom';
 
 const Problem = () => {
   const { loading, accessToken } = useAuth0();
@@ -18,6 +19,7 @@ const Problem = () => {
   const [showCommentModal, setShowCommentModal] = useState(false);
   const [saving, setSaving] = useState(false);
   let { problemId } = useParams();
+  let history = useHistory();
   useEffect(() => {
     if (!loading) {
       getProblem(accessToken, parseInt(problemId)).then((data) => setData(data));
@@ -47,7 +49,7 @@ const Problem = () => {
 
   function toggleTodo(problemId : number) {
     setSaving(true);
-    getTodo(accessToken, "-1")
+    getTodo(accessToken, -1)
     .then((data) => {
       const todo = data.todo.filter(x => x.problemId==problemId);
       let id = -1;
@@ -136,7 +138,7 @@ const Problem = () => {
     };
     panes.push({
       menuItem: { key: 'map', icon: 'map', content: 'Map' },
-      render: () => <Tab.Pane><Leaflet height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={{lat: markers[0].lat, lng: markers[0].lng}} defaultZoom={16}/></Tab.Pane>
+      render: () => <Tab.Pane><Leaflet height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={{lat: markers[0].lat, lng: markers[0].lng}} defaultZoom={16} history={history}/></Tab.Pane>
     });
   }
   
@@ -240,7 +242,7 @@ const Problem = () => {
                 </Button.Content>
               </Button>
               {data.metadata.isAdmin?
-                <Button animated='fade' as={Link} to={{ pathname: `/problem/edit/${data.id}`, query: { idSector: data.sectorId, lat: data.sectorLat, lng: data.sectorLng } }}>
+                <Button animated='fade' as={Link} to={`/problem/edit/${data.sectorId}-${data.id}`}>
                   <Button.Content hidden>Edit</Button.Content>
                   <Button.Content visible>
                     <Icon name='edit' />

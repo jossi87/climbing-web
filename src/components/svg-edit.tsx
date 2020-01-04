@@ -68,10 +68,6 @@ const SvgEdit = () => {
     if (!e.ctrlKey) setCtrl(false);
   };
 
-  function onCancel() {
-    window.history.back();
-  }
-
   function onAddAnchor() {
     setAddAnchor(!addAnchor);
     setAddText(false);
@@ -274,7 +270,7 @@ const SvgEdit = () => {
         <Button.Group floated="right">
           <Button negative disabled={points.length===0 && anchors.length===0 && myTexts.length===0} onClick={reset}>Reset</Button>
           <Button.Or />
-          <Button onClick={onCancel}>Cancel</Button>
+          <Button onClick={() => history.goBack()}>Cancel</Button>
           <Button.Or />
           <Button positive onClick={save}>Save</Button>
         </Button.Group>

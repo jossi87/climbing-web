@@ -3,15 +3,9 @@ import { parseSVG, makeAbsolute } from 'svg-path-parser';
 import { getImageUrl } from '../../../api';
 import { useHistory } from 'react-router-dom';
 
-interface SvgProps {
-  style: any,
-  close?: Function,
-  m: any,
-  thumb: boolean,
-  useBlueNotRed: boolean
-}
+const Svg = ({ style, close, m, thumb, useBlueNotRed }) => {
+  let history = useHistory();
 
-function Svg(props: SvgProps) {
   function generateShapes(svgs, svgProblemId, w, h) {
     return svgs.map((svg, key) => {
       const path: any = parseSVG(svg.path);
@@ -39,30 +33,30 @@ function Svg(props: SvgProps) {
       if (y > (h-r)) y = h-r;
       let anchors = [];
       if (svg.hasAnchor) {
-        anchors.push(<circle key={key} className={props.useBlueNotRed? "buldreinfo-svg-ring-blue" : "buldreinfo-svg-ring-red"} cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.006*w}/>);
+        anchors.push(<circle key={key} className={useBlueNotRed? "buldreinfo-svg-ring-blue" : "buldreinfo-svg-ring-red"} cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.006*w}/>);
       }
       if (svg.anchors) {
         JSON.parse(svg.anchors).map((a, i) => {
-          anchors.push(<circle key={i} className={props.useBlueNotRed? "buldreinfo-svg-ring-blue" : "buldreinfo-svg-ring-red"} cx={a.x} cy={a.y} r={0.006*w} />);
+          anchors.push(<circle key={i} className={useBlueNotRed? "buldreinfo-svg-ring-blue" : "buldreinfo-svg-ring-red"} cx={a.x} cy={a.y} r={0.006*w} />);
         });
       }
-      let texts = svg.texts && JSON.parse(svg.texts).map((t, i) => (<text key={i} x={t.x} y={t.y} fontSize="5em" fill={props.useBlueNotRed? "blue" : "red"}>{t.txt}</text>));
+      let texts = svg.texts && JSON.parse(svg.texts).map((t, i) => (<text key={i} x={t.x} y={t.y} fontSize="5em" fill={useBlueNotRed? "blue" : "red"}>{t.txt}</text>));
       var factor = 1;
       var gClassName = "buldreinfo-svg-pointer buldreinfo-svg-hover";
       if (!(svgProblemId===0 || svg.problemId===svgProblemId)) {
         gClassName += " buldreinfo-svg-opacity";
-      } else if (props.thumb) {
+      } else if (thumb) {
         factor = 2;
       }
       return (
-        <g className={gClassName} key={key} style={props.style} onClick={() => {
-          if (props.close) {
+        <g className={gClassName} key={key} style={style} onClick={() => {
+          if (close) {
             history.push("/problem/" + svg.problemId);
-            props.close();
+            close();
           }
         }}>
-          <path d={svg.path} className={props.useBlueNotRed? "buldreinfo-svg-route-blue" : "buldreinfo-svg-route-red"} strokeWidth={0.003*w*factor} strokeDasharray={factor>1? null : 0.006*w}/>
-          <circle className={props.useBlueNotRed? "buldreinfo-svg-ring-blue" : "buldreinfo-svg-ring-red"} cx={x} cy={y} r={r}/>
+          <path d={svg.path} className={useBlueNotRed? "buldreinfo-svg-route-blue" : "buldreinfo-svg-route-red"} strokeWidth={0.003*w*factor} strokeDasharray={factor>1? null : 0.006*w}/>
+          <circle className={useBlueNotRed? "buldreinfo-svg-ring-blue" : "buldreinfo-svg-ring-red"} cx={x} cy={y} r={r}/>
           <text className="buldreinfo-svg-routenr" x={x} y={y} fontSize={0.02*w} dy=".3em">{svg.nr}</text>
           {anchors}
           {texts}
@@ -73,14 +67,14 @@ function Svg(props: SvgProps) {
 
   return (
     <>
-      <canvas className="buldreinfo-svg-canvas-ie-hack" width={props.m.width} height={props.m.height} style={props.style}></canvas>
-      <svg className="buldreinfo-svg" viewBox={"0 0 " + props.m.width + " " + props.m.height} preserveAspectRatio="xMidYMid meet" onClick={(e: React.MouseEvent<SVGSVGElement>) => {
+      <canvas className="buldreinfo-svg-canvas-ie-hack" width={m.width} height={m.height} style={style}></canvas>
+      <svg className="buldreinfo-svg" viewBox={"0 0 " + m.width + " " + m.height} preserveAspectRatio="xMidYMid meet" onClick={(e: React.MouseEvent<SVGSVGElement>) => {
         if (e.target instanceof SVGSVGElement) {
-          props.close();
+          close();
         }
       }}>
-        <image xlinkHref={getImageUrl(props.m.id)} width="100%" height="100%"/>
-        {generateShapes(props.m.svgs, props.m.svgProblemId, props.m.width, props.m.height)}
+        <image xlinkHref={getImageUrl(m.id)} width="100%" height="100%"/>
+        {generateShapes(m.svgs, m.svgProblemId, m.width, m.height)}
       </svg>
     </>
   )

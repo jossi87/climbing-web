@@ -6,8 +6,7 @@ import { Form, Button, Input, Dropdown, TextArea } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getAreaEdit, postArea } from '../api';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { useHistory } from 'react-router-dom';
-import { useParams, useLocation } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 
 const AreaEdit = () => {
   const { accessToken } = useAuth0();
@@ -15,7 +14,6 @@ const AreaEdit = () => {
   const [forceUpdate, setForceUpdate] = useState(1);
   const [saving, setSaving] = useState(false);
   let { areaId } = useParams();
-  let location = useLocation();
   let history = useHistory();
   useEffect(() => {
     if (areaId && accessToken) {
@@ -66,10 +64,6 @@ const AreaEdit = () => {
     setForceUpdate(forceUpdate+1);
   }
 
-  function onCancel() {
-    window.history.back();
-  }
-
   if (!data) {
     return <LoadingAndRestoreScroll />;
   } else if (!data) {
@@ -77,8 +71,8 @@ const AreaEdit = () => {
   } else if (!data.metadata.isAdmin) {
     history.push("/login");
   }
-  const defaultCenter = location && location.query && location.query.lat && parseFloat(location.query.lat)>0? {lat: parseFloat(location.query.lat), lng: parseFloat(location.query.lng)} : data.metadata.defaultCenter;
-  const defaultZoom: number = location && location.query && location.query.lat && parseFloat(location.query.lat)>0? 8 : data.metadata.defaultZoom;
+  const defaultCenter = data.lat && data.lng && parseFloat(data.lat)>0? {lat: parseFloat(data.lat), lng: parseFloat(data.lng)} : data.metadata.defaultCenter;
+  const defaultZoom: number = data.lat && parseFloat(data.lat)>0? 8 : data.metadata.defaultZoom;
   const visibilityOptions = [
     {key: 0, value: 0, text: "Visible for everyone"},
     {key: 1, value: 1, text: "Only visible for administrators"}
@@ -115,10 +109,11 @@ const AreaEdit = () => {
             defaultCenter={defaultCenter}
             defaultZoom={defaultZoom}
             onClick={onMarkerClick}
+            history={history}
           />
         </Form.Field>
         <Button.Group>
-          <Button negative onClick={onCancel}>Cancel</Button>
+          <Button negative onClick={() => history.goBack()}>Cancel</Button>
           <Button.Or />
           <Button positive loading={saving} onClick={save}>Save area</Button>
         </Button.Group>

@@ -57,11 +57,11 @@ const App = () => {
                 <Route path='/hse'><ProblemHse/></Route>
                 <Route path='/permissions'><Permissions/></Route>
                 <Route exact path='/problem/:problemId'><Problem/></Route>
-                <Route exact path='/problem/edit/:problemId'><ProblemEdit/></Route>
+                <Route exact path='/problem/edit/:sectorIdProblemId'><ProblemEdit/></Route>
                 <Route exact path='/problem/edit/media/:problemId'><ProblemEditMedia/></Route>
                 <Route exact path='/problem/svg-edit/:problemIdMediaId'><SvgEdit/></Route>
                 <Route exact path='/sector/:sectorId'><Sector/></Route>
-                <Route exact path='/sector/edit/:sectorId'><SectorEdit/></Route>
+                <Route exact path='/sector/edit/:areaIdSectorId'><SectorEdit/></Route>
                 <Route path='/ticks/:page'><Ticks/></Route>
                 <Route exact path='/user'><User/></Route>
                 <Route exact path='/user/:userId'><User/></Route>

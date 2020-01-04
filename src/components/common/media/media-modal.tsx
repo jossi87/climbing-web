@@ -3,6 +3,7 @@ import { Dimmer, Button, Icon, Image } from 'semantic-ui-react';
 import { getImageUrl } from '../../../api';
 import ReactPlayer from 'react-player';
 import Svg from './svg';
+import { useHistory } from 'react-router-dom';
 
 const style = {
   img: {
@@ -53,21 +54,8 @@ const style = {
     marginLeft: '-30px' /* 1/2 the width of the button */
   },
 }
-
-interface MediaModalProps {
-  isAdmin: boolean,
-  onClose: any,
-  onDelete: any,
-  m: Media,
-  length: number,
-  gotoPrev: any,
-  gotoNext: any,
-  playVideo: any,
-  useBlueNotRed: boolean,
-  history: any
-}
-function MediaModal(props: MediaModalProps) {
-  const {isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext, playVideo, useBlueNotRed, history} = props;
+const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext, playVideo, useBlueNotRed }) => {
+  let history = useHistory();
   let myPlayer;
   var topLeftButton;
   if (isAdmin && m.idType===1) {

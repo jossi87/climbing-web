@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useHistory } from 'react-router-dom';
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
 import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
@@ -13,6 +13,7 @@ const Sector = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState();
   const [forceUpdate, setForceUpdate] = useState(1);
+  let history = useHistory();
   let { sectorId } = useParams();
   useEffect(() => {
     if (!loading) {
@@ -72,12 +73,11 @@ const Sector = () => {
         return e.split(",").map(Number);
       })
     };
-    panes.push({ menuItem: 'Map', render: () => <Tab.Pane><Leaflet height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/></Tab.Pane> });
+    panes.push({ menuItem: 'Map', render: () => <Tab.Pane><Leaflet height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} /></Tab.Pane> });
   }
   if (data.problems.length!=0) {
     panes.push({ menuItem: 'Distribution', render: () => <Tab.Pane><ChartGradeDistribution accessToken={accessToken} idArea={0} idSector={data.id}/></Tab.Pane> });
   }
-  const nextNr = data.problems.length>0? data.problems[data.problems.length-1].nr+1 : 1;
   return (
     <>
       <MetaTags>
@@ -98,13 +98,13 @@ const Sector = () => {
         <div style={{float: 'right'}}>
           {data && data.metadata.isAdmin &&
             <Button.Group size="mini" compact>
-              <Button animated='fade' as={Link} to={{ pathname: `/problem/edit/-1`, query: { idSector: data.id, nr: nextNr, lat: data.lat, lng: data.lng } }}>
+              <Button animated='fade' as={Link} to={`/problem/edit/${data.id}-0`}>
                 <Button.Content hidden>Add</Button.Content>
                 <Button.Content visible>
                   <Icon name='plus' />
                 </Button.Content>
               </Button>
-              <Button animated='fade' as={Link} to={{ pathname: `/sector/edit/${data.id}`, query: { idArea: data.areaId, lat: data.lat, lng: data.lng } }}>
+              <Button animated='fade' as={Link} to={ `/sector/edit/${data.areaId}-${data.id}`}>
                 <Button.Content hidden>Edit</Button.Content>
                 <Button.Content visible>
                   <Icon name='edit' />

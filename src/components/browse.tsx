@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { Button, List, Breadcrumb, Icon, Segment } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
@@ -10,6 +10,7 @@ import { getBrowse } from '../api';
 const Browse = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState();
+  let history = useHistory();
   useEffect(() => {
     if (!loading) {
       getBrowse(accessToken).then((data) => setData(data));
@@ -28,7 +29,7 @@ const Browse = () => {
         url: '/area/' + a.id
       }
   });
-  const map = markers.length>0 && <><Leaflet height='75vh' markers={markers} defaultCenter={data.metadata.defaultCenter} defaultZoom={data.metadata.defaultZoom}/><br/></>;
+  const map = markers.length>0 && <><Leaflet height='75vh' markers={markers} defaultCenter={data.metadata.defaultCenter} defaultZoom={data.metadata.defaultZoom} history={history} /><br/></>;
   return (
     <>
       <MetaTags>

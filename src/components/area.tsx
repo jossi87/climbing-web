@@ -7,6 +7,7 @@ import Media from './common/media/media';
 import { LockSymbol, LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Button, Tab, Item, Message, Icon, Image, Breadcrumb, Segment, Header } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
+import { useHistory } from 'react-router-dom';
 import { getArea, getImageUrl } from '../api';
 
 const Area = () => {
@@ -14,6 +15,7 @@ const Area = () => {
   const [data, setData] = useState();
   const [forceUpdate, setForceUpdate] = useState(1);
   let { areaId } = useParams();
+  let history = useHistory();
   useEffect(() => {
     if (!loading) {
       getArea(accessToken, parseInt(areaId)).then((data) => setData(data));
@@ -58,7 +60,7 @@ const Area = () => {
   if (markers.length>0 || outlines.length>0) {
     const defaultCenter = data.lat && data.lat>0? {lat: data.lat, lng: data.lng} : data.metadata.defaultCenter;
     const defaultZoom = data.lat && data.lat>0? 14 : data.metadata.defaultZoom;
-    panes.push({ menuItem: 'Map', render: () => <Tab.Pane><Leaflet height={height} markers={markers} outlines={outlines} polylines={polylines} defaultCenter={defaultCenter} defaultZoom={defaultZoom}/></Tab.Pane> });
+    panes.push({ menuItem: 'Map', render: () => <Tab.Pane><Leaflet height={height} markers={markers} outlines={outlines} polylines={polylines} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} /></Tab.Pane> });
   }
   if (data.sectors.length!=0) {
     panes.push({ menuItem: 'Distribution', render: () => <Tab.Pane><ChartGradeDistribution accessToken={accessToken} idArea={data.id} idSector={0}/></Tab.Pane> });
@@ -83,13 +85,13 @@ const Area = () => {
         <div style={{float: 'right'}}>
           {data.metadata.isAdmin &&
             <Button.Group size="mini" compact>
-              <Button animated='fade' as={Link} to={{ pathname: `/sector/edit/-1`, query: { idArea: data.id, lat: data.lat, lng: data.lng } }}>
+              <Button animated='fade' as={Link} to={`/sector/edit/${data.id}-0`}>
                 <Button.Content hidden>Add</Button.Content>
                 <Button.Content visible>
                   <Icon name='plus' />
                 </Button.Content>
               </Button>
-              <Button animated='fade' as={Link} to={{ pathname: `/area/edit/${data.id}`, query: { lat: data.lat, lng: data.lng } }}>
+              <Button animated='fade' as={Link} to={`/area/edit/${data.id}`}>
                 <Button.Content hidden>Edit</Button.Content>
                 <Button.Content visible>
                   <Icon name='edit' />

@@ -6,8 +6,7 @@ import { Form, Button, Input, Dropdown, TextArea } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSectorEdit, postSector } from './../api';
 import Leaflet from './common/leaflet/leaflet';
-import { useHistory } from 'react-router-dom';
-import { useParams, useLocation } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 
 const SectorEdit = () => {
   const { accessToken } = useAuth0();
@@ -15,14 +14,13 @@ const SectorEdit = () => {
   const [data, setData] = useState();
   const [forceUpdate, setForceUpdate] = useState(1);
   const [saving, setSaving] = useState(false);
-  let { sectorId } = useParams();
-  let location = useLocation();
+  let { areaIdSectorId } = useParams();
   let history = useHistory();
   useEffect(() => {
-    if (sectorId && accessToken) {
-      getSectorEdit(accessToken, parseInt(sectorId)).then((data) => setData(data));
+    if (areaIdSectorId && accessToken) {
+      getSectorEdit(accessToken, areaIdSectorId).then((data) => setData(data));
     }
-  }, [accessToken, sectorId]);
+  }, [accessToken, areaIdSectorId]);
 
   function onNameChanged(e, { value }) {
     data.name = value;
@@ -51,7 +49,7 @@ const SectorEdit = () => {
   function save(event) {
     event.preventDefault();
     setSaving(true);
-    postSector(accessToken, location.query.idArea, data.id, data.visibility, data.name, data.comment, data.lat, data.lng, data.polygonCoords, data.polyline, data.newMedia)
+    postSector(accessToken, data.areaId, data.id, data.visibility, data.name, data.comment, data.lat, data.lng, data.polygonCoords, data.polyline, data.newMedia)
     .then((response) => {
       history.push("/sector/" + response.id);
     })
@@ -96,10 +94,6 @@ const SectorEdit = () => {
     setForceUpdate(forceUpdate+1);
   }
 
-  function onCancel() {
-    window.history.back();
-  }
-
   if (!data) {
     return <LoadingAndRestoreScroll />;
   } else if (!data.metadata.isAdmin) {
@@ -115,8 +109,8 @@ const SectorEdit = () => {
       return e.split(",").map(Number);
     })
   };
-  const defaultCenter = location && location.query && location.query.lat && parseFloat(location.query.lat)>0? {lat: parseFloat(location.query.lat), lng: parseFloat(location.query.lng)} : data.metadata.defaultCenter;
-  const defaultZoom: number = location && location.query && location.query.lat && parseFloat(location.query.lat)>0? 14 : data.metadata.defaultZoom;
+  const defaultCenter = data.lat && parseFloat(data.lat)>0? {lat: parseFloat(data.lat), lng: parseFloat(data.lng)} : data.metadata.defaultCenter;
+  const defaultZoom: number = data.lat && parseFloat(data.lat)>0? 14 : data.metadata.defaultZoom;
   const visibilityOptions = [
     {key: 0, value: 0, text: "Visible for everyone"},
     {key: 1, value: 1, text: "Only visible for administrators"}
@@ -162,10 +156,11 @@ const SectorEdit = () => {
             defaultCenter={defaultCenter}
             defaultZoom={defaultZoom}
             onClick={onMapClick}
+            history={history}
           />
         </Form.Field>
         <Button.Group>
-          <Button negative onClick={onCancel}>Cancel</Button>
+          <Button negative onClick={() => history.goBack()}>Cancel</Button>
           <Button.Or />
           <Button positive loading={saving} onClick={save}>Save sector</Button>
         </Button.Group>

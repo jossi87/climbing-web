@@ -9,22 +9,20 @@ import Leaflet from './common/leaflet/leaflet';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getProblemEdit, convertFromDateToString, convertFromStringToDate, postProblem } from '../api';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { useHistory } from 'react-router-dom';
-import { useParams, useLocation } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 
 const ProblemEdit = () => {
   const { accessToken } = useAuth0();
   const [data, setData] = useState();
   const [forceUpdate, setForceUpdate] = useState(1);
   const [saving, setSaving] = useState(false);
-  let { problemId } = useParams();
-  let location = useLocation();
+  let { sectorIdProblemId } = useParams();
   let history = useHistory();
   useEffect(() => {
-    if (problemId && accessToken) {
-      getProblemEdit(accessToken, parseInt(problemId)).then((data) => setData(data));
+    if (sectorIdProblemId && accessToken) {
+      getProblemEdit(accessToken, sectorIdProblemId).then((data) => setData(data));
     }
-  }, [accessToken, problemId]);
+  }, [accessToken, sectorIdProblemId]);
 
   function onNameChanged(e, { value }) {
     data.name = value;
@@ -91,7 +89,7 @@ const ProblemEdit = () => {
     setSaving(true);
     postProblem(
       accessToken,
-      location.query.idSector,
+      data.sectorId,
       data.id,
       data.visibility,
       data.name,
@@ -134,13 +132,7 @@ const ProblemEdit = () => {
     setForceUpdate(forceUpdate+1);
   }
 
-  function onCancel() {
-    window.history.back();
-  }
-
-  if (!location.query || !location.query.idSector) {
-    return <span><h3>Missing query params</h3></span>;
-  } else if (!data) {
+  if (!data) {
     return <LoadingAndRestoreScroll />;
   } else if (!data.metadata.isAdmin) {
     return <span><h3>Not logged in</h3></span>;
@@ -153,10 +145,6 @@ const ProblemEdit = () => {
   if (data.lat!=0 && data.lng!=0) {
     defaultCenter = {lat: data.lat, lng: data.lng};
     defaultZoom = 15;
-  }
-  else if (location.query.lat && parseFloat(location.query.lat)>0) {
-    defaultCenter = {lat: parseFloat(location.query.lat), lng: parseFloat(location.query.lng)};
-    defaultZoom = 14;
   }
   else {
     defaultCenter = data.metadata.defaultCenter;
@@ -239,6 +227,7 @@ const ProblemEdit = () => {
             defaultCenter={defaultCenter}
             defaultZoom={defaultZoom}
             onClick={onMapClick}
+            history={history}
           />
         </Form.Field>
         <Form.Field>
@@ -250,7 +239,7 @@ const ProblemEdit = () => {
           <Input placeholder='Longitude' value={data.lng} onChange={onLngChanged} />
         </Form.Field>
         <Button.Group>
-          <Button negative onClick={onCancel}>Cancel</Button>
+          <Button negative onClick={() => history.goBack()}>Cancel</Button>
           <Button.Or />
           <Button positive loading={saving} onClick={save}>Save</Button>
         </Button.Group>

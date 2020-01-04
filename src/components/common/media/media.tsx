@@ -99,7 +99,7 @@ class Media extends Component<Props, any> {
           {this.props.media.map((m, i) => (
             <Card as="a" onClick={() => this.openModal(m, true)} key={i} raised>
               <div style={{paddingTop: '75%'}}>
-                {m.svgs? <Svg useBlueNotRed={this.props.useBlueNotRed} thumb={true} m={m} key={i} style={style}/> : <Image alt={m.description} key={i} style={style} src={getImageUrl(m.id, 205)} />}
+                {m.svgs? <Svg close={null} useBlueNotRed={this.props.useBlueNotRed} thumb={true} m={m} key={i} style={style}/> : <Image alt={m.description} key={i} style={style} src={getImageUrl(m.id, 205)} />}
               </div>
             </Card>
           ))}
