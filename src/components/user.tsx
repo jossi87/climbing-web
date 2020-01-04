@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Chart from './common/chart/chart';
 import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
 import { Icon, List, Label, Header, Segment, Divider, Image, Button, Checkbox, ButtonGroup } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getUser, getUsersTicks, numberWithCommas, postUser } from '../api';
 
-const User = ({ match }) => {
-  const id = match.params.userId;
+const User = () => {
+  let { userId } = useParams();
   const { loading, isAuthenticated, accessToken } = useAuth0();
   const [data, setData] = useState(null);
   const [orderBy, setOrderBy] = useState('date');
   useEffect(() => {
     if (!loading) {
-      getUser(accessToken, id? id : "-1").then((data) => setData(data));
+      getUser(accessToken, userId? parseInt(userId) : -1).then((data) => setData(data));
     }
-  }, [loading, accessToken]);
+  }, [loading, accessToken, userId]);
 
   if (!data) {
     return <LoadingAndRestoreScroll />;
@@ -72,7 +72,7 @@ const User = ({ match }) => {
       </MetaTags>
       <Segment>
         <ButtonGroup floated="right">
-          {isAuthenticated && !id &&
+          {isAuthenticated && !userId &&
             <Button icon labelPosition="left" size="mini" onClick={() => getUsersTicks(accessToken)}>
               <Icon name="file excel"/>
               Download
@@ -94,7 +94,7 @@ const User = ({ match }) => {
           <Label color='blue' image><Icon name='video' />{numberWithCommas(data.numVideoTags)}<Label.Detail>Tag</Label.Detail></Label>
           <Label color='violet' image><Icon name='video' />{numberWithCommas(data.numVideosCreated)}<Label.Detail>Captured</Label.Detail></Label>
         </Label.Group>
-        {isAuthenticated && !id &&
+        {isAuthenticated && !userId &&
           <>
             <br/>
             <Checkbox

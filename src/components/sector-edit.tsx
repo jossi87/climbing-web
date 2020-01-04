@@ -6,20 +6,23 @@ import { Form, Button, Input, Dropdown, TextArea } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSectorEdit, postSector } from './../api';
 import Leaflet from './common/leaflet/leaflet';
-import history from '../utils/history';
+import { useHistory } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 
-const SectorEdit = ({ location, match }) => {
+const SectorEdit = () => {
   const { accessToken } = useAuth0();
   const [leafletMode, setLeafletMode] = useState('PARKING');
   const [data, setData] = useState();
   const [forceUpdate, setForceUpdate] = useState(1);
   const [saving, setSaving] = useState(false);
+  let { sectorId } = useParams();
+  let location = useLocation();
+  let history = useHistory();
   useEffect(() => {
-    const id = match.params.sectorId;
-    if (id && accessToken) {
-      getSectorEdit(accessToken, id).then((data) => setData(data));
+    if (sectorId && accessToken) {
+      getSectorEdit(accessToken, parseInt(sectorId)).then((data) => setData(data));
     }
-  }, [accessToken, match]);
+  }, [accessToken, sectorId]);
 
   function onNameChanged(e, { value }) {
     data.name = value;

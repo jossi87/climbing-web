@@ -6,19 +6,22 @@ import { Form, Button, Input, Dropdown, TextArea } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getAreaEdit, postArea } from '../api';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
-import history from '../utils/history';
+import { useHistory } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 
-const AreaEdit = ({ location, match }) => {
+const AreaEdit = () => {
   const { accessToken } = useAuth0();
   const [data, setData] = useState();
   const [forceUpdate, setForceUpdate] = useState(1);
   const [saving, setSaving] = useState(false);
+  let { areaId } = useParams();
+  let location = useLocation();
+  let history = useHistory();
   useEffect(() => {
-    const id = match.params.areaId;
-    if (id && accessToken) {
-      getAreaEdit(accessToken, id).then((data) => setData(data));
+    if (areaId && accessToken) {
+      getAreaEdit(accessToken, parseInt(areaId)).then((data) => setData(data));
     }
-  }, [accessToken, match]);
+  }, [accessToken, areaId]);
 
   function onNameChanged(e, { value }) {
     data.name = value;

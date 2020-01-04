@@ -2,22 +2,24 @@ import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import { Segment, Header, Pagination, Loader, Feed } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getTicks } from '../api';
-import history from '../utils/history';
+import { useHistory } from 'react-router-dom';
 
-const Ticks = ({ match }) => {
+const Ticks = () => {
   const { accessToken } = useAuth0();
   const [data, setData] = useState();
   const [loading, setLoading] = useState(false);
+  let { page } = useParams();
+  let history = useHistory();
   useEffect(() => {
     setLoading(true);
-    getTicks(accessToken, match.params.page).then((data) => {
+    getTicks(accessToken, parseInt(page)).then((data) => {
       setData(data);
       setLoading(false);
     });
-  }, [accessToken, match]);
+  }, [accessToken, page]);
 
   if (!data) {
     return <LoadingAndRestoreScroll />;

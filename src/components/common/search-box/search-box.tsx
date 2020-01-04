@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Search, Image } from 'semantic-ui-react'
 import { getImageUrl, postSearch } from './../../../api';
 import { LockSymbol } from '../widgets/widgets';
-import history from '../../../utils/history';
+import { useHistory } from 'react-router-dom';
 import { useAuth0 } from '../../../utils/react-auth0-spa';
 
 const SearchBox = ({ children, ...searchProps} ) => {
@@ -10,6 +10,7 @@ const SearchBox = ({ children, ...searchProps} ) => {
   const [results, setResults] = useState([]);
   const [value, setValue] = useState('');
   const { accessToken } = useAuth0();
+  let history = useHistory();
 
   return (
     <Search

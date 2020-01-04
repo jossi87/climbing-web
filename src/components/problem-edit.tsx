@@ -9,19 +9,22 @@ import Leaflet from './common/leaflet/leaflet';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getProblemEdit, convertFromDateToString, convertFromStringToDate, postProblem } from '../api';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
-import history from '../utils/history';
+import { useHistory } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 
-const ProblemEdit = ({ location, match }) => {
+const ProblemEdit = () => {
   const { accessToken } = useAuth0();
   const [data, setData] = useState();
   const [forceUpdate, setForceUpdate] = useState(1);
   const [saving, setSaving] = useState(false);
+  let { problemId } = useParams();
+  let location = useLocation();
+  let history = useHistory();
   useEffect(() => {
-    const id = match.params.problemId;
-    if (id && accessToken) {
-      getProblemEdit(accessToken, id).then((data) => setData(data));
+    if (problemId && accessToken) {
+      getProblemEdit(accessToken, parseInt(problemId)).then((data) => setData(data));
     }
-  }, [accessToken, match]);
+  }, [accessToken, problemId]);
 
   function onNameChanged(e, { value }) {
     data.name = value;

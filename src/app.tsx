@@ -1,7 +1,6 @@
 import React, { Suspense, lazy } from 'react';
-import history from './utils/history';
 import { Container, Divider, Grid, Header, List, Segment } from 'semantic-ui-react'
-import { Router, Switch, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import Analytics from 'react-router-ga';
 import { LoadingAndRestoreScroll } from './components/common/widgets/widgets';
 
@@ -42,32 +41,32 @@ const App = () => {
     backgroundColor: '#FFFFFF'
   };
   return (
-    <Router history={history}>
+    <Router>
       <div style={{background: "#F5F5F5"}}>
         <Navigation />
         <Container style={{ marginTop: '1em' }}>
           <Analytics id="UA-76534258-1">
             <Switch>
               <Suspense fallback={<LoadingAndRestoreScroll />}>
-              <Route exact path='/' component={Frontpage} />
-                <Route path='/browse' component={Browse} />
-                <Route path='/ethics' component={Ethics} />
-                <Route exact path='/area/:areaId' component={Area} />
-                <Route exact path='/area/edit/:areaId' component={AreaEdit} />
-                <Route path='/filter' component={Filter} />
-                <Route path='/hse' component={ProblemHse} />
-                <Route path='/permissions' component={Permissions} />
-                <Route exact path='/problem/:problemId' component={Problem} />
-                <Route exact path='/problem/edit/:problemId' component={ProblemEdit} />
-                <Route exact path='/problem/edit/media/:problemId' component={ProblemEditMedia} />
-                <Route exact path='/problem/svg-edit/:problemIdMediaId' component={SvgEdit} />
-                <Route exact path='/sector/:sectorId' component={Sector} />
-                <Route exact path='/sector/edit/:sectorId' component={SectorEdit} />
-                <Route path='/ticks/:page' component={Ticks} />
-                <Route exact path='/user' component={User} />
-                <Route exact path='/user/:userId' component={User} />
-                <Route exact path='/todo' component={Todo} />
-                <Route exact path='/todo/:userId' component={Todo} />
+                <Route exact path='/'><Frontpage/></Route>
+                <Route path='/browse'><Browse/></Route>
+                <Route path='/ethics'><Ethics/></Route>
+                <Route exact path='/area/:areaId'><Area/></Route>
+                <Route exact path='/area/edit/:areaId'><AreaEdit/></Route>
+                <Route path='/filter'><Filter/></Route>
+                <Route path='/hse'><ProblemHse/></Route>
+                <Route path='/permissions'><Permissions/></Route>
+                <Route exact path='/problem/:problemId'><Problem/></Route>
+                <Route exact path='/problem/edit/:problemId'><ProblemEdit/></Route>
+                <Route exact path='/problem/edit/media/:problemId'><ProblemEditMedia/></Route>
+                <Route exact path='/problem/svg-edit/:problemIdMediaId'><SvgEdit/></Route>
+                <Route exact path='/sector/:sectorId'><Sector/></Route>
+                <Route exact path='/sector/edit/:sectorId'><SectorEdit/></Route>
+                <Route path='/ticks/:page'><Ticks/></Route>
+                <Route exact path='/user'><User/></Route>
+                <Route exact path='/user/:userId'><User/></Route>
+                <Route exact path='/todo'><Todo/></Route>
+                <Route exact path='/todo/:userId'><Todo/></Route>
               </Suspense>
             </Switch>
           </Analytics>

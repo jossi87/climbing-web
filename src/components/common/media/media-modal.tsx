@@ -3,7 +3,6 @@ import { Dimmer, Button, Icon, Image } from 'semantic-ui-react';
 import { getImageUrl } from '../../../api';
 import ReactPlayer from 'react-player';
 import Svg from './svg';
-import history from '../../../utils/history';
 
 const style = {
   img: {
@@ -64,10 +63,11 @@ interface MediaModalProps {
   gotoPrev: any,
   gotoNext: any,
   playVideo: any,
-  useBlueNotRed: boolean
+  useBlueNotRed: boolean,
+  history: any
 }
 function MediaModal(props: MediaModalProps) {
-  const {isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext, playVideo, useBlueNotRed} = props;
+  const {isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext, playVideo, useBlueNotRed, history} = props;
   let myPlayer;
   var topLeftButton;
   if (isAdmin && m.idType===1) {

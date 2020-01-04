@@ -1,7 +1,7 @@
 import React from 'react';
 import { parseSVG, makeAbsolute } from 'svg-path-parser';
 import { getImageUrl } from '../../../api';
-import history from '../../../utils/history';
+import { useHistory } from 'react-router-dom';
 
 interface SvgProps {
   style: any,

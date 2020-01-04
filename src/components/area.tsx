@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
 import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
@@ -9,16 +9,16 @@ import { Button, Tab, Item, Message, Icon, Image, Breadcrumb, Segment, Header } 
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getArea, getImageUrl } from '../api';
 
-const Area = ({ match }) => {
+const Area = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState();
   const [forceUpdate, setForceUpdate] = useState(1);
+  let { areaId } = useParams();
   useEffect(() => {
     if (!loading) {
-      const id = match.params.areaId;
-      getArea(accessToken, id).then((data) => setData(data));
+      getArea(accessToken, parseInt(areaId)).then((data) => setData(data));
     }
-  }, [loading, accessToken, match]);
+  }, [loading, accessToken, areaId]);
 
   if (!data) {
     return <LoadingAndRestoreScroll />;

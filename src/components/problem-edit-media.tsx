@@ -4,21 +4,23 @@ import { useAuth0 } from '../utils/react-auth0-spa';
 import { getProblem, postProblemMedia } from '../api';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Segment, Button } from 'semantic-ui-react';
-import history from '../utils/history';
+import { useHistory } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
-const ProblemEditMedia = ({ match }) => {
+const ProblemEditMedia = () => {
   const { accessToken, isAuthenticated } = useAuth0();
   const [id, setId] = useState();
   const [media, setMedia] = useState();
   const [saving, setSaving] = useState(false);
+  let { problemId } = useParams();
+  let history = useHistory();
   useEffect(() => {
-    const id = match.params.problemId;
-    if (id && accessToken) {
-      getProblem(accessToken, id).then((data) => {
+    if (problemId && accessToken) {
+      getProblem(accessToken, parseInt(problemId)).then((data) => {
         setId(data.id);
       });
     }
-  }, [accessToken, match]);
+  }, [accessToken, problemId]);
 
   function save(event) {
     event.preventDefault();

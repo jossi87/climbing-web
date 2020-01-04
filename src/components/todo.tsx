@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 import { Image, Button, List, Header, Segment } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getTodo, getImageUrl, postTodo } from '../api';
 
-const Todo = ({ match }) => {
+const Todo = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState();
   const [saving, setSaving] = useState(false);
+  let { userId } = useParams();
   useEffect(() => {
     if (!loading) {
-      const id = match.params.userId? match.params.userId : "-1";
+      const id = userId? parseInt(userId) : -1;
       getTodo(accessToken, id).then((data) => setData(data));
     }
-  }, [loading, accessToken]);
+  }, [loading, accessToken, userId]);
 
   function move(up: boolean, ix : number) {
     setSaving(true);

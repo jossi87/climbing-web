@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import history from '../../../utils/history';
+import { useHistory } from 'react-router-dom';
 let parkingIcon, Circle, Map, TileLayer, LayersControl, Marker, Polygon, Polyline, Tooltip, WMSTileLayer;
 
 interface Coordinates {

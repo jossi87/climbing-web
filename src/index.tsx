@@ -1,10 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { useHistory } from 'react-router-dom';
 import { Auth0Provider } from './utils/react-auth0-spa';
-import history from './utils/history';
 import App from './app';
 
 const onRedirectCallback = appState => {
+  let history = useHistory();
   history.push(
     appState && appState.targetUrl
       ? appState.targetUrl
@@ -13,6 +14,7 @@ const onRedirectCallback = appState => {
 };
 
 const Index = () => (
+
   <Auth0Provider
       domain='climbing.eu.auth0.com'
       client_id='DNJNVzhxbF7PtaBFh7H6iBSNLh2UJWHt'

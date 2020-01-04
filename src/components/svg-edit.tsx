@@ -4,9 +4,10 @@ import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSvgEdit, getImageUrl, postProblemSvg } from '../api';
 import { parseReadOnlySvgs } from '../utils/svg';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
-import history from '../utils/history';
+import { useHistory } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
-const SvgEdit = ({ match }) => {
+const SvgEdit = () => {
   const { accessToken } = useAuth0();
   const [mediaId, setMediaId] = useState();
   const [w, setW] = useState();
@@ -27,9 +28,9 @@ const SvgEdit = ({ match }) => {
   const [addText, setAddText] = useState(false);
   const imageRef = useRef(null);
   const [forceUpdate, setForceUpdate] = useState(1);
-
+  let { problemIdMediaId } = useParams();
+  let history = useHistory();
   useEffect(() => {
-    const problemIdMediaId = match.params.problemIdMediaId;
     if (problemIdMediaId && accessToken) {
       getSvgEdit(accessToken, problemIdMediaId).then((data) => {
         setMediaId(data.mediaId);
@@ -49,7 +50,7 @@ const SvgEdit = ({ match }) => {
         setMetadata(data.metadata);
       });
     }
-  }, [accessToken, match]);
+  }, [accessToken, problemIdMediaId]);
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);

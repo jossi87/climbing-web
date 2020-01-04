@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
 import { Button, Message, Grid, Breadcrumb, Tab, Label, Icon, List, Comment, Header, Segment } from 'semantic-ui-react';
@@ -10,19 +10,19 @@ import { getProblem, getTodo, postComment, postTodo } from '../api';
 import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
 
-const Problem = ({ match }) => {
+const Problem = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState();
   const [forceUpdate, setForceUpdate] = useState(1);
   const [showTickModal, setShowTickModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(false);
   const [saving, setSaving] = useState(false);
+  let { problemId } = useParams();
   useEffect(() => {
     if (!loading) {
-      const id = match.params.problemId;
-      getProblem(accessToken, id).then((data) => setData(data));
+      getProblem(accessToken, parseInt(problemId)).then((data) => setData(data));
     }
-  }, [loading, accessToken, match, forceUpdate]);
+  }, [loading, accessToken, problemId, forceUpdate]);
 
   function onRemoveMedia(idMediaToRemove) {
     data.media = data.media.filter(m => m.id!=idMediaToRemove);

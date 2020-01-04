@@ -319,7 +319,7 @@ export function getSvgEdit(accessToken: string, problemIdMediaId: string): Promi
   });
 }
 
-export function getTicks(accessToken: string, page: string): Promise<any> {
+export function getTicks(accessToken: string, page: number): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/ticks?page=${page}`, null)
   .then((data) => data.json())
   .catch((error) => {
@@ -328,7 +328,7 @@ export function getTicks(accessToken: string, page: string): Promise<any> {
   });
 }
 
-export function getTodo(accessToken: string, id: string): Promise<any> {
+export function getTodo(accessToken: string, id: number): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/todo?id=${id}`, null)
   .then((data) => data.json())
   .catch((error) => {
@@ -337,7 +337,7 @@ export function getTodo(accessToken: string, id: string): Promise<any> {
   });
 }
 
-export function getUser(accessToken: string, id: string): Promise<any> {
+export function getUser(accessToken: string, id: number): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/users?id=${id}`, null)
   .then((data) => data.json())
   .catch((error) => {

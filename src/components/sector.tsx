@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
 import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
@@ -9,16 +9,16 @@ import { Segment, Icon, Button, List, Tab, Breadcrumb, Message, Header } from 's
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSector } from '../api';
 
-const Sector = ({ match }) => {
+const Sector = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState();
   const [forceUpdate, setForceUpdate] = useState(1);
+  let { sectorId } = useParams();
   useEffect(() => {
     if (!loading) {
-      const id = match.params.sectorId;
-      getSector(accessToken, id).then((data) => setData(data));
+      getSector(accessToken, parseInt(sectorId)).then((data) => setData(data));
     }
-  }, [loading, accessToken, match]);
+  }, [loading, accessToken, sectorId]);
 
   if (!data) {
     return <LoadingAndRestoreScroll />;
