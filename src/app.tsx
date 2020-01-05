@@ -41,8 +41,8 @@ const App = () => {
     backgroundColor: '#FFFFFF'
   };
   return (
-    <Router>
-      <div style={{background: "#F5F5F5"}}>
+    <div style={{background: "#F5F5F5"}}>
+      <Router>
         <Navigation />
         <Container style={{ marginTop: '1em' }}>
           <Analytics id="UA-76534258-1">
@@ -115,8 +115,8 @@ const App = () => {
             </p>
           </Container>
         </Segment>
-      </div>
-    </Router>
+      </Router>
+    </div>
   );
 }
 
