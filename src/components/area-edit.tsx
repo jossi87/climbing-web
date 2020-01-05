@@ -5,21 +5,22 @@ import Leaflet from './common/leaflet/leaflet';
 import { Form, Button, Input, Dropdown, TextArea } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getAreaEdit, postArea } from '../api';
-import { LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { useHistory, useParams } from 'react-router-dom';
+import { LoadingAndRestoreScroll, InsufficientPrivileges } from './common/widgets/widgets';
+import { useHistory, useParams, useLocation } from 'react-router-dom';
 
 const AreaEdit = () => {
-  const { accessToken } = useAuth0();
+  const { accessToken, loading, isAuthenticated, loginWithRedirect } = useAuth0();
   const [data, setData] = useState();
   const [forceUpdate, setForceUpdate] = useState(1);
   const [saving, setSaving] = useState(false);
   let { areaId } = useParams();
   let history = useHistory();
+  let location = useLocation();
   useEffect(() => {
-    if (areaId && accessToken) {
+    if (!loading && areaId && accessToken) {
       getAreaEdit(accessToken, parseInt(areaId)).then((data) => setData(data));
     }
-  }, [accessToken, areaId]);
+  }, [accessToken, areaId, loading]);
 
   function onNameChanged(e, { value }) {
     data.name = value;
@@ -64,12 +65,12 @@ const AreaEdit = () => {
     setForceUpdate(forceUpdate+1);
   }
 
-  if (!data) {
+  if (loading || (isAuthenticated && !data)) {
     return <LoadingAndRestoreScroll />;
-  } else if (!data) {
-    return <LoadingAndRestoreScroll />;
+  } else if (!isAuthenticated) {
+    loginWithRedirect({appState: { targetUrl: location.pathname }});
   } else if (!data.metadata.isAdmin) {
-    history.push("/login");
+    return <InsufficientPrivileges />
   }
   const defaultCenter = data.lat && data.lng && parseFloat(data.lat)>0? {lat: parseFloat(data.lat), lng: parseFloat(data.lng)} : data.metadata.defaultCenter;
   const defaultZoom: number = data.lat && parseFloat(data.lat)>0? 8 : data.metadata.defaultZoom;
@@ -113,7 +114,7 @@ const AreaEdit = () => {
           />
         </Form.Field>
         <Button.Group>
-          <Button negative onClick={() => history.goBack()}>Cancel</Button>
+          <Button negative onClick={() => history.push(`/area/${areaId}`)}>Cancel</Button>
           <Button.Or />
           <Button positive loading={saving} onClick={save}>Save area</Button>
         </Button.Group>

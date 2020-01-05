@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useHistory } from 'react-router-dom';
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
 import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
 import { LockSymbol, LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Button, Tab, Item, Message, Icon, Image, Breadcrumb, Segment, Header } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
-import { useHistory } from 'react-router-dom';
 import { getArea, getImageUrl } from '../api';
 
 const Area = () => {

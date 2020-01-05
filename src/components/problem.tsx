@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useHistory } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
 import { Button, Message, Grid, Breadcrumb, Tab, Label, Icon, List, Comment, Header, Segment } from 'semantic-ui-react';
@@ -9,7 +9,6 @@ import { useAuth0 } from '../utils/react-auth0-spa';
 import { getProblem, getTodo, postComment, postTodo } from '../api';
 import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
-import { useHistory } from 'react-router-dom';
 
 const Problem = () => {
   const { loading, accessToken } = useAuth0();

@@ -3,12 +3,11 @@ import { Container, Button, Segment, Dropdown } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSvgEdit, getImageUrl, postProblemSvg } from '../api';
 import { parseReadOnlySvgs } from '../utils/svg';
-import { LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { useHistory } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
+import { LoadingAndRestoreScroll, InsufficientPrivileges } from './common/widgets/widgets';
+import { useHistory, useParams, useLocation } from 'react-router-dom';
 
 const SvgEdit = () => {
-  const { accessToken } = useAuth0();
+  const { accessToken, isAuthenticated, loading, loginWithRedirect } = useAuth0();
   const [mediaId, setMediaId] = useState();
   const [w, setW] = useState();
   const [h, setH] = useState();
@@ -30,6 +29,7 @@ const SvgEdit = () => {
   const [forceUpdate, setForceUpdate] = useState(1);
   let { problemIdMediaId } = useParams();
   let history = useHistory();
+  let location = useLocation();
   useEffect(() => {
     if (problemIdMediaId && accessToken) {
       getSvgEdit(accessToken, problemIdMediaId).then((data) => {
@@ -235,6 +235,14 @@ const SvgEdit = () => {
     setHasAnchor(false);
   };
 
+  if (loading || (isAuthenticated && !metadata)) {
+    return <LoadingAndRestoreScroll />;
+  } else if (!isAuthenticated) {
+    loginWithRedirect({appState: { targetUrl: location.pathname }});
+  } else if (!metadata.isAdmin) {
+    return <InsufficientPrivileges />
+  }
+
   if (!id || !metadata) {
     return <LoadingAndRestoreScroll />;
   } else if (!metadata.isAdmin) {
@@ -270,7 +278,7 @@ const SvgEdit = () => {
         <Button.Group floated="right">
           <Button negative disabled={points.length===0 && anchors.length===0 && myTexts.length===0} onClick={reset}>Reset</Button>
           <Button.Or />
-          <Button onClick={() => history.goBack()}>Cancel</Button>
+          <Button onClick={() => history.push(`/problem/${problemIdMediaId.split("-")[0]}`)}>Cancel</Button>
           <Button.Or />
           <Button positive onClick={save}>Save</Button>
         </Button.Group>

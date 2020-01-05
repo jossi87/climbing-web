@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useHistory } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 import { Image, Button, List, Header, Segment } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getTodo, getImageUrl, postTodo } from '../api';
-import { useHistory } from 'react-router-dom';
 
 const Todo = () => {
   const { loading, accessToken } = useAuth0();

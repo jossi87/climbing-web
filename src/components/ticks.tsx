@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import { Segment, Header, Pagination, Loader, Feed } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useHistory } from 'react-router-dom';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getTicks } from '../api';
-import { useHistory } from 'react-router-dom';
 
 const Ticks = () => {
   const { accessToken } = useAuth0();

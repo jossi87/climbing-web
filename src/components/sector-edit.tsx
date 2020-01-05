@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import ImageUpload from './common/image-upload/image-upload';
-import { LoadingAndRestoreScroll } from './common/widgets/widgets';
+import { LoadingAndRestoreScroll, InsufficientPrivileges } from './common/widgets/widgets';
 import { Form, Button, Input, Dropdown, TextArea } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSectorEdit, postSector } from './../api';
 import Leaflet from './common/leaflet/leaflet';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory, useParams, useLocation } from 'react-router-dom';
 
 const SectorEdit = () => {
-  const { accessToken } = useAuth0();
+  const { accessToken, loading, isAuthenticated, loginWithRedirect } = useAuth0();
   const [leafletMode, setLeafletMode] = useState('PARKING');
   const [data, setData] = useState();
   const [forceUpdate, setForceUpdate] = useState(1);
   const [saving, setSaving] = useState(false);
   let { areaIdSectorId } = useParams();
   let history = useHistory();
+  let location = useLocation();
   useEffect(() => {
     if (areaIdSectorId && accessToken) {
       getSectorEdit(accessToken, areaIdSectorId).then((data) => setData(data));
@@ -94,10 +95,12 @@ const SectorEdit = () => {
     setForceUpdate(forceUpdate+1);
   }
 
-  if (!data) {
+  if (loading || (isAuthenticated && !data)) {
     return <LoadingAndRestoreScroll />;
+  } else if (!isAuthenticated) {
+    loginWithRedirect({appState: { targetUrl: location.pathname }});
   } else if (!data.metadata.isAdmin) {
-    return <span><h3>Not logged in</h3></span>;
+    return <InsufficientPrivileges />
   }
   const polygon = data.polygonCoords && data.polygonCoords.split(";").map((c, i) => {
     const latLng = c.split(",");
@@ -160,7 +163,7 @@ const SectorEdit = () => {
           />
         </Form.Field>
         <Button.Group>
-          <Button negative onClick={() => history.goBack()}>Cancel</Button>
+          <Button negative onClick={() => history.push(`/sector/${areaIdSectorId.split("-")[1]}`)}>Cancel</Button>
           <Button.Or />
           <Button positive loading={saving} onClick={save}>Save sector</Button>
         </Button.Group>

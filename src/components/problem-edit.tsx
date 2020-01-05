@@ -8,16 +8,17 @@ import { Form, Button, Input, Dropdown, TextArea } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getProblemEdit, convertFromDateToString, convertFromStringToDate, postProblem } from '../api';
-import { LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { useHistory, useParams } from 'react-router-dom';
+import { LoadingAndRestoreScroll, InsufficientPrivileges } from './common/widgets/widgets';
+import { useHistory, useParams, useLocation } from 'react-router-dom';
 
 const ProblemEdit = () => {
-  const { accessToken } = useAuth0();
+  const { accessToken, loading, isAuthenticated, loginWithRedirect } = useAuth0();
   const [data, setData] = useState();
   const [forceUpdate, setForceUpdate] = useState(1);
   const [saving, setSaving] = useState(false);
   let { sectorIdProblemId } = useParams();
   let history = useHistory();
+  let location = useLocation();
   useEffect(() => {
     if (sectorIdProblemId && accessToken) {
       getProblemEdit(accessToken, sectorIdProblemId).then((data) => setData(data));
@@ -132,10 +133,12 @@ const ProblemEdit = () => {
     setForceUpdate(forceUpdate+1);
   }
 
-  if (!data) {
+  if (loading || (isAuthenticated && !data)) {
     return <LoadingAndRestoreScroll />;
+  } else if (!isAuthenticated) {
+    loginWithRedirect({appState: { targetUrl: location.pathname }});
   } else if (!data.metadata.isAdmin) {
-    return <span><h3>Not logged in</h3></span>;
+    return <InsufficientPrivileges />
   }
 
   const yesterday = new Date();
@@ -239,7 +242,7 @@ const ProblemEdit = () => {
           <Input placeholder='Longitude' value={data.lng} onChange={onLngChanged} />
         </Form.Field>
         <Button.Group>
-          <Button negative onClick={() => history.goBack()}>Cancel</Button>
+          <Button negative onClick={() => history.push(`/problem/${sectorIdProblemId.split("-")[1]}`)}>Cancel</Button>
           <Button.Or />
           <Button positive loading={saving} onClick={save}>Save</Button>
         </Button.Group>

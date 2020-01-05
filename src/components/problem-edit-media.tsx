@@ -4,16 +4,16 @@ import { useAuth0 } from '../utils/react-auth0-spa';
 import { getProblem, postProblemMedia } from '../api';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Segment, Button } from 'semantic-ui-react';
-import { useHistory } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams, useLocation } from 'react-router-dom';
 
 const ProblemEditMedia = () => {
-  const { accessToken, isAuthenticated } = useAuth0();
+  const { accessToken, isAuthenticated, loading, loginWithRedirect } = useAuth0();
   const [id, setId] = useState();
   const [media, setMedia] = useState();
   const [saving, setSaving] = useState(false);
   let { problemId } = useParams();
   let history = useHistory();
+  let location = useLocation();
   useEffect(() => {
     if (problemId && accessToken) {
       getProblem(accessToken, parseInt(problemId)).then((data) => {
@@ -34,17 +34,18 @@ const ProblemEditMedia = () => {
     });
   }
 
-  if (!id || !isAuthenticated) {
+  if (loading || (isAuthenticated && !id)) {
     return <LoadingAndRestoreScroll />;
+  } else if (!isAuthenticated) {
+    loginWithRedirect({appState: { targetUrl: location.pathname }});
   }
-    
   return (
     <Segment>
       <h3>Upload image(s)</h3>
       <form onSubmit={save}>
         <ImageUpload onMediaChanged={(newMedia) => setMedia(newMedia)} />
         <Button.Group>
-          <Button onClick={() => window.history.back()}>Cancel</Button>
+          <Button onClick={() => history.push(`/problem/${id}`)}>Cancel</Button>
           <Button.Or />
           <Button type="submit" positive loading={saving}>Save</Button>
         </Button.Group>

@@ -3,12 +3,14 @@ import MetaTags from 'react-meta-tags';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 import { getPermissions, postPermissions } from '../api';
 import { Header, Image, Dropdown, Card } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth0 } from '../utils/react-auth0-spa';
+import { InsufficientPrivileges } from './common/widgets/widgets';
 
 const Permissions = () => {
-  const { loading, accessToken } = useAuth0();
+  const { isAuthenticated, loading, accessToken, loginWithRedirect } = useAuth0();
   const [data, setPermission] = useState();
+  let location = useLocation();
 
   useEffect(() => {
     if (!loading) {
@@ -18,8 +20,12 @@ const Permissions = () => {
     }
   }, [loading, accessToken]);
 
-  if (!data) {
+  if (loading || (isAuthenticated && !data)) {
     return <LoadingAndRestoreScroll />;
+  } else if (!isAuthenticated) {
+    loginWithRedirect({appState: { targetUrl: location.pathname }});
+  } else if (!data.metadata.isSuperAdmin) {
+    return <InsufficientPrivileges />
   }
   return (
     <>

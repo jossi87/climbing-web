@@ -1,5 +1,5 @@
 import React from 'react';
-import { Loader, Icon, Popup } from 'semantic-ui-react';
+import { Segment, Loader, Icon, Popup } from 'semantic-ui-react';
 
 export function LockSymbol({visibility}) {
   if (visibility===1) {
@@ -46,4 +46,13 @@ export function Stars({numStars}) {
 export function LoadingAndRestoreScroll() {
   window.scrollTo(0, 0);
   return <Loader active inline='centered' />;
+}
+
+export function InsufficientPrivileges() {
+  return (
+    <Segment>
+      <h3>Insufficient privileges</h3>
+      Contact <a href="mailto:jostein.oygarden@gmail.com">Jostein Øygarden</a> if you want permissions.
+    </Segment>
+  )
 }
