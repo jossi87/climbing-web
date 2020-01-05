@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { Auth0Provider } from './utils/react-auth0-spa';
 import App from './app';
 
@@ -9,6 +10,7 @@ const Index = () => (
       client_id='DNJNVzhxbF7PtaBFh7H6iBSNLh2UJWHt'
       redirect_uri={window.location.origin}
       onRedirectCallback={(appState: any) => {
+        //alert(appState? appState.targetUrl : "null");
         window.location.replace(
           appState && appState.targetUrl
             ? appState.targetUrl
@@ -16,7 +18,7 @@ const Index = () => (
         );
       }}
     >
-    <App />
+    <Router><App /></Router>
   </Auth0Provider>
 );
 

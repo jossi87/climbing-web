@@ -1,12 +1,13 @@
 import React from 'react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { Container, Dropdown, Image, Menu } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import SearchBox from './common/search-box/search-box';
 import { getBaseUrl } from '../api';
 
 const Navigation = () => {
   const { loading, isAuthenticated, loginWithRedirect, logout } = useAuth0();
+  let location = useLocation();
 
   return (
     <Menu attached='top' inverted compact borderless>
@@ -26,7 +27,7 @@ const Navigation = () => {
               </Dropdown.Menu>
             </Dropdown>
           :
-            <Menu.Item as="a" onClick={() => loginWithRedirect({})} icon="sign in" />
+            <Menu.Item as="a" onClick={() => loginWithRedirect({appState: { targetUrl: location.pathname }})} icon="sign in" />
           )
         }
       </Container>
