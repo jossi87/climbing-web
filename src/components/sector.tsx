@@ -169,11 +169,11 @@ const Sector = () => {
                 }
               }
               return (
-                <List.Item key={i} as={Link} to={`/problem/${problem.id}`}>
+                <List.Item key={i} onClick={() => history.push(`/problem/${problem.id}`)}>
                   <List.Header>
                     {problem.danger && <Icon color="red" name="warning"/>}
                     {!data.orderByGrade && `#${problem.nr} `}
-                    <a>{problem.name}</a>
+                    <Link to={`/problem/${problem.id}`}>{problem.name}</Link>
                     {' '}{problem.grade}
                     {' '}<Stars numStars={problem.stars}/>
                     {problem.fa && <small>{problem.fa}</small>}

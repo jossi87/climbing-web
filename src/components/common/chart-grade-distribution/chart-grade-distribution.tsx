@@ -26,12 +26,14 @@ const ChartGradeDistribution = ({accessToken, idArea, idSector}) => {
   });
   return (
     <table style={{height: '20vh'}}>
-      <tr>
-        {cols}
-      </tr>
-      <tr>
-        {gradeDistribution.map((g, i) => <td style={{width: '40px', textAlign: 'center'}} key={i}><strong>{g.grade}</strong></td>)}
-      </tr>
+      <tbody>
+        <tr>
+          {cols}
+        </tr>
+        <tr>
+          {gradeDistribution.map((g, i) => <td style={{width: '40px', textAlign: 'center'}} key={i}><strong>{g.grade}</strong></td>)}
+        </tr>
+      </tbody>
     </table>
   )
 }

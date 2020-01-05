@@ -111,10 +111,11 @@ const Frontpage = () => {
             </Statistic.Group>
             {data.randomMedia &&
               <>
-                <Card as={Link} to={`/problem/${data.randomMedia.idProblem}`}>
-                  <Image size="medium" style={{maxHeight: '250px', objectFit: 'cover'}} src={getImageUrl(data.randomMedia.idMedia, 275)} />
+                <Card>
+                  <Image 
+                    size="medium" style={{maxHeight: '250px', objectFit: 'cover'}} src={getImageUrl(data.randomMedia.idMedia, 275)} />
                   <Card.Content>
-                    <Card.Header>
+                    <Card.Header as={Link} to={`/problem/${data.randomMedia.idProblem}`}>
                       {data.randomMedia.problem} {data.randomMedia.grade}
                     </Card.Header>
                     <Card.Description>

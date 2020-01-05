@@ -51,7 +51,7 @@ const Ticks = () => {
                 <Feed.Content>
                   <Feed.Summary>
                     <Feed.Date>{t.date}</Feed.Date>
-                    {' '}{t.areaName} <LockSymbol visibility={t.areaVisibility}/> / {t.sectorName} <LockSymbol visibility={t.sectorVisibility}/> / <a>{t.problemName} <LockSymbol visibility={t.problemVisibility}/></a>
+                    {' '}{t.areaName} <LockSymbol visibility={t.areaVisibility}/> / {t.sectorName} <LockSymbol visibility={t.sectorVisibility}/> / {t.problemName} <LockSymbol visibility={t.problemVisibility}/>
                     <Feed.Meta>{t.name}{' '} {t.problemGrade}</Feed.Meta>
                   </Feed.Summary>
                 </Feed.Content>
