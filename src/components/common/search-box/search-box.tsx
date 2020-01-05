@@ -14,6 +14,7 @@ const SearchBox = ({ children, ...searchProps} ) => {
 
   return (
     <Search
+      id="mySearch"
       loading={loading}
       onResultSelect={(e, { result }) => history.push(result.url)}
       onSearchChange={(e, { value }) => {
@@ -33,10 +34,10 @@ const SearchBox = ({ children, ...searchProps} ) => {
         }
         return (
           <>
-            <div key='image' className='image'>
+            <div className='image'>
               {imageSrc && <Image style={{objectFit: 'cover', width: '45px', height: '45px'}} src={imageSrc} />}
             </div>
-            <div key='content' className='content'>
+            <div className='content'>
               {title && <div className='title'>{title} <LockSymbol visibility={visibility} /></div>}
               {description && <div className='description'>{description}</div>}
             </div>
@@ -44,7 +45,7 @@ const SearchBox = ({ children, ...searchProps} ) => {
         )
       }}
       minCharacters={1}
-      results={results}
+      results={results.map(s => ({ ...s, key: s.url }))}
       value={value}
       {...searchProps}
     />
