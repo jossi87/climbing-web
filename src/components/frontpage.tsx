@@ -112,8 +112,9 @@ const Frontpage = () => {
             {data.randomMedia &&
               <>
                 <Card>
-                  <Image 
-                    size="medium" style={{maxHeight: '250px', objectFit: 'cover'}} src={getImageUrl(data.randomMedia.idMedia, 275)} />
+                  <Link to={`/problem/${data.randomMedia.idProblem}`}>
+                    <Image size="medium" style={{maxHeight: '250px', objectFit: 'cover'}} src={getImageUrl(data.randomMedia.idMedia, 275)} />
+                  </Link>
                   <Card.Content>
                     <Card.Header as={Link} to={`/problem/${data.randomMedia.idProblem}`}>
                       {data.randomMedia.problem} {data.randomMedia.grade}
