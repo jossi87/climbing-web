@@ -8,8 +8,7 @@ module.exports = {
   ],
   module: {
     rules: [
-      { test: /\.tsx?$/, exclude: /node_modules/, use: 'ts-loader' },
-      { test: /\.css$/, use: [{ loader: 'style-loader' }, { loader: 'css-loader' }]}
+      { test: /\.tsx?$/, exclude: /node_modules/, use: 'ts-loader' }
     ]
   },
   resolve: {
