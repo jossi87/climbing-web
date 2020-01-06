@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Container, Button, Segment, Dropdown } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSvgEdit, getImageUrl, postProblemSvg } from '../api';
-import { parseReadOnlySvgs } from '../utils/svg';
+import { parseReadOnlySvgs, parsePath } from '../utils/svg';
 import { LoadingAndRestoreScroll, InsufficientPrivileges } from './common/widgets/widgets';
 import { useHistory, useParams, useLocation } from 'react-router-dom';
 
@@ -38,7 +38,7 @@ const SvgEdit = () => {
         setH(data.h);
         setCtrl(data.ctrl);
         setSvgId(data.svgId);
-        setPoints(data.points);
+        setPoints(parsePath(data.path));
         setAnchors(data.anchors);
         setTexts(data.texts);
         setReadOnlySvgs(data.readOnlySvgs);

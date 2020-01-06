@@ -6,6 +6,7 @@ import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/wid
 import { Icon, List, Label, Header, Segment, Divider, Image, Button, Checkbox, ButtonGroup } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getUser, getUsersTicks, numberWithCommas, postUser } from '../api';
+import { saveAs } from 'file-saver';
 
 const User = () => {
   let { userId } = useParams();
@@ -73,7 +74,14 @@ const User = () => {
       <Segment>
         <ButtonGroup floated="right">
           {isAuthenticated && !userId &&
-            <Button icon labelPosition="left" size="mini" onClick={() => getUsersTicks(accessToken)}>
+            <Button icon labelPosition="left" size="mini" onClick={() => {
+              let filename = "ticks.xlsx";
+              getUsersTicks(accessToken).then(response => {
+                filename = response.headers.get("content-disposition").substring(22,42);
+                return response.blob();
+              })
+              .then (blob => saveAs(blob, filename));
+            }}>
               <Icon name="file excel"/>
               Download
             </Button>

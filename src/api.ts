@@ -1,6 +1,4 @@
 import fetch from 'isomorphic-fetch';
-import { saveAs } from 'file-saver';
-import { parsePath } from './utils/svg';
 
 export function getBaseUrl(): string {
   var origin = window.origin;
@@ -277,14 +275,14 @@ export function getSvgEdit(accessToken: string, problemIdMediaId: string): Promi
     const readOnlySvgs = [];
     var svgId = 0;
     var hasAnchor = true;
-    var points = [];
+    var path = null;
     var anchors = [];
     var texts = [];
     if (m.svgs) {
       for (let svg of m.svgs) {
         if (svg.problemId===res.id) {
           svgId = svg.id;
-          points = parsePath(svg.path);
+          path = svg.path;
           hasAnchor = svg.hasAnchor;
           anchors = svg.anchors? JSON.parse(svg.anchors) : [];
           texts = svg.texts? JSON.parse(svg.texts) : [];
@@ -301,7 +299,7 @@ export function getSvgEdit(accessToken: string, problemIdMediaId: string): Promi
       h: m.height,
       ctrl: false,
       svgId: svgId,
-      points: points,
+      path: path,
       anchors: anchors,
       texts: texts,
       readOnlySvgs: readOnlySvgs,
@@ -365,19 +363,13 @@ export function getUserSearch(accessToken: string, value: string): Promise<any> 
 }
 
 export function getUsersTicks(accessToken: string): Promise<any> {
-  let filename = "ticks.xlsx";
   return makeAuthenticatedRequest(accessToken, `/users/ticks`, {
     expose:  ['Content-Disposition']
   })
-  .then(response => {
-    filename = response.headers.get("content-disposition").substring(22,42);
-    return response.blob()
-  })
-  .then(blob => saveAs(blob, filename))
   .catch((error) => {
     console.warn(error);
     return null;
-  });;
+  });
 }
 
 export function postArea(accessToken: string, id: number, visibility: number, name: string, comment: string, lat: number, lng: number, media: any): Promise<any> {
