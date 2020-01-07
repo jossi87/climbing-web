@@ -114,6 +114,9 @@ const Filter = () => {
             defaultCenter={meta.metadata.defaultCenter}
             defaultZoom={meta.metadata.defaultZoom}
             history={history}
+            polylines={null}
+            outlines={null}
+            onClick={null}
             />
           <List selection verticalAlign='middle'>
             {res.map((p, i) => (

@@ -99,6 +99,9 @@ const AreaEdit = () => {
             defaultZoom={defaultZoom}
             onClick={onMarkerClick}
             history={history}
+            polylines={null}
+            outlines={null}
+            height={null}
           />
         </Form.Field>
         <Button.Group>

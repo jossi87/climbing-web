@@ -206,6 +206,9 @@ const ProblemEdit = () => {
             defaultZoom={defaultZoom}
             onClick={onMapClick}
             history={history}
+            polylines={null}
+            outlines={null}
+            height={null}
           />
         </Form.Field>
         <Form.Field>

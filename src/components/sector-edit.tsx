@@ -149,6 +149,7 @@ const SectorEdit = () => {
             defaultZoom={defaultZoom}
             onClick={onMapClick}
             history={history}
+            height={null}
           />
         </Form.Field>
         <Button.Group>

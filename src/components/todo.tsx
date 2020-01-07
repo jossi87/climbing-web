@@ -83,6 +83,9 @@ const Todo = () => {
               defaultCenter={data.metadata.defaultCenter}
               defaultZoom={data.metadata.defaultZoom}
               history={history}
+              polylines={null}
+              outlines={null}
+              onClick={null}
               />
             <List selection>
               {data.todo.map((p, i) => (

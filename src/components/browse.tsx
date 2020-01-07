@@ -29,7 +29,7 @@ const Browse = () => {
         url: '/area/' + a.id
       }
   });
-  const map = markers.length>0 && <><Leaflet height='75vh' markers={markers} defaultCenter={data.metadata.defaultCenter} defaultZoom={data.metadata.defaultZoom} history={history} /><br/></>;
+  const map = markers.length>0 && <><Leaflet height='75vh' markers={markers} defaultCenter={data.metadata.defaultCenter} defaultZoom={data.metadata.defaultZoom} history={history} polylines={null} outlines={null} onClick={null} /><br/></>;
   return (
     <>
       <MetaTags>
