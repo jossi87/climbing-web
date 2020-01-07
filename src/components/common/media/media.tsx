@@ -1,77 +1,69 @@
-import React, {Component} from 'react';
+import React, { useState, useEffect } from 'react';
 import { getImageUrl, deleteMedia } from '../../../api';
 import { Card, Image } from 'semantic-ui-react';
 import MediaModal from './media-modal';
 import Svg from './svg';
+import { useAuth0 } from '../../../utils/react-auth0-spa';
+import { LoadingAndRestoreScroll } from '../widgets/widgets';
 
-interface Props {
-  removeMedia: any,
-  accessToken: string,
-  isAdmin: boolean,
-  media: Array<any>,
-  useBlueNotRed: boolean
-}
 const style = {objectFit: 'cover', position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, width: '100%', height: '100%'};
 
-class Media extends Component<Props, any> {
-  componentDidMount() {
-    document.addEventListener('keydown', this.handleKeyPress);
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener('keydown', this.handleKeyPress);
-  }
-
-  handleKeyPress = (e) => {
-    if (this.state && this.state.m) {
-      if (e.keyCode === 27) {
-        this.closeModal();
-      } else if (e.keyCode === 37) {
-        this.gotoPrev();
-      } else if (e.keyCode === 39) {
-        this.gotoNext();
+const Media = ({ media, removeMedia, useBlueNotRed, isAdmin }) => {
+  const [m, setM] = useState(null)
+  const [autoPlayVideo, setAutoPlayVideo] = useState(false)
+  const { loading, accessToken } = useAuth0();
+  useEffect(() => {
+    function handleKeyPress({ keyCode }) {
+      if (keyCode === 27) {
+        closeModal();
+      } else if (keyCode === 37) {
+        gotoPrev();
+      } else if (keyCode === 39) {
+        gotoNext();
       }
     }
+    document.addEventListener("keydown", handleKeyPress);
+    return () => {
+      document.removeEventListener("keydown", handleKeyPress);
+    }
+  });
+
+  function openModal(m, autoPlayVideo) {
+    setM(m);
+    setAutoPlayVideo(autoPlayVideo);
   }
 
-  openModal = (m, autoPlayVideo) => {
-    m.autoPlayVideo = autoPlayVideo;
-    this.setState({ m });
+  function closeModal() {
+    setM(null);
   }
 
-  closeModal = () => {
-    this.setState({m: null});
-  }
-
-  gotoPrev = () => {
-    const { media } = this.props;
-    if (this.state && this.state.m && media.length > 1) {
-      let ix = (media.indexOf(this.state.m) - 1 + media.length) % media.length;
-      this.openModal(this.props.media[ix], false);
+  function gotoPrev() {
+    if (m && media.length > 1) {
+      let ix = (media.indexOf(m) - 1 + media.length) % media.length;
+      openModal(media[ix], false);
     }
   }
 
-  gotoNext = () => {
-    const { media } = this.props;
-    if (this.state && this.state.m && media.length > 1) {
-      let ix = (media.indexOf(this.state.m) + 1) % media.length;
-      this.openModal(this.props.media[ix], false);
+  function gotoNext() {
+    if (m && media.length > 1) {
+      let ix = (media.indexOf(m) + 1) % media.length;
+      openModal(media[ix], false);
     }
   }
 
-  playVideo = () => {
-    if (this.state && this.state.m) {
-      this.openModal(this.state.m, true);
+  function playVideo() {
+    if (m) {
+      openModal(m, true);
     }
   }
 
-  onDeleteImage = () => {
+  function onDeleteImage() {
     if (confirm('Are you sure you want to delete this image?')) {
-      const id = this.state.m.id;
-      deleteMedia(this.props.accessToken, id)
+      const id = m.id;
+      deleteMedia(accessToken, id)
       .then((response) => {
-        this.props.removeMedia(id);
-        this.closeModal();
+        removeMedia(id);
+        closeModal();
       })
       .catch ((error) => {
         console.warn(error);
@@ -79,34 +71,37 @@ class Media extends Component<Props, any> {
     }
   }
 
-  render() {
-    return (
-      <>
-        {this.state && this.state.m &&
-          <MediaModal
-            isAdmin={this.props.isAdmin}
-            onClose={this.closeModal}
-            m={this.state.m}
-            onDelete={this.onDeleteImage}
-            length={this.props.media.length}
-            gotoPrev={this.gotoPrev}
-            gotoNext={this.gotoNext}
-            playVideo={this.playVideo}
-            useBlueNotRed={this.props.useBlueNotRed}
-          />
-        }
-        <Card.Group itemsPerRow={5} doubling>
-          {this.props.media.map((m, i) => (
-            <Card as="a" onClick={() => this.openModal(m, true)} key={i} raised>
-              <div style={{paddingTop: '75%'}}>
-                {m.svgs? <Svg close={null} useBlueNotRed={this.props.useBlueNotRed} thumb={true} m={m} key={i} style={style}/> : <Image alt={m.description} key={i} style={style} src={getImageUrl(m.id, 205)} />}
-              </div>
-            </Card>
-          ))}
-        </Card.Group>
-      </>
-    )
+  if (loading) {
+    return <LoadingAndRestoreScroll />;
   }
+
+  return (
+    <>
+      {m &&
+        <MediaModal
+          isAdmin={isAdmin}
+          onClose={closeModal}
+          m={m}
+          autoPlayVideo={autoPlayVideo}
+          onDelete={onDeleteImage}
+          length={media.length}
+          gotoPrev={gotoPrev}
+          gotoNext={gotoNext}
+          playVideo={playVideo}
+          useBlueNotRed={useBlueNotRed}
+        />
+      }
+      <Card.Group itemsPerRow={5} doubling>
+        {media.map((x, i) => (
+          <Card as="a" onClick={() => openModal(x, true)} key={i} raised>
+            <div style={{paddingTop: '75%'}}>
+              {x.svgs? <Svg close={null} useBlueNotRed={useBlueNotRed} thumb={true} m={x} key={i} style={style}/> : <Image alt={x.description} key={i} style={style} src={getImageUrl(x.id, 205)} />}
+            </div>
+          </Card>
+        ))}
+      </Card.Group>
+    </>
+  )
 }
 
 export default Media;

@@ -174,7 +174,7 @@ const ProblemEdit = () => {
         </Form.Field>
         <Form.Field>
           <label>FA</label>
-          <UserSelector isMulti={true} placeholder="Select user(s)" accessToken={accessToken} users={data.fa? data.fa.map(u => {return {value: u.id, label: u.name}}) : []} onUsersUpdated={onUsersUpdated} />
+          <UserSelector isMulti={true} placeholder="Select user(s)" users={data.fa? data.fa.map(u => {return {value: u.id, label: u.name}}) : []} onUsersUpdated={onUsersUpdated} identity={null} />
         </Form.Field>
         <Form.Field>
           <label>Visibility</label>

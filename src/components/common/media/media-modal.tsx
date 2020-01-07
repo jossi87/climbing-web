@@ -54,7 +54,7 @@ const style = {
     marginLeft: '-30px' /* 1/2 the width of the button */
   },
 }
-const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext, playVideo, useBlueNotRed }) => {
+const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext, playVideo, useBlueNotRed, autoPlayVideo }) => {
   let history = useHistory();
   let myPlayer;
   var topLeftButton;
@@ -78,7 +78,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext,
       {m.idType===1?
         (m.svgs? <Image style={style.img}><Svg useBlueNotRed={useBlueNotRed} thumb={false} style={{}} m={m} close={onClose}/></Image> : <Image style={style.img} alt={m.description} src={getImageUrl(m.id, 720)} />)
       :
-        (m.autoPlayVideo?
+        (autoPlayVideo?
           <ReactPlayer
             style={style.video}
             ref={player => myPlayer = player }

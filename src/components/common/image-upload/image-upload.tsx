@@ -43,11 +43,11 @@ const ImageUpload = ({ onMediaChanged }) => {
             <Card key={i}>
               <Image src={m.file.preview} />
               <Card.Content>
-                <UserSelector isMulti={false} placeholder="In photo" accessToken={accessToken} onUsersUpdated={(u, m) => {
+                <UserSelector users={[]} isMulti={false} placeholder="In photo" onUsersUpdated={(u, m) => {
                   m.inPhoto = u.label;
                   onMediaChanged(media);
                 }} identity={m} />
-                <UserSelector isMulti={false} placeholder="Photographer" accessToken={accessToken} onUsersUpdated={(u, m) => {
+                <UserSelector users={[]} isMulti={false} placeholder="Photographer" onUsersUpdated={(u, m) => {
                   m.photographer = u.label;
                   onMediaChanged(media);
                 }} identity={m} />

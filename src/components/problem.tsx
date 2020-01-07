@@ -117,7 +117,7 @@ const Problem = () => {
   if (data.media && data.media.length>0) {
     panes.push({
       menuItem: { key: 'media', icon: 'images', content: 'Media' },
-      render: () => <Tab.Pane><Media accessToken={accessToken} isAdmin={data.metadata.isAdmin} removeMedia={onRemoveMedia} media={data.media} useBlueNotRed={data.metadata.useBlueNotRed} /></Tab.Pane>
+      render: () => <Tab.Pane><Media isAdmin={data.metadata.isAdmin} removeMedia={onRemoveMedia} media={data.media} useBlueNotRed={data.metadata.useBlueNotRed} /></Tab.Pane>
     });
   }
   if (markers.length>0) {
