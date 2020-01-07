@@ -12,7 +12,6 @@ import { getArea, getImageUrl } from '../api';
 const Area = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState();
-  const [forceUpdate, setForceUpdate] = useState(1);
   let { areaId } = useParams();
   let history = useHistory();
   useEffect(() => {
@@ -51,9 +50,8 @@ const Area = () => {
   const height = '40vh';
   if (data.media && data.media.length>0) {
     panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Media accessToken={accessToken} isAdmin={data.metadata.isAdmin} removeMedia={(idMediaToRemove) => {
-      data.media = data.media.filter(m => m.id!=idMediaToRemove);
-      setData(data);
-      setForceUpdate(forceUpdate+1);
+      let newMedia = data.media.filter(m => m.id!=idMediaToRemove);
+      setData(prevState => ({ ...prevState, media: newMedia }));
     }} media={data.media} useBlueNotRed={data.metadata.useBlueNotRed} /></Tab.Pane> });
   }
   if (markers.length>0 || outlines.length>0) {

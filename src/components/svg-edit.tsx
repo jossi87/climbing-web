@@ -26,7 +26,6 @@ const SvgEdit = () => {
   const [addAnchor, setAddAnchor] = useState(false);
   const [addText, setAddText] = useState(false);
   const imageRef = useRef(null);
-  const [forceUpdate, setForceUpdate] = useState(1);
   let { problemIdMediaId } = useParams();
   let history = useHistory();
   let location = useLocation();
@@ -107,8 +106,7 @@ const SvgEdit = () => {
     if (ctrl) {
       let coords = getMouseCoords(e);
       points.push(coords);
-      setPoints(points);
-      setForceUpdate(forceUpdate+1);
+      setPoints([...points]);
       setActivePoint(points.length - 1);
     } else if (addText) {
       let coords = getMouseCoords(e);
@@ -159,16 +157,14 @@ const SvgEdit = () => {
     const active = activePoint;
     points[active].x = coords.x;
     points[active].y = coords.y;
-    setPoints(points);
-    setForceUpdate(forceUpdate+1);
+    setPoints([...points]);
   };
 
   function setCubicCoords(coords, anchor) {
     const active = activePoint;
     points[active].c[anchor].x = coords.x;
     points[active].c[anchor].y = coords.y;
-    setPoints(points);
-    setForceUpdate(forceUpdate+1);
+    setPoints([...points]);
   };
 
   function setCurrDraggedPoint(index) {
@@ -209,8 +205,7 @@ const SvgEdit = () => {
           };
         break;
       }
-      setPoints(points);
-      setForceUpdate(forceUpdate+1);
+      setPoints([...points]);
     }
   };
 
@@ -218,8 +213,7 @@ const SvgEdit = () => {
     let active = activePoint;
     if (points.length > 1 && active !== 0) {
       points.splice(active, 1);
-      setPoints(points);
-      setForceUpdate(forceUpdate+1);
+      setPoints([...points]);
       setActivePoint(points.length-1);
     }
   };

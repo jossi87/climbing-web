@@ -13,31 +13,29 @@ import CommentModal from './common/comment-modal/comment-modal';
 const Problem = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState();
-  const [forceUpdate, setForceUpdate] = useState(1);
   const [showTickModal, setShowTickModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(false);
   const [saving, setSaving] = useState(false);
   let { problemId } = useParams();
   let history = useHistory();
   useEffect(() => {
-    if (!loading) {
+    if (!loading && !saving) {
       getProblem(accessToken, parseInt(problemId)).then((data) => setData(data));
     }
-  }, [loading, accessToken, problemId, forceUpdate]);
+  }, [loading, accessToken, problemId, saving]);
 
   function onRemoveMedia(idMediaToRemove) {
-    data.media = data.media.filter(m => m.id!=idMediaToRemove);
-    setData(data);
-    setForceUpdate(forceUpdate+1);
+    let newMedia = data.media.filter(m => m.id!=idMediaToRemove);
+    setData(prevState => ({ ...prevState, media: newMedia }));
   }
 
   function flagAsDangerous(id) {
     if (confirm('Are you sure you want to flag this comment?')) {
       setSaving(true);
+      setData(null);
       postComment(accessToken, id, -1, null, true, false)
         .then((response) => {
           setSaving(false);
-          setForceUpdate(forceUpdate+1);
         })
         .catch((error) => {
           console.warn(error);
@@ -48,6 +46,7 @@ const Problem = () => {
 
   function toggleTodo(problemId : number) {
     setSaving(true);
+    setData(null);
     getTodo(accessToken, -1)
     .then((data) => {
       const todo = data.todo.filter(x => x.problemId==problemId);
@@ -62,7 +61,6 @@ const Problem = () => {
       postTodo(accessToken, id, problemId, priority, isDelete)
       .then((response) => {
         setSaving(false);
-        setForceUpdate(forceUpdate+1);
       })
       .catch((error) => {
         console.warn(error);
@@ -77,7 +75,8 @@ const Problem = () => {
 
   function closeTickModal() {
     setShowTickModal(false);
-    setForceUpdate(forceUpdate+1);
+    setSaving(true);
+    setSaving(false);
   }
 
   function openTickModal() {
@@ -86,7 +85,8 @@ const Problem = () => {
 
   function closeCommentModal() {
     setShowCommentModal(false);
-    setForceUpdate(forceUpdate+1);
+    setSaving(true);
+    setSaving(false);
   }
 
   function openCommentModal() {

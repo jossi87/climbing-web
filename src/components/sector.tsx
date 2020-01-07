@@ -12,7 +12,6 @@ import { getSector } from '../api';
 const Sector = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState();
-  const [forceUpdate, setForceUpdate] = useState(1);
   let history = useHistory();
   let { sectorId } = useParams();
   useEffect(() => {
@@ -51,9 +50,8 @@ const Sector = () => {
   const panes = [];
   if (data.media && data.media.length>0) {
     panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Media accessToken={accessToken} isAdmin={data.metadata.isAdmin} removeMedia={(idMediaToRemove) => {
-      data.media = data.media.filter(m => m.id!=idMediaToRemove);
-      setData(data);
-      setForceUpdate(forceUpdate+1);
+      let newMedia = data.media.filter(m => m.id!=idMediaToRemove);
+      setData(prevState => ({ ...prevState, media: newMedia }));
     }} media={data.media} useBlueNotRed={data.metadata.useBlueNotRed} /></Tab.Pane> });
   }
   if (markers.length>0) {
@@ -134,9 +132,9 @@ const Sector = () => {
           <div>
             <div style={{float: 'right'}}>
               <Button icon labelPosition="left" size="mini" onClick={() => {
-                data.orderByGrade = !data.orderByGrade;
-                data.problems.sort((a, b) => {
-                  if (data.orderByGrade) {
+                let orderByGrade = !data.orderByGrade;
+                let problems = data.problems.sort((a, b) => {
+                  if (orderByGrade) {
                     if (a.gradeNumber != b.gradeNumber) {
                       return b.gradeNumber-a.gradeNumber;
                     }
@@ -144,8 +142,7 @@ const Sector = () => {
                   }
                   return a.nr-b.nr;
                 });
-                setData(data);
-                setForceUpdate(forceUpdate+1);
+                setData(prevState => ({ ...prevState, orderByGrade, problems }));
               }}>
                 <Icon name="sort"/>
                 {data.orderByGrade? "Order by number" : "Order by grade"}

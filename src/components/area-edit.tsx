@@ -11,7 +11,6 @@ import { useHistory, useParams, useLocation } from 'react-router-dom';
 const AreaEdit = () => {
   const { accessToken, loading, isAuthenticated, loginWithRedirect } = useAuth0();
   const [data, setData] = useState();
-  const [forceUpdate, setForceUpdate] = useState(1);
   const [saving, setSaving] = useState(false);
   let { areaId } = useParams();
   let history = useHistory();
@@ -23,27 +22,19 @@ const AreaEdit = () => {
   }, [accessToken, areaId, loading]);
 
   function onNameChanged(e, { value }) {
-    data.name = value;
-    setData(data);
-    setForceUpdate(forceUpdate+1);
+    setData(prevState => ({ ...prevState, name: value }));
   }
 
   function onVisibilityChanged(e, { value }) {
-    data.visibility = value;
-    setData(data);
-    setForceUpdate(forceUpdate+1);
+    setData(prevState => ({ ...prevState, visibility: value }));
   }
 
   function onCommentChanged(e, { value }) {
-    data.comment = value;
-    setData(data);
-    setForceUpdate(forceUpdate+1);
+    setData(prevState => ({ ...prevState, comment: value }));
   }
 
   function onNewMediaChanged(newMedia) {
-    data.newMedia = newMedia;
-    setData(data);
-    setForceUpdate(forceUpdate+1);
+    setData(prevState => ({ ...prevState, newMedia }));
   }
 
   function save(event) {
@@ -59,10 +50,7 @@ const AreaEdit = () => {
   }
 
   function onMarkerClick(event) {
-    data.lat = event.latlng.lat;
-    data.lng = event.latlng.lng;
-    setData(data);
-    setForceUpdate(forceUpdate+1);
+    setData(prevState => ({ ...prevState, lat: event.latlng.lat, lng: event.latlng.lng }));
   }
 
   if (loading || (isAuthenticated && !data)) {

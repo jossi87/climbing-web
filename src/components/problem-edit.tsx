@@ -14,7 +14,6 @@ import { useHistory, useParams, useLocation } from 'react-router-dom';
 const ProblemEdit = () => {
   const { accessToken, loading, isAuthenticated, loginWithRedirect } = useAuth0();
   const [data, setData] = useState();
-  const [forceUpdate, setForceUpdate] = useState(1);
   const [saving, setSaving] = useState(false);
   let { sectorIdProblemId } = useParams();
   let history = useHistory();
@@ -26,63 +25,45 @@ const ProblemEdit = () => {
   }, [accessToken, sectorIdProblemId]);
 
   function onNameChanged(e, { value }) {
-    data.name = value;
-    setData(data);
-    setForceUpdate(forceUpdate+1);
+    setData(prevState => ({ ...prevState, name: value }));
   }
 
   function onNrChanged(e, { value }) {
-    data.nr = parseInt(value);
-    setData(data);
-    setForceUpdate(forceUpdate+1);
+    setData(prevState => ({ ...prevState, nr: value }));
   }
 
   function onLatChanged(e, { value }) {
-    data.lat = parseFloat(value);
-    setData(data);
-    setForceUpdate(forceUpdate+1);
+    setData(prevState => ({ ...prevState, lat: parseFloat(value) }));
   }
 
   function onLngChanged(e, { value }) {
-    data.lng = parseFloat(value);
-    setData(data);
-    setForceUpdate(forceUpdate+1);
+    setData(prevState => ({ ...prevState, lng: parseFloat(value) }));
   }
 
   function onVisibilityChanged(e, { value }) {
-    data.visibility = value;
-    setData(data);
-    setForceUpdate(forceUpdate+1);
+    setData(prevState => ({ ...prevState, visibility: value }));
   }
 
   function onCommentChanged(e, { value }) {
-    data.comment = value;
-    setData(data);
-    setForceUpdate(forceUpdate+1);
+    setData(prevState => ({ ...prevState, comment: value }));
   }
 
   function onFaDateChanged(newFaDate) {
-    data.faDate = newFaDate? convertFromDateToString(newFaDate) : null;
-    setData(data);
-    setForceUpdate(forceUpdate+1);
+    let faDate = newFaDate? convertFromDateToString(newFaDate) : null;
+    setData(prevState => ({ ...prevState, faDate }));
   }
 
   function onOriginalGradeChanged(e, { value }) {
-    data.originalGrade = value;
-    setData(data);
-    setForceUpdate(forceUpdate+1);
+    setData(prevState => ({ ...prevState, originalGrade: value }));
   }
 
   function onTypeIdChanged(e, { value }) {
-    data.typeId = parseInt(value);
-    setData(data);
-    setForceUpdate(forceUpdate+1);
+    let typeId = parseInt(value);
+    setData(prevState => ({ ...prevState, typeId }));
   }
 
   function onNewMediaChanged(newMedia) {
-    data.newMedia = newMedia;
-    setData(data);
-    setForceUpdate(forceUpdate+1);
+    setData(prevState => ({ ...prevState, newMedia }));
   }
 
   function save(event) {
@@ -113,24 +94,18 @@ const ProblemEdit = () => {
   }
 
   function onMapClick(event) {
-    data.lat = event.latlng.lat;
-    data.lng = event.latlng.lng;
-    setData(data);
-    setForceUpdate(forceUpdate+1);
+    setData(prevState => ({ ...prevState, lat: event.latlng.lat, lng: event.latlng.lng }));
   }
 
   function onUsersUpdated(newUsers) {
-    data.fa = newUsers.map(u => {
+    let fa = newUsers.map(u => {
       return {id: (typeof u.value === 'string' || u.value instanceof String)? -1 : u.value, name: u.label};
     });
-    setData(data);
-    setForceUpdate(forceUpdate+1);
+    setData(prevState => ({ ...prevState, fa }));
   }
 
   function onSectionsUpdated(sections) {
-    data.sections = sections;
-    setData(data);
-    setForceUpdate(forceUpdate+1);
+    setData(prevState => ({ ...prevState, sections }));
   }
 
   if (loading || (isAuthenticated && !data)) {

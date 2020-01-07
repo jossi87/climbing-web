@@ -12,7 +12,6 @@ const SectorEdit = () => {
   const { accessToken, loading, isAuthenticated, loginWithRedirect } = useAuth0();
   const [leafletMode, setLeafletMode] = useState('PARKING');
   const [data, setData] = useState();
-  const [forceUpdate, setForceUpdate] = useState(1);
   const [saving, setSaving] = useState(false);
   let { areaIdSectorId } = useParams();
   let history = useHistory();
@@ -24,27 +23,19 @@ const SectorEdit = () => {
   }, [accessToken, areaIdSectorId]);
 
   function onNameChanged(e, { value }) {
-    data.name = value;
-    setData(data);
-    setForceUpdate(forceUpdate+1);
+    setData(prevState => ({ ...prevState, name: value }));
   }
 
   function onVisibilityChanged(e, { value }) {
-    data.visibility = value;
-    setData(data);
-    setForceUpdate(forceUpdate+1);
+    setData(prevState => ({ ...prevState, visibility: value }));
   }
 
   function onCommentChanged(e, { value }) {
-    data.comment = value;
-    setData(data);
-    setForceUpdate(forceUpdate+1);
+    setData(prevState => ({ ...prevState, comment: value }));
   }
 
   function onNewMediaChanged(newMedia) {
-    data.newMedia = newMedia;
-    setData(data);
-    setForceUpdate(forceUpdate+1);
+    setData(prevState => ({ ...prevState, newMedia }));
   }
 
   function save(event) {
@@ -61,38 +52,36 @@ const SectorEdit = () => {
 
   function onMapClick(event) {
     if (leafletMode == 'PARKING') {
-      data.lat = event.latlng.lat;
-      data.lng = event.latlng.lng;
+      setData(prevState => ({ ...prevState, lat: event.latlng.lat, lng: event.latlng.lng }));
     } else if (leafletMode == 'POLYGON') {
       const coords = event.latlng.lat + "," + event.latlng.lng;
-      if (data.polygonCoords) {
-        data.polygonCoords = data.polygonCoords + ";" + coords;
+      let { polygonCoords } = data;
+      if (polygonCoords) {
+        polygonCoords = polygonCoords + ";" + coords;
       } else {
-        data.polygonCoords = coords;
+        polygonCoords = coords;
       }
+      setData(prevState => ({ ...prevState, polygonCoords }));
     } else if (leafletMode == 'POLYLINE') {
       const coords = event.latlng.lat + "," + event.latlng.lng;
-      if (data.polyline) {
-        data.polyline = data.polyline + ";" + coords;
+      let { polyline } = data;
+      if (polyline) {
+        polyline = polyline + ";" + coords;
       } else {
-        data.polyline = coords;
+        polyline = coords;
       }
+      setData(prevState => ({ ...prevState, polyline }));
     }
-    setData(data);
-    setForceUpdate(forceUpdate+1);
   }
 
   function clearDrawing() {
     if (leafletMode == 'PARKING') {
-      data.lat = 0;
-      data.lng = 0;
+      setData(prevState => ({ ...prevState, lat: 0, lng: 0 }));
     } else if (leafletMode == 'POLYGON') {
-      data.polygonCoords = null;
+      setData(prevState => ({ ...prevState, polygonCoords: null }));
     } else if (leafletMode == 'POLYLINE') {
-      data.polyline = null;
+      setData(prevState => ({ ...prevState, polyline: null }));
     }
-    setData(data);
-    setForceUpdate(forceUpdate+1);
   }
 
   if (loading || (isAuthenticated && !data)) {
@@ -113,7 +102,7 @@ const SectorEdit = () => {
     })
   };
   const defaultCenter = data.lat && parseFloat(data.lat)>0? {lat: parseFloat(data.lat), lng: parseFloat(data.lng)} : data.metadata.defaultCenter;
-  const defaultZoom: number = data.lat && parseFloat(data.lat)>0? 14 : data.metadata.defaultZoom;
+  const defaultZoom = data.lat && parseFloat(data.lat)>0? 14 : data.metadata.defaultZoom;
   const visibilityOptions = [
     {key: 0, value: 0, text: "Visible for everyone"},
     {key: 1, value: 1, text: "Only visible for administrators"}
