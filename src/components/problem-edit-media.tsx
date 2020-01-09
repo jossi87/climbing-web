@@ -9,6 +9,7 @@ import { useHistory, useParams, useLocation } from 'react-router-dom';
 const ProblemEditMedia = () => {
   const { accessToken, isAuthenticated, loading, loginWithRedirect } = useAuth0();
   const [id, setId] = useState();
+  const [isMultiPitch, setIsMultiPitch] = useState(false);
   const [media, setMedia] = useState();
   const [saving, setSaving] = useState(false);
   let { problemId } = useParams();
@@ -18,6 +19,7 @@ const ProblemEditMedia = () => {
     if (problemId && accessToken) {
       getProblem(accessToken, parseInt(problemId)).then((data) => {
         setId(data.id);
+        setIsMultiPitch(data.sections && data.sections.length>1);
       });
     }
   }, [accessToken, problemId]);
@@ -43,7 +45,7 @@ const ProblemEditMedia = () => {
     <Segment>
       <h3>Upload image(s)</h3>
       <form onSubmit={save}>
-        <ImageUpload onMediaChanged={(newMedia) => setMedia(newMedia)} />
+        <ImageUpload onMediaChanged={(newMedia) => setMedia(newMedia)} isMultiPitch={isMultiPitch} />
         <Button.Group>
           <Button onClick={() => history.push(`/problem/${id}`)}>Cancel</Button>
           <Button.Or />

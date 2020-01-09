@@ -196,7 +196,7 @@ const ProblemEdit = () => {
         }
         <Form.Field>
           <label>New media</label><br/>
-          <ImageUpload onMediaChanged={onNewMediaChanged} />
+          <ImageUpload onMediaChanged={onNewMediaChanged} isMultiPitch={data.sections && data.sections.length>1} />
         </Form.Field>
         <Form.Field>
           <label>Click to mark problem on map</label><br/>

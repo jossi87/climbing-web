@@ -89,7 +89,7 @@ const AreaEdit = () => {
         </Form.Field>
         <Form.Field>
           <label>Upload image(s)</label>
-          <ImageUpload onMediaChanged={onNewMediaChanged} />
+          <ImageUpload onMediaChanged={onNewMediaChanged} isMultiPitch={false} />
         </Form.Field>
         <Form.Field>
           <label>Click to mark area center on map</label>

@@ -3,7 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { Link, useParams, useHistory } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
-import { Button, Message, Grid, Breadcrumb, Tab, Label, Icon, List, Comment, Header, Segment } from 'semantic-ui-react';
+import { Button, Message, Grid, Breadcrumb, Tab, Label, Icon, Comment, Header, Segment, Feed } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getProblem, getTodo, postComment, postTodo } from '../api';
@@ -292,16 +292,20 @@ const Problem = () => {
           {data.sections &&
             <>
               <strong>Pitches:</strong>
-              <List ordered>
-                {data.sections.map((s, i) => (
-                  <List.Item key={i}>
-                    <List.Content>
-                      <List.Header>{s.grade}</List.Header>
-                      <List.Description>{s.description}</List.Description>
-                    </List.Content>
-                  </List.Item>
+              <Feed size="small">
+                {data.sections.map((s,i) => (
+                  <Feed.Event key={i}>
+                    <Feed.Label style={{marginTop: '8px'}}>{s.nr}</Feed.Label>
+                    <Feed.Content>
+                      <Feed.Summary>
+                        <Feed.Label>{s.grade}</Feed.Label> 
+                        <Feed.Date>{s.description}</Feed.Date>
+                        {s.media && <Feed.Extra><Media isAdmin={data.metadata.isAdmin} removeMedia={() => window.location.reload()} media={s.media} useBlueNotRed={data.metadata.useBlueNotRed} /></Feed.Extra>}
+                      </Feed.Summary>
+                    </Feed.Content>
+                  </Feed.Event>
                 ))}
-              </List>
+              </Feed>
             </>
           }
         </Message.Content>

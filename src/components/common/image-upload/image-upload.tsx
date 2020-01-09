@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import { useAuth0 } from '../../../utils/react-auth0-spa';
 import Dropzone from 'react-dropzone';
-import { Button, Card, Image } from 'semantic-ui-react';
+import { Button, Card, Image, Input } from 'semantic-ui-react';
 import classNames from 'classnames';
 import UserSelector from '../user-selector/user-selector';
 
-const ImageUpload = ({ onMediaChanged }) => {
-  const { accessToken } = useAuth0();
+const ImageUpload = ({ onMediaChanged, isMultiPitch }) => {
   const [media, setMedia] = useState([]);
 
   return (
@@ -43,6 +41,11 @@ const ImageUpload = ({ onMediaChanged }) => {
             <Card key={i}>
               <Image src={m.file.preview} />
               <Card.Content>
+                {isMultiPitch &&
+                  <Input size="mini" icon="hashtag" iconPosition="left" fluid placeholder='Pitch' value={m.pitch} onChange={(e, { value }) => {
+                    m.pitch = parseInt(value);
+                    onMediaChanged(media);
+                  }} />}
                 <UserSelector users={[]} isMulti={false} placeholder="In photo" onUsersUpdated={(u, m) => {
                   m.inPhoto = u.label;
                   onMediaChanged(media);
