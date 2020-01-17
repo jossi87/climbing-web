@@ -30,11 +30,6 @@ const Frontpage = () => {
                 <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
                 <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
                 <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
-                <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
-                <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
-                <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
-                <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
-                <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
               </Placeholder>
             </Segment>
             <Card>
@@ -56,6 +51,16 @@ const Frontpage = () => {
           <Grid.Column mobile={16} tablet={8} computer={12}>
             <Segment>
               <Placeholder>
+                <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
                 <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
                 <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
                 <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
