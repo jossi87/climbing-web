@@ -30,6 +30,11 @@ const Frontpage = () => {
                 <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
                 <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
                 <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
               </Placeholder>
             </Segment>
             <Card>
