@@ -22,7 +22,7 @@ const Frontpage = () => {
     return (
       <Grid>
         <Grid.Row>
-          <Grid.Column mobile={16} tablet={8} computer={4}>
+          <Grid.Column mobile={16} tablet={8} computer={4} style={{marginBottom: '10px'}}>
             <Segment>
               <Placeholder>
                 <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
@@ -50,7 +50,7 @@ const Frontpage = () => {
           </Grid.Column>
           <Grid.Column mobile={16} tablet={8} computer={12}>
             <Segment>
-              <Placeholder>
+              <Placeholder fluid>
                 <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
                 <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
                 <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
