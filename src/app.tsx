@@ -79,7 +79,7 @@ const App = () => {
                   <Header inverted as='h4' content='Bouldering' />
                   <List link inverted>
                     <List.Item as='a' href='https://buldreinfo.com' rel='noopener' target='_blank'>buldreinfo.com (Rogaland)</List.Item>
-                    <List.Item as='a' href='https://buldreforer.tromsoklatring.no' rel='noopener' target='_blank'>buldreforer.tromsoklatring.no (Tromsø)</List.Item>
+                    <List.Item as='a' href='https://buldreforer.tromsoklatring.no' rel='noopener' target='_blank'>buldreforer.tromsoklatring.no (Troms&oslash;)</List.Item>
                     <List.Item as='a' href='https://buldring.bergen-klatreklubb.no' rel='noopener' target='_blank'>buldring.bergen-klatreklubb.no (Bergen)</List.Item>
                     <List.Item as='a' href='https://buldring.fredrikstadklatreklubb.org' rel='noopener' target='_blank'>buldring.fredrikstadklatreklubb.org (Fredrikstad)</List.Item>
                     <List.Item as='a' href='https://buldring.jotunheimenfjellsport.com' rel='noopener' target='_blank'>buldring.jotunheimenfjellsport.com (Jotunheimen)</List.Item>
@@ -91,7 +91,7 @@ const App = () => {
                   <List.Item as='a' href='https://brattelinjer.no' rel='noopener' target='_blank'>brattelinjer.no (Rogaland)</List.Item>
                   <List.Item as='a' href='https://hkl.brattelinjer.no' rel='noopener' target='_blank'>hkl.brattelinjer.no (Haugalandet)</List.Item>
                   <List.Item as='a' href='https://klatreforer.narvikklatreklubb.no' rel='noopener' target='_blank'>klatreforer.narvikklatreklubb.no (Narvik)</List.Item>
-                  <List.Item as='a' href='https://klatreforer.tromsoklatring.no' rel='noopener' target='_blank'>klatreforer.tromsoklatring.no (Tromsø)</List.Item>
+                  <List.Item as='a' href='https://klatreforer.tromsoklatring.no' rel='noopener' target='_blank'>klatreforer.tromsoklatring.no (Troms&oslash;)</List.Item>
                   <List.Item as='a' href='https://klatring.jotunheimenfjellsport.com' rel='noopener' target='_blank'>klatring.jotunheimenfjellsport.com (Jotunheimen)</List.Item>
                   <List.Item as='a' href='https://tau.fredrikstadklatreklubb.org' rel='noopener' target='_blank'>tau.fredrikstadklatreklubb.org (Fredrikstad)</List.Item>
                   </List>
