@@ -89,6 +89,7 @@ const App = () => {
                   <Header inverted as='h4' content='Climbing' />
                   <List link inverted>
                   <List.Item as='a' href='https://brattelinjer.no' rel='noopener' target='_blank'>brattelinjer.no</List.Item>
+                  <List.Item as='a' href='https://hkl.brattelinjer.no' rel='noopener' target='_blank'>hkl.brattelinjer.no (Haugalandet)</List.Item>
                   <List.Item as='a' href='https://klatreforer.narvikklatreklubb.no' rel='noopener' target='_blank'>klatreforer.narvikklatreklubb.no</List.Item>
                   <List.Item as='a' href='https://klatreforer.tromsoklatring.no' rel='noopener' target='_blank'>klatreforer.tromsoklatring.no</List.Item>
                   <List.Item as='a' href='https://klatring.jotunheimenfjellsport.com' rel='noopener' target='_blank'>klatring.jotunheimenfjellsport.com</List.Item>
