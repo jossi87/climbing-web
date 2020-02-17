@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimmer, Button, Icon, Image } from 'semantic-ui-react';
+import { Dimmer, Button, Icon, Image, Responsive } from 'semantic-ui-react';
 import { getImageUrl } from '../../../api';
 import ReactPlayer from 'react-player';
 import Svg from './svg';
@@ -65,14 +65,15 @@ const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext,
       topLeftButton = <Icon style={style.buttonEdit} size="large" color="red" name="trash" link onClick={onDelete} />
     }
   }
+  const size = Responsive.onlyComputer.minWidth? 'huge' : 'big';
   return (
     <Dimmer active={true} onClickOutside={onClose} page>
       {topLeftButton}
       <Icon style={style.close} size="big" name="close" link onClick={onClose} />
       {length > 1 &&
         <>
-          <Icon style={style.prev} size="big" name="angle left" link onClick={gotoPrev} />
-          <Icon style={style.next} size="big" name="angle right" link onClick={gotoNext} />
+          <Icon style={style.prev} size={size} name="angle left" link onClick={gotoPrev} />
+          <Icon style={style.next} size={size} name="angle right" link onClick={gotoNext} />
         </>
       }
       {m.idType===1?
