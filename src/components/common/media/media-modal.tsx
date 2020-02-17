@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimmer, Button, Icon, Image, Responsive } from 'semantic-ui-react';
+import { Dimmer, Button, Icon, Image, Responsive, Modal, Header } from 'semantic-ui-react';
 import { getImageUrl } from '../../../api';
 import ReactPlayer from 'react-player';
 import Svg from './svg';
@@ -20,6 +20,12 @@ const style = {
     position: 'fixed',
     top: '2px',
     left: '2px'
+  },
+  info: {
+    zIndex: 2,
+    position: 'fixed',
+    top: '2px',
+    right: '35px'
   },
   close: {
     zIndex: 2,
@@ -65,19 +71,64 @@ const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext,
       topLeftButton = <Icon style={style.buttonEdit} size="large" color="red" name="trash" link onClick={onDelete} />
     }
   }
-  const size = Responsive.onlyComputer.minWidth? 'huge' : 'big';
   return (
     <Dimmer active={true} onClickOutside={onClose} page>
       {topLeftButton}
-      <Icon style={style.close} size="big" name="close" link onClick={onClose} />
+      <Modal trigger={<Icon style={style.info} size="big" name="info circle" link />}>
+        <Modal.Content image>
+          <Image wrapped size='medium' src={getImageUrl(m.id, 150)} />
+          <Modal.Description>
+            <Header>Info</Header>
+            {m.mediaMetadata.dateCreated && <><b>Date uploaded:</b> {m.mediaMetadata.dateCreated}<br/></>}
+            {m.mediaMetadata.dateTaken && <><b>Date taken:</b> {m.mediaMetadata.dateTaken}<br/></>}
+            {m.mediaMetadata.capturer && <><b>{m.idType===1? "Photographer" : "Video created by"}:</b> {m.mediaMetadata.capturer}<br/></>}
+            {m.mediaMetadata.tagged && <><b>In {m.idType===1? "photo" : "video"}:</b> {m.mediaMetadata.tagged}</>}
+          </Modal.Description>
+        </Modal.Content>
+      </Modal>
+      <Icon style={style.close} size="big" name="window close" link onClick={onClose} />
       {length > 1 &&
         <>
-          <Icon style={style.prev} size={size} name="angle left" link onClick={gotoPrev} />
-          <Icon style={style.next} size={size} name="angle right" link onClick={gotoNext} />
+          <Responsive
+            {...Responsive.onlyMobile}
+            as={Icon}
+            size="big"
+            style={style.prev}
+            name="angle left"
+            link
+            onClick={gotoPrev}
+          />
+          <Responsive
+            {...Responsive.onlyMobile}
+            as={Icon}
+            size="big"
+            style={style.next}
+            name="angle right"
+            link
+            onClick={gotoNext}
+          />
+          <Responsive
+            as={Icon}
+            size="huge"
+            style={style.prev}
+            name="angle left"
+            link
+            onClick={gotoPrev}
+            minWidth={Responsive.onlyTablet.minWidth}
+          />
+          <Responsive
+            as={Icon}
+            size="huge"
+            style={style.next}
+            name="angle right"
+            link
+            onClick={gotoNext}
+            minWidth={Responsive.onlyTablet.minWidth}
+          />
         </>
       }
       {m.idType===1?
-        (m.svgs? <Image style={style.img}><Svg useBlueNotRed={useBlueNotRed} thumb={false} style={{}} m={m} close={onClose}/></Image> : <Image style={style.img} alt={m.description} src={getImageUrl(m.id, 720)} />)
+        (m.svgs? <Image style={style.img}><Svg useBlueNotRed={useBlueNotRed} thumb={false} style={{}} m={m} close={onClose}/></Image> : <Image style={style.img} alt={m.mediaMetadata.alt} src={getImageUrl(m.id, 720)} />)
       :
         (autoPlayVideo?
           <ReactPlayer
