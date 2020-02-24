@@ -3,7 +3,7 @@ import fetch from 'isomorphic-fetch';
 export function getBaseUrl(): string {
   var origin = window.origin;
   if (origin === 'http://localhost:3000') {
-    origin = 'https://brattelinjer.no';
+    origin = 'https://buldreinfo.com';
   }
   return origin;
 }
@@ -194,6 +194,10 @@ export function getProblemEdit(accessToken: string, sectorIdProblemId: string): 
   } else {
     return getProblem(accessToken, problemId)
     .then((res) => {
+      let m = res.metadata;
+      if (res.sectorLat && res.sectorLng && parseFloat(res.sectorLat)>0) {
+        m.defaultCenter = {lat: parseFloat(res.sectorLat), lng: parseFloat(res.sectorLng)};
+      }
       return {
         id: res.id,
         sectorId: res.sectorId,
@@ -208,7 +212,7 @@ export function getProblemEdit(accessToken: string, sectorIdProblemId: string): 
         lat: res.lat,
         lng: res.lng,
         sections: res.sections,
-        metadata: res.metadata,
+        metadata: m,
         newMedia: []
       };
     })

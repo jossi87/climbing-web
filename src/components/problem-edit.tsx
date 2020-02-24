@@ -124,10 +124,6 @@ const ProblemEdit = () => {
     defaultCenter = {lat: data.lat, lng: data.lng};
     defaultZoom = 15;
   }
-  else if (data.sectorLat!=0 && data.sectorLng!=0) {
-    defaultCenter = {lat: data.sectorLat, lng: data.sectorLng};
-    defaultZoom = 15;
-  }
   else {
     defaultCenter = data.metadata.defaultCenter;
     defaultZoom = data.metadata.defaultZoom;
