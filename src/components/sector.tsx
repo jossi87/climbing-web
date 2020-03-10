@@ -165,6 +165,14 @@ const Sector = () => {
                   typeAscents = " (" + t + ") ";
                 }
               }
+              var comment;
+              if (data.orderByGrade && problem.comment) {
+                comment = <small><i style={{color: "gray"}}>{' '}#{problem.nr} - {problem.comment}{' '}</i></small>;
+              } else if (data.orderByGrade) {
+                comment = <small><i style={{color: "gray"}}>{' '}#{problem.nr}{' '}</i></small>;
+              } else if (problem.comment) {
+                comment = <small><i style={{color: "gray"}}>{' '}{problem.comment}{' '}</i></small>;
+              }
               return (
                 <List.Item key={i} onClick={() => history.push(`/problem/${problem.id}`)}>
                   <List.Header>
@@ -175,7 +183,7 @@ const Sector = () => {
                     {' '}<Stars numStars={problem.stars}/>
                     {problem.fa && <small>{problem.fa}</small>}
                     {typeAscents && <small>{typeAscents}</small>}
-                    {problem.comment && <small><i style={{color: "gray"}}>{' '}{problem.comment}{' '}</i></small>}
+                    {comment}
                     {problem.hasImages>0 && <Icon color="black" name="photo"/>}
                     {problem.hasMovies>0 && <Icon color="black" name="film"/>}
                     <LockSymbol visibility={problem.visibility}/>
