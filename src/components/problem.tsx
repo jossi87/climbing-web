@@ -15,14 +15,17 @@ const Problem = () => {
   const [data, setData] = useState();
   const [showTickModal, setShowTickModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const [reload, setReload] = useState(true);
   let { problemId } = useParams();
   let history = useHistory();
   useEffect(() => {
-    if (!loading && !saving) {
-      getProblem(accessToken, parseInt(problemId)).then((data) => setData(data));
+    if (!loading && reload) {
+      getProblem(accessToken, parseInt(problemId)).then((data) => {
+        setData(data);
+        setReload(false);
+      });
     }
-  }, [loading, accessToken, problemId, saving]);
+  }, [loading, accessToken, problemId, reload]);
 
   function onRemoveMedia(idMediaToRemove) {
     let newMedia = data.media.filter(m => m.id!=idMediaToRemove);
@@ -31,11 +34,10 @@ const Problem = () => {
 
   function flagAsDangerous(id) {
     if (confirm('Are you sure you want to flag this comment?')) {
-      setSaving(true);
       setData(null);
       postComment(accessToken, id, -1, null, true, false)
         .then((response) => {
-          setSaving(false);
+          setReload(true);
         })
         .catch((error) => {
           console.warn(error);
@@ -45,7 +47,6 @@ const Problem = () => {
   }
 
   function toggleTodo(problemId : number) {
-    setSaving(true);
     setData(null);
     getTodo(accessToken, -1)
     .then((data) => {
@@ -60,7 +61,7 @@ const Problem = () => {
       }
       postTodo(accessToken, id, problemId, priority, isDelete)
       .then((response) => {
-        setSaving(false);
+        setReload(true);
       })
       .catch((error) => {
         console.warn(error);
@@ -75,8 +76,7 @@ const Problem = () => {
 
   function closeTickModal() {
     setShowTickModal(false);
-    setSaving(true);
-    setSaving(false);
+    setReload(true);
   }
 
   function openTickModal() {
@@ -85,15 +85,14 @@ const Problem = () => {
 
   function closeCommentModal() {
     setShowCommentModal(false);
-    setSaving(true);
-    setSaving(false);
+    setReload(true);
   }
 
   function openCommentModal() {
     setShowCommentModal(true);
   }
 
-  if (!data || saving) {
+  if (!data || reload) {
     return <LoadingAndRestoreScroll />;
   }
   const markers = [];
