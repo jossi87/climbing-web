@@ -19,7 +19,7 @@ const Problem = () => {
   let { problemId } = useParams();
   let history = useHistory();
   useEffect(() => {
-    if (!loading && reload) {
+    if (!loading && (reload || (data != null && data.id!=problemId))) {
       getProblem(accessToken, parseInt(problemId)).then((data) => {
         setData(data);
         setReload(false);
