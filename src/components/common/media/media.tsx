@@ -31,14 +31,14 @@ const Media = ({ media, removeMedia, useBlueNotRed, isAdmin }) => {
   });
 
   function openModal(m, autoPlayVideo) {
-    setM(m);
     onMediaIdOpen(m.id);
+    setM(m);
     setAutoPlayVideo(autoPlayVideo);
   }
 
   function closeModal() {
-    setM(null);
     onMediaIdOpen(null);
+    setM(null);
   }
 
   function onMediaIdOpen(idMedia) {
