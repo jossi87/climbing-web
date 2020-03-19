@@ -49,7 +49,7 @@ const Sector = () => {
   }
   const panes = [];
   if (data.media && data.media.length>0) {
-    panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Media isAdmin={data.metadata.isAdmin} removeMedia={(idMediaToRemove) => {
+    panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Media isAdmin={data.metadata.isAdmin} history={history} removeMedia={(idMediaToRemove) => {
       let newMedia = data.media.filter(m => m.id!=idMediaToRemove);
       setData(prevState => ({ ...prevState, media: newMedia }));
     }} media={data.media} useBlueNotRed={data.metadata.useBlueNotRed} /></Tab.Pane> });

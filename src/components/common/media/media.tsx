@@ -8,7 +8,7 @@ import { LoadingAndRestoreScroll } from '../widgets/widgets';
 
 const style = {objectFit: 'cover', position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, width: '100%', height: '100%'};
 
-const Media = ({ media, removeMedia, useBlueNotRed, isAdmin }) => {
+const Media = ({ history, media, removeMedia, useBlueNotRed, isAdmin }) => {
   const [m, setM] = useState(null)
   const [autoPlayVideo, setAutoPlayVideo] = useState(false)
   const { loading, accessToken } = useAuth0();
@@ -30,11 +30,17 @@ const Media = ({ media, removeMedia, useBlueNotRed, isAdmin }) => {
 
   function openModal(m, autoPlayVideo) {
     setM(m);
+    onMediaIdOpen(m.id);
     setAutoPlayVideo(autoPlayVideo);
   }
 
   function closeModal() {
     setM(null);
+    onMediaIdOpen(null);
+  }
+
+  function onMediaIdOpen(idMedia) {
+    history.push(history.location.pathname + (idMedia ? "?idMedia=" + idMedia : ""));
   }
 
   function gotoPrev() {
@@ -73,6 +79,13 @@ const Media = ({ media, removeMedia, useBlueNotRed, isAdmin }) => {
 
   if (loading) {
     return <LoadingAndRestoreScroll />;
+  }
+  if (history.location.search && media && m == null) {
+    let id = history.location.search.replace("?idMedia=","");
+    let x = media.filter(m => m.id==id);
+    if (x && x.length > 0) {
+      setM(x[0]);
+    }
   }
 
   return (

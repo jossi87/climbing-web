@@ -116,7 +116,14 @@ const Problem = () => {
   if (data.media && data.media.length>0) {
     panes.push({
       menuItem: { key: 'media', icon: 'images', content: 'Media' },
-      render: () => <Tab.Pane><Media isAdmin={data.metadata.isAdmin} removeMedia={onRemoveMedia} media={data.media} useBlueNotRed={data.metadata.useBlueNotRed} /></Tab.Pane>
+      render: () =>
+        <Tab.Pane>
+          <Media history={history}
+            isAdmin={data.metadata.isAdmin}
+            removeMedia={onRemoveMedia}
+            media={data.media}
+            useBlueNotRed={data.metadata.useBlueNotRed} />
+        </Tab.Pane>
     });
   }
   if (markers.length>0) {
@@ -299,7 +306,7 @@ const Problem = () => {
                       <Feed.Summary>
                         <Feed.Label>{s.grade}</Feed.Label> 
                         <Feed.Date>{s.description}</Feed.Date>
-                        {s.media && <Feed.Extra><Media isAdmin={data.metadata.isAdmin} removeMedia={() => window.location.reload()} media={s.media} useBlueNotRed={data.metadata.useBlueNotRed} /></Feed.Extra>}
+                        {s.media && <Feed.Extra><Media history={history} isAdmin={data.metadata.isAdmin} removeMedia={() => window.location.reload()} media={s.media} useBlueNotRed={data.metadata.useBlueNotRed} /></Feed.Extra>}
                       </Feed.Summary>
                     </Feed.Content>
                   </Feed.Event>
