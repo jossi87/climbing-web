@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { getImageUrl, deleteMedia } from '../../../api';
 import { Card, Image } from 'semantic-ui-react';
 import MediaModal from './media-modal';
@@ -8,7 +9,8 @@ import { LoadingAndRestoreScroll } from '../widgets/widgets';
 
 const style = {objectFit: 'cover', position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, width: '100%', height: '100%'};
 
-const Media = ({ history, media, removeMedia, useBlueNotRed, isAdmin }) => {
+const Media = ({ media, removeMedia, useBlueNotRed, isAdmin }) => {
+  let history = useHistory();
   const [m, setM] = useState(null)
   const [autoPlayVideo, setAutoPlayVideo] = useState(false)
   const { loading, accessToken } = useAuth0();

@@ -18,6 +18,7 @@ const Problem = () => {
   const [reload, setReload] = useState(true);
   let { problemId } = useParams();
   let history = useHistory();
+
   useEffect(() => {
     if (!loading && (reload || (data != null && data.id!=problemId))) {
       getProblem(accessToken, parseInt(problemId)).then((data) => {
@@ -118,8 +119,7 @@ const Problem = () => {
       menuItem: { key: 'media', icon: 'images', content: 'Media' },
       render: () =>
         <Tab.Pane>
-          <Media history={history}
-            isAdmin={data.metadata.isAdmin}
+          <Media isAdmin={data.metadata.isAdmin}
             removeMedia={onRemoveMedia}
             media={data.media}
             useBlueNotRed={data.metadata.useBlueNotRed} />
@@ -306,7 +306,7 @@ const Problem = () => {
                       <Feed.Summary>
                         <Feed.Label>{s.grade}</Feed.Label> 
                         <Feed.Date>{s.description}</Feed.Date>
-                        {s.media && <Feed.Extra><Media history={history} isAdmin={data.metadata.isAdmin} removeMedia={() => window.location.reload()} media={s.media} useBlueNotRed={data.metadata.useBlueNotRed} /></Feed.Extra>}
+                        {s.media && <Feed.Extra><Media isAdmin={data.metadata.isAdmin} removeMedia={() => window.location.reload()} media={s.media} useBlueNotRed={data.metadata.useBlueNotRed} /></Feed.Extra>}
                       </Feed.Summary>
                     </Feed.Content>
                   </Feed.Event>
