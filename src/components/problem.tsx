@@ -197,14 +197,16 @@ const Problem = () => {
   );
   
   var tickModal = null;
-  if (data.ticks) {
-    const userTicks = data.ticks.filter(t => t.writable);
-    if (userTicks && userTicks.length>0) {
-      tickModal = <TickModal accessToken={accessToken} idTick={userTicks[0].id} idProblem={data.id} date={userTicks[0].date} comment={userTicks[0].comment} grade={userTicks[0].suggestedGrade} grades={data.metadata.grades} stars={userTicks[0].stars} open={showTickModal} onClose={closeTickModal}/>
+  if (showTickModal) {
+    if (data.ticks) {
+      const userTicks = data.ticks.filter(t => t.writable);
+      if (userTicks && userTicks.length>0) {
+        tickModal = <TickModal accessToken={accessToken} idTick={userTicks[0].id} idProblem={data.id} date={userTicks[0].date} comment={userTicks[0].comment} grade={userTicks[0].suggestedGrade} grades={data.metadata.grades} stars={userTicks[0].stars} open={showTickModal} onClose={closeTickModal}/>
+      }
     }
-  }
-  if (!tickModal) {
-    tickModal = <TickModal accessToken={accessToken} idTick={-1} idProblem={data.id} grade={data.originalGrade} grades={data.metadata.grades} open={showTickModal} onClose={closeTickModal} comment={null} stars={null} date={null} />;
+    if (!tickModal) {
+      tickModal = <TickModal accessToken={accessToken} idTick={-1} idProblem={data.id} grade={data.originalGrade} grades={data.metadata.grades} open={showTickModal} onClose={closeTickModal} comment={null} stars={null} date={null} />;
+    }
   }
   return (
     <>
