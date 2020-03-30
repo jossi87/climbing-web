@@ -1,5 +1,6 @@
 import React from 'react';
 import { Map, Circle, TileLayer, LayersControl, Marker, Polygon, Polyline, Tooltip, WMSTileLayer } from 'react-leaflet';
+import FullscreenControl from 'react-leaflet-fullscreen';
 let parkingIcon;
 
 const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter, defaultZoom, onClick }) => {
@@ -102,6 +103,7 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
       zoom={defaultZoom}
       onClick={onClick}
     >
+      <FullscreenControl position="topright" />
       <LayersControl position="topright">
         <LayersControl.BaseLayer checked={true} name="Norge i Bilder">
           <TileLayer
