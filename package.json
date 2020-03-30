@@ -11,6 +11,8 @@
     "url": "https://bitbucket.org/josteinoygarden/buldreinfo-web.git"
   },
   "devDependencies": {
+    "clean-webpack-plugin": "^3.0.0",
+    "html-webpack-plugin": "^4.0.3",
     "nodemon": "^2.0.2",
     "ts-loader": "^6.2.2",
     "typescript": "^3.7.5",

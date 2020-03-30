@@ -1,6 +1,5 @@
-var path = require('path')
-var webpack = require('webpack')
-var nodeExternals = require('webpack-node-externals')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: [
@@ -14,9 +13,16 @@ module.exports = {
   resolve: {
     extensions: [".ts", ".tsx", ".js"]
   },
+  plugins: [
+    new CleanWebpackPlugin(),
+    new HtmlWebpackPlugin({
+       template: './src/index.html',
+       filename: '../index.html'
+    }),
+  ],
   output: {
     path: __dirname + '/build/js',
     publicPath: '/js/',
-    filename: 'bundle.js'
+    filename: 'bundle.[contenthash].js'
   }
 };
