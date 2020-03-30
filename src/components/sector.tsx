@@ -160,7 +160,7 @@ const Sector = () => {
                 {data.orderByGrade? "Grade" : "Number"}
               </Button>
             </div>
-            <Header as="h3">{data.metadata.isBouldering? "Problems:" : "Routes:"}</Header>
+            <Header as="h3">{data.problems.filter(problem => !hideTicked || !problem.ticked).length + (data.metadata.isBouldering? " Boulders" : " Routes")}</Header>
           </div>
           <List selection>
             {data.problems.filter(problem => !hideTicked || !problem.ticked).map((problem, i) => {
