@@ -5,13 +5,14 @@ import ChartGradeDistribution from './common/chart-grade-distribution/chart-grad
 import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
 import { LockSymbol, Stars, LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { Segment, Icon, Button, List, Tab, Breadcrumb, Message, Header } from 'semantic-ui-react';
+import { Segment, Icon, Checkbox, Button, List, Tab, Breadcrumb, Message, Header } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSector } from '../api';
 
 const Sector = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState();
+  const [hideTicked, setHideTicked] = useState(false);
   let history = useHistory();
   let { sectorId } = useParams();
   useEffect(() => {
@@ -131,6 +132,17 @@ const Sector = () => {
         <Segment>
           <div>
             <div style={{float: 'right'}}>
+              {data.problems.filter(p => p.ticked).length>0 && (
+                <Checkbox
+                  size="mini"
+                  label="Hide ticked"
+                  style={{marginRight: "10px"}}
+                  checked={hideTicked}
+                  onClick={() => {
+                    setHideTicked(!hideTicked);
+                  }}
+                />
+              )}
               <Button icon labelPosition="left" size="mini" onClick={() => {
                 let orderByGrade = !data.orderByGrade;
                 let problems = data.problems.sort((a, b) => {
@@ -145,13 +157,13 @@ const Sector = () => {
                 setData(prevState => ({ ...prevState, orderByGrade, problems }));
               }}>
                 <Icon name="sort"/>
-                {data.orderByGrade? "Order by number" : "Order by grade"}
-              </Button>  
+                {data.orderByGrade? "Grade" : "Number"}
+              </Button>
             </div>
             <Header as="h3">{data.metadata.isBouldering? "Problems:" : "Routes:"}</Header>
           </div>
           <List selection>
-            {data.problems.map((problem, i) => {
+            {data.problems.filter(problem => !hideTicked || !problem.ticked).map((problem, i) => {
               var ascents = problem.numTicks>0 && (problem.numTicks + (problem.numTicks==1? " ascent" : " ascents"));
               var typeAscents;
               if (data.metadata.isBouldering && ascents) {
