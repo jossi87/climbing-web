@@ -3,7 +3,7 @@ import fetch from 'isomorphic-fetch';
 export function getBaseUrl(): string {
   var origin = window.origin;
   if (origin === 'http://localhost:3000') {
-    origin = 'https://brattelinjer.no';
+    origin = 'https://buldreinfo.com';
   }
   return origin;
 }
@@ -161,7 +161,12 @@ export function getProblemEdit(accessToken: string, sectorIdProblemId: string): 
   if (problemId === 0) {
     return getSector(accessToken, sectorId)
     .then((res) => {
-      const defaultCenter = res.lat && res.lng && parseFloat(res.lat)>0? {lat: parseFloat(res.lat), lng: parseFloat(res.lng)} : res.metadata.defaultCenter;
+      let defaultCenter = res.metadata.defaultCenter;
+      let defaultZoom = res.metadata.defaultZoom;
+      if (res.lat && res.lng && parseFloat(res.lat)>0) {
+        defaultCenter = {lat: parseFloat(res.lat), lng: parseFloat(res.lng)};
+        defaultZoom = 15;
+      }
       return {
         id: -1,
         sectorId: res.id,
@@ -197,6 +202,7 @@ export function getProblemEdit(accessToken: string, sectorIdProblemId: string): 
       let m = res.metadata;
       if (res.sectorLat && res.sectorLng && parseFloat(res.sectorLat)>0) {
         m.defaultCenter = {lat: parseFloat(res.sectorLat), lng: parseFloat(res.sectorLng)};
+        m.defaultZoom = 15;
       }
       return {
         id: res.id,
