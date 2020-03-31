@@ -79,7 +79,7 @@ const Todo = () => {
           <>
             <Leaflet
               height='40vh'
-              markers={data.todo.filter(p => p.problemLat!=0 && p.problemLng!=0).map(p => ({lat: p.problemLat, lng: p.problemLng, label: p.problemName, url: '/problem/' + p.problemId}))}
+              markers={data.todo.filter(p => p.lat!=0 && p.lng!=0).map(p => ({lat: p.lat, lng: p.lng, label: p.problemName, url: '/problem/' + p.problemId}))}
               defaultCenter={data.metadata.defaultCenter}
               defaultZoom={data.metadata.defaultZoom}
               history={history}
