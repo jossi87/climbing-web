@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { Container, Divider, Grid, Header, List, Segment } from 'semantic-ui-react'
+import { Button, Icon, Container, Divider, Grid, Header, List, Segment } from 'semantic-ui-react'
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import Analytics from 'react-router-ga';
 import { LoadingAndRestoreScroll } from './components/common/widgets/widgets';
@@ -24,10 +24,11 @@ const User = lazy(() => import('./components/user'));
 const Permissions = lazy(() => import('./components/permissions'));
 
 const App = () => {
-  const styleGoogle = {
-    width: '200px',
-    marginTop: '-10px',
-    marginBottom: '-5px'
+  const styleFacebook = {
+    width: '170px',
+    marginTop: '3px',
+    marginLeft: '5px',
+    marginBottom: '5px',
   }
   const styleBrv = {
     marginBottom: '10px',
@@ -40,6 +41,10 @@ const App = () => {
     maxWidth: '170px',
     backgroundColor: '#FFFFFF'
   };
+  const styleGoogle = {
+    width: '200px',
+    marginTop: '-22px',
+  }
   return (
     <div style={{background: "#F5F5F5"}}>
       <Router>
@@ -98,8 +103,9 @@ const App = () => {
                 </Grid.Column>
                 <Grid.Column width={4}>
                   <Header inverted as='h4' content='Links' />
-                  <a href='https://play.google.com/store/apps/details?id=org.jossi.android.bouldering&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'  rel="noopener" target="_blank"><img style={styleGoogle} alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a><br/>
-                  <a href={"https://brv.no"} rel="noopener" target="_blank"><img style={styleBrv} src={"/png/brv.png"} alt="Bratte Rogalands venner"/></a>
+                  <a href={"https://www.facebook.com/groups/223850524951936/"} rel="noopener" target="_blank"><Button style={styleFacebook} color='facebook'><Icon name='facebook' /> Facebook</Button></a><br/>
+                  <a href={"https://brv.no"} rel="noopener" target="_blank"><img style={styleBrv} src={"/png/brv.png"} alt="Bratte Rogalands venner"/></a><br/>
+                  <a href='https://play.google.com/store/apps/details?id=org.jossi.android.bouldering&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'  rel="noopener" target="_blank"><img style={styleGoogle} alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
                 </Grid.Column>
               </Grid.Row>
             </Grid>
