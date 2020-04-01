@@ -84,6 +84,7 @@ const App = () => {
                   <Header inverted as='h4' content='Bouldering' />
                   <List link inverted>
                     <List.Item as='a' href='https://buldreinfo.com' rel='noopener' target='_blank'>buldreinfo.com (Rogaland)</List.Item>
+                    <List.Item as='a' href='https://hkl.buldreinfo.com' rel='noopener' target='_blank'>hkl.buldreinfo.com (Haugalandet)</List.Item>
                     <List.Item as='a' href='https://buldreforer.tromsoklatring.no' rel='noopener' target='_blank'>buldreforer.tromsoklatring.no (Troms)</List.Item>
                     <List.Item as='a' href='https://buldring.bergen-klatreklubb.no' rel='noopener' target='_blank'>buldring.bergen-klatreklubb.no (Bergen)</List.Item>
                     <List.Item as='a' href='https://buldring.fredrikstadklatreklubb.org' rel='noopener' target='_blank'>buldring.fredrikstadklatreklubb.org (Fredrikstad)</List.Item>
