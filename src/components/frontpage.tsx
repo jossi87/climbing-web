@@ -24,10 +24,21 @@ const Frontpage = () => {
   useEffect(() => {
     if (!loading) {
       getActivity(accessToken, lowerGradeId, excludeTicks).then((res) => {
+        if (res.length == 0) {
+          setLowerGradeId(0);
+          setLowerGradeText("n/a");
+          setExcludeTicks(false);
+        }
         setActivity(res);
       });
     }
   }, [loading, accessToken, lowerGradeId, excludeTicks]);
+
+  if (frontpage && frontpage.metadata.grades.filter(g => g.grade == lowerGradeText).length === 0) {
+    setLowerGradeId(0);
+    setLowerGradeText("n/a");
+    setExcludeTicks(false);
+  }
 
   const filter = frontpage && (
     <div style={{float: 'right'}}>
