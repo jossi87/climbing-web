@@ -9,10 +9,14 @@ import { LockSymbol, Stars } from './common/widgets/widgets';
 const Frontpage = () => {
   const { loading, accessToken } = useAuth0();
   const [frontpage, setFrontpage] = useState(null);
+  const [activityLoading, setActivityLoading] = useState(true);
   const [activity, setActivity] = useState(null);
   const [lowerGradeId, setLowerGradeId] = useLocalStorage("lower_grade_id", 0);
   const [lowerGradeText, setLowerGradeText] = useLocalStorage("lower_grade_text", "n/a");
-  const [excludeTicks, setExcludeTicks] = useLocalStorage("exclude_ticks", false);
+  const [activityTypeTicks, setActivityTypeTicks] = useLocalStorage("activity_type_ticks", true);
+  const [activityTypeFa, setActivityTypeFa] = useLocalStorage("activity_type_fa", true);
+  const [activityTypeComments, setActivityTypeComments] = useLocalStorage("activity_type_comments", true);
+  const [activityTypeMedia, setActivityTypeMedia] = useLocalStorage("activity_type_media", true);
 
   useEffect(() => {
     if (!loading) {
@@ -22,28 +26,29 @@ const Frontpage = () => {
     }
   }, [loading, accessToken]);
   useEffect(() => {
-    if (!loading) {
-      getActivity(accessToken, lowerGradeId, excludeTicks).then((res) => {
-        if (res.length == 0) {
-          setLowerGradeId(0);
-          setLowerGradeText("n/a");
-          setExcludeTicks(false);
-        }
+    if (!loading && activityLoading) {
+      getActivity(accessToken, lowerGradeId, activityTypeFa, activityTypeComments, activityTypeTicks, activityTypeMedia).then((res) => {
         setActivity(res);
+        setActivityLoading(false);
       });
     }
-  }, [loading, accessToken, lowerGradeId, excludeTicks]);
+  }, [loading, accessToken, activityLoading]);
 
   if (frontpage && frontpage.metadata.grades.filter(g => g.grade == lowerGradeText).length === 0) {
     setLowerGradeId(0);
     setLowerGradeText("n/a");
-    setExcludeTicks(false);
+    setActivityTypeTicks(false);
+    setActivityTypeFa(false);
+    setActivityTypeComments(false);
+    setActivityTypeMedia(false);
+    setActivityLoading(true);
   }
 
   const filter = frontpage && (
     <div style={{float: 'right'}}>
       <Button.Group size="mini" compact>
         <Dropdown
+          basic
           text={"Lower grade: " + lowerGradeText}
           icon="filter"
           floating
@@ -57,19 +62,47 @@ const Frontpage = () => {
                   setActivity(null);
                   setLowerGradeId(a.id);
                   setLowerGradeText(a.grade);
+                  setActivityLoading(true);
                 }}/>
               ))}
             </Dropdown.Menu>
           </Dropdown.Menu>
         </Dropdown>
+      </Button.Group><br/>
+      <Button.Group size="mini" basic compact >
+        <Button animated='fade' onClick={() => {
+          setActivity(null);
+          setActivityTypeFa(!activityTypeFa);
+          setActivityLoading(true);
+        }}>
+          <Button.Content hidden>FA</Button.Content>
+          <Button.Content visible><Icon name='plus' color={activityTypeFa? 'green' : 'red'} /></Button.Content>
+        </Button>
+        <Button animated='fade'  onClick={() => {
+          setActivity(null);
+          setActivityTypeTicks(!activityTypeTicks);
+          setActivityLoading(true);
+        }}>
+          <Button.Content hidden>Tick</Button.Content>
+          <Button.Content visible><Icon name='check' color={activityTypeTicks? 'green' : 'red'} /></Button.Content>
+        </Button>
+        <Button animated='fade' onClick={() => {
+          setActivity(null);
+          setActivityTypeMedia(!activityTypeMedia);
+          setActivityLoading(true);
+        }}>
+          <Button.Content hidden>Media</Button.Content>
+          <Button.Content visible><Icon name='images' color={activityTypeMedia? 'green' : 'red'} /></Button.Content>
+        </Button>
+        <Button animated='fade' onClick={() => {
+          setActivity(null);
+          setActivityTypeComments(!activityTypeComments);
+          setActivityLoading(true);
+        }}>
+          <Button.Content hidden>Comment</Button.Content>
+          <Button.Content visible><Icon name='comments' color={activityTypeComments? 'green' : 'red'} /></Button.Content>
+        </Button>
       </Button.Group>
-      <Button size="mini" compact icon labelPosition="left" onClick={() => {
-        setActivity(null);
-        setExcludeTicks(!excludeTicks);
-      }}>
-        <Icon name={excludeTicks? "square outline" : "check square outline"}/>
-        Ticks
-      </Button>
     </div>
   );
 
@@ -173,7 +206,7 @@ const Frontpage = () => {
               </Card>
             </Grid.Column>
           }
-          {activity?
+          {!activityLoading?
             <Grid.Column mobile={16} tablet={8} computer={12}>
               <Feed as={Segment}>
                 {activity.map((a, i) => {
