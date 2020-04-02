@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
-import { Label, Grid, Statistic, Icon, Image, Card, Feed, Segment, Placeholder } from 'semantic-ui-react';
+import { Label, Grid, Statistic, Icon, Image, Card, Feed, Segment, Placeholder, Button, Checkbox, Dropdown } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getActivity, getFrontpage, getImageUrl, numberWithCommas } from '../api';
@@ -10,17 +10,57 @@ const Frontpage = () => {
   const { loading, accessToken } = useAuth0();
   const [frontpage, setFrontpage] = useState(null);
   const [activity, setActivity] = useState(null);
+  const [minGrade, setMinGrade] = useState(0);
+  const [minGradeText, setMinGradeText] = useState(null);
+  const [excludeTicks, setExcludeTicks] = useState(false);
 
   useEffect(() => {
     if (!loading) {
       getFrontpage(accessToken).then((res) => {
         setFrontpage(res);
       });
-      getActivity(accessToken).then((res) => {
+    }
+  }, [loading, accessToken]);
+  useEffect(() => {
+    if (!loading) {
+      getActivity(accessToken, minGrade, excludeTicks).then((res) => {
         setActivity(res);
       });
     }
-  }, [loading, accessToken]);
+  }, [loading, accessToken, minGrade, excludeTicks]);
+
+  const filter = frontpage && (
+    <div style={{float: 'right'}}>
+      <Button.Group size="mini" compact>
+        <Dropdown
+          text={minGradeText? "Lower grade: " + minGradeText : "Lower grade"}
+          icon="filter"
+          floating
+          labeled
+          button
+          className='icon'>
+          <Dropdown.Menu>
+            <Dropdown.Menu scrolling>
+              {frontpage.metadata.grades.map((a, i) => (
+                <Dropdown.Item key={i} text={a.grade} onClick={() => {
+                  setActivity(null);
+                  setMinGrade(a.id);
+                  setMinGradeText(a.grade);
+                }}/>
+              ))}
+            </Dropdown.Menu>
+          </Dropdown.Menu>
+        </Dropdown>
+      </Button.Group>
+      <Button size="mini" compact icon labelPosition="left" onClick={() => {
+        setActivity(null);
+        setExcludeTicks(!excludeTicks);
+      }}>
+        <Icon name={excludeTicks? "check square outline" : "square outline"}/>
+        Exclude ticks
+      </Button>
+    </div>
+  );
 
   return (
     <>
@@ -159,6 +199,7 @@ const Frontpage = () => {
                             </Feed.Meta>
                           }
                         </Feed.Content>
+                        {i === 0 && filter}
                       </Feed.Event>
                     )
                   }
@@ -189,6 +230,7 @@ const Frontpage = () => {
                             {a.media.map((m, i) => (<img key={i} src={getImageUrl(m.id, 115)}/>))}
                           </Feed.Extra>
                         </Feed.Content>
+                        {i === 0 && filter}
                       </Feed.Event>
                     )
                   }
@@ -207,6 +249,7 @@ const Frontpage = () => {
                             {a.message}
                           </Feed.Extra>
                         </Feed.Content>
+                        {i === 0 && filter}
                       </Feed.Event>
                     )
                   }
@@ -224,6 +267,7 @@ const Frontpage = () => {
                           {a.description && <Feed.Extra text>{a.description}</Feed.Extra>}
                           {a.stars>0 && <Feed.Meta><Stars numStars={a.stars} /></Feed.Meta>}
                         </Feed.Content>
+                        {i === 0 && filter}
                       </Feed.Event>
                     )
                   }

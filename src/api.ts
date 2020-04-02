@@ -59,8 +59,8 @@ export function deleteMedia(accessToken: string, id: number): Promise<any> {
   });
 }
 
-export function getActivity(accessToken: string): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/activity`, null)
+export function getActivity(accessToken: string, minGrade: number, excludeTicks: boolean): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/activity?minGrade=${minGrade}&excludeTicks=${excludeTicks}`, null)
   .then((data) => data.json())
   .catch((error) => {
     console.warn(error);
