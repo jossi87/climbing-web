@@ -146,7 +146,7 @@ const Frontpage = () => {
           }
           <Grid.Column mobile={16} tablet={8} computer={12}>
             <Segment>
-              <Segment vertical>
+              <Segment vertical style={{paddingTop: 0}}>
                 <Button.Group size="mini" compact>
                   <Dropdown
                     text={"Lower grade: " + lowerGradeText}
