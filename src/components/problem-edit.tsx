@@ -13,7 +13,7 @@ import { useHistory, useParams, useLocation } from 'react-router-dom';
 
 const ProblemEdit = () => {
   const { accessToken, loading, isAuthenticated, loginWithRedirect } = useAuth0();
-  const [data, setData] = useState();
+  const [data, setData] = useState(null);
   const [saving, setSaving] = useState(false);
   let { sectorIdProblemId } = useParams();
   let history = useHistory();

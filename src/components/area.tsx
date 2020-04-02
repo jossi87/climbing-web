@@ -11,7 +11,7 @@ import { getArea, getImageUrl } from '../api';
 
 const Area = () => {
   const { loading, accessToken } = useAuth0();
-  const [data, setData] = useState();
+  const [data, setData] = useState(null);
   let { areaId } = useParams();
   let history = useHistory();
   useEffect(() => {

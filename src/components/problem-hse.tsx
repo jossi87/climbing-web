@@ -8,7 +8,7 @@ import { getProblemHse } from '../api';
 
 const ProblemHse = () => {
   const { loading, accessToken } = useAuth0();
-  const [data, setData] = useState();
+  const [data, setData] = useState(null);
   useEffect(() => {
     if (!loading) {
       getProblemHse(accessToken).then((data) => setData(data));

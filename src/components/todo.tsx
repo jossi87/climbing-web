@@ -9,7 +9,7 @@ import { getTodo, getImageUrl, postTodo } from '../api';
 
 const Todo = () => {
   const { loading, accessToken } = useAuth0();
-  const [data, setData] = useState();
+  const [data, setData] = useState(null);
   const [saving, setSaving] = useState(false);
   let { userId } = useParams();
   let history = useHistory();

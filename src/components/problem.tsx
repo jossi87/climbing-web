@@ -12,7 +12,7 @@ import CommentModal from './common/comment-modal/comment-modal';
 
 const Problem = () => {
   const { loading, accessToken } = useAuth0();
-  const [data, setData] = useState();
+  const [data, setData] = useState(null);
   const [showTickModal, setShowTickModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(false);
   const [reload, setReload] = useState(true);

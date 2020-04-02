@@ -6,7 +6,7 @@ import { getMeta } from '../api';
 
 const Ethics = () => {
   const { accessToken } = useAuth0();
-  const [data, setData] = useState();
+  const [data, setData] = useState(null);
   useEffect(() => {
     getMeta(accessToken).then((data) => setData(data));
   }, [accessToken]);

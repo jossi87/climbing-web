@@ -9,7 +9,7 @@ import { getBrowse } from '../api';
 
 const Browse = () => {
   const { loading, accessToken } = useAuth0();
-  const [data, setData] = useState();
+  const [data, setData] = useState(null);
   let history = useHistory();
   useEffect(() => {
     if (!loading) {

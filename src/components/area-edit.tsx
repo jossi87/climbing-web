@@ -10,7 +10,7 @@ import { useHistory, useParams, useLocation } from 'react-router-dom';
 
 const AreaEdit = () => {
   const { accessToken, loading, isAuthenticated, loginWithRedirect } = useAuth0();
-  const [data, setData] = useState();
+  const [data, setData] = useState(null);
   const [saving, setSaving] = useState(false);
   let { areaId } = useParams();
   let history = useHistory();

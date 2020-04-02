@@ -11,7 +11,7 @@ import { useHistory, useParams, useLocation } from 'react-router-dom';
 const SectorEdit = () => {
   const { accessToken, loading, isAuthenticated, loginWithRedirect } = useAuth0();
   const [leafletMode, setLeafletMode] = useState('PARKING');
-  const [data, setData] = useState();
+  const [data, setData] = useState(null);
   const [saving, setSaving] = useState(false);
   let { areaIdSectorId } = useParams();
   let history = useHistory();

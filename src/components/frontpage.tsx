@@ -8,7 +8,7 @@ import { LockSymbol, Stars } from './common/widgets/widgets';
 
 const Frontpage = () => {
   const { loading, accessToken } = useAuth0();
-  const [data, setData] = useState();
+  const [data, setData] = useState(null);
 
   useEffect(() => {
     if (!loading) {

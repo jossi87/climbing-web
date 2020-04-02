@@ -8,7 +8,7 @@ import { getTicks } from '../api';
 
 const Ticks = () => {
   const { accessToken } = useAuth0();
-  const [data, setData] = useState();
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   let { page } = useParams();
   let history = useHistory();

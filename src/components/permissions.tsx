@@ -9,7 +9,7 @@ import { InsufficientPrivileges } from './common/widgets/widgets';
 
 const Permissions = () => {
   const { isAuthenticated, loading, accessToken, loginWithRedirect } = useAuth0();
-  const [data, setPermission] = useState();
+  const [data, setPermission] = useState(null);
   let location = useLocation();
 
   useEffect(() => {

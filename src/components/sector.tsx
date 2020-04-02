@@ -11,7 +11,7 @@ import { getSector } from '../api';
 
 const Sector = () => {
   const { loading, accessToken } = useAuth0();
-  const [data, setData] = useState();
+  const [data, setData] = useState(null);
   const [hideTicked, setHideTicked] = useState(false);
   let history = useHistory();
   let { sectorId } = useParams();
