@@ -59,6 +59,15 @@ export function deleteMedia(accessToken: string, id: number): Promise<any> {
   });
 }
 
+export function getActivity(accessToken: string): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/activity`, null)
+  .then((data) => data.json())
+  .catch((error) => {
+    console.warn(error);
+    return null;
+  });
+}
+
 export function getArea(accessToken: string, id: number): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/areas?id=${id}`, null)
   .then((data) => data.json())
