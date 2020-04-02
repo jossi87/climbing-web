@@ -208,7 +208,8 @@ const Frontpage = () => {
           }
           {!activityLoading?
             <Grid.Column mobile={16} tablet={8} computer={12}>
-              <Feed as={Segment}>
+              <Feed as={Segment} style={{minHeight: '100px'}}>
+                {activity.length===0 && filter}
                 {activity.map((a, i) => {
                   // FA
                   if (a.users) {
