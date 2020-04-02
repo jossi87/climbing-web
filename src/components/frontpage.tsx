@@ -10,9 +10,9 @@ const Frontpage = () => {
   const { loading, accessToken } = useAuth0();
   const [frontpage, setFrontpage] = useState(null);
   const [activity, setActivity] = useState(null);
-  const [minGrade, setMinGrade] = useState(0);
-  const [minGradeText, setMinGradeText] = useState(null);
-  const [excludeTicks, setExcludeTicks] = useState(false);
+  const [lowerGradeId, setLowerGradeId] = useLocalStorage("lower_grade_id", 0);
+  const [lowerGradeText, setLowerGradeText] = useLocalStorage("lower_grade_text", "n/a");
+  const [excludeTicks, setExcludeTicks] = useLocalStorage("exclude_ticks", false);
 
   useEffect(() => {
     if (!loading) {
@@ -23,17 +23,17 @@ const Frontpage = () => {
   }, [loading, accessToken]);
   useEffect(() => {
     if (!loading) {
-      getActivity(accessToken, minGrade, excludeTicks).then((res) => {
+      getActivity(accessToken, lowerGradeId, excludeTicks).then((res) => {
         setActivity(res);
       });
     }
-  }, [loading, accessToken, minGrade, excludeTicks]);
+  }, [loading, accessToken, lowerGradeId, excludeTicks]);
 
   const filter = frontpage && (
     <div style={{float: 'right'}}>
       <Button.Group size="mini" compact>
         <Dropdown
-          text={minGradeText? "Lower grade: " + minGradeText : "Lower grade: n/a"}
+          text={"Lower grade: " + lowerGradeText}
           icon="filter"
           floating
           labeled
@@ -44,8 +44,8 @@ const Frontpage = () => {
               {frontpage.metadata.grades.map((a, i) => (
                 <Dropdown.Item key={i} text={a.grade} onClick={() => {
                   setActivity(null);
-                  setMinGrade(a.id);
-                  setMinGradeText(a.grade);
+                  setLowerGradeId(a.id);
+                  setLowerGradeText(a.grade);
                 }}/>
               ))}
             </Dropdown.Menu>
@@ -301,6 +301,30 @@ const Frontpage = () => {
       </Grid>
     </>
   );
+}
+
+function useLocalStorage(key, initialValue) {
+  const [storedValue, setStoredValue] = useState(() => {
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch (error) {
+      console.log(error);
+      return initialValue;
+    }
+  });
+
+  const setValue = value => {
+    try {
+      const valueToStore = value instanceof Function ? value(storedValue) : value;
+      setStoredValue(valueToStore);
+      window.localStorage.setItem(key, JSON.stringify(valueToStore));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return [storedValue, setValue];
 }
 
 export default Frontpage;
