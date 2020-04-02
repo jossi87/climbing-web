@@ -33,7 +33,7 @@ const Frontpage = () => {
     <div style={{float: 'right'}}>
       <Button.Group size="mini" compact>
         <Dropdown
-          text={minGradeText? "Lower grade: " + minGradeText : "Lower grade"}
+          text={minGradeText? "Lower grade: " + minGradeText : "Lower grade: n/a"}
           icon="filter"
           floating
           labeled
@@ -56,8 +56,8 @@ const Frontpage = () => {
         setActivity(null);
         setExcludeTicks(!excludeTicks);
       }}>
-        <Icon name={excludeTicks? "check square outline" : "square outline"}/>
-        Exclude ticks
+        <Icon name={excludeTicks? "square outline" : "check square outline"}/>
+        Ticks
       </Button>
     </div>
   );
