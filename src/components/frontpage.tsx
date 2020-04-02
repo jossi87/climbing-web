@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
-import { Label, Grid, Statistic, Icon, Image, Card, Feed, Segment, Placeholder, Button, Checkbox, Dropdown } from 'semantic-ui-react';
+import { Label, Grid, Statistic, Icon, Image, Card, Feed, Segment, Placeholder, Button, Container, Dropdown } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getActivity, getFrontpage, getImageUrl, numberWithCommas } from '../api';
@@ -9,7 +9,6 @@ import { LockSymbol, Stars } from './common/widgets/widgets';
 const Frontpage = () => {
   const { loading, accessToken } = useAuth0();
   const [frontpage, setFrontpage] = useState(null);
-  const [activityLoading, setActivityLoading] = useState(true);
   const [activity, setActivity] = useState(null);
   const [lowerGradeId, setLowerGradeId] = useLocalStorage("lower_grade_id", 0);
   const [lowerGradeText, setLowerGradeText] = useLocalStorage("lower_grade_text", "n/a");
@@ -26,85 +25,24 @@ const Frontpage = () => {
     }
   }, [loading, accessToken]);
   useEffect(() => {
-    if (!loading && activityLoading) {
+    if (!loading) {
       getActivity(accessToken, lowerGradeId, activityTypeFa, activityTypeComments, activityTypeTicks, activityTypeMedia).then((res) => {
         setActivity(res);
-        setActivityLoading(false);
       });
     }
-  }, [loading, accessToken, activityLoading]);
+  }, [loading, accessToken, lowerGradeId, activityTypeFa, activityTypeComments, activityTypeTicks, activityTypeMedia]);
 
-  if (frontpage && frontpage.metadata.grades.filter(g => g.grade == lowerGradeText).length === 0) {
+  if (frontpage && frontpage.metadata.grades.filter(g => {
+    let gradeText = g.grade.indexOf('(')>0? g.grade.substr(g.grade.indexOf('(')+1).replace(')','') : g.grade;
+    return (gradeText == lowerGradeText && g.id == lowerGradeId)
+  }).length === 0) {
     setLowerGradeId(0);
     setLowerGradeText("n/a");
-    setActivityTypeTicks(false);
-    setActivityTypeFa(false);
-    setActivityTypeComments(false);
-    setActivityTypeMedia(false);
-    setActivityLoading(true);
+    setActivityTypeTicks(true);
+    setActivityTypeFa(true);
+    setActivityTypeComments(true);
+    setActivityTypeMedia(true);
   }
-
-  const filter = frontpage && (
-    <div style={{float: 'right'}}>
-      <Button.Group size="mini" compact>
-        <Dropdown
-          basic
-          text={"Lower grade: " + lowerGradeText}
-          icon="filter"
-          floating
-          labeled
-          button
-          className='icon'>
-          <Dropdown.Menu>
-            <Dropdown.Menu scrolling>
-              {frontpage.metadata.grades.map((a, i) => (
-                <Dropdown.Item key={i} text={a.grade} onClick={() => {
-                  setActivity(null);
-                  setLowerGradeId(a.id);
-                  setLowerGradeText(a.grade);
-                  setActivityLoading(true);
-                }}/>
-              ))}
-            </Dropdown.Menu>
-          </Dropdown.Menu>
-        </Dropdown>
-      </Button.Group><br/>
-      <Button.Group size="mini" basic compact >
-        <Button animated='fade' onClick={() => {
-          setActivity(null);
-          setActivityTypeFa(!activityTypeFa);
-          setActivityLoading(true);
-        }}>
-          <Button.Content hidden>FA</Button.Content>
-          <Button.Content visible><Icon name='plus' color={activityTypeFa? 'green' : 'red'} /></Button.Content>
-        </Button>
-        <Button animated='fade'  onClick={() => {
-          setActivity(null);
-          setActivityTypeTicks(!activityTypeTicks);
-          setActivityLoading(true);
-        }}>
-          <Button.Content hidden>Tick</Button.Content>
-          <Button.Content visible><Icon name='check' color={activityTypeTicks? 'green' : 'red'} /></Button.Content>
-        </Button>
-        <Button animated='fade' onClick={() => {
-          setActivity(null);
-          setActivityTypeMedia(!activityTypeMedia);
-          setActivityLoading(true);
-        }}>
-          <Button.Content hidden>Media</Button.Content>
-          <Button.Content visible><Icon name='images' color={activityTypeMedia? 'green' : 'red'} /></Button.Content>
-        </Button>
-        <Button animated='fade' onClick={() => {
-          setActivity(null);
-          setActivityTypeComments(!activityTypeComments);
-          setActivityLoading(true);
-        }}>
-          <Button.Content hidden>Comment</Button.Content>
-          <Button.Content visible><Icon name='comments' color={activityTypeComments? 'green' : 'red'} /></Button.Content>
-        </Button>
-      </Button.Group>
-    </div>
-  );
 
   return (
     <>
@@ -206,10 +144,88 @@ const Frontpage = () => {
               </Card>
             </Grid.Column>
           }
-          {!activityLoading?
-            <Grid.Column mobile={16} tablet={8} computer={12}>
+          <Grid.Column mobile={16} tablet={8} computer={12}>
+            <Segment>
+              <Button.Group size="mini" compact>
+                <Dropdown
+                  text={"Lower grade: " + lowerGradeText}
+                  icon="filter"
+                  floating
+                  compact
+                  labeled
+                  button
+                  className='icon'>
+                  <Dropdown.Menu>
+                    <Dropdown.Menu scrolling>
+                      {frontpage && frontpage.metadata.grades.map((a, i) => (
+                        <Dropdown.Item key={i} text={a.grade} onClick={() => {
+                          let gradeText = a.grade.indexOf('(')>0? a.grade.substr(a.grade.indexOf('(')+1).replace(')','') : a.grade;
+                          setActivity(null);
+                          setLowerGradeId(a.id);
+                          setLowerGradeText(gradeText);
+                        }}/>
+                      ))}
+                    </Dropdown.Menu>
+                  </Dropdown.Menu>
+                </Dropdown>
+                <Button animated='fade' inverted={!activityTypeFa} onClick={() => {
+                  setActivity(null);
+                  setActivityTypeFa(!activityTypeFa);
+                }}>
+                  <Button.Content hidden>FA</Button.Content>
+                  <Button.Content visible><Icon name='plus' color='black' /></Button.Content>
+                </Button>
+                <Button animated='fade' inverted={!activityTypeTicks} onClick={() => {
+                  setActivity(null);
+                  setActivityTypeTicks(!activityTypeTicks);
+                }}>
+                  <Button.Content hidden>Tick</Button.Content>
+                  <Button.Content visible><Icon name='check' color='black' /></Button.Content>
+                </Button>
+                <Button animated='fade' inverted={!activityTypeMedia} onClick={() => {
+                  setActivity(null);
+                  setActivityTypeMedia(!activityTypeMedia);
+                }}>
+                  <Button.Content hidden>Media</Button.Content>
+                  <Button.Content visible><Icon name='images' color='black' /></Button.Content>
+                </Button>
+                <Button animated='fade' inverted={!activityTypeComments} onClick={() => {
+                  setActivity(null);
+                  setActivityTypeComments(!activityTypeComments);
+                }}>
+                  <Button.Content hidden>Comment</Button.Content>
+                  <Button.Content visible><Icon name='comments' color='black' /></Button.Content>
+                </Button>
+              </Button.Group>
+            </Segment>
+            {!activity &&
+              <Segment>
+                <Placeholder fluid>
+                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
+                </Placeholder>
+              </Segment>
+            }
+            {activity && activity.length===0 &&
+              <Segment>
+                <i>No data</i>
+              </Segment>
+            }
+            {activity && activity.length!=0 &&
               <Feed as={Segment} style={{minHeight: '100px'}}>
-                {activity.length===0 && filter}
                 {activity.map((a, i) => {
                   // FA
                   if (a.users) {
@@ -244,7 +260,6 @@ const Frontpage = () => {
                             </Feed.Meta>
                           }
                         </Feed.Content>
-                        {i === 0 && filter}
                       </Feed.Event>
                     )
                   }
@@ -275,7 +290,6 @@ const Frontpage = () => {
                             {a.media.map((m, i) => (<img key={i} src={getImageUrl(m.id, 115)}/>))}
                           </Feed.Extra>
                         </Feed.Content>
-                        {i === 0 && filter}
                       </Feed.Event>
                     )
                   }
@@ -294,7 +308,6 @@ const Frontpage = () => {
                             {a.message}
                           </Feed.Extra>
                         </Feed.Content>
-                        {i === 0 && filter}
                       </Feed.Event>
                     )
                   }
@@ -312,36 +325,13 @@ const Frontpage = () => {
                           {a.description && <Feed.Extra text>{a.description}</Feed.Extra>}
                           {a.stars>0 && <Feed.Meta><Stars numStars={a.stars} /></Feed.Meta>}
                         </Feed.Content>
-                        {i === 0 && filter}
                       </Feed.Event>
                     )
                   }
                 })}
               </Feed>
-            </Grid.Column>
-          :
-            <Grid.Column mobile={16} tablet={8} computer={12}>
-              <Segment>
-                <Placeholder fluid>
-                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
-                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
-                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
-                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
-                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
-                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
-                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
-                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
-                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
-                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
-                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
-                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
-                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
-                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
-                  <Placeholder.Header image><Placeholder.Line/></Placeholder.Header>
-                </Placeholder>
-              </Segment>
-            </Grid.Column>
-          }
+            }
+          </Grid.Column>
         </Grid.Row>
       </Grid>
     </>
