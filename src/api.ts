@@ -283,6 +283,16 @@ export function getSectorEdit(accessToken: string, areaIdSectorId: string): Prom
   }
 }
 
+export function getSites(accessToken: string, type: string): Promise<any> {
+  let idType = type==='bouldering'? 1 : 2;
+  return makeAuthenticatedRequest(accessToken, `/sites?idType=${idType}`, null)
+  .then((data) => data.json())
+  .catch((error) => {
+    console.warn(error);
+    return null;
+  });
+}
+
 export function getSvgEdit(accessToken: string, problemIdMediaId: string): Promise<any> {
   const parts = problemIdMediaId.split("-");
   const problemId = parts[0];

@@ -70,7 +70,16 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
   })
 
   const polygons = outlines && outlines.map((o, i) => (
-    <Polygon key={i} positions={o.polygon} onClick={() => onClick? null : history.push(o.url)}>
+    <Polygon key={i} positions={o.polygon} onClick={() => {
+      if (!onClick) {
+        if (o.url.startsWith("https")) {
+          var win = window.open(o.url, '_blank');
+          win.focus();
+        } else {
+          history.push(o.url)
+        }
+      }
+    }}>
       {o.label && (
         <Tooltip opacity={0.9} permanent>
           {o.label}

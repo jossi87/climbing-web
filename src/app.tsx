@@ -17,6 +17,7 @@ const ProblemEditMedia = lazy(() => import('./components/problem-edit-media'));
 const ProblemHse = lazy(() => import('./components/problem-hse'));
 const Sector = lazy(() => import('./components/sector'));
 const SectorEdit = lazy(() => import('./components/sector-edit'));
+const Sites = lazy(() => import('./components/sites'));
 const SvgEdit = lazy(() => import('./components/svg-edit'));
 const Ticks = lazy(() => import('./components/ticks'));
 const Todo = lazy(() => import('./components/todo'));
@@ -65,6 +66,7 @@ const App = () => {
                 <Route exact path='/problem/edit/:sectorIdProblemId'><ProblemEdit/></Route>
                 <Route exact path='/problem/edit/media/:problemId'><ProblemEditMedia/></Route>
                 <Route exact path='/problem/svg-edit/:problemIdMediaId'><SvgEdit/></Route>
+                <Route exact path='/sites/:type'><Sites/></Route>
                 <Route exact path='/sector/:sectorId'><Sector/></Route>
                 <Route exact path='/sector/edit/:areaIdSectorId'><SectorEdit/></Route>
                 <Route path='/ticks/:page'><Ticks/></Route>
@@ -83,6 +85,8 @@ const App = () => {
                 <Grid.Column width={6}>
                   <Header inverted as='h4' content='Bouldering' />
                   <List link inverted>
+                    <List.Item as='a' href='/sites/bouldering'>Bouldering sites (map)</List.Item>
+                    <br/>
                     <List.Item as='a' href='https://buldreinfo.com' rel='noopener' target='_blank'>buldreinfo.com (Rogaland)</List.Item>
                     <List.Item as='a' href='https://hkl.buldreinfo.com' rel='noopener' target='_blank'>hkl.buldreinfo.com (Haugalandet)</List.Item>
                     <List.Item as='a' href='https://buldreforer.tromsoklatring.no' rel='noopener' target='_blank'>buldreforer.tromsoklatring.no (Troms)</List.Item>
@@ -94,6 +98,8 @@ const App = () => {
                 <Grid.Column width={6}>
                   <Header inverted as='h4' content='Climbing' />
                   <List link inverted>
+                  <List.Item as='a' href='/sites/climbing'>Climbing sites (map)</List.Item>
+                  <br/>
                   <List.Item as='a' href='https://brattelinjer.no' rel='noopener' target='_blank'>brattelinjer.no (Rogaland)</List.Item>
                   <List.Item as='a' href='https://hkl.brattelinjer.no' rel='noopener' target='_blank'>hkl.brattelinjer.no (Haugalandet)</List.Item>
                   <List.Item as='a' href='https://klatreforer.narvikklatreklubb.no' rel='noopener' target='_blank'>klatreforer.narvikklatreklubb.no (Narvik)</List.Item>
