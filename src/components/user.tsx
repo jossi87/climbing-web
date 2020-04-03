@@ -92,7 +92,7 @@ const User = () => {
           </Button>
         </ButtonGroup>
         <Header as="h2">
-          {data.picture && <Image circular src={data.picture}/>} {data.name}
+          {data.picture && <Image size="small" circular src={data.picture}/>} {data.name}
         </Header>  
         <Label.Group size="small">
           <Label color='orange' image><Icon name='check' />{numberWithCommas(numFas)}<Label.Detail>FA</Label.Detail></Label>
