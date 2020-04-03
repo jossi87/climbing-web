@@ -284,8 +284,8 @@ export function getSectorEdit(accessToken: string, areaIdSectorId: string): Prom
 }
 
 export function getSites(accessToken: string, type: string): Promise<any> {
-  let idType = type==='bouldering'? 1 : 2;
-  return makeAuthenticatedRequest(accessToken, `/sites?idType=${idType}`, null)
+  let isBouldering = type==='bouldering'? true : false;
+  return makeAuthenticatedRequest(accessToken, `/sites?isBouldering=${isBouldering}`, null)
   .then((data) => data.json())
   .catch((error) => {
     console.warn(error);
