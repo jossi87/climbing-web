@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Image } from 'semantic-ui-react'
 import { getImageUrl, postSearch } from './../../../api';
 import { LockSymbol } from '../widgets/widgets';
@@ -12,18 +12,25 @@ const SearchBox = ({ children, ...searchProps} ) => {
   const { accessToken } = useAuth0();
   let history = useHistory();
 
+  useEffect(() => {
+    let canceled = false;
+    setLoading(true);
+    postSearch(accessToken, value).then((res) => {
+      if (!canceled) {
+        setResults(res);
+        setLoading(false);
+      }
+    });
+    return () => (canceled = true);
+  }, [value]);
+
   return (
     <Search
       id="mySearch"
       loading={loading}
       onResultSelect={(e, { result }) => history.push(result.url)}
       onSearchChange={(e, { value }) => {
-        setLoading(true);
         setValue(value);
-        postSearch(accessToken, value).then((res) => {
-          setResults(res);
-          setLoading(false);
-        });
       }}
       resultRenderer={({ mediaId, mediaUrl, title, description, visibility }) => {
         var imageSrc = null;

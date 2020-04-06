@@ -26,9 +26,13 @@ const Frontpage = () => {
   }, [loading, accessToken]);
   useEffect(() => {
     if (!loading) {
+      let canceled = false;
       getActivity(accessToken, lowerGradeId, activityTypeFa, activityTypeComments, activityTypeTicks, activityTypeMedia).then((res) => {
-        setActivity(res);
+        if (!canceled) {
+          setActivity(res);
+        }
       });
+      return () => (canceled = true);
     }
   }, [loading, accessToken, lowerGradeId, activityTypeFa, activityTypeComments, activityTypeTicks, activityTypeMedia]);
 
