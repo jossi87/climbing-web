@@ -109,9 +109,12 @@ const User = () => {
               checked={data.metadata.useBlueNotRed}
               label='Use blue instead of red lines on schematics'
               onClick={() => {
-                data.metadata.useBlueNotRed = !data.metadata.useBlueNotRed;
-                setData(data);
-                postUser(accessToken, data.metadata.useBlueNotRed)
+                let metadata = data.metadata;
+                metadata.useBlueNotRed = !metadata.useBlueNotRed;
+                postUser(accessToken, metadata.useBlueNotRed)
+                .then(() => {
+                  setData(prevState => ({ ...prevState, metadata }));
+                })
                 .catch((error) => {
                   console.warn(error);
                 });
