@@ -135,6 +135,12 @@ const ProblemEdit = () => {
   if (data.metadata.isSuperAdmin) {
     visibilityOptions.push({key: 2, value: 2, text: "Only visible for super administrators"})
   }
+  //@ts-ignore
+  let dayPicker = <DayPickerInput
+      format="LL"
+      onDayChange={onFaDateChanged}
+      value={convertFromStringToDate(data.faDate)}
+    />;
   return (
     <>
       <MetaTags>
@@ -147,11 +153,7 @@ const ProblemEdit = () => {
         </Form.Field>
         <Form.Field>
           <label>FA date (yyyy-mm-dd)</label>
-          <DayPickerInput
-            format="LL"
-            onDayChange={onFaDateChanged}
-            value={convertFromStringToDate(data.faDate)}
-          /><br/>
+          {dayPicker}<br/>
           <Button.Group>
             <Button onClick={() => onFaDateChanged(yesterday)}>Yesterday</Button>
             <Button onClick={() => onFaDateChanged(new Date())}>Today</Button>

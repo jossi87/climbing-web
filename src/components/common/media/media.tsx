@@ -85,7 +85,7 @@ const Media = ({ media, removeMedia, useBlueNotRed, isAdmin }) => {
   if (history.location.search && media && m == null) {
     let id = history.location.search.replace("?idMedia=","");
     if (id.indexOf("&") > 0) {
-      id = id.substr(id, id.indexOf("&"));
+      id = id.substr(0, id.indexOf("&"));
     }
     let x = media.filter(m => m.id==id);
     if (x && x.length > 0) {

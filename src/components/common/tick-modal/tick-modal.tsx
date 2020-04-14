@@ -22,6 +22,13 @@ const TickModal = ({ open, onClose, accessToken, idTick, idProblem, grades, comm
 
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate()-1);
+
+  //@ts-ignore
+  let dayPicker = <DayPickerInput
+    format="LL"
+    onDayChange={(newDate) => {setDate(convertFromDateToString(newDate))}}
+    value={date && convertFromStringToDate(date)}
+  />
   return (
     <Modal open={open} onClose={onClose}>
       <Modal.Header>Tick</Modal.Header>
@@ -30,11 +37,7 @@ const TickModal = ({ open, onClose, accessToken, idTick, idProblem, grades, comm
           <Form>
             <Form.Field>
               <label>Date (yyyy-mm-dd)</label>
-              <DayPickerInput
-                format="LL"
-                onDayChange={(newDate) => {setDate(convertFromDateToString(newDate))}}
-                value={date && convertFromStringToDate(date)}
-              /><br/>
+              {dayPicker}<br/>
               <Button.Group>
                 <Button onClick={() => setDate(convertDateToString(yesterday))}>Yesterday</Button>
                 <Button onClick={() => setDate(convertDateToString(new Date()))}>Today</Button>
