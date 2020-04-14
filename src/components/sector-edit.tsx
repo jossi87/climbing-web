@@ -153,7 +153,15 @@ const SectorEdit = () => {
           />
         </Form.Field>
         <Button.Group>
-          <Button negative onClick={() => history.push(`/sector/${areaIdSectorId.split("-")[1]}`)}>Cancel</Button>
+          <Button negative onClick={() => {
+            let sectorId = areaIdSectorId.split("-")[1];
+            if (sectorId != '0') {
+              history.push(`/sector/${sectorId}`);
+            } else {
+              let areaId = areaIdSectorId.split("-")[0];
+              history.push(`/area/${areaId}`);
+            }
+          }}>Cancel</Button>
           <Button.Or />
           <Button positive loading={saving} onClick={save}>Save sector</Button>
         </Button.Group>

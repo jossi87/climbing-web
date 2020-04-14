@@ -222,7 +222,15 @@ const ProblemEdit = () => {
           <Input placeholder='Longitude' value={data.lng} onChange={onLngChanged} />
         </Form.Field>
         <Button.Group>
-          <Button negative onClick={() => history.push(`/problem/${sectorIdProblemId.split("-")[1]}`)}>Cancel</Button>
+          <Button negative onClick={() => {
+            let problemId = sectorIdProblemId.split("-")[1];
+            if (problemId && problemId != '0') {
+              history.push(`/problem/${problemId}`)
+            } else {
+              let sectorId = sectorIdProblemId.split("-")[0];
+              history.push(`/sector/${sectorId}`)
+            }
+          }}>Cancel</Button>
           <Button.Or />
           <Button positive loading={saving} onClick={save}>Save</Button>
         </Button.Group>

@@ -191,7 +191,7 @@ export function getProblemEdit(accessToken: string, sectorIdProblemId: string): 
         newMedia: [],
         metadata: {
           title: 'New problem | ' + res.metadata.title,
-          defaultZoom: res.metadata.defaultZoom,
+          defaultZoom: defaultZoom,
           defaultCenter: defaultCenter,
           grades: res.metadata.grades,
           types: res.metadata.types,
@@ -264,7 +264,7 @@ export function getSectorEdit(accessToken: string, areaIdSectorId: string): Prom
         lat: 0,
         lng: 0,
         newMedia: [],
-        metadata: {title: 'New sector | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: defaultCenter, isAdmin: res.metadata.isAdmin, isSuperAdmin: res.metadata.isSuperAdmin}
+        metadata: {title: 'New sector | ' + res.metadata.title, defaultZoom: 12, defaultCenter: defaultCenter, isAdmin: res.metadata.isAdmin, isSuperAdmin: res.metadata.isSuperAdmin}
       };
     })
     .catch((error) => {

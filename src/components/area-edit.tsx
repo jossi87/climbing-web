@@ -105,7 +105,13 @@ const AreaEdit = () => {
           />
         </Form.Field>
         <Button.Group>
-          <Button negative onClick={() => history.push(`/area/${areaId}`)}>Cancel</Button>
+          <Button negative onClick={() => {
+            if (areaId && areaId != '-1') {
+              history.push(`/area/${areaId}`);
+            } else {
+              history.push(`/browse`);
+            }
+          }}>Cancel</Button>
           <Button.Or />
           <Button positive loading={saving} onClick={save}>Save area</Button>
         </Button.Group>
