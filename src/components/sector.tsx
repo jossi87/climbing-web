@@ -8,6 +8,7 @@ import { LockSymbol, Stars, LoadingAndRestoreScroll } from './common/widgets/wid
 import { Segment, Icon, Checkbox, Button, List, Tab, Breadcrumb, Message, Header } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSector } from '../api';
+import Linkify from 'react-linkify';
 
 const Sector = () => {
   const { loading, accessToken } = useAuth0();
@@ -125,7 +126,7 @@ const Sector = () => {
         <Icon name="info" />
         <Message.Content>
           <strong>Page views:</strong> {data.hits}<br/>
-          {data.comment}
+          <Linkify>{data.comment}</Linkify>
         </Message.Content>
       </Message>
       {data.problems &&

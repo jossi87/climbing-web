@@ -9,6 +9,7 @@ import { useAuth0 } from '../utils/react-auth0-spa';
 import { getProblem, getTodo, postComment, postTodo } from '../api';
 import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
+import Linkify from 'react-linkify';
 
 const Problem = () => {
   const { loading, accessToken } = useAuth0();
@@ -157,7 +158,7 @@ const Problem = () => {
             <Comment.Content>
               <Comment.Author as={Link} to={`/user/${t.idUser}`}>{t.name}</Comment.Author>
               <Comment.Metadata>{t.date}</Comment.Metadata>
-              <Comment.Text><Stars numStars={t.stars} /> {t.suggestedGrade}<br/>{t.comment}</Comment.Text>
+              <Comment.Text><Stars numStars={t.stars} /> {t.suggestedGrade}<br/><Linkify>{t.comment}</Linkify></Comment.Text>
             </Comment.Content>
           </Comment>
         ))
@@ -185,7 +186,7 @@ const Problem = () => {
               <Comment.Content>
                 <Comment.Author as={Link} to={`/user/${c.idUser}`}>{c.name}</Comment.Author>
                 <Comment.Metadata>{c.date}</Comment.Metadata>
-                <Comment.Text>{c.message}</Comment.Text>
+                <Comment.Text><Linkify>{c.message}</Linkify></Comment.Text>
                 {extra && <Comment.Actions>{extra}</Comment.Actions>}
               </Comment.Content>
             </Comment>
@@ -282,7 +283,7 @@ const Problem = () => {
         <Message.Content>
           {!data.metadata.isBouldering && <><strong>Type:</strong> {data.t.subType}<br/></>}
           <strong>Nr:</strong> {data.nr}<br/>
-          <strong>Comment:</strong> {data.comment}<br/>
+          <strong>Comment:</strong> <Linkify>{data.comment}</Linkify><br/>
           <strong>FA:</strong> {data.fa && data.fa.map((u, i) => (
             <Label key={i} as={Link} to={`/user/${u.id}`} image>
               {u.picture ? <img src={u.picture} /> : <Icon name="user"/>}{u.name}
