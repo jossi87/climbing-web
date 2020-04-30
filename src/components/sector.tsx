@@ -124,7 +124,7 @@ const Sector = () => {
       <Message icon>
         <Icon name="info" />
         <Message.Content>
-          <strong>Page views (since 2019.10.09):</strong> {data.hits}<br/>
+          <strong>Page views:</strong> {data.hits}<br/>
           {data.comment}
         </Message.Content>
       </Message>

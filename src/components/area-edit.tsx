@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import ImageUpload from './common/image-upload/image-upload';
 import Leaflet from './common/leaflet/leaflet';
-import { Form, Button, Input, Dropdown, TextArea } from 'semantic-ui-react';
+import { Form, Button, Checkbox, Input, Dropdown, TextArea } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getAreaEdit, postArea } from '../api';
 import { LoadingAndRestoreScroll, InsufficientPrivileges } from './common/widgets/widgets';
@@ -40,7 +40,7 @@ const AreaEdit = () => {
   function save(event) {
     event.preventDefault();
     setSaving(true);
-    postArea(accessToken, data.id, data.visibility, data.name, data.comment, data.lat, data.lng, data.newMedia)
+    postArea(accessToken, data.id, data.visibility, data.forDevelopers, data.name, data.comment, data.lat, data.lng, data.newMedia)
     .then((response) => {
       history.push("/area/" + response.id);
     })
@@ -86,6 +86,10 @@ const AreaEdit = () => {
         <Form.Field>
           <label>Visibility</label>
           <Dropdown selection value={data.visibility} onChange={onVisibilityChanged} options={visibilityOptions}/>
+        </Form.Field>
+        <Form.Field>
+          <label>For developers</label>
+          <Checkbox label="For developers" checked={data.forDevelopers} onChange={() => setData(prevState => ({ ...prevState, forDevelopers: !data.forDevelopers }))} />
         </Form.Field>
         <Form.Field>
           <label>Upload image(s)</label>

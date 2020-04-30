@@ -401,10 +401,10 @@ export function getUsersTicks(accessToken: string): Promise<any> {
   });
 }
 
-export function postArea(accessToken: string, id: number, visibility: number, name: string, comment: string, lat: number, lng: number, media: any): Promise<any> {
+export function postArea(accessToken: string, id: number, visibility: number, forDevelopers: boolean, name: string, comment: string, lat: number, lng: number, media: any): Promise<any> {
   const formData = new FormData();
   const newMedia = media.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto}});
-  formData.append('json', JSON.stringify({id, visibility, name, comment, lat, lng, newMedia}));
+  formData.append('json', JSON.stringify({id, visibility, forDevelopers, name, comment, lat, lng, newMedia}));
   media.forEach(m => formData.append(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
   return makeAuthenticatedRequest(accessToken, `/areas`,{
     method: 'POST',

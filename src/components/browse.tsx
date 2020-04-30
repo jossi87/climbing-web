@@ -10,6 +10,7 @@ import { getBrowse } from '../api';
 const Browse = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState(null);
+  const [showForDevelopers, setShowForDevelopers] = useState(false);
   let history = useHistory();
   useEffect(() => {
     if (!loading) {
@@ -21,7 +22,7 @@ const Browse = () => {
     return <LoadingAndRestoreScroll />;
   }
   const typeDescription = data.metadata.isBouldering? "problem(s)" : "route(s)";
-  const markers = data.areas.filter(a => a.lat!=0 && a.lng!=0).map(a => {
+  const markers = data.areas.filter(a => a.forDevelopers === showForDevelopers && a.lat!=0 && a.lng!=0).map(a => {
     return {
         lat: a.lat,
         lng: a.lng,
@@ -56,17 +57,18 @@ const Browse = () => {
           </Button.Group>
         }
       </div>
-      <Breadcrumb>
-        <Breadcrumb.Section active>Browse areas</Breadcrumb.Section>
-      </Breadcrumb>
+      <Button.Group>
+        <Button active={!showForDevelopers} onClick={() => setShowForDevelopers(false)}>Developed areas</Button>
+        <Button active={showForDevelopers} onClick={() => setShowForDevelopers(true)}>Areas for developers</Button>
+      </Button.Group>
       {map}
       <List divided relaxed as={Segment}>
-        {data.areas.map((area, i) => (
+        {data.areas.filter(a => a.forDevelopers === showForDevelopers).map((area, i) => (
           <List.Item key={i}>
             <List.Content as={Link} to={`/area/${area.id}`}>
               <List.Header>{area.name} <LockSymbol visibility={area.visibility}/></List.Header>
               <List.Description>
-                <i>{`${area.numSectors} sector(s), ${area.numProblems} ${typeDescription}, ${area.hits} page views (since 2019.10.09)`}</i><br/>
+                <i>{`${area.numSectors} sector(s), ${area.numProblems} ${typeDescription}, ${area.hits} page views`}</i><br/>
                 {area.comment && area.comment.length>350? area.comment.substring(0,350) + "..." : area.comment}
               </List.Description>
             </List.Content>
