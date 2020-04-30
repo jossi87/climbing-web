@@ -54,7 +54,7 @@ const Area = () => {
       setData(prevState => ({ ...prevState, media: newMedia }));
     }} media={data.media} useBlueNotRed={data.metadata.useBlueNotRed} /></Tab.Pane> });
   }
-  if (markers.length>0 || outlines.length>0) {
+  if (markers.length>0 || outlines.length>0 || (data.lat && data.lat>0)) {
     const defaultCenter = data.lat && data.lat>0? {lat: data.lat, lng: data.lng} : data.metadata.defaultCenter;
     const defaultZoom = data.lat && data.lat>0? 14 : data.metadata.defaultZoom;
     panes.push({ menuItem: 'Map', render: () => <Tab.Pane><Leaflet height={height} markers={markers} outlines={outlines} polylines={polylines} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} onClick={null} /></Tab.Pane> });
@@ -108,7 +108,7 @@ const Area = () => {
         <Icon name="info" />
         <Message.Content>
           <strong>Page views:</strong> {data.hits}<br/>
-          {data.forDevelopers && <strong>Under development</strong>}
+          {data.forDevelopers && <strong><i>Under development</i></strong>}
           {data.comment && <div dangerouslySetInnerHTML={{ __html: data.comment }} />}
         </Message.Content>
       </Message>
