@@ -94,6 +94,7 @@ const App = () => {
                     <List.Item as='a' href='https://buldring.flatangeradventure.no' rel='noopener' target='_blank'>buldring.flatangeradventure.no (Flatanger)</List.Item>
                     <List.Item as='a' href='https://buldring.fredrikstadklatreklubb.org' rel='noopener' target='_blank'>buldring.fredrikstadklatreklubb.org (Fredrikstad)</List.Item>
                     <List.Item as='a' href='https://buldring.jotunheimenfjellsport.com' rel='noopener' target='_blank'>buldring.jotunheimenfjellsport.com (Jotunheimen)</List.Item>
+                    <List.Item as='a' href='https://buldring.narvikklatreklubb.no' rel='noopener' target='_blank'>buldring.narvikklatreklubb.no (Narvik)</List.Item>
                   </List>
                 </Grid.Column>
                 <Grid.Column width={6}>
