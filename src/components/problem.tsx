@@ -287,7 +287,7 @@ const Problem = () => {
           <List.Item>
             <List.Icon name='info' />
             <List.Content>
-              <strong>{data.faAid? "First free ascent:" : "First ascent:"}</strong><br/>
+              <strong>{data.faAid? "First free ascent (FFA):" : "First ascent:"}</strong><br/>
               <Label basic>Grade:<Label.Detail>{data.originalGrade}</Label.Detail></Label>
               {!data.metadata.isBouldering && <Label basic><Icon name='tag' />{data.t.subType}</Label>}
               {data.faDateHr && <Label basic><Icon name='calendar check' />{data.faDateHr}</Label>}
@@ -300,7 +300,7 @@ const Problem = () => {
               {data.comment && data.comment.trim().length>0 && <Label basic><Icon name="paragraph" /><Linkify>{data.comment}</Linkify></Label>}
               {data.faAid &&
                 <><br/><br/>
-                  <strong>First ascent (AID):</strong><br/>
+                  <strong>First ascent (Aid):</strong><br/>
                   {data.faAid.dateHr && <Label basic><Icon name='calendar check' />{data.faAid.dateHr}</Label>}
                   <br/>
                   {data.faAid.users && <>{data.faAid.users.map((u, i) => (
