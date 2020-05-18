@@ -300,7 +300,7 @@ const Problem = () => {
               {data.comment && data.comment.trim().length>0 && <Label basic><Icon name="paragraph" /><Linkify>{data.comment}</Linkify></Label>}
               {data.faAid &&
                 <><br/><br/>
-                  <strong>First AID ascent:</strong><br/>
+                  <strong>First ascent (AID):</strong><br/>
                   {data.faAid.dateHr && <Label basic><Icon name='calendar check' />{data.faAid.dateHr}</Label>}
                   <br/>
                   {data.faAid.users && <>{data.faAid.users.map((u, i) => (
