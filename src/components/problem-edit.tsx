@@ -4,7 +4,7 @@ import UserSelector from './common/user-selector/user-selector';
 import ProblemSection from './common/problem-section/problem-section';
 import ImageUpload from './common/image-upload/image-upload';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
-import { Form, Button, Input, Dropdown, TextArea } from 'semantic-ui-react';
+import { Form, Button, Input, Dropdown, TextArea, Segment } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getProblemEdit, convertFromDateToString, convertFromStringToDate, postProblem } from '../api';
@@ -66,6 +66,28 @@ const ProblemEdit = () => {
     setData(prevState => ({ ...prevState, newMedia }));
   }
 
+  function onFaAidDateChanged(newFaDate) {
+    let faDate = newFaDate? convertFromDateToString(newFaDate) : null;
+    let faAid = data.faAid;
+    data.faAid.date = faDate;
+    setData(prevState => ({ ...prevState, faAid }));
+  }
+
+  function onFaAidDescriptionChanged(e, { value }) {
+    let faAid = data.faAid;
+    faAid.description = value;
+    setData(prevState => ({ ...prevState, faAid }));
+  }
+
+  function onFaAidUsersUpdated(newUsers) {
+    let fa = newUsers.map(u => {
+      return {id: (typeof u.value === 'string' || u.value instanceof String)? -1 : u.value, name: u.label};
+    });
+    let faAid = data.faAid;
+    faAid.users = fa;
+    setData(prevState => ({ ...prevState, faAid }));
+  }
+
   function save(event) {
     event.preventDefault();
     setSaving(true);
@@ -84,7 +106,8 @@ const ProblemEdit = () => {
       data.lat,
       data.lng,
       data.sections,
-      data.newMedia)
+      data.newMedia,
+      data.faAid)
     .then((response) => {
       history.push("/problem/" + response.id);
     })
@@ -141,12 +164,35 @@ const ProblemEdit = () => {
       onDayChange={onFaDateChanged}
       value={convertFromStringToDate(data.faDate)}
     />;
+  //@ts-ignore
+  let dayPickerAid = <DayPickerInput
+    format="LL"
+    onDayChange={onFaAidDateChanged}
+    value={convertFromStringToDate(data.faAid? data.faAid.date : '')}
+  />;
   return (
     <>
       <MetaTags>
         <title>{data.metadata.title}</title>
       </MetaTags>
       <Form>
+        {!data.metadata.isBouldering &&
+          <Form.Field>
+            <label>First AID ascent</label>
+            <Button.Group>
+              <Button onClick={() => setData(prevState => ({ ...prevState, faAid: {problemId: data.id, date: '', description: ''} }))} positive={data.faAid? true : false}>Yes</Button>
+              <Button.Or />
+              <Button onClick={() => setData(prevState => ({ ...prevState, faAid: null }))} positive={data.faAid? false : true}>No</Button>
+            </Button.Group>
+            {data.faAid &&
+              <Segment>
+                {dayPickerAid}
+                <TextArea placeholder='Enter description' style={{ minHeight: 75 }} value={data.faAid.description} onChange={onFaAidDescriptionChanged} />
+                <UserSelector isMulti={true} placeholder="Select user(s)" users={data.faAid.users? data.faAid.users.map(u => {return {value: u.id, label: u.name}}) : []} onUsersUpdated={onFaAidUsersUpdated} identity={null} />
+              </Segment>
+            }
+          </Form.Field>
+        }
         <Form.Field>
           <label>Name</label>
           <Input placeholder='Enter name' value={data.name} onChange={onNameChanged} />
