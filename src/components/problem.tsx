@@ -287,7 +287,7 @@ const Problem = () => {
           <List.Item>
             <List.Icon name='info' />
             <List.Content>
-              <strong>{data.faAid? "First free ascent (FFA):" : "First ascent:"}</strong><br/>
+              {data.faAid && <strong>First free ascent (FFA):<br/></strong>}
               <Label basic>Grade:<Label.Detail>{data.originalGrade}</Label.Detail></Label>
               {!data.metadata.isBouldering && <Label basic><Icon name='tag' />{data.t.subType}</Label>}
               {data.faDateHr && <Label basic><Icon name='calendar check' />{data.faDateHr}</Label>}
