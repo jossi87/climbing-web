@@ -5,7 +5,7 @@ import ChartGradeDistribution from './common/chart-grade-distribution/chart-grad
 import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
 import { LockSymbol, Stars, LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { Segment, Icon, ButtonGroup, Button, List, Tab, Breadcrumb, Message, Header } from 'semantic-ui-react';
+import { Segment, Icon, ButtonGroup, Button, List, Tab, Breadcrumb, Header, Table, Label } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSector } from '../api';
 import Linkify from 'react-linkify';
@@ -135,13 +135,30 @@ const Sector = () => {
         </Breadcrumb>
       </div>
       <Tab panes={panes} />
-      <Message icon>
-        <Icon name="info" />
-        <Message.Content>
-          <strong>Page views:</strong> {data.hits}<br/>
-          <Linkify>{data.comment}</Linkify>
-        </Message.Content>
-      </Message>
+      <Table definition unstackable>
+        <Table.Body>
+          {data.comment &&
+            <Table.Row>
+              <Table.Cell>Description:</Table.Cell>
+              <Table.Cell><Linkify>{data.comment}</Linkify></Table.Cell>
+          </Table.Row>
+          }
+          {data.lat>0 && data.lng>0 &&
+            <Table.Row>
+              <Table.Cell>Navigate to parking lot:</Table.Cell>
+              <Table.Cell>
+                <Label href={`https://maps.google.com/maps?q=loc:${data.lat},${data.lng}&navigate=yes`} rel="noopener" target="_blank" image basic >
+                <Icon name="map"/>Google Maps
+                </Label>
+              </Table.Cell>
+            </Table.Row>
+          }
+          <Table.Row>
+            <Table.Cell width={3}>Page views:</Table.Cell>
+            <Table.Cell>{data.hits}</Table.Cell>
+          </Table.Row>
+        </Table.Body>
+      </Table>
       {data.problems &&
         <Segment>
           <div>

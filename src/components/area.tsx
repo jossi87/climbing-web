@@ -5,7 +5,7 @@ import ChartGradeDistribution from './common/chart-grade-distribution/chart-grad
 import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
 import { LockSymbol, LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { Button, Tab, Item, Message, Icon, Image, Breadcrumb, Segment, Header } from 'semantic-ui-react';
+import { Button, Tab, Item, Icon, Image, Breadcrumb, Segment, Header } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getArea, getImageUrl } from '../api';
 
@@ -104,14 +104,11 @@ const Area = () => {
         </Breadcrumb>
       </div>
       <Tab panes={panes} />
-      <Message icon>
-        <Icon name="info" />
-        <Message.Content>
-          <strong>Page views:</strong> {data.hits}<br/>
-          {data.forDevelopers && <strong><i>Under development</i></strong>}
-          {data.comment && <div dangerouslySetInnerHTML={{ __html: data.comment }} />}
-        </Message.Content>
-      </Message>
+      <Segment>
+        <strong>Page views:</strong> {data.hits}<br/>
+        {data.forDevelopers && <strong><i>Under development</i></strong>}
+        {data.comment && <div dangerouslySetInnerHTML={{ __html: data.comment }} />}
+      </Segment>
       {data.sectors &&
         <Segment>
           <Header as="h3">Sectors:</Header>

@@ -3,7 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { Link, useParams, useHistory } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
-import { Button, Message, Grid, Breadcrumb, Tab, Label, Icon, Comment, Header, Segment, Feed, List, Divider } from 'semantic-ui-react';
+import { Button, Grid, Breadcrumb, Tab, Label, Icon, Comment, Header, Segment, Table } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getProblem, getTodo, postComment, postTodo } from '../api';
@@ -278,77 +278,56 @@ const Problem = () => {
         </Breadcrumb>
       </div>
       <Tab panes={panes} />
-      <Message>
-        <List>
-          <List.Item>
-            <List.Icon name='hashtag' />
-            {data.nr}
-          </List.Item>
-          <List.Item>
-            <List.Icon name='info' />
-            <List.Content>
-              {data.faAid && <strong>First free ascent (FFA):<br/></strong>}
+      <Table definition unstackable>
+        <Table.Body>
+          <Table.Row>
+            <Table.Cell width={3}>Number:</Table.Cell>
+            <Table.Cell>{data.nr}</Table.Cell>
+          </Table.Row>
+          <Table.Row>
+            <Table.Cell>{data.faAid ? "First free ascent (FFA):" : "First ascent:"}</Table.Cell>
+            <Table.Cell>
               <Label basic>Grade:<Label.Detail>{data.originalGrade}</Label.Detail></Label>
               {!data.metadata.isBouldering && <Label basic><Icon name='tag' />{data.t.subType}</Label>}
               {data.faDateHr && <Label basic><Icon name='calendar check' />{data.faDateHr}</Label>}
-              <br/>
               {data.fa && <>{data.fa.map((u, i) => (
                 <Label key={i} as={Link} to={`/user/${u.id}`} image basic>
                   {u.picture ? <img src={u.picture} /> : <Icon name="user"/>}{u.name}
                 </Label>
-              ))}<br/></>}
-              {data.comment && data.comment.trim().length>0 && <Label basic><Icon name="paragraph" /><Linkify>{data.comment}</Linkify></Label>}
-              {data.faAid &&
-                <><br/><br/>
-                  <strong>First ascent (Aid):</strong><br/>
-                  {data.faAid.dateHr && <Label basic><Icon name='calendar check' />{data.faAid.dateHr}</Label>}
-                  <br/>
-                  {data.faAid.users && <>{data.faAid.users.map((u, i) => (
-                    <Label key={i} as={Link} to={`/user/${u.id}`} image basic>
-                      {u.picture ? <img src={u.picture} /> : <Icon name="user"/>}{u.name}
-                    </Label>
-                  ))}<br/></>}
-                  {data.faAid.description && <Label basic><Icon name="paragraph" /><Linkify>{data.faAid.description}</Linkify></Label>}
-                </>
-              }
-            </List.Content>
-          </List.Item>
+              ))}</>}
+              {data.comment && data.comment.trim().length>0 && <Linkify><br/>{data.comment}</Linkify>}
+            </Table.Cell>
+          </Table.Row>
+          {data.faAid &&
+            <Table.Row>
+              <Table.Cell>First ascent (Aid):</Table.Cell>
+              <Table.Cell>
+                {data.faAid.dateHr && <Label basic><Icon name='calendar check' />{data.faAid.dateHr}</Label>}
+                {data.faAid.users && <>{data.faAid.users.map((u, i) => (
+                  <Label key={i} as={Link} to={`/user/${u.id}`} image basic>
+                    {u.picture ? <img src={u.picture} /> : <Icon name="user"/>}{u.name}
+                  </Label>
+                ))}</>}
+                {data.faAid.description && <Linkify><br/>{data.faAid.description}</Linkify>}
+              </Table.Cell>
+            </Table.Row>
+          }
           {data.sectorLat>0 && data.sectorLng>0 &&
-            <List.Item>
-              <List.Icon name="map" />
-              <List.Content>
-                <a href={`https://maps.google.com/maps?q=loc:${data.sectorLat},${data.sectorLng}&navigate=yes`} rel="noopener" target="_blank">Navigate to parking lot (Google Maps)</a>
-              </List.Content>
-            </List.Item>
+            <Table.Row>
+              <Table.Cell>Navigate to parking lot:</Table.Cell>
+              <Table.Cell>
+                <Label href={`https://maps.google.com/maps?q=loc:${data.sectorLat},${data.sectorLng}&navigate=yes`} rel="noopener" target="_blank" image basic >
+                <Icon name="map"/>Google Maps
+                </Label>
+              </Table.Cell>
+            </Table.Row>
           }
-          <List.Item>
-            <List.Icon name='eye' />
-            <List.Content>{data.hits}</List.Content>
-          </List.Item>
-          {data.sections &&
-            <List.Item>
-              <List.Icon name='content' />
-              <List.Content>
-                <strong>Pitches:</strong>
-                <Feed size="small">
-                  {data.sections.map((s,i) => (
-                    <Feed.Event key={i}>
-                      <Feed.Label style={{marginTop: '8px'}}>{s.nr}</Feed.Label>
-                      <Feed.Content>
-                        <Feed.Summary>
-                          <Feed.Label>{s.grade}</Feed.Label> 
-                          <Feed.Date>{s.description}</Feed.Date>
-                          {s.media && <Feed.Extra><Media isAdmin={data.metadata.isAdmin} removeMedia={() => window.location.reload()} media={s.media} useBlueNotRed={data.metadata.useBlueNotRed} /></Feed.Extra>}
-                        </Feed.Summary>
-                      </Feed.Content>
-                    </Feed.Event>
-                  ))}
-                </Feed>
-              </List.Content>
-            </List.Item>
-          }
-        </List>
-      </Message>
+          <Table.Row>
+            <Table.Cell>Page views:</Table.Cell>
+            <Table.Cell>{data.hits}</Table.Cell>
+          </Table.Row>
+        </Table.Body>
+      </Table>
       <Grid>
         <Grid.Column mobile={16} tablet={8} computer={8}>{ticks}</Grid.Column>
         <Grid.Column mobile={16} tablet={8} computer={8}>{comments}</Grid.Column>
