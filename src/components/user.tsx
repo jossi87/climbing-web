@@ -134,7 +134,7 @@ const User = () => {
           <div>
             <ButtonGroup floated="right" size="mini">
               <Button icon labelPosition="left" onClick={() => order('date')} active={orderBy==='date'}><Icon name="sort content ascending"/>Date</Button>
-              <Button icon labelPosition="left" onClick={() => order('grade')} active={orderBy==='grade'}><Icon name="sort numeric descending"/>Grade</Button>
+              <Button icon labelPosition="left" onClick={() => order('grade')} active={orderBy==='grade'}><Icon name="sort numeric ascending"/>Grade</Button>
               <Button icon labelPosition="left" onClick={() => order('name')} active={orderBy==='name'}><Icon name="sort alphabet down"/>Name</Button>
             </ButtonGroup>
             <Header as="h3">Public ascents:</Header>
