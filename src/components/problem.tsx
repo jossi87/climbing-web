@@ -3,7 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { Link, useParams, useHistory } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
-import { Button, Grid, Breadcrumb, Tab, Label, Icon, Comment, Header, Segment, Table } from 'semantic-ui-react';
+import { Button, Grid, Breadcrumb, Tab, Label, Icon, Comment, Header, Segment, Table, Feed } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getProblem, getTodo, postComment, postTodo } from '../api';
@@ -326,6 +326,27 @@ const Problem = () => {
             <Table.Cell>Page views:</Table.Cell>
             <Table.Cell>{data.hits}</Table.Cell>
           </Table.Row>
+          {data.sections &&
+            <Table.Row>
+              <Table.Cell verticalAlign="top">Pitches:</Table.Cell>
+              <Table.Cell>
+                <Feed size="small">
+                  {data.sections.map((s, i) => (
+                    <Feed.Event key={i}>
+                      <Feed.Label style={{marginTop: '8px'}}>{s.nr}</Feed.Label>
+                      <Feed.Content>
+                        <Feed.Summary>
+                          <Feed.Label>{s.grade}</Feed.Label> 
+                          <Feed.Date>{s.description}</Feed.Date>
+                          {s.media && <Feed.Extra><Media isAdmin={data.metadata.isAdmin} removeMedia={() => window.location.reload()} media={s.media} useBlueNotRed={data.metadata.useBlueNotRed} /></Feed.Extra>}
+                        </Feed.Summary>
+                      </Feed.Content>
+                    </Feed.Event>
+                  ))}
+                </Feed>  
+              </Table.Cell>
+            </Table.Row>
+          }
         </Table.Body>
       </Table>
       <Grid>
