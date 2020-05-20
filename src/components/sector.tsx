@@ -137,11 +137,21 @@ const Sector = () => {
       <Tab panes={panes} />
       <Table definition unstackable>
         <Table.Body>
+          <Table.Row>
+          <Table.Cell width={3}>{data.metadata.isBouldering? "Boulders:" : "Routes:"}</Table.Cell>
+          <Table.Cell>
+            {hideTicked?
+              data.problems.filter(problem => !problem.ticked).length + " (" + data.problems.length + " in total)"
+              :
+              data.problems.length
+            }
+          </Table.Cell>
+        </Table.Row>
           {data.comment &&
             <Table.Row>
               <Table.Cell>Description:</Table.Cell>
               <Table.Cell><Linkify>{data.comment}</Linkify></Table.Cell>
-          </Table.Row>
+            </Table.Row>
           }
           {data.lat>0 && data.lng>0 &&
             <Table.Row>
@@ -154,22 +164,19 @@ const Sector = () => {
             </Table.Row>
           }
           <Table.Row>
-            <Table.Cell width={3}>Page views:</Table.Cell>
+            <Table.Cell>Page views:</Table.Cell>
             <Table.Cell>{data.hits}</Table.Cell>
           </Table.Row>
         </Table.Body>
       </Table>
       {data.problems &&
         <Segment>
-          <div>
-            <ButtonGroup floated="right" size="mini">
-              {data.problems.filter(p => p.ticked).length>0 && 
-                <Button icon labelPosition="left" onClick={() => setHideTicked(!hideTicked)} active={hideTicked}><Icon name="check"/>Hide ticked</Button>}
-              <Button icon labelPosition="left" onClick={() => sortBy(true)} active={data.orderByGrade}><Icon name="sort alphabet down"/>Grade</Button>
-              <Button icon labelPosition="left" onClick={() => sortBy(false)} active={!data.orderByGrade}><Icon name="sort numeric ascending"/>Number</Button>
-            </ButtonGroup>
-            <Header as="h3">{data.problems.filter(problem => !hideTicked || !problem.ticked).length + (data.metadata.isBouldering? " Boulders" : " Routes")}</Header>
-          </div>
+          <ButtonGroup size="mini">
+            {data.problems.filter(p => p.ticked).length>0 && 
+              <Button icon labelPosition="left" onClick={() => setHideTicked(!hideTicked)} active={hideTicked}><Icon name="check"/>Hide ticked</Button>}
+            <Button icon labelPosition="left" onClick={() => sortBy(true)} active={data.orderByGrade}><Icon name="sort alphabet down"/>Grade</Button>
+            <Button icon labelPosition="left" onClick={() => sortBy(false)} active={!data.orderByGrade}><Icon name="sort numeric ascending"/>Number</Button>
+          </ButtonGroup>
           <List selection>
             {data.problems.filter(problem => !hideTicked || !problem.ticked).map((problem, i) => {
               var ascents = problem.numTicks>0 && (problem.numTicks + (problem.numTicks==1? " ascent" : " ascents"));
