@@ -101,7 +101,7 @@ const Sector = () => {
     let txt = numTicked === 0? problemsOfType.length : problemsOfType.length + " (" + numTicked + " ticked)";
     return (
       <Table.Row key={i}>
-        <TableCell>{subType}:</TableCell>
+        <TableCell>{subType? subType : "Boulders"}:</TableCell>
         <TableCell>{txt}</TableCell>
       </Table.Row>
     );
