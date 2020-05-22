@@ -175,7 +175,7 @@ const Sector = () => {
           </Table.Row>
         </Table.Body>
       </Table>
-      {data.problems &&
+      {data.problems && data.problems.length!=0 &&
         <Segment>
           <ButtonGroup size="mini">
             {data.problems.filter(p => p.ticked).length>0 && 
