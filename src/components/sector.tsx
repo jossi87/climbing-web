@@ -5,7 +5,7 @@ import ChartGradeDistribution from './common/chart-grade-distribution/chart-grad
 import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
 import { LockSymbol, Stars, LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { Segment, Icon, ButtonGroup, Button, List, Tab, Breadcrumb, Header, Table, Label } from 'semantic-ui-react';
+import { Segment, Icon, ButtonGroup, Button, List, Tab, Breadcrumb, Header, Table, Label, TableCell } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSector } from '../api';
 import Linkify from 'react-linkify';
@@ -91,6 +91,21 @@ const Sector = () => {
   if (data.problems.length!=0) {
     panes.push({ menuItem: 'Distribution', render: () => <Tab.Pane><ChartGradeDistribution accessToken={accessToken} idArea={0} idSector={data.id}/></Tab.Pane> });
   }
+  let content = data.problems
+                  .map(p => p.t.subType)
+                  .filter((value, index, self) => self.indexOf(value) === index)
+                  .sort()
+                  .map((subType, i) => {
+    let problemsOfType = data.problems.filter(p => p.t.subType === subType);
+    let numTicked = problemsOfType.filter(p => p.ticked).length;
+    let txt = numTicked === 0? problemsOfType.length : problemsOfType.length + " (" + numTicked + " ticked)";
+    return (
+      <Table.Row key={i}>
+        <TableCell>{subType}:</TableCell>
+        <TableCell>{txt}</TableCell>
+      </Table.Row>
+    );
+  })
   return (
     <>
       <MetaTags>
@@ -137,16 +152,7 @@ const Sector = () => {
       <Tab panes={panes} />
       <Table definition unstackable>
         <Table.Body>
-          <Table.Row>
-          <Table.Cell width={3}>{data.metadata.isBouldering? "Boulders:" : "Routes:"}</Table.Cell>
-          <Table.Cell>
-            {hideTicked?
-              data.problems.filter(problem => !problem.ticked).length + " (" + data.problems.length + " in total)"
-              :
-              data.problems.length
-            }
-          </Table.Cell>
-        </Table.Row>
+          {content}
           {data.comment &&
             <Table.Row>
               <Table.Cell>Description:</Table.Cell>
@@ -164,7 +170,7 @@ const Sector = () => {
             </Table.Row>
           }
           <Table.Row>
-            <Table.Cell>Page views:</Table.Cell>
+            <Table.Cell width={3}>Page views:</Table.Cell>
             <Table.Cell>{data.hits}</Table.Cell>
           </Table.Row>
         </Table.Body>
