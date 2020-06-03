@@ -27,8 +27,11 @@ export const Auth0Provider = ({
         window.location.search.includes("state=")
       ) {
         const { appState } = await auth0FromHook.handleRedirectCallback();
-        //@ts-ignore
-        onRedirectCallback(appState);
+        window.location.replace(
+          appState && appState.targetUrl
+            ? appState.targetUrl
+            : window.location.pathname
+        );
       }
 
       const isAuthenticated = await auth0FromHook.isAuthenticated();
@@ -63,10 +66,10 @@ export const Auth0Provider = ({
   const handleRedirectCallback = async () => {
     setLoading(true);
     await auth0Client.handleRedirectCallback();
-    const user = await auth0Client.getUser();
-    setLoading(false);
+    const accessToken = await auth0Client!.getTokenSilently();
     setIsAuthenticated(true);
     setAccessToken(accessToken);
+    setLoading(false);
   };
   return (
     <Auth0Context.Provider
