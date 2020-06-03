@@ -16,6 +16,7 @@ function makeAuthenticatedRequest(accessToken: string, urlSuffix: string, opts: 
   opts = opts || {};
   opts.headers = opts.headers || {};
   opts.mode = 'cors';
+  console.log(accessToken + " <--")
   if (accessToken) {
     opts.headers.Authorization = `Bearer ${accessToken}`;
   }
