@@ -9,14 +9,6 @@ const Index = () => (
       domain='climbing.eu.auth0.com'
       client_id='DNJNVzhxbF7PtaBFh7H6iBSNLh2UJWHt'
       redirect_uri={window.location.origin}
-      onRedirectCallback={(appState: any) => {
-        //alert(appState? appState.targetUrl : "null");
-        window.location.replace(
-          appState && appState.targetUrl
-            ? appState.targetUrl
-            : window.location.pathname
-        );
-      }}
     >
     <Router><App /></Router>
   </Auth0Provider>
