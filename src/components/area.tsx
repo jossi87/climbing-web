@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link, useParams, useHistory } from 'react-router-dom';
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
+import Activity from './common/activity/activity';
 import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
 import { LockSymbol, LoadingAndRestoreScroll } from './common/widgets/widgets';
@@ -57,10 +58,20 @@ const Area = () => {
   if (markers.length>0 || outlines.length>0 || (data.lat && data.lat>0)) {
     const defaultCenter = data.lat && data.lat>0? {lat: data.lat, lng: data.lng} : data.metadata.defaultCenter;
     const defaultZoom = data.lat && data.lat>0? 14 : data.metadata.defaultZoom;
-    panes.push({ menuItem: 'Map', render: () => <Tab.Pane><Leaflet height={height} markers={markers} outlines={outlines} polylines={polylines} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} onClick={null} /></Tab.Pane> });
+    panes.push({
+      menuItem: { key: 'map', icon: 'map', content: 'Map' },
+      render: () => <Tab.Pane><Leaflet height={height} markers={markers} outlines={outlines} polylines={polylines} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} onClick={null} /></Tab.Pane>
+    });
   }
   if (data.sectors.length!=0) {
-    panes.push({ menuItem: 'Distribution', render: () => <Tab.Pane><ChartGradeDistribution accessToken={accessToken} idArea={data.id} idSector={0}/></Tab.Pane> });
+    panes.push({
+      menuItem: { key: 'distribution', icon: 'area graph', content: 'Distribution' },
+      render: () => <Tab.Pane><ChartGradeDistribution accessToken={accessToken} idArea={data.id} idSector={0}/></Tab.Pane>
+    });
+    panes.push({
+      menuItem: { key: 'activity', icon: 'time', content: 'Activity' },
+      render: () => <Tab.Pane><Activity idArea={data.id} idSector={0}/></Tab.Pane>
+    });
   }
   return (
     <>

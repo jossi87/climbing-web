@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link, useParams, useHistory } from 'react-router-dom';
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
+import Activity from './common/activity/activity';
 import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
 import { LockSymbol, Stars, LoadingAndRestoreScroll } from './common/widgets/widgets';
@@ -64,10 +65,13 @@ const Sector = () => {
   }
   const panes = [];
   if (data.media && data.media.length>0) {
-    panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Media isAdmin={data.metadata.isAdmin} removeMedia={(idMediaToRemove) => {
-      let newMedia = data.media.filter(m => m.id!=idMediaToRemove);
-      setData(prevState => ({ ...prevState, media: newMedia }));
-    }} media={data.media} useBlueNotRed={data.metadata.useBlueNotRed} /></Tab.Pane> });
+    panes.push({
+      menuItem: { key: 'topo', icon: 'image', content: 'Topo' },
+      render: () => <Tab.Pane><Media isAdmin={data.metadata.isAdmin} removeMedia={(idMediaToRemove) => {
+        let newMedia = data.media.filter(m => m.id!=idMediaToRemove);
+        setData(prevState => ({ ...prevState, media: newMedia }));
+      }} media={data.media} useBlueNotRed={data.metadata.useBlueNotRed} /></Tab.Pane>
+  });
   }
   if (markers.length>0) {
     const defaultCenter = data.lat && data.lat>0? {lat: data.lat, lng: data.lng} : data.metadata.defaultCenter;
@@ -86,10 +90,20 @@ const Sector = () => {
         return e.split(",").map(Number);
       })
     };
-    panes.push({ menuItem: 'Map', render: () => <Tab.Pane><Leaflet height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} onClick={null} /></Tab.Pane> });
+    panes.push({
+      menuItem: { key: 'map', icon: 'map', content: 'Map' },
+      render: () => <Tab.Pane><Leaflet height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} onClick={null} /></Tab.Pane>
+    });
   }
   if (data.problems.length!=0) {
-    panes.push({ menuItem: 'Distribution', render: () => <Tab.Pane><ChartGradeDistribution accessToken={accessToken} idArea={0} idSector={data.id}/></Tab.Pane> });
+    panes.push({
+      menuItem: { key: 'distribution', icon: 'area graph', content: 'Distribution' },
+      render: () => <Tab.Pane><ChartGradeDistribution accessToken={accessToken} idArea={0} idSector={data.id}/></Tab.Pane>
+    });
+    panes.push({
+      menuItem: { key: 'activity', icon: 'time', content: 'Activity' },
+      render: () => <Tab.Pane><Activity idArea={0} idSector={data.id}/></Tab.Pane>
+    });
   }
   let content = data.problems
                   .map(p => p.t.subType)
