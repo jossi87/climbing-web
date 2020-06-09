@@ -21,7 +21,7 @@ const Activity = ({ idArea, idSector }) => {
     if (!loading) {
       getMeta(accessToken).then((data) => setMeta(data));
     }
-  }, [accessToken]);
+  }, [loading, accessToken]);
   useEffect(() => {
     if (!loading) {
       let canceled = false;
@@ -32,7 +32,7 @@ const Activity = ({ idArea, idSector }) => {
       });
       return () => (canceled = true);
     }
-  }, [accessToken, idArea, idSector, lowerGradeId, activityTypeFa, activityTypeComments, activityTypeTicks, activityTypeMedia]);
+  }, [loading, accessToken, idArea, idSector, lowerGradeId, activityTypeFa, activityTypeComments, activityTypeTicks, activityTypeMedia]);
 
   if (meta && meta.metadata.grades.filter(g => {
     let gradeText = g.grade.indexOf('(')>0? g.grade.substr(g.grade.indexOf('(')+1).replace(')','') : g.grade;
