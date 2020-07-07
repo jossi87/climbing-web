@@ -15,7 +15,11 @@ const User = () => {
   const [orderBy, setOrderBy] = useState('date');
   useEffect(() => {
     if (!loading) {
-      getUser(accessToken, userId? parseInt(userId) : -1).then((data) => setData(data));
+      getUser(accessToken, userId? parseInt(userId) : -1)
+      .then((data) => {
+        setData(data);
+        setOrderBy('date');
+      });
     }
   }, [loading, accessToken, userId]);
 
@@ -114,6 +118,7 @@ const User = () => {
                 postUser(accessToken, metadata.useBlueNotRed)
                 .then(() => {
                   setData(prevState => ({ ...prevState, metadata }));
+                  setOrderBy('date');
                 })
                 .catch((error) => {
                   console.warn(error);
