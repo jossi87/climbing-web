@@ -284,6 +284,23 @@ const Problem = () => {
             <Table.Cell width={3}>Number:</Table.Cell>
             <Table.Cell>{data.nr}</Table.Cell>
           </Table.Row>
+          {data.sectorIdProblemPrev>0 && (
+            <Table.Row>
+              <Table.Cell>Jump:</Table.Cell>
+              <Table.Cell>
+              <Button.Group size="mini">
+                <Button tiny as={Link} to={`/problem/${data.sectorIdProblemPrev}`} icon labelPosition='left'>
+                  <Icon name='angle left' />
+                  Prev
+                </Button>
+                <Button tiny as={Link} to={`/problem/${data.sectorIdProblemNext}`} icon labelPosition='right'>
+                  <Icon name='angle right' />
+                  Next
+                </Button>
+              </Button.Group>
+              </Table.Cell>
+            </Table.Row>
+          )}
           <Table.Row>
             <Table.Cell>{data.faAid ? "First free ascent (FFA):" : "First ascent:"}</Table.Cell>
             <Table.Cell>
