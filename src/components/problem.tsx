@@ -329,6 +329,12 @@ const Problem = () => {
               </Table.Cell>
             </Table.Row>
           }
+          {data.ticks &&
+            <Table.Row>
+              <Table.Cell>Public ascents:</Table.Cell>
+              <Table.Cell>{data.ticks.length}</Table.Cell>
+            </Table.Row>
+          }
           {data.sectorLat>0 && data.sectorLng>0 &&
             <Table.Row>
               <Table.Cell>Navigate to parking lot:</Table.Cell>
