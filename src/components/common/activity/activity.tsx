@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Label, Icon, Feed, Segment, Placeholder, Button, Dropdown } from 'semantic-ui-react';
+import { Label, Icon, Image, Feed, Segment, Placeholder, Button, Dropdown } from 'semantic-ui-react';
 import { useLocalStorage } from '../../../utils/use-local-storage';
 import { useAuth0 } from '../../../utils/react-auth0-spa';
 import { getMeta, getActivity, getImageUrl } from '../../../api';
@@ -188,7 +188,7 @@ const Activity = ({ idArea, idSector }) => {
                       {summary}on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}<LockSymbol visibility={a.problemVisibility}/><Feed.Date>{a.timeAgo}</Feed.Date>
                     </Feed.Summary>
                     <Feed.Extra images as={Link} to={`/problem/${a.problemId}`}>
-                      {a.media.map((m, i) => (<img key={i} src={getImageUrl(m.id, 115)}/>))}
+                      {a.media.map((m, i) => (<Image key={i} src={getImageUrl(m.id, 115)} onError={i => i.target.src='https://react.semantic-ui.com/images/wireframe/image.png'} />))}
                     </Feed.Extra>
                   </Feed.Content>
                 </Feed.Event>
