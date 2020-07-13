@@ -188,7 +188,7 @@ const Activity = ({ idArea, idSector }) => {
                       {summary}on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}<LockSymbol visibility={a.problemVisibility}/><Feed.Date>{a.timeAgo}</Feed.Date>
                     </Feed.Summary>
                     <Feed.Extra images as={Link} to={`/problem/${a.problemId}`}>
-                      {a.media.map((m, i) => (<Image key={i} src={getImageUrl(m.id, 115)} onError={i => i.target.src='https://react.semantic-ui.com/images/wireframe/image.png'} />))}
+                      {a.media.map((m, i) => (<Image key={i} src={getImageUrl(m.id, 115)} onError={i => i.target.src='/png/video_placeholder.png'} />))}
                     </Feed.Extra>
                   </Feed.Content>
                 </Feed.Event>

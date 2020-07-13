@@ -113,7 +113,7 @@ const Media = ({ media, removeMedia, useBlueNotRed, isAdmin }) => {
         {media.map((x, i) => (
           <Card as="a" onClick={() => openModal(x, true)} key={i} raised>
             <div style={{paddingTop: '75%'}}>
-              {x.svgs? <Svg close={null} useBlueNotRed={useBlueNotRed} thumb={true} m={x} key={i} style={style}/> : <Image alt={x.description} key={i} style={style} src={getImageUrl(x.id, 205)} />}
+              {x.svgs? <Svg close={null} useBlueNotRed={useBlueNotRed} thumb={true} m={x} key={i} style={style}/> : <Image alt={x.description} key={i} style={style} src={getImageUrl(x.id, 205)} onError={i => i.target.src='/png/video_placeholder.png'} />}
             </div>
           </Card>
         ))}
