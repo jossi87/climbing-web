@@ -6,7 +6,7 @@ import Activity from './common/activity/activity';
 import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
 import { LockSymbol, Stars, LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { Segment, Icon, ButtonGroup, Button, List, Tab, Breadcrumb, Table, Label, TableCell } from 'semantic-ui-react';
+import { Segment, Icon, ButtonGroup, Button, List, Tab, Breadcrumb, Table, Label, TableCell, Header } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSector } from '../api';
 import Linkify from 'react-linkify';
@@ -105,11 +105,8 @@ const Sector = () => {
       render: () => <Tab.Pane><Activity idArea={0} idSector={data.id}/></Tab.Pane>
     });
   }
-  let content = data.problems
-                  .map(p => p.t.subType)
-                  .filter((value, index, self) => self.indexOf(value) === index)
-                  .sort()
-                  .map((subType, i) => {
+  let subTypes = data.problems.map(p => p.t.subType).filter((value, index, self) => self.indexOf(value) === index).sort(); 
+  let content = subTypes.map((subType, i) => {
     let problemsOfType = data.problems.filter(p => p.t.subType === subType);
     let numTicked = problemsOfType.filter(p => p.ticked).length;
     let txt = numTicked === 0? problemsOfType.length : problemsOfType.length + " (" + numTicked + " ticked)";
@@ -199,46 +196,52 @@ const Sector = () => {
           </ButtonGroup>
           <Segment attached="bottom">
             <List selection attached="bottom">
-              {data.problems.filter(problem => !hideTicked || !problem.ticked).map((problem, i) => {
-                var ascents = problem.numTicks>0 && (problem.numTicks + (problem.numTicks==1? " ascent" : " ascents"));
-                var typeAscents;
-                if (data.metadata.isBouldering && ascents) {
-                  typeAscents = " (" + ascents + ") ";
-                } else if (!data.metadata.isBouldering) {
-                  let t = problem.t.subType;
-                  if (problem.numPitches>1) t += ", " + problem.numPitches + " pitches";
-                  if (ascents) {
-                    typeAscents = " (" + t + ", " + ascents + ") ";
-                  } else {
-                    typeAscents = " (" + t + ") ";
+              {subTypes.filter((x, i) => data.orderByGrade || i === 0).map(subType => (
+                <>
+                  {data.orderByGrade && subTypes.length>1 && <Header as="h5">{subType}:</Header>}
+                  {data.problems.filter(problem => (!data.orderByGrade || problem.t.subType==subType) && (!hideTicked || !problem.ticked)).map((problem, i) => {
+                    var ascents = problem.numTicks>0 && (problem.numTicks + (problem.numTicks==1? " ascent" : " ascents"));
+                    var typeAscents;
+                    if (data.metadata.isBouldering && ascents) {
+                      typeAscents = " (" + ascents + ") ";
+                    } else if (!data.metadata.isBouldering) {
+                      let t = problem.t.subType;
+                      if (problem.numPitches>1) t += ", " + problem.numPitches + " pitches";
+                      if (ascents) {
+                        typeAscents = " (" + t + ", " + ascents + ") ";
+                      } else {
+                        typeAscents = " (" + t + ") ";
+                      }
+                    }
+                    var comment;
+                    if (data.orderByGrade && problem.comment) {
+                      comment = <small><i style={{color: "gray"}}>{' '}#{problem.nr} - {problem.comment}{' '}</i></small>;
+                    } else if (data.orderByGrade) {
+                      comment = <small><i style={{color: "gray"}}>{' '}#{problem.nr}{' '}</i></small>;
+                    } else if (problem.comment) {
+                      comment = <small><i style={{color: "gray"}}>{' '}{problem.comment}{' '}</i></small>;
+                    }
+                    return (
+                      <List.Item key={i} onClick={() => history.push(`/problem/${problem.id}`)}>
+                        <List.Header>
+                          {problem.danger && <Icon color="red" name="warning"/>}
+                          {!data.orderByGrade && `#${problem.nr} `}
+                          <Link to={`/problem/${problem.id}`}>{problem.name}</Link>
+                          {' '}{problem.grade}
+                          {' '}<Stars numStars={problem.stars}/>
+                          {problem.fa && <small>{problem.fa}</small>}
+                          {typeAscents && <small>{typeAscents}</small>}
+                          {comment}
+                          {problem.hasImages>0 && <Icon color="black" name="photo"/>}
+                          {problem.hasMovies>0 && <Icon color="black" name="film"/>}
+                          <LockSymbol visibility={problem.visibility}/>
+                          {problem.ticked && <Icon color="green" name="check"/>}
+                        </List.Header>
+                      </List.Item>
+                    )})
                   }
-                }
-                var comment;
-                if (data.orderByGrade && problem.comment) {
-                  comment = <small><i style={{color: "gray"}}>{' '}#{problem.nr} - {problem.comment}{' '}</i></small>;
-                } else if (data.orderByGrade) {
-                  comment = <small><i style={{color: "gray"}}>{' '}#{problem.nr}{' '}</i></small>;
-                } else if (problem.comment) {
-                  comment = <small><i style={{color: "gray"}}>{' '}{problem.comment}{' '}</i></small>;
-                }
-                return (
-                  <List.Item key={i} onClick={() => history.push(`/problem/${problem.id}`)}>
-                    <List.Header>
-                      {problem.danger && <Icon color="red" name="warning"/>}
-                      {!data.orderByGrade && `#${problem.nr} `}
-                      <Link to={`/problem/${problem.id}`}>{problem.name}</Link>
-                      {' '}{problem.grade}
-                      {' '}<Stars numStars={problem.stars}/>
-                      {problem.fa && <small>{problem.fa}</small>}
-                      {typeAscents && <small>{typeAscents}</small>}
-                      {comment}
-                      {problem.hasImages>0 && <Icon color="black" name="photo"/>}
-                      {problem.hasMovies>0 && <Icon color="black" name="film"/>}
-                      <LockSymbol visibility={problem.visibility}/>
-                      {problem.ticked && <Icon color="green" name="check"/>}
-                    </List.Header>
-                  </List.Item>
-                )})}
+                </>
+              ))}
             </List>
           </Segment>
         </>
