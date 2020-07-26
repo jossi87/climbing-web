@@ -337,7 +337,7 @@ const Problem = () => {
           }
           {data.sectorLat>0 && data.sectorLng>0 &&
             <Table.Row>
-              <Table.Cell>Navigate to parking lot:</Table.Cell>
+              <Table.Cell>Navigate to parking:</Table.Cell>
               <Table.Cell>
                 <Label href={`https://maps.google.com/maps?q=loc:${data.sectorLat},${data.sectorLng}&navigate=yes`} rel="noopener" target="_blank" image basic >
                 <Icon name="map"/>Google Maps
