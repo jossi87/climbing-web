@@ -301,20 +301,6 @@ const Problem = () => {
               </Table.Cell>
             </Table.Row>
           )}
-          <Table.Row>
-            <Table.Cell>{data.faAid ? "First free ascent (FFA):" : "First ascent:"}</Table.Cell>
-            <Table.Cell>
-              <Label basic>Grade:<Label.Detail>{data.originalGrade}</Label.Detail></Label>
-              {!data.metadata.isBouldering && <Label basic><Icon name='tag' />{data.t.subType}</Label>}
-              {data.faDateHr && <Label basic><Icon name='calendar check' />{data.faDateHr}</Label>}
-              {data.fa && <>{data.fa.map((u, i) => (
-                <Label key={i} as={Link} to={`/user/${u.id}`} image basic>
-                  {u.picture ? <img src={u.picture} /> : <Icon name="user"/>}{u.name}
-                </Label>
-              ))}</>}
-              {data.comment && data.comment.trim().length>0 && <Linkify><br/>{data.comment}</Linkify>}
-            </Table.Cell>
-          </Table.Row>
           {data.faAid &&
             <Table.Row>
               <Table.Cell>First ascent (Aid):</Table.Cell>
@@ -329,6 +315,20 @@ const Problem = () => {
               </Table.Cell>
             </Table.Row>
           }
+          <Table.Row>
+            <Table.Cell>{data.faAid ? "First free ascent (FFA):" : "First ascent:"}</Table.Cell>
+            <Table.Cell>
+              <Label basic>Grade:<Label.Detail>{data.originalGrade}</Label.Detail></Label>
+              {!data.metadata.isBouldering && <Label basic><Icon name='tag' />{data.t.subType}</Label>}
+              {data.faDateHr && <Label basic><Icon name='calendar check' />{data.faDateHr}</Label>}
+              {data.fa && <>{data.fa.map((u, i) => (
+                <Label key={i} as={Link} to={`/user/${u.id}`} image basic>
+                  {u.picture ? <img src={u.picture} /> : <Icon name="user"/>}{u.name}
+                </Label>
+              ))}</>}
+              {data.comment && data.comment.trim().length>0 && <Linkify><br/>{data.comment}</Linkify>}
+            </Table.Cell>
+          </Table.Row>
           {data.ticks &&
             <Table.Row>
               <Table.Cell>Public ascents:</Table.Cell>
