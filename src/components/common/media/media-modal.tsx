@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimmer, Button, Icon, Image, Responsive, Modal, Header } from 'semantic-ui-react';
+import { Dimmer, Button, Icon, Image, Responsive, Modal, Header, ButtonGroup } from 'semantic-ui-react';
 import { getImageUrl } from '../../../api';
 import ReactPlayer from 'react-player';
 import Svg from './svg';
@@ -63,17 +63,18 @@ const style = {
 const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext, playVideo, useBlueNotRed, autoPlayVideo }) => {
   let history = useHistory();
   let myPlayer;
-  var topLeftButton;
-  if (isAdmin && m.idType===1) {
-    if (m.svgProblemId>0) {
-      topLeftButton = <Icon style={style.buttonEdit} size="large" color="red" name="edit" link onClick={() => history.push(`/problem/svg-edit/${m.svgProblemId}-${m.id}`)} />
-    } else if (!m.svgs) {
-      topLeftButton = <Icon style={style.buttonEdit} size="large" color="red" name="trash" link onClick={onDelete} />
-    }
-  }
   return (
     <Dimmer active={true} onClickOutside={onClose} page>
-      {topLeftButton}
+      {isAdmin && m.idType===1 && (
+        <ButtonGroup size="mini" style={style.buttonEdit}>
+          <Button icon onClick={onDelete} disabled={m.svgs}>
+            <Icon name="trash"/>
+          </Button>
+          <Button icon onClick={() => history.push(`/problem/svg-edit/${m.svgProblemId}-${m.id}`)}>
+            <Icon name="paint brush"/>
+          </Button>
+        </ButtonGroup>
+      )}
       <Modal trigger={<Icon style={style.info} size="big" name="info circle" link />}>
         <Modal.Content image>
           <Image wrapped size='medium' src={getImageUrl(m.id, 150)} />
