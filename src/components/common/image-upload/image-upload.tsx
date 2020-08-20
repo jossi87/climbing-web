@@ -54,6 +54,10 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }) => {
                   m.photographer = u.label;
                   onMediaChanged(media);
                 }} identity={m} />
+                <Input size="mini" icon="comment" iconPosition="left" fluid placeholder='Description' value={m.description} onChange={(e, { value }) => {
+                  m.description = value;
+                  onMediaChanged(media);
+                }} />
               </Card.Content>
               <Card.Content extra>
                 <Button fluid basic negative onClick={() => {
