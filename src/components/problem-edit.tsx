@@ -243,8 +243,8 @@ const ProblemEdit = () => {
           </Form.Field>
         </Segment>
         
-        <Segment>
-          {data.metadata.types.length > 1 &&
+        {!data.metadata.isBouldering &&
+          <Segment>
             <Form.Field
               label="Type"
               control={Dropdown}
@@ -257,31 +257,27 @@ const ProblemEdit = () => {
               })}
               error={data.typeId? false : "Type required"}>
             </Form.Field>
-          }
-          {!data.metadata.isBouldering &&
-            <>
-              <Form.Field>
-                <label>First AID ascent?</label>
-                <Button.Group size="tiny">
-                  <Button onClick={() => setData(prevState => ({ ...prevState, faAid: {problemId: data.id, date: '', description: ''} }))} positive={data.faAid? true : false}>Yes</Button>
-                  <Button.Or />
-                  <Button onClick={() => setData(prevState => ({ ...prevState, faAid: null }))} positive={data.faAid? false : true}>No</Button>
-                </Button.Group>
-                {data.faAid &&
-                  <Container>
-                    {dayPickerAid}
-                    <TextArea placeholder='Enter description' style={{ minHeight: 75 }} value={data.faAid.description} onChange={onFaAidDescriptionChanged} />
-                    <UserSelector isMulti={true} placeholder="Select user(s)" users={data.faAid.users? data.faAid.users.map(u => {return {value: u.id, label: u.name}}) : []} onUsersUpdated={onFaAidUsersUpdated} identity={null} />
-                  </Container>
-                }
-              </Form.Field>
-              <Form.Field>
-                <label>Pitches</label>
-                <ProblemSection sections={data.sections} grades={data.metadata.grades} onSectionsUpdated={onSectionsUpdated} />
-              </Form.Field>
-            </>
-          }
-        </Segment>
+            <Form.Field>
+              <label>First AID ascent?</label>
+              <Button.Group size="tiny">
+                <Button onClick={() => setData(prevState => ({ ...prevState, faAid: {problemId: data.id, date: '', description: ''} }))} positive={data.faAid? true : false}>Yes</Button>
+                <Button.Or />
+                <Button onClick={() => setData(prevState => ({ ...prevState, faAid: null }))} positive={data.faAid? false : true}>No</Button>
+              </Button.Group>
+              {data.faAid &&
+                <Container>
+                  {dayPickerAid}
+                  <TextArea placeholder='Enter description' style={{ minHeight: 75 }} value={data.faAid.description} onChange={onFaAidDescriptionChanged} />
+                  <UserSelector isMulti={true} placeholder="Select user(s)" users={data.faAid.users? data.faAid.users.map(u => {return {value: u.id, label: u.name}}) : []} onUsersUpdated={onFaAidUsersUpdated} identity={null} />
+                </Container>
+              }
+            </Form.Field>
+            <Form.Field>
+              <label>Pitches</label>
+              <ProblemSection sections={data.sections} grades={data.metadata.grades} onSectionsUpdated={onSectionsUpdated} />
+            </Form.Field>
+          </Segment>
+        }
 
         <Segment>
           <Form.Field>
