@@ -4,7 +4,7 @@ import UserSelector from './common/user-selector/user-selector';
 import ProblemSection from './common/problem-section/problem-section';
 import ImageUpload from './common/image-upload/image-upload';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
-import { Form, Button, Input, Dropdown, TextArea, Segment } from 'semantic-ui-react';
+import { Icon, Form, Button, Input, Dropdown, TextArea, Segment } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getProblemEdit, convertFromDateToString, convertFromStringToDate, postProblem } from '../api';
@@ -175,6 +175,7 @@ const ProblemEdit = () => {
       <MetaTags>
         <title>{data.metadata.title}</title>
       </MetaTags>
+      <Segment size="mini"><Icon name="info"/>Contact <a href="mailto:jostein.oygarden@gmail.com">Jostein Øygarden</a> if you want to delete or move {data.metadata.isBouldering? "problem" : "route"} to an other sector.</Segment>
       <Form>
         {!data.metadata.isBouldering &&
           <Form.Field>

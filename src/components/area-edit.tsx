@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import ImageUpload from './common/image-upload/image-upload';
 import Leaflet from './common/leaflet/leaflet';
-import { Form, Button, Checkbox, Input, Dropdown, TextArea } from 'semantic-ui-react';
+import { Form, Button, Checkbox, Input, Dropdown, TextArea, Segment, Icon } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getAreaEdit, postArea } from '../api';
 import { LoadingAndRestoreScroll, InsufficientPrivileges } from './common/widgets/widgets';
@@ -74,6 +74,7 @@ const AreaEdit = () => {
       <MetaTags>
         <title>{data.metadata.title}</title>
       </MetaTags>
+      <Segment size="mini"><Icon name="info"/>Contact <a href="mailto:jostein.oygarden@gmail.com">Jostein Øygarden</a> if you want to delete area.</Segment>
       <Form>
         <Form.Field>
           <label>Area name</label>
