@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Segment, Input, Dropdown } from 'semantic-ui-react';
+import { Form, Input, Dropdown } from 'semantic-ui-react';
 
 const ProblemSection = ({ sections : initSections, grades, onSectionsUpdated }) => {
   const [sections, setSections] = useState(initSections);
@@ -21,7 +21,7 @@ const ProblemSection = ({ sections : initSections, grades, onSectionsUpdated }) 
   }
 
   return (
-    <Segment>
+    <>
       <Dropdown selection value={sections? sections.length : 1} onChange={onNumberOfSectionsChange} options={[
         {key: 1, value: 1, text: 1},
         {key: 2, value: 2, text: 2},
@@ -79,7 +79,7 @@ const ProblemSection = ({ sections : initSections, grades, onSectionsUpdated }) 
           </Form.Field>
         </Form.Group>
       ))}
-    </Segment>
+    </>
   );
 }
 

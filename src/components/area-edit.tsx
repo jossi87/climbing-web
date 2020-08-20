@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import ImageUpload from './common/image-upload/image-upload';
 import Leaflet from './common/leaflet/leaflet';
-import { Form, Button, Checkbox, Input, Dropdown, TextArea, Segment, Icon } from 'semantic-ui-react';
+import { Form, Button, Checkbox, Input, Dropdown, TextArea, Segment, Icon, Message } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getAreaEdit, postArea } from '../api';
 import { LoadingAndRestoreScroll, InsufficientPrivileges } from './common/widgets/widgets';
@@ -74,41 +74,66 @@ const AreaEdit = () => {
       <MetaTags>
         <title>{data.metadata.title}</title>
       </MetaTags>
-      <Segment size="mini"><Icon name="info"/>Contact <a href="mailto:jostein.oygarden@gmail.com">Jostein Øygarden</a> if you want to delete area.</Segment>
+      <Message
+        size="tiny"
+        content={<><Icon name="info"/>Contact <a href='mailto:jostein.oygarden@gmail.com'>Jostein Øygarden</a> if you want to delete or split area.</>}
+      />
       <Form>
-        <Form.Field>
-          <label>Area name</label>
-          <Input placeholder='Enter name' value={data.name} onChange={onNameChanged} />
-        </Form.Field>
-        <Form.Field>
-          <label>Comment</label>
-          <TextArea placeholder='Enter comment' style={{ minHeight: 100 }} value={data.comment} onChange={onCommentChanged} />
-        </Form.Field>
-        <Form.Field>
-          <label>Visibility</label>
-          <Dropdown selection value={data.visibility} onChange={onVisibilityChanged} options={visibilityOptions}/>
-        </Form.Field>
-        <Form.Field>
-          <label>For developers</label>
-          <Checkbox label="For developers" checked={data.forDevelopers} onChange={() => setData(prevState => ({ ...prevState, forDevelopers: !data.forDevelopers }))} />
-        </Form.Field>
-        <Form.Field>
-          <label>Upload image(s)</label>
-          <ImageUpload onMediaChanged={onNewMediaChanged} isMultiPitch={false} />
-        </Form.Field>
-        <Form.Field>
-          <label>Click to mark area center on map</label>
-          <Leaflet
-            markers={data.lat!=0 && data.lng!=0 && [{lat: data.lat, lng: data.lng}]}
-            defaultCenter={defaultCenter}
-            defaultZoom={defaultZoom}
-            onClick={onMarkerClick}
-            history={history}
-            polylines={null}
-            outlines={null}
-            height={null}
-          />
-        </Form.Field>
+        <Segment>
+          <Form.Group widths='equal'>
+            <Form.Field
+              label="Area name"
+              control={Input}
+              placeholder="Enter name"
+              value={data.name}
+              onChange={onNameChanged}
+              error={data.name? false : "Area name required"}
+            />
+            <Form.Field
+              label="Visibility"
+              control={Dropdown}
+              selection
+              value={data.visibility}
+              onChange={onVisibilityChanged}
+              options={visibilityOptions} />
+            <Form.Field>
+              <label>For developers</label>
+              <Checkbox label="For developers" checked={data.forDevelopers} onChange={() => setData(prevState => ({ ...prevState, forDevelopers: !data.forDevelopers }))} />
+            </Form.Field>
+          </Form.Group>
+          <Form.Field
+            label="Description"
+            control={TextArea}
+            placeholder='Enter description'
+            style={{ minHeight: 100 }}
+            value={data.comment}
+            onChange={onCommentChanged} />
+        </Segment>
+
+        <Segment>
+          <Form.Field
+            label="Upload image(s)"
+            control={ImageUpload}
+            onMediaChanged={onNewMediaChanged}
+            isMultiPitch={false} />
+        </Segment>
+
+        <Segment>
+          <Form.Field>
+            <label>Click to mark area center on map</label>
+            <Leaflet
+              markers={data.lat!=0 && data.lng!=0 && [{lat: data.lat, lng: data.lng}]}
+              defaultCenter={defaultCenter}
+              defaultZoom={defaultZoom}
+              onClick={onMarkerClick}
+              history={history}
+              polylines={null}
+              outlines={null}
+              height={'300px'}
+            />
+          </Form.Field>
+        </Segment>
+
         <Button.Group>
           <Button negative onClick={() => {
             if (areaId && areaId != '-1') {
@@ -118,7 +143,7 @@ const AreaEdit = () => {
             }
           }}>Cancel</Button>
           <Button.Or />
-          <Button positive loading={saving} onClick={save}>Save area</Button>
+          <Button positive loading={saving} onClick={save} disabled={!data.name}>Save area</Button>
         </Button.Group>
       </Form>
     </>

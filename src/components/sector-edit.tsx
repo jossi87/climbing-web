@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import ImageUpload from './common/image-upload/image-upload';
 import { LoadingAndRestoreScroll, InsufficientPrivileges } from './common/widgets/widgets';
-import { Form, Button, Input, Dropdown, TextArea, Segment, Icon } from 'semantic-ui-react';
+import { Form, Button, Input, Dropdown, TextArea, Segment, Icon, Message } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSectorEdit, postSector } from './../api';
 import Leaflet from './common/leaflet/leaflet';
@@ -115,44 +115,69 @@ const SectorEdit = () => {
       <MetaTags>
         <title>{data.metadata.title}</title>
       </MetaTags>
-      <Segment size="mini"><Icon name="info"/>Contact <a href="mailto:jostein.oygarden@gmail.com">Jostein Øygarden</a> if you want to delete, move or split sector.</Segment>
+      <Message
+        size="tiny"
+        content={<><Icon name="info"/>Contact <a href='mailto:jostein.oygarden@gmail.com'>Jostein Øygarden</a> if you want to delete, move or split sector.</>}
+      />
       <Form>
-        <Form.Field>
-          <label>Sector name</label>
-          <Input placeholder='Enter name' value={data.name} onChange={onNameChanged} />
-        </Form.Field>
-        <Form.Field>
-          <label>Comment</label>
-          <TextArea placeholder='Enter comment' style={{ minHeight: 100 }} value={data.comment} onChange={onCommentChanged} />
-        </Form.Field>
-        <Form.Field>
-          <label>Visibility</label>
-          <Dropdown selection value={data.visibility} onChange={onVisibilityChanged} options={visibilityOptions}/>
-        </Form.Field>
-        <Form.Field>
-          <label>Upload image(s)</label>
-          <ImageUpload onMediaChanged={onNewMediaChanged} isMultiPitch={false} />
-        </Form.Field>
-        <Form.Field>
-          <label>Draw mode (click on map to draw)</label>
-          <Button.Group>
-            <Button positive={leafletMode=='PARKING'} onClick={() => setLeafletMode("PARKING")}>Parking</Button>
-            <Button positive={leafletMode=='POLYGON'} onClick={() => setLeafletMode("POLYGON")}>Sector outline (polygon)</Button>
-            <Button positive={leafletMode=='POLYLINE'} onClick={() => setLeafletMode("POLYLINE")}>Path to sector (polyline)</Button>
-            <Button negative onClick={clearDrawing}>Remove parking/polygon/polyline</Button>
-          </Button.Group>
-          <br/><br/>
-          <Leaflet
-            markers={data.lat!=0 && data.lng!=0 && [{lat: data.lat, lng: data.lng, isParking: true}]}
-            outlines={polygon && [{polygon: polygon}]}
-            polylines={polyline && [polyline]}
-            defaultCenter={defaultCenter}
-            defaultZoom={defaultZoom}
-            onClick={onMapClick}
-            history={history}
-            height={null}
-          />
-        </Form.Field>
+        <Segment>
+          <Form.Group widths='equal'>
+            <Form.Field
+              label="Sector name"
+              control={Input}
+              placeholder="Enter name"
+              value={data.name}
+              onChange={onNameChanged}
+              error={data.name? false : "Sector name required"}
+            />
+            <Form.Field
+              label="Visibility"
+              control={Dropdown}
+              selection
+              value={data.visibility}
+              onChange={onVisibilityChanged}
+              options={visibilityOptions} />
+          </Form.Group>
+          <Form.Field
+            label="Description"
+            control={TextArea}
+            placeholder='Enter description'
+            style={{ minHeight: 100 }}
+            value={data.comment}
+            onChange={onCommentChanged} />
+        </Segment>
+
+        <Segment>
+          <Form.Field
+            label="Upload image(s)"
+            control={ImageUpload}
+            onMediaChanged={onNewMediaChanged}
+            isMultiPitch={false} />
+        </Segment>
+
+        <Segment>
+          <Form.Field>
+            <label>Draw mode (click on map to draw)</label>
+            <Button.Group size="tiny" compact>
+              <Button positive={leafletMode=='PARKING'} onClick={() => setLeafletMode("PARKING")}>Parking</Button>
+              <Button positive={leafletMode=='POLYGON'} onClick={() => setLeafletMode("POLYGON")}>Outline</Button>
+              <Button positive={leafletMode=='POLYLINE'} onClick={() => setLeafletMode("POLYLINE")}>Approach</Button>
+              <Button color="orange" onClick={clearDrawing}>Reset selected</Button>
+            </Button.Group>
+            <br/>
+            <Leaflet
+              markers={data.lat!=0 && data.lng!=0 && [{lat: data.lat, lng: data.lng, isParking: true}]}
+              outlines={polygon && [{polygon: polygon}]}
+              polylines={polyline && [polyline]}
+              defaultCenter={defaultCenter}
+              defaultZoom={defaultZoom}
+              onClick={onMapClick}
+              history={history}
+              height={'300px'}
+            />
+          </Form.Field>
+        </Segment>
+        
         <Button.Group>
           <Button negative onClick={() => {
             let sectorId = areaIdSectorId.split("-")[1];
@@ -164,7 +189,7 @@ const SectorEdit = () => {
             }
           }}>Cancel</Button>
           <Button.Or />
-          <Button positive loading={saving} onClick={save}>Save sector</Button>
+          <Button positive loading={saving} onClick={save} disabled={!data.name}>Save sector</Button>
         </Button.Group>
       </Form>
     </>
