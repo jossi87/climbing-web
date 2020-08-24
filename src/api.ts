@@ -29,10 +29,6 @@ export function getImageUrl(id: number, minDimention?: number): string {
   return getUrl(`/images?id=${id}`);
 }
 
-export function getAreaPdfUrl(id: number): string {
-  return getUrl(`/areas/pdf?id=${id}`);
-}
-
 export function numberWithCommas(number: number) {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
@@ -75,6 +71,16 @@ export function getActivity(accessToken: string, idArea: number, idSector: numbe
 export function getArea(accessToken: string, id: number): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/areas?id=${id}`, null)
   .then((data) => data.json())
+  .catch((error) => {
+    console.warn(error);
+    return null;
+  });
+}
+
+export function getAreaPdf(accessToken: string, id: number): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/areas/pdf?id=${id}`, {
+    expose:  ['Content-Disposition']
+  })
   .catch((error) => {
     console.warn(error);
     return null;

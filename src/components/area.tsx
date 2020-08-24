@@ -8,7 +8,8 @@ import Media from './common/media/media';
 import { LockSymbol, LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Table, Label, Button, Tab, Item, Icon, Image, Breadcrumb, Segment, Header } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
-import { getArea, getImageUrl, getAreaPdfUrl } from '../api';
+import { getArea, getImageUrl, getAreaPdf } from '../api';
+import { saveAs } from 'file-saver';
 
 interface AreaIdParams {
   areaId: string;
@@ -123,8 +124,14 @@ const Area = () => {
           <Table.Row>
             <Table.Cell width={3}>Download:</Table.Cell>
             <Table.Cell>
-              <Label href={getAreaPdfUrl(data.id)} rel="noopener" target="_blank" image basic>
-              <Icon name="file pdf outline"/>Download PDF
+              <Label as={Link} image basic onClick={() => {
+                let filename = `${data.name}.pdf`;
+                getAreaPdf(accessToken, data.id).then(response => {
+                  return response.blob();
+                })
+                .then (blob => saveAs(blob, filename));
+              }}>
+                <Icon name="file pdf outline"/>Download PDF
               </Label>
             </Table.Cell>
           </Table.Row>
