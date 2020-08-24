@@ -6,14 +6,17 @@ import Activity from './common/activity/activity';
 import Leaflet from './common/leaflet/leaflet';
 import Media from './common/media/media';
 import { LockSymbol, LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { Button, Tab, Item, Icon, Image, Breadcrumb, Segment, Header } from 'semantic-ui-react';
+import { Table, Label, Button, Tab, Item, Icon, Image, Breadcrumb, Segment, Header } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
-import { getArea, getImageUrl } from '../api';
+import { getArea, getImageUrl, getAreaPdfUrl } from '../api';
 
+interface AreaIdParams {
+  areaId: string;
+}
 const Area = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState(null);
-  let { areaId } = useParams();
+  let { areaId } = useParams<AreaIdParams>();
   let history = useHistory();
   useEffect(() => {
     if (!loading) {
@@ -115,11 +118,28 @@ const Area = () => {
         </Breadcrumb>
       </div>
       <Tab panes={panes} />
-      <Segment>
-        <strong>Page views:</strong> {data.hits}<br/>
-        {data.forDevelopers && <strong><i>Under development</i></strong>}
-        {data.comment && <div dangerouslySetInnerHTML={{ __html: data.comment }} />}
-      </Segment>
+      <Table definition unstackable>
+        <Table.Body>
+          <Table.Row>
+            <Table.Cell width={3}>Download:</Table.Cell>
+            <Table.Cell>
+              <Label href={getAreaPdfUrl(data.id)} rel="noopener" target="_blank" image basic>
+              <Icon name="file pdf outline"/>Download PDF
+              </Label>
+            </Table.Cell>
+          </Table.Row>
+          <Table.Row>
+            <Table.Cell>Page views:</Table.Cell>
+            <Table.Cell>{data.hits}</Table.Cell>
+          </Table.Row>
+          {data.forDevelopers && 
+            <Table.Row>
+              <Table.Cell>For developers:</Table.Cell>
+              <Table.Cell><strong><i>Under development</i></strong></Table.Cell>
+            </Table.Row>}
+        </Table.Body>
+      </Table>
+      {data.comment && <Segment><div dangerouslySetInnerHTML={{ __html: data.comment }} /></Segment>}
       {data.sectors &&
         <Segment>
           <Header as="h3">Sectors:</Header>

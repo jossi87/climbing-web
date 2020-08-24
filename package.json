@@ -14,12 +14,12 @@
     "clean-webpack-plugin": "^3.0.0",
     "html-webpack-plugin": "^4.3.0",
     "nodemon": "^2.0.4",
-    "ts-loader": "^8.0.2",
-    "typescript": "^3.9.7",
+    "ts-loader": "^8.0.3",
+    "typescript": "^4.0.2",
     "webpack": "^4.44.1",
     "webpack-bundle-analyzer": "^3.8.0",
     "webpack-cli": "^3.3.12",
-    "webpack-node-externals": "^2.5.1"
+    "webpack-node-externals": "^2.5.2"
   },
   "dependencies": {
     "@auth0/auth0-spa-js": "^1.11.0",
@@ -47,7 +47,7 @@
     "react-leaflet-fullscreen": "^1.0.1",
     "react-linkify": "^1.0.0-alpha",
     "react-meta-tags": "^0.7.4",
-    "react-player": "^2.6.0",
+    "react-player": "^2.6.1",
     "react-router-dom": "^5.2.0",
     "react-router-ga": "^1.2.3",
     "react-select": "^3.1.0",

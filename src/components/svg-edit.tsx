@@ -6,6 +6,9 @@ import { parseReadOnlySvgs, parsePath } from '../utils/svg';
 import { LoadingAndRestoreScroll, InsufficientPrivileges } from './common/widgets/widgets';
 import { useHistory, useParams, useLocation } from 'react-router-dom';
 
+interface ProblemIdMediaIdParams {
+  problemIdMediaId: string;
+}
 const SvgEdit = () => {
   const { accessToken, isAuthenticated, loading, loginWithRedirect } = useAuth0();
   const [mediaId, setMediaId] = useState(null);
@@ -26,7 +29,7 @@ const SvgEdit = () => {
   const [addAnchor, setAddAnchor] = useState(false);
   const [addText, setAddText] = useState(false);
   const imageRef = useRef(null);
-  let { problemIdMediaId } = useParams();
+  let { problemIdMediaId } = useParams<ProblemIdMediaIdParams>();
   let history = useHistory();
   let location = useLocation();
   useEffect(() => {

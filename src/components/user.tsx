@@ -8,8 +8,11 @@ import { useAuth0 } from '../utils/react-auth0-spa';
 import { getUser, getUsersTicks, numberWithCommas, postUser } from '../api';
 import { saveAs } from 'file-saver';
 
+interface UserParams {
+  userId: string;
+}
 const User = () => {
-  let { userId } = useParams();
+  let { userId } = useParams<UserParams>();
   const { loading, isAuthenticated, accessToken } = useAuth0();
   const [data, setData] = useState(null);
   const [orderBy, setOrderBy] = useState('date');

@@ -6,11 +6,14 @@ import { Link, useParams, useHistory } from 'react-router-dom';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getTicks } from '../api';
 
+interface PageParams {
+  page: string;
+}
 const Ticks = () => {
   const { accessToken } = useAuth0();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
-  let { page } = useParams();
+  let { page } = useParams<PageParams>();
   let history = useHistory();
   useEffect(() => {
     setLoading(true);

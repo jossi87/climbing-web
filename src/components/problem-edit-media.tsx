@@ -6,13 +6,16 @@ import { LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Segment, Button } from 'semantic-ui-react';
 import { useHistory, useParams, useLocation } from 'react-router-dom';
 
+interface ProblemIdParams {
+  problemId: string;
+}
 const ProblemEditMedia = () => {
   const { accessToken, isAuthenticated, loading, loginWithRedirect } = useAuth0();
   const [id, setId] = useState();
   const [isMultiPitch, setIsMultiPitch] = useState(false);
   const [media, setMedia] = useState();
   const [saving, setSaving] = useState(false);
-  let { problemId } = useParams();
+  let { problemId } = useParams<ProblemIdParams>();
   let history = useHistory();
   let location = useLocation();
   useEffect(() => {

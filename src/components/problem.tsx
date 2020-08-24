@@ -11,13 +11,16 @@ import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
 import Linkify from 'react-linkify';
 
+interface ProblemIdParams {
+  problemId: string;
+}
 const Problem = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState(null);
   const [showTickModal, setShowTickModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(false);
   const [reload, setReload] = useState(true);
-  let { problemId } = useParams();
+  let { problemId } = useParams<ProblemIdParams>();
   let history = useHistory();
 
   useEffect(() => {

@@ -8,15 +8,18 @@ import Media from './common/media/media';
 import { LockSymbol, Stars, LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Segment, Icon, ButtonGroup, Button, List, Tab, Breadcrumb, Table, Label, TableCell, Header } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
-import { getSector } from '../api';
+import { getSector, getAreaPdfUrl } from '../api';
 import Linkify from 'react-linkify';
 
+interface SectorIdParams {
+  sectorId: string;
+}
 const Sector = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState(null);
   const [hideTicked, setHideTicked] = useState(false);
   let history = useHistory();
-  let { sectorId } = useParams();
+  let { sectorId } = useParams<SectorIdParams>();
   useEffect(() => {
     if (!loading) {
       getSector(accessToken, parseInt(sectorId)).then((data) => setData(data));
@@ -170,6 +173,14 @@ const Sector = () => {
               <Table.Cell><Linkify>{data.comment}</Linkify></Table.Cell>
             </Table.Row>
           }
+          <Table.Row>
+            <Table.Cell>Download:</Table.Cell>
+            <Table.Cell>
+              <Label href={getAreaPdfUrl(data.areaId)} rel="noopener" target="_blank" image basic >
+              <Icon name="file pdf outline"/>Download PDF
+              </Label>
+            </Table.Cell>
+          </Table.Row>
           {data.lat>0 && data.lng>0 &&
             <Table.Row>
               <Table.Cell>Navigate to parking:</Table.Cell>

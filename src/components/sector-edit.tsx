@@ -8,12 +8,15 @@ import { getSectorEdit, postSector } from './../api';
 import Leaflet from './common/leaflet/leaflet';
 import { useHistory, useParams, useLocation } from 'react-router-dom';
 
+interface AreaIdSectorIdParams {
+  areaIdSectorId: string;
+}
 const SectorEdit = () => {
   const { accessToken, loading, isAuthenticated, loginWithRedirect } = useAuth0();
   const [leafletMode, setLeafletMode] = useState('PARKING');
   const [data, setData] = useState(null);
   const [saving, setSaving] = useState(false);
-  let { areaIdSectorId } = useParams();
+  let { areaIdSectorId } = useParams<AreaIdSectorIdParams>();
   let history = useHistory();
   let location = useLocation();
   useEffect(() => {

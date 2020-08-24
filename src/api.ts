@@ -29,6 +29,10 @@ export function getImageUrl(id: number, minDimention?: number): string {
   return getUrl(`/images?id=${id}`);
 }
 
+export function getAreaPdfUrl(id: number): string {
+  return getUrl(`/areas/pdf?id=${id}`);
+}
+
 export function numberWithCommas(number: number) {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }

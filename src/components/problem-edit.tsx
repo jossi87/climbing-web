@@ -11,11 +11,14 @@ import { getProblemEdit, convertFromDateToString, convertFromStringToDate, postP
 import { LoadingAndRestoreScroll, InsufficientPrivileges } from './common/widgets/widgets';
 import { useHistory, useParams, useLocation } from 'react-router-dom';
 
+interface SectorIdProblemIdParams {
+  sectorIdProblemId: string;
+}
 const ProblemEdit = () => {
   const { accessToken, loading, isAuthenticated, loginWithRedirect } = useAuth0();
   const [data, setData] = useState(null);
   const [saving, setSaving] = useState(false);
-  let { sectorIdProblemId } = useParams();
+  let { sectorIdProblemId } = useParams<SectorIdProblemIdParams>();
   let history = useHistory();
   let location = useLocation();
   useEffect(() => {

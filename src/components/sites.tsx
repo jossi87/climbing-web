@@ -7,10 +7,13 @@ import { LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSites } from '../api';
 
+interface TypeParams {
+  type: string;
+}
 const Sites = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState(null);
-  let { type } = useParams();
+  let { type } = useParams<TypeParams>();
   let history = useHistory();
   useEffect(() => {
     if (data) {

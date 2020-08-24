@@ -7,11 +7,14 @@ import { Image, Button, List, Header, Segment } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getTodo, getImageUrl, postTodo } from '../api';
 
+interface UserParams {
+  userId: string;
+}
 const Todo = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState(null);
   const [saving, setSaving] = useState(false);
-  let { userId } = useParams();
+  let { userId } = useParams<UserParams>();
   let history = useHistory();
   useEffect(() => {
     if (!loading) {
