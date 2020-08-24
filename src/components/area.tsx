@@ -137,9 +137,9 @@ const Area = () => {
               <Table.Cell>For developers:</Table.Cell>
               <Table.Cell><strong><i>Under development</i></strong></Table.Cell>
             </Table.Row>}
+          {data.comment && <Table.Row><Table.Cell colSpan={2} style={{fontWeight: '100', backgroundColor: 'white'}}><div dangerouslySetInnerHTML={{ __html: data.comment }} /></Table.Cell></Table.Row>}
         </Table.Body>
       </Table>
-      {data.comment && <Segment><div dangerouslySetInnerHTML={{ __html: data.comment }} /></Segment>}
       {data.sectors &&
         <Segment>
           <Header as="h3">Sectors:</Header>
