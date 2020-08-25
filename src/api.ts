@@ -33,6 +33,10 @@ export function getAreaPdfUrl(accessToken: string, id: number): string {
   return getUrl(`/areas/pdf?accessToken=${accessToken}&id=${id}`);
 }
 
+export function getProblemPdfUrl(accessToken: string, id: number): string {
+  return getUrl(`/problems/pdf?accessToken=${accessToken}&id=${id}`);
+}
+
 export function numberWithCommas(number: number) {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }

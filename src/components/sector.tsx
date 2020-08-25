@@ -174,10 +174,10 @@ const Sector = () => {
             </Table.Row>
           }
           <Table.Row>
-            <Table.Cell>Download:</Table.Cell>
+            <Table.Cell>Download PDF:</Table.Cell>
             <Table.Cell>
               <Label href={getAreaPdfUrl(accessToken, data.areaId)} rel="noopener" target="_blank" image basic>
-                <Icon name="file pdf outline"/>Download PDF
+                <Icon name="file pdf outline"/>area.pdf
               </Label>
             </Table.Cell>
           </Table.Row>

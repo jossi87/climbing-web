@@ -6,7 +6,7 @@ import Media from './common/media/media';
 import { Button, Grid, Breadcrumb, Tab, Label, Icon, Comment, Header, Segment, Table, Feed } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
 import { useAuth0 } from '../utils/react-auth0-spa';
-import { getProblem, getTodo, postComment, postTodo } from '../api';
+import { getAreaPdfUrl, getProblemPdfUrl, getProblem, getTodo, postComment, postTodo } from '../api';
 import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
 import Linkify from 'react-linkify';
@@ -338,6 +338,17 @@ const Problem = () => {
               <Table.Cell>{data.ticks.length}</Table.Cell>
             </Table.Row>
           }
+          <Table.Row>
+            <Table.Cell>Download PDF:</Table.Cell>
+            <Table.Cell>
+              <Label href={getProblemPdfUrl(accessToken, data.id)} rel="noopener" target="_blank" image basic>
+                <Icon name="file pdf outline"/>{data.metadata.isBouldering? "boulder.pdf" : "route.pdf"}
+              </Label>
+              <Label href={getAreaPdfUrl(accessToken, data.areaId)} rel="noopener" target="_blank" image basic>
+                <Icon name="file pdf outline"/>area.pdf
+              </Label>
+            </Table.Cell>
+          </Table.Row>
           {data.sectorLat>0 && data.sectorLng>0 &&
             <Table.Row>
               <Table.Cell>Navigate to parking:</Table.Cell>

@@ -27,7 +27,7 @@
     "@types/isomorphic-fetch": "0.0.35",
     "@types/leaflet": "^1.5.17",
     "@types/prop-types": "^15.7.3",
-    "@types/react": "^16.9.46",
+    "@types/react": "^16.9.47",
     "@types/react-dom": "^16.9.8",
     "@types/react-dropzone": "^5.1.0",
     "@types/react-leaflet": "^2.5.2",

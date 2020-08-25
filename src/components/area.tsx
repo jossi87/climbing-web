@@ -121,10 +121,10 @@ const Area = () => {
       <Table definition unstackable>
         <Table.Body>
           <Table.Row>
-            <Table.Cell width={3}>Download:</Table.Cell>
+            <Table.Cell width={3}>Download PDF:</Table.Cell>
             <Table.Cell>
               <Label href={getAreaPdfUrl(accessToken, data.id)} rel="noopener" target="_blank" image basic>
-                <Icon name="file pdf outline"/>Download PDF
+                <Icon name="file pdf outline"/>area.pdf
               </Label>
             </Table.Cell>
           </Table.Row>
