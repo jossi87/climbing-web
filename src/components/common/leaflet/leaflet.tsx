@@ -180,10 +180,11 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
         </>
         :
         <TileLayer
-          maxNativeZoom={maxZoom}
+          maxNativeZoom={15}
           minZoom={0}
-          maxZoom={maxZoom}
-          url='https://waapi.webatlas.no/maptiles/tiles/webatlas-orto-newup/wa_grid/{z}/{x}/{y}.jpeg?api_key=b8e36d51-119a-423b-b156-d744d54123d5'
+          maxZoom={15}
+          subdomains='23'
+          url='https://opencache{s}.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}'
         />
       }
       {renderMarkers}
