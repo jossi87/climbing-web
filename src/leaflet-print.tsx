@@ -24,7 +24,7 @@ const LeafletPrint = () => {
     }
   });
   return (
-    <Leaflet height={'100vh'} markers={leaflet.markers} outlines={outlines} polylines={polylines} defaultCenter={leaflet.defaultCenter} defaultZoom={leaflet.defaultZoom} history={null} onClick={null} />
+    <Leaflet height={'100vh'} markers={leaflet.markers} outlines={outlines} polylines={polylines} defaultCenter={leaflet.defaultCenter} defaultZoom={leaflet.defaultZoom} history={null} onClick={null} onlyMap={true} />
   );
 }
 

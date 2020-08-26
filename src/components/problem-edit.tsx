@@ -294,6 +294,7 @@ const ProblemEdit = () => {
               polylines={null}
               outlines={null}
               height={'300px'}
+              onlyMap={false}
             />
           </Form.Field>
           <Form.Group widths='equal'>

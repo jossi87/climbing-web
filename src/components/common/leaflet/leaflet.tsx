@@ -3,7 +3,7 @@ import { Map, Circle, TileLayer, LayersControl, Marker, Polygon, Polyline, Toolt
 import FullscreenControl from 'react-leaflet-fullscreen';
 let parkingIcon;
 
-const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter, defaultZoom, onClick }) => {
+const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter, defaultZoom, onClick, onlyMap }) => {
   function calculateDistance(polyline) {
     var km = 0;
     for (var i = 1; i < polyline.length; i++) {
@@ -111,69 +111,81 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
       center={defaultCenter}
       zoom={defaultZoom}
       onClick={onClick}
+      zoomControl={!onlyMap}
     >
-      <FullscreenControl position="topright" />
-      <LayersControl position="topright">
-        <LayersControl.BaseLayer checked={true} name="Norge i Bilder">
-          <TileLayer
-            maxNativeZoom={maxZoom}
-            minZoom={0}
-            maxZoom={maxZoom}
-            attribution='&copy; <a href="https://www.norgeibilder.no/" rel="noopener" target="_blank">Geovekst</a>'
-            url='https://waapi.webatlas.no/maptiles/tiles/webatlas-orto-newup/wa_grid/{z}/{x}/{y}.jpeg?api_key=b8e36d51-119a-423b-b156-d744d54123d5'
-          />
-        </LayersControl.BaseLayer>
+      {!onlyMap?
+        <>
+          <FullscreenControl position="topright" />
+          <LayersControl position="topright">
+            <LayersControl.BaseLayer checked={true} name="Norge i Bilder">
+              <TileLayer
+                maxNativeZoom={maxZoom}
+                minZoom={0}
+                maxZoom={maxZoom}
+                attribution='&copy; <a href="https://www.norgeibilder.no/" rel="noopener" target="_blank">Geovekst</a>'
+                url='https://waapi.webatlas.no/maptiles/tiles/webatlas-orto-newup/wa_grid/{z}/{x}/{y}.jpeg?api_key=b8e36d51-119a-423b-b156-d744d54123d5'
+              />
+            </LayersControl.BaseLayer>
 
-        <LayersControl.BaseLayer name="OpenStreetMap">
-          <TileLayer
-            maxNativeZoom={maxZoom}
-            minZoom={0}
-            maxZoom={maxZoom}
-            attribution='&copy; <a href="https://osm.org/copyright" rel="noopener" target="_blank">OpenStreetMap</a> contributors'
-            url='https://{s}.tile.osm.org/{z}/{x}/{y}.png'
-          />
-        </LayersControl.BaseLayer>
+            <LayersControl.BaseLayer name="OpenStreetMap">
+              <TileLayer
+                maxNativeZoom={maxZoom}
+                minZoom={0}
+                maxZoom={maxZoom}
+                attribution='&copy; <a href="https://osm.org/copyright" rel="noopener" target="_blank">OpenStreetMap</a> contributors'
+                url='https://{s}.tile.osm.org/{z}/{x}/{y}.png'
+              />
+            </LayersControl.BaseLayer>
 
-        <LayersControl.BaseLayer name="Kartverket N50 topo">
-          <TileLayer
-            maxNativeZoom={15}
-            minZoom={0}
-            maxZoom={15}
-            subdomains='23'
-            attribution='&copy; <a href="https://wiki.openstreetmap.org/wiki/No:Kartverket_import" rel="noopener" target="_blank">Kartverket</a>'
-            url='https://opencache{s}.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}'
-          />
-        </LayersControl.BaseLayer>
+            <LayersControl.BaseLayer name="Kartverket N50 topo">
+              <TileLayer
+                maxNativeZoom={15}
+                minZoom={0}
+                maxZoom={15}
+                subdomains='23'
+                attribution='&copy; <a href="https://wiki.openstreetmap.org/wiki/No:Kartverket_import" rel="noopener" target="_blank">Kartverket</a>'
+                url='https://opencache{s}.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}'
+              />
+            </LayersControl.BaseLayer>
 
-        <LayersControl.Overlay checked={true} name="Stedsnavn">
-          <WMSTileLayer
-              maxNativeZoom={maxZoom}
-              minZoom={0}
-              maxZoom={maxZoom}
-              transparent={true}
-              format={"image/png"}
-              layers={"Stedsnavn"}
-              version={"1.3.0"}
-              uppercase={true}
-              url="https://openwms.statkart.no/skwms1/wms.topo4"
-            />
-        </LayersControl.Overlay>
+            <LayersControl.Overlay checked={true} name="Stedsnavn">
+              <WMSTileLayer
+                  maxNativeZoom={maxZoom}
+                  minZoom={0}
+                  maxZoom={maxZoom}
+                  transparent={true}
+                  format={"image/png"}
+                  layers={"Stedsnavn"}
+                  version={"1.3.0"}
+                  uppercase={true}
+                  url="https://openwms.statkart.no/skwms1/wms.topo4"
+                />
+            </LayersControl.Overlay>
 
-        <LayersControl.Overlay checked={true} name="Vegnett">
-          <WMSTileLayer
-              maxNativeZoom={maxZoom}
-              minZoom={0}
-              maxZoom={maxZoom}
-              transparent={true}
-              format={"image/png"}
-              layers={"all"}
-              version={"1.3.0"}
-              uppercase={true}
-              url="https://openwms.statkart.no/skwms1/wms.vegnett"
-            />
-        </LayersControl.Overlay>
+            <LayersControl.Overlay checked={true} name="Vegnett">
+              <WMSTileLayer
+                  maxNativeZoom={maxZoom}
+                  minZoom={0}
+                  maxZoom={maxZoom}
+                  transparent={true}
+                  format={"image/png"}
+                  layers={"all"}
+                  version={"1.3.0"}
+                  uppercase={true}
+                  url="https://openwms.statkart.no/skwms1/wms.vegnett"
+                />
+            </LayersControl.Overlay>
 
-      </LayersControl>
+          </LayersControl>
+        </>
+        :
+        <TileLayer
+          maxNativeZoom={maxZoom}
+          minZoom={0}
+          maxZoom={maxZoom}
+          url='https://waapi.webatlas.no/maptiles/tiles/webatlas-orto-newup/wa_grid/{z}/{x}/{y}.jpeg?api_key=b8e36d51-119a-423b-b156-d744d54123d5'
+        />
+      }
       {renderMarkers}
       {polygons}
       {renderPolylines}

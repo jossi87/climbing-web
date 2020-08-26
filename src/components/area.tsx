@@ -63,7 +63,7 @@ const Area = () => {
     const defaultZoom = data.lat && data.lat>0? 14 : data.metadata.defaultZoom;
     panes.push({
       menuItem: { key: 'map', icon: 'map', content: 'Map' },
-      render: () => <Tab.Pane><Leaflet height={height} markers={markers} outlines={outlines} polylines={polylines} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} onClick={null} /></Tab.Pane>
+      render: () => <Tab.Pane><Leaflet height={height} markers={markers} outlines={outlines} polylines={polylines} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} onClick={null} onlyMap={false} /></Tab.Pane>
     });
   }
   if (data.sectors.length!=0) {

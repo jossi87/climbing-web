@@ -133,6 +133,7 @@ const AreaEdit = () => {
               polylines={null}
               outlines={null}
               height={'300px'}
+              onlyMap={false}
             />
           </Form.Field>
         </Segment>

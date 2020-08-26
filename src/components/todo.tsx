@@ -89,6 +89,7 @@ const Todo = () => {
               polylines={null}
               outlines={null}
               onClick={null}
+              onlyMap={false}
               />
             <List selection>
               {data.todo.map((p, i) => (
