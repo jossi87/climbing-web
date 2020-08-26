@@ -119,8 +119,8 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
         if (mapRef.current && featureGroupRef.current) { //we will get inside just once when loading
             const map = (mapRef as any).current.leafletElement;
             const layer = (featureGroupRef as any).current.leafletElement;
-            let maxZoom = onlyMap? 15 : 22;
-            map.fitBounds(layer.getBounds().pad(0.5), {maxZoom});
+            let maxZoom = onlyMap? 15 : 16;
+            map.fitBounds(layer.getBounds(), {maxZoom});
         }
     }}
     >
