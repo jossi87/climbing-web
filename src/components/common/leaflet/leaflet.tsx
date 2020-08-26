@@ -1,9 +1,11 @@
-import React from 'react';
-import { Map, Circle, TileLayer, LayersControl, Marker, Polygon, Polyline, Tooltip, WMSTileLayer } from 'react-leaflet';
+import React, { useRef } from "react";
+import { Map, Circle, TileLayer, LayersControl, Marker, Polygon, Polyline, Tooltip, WMSTileLayer, FeatureGroup } from 'react-leaflet';
 import FullscreenControl from 'react-leaflet-fullscreen';
 let parkingIcon;
 
 const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter, defaultZoom, onClick, onlyMap }) => {
+  const featureGroupRef = useRef();
+  const mapRef = useRef();
   function calculateDistance(polyline) {
     var km = 0;
     for (var i = 1; i < polyline.length; i++) {
@@ -107,11 +109,20 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
   const maxZoom = 21;
   return (
     <Map
+      ref={mapRef}
       style={{height: (height? height : '500px'), width: '100%', zIndex: 0}}
       center={defaultCenter}
       zoom={defaultZoom}
       onClick={onClick}
       zoomControl={!onlyMap}
+      whenReady={() => {
+        if (mapRef.current && featureGroupRef.current) { //we will get inside just once when loading
+            const map = (mapRef as any).current.leafletElement;
+            const layer = (featureGroupRef as any).current.leafletElement;
+            let maxZoom = onlyMap? 15 : 22;
+            map.fitBounds(layer.getBounds().pad(0.5), {maxZoom});
+        }
+    }}
     >
       {!onlyMap?
         <>
@@ -187,9 +198,11 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
           url='https://opencache{s}.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}'
         />
       }
-      {renderMarkers}
-      {polygons}
-      {renderPolylines}
+      <FeatureGroup ref={featureGroupRef}>
+        {renderMarkers}
+        {polygons}
+        {renderPolylines}
+      </FeatureGroup>
     </Map>
   );
 }
