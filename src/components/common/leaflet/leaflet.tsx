@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Map, Circle, TileLayer, LayersControl, Marker, Polygon, Polyline, Tooltip, WMSTileLayer, FeatureGroup } from 'react-leaflet';
+import { Map, Circle, TileLayer, LayersControl, Marker, Polygon, Polyline, Tooltip, WMSTileLayer, FeatureGroup, ScaleControl } from 'react-leaflet';
 import FullscreenControl from 'react-leaflet-fullscreen';
 let parkingIcon;
 
@@ -118,6 +118,7 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
       whenReady={() => {
         if (mapRef.current && featureGroupRef.current) { //we will get inside just once when loading
           const map = (mapRef as any).current.leafletElement;
+
           const layer = (featureGroupRef as any).current.leafletElement;
           if (layer.getBounds().length>1) {
             let maxZoom = onlyMap? 15 : 16;
@@ -126,6 +127,7 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
         }
     }}
     >
+      <ScaleControl maxWidth={100} metric={true} imperial={false} />
       {!onlyMap?
         <>
           <FullscreenControl position="topright" />
