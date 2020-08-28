@@ -44,7 +44,7 @@ const Area = () => {
   });
   const polylines = data.sectors.filter(s => s.polyline).map(s => {
     return {
-      label: s.name,
+      label: null,
       polyline: s.polyline.split(";").map(e => {
         return e.split(",").map(Number);
       })
