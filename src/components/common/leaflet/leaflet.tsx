@@ -137,7 +137,7 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
                 maxNativeZoom={maxZoom}
                 minZoom={0}
                 maxZoom={maxZoom}
-                attribution='&copy; <a href="https://www.norgeibilder.no/" rel="noopener" target="_blank">Geovekst</a>'
+                attribution='<a href="https://www.norgeibilder.no/" rel="noopener" target="_blank">Geovekst</a>'
                 url='https://waapi.webatlas.no/maptiles/tiles/webatlas-orto-newup/wa_grid/{z}/{x}/{y}.jpeg?api_key=b8e36d51-119a-423b-b156-d744d54123d5'
               />
             </LayersControl.BaseLayer>
@@ -147,7 +147,7 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
                 maxNativeZoom={maxZoom}
                 minZoom={0}
                 maxZoom={maxZoom}
-                attribution='&copy; <a href="https://osm.org/copyright" rel="noopener" target="_blank">OpenStreetMap</a> contributors'
+                attribution='<a href="https://osm.org/copyright" rel="noopener" target="_blank">OpenStreetMap</a> contributors'
                 url='https://{s}.tile.osm.org/{z}/{x}/{y}.png'
               />
             </LayersControl.BaseLayer>
@@ -158,7 +158,7 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
                 minZoom={0}
                 maxZoom={15}
                 subdomains='23'
-                attribution='&copy; <a href="https://wiki.openstreetmap.org/wiki/No:Kartverket_import" rel="noopener" target="_blank">Kartverket</a>'
+                attribution='<a href="https://wiki.openstreetmap.org/wiki/No:Kartverket_import" rel="noopener" target="_blank">Kartverket</a>'
                 url='https://opencache{s}.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}'
               />
             </LayersControl.BaseLayer>
