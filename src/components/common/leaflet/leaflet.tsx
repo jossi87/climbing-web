@@ -100,7 +100,7 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
         return (
         <Polyline key={i} color="lime" positions={p.polyline}>
           <Tooltip opacity={0.5} permanent>
-            {polylines.length>1 && p.label + ": "}{distance}
+            {polylines.length>1 && p.label && p.label + ": "}{distance}
           </Tooltip>
         </Polyline>);
       }
