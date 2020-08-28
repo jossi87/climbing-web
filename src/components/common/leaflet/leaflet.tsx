@@ -83,7 +83,7 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
       }
     }}>
       {o.label && (
-        <Tooltip opacity={0.9} permanent>
+        <Tooltip opacity={0.5} permanent>
           {o.label}
         </Tooltip>
       )}
@@ -118,11 +118,11 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
       whenReady={() => {
         if (mapRef.current && featureGroupRef.current) { //we will get inside just once when loading
           const map = (mapRef as any).current.leafletElement;
-
           const layer = (featureGroupRef as any).current.leafletElement;
-          if (layer.getBounds().length>1) {
+          let bounds = layer.getBounds();
+          if (bounds._northEast && bounds._southWest) {
             let maxZoom = onlyMap? 15 : 16;
-            map.fitBounds(layer.getBounds(), {maxZoom});
+            map.fitBounds(bounds, {maxZoom});
           }
         }
     }}
