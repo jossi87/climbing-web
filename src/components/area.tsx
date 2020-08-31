@@ -129,6 +129,14 @@ const Area = () => {
             </Table.Cell>
           </Table.Row>
           <Table.Row>
+            <Table.Cell>Sectors:</Table.Cell>
+            <Table.Cell>{data.sectors.length}</Table.Cell>
+          </Table.Row>
+          <Table.Row>
+            <Table.Cell>{data.metadata.isBouldering? "Problems:" : "Routes:"}</Table.Cell>
+            <Table.Cell>{data.sectors.map(s => s.numProblems).reduce((a, b) => a+b, 0)}</Table.Cell>
+          </Table.Row>
+          <Table.Row>
             <Table.Cell>Page views:</Table.Cell>
             <Table.Cell>{data.hits}</Table.Cell>
           </Table.Row>
