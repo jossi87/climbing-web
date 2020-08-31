@@ -341,10 +341,10 @@ const Problem = () => {
           <Table.Row>
             <Table.Cell>Download PDF:</Table.Cell>
             <Table.Cell>
-              <Label href={getProblemPdfUrl(accessToken, data.id)} rel="noopener" target="_blank" image basic>
+              <Label href={getProblemPdfUrl(accessToken, data.id)} rel="noreferrer noopener" target="_blank" image basic>
                 <Icon name="file pdf outline"/>{data.metadata.isBouldering? "boulder.pdf" : "route.pdf"}
               </Label>
-              <Label href={getAreaPdfUrl(accessToken, data.areaId)} rel="noopener" target="_blank" image basic>
+              <Label href={getAreaPdfUrl(accessToken, data.areaId)} rel="noreferrer noopener" target="_blank" image basic>
                 <Icon name="file pdf outline"/>area.pdf
               </Label>
             </Table.Cell>

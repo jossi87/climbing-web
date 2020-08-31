@@ -123,7 +123,7 @@ const Area = () => {
           <Table.Row>
             <Table.Cell width={3}>Download PDF:</Table.Cell>
             <Table.Cell>
-              <Label href={getAreaPdfUrl(accessToken, data.id)} rel="noopener" target="_blank" image basic>
+              <Label href={getAreaPdfUrl(accessToken, data.id)} rel="noreferrer noopener" target="_blank" image basic>
                 <Icon name="file pdf outline"/>area.pdf
               </Label>
             </Table.Cell>
