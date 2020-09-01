@@ -288,11 +288,11 @@ const Problem = () => {
               <Table.Cell>Jump:</Table.Cell>
               <Table.Cell>
               <Button.Group size="mini">
-                <Button tiny as={Link} to={`/problem/${data.sectorIdProblemPrev}`} icon labelPosition='left'>
+                <Button size="tiny" as={Link} to={`/problem/${data.sectorIdProblemPrev}`} icon labelPosition='left'>
                   <Icon name='angle left' />
                   Prev
                 </Button>
-                <Button tiny as={Link} to={`/problem/${data.sectorIdProblemNext}`} icon labelPosition='right'>
+                <Button size="tiny" as={Link} to={`/problem/${data.sectorIdProblemNext}`} icon labelPosition='right'>
                   <Icon name='angle right' />
                   Next
                 </Button>

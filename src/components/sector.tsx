@@ -202,10 +202,10 @@ const Sector = () => {
             <Button icon labelPosition="left" onClick={() => sortBy(false)} toggle active={!data.orderByGrade}><Icon name="sort numeric ascending"/>Number</Button>
           </ButtonGroup>
           <Segment attached="bottom">
-            <List selection attached="bottom">
-              {subTypes.filter((x, i) => data.orderByGrade || i === 0).map(subType => (
-                <>
-                  {data.orderByGrade && subTypes.length>1 && <Header as="h5">{subType}:</Header>}
+            {subTypes.filter((x, i) => data.orderByGrade || i === 0).map((subType, i) => (
+              <span key={i}>
+                {data.orderByGrade && subTypes.length>1 && <Header as="h5">{subType}:</Header>}
+                <List selection attached="bottom">
                   {data.problems.filter(problem => (!data.orderByGrade || problem.t.subType==subType) && (!hideTicked || !problem.ticked)).map((problem, i) => {
                     var ascents = problem.numTicks>0 && (problem.numTicks + (problem.numTicks==1? " ascent" : " ascents"));
                     var typeAscents;
@@ -247,9 +247,9 @@ const Sector = () => {
                       </List.Item>
                     )})
                   }
-                </>
-              ))}
-            </List>
+                </List>
+              </span>
+            ))}
           </Segment>
         </>
       }
