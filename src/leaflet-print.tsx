@@ -7,13 +7,13 @@ interface LeafletPrintProps {
 }
 const LeafletPrint = () => {
   let { json } = useParams<LeafletPrintProps>();
-  let leaflet = JSON.parse(decodeURIComponent(json));
+  let leaflet = JSON.parse(atob(json));
   const outlines = leaflet.outlines.map(o => {
-    const polygon = o.polygonCoords.split(";").map((c, i) => {
+    const polygon = o.polygonCoords.split(";").map(c => {
       const latLng = c.split(",");
       return ([parseFloat(latLng[0]), parseFloat(latLng[1])]);
     });
-    return {label: o.name.replace(/\+/g, " "), polygon}
+    return {label: o.name, polygon}
   });
   const polylines = leaflet.polylines.map(p => p.split(";").map(e => e.split(",").map(Number)));
   return (
