@@ -116,6 +116,7 @@ const Filter = () => {
             history={history}
             polylines={null}
             outlines={null}
+            legends={null}
             onClick={null}
             onlyMap={false}
             />

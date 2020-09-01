@@ -293,6 +293,7 @@ const ProblemEdit = () => {
               history={history}
               polylines={null}
               outlines={null}
+              legends={null}
               height={'300px'}
               onlyMap={false}
             />

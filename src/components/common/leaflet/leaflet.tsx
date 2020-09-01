@@ -1,43 +1,12 @@
 import React, { useRef } from "react";
 import { Map, Circle, TileLayer, LayersControl, Marker, Polygon, Polyline, Tooltip, WMSTileLayer, FeatureGroup, ScaleControl } from 'react-leaflet';
+import Control from 'react-leaflet-control';
 import FullscreenControl from 'react-leaflet-fullscreen';
 let parkingIcon;
 
-const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter, defaultZoom, onClick, onlyMap }) => {
+const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter, defaultZoom, onClick, onlyMap, legends }) => {
   const featureGroupRef = useRef();
   const mapRef = useRef();
-  function calculateDistance(polyline) {
-    var km = 0;
-    for (var i = 1; i < polyline.length; i++) {
-      const lat1 = polyline[i-1][0];
-      const lng1 = polyline[i-1][1];
-      const lat2 = polyline[i][0];
-      const lng2 = polyline[i][1];
-      km += calculateDistanceBetweenCoordinates(lat1, lng1, lat2, lng2);
-    }
-    if (km > 1) {
-      return Math.round(km*100)/100 + " km";
-    }
-		return Math.round(km*1000) + " meter";
-  }
-
-  function calculateDistanceBetweenCoordinates(lat1, lng1, lat2, lng2) {
-    const R = 6371; // Radius of the earth in km
-		const dLat = deg2rad(lat2-lat1);  // deg2rad below
-		const dLon = deg2rad(lng2-lng1); 
-		const a = 
-				Math.sin(dLat/2) * Math.sin(dLat/2) +
-				Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
-				Math.sin(dLon/2) * Math.sin(dLon/2)
-				; 
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-    const d = R * c; // Distance in km
-    return d;
-  }
-
-  function deg2rad(deg) {
-		return deg * (Math.PI/180);
-	}
 
   const renderMarkers = markers && markers.map((m, i) => {
     if (m.isParking) {
@@ -83,7 +52,7 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
       }
     }}>
       {o.label && (
-        <Tooltip opacity={0.5} permanent>
+        <Tooltip opacity={legends? 1 : 0.5} permanent className='buldreinfo-tooltip-compact'>
           {o.label}
         </Tooltip>
       )}
@@ -92,21 +61,19 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
   var renderPolylines;
   if (polylines) {
     renderPolylines = polylines.map((p, i) => {
-      if (p.polyline.length == 1) {
-        return <Circle key={i} center={p.polyline[0]} radius={0.5} />
+      if (p.length == 1) {
+        return <Circle key={i} center={p[0]} radius={0.5} />
       }
       else {
-        const distance = calculateDistance(p.polyline);
         return (
-        <Polyline key={i} color="lime" positions={p.polyline}>
-          <Tooltip opacity={0.5} permanent>
-            {polylines.length>1 && p.label && p.label + ": "}{distance}
-          </Tooltip>
-        </Polyline>);
+          <Polyline key={i} color="lime" positions={p} />
+        );
       }
     })
   }
-  const maxZoom = 21;
+  let legend = legends && legends.length>0 && <div className='leaflet-control-scale-line'>{legends.map(l => <>{l}<br/></>)}</div>;
+
+  const maxZoom = 22;
   return (
     <Map
       ref={mapRef}
@@ -207,8 +174,46 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
         {polygons}
         {renderPolylines}
       </FeatureGroup>
+      {legend && 
+        <Control position='topleft' >
+          {legend}
+        </Control>
+      }
     </Map>
   );
+}
+
+export function calculateDistance(polyline) {
+  var km = 0;
+  for (var i = 1; i < polyline.length; i++) {
+    const lat1 = polyline[i-1][0];
+    const lng1 = polyline[i-1][1];
+    const lat2 = polyline[i][0];
+    const lng2 = polyline[i][1];
+    km += calculateDistanceBetweenCoordinates(lat1, lng1, lat2, lng2);
+  }
+  if (km > 1) {
+    return Math.round(km*100)/100 + " km";
+  }
+  return Math.round(km*1000) + " meter";
+}
+
+function calculateDistanceBetweenCoordinates(lat1, lng1, lat2, lng2) {
+  const R = 6371; // Radius of the earth in km
+  const dLat = deg2rad(lat2-lat1);  // deg2rad below
+  const dLon = deg2rad(lng2-lng1); 
+  const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2)
+      ; 
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+  const d = R * c; // Distance in km
+  return d;
+}
+
+function deg2rad(deg) {
+  return deg * (Math.PI/180);
 }
 
 export default Leaflet;

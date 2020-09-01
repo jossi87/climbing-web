@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link, useParams, useHistory } from 'react-router-dom';
-import Leaflet from './common/leaflet/leaflet';
+import Leaflet, { calculateDistance } from './common/leaflet/leaflet';
 import Media from './common/media/media';
 import { Button, Grid, Breadcrumb, Tab, Label, Icon, Comment, Header, Segment, Table, Feed } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
@@ -131,23 +131,19 @@ const Problem = () => {
     });
   }
   if (markers.length>0) {
+    const polyline = data.sectorPolyline && data.sectorPolyline.split(";").map(e => e.split(",").map(Number));
     var outlines;
-    if (data.sectorPolygonCoords && markers.filter(m => !m.isParking).length===0) {
+    if (data.sectorPolygonCoords) {
       const polygon = data.sectorPolygonCoords.split(";").map(c => {
         const latLng = c.split(",");
         return ([parseFloat(latLng[0]), parseFloat(latLng[1])]);
       });
-      outlines = [{url: '/sector/' + data.sectorId, label: data.sectorName, polygon: polygon}];
+      let label = data.sectorName + (polyline? " (" + calculateDistance(polyline) + ")" : "");
+      outlines = [{url: '/sector/' + data.sectorId, label, polygon}];
     }
-    const polyline = data.sectorPolyline && {
-      label: data.sectorName,
-      polyline: data.sectorPolyline.split(";").map(e => {
-        return e.split(",").map(Number);
-      })
-    };
     panes.push({
       menuItem: { key: 'map', icon: 'map', content: 'Map' },
-      render: () => <Tab.Pane><Leaflet height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={{lat: markers[0].lat, lng: markers[0].lng}} defaultZoom={16} history={history} onClick={null} onlyMap={false} /></Tab.Pane>
+      render: () => <Tab.Pane><Leaflet height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} legends={null} defaultCenter={{lat: markers[0].lat, lng: markers[0].lng}} defaultZoom={16} history={history} onClick={null} onlyMap={false} /></Tab.Pane>
     });
   }
   

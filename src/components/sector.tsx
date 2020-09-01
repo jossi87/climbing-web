@@ -3,7 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { Link, useParams, useHistory } from 'react-router-dom';
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
 import Activity from './common/activity/activity';
-import Leaflet from './common/leaflet/leaflet';
+import Leaflet, { calculateDistance } from './common/leaflet/leaflet';
 import Media from './common/media/media';
 import { LockSymbol, Stars, LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Segment, Icon, ButtonGroup, Button, List, Tab, Breadcrumb, Table, Label, TableCell, Header } from 'semantic-ui-react';
@@ -79,23 +79,19 @@ const Sector = () => {
   if (markers.length>0) {
     const defaultCenter = data.lat && data.lat>0? {lat: data.lat, lng: data.lng} : data.metadata.defaultCenter;
     const defaultZoom = data.lat && data.lat>0? 15 : data.metadata.defaultZoom;
+    let polyline = data.polyline && data.polyline.split(";").map(e => e.split(",").map(Number));
     var outlines;
-    if (data.polygonCoords && markers.filter(m => !m.isParking).length===0) {
+    if (data.polygonCoords) {
       const polygon = data.polygonCoords.split(";").map(c => {
         const latLng = c.split(",");
         return ([parseFloat(latLng[0]), parseFloat(latLng[1])]);
       });
-      outlines = [{url: '/sector/' + data.id, label: data.name, polygon: polygon}];
+      let label = data.name + (polyline? " (" + calculateDistance(polyline) + ")" : "");
+      outlines = [{url: '/sector/' + data.id, label, polygon: polygon}];
     }
-    const polyline = data.polyline && {
-      label: data.name,
-      polyline: data.polyline.split(";").map(e => {
-        return e.split(",").map(Number);
-      })
-    };
     panes.push({
       menuItem: { key: 'map', icon: 'map', content: 'Map' },
-      render: () => <Tab.Pane><Leaflet height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} onClick={null} onlyMap={false} /></Tab.Pane>
+      render: () => <Tab.Pane><Leaflet height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} legends={null} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} onClick={null} onlyMap={false} /></Tab.Pane>
     });
   }
   if (data.problems.length!=0) {

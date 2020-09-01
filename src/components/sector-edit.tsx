@@ -98,12 +98,7 @@ const SectorEdit = () => {
     const latLng = c.split(",");
     return ([parseFloat(latLng[0]), parseFloat(latLng[1])]);
   });
-  const polyline = data.polyline && {
-    label: "",
-    polyline: data.polyline.split(";").map(e => {
-      return e.split(",").map(Number);
-    })
-  };
+  const polyline = data.polyline && data.polyline.split(";").map(e => e.split(",").map(Number));
   const defaultCenter = data.lat && parseFloat(data.lat)>0? {lat: parseFloat(data.lat), lng: parseFloat(data.lng)} : data.metadata.defaultCenter;
   const defaultZoom = data.lat && parseFloat(data.lat)>0? 14 : data.metadata.defaultZoom;
   const visibilityOptions = [
@@ -172,6 +167,7 @@ const SectorEdit = () => {
               markers={data.lat!=0 && data.lng!=0 && [{lat: data.lat, lng: data.lng, isParking: true}]}
               outlines={polygon && [{polygon: polygon}]}
               polylines={polyline && [polyline]}
+              legends={null}
               defaultCenter={defaultCenter}
               defaultZoom={defaultZoom}
               onClick={onMapClick}

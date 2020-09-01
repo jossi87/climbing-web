@@ -3,7 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { Link, useParams, useHistory } from 'react-router-dom';
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
 import Activity from './common/activity/activity';
-import Leaflet from './common/leaflet/leaflet';
+import Leaflet, { calculateDistance } from './common/leaflet/leaflet';
 import Media from './common/media/media';
 import { LockSymbol, LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Table, Label, Button, Tab, Item, Icon, Image, Breadcrumb, Segment, Header } from 'semantic-ui-react';
@@ -35,21 +35,24 @@ const Area = () => {
         isParking: true
       }
   });
-  const outlines = data.sectors.filter(s => s.polygonCoords).map(s => {
-    const polygon = s.polygonCoords.split(";").map((c, i) => {
-      const latLng = c.split(",");
-      return ([parseFloat(latLng[0]), parseFloat(latLng[1])]);
-    });
-    return {url: '/sector/' + s.id, label: s.name, polygon: polygon}
-  });
-  const polylines = data.sectors.filter(s => s.polyline).map(s => {
-    return {
-      label: null,
-      polyline: s.polyline.split(";").map(e => {
-        return e.split(",").map(Number);
-      })
+  let outlines = [];
+  let polylines = [];
+  for (let s of data.sectors) {
+    let distance = null;
+    if (s.polyline) {
+      let polyline = s.polyline.split(";").map(e => e.split(",").map(Number));
+      distance = calculateDistance(polyline);
+      polylines.push(polyline);
     }
-  });
+    if (s.polygonCoords) {
+      const polygon = s.polygonCoords.split(";").map((c, i) => {
+        const latLng = c.split(",");
+        return ([parseFloat(latLng[0]), parseFloat(latLng[1])]);
+      });
+      let label = s.name + (distance? " (" + distance + ")" : "");
+      outlines.push({url: '/sector/' + s.id, label, polygon: polygon});
+    }
+  }
   const panes = [];
   const height = '40vh';
   if (data.media && data.media.length>0) {
@@ -63,7 +66,7 @@ const Area = () => {
     const defaultZoom = data.lat && data.lat>0? 14 : data.metadata.defaultZoom;
     panes.push({
       menuItem: { key: 'map', icon: 'map', content: 'Map' },
-      render: () => <Tab.Pane><Leaflet height={height} markers={markers} outlines={outlines} polylines={polylines} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} onClick={null} onlyMap={false} /></Tab.Pane>
+      render: () => <Tab.Pane><Leaflet height={height} markers={markers} outlines={outlines} polylines={polylines} legends={null} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} onClick={null} onlyMap={false} /></Tab.Pane>
     });
   }
   if (data.sectors.length!=0) {

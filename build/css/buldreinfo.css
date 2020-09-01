@@ -1,5 +1,9 @@
 /* Buldreinfo / Bratte Linjer */
 
+.buldreinfo-tooltip-compact {
+  padding: 0px !important;
+}
+
 .buldreinfo-scale-img {
   max-height: 100vh;
   max-width: 100vw;

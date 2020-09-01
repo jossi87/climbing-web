@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
 import Leaflet from './components/common/leaflet/leaflet';
 
@@ -15,16 +15,9 @@ const LeafletPrint = () => {
     });
     return {label: o.name, polygon}
   });
-  const polylines = leaflet.polylines.map(p => {
-    return {
-      label: p.name,
-      polyline: p.polyline.split(";").map(e => {
-        return e.split(",").map(Number);
-      })
-    }
-  });
+  const polylines = leaflet.polylines.map(p => p.split(";").map(e => e.split(",").map(Number)));
   return (
-    <Leaflet height={'100vh'} markers={leaflet.markers} outlines={outlines} polylines={polylines} defaultCenter={leaflet.defaultCenter} defaultZoom={leaflet.defaultZoom} history={null} onClick={null} onlyMap={true} />
+    <Leaflet height={'100vh'} markers={leaflet.markers} outlines={outlines} polylines={polylines} legends={leaflet.legends} defaultCenter={leaflet.defaultCenter} defaultZoom={leaflet.defaultZoom} history={null} onClick={null} onlyMap={true} />
   );
 }
 
