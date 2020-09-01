@@ -87,7 +87,7 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
           const layer = (featureGroupRef as any).current.leafletElement;
           let bounds = layer.getBounds();
           if (bounds._northEast && bounds._southWest) {
-            map.fitBounds(bounds);
+            map.fitBounds(bounds, {maxZoom: 19});
           }
         }
     }}
