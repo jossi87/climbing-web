@@ -174,6 +174,7 @@ const SectorEdit = () => {
               history={history}
               height={'300px'}
               onlyMap={false}
+              showPhotoNotMap={false} 
             />
           </Form.Field>
         </Segment>

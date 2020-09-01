@@ -4,7 +4,7 @@ import Control from 'react-leaflet-control';
 import FullscreenControl from 'react-leaflet-fullscreen';
 let parkingIcon;
 
-const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter, defaultZoom, onClick, onlyMap, legends }) => {
+const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter, defaultZoom, onClick, onlyMap, legends, showPhotoNotMap }) => {
   const featureGroupRef = useRef();
   const mapRef = useRef();
 
@@ -153,12 +153,21 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
           </LayersControl>
         </>
         :
-        <TileLayer
-          maxZoom={19}
-          maxNativeZoom={19}
-          attribution='<a href="https://openstreetmap.org/copyright" rel="noopener" target="_blank">OpenStreetMap contributors</a>'
-          url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-        />
+        (showPhotoNotMap?
+            <TileLayer
+              maxNativeZoom={21}
+              maxZoom={21}
+              attribution='<a href="https://www.norgeibilder.no/" rel="noopener" target="_blank">Geovekst</a>'
+              url='https://waapi.webatlas.no/maptiles/tiles/webatlas-orto-newup/wa_grid/{z}/{x}/{y}.jpeg?api_key=b8e36d51-119a-423b-b156-d744d54123d5'
+            />
+          :
+          <TileLayer
+            maxZoom={19}
+            maxNativeZoom={19}
+            attribution='<a href="https://openstreetmap.org/copyright" rel="noopener" target="_blank">OpenStreetMap contributors</a>'
+            url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+          />
+        )
       }
       <FeatureGroup ref={featureGroupRef}>
         {renderMarkers}

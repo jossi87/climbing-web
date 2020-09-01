@@ -17,7 +17,7 @@ const LeafletPrint = () => {
   });
   const polylines = leaflet.polylines.map(p => p.split(";").map(e => e.split(",").map(Number)));
   return (
-    <Leaflet height={'100vh'} markers={leaflet.markers} outlines={outlines} polylines={polylines} legends={leaflet.legends} defaultCenter={leaflet.defaultCenter} defaultZoom={leaflet.defaultZoom} history={null} onClick={null} onlyMap={true} />
+    <Leaflet height={'100vh'} markers={leaflet.markers} outlines={outlines} polylines={polylines} legends={leaflet.legends} defaultCenter={leaflet.defaultCenter} defaultZoom={leaflet.defaultZoom} history={null} onClick={null} onlyMap={true} showPhotoNotMap={leaflet.showPhotoNotMap} />
   );
 }
 

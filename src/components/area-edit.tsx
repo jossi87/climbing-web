@@ -135,6 +135,7 @@ const AreaEdit = () => {
               legends={null}
               height={'300px'}
               onlyMap={false}
+              showPhotoNotMap={false} 
             />
           </Form.Field>
         </Segment>
