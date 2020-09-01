@@ -87,7 +87,7 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
           const layer = (featureGroupRef as any).current.leafletElement;
           let bounds = layer.getBounds();
           if (bounds._northEast && bounds._southWest) {
-            map.fitBounds(bounds, {maxZoom: 19});
+            map.fitBounds(bounds);
           }
         }
     }}
@@ -99,9 +99,8 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
           <LayersControl position="topright">
             <LayersControl.BaseLayer checked={true} name="Norge i Bilder">
               <TileLayer
-                maxNativeZoom={19}
-                minZoom={0}
-                maxZoom={19}
+                maxNativeZoom={21}
+                maxZoom={21}
                 attribution='<a href="https://www.norgeibilder.no/" rel="noopener" target="_blank">Geovekst</a>'
                 url='https://waapi.webatlas.no/maptiles/tiles/webatlas-orto-newup/wa_grid/{z}/{x}/{y}.jpeg?api_key=b8e36d51-119a-423b-b156-d744d54123d5'
               />
@@ -109,59 +108,56 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
 
             <LayersControl.BaseLayer name="OpenStreetMap">
               <TileLayer
-                maxNativeZoom={19}
-                minZoom={0}
                 maxZoom={19}
-                attribution='<a href="https://osm.org/copyright" rel="noopener" target="_blank">OpenStreetMap</a> contributors'
-                url='https://{s}.tile.osm.org/{z}/{x}/{y}.png'
+                maxNativeZoom={19}
+                attribution='<a href="https://openstreetmap.org/copyright" rel="noopener" target="_blank">OpenStreetMap contributors</a>'
+                url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
               />
             </LayersControl.BaseLayer>
 
             <LayersControl.BaseLayer name="Kartverket N50 topo">
               <TileLayer
-                maxNativeZoom={19}
-                minZoom={0}
-                maxZoom={19}
-                subdomains='23'
-                attribution='<a href="https://wiki.openstreetmap.org/wiki/No:Kartverket_import" rel="noopener" target="_blank">Kartverket</a>'
-                url='https://opencache{s}.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}'
+                maxNativeZoom={15}
+                maxZoom={15}
+                attribution='<a href="http://www.kartverket.no/">Kartverket</a>'
+                url='https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}'
               />
             </LayersControl.BaseLayer>
 
             <LayersControl.Overlay checked={true} name="Stedsnavn">
               <WMSTileLayer
-                  maxNativeZoom={15}
-                  minZoom={0}
-                  maxZoom={15}
-                  transparent={true}
-                  format={"image/png"}
-                  layers={"Stedsnavn"}
-                  version={"1.3.0"}
-                  uppercase={true}
-                  url="https://openwms.statkart.no/skwms1/wms.topo4"
-                />
+                maxNativeZoom={15}
+                maxZoom={15}
+                transparent={true}
+                format={"image/png"}
+                layers={"Stedsnavn"}
+                version={"1.3.0"}
+                uppercase={true}
+                url="https://openwms.statkart.no/skwms1/wms.topo4"
+              />
             </LayersControl.Overlay>
 
             <LayersControl.Overlay checked={true} name="Vegnett">
               <WMSTileLayer
-                  maxNativeZoom={15}
-                  minZoom={0}
-                  maxZoom={15}
-                  transparent={true}
-                  format={"image/png"}
-                  layers={"all"}
-                  version={"1.3.0"}
-                  uppercase={true}
-                  url="https://openwms.statkart.no/skwms1/wms.vegnett"
-                />
+                maxNativeZoom={15}
+                maxZoom={15}
+                transparent={true}
+                format={"image/png"}
+                layers={"all"}
+                version={"1.3.0"}
+                uppercase={true}
+                url="https://openwms.statkart.no/skwms1/wms.vegnett"
+              />
             </LayersControl.Overlay>
 
           </LayersControl>
         </>
         :
         <TileLayer
-          attribution='<a href="https://osm.org/copyright" rel="noopener" target="_blank">OpenStreetMap</a> contributors'
-          url='https://{s}.tile.osm.org/{z}/{x}/{y}.png'
+          maxZoom={19}
+          maxNativeZoom={19}
+          attribution='<a href="https://openstreetmap.org/copyright" rel="noopener" target="_blank">OpenStreetMap contributors</a>'
+          url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
         />
       }
       <FeatureGroup ref={featureGroupRef}>
