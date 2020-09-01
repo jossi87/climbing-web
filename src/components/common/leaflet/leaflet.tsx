@@ -52,7 +52,7 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
       }
     }}>
       {o.label && (
-        <Tooltip opacity={legends? 1 : 0.5} permanent className='buldreinfo-tooltip-compact'>
+        <Tooltip opacity={0.5} permanent className='buldreinfo-tooltip-compact'>
           {o.label}
         </Tooltip>
       )}

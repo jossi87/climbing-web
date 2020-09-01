@@ -13,7 +13,7 @@ const LeafletPrint = () => {
       const latLng = c.split(",");
       return ([parseFloat(latLng[0]), parseFloat(latLng[1])]);
     });
-    return {label: o.name, polygon}
+    return {label: o.name.replace(/\+/g, " "), polygon}
   });
   const polylines = leaflet.polylines.map(p => p.split(";").map(e => e.split(",").map(Number)));
   return (
