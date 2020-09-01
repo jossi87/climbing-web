@@ -71,7 +71,7 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
       }
     })
   }
-  let legend = legends && legends.length>0 && <div className='leaflet-control-scale-line'>{legends.map(l => <>{l}<br/></>)}</div>;
+  let legend = legends && legends.length>0 && <div className='leaflet-control-scale-line'>{legends.map((l, i) => <span key={i}>{l.replace(/\+/g, " ")}<br/></span>)}</div>;
 
   const maxZoom = 22;
   return (

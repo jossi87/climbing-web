@@ -7,7 +7,7 @@ interface LeafletPrintProps {
 }
 const LeafletPrint = () => {
   let { json } = useParams<LeafletPrintProps>();
-  let leaflet = JSON.parse(json);
+  let leaflet = JSON.parse(decodeURIComponent(json));
   const outlines = leaflet.outlines.map(o => {
     const polygon = o.polygonCoords.split(";").map((c, i) => {
       const latLng = c.split(",");
