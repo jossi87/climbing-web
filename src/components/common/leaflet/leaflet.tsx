@@ -17,7 +17,7 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
       return (
         <Marker position={[m.lat, m.lng]} key={i} onClick={() => onClick? null : history.push(m.url)} icon={parkingIcon}>
           {m.label && (
-            <Tooltip opacity={0.5} permanent>
+            <Tooltip opacity={0.5} permanent className='buldreinfo-tooltip-compact'>
               {m.label}
             </Tooltip>
           )}
