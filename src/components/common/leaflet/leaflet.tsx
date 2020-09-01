@@ -87,7 +87,7 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
           const layer = (featureGroupRef as any).current.leafletElement;
           let bounds = layer.getBounds();
           if (bounds._northEast && bounds._southWest) {
-            map.fitBounds(bounds, {maxZoom: 19});
+            map.fitBounds(bounds, {maxZoom: 21});
           }
         }
     }}
@@ -154,18 +154,16 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
         </>
         :
         (showPhotoNotMap?
-            <TileLayer
-              maxNativeZoom={21}
-              maxZoom={21}
-              attribution='<a href="https://www.norgeibilder.no/" rel="noopener" target="_blank">Geovekst</a>'
-              url='https://waapi.webatlas.no/maptiles/tiles/webatlas-orto-newup/wa_grid/{z}/{x}/{y}.jpeg?api_key=b8e36d51-119a-423b-b156-d744d54123d5'
-            />
+          <TileLayer
+            maxNativeZoom={21}
+            maxZoom={21}
+            attribution='<a href="https://www.norgeibilder.no/" rel="noopener" target="_blank">Geovekst</a>'
+            url='https://waapi.webatlas.no/maptiles/tiles/webatlas-orto-newup/wa_grid/{z}/{x}/{y}.jpeg?api_key=b8e36d51-119a-423b-b156-d744d54123d5'
+          />
           :
           <TileLayer
-            maxZoom={19}
-            maxNativeZoom={19}
-            attribution='<a href="https://openstreetmap.org/copyright" rel="noopener" target="_blank">OpenStreetMap contributors</a>'
-            url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+            attribution='<a href="http://www.kartverket.no/">Kartverket</a>'
+            url='https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}'
           />
         )
       }
