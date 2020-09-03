@@ -5,6 +5,7 @@ import FullscreenControl from 'react-leaflet-fullscreen';
 let parkingIcon;
 
 const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter, defaultZoom, onClick, onlyMap, legends, showPhotoNotMap }) => {
+  let opacity = onlyMap? 0.8 : 0.5;
   const featureGroupRef = useRef();
   const mapRef = useRef();
 
@@ -17,7 +18,7 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
       return (
         <Marker position={[m.lat, m.lng]} key={i} onClick={() => onClick? null : history.push(m.url)} icon={parkingIcon}>
           {m.label && (
-            <Tooltip opacity={0.5} permanent className='buldreinfo-tooltip-compact'>
+            <Tooltip opacity={opacity} permanent className='buldreinfo-tooltip-compact'>
               {m.label}
             </Tooltip>
           )}
@@ -31,7 +32,7 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
           onClick={() => history.push(m.url)}
           draggable={false} >
           {m.label && (
-            <Tooltip opacity={0.5} permanent>
+            <Tooltip opacity={opacity} permanent>
               {m.label}
             </Tooltip>
           )}
@@ -52,7 +53,7 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
       }
     }}>
       {o.label && (
-        <Tooltip opacity={0.5} permanent className='buldreinfo-tooltip-compact'>
+        <Tooltip opacity={opacity} permanent className='buldreinfo-tooltip-compact'>
           {o.label}
         </Tooltip>
       )}
