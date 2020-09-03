@@ -36,11 +36,20 @@ const ProblemEdit = () => {
   }
 
   function onLatChanged(e, { value }) {
-    setData(prevState => ({ ...prevState, lat: parseFloat(value) }));
+    console.log(value.replace(',','.'));
+    let lat = parseFloat(value);
+    if (isNaN(lat)) {
+      lat = 0;
+    }
+    setData(prevState => ({ ...prevState, lat }));
   }
 
   function onLngChanged(e, { value }) {
-    setData(prevState => ({ ...prevState, lng: parseFloat(value) }));
+    let lng = parseFloat(value);
+    if (isNaN(lng)) {
+      lng = 0;
+    }
+    setData(prevState => ({ ...prevState, lng }));
   }
 
   function onVisibilityChanged(e, { value }) {
