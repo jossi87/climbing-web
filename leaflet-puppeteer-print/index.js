@@ -22,7 +22,7 @@ async function start() {
   });
   await page.goto(htmlPath);
   await page.evaluate(initMap, leaflet);
-  await timeout(1000);
+  await timeout(500);
   await page.screenshot({ path });
   await browser.close();
 }
@@ -74,7 +74,7 @@ function initMap(leaflet) {
     group.addTo(map);
     if (num > 1) {
       let bounds = group.getBounds();
-      map.fitBounds(bounds);
+      map.fitBounds(bounds.pad(0.032));
     }
     if (leaflet.legends && leaflet.legends.length>0) {
       let legend = leaflet.legends.join('<br/>');
