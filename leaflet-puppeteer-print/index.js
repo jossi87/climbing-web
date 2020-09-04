@@ -5,6 +5,10 @@ const htmlPath = `file://${__dirname}/index.html`;
 
 start();
 
+async function timeout(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function start() {
   const args = process.argv.slice(2);
   const path = args[0];
@@ -18,7 +22,7 @@ async function start() {
   });
   await page.goto(htmlPath);
   await page.evaluate(initMap, leaflet);
-  await page.evaluate(() => { window.scrollBy(0, window.innerHeight); })
+  await timeout(1000);
   await page.screenshot({ path });
   await browser.close();
 }
