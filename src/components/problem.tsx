@@ -6,7 +6,7 @@ import Media from './common/media/media';
 import { Button, Grid, Breadcrumb, Tab, Label, Icon, Comment, Header, Segment, Table, Feed } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
 import { useAuth0 } from '../utils/react-auth0-spa';
-import { getAreaPdfUrl, getProblemPdfUrl, getProblem, getTodo, postComment, postTodo } from '../api';
+import { getAreaPdfUrl, getSectorPdfUrl, getProblemPdfUrl, getProblem, getTodo, postComment, postTodo } from '../api';
 import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
 import Linkify from 'react-linkify';
@@ -339,6 +339,9 @@ const Problem = () => {
             <Table.Cell>
               <Label href={getProblemPdfUrl(accessToken, data.id)} rel="noreferrer noopener" target="_blank" image basic>
                 <Icon name="file pdf outline"/>{data.metadata.isBouldering? "boulder.pdf" : "route.pdf"}
+              </Label>
+              <Label href={getSectorPdfUrl(accessToken, data.sectorId)} rel="noreferrer noopener" target="_blank" image basic>
+                <Icon name="file pdf outline"/>sector.pdf
               </Label>
               <Label href={getAreaPdfUrl(accessToken, data.areaId)} rel="noreferrer noopener" target="_blank" image basic>
                 <Icon name="file pdf outline"/>area.pdf

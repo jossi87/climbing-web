@@ -33,6 +33,10 @@ export function getAreaPdfUrl(accessToken: string, id: number): string {
   return getUrl(`/areas/pdf?accessToken=${accessToken}&id=${id}`);
 }
 
+export function getSectorPdfUrl(accessToken: string, id: number): string {
+  return getUrl(`/sectors/pdf?accessToken=${accessToken}&id=${id}`);
+}
+
 export function getProblemPdfUrl(accessToken: string, id: number): string {
   return getUrl(`/problems/pdf?accessToken=${accessToken}&id=${id}`);
 }

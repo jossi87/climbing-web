@@ -8,7 +8,7 @@ import Media from './common/media/media';
 import { LockSymbol, Stars, LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Segment, Icon, ButtonGroup, Button, List, Tab, Breadcrumb, Table, Label, TableCell, Header } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
-import { getSector, getAreaPdfUrl } from '../api';
+import { getSector, getAreaPdfUrl, getSectorPdfUrl } from '../api';
 import Linkify from 'react-linkify';
 
 interface SectorIdParams {
@@ -172,6 +172,9 @@ const Sector = () => {
           <Table.Row>
             <Table.Cell>Download PDF:</Table.Cell>
             <Table.Cell>
+              <Label href={getSectorPdfUrl(accessToken, data.sectorId)} rel="noreferrer noopener" target="_blank" image basic>
+                <Icon name="file pdf outline"/>sector.pdf
+              </Label>
               <Label href={getAreaPdfUrl(accessToken, data.areaId)} rel="noreferrer noopener" target="_blank" image basic>
                 <Icon name="file pdf outline"/>area.pdf
               </Label>
