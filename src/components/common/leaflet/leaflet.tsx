@@ -88,7 +88,7 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
           const layer = (featureGroupRef as any).current.leafletElement;
           let bounds = layer.getBounds();
           if (bounds._northEast && bounds._southWest) {
-            map.fitBounds(bounds, {maxZoom: 21});
+            map.fitBounds(bounds.pad(0.032), {maxZoom: 21}); // Test padding on Sirevåg - Holmavatn
           }
         }
     }}
