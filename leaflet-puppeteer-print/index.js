@@ -18,7 +18,7 @@ async function start() {
   });
   await page.goto(htmlPath);
   await page.evaluate(initMap, leaflet);
-  await page.waitForNavigation({waitUntil: 'networkidle2'});
+  await page.evaluate(() => { window.scrollBy(0, window.innerHeight); })
   await page.screenshot({ path });
   await browser.close();
 }
