@@ -172,7 +172,7 @@ const Sector = () => {
           <Table.Row>
             <Table.Cell>Download PDF:</Table.Cell>
             <Table.Cell>
-              <Label href={getSectorPdfUrl(accessToken, data.sectorId)} rel="noreferrer noopener" target="_blank" image basic>
+              <Label href={getSectorPdfUrl(accessToken, data.id)} rel="noreferrer noopener" target="_blank" image basic>
                 <Icon name="file pdf outline"/>sector.pdf
               </Label>
               <Label href={getAreaPdfUrl(accessToken, data.areaId)} rel="noreferrer noopener" target="_blank" image basic>
