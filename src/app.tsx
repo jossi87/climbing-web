@@ -52,8 +52,8 @@ const App = () => {
         <Navigation />
         <Container style={{ marginTop: '1em' }}>
           <Analytics id="UA-76534258-1">
-            <Switch>
-              <Suspense fallback={<LoadingAndRestoreScroll />}>
+          <Suspense fallback={<LoadingAndRestoreScroll />}>
+              <Switch>
                 <Route exact path='/'><Frontpage/></Route>
                 <Route path='/browse'><Browse/></Route>
                 <Route path='/ethics'><Ethics/></Route>
@@ -74,8 +74,8 @@ const App = () => {
                 <Route exact path='/user/:userId'><User/></Route>
                 <Route exact path='/todo'><Todo/></Route>
                 <Route exact path='/todo/:userId'><Todo/></Route>
-              </Suspense>
-            </Switch>
+              </Switch>
+            </Suspense>
           </Analytics>
         </Container>
         <Segment inverted vertical style={{ margin: '5em 0em 0em', padding: '5em 0em' }}>
