@@ -1,11 +1,10 @@
 import React, { useRef } from "react";
 import { Map, Circle, TileLayer, LayersControl, Marker, Polygon, Polyline, Tooltip, WMSTileLayer, FeatureGroup, ScaleControl } from 'react-leaflet';
-import Control from 'react-leaflet-control';
 import FullscreenControl from 'react-leaflet-fullscreen';
 let parkingIcon;
 
-const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter, defaultZoom, onClick, onlyMap, legends, showPhotoNotMap }) => {
-  let opacity = onlyMap? 0.8 : 0.5;
+const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter, defaultZoom, onClick }) => {
+  let opacity = 0.5;
   const featureGroupRef = useRef();
   const mapRef = useRef();
 
@@ -72,7 +71,6 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
       }
     })
   }
-  let legend = legends && legends.length>0 && <div className='leaflet-control-scale-line'>{legends.map((l, i) => <span key={i}>{l}<br/></span>)}</div>;
 
   return (
     <Map
@@ -81,7 +79,7 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
       center={defaultCenter}
       zoom={defaultZoom}
       onClick={onClick}
-      zoomControl={!onlyMap}
+      zoomControl={true}
       whenReady={() => {
         if (mapRef.current && featureGroupRef.current) { //we will get inside just once when loading
           const map = (mapRef as any).current.leafletElement;
@@ -94,90 +92,67 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
     }}
     >
       <ScaleControl maxWidth={100} metric={true} imperial={false} />
-      {!onlyMap?
-        <>
-          <FullscreenControl position="topright" />
-          <LayersControl position="topright">
-            <LayersControl.BaseLayer checked={true} name="Norge i Bilder">
-              <TileLayer
-                maxNativeZoom={21}
-                maxZoom={21}
-                attribution='<a href="https://www.norgeibilder.no/" rel="noopener" target="_blank">Geovekst</a>'
-                url='https://waapi.webatlas.no/maptiles/tiles/webatlas-orto-newup/wa_grid/{z}/{x}/{y}.jpeg?api_key=b8e36d51-119a-423b-b156-d744d54123d5'
-              />
-            </LayersControl.BaseLayer>
-
-            <LayersControl.BaseLayer name="OpenStreetMap">
-              <TileLayer
-                maxZoom={19}
-                maxNativeZoom={19}
-                attribution='<a href="https://openstreetmap.org/copyright" rel="noopener" target="_blank">OpenStreetMap contributors</a>'
-                url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-              />
-            </LayersControl.BaseLayer>
-
-            <LayersControl.BaseLayer name="Kartverket N50 topo">
-              <TileLayer
-                maxNativeZoom={15}
-                maxZoom={15}
-                attribution='<a href="http://www.kartverket.no/">Kartverket</a>'
-                url='https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}'
-              />
-            </LayersControl.BaseLayer>
-
-            <LayersControl.Overlay checked={true} name="Stedsnavn">
-              <WMSTileLayer
-                maxNativeZoom={15}
-                maxZoom={15}
-                transparent={true}
-                format={"image/png"}
-                layers={"Stedsnavn"}
-                version={"1.3.0"}
-                uppercase={true}
-                url="https://openwms.statkart.no/skwms1/wms.topo4"
-              />
-            </LayersControl.Overlay>
-
-            <LayersControl.Overlay checked={true} name="Vegnett">
-              <WMSTileLayer
-                maxNativeZoom={15}
-                maxZoom={15}
-                transparent={true}
-                format={"image/png"}
-                layers={"all"}
-                version={"1.3.0"}
-                uppercase={true}
-                url="https://openwms.statkart.no/skwms1/wms.vegnett"
-              />
-            </LayersControl.Overlay>
-
-          </LayersControl>
-        </>
-        :
-        (showPhotoNotMap?
+      <FullscreenControl position="topright" />
+      <LayersControl position="topright">
+        <LayersControl.BaseLayer checked={true} name="Norge i Bilder">
           <TileLayer
             maxNativeZoom={21}
             maxZoom={21}
             attribution='<a href="https://www.norgeibilder.no/" rel="noopener" target="_blank">Geovekst</a>'
             url='https://waapi.webatlas.no/maptiles/tiles/webatlas-orto-newup/wa_grid/{z}/{x}/{y}.jpeg?api_key=b8e36d51-119a-423b-b156-d744d54123d5'
           />
-          :
+        </LayersControl.BaseLayer>
+
+        <LayersControl.BaseLayer name="OpenStreetMap">
           <TileLayer
+            maxZoom={19}
+            maxNativeZoom={19}
+            attribution='<a href="https://openstreetmap.org/copyright" rel="noopener" target="_blank">OpenStreetMap contributors</a>'
+            url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+          />
+        </LayersControl.BaseLayer>
+
+        <LayersControl.BaseLayer name="Kartverket N50 topo">
+          <TileLayer
+            maxNativeZoom={15}
+            maxZoom={15}
             attribution='<a href="http://www.kartverket.no/">Kartverket</a>'
             url='https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}'
           />
-        )
-      }
+        </LayersControl.BaseLayer>
+
+        <LayersControl.Overlay checked={true} name="Stedsnavn">
+          <WMSTileLayer
+            maxNativeZoom={15}
+            maxZoom={15}
+            transparent={true}
+            format={"image/png"}
+            layers={"Stedsnavn"}
+            version={"1.3.0"}
+            uppercase={true}
+            url="https://openwms.statkart.no/skwms1/wms.topo4"
+          />
+        </LayersControl.Overlay>
+
+        <LayersControl.Overlay checked={true} name="Vegnett">
+          <WMSTileLayer
+            maxNativeZoom={15}
+            maxZoom={15}
+            transparent={true}
+            format={"image/png"}
+            layers={"all"}
+            version={"1.3.0"}
+            uppercase={true}
+            url="https://openwms.statkart.no/skwms1/wms.vegnett"
+          />
+        </LayersControl.Overlay>
+
+      </LayersControl>
       <FeatureGroup ref={featureGroupRef}>
         {renderMarkers}
         {polygons}
         {renderPolylines}
       </FeatureGroup>
-      {legend && 
-        <Control position='topleft' >
-          {legend}
-        </Control>
-      }
     </Map>
   );
 }

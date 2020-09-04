@@ -167,14 +167,11 @@ const SectorEdit = () => {
               markers={data.lat!=0 && data.lng!=0 && [{lat: data.lat, lng: data.lng, isParking: true}]}
               outlines={polygon && [{polygon: polygon}]}
               polylines={polyline && [polyline]}
-              legends={null}
               defaultCenter={defaultCenter}
               defaultZoom={defaultZoom}
               onClick={onMapClick}
               history={history}
               height={'300px'}
-              onlyMap={false}
-              showPhotoNotMap={false} 
             />
           </Form.Field>
         </Segment>

@@ -302,10 +302,7 @@ const ProblemEdit = () => {
               history={history}
               polylines={null}
               outlines={null}
-              legends={null}
               height={'300px'}
-              onlyMap={false}
-              showPhotoNotMap={false} 
             />
           </Form.Field>
           <Form.Group widths='equal'>

@@ -88,10 +88,7 @@ const Todo = () => {
               history={history}
               polylines={null}
               outlines={null}
-              legends={null}
               onClick={null}
-              onlyMap={false}
-              showPhotoNotMap={false} 
               />
             <List selection>
               {data.todo.map((p, i) => (

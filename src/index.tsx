@@ -1,10 +1,8 @@
-import React, { Suspense, lazy } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { Auth0Provider } from './utils/react-auth0-spa';
-import { LoadingAndRestoreScroll } from './components/common/widgets/widgets';
-const App = lazy(() => import('./app'));
-const LeafletPrint = lazy(() => import('./leaflet-print'));
+import App from './app';
 
 const Index = () => (
   <Auth0Provider
@@ -13,12 +11,7 @@ const Index = () => (
       redirect_uri={window.location.origin}
     >
     <Router>
-      <Switch>
-        <Suspense fallback={<LoadingAndRestoreScroll />}>
-          <Route exact path="/leaflet-print/:json" component={LeafletPrint} />
-          <Route component={App}/>
-        </Suspense>
-      </Switch>
+      <App />
     </Router>
   </Auth0Provider>
 );
