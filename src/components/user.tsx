@@ -15,13 +15,13 @@ const User = () => {
   let { userId } = useParams<UserParams>();
   const { loading, isAuthenticated, accessToken } = useAuth0();
   const [data, setData] = useState(null);
-  const [orderBy, setOrderBy] = useState('date');
+  const [sortBy, setSortBy] = useState('date');
   useEffect(() => {
     if (!loading) {
       getUser(accessToken, userId? parseInt(userId) : -1)
       .then((data) => {
         setData(data);
-        setOrderBy('date');
+        order('date');
       });
     }
   }, [loading, accessToken, userId]);
@@ -61,9 +61,10 @@ const User = () => {
         console.log("Wrong type: " + type);
       }
     });
-    setOrderBy(type);
+    setSortBy(type);
   }
 
+  let subTypes = data.ticks.map(t => t.subtype).filter((value, index, self) => self.indexOf(value) === index).sort(); 
   return (
     <>
       <MetaTags>
@@ -121,7 +122,7 @@ const User = () => {
                 postUser(accessToken, metadata.useBlueNotRed)
                 .then(() => {
                   setData(prevState => ({ ...prevState, metadata }));
-                  setOrderBy('date');
+                  order('date');
                 })
                 .catch((error) => {
                   console.warn(error);
@@ -138,32 +139,36 @@ const User = () => {
         }
       </Segment>
       {data.ticks.length>0 &&
-        <Segment>
-          <div>
-            <ButtonGroup floated="right" size="mini">
-              <Button icon labelPosition="left" onClick={() => order('date')} active={orderBy==='date'}><Icon name="sort content ascending"/>Date</Button>
-              <Button icon labelPosition="left" onClick={() => order('grade')} active={orderBy==='grade'}><Icon name="sort numeric ascending"/>Grade</Button>
-              <Button icon labelPosition="left" onClick={() => order('name')} active={orderBy==='name'}><Icon name="sort alphabet down"/>Name</Button>
-            </ButtonGroup>
-            <Header as="h3">Public ascents:</Header>
-          </div>
-          <List selection>
-            {data.ticks.map((t, i) => (
-              <List.Item key={i}>
-                <List.Header>
-                  <small>{t.dateHr}</small>
-                  {' '}<small style={{color: 'gray'}}>{t.areaName} <LockSymbol visibility={t.areaVisibility}/> / {t.sectorName}<LockSymbol visibility={t.sectorVisibility}/> /</small>
-                  {' '}<Link to={`/problem/${t.idProblem}`}>{t.name}</Link>
-                  {' '}{t.grade}<LockSymbol visibility={t.visibility}/>
-                  {t.stars>0 && <>{' '}<Stars numStars={t.stars} />{' '}</>}
-                  {t.fa && <Label color="red" size="mini" content="FA"/>}
-                  {t.subtype && <Label size="mini" content={t.subtype}/>}
-                  {' '}{t.comment && <small style={{color: 'gray'}}><i>{t.comment}</i></small>}
-                </List.Header>
-              </List.Item>
+        <>
+          <ButtonGroup size="mini" compact basic attached="top">
+            <Button icon labelPosition="left" onClick={() => order('date')} toggle active={sortBy==='date'}><Icon name="sort content ascending"/>Date</Button>
+            <Button icon labelPosition="left" onClick={() => order('grade')} toggle active={sortBy==='grade'}><Icon name="sort alphabet down"/>Grade</Button>
+            <Button icon labelPosition="left" onClick={() => order('name')} toggle active={sortBy==='name'}><Icon name="sort alphabet down"/>Name</Button>
+          </ButtonGroup>
+          <Segment attached="bottom">
+            {subTypes.filter((x, i) => sortBy==='grade' || i === 0).map((subType, i) => (
+              <span key={i}>
+                {sortBy==='grade' && subTypes.length>1 && <Header as="h5">{subType}:</Header>}
+                <List selection attached="bottom">
+                  {data.ticks.filter(t=> (sortBy!='grade' || t.subtype==subType)).map((t, j) => (
+                    <List.Item key={j}>
+                      <List.Header>
+                        <small>{t.dateHr}</small>
+                        {' '}<small style={{color: 'gray'}}>{t.areaName} <LockSymbol visibility={t.areaVisibility}/> / {t.sectorName}<LockSymbol visibility={t.sectorVisibility}/> /</small>
+                        {' '}<Link to={`/problem/${t.idProblem}`}>{t.name}</Link>
+                        {' '}{t.grade}<LockSymbol visibility={t.visibility}/>
+                        {t.stars>0 && <>{' '}<Stars numStars={t.stars} />{' '}</>}
+                        {t.fa && <Label color="red" size="mini" content="FA"/>}
+                        {t.subtype && <Label size="mini" content={t.subtype}/>}
+                        {' '}{t.comment && <small style={{color: 'gray'}}><i>{t.comment}</i></small>}
+                      </List.Header>
+                    </List.Item>
+                  ))}
+                </List>
+              </span>
             ))}
-          </List>
-        </Segment>
+          </Segment>
+        </>
       }
     </>
   );
