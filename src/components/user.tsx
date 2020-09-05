@@ -64,7 +64,7 @@ const User = () => {
     setSortBy(type);
   }
 
-  let subTypes = data.ticks.map(t => t.subtype).filter((value, index, self) => self.indexOf(value) === index).sort(); 
+  let subTypes = data.ticks.map(t => t.subType).filter((value, index, self) => self.indexOf(value) === index).sort(); 
   return (
     <>
       <MetaTags>
@@ -150,7 +150,7 @@ const User = () => {
               <span key={i}>
                 {sortBy==='grade' && subTypes.length>1 && <Header as="h5">{subType}:</Header>}
                 <List selection attached="bottom">
-                  {data.ticks.filter(t=> (sortBy!='grade' || t.subtype==subType)).map((t, j) => (
+                  {data.ticks.filter(t=> (sortBy!='grade' || t.subType==subType)).map((t, j) => (
                     <List.Item key={j}>
                       <List.Header>
                         <small>{t.dateHr}</small>
@@ -159,7 +159,7 @@ const User = () => {
                         {' '}{t.grade}<LockSymbol visibility={t.visibility}/>
                         {t.stars>0 && <>{' '}<Stars numStars={t.stars} />{' '}</>}
                         {t.fa && <Label color="red" size="mini" content="FA"/>}
-                        {t.subtype && <Label size="mini" content={t.subtype}/>}
+                        {t.subType && <Label size="mini" content={t.subType}/>}
                         {' '}{t.comment && <small style={{color: 'gray'}}><i>{t.comment}</i></small>}
                       </List.Header>
                     </List.Item>
