@@ -135,10 +135,12 @@ const Area = () => {
             <Table.Cell>Sectors:</Table.Cell>
             <Table.Cell>{data.sectors.length}</Table.Cell>
           </Table.Row>
-          <Table.Row>
-            <Table.Cell>{data.metadata.isBouldering? "Problems:" : "Routes:"}</Table.Cell>
-            <Table.Cell>{data.sectors.map(s => s.numProblems).reduce((a, b) => a+b, 0)}</Table.Cell>
-          </Table.Row>
+          {data.typeNumTicked.map((t, i) => (
+            <Table.Row key={i}>
+              <Table.Cell>{data.metadata.isBouldering? "Boulders:" : "Routes (" + t.type.toLowerCase() + "):"}</Table.Cell>
+              <Table.Cell>{t.num}{t.ticked>0 && " (" + t.ticked + " ticked)"}</Table.Cell>
+            </Table.Row>
+          ))}
           <Table.Row>
             <Table.Cell>Page views:</Table.Cell>
             <Table.Cell>{data.hits}</Table.Cell>
@@ -163,7 +165,7 @@ const Area = () => {
                     {sector.name} <LockSymbol visibility={sector.visibility}/>
                   </Item.Header>
                   <Item.Meta>
-                    {sector.numProblems} {data.metadata.isBouldering? "problem(s)" : "route(s)"}
+                    {sector.typeNumTicked.map((x, i) => <p key={i}>{data.metadata.isBouldering? "Boulders:" : x.type + ":"} {x.num}{x.ticked>0 && " (" + x.ticked + " ticked)"}</p>)}
                   </Item.Meta>
                   <Item.Description>
                     {sector.comment}
