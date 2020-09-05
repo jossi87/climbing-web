@@ -1,15 +1,58 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link, useParams, useHistory } from 'react-router-dom';
+import AccordionContainer from './common/accordion-container/accordion-container'
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
 import Activity from './common/activity/activity';
 import Leaflet, { calculateDistance } from './common/leaflet/leaflet';
 import Media from './common/media/media';
 import { LockSymbol, Stars, LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { Segment, Icon, ButtonGroup, Button, List, Tab, Breadcrumb, Table, Label, TableCell, Header } from 'semantic-ui-react';
+import { Segment, Icon, ButtonGroup, Button, List, Tab, Breadcrumb, Table, Label, TableCell } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSector, getAreaPdfUrl, getSectorPdfUrl } from '../api';
 import Linkify from 'react-linkify';
+
+const SectorListItem = ({ history, problem, isBouldering, orderByGrade } ) => {
+  var ascents = problem.numTicks>0 && (problem.numTicks + (problem.numTicks==1? " ascent" : " ascents"));
+  var typeAscents;
+  if (isBouldering && ascents) {
+    typeAscents = " (" + ascents + ") ";
+  } else if (!isBouldering) {
+    let t = problem.t.subType;
+    if (problem.numPitches>1) t += ", " + problem.numPitches + " pitches";
+    if (ascents) {
+      typeAscents = " (" + t + ", " + ascents + ") ";
+    } else {
+      typeAscents = " (" + t + ") ";
+    }
+  }
+  var comment;
+  if (orderByGrade && problem.comment) {
+    comment = <small><i style={{color: "gray"}}>{' '}#{problem.nr} - {problem.comment}{' '}</i></small>;
+  } else if (orderByGrade) {
+    comment = <small><i style={{color: "gray"}}>{' '}#{problem.nr}{' '}</i></small>;
+  } else if (problem.comment) {
+    comment = <small><i style={{color: "gray"}}>{' '}{problem.comment}{' '}</i></small>;
+  }
+  return (
+    <List.Item key={problem.id} onClick={() => history.push(`/problem/${problem.id}`)}>
+      <List.Header>
+        {problem.danger && <Icon color="red" name="warning"/>}
+        {!orderByGrade && `#${problem.nr} `}
+        <Link to={`/problem/${problem.id}`}>{problem.name}</Link>
+        {' '}{problem.grade}
+        {' '}<Stars numStars={problem.stars}/>
+        {problem.fa && <small>{problem.fa}</small>}
+        {typeAscents && <small>{typeAscents}</small>}
+        {comment}
+        {problem.hasImages>0 && <Icon color="black" name="photo"/>}
+        {problem.hasMovies>0 && <Icon color="black" name="film"/>}
+        <LockSymbol visibility={problem.visibility}/>
+        {problem.ticked && <Icon color="green" name="check"/>}
+      </List.Header>
+    </List.Item>
+  ) 
+};
 
 interface SectorIdParams {
   sectorId: string;
@@ -116,6 +159,27 @@ const Sector = () => {
       </Table.Row>
     );
   })
+  let problems;
+  if (data.orderByGrade && subTypes.length>1) {
+    let accordionRows = subTypes.map(subType => {
+      let rows = data.problems.filter(p => p.t.subType==subType && (!hideTicked || !p.ticked)).map((p, i) => <SectorListItem key={i} history={history} problem={p} orderByGrade={data.orderByGrade} isBouldering={data.metadata.isBouldering} />);
+      let label = subType + " (" + rows.length + ")";
+      let content = <List selection>{rows}</List>;
+      return (
+        {label, content}
+      );
+    });
+    problems = <AccordionContainer accordionRows={accordionRows}/>;
+  }
+  else {
+    problems = (
+      <Segment attached="bottom">
+        <List selection>
+          {data.problems.filter(p => !hideTicked || !p.ticked).map((p, i) => <SectorListItem key={i} history={history} problem={p} orderByGrade={data.orderByGrade} isBouldering={data.metadata.isBouldering} />)}
+        </List>
+      </Segment>
+    )
+  }
   return (
     <>
       <MetaTags>
@@ -198,62 +262,13 @@ const Sector = () => {
       </Table>
       {data.problems && data.problems.length!=0 &&
         <>
-          <ButtonGroup size="mini" compact basic attached="top">
+          <ButtonGroup size="mini" compact attached="top">
             {data.problems.filter(p => p.ticked).length>0 && 
-              <Button icon labelPosition="left" onClick={() => setHideTicked(!hideTicked)} toggle active={hideTicked}><Icon name="check"/>Hide ticked</Button>}
-            <Button icon labelPosition="left" onClick={() => sortBy(true)} toggle active={data.orderByGrade}><Icon name="sort alphabet down"/>Grade</Button>
-            <Button icon labelPosition="left" onClick={() => sortBy(false)} toggle active={!data.orderByGrade}><Icon name="sort numeric ascending"/>Number</Button>
+              <Button icon labelPosition="left" onClick={() => setHideTicked(!hideTicked)} toggle primary={hideTicked}><Icon name="check"/>Hide ticked</Button>}
+            <Button icon labelPosition="left" onClick={() => sortBy(true)} toggle primary={data.orderByGrade}><Icon name="sort content ascending"/>{data.metadata.isBouldering || subTypes.length===1? "Grade" : "Type and grade"}</Button>
+            <Button icon labelPosition="left" onClick={() => sortBy(false)} toggle primary={!data.orderByGrade}><Icon name="sort numeric ascending"/>Number</Button>
           </ButtonGroup>
-          <Segment attached="bottom">
-            {subTypes.filter((x, i) => data.orderByGrade || i === 0).map((subType, i) => (
-              <span key={i}>
-                {data.orderByGrade && subTypes.length>1 && <Header as="h5">{subType}:</Header>}
-                <List selection attached="bottom">
-                  {data.problems.filter(problem => (!data.orderByGrade || problem.t.subType==subType) && (!hideTicked || !problem.ticked)).map((problem, i) => {
-                    var ascents = problem.numTicks>0 && (problem.numTicks + (problem.numTicks==1? " ascent" : " ascents"));
-                    var typeAscents;
-                    if (data.metadata.isBouldering && ascents) {
-                      typeAscents = " (" + ascents + ") ";
-                    } else if (!data.metadata.isBouldering) {
-                      let t = problem.t.subType;
-                      if (problem.numPitches>1) t += ", " + problem.numPitches + " pitches";
-                      if (ascents) {
-                        typeAscents = " (" + t + ", " + ascents + ") ";
-                      } else {
-                        typeAscents = " (" + t + ") ";
-                      }
-                    }
-                    var comment;
-                    if (data.orderByGrade && problem.comment) {
-                      comment = <small><i style={{color: "gray"}}>{' '}#{problem.nr} - {problem.comment}{' '}</i></small>;
-                    } else if (data.orderByGrade) {
-                      comment = <small><i style={{color: "gray"}}>{' '}#{problem.nr}{' '}</i></small>;
-                    } else if (problem.comment) {
-                      comment = <small><i style={{color: "gray"}}>{' '}{problem.comment}{' '}</i></small>;
-                    }
-                    return (
-                      <List.Item key={i} onClick={() => history.push(`/problem/${problem.id}`)}>
-                        <List.Header>
-                          {problem.danger && <Icon color="red" name="warning"/>}
-                          {!data.orderByGrade && `#${problem.nr} `}
-                          <Link to={`/problem/${problem.id}`}>{problem.name}</Link>
-                          {' '}{problem.grade}
-                          {' '}<Stars numStars={problem.stars}/>
-                          {problem.fa && <small>{problem.fa}</small>}
-                          {typeAscents && <small>{typeAscents}</small>}
-                          {comment}
-                          {problem.hasImages>0 && <Icon color="black" name="photo"/>}
-                          {problem.hasMovies>0 && <Icon color="black" name="film"/>}
-                          <LockSymbol visibility={problem.visibility}/>
-                          {problem.ticked && <Icon color="green" name="check"/>}
-                        </List.Header>
-                      </List.Item>
-                    )})
-                  }
-                </List>
-              </span>
-            ))}
-          </Segment>
+          {problems}
         </>
       }
     </>

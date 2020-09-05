@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link, useParams } from 'react-router-dom';
 import Chart from './common/chart/chart';
+import AccordionContainer from './common/accordion-container/accordion-container'
 import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
 import { Icon, List, Label, Header, Segment, Divider, Image, Button, Checkbox, ButtonGroup } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
@@ -11,6 +12,20 @@ import { saveAs } from 'file-saver';
 interface UserParams {
   userId: string;
 }
+const TickListItem = ({ tick } ) => (
+    <List.Item key={tick.idProblem}>
+      <List.Header>
+        <small>{tick.dateHr}</small>
+        {' '}<small style={{color: 'gray'}}>{tick.areaName} <LockSymbol visibility={tick.areaVisibility}/> / {tick.sectorName}<LockSymbol visibility={tick.sectorVisibility}/> /</small>
+        {' '}<Link to={`/problem/${tick.idProblem}`}>{tick.name}</Link>
+        {' '}{tick.grade}<LockSymbol visibility={tick.visibility}/>
+        {tick.stars>0 && <>{' '}<Stars numStars={tick.stars} />{' '}</>}
+        {tick.fa && <Label color="red" size="mini" content="FA"/>}
+        {tick.subType && <Label size="mini" content={tick.subType}/>}
+        {' '}{tick.comment && <small style={{color: 'gray'}}><i>{tick.comment}</i></small>}
+      </List.Header>
+    </List.Item>
+);
 const User = () => {
   let { userId } = useParams<UserParams>();
   const { loading, isAuthenticated, accessToken } = useAuth0();
@@ -34,7 +49,7 @@ const User = () => {
   const chart = data.ticks.length>0? <Chart data={data.ticks}/> : null;
 
   function order(type) {
-    data.ticks.sort((a, b) => {
+    data && data.ticks && data.ticks.sort((a, b) => {
       if (type == 'grade') {
         if (a.gradeNumber != b.gradeNumber) {
           return b.gradeNumber-a.gradeNumber;
@@ -65,6 +80,27 @@ const User = () => {
   }
 
   let subTypes = data.ticks.map(t => t.subType).filter((value, index, self) => self.indexOf(value) === index).sort(); 
+  let ticks;
+  if (sortBy==='grade' && subTypes.length>1) {
+    let accordionRows = subTypes.map(subType => {
+      let rows = data.ticks.filter(t => t.subType===subType).map((t, i) => <TickListItem key={i} tick={t} />);
+      let label = subType + " (" + rows.length + ")";
+      let content = <List selection>{rows}</List>;
+      return (
+        {label, content}
+      );
+    });
+    ticks = <AccordionContainer accordionRows={accordionRows}/>;
+  }
+  else {
+    ticks = (
+      <Segment attached="bottom">
+        <List selection>
+          {data.ticks.map((t, i) => <TickListItem key={i} tick={t} />)}
+        </List>
+      </Segment>
+    )
+  }
   return (
     <>
       <MetaTags>
@@ -140,34 +176,12 @@ const User = () => {
       </Segment>
       {data.ticks.length>0 &&
         <>
-          <ButtonGroup size="mini" compact basic attached="top">
-            <Button icon labelPosition="left" onClick={() => order('date')} toggle active={sortBy==='date'}><Icon name="sort content ascending"/>Date</Button>
-            <Button icon labelPosition="left" onClick={() => order('grade')} toggle active={sortBy==='grade'}><Icon name="sort alphabet down"/>Grade</Button>
-            <Button icon labelPosition="left" onClick={() => order('name')} toggle active={sortBy==='name'}><Icon name="sort alphabet down"/>Name</Button>
+          <ButtonGroup size="mini" compact  attached="top">
+            <Button icon labelPosition="left" onClick={() => order('date')} toggle primary={sortBy==='date'}><Icon name="sort content ascending"/>Date</Button>
+            <Button icon labelPosition="left" onClick={() => order('grade')} toggle primary={sortBy==='grade'}><Icon name="sort content ascending"/>{data.metadata.isBouldering || subTypes.length===1? "Grade" : "Type and grade"}</Button>
+            <Button icon labelPosition="left" onClick={() => order('name')} toggle primary={sortBy==='name'}><Icon name="sort alphabet down"/>Name</Button>
           </ButtonGroup>
-          <Segment attached="bottom">
-            {subTypes.filter((x, i) => sortBy==='grade' || i === 0).map((subType, i) => (
-              <span key={i}>
-                {sortBy==='grade' && subTypes.length>1 && <Header as="h5">{subType}:</Header>}
-                <List selection attached="bottom">
-                  {data.ticks.filter(t=> (sortBy!='grade' || t.subType==subType)).map((t, j) => (
-                    <List.Item key={j}>
-                      <List.Header>
-                        <small>{t.dateHr}</small>
-                        {' '}<small style={{color: 'gray'}}>{t.areaName} <LockSymbol visibility={t.areaVisibility}/> / {t.sectorName}<LockSymbol visibility={t.sectorVisibility}/> /</small>
-                        {' '}<Link to={`/problem/${t.idProblem}`}>{t.name}</Link>
-                        {' '}{t.grade}<LockSymbol visibility={t.visibility}/>
-                        {t.stars>0 && <>{' '}<Stars numStars={t.stars} />{' '}</>}
-                        {t.fa && <Label color="red" size="mini" content="FA"/>}
-                        {t.subType && <Label size="mini" content={t.subType}/>}
-                        {' '}{t.comment && <small style={{color: 'gray'}}><i>{t.comment}</i></small>}
-                      </List.Header>
-                    </List.Item>
-                  ))}
-                </List>
-              </span>
-            ))}
-          </Segment>
+          {ticks}
         </>
       }
     </>
