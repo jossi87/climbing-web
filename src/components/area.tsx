@@ -165,7 +165,7 @@ const Area = () => {
                     {sector.name} <LockSymbol visibility={sector.visibility}/>
                   </Item.Header>
                   <Item.Meta>
-                    {sector.typeNumTicked.map((x, i) => <p key={i}>{x.type + ":" + x.num}{x.ticked>0 && " (" + x.ticked + " ticked)"}</p>)}
+                    {sector.typeNumTicked.map((x, i) => <p key={i}>{x.type + ": " + x.num + (x.ticked>0 && " (" + x.ticked + " ticked)")}</p>)}
                   </Item.Meta>
                   <Item.Description>
                     {sector.comment}
