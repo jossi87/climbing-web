@@ -9,6 +9,8 @@ const Index = () => (
       domain='climbing.eu.auth0.com'
       client_id='DNJNVzhxbF7PtaBFh7H6iBSNLh2UJWHt'
       redirect_uri={window.location.origin}
+      useRefreshTokens
+      cacheLocation="localstorage"
     >
     <Router>
       <App />
