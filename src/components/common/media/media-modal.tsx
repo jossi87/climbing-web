@@ -67,12 +67,16 @@ const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext,
     <Dimmer active={true} onClickOutside={onClose} page>
       {isAdmin && m.idType===1 && (
         <ButtonGroup size="mini" style={style.buttonEdit}>
-          <Button icon onClick={onDelete} disabled={m.svgs}>
-            <Icon name="trash"/>
-          </Button>
-          <Button icon onClick={() => history.push(`/problem/svg-edit/${m.svgProblemId}-${m.id}`)}>
-            <Icon name="paint brush"/>
-          </Button>
+          {!m.svgs &&
+            <Button icon onClick={onDelete}>
+              <Icon name="trash"/>
+            </Button>
+          }
+          {m.svgProblemId &&
+            <Button icon onClick={() => history.push(`/problem/svg-edit/${m.svgProblemId}-${m.id}`)}>
+              <Icon name="paint brush"/>
+            </Button>
+          }
         </ButtonGroup>
       )}
       <Modal trigger={<Icon style={style.info} size="big" name="info circle" link />}>
