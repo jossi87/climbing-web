@@ -104,11 +104,11 @@ const App = () => {
                   <br/>
                   <List.Item as='a' href='https://brattelinjer.no' rel='noopener' target='_blank'>brattelinjer.no (Rogaland)</List.Item>
                   <List.Item as='a' href='https://hkl.brattelinjer.no' rel='noopener' target='_blank'>hkl.brattelinjer.no (Haugalandet)</List.Item>
-                  <List.Item as='a' href='https://klatre.forer.no' rel='noopener' target='_blank'>klatre.forer.no (Fredrikstad)</List.Item>
                   <List.Item as='a' href='https://klatreforer.narvikklatreklubb.no' rel='noopener' target='_blank'>klatreforer.narvikklatreklubb.no (Narvik)</List.Item>
                   <List.Item as='a' href='https://klatreforer.tromsoklatring.no' rel='noopener' target='_blank'>klatreforer.tromsoklatring.no (Troms)</List.Item>
                   <List.Item as='a' href='https://klatring.flatangeradventure.no' rel='noopener' target='_blank'>klatring.flatangeradventure.no (Trondheim)</List.Item>
                   <List.Item as='a' href='https://klatring.jotunheimenfjellsport.com' rel='noopener' target='_blank'>klatring.jotunheimenfjellsport.com (Jotunheimen)</List.Item>
+                  <List.Item as='a' href='https://tau.forer.no' rel='noopener' target='_blank'>tau.forer.no (Fredrikstad)</List.Item>
                   </List>
                 </Grid.Column>
                 <Grid.Column width={4}>
