@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { Button, Icon, Container, Divider, Grid, Header, List, Segment } from 'semantic-ui-react'
+import { Button, Icon, Container, Divider, Grid, Header, List, Segment } from 'semantic-ui-react';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import Analytics from 'react-router-ga';
 import { LoadingAndRestoreScroll } from './components/common/widgets/widgets';
