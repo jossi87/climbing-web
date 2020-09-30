@@ -117,6 +117,7 @@ const Filter = () => {
             polylines={null}
             outlines={null}
             onClick={null}
+            clusterMarkers={true}
             />
           <List selection verticalAlign='middle'>
             {res.map((p, i) => (

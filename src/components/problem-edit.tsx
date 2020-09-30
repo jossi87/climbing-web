@@ -303,6 +303,7 @@ const ProblemEdit = () => {
               polylines={null}
               outlines={null}
               height={'300px'}
+              clusterMarkers={false}
             />
           </Form.Field>
           <Form.Group widths='equal'>

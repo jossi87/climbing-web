@@ -172,6 +172,7 @@ const SectorEdit = () => {
               onClick={onMapClick}
               history={history}
               height={'300px'}
+              clusterMarkers={false}
             />
           </Form.Field>
         </Segment>
