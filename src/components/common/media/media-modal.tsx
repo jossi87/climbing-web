@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimmer, Button, Icon, Image, Responsive, Modal, Header, ButtonGroup } from 'semantic-ui-react';
+import { Dimmer, Button, Icon, Image, Modal, Header, ButtonGroup } from 'semantic-ui-react';
 import { getImageUrl } from '../../../api';
 import ReactPlayer from 'react-player';
 import Svg from './svg';
@@ -60,6 +60,7 @@ const style = {
     marginLeft: '-30px' /* 1/2 the width of the button */
   },
 }
+
 const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext, playVideo, useBlueNotRed, autoPlayVideo }) => {
   let history = useHistory();
   let myPlayer;
@@ -95,41 +96,20 @@ const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext,
       <Icon style={style.close} size="big" name="window close" link onClick={onClose} />
       {length > 1 &&
         <>
-          <Responsive
-            {...Responsive.onlyMobile}
-            as={Icon}
+          <Icon
             size="big"
             style={style.prev}
             name="angle left"
             link
             onClick={gotoPrev}
           />
-          <Responsive
-            {...Responsive.onlyMobile}
+          <Icon
             as={Icon}
             size="big"
             style={style.next}
             name="angle right"
             link
             onClick={gotoNext}
-          />
-          <Responsive
-            as={Icon}
-            size="huge"
-            style={style.prev}
-            name="angle left"
-            link
-            onClick={gotoPrev}
-            minWidth={Responsive.onlyTablet.minWidth}
-          />
-          <Responsive
-            as={Icon}
-            size="huge"
-            style={style.next}
-            name="angle right"
-            link
-            onClick={gotoNext}
-            minWidth={Responsive.onlyTablet.minWidth}
           />
         </>
       }
