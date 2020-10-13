@@ -23,6 +23,7 @@ const Ticks = lazy(() => import('./components/ticks'));
 const Todo = lazy(() => import('./components/todo'));
 const User = lazy(() => import('./components/user'));
 const Permissions = lazy(() => import('./components/permissions'));
+const Weather = lazy(() => import('./components/weather'));
 
 const App = () => {
   const styleFacebook = {
@@ -74,6 +75,8 @@ const App = () => {
                 <Route exact path='/user/:userId'><User/></Route>
                 <Route exact path='/todo'><Todo/></Route>
                 <Route exact path='/todo/:userId'><Todo/></Route>
+                <Route exact path='/weather'><Weather/></Route>
+                <Route exact path='/weather/:json'><Weather/></Route>
               </Switch>
             </Suspense>
           </Analytics>

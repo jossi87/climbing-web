@@ -143,7 +143,7 @@ const Problem = () => {
     }
     panes.push({
       menuItem: { key: 'map', icon: 'map', content: 'Map' },
-      render: () => <Tab.Pane><Leaflet height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={{lat: markers[0].lat, lng: markers[0].lng}} defaultZoom={16} history={history} onClick={null} clusterMarkers={false} /></Tab.Pane>
+      render: () => <Tab.Pane><Leaflet autoZoom={true} height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={{lat: markers[0].lat, lng: markers[0].lng}} defaultZoom={16} history={history} onClick={null} clusterMarkers={false} /></Tab.Pane>
     });
   }
   
@@ -353,7 +353,17 @@ const Problem = () => {
               <Table.Cell>Navigate to parking:</Table.Cell>
               <Table.Cell>
                 <Label href={`https://maps.google.com/maps?q=loc:${data.sectorLat},${data.sectorLng}&navigate=yes`} rel="noopener" target="_blank" image basic >
-                <Icon name="map"/>Google Maps
+                  <Icon name="map"/>Google Maps
+                </Label>
+              </Table.Cell>
+            </Table.Row>
+          }
+          {((data.lat>0 && data.lng>0) || (data.sectorLat>0 && data.sectorLng>0)) &&
+            <Table.Row>
+              <Table.Cell>Forecast and web camera:</Table.Cell>
+              <Table.Cell>
+                <Label href={`/weather/` + JSON.stringify({lat: data.lat>0? data.lat : data.sectorLat, lng: data.lng>0? data.lng : data.sectorLng, label: data.areaName})} rel="noopener" target="_blank" image basic >
+                  <Icon name="sun"/>Weather map
                 </Label>
               </Table.Cell>
             </Table.Row>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth0 } from '../utils/react-auth0-spa';
-import { Container, Dropdown, Image, Menu } from 'semantic-ui-react';
+import { Container, Dropdown, DropdownDivider, Image, Menu } from 'semantic-ui-react';
 import { Link, useLocation } from 'react-router-dom';
 import SearchBox from './common/search-box/search-box';
 import { getBaseUrl } from '../api';
@@ -14,7 +14,12 @@ const Navigation = () => {
       <Container>
         <Menu.Item header as={Link} to='/'><Image size='mini' src='/png/buldreinfo.png' /></Menu.Item>
         <Menu.Item as={SearchBox}  style={{maxWidth: '35vw'}} />
-        <Menu.Item as={Link} to='/browse' icon='map' />
+        <Dropdown item simple icon='map'>
+          <Dropdown.Menu>
+              <Dropdown.Item as={Link} to="/browse">Browse areas</Dropdown.Item>
+              <Dropdown.Item as={Link} to="/weather">Weather map</Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
         <Menu.Item as={Link} to='/filter' icon='filter' />
         {!loading && 
           (isAuthenticated?

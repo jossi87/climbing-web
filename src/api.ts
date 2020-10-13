@@ -121,6 +121,15 @@ export function getBrowse(accessToken: string): Promise<any> {
   });
 }
 
+export function getCameras(): Promise<any> {
+  return makeAuthenticatedRequest(null, `/cameras`, null)
+  .then((data) => data.json())
+  .catch((error) => {
+    console.warn(error);
+    return null;
+  });
+}
+
 export function getFrontpage(accessToken: string): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/frontpage`, null)
   .then((data) => data.json())

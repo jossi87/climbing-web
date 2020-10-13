@@ -134,7 +134,7 @@ const Sector = () => {
     }
     panes.push({
       menuItem: { key: 'map', icon: 'map', content: 'Map' },
-      render: () => <Tab.Pane><Leaflet height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} onClick={null} clusterMarkers={false} /></Tab.Pane>
+      render: () => <Tab.Pane><Leaflet autoZoom={true} height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} onClick={null} clusterMarkers={false} /></Tab.Pane>
     });
   }
   if (data.problems.length!=0) {
@@ -250,6 +250,16 @@ const Sector = () => {
               <Table.Cell>
                 <Label href={`https://maps.google.com/maps?q=loc:${data.lat},${data.lng}&navigate=yes`} rel="noopener" target="_blank" image basic >
                   <Icon name="map"/>Google Maps
+                </Label>
+              </Table.Cell>
+            </Table.Row>
+          }
+          {data.lat>0 && data.lng>0 &&
+            <Table.Row>
+              <Table.Cell>Forecast and web camera:</Table.Cell>
+              <Table.Cell>
+                <Label href={`/weather/` + JSON.stringify({lat: data.lat, lng: data.lng, label: data.areaName})} rel="noopener" target="_blank" image basic >
+                  <Icon name="sun"/>Weather map
                 </Label>
               </Table.Cell>
             </Table.Row>

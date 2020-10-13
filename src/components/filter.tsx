@@ -109,6 +109,7 @@ const Filter = () => {
             <Header as="h3">{res.length} {meta.metadata.isBouldering? "Problems" : "Routes"}</Header>
           </div>
           <Leaflet
+            autoZoom={true}
             height='40vh'
             markers={res.filter(p => p.latitude!=0 && p.longitude!=0).map(p => ({lat: p.latitude, lng: p.longitude, label: p.problemName, url: '/problem/' + p.problemId}))}
             defaultCenter={meta.metadata.defaultCenter}

@@ -164,6 +164,7 @@ const SectorEdit = () => {
             </Button.Group>
             <br/>
             <Leaflet
+              autoZoom={true}
               markers={data.lat!=0 && data.lng!=0 && [{lat: data.lat, lng: data.lng, isParking: true}]}
               outlines={polygon && [{polygon: polygon}]}
               polylines={polyline && [polyline]}

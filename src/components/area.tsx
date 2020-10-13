@@ -66,7 +66,7 @@ const Area = () => {
     const defaultZoom = data.lat && data.lat>0? 14 : data.metadata.defaultZoom;
     panes.push({
       menuItem: { key: 'map', icon: 'map', content: 'Map' },
-      render: () => <Tab.Pane><Leaflet height={height} markers={markers} outlines={outlines} polylines={polylines} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} onClick={null} clusterMarkers={false} /></Tab.Pane>
+      render: () => <Tab.Pane><Leaflet autoZoom={true} height={height} markers={markers} outlines={outlines} polylines={polylines} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} onClick={null} clusterMarkers={false} /></Tab.Pane>
     });
   }
   if (data.sectors.length!=0) {
@@ -141,6 +141,16 @@ const Area = () => {
               <Table.Cell>{t.num}{t.ticked>0 && " (" + t.ticked + " ticked)"}</Table.Cell>
             </Table.Row>
           ))}
+          {data.lat>0 && data.lng>0 &&
+            <Table.Row>
+              <Table.Cell>Forecast and web camera:</Table.Cell>
+              <Table.Cell>
+                <Label href={`/weather/` + JSON.stringify({lat: data.lat, lng: data.lng, label: data.name})} rel="noopener" target="_blank" image basic >
+                  <Icon name="sun"/>Weather map
+                </Label>
+              </Table.Cell>
+            </Table.Row>
+          }
           <Table.Row>
             <Table.Cell>Page views:</Table.Cell>
             <Table.Cell>{data.hits}</Table.Cell>

@@ -295,6 +295,7 @@ const ProblemEdit = () => {
           <Form.Field>
             <label>Click to mark problem on map</label>
             <Leaflet
+              autoZoom={true}
               markers={data.lat!=0 && data.lng!=0 && [{lat: data.lat, lng: data.lng}]}
               defaultCenter={defaultCenter}
               defaultZoom={defaultZoom}

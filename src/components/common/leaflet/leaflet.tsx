@@ -1,10 +1,11 @@
 import React, { useRef } from "react";
-import { Map, Circle, TileLayer, LayersControl, Marker, Polygon, Polyline, Tooltip, WMSTileLayer, FeatureGroup, ScaleControl } from 'react-leaflet';
+import { Map, Circle, TileLayer, LayersControl, Marker, Polygon, Polyline, Tooltip, WMSTileLayer, FeatureGroup, ScaleControl, Popup } from 'react-leaflet';
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import FullscreenControl from 'react-leaflet-fullscreen';
 let parkingIcon;
+let weatherIcon;
 
-const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter, defaultZoom, onClick, clusterMarkers }) => {
+const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defaultCenter, defaultZoom, onClick, clusterMarkers }) => {
   let opacity = 0.5;
   const featureGroupRef = useRef();
   const mapRef = useRef();
@@ -24,6 +25,21 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
           )}
         </Marker>
       )
+    } else if (m.isCamera) {
+      if (weatherIcon == null) {
+        const L = require('leaflet')
+        weatherIcon = new L.icon({ iconUrl: '/png/weather.png', iconAnchor: [15, 15] })
+      }
+      return (
+        <Marker position={[m.lat, m.lng]} key={i} icon={weatherIcon}>
+          <Popup>
+            <b>{m.name}</b> (<i>{m.lastUpdated}</i>)
+            <a rel='noopener' target='_blank' href={m.urlStillImage}><img style={{maxWidth: '225px'}} src={m.urlStillImage}/></a><br/>
+            <i>Click on image to open in new tab</i><br/><br/>
+            <a rel='noopener' target='_blank' href={m.urlYr}>yr.no weather forecast</a>
+          </Popup>
+        </Marker>
+      );
     } else {
       return (
         <Marker
@@ -86,7 +102,7 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
       onClick={onClick}
       zoomControl={true}
       whenReady={() => {
-        if (mapRef.current && featureGroupRef.current) { //we will get inside just once when loading
+        if (autoZoom && mapRef.current && featureGroupRef.current) { //we will get inside just once when loading
           const map = (mapRef as any).current.leafletElement;
           const layer = (featureGroupRef as any).current.leafletElement;
           let bounds = layer.getBounds();
@@ -99,7 +115,7 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
       <ScaleControl maxWidth={100} metric={true} imperial={false} />
       <FullscreenControl position="topright" />
       <LayersControl position="topright">
-        <LayersControl.BaseLayer checked={!clusterMarkers} name="Norge i Bilder">
+        <LayersControl.BaseLayer checked={!clusterMarkers || autoZoom} name="Norge i Bilder">
           <TileLayer
             maxNativeZoom={21}
             maxZoom={21}
@@ -108,7 +124,7 @@ const Leaflet = ({ history, markers, outlines, polylines, height, defaultCenter,
           />
         </LayersControl.BaseLayer>
 
-        <LayersControl.BaseLayer checked={clusterMarkers} name="OpenStreetMap">
+        <LayersControl.BaseLayer checked={clusterMarkers || !autoZoom} name="OpenStreetMap">
           <TileLayer
             maxZoom={19}
             maxNativeZoom={19}
