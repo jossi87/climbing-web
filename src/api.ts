@@ -562,3 +562,9 @@ export function postUser(accessToken: string, useBlueNotRed: boolean): Promise<a
     method: 'POST'
   });
 }
+
+export function postUserRegion(accessToken: string, regionId: number, del: boolean): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/user/regions?regionId=${regionId}&delete=${del}`,{
+    method: 'POST'
+  });
+}

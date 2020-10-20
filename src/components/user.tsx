@@ -4,9 +4,9 @@ import { Link, useParams } from 'react-router-dom';
 import Chart from './common/chart/chart';
 import AccordionContainer from './common/accordion-container/accordion-container'
 import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
-import { Icon, List, Label, Header, Segment, Divider, Image, Button, Checkbox, ButtonGroup } from 'semantic-ui-react';
+import { Icon, List, Label, Header, Segment, Divider, Image, Button, Checkbox, Dropdown, ButtonGroup } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
-import { getUser, getUsersTicks, numberWithCommas, postUser } from '../api';
+import { getUser, getUsersTicks, numberWithCommas, postUser, postUserRegion } from '../api';
 import { saveAs } from 'file-saver';
 
 interface UserParams {
@@ -146,6 +146,43 @@ const User = () => {
           <Label color='blue' image><Icon name='video' />{numberWithCommas(data.numVideoTags)}<Label.Detail>Tag</Label.Detail></Label>
           <Label color='violet' image><Icon name='video' />{numberWithCommas(data.numVideosCreated)}<Label.Detail>Captured</Label.Detail></Label>
         </Label.Group>
+        {isAuthenticated && !userId && data.userRegions &&
+          <>
+            <br/>
+            Specify the different region(s) you want to show:
+            <Dropdown placeholder="Select visible region(s)" fluid multiple selection
+              options={data.userRegions.map(ur => ({key: ur.id, value: ur.id, text: ur.name}))}
+              value={data.userRegions.filter(ur => ur.enabled).map(ur => ur.id)}
+              onChange={(e, { value }) => {
+                if ((value as Array<Number>).length<data.userRegions.filter(ur => ur.enabled).length) {
+                  let deleteUserRegion = data.userRegions.filter(ur => ur.enabled && (value as Array<Number>).indexOf(ur.id)===-1)[0];
+                  if (deleteUserRegion.readOnly) {
+                    alert("You cannot remove: " + deleteUserRegion.name);
+                  } else {
+                    postUserRegion(accessToken, deleteUserRegion.id, true)
+                    .then((response) => {
+                      window.location.reload();
+                    })
+                    .catch((error) => {
+                      console.warn(error);
+                      alert(error.toString());
+                    });
+                  }
+                } else {
+                  let insertUserRegion = data.userRegions.filter(ur => !ur.enabled && (value as Array<Number>).indexOf(ur.id)!==-1)[0];
+                  postUserRegion(accessToken, insertUserRegion.id, false)
+                  .then((response) => {
+                    window.location.reload();
+                  })
+                  .catch((error) => {
+                    console.warn(error);
+                    alert(error.toString());
+                  });
+                }
+              }}
+            />
+          </>
+        }
         {isAuthenticated && !userId &&
           <>
             <br/>
