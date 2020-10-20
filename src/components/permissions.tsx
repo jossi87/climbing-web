@@ -81,11 +81,11 @@ const Permissions = () => {
                         {key: 3, value: 3, icon: "user secret", text: "Admin + manage users"}
                       ]}
                       onChange={(e, data) => {
-                        u.adminRead = value===1||value===2;
-                        u.adminWrite = value===2;
-                        u.superadminRead = value===3;
-                        u.superadminWrite = value===3;
-                        postPermissions(accessToken, u.userId, u.adminRead, u.adminWrite, u.superadminRead, u.superadminWrite)
+                        let adminRead = data.value===1||data.value===2;
+                        let adminWrite = data.value===2;
+                        let superadminRead = data.value===3;
+                        let superadminWrite = data.value===3;
+                        postPermissions(accessToken, u.userId, adminRead, adminWrite, superadminRead, superadminWrite)
                         .then((response) => {
                           window.location.reload();
                         })
