@@ -138,7 +138,7 @@ const Activity = ({ idArea, idSector }) => {
                   </Feed.Label>
                   <Feed.Content>
                     <Feed.Summary>
-                      New {typeDescription} <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}<LockSymbol visibility={a.problemVisibility}/><Feed.Date>{a.timeAgo}</Feed.Date>
+                      New {typeDescription} <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}<LockSymbol lockedAdmin={a.problemLockedAdmin} lockedSuperadmin={a.problemLockedSuperadmin} /><Feed.Date>{a.timeAgo}</Feed.Date>
                     </Feed.Summary>
                     <Feed.Extra text>
                       {a.description}
@@ -185,7 +185,7 @@ const Activity = ({ idArea, idSector }) => {
                   </Feed.Label>
                   <Feed.Content>
                     <Feed.Summary style={{marginBottom: '3px'}}>
-                      {summary}on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}<LockSymbol visibility={a.problemVisibility}/><Feed.Date>{a.timeAgo}</Feed.Date>
+                      {summary}on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}<LockSymbol lockedAdmin={a.problemLockedAdmin} lockedSuperadmin={a.problemLockedSuperadmin} /><Feed.Date>{a.timeAgo}</Feed.Date>
                     </Feed.Summary>
                     <Feed.Extra images as={Link} to={`/problem/${a.problemId}`}>
                       {a.media.map((m, i) => (<Image key={i} src={getImageUrl(m.id, 115)} onError={i => i.target.src='/png/video_placeholder.png'} />))}
@@ -203,7 +203,7 @@ const Activity = ({ idArea, idSector }) => {
                   </Feed.Label>
                   <Feed.Content>
                     <Feed.Summary>
-                      <Feed.User as={Link} to={`/user/${a.id}`} style={{color: "black"}}>{a.name}</Feed.User> posted a comment on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}<LockSymbol visibility={a.problemVisibility}/><Feed.Date>{a.timeAgo}</Feed.Date>
+                      <Feed.User as={Link} to={`/user/${a.id}`} style={{color: "black"}}>{a.name}</Feed.User> posted a comment on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}<LockSymbol lockedAdmin={a.problemLockedAdmin} lockedSuperadmin={a.problemLockedSuperadmin} /><Feed.Date>{a.timeAgo}</Feed.Date>
                     </Feed.Summary>
                     <Feed.Extra text>
                       {a.message}
@@ -221,7 +221,7 @@ const Activity = ({ idArea, idSector }) => {
                   </Feed.Label>
                   <Feed.Content>
                     <Feed.Summary>
-                      <Feed.User as={Link} to={`/user/${a.id}`} style={{color: "black"}}>{a.name}</Feed.User> ticked <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}<LockSymbol visibility={a.problemVisibility}/><Feed.Date>{a.timeAgo}</Feed.Date>
+                      <Feed.User as={Link} to={`/user/${a.id}`} style={{color: "black"}}>{a.name}</Feed.User> ticked <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}<LockSymbol lockedAdmin={a.problemLockedAdmin} lockedSuperadmin={a.problemLockedSuperadmin} /><Feed.Date>{a.timeAgo}</Feed.Date>
                     </Feed.Summary>
                     {a.description && <Feed.Extra text>{a.description}</Feed.Extra>}
                     {a.stars>0 && <Feed.Meta><Stars numStars={a.stars} /></Feed.Meta>}

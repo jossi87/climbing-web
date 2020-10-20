@@ -53,7 +53,7 @@ const Ticks = () => {
                 <Feed.Content>
                   <Feed.Summary>
                     <Feed.Date>{t.date}</Feed.Date>
-                    {' '}{t.areaName} <LockSymbol visibility={t.areaVisibility}/> / {t.sectorName} <LockSymbol visibility={t.sectorVisibility}/> / {t.problemName} <LockSymbol visibility={t.problemVisibility}/>
+                    {' '}{t.areaName} <LockSymbol lockedAdmin={t.areaLockedAdmin} lockedSuperadmin={t.areaLockedSuperadmin} /> / {t.sectorName} <LockSymbol lockedAdmin={t.sectorLockedAdmin} lockedSuperadmin={t.sectorLockedSuperadmin} /> / {t.problemName} <LockSymbol lockedAdmin={t.problemLockedAdmin} lockedSuperadmin={t.problemLockedSuperadmin} />
                     <Feed.Meta>{t.name}{' '} {t.problemGrade}</Feed.Meta>
                   </Feed.Summary>
                 </Feed.Content>

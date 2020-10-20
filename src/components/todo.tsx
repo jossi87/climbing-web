@@ -106,7 +106,7 @@ const Todo = () => {
                     <List.Header>
                       {' '}<Link to={`/problem/${p.problemId}`}>{p.problemName}</Link>
                       {' '}{p.problemGrade}
-                      {' '}<LockSymbol visibility={p.problemVisibility}/>
+                      {' '}<LockSymbol lockedAdmin={p.problemLockedAdmin} lockedSuperadmin={p.problemLockedSuperadmin} />
                     </List.Header>
                     <List.Content>
                       {p.areaName} / {p.sectorName}

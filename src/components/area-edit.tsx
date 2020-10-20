@@ -28,8 +28,12 @@ const AreaEdit = () => {
     setData(prevState => ({ ...prevState, name: value }));
   }
 
-  function onVisibilityChanged(e, { value }) {
-    setData(prevState => ({ ...prevState, visibility: value }));
+  function onLockedChanged(e, { value }) {
+    setData(prevState => ({
+      ...prevState,
+      lockedAdmin: value == 1,
+      lockedSuperadmin: value == 2
+    }));
   }
 
   function onCommentChanged(e, { value }) {
@@ -43,7 +47,7 @@ const AreaEdit = () => {
   function save(event) {
     event.preventDefault();
     setSaving(true);
-    postArea(accessToken, data.id, data.visibility, data.forDevelopers, data.name, data.comment, data.lat, data.lng, data.newMedia)
+    postArea(accessToken, data.id, data.lockedAdmin, data.lockedSuperadmin, data.forDevelopers, data.name, data.comment, data.lat, data.lng, data.newMedia)
     .then((response) => {
       history.push("/area/" + response.id);
     })
@@ -65,12 +69,18 @@ const AreaEdit = () => {
   }
   const defaultCenter = data.lat && data.lng && parseFloat(data.lat)>0? {lat: parseFloat(data.lat), lng: parseFloat(data.lng)} : data.metadata.defaultCenter;
   const defaultZoom: number = data.lat && parseFloat(data.lat)>0? 8 : data.metadata.defaultZoom;
-  const visibilityOptions = [
+  const lockedOptions = [
     {key: 0, value: 0, text: "Visible for everyone"},
     {key: 1, value: 1, text: "Only visible for administrators"}
   ];
   if (data.metadata.isSuperAdmin) {
-    visibilityOptions.push({key: 2, value: 2, text: "Only visible for super administrators"})
+    lockedOptions.push({key: 2, value: 2, text: "Only visible for super administrators"})
+  }
+  let lockedValue = 0;
+  if (data.lockedSuperadmin) {
+    lockedValue = 2;
+  } else if (data.lockedAdmin) {
+    lockedValue = 1;
   }
   return (
     <>
@@ -96,9 +106,9 @@ const AreaEdit = () => {
               label="Visibility"
               control={Dropdown}
               selection
-              value={data.visibility}
-              onChange={onVisibilityChanged}
-              options={visibilityOptions} />
+              value={lockedValue}
+              onChange={onLockedChanged}
+              options={lockedOptions} />
             <Form.Field>
               <label>For developers</label>
               <Checkbox label="For developers" checked={data.forDevelopers} onChange={() => setData(prevState => ({ ...prevState, forDevelopers: !data.forDevelopers }))} />

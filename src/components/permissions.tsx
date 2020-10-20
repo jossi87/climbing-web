@@ -57,24 +57,35 @@ const Permissions = () => {
             } else {
               color = 'yellow';
             }
+            let value = 0;
+            if (u.superadminWrite) {
+              value = 3;
+            } else if (u.adminWrite) {
+              value = 2;
+            } else if (u.adminRead) {
+              value = 1;
+            }
             return (
               <Card color={color} key={key} raised>
                 <Card.Content>
                   <Image floated='right' size='mini' src={u.picture? u.picture : '/png/image.png'} />
-                  <Card.Header as={Link} to={`/user/${u.userId}`}>{u.name} <LockSymbol visibility={u.write}/></Card.Header>
+                  <Card.Header as={Link} to={`/user/${u.userId}`}>{u.name} <LockSymbol lockedAdmin={u.adminRead||u.adminWrite} lockedSuperadmin={u.superadminRead||u.superadminWrite}/></Card.Header>
                   <Card.Meta>Last seen {u.lastLogin}</Card.Meta>
                   <Card.Description>
-                    <Dropdown value={u.write}
+                    <Dropdown value={value}
                       disabled={u.readOnly}
                       options={[
-                        {key: -1, value: -1, icon: "user", text: "Default user"},
-                        {key: 0, value: 0, icon: "user plus", text: "Read hidden data"},
-                        {key: 1, value: 1, icon: "lock", text: "Admin (read+write hidden data)"},
-                        {key: 2, value: 2, icon: "user secret", text: "Admin + manage users"}
+                        {key: 0, value: 0, icon: "user", text: "Default user"},
+                        {key: 1, value: 1, icon: "user plus", text: "Read hidden data"},
+                        {key: 2, value: 2, icon: "lock", text: "Admin (read+write hidden data)"},
+                        {key: 3, value: 3, icon: "user secret", text: "Admin + manage users"}
                       ]}
                       onChange={(e, data) => {
-                        u.write=data.value;
-                        postPermissions(accessToken, u.userId, u.write)
+                        u.adminRead = value===1||value===2;
+                        u.adminWrite = value===2;
+                        u.superadminRead = value===3;
+                        u.superadminWrite = value===3;
+                        postPermissions(accessToken, u.userId, u.adminRead, u.adminWrite, u.superadminRead, u.superadminWrite)
                         .then((response) => {
                           window.location.reload();
                         })

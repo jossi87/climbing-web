@@ -16,9 +16,9 @@ const TickListItem = ({ tick } ) => (
     <List.Item key={tick.idProblem}>
       <List.Header>
         <small>{tick.dateHr}</small>
-        {' '}<small style={{color: 'gray'}}>{tick.areaName} <LockSymbol visibility={tick.areaVisibility}/> / {tick.sectorName}<LockSymbol visibility={tick.sectorVisibility}/> /</small>
+        {' '}<small style={{color: 'gray'}}>{tick.areaName} <LockSymbol lockedAdmin={tick.areaLockedAdmin} lockedSuperadmin={tick.areaLockedSuperadmin} /> / {tick.sectorName}<LockSymbol lockedAdmin={tick.sectorLockedAdmin} lockedSuperadmin={tick.sectorLockedSuperadmin} /> /</small>
         {' '}<Link to={`/problem/${tick.idProblem}`}>{tick.name}</Link>
-        {' '}{tick.grade}<LockSymbol visibility={tick.visibility}/>
+        {' '}{tick.grade}<LockSymbol lockedAdmin={tick.lockedAdmin} lockedSuperadmin={tick.lockedSuperadmin} />
         {tick.stars>0 && <>{' '}<Stars numStars={tick.stars} />{' '}</>}
         {tick.fa && <Label color="red" size="mini" content="FA"/>}
         {tick.subType && <Label size="mini" content={tick.subType}/>}

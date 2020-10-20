@@ -32,7 +32,7 @@ const SearchBox = ({ children, ...searchProps} ) => {
       onSearchChange={(e, { value }) => {
         setValue(value);
       }}
-      resultRenderer={({ mediaId, mediaUrl, title, description, visibility }) => {
+      resultRenderer={({ mediaId, mediaUrl, title, description, lockedAdmin, lockedSuperadmin }) => {
         var imageSrc = null;
         if (mediaId > 0) {
           imageSrc = getImageUrl(mediaId, 45);
@@ -45,7 +45,7 @@ const SearchBox = ({ children, ...searchProps} ) => {
               {imageSrc && <Image style={{objectFit: 'cover', width: '45px', height: '45px'}} src={imageSrc} />}
             </div>
             <div className='content'>
-              {title && <div className='title'>{title} <LockSymbol visibility={visibility} /></div>}
+              {title && <div className='title'>{title} <LockSymbol lockedAdmin={lockedAdmin} lockedSuperadmin={lockedSuperadmin} /></div>}
               {description && <div className='description'>{description}</div>}
             </div>
           </>

@@ -47,7 +47,7 @@ const SectorListItem = ({ history, problem, isBouldering, orderByGrade } ) => {
         {comment}
         {problem.hasImages>0 && <Icon color="black" name="photo"/>}
         {problem.hasMovies>0 && <Icon color="black" name="film"/>}
-        <LockSymbol visibility={problem.visibility}/>
+        <LockSymbol lockedAdmin={problem.lockedAdmin} lockedSuperadmin={problem.lockedSuperadmin} />
         {problem.ticked && <Icon color="green" name="check"/>}
       </List.Header>
     </List.Item>
@@ -218,9 +218,9 @@ const Sector = () => {
         <Breadcrumb>
           <Breadcrumb.Section><Link to='/browse'>Browse</Link></Breadcrumb.Section>
           <Breadcrumb.Divider icon='right angle' />
-          <Breadcrumb.Section><Link to={`/area/${data.areaId}`}>{data.areaName}</Link> <LockSymbol visibility={data.areaVisibility}/></Breadcrumb.Section>
+          <Breadcrumb.Section><Link to={`/area/${data.areaId}`}>{data.areaName}</Link> <LockSymbol lockedAdmin={data.areaLockedAdmin} lockedSuperadmin={data.areaLockedSuperadmin} /></Breadcrumb.Section>
           <Breadcrumb.Divider icon='right angle' />
-          <Breadcrumb.Section active>{data.name} <LockSymbol visibility={data.visibility}/></Breadcrumb.Section>
+          <Breadcrumb.Section active>{data.name} <LockSymbol lockedAdmin={data.lockedAdmin} lockedSuperadmin={data.lockedSuperadmin} /></Breadcrumb.Section>
         </Breadcrumb>
       </div>
       <Tab panes={panes} />

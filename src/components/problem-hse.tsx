@@ -21,9 +21,9 @@ const ProblemHse = () => {
   const rows = data.map((hse, i) => {
     return (
       <Table.Row key={i}>
-        <Table.Cell><Link to={`/area/${hse.areaId}`}>{hse.areaName}</Link> <LockSymbol visibility={hse.areaVisibility}/></Table.Cell>
-        <Table.Cell><Link to={`/sector/${hse.sectorId}`}>{hse.sectorName}</Link> <LockSymbol visibility={hse.sectorVisibility}/></Table.Cell>
-        <Table.Cell><Link to={`/problem/${hse.problemId}`}>{hse.problemName}</Link> <LockSymbol visibility={hse.problemVisibility}/></Table.Cell>
+        <Table.Cell><Link to={`/area/${hse.areaId}`}>{hse.areaName}</Link> <LockSymbol lockedAdmin={hse.areaLockedAdmin} lockedSuperadmin={hse.areaLockedSuperadmin} /></Table.Cell>
+        <Table.Cell><Link to={`/sector/${hse.sectorId}`}>{hse.sectorName}</Link> <LockSymbol lockedAdmin={hse.sectorLockedAdmin} lockedSuperadmin={hse.sectorLockedSuperadmin} /></Table.Cell>
+        <Table.Cell><Link to={`/problem/${hse.problemId}`}>{hse.problemName}</Link> <LockSymbol lockedAdmin={hse.problemLockedAdmin} lockedSuperadmin={hse.problemLockedSuperadmin} /></Table.Cell>
         <Table.Cell>{hse.comment}</Table.Cell>
       </Table.Row>
     )

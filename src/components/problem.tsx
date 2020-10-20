@@ -269,11 +269,11 @@ const Problem = () => {
         <Breadcrumb>
           <Breadcrumb.Section><Link to='/browse'>Browse</Link></Breadcrumb.Section>
           <Breadcrumb.Divider icon='right angle' />
-          <Breadcrumb.Section><Link to={`/area/${data.areaId}`}>{data.areaName}</Link> <LockSymbol visibility={data.areaVisibility}/></Breadcrumb.Section>
+          <Breadcrumb.Section><Link to={`/area/${data.areaId}`}>{data.areaName}</Link> <LockSymbol lockedAdmin={data.areaLockedAdmin} lockedSuperadmin={data.areaLockedSuperadmin} /></Breadcrumb.Section>
           <Breadcrumb.Divider icon='right angle' />
-          <Breadcrumb.Section><Link to={`/sector/${data.sectorId}`}>{data.sectorName}</Link> <LockSymbol visibility={data.sectorVisibility}/></Breadcrumb.Section>
+          <Breadcrumb.Section><Link to={`/sector/${data.sectorId}`}>{data.sectorName}</Link> <LockSymbol lockedAdmin={data.sectorLockedAdmin} lockedSuperadmin={data.sectorLockedSuperadmin} /></Breadcrumb.Section>
           <Breadcrumb.Divider icon='right angle' />
-          <Breadcrumb.Section active>{data.name} {data.grade} <LockSymbol visibility={data.visibility}/></Breadcrumb.Section>
+          <Breadcrumb.Section active>{data.name} {data.grade} <LockSymbol lockedAdmin={data.lockedAdmin} lockedSuperadmin={data.lockedSuperadmin} /></Breadcrumb.Section>
         </Breadcrumb>
       </div>
       <Tab panes={panes} />

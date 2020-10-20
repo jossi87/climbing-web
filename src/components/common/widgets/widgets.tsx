@@ -1,11 +1,11 @@
 import React from 'react';
 import { Segment, Loader, Icon, Popup } from 'semantic-ui-react';
 
-export function LockSymbol({visibility}) {
-  if (visibility===1) {
-    return <Icon color='black' name="lock" />
-  } else if (visibility===2) {
+export function LockSymbol({lockedAdmin, lockedSuperadmin}) {
+  if (lockedSuperadmin) {
     return <Icon color='black'  name="user secret" />
+  } else if (lockedAdmin) {
+    return <Icon color='black' name="lock" />
   }
   return null;
 }

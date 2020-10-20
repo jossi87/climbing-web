@@ -29,8 +29,12 @@ const SectorEdit = () => {
     setData(prevState => ({ ...prevState, name: value }));
   }
 
-  function onVisibilityChanged(e, { value }) {
-    setData(prevState => ({ ...prevState, visibility: value }));
+  function onLockedChanged(e, { value }) {
+    setData(prevState => ({
+      ...prevState,
+      lockedAdmin: value == 1,
+      lockedSuperadmin: value == 2
+    }));
   }
 
   function onCommentChanged(e, { value }) {
@@ -44,7 +48,7 @@ const SectorEdit = () => {
   function save(event) {
     event.preventDefault();
     setSaving(true);
-    postSector(accessToken, data.areaId, data.id, data.visibility, data.name, data.comment, data.lat, data.lng, data.polygonCoords, data.polyline, data.newMedia)
+    postSector(accessToken, data.areaId, data.id, data.lockedAdmin, data.lockedSuperadmin, data.name, data.comment, data.lat, data.lng, data.polygonCoords, data.polyline, data.newMedia)
     .then((response) => {
       history.push("/sector/" + response.id);
     })
@@ -101,12 +105,18 @@ const SectorEdit = () => {
   const polyline = data.polyline && data.polyline.split(";").map(e => e.split(",").map(Number));
   const defaultCenter = data.lat && parseFloat(data.lat)>0? {lat: parseFloat(data.lat), lng: parseFloat(data.lng)} : data.metadata.defaultCenter;
   const defaultZoom = data.lat && parseFloat(data.lat)>0? 14 : data.metadata.defaultZoom;
-  const visibilityOptions = [
+  const lockedOptions = [
     {key: 0, value: 0, text: "Visible for everyone"},
     {key: 1, value: 1, text: "Only visible for administrators"}
   ];
   if (data.metadata.isSuperAdmin) {
-    visibilityOptions.push({key: 2, value: 2, text: "Only visible for super administrators"})
+    lockedOptions.push({key: 2, value: 2, text: "Only visible for super administrators"})
+  }
+  let lockedValue = 0;
+  if (data.lockedSuperadmin) {
+    lockedValue = 2;
+  } else if (data.lockedAdmin) {
+    lockedValue = 1;
   }
   return (
     <>
@@ -132,9 +142,9 @@ const SectorEdit = () => {
               label="Visibility"
               control={Dropdown}
               selection
-              value={data.visibility}
-              onChange={onVisibilityChanged}
-              options={visibilityOptions} />
+              value={lockedValue}
+              onChange={onLockedChanged}
+              options={lockedOptions} />
           </Form.Group>
           <Form.Field
             label="Description"

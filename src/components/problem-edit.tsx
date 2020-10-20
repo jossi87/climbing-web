@@ -52,8 +52,12 @@ const ProblemEdit = () => {
     setData(prevState => ({ ...prevState, lng }));
   }
 
-  function onVisibilityChanged(e, { value }) {
-    setData(prevState => ({ ...prevState, visibility: value }));
+  function onLockedChanged(e, { value }) {
+    setData(prevState => ({
+      ...prevState,
+      lockedAdmin: value == 1,
+      lockedSuperadmin: value == 2
+    }));
   }
 
   function onCommentChanged(e, { value }) {
@@ -107,7 +111,8 @@ const ProblemEdit = () => {
       accessToken,
       data.sectorId,
       data.id,
-      data.visibility,
+      data.lockedAdmin,
+      data.lockedSuperadmin,
       data.name,
       data.comment,
       data.originalGrade,
@@ -163,13 +168,20 @@ const ProblemEdit = () => {
     defaultCenter = data.metadata.defaultCenter;
     defaultZoom = data.metadata.defaultZoom;
   }
-  const visibilityOptions = [
+  const lockedOptions = [
     {key: 0, value: 0, text: "Visible for everyone"},
     {key: 1, value: 1, text: "Only visible for administrators"}
   ];
   if (data.metadata.isSuperAdmin) {
-    visibilityOptions.push({key: 2, value: 2, text: "Only visible for super administrators"})
+    lockedOptions.push({key: 2, value: 2, text: "Only visible for super administrators"})
   }
+  let lockedValue = 0;
+  if (data.lockedSuperadmin) {
+    lockedValue = 2;
+  } else if (data.lockedAdmin) {
+    lockedValue = 1;
+  }
+
   //@ts-ignore
   let dayPicker = <DayPickerInput
       format="LL"
@@ -206,9 +218,9 @@ const ProblemEdit = () => {
               label="Visibility"
               control={Dropdown}
               selection
-              value={data.visibility}
-              onChange={onVisibilityChanged}
-              options={visibilityOptions} />
+              value={lockedValue}
+              onChange={onLockedChanged}
+              options={lockedOptions} />
             <Form.Field
               label="Number"
               control={Input}

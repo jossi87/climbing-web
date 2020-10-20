@@ -32,7 +32,7 @@ const Filter = () => {
   }
   const gradeOptions = meta.metadata.grades.map(g => ({key: g.id, value: g.id, text: g.grade}));
   const typeOptions = meta.metadata.types.sort((a, b) => a.subType.localeCompare(b.subType)).map(t => ({key: t.id, value: t.id, text: t.subType}));
-  var res = result && result.filter(p => ( (!hideTicked || !p.ticked) && (!onlyWithMedia || p.randomMediaId>0) && (!onlyAdmin || p.problemVisibility===1) && (!onlySuperAdmin || p.problemVisibility===2) ))
+  var res = result && result.filter(p => ( (!hideTicked || !p.ticked) && (!onlyWithMedia || p.randomMediaId>0) && (!onlyAdmin || p.lockedAdmin) && (!onlySuperAdmin || p.lockedSuperadmin) ))
   return (
     <>
       <Segment>
@@ -126,10 +126,10 @@ const Filter = () => {
                 <Image avatar src={p.randomMediaId>0? getImageUrl(p.randomMediaId, 28) : '/png/image.png'} />
                 <List.Content>
                   <List.Header>
-                    {p.problemName} {p.grade} <LockSymbol visibility={p.problemVisibility}/> <Stars numStars={p.stars} />
+                    {p.problemName} {p.grade} <LockSymbol lockedAdmin={p.problemLockedAdmin} lockedSuperadmin={p.problemLockedSuperadmin} /> <Stars numStars={p.stars} />
                   </List.Header>
                   <List.Description>
-                    {p.areaName} <LockSymbol visibility={p.areaVisibility}/> / {p.sectorName} <LockSymbol visibility={p.sectorVisibility}/>
+                    {p.areaName} <LockSymbol lockedAdmin={p.areaLockedAdmin} lockedSuperadmin={p.areaLockedSuperadmin} /> / {p.sectorName} <LockSymbol lockedAdmin={p.sectorLockedAdmin} lockedSuperadmin={p.sectorLockedSuperadmin} />
                   </List.Description>
                 </List.Content>
               </List.Item>

@@ -93,7 +93,7 @@ export function getAreaEdit(accessToken: string, id: number): Promise<any> {
   if (id == -1) {
     return getMeta(accessToken)
     .then((res) => {
-      return {id: -1, visibility: 0, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: {title: 'New area | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, isAdmin: res.metadata.isAdmin, isSuperAdmin: res.metadata.isSuperAdmin}};
+      return {id: -1, lockedAdmin: false, lockedSuperadmin: false, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: {title: 'New area | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, isAdmin: res.metadata.isAdmin, isSuperAdmin: res.metadata.isSuperAdmin}};
     })
     .catch((error) => {
       console.warn(error);
@@ -103,7 +103,7 @@ export function getAreaEdit(accessToken: string, id: number): Promise<any> {
     return makeAuthenticatedRequest(accessToken, `/areas?id=${id}`, null)
     .then((data) => data.json())
     .then((res) => {
-      return {id: res.id, visibility: res.visibility, name: res.name, comment: res.comment, lat: res.lat, lng: res.lng, newMedia: [], metadata: res.metadata};
+      return {id: res.id, lockedAdmin: res.lockedAdmin, lockedSuperadmin: res.lockedSuperadmin, name: res.name, comment: res.comment, lat: res.lat, lng: res.lng, newMedia: [], metadata: res.metadata};
     })
     .catch((error) => {
       console.warn(error);
@@ -200,7 +200,8 @@ export function getProblemEdit(accessToken: string, sectorIdProblemId: string): 
       return {
         id: -1,
         sectorId: res.id,
-        visibility: 0,
+        lockedAdmin: false,
+        lockedSuperadmin: false,
         name: '',
         comment: '',
         originalGrade: 'n/a',
@@ -237,7 +238,7 @@ export function getProblemEdit(accessToken: string, sectorIdProblemId: string): 
       return {
         id: res.id,
         sectorId: res.sectorId,
-        visibility: res.visibility,
+        lockedAdmin: res.lockedAdmin, lockedSuperadmin: res.lockedSuperadmin,
         name: res.name,
         comment: res.comment,
         originalGrade: res.originalGrade,
@@ -280,7 +281,8 @@ export function getSectorEdit(accessToken: string, areaIdSectorId: string): Prom
       return {
         areaId: res.id,
         id: -1,
-        visibility: 0,
+        lockedAdmin: false,
+        lockedSuperadmin: false,
         name: '',
         comment: '',
         lat: 0,
@@ -296,7 +298,7 @@ export function getSectorEdit(accessToken: string, areaIdSectorId: string): Prom
   } else {
     return getSector(accessToken, sectorId)
     .then((res) => {
-      return {id: res.id, areaId: res.areaId, visibility: res.visibility, name: res.name, comment: res.comment, lat: res.lat, lng: res.lng, polygonCoords: res.polygonCoords, polyline: res.polyline, newMedia: [], metadata: res.metadata};
+      return {id: res.id, areaId: res.areaId, lockedAdmin: res.lockedAdmin, lockedSuperadmin: res.lockedSuperadmin, name: res.name, comment: res.comment, lat: res.lat, lng: res.lng, polygonCoords: res.polygonCoords, polyline: res.polyline, newMedia: [], metadata: res.metadata};
     })
     .catch((error) => {
       console.warn(error);
@@ -360,14 +362,17 @@ export function getSvgEdit(accessToken: string, problemIdMediaId: string): Promi
       hasAnchor: hasAnchor,
       areaId: res.areaId,
       areaName: res.areaName,
-      areaVisibility: res.areaVisibility,
+      areaLockedAdmin: res.areaLockedAdmin,
+	  areaLockedSuperadmin: res.areaLockedSuperadmin,
       sectorId: res.sectorId,
       sectorName: res.sectorName,
-      sectorVisibility: res.sectorVisibility,
+      sectorLockedAdmin: res.sectorLockedAdmin,
+	  sectorLockedSuperadmin: res.sectorLockedSuperadmin,
       id: res.id,
       name: res.name,
       grade: res.grade,
-      visibility: res.visibility,
+      lockedAdmin: res.lockedAdmin,
+	  lockedSuperadmin: res.lockedSuperadmin,
       metadata: res.metadata
     };
   })
@@ -423,10 +428,10 @@ export function getUsersTicks(accessToken: string): Promise<any> {
   });
 }
 
-export function postArea(accessToken: string, id: number, visibility: number, forDevelopers: boolean, name: string, comment: string, lat: number, lng: number, media: any): Promise<any> {
+export function postArea(accessToken: string, id: number, lockedAdmin: number, lockedSuperadmin: number, forDevelopers: boolean, name: string, comment: string, lat: number, lng: number, media: any): Promise<any> {
   const formData = new FormData();
   const newMedia = media.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto, description: m.description}});
-  formData.append('json', JSON.stringify({id, visibility, forDevelopers, name, comment, lat, lng, newMedia}));
+  formData.append('json', JSON.stringify({id, lockedAdmin, lockedSuperadmin, forDevelopers, name, comment, lat, lng, newMedia}));
   media.forEach(m => formData.append(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
   return makeAuthenticatedRequest(accessToken, `/areas`,{
     method: 'POST',
@@ -458,20 +463,20 @@ export function postFilter(accessToken: string, grades: Array<number>, types: Ar
   }).then((data) => data.json());
 }
 
-export function postPermissions(accessToken: string, userId: number, write: number): Promise<any> {
+export function postPermissions(accessToken: string, userId: number, adminRead: boolean, adminWrite: boolean, superadminRead: boolean, superadminWrite: boolean): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/permissions`,{
     method: 'POST',
-    body: JSON.stringify({userId, write}),
+    body: JSON.stringify({userId, adminRead, adminWrite, superadminRead, superadminWrite}),
     headers: {
       'Content-Type': 'application/json'
     }
   });
 }
 
-export function postProblem(accessToken: string, sectorId: number, id: number, visibility: number, name: string, comment: string, originalGrade: string, fa: any, faDate: string, nr: number, t: any, lat: number, lng: number, sections: any, media: any, faAid: any): Promise<any> {
+export function postProblem(accessToken: string, sectorId: number, id: number, lockedAdmin: number, lockedSuperadmin: number, name: string, comment: string, originalGrade: string, fa: any, faDate: string, nr: number, t: any, lat: number, lng: number, sections: any, media: any, faAid: any): Promise<any> {
   const formData = new FormData();
   const newMedia = media.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto, pitch: m.pitch, description: m.description}});
-  formData.append('json', JSON.stringify({sectorId, id, visibility, name, comment, originalGrade, fa, faDate, nr, t, lat, lng, sections, newMedia, faAid}));
+  formData.append('json', JSON.stringify({sectorId, id, lockedAdmin, lockedSuperadmin, name, comment, originalGrade, fa, faDate, nr, t, lat, lng, sections, newMedia, faAid}));
   media.forEach(m => formData.append(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
   return makeAuthenticatedRequest(accessToken, `/problems`,{
     method: 'POST',
@@ -518,10 +523,10 @@ export function postProblemSvg(accessToken: string, problemId: number, mediaId: 
   });
 }
 
-export function postSector(accessToken: string, areaId: number, id: number, visibility: number, name: string, comment: string, lat: number, lng: number, polygonCoords: any, polyline: any, media: any): Promise<any> {
+export function postSector(accessToken: string, areaId: number, id: number, lockedAdmin: number, lockedSuperadmin: number, name: string, comment: string, lat: number, lng: number, polygonCoords: any, polyline: any, media: any): Promise<any> {
   const formData = new FormData();
   const newMedia = media.map(m => {return {name: m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto, description: m.description}});
-  formData.append('json', JSON.stringify({areaId, id, visibility, name, comment, lat, lng, polygonCoords, polyline, newMedia}));
+  formData.append('json', JSON.stringify({areaId, id, lockedAdmin, lockedSuperadmin, name, comment, lat, lng, polygonCoords, polyline, newMedia}));
   media.forEach(m => formData.append(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
   return makeAuthenticatedRequest(accessToken, `/sectors`,{
     method: 'POST',
