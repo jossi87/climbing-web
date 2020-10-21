@@ -84,7 +84,7 @@ export function getArea(accessToken: string, id: number): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/areas?id=${id}`, null)
   .then((response) => response.json())
   .then((data) => {
-    if (data.redirectUrl) {
+    if (data.redirectUrl && data.redirectUrl!=window.location.href) {
       window.location.href = data.redirectUrl;
     }
     return data;
@@ -185,7 +185,7 @@ export function getProblem(accessToken: string, id: number): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/problems?id=${id}`, null)
   .then((response) => response.json())
   .then((data) => {
-    if (data.redirectUrl) {
+    if (data.redirectUrl && data.redirectUrl!=window.location.href) {
       window.location.href = data.redirectUrl;
     }
     return data;
@@ -277,7 +277,7 @@ export function getSector(accessToken: string, id: number): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/sectors?id=${id}`, null)
   .then((response) => response.json())
   .then((data) => {
-    if (data.redirectUrl) {
+    if (data.redirectUrl && data.redirectUrl!=window.location.href) {
       window.location.href = data.redirectUrl;
     }
     return data;
