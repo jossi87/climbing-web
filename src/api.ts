@@ -82,7 +82,13 @@ export function getActivity(accessToken: string, idArea: number, idSector: numbe
 
 export function getArea(accessToken: string, id: number): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/areas?id=${id}`, null)
-  .then((data) => data.json())
+  .then((response) => response.json())
+  .then((data) => {
+    if (data.redirectUrl) {
+      window.location.href = data.redirectUrl;
+    }
+    return data;
+  })
   .catch((error) => {
     console.warn(error);
     return null;
@@ -177,7 +183,13 @@ export function getProblemHse(accessToken: string): Promise<any> {
 
 export function getProblem(accessToken: string, id: number): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/problems?id=${id}`, null)
-  .then((data) => data.json())
+  .then((response) => response.json())
+  .then((data) => {
+    if (data.redirectUrl) {
+      window.location.href = data.redirectUrl;
+    }
+    return data;
+  })
   .catch((error) => {
     console.warn(error);
     return null;
@@ -263,7 +275,13 @@ export function getProblemEdit(accessToken: string, sectorIdProblemId: string): 
 
 export function getSector(accessToken: string, id: number): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/sectors?id=${id}`, null)
-  .then((data) => data.json())
+  .then((response) => response.json())
+  .then((data) => {
+    if (data.redirectUrl) {
+      window.location.href = data.redirectUrl;
+    }
+    return data;
+  })
   .catch((error) => {
     console.warn(error);
     return null;
