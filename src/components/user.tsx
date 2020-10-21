@@ -146,46 +146,9 @@ const User = () => {
           <Label color='blue' image><Icon name='video' />{numberWithCommas(data.numVideoTags)}<Label.Detail>Tag</Label.Detail></Label>
           <Label color='violet' image><Icon name='video' />{numberWithCommas(data.numVideosCreated)}<Label.Detail>Captured</Label.Detail></Label>
         </Label.Group>
-        {isAuthenticated && !userId && data.userRegions &&
-          <>
-            <br/>
-            Specify the different region(s) you want to show:
-            <Dropdown placeholder="Select visible region(s)" fluid multiple selection
-              options={data.userRegions.map(ur => ({key: ur.id, value: ur.id, text: ur.name}))}
-              value={data.userRegions.filter(ur => ur.enabled).map(ur => ur.id)}
-              onChange={(e, { value }) => {
-                if ((value as Array<Number>).length<data.userRegions.filter(ur => ur.enabled).length) {
-                  let deleteUserRegion = data.userRegions.filter(ur => ur.enabled && (value as Array<Number>).indexOf(ur.id)===-1)[0];
-                  if (deleteUserRegion.readOnly) {
-                    alert("You cannot remove: " + deleteUserRegion.name);
-                  } else {
-                    postUserRegion(accessToken, deleteUserRegion.id, true)
-                    .then((response) => {
-                      window.location.reload();
-                    })
-                    .catch((error) => {
-                      console.warn(error);
-                      alert(error.toString());
-                    });
-                  }
-                } else {
-                  let insertUserRegion = data.userRegions.filter(ur => !ur.enabled && (value as Array<Number>).indexOf(ur.id)!==-1)[0];
-                  postUserRegion(accessToken, insertUserRegion.id, false)
-                  .then((response) => {
-                    window.location.reload();
-                  })
-                  .catch((error) => {
-                    console.warn(error);
-                    alert(error.toString());
-                  });
-                }
-              }}
-            />
-          </>
-        }
         {isAuthenticated && !userId &&
           <>
-            <br/>
+            <Divider/>
             <Checkbox
               checked={data.metadata.useBlueNotRed}
               label='Use blue instead of red lines on schematics'
@@ -202,6 +165,54 @@ const User = () => {
                 });
               }}
             />
+          </>
+        }
+        {isAuthenticated && !userId && data.userRegions &&
+          <>
+            <Divider/>
+            Specify the different region(s) you want to show:<br/>
+            {data.userRegions.map(ur => {
+              if (ur.enabled && ur.readOnly) {
+                return (
+                  <Label color="blue" key={ur.id} active={false} size="mini">
+                    {ur.name}
+                    <Label.Detail>{ur.role? ur.role : "Current site"}</Label.Detail>
+                  </Label>
+                );
+              } else if (ur.enabled && !ur.readOnly) {
+                return (
+                  <Label color="blue" key={ur.id} active={true} size="mini" as="a" onClick={() => {
+                    postUserRegion(accessToken, ur.id, true)
+                    .then((response) => {
+                      window.location.reload();
+                    })
+                    .catch((error) => {
+                      console.warn(error);
+                      alert(error.toString());
+                    });
+                  }}>
+                    {ur.name}
+                    <Icon name='delete' />
+                  </Label>
+                );
+              } else {
+                return (
+                  <Label key={ur.id} active={true} size="mini" as="a" onClick={() => {
+                    postUserRegion(accessToken, ur.id, false)
+                    .then((response) => {
+                      window.location.reload();
+                    })
+                    .catch((error) => {
+                      console.warn(error);
+                      alert(error.toString());
+                    });
+                  }}>
+                    <Icon name='add' />
+                    {ur.name}
+                  </Label>
+                );
+              }
+            })}
           </>
         }
         {chart && 
