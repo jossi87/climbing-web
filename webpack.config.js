@@ -14,7 +14,7 @@ module.exports = {
     extensions: [".ts", ".tsx", ".js"]
   },
   plugins: [
-    new CleanWebpackPlugin(),
+    new CleanWebpackPlugin({dangerouslyAllowCleanPatternsOutsideProject: true}),
     new HtmlWebpackPlugin({
        template: './src/index.html',
        filename: '../index.html'
