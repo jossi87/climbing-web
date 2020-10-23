@@ -5,13 +5,14 @@ module.exports = {
   entry: [
     './src/index.tsx'
   ],
+  devtool: 'inline-source-map',
   module: {
     rules: [
       { test: /\.tsx?$/, exclude: /node_modules/, use: 'ts-loader' }
     ]
   },
   resolve: {
-    extensions: [".ts", ".tsx", ".js"]
+    extensions: [".js", ".ts", ".tsx"]
   },
   plugins: [
     new CleanWebpackPlugin(),
