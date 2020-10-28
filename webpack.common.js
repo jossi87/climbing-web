@@ -9,13 +9,11 @@ module.exports = {
   module: {
     rules: [
       { test: /\.tsx?$/, exclude: /node_modules/, use: 'ts-loader' },
-      { test: /\.css$/, use: [MiniCssExtractPlugin.loader, 'css-loader']},
-      {test:/\.svg$/, use:'url-loader'},
-      {test:/\.woff$/, use:'url-loader'},
-      {test:/\.woff2$/, use:'url-loader'},
-      {test:/\.[ot]tf$/, use:'url-loader'},
-      {test:/\.eot$/, use:'url-loader'},
-      {test:/\.png$/, use:'url-loader'},
+      { test: /\.css$/, use: [
+        {loader: MiniCssExtractPlugin.loader},
+        {loader: 'css-loader'}
+      ]},
+      { test: /\.(jpg|png|gif|woff|eot|ttf|svg)/, use: 'file-loader' }
     ]
   },
   resolve: {

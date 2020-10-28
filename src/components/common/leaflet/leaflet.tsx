@@ -4,6 +4,7 @@ import "react-leaflet-markercluster/dist/styles.min.css";
 import { Map, Circle, TileLayer, LayersControl, Marker, Polygon, Polyline, Tooltip, WMSTileLayer, FeatureGroup, ScaleControl, Popup } from 'react-leaflet';
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import FullscreenControl from 'react-leaflet-fullscreen';
+let markerIcon;
 let parkingIcon;
 let weatherIcon;
 
@@ -43,8 +44,13 @@ const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defa
         </Marker>
       );
     } else {
+      if (markerIcon == null) {
+        const L = require('leaflet')
+        markerIcon = new L.icon({ iconUrl: '/png/marker_icon.png', iconAnchor: [15, 41] })
+      }
       return (
         <Marker
+          icon={markerIcon}
           position={[m.lat, m.lng]}
           key={i}
           onClick={() => history.push(m.url)}
