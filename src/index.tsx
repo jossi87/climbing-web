@@ -4,6 +4,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { Auth0Provider } from './utils/react-auth0-spa';
 import App from './app';
 import 'semantic-ui-css/semantic.min.css';
+import './buldreinfo.css';
 
 const Index = () => (
   <Auth0Provider

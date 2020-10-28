@@ -1,4 +1,6 @@
 import React, { useRef } from "react";
+import "leaflet/dist/leaflet.css";
+import "react-leaflet-markercluster/dist/styles.min.css";
 import { Map, Circle, TileLayer, LayersControl, Marker, Polygon, Polyline, Tooltip, WMSTileLayer, FeatureGroup, ScaleControl, Popup } from 'react-leaflet';
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import FullscreenControl from 'react-leaflet-fullscreen';
