@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Auth0Provider } from './utils/react-auth0-spa';
 import App from './app';
+import 'semantic-ui-css/semantic.min.css';
 
 const Index = () => (
   <Auth0Provider
