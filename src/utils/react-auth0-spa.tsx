@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import createAuth0Client from "@auth0/auth0-spa-js";
+import createAuth0Client, { Auth0Client } from "@auth0/auth0-spa-js";
 
 const DEFAULT_REDIRECT_CALLBACK = () =>
   window.history.replaceState({}, document.title, window.location.pathname);
@@ -19,14 +19,26 @@ export const Auth0Provider = ({
 
   useEffect(() => {
     const initAuth0 = async () => {
-      const auth0FromHook = await createAuth0Client(initOptions as any);
-      setAuth0(auth0FromHook);
+      let client;
+      try {
+        client = await createAuth0Client(initOptions as any);
+        setAuth0(client);
+      } catch (e) {
+        console.log(e);
+        // Something has gone wrong when the SDK has attempted to create an
+        // Auth0 client and have it set up the correct authentication status for
+        // the user. In this bad state, there's not much we can do but force a
+        // log out on the user so that they can log in again.
+        client = new Auth0Client(initOptions as any);
+        client.logout();
+        setAuth0(client);
+      }
 
       if (
         window.location.search.includes("code=") &&
         window.location.search.includes("state=")
       ) {
-        const { appState } = await auth0FromHook.handleRedirectCallback();
+        const { appState } = await client.handleRedirectCallback();
         window.location.replace(
           appState && appState.targetUrl
             ? appState.targetUrl
@@ -34,12 +46,12 @@ export const Auth0Provider = ({
         );
       }
 
-      const isAuthenticated = await auth0FromHook.isAuthenticated();
+      const isAuthenticated = await client.isAuthenticated();
 
       setIsAuthenticated(isAuthenticated);
 
       if (isAuthenticated) {
-        const accessToken = await auth0FromHook.getTokenSilently();
+        const accessToken = await client.getTokenSilently();
         setAccessToken(accessToken);
       }
 
