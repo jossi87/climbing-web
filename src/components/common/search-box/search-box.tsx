@@ -46,14 +46,23 @@ const SearchBox = ({ children, ...searchProps} ) => {
               {imageSrc && <Image style={{objectFit: 'cover', width: '45px', height: '45px'}} src={imageSrc} />}
             </div>
             <div className='content'>
-              {title && <div className='title'>{title} <LockSymbol lockedAdmin={lockedadmin} lockedSuperadmin={lockedsuperadmin} /></div>}
+              {title && <div className='title'>{title} <LockSymbol lockedAdmin={lockedadmin==='true'} lockedSuperadmin={lockedsuperadmin==='true'} /></div>}
               {description && <div className='description'>{description}</div>}
             </div>
           </>
         )
       }}
       minCharacters={1}
-      results={results.map(s => ({ ...s, key: s.url }))}
+      results={results.map(s => ({ 
+        key: s.url,
+        url: s.url,
+        mediaid: s.mediaid,
+        mediaurl: s.mediaurl,
+        title: s.title,
+        description: s.description,
+        lockedadmin: s.lockedadmin.toString(),
+        lockedsuperadmin: s.lockedsuperadmin.toString()
+      }))}
       value={value}
       {...searchProps}
     />
