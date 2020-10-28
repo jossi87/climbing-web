@@ -1,5 +1,6 @@
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   entry: [
@@ -8,7 +9,7 @@ module.exports = {
   module: {
     rules: [
       { test: /\.tsx?$/, exclude: /node_modules/, use: 'ts-loader' },
-      { test: /\.css$/, use: [{ loader: 'style-loader' }, { loader: 'css-loader' }]},
+      { test: /\.css$/, use: [MiniCssExtractPlugin.loader, 'css-loader']},
       {test:/\.svg$/, use:'url-loader'},
       {test:/\.woff$/, use:'url-loader'},
       {test:/\.woff2$/, use:'url-loader'},
@@ -26,6 +27,7 @@ module.exports = {
        template: './src/index.html',
        filename: '../index.html'
     }),
+    new MiniCssExtractPlugin(),
   ],
   output: {
     path: __dirname + '/build/js',
