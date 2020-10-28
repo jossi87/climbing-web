@@ -46,7 +46,7 @@ const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defa
     } else {
       if (markerIcon == null) {
         const L = require('leaflet')
-        markerIcon = new L.icon({ iconUrl: '/png/marker_icon.png', iconAnchor: [15, 41] })
+        markerIcon = new L.icon({ iconUrl: '/png/marker_icon.png', iconAnchor: [8, 30] })
       }
       return (
         <Marker
