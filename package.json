@@ -1,7 +1,7 @@
 {
   "name": "buldreinfo-web",
   "version": "1.0.0",
-  "description": "https://buldreinfo.com | https://buldring.fredrikstadklatreklubb.org | https://buldring.bergen-klatreklubb.no | https://brattelinjer.no",
+  "description": "https://buldreinfo.com | https://brattelinjer.no",
   "homepage": "https://buldreinfo.com",
   "license": "UNLICENSED",
   "private": true,
@@ -11,7 +11,7 @@
     "url": "https://bitbucket.org/josteinoygarden/buldreinfo-web.git"
   },
   "devDependencies": {
-    "@types/react": "^16.9.54",
+    "@types/react": "^16.9.55",
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^5.0.0",
     "file-loader": "^6.2.0",
@@ -19,7 +19,7 @@
     "mini-css-extract-plugin": "^1.2.1",
     "ts-loader": "^8.0.7",
     "typescript": "^4.0.5",
-    "webpack": "^5.3.0",
+    "webpack": "^5.3.1",
     "webpack-bundle-analyzer": "^3.9.0",
     "webpack-cli": "^4.1.0",
     "webpack-merge": "^5.2.0",
