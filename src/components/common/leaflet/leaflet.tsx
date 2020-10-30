@@ -4,6 +4,7 @@ import "react-leaflet-markercluster/dist/styles.min.css";
 import { Map, Circle, TileLayer, LayersControl, Marker, Polygon, Polyline, Tooltip, WMSTileLayer, FeatureGroup, ScaleControl, Popup } from 'react-leaflet';
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import FullscreenControl from 'react-leaflet-fullscreen';
+import LocateControl from './locatecontrol';
 let markerIcon;
 let parkingIcon;
 let weatherIcon;
@@ -120,6 +121,7 @@ const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defa
         }
     }}
     >
+      <LocateControl />
       <ScaleControl maxWidth={100} metric={true} imperial={false} />
       <FullscreenControl position="topright" />
       <LayersControl position="topright">
