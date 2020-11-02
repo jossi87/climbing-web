@@ -16,8 +16,8 @@ export default function LocateControl() {
       },
       onActivate: () => {} // callback before engine starts retrieving locations
     }
-    const lc = new Locate(locateOptions);
-    lc.addTo(map);
+    const lc = new Locate(locateOptions).addTo(map);
+    lc.start();
   }, [map]);
 
   return null;
