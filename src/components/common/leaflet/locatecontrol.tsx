@@ -8,7 +8,8 @@ export default function LocateControl() {
   useEffect(() => {
     // geo locate props
     const locateOptions = {
-        enableHighAccuracy: true,
+      watch: true,
+      enableHighAccuracy: true,
       position: 'topleft',
       maxZoom: 19,
       strings: {
@@ -16,8 +17,8 @@ export default function LocateControl() {
       },
       onActivate: () => {} // callback before engine starts retrieving locations
     }
-    const lc = new Locate(locateOptions).addTo(map);
-    lc.start();
+    const lc = new Locate(locateOptions);
+    lc.addTo(map);
   }, [map]);
 
   return null;
