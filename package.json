@@ -41,7 +41,6 @@
     "react-dropzone": "^11.2.3",
     "react-leaflet": "^2.8.0",
     "react-leaflet-fullscreen": "^1.0.1",
-    "react-leaflet-markercluster": "^2.0.0",
     "react-linkify": "^1.0.0-alpha",
     "react-meta-tags": "^0.7.4",
     "react-player": "^2.6.2",

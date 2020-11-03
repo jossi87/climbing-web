@@ -54,7 +54,7 @@ const Weather = () => {
         <meta property="og:image:height" content={data.metadata.og.imageHeight} />
         <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
       </MetaTags>
-      <Leaflet height='85vh' autoZoom={false} outlines={null} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} markers={markers} polylines={null} onClick={null} clusterMarkers={false} />
+      <Leaflet height='85vh' autoZoom={false} outlines={null} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} markers={markers} polylines={null} onClick={null} />
     </>
   );
 }

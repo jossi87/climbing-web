@@ -1,15 +1,14 @@
 import React, { useRef } from "react";
 import "leaflet/dist/leaflet.css";
-import "react-leaflet-markercluster/dist/styles.min.css";
 import { Map, Circle, TileLayer, LayersControl, Marker, Polygon, Polyline, Tooltip, WMSTileLayer, FeatureGroup, ScaleControl, Popup } from 'react-leaflet';
-import MarkerClusterGroup from "react-leaflet-markercluster";
+
 import FullscreenControl from 'react-leaflet-fullscreen';
 import LocateControl from './locatecontrol';
 let markerIcon;
 let parkingIcon;
 let weatherIcon;
 
-const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defaultCenter, defaultZoom, onClick, clusterMarkers }) => {
+const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defaultCenter, defaultZoom, onClick }) => {
   let opacity = 0.5;
   const featureGroupRef = useRef();
   const mapRef = useRef();
@@ -65,9 +64,7 @@ const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defa
       )
     }
   })
-  if (renderMarkers && clusterMarkers) {
-    renderMarkers = <MarkerClusterGroup>{renderMarkers}</MarkerClusterGroup>
-  }
+  
 
   const polygons = outlines && outlines.map((o, i) => (
     <Polygon key={i} positions={o.polygon} onClick={() => {
@@ -104,7 +101,6 @@ const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defa
   return (
     <Map
       ref={mapRef}
-      className="markercluster-map"
       style={{height: (height? height : '500px'), width: '100%', zIndex: 0}}
       center={defaultCenter}
       zoom={defaultZoom}
@@ -125,7 +121,7 @@ const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defa
       <ScaleControl maxWidth={100} metric={true} imperial={false} />
       <FullscreenControl position="topright" />
       <LayersControl position="topright">
-        <LayersControl.BaseLayer checked={!clusterMarkers || autoZoom} name="Norge i Bilder">
+        <LayersControl.BaseLayer checked={autoZoom} name="Norge i Bilder">
           <TileLayer
             maxNativeZoom={21}
             maxZoom={21}
@@ -134,7 +130,7 @@ const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defa
           />
         </LayersControl.BaseLayer>
 
-        <LayersControl.BaseLayer checked={clusterMarkers || !autoZoom} name="OpenStreetMap">
+        <LayersControl.BaseLayer checked={!autoZoom} name="OpenStreetMap">
           <TileLayer
             maxZoom={19}
             maxNativeZoom={19}
