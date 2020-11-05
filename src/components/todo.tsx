@@ -81,6 +81,7 @@ const Todo = () => {
         {data.todo.length>0?
           <>
             <Leaflet
+              key={new Date().getTime()}
               autoZoom={true}
               height='40vh'
               markers={data.todo.filter(p => p.lat!=0 && p.lng!=0).map(p => ({lat: p.lat, lng: p.lng, label: p.problemName, url: '/problem/' + p.problemId}))}

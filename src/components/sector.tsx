@@ -4,7 +4,8 @@ import { Link, useParams, useHistory } from 'react-router-dom';
 import AccordionContainer from './common/accordion-container/accordion-container'
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
 import Activity from './common/activity/activity';
-import Leaflet, { calculateDistance } from './common/leaflet/leaflet';
+import Leaflet from './common/leaflet/leaflet';
+import { calculateDistance } from './common/leaflet/distance-math';
 import Media from './common/media/media';
 import { LockSymbol, Stars, LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Segment, Icon, ButtonGroup, Button, List, Tab, Breadcrumb, Table, Label, TableCell } from 'semantic-ui-react';
@@ -134,7 +135,7 @@ const Sector = () => {
     }
     panes.push({
       menuItem: { key: 'map', icon: 'map', content: 'Map' },
-      render: () => <Tab.Pane><Leaflet autoZoom={true} height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} onClick={null} /></Tab.Pane>
+      render: () => <Tab.Pane><Leaflet key={new Date().getTime()} autoZoom={true} height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} onClick={null} /></Tab.Pane>
     });
   }
   if (data.problems.length!=0) {
