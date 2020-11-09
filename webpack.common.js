@@ -28,8 +28,8 @@ module.exports = {
     new MiniCssExtractPlugin(),
   ],
   output: {
-    path: __dirname + '/build/js',
-    publicPath: '/js/',
+    path: __dirname + '/build/static',
+    publicPath: '/static/',
     filename: 'bundle.[contenthash].js'
   }
 };
