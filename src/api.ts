@@ -3,7 +3,7 @@ import fetch from 'isomorphic-fetch';
 export function getBaseUrl(): string {
   var origin = window.origin;
   if (origin === 'http://localhost:3000') {
-    origin = 'https://buldreinfo.com';
+    origin = 'https://brattelinjer.no';
   }
   return origin;
 }
