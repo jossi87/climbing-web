@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@auth0/auth0-spa-js": "^1.13.3",
+    "@react-leaflet/core": "^1.0.2",
     "atob": "^2.1.2",
     "classnames": "^2.2.6",
     "express": "^4.17.1",
@@ -36,6 +37,7 @@
     "leaflet": "^1.7.1",
     "leaflet.fullscreen": "^1.6.0",
     "leaflet.locatecontrol": "^0.72.0",
+    "leaflet.markercluster": "^1.4.1",
     "puppeteer": "^5.4.1",
     "react": "^17.0.1",
     "react-day-picker": "^7.4.8",

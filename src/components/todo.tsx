@@ -91,6 +91,7 @@ const Todo = () => {
               polylines={null}
               outlines={null}
               onClick={null}
+              clusterMarkers={true}
               />
             <List selection>
               {data.todo.map((p, i) => (

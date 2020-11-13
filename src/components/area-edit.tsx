@@ -144,6 +144,7 @@ const AreaEdit = () => {
               polylines={null}
               outlines={null}
               height={'300px'}
+              clusterMarkers={false}
             />
           </Form.Field>
         </Segment>

@@ -7,6 +7,7 @@ import FullscreenControl from './fullscreencontrol';
 import Markers from './markers';
 import Polygons from './polygons';
 import Polylines from './polylines';
+import MarkerClusterGroup from "./react-leaflet-markercluster";
 
 function MapEvent({ onClick }) {
   useMapEvents({
@@ -19,9 +20,14 @@ function MapEvent({ onClick }) {
   return null
 }
 
-const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defaultCenter, defaultZoom, onClick }) => {
+const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defaultCenter, defaultZoom, onClick, clusterMarkers }) => {
   let opacity = 0.5;
   let addEventHandlers = onClick == null;
+  let markerGroup = <Markers history={history} opacity={opacity} markers={markers} addEventHandlers={addEventHandlers} />;
+  if (clusterMarkers) {
+    markerGroup = <MarkerClusterGroup>{markerGroup}</MarkerClusterGroup>
+  }
+  let showSateliteImage = !clusterMarkers && autoZoom;
   return (
     <MapContainer
       style={{height: (height? height : '500px'), width: '100%', zIndex: 0}}
@@ -35,14 +41,14 @@ const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defa
       <LocateControl />
       <ScaleControl maxWidth={100} metric={true} imperial={false} />
       <LayersControl>
-        <LayersControl.BaseLayer checked={autoZoom} name="Norge i Bilder">
+        <LayersControl.BaseLayer checked={showSateliteImage} name="Norge i Bilder">
           <TileLayer
             attribution='<a href="https://www.norgeibilder.no/" rel="noopener" target="_blank">Geovekst</a>'
             url='https://waapi.webatlas.no/maptiles/tiles/webatlas-orto-newup/wa_grid/{z}/{x}/{y}.jpeg?api_key=b8e36d51-119a-423b-b156-d744d54123d5'
           />
         </LayersControl.BaseLayer>
 
-        <LayersControl.BaseLayer checked={!autoZoom} name="OpenStreetMap">
+        <LayersControl.BaseLayer checked={!showSateliteImage} name="OpenStreetMap">
           <TileLayer
             attribution='<a href="https://openstreetmap.org/copyright" rel="noopener" target="_blank">OpenStreetMap contributors</a>'
             url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
@@ -81,7 +87,7 @@ const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defa
         </LayersControl.Overlay>
       </LayersControl>
       <FeatureGroup>
-        <Markers history={history} opacity={opacity} markers={markers} addEventHandlers={addEventHandlers} />
+        {markerGroup}
         <Polygons history={history} opacity={opacity} outlines={outlines} addEventHandlers={addEventHandlers} />
         <Polylines polylines={polylines} />
       </FeatureGroup>

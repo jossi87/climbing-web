@@ -34,7 +34,7 @@ const Sites = () => {
     });
     return {url: r.url, label: r.name + " (" + r.numProblems + (type==='bouldering'? " boulders" : " routes") + ")", polygon: polygon};
   });
-  const map = <Leaflet autoZoom={true} height='85vh' outlines={outlines} defaultCenter={data.metadata.defaultCenter} defaultZoom={data.metadata.defaultZoom} history={history} markers={null} polylines={null} onClick={null} />;
+  const map = <Leaflet autoZoom={true} height='85vh' outlines={outlines} defaultCenter={data.metadata.defaultCenter} defaultZoom={data.metadata.defaultZoom} history={history} markers={null} polylines={null} onClick={null} clusterMarkers={true} />;
   return (
     <>
       <MetaTags>
