@@ -4,6 +4,7 @@ import { getImageUrl } from '../../../api';
 import ReactPlayer from 'react-player';
 import Svg from './svg';
 import { useHistory } from 'react-router-dom';
+import { saveAs } from 'file-saver';
 
 const style = {
   img: {
@@ -15,23 +16,11 @@ const style = {
     maxHeight: '100vh',
     maxWidth: '100vw'
   },
-  buttonEdit: {
+  actions: {
     zIndex: 2,
     position: 'fixed',
-    top: '2px',
-    left: '2px'
-  },
-  info: {
-    zIndex: 2,
-    position: 'fixed',
-    top: '2px',
-    right: '35px'
-  },
-  close: {
-    zIndex: 2,
-    position: 'fixed',
-    top: '2px',
-    right: '2px'
+    top: '0px',
+    right: '0px'
   },
   prev: {
     zIndex: 2,
@@ -66,34 +55,33 @@ const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext,
   let myPlayer;
   return (
     <Dimmer active={true} onClickOutside={onClose} page>
-      {isAdmin && m.idType===1 && (
-        <ButtonGroup size="mini" style={style.buttonEdit}>
-          {!m.svgs &&
-            <Button icon onClick={onDelete}>
-              <Icon name="trash"/>
-            </Button>
-          }
-          {m.svgProblemId &&
-            <Button icon onClick={() => history.push(`/problem/svg-edit/${m.svgProblemId}-${m.id}`)}>
-              <Icon name="paint brush"/>
-            </Button>
-          }
-        </ButtonGroup>
-      )}
-      <Modal trigger={<Icon style={style.info} size="big" name="info circle" link />}>
-        <Modal.Content image>
-          <Image wrapped size='medium' src={getImageUrl(m.id, 150)} />
-          <Modal.Description>
-            <Header>Info</Header>
-            {m.mediaMetadata.dateCreated && <><b>Date uploaded:</b> {m.mediaMetadata.dateCreated}<br/></>}
-            {m.mediaMetadata.dateTaken && <><b>Date taken:</b> {m.mediaMetadata.dateTaken}<br/></>}
-            {m.mediaMetadata.capturer && <><b>{m.idType===1? "Photographer" : "Video created by"}:</b> {m.mediaMetadata.capturer}<br/></>}
-            {m.mediaMetadata.tagged && <><b>In {m.idType===1? "photo" : "video"}:</b> {m.mediaMetadata.tagged}<br/></>}
-            <i>{m.mediaMetadata.description}</i>
-          </Modal.Description>
-        </Modal.Content>
-      </Modal>
-      <Icon style={style.close} size="big" name="window close" link onClick={onClose} />
+      <ButtonGroup secondary size="small" style={style.actions}>
+        {isAdmin && m.idType===1 && !m.svgs && (
+          <Button icon onClick={onDelete}>
+            <Icon name="trash"/>
+          </Button>
+        )}
+        {isAdmin && m.idType===1 && m.svgProblemId && (
+          <Button icon onClick={() => history.push(`/problem/svg-edit/${m.svgProblemId}-${m.id}`)}>
+            <Icon name="paint brush"/>
+          </Button>
+        )}
+        <Button icon="download" onClick={() => saveAs('https://buldreinfo.com/buldreinfo_media/original/jpg/' + (Math.floor(m.id/100)*100) + "/" + m.id + '.jpg')} />
+        <Modal trigger={<Button icon="info" />}>
+          <Modal.Content image>
+            <Image wrapped size='medium' src={getImageUrl(m.id, 150)} />
+            <Modal.Description>
+              <Header>Info</Header>
+              {m.mediaMetadata.dateCreated && <><b>Date uploaded:</b> {m.mediaMetadata.dateCreated}<br/></>}
+              {m.mediaMetadata.dateTaken && <><b>Date taken:</b> {m.mediaMetadata.dateTaken}<br/></>}
+              {m.mediaMetadata.capturer && <><b>{m.idType===1? "Photographer" : "Video created by"}:</b> {m.mediaMetadata.capturer}<br/></>}
+              {m.mediaMetadata.tagged && <><b>In {m.idType===1? "photo" : "video"}:</b> {m.mediaMetadata.tagged}<br/></>}
+              <i>{m.mediaMetadata.description}</i>
+            </Modal.Description>
+          </Modal.Content>
+        </Modal>
+        <Button icon="close" onClick={onClose} />
+      </ButtonGroup>
       {length > 1 &&
         <>
           <Icon
