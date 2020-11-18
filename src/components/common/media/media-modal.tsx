@@ -66,7 +66,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext,
             <Icon name="paint brush"/>
           </Button>
         )}
-        <Button icon="download" onClick={() => saveAs(getBaseUrl() + '/buldreinfo_media/original/jpg/' + (Math.floor(m.id/100)*100) + "/" + m.id + '.jpg')} />
+        <Button icon="download" onClick={() => saveAs(getBaseUrl() + '/buldreinfo_media/original/jpg/' + (Math.floor(m.id/100)*100) + "/" + m.id + '.jpg', "buldreinfo_brattelinjer_" + m.id + ".jpg")} />
         <Modal trigger={<Button icon="info" />}>
           <Modal.Content image>
             <Image wrapped size='medium' src={getImageUrl(m.id, 150)} />
