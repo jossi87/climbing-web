@@ -66,7 +66,11 @@ const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext,
             <Icon name="paint brush"/>
           </Button>
         )}
-        <Button icon="download" onClick={() => saveAs(getBuldreinfoMediaUrl(m.id, false), "buldreinfo_brattelinjer_" + m.id + ".jpg")} />
+        <Button icon="download" onClick={() => {
+          let isMovie = m.idType!==1;
+          let ext = isMovie? "mp4" : "jpg";
+          saveAs(getBuldreinfoMediaUrl(m.id, isMovie), "buldreinfo_brattelinjer_" + m.id + "." + ext)}
+        }/>
         <Modal trigger={<Button icon="info" />}>
           <Modal.Content image>
             <Image wrapped size='medium' src={getImageUrl(m.id, 150)} />
@@ -76,8 +80,8 @@ const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext,
               {m.mediaMetadata.dateTaken && <><b>Date taken:</b> {m.mediaMetadata.dateTaken}<br/></>}
               {m.mediaMetadata.capturer && <><b>{m.idType===1? "Photographer" : "Video created by"}:</b> {m.mediaMetadata.capturer}<br/></>}
               {m.mediaMetadata.tagged && <><b>In {m.idType===1? "photo" : "video"}:</b> {m.mediaMetadata.tagged}<br/></>}
-              {m.height && m.height>0 && m.width && m.width>0 && <><b>Image dimensions:</b> {m.width}x{m.height}<br/></>}
-              <i>{m.mediaMetadata.description}</i>
+              {m.height!=0 && m.width!=0 && <><b>Image dimensions:</b> {m.width}x{m.height}<br/></>}
+              {m.mediaMetadata.description && <i>{m.mediaMetadata.description}</i>}
             </Modal.Description>
           </Modal.Content>
         </Modal>
