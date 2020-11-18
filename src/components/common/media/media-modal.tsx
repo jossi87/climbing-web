@@ -76,6 +76,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext,
               {m.mediaMetadata.dateTaken && <><b>Date taken:</b> {m.mediaMetadata.dateTaken}<br/></>}
               {m.mediaMetadata.capturer && <><b>{m.idType===1? "Photographer" : "Video created by"}:</b> {m.mediaMetadata.capturer}<br/></>}
               {m.mediaMetadata.tagged && <><b>In {m.idType===1? "photo" : "video"}:</b> {m.mediaMetadata.tagged}<br/></>}
+              {m.height && m.height>0 && m.width && m.width>0 && <><b>Image dimensions:</b> {m.width}x{m.height}<br/></>}
               <i>{m.mediaMetadata.description}</i>
             </Modal.Description>
           </Modal.Content>
