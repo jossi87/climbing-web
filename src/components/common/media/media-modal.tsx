@@ -1,6 +1,6 @@
 import React from 'react';
 import { Dimmer, Button, Icon, Image, Modal, Header, ButtonGroup } from 'semantic-ui-react';
-import { getBaseUrl, getImageUrl } from '../../../api';
+import { getBuldreinfoMediaUrl, getImageUrl } from '../../../api';
 import ReactPlayer from 'react-player';
 import Svg from './svg';
 import { useHistory } from 'react-router-dom';
@@ -66,7 +66,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext,
             <Icon name="paint brush"/>
           </Button>
         )}
-        <Button icon="download" onClick={() => saveAs(getBaseUrl() + '/buldreinfo_media/original/jpg/' + (Math.floor(m.id/100)*100) + "/" + m.id + '.jpg', "buldreinfo_brattelinjer_" + m.id + ".jpg")} />
+        <Button icon="download" onClick={() => saveAs(getBuldreinfoMediaUrl(m.id, false), "buldreinfo_brattelinjer_" + m.id + ".jpg")} />
         <Modal trigger={<Button icon="info" />}>
           <Modal.Content image>
             <Image wrapped size='medium' src={getImageUrl(m.id, 150)} />
@@ -108,7 +108,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext,
           <ReactPlayer
             style={style.video}
             ref={player => myPlayer = player }
-            url={getBaseUrl() + '/buldreinfo_media/mp4/' + (Math.floor(m.id/100)*100) + "/" + m.id + '.mp4'}
+            url={getBuldreinfoMediaUrl(m.id, true)}
             controls={true}
             playing={true}
             onDuration={duration => myPlayer.seekTo(m.t/duration)}

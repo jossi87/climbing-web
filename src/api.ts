@@ -29,6 +29,13 @@ export function getImageUrl(id: number, minDimention?: number): string {
   return getUrl(`/images?id=${id}`);
 }
 
+export function getBuldreinfoMediaUrl(id: number, isMovie: boolean): string {
+  if (isMovie) {
+    return getBaseUrl() + '/buldreinfo_media/mp4/' + (Math.floor(id/100)*100) + "/" + id + '.mp4';
+  }
+  return getBaseUrl() + '/buldreinfo_media/original/jpg/' + (Math.floor(id/100)*100) + "/" + id + '.jpg';
+}
+
 export function getAreaPdfUrl(accessToken: string, id: number): string {
   return getUrl(`/areas/pdf?accessToken=${accessToken}&id=${id}`);
 }
