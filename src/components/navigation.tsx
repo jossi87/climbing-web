@@ -14,9 +14,10 @@ const Navigation = () => {
       <Container>
         <Menu.Item header as={Link} to='/'><Image size='mini' src='/png/buldreinfo.png' /></Menu.Item>
         <Menu.Item as={SearchBox}  style={{maxWidth: '35vw'}} />
-        <Dropdown item simple icon='map'>
+        <Dropdown item simple icon='list'>
           <Dropdown.Menu>
               <Dropdown.Item as={Link} to="/browse">Browse areas</Dropdown.Item>
+              <Dropdown.Item as={Link} to="/toc">Table of Contents</Dropdown.Item>
               <Dropdown.Item as={Link} to="/weather">Weather map</Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>

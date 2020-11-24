@@ -416,6 +416,25 @@ export function getTicks(accessToken: string, page: number): Promise<any> {
   });
 }
 
+export function getToc(accessToken: string): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/toc`, null)
+  .then((data) => data.json())
+  .catch((error) => {
+    console.warn(error);
+    return null;
+  });
+}
+
+export function getTocXlsx(accessToken: string): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/toc/xlsx`, {
+    expose:  ['Content-Disposition']
+  })
+  .catch((error) => {
+    console.warn(error);
+    return null;
+  });
+}
+
 export function getTodo(accessToken: string, id: number): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/todo?id=${id}`, null)
   .then((data) => data.json())

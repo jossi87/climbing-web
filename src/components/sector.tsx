@@ -16,8 +16,13 @@ import Linkify from 'react-linkify';
 const SectorListItem = ({ history, problem, isBouldering, orderByGrade } ) => {
   var ascents = problem.numTicks>0 && (problem.numTicks + (problem.numTicks==1? " ascent" : " ascents"));
   var typeAscents;
-  if (isBouldering && ascents) {
-    typeAscents = " (" + ascents + ") ";
+  if (isBouldering) {
+    if (ascents) {
+      typeAscents = " (" + ascents + ") ";
+    }
+    else {
+      typeAscents = " ";
+    }
   } else if (!isBouldering) {
     let t = problem.t.subType;
     if (problem.numPitches>1) t += ", " + problem.numPitches + " pitches";

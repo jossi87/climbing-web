@@ -29,6 +29,7 @@ const TickListItem = ({ tick } ) => (
 const User = () => {
   let { userId } = useParams<UserParams>();
   const { loading, isAuthenticated, accessToken } = useAuth0();
+  const [isSaving, setIsSaving] = useState(false);
   const [data, setData] = useState(null);
   const [sortBy, setSortBy] = useState('date');
   useEffect(() => {
@@ -116,21 +117,25 @@ const User = () => {
         <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
       </MetaTags>
       <Segment>
-        <ButtonGroup floated="right">
+        <ButtonGroup floated="right" size="mini">
           {isAuthenticated && !userId &&
-            <Button icon labelPosition="left" size="mini" onClick={() => {
+            <Button loading={isSaving} icon labelPosition="left" onClick={() => {
+              setIsSaving(true);
               let filename = "ticks.xlsx";
               getUsersTicks(accessToken).then(response => {
-                filename = response.headers.get("content-disposition").substring(22,42);
+                filename = response.headers.get("content-disposition").slice(22,-1);
                 return response.blob();
               })
-              .then (blob => saveAs(blob, filename));
+              .then (blob => {
+                setIsSaving(false);
+                saveAs(blob, filename)
+              });
             }}>
               <Icon name="file excel"/>
               Download
             </Button>
           }
-          <Button icon labelPosition="left" size="mini" as={Link} to={`/todo/${data.id}`}>
+          <Button icon labelPosition="left" as={Link} to={`/todo/${data.id}`}>
             <Icon name="list"/>
             To-do list
           </Button>

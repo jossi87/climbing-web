@@ -20,6 +20,7 @@ const SectorEdit = lazy(() => import('./components/sector-edit'));
 const Sites = lazy(() => import('./components/sites'));
 const SvgEdit = lazy(() => import('./components/svg-edit'));
 const Ticks = lazy(() => import('./components/ticks'));
+const Toc = lazy(() => import('./components/toc'));
 const Todo = lazy(() => import('./components/todo'));
 const User = lazy(() => import('./components/user'));
 const Permissions = lazy(() => import('./components/permissions'));
@@ -73,6 +74,7 @@ const App = () => {
                 <Route path='/ticks/:page'><Ticks/></Route>
                 <Route exact path='/user'><User/></Route>
                 <Route exact path='/user/:userId'><User/></Route>
+                <Route exact path='/toc'><Toc/></Route>
                 <Route exact path='/todo'><Todo/></Route>
                 <Route exact path='/todo/:userId'><Todo/></Route>
                 <Route exact path='/weather'><Weather/></Route>
