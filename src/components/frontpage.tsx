@@ -40,7 +40,7 @@ const Frontpage = () => {
             <Grid.Column mobile={16} tablet={8} computer={4}>
               <Statistic.Group size="mini" horizontal as={Segment}>
                 <Statistic as={Link} to="/toc" color="blue">
-                  <Statistic.Value><Icon name='list' /> {numberWithCommas(frontpage.numProblems)}</Statistic.Value>
+                  <Statistic.Value><Icon name='database' /> {numberWithCommas(frontpage.numProblems)}</Statistic.Value>
                   <Statistic.Label>{frontpage.metadata.isBouldering? "Problems" : "Routes"}</Statistic.Label>
                 </Statistic>
                 <Statistic>
