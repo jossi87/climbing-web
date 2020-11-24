@@ -53,7 +53,13 @@ const Toc = () => {
             Download
           </Button>
         </ButtonGroup>
-        <Header as="h2">Table of Contents</Header>
+        <Header as="h2">
+          <Icon name='database' />
+          <Header.Content>
+            Table of Contents
+            <Header.Subheader>{data.metadata.description}</Header.Subheader>
+          </Header.Content>
+        </Header>
         <List celled>
           {data.areas.map((area, i) => (
             <List.Item key={i}>
