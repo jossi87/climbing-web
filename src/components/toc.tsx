@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
+import { HashLink } from 'react-router-hash-link';
 import { Header, List, Segment, Icon, Button, ButtonGroup } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
 import { useAuth0 } from '../utils/react-auth0-spa';
@@ -60,10 +61,15 @@ const Toc = () => {
             <Header.Subheader>{data.metadata.description}</Header.Subheader>
           </Header.Content>
         </Header>
+        <List celled link horizontal size="small">
+          {data.areas.map((area, i) => (
+            <List.Item key={i} as={HashLink} to={`#${area.id}`}>{area.name}</List.Item>
+          ))}
+        </List>
         <List celled>
           {data.areas.map((area, i) => (
             <List.Item key={i}>
-              <List.Header><Link to={{pathname: area.url}} target='_blank'>{area.name}</Link><LockSymbol lockedAdmin={area.lockedAdmin} lockedSuperadmin={area.lockedSuperadmin} /></List.Header>
+              <List.Header><Link id={area.id} to={{pathname: area.url}} target='_blank'>{area.name}</Link><LockSymbol lockedAdmin={area.lockedAdmin} lockedSuperadmin={area.lockedSuperadmin} /> <HashLink to="#top"><Icon name="arrow alternate circle up outline" color="black"/></HashLink></List.Header>
               {area.sectors.map((sector, i) => (
                 <List.List key={i}>
                   <List.Header><Link to={{pathname: sector.url}} target='_blank'>{sector.name}</Link><LockSymbol lockedAdmin={sector.lockedAdmin} lockedSuperadmin={sector.lockedSuperadmin} /></List.Header>
