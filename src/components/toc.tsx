@@ -63,7 +63,7 @@ const Toc = () => {
         </Header>
         <List celled link horizontal size="small">
           {data.areas.map((area, i) => (
-            <List.Item key={i} as={HashLink} to={`#${area.id}`}>{area.name}</List.Item>
+            <><List.Item key={i} as={HashLink} to={`#${area.id}`}>{area.name}</List.Item><LockSymbol lockedAdmin={area.lockedAdmin} lockedSuperadmin={area.lockedSuperadmin} /></>
           ))}
         </List>
         <List celled>
