@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Auth0Provider } from './utils/react-auth0-spa';
+import CookieConsent from "react-cookie-consent";
 import App from './app';
 import 'semantic-ui-css/semantic.min.css';
 import './buldreinfo.css';
@@ -16,6 +17,7 @@ const Index = () => (
     >
     <Router>
       <App />
+      <CookieConsent>This website uses cookies to enhance the user experience.</CookieConsent>
     </Router>
   </Auth0Provider>
 );

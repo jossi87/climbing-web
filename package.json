@@ -40,6 +40,7 @@
     "leaflet.markercluster": "^1.4.1",
     "puppeteer": "^5.5.0",
     "react": "^17.0.1",
+    "react-cookie-consent": "^6.1.0",
     "react-day-picker": "^7.4.8",
     "react-dom": "^17.0.1",
     "react-dropzone": "^11.2.4",

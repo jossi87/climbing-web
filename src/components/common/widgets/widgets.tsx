@@ -1,5 +1,5 @@
 import React from 'react';
-import { Segment, Loader, Icon, Popup } from 'semantic-ui-react';
+import { Segment, Message, Icon, Popup } from 'semantic-ui-react';
 
 export function LockSymbol({lockedAdmin, lockedSuperadmin}) {
   if (lockedSuperadmin) {
@@ -45,7 +45,15 @@ export function Stars({numStars}) {
 
 export function LoadingAndRestoreScroll() {
   window.scrollTo(0, 0);
-  return <Loader active inline='centered' />;
+  return (
+    <Message icon>
+      <Icon name='circle notched' loading />
+      <Message.Content>
+        <Message.Header>Just one second</Message.Header>
+        We are fetching that content for you.
+      </Message.Content>
+    </Message>
+  );
 }
 
 export function InsufficientPrivileges() {
