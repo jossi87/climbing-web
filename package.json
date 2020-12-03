@@ -27,7 +27,7 @@
     "webpack-serve": "^3.2.0"
   },
   "dependencies": {
-    "@auth0/auth0-spa-js": "^1.13.3",
+    "@auth0/auth0-spa-js": "^1.13.4",
     "@react-leaflet/core": "^1.0.2",
     "atob": "^2.1.2",
     "classnames": "^2.2.6",
