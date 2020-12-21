@@ -4,10 +4,10 @@ import UserSelector from './common/user-selector/user-selector';
 import ProblemSection from './common/problem-section/problem-section';
 import ImageUpload from './common/image-upload/image-upload';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
-import { Icon, Form, Button, Input, Dropdown, TextArea, Segment, Message, Container } from 'semantic-ui-react';
+import { Icon, Form, Button, Input, Dropdown, TextArea, Segment, Message, Container, Checkbox } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
 import { useAuth0 } from '../utils/react-auth0-spa';
-import { getProblemEdit, convertFromDateToString, convertFromStringToDate, postProblem } from '../api';
+import { getProblemEdit, convertFromDateToString, convertFromStringToDate, postProblem, getSector } from '../api';
 import { LoadingAndRestoreScroll, InsufficientPrivileges } from './common/widgets/widgets';
 import { useHistory, useParams, useLocation } from 'react-router-dom';
 
@@ -17,6 +17,7 @@ interface SectorIdProblemIdParams {
 const ProblemEdit = () => {
   const { accessToken, loading, isAuthenticated, loginWithRedirect } = useAuth0();
   const [data, setData] = useState(null);
+  const [sectorMarkers, setSectorMarkers] = useState(null);
   const [saving, setSaving] = useState(false);
   let { sectorIdProblemId } = useParams<SectorIdProblemIdParams>();
   let history = useHistory();
@@ -194,6 +195,14 @@ const ProblemEdit = () => {
     onDayChange={onFaAidDateChanged}
     value={convertFromStringToDate(data.faAid? data.faAid.date : '')}
   />;
+
+  let markers = [];
+  if (data.lat!=0 && data.lng!=0) {
+    markers.push({lat: data.lat, lng: data.lng});
+  }
+  if (sectorMarkers) {
+    markers.push(...sectorMarkers);
+  }
   return (
     <>
       <MetaTags>
@@ -308,7 +317,7 @@ const ProblemEdit = () => {
             <label>Click to mark problem on map</label>
             <Leaflet
               autoZoom={true}
-              markers={data.lat!=0 && data.lng!=0 && [{lat: data.lat, lng: data.lng}]}
+              markers={markers}
               defaultCenter={defaultCenter}
               defaultZoom={defaultZoom}
               onClick={onMapClick}
@@ -327,6 +336,17 @@ const ProblemEdit = () => {
             <Form.Field>
               <label>Longitude</label>
               <Input placeholder='Longitude' value={data.lng} onChange={onLngChanged} />
+            </Form.Field>
+            <Form.Field>
+              <label>Include all markers in sector</label>
+              <Checkbox toggle onChange={(e,d) => {
+                if (d.checked) {
+                  let sectorId = sectorIdProblemId.split("-")[0];
+                  getSector(accessToken, parseInt(sectorId)).then((data) => setSectorMarkers(data.problems.filter(p => p.lat>0 && p.lng>0).map(p => ({lat: p.lat, lng: p.lng, label: p.name}))));
+                } else {
+                  setSectorMarkers(null);
+                }
+              }} />
             </Form.Field>
           </Form.Group>
         </Segment>

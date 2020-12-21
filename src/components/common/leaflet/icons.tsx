@@ -1,7 +1,12 @@
 import L from 'leaflet';
 
-const markerIcon = new L.Icon({
-    iconUrl: "/png/marker_icon.png",
+const markerBlueIcon = new L.Icon({
+    iconUrl: "/png/marker_icon_blue.png",
+    iconAnchor: [8, 30]
+});
+
+const markerRedIcon = new L.Icon({
+    iconUrl: "/png/marker_icon_red.png",
     iconAnchor: [8, 30]
 });
 
@@ -15,4 +20,4 @@ const weatherIcon = new L.Icon({
     iconAnchor: [15, 15]
 });
 
-export { markerIcon, parkingIcon, weatherIcon };
+export { markerBlueIcon, markerRedIcon, parkingIcon, weatherIcon };
