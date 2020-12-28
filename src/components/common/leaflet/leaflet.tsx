@@ -43,6 +43,7 @@ const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defa
       <LayersControl>
         <LayersControl.BaseLayer checked={showSateliteImage} name="Norge i Bilder">
           <TileLayer
+            maxZoom={21}
             attribution='<a href="https://www.norgeibilder.no/" rel="noopener" target="_blank">Geovekst</a>'
             url='https://waapi.webatlas.no/maptiles/tiles/webatlas-orto-newup/wa_grid/{z}/{x}/{y}.jpeg?api_key=b8e36d51-119a-423b-b156-d744d54123d5'
           />
