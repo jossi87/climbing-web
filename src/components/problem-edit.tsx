@@ -341,8 +341,10 @@ const ProblemEdit = () => {
               <label>Include all markers in sector</label>
               <Checkbox toggle onChange={(e,d) => {
                 if (d.checked) {
-                  let sectorId = sectorIdProblemId.split("-")[0];
-                  getSector(accessToken, parseInt(sectorId)).then((data) => setSectorMarkers(data.problems.filter(p => p.lat>0 && p.lng>0).map(p => ({lat: p.lat, lng: p.lng, label: p.name}))));
+                  let sectorIdProblemIdArray = sectorIdProblemId.split("-");
+                  let sectorId = sectorIdProblemIdArray[0];
+                  let problemId = sectorIdProblemIdArray[1];
+                  getSector(accessToken, parseInt(sectorId)).then((data) => setSectorMarkers(data.problems.filter(p => p.lat>0 && p.lng>0 && p.id!=problemId).map(p => ({lat: p.lat, lng: p.lng, label: p.name}))));
                 } else {
                   setSectorMarkers(null);
                 }
