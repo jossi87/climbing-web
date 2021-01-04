@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import ImageUpload from './common/image-upload/image-upload';
 import { LoadingAndRestoreScroll, InsufficientPrivileges } from './common/widgets/widgets';
-import { Form, Button, Input, Dropdown, TextArea, Segment, Icon, Message } from 'semantic-ui-react';
+import { Checkbox, Form, Button, Input, Dropdown, TextArea, Segment, Icon, Message } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
-import { getSectorEdit, postSector } from './../api';
+import { getSectorEdit, postSector, getSector } from './../api';
 import Leaflet from './common/leaflet/leaflet';
 import { useHistory, useParams, useLocation } from 'react-router-dom';
 
@@ -15,6 +15,7 @@ const SectorEdit = () => {
   const { accessToken, loading, isAuthenticated, loginWithRedirect } = useAuth0();
   const [leafletMode, setLeafletMode] = useState('PARKING');
   const [data, setData] = useState(null);
+  const [sectorMarkers, setSectorMarkers] = useState(null);
   const [saving, setSaving] = useState(false);
   let { areaIdSectorId } = useParams<AreaIdSectorIdParams>();
   let history = useHistory();
@@ -118,6 +119,13 @@ const SectorEdit = () => {
   } else if (data.lockedAdmin) {
     lockedValue = 1;
   }
+  let markers = [];
+  if (data.lat!=0 && data.lng!=0) {
+    markers.push({lat: data.lat, lng: data.lng, isParking: true});
+  }
+  if (sectorMarkers) {
+    markers.push(...sectorMarkers);
+  }
   return (
     <>
       <MetaTags>
@@ -175,7 +183,7 @@ const SectorEdit = () => {
             <br/>
             <Leaflet
               autoZoom={true}
-              markers={data.lat!=0 && data.lng!=0 && [{lat: data.lat, lng: data.lng, isParking: true}]}
+              markers={markers}
               outlines={polygon && [{polygon: polygon}]}
               polylines={polyline && [polyline]}
               defaultCenter={defaultCenter}
@@ -186,6 +194,19 @@ const SectorEdit = () => {
               clusterMarkers={false}
             />
           </Form.Field>
+          <Form.Field>
+              <label>Include all markers in sector</label>
+              <Checkbox toggle onChange={(e,d) => {
+                if (d.checked) {
+                  let sectorId = areaIdSectorId.split("-")[1];
+                  if (sectorId>0) {
+                    getSector(accessToken, parseInt(sectorId)).then((data) => setSectorMarkers(data.problems.filter(p => p.lat>0 && p.lng>0).map(p => ({lat: p.lat, lng: p.lng, label: p.name}))));
+                  }
+                } else {
+                  setSectorMarkers(null);
+                }
+              }} />
+            </Form.Field>
         </Segment>
         
         <Button.Group>
