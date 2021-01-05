@@ -75,12 +75,7 @@ const Todo = () => {
                     <Card.Meta>{p.areaName} / {p.sectorName}</Card.Meta>
                     {p.partners && p.partners.length>0 &&
                       <Card.Description>
-                        Also on todo-list:{' '}
-                        <List horizontal>
-                          {p.partners.map((u, i) =>
-                            <List.Item key={i} as={Link} to={`/user/${u.id}`}>{u.name}</List.Item>
-                          )}
-                        </List>
+                        {p.partners.map((u, i) => <>{i===0? 'Other users: ' : ', '}<Link key={i} to={`/todo/${u.id}`}>{u.name}</Link></>)}
                       </Card.Description>
                     }
                   </Card.Content>
