@@ -58,14 +58,12 @@ const Problem = () => {
     .then((data) => {
       const todo = data.todo.filter(x => x.problemId==problemId);
       let id = -1;
-      let priority = 1;
       let isDelete = false;
       if (todo.length === 1) {
         id = todo[0].id;
-        priority = todo[0].priority;
         isDelete = true;
       }
-      postTodo(accessToken, id, problemId, priority, isDelete)
+      postTodo(accessToken, id, problemId, isDelete)
       .then((response) => {
         setReload(true);
       })

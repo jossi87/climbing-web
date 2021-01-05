@@ -3,9 +3,9 @@ import MetaTags from 'react-meta-tags';
 import { Link, useParams, useHistory } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
-import { Image, Button, List, Header, Segment } from 'semantic-ui-react';
+import { Image, Card, List, Header, Segment } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
-import { getTodo, getImageUrl, postTodo } from '../api';
+import { getTodo, getImageUrl } from '../api';
 
 interface UserParams {
   userId: string;
@@ -13,7 +13,6 @@ interface UserParams {
 const Todo = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState(null);
-  const [saving, setSaving] = useState(false);
   let { userId } = useParams<UserParams>();
   let history = useHistory();
   useEffect(() => {
@@ -22,38 +21,6 @@ const Todo = () => {
       getTodo(accessToken, id).then((data) => setData(data));
     }
   }, [loading, accessToken, userId]);
-
-  function move(up: boolean, ix : number) {
-    setSaving(true);
-    let a;
-    let b;
-    if (up) {
-      a = data.todo[ix-1];
-      b = data.todo[ix];
-    } else {
-      a = data.todo[ix];
-      b = data.todo[ix+1];
-    }
-    a.priority = a.priority+1;
-    b.priority = b.priority-1;
-    postTodo(accessToken, a.id, a.problemId, a.priority, false)
-    .then((response) => {
-      postTodo(accessToken, b.id, b.problemId, b.priority, false)
-      .then((response) => {
-        data.todo.sort((a, b) => a.priority-b.priority);
-        setSaving(false);
-        setData(data);
-      })
-      .catch((error) => {
-        console.warn(error);
-        alert(error.toString());
-      });
-    })
-    .catch((error) => {
-      console.warn(error);
-      alert(error.toString());
-    });
-  }
 
   if (!data) {
     return <LoadingAndRestoreScroll />;
@@ -74,10 +41,12 @@ const Todo = () => {
       </MetaTags>
       <Segment>
         <Header as="h2">
-          {data.picture && <Image circular src={data.picture}/>} {data.name} (To-do list)
+          {data.picture && <Image circular src={data.picture}/>} 
+          <Header.Content>
+            {data.name} (To-do list)
+            <Header.Subheader>{data.todo.length} {data.metadata.isBouldering? "problems" : "routes"}</Header.Subheader>
+          </Header.Content>
         </Header>
-      </Segment>
-      <Segment>
         {data.todo.length>0?
           <>
             <Leaflet
@@ -92,30 +61,32 @@ const Todo = () => {
               outlines={null}
               onClick={null}
               clusterMarkers={true}
-              />
-            <List selection>
+              /><br/>
+            <Card.Group doubling stackable itemsPerRow={4}>
               {data.todo.map((p, i) => (
-                <List.Item key={i}>
-                  <Image size="tiny" style={{maxHeight: '80px', objectFit: 'cover'}} src={p.randomMediaId? getImageUrl(p.randomMediaId, 80) : '/png/image.png'} />
-                  <List.Content>
-                    {!data.readOnly &&
-                      <>
-                        <Button icon="arrow up" size="mini" disabled={i===0 || saving} onClick={() => move(true, i)} />
-                        <Button icon="arrow down" size="mini" disabled={i===data.todo.length-1 || saving} onClick={() => move(false, i)} />
-                      </>
-                    }
-                    <List.Header>
+                <Card key={i}>
+                  <Card.Content>
+                    <Image floated='right' size='mini' src={p.randomMediaId? getImageUrl(p.randomMediaId, 80) : '/png/image.png'} />
+                    <Card.Header>
                       {' '}<Link to={`/problem/${p.problemId}`}>{p.problemName}</Link>
                       {' '}{p.problemGrade}
                       {' '}<LockSymbol lockedAdmin={p.problemLockedAdmin} lockedSuperadmin={p.problemLockedSuperadmin} />
-                    </List.Header>
-                    <List.Content>
-                      {p.areaName} / {p.sectorName}
-                    </List.Content>
-                  </List.Content>
-                </List.Item>
+                    </Card.Header>
+                    <Card.Meta>{p.areaName} / {p.sectorName}</Card.Meta>
+                    {p.partners && p.partners.length>0 &&
+                      <Card.Description>
+                        Also on todo-list:{' '}
+                        <List horizontal>
+                          {p.partners.map((u, i) =>
+                            <List.Item key={i} as={Link} to={`/user/${u.id}`}>{u.name}</List.Item>
+                          )}
+                        </List>
+                      </Card.Description>
+                    }
+                  </Card.Content>
+                </Card>
               ))}
-            </List>
+            </Card.Group>
           </>
           :
           <i>Empty list</i>

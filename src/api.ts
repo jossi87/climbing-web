@@ -591,10 +591,10 @@ export function postTicks(accessToken: string, del: boolean, id: number, idProbl
   });
 }
 
-export function postTodo(accessToken: string, id: number, problemId: number, priority: number, isDelete: boolean): Promise<any> {
+export function postTodo(accessToken: string, id: number, problemId: number, isDelete: boolean): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/todo`,{
     method: 'POST',
-    body: JSON.stringify({id, problemId, priority, isDelete}),
+    body: JSON.stringify({id, problemId, isDelete}),
     headers: {
       'Content-Type': 'application/json'
     }
