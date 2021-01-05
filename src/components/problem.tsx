@@ -54,23 +54,9 @@ const Problem = () => {
 
   function toggleTodo(problemId : number) {
     setData(null);
-    getTodo(accessToken, -1)
-    .then((data) => {
-      const todo = data.todo.filter(x => x.problemId==problemId);
-      let id = -1;
-      let isDelete = false;
-      if (todo.length === 1) {
-        id = todo[0].id;
-        isDelete = true;
-      }
-      postTodo(accessToken, id, problemId, isDelete)
-      .then((response) => {
-        setReload(true);
-      })
-      .catch((error) => {
-        console.warn(error);
-        alert(error.toString());
-      });
+    postTodo(accessToken, problemId)
+    .then((response) => {
+      setReload(true);
     })
     .catch((error) => {
       console.warn(error);
