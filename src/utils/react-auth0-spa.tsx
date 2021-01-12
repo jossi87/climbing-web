@@ -25,6 +25,7 @@ export const Auth0Provider = ({
         setAuth0(client);
       } catch (e) {
         console.log(e);
+        // https://github.com/auth0/auth0-spa-js/issues/449
         // Something has gone wrong when the SDK has attempted to create an
         // Auth0 client and have it set up the correct authentication status for
         // the user. In this bad state, there's not much we can do but force a
