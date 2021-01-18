@@ -11,16 +11,16 @@
     "url": "https://bitbucket.org/josteinoygarden/buldreinfo-web.git"
   },
   "devDependencies": {
-    "@types/leaflet": "^1.5.19",
+    "@types/leaflet": "^1.5.21",
     "@types/react": "^17.0.0",
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^5.0.1",
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^4.5.1",
-    "mini-css-extract-plugin": "^1.3.3",
+    "mini-css-extract-plugin": "^1.3.4",
     "ts-loader": "^8.0.14",
     "typescript": "^4.1.3",
-    "webpack": "^5.13.0",
+    "webpack": "^5.15.0",
     "webpack-bundle-analyzer": "^4.3.0",
     "webpack-cli": "^4.3.1",
     "webpack-merge": "^5.7.3",
@@ -51,9 +51,9 @@
     "react-router-dom": "^5.2.0",
     "react-router-ga": "^1.2.3",
     "react-router-hash-link": "^2.3.1",
-    "react-select": "^3.1.1",
+    "react-select": "^3.2.0",
     "semantic-ui-css": "^2.4.1",
-    "semantic-ui-react": "^2.0.1",
+    "semantic-ui-react": "^2.0.2",
     "svg-path-parser": "^1.1.0"
   },
   "scripts": {
