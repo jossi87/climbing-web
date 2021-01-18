@@ -150,7 +150,7 @@ const Sector = () => {
     });
     panes.push({
       menuItem: { key: 'activity', icon: 'time', content: 'Activity' },
-      render: () => <Tab.Pane><Activity idArea={0} idSector={data.id}/></Tab.Pane>
+      render: () => <Tab.Pane><Activity metadata={data.metadata} idArea={0} idSector={data.id}/></Tab.Pane>
     });
   }
   let subTypes = data.problems.map(p => p.t.subType).filter((value, index, self) => self.indexOf(value) === index).sort(); 

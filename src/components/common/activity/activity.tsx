@@ -3,12 +3,11 @@ import { Link } from 'react-router-dom';
 import { Label, Icon, Image, Feed, Segment, Placeholder, Button, Dropdown } from 'semantic-ui-react';
 import { useLocalStorage } from '../../../utils/use-local-storage';
 import { useAuth0 } from '../../../utils/react-auth0-spa';
-import { getMeta, getActivity, getImageUrl } from '../../../api';
+import { getActivity, getImageUrl } from '../../../api';
 import { LockSymbol, Stars } from './../../common/widgets/widgets';
 
-const Activity = ({ idArea, idSector }) => {
+const Activity = ({ metadata, idArea, idSector }) => {
   const { loading, accessToken } = useAuth0();
-  const [meta, setMeta] = useState(null);
   const [activity, setActivity] = useState(null);
   const [lowerGradeId, setLowerGradeId] = useLocalStorage("lower_grade_id", 0);
   const [lowerGradeText, setLowerGradeText] = useLocalStorage("lower_grade_text", "n/a");
@@ -17,11 +16,6 @@ const Activity = ({ idArea, idSector }) => {
   const [activityTypeComments, setActivityTypeComments] = useLocalStorage("activity_type_comments", true);
   const [activityTypeMedia, setActivityTypeMedia] = useLocalStorage("activity_type_media", true);
 
-  useEffect(() => {
-    if (!loading) {
-      getMeta(accessToken).then((data) => setMeta(data));
-    }
-  }, [loading, accessToken]);
   useEffect(() => {
     if (!loading) {
       let canceled = false;
@@ -34,16 +28,16 @@ const Activity = ({ idArea, idSector }) => {
     }
   }, [loading, accessToken, idArea, idSector, lowerGradeId, activityTypeFa, activityTypeComments, activityTypeTicks, activityTypeMedia]);
 
-  if (meta && meta.metadata.grades.filter(g => {
+  if (metadata && metadata.grades.filter(g => {
     let gradeText = g.grade.indexOf('(')>0? g.grade.substr(g.grade.indexOf('(')+1).replace(')','') : g.grade;
     return (gradeText == lowerGradeText && g.id == lowerGradeId)
   }).length === 0) {
-    setLowerGradeId(0);
-    setLowerGradeText("n/a");
-    setActivityTypeTicks(true);
-    setActivityTypeFa(true);
-    setActivityTypeComments(true);
-    setActivityTypeMedia(true);
+    if (lowerGradeId != 0) setLowerGradeId(0);
+    if (lowerGradeText!="n/a") setLowerGradeText("n/a");
+    if (!activityTypeTicks) setActivityTypeTicks(true);
+    if (!activityTypeFa) setActivityTypeFa(true);
+    if (!activityTypeComments) setActivityTypeComments(true);
+    if (!activityTypeMedia) setActivityTypeMedia(true);
   }
 
   return (
@@ -60,7 +54,7 @@ const Activity = ({ idArea, idSector }) => {
             className='icon'>
             <Dropdown.Menu>
               <Dropdown.Menu scrolling>
-                {meta && meta.metadata.grades.map((a, i) => (
+                {metadata && metadata.grades.map((a, i) => (
                   <Dropdown.Item key={i} text={a.grade} onClick={() => {
                     let gradeText = a.grade.indexOf('(')>0? a.grade.substr(a.grade.indexOf('(')+1).replace(')','') : a.grade;
                     setActivity(null);
@@ -130,7 +124,7 @@ const Activity = ({ idArea, idSector }) => {
           {activity.map((a, i) => {
             // FA
             if (a.users) {
-              const typeDescription = meta && meta.metadata.isBouldering? "problem" : "route";
+              const typeDescription = metadata && metadata.isBouldering? "problem" : "route";
               return (
                 <Feed.Event key={i}>
                   <Feed.Label>

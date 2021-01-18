@@ -77,7 +77,7 @@ const Area = () => {
     });
     panes.push({
       menuItem: { key: 'activity', icon: 'time', content: 'Activity' },
-      render: () => <Tab.Pane><Activity idArea={data.id} idSector={0}/></Tab.Pane>
+      render: () => <Tab.Pane><Activity metadata={data.metadata} idArea={data.id} idSector={0}/></Tab.Pane>
     });
   }
   return (

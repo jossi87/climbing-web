@@ -120,7 +120,7 @@ const Frontpage = () => {
           }
           <Grid.Column mobile={16} tablet={8} computer={12}>
             <Segment>
-              <Activity idArea={0} idSector={0} />
+              <Activity metadata={frontpage? frontpage.metadata : null} idArea={0} idSector={0} />
             </Segment>
           </Grid.Column>
         </Grid.Row>
