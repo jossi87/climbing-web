@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimmer, Button, Icon, Image, Modal, Header, ButtonGroup } from 'semantic-ui-react';
+import { Dimmer, Button, Icon, Image, Modal, Header, ButtonGroup, Embed, Container } from 'semantic-ui-react';
 import { getBuldreinfoMediaUrl, getImageUrl } from '../../../api';
 import ReactPlayer from 'react-player';
 import Svg from './svg';
@@ -53,6 +53,37 @@ const style = {
 const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext, playVideo, useBlueNotRed, autoPlayVideo }) => {
   let history = useHistory();
   let myPlayer;
+  let content;
+  if (m.idType===1) {
+    if (m.svgs) {
+      content = <Image style={style.img}><Svg useBlueNotRed={useBlueNotRed} thumb={false} style={{}} m={m} close={onClose}/></Image>;
+    }
+    else {
+      content = <Image style={style.img} alt={m.mediaMetadata.alt} src={getImageUrl(m.id, m.embedUrl, 720)} />
+    }
+  }
+  else {
+    if (m.embedUrl) {
+      content = <Embed as={Container} url={m.embedUrl} defaultActive={true}/>;
+    }
+    else if (autoPlayVideo) {
+      content = <ReactPlayer
+        style={style.video}
+        ref={player => myPlayer = player }
+        url={getBuldreinfoMediaUrl(m.id, true)}
+        controls={true}
+        playing={true}
+        onDuration={duration => myPlayer.seekTo(m.t/duration)}
+      />;
+    }
+    else {
+      content = <>
+        <Image style={style.img} alt={m.description} src={getImageUrl(m.id, m.embedUrl, 360)} />
+        <Button size="massive" color="youtube" circular style={style.play} icon="play" onClick={playVideo} />
+      </>
+    }
+  }
+
   return (
     <Dimmer active={true} onClickOutside={onClose} page>
       <ButtonGroup secondary size="small" style={style.actions}>
@@ -66,14 +97,14 @@ const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext,
             <Icon name="paint brush"/>
           </Button>
         )}
-        <Button icon="download" onClick={() => {
+        {!m.embedUrl && <Button icon="download" onClick={() => {
           let isMovie = m.idType!==1;
           let ext = isMovie? "mp4" : "jpg";
           saveAs(getBuldreinfoMediaUrl(m.id, isMovie), "buldreinfo_brattelinjer_" + m.id + "." + ext)}
-        }/>
+        }/>}
         <Modal trigger={<Button icon="info" />}>
           <Modal.Content image>
-            <Image wrapped size='medium' src={getImageUrl(m.id, 150)} />
+            <Image wrapped size='medium' src={getImageUrl(m.id, m.embedUrl, 150)} />
             <Modal.Description>
               <Header>Info</Header>
               {m.mediaMetadata.dateCreated && <><b>Date uploaded:</b> {m.mediaMetadata.dateCreated}<br/></>}
@@ -106,25 +137,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext,
           />
         </>
       }
-      {m.idType===1?
-        (m.svgs? <Image style={style.img}><Svg useBlueNotRed={useBlueNotRed} thumb={false} style={{}} m={m} close={onClose}/></Image> : <Image style={style.img} alt={m.mediaMetadata.alt} src={getImageUrl(m.id, 720)} />)
-      :
-        (autoPlayVideo?
-          <ReactPlayer
-            style={style.video}
-            ref={player => myPlayer = player }
-            url={getBuldreinfoMediaUrl(m.id, true)}
-            controls={true}
-            playing={true}
-            onDuration={duration => myPlayer.seekTo(m.t/duration)}
-          />
-        :
-          <>
-            <Image style={style.img} alt={m.description} src={getImageUrl(m.id, 360)} />
-            <Button size="massive" color="youtube" circular style={style.play} icon="play" onClick={playVideo} />
-          </>
-        )
-      }
+      {content}
     </Dimmer>
   )
 }

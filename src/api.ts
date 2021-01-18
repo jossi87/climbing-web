@@ -3,7 +3,7 @@ import fetch from 'isomorphic-fetch';
 export function getBaseUrl(): string {
   var origin = window.origin;
   if (origin === 'http://localhost:3000') {
-    origin = 'https://brattelinjer.no';
+    origin = 'https://buldreinfo.com';
   }
   return origin;
 }
@@ -22,7 +22,10 @@ function makeAuthenticatedRequest(accessToken: string, urlSuffix: string, opts: 
   return fetch(getUrl(urlSuffix), opts);
 }
 
-export function getImageUrl(id: number, minDimention?: number): string {
+export function getImageUrl(id: number, embedUrl: string, minDimention?: number): string {
+  if (embedUrl && embedUrl.includes("youtube")) {
+    return "https://img.youtube.com/vi/" + embedUrl.substr(30, 11) + "/0.jpg";
+  }
   if (minDimention) {
     return getUrl(`/images?id=${id}&minDimention=${minDimention}`);
   }

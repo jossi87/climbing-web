@@ -123,7 +123,7 @@ const Filter = () => {
           <List selection verticalAlign='middle'>
             {res.map((p, i) => (
               <List.Item key={i} as={Link} to={`/problem/${p.problemId}`}>
-                <Image avatar src={p.randomMediaId>0? getImageUrl(p.randomMediaId, 28) : '/png/image.png'} />
+                <Image avatar src={p.randomMediaId>0? getImageUrl(p.randomMediaId, null, 28) : '/png/image.png'} />
                 <List.Content>
                   <List.Header>
                     {p.problemName} {p.grade} <LockSymbol lockedAdmin={p.problemLockedAdmin} lockedSuperadmin={p.problemLockedSuperadmin} /> <Stars numStars={p.stars} />

@@ -110,13 +110,22 @@ const Media = ({ media, removeMedia, useBlueNotRed, isAdmin }) => {
         />
       }
       <Card.Group itemsPerRow={5} doubling>
-        {media.map((x, i) => (
-          <Card as="a" onClick={() => openModal(x, true)} key={i} raised>
-            <div style={{paddingTop: '75%'}}>
-              {x.svgs? <Svg close={null} useBlueNotRed={useBlueNotRed} thumb={true} m={x} key={i} style={style}/> : <Image alt={x.description} key={i} style={style} src={getImageUrl(x.id, 205)} onError={i => i.target.src='/png/video_placeholder.png'} />}
-            </div>
-          </Card>
-        ))}
+        {media.map((x, i) => {
+          let content;
+          if (x.svgs) {
+            content = <Svg close={null} useBlueNotRed={useBlueNotRed} thumb={true} m={x} key={i} style={style}/>;
+          }
+          else {
+            content = <Image alt={x.description} key={i} style={style} src={getImageUrl(x.id, x.embedUrl, 205)} onError={i => i.target.src='/png/video_placeholder.png'} />;
+          }
+          return (
+            <Card as="a" onClick={() => openModal(x, true)} key={i} raised>
+              <div style={{paddingTop: '75%'}}>
+                {content}
+              </div>
+            </Card>
+          );
+        })}
       </Card.Group>
     </>
   )

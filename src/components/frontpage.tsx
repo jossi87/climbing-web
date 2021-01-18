@@ -70,7 +70,7 @@ const Frontpage = () => {
                 <>
                   <Card>
                     <Link to={`/problem/${frontpage.randomMedia.idProblem}`}>
-                      <Image size="medium" style={{maxHeight: '250px', objectFit: 'cover'}} src={getImageUrl(frontpage.randomMedia.idMedia, 275)} />
+                      <Image size="medium" style={{maxHeight: '250px', objectFit: 'cover'}} src={getImageUrl(frontpage.randomMedia.idMedia, null, 275)} />
                     </Link>
                     <Card.Content>
                       <Card.Header as={Link} to={`/problem/${frontpage.randomMedia.idProblem}`}>

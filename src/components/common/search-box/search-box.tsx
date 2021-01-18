@@ -36,7 +36,7 @@ const SearchBox = ({ children, ...searchProps} ) => {
         let { mediaid, mediaurl, title, description, lockedadmin, lockedsuperadmin } = data;
         var imageSrc = null;
         if (mediaid > 0) {
-          imageSrc = getImageUrl(mediaid, 45);
+          imageSrc = getImageUrl(mediaid, null, 45);
         } else if (mediaurl) {
           imageSrc = mediaurl;
         }

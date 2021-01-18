@@ -309,7 +309,7 @@ const SvgEdit = () => {
         {activePoint !== 0 && <Button disabled={activePoint===0} onClick={removeActivePoint}>Remove this point</Button>}
       </Segment>
       <svg viewBox={"0 0 " + w + " " + h} onClick={handleOnClick} onMouseMove={handleMouseMove} width="100%" height="100%">
-        <image ref={imageRef} xlinkHref={getImageUrl(mediaId)} width="100%" height="100%"/>
+        <image ref={imageRef} xlinkHref={getImageUrl(mediaId, null)} width="100%" height="100%"/>
         {parseReadOnlySvgs(readOnlySvgs, w, h, metadata.useBlueNotRed)}
         <path className={metadata.useBlueNotRed? "buldreinfo-svg-route-blue" : "buldreinfo-svg-route-red"} d={path} strokeWidth={0.002*w}/>
         {circles}

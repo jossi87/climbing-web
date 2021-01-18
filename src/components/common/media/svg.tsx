@@ -74,7 +74,7 @@ const Svg = ({ style, close, m, thumb, useBlueNotRed }) => {
           close();
         }
       }}>
-        <image xlinkHref={getImageUrl(m.id)} width="100%" height="100%"/>
+        <image xlinkHref={getImageUrl(m.id, m.embedUrl)} width="100%" height="100%"/>
         {generateShapes(m.svgs, m.svgProblemId, m.width, m.height)}
       </svg>
     </>
