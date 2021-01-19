@@ -41,10 +41,10 @@ const Filter = () => {
           <Form.Field>
             <Dropdown placeholder="Select grade(s)" fluid multiple selection options={gradeOptions} value={grades? grades : []} onChange={(e, { value }) => {
               setGrades(value);
-              setFilterDisabled(!value || (!meta.metadata.isBouldering && (!types || types.length==0)) );
+              setFilterDisabled(!value || (typeOptions.length>1 && (!types || types.length==0)) );
             }} />
           </Form.Field>
-          {!meta.metadata.isBouldering &&
+          {typeOptions.length>1 &&
             <Form.Field>
               <Dropdown placeholder="Select type(s)" fluid multiple selection options={typeOptions} value={types? types : []} onChange={(e, { value }) => {
               setTypes(value);
@@ -77,7 +77,7 @@ const Filter = () => {
           <Button icon labelPosition='left' disabled={filterDisabled} loading={refreshing} onClick={() => {
             setRefreshing(true);
             setFilterDisabled(true);
-            const myTypes = meta.metadata.isBouldering? [1] : types;
+            const myTypes = typeOptions.length===1? [typeOptions[0].value] : types;
             postFilter(accessToken, grades, myTypes).then((res) => {
               setResult(res);
               setRefreshing(false);
