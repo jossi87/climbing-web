@@ -39,7 +39,7 @@ const VideoEmbedder = ({ addMedia }) => {
             if (!start) {
                 start = urlObj.searchParams.get("start");
             }
-            if (type=='youtube.com') {
+            if (type=='youtu.be' || type=='youtube.com') {
               videoUrl = "https://www.youtube.com/embed/" + id + (start? "?start=" + start : "");
               thumbnailUrl = "https://img.youtube.com/vi/" + id + "/0.jpg";
             }
@@ -48,6 +48,9 @@ const VideoEmbedder = ({ addMedia }) => {
               fetch("http://vimeo.com/api/v2/video/" + id + ".json")
               .then((data) => data.json())
               .then((json) => setEmbedThumbnailUrl(json[0].thumbnail_large));
+            }
+            else {
+              console.log(type + " - " + id);
             }
           }
         }
