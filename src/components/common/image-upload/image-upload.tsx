@@ -36,9 +36,9 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }) => {
           )
         }}
       </Dropzone><br/>
-      <VideoEmbedder addMedia={(embedVideoUrl, embedThumbnailUrl) => {
+      <VideoEmbedder addMedia={(embedVideoUrl, embedThumbnailUrl, embedMilliseconds) => {
         const allMedia = media;
-        allMedia.push({embedVideoUrl, embedThumbnailUrl});
+        allMedia.push({embedVideoUrl, embedThumbnailUrl, embedMilliseconds});
         setMedia(allMedia);
         onMediaChanged(allMedia);
       }}/><br/><br/>
