@@ -10,7 +10,7 @@ const VideoEmbedder = ({ addMedia }) => {
 
   return (
     <Input
-      placeholder='Video URL (supports YouTube and Vimeo)'
+      placeholder='YouTube/Vimeo video URL (supports "start"/"t"-parameter)'
       action={{
         labelPosition: 'right',
         color: enabled? "youtube" : "grey",
@@ -39,13 +39,12 @@ const VideoEmbedder = ({ addMedia }) => {
             if (!start) {
                 start = urlObj.searchParams.get("start");
             }
-            console.log(type + " og " + id)
             if (type=='youtube.com') {
               videoUrl = "https://www.youtube.com/embed/" + id + (start? "?start=" + start : "");
               thumbnailUrl = "https://img.youtube.com/vi/" + id + "/0.jpg";
             }
             else if (type=='vimeo.com') {
-              videoUrl = "https://player.vimeo.com/video/" + id + (start? "?start=" + start : "");
+              videoUrl = "https://player.vimeo.com/video/" + id + (start? "?t=" + start : "");
               fetch("http://vimeo.com/api/v2/video/" + id + ".json")
               .then((data) => data.json())
               .then((json) => setEmbedThumbnailUrl(json[0].thumbnail_large));
