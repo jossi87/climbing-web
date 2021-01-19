@@ -45,7 +45,7 @@ const VideoEmbedder = ({ addMedia }) => {
             }
             else if (type=='vimeo.com') {
               videoUrl = "https://player.vimeo.com/video/" + id + (start? "?t=" + start : "");
-              fetch("http://vimeo.com/api/v2/video/" + id + ".json")
+              fetch("https://vimeo.com/api/v2/video/" + id + ".json")
               .then((data) => data.json())
               .then((json) => setEmbedThumbnailUrl(json[0].thumbnail_large));
             }
