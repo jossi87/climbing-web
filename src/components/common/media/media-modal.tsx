@@ -64,7 +64,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext,
   }
   else {
     if (m.embedUrl) {
-      content = <Embed as={Container} url={m.embedUrl} defaultActive={true}/>;
+      content = <Embed as={Container} style={{minWidth: '320px', minHeight: '200px'}} url={m.embedUrl} defaultActive={true}/>;
     }
     else if (autoPlayVideo) {
       content = <ReactPlayer
