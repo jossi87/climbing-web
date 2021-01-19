@@ -165,7 +165,7 @@ const SectorEdit = () => {
 
         <Segment>
           <Form.Field
-            label="Upload image(s)"
+            label="Upload image(s) or embed video(s)"
             control={ImageUpload}
             onMediaChanged={onNewMediaChanged}
             isMultiPitch={false} />

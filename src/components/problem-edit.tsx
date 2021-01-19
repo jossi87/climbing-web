@@ -271,7 +271,7 @@ const ProblemEdit = () => {
           
         <Segment>
           <Form.Field>
-            <label>Upload image(s)</label><br/>
+            <label>Upload image(s) or embed video(s)</label><br/>
             <ImageUpload onMediaChanged={onNewMediaChanged} isMultiPitch={data.sections && data.sections.length>1} />
           </Form.Field>
         </Segment>

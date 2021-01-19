@@ -59,7 +59,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext,
       content = <Image style={style.img}><Svg useBlueNotRed={useBlueNotRed} thumb={false} style={{}} m={m} close={onClose}/></Image>;
     }
     else {
-      content = <Image style={style.img} alt={m.mediaMetadata.alt} src={getImageUrl(m.id, m.embedUrl, 720)} />
+      content = <Image style={style.img} alt={m.mediaMetadata.alt} src={getImageUrl(m.id, 720)} />
     }
   }
   else {
@@ -78,7 +78,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext,
     }
     else {
       content = <>
-        <Image style={style.img} alt={m.description} src={getImageUrl(m.id, m.embedUrl, 360)} />
+        <Image style={style.img} alt={m.description} src={getImageUrl(m.id, 360)} />
         <Button size="massive" color="youtube" circular style={style.play} icon="play" onClick={playVideo} />
       </>
     }
@@ -104,7 +104,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext,
         }/>}
         <Modal trigger={<Button icon="info" />}>
           <Modal.Content image>
-            <Image wrapped size='medium' src={getImageUrl(m.id, m.embedUrl, 150)} />
+            <Image wrapped size='medium' src={getImageUrl(m.id, 150)} />
             <Modal.Description>
               <Header>Info</Header>
               {m.mediaMetadata.dateCreated && <><b>Date uploaded:</b> {m.mediaMetadata.dateCreated}<br/></>}

@@ -116,7 +116,7 @@ const Media = ({ media, removeMedia, useBlueNotRed, isAdmin }) => {
             content = <Svg close={null} useBlueNotRed={useBlueNotRed} thumb={true} m={x} key={i} style={style}/>;
           }
           else {
-            content = <Image alt={x.description} key={i} style={style} src={getImageUrl(x.id, x.embedUrl, 205)} onError={i => i.target.src='/png/video_placeholder.png'} />;
+            content = <Image alt={x.description} key={i} style={style} src={getImageUrl(x.id, 205)} onError={i => i.target.src='/png/video_placeholder.png'} />;
           }
           return (
             <Card as="a" onClick={() => openModal(x, true)} key={i} raised>

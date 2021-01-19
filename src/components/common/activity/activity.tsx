@@ -128,7 +128,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
               return (
                 <Feed.Event key={i}>
                   <Feed.Label>
-                    {a.problemRandomMediaId>0 && <img style={{height: '35px', objectFit: 'cover'}} src={getImageUrl(a.problemRandomMediaId, null, 35)} />}
+                    {a.problemRandomMediaId>0 && <img style={{height: '35px', objectFit: 'cover'}} src={getImageUrl(a.problemRandomMediaId, 35)} />}
                   </Feed.Label>
                   <Feed.Content>
                     <Feed.Summary>
@@ -140,7 +140,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
                     {a.media &&
                       <>
                         <Feed.Extra images as={Link} to={`/problem/${a.problemId}`}>
-                          {a.media.map((m, i) => (<img key={i} src={getImageUrl(m.id, m.embedUrl, 115)}/>))}
+                          {a.media.map((m, i) => (<img key={i} src={getImageUrl(m.id, 115)}/>))}
                         </Feed.Extra>
                         <br/>
                       </>
@@ -175,14 +175,14 @@ const Activity = ({ metadata, idArea, idSector }) => {
               return (
                 <Feed.Event key={i}>
                   <Feed.Label>
-                    {a.problemRandomMediaId>0 && <img style={{height: '35px', objectFit: 'cover'}} src={getImageUrl(a.problemRandomMediaId, null, 35)} />}
+                    {a.problemRandomMediaId>0 && <img style={{height: '35px', objectFit: 'cover'}} src={getImageUrl(a.problemRandomMediaId, 35)} />}
                   </Feed.Label>
                   <Feed.Content>
                     <Feed.Summary style={{marginBottom: '3px'}}>
                       {summary}on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}<LockSymbol lockedAdmin={a.problemLockedAdmin} lockedSuperadmin={a.problemLockedSuperadmin} /><Feed.Date>{a.timeAgo}</Feed.Date>
                     </Feed.Summary>
                     <Feed.Extra images as={Link} to={`/problem/${a.problemId}`}>
-                      {a.media.map((m, i) => (<Image key={i} src={getImageUrl(m.id, m.embedUrl, 115)} onError={i => i.target.src='/png/video_placeholder.png'} />))}
+                      {a.media.map((m, i) => (<Image key={i} src={getImageUrl(m.id, 115)} onError={i => i.target.src='/png/video_placeholder.png'} />))}
                     </Feed.Extra>
                   </Feed.Content>
                 </Feed.Event>

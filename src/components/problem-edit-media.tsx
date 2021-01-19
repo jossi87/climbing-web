@@ -46,7 +46,7 @@ const ProblemEditMedia = () => {
   }
   return (
     <Segment>
-      <h3>Upload image(s)</h3>
+      <h3>Upload image(s) or embed video(s)</h3>
       <form onSubmit={save}>
         <ImageUpload onMediaChanged={(newMedia) => setMedia(newMedia)} isMultiPitch={isMultiPitch} />
         <Button.Group>

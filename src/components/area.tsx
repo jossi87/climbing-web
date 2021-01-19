@@ -170,7 +170,7 @@ const Area = () => {
           <Item.Group link unstackable>
             {data.sectors.map((sector, i) => (
               <Item as={Link} to={`/sector/${sector.id}`} key={i}>
-                <Image size="small" style={{maxHeight: '150px', objectFit: 'cover'}} src={sector.randomMediaId? getImageUrl(sector.randomMediaId, null, 150) : '/png/image.png'} />
+                <Image size="small" style={{maxHeight: '150px', objectFit: 'cover'}} src={sector.randomMediaId? getImageUrl(sector.randomMediaId, 150) : '/png/image.png'} />
                 <Item.Content>
                   <Item.Header>
                     {sector.name} <LockSymbol lockedAdmin={sector.lockedAdmin} lockedSuperadmin={sector.lockedSuperadmin} />

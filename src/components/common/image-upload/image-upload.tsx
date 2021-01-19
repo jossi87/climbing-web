@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Dropzone from 'react-dropzone';
 import { Button, Card, Image, Input } from 'semantic-ui-react';
+import VideoEmbedder from './video-embedder';
 import classNames from 'classnames';
 import UserSelector from '../user-selector/user-selector';
 
@@ -35,11 +36,17 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }) => {
           )
         }}
       </Dropzone><br/>
+      <VideoEmbedder addMedia={(embedVideoUrl, embedThumbnailUrl) => {
+        const allMedia = media;
+        allMedia.push({embedVideoUrl, embedThumbnailUrl});
+        setMedia(allMedia);
+        onMediaChanged(allMedia);
+      }}/><br/><br/>
       {media.length > 0 &&
         <Card.Group itemsPerRow={4} stackable>
           {media.map((m, i) =>
             <Card key={i}>
-              <Image src={m.file.preview} />
+              <Image src={m.file? m.file.preview : m.embedThumbnailUrl} />
               <Card.Content>
                 {isMultiPitch &&
                   <Input size="mini" icon="hashtag" iconPosition="left" fluid placeholder='Pitch' value={m.pitch} onChange={(e, { value }) => {
