@@ -42,6 +42,10 @@ const VideoEmbedder = ({ addMedia }) => {
             if (!start) {
                 start = urlObj.searchParams.get("start");
             }
+            if (!start && videoUrl.includes("vimeo") && videoUrl.includes("#t=")) {
+              let ix = videoUrl.lastIndexOf("#t=");
+              start = videoUrl.substr(ix+3);
+            }
             if (start) {
               start = start.toUpperCase();
               var total = 0;
