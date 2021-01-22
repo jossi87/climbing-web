@@ -13,17 +13,17 @@ import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSector, getAreaPdfUrl, getSectorPdfUrl } from '../api';
 import Linkify from 'react-linkify';
 
-const SectorListItem = ({ history, problem, isBouldering, orderByGrade } ) => {
+const SectorListItem = ({ history, problem, showType, orderByGrade } ) => {
   var ascents = problem.numTicks>0 && (problem.numTicks + (problem.numTicks==1? " ascent" : " ascents"));
   var typeAscents;
-  if (isBouldering) {
+  if (showType) {
     if (ascents) {
       typeAscents = " (" + ascents + ") ";
     }
     else {
       typeAscents = " ";
     }
-  } else if (!isBouldering) {
+  } else if (!showType) {
     let t = problem.t.subType;
     if (problem.numPitches>1) t += ", " + problem.numPitches + " pitches";
     if (ascents) {
@@ -168,7 +168,7 @@ const Sector = () => {
   let problems;
   if (data.orderByGrade && subTypes.length>1) {
     let accordionRows = subTypes.map(subType => {
-      let rows = data.problems.filter(p => p.t.subType==subType && (!hideTicked || !p.ticked)).map((p, i) => <SectorListItem key={i} history={history} problem={p} orderByGrade={data.orderByGrade} isBouldering={data.metadata.isBouldering} />);
+      let rows = data.problems.filter(p => p.t.subType==subType && (!hideTicked || !p.ticked)).map((p, i) => <SectorListItem key={i} history={history} problem={p} orderByGrade={data.orderByGrade} showType={data.metadata.gradeSystem==='CLIMBING'} />);
       let label = subType + " (" + rows.length + ")";
       let content = <List selection>{rows}</List>;
       return (
@@ -181,7 +181,7 @@ const Sector = () => {
     problems = (
       <Segment attached="bottom">
         <List selection>
-          {data.problems.filter(p => !hideTicked || !p.ticked).map((p, i) => <SectorListItem key={i} history={history} problem={p} orderByGrade={data.orderByGrade} isBouldering={data.metadata.isBouldering} />)}
+          {data.problems.filter(p => !hideTicked || !p.ticked).map((p, i) => <SectorListItem key={i} history={history} problem={p} orderByGrade={data.orderByGrade} showType={data.metadata.gradeSystem==='CLIMBING'} />)}
         </List>
       </Segment>
     )

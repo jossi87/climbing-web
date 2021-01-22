@@ -19,7 +19,6 @@ const ProblemHse = () => {
   if (!data) {
     return <LoadingAndRestoreScroll />;
   }
-  let isBouldering = data.metadata.isBouldering;
   return (
     <>
       <MetaTags>

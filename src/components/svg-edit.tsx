@@ -279,7 +279,7 @@ const SvgEdit = () => {
           <Button.Or />
           <Button positive onClick={save}>Save</Button>
         </Button.Group>
-        {!metadata.isBouldering &&
+        {metadata.gradeSystem==='CLIMBING' &&
           <>
             <Button.Group size="tiny">
               <Button onClick={onAddText}>{addText? "Click on image to add text" : "Add text"}</Button>

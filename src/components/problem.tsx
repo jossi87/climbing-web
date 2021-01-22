@@ -161,7 +161,7 @@ const Problem = () => {
             extra = <Label color="red">Flagged as dangerous</Label>;
           } else if (c.resolved) {
             extra = <Label color="green">Flagged as safe</Label>;
-          } else if (data.metadata && data.metadata.isAuthenticated && !data.metadata.isBouldering) {
+          } else if (data.metadata && data.metadata.isAuthenticated && data.metadata.gradeSystem==='CLIMBING') {
             extra = <Button basic size="tiny" compact onClick={() => flagAsDangerous(c.id)}>Flag as dangerous</Button>;
           }
           return (
@@ -210,7 +210,7 @@ const Problem = () => {
         <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
       </MetaTags>
       {tickModal}
-      <CommentModal accessToken={accessToken} idProblem={data.id} open={showCommentModal} onClose={closeCommentModal} isBouldering={data.metadata.isBouldering}/>
+      <CommentModal accessToken={accessToken} idProblem={data.id} open={showCommentModal} onClose={closeCommentModal} showHse={data.metadata.gradeSystem==='CLIMBING'}/>
       <div style={{marginBottom: '5px'}}>
         <div style={{float: 'right'}}>
           {data.metadata && data.metadata.isAuthenticated &&
@@ -303,7 +303,7 @@ const Problem = () => {
             <Table.Cell>{data.faAid ? "First free ascent (FFA):" : "First ascent:"}</Table.Cell>
             <Table.Cell>
               <Label basic>Grade:<Label.Detail>{data.originalGrade}</Label.Detail></Label>
-              {!data.metadata.isBouldering && <Label basic><Icon name='tag' />{data.t.subType}</Label>}
+              {data.metadata.gradeSystem==='CLIMBING' && <Label basic><Icon name='tag' />{data.t.subType}</Label>}
               {data.faDateHr && <Label basic><Icon name='calendar check' />{data.faDateHr}</Label>}
               {data.fa && <>{data.fa.map((u, i) => (
                 <Label key={i} as={Link} to={`/user/${u.id}`} image basic>
@@ -323,7 +323,7 @@ const Problem = () => {
             <Table.Cell>Download PDF:</Table.Cell>
             <Table.Cell>
               <Label href={getProblemPdfUrl(accessToken, data.id)} rel="noreferrer noopener" target="_blank" image basic>
-                <Icon name="file pdf outline"/>{data.metadata.isBouldering? "boulder.pdf" : "route.pdf"}
+                <Icon name="file pdf outline"/>{data.metadata.gradeSystem==='BOULDER'? "boulder.pdf" : "route.pdf"}
               </Label>
               <Label href={getSectorPdfUrl(accessToken, data.sectorId)} rel="noreferrer noopener" target="_blank" image basic>
                 <Icon name="file pdf outline"/>sector.pdf

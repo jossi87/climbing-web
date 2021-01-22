@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { postComment } from './../../../api';
 import { Button, Modal, Form, TextArea } from 'semantic-ui-react';
 
-const CommentModal = ({ open, isBouldering, accessToken, idProblem, onClose }) => {
+const CommentModal = ({ open, showHse, accessToken, idProblem, onClose }) => {
   const [comment, setComment] = useState(null);
   const [danger, setDanger] = useState(false);
   const [resolved, setResolved] = useState(false);
@@ -17,7 +17,7 @@ const CommentModal = ({ open, isBouldering, accessToken, idProblem, onClose }) =
               <label>Comment</label>
               <TextArea placeholder='Comment' style={{ minHeight: 100 }} value={comment? comment : ""} onChange={(e, data) => { setComment(data.value); }} />
             </Form.Field>
-            {!isBouldering &&
+            {showHse &&
               <Button.Group size="mini" compact>
                 <Button onClick={() => { setDanger(false); setResolved(false); }} active={danger && resolved}>Default comment</Button>
                 <Button.Or />

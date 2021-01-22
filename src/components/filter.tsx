@@ -106,7 +106,7 @@ const Filter = () => {
                 {!orderByStars? "Order by stars" : "Order by name"}
               </Button>
             </div>
-            <Header as="h3">{res.length} {meta.metadata.isBouldering? "Problems" : "Routes"}</Header>
+            <Header as="h3">{res.length} {meta.metadata.gradeSystem==='BOULDER'? "Problems" : "Routes"}</Header>
           </div>
           <Leaflet
             autoZoom={true}

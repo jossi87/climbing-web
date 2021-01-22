@@ -210,7 +210,7 @@ const ProblemEdit = () => {
       </MetaTags>
       <Message
         size="tiny"
-        content={<><Icon name="info"/>Contact <a href='mailto:jostein.oygarden@gmail.com'>Jostein Øygarden</a> if you want to delete or move {data.metadata.isBouldering? "problem" : "route"} to an other sector.</>}
+        content={<><Icon name="info"/>Contact <a href='mailto:jostein.oygarden@gmail.com'>Jostein Øygarden</a> if you want to delete or move {data.metadata.gradeSystem==='BOULDER'? "problem" : "route"} to an other sector.</>}
       />
       <Form>
         <Segment>
@@ -276,7 +276,7 @@ const ProblemEdit = () => {
           </Form.Field>
         </Segment>
         
-        {!data.metadata.isBouldering &&
+        {data.metadata.gradeSystem==='CLIMBING' &&
           <Segment>
             <Form.Field
               label="Type"

@@ -21,7 +21,7 @@ const Browse = () => {
   if (!data) {
     return <LoadingAndRestoreScroll />;
   }
-  const typeDescription = data.metadata.isBouldering? "problem(s)" : "route(s)";
+  const typeDescription = data.metadata.gradeSystem==='BOULDER'? "problem(s)" : "route(s)";
   const markers = data.areas.filter(a => a.forDevelopers === showForDevelopers && a.lat!=0 && a.lng!=0).map(a => {
     return {
         lat: a.lat,

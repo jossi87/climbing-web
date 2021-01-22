@@ -231,7 +231,7 @@ const User = () => {
         <>
           <ButtonGroup size="mini" compact  attached="top">
             <Button icon labelPosition="left" onClick={() => order('date')} toggle primary={sortBy==='date'}><Icon name="sort content ascending"/>Date</Button>
-            <Button icon labelPosition="left" onClick={() => order('grade')} toggle primary={sortBy==='grade'}><Icon name="sort content ascending"/>{data.metadata.isBouldering || subTypes.length===1? "Grade" : "Type and grade"}</Button>
+            <Button icon labelPosition="left" onClick={() => order('grade')} toggle primary={sortBy==='grade'}><Icon name="sort content ascending"/>{data.metadata.gradeSystem==='BOULDER' || subTypes.length===1? "Grade" : "Type and grade"}</Button>
             <Button icon labelPosition="left" onClick={() => order('name')} toggle primary={sortBy==='name'}><Icon name="sort alphabet down"/>Name</Button>
           </ButtonGroup>
           {ticks}

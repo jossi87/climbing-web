@@ -41,13 +41,13 @@ const Frontpage = () => {
               <Statistic.Group size="mini" horizontal as={Segment}>
                 <Statistic as={Link} to="/toc" color="blue">
                   <Statistic.Value><Icon name='database' /> {numberWithCommas(frontpage.numProblems)}</Statistic.Value>
-                  <Statistic.Label>{frontpage.metadata.isBouldering? "Problems" : "Routes"}</Statistic.Label>
+                  <Statistic.Label>{frontpage.metadata.gradeSystem==='BOULDER'? "Problems" : "Routes"}</Statistic.Label>
                 </Statistic>
                 <Statistic>
                   <Statistic.Value><Icon name='map marker' /> {numberWithCommas(frontpage.numProblemsWithCoordinates)}</Statistic.Value>
                   <Statistic.Label>With coordinates</Statistic.Label>
                 </Statistic>
-                {!frontpage.metadata.isBouldering &&
+                {frontpage.metadata.gradeSystem==='CLIMBING' &&
                   <Statistic>
                     <Statistic.Value><Icon name='image outline' /> {numberWithCommas(frontpage.numProblemsWithTopo)}</Statistic.Value>
                     <Statistic.Label>With topo</Statistic.Label>

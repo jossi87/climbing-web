@@ -21,7 +21,7 @@ const Toc = () => {
   if (!data) {
     return <LoadingAndRestoreScroll />;
   }
-  let isBouldering = data.metadata.isBouldering;
+  const showType = data.metadata.gradeSystem==='CLIMBING';
   return (
     <>
       <MetaTags>
@@ -77,14 +77,14 @@ const Toc = () => {
                   {sector.problems.map((problem, i) => {
                     var ascents = problem.numTicks>0 && (problem.numTicks + (problem.numTicks==1? " ascent" : " ascents"));
                     var typeAscents;
-                    if (isBouldering) {
+                    if (showType) {
                       if (ascents) {
                         typeAscents = " (" + ascents + ") ";
                       }
                       else {
                         typeAscents = " ";
                       }
-                    } else if (!isBouldering) {
+                    } else if (!showType) {
                       let t = problem.t.subType;
                       if (problem.numPitches>1) t += ", " + problem.numPitches + " pitches";
                       if (ascents) {
