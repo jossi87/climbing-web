@@ -78,19 +78,19 @@ const Toc = () => {
                     var ascents = problem.numTicks>0 && (problem.numTicks + (problem.numTicks==1? " ascent" : " ascents"));
                     var typeAscents;
                     if (showType) {
-                      if (ascents) {
-                        typeAscents = " (" + ascents + ") ";
-                      }
-                      else {
-                        typeAscents = " ";
-                      }
-                    } else if (!showType) {
                       let t = problem.t.subType;
                       if (problem.numPitches>1) t += ", " + problem.numPitches + " pitches";
                       if (ascents) {
                         typeAscents = " (" + t + ", " + ascents + ") ";
                       } else {
                         typeAscents = " (" + t + ") ";
+                      }
+                    } else if (!showType) {
+                      if (ascents) {
+                        typeAscents = " (" + ascents + ") ";
+                      }
+                      else {
+                        typeAscents = " ";
                       }
                     }
                     return (
