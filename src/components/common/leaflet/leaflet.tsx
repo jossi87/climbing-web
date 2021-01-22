@@ -31,6 +31,9 @@ const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defa
     if (outlines && outlines.length > 0) {
       outlines.forEach((o) => o.polygon.forEach((p) => bounds.extend([p[0], p[1]])));
     }
+    if (bounds._northEast.lat===bounds._southWest.lat || bounds._northEast.lng===bounds._southWest.lng) {
+      bounds = null;
+    }
   }
   let opacity = 0.5;
   let addEventHandlers = onClick == null;
