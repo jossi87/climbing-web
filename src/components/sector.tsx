@@ -281,7 +281,7 @@ const Sector = () => {
           <ButtonGroup size="mini" compact attached="top">
             {data.problems.filter(p => p.ticked).length>0 && 
               <Button icon labelPosition="left" onClick={() => setHideTicked(!hideTicked)} toggle primary={hideTicked}><Icon name="check"/>Hide ticked</Button>}
-            <Button icon labelPosition="left" onClick={() => sortBy(true)} toggle primary={data.orderByGrade}><Icon name="sort content ascending"/>{data.metadata.isBouldering || subTypes.length===1? "Grade" : "Type and grade"}</Button>
+            <Button icon labelPosition="left" onClick={() => sortBy(true)} toggle primary={data.orderByGrade}><Icon name="sort content ascending"/>{data.metadata.gradeSystem==='BOULDER' || subTypes.length===1? "Grade" : "Type and grade"}</Button>
             <Button icon labelPosition="left" onClick={() => sortBy(false)} toggle primary={!data.orderByGrade}><Icon name="sort numeric ascending"/>Number</Button>
           </ButtonGroup>
           {problems}
