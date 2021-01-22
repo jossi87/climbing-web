@@ -1,13 +1,14 @@
 import React from "react";
 import "leaflet/dist/leaflet.css";
 import { useMapEvents, MapContainer, TileLayer, LayersControl, WMSTileLayer, ScaleControl, FeatureGroup } from 'react-leaflet';
+import { latLngBounds } from 'leaflet';
 import LocateControl from './locatecontrol';
-import FitBounds from './fitbounds';
 import FullscreenControl from './fullscreencontrol';
 import Markers from './markers';
 import Polygons from './polygons';
 import Polylines from './polylines';
 import MarkerClusterGroup from "./react-leaflet-markercluster";
+
 
 function MapEvent({ onClick }) {
   useMapEvents({
@@ -21,6 +22,16 @@ function MapEvent({ onClick }) {
 }
 
 const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defaultCenter, defaultZoom, onClick, clusterMarkers }) => {
+  let bounds = null;
+  if (autoZoom && ((markers && markers.length > 0) || (outlines && outlines.length > 0))) {
+    bounds = latLngBounds([]);
+    if (markers && markers.length > 0) {
+      markers.forEach((m) => bounds.extend([m.lat, m.lng]));
+    }
+    if (outlines && outlines.length > 0) {
+      outlines.forEach((o) => o.polygon.forEach((p) => bounds.extend([p[0], p[1]])));
+    }
+  }
   let opacity = 0.5;
   let addEventHandlers = onClick == null;
   let markerGroup = <Markers history={history} opacity={opacity} markers={markers} addEventHandlers={addEventHandlers} />;
@@ -31,12 +42,12 @@ const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defa
   return (
     <MapContainer
       style={{height: (height? height : '500px'), width: '100%', zIndex: 0}}
-      center={defaultCenter}
-      zoom={defaultZoom}
       zoomControl={true}
+      zoom={bounds? null : defaultZoom}
+      center={bounds? null : defaultCenter}
+      bounds={bounds}
     >
       <MapEvent onClick={onClick}/>
-      <FitBounds autoZoom={autoZoom} />
       <FullscreenControl />
       <LocateControl />
       <ScaleControl maxWidth={100} metric={true} imperial={false} />

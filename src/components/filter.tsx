@@ -15,7 +15,7 @@ const Filter = () => {
   const [types, setTypes] = useState(null);
   const [result, setResult] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
-  const [filterDisabled, setFilterDisabled] = useState(false);
+  const [filterDisabled, setFilterDisabled] = useState(true);
   const [hideTicked, setHideTicked] = useState(false);
   const [onlyWithMedia, setOnlyWithMedia] = useState(false);
   const [onlyAdmin, setOnlyAdmin] = useState(false);
