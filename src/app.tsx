@@ -87,33 +87,41 @@ const App = () => {
           <Container textAlign='center'>
             <Grid divided inverted stackable>
               <Grid.Row>
-                <Grid.Column width={6}>
+                <Grid.Column width={4}>
                   <Header inverted as='h4' content='Bouldering' />
                   <List link inverted>
-                    <List.Item as='a' href='/sites/bouldering'>Bouldering sites (map)</List.Item>
+                    <List.Item as='a' href='/sites/boulder'>Map</List.Item>
                     <br/>
-                    <List.Item as='a' href='https://buldreinfo.com' rel='noopener' target='_blank'>buldreinfo.com (Rogaland)</List.Item>
-                    <List.Item as='a' href='https://buldre.forer.no' rel='noopener' target='_blank'>buldre.forer.no (Fredrikstad)</List.Item>
-                    <List.Item as='a' href='https://buldreforer.tromsoklatring.no' rel='noopener' target='_blank'>buldreforer.tromsoklatring.no (Troms)</List.Item>
-                    <List.Item as='a' href='https://buldring.bergen-klatreklubb.no' rel='noopener' target='_blank'>buldring.bergen-klatreklubb.no (Bergen)</List.Item>
-                    <List.Item as='a' href='https://buldring.flatangeradventure.no' rel='noopener' target='_blank'>buldring.flatangeradventure.no (Trondheim)</List.Item>
-                    <List.Item as='a' href='https://buldring.jotunheimenfjellsport.com' rel='noopener' target='_blank'>buldring.jotunheimenfjellsport.com (Jotunheimen)</List.Item>
-                    <List.Item as='a' href='https://buldring.narvikklatreklubb.no' rel='noopener' target='_blank'>buldring.narvikklatreklubb.no (Narvik)</List.Item>
-                    <List.Item as='a' href='https://hkl.buldreinfo.com' rel='noopener' target='_blank'>hkl.buldreinfo.com (Haugalandet)</List.Item>
+                    <List.Item as='a' href='https://buldreinfo.com' rel='noopener' target='_blank'>Rogaland</List.Item>
+                    <List.Item as='a' href='https://buldre.forer.no' rel='noopener' target='_blank'>Fredrikstad</List.Item>
+                    <List.Item as='a' href='https://buldreforer.tromsoklatring.no' rel='noopener' target='_blank'>Troms</List.Item>
+                    <List.Item as='a' href='https://buldring.bergen-klatreklubb.no' rel='noopener' target='_blank'>Bergen</List.Item>
+                    <List.Item as='a' href='https://buldring.flatangeradventure.no' rel='noopener' target='_blank'>Trondheim</List.Item>
+                    <List.Item as='a' href='https://buldring.jotunheimenfjellsport.com' rel='noopener' target='_blank'>Jotunheimen</List.Item>
+                    <List.Item as='a' href='https://buldring.narvikklatreklubb.no' rel='noopener' target='_blank'>Narvik</List.Item>
+                    <List.Item as='a' href='https://hkl.buldreinfo.com' rel='noopener' target='_blank'>Haugalandet</List.Item>
                   </List>
                 </Grid.Column>
-                <Grid.Column width={6}>
-                  <Header inverted as='h4' content='Climbing' />
+                <Grid.Column width={4}>
+                  <Header inverted as='h4' content='Route climbing' />
                   <List link inverted>
-                  <List.Item as='a' href='/sites/climbing'>Climbing sites (map)</List.Item>
-                  <br/>
-                  <List.Item as='a' href='https://brattelinjer.no' rel='noopener' target='_blank'>brattelinjer.no (Rogaland)</List.Item>
-                  <List.Item as='a' href='https://hkl.brattelinjer.no' rel='noopener' target='_blank'>hkl.brattelinjer.no (Haugalandet)</List.Item>
-                  <List.Item as='a' href='https://klatreforer.narvikklatreklubb.no' rel='noopener' target='_blank'>klatreforer.narvikklatreklubb.no (Narvik)</List.Item>
-                  <List.Item as='a' href='https://klatreforer.tromsoklatring.no' rel='noopener' target='_blank'>klatreforer.tromsoklatring.no (Troms)</List.Item>
-                  <List.Item as='a' href='https://klatring.flatangeradventure.no' rel='noopener' target='_blank'>klatring.flatangeradventure.no (Trondheim)</List.Item>
-                  <List.Item as='a' href='https://klatring.jotunheimenfjellsport.com' rel='noopener' target='_blank'>klatring.jotunheimenfjellsport.com (Jotunheimen)</List.Item>
-                  <List.Item as='a' href='https://tau.forer.no' rel='noopener' target='_blank'>tau.forer.no (Fredrikstad)</List.Item>
+                    <List.Item as='a' href='/sites/climbing'>Map</List.Item>
+                    <br/>
+                    <List.Item as='a' href='https://brattelinjer.no' rel='noopener' target='_blank'>Rogaland</List.Item>
+                    <List.Item as='a' href='https://hkl.brattelinjer.no' rel='noopener' target='_blank'>Haugalandet</List.Item>
+                    <List.Item as='a' href='https://klatreforer.narvikklatreklubb.no' rel='noopener' target='_blank'>Narvik</List.Item>
+                    <List.Item as='a' href='https://klatreforer.tromsoklatring.no' rel='noopener' target='_blank'>Troms</List.Item>
+                    <List.Item as='a' href='https://klatring.flatangeradventure.no' rel='noopener' target='_blank'>Trondheim</List.Item>
+                    <List.Item as='a' href='https://klatring.jotunheimenfjellsport.com' rel='noopener' target='_blank'>Jotunheimen</List.Item>
+                    <List.Item as='a' href='https://tau.forer.no' rel='noopener' target='_blank'>Fredrikstad</List.Item>
+                  </List>
+                </Grid.Column>
+                <Grid.Column width={4}>
+                  <Header inverted as='h4' content='Ice climbing' />
+                  <List link inverted>
+                    <List.Item as='a' href='/sites/ice'>Map</List.Item>
+                    <br/>
+                    <List.Item as='a' href='https://ic.brattelinjer.no' rel='noopener' target='_blank'>Rogaland</List.Item>
                   </List>
                 </Grid.Column>
                 <Grid.Column width={4}>

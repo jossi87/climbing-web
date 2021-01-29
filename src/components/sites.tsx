@@ -32,7 +32,7 @@ const Sites = () => {
       const latLng = c.split(",");
       return ([parseFloat(latLng[0]), parseFloat(latLng[1])]);
     });
-    return {url: r.url, label: r.name + " (" + r.numProblems + (type==='bouldering'? " boulders" : " routes") + ")", polygon: polygon};
+    return {url: r.url, label: r.name + " (" + r.numProblems + (type==='boulder'? " boulders" : " routes") + ")", polygon: polygon};
   });
   const map = <Leaflet autoZoom={true} height='85vh' outlines={outlines} defaultCenter={data.metadata.defaultCenter} defaultZoom={data.metadata.defaultZoom} history={history} markers={null} polylines={null} onClick={null} clusterMarkers={true} />;
   return (
@@ -50,8 +50,9 @@ const Sites = () => {
         <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
       </MetaTags>
       <Button.Group fluid>
-        <Button as={Link} to={'/sites/bouldering'} active={data.isBouldering}>Bouldering sites</Button>
-        <Button as={Link} to={'/sites/climbing'}  active={!data.isBouldering}>Climbing sites</Button>
+        <Button as={Link} to={'/sites/boulder'} active={data.type=='BOULDER'}>Bouldering</Button>
+        <Button as={Link} to={'/sites/climbing'}  active={data.type=='CLIMBING'}>Route climbing</Button>
+        <Button as={Link} to={'/sites/ice'}  active={data.type=='ICE'}>Ice climbing</Button>
       </Button.Group>
       {map}
     </>
