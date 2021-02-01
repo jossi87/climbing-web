@@ -23,13 +23,16 @@ function MapEvent({ onClick }) {
 
 const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defaultCenter, defaultZoom, onClick, clusterMarkers }) => {
   let bounds = null;
-  if (autoZoom && ((markers && markers.length > 0) || (outlines && outlines.length > 0))) {
+  if (autoZoom && ((markers && markers.length > 0) || (outlines && outlines.length > 0) || (polylines && polylines.length > 0))) {
     bounds = latLngBounds([]);
     if (markers && markers.length > 0) {
       markers.forEach((m) => bounds.extend([m.lat, m.lng]));
     }
     if (outlines && outlines.length > 0) {
       outlines.forEach((o) => o.polygon.forEach((p) => bounds.extend([p[0], p[1]])));
+    }
+    if (polylines && polylines.length > 0) {
+      polylines.forEach((p) => p.forEach((x) => bounds.extend([x[0], x[1]])));
     }
     if (bounds._northEast.lat===bounds._southWest.lat || bounds._northEast.lng===bounds._southWest.lng) {
       bounds = null;
