@@ -452,6 +452,15 @@ export function getUser(accessToken: string, id: number): Promise<any> {
   });
 }
 
+export function getUserMedia(accessToken: string, id: number): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/users/media?id=${id}`, null)
+  .then((data) => data.json())
+  .catch((error) => {
+    console.warn(error);
+    return null;
+  });
+}
+
 export function getUserSearch(accessToken: string, value: string): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/users/search?value=${value}`, null)
   .then((data) => data.json())

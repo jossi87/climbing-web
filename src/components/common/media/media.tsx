@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import LazyLoad from 'react-lazyload';
 import { useHistory } from 'react-router-dom';
 import { getImageUrl, deleteMedia } from '../../../api';
 import { Card, Image } from 'semantic-ui-react';
@@ -121,7 +122,7 @@ const Media = ({ media, removeMedia, useBlueNotRed, isAdmin }) => {
           return (
             <Card as="a" onClick={() => openModal(x, true)} key={i} raised>
               <div style={{paddingTop: '75%'}}>
-                {content}
+                <LazyLoad offset={100}>{content}</LazyLoad>
               </div>
             </Card>
           );

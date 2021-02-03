@@ -44,6 +44,7 @@
     "react-day-picker": "^7.4.8",
     "react-dom": "^17.0.1",
     "react-dropzone": "^11.3.0",
+    "react-lazyload": "^3.1.0",
     "react-leaflet": "^3.1.0",
     "react-linkify": "^1.0.0-alpha",
     "react-meta-tags": "^1.0.1",

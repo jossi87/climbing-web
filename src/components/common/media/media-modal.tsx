@@ -97,6 +97,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext,
             <Icon name="paint brush"/>
           </Button>
         )}
+        {m.problemId && <Button icon="external" onClick={() => window.open("/problem/" + m.problemId, "_blank")}/>}
         {!m.embedUrl && <Button icon="download" onClick={() => {
           let isMovie = m.idType!==1;
           let ext = isMovie? "mp4" : "jpg";

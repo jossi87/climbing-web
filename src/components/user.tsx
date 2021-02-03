@@ -4,7 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import Chart from './common/chart/chart';
 import AccordionContainer from './common/accordion-container/accordion-container'
 import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
-import { Icon, List, Label, Header, Segment, Divider, Image, Button, Checkbox, Dropdown, ButtonGroup } from 'semantic-ui-react';
+import { Icon, List, Label, Header, Segment, Divider, Image, Button, Checkbox, ButtonGroup } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getUser, getUsersTicks, numberWithCommas, postUser, postUserRegion } from '../api';
 import { saveAs } from 'file-saver';
@@ -117,7 +117,7 @@ const User = () => {
         <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
       </MetaTags>
       <Segment>
-        <ButtonGroup floated="right" size="mini">
+        <ButtonGroup floated="right" size="mini" basic>
           {isAuthenticated && !userId &&
             <Button loading={isSaving} icon labelPosition="left" onClick={() => {
               setIsSaving(true);
@@ -139,6 +139,10 @@ const User = () => {
             <Icon name="list"/>
             To-do list
           </Button>
+          {(data.numImageTags>0 || data.numVideoTags>0) && <Button icon labelPosition="left" as={Link} to={`/user/media/${data.id}`}>
+            <Icon name="images"/>
+            Media
+          </Button>}
         </ButtonGroup>
         <Header as="h2">
           {data.picture && <Image size="small" circular src={data.picture}/>} {data.name}
