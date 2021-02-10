@@ -41,7 +41,7 @@ const SectorListItem = ({ history, problem, showType, orderByGrade } ) => {
     comment = <small><i style={{color: "gray"}}>{' '}{problem.comment}{' '}</i></small>;
   }
   return (
-    <List.Item style={{backgroundColor: problem.ticked? "#d9e778" : "#ffffff"}} key={problem.id} onClick={() => history.push(`/problem/${problem.id}`)}>
+    <List.Item style={{backgroundColor: problem.ticked? "#d2f8d2" : "#ffffff"}} key={problem.id} onClick={() => history.push(`/problem/${problem.id}`)}>
       <List.Header>
         {problem.danger && <Icon color="red" name="warning"/>}
         {!orderByGrade && `#${problem.nr} `}
