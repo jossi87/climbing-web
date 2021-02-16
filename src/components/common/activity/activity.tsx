@@ -16,6 +16,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
   const [activityTypeComments, setActivityTypeComments] = useLocalStorage("activity_type_comments", true);
   const [activityTypeMedia, setActivityTypeMedia] = useLocalStorage("activity_type_media", true);
 
+  //@ts-ignore
   useEffect(() => {
     if (!loading) {
       let canceled = false;

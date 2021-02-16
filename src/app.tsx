@@ -123,7 +123,8 @@ const App = () => {
                   <List link inverted>
                     <List.Item as='a' href='/sites/ice'>Map</List.Item>
                     <br/>
-                    <List.Item as='a' href='https://ic.brattelinjer.no' rel='noopener' target='_blank'>Rogaland</List.Item>
+                    <List.Item as='a' href='https://is.brattelinjer.no' rel='noopener' target='_blank'>Rogaland</List.Item>
+                    <List.Item as='a' href='https://is.forer.no' rel='noopener' target='_blank'>Fredrikstad</List.Item>
                   </List>
                 </Grid.Column>
                 <Grid.Column width={4}>

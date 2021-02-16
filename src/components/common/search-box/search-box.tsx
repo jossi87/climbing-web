@@ -12,6 +12,7 @@ const SearchBox = ({ children, ...searchProps} ) => {
   const { accessToken } = useAuth0();
   let history = useHistory();
 
+  //@ts-ignore
   useEffect(() => {
     let canceled = false;
     setLoading(true);
