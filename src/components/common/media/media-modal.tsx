@@ -59,7 +59,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext,
       content = <Image style={style.img}><Svg useBlueNotRed={useBlueNotRed} thumb={false} style={{}} m={m} close={onClose}/></Image>;
     }
     else {
-      content = <Image style={style.img} alt={m.mediaMetadata.alt} src={getImageUrl(m.id, 720)} />
+      content = <Image style={style.img} alt={m.mediaMetadata.alt} src={getImageUrl(m.id, 1080)} />
     }
   }
   else {
