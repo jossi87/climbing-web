@@ -70,7 +70,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext,
       content = <ReactPlayer
         style={style.video}
         ref={player => myPlayer = player }
-        url={getBuldreinfoMediaUrl(m.id, true)}
+        url={[getBuldreinfoMediaUrl(m.id, "webm"), getBuldreinfoMediaUrl(m.id, "mp4")]}
         controls={true}
         playing={true}
         onDuration={duration => myPlayer.seekTo(m.t/duration)}
@@ -101,7 +101,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext,
         {!m.embedUrl && <Button icon="download" onClick={() => {
           let isMovie = m.idType!==1;
           let ext = isMovie? "mp4" : "jpg";
-          saveAs(getBuldreinfoMediaUrl(m.id, isMovie), "buldreinfo_brattelinjer_" + m.id + "." + ext)}
+          saveAs(getBuldreinfoMediaUrl(m.id, ext), "buldreinfo_brattelinjer_" + m.id + "." + ext)}
         }/>}
         <Modal trigger={<Button icon="info" />}>
           <Modal.Content image>

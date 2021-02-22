@@ -3,7 +3,7 @@ import fetch from 'isomorphic-fetch';
 export function getBaseUrl(): string {
   var origin = window.origin;
   if (origin === 'http://localhost:3000') {
-    origin = 'https://brattelinjer.no';
+    origin = 'https://buldreinfo.com';
   }
   return origin;
 }
@@ -29,11 +29,15 @@ export function getImageUrl(id: number, minDimention?: number): string {
   return getUrl(`/images?id=${id}`);
 }
 
-export function getBuldreinfoMediaUrl(id: number, isMovie: boolean): string {
-  if (isMovie) {
+export function getBuldreinfoMediaUrl(id: number, suffix: string): string {
+  if (suffix==='jpg') {
+    return getBaseUrl() + '/buldreinfo_media/original/jpg/' + (Math.floor(id/100)*100) + "/" + id + '.jpg';
+  } else if (suffix==='webm') {
+    return getBaseUrl() + '/buldreinfo_media/webm/' + (Math.floor(id/100)*100) + "/" + id + '.webm';
+  } else if (suffix==='mp4') {
     return getBaseUrl() + '/buldreinfo_media/mp4/' + (Math.floor(id/100)*100) + "/" + id + '.mp4';
   }
-  return getBaseUrl() + '/buldreinfo_media/original/jpg/' + (Math.floor(id/100)*100) + "/" + id + '.jpg';
+  return getBaseUrl() + '/buldreinfo_media/webp/' + (Math.floor(id/100)*100) + "/" + id + '.webp';
 }
 
 export function getAreaPdfUrl(accessToken: string, id: number): string {
