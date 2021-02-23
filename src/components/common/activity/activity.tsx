@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Label, Icon, Image, Feed, Segment, Placeholder, Button, Dropdown } from 'semantic-ui-react';
+import LazyLoad from 'react-lazyload';
 import { useLocalStorage } from '../../../utils/use-local-storage';
 import { useAuth0 } from '../../../utils/react-auth0-spa';
 import { getActivity, getImageUrl } from '../../../api';
@@ -40,6 +41,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
     if (!activityTypeComments) setActivityTypeComments(true);
     if (!activityTypeMedia) setActivityTypeMedia(true);
   }
+  const imgStyle = {height: "fit-content", maxHeight: '80px', objectFit: 'none'};
 
   return (
     <>
@@ -139,12 +141,12 @@ const Activity = ({ metadata, idArea, idSector }) => {
                       {a.description}
                     </Feed.Extra>
                     {a.media &&
-                      <>
+                      <LazyLoad>
                         <Feed.Extra images as={Link} to={`/problem/${a.problemId}`}>
-                          {a.media.map((m, i) => (<img key={i} src={getImageUrl(m.id, 115)}/>))}
+                          {a.media.map((m, i) => (<Image key={i} style={imgStyle} src={getImageUrl(m.id, 85)}/>))}
                         </Feed.Extra>
                         <br/>
-                      </>
+                      </LazyLoad>
                     }
                     {a.users &&
                       <Feed.Meta>
@@ -182,9 +184,11 @@ const Activity = ({ metadata, idArea, idSector }) => {
                     <Feed.Summary style={{marginBottom: '3px'}}>
                       {summary}on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}<LockSymbol lockedAdmin={a.problemLockedAdmin} lockedSuperadmin={a.problemLockedSuperadmin} /><Feed.Date>{a.timeAgo}</Feed.Date>
                     </Feed.Summary>
-                    <Feed.Extra images as={Link} to={`/problem/${a.problemId}`}>
-                      {a.media.map((m, i) => (<Image key={i} src={getImageUrl(m.id, 115)} onError={i => i.target.src='/png/video_placeholder.png'} />))}
-                    </Feed.Extra>
+                    <LazyLoad>
+                      <Feed.Extra images as={Link} to={`/problem/${a.problemId}`}>
+                        {a.media.map((m, i) => (<Image key={i} style={imgStyle} src={getImageUrl(m.id, 85)} onError={i => i.target.src='/png/video_placeholder.png'} />))}
+                      </Feed.Extra>
+                    </LazyLoad>
                   </Feed.Content>
                 </Feed.Event>
               )
