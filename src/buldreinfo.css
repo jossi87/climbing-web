@@ -41,10 +41,20 @@
 .buldreinfo-svg-ring-blue {
   fill: #0000FF;
 }
+.buldreinfo-svg-rect {
+  fill: #202020;
+}
 .buldreinfo-svg-routenr {
   fill: #FFFFFF;
   text-anchor: middle;
   line-height: 1;
+  font-weight: bolder;
+}
+.buldreinfo-svg-routenr-ticked {
+  fill: #21ba45;
+  text-anchor: middle;
+  line-height: 1;
+  font-weight: bolder;
 }
 .buldreinfo-svg-pointer {
   cursor: pointer;
