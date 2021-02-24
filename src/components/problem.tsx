@@ -7,7 +7,7 @@ import Media from './common/media/media';
 import { Button, Grid, Breadcrumb, Tab, Label, Icon, Comment, Header, Segment, Table, Feed } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
 import { useAuth0 } from '../utils/react-auth0-spa';
-import { getAreaPdfUrl, getSectorPdfUrl, getProblemPdfUrl, getProblem, getTodo, postComment, postTodo } from '../api';
+import { getAreaPdfUrl, getSectorPdfUrl, getProblemPdfUrl, getProblem, postComment, postTodo } from '../api';
 import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
 import Linkify from 'react-linkify';
@@ -111,7 +111,8 @@ const Problem = () => {
           <Media isAdmin={data.metadata.isAdmin}
             removeMedia={onRemoveMedia}
             media={data.media}
-            useBlueNotRed={data.metadata.useBlueNotRed} />
+            useBlueNotRed={data.metadata.useBlueNotRed}
+            optProblemId={data.id} />
         </Tab.Pane>
     });
   }
@@ -369,7 +370,7 @@ const Problem = () => {
                         <Feed.Summary>
                           <Feed.Label>{s.grade}</Feed.Label> 
                           <Feed.Date>{s.description}</Feed.Date>
-                          {s.media && <Feed.Extra><Media isAdmin={data.metadata.isAdmin} removeMedia={() => window.location.reload()} media={s.media} useBlueNotRed={data.metadata.useBlueNotRed} /></Feed.Extra>}
+                          {s.media && <Feed.Extra><Media isAdmin={data.metadata.isAdmin} removeMedia={() => window.location.reload()} media={s.media} useBlueNotRed={data.metadata.useBlueNotRed} optProblemId={null} /></Feed.Extra>}
                         </Feed.Summary>
                       </Feed.Content>
                     </Feed.Event>

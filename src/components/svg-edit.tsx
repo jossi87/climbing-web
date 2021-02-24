@@ -250,25 +250,25 @@ const SvgEdit = () => {
     if (p.c) {
       anchors.push(
         <g key={anchors.length} className="buldreinfo-svg-edit-opacity">
-          <line className={metadata.useBlueNotRed? "buldreinfo-svg-pointer buldreinfo-svg-route-blue" : "buldreinfo-svg-pointer buldreinfo-svg-route-red"} x1={a[i-1].x} y1={a[i-1].y} x2={p.c[0].x} y2={p.c[0].y} strokeWidth={0.0026*w} strokeDasharray={0.003*w}/>
-          <line className={metadata.useBlueNotRed? "buldreinfo-svg-pointer buldreinfo-svg-route-blue" : "buldreinfo-svg-pointer buldreinfo-svg-route-red"} x1={p.x} y1={p.y} x2={p.c[1].x} y2={p.c[1].y} strokeWidth={0.0026*w} strokeDasharray={0.003*w}/>
-          <circle className={metadata.useBlueNotRed? "buldreinfo-svg-pointer buldreinfo-svg-ring-blue" : "buldreinfo-svg-pointer buldreinfo-svg-ring-red"} cx={p.c[0].x} cy={p.c[0].y} r={0.003*w} onMouseDown={() => setCurrDraggedCubic(i, 0)}/>
-          <circle className={metadata.useBlueNotRed? "buldreinfo-svg-pointer buldreinfo-svg-ring-blue" : "buldreinfo-svg-pointer buldreinfo-svg-ring-red"} cx={p.c[1].x} cy={p.c[1].y} r={0.003*w} onMouseDown={() => setCurrDraggedCubic(i, 1)}/>
+          <line className={"buldreinfo-svg-pointer"} style={{fill: "none", stroke: "#E2011A"}} x1={a[i-1].x} y1={a[i-1].y} x2={p.c[0].x} y2={p.c[0].y} strokeWidth={0.0026*w} strokeDasharray={0.003*w}/>
+          <line className={"buldreinfo-svg-pointer"} style={{fill: "none", stroke: "#E2011A"}} x1={p.x} y1={p.y} x2={p.c[1].x} y2={p.c[1].y} strokeWidth={0.0026*w} strokeDasharray={0.003*w}/>
+          <circle className={"buldreinfo-svg-pointer"} fill="#E2011A" cx={p.c[0].x} cy={p.c[0].y} r={0.003*w} onMouseDown={() => setCurrDraggedCubic(i, 0)}/>
+          <circle className={"buldreinfo-svg-pointer"} fill="#E2011A" cx={p.c[1].x} cy={p.c[1].y} r={0.003*w} onMouseDown={() => setCurrDraggedCubic(i, 1)}/>
         </g>
       );
     }
     return (
       <g key={i} className={"buldreinfo-svg-ring-group" + (activePoint === i ? "  is-active" : "")}>
         {anchors}
-        <circle className={metadata.useBlueNotRed? "buldreinfo-svg-pointer buldreinfo-svg-ring-blue" : "buldreinfo-svg-pointer buldreinfo-svg-ring-red"} cx={p.x} cy={p.y} r={0.003*w} onMouseDown={() => setCurrDraggedPoint(i)}/>
+        <circle className={"buldreinfo-svg-pointer"} fill="#E2011A" cx={p.x} cy={p.y} r={0.003*w} onMouseDown={() => setCurrDraggedPoint(i)}/>
       </g>
     );
   });
   anchors.map((a, i) => {
-    circles.push(<circle key={i} className={metadata.useBlueNotRed? "buldreinfo-svg-ring-blue" : "buldreinfo-svg-ring-red"} cx={a.x} cy={a.y} r={0.006*w} />);
+    circles.push(<circle key={i} fill="#E2011A" cx={a.x} cy={a.y} r={0.006*w} />);
   });
   const path = generatePath();
-  const myTexts = texts.map((t, i) => (<text key={i} x={t.x} y={t.y} fontSize="5em" fill={metadata.useBlueNotRed? "blue" : "red"}>{t.txt}</text>));
+  const myTexts = texts.map((t, i) => (<text key={i} x={t.x} y={t.y} fontSize="5em" fill={"red"}>{t.txt}</text>));
   return (
     <Container onMouseUp={cancelDragging} onMouseLeave={cancelDragging}>
       <Segment style={{minHeight: '130px'}}>
@@ -311,7 +311,7 @@ const SvgEdit = () => {
       <svg viewBox={"0 0 " + w + " " + h} onClick={handleOnClick} onMouseMove={handleMouseMove} width="100%" height="100%">
         <image ref={imageRef} xlinkHref={getImageUrl(mediaId, null)} width="100%" height="100%"/>
         {parseReadOnlySvgs(readOnlySvgs, w, h, metadata.useBlueNotRed)}
-        <path className={metadata.useBlueNotRed? "buldreinfo-svg-route-blue" : "buldreinfo-svg-route-red"} d={path} strokeWidth={0.002*w}/>
+        <path style={{fill: "none", stroke: "#E2011A"}} d={path} strokeWidth={0.002*w}/>
         {circles}
         {myTexts}
       </svg>

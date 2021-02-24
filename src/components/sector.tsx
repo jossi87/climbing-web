@@ -122,7 +122,7 @@ const Sector = () => {
       render: () => <Tab.Pane><Media isAdmin={data.metadata.isAdmin} removeMedia={(idMediaToRemove) => {
         let newMedia = data.media.filter(m => m.id!=idMediaToRemove);
         setData(prevState => ({ ...prevState, media: newMedia }));
-      }} media={data.media} useBlueNotRed={data.metadata.useBlueNotRed} /></Tab.Pane>
+      }} media={data.media} useBlueNotRed={data.metadata.useBlueNotRed} optProblemId={null} /></Tab.Pane>
   });
   }
   if (markers.length>0) {

@@ -25,12 +25,12 @@ function generateSvgNrAndAnchor(path, nr, hasAnchor, w, h, useBlueNotRed) {
   if (y > (h-r)) y = h-r;
   var anchor = null;
   if (hasAnchor === true) {
-    anchor = <circle className={useBlueNotRed? "buldreinfo-svg-ring-blue" : "buldreinfo-svg-ring-red"} cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.006*w}/>
+    anchor = <circle fill="#E2011A" cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.006*w}/>
   }
   return (
-    <g className="buldreinfo-svg-opacity">
-      <circle className={useBlueNotRed? "buldreinfo-svg-ring-blue" : "buldreinfo-svg-ring-red"} cx={x} cy={y} r={r}/>
-      <text className="buldreinfo-svg-routenr" x={x} y={y} fontSize={0.02*w}>{nr}</text>
+    <g className="buldreinfo-svg-opacity-low">
+      <rect className="buldreinfo-svg-rect" x={x-r} y={y-r} width={r*2} height={r*1.9} rx={r/3}/>
+      <text className="buldreinfo-svg-routenr" fill="#FFFFFF" x={x} y={y} fontSize={0.015*w} dy=".3em">{nr}</text>
       {anchor}
     </g>
   );
@@ -54,12 +54,12 @@ export function parsePath(d) {
 export function parseReadOnlySvgs(readOnlySvgs, w, h, useBlueNotRed) {
   const shapes = [];
   for (let svg of readOnlySvgs) {
-    shapes.push(<path key={shapes.length} d={svg.path} className={useBlueNotRed? "buldreinfo-svg-opacity buldreinfo-svg-route-blue" : "buldreinfo-svg-opacity buldreinfo-svg-route-red"} strokeWidth={0.003*w} strokeDasharray={0.006*w}/>);
+    shapes.push(<path key={shapes.length} d={svg.path} className={"buldreinfo-svg-opacity-low"} style={{fill: "none", stroke: "#E2011A"}} strokeWidth={0.003*w} strokeDasharray={0.006*w}/>);
     const commands = parseSVG(svg.path);
     makeAbsolute(commands); // Note: mutates the commands in place!
     shapes.push(generateSvgNrAndAnchor(commands, svg.nr, svg.hasAnchor, w, h, useBlueNotRed));
     svg.anchors.map((a, i) => {
-      shapes.push(<circle key={i} className={useBlueNotRed? "buldreinfo-svg-opacity buldreinfo-svg-ring-blue" : "buldreinfo-svg-opacity buldreinfo-svg-ring-red"} cx={a.x} cy={a.y} r={0.006*w} />);
+      shapes.push(<circle key={i} className="buldreinfo-svg-opacity-low" fill="#E2011A" cx={a.x} cy={a.y} r={0.006*w} />);
     });
   }
   return shapes;
