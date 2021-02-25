@@ -118,7 +118,7 @@ const Svg = ({ style, close, m, thumb, useBlueNotRed, optProblemId }) => {
             </feMerge>
           </filter>
         </defs>
-        <text dominantBaseline="hanging" textAnchor="start" filter="url(#solid)" fontSize={0.02*scale} x={0} y={0} fill="white">{text}</text>
+        <text dominantBaseline="hanging" filter="url(#solid)" fontSize={0.02*scale} x={0} y={5} fontWeight="bolder" fill="white">{text}</text>
       </>
     )
   }
