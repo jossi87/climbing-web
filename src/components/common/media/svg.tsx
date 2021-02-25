@@ -90,26 +90,51 @@ const Svg = ({ style, close, m, thumb, useBlueNotRed, optProblemId }) => {
     });
   }
   
-  let title;
+  let info;
   if (!optProblemId) {
     optProblemId = 0;
   } else if (optProblemId>0) {
     let svg = m.svgs.filter(x => x.problemId===optProblemId)[0];
-    title = <text fontSize={0.02*scale} x={20} y={m.height-20} fill="white">#{svg.nr} {svg.problemName} ({svg.problemGrade})</text>
+    let text = `#${svg.nr} - ${svg.problemName} [${svg.problemGrade}]`;
+    if (!svg.primary) {
+      text += " - Trad"
+    }
+    if (svg.isTicked) {
+      text += " - Ticked";
+    } else if (svg.isTodo) {
+      text += " - In TODO-list";
+    }
+    if (svg.isDangerous) {
+      text += " - Marked as dangerous";
+    }
+    info = (
+      <>
+        <defs>
+          <filter x="0" y="0" width="1" height="1" id="solid">
+            <feFlood floodColor="#202020" result="bg" />
+            <feMerge>
+              <feMergeNode in="bg"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+        <text dominantBaseline="hanging" textAnchor="start" filter="url(#solid)" fontSize={0.02*scale} x={0} y={0} fill="white">{text}</text>
+      </>
+    )
   }
   return (
     <>
       <canvas className="buldreinfo-svg-canvas-ie-hack" width={m.width} height={m.height} style={style}></canvas>
-      <svg className="buldreinfo-svg" viewBox={"0 0 " + m.width + " " + m.height} preserveAspectRatio="xMidYMid meet" onClick={(e: React.MouseEvent<SVGSVGElement>) => {
+      <svg overflow="visible" className="buldreinfo-svg" viewBox={"0 0 " + m.width + " " + m.height} preserveAspectRatio="xMidYMid meet" onClick={(e: React.MouseEvent<SVGSVGElement>) => {
         if (e.target instanceof SVGSVGElement && close) {
           close();
         }
       }}>
         <image xlinkHref={getImageUrl(m.id, m.embedUrl)} width="100%" height="100%"/>
-        {title}
         <g key={optProblemId} className={optProblemId===0 && "buldreinfo-svg-sibling-fade"}>
           {generateShapes(m.svgs, optProblemId, m.width, m.height)}
         </g>
+        {info}
       </svg>
     </>
   )
