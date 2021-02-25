@@ -91,9 +91,7 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
   }
   
   let info;
-  if (!optProblemId) {
-    optProblemId = 0;
-  } else if (optProblemId>0) {
+  if (optProblemId && optProblemId>0 && m.svgs.filter(x => x.problemId===optProblemId).length===1) {
     let svg = m.svgs.filter(x => x.problemId===optProblemId)[0];
     let text = `#${svg.nr} - ${svg.problemName} [${svg.problemGrade}]`;
     if (!svg.primary) {
@@ -121,6 +119,8 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
         <text dominantBaseline="hanging" filter="url(#solid)" fontSize={0.02*scale} x={0} y={5} fontWeight="bolder" fill="white">{text}</text>
       </>
     )
+  } else {
+    optProblemId = 0;
   }
   return (
     <>
