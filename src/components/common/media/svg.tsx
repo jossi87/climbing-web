@@ -3,7 +3,7 @@ import { parseSVG, makeAbsolute } from 'svg-path-parser';
 import { getImageUrl } from '../../../api';
 import { useHistory } from 'react-router-dom';
 
-const Svg = ({ style, close, m, thumb, useBlueNotRed, optProblemId }) => {
+const Svg = ({ style, close, m, thumb, optProblemId }) => {
   let history = useHistory();
   const scale = Math.max(m.width, m.height);
 

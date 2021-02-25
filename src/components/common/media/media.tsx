@@ -10,7 +10,7 @@ import { LoadingAndRestoreScroll } from '../widgets/widgets';
 
 const style = {objectFit: 'cover', position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, width: '100%', height: '100%'};
 
-const Media = ({ media, removeMedia, useBlueNotRed, isAdmin, optProblemId }) => {
+const Media = ({ media, removeMedia, isAdmin, optProblemId }) => {
   let history = useHistory();
   const [m, setM] = useState(null)
   const [autoPlayVideo, setAutoPlayVideo] = useState(false)
@@ -107,7 +107,6 @@ const Media = ({ media, removeMedia, useBlueNotRed, isAdmin, optProblemId }) => 
           gotoPrev={gotoPrev}
           gotoNext={gotoNext}
           playVideo={playVideo}
-          useBlueNotRed={useBlueNotRed}
           optProblemId={optProblemId}
         />
       }
@@ -115,7 +114,7 @@ const Media = ({ media, removeMedia, useBlueNotRed, isAdmin, optProblemId }) => 
         {media.map((x, i) => {
           let content;
           if (x.svgs) {
-            content = <Svg close={null} useBlueNotRed={useBlueNotRed} thumb={true} m={x} key={i} style={style} optProblemId={optProblemId}/>;
+            content = <Svg close={null} thumb={true} m={x} key={i} style={style} optProblemId={optProblemId}/>;
           }
           else {
             content = <Image alt={x.description} key={i} style={style} src={getImageUrl(x.id, 205)} onError={i => i.target.src='/png/video_placeholder.png'} />;

@@ -609,12 +609,6 @@ export function postTodo(accessToken: string, problemId: number): Promise<any> {
   });
 }
 
-export function postUser(accessToken: string, useBlueNotRed: boolean): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/user?useBlueNotRed=${useBlueNotRed}`,{
-    method: 'POST'
-  });
-}
-
 export function postUserRegion(accessToken: string, regionId: number, del: boolean): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/user/regions?regionId=${regionId}&delete=${del}`,{
     method: 'POST'

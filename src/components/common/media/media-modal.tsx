@@ -50,13 +50,13 @@ const style = {
   },
 }
 
-const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext, playVideo, useBlueNotRed, autoPlayVideo, optProblemId }) => {
+const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext, playVideo, autoPlayVideo, optProblemId }) => {
   let history = useHistory();
   let myPlayer;
   let content;
   if (m.idType===1) {
     if (m.svgs) {
-      content = <Image style={style.img}><Svg useBlueNotRed={useBlueNotRed} thumb={false} style={{}} m={m} close={onClose} optProblemId={optProblemId}/></Image>;
+      content = <Image style={style.img}><Svg thumb={false} style={{}} m={m} close={onClose} optProblemId={optProblemId}/></Image>;
     }
     else {
       content = <Image style={style.img} alt={m.mediaMetadata.alt} src={getImageUrl(m.id, 1080)} />

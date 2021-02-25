@@ -48,7 +48,6 @@ const UserMedia = () => {
       <Media isAdmin={false}
         removeMedia={null}
         media={data.media}
-        useBlueNotRed={data.metadata.useBlueNotRed}
         optProblemId={null} />
     </Segment>
   );

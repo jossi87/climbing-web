@@ -4,9 +4,9 @@ import { Link, useParams } from 'react-router-dom';
 import Chart from './common/chart/chart';
 import AccordionContainer from './common/accordion-container/accordion-container'
 import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
-import { Icon, List, Label, Header, Segment, Divider, Image, Button, Checkbox, ButtonGroup } from 'semantic-ui-react';
+import { Icon, List, Label, Header, Segment, Divider, Image, Button, ButtonGroup } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
-import { getUser, getUsersTicks, numberWithCommas, postUser, postUserRegion } from '../api';
+import { getUser, getUsersTicks, numberWithCommas, postUserRegion } from '../api';
 import { saveAs } from 'file-saver';
 
 interface UserParams {
@@ -155,27 +155,6 @@ const User = () => {
           <Label color='blue' image><Icon name='video' />{numberWithCommas(data.numVideoTags)}<Label.Detail>Tag</Label.Detail></Label>
           <Label color='violet' image><Icon name='video' />{numberWithCommas(data.numVideosCreated)}<Label.Detail>Captured</Label.Detail></Label>
         </Label.Group>
-        {isAuthenticated && !userId &&
-          <>
-            <Divider/>
-            <Checkbox
-              checked={data.metadata.useBlueNotRed}
-              label='Use blue instead of red lines on schematics'
-              onClick={() => {
-                let metadata = data.metadata;
-                metadata.useBlueNotRed = !metadata.useBlueNotRed;
-                postUser(accessToken, metadata.useBlueNotRed)
-                .then(() => {
-                  setData(prevState => ({ ...prevState, metadata }));
-                  order('date');
-                })
-                .catch((error) => {
-                  console.warn(error);
-                });
-              }}
-            />
-          </>
-        }
         {isAuthenticated && !userId && data.userRegions &&
           <>
             <Divider/>

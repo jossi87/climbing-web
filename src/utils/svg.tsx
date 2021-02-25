@@ -1,7 +1,7 @@
 import React from 'react';
 import { parseSVG, makeAbsolute } from 'svg-path-parser';
 
-function generateSvgNrAndAnchor(path, nr, hasAnchor, w, h, useBlueNotRed) {
+function generateSvgNrAndAnchor(path, nr, hasAnchor, w, h) {
   var ixNr;
   var maxY = 0;
   var ixAnchor;
@@ -51,13 +51,13 @@ export function parsePath(d) {
   return [];
 }
 
-export function parseReadOnlySvgs(readOnlySvgs, w, h, useBlueNotRed) {
+export function parseReadOnlySvgs(readOnlySvgs, w, h) {
   const shapes = [];
   for (let svg of readOnlySvgs) {
     shapes.push(<path key={shapes.length} d={svg.path} className={"buldreinfo-svg-opacity-low"} style={{fill: "none", stroke: "#E2011A"}} strokeWidth={0.003*w} strokeDasharray={0.006*w}/>);
     const commands = parseSVG(svg.path);
     makeAbsolute(commands); // Note: mutates the commands in place!
-    shapes.push(generateSvgNrAndAnchor(commands, svg.nr, svg.hasAnchor, w, h, useBlueNotRed));
+    shapes.push(generateSvgNrAndAnchor(commands, svg.nr, svg.hasAnchor, w, h));
     svg.anchors.map((a, i) => {
       shapes.push(<circle key={i} className="buldreinfo-svg-opacity-low" fill="#E2011A" cx={a.x} cy={a.y} r={0.006*w} />);
     });
