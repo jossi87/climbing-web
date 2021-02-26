@@ -67,7 +67,8 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
       if (y > (h-r)) y = h-r;
       let anchors = [];
       if (svg.hasAnchor) {
-        anchors.push(<circle key={key} fill={groupColor} cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.006*scale}/>);
+        anchors.push(<circle key={key+"_1"} fill={"#000000"} cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.005*scale}/>);
+        anchors.push(<circle key={key+"_2"} fill={groupColor} cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.004*scale}/>);
       }
       if (svg.anchors) {
         JSON.parse(svg.anchors).map((a, i) => {
