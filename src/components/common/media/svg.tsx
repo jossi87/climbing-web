@@ -4,8 +4,9 @@ import { getImageUrl } from '../../../api';
 import { useHistory } from 'react-router-dom';
 
 const Svg = ({ style, close, m, thumb, optProblemId }) => {
+  const { outerWidth, outerHeight } = window;
   let history = useHistory();
-  const scale = Math.max(m.width, m.height);
+  const scale = Math.max(m.width, m.height, outerWidth, outerHeight);
 
   function generateShapes(svgs, svgProblemId, w, h) {
     return svgs.map((svg, key) => {
@@ -82,7 +83,7 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
           <path d={svg.path} style={{fill: "none", stroke: "#000000"}} strokeWidth={0.003*scale*factor} strokeDasharray={strokeDasharray}/>
           <path d={svg.path} style={{fill: "none", stroke: groupColor}} strokeWidth={0.0015*scale*factor} strokeDasharray={strokeDasharray}/>
           <rect className="buldreinfo-svg-rect" x={x-r} y={y-r} width={r*2} height={r*1.9} rx={r/3}/>
-          <text className="buldreinfo-svg-routenr" fill={textColor} x={x} y={y} fontSize={0.015*scale} dy=".3em">{svg.nr}</text>
+          <text dominantBaseline="central" textAnchor="middle" fontSize={0.015*scale} fontWeight="bolder" fill={textColor} x={x} y={y}>{svg.nr}</text>
           {anchors}
           {texts}
         </g>
@@ -103,22 +104,9 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
       text += " - In TODO-list";
     }
     if (svg.isDangerous) {
-      text += " - Marked as dangerous";
+      text += " - Flagged as dangerous";
     }
-    info = (
-      <>
-        <defs>
-          <filter x="0" y="0" width="1" height="1" id="solid">
-            <feFlood floodColor="#202020" result="bg" />
-            <feMerge>
-              <feMergeNode in="bg"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
-        <text dominantBaseline="hanging" filter="url(#solid)" fontSize={0.02*scale} x={0} y={5} fontWeight="bolder" fill="white">{text}</text>
-      </>
-    )
+    info = <text xmlSpace="preserve" dominantBaseline="text-before-edge" filter="url(#solid)" fontSize={0.02*scale} fontWeight="bolder" fill="white"> {text} </text>;
   } else {
     optProblemId = 0;
   }
@@ -130,6 +118,12 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
           close();
         }
       }}>
+        <defs>
+          <filter id="solid" x="0" y="0" width="1" height="1">
+            <feFlood flood-color="#202020"/>
+            <feComposite in="SourceGraphic"/>
+          </filter>
+        </defs>
         <image xlinkHref={getImageUrl(m.id, m.embedUrl)} width="100%" height="100%"/>
         <g key={optProblemId} className={optProblemId===0 && "buldreinfo-svg-sibling-fade"}>
           {generateShapes(m.svgs, optProblemId, m.width, m.height)}
