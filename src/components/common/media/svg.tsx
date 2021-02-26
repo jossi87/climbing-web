@@ -6,7 +6,8 @@ import { useHistory } from 'react-router-dom';
 const Svg = ({ style, close, m, thumb, optProblemId }) => {
   const { outerWidth, outerHeight } = window;
   let history = useHistory();
-  const scale = Math.max(m.width, m.height, outerWidth, outerHeight);
+  const minWindowScale = Math.min(outerWidth, outerHeight);
+  const scale = Math.max(m.width, m.height, minWindowScale);
 
   function generateShapes(svgs, svgProblemId, w, h) {
     return svgs.map((svg, key) => {
