@@ -114,7 +114,7 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
   }
   return (
     <>
-      <canvas width={m.width} height={m.height} style={style}></canvas>
+      <canvas className="buldreinfo-svg-canvas" width={m.width} height={m.height} style={style}></canvas>
       <svg overflow="visible" className="buldreinfo-svg" viewBox={"0 0 " + m.width + " " + m.height} preserveAspectRatio="xMidYMid meet" onClick={(e: React.MouseEvent<SVGSVGElement>) => {
         if (e.target instanceof SVGSVGElement && close) {
           close();

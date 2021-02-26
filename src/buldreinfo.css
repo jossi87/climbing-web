@@ -11,6 +11,13 @@
 	font-family: 'object-fit: scale-down';
 }
 
+.buldreinfo-svg-canvas {
+  display: block;
+  width: 100%;
+  visibility: hidden;
+  max-width: 100vw;
+  max-height: 100vh;
+}
 .buldreinfo-svg {
   position: absolute;
   top: 0;
