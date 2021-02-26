@@ -28,10 +28,12 @@ function generateSvgNrAndAnchor(path, nr, hasAnchor, w, h) {
     anchor = <circle fill="#E2011A" cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.006*w}/>
   }
   return (
-    <g className="buldreinfo-svg-opacity-low">
-      <rect className="buldreinfo-svg-rect" x={x-r} y={y-r} width={r*2} height={r*1.9} rx={r/3}/>
-      <text className="buldreinfo-svg-routenr" fill="#FFFFFF" x={x} y={y} fontSize={0.015*w} dy=".3em">{nr}</text>
-      {anchor}
+    <g className="buldreinfo-svg-edit-opacity">
+      <rect fill="#000000" x={x-r} y={y-r} width={r*2} height={r*1.9} rx={r/3}/>
+      <text dominantBaseline="central" textAnchor="middle" fontSize={0.015*w} fontWeight="bolder" fill="#FFFFFF" x={x} y={y}>{nr}</text>
+      {hasAnchor && (
+        <circle fill={"#000000"} cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.005*w}/>
+      )}
     </g>
   );
 }
@@ -54,12 +56,12 @@ export function parsePath(d) {
 export function parseReadOnlySvgs(readOnlySvgs, w, h) {
   const shapes = [];
   for (let svg of readOnlySvgs) {
-    shapes.push(<path key={shapes.length} d={svg.path} className={"buldreinfo-svg-opacity-low"} style={{fill: "none", stroke: "#E2011A"}} strokeWidth={0.003*w} strokeDasharray={0.006*w}/>);
+    shapes.push(<path key={shapes.length} d={svg.path} className={"buldreinfo-svg-edit-opacity"} style={{fill: "none", stroke: "#000000"}} strokeWidth={0.003*w} strokeDasharray={0.006*w}/>);
     const commands = parseSVG(svg.path);
     makeAbsolute(commands); // Note: mutates the commands in place!
     shapes.push(generateSvgNrAndAnchor(commands, svg.nr, svg.hasAnchor, w, h));
     svg.anchors.map((a, i) => {
-      shapes.push(<circle key={i} className="buldreinfo-svg-opacity-low" fill="#E2011A" cx={a.x} cy={a.y} r={0.006*w} />);
+      shapes.push(<circle key={i} className="buldreinfo-svg-edit-opacity" fill="#000000" cx={a.x} cy={a.y} r={0.006*w} />);
     });
   }
   return shapes;

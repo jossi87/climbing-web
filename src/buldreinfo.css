@@ -11,13 +11,6 @@
 	font-family: 'object-fit: scale-down';
 }
 
-.buldreinfo-svg-canvas-ie-hack {
-  display: block;
-  width: 100%;
-  visibility: hidden;
-  max-width: 100vw;
-  max-height: 100vh;
-}
 .buldreinfo-svg {
   position: absolute;
   top: 0;
@@ -26,9 +19,6 @@
   height: 100%;
   max-width: 100vw;
   max-height: 100vh;
-}
-.buldreinfo-svg-rect {
-  fill: #202020;
 }
 .buldreinfo-svg-routenr {
   text-anchor: middle;

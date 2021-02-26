@@ -258,9 +258,9 @@ const SvgEdit = () => {
       );
     }
     return (
-      <g key={i} className={"buldreinfo-svg-ring-group" + (activePoint === i ? "  is-active" : "")}>
+      <g key={i}>
         {anchors}
-        <circle className={"buldreinfo-svg-pointer"} fill="#E2011A" cx={p.x} cy={p.y} r={0.003*w} onMouseDown={() => setCurrDraggedPoint(i)}/>
+        <circle className={"buldreinfo-svg-pointer"} fill="#FF0000" cx={p.x} cy={p.y} r={0.003*w} onMouseDown={() => setCurrDraggedPoint(i)}/>
       </g>
     );
   });
@@ -311,7 +311,7 @@ const SvgEdit = () => {
       <svg viewBox={"0 0 " + w + " " + h} onClick={handleOnClick} onMouseMove={handleMouseMove} width="100%" height="100%">
         <image ref={imageRef} xlinkHref={getImageUrl(mediaId, null)} width="100%" height="100%"/>
         {parseReadOnlySvgs(readOnlySvgs, w, h)}
-        <path style={{fill: "none", stroke: "#E2011A"}} d={path} strokeWidth={0.002*w}/>
+        <path style={{fill: "none", stroke: "#FF0000"}} d={path} strokeWidth={0.002*w}/>
         {circles}
         {myTexts}
       </svg>

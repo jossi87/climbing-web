@@ -31,7 +31,7 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
         case 1: groupColor='#00FF00'; break;
         case 2: groupColor='#0000FF'; break;
         case 3: groupColor='#FFFF00'; break;
-        case 4: groupColor='#E2011A'; break;
+        case 4: groupColor='#FF0000'; break;
         case 5: groupColor='#FF00FF'; break;
         default: groupColor='#000000'; break;
       }
@@ -84,7 +84,7 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
         }}>
           <path d={svg.path} style={{fill: "none", stroke: "#000000"}} strokeWidth={0.003*scale*factor} strokeDasharray={strokeDasharray} strokeLinecap="round"/>
           <path d={svg.path} style={{fill: "none", stroke: groupColor}} strokeWidth={0.0015*scale*factor} strokeDasharray={strokeDasharray} strokeLinecap="round"/>
-          <rect className="buldreinfo-svg-rect" x={x-r} y={y-r} width={r*2} height={r*1.9} rx={r/3}/>
+          <rect fill="#000000" x={x-r} y={y-r} width={r*2} height={r*1.9} rx={r/3}/>
           <text dominantBaseline="central" textAnchor="middle" fontSize={0.015*scale} fontWeight="bolder" fill={textColor} x={x} y={y}>{svg.nr}</text>
           {anchors}
           {texts}
@@ -114,7 +114,7 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
   }
   return (
     <>
-      <canvas className="buldreinfo-svg-canvas-ie-hack" width={m.width} height={m.height} style={style}></canvas>
+      <canvas width={m.width} height={m.height} style={style}></canvas>
       <svg overflow="visible" className="buldreinfo-svg" viewBox={"0 0 " + m.width + " " + m.height} preserveAspectRatio="xMidYMid meet" onClick={(e: React.MouseEvent<SVGSVGElement>) => {
         if (e.target instanceof SVGSVGElement && close) {
           close();
@@ -122,7 +122,7 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
       }}>
         <defs>
           <filter id="solid" x="0" y="0" width="1" height="1">
-            <feFlood flood-color="#202020"/>
+            <feFlood flood-color="#000000"/>
             <feComposite in="SourceGraphic"/>
           </filter>
         </defs>
