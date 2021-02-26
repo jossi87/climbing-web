@@ -81,8 +81,8 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
             history.push("/problem/" + svg.problemId + "?idMedia=" + m.id);
           }
         }}>
-          <path d={svg.path} style={{fill: "none", stroke: "#000000"}} strokeWidth={0.003*scale*factor} strokeDasharray={strokeDasharray}/>
-          <path d={svg.path} style={{fill: "none", stroke: groupColor}} strokeWidth={0.0015*scale*factor} strokeDasharray={strokeDasharray}/>
+          <path d={svg.path} style={{fill: "none", stroke: "#000000"}} strokeWidth={0.003*scale*factor} strokeDasharray={strokeDasharray} strokeLinecap="round"/>
+          <path d={svg.path} style={{fill: "none", stroke: groupColor}} strokeWidth={0.0015*scale*factor} strokeDasharray={strokeDasharray} strokeLinecap="round"/>
           <rect className="buldreinfo-svg-rect" x={x-r} y={y-r} width={r*2} height={r*1.9} rx={r/3}/>
           <text dominantBaseline="central" textAnchor="middle" fontSize={0.015*scale} fontWeight="bolder" fill={textColor} x={x} y={y}>{svg.nr}</text>
           {anchors}
