@@ -92,8 +92,8 @@ const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext,
             <Icon name="trash"/>
           </Button>
         )}
-        {isAdmin && m.idType===1 && m.svgProblemId && (
-          <Button icon onClick={() => history.push(`/problem/svg-edit/${m.svgProblemId}-${m.id}`)}>
+        {isAdmin && m.idType===1 && optProblemId && (
+          <Button icon onClick={() => history.push(`/problem/svg-edit/${optProblemId}-${m.id}`)}>
             <Icon name="paint brush"/>
           </Button>
         )}
