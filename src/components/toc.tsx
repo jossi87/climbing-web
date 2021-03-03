@@ -14,7 +14,18 @@ const Toc = () => {
   const [isSaving, setIsSaving] = useState(false);
   useEffect(() => {
     if (!loading) {
-      getToc(accessToken).then((data) => setData(data));
+      getToc(accessToken)
+      .then((data) => setData(data))
+      .then(() => {
+        const { hash } = window.location;
+        if (hash) {
+          const id = hash.replace("#", "");
+          const element = document.getElementById(id);
+          if (element) {
+            element.scrollIntoView({ block: 'start' })
+          }
+        }
+      });
     }
   }, [loading, accessToken]);
 

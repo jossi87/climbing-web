@@ -44,7 +44,6 @@ export function Stars({numStars}) {
 }
 
 export function LoadingAndRestoreScroll() {
-  window.scrollTo(0, 0);
   return (
     <Message icon>
       <Icon name='circle notched' loading />
