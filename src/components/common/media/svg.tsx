@@ -9,14 +9,14 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
   const minWindowScale = Math.min(outerWidth, outerHeight);
   const scale = Math.max(m.width, m.height, minWindowScale);
 
-  function generateShapes(svgs, svgProblemId, w, h) {
+  function generateShapes(svgs, w, h) {
     return svgs.map((svg, key) => {
       const path: any = parseSVG(svg.path);
       makeAbsolute(path); // Note: mutates the commands in place!
 
       var factor = 1;
       var gClassName = "buldreinfo-svg-pointer";
-      if (!(svgProblemId===0 || svg.problemId===svgProblemId)) {
+      if (optProblemId && svg.problemId!=optProblemId) {
         gClassName += " buldreinfo-svg-opacity-low";
       } else if (thumb) {
         factor = 2;
@@ -109,8 +109,6 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
       text += " - Flagged as dangerous";
     }
     info = <text xmlSpace="preserve" dominantBaseline="text-before-edge" filter="url(#solid)" fontSize={0.02*scale} fontWeight="bolder" fill="white"> {text} </text>;
-  } else {
-    optProblemId = 0;
   }
   return (
     <>
@@ -122,13 +120,13 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
       }}>
         <defs>
           <filter id="solid" x="0" y="0" width="1" height="1">
-            <feFlood flood-color="#000000"/>
+            <feFlood floodColor="#000000"/>
             <feComposite in="SourceGraphic"/>
           </filter>
         </defs>
         <image xlinkHref={getImageUrl(m.id, m.embedUrl)} width="100%" height="100%"/>
         <g key={optProblemId} className={optProblemId===0 && "buldreinfo-svg-sibling-fade"}>
-          {generateShapes(m.svgs, optProblemId, m.width, m.height)}
+          {generateShapes(m.svgs, m.width, m.height)}
         </g>
         {info}
       </svg>
