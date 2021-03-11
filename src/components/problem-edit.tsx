@@ -203,7 +203,6 @@ const ProblemEdit = () => {
   if (sectorMarkers) {
     markers.push(...sectorMarkers);
   }
-  console.log(data.metadata)
   return (
     <>
       <MetaTags>

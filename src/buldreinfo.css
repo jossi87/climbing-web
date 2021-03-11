@@ -41,7 +41,7 @@
 .buldreinfo-svg-opacity-low {
   opacity: .35;
 }
-.buldreinfo-svg-opacity-low:hover {
+.buldreinfo-svg-sibling-fade .buldreinfo-svg-opacity-low:hover {
   opacity: 1;
 }
 .buldreinfo-svg-edit-opacity {

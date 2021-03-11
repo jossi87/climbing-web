@@ -14,7 +14,7 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
       const path: any = parseSVG(svg.path);
       makeAbsolute(path); // Note: mutates the commands in place!
 
-      const factor = thumb? 2 : 1;
+      const factor = thumb? 4 : 1;
       var gClassName = "buldreinfo-svg-pointer";
       if (optProblemId) {
         if (svg.problemId!=optProblemId) {
@@ -96,7 +96,7 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
   }
   
   let info;
-  if (optProblemId && optProblemId>0 && m.svgs.filter(x => x.problemId===optProblemId).length===1) {
+  if (!thumb && optProblemId && optProblemId>0 && m.svgs.filter(x => x.problemId===optProblemId).length===1) {
     let svg = m.svgs.filter(x => x.problemId===optProblemId)[0];
     let text = `#${svg.nr} - ${svg.problemName} [${svg.problemGrade}]`;
     if (!svg.primary) {
@@ -127,7 +127,7 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
           </filter>
         </defs>
         <image xlinkHref={getImageUrl(m.id, m.embedUrl)} width="100%" height="100%"/>
-        <g key={optProblemId} className={"buldreinfo-svg-sibling-fade"}>
+        <g key={optProblemId} className={thumb? "" : "buldreinfo-svg-sibling-fade"}>
           {generateShapes(m.svgs, m.width, m.height)}
         </g>
         {info}
