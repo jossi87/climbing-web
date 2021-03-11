@@ -242,7 +242,7 @@ export function getProblemEdit(accessToken: string, sectorIdProblemId: string): 
           types: res.metadata.types,
           isAdmin: res.metadata.isAdmin,
           isSuperAdmin: res.metadata.isSuperAdmin,
-          isBouldering: res.metadata.isBouldering
+          gradeSystem: res.metadata.gradeSystem
         }
       };
     })
