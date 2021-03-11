@@ -35,6 +35,9 @@
 .buldreinfo-svg-pointer {
   cursor: pointer;
 }
+.buldreinfo-svg-opacity-high {
+  opacity: 1 !important;
+}
 .buldreinfo-svg-opacity-low {
   opacity: .35;
 }
