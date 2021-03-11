@@ -9,7 +9,6 @@ import Polygons from './polygons';
 import Polylines from './polylines';
 import MarkerClusterGroup from "./react-leaflet-markercluster";
 
-
 function MapEvent({ onClick }) {
   useMapEvents({
     click: (e) => {
