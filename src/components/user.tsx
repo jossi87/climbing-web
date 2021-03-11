@@ -52,16 +52,10 @@ const User = () => {
   function order(type) {
     data && data.ticks && data.ticks.sort((a, b) => {
       if (type == 'grade') {
-        if (a.gradeNumber != b.gradeNumber) {
-          return b.gradeNumber-a.gradeNumber;
-        }
-        if (a.date && !b.date) {
-          return -1;
-        } else if (!a.date && b.date) {
-          return 1;
-        } else if (a.date != b.date) {
-          return b.date.localeCompare(a.date);
-        }
+        if (a.gradeNumber != b.gradeNumber) return b.gradeNumber-a.gradeNumber
+        else if (a.date && !b.date) return -1;
+        else if (!a.date && b.date) return 1;
+        else if (a.date != b.date) return b.date.localeCompare(a.date);
         return a.name.localeCompare(b.name);
       } else if (type == 'date') {
         return a.num-b.num;
@@ -73,6 +67,14 @@ const User = () => {
         else if (a.name > b.name) return 1;
         else if (a.name < b.name) return -1;
         return 0;
+      } else if (type == 'fa') {
+        if (a.fa && !b.fa) return -1;
+        else if (!a.fa && b.fa) return 1;
+        else if (a.gradeNumber != b.gradeNumber) return b.gradeNumber-a.gradeNumber;
+        else if (a.date && !b.date) return -1;
+        else if (!a.date && b.date) return 1;
+        else if (a.date != b.date) return b.date.localeCompare(a.date);
+        return a.name.localeCompare(b.name);
       } else {
         console.log("Wrong type: " + type);
       }
@@ -214,7 +216,8 @@ const User = () => {
         <>
           <ButtonGroup size="mini" compact  attached="top">
             <Button icon labelPosition="left" onClick={() => order('date')} toggle primary={sortBy==='date'}><Icon name="sort content ascending"/>Date</Button>
-            <Button icon labelPosition="left" onClick={() => order('grade')} toggle primary={sortBy==='grade'}><Icon name="sort content ascending"/>{data.metadata.gradeSystem==='BOULDER' || subTypes.length===1? "Grade" : "Type and grade"}</Button>
+            <Button icon labelPosition="left" onClick={() => order('grade')} toggle primary={sortBy==='grade'}><Icon name="sort content ascending"/>Grade</Button>
+            {numFas>0 && <Button icon labelPosition="left" onClick={() => order('fa')} toggle primary={sortBy==='fa'}><Icon name="sort content ascending"/>FA</Button>}
             <Button icon labelPosition="left" onClick={() => order('name')} toggle primary={sortBy==='name'}><Icon name="sort alphabet down"/>Name</Button>
           </ButtonGroup>
           {ticks}
