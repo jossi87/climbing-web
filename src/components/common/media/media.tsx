@@ -83,13 +83,13 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId }) => {
   if (loading) {
     return <LoadingAndRestoreScroll />;
   }
-  if (history.location.search && media && m == null) {
+  if (history.location.search && media) {
     let id = history.location.search.replace("?idMedia=","");
     if (id.indexOf("&") > 0) {
       id = id.substr(0, id.indexOf("&"));
     }
     let x = media.filter(m => m.id==id);
-    if (x && x.length > 0) {
+    if (x && x.length===1 && (!m || m.id!=x[0].id)) {
       setM(x[0]);
     }
   }
