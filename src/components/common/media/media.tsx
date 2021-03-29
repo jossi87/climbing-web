@@ -43,7 +43,7 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId }) => {
   }
 
   function onMediaIdOpen(idMedia) {
-    history.push(history.location.pathname + (idMedia ? "?idMedia=" + idMedia : ""));
+    history.replace(history.location.pathname + (idMedia ? "?idMedia=" + idMedia : ""));
   }
 
   function gotoPrev() {
