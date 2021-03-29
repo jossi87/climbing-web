@@ -6,21 +6,21 @@ import { Header, Segment, Form, Dropdown, Button, Checkbox, Icon, List, Image } 
 import { getMeta, getImageUrl, postFilter } from '../api';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { Stars, LockSymbol } from './common/widgets/widgets';
+import { useLocalStorage } from '../utils/use-local-storage';
 
 const Filter = () => {
   const { loading, accessToken } = useAuth0();
   let history = useHistory();
   const [meta, setMeta] = useState(null);
-  const [grades, setGrades] = useState(null);
-  const [types, setTypes] = useState(null);
-  const [result, setResult] = useState(null);
+  const [grades, setGrades] = useLocalStorage("filter_grades", null);
+  const [types, setTypes] = useLocalStorage("filter_types", null);
+  const [result, setResult] = useLocalStorage("filter_result", null);
   const [refreshing, setRefreshing] = useState(false);
-  const [filterDisabled, setFilterDisabled] = useState(true);
-  const [hideTicked, setHideTicked] = useState(false);
-  const [onlyWithMedia, setOnlyWithMedia] = useState(false);
-  const [onlyAdmin, setOnlyAdmin] = useState(false);
-  const [onlySuperAdmin, setOnlySuperAdmin] = useState(false);
-  const [orderByStars, setOrderByStars] = useState(false);
+  const [hideTicked, setHideTicked] = useLocalStorage("filter_ticked", false);
+  const [onlyWithMedia, setOnlyWithMedia] = useLocalStorage("filter_only_with_media", false);
+  const [onlyAdmin, setOnlyAdmin] = useLocalStorage("filter_only_admin", false);
+  const [onlySuperAdmin, setOnlySuperAdmin] = useLocalStorage("filter_only_sa", false);
+  const [orderByStars, setOrderByStars] = useLocalStorage("filter_order_by_stars", false);
   useEffect(() => {
     if (!loading) {
       getMeta(accessToken).then((meta) => setMeta(meta));
@@ -41,14 +41,14 @@ const Filter = () => {
           <Form.Field>
             <Dropdown placeholder="Select grade(s)" fluid multiple selection options={gradeOptions} value={grades? grades : []} onChange={(e, { value }) => {
               setGrades(value);
-              setFilterDisabled(!value || (typeOptions.length>1 && (!types || types.length==0)) );
+              setResult(null);
             }} />
           </Form.Field>
           {typeOptions.length>1 &&
             <Form.Field>
               <Dropdown placeholder="Select type(s)" fluid multiple selection options={typeOptions} value={types? types : []} onChange={(e, { value }) => {
               setTypes(value);
-              setFilterDisabled(!value || (!grades || grades.length==0) );
+              setResult(null);
             }} />
             </Form.Field>
           }
@@ -74,9 +74,8 @@ const Filter = () => {
               }} />
             </Form.Field>
           }
-          <Button icon labelPosition='left' disabled={filterDisabled} loading={refreshing} onClick={() => {
+          <Button icon labelPosition='left' disabled={!grades || grades.length==0 || (typeOptions.length>1 && (!types || types.length==0))} loading={refreshing} onClick={() => {
             setRefreshing(true);
-            setFilterDisabled(true);
             const myTypes = typeOptions.length===1? [typeOptions[0].value] : types;
             postFilter(accessToken, grades, myTypes).then((res) => {
               setResult(res);
@@ -100,6 +99,7 @@ const Filter = () => {
                   }
                   return a.problemName.localeCompare(b.problemName);
                 });
+                setResult(result);
                 setOrderByStars(myOrderByStars);
               }}>
                 <Icon name="filter"/>
