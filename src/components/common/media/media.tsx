@@ -93,7 +93,9 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId }) => {
       setM(x[0]);
     }
   }
-
+  else if (!history.location.search && media && m) {
+    setM(null);
+  }
   return (
     <>
       {m &&

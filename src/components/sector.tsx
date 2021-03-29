@@ -13,7 +13,7 @@ import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSector, getAreaPdfUrl, getSectorPdfUrl } from '../api';
 import Linkify from 'react-linkify';
 
-const SectorListItem = ({ history, problem, showType, orderByGrade } ) => {
+const SectorListItem = ({ problem, showType, orderByGrade } ) => {
   var ascents = problem.numTicks>0 && (problem.numTicks + (problem.numTicks==1? " ascent" : " ascents"));
   var typeAscents;
   if (showType) {
@@ -41,7 +41,7 @@ const SectorListItem = ({ history, problem, showType, orderByGrade } ) => {
     comment = <small><i style={{color: "gray"}}>{' '}{problem.comment}{' '}</i></small>;
   }
   return (
-    <List.Item style={{backgroundColor: problem.ticked? "#d2f8d2" : "#ffffff"}} key={problem.id} onClick={() => history.push(`/problem/${problem.id}`)}>
+    <List.Item style={{backgroundColor: problem.ticked? "#d2f8d2" : "#ffffff"}} key={problem.id}>
       <List.Header>
         {problem.danger && <Icon color="red" name="warning"/>}
         {!orderByGrade && `#${problem.nr} `}
@@ -168,7 +168,7 @@ const Sector = () => {
   let problems;
   if (data.orderByGrade && subTypes.length>1) {
     let accordionRows = subTypes.map(subType => {
-      let rows = data.problems.filter(p => p.t.subType==subType && (!hideTicked || !p.ticked)).map((p, i) => <SectorListItem key={i} history={history} problem={p} orderByGrade={data.orderByGrade} showType={data.metadata.gradeSystem==='CLIMBING'} />);
+      let rows = data.problems.filter(p => p.t.subType==subType && (!hideTicked || !p.ticked)).map((p, i) => <SectorListItem key={i} problem={p} orderByGrade={data.orderByGrade} showType={data.metadata.gradeSystem==='CLIMBING'} />);
       let label = subType + " (" + rows.length + ")";
       let content = <List selection>{rows}</List>;
       return (
@@ -181,7 +181,7 @@ const Sector = () => {
     problems = (
       <Segment attached="bottom">
         <List selection>
-          {data.problems.filter(p => !hideTicked || !p.ticked).map((p, i) => <SectorListItem key={i} history={history} problem={p} orderByGrade={data.orderByGrade} showType={data.metadata.gradeSystem==='CLIMBING'} />)}
+          {data.problems.filter(p => !hideTicked || !p.ticked).map((p, i) => <SectorListItem key={i} problem={p} orderByGrade={data.orderByGrade} showType={data.metadata.gradeSystem==='CLIMBING'} />)}
         </List>
       </Segment>
     )
