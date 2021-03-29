@@ -74,7 +74,8 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
       }
       if (svg.anchors) {
         JSON.parse(svg.anchors).map((a, i) => {
-          anchors.push(<circle key={i} fill={groupColor} cx={a.x} cy={a.y} r={0.006*scale} />);
+          anchors.push(<circle key={i+"_1"} fill={"#000000"} cx={a.x} cy={a.y} r={0.005*scale} />);
+          anchors.push(<circle key={i+"_2"} fill={groupColor} cx={a.x} cy={a.y} r={0.004*scale} />);
         });
       }
       let texts = svg.texts && JSON.parse(svg.texts).map((t, i) => (<text key={i} x={t.x} y={t.y} fontSize="5em" fill="red">{t.txt}</text>));
