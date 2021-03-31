@@ -48,14 +48,14 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId }) => {
 
   function gotoPrev() {
     if (m && media.length > 1) {
-      let ix = (media.indexOf(m) - 1 + media.length) % media.length;
+      let ix = (media.findIndex(x => x.id===m.id) - 1 + media.length) % media.length;
       openModal(media[ix], false);
     }
   }
 
   function gotoNext() {
     if (m && media.length > 1) {
-      let ix = (media.indexOf(m) + 1) % media.length;
+      let ix = (media.findIndex(x => x.id===m.id) + 1) % media.length;
       openModal(media[ix], false);
     }
   }
