@@ -14,7 +14,6 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
       const path: any = parseSVG(svg.path);
       makeAbsolute(path); // Note: mutates the commands in place!
 
-      const factor = thumb? 4 : 1;
       var gClassName = "buldreinfo-svg-pointer";
       if (optProblemId) {
         if (svg.problemId!=optProblemId) {
@@ -23,9 +22,10 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
           gClassName += " buldreinfo-svg-opacity-high";
         }
       }
-      let strokeDasharray = factor>1? null : 0.006*scale;
-      if (factor===1 && !svg.primary) {
-        strokeDasharray = null;
+      let strokeDasharray = null;
+      if (svg.primary) {
+        let x = thumb? 0.013 : 0.006;
+        strokeDasharray = x*scale;
       }
       let groupColor;
       switch(svg.problemGradeGroup) {
@@ -62,20 +62,20 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
       }
       var x = path[ixNr].x;
       var y = path[ixNr].y;
-      const r = 0.01*scale;
+      const r = 0.01*scale*(thumb? 2 : 1);
       if (x < r) x = r;
       if (x > (w-r)) x = w-r;
       if (y < r) y = r;
       if (y > (h-r)) y = h-r;
       let anchors = [];
       if (svg.hasAnchor) {
-        anchors.push(<circle key={key+"_1"} fill={"#000000"} cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.005*scale}/>);
-        anchors.push(<circle key={key+"_2"} fill={groupColor} cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.004*scale}/>);
+        anchors.push(<circle key={key+"_1"} fill={"#000000"} cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.005*scale*(thumb? 4 : 1)}/>);
+        anchors.push(<circle key={key+"_2"} fill={groupColor} cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.004*scale*(thumb? 4 : 1)}/>);
       }
       if (svg.anchors) {
         JSON.parse(svg.anchors).map((a, i) => {
-          anchors.push(<circle key={i+"_1"} fill={"#000000"} cx={a.x} cy={a.y} r={0.005*scale} />);
-          anchors.push(<circle key={i+"_2"} fill={groupColor} cx={a.x} cy={a.y} r={0.004*scale} />);
+          anchors.push(<circle key={i+"_1"} fill={"#000000"} cx={a.x} cy={a.y} r={0.005*scale*(thumb? 4 : 1)} />);
+          anchors.push(<circle key={i+"_2"} fill={groupColor} cx={a.x} cy={a.y} r={0.004*scale*(thumb? 4 : 1)} />);
         });
       }
       let texts = svg.texts && JSON.parse(svg.texts).map((t, i) => (<text key={i} x={t.x} y={t.y} fontSize="5em" fill="red">{t.txt}</text>));
@@ -85,10 +85,10 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
             history.push("/problem/" + svg.problemId + "?idMedia=" + m.id);
           }
         }}>
-          <path d={svg.path} style={{fill: "none", stroke: "#000000"}} strokeWidth={0.003*scale*factor} strokeDasharray={strokeDasharray} strokeLinecap="round"/>
-          <path d={svg.path} style={{fill: "none", stroke: groupColor}} strokeWidth={0.0015*scale*factor} strokeDasharray={strokeDasharray} strokeLinecap="round"/>
+          <path d={svg.path} style={{fill: "none", stroke: "#000000"}} strokeWidth={0.003*scale*(thumb? 4 : 1)} strokeDasharray={strokeDasharray} strokeLinecap="round"/>
+          <path d={svg.path} style={{fill: "none", stroke: groupColor}} strokeWidth={0.0015*scale*(thumb? 4 : 1)} strokeDasharray={strokeDasharray} strokeLinecap="round"/>
           <rect fill="#000000" x={x-r} y={y-r} width={r*2} height={r*1.9} rx={r/3}/>
-          <text dominantBaseline="central" textAnchor="middle" fontSize={0.015*scale} fontWeight="bolder" fill={textColor} x={x} y={y}>{svg.nr}</text>
+          <text dominantBaseline="central" textAnchor="middle" fontSize={0.015*scale*(thumb? 2 : 1)} fontWeight="bolder" fill={textColor} x={x} y={y}>{svg.nr}</text>
           {anchors}
           {texts}
         </g>
