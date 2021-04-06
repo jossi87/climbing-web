@@ -21,7 +21,7 @@ const Browse = () => {
   if (!data) {
     return <LoadingAndRestoreScroll />;
   }
-  const typeDescription = data.metadata.gradeSystem==='BOULDER'? "problem(s)" : "route(s)";
+  const typeDescription = data.metadata.gradeSystem==='BOULDER'? "problems" : "routes";
   const markers = data.areas.filter(a => a.forDevelopers === showForDevelopers && a.lat!=0 && a.lng!=0).map(a => {
     return {
         lat: a.lat,
@@ -30,7 +30,7 @@ const Browse = () => {
         url: '/area/' + a.id,
         html: <>
           <a rel='noopener' target='_blank' href={'/area/' + a.id}><b>{a.name}</b></a><br/>
-          <i>{`${a.numSectors} sector(s), ${a.numProblems} ${typeDescription}`}</i><br/>
+          <i>{`${a.numSectors} sectors, ${a.numProblems} ${typeDescription}`}</i><br/>
           {a.randomMediaId > 0 && <><Image size="small" style={{maxHeight: '225px', objectFit: 'cover'}} src={getImageUrl(a.randomMediaId, 225)} /><br/></>}
           {a.comment && <><div dangerouslySetInnerHTML={{ __html: a.comment && a.comment.length>200? a.comment.substring(0,200) + "..." : a.comment }} /><br/></>}
           <a rel='noopener' target='_blank' href={'/area/' + a.id}><b>{a.canonical}</b></a>
@@ -75,7 +75,7 @@ const Browse = () => {
             <List.Content as={Link} to={`/area/${area.id}`}>
               <List.Header>{area.name} <LockSymbol lockedAdmin={area.lockedAdmin} lockedSuperadmin={area.lockedSuperadmin} /></List.Header>
               <List.Description>
-                <i>{`${area.numSectors} sector(s), ${area.numProblems} ${typeDescription}, ${area.hits} page views`}</i><br/>
+                <i>{`${area.numSectors} sectors, ${area.numProblems} ${typeDescription}, ${area.hits} page views`}</i><br/>
                 <div dangerouslySetInnerHTML={{ __html: area.comment && area.comment.length>350? area.comment.substring(0,350) + "..." : area.comment}}/>
               </List.Description>
             </List.Content>
