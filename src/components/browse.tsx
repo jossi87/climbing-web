@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link, useHistory } from 'react-router-dom';
-import { Button, List, Icon, Segment } from 'semantic-ui-react';
+import { Button, List, Icon, Image, Segment } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 import { useAuth0 } from '../utils/react-auth0-spa';
-import { getBrowse } from '../api';
+import { getBrowse, getImageUrl } from '../api';
 
 const Browse = () => {
   const { loading, accessToken } = useAuth0();
@@ -27,7 +27,14 @@ const Browse = () => {
         lat: a.lat,
         lng: a.lng,
         label: a.name,
-        url: '/area/' + a.id
+        url: '/area/' + a.id,
+        html: <>
+          <a rel='noopener' target='_blank' href={'/area/' + a.id}><b>{a.name}</b></a><br/>
+          <i>{`${a.numSectors} sector(s), ${a.numProblems} ${typeDescription}`}</i><br/>
+          {a.randomMediaId > 0 && <><Image size="small" style={{maxHeight: '225px', objectFit: 'cover'}} src={getImageUrl(a.randomMediaId, 225)} /><br/></>}
+          {a.comment && <><div dangerouslySetInnerHTML={{ __html: a.comment && a.comment.length>200? a.comment.substring(0,200) + "..." : a.comment }} /><br/></>}
+          <a rel='noopener' target='_blank' href={'/area/' + a.id}><b>{a.canonical}</b></a>
+        </>
       }
   });
   const map = markers.length>0 && <><Leaflet autoZoom={true} height='75vh' markers={markers} defaultCenter={data.metadata.defaultCenter} defaultZoom={data.metadata.defaultZoom} history={history} polylines={null} outlines={null} onClick={null} clusterMarkers={true} /><br/></>;
@@ -69,7 +76,7 @@ const Browse = () => {
               <List.Header>{area.name} <LockSymbol lockedAdmin={area.lockedAdmin} lockedSuperadmin={area.lockedSuperadmin} /></List.Header>
               <List.Description>
                 <i>{`${area.numSectors} sector(s), ${area.numProblems} ${typeDescription}, ${area.hits} page views`}</i><br/>
-                {area.comment && area.comment.length>350? area.comment.substring(0,350) + "..." : area.comment}
+                <div dangerouslySetInnerHTML={{ __html: area.comment && area.comment.length>350? area.comment.substring(0,350) + "..." : area.comment}}/>
               </List.Description>
             </List.Content>
           </List.Item>

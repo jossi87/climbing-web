@@ -40,6 +40,17 @@ export default function Markers({ history, opacity, markers, addEventHandlers })
             </Popup>
           </Marker>
         );
+      } else if (m.html) {
+        return (
+          <Marker icon={markerBlueIcon} position={[m.lat, m.lng]} key={i}>
+            <Tooltip opacity={opacity} permanent className='buldreinfo-tooltip-compact'>
+              {m.label}
+            </Tooltip>
+            <Popup>
+              {m.html}
+            </Popup>
+          </Marker>
+        );
       } else if (m.label) {
         return (
           <Marker
