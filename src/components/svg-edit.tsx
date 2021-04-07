@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Container, Button, Segment, Dropdown } from 'semantic-ui-react';
+import { Container, Button, Segment, Dropdown, Input, Icon } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSvgEdit, getImageUrl, postProblemSvg } from '../api';
 import { parseReadOnlySvgs, parsePath } from '../utils/svg';
@@ -16,6 +16,8 @@ const SvgEdit = () => {
   const [h, setH] = useState(null);
   const [ctrl, setCtrl] = useState(false);
   const [svgId, setSvgId] = useState(null);
+  const [path, setPath] = useState(null);
+  const [pathTxt, setPathTxt] = useState(null);
   const [points, setPoints] = useState(null);
   const [anchors, setAnchors] = useState(null);
   const [texts, setTexts] = useState(null);
@@ -40,6 +42,8 @@ const SvgEdit = () => {
         setH(data.h);
         setCtrl(data.ctrl);
         setSvgId(data.svgId);
+        setPath(data.path);
+        setPathTxt(data.path);
         setPoints(parsePath(data.path));
         setAnchors(data.anchors);
         setTexts(data.texts);
@@ -82,7 +86,7 @@ const SvgEdit = () => {
 
   function save(event) {
     event.preventDefault();
-    postProblemSvg(accessToken, id, mediaId, points.length<2, svgId, generatePath(), hasAnchor, JSON.stringify(anchors), JSON.stringify(texts))
+    postProblemSvg(accessToken, id, mediaId, points.length<2, svgId, path, hasAnchor, JSON.stringify(anchors), JSON.stringify(texts))
     .then(() => {
       history.push("/problem/" + id);
     })
@@ -109,6 +113,9 @@ const SvgEdit = () => {
     if (ctrl) {
       let coords = getMouseCoords(e);
       points.push(coords);
+      const p = generatePath();
+      setPath(p);
+      setPathTxt(p);
       setPoints([...points]);
       setActivePoint(points.length - 1);
     } else if (addText) {
@@ -160,6 +167,9 @@ const SvgEdit = () => {
     const active = activePoint;
     points[active].x = coords.x;
     points[active].y = coords.y;
+    const p = generatePath();
+    setPath(p);
+    setPathTxt(p);
     setPoints([...points]);
   };
 
@@ -167,6 +177,9 @@ const SvgEdit = () => {
     const active = activePoint;
     points[active].c[anchor].x = coords.x;
     points[active].c[anchor].y = coords.y;
+    const p = generatePath();
+    setPath(p);
+    setPathTxt(p);
     setPoints([...points]);
   };
 
@@ -208,6 +221,9 @@ const SvgEdit = () => {
           };
         break;
       }
+      const p = generatePath();
+      setPath(p);
+      setPathTxt(p);
       setPoints([...points]);
     }
   };
@@ -216,6 +232,9 @@ const SvgEdit = () => {
     let active = activePoint;
     if (points.length > 1 && active !== 0) {
       points.splice(active, 1);
+      const p = generatePath();
+      setPath(p);
+      setPathTxt(p);
       setPoints([...points]);
       setActivePoint(points.length-1);
     }
@@ -223,6 +242,8 @@ const SvgEdit = () => {
 
   function reset(e) {
     setCtrl(false);
+    setPath(null);
+    setPathTxt(null);
     setPoints([]);
     setAnchors([]);
     setTexts([]);
@@ -267,7 +288,6 @@ const SvgEdit = () => {
   anchors.map((a, i) => {
     circles.push(<circle key={i} fill="#E2011A" cx={a.x} cy={a.y} r={0.006*w} />);
   });
-  const path = generatePath();
   const myTexts = texts.map((t, i) => (<text key={i} x={t.x} y={t.y} fontSize="5em" fill={"red"}>{t.txt}</text>));
   return (
     <Container onMouseUp={cancelDragging} onMouseLeave={cancelDragging}>
@@ -314,7 +334,23 @@ const SvgEdit = () => {
         <path style={{fill: "none", stroke: "#FF0000"}} d={path} strokeWidth={0.002*w}/>
         {circles}
         {myTexts}
-      </svg>
+      </svg><br/>
+      <Input
+        label="SVG Path:"
+        action={{
+          labelPosition: 'right',
+          color: path===pathTxt? 'gray': 'blue',
+          icon: 'sync',
+          content: 'Update',
+          onClick: () => {
+            setPath(pathTxt);
+            setPoints(parsePath(pathTxt));
+          }
+        }}
+        fluid placeholder='SVG Path' value={pathTxt} onChange={(e, { value }) => {
+          setPathTxt(value);
+        }}
+      />
     </Container>
   )
 }
