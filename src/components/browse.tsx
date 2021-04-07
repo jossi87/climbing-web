@@ -3,6 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { Link, useHistory } from 'react-router-dom';
 import { Button, List, Icon, Image, Segment } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
+import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getBrowse, getImageUrl } from '../api';
@@ -29,9 +30,8 @@ const Browse = () => {
         label: a.name,
         url: '/area/' + a.id,
         html: <>
-          <a rel='noopener' target='_blank' href={'/area/' + a.id}><b>{a.name}</b></a><br/>
-          <i>{`${a.numSectors} sectors, ${a.numProblems} ${typeDescription}`}</i><br/>
-          {a.randomMediaId > 0 && <><Image size="small" style={{maxHeight: '225px', objectFit: 'cover'}} src={getImageUrl(a.randomMediaId, 225)} /><br/></>}
+          <a rel='noopener' target='_blank' href={'/area/' + a.id}><b>{a.name}</b></a> <i>{`(${a.numSectors} sectors, ${a.numProblems} ${typeDescription})`}</i><br/>
+          {a.numProblems>0 && <ChartGradeDistribution accessToken={accessToken} idArea={a.id} idSector={0}/>}
           {a.comment && <><div dangerouslySetInnerHTML={{ __html: a.comment && a.comment.length>200? a.comment.substring(0,200) + "..." : a.comment }} /><br/></>}
           <a rel='noopener' target='_blank' href={'/area/' + a.id}><b>{a.canonical}</b></a>
         </>
