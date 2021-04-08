@@ -46,7 +46,7 @@ export default function Markers({ history, opacity, markers, addEventHandlers })
             <Tooltip opacity={opacity} permanent className='buldreinfo-tooltip-compact'>
               {m.label}
             </Tooltip>
-            <Popup>
+            <Popup minWidth={400}>
               {m.html}
             </Popup>
           </Marker>
