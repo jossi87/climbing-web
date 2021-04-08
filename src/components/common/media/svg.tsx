@@ -100,6 +100,9 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
   if (!thumb && optProblemId && optProblemId>0 && m.svgs.filter(x => x.problemId===optProblemId).length===1) {
     let svg = m.svgs.filter(x => x.problemId===optProblemId)[0];
     let text = `#${svg.nr} - ${svg.problemName} [${svg.problemGrade}]`;
+    if (svg.problemSubtype) {
+      text += " - " + svg.problemSubtype;
+    }
     if (svg.isTicked) {
       text += " - Ticked";
     } else if (svg.isTodo) {
