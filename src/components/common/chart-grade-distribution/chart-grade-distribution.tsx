@@ -16,16 +16,18 @@ const ChartGradeDistribution = ({accessToken, idArea, idSector}) => {
   }
   const maxValue = Math.max.apply(Math, gradeDistribution.map(d => {return d.num}));
   const cols = gradeDistribution.map((g, i) => {
-    const h = (g.num/maxValue*90) + '%';
+    const hPrim = (g.prim/maxValue*80) + '%';
+    const hSec = (g.sec/maxValue*80) + '%';
     return (
         <td key={i} style={{height: '100%', verticalAlign: 'bottom', textAlign: 'center'}}>
-          {g.num}
-          <div style={{marginLeft: '3px', marginRight: '3px', height: h, backgroundColor: '#3182bd'}}></div>
+          {g.num>0 && g.num}
+          <div style={{marginLeft: '3px', marginRight: '3px', height: hSec, backgroundColor: '#BD313C'}} />
+          <div style={{marginLeft: '3px', marginRight: '3px', paddingBottom: hSec, height: hPrim, backgroundColor: '#3182bd'}} />
         </td>
     )
   });
   return (
-    <table style={{height: '20vh'}}>
+    <table style={{height: '20vh', tableLayout: 'fixed', width: '100%', maxWidth: '400px'}}>
       <tbody>
         <tr>
           {cols}
