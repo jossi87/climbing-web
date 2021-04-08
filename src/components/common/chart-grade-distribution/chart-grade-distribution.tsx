@@ -21,8 +21,8 @@ const ChartGradeDistribution = ({accessToken, idArea, idSector}) => {
     return (
         <td key={i} style={{height: '100%', verticalAlign: 'bottom', textAlign: 'center'}}>
           {g.num>0 && g.num}
-          <div style={{marginLeft: '3px', marginRight: '3px', height: hSec, backgroundColor: '#BD313C'}} />
-          <div style={{marginLeft: '3px', marginRight: '3px', paddingBottom: hSec, height: hPrim, backgroundColor: '#3182bd'}} />
+          {g.sec>0 && <div style={{marginLeft: '3px', marginRight: '3px', height: hSec, backgroundColor: '#BD313C'}} />}
+          {g.prim>0 && <div style={{marginLeft: '3px', marginRight: '3px', paddingBottom: hSec, height: hPrim, backgroundColor: '#3182bd'}} />}
         </td>
     )
   });
