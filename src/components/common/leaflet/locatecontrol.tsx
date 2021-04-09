@@ -15,6 +15,8 @@ export default function LocateControl() {
       strings: {
           title: 'Show my location'
       },
+      iconElementTag: "i",
+      icon: "black map marker alternate icon",
       onActivate: () => {} // callback before engine starts retrieving locations
     }
     const lc = new Locate(locateOptions);
