@@ -30,7 +30,7 @@ const Browse = () => {
         label: a.name,
         url: '/area/' + a.id,
         html: <>
-          <a rel='noopener' target='_blank' href={'/area/' + a.id}><b>{a.name}</b></a> <i>{`(${a.numSectors} sectors, ${a.numProblems} ${typeDescription})`}</i><br/>
+          <a rel='noopener' target='_blank' href={'/area/' + a.id}><b>{a.name}</b> <LockSymbol lockedAdmin={a.lockedAdmin} lockedSuperadmin={a.lockedSuperadmin} /></a> <i>{`(${a.numSectors} sectors, ${a.numProblems} ${typeDescription})`}</i><br/>
           {a.numProblems>0 && <ChartGradeDistribution accessToken={accessToken} idArea={a.id} idSector={0}/>}
           {a.comment && <><div dangerouslySetInnerHTML={{ __html: a.comment && a.comment.length>200? a.comment.substring(0,200) + "..." : a.comment }} /><br/></>}
           <a rel='noopener' target='_blank' href={'/area/' + a.id}><b>{a.canonical}</b></a>
