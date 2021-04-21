@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimmer, Button, Icon, Image, Modal, Header, ButtonGroup, Embed, Container } from 'semantic-ui-react';
+import { Dimmer, Button, Icon, Image, Modal, Header, ButtonGroup, Embed, Container, Dropdown } from 'semantic-ui-react';
 import { getBuldreinfoMediaUrl, getImageUrl } from '../../../api';
 import ReactPlayer from 'react-player';
 import Svg from './svg';
@@ -50,7 +50,7 @@ const style = {
   },
 }
 
-const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext, playVideo, autoPlayVideo, optProblemId }) => {
+const MediaModal = ({ isAdmin, onClose, onDelete, onMoveImageLeft, onMoveImageRight, m, length, gotoPrev, gotoNext, playVideo, autoPlayVideo, optProblemId }) => {
   let history = useHistory();
   let myPlayer;
   let content;
@@ -84,18 +84,22 @@ const MediaModal = ({ isAdmin, onClose, onDelete, m, length, gotoPrev, gotoNext,
     }
   }
 
+  const canDelete = isAdmin && m.idType===1 && !m.svgs;
+  const canDrawTopo = isAdmin && m.idType===1 && optProblemId;
+  const canOrder = isAdmin && m.idType===1 && length>1;
   return (
     <Dimmer active={true} onClickOutside={onClose} page>
       <ButtonGroup secondary size="small" style={style.actions}>
-        {isAdmin && m.idType===1 && !m.svgs && (
-          <Button icon onClick={onDelete}>
-            <Icon name="trash"/>
-          </Button>
-        )}
-        {isAdmin && m.idType===1 && optProblemId && (
-          <Button icon onClick={() => history.push(`/problem/svg-edit/${optProblemId}-${m.id}`)}>
-            <Icon name="paint brush"/>
-          </Button>
+        {(canDelete || canDrawTopo || canOrder) && (
+          <Dropdown direction='left' icon='bars' button>
+            <Dropdown.Menu>
+              {canDrawTopo && <Dropdown.Item icon="paint brush" text="Draw topo line" onClick={() => history.push(`/problem/svg-edit/${optProblemId}-${m.id}`)} />}
+              {canOrder && <Dropdown.Item icon="arrow left" text="Move image to the left" onClick={onMoveImageLeft} />}
+              {canOrder && <Dropdown.Item icon="arrow right" text="Move image to the right"  onClick={onMoveImageRight} />}
+              <Dropdown.Divider />
+              {canDelete && <Dropdown.Item icon="trash" text="Delete image" onClick={onDelete} />}
+            </Dropdown.Menu>
+          </Dropdown>
         )}
         {m.problemId && <Button icon="external" onClick={() => window.open("/problem/" + m.problemId, "_blank")}/>}
         {!m.embedUrl && <Button icon="download" onClick={() => {

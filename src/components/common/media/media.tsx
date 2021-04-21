@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import LazyLoad from 'react-lazyload';
 import { useHistory } from 'react-router-dom';
-import { getImageUrl, deleteMedia } from '../../../api';
+import { getImageUrl, deleteMedia, moveMedia } from '../../../api';
 import { Card, Image } from 'semantic-ui-react';
 import MediaModal from './media-modal';
 import Svg from './svg';
@@ -80,6 +80,28 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId }) => {
     }
   }
 
+  function onMoveImageLeft() {
+    moveMedia(accessToken, m.id, true)
+    .then((response) => {
+      closeModal();
+      window.location.reload();
+    })
+    .catch ((error) => {
+      console.warn(error);
+    });
+  }
+
+  function onMoveImageRight() {
+    moveMedia(accessToken, m.id, false)
+    .then((response) => {
+      closeModal();
+      window.location.reload();
+    })
+    .catch ((error) => {
+      console.warn(error);
+    });
+  }
+
   if (loading) {
     return <LoadingAndRestoreScroll />;
   }
@@ -105,6 +127,8 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId }) => {
           m={m}
           autoPlayVideo={autoPlayVideo}
           onDelete={onDeleteImage}
+          onMoveImageLeft={onMoveImageLeft}
+          onMoveImageRight={onMoveImageRight}
           length={media.length}
           gotoPrev={gotoPrev}
           gotoNext={gotoNext}

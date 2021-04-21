@@ -82,6 +82,12 @@ export function deleteMedia(accessToken: string, id: number): Promise<any> {
   });
 }
 
+export function moveMedia(accessToken: string, id: number, left: boolean): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/media?id=${id}&left=${left}`, {
+    method: 'PUT'
+  });
+}
+
 export function getActivity(accessToken: string, idArea: number, idSector: number, lowerGrade: number, fa: boolean, comments: boolean, ticks: boolean, media: boolean): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/activity?idArea=${idArea}&idSector=${idSector}&lowerGrade=${lowerGrade}&fa=${fa}&comments=${comments}&ticks=${ticks}&media=${media}`, null)
   .then((data) => data.json())
