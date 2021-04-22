@@ -146,7 +146,7 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId }) => {
             content = <Image alt={x.description} key={i} style={style} src={getImageUrl(x.id, 205)} onError={i => i.target.src='/png/video_placeholder.png'} />;
           }
           return (
-            <Card as="a" onClick={() => openModal(x, true)} key={i} raised>
+            <Card as="a" onClick={() => openModal(x, true)} key={i} raised style={{backgroundColor: "rgb(245, 245, 245)", border: (x.inherited? "1px solid black" : "1px solid rgb(245, 245, 245)")}}>
               <div style={{paddingTop: '75%'}}>
                 <LazyLoad offset={100}>{content}</LazyLoad>
               </div>
