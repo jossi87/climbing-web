@@ -42,7 +42,7 @@ const ChartGradeDistribution = ({accessToken, idArea, idSector}) => {
             offset={[0, 20]}
             trigger={col}
             content={
-              <Table compact inverted>
+              <Table compact inverted unstackable>
                 <Table.Header>
                   <Table.HeaderCell>Sector</Table.HeaderCell>
                   {hasBoulder && <Table.HeaderCell>Boulder</Table.HeaderCell>}
