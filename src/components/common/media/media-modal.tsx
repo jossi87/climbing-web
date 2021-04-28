@@ -96,8 +96,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onMoveImageLeft, onMoveImageRi
               {canDrawTopo && <Dropdown.Item icon="paint brush" text="Draw topo line" onClick={() => history.push(`/problem/svg-edit/${optProblemId}-${m.id}`)} />}
               {canOrder && <Dropdown.Item icon="arrow left" text="Move image to the left" onClick={onMoveImageLeft} />}
               {canOrder && <Dropdown.Item icon="arrow right" text="Move image to the right"  onClick={onMoveImageRight} />}
-              <Dropdown.Divider />
-              {canDelete && <Dropdown.Item icon="trash" text="Delete image" onClick={onDelete} />}
+              {canDelete && <><Dropdown.Divider /><Dropdown.Item icon="trash" text="Delete image" onClick={onDelete} /></>}
             </Dropdown.Menu>
           </Dropdown>
         )}

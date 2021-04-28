@@ -51,10 +51,12 @@ const SectorListItem = ({ problem, showType, orderByGrade } ) => {
         {problem.fa && <small>{problem.fa}</small>}
         {typeAscents && <small>{typeAscents}</small>}
         {comment}
-        {problem.hasImages>0 && <Icon color="black" name="photo"/>}
-        {problem.hasMovies>0 && <Icon color="black" name="film"/>}
+        {problem.lat>0 && problem.lng>0 && <Icon size="small" name="map marker alternate"/>}
+        {problem.hasTopo && <Icon size="small" name="paint brush"/>}
+        {problem.hasImages>0 && <Icon size="small" color="black" name="photo"/>}
+        {problem.hasMovies>0 && <Icon size="small" color="black" name="film"/>}
         <LockSymbol lockedAdmin={problem.lockedAdmin} lockedSuperadmin={problem.lockedSuperadmin} />
-        {problem.ticked && <Icon color="green" name="check"/>}
+        {problem.ticked && <Icon size="small" color="green" name="check"/>}
       </List.Header>
     </List.Item>
   ) 
