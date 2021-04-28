@@ -299,13 +299,13 @@ const SvgEdit = () => {
           <Button.Or />
           <Button positive onClick={save}>Save</Button>
         </Button.Group>
+        <Button.Group size="tiny">
+          <Button onClick={onAddText}>{addText? "Click on image to add text" : "Add text"}</Button>
+          <Button.Or />
+          <Button disabled={myTexts.length===0} onClick={() => setTexts([])}>Remove all texts</Button>
+        </Button.Group>
         {metadata.gradeSystem==='CLIMBING' &&
           <>
-            <Button.Group size="tiny">
-              <Button onClick={onAddText}>{addText? "Click on image to add text" : "Add text"}</Button>
-              <Button.Or />
-              <Button disabled={myTexts.length===0} onClick={() => setTexts([])}>Remove all texts</Button>
-            </Button.Group>
             {' '}
             <Button.Group size="tiny">
               <Button onClick={onAddAnchor}>{addAnchor? "Click on image to add extra anchor" : "Add extra anchor"}</Button>
