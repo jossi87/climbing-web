@@ -20,13 +20,14 @@ const Problem = () => {
   const [data, setData] = useState(null);
   const [showTickModal, setShowTickModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(false);
+  const [showHiddenMedia, setShowHiddenMedia] = useState(false);
   const [reload, setReload] = useState(true);
   let { problemId } = useParams<ProblemIdParams>();
   let history = useHistory();
 
   useEffect(() => {
     if (!loading && (reload || (data != null && data.id!=problemId))) {
-      getProblem(accessToken, parseInt(problemId)).then((data) => {
+      getProblem(accessToken, parseInt(problemId), showHiddenMedia).then((data) => {
         setData(data);
         setReload(false);
       });
@@ -233,6 +234,17 @@ const Problem = () => {
                   <Icon name='comment' />
                 </Button.Content>
               </Button>
+              {data.metadata.isAdmin &&
+                <Button positive={showHiddenMedia} animated='fade' onClick={() => {
+                  setShowHiddenMedia(!showHiddenMedia);
+                  setReload(true);
+                }}>
+                  <Button.Content hidden>Images</Button.Content>
+                  <Button.Content visible>
+                    <Icon name='eye' />
+                  </Button.Content>
+                </Button>
+              }
               {data.metadata.isAdmin?
                 <Button animated='fade' as={Link} to={`/problem/edit/${data.sectorId}-${data.id}`}>
                   <Button.Content hidden>Edit</Button.Content>

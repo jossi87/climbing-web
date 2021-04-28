@@ -198,8 +198,8 @@ export function getProblemHse(accessToken: string): Promise<any> {
   });
 }
 
-export function getProblem(accessToken: string, id: number): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/problems?id=${id}`, null)
+export function getProblem(accessToken: string, id: number, showHiddenMedia: boolean): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/problems?id=${id}&showHiddenMedia=${showHiddenMedia}`, null)
   .then((response) => response.json())
   .then((data) => {
     if (data.redirectUrl && data.redirectUrl!=window.location.href) {
@@ -257,7 +257,7 @@ export function getProblemEdit(accessToken: string, sectorIdProblemId: string): 
       return null;
     });
   } else {
-    return getProblem(accessToken, problemId)
+    return getProblem(accessToken, problemId, false)
     .then((res) => {
       let m = res.metadata;
       if (res.sectorLat && res.sectorLng && parseFloat(res.sectorLat)>0) {
@@ -355,7 +355,7 @@ export function getSvgEdit(accessToken: string, problemIdMediaId: string): Promi
   const parts = problemIdMediaId.split("-");
   const problemId = parts[0];
   const mediaId = parts[1];
-  return makeAuthenticatedRequest(accessToken, `/problems?id=${problemId}`, null)
+  return makeAuthenticatedRequest(accessToken, `/problems?id=${problemId}&showHiddenMedia=true`, null)
   .then((data) => data.json())
   .then((res) => {
     const m = res.media.filter(x => x.id==mediaId)[0];

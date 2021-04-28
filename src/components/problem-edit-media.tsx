@@ -20,7 +20,7 @@ const ProblemEditMedia = () => {
   let location = useLocation();
   useEffect(() => {
     if (problemId && accessToken) {
-      getProblem(accessToken, parseInt(problemId)).then((data) => {
+      getProblem(accessToken, parseInt(problemId), false).then((data) => {
         setId(data.id);
         setIsMultiPitch(data.sections && data.sections.length>1);
       });
