@@ -19,7 +19,7 @@ const Problem = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState(null);
   const [showTickModal, setShowTickModal] = useState(false);
-  const [showCommentModal, setShowCommentModal] = useState(false);
+  const [showCommentModal, setShowCommentModal] = useState(null);
   const [showHiddenMedia, setShowHiddenMedia] = useState(false);
   const [reload, setReload] = useState(true);
   let { problemId } = useParams<ProblemIdParams>();
@@ -39,10 +39,24 @@ const Problem = () => {
     setData(prevState => ({ ...prevState, media: newMedia }));
   }
 
-  function flagAsDangerous(id) {
+  function flagAsDangerous({ id, message }) {
     if (confirm('Are you sure you want to flag this comment?')) {
       setData(null);
-      postComment(accessToken, id, -1, null, true, false)
+      postComment(accessToken, id, data.id, message, true, false, false)
+        .then((response) => {
+          setReload(true);
+        })
+        .catch((error) => {
+          console.warn(error);
+          alert(error.toString());
+        });
+    }
+  }
+
+  function deleteComment({ id }) {
+    if (confirm('Are you sure you want to delete this comment?')) {
+      setData(null);
+      postComment(accessToken, id, data.id, null, false, false, true)
         .then((response) => {
           setReload(true);
         })
@@ -75,12 +89,8 @@ const Problem = () => {
   }
 
   function closeCommentModal() {
-    setShowCommentModal(false);
+    setShowCommentModal(null);
     setReload(true);
-  }
-
-  function openCommentModal() {
-    setShowCommentModal(true);
   }
 
   if (!data || reload) {
@@ -161,14 +171,20 @@ const Problem = () => {
           if (c.danger) {
             extra = <Label color="red">Flagged as dangerous</Label>;
           } else if (c.resolved) {
-            extra = <Label color="green">Flagged as safe</Label>;
+            extra = <Label color="green">Flagged as safe</Label>
           } else if (data.metadata && data.metadata.isAuthenticated && data.metadata.gradeSystem==='CLIMBING') {
-            extra = <Button basic size="tiny" compact onClick={() => flagAsDangerous(c.id)}>Flag as dangerous</Button>;
+            extra = <Button basic size="tiny" compact onClick={() => flagAsDangerous(c)}>Flag as dangerous</Button>;
           }
           return (
             <Comment key={i}>
               <Comment.Avatar src={c.picture? c.picture : '/png/image.png'} />
               <Comment.Content>
+                {c.editable &&
+                  <Button.Group size="tiny" basic compact floated="right">
+                    <Button onClick={() => setShowCommentModal(c)} icon="edit" />
+                    <Button onClick={() => deleteComment(c)} icon="trash" />
+                  </Button.Group>
+                }
                 <Comment.Author as={Link} to={`/user/${c.idUser}`}>{c.name}</Comment.Author>
                 <Comment.Metadata>{c.date}</Comment.Metadata>
                 <Comment.Text><Linkify>{c.message}</Linkify></Comment.Text>
@@ -211,7 +227,8 @@ const Problem = () => {
         <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
       </MetaTags>
       {tickModal}
-      <CommentModal accessToken={accessToken} idProblem={data.id} open={showCommentModal} onClose={closeCommentModal} showHse={data.metadata.gradeSystem==='CLIMBING'}/>
+      <CommentModal accessToken={accessToken} open={showCommentModal? true : false} onClose={closeCommentModal} showHse={data.metadata.gradeSystem==='CLIMBING'}
+        id={showCommentModal?.id} idProblem={data.id} initMessage={showCommentModal?.message} initDanger={showCommentModal?.danger} initResolved={showCommentModal?.resolved} />
       <div style={{marginBottom: '5px'}}>
         <div style={{float: 'right'}}>
           {data.metadata && data.metadata.isAuthenticated &&
@@ -228,7 +245,7 @@ const Problem = () => {
                   <Icon name='check' />
                 </Button.Content>
               </Button>
-              <Button animated='fade' onClick={openCommentModal}>
+              <Button animated='fade' onClick={() => setShowCommentModal({id: -1, idProblem: data.id, danger: false, resolved: false})}>
                 <Button.Content hidden>Comment</Button.Content>
                 <Button.Content visible>
                   <Icon name='comment' />

@@ -504,10 +504,10 @@ export function postArea(accessToken: string, id: number, lockedAdmin: number, l
   }).then((data) => data.json());
 }
 
-export function postComment(accessToken: string, id: number, idProblem: number, comment: string, danger: boolean, resolved: boolean): Promise<any> {
+export function postComment(accessToken: string, id: number, idProblem: number, comment: string, danger: boolean, resolved: boolean, del: boolean): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/comments`,{
     method: 'POST',
-    body: JSON.stringify({id, idProblem, comment, danger, resolved}),
+    body: JSON.stringify({id, idProblem, comment, danger, resolved, delete: del}),
     headers: {
       'Content-Type': 'application/json'
     }

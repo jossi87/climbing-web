@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { postComment } from './../../../api';
 import { Button, Modal, Form, TextArea } from 'semantic-ui-react';
 
-const CommentModal = ({ open, showHse, accessToken, idProblem, onClose }) => {
+const CommentModal = ({ open, showHse, accessToken, onClose, id, idProblem, initMessage, initDanger, initResolved }) => {
   const [comment, setComment] = useState(null);
   const [danger, setDanger] = useState(false);
   const [resolved, setResolved] = useState(false);
+
+  useEffect(() => {
+    setComment(initMessage)
+    setDanger(initDanger);
+    setResolved(initResolved);
+  }, [initMessage, initDanger, initResolved]);
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -42,7 +48,7 @@ const CommentModal = ({ open, showHse, accessToken, idProblem, onClose }) => {
             content="Save"
             onClick={() => {
               if (comment) {
-                postComment(accessToken, -1, idProblem, comment, danger, resolved)
+                postComment(accessToken, id, idProblem, comment, danger, resolved, false)
                 .then((response) => {
                   setComment(null);
                   setDanger(false);
