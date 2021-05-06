@@ -118,6 +118,7 @@ const Filter = () => {
             polylines={null}
             outlines={null}
             onClick={null}
+            showSateliteImage={false} 
             clusterMarkers={true}
             />
           <List selection verticalAlign='middle'>

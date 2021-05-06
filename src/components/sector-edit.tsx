@@ -191,6 +191,7 @@ const SectorEdit = () => {
               onClick={onMapClick}
               history={history}
               height={'300px'}
+              showSateliteImage={true} 
               clusterMarkers={false}
             />
           </Form.Field>

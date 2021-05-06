@@ -325,6 +325,7 @@ const ProblemEdit = () => {
               polylines={null}
               outlines={null}
               height={'300px'}
+              showSateliteImage={true} 
               clusterMarkers={false}
             />
           </Form.Field>

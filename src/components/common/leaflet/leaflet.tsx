@@ -20,7 +20,7 @@ function MapEvent({ onClick }) {
   return null
 }
 
-const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defaultCenter, defaultZoom, onClick, clusterMarkers }) => {
+const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defaultCenter, defaultZoom, onClick, clusterMarkers, showSateliteImage }) => {
   let bounds = null;
   if (autoZoom && ((markers && markers.length > 0) || (outlines && outlines.length > 0) || (polylines && polylines.length > 0))) {
     bounds = latLngBounds([]);
@@ -43,7 +43,6 @@ const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defa
   if (clusterMarkers) {
     markerGroup = <MarkerClusterGroup>{markerGroup}</MarkerClusterGroup>
   }
-  let showSateliteImage = !clusterMarkers && autoZoom;
   return (
     <MapContainer
       style={{height: (height? height : '500px'), width: '100%', zIndex: 0}}

@@ -71,6 +71,7 @@ const Todo = () => {
               polylines={null}
               outlines={null}
               onClick={null}
+              showSateliteImage={false}
               clusterMarkers={true}
             />
             <List celled>
