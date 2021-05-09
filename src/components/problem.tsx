@@ -340,8 +340,22 @@ const Problem = () => {
                 </Label>
               ))}</>}
               {data.comment && data.comment.trim().length>0 && <Linkify><br/>{data.comment}</Linkify>}
+              {data.metadata.gradeSystem==='ICE' &&
+                <>
+                  <br/><b>Starting altitude: </b>{data.startingAltitude}
+                  <br/><b>Aspect: </b>{data.aspect}
+                  <br/><b>Route length: </b>{data.routeLength}
+                  <br/><b>Descent: </b>{data.descent}
+                </>
+              }
             </Table.Cell>
           </Table.Row>
+          {data.trivia && 
+            <Table.Row>
+              <Table.Cell>Trivia:</Table.Cell>
+              <Table.Cell>{data.trivia}</Table.Cell>
+            </Table.Row>
+          }
           {data.ticks &&
             <Table.Row>
               <Table.Cell>Public ascents:</Table.Cell>

@@ -105,6 +105,26 @@ const ProblemEdit = () => {
     setData(prevState => ({ ...prevState, faAid }));
   }
 
+  function onTriviaChanged(e, { value }) {
+    setData(prevState => ({ ...prevState, trivia: value }));
+  }
+
+  function onStartingAltitudeChanged(e, { value }) {
+    setData(prevState => ({ ...prevState, startingAltitude: value }));
+  }
+
+  function onAspectChanged(e, { value }) {
+    setData(prevState => ({ ...prevState, aspect: value }));
+  }
+
+  function onRouteLengthChanged(e, { value }) {
+    setData(prevState => ({ ...prevState, routeLength: value }));
+  }
+
+  function onDescentChanged(e, { value }) {
+    setData(prevState => ({ ...prevState, descent: value }));
+  }
+
   function save(event) {
     event.preventDefault();
     setSaving(true);
@@ -125,7 +145,9 @@ const ProblemEdit = () => {
       data.lng,
       data.sections,
       data.newMedia,
-      data.faAid)
+      data.faAid,
+      data.trivia,
+      data.startingAltitude, data.aspect, data.routeLength, data.descent)
     .then((response) => {
       history.push("/problem/" + response.id);
     })
@@ -267,6 +289,45 @@ const ProblemEdit = () => {
             style={{ minHeight: 100 }}
             value={data.comment}
             onChange={onCommentChanged} />
+          <Form.Field
+            label="Trivia (e.g. name origin)"
+            control={TextArea}
+            placeholder='Enter trivia'
+            style={{ minHeight: 100 }}
+            value={data.trivia}
+            onChange={onTriviaChanged} />
+          {data.metadata.gradeSystem==='ICE' &&
+            <>
+              <Form.Field
+                label="Starting altitude"
+                control={Input}
+                placeholder="Enter starting altitude"
+                value={data.startingAltitude}
+                onChange={onStartingAltitudeChanged}
+              />
+              <Form.Field
+                label="Aspect"
+                control={Input}
+                placeholder="Enter aspect"
+                value={data.aspect}
+                onChange={onAspectChanged}
+              />
+              <Form.Field
+                label="Route length"
+                control={Input}
+                placeholder="Enter route length"
+                value={data.routeLength}
+                onChange={onRouteLengthChanged}
+              />
+              <Form.Field
+                label="Descent"
+                control={Input}
+                placeholder="Enter descent"
+                value={data.descent}
+                onChange={onDescentChanged}
+              />
+            </>
+          }
         </Segment>
           
         <Segment>
