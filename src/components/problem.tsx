@@ -42,7 +42,7 @@ const Problem = () => {
   function flagAsDangerous({ id, message }) {
     if (confirm('Are you sure you want to flag this comment?')) {
       setData(null);
-      postComment(accessToken, id, data.id, message, true, false, false)
+      postComment(accessToken, id, data.id, message, true, false, false, [])
         .then((response) => {
           setReload(true);
         })
@@ -56,7 +56,7 @@ const Problem = () => {
   function deleteComment({ id }) {
     if (confirm('Are you sure you want to delete this comment?')) {
       setData(null);
-      postComment(accessToken, id, data.id, null, false, false, true)
+      postComment(accessToken, id, data.id, null, false, false, true, [])
         .then((response) => {
           setReload(true);
         })
@@ -187,7 +187,10 @@ const Problem = () => {
                 }
                 <Comment.Author as={Link} to={`/user/${c.idUser}`}>{c.name}</Comment.Author>
                 <Comment.Metadata>{c.date}</Comment.Metadata>
-                <Comment.Text><Linkify>{c.message}</Linkify></Comment.Text>
+                <Comment.Text>
+                  <Linkify>{c.message}</Linkify>
+                  {c.media && c.media.length>0 && <Media isAdmin={false} removeMedia={() => window.location.reload()} media={c.media} optProblemId={null} />}
+                </Comment.Text>
                 {extra && <Comment.Actions>{extra}</Comment.Actions>}
               </Comment.Content>
             </Comment>

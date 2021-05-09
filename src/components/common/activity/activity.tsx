@@ -161,6 +161,32 @@ const Activity = ({ metadata, idArea, idSector }) => {
                 </Feed.Event>
               )
             }
+            // Guestbook
+            else if (a.message) {
+              return (
+                <Feed.Event key={i}>
+                  <Feed.Label>
+                    {a.picture && <img src={a.picture} />}
+                  </Feed.Label>
+                  <Feed.Content>
+                    <Feed.Summary>
+                      <Feed.User as={Link} to={`/user/${a.id}`} style={{color: "black"}}>{a.name}</Feed.User> posted a comment on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}<LockSymbol lockedAdmin={a.problemLockedAdmin} lockedSuperadmin={a.problemLockedSuperadmin} /><Feed.Date>{a.timeAgo}</Feed.Date>
+                    </Feed.Summary>
+                    <Feed.Extra text>
+                      {a.message}
+                    </Feed.Extra>
+                    {a.media &&
+                      <LazyLoad>
+                        <Feed.Extra images as={Link} to={`/problem/${a.problemId}`}>
+                          {a.media.map((m, i) => (<Image key={i} style={imgStyle} src={getImageUrl(m.id, 85)}/>))}
+                        </Feed.Extra>
+                        <br/>
+                      </LazyLoad>
+                    }
+                  </Feed.Content>
+                </Feed.Event>
+              )
+            }
             // Media
             else if (a.media) {
               const numImg = a.media.filter(m => !m.isMovie).length;
@@ -189,24 +215,6 @@ const Activity = ({ metadata, idArea, idSector }) => {
                         {a.media.map((m, i) => (<Image key={i} style={imgStyle} src={getImageUrl(m.id, 85)} onError={i => i.target.src='/png/video_placeholder.png'} />))}
                       </Feed.Extra>
                     </LazyLoad>
-                  </Feed.Content>
-                </Feed.Event>
-              )
-            }
-            // Guestbook
-            else if (a.message) {
-              return (
-                <Feed.Event key={i}>
-                  <Feed.Label>
-                    {a.picture && <img src={a.picture} />}
-                  </Feed.Label>
-                  <Feed.Content>
-                    <Feed.Summary>
-                      <Feed.User as={Link} to={`/user/${a.id}`} style={{color: "black"}}>{a.name}</Feed.User> posted a comment on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}<LockSymbol lockedAdmin={a.problemLockedAdmin} lockedSuperadmin={a.problemLockedSuperadmin} /><Feed.Date>{a.timeAgo}</Feed.Date>
-                    </Feed.Summary>
-                    <Feed.Extra text>
-                      {a.message}
-                    </Feed.Extra>
                   </Feed.Content>
                 </Feed.Event>
               )

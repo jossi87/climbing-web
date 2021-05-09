@@ -125,10 +125,11 @@ const AreaEdit = () => {
 
         <Segment>
           <Form.Field
-            label="Upload image(s) or embed video(s)"
+            label="Upload image(s)"
             control={ImageUpload}
             onMediaChanged={onNewMediaChanged}
-            isMultiPitch={false} />
+            isMultiPitch={false}
+            includeVideoEmbedder={false} />
         </Segment>
 
         <Segment>

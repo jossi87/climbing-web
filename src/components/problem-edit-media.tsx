@@ -48,7 +48,7 @@ const ProblemEditMedia = () => {
     <Segment>
       <h3>Upload image(s) or embed video(s)</h3>
       <form onSubmit={save}>
-        <ImageUpload onMediaChanged={(newMedia) => setMedia(newMedia)} isMultiPitch={isMultiPitch} />
+        <ImageUpload onMediaChanged={(newMedia) => setMedia(newMedia)} isMultiPitch={isMultiPitch} includeVideoEmbedder={true} />
         <Button.Group>
           <Button onClick={() => history.push(`/problem/${id}`)}>Cancel</Button>
           <Button.Or />

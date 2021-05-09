@@ -3,7 +3,7 @@ import fetch from 'isomorphic-fetch';
 export function getBaseUrl(): string {
   var origin = window.origin;
   if (origin === 'http://localhost:3000') {
-    origin = 'https://is.brattelinjer.no';
+    origin = 'https://brattelinjer.no';
   }
   return origin;
 }
@@ -514,12 +514,17 @@ export function postArea(accessToken: string, id: number, lockedAdmin: number, l
   }).then((data) => data.json());
 }
 
-export function postComment(accessToken: string, id: number, idProblem: number, comment: string, danger: boolean, resolved: boolean, del: boolean): Promise<any> {
+export function postComment(accessToken: string, id: number, idProblem: number, comment: string, danger: boolean, resolved: boolean, del: boolean, media: any): Promise<any> {
+  const formData = new FormData();
+  const newMedia = media.map(m => {return {name: m.file && m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto, pitch: m.pitch, description: m.description, embedVideoUrl: m.embedVideoUrl, embedThumbnailUrl: m.embedThumbnailUrl, embedMilliseconds: m.embedMilliseconds}});
+  formData.append('json', JSON.stringify({id, idProblem, comment, danger, resolved, delete: del, newMedia}));
+  media.forEach(m => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
+  
   return makeAuthenticatedRequest(accessToken, `/comments`,{
     method: 'POST',
-    body: JSON.stringify({id, idProblem, comment, danger, resolved, delete: del}),
+    body: formData,
     headers: {
-      'Content-Type': 'application/json'
+      'Accept': 'application/json'
     }
   });
 }
