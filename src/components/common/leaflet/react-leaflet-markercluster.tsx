@@ -9,7 +9,7 @@ const MarkerClusterGroup = createPathComponent((
   { children: _c, ...props },
   ctx
 ) => {
-  const clusterProps = {maxClusterRadius: 18, disableClusteringAtZoom: 21, spiderfyOnMaxZoom: true};
+  const clusterProps = {maxClusterRadius: 18, spiderfyOnMaxZoom: true};
   const clusterEvents = {};
 
   // Splitting props and events to different objects

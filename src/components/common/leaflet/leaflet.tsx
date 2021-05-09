@@ -66,6 +66,7 @@ const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defa
 
         <LayersControl.BaseLayer checked={!showSateliteImage} name="OpenStreetMap">
           <TileLayer
+            maxZoom={19}
             attribution='<a href="https://openstreetmap.org/copyright" rel="noopener" target="_blank">OpenStreetMap contributors</a>'
             url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
           />
@@ -73,6 +74,7 @@ const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defa
 
         <LayersControl.BaseLayer name="Kartverket N50 topo">
           <TileLayer
+            maxZoom={19}
             attribution='<a href="http://www.kartverket.no/">Kartverket</a>'
             url='https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}'
           />
