@@ -48,7 +48,8 @@ const UserMedia = () => {
       <Media isAdmin={false}
         removeMedia={null}
         media={data.media}
-        optProblemId={null} />
+        optProblemId={null}
+        isBouldering={data.metadata.gradeSystem==='BOULDER'} />
     </Segment>
   );
 }

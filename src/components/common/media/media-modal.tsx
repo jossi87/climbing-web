@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimmer, Button, Icon, Image, Modal, Header, ButtonGroup, Embed, Container, Dropdown } from 'semantic-ui-react';
+import { Dimmer, Button, Icon, Image, Modal, Header, ButtonGroup, Embed, Container, Dropdown, List } from 'semantic-ui-react';
 import { getBuldreinfoMediaUrl, getImageUrl } from '../../../api';
 import ReactPlayer from 'react-player';
 import Svg from './svg';
@@ -50,7 +50,7 @@ const style = {
   },
 }
 
-const MediaModal = ({ isAdmin, onClose, onDelete, onMoveImageLeft, onMoveImageRight, m, length, gotoPrev, gotoNext, playVideo, autoPlayVideo, optProblemId }) => {
+const MediaModal = ({ isAdmin, onClose, onDelete, onMoveImageLeft, onMoveImageRight, m, length, gotoPrev, gotoNext, playVideo, autoPlayVideo, optProblemId, isBouldering }) => {
   let history = useHistory();
   let myPlayer;
   let content;
@@ -120,6 +120,98 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onMoveImageLeft, onMoveImageRi
             </Modal.Description>
           </Modal.Content>
         </Modal>
+        {!isBouldering && m.svgs &&
+          <Modal trigger={<Button icon="help" />}>
+            <Modal.Content image>
+              <Modal.Description>
+                <Header>Topo</Header>
+                <List divided relaxed>
+                  <List.Item>
+                    <List.Header>Line shapes:</List.Header>
+                    <List bulleted>
+                      <List.Item>
+                        <List.Content>
+                          <List.Header>Dotted line</List.Header>
+                          <List.Description>Bolted sport route</List.Description>
+                        </List.Content>
+                      </List.Item>
+                      <List.Item>
+                        <List.Content>
+                          <List.Header>Unbroken line</List.Header>
+                          <List.Description>Traditionally protected route</List.Description>
+                        </List.Content>
+                      </List.Item>
+                    </List>
+                  </List.Item>
+                  <List.Item>
+                    <List.Header>Line colors:</List.Header>
+                    <List bulleted>
+                      <List.Item>
+                        <List.Content>
+                          <List.Header>White</List.Header>
+                          <List.Description>Project</List.Description>
+                        </List.Content>
+                      </List.Item>
+                      <List.Item>
+                        <List.Content>
+                          <List.Header>Green</List.Header>
+                          <List.Description>Grade 3, 4 and 5</List.Description>
+                        </List.Content>
+                      </List.Item>
+                      <List.Item>
+                        <List.Content>
+                          <List.Header>Yellow</List.Header>
+                          <List.Description>Grade 7</List.Description>
+                        </List.Content>
+                      </List.Item>
+                      <List.Item>
+                        <List.Content>
+                          <List.Header>Red</List.Header>
+                          <List.Description>Grade 8</List.Description>
+                        </List.Content>
+                      </List.Item>
+                      <List.Item>
+                        <List.Content>
+                          <List.Header>Magenta</List.Header>
+                          <List.Description>Grade 9 and 10</List.Description>
+                        </List.Content>
+                      </List.Item>
+                    </List>
+                  </List.Item>
+                  <List.Item>
+                    <List.Header>Number colors:</List.Header>
+                    <List bulleted>
+                      <List.Item>
+                        <List.Content>
+                          <List.Header>Green</List.Header>
+                          <List.Description>Ticked</List.Description>
+                        </List.Content>
+                      </List.Item>
+                      <List.Item>
+                        <List.Content>
+                          <List.Header>Blue</List.Header>
+                          <List.Description>In todo-list</List.Description>
+                        </List.Content>
+                      </List.Item>
+                      <List.Item>
+                        <List.Content>
+                          <List.Header>Red</List.Header>
+                          <List.Description>Flagged as dangerous</List.Description>
+                        </List.Content>
+                      </List.Item>
+                      <List.Item>
+                        <List.Content>
+                          <List.Header>White</List.Header>
+                          <List.Description>Default color</List.Description>
+                        </List.Content>
+                      </List.Item>
+                    </List>
+                  </List.Item>
+                </List>
+              </Modal.Description>
+            </Modal.Content>
+          </Modal>
+        }
         <Button icon="close" onClick={onClose} />
       </ButtonGroup>
       {length > 1 &&

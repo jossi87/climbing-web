@@ -10,7 +10,7 @@ import { LoadingAndRestoreScroll } from '../widgets/widgets';
 
 const style = {objectFit: 'cover', position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, width: '100%', height: '100%'};
 
-const Media = ({ media, removeMedia, isAdmin, optProblemId }) => {
+const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
   let history = useHistory();
   const [m, setM] = useState(null)
   const [autoPlayVideo, setAutoPlayVideo] = useState(false)
@@ -134,6 +134,7 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId }) => {
           gotoNext={gotoNext}
           playVideo={playVideo}
           optProblemId={optProblemId}
+          isBouldering={isBouldering}
         />
       }
       <Card.Group itemsPerRow={5} doubling>

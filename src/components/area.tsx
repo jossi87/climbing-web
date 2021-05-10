@@ -60,7 +60,7 @@ const Area = () => {
     panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Media isAdmin={data.metadata.isAdmin} removeMedia={(idMediaToRemove) => {
       let newMedia = data.media.filter(m => m.id!=idMediaToRemove);
       setData(prevState => ({ ...prevState, media: newMedia }));
-    }} media={data.media} optProblemId={null} /></Tab.Pane> });
+    }} media={data.media} optProblemId={null} isBouldering={data.metadata.gradeSystem==='BOULDER'} /></Tab.Pane> });
   }
   if (markers.length>0 || outlines.length>0 || (data.lat && data.lat>0)) {
     const defaultCenter = data.lat && data.lat>0? {lat: data.lat, lng: data.lng} : data.metadata.defaultCenter;
