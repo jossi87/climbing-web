@@ -140,7 +140,7 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
       <Card.Group itemsPerRow={5} doubling>
         {media.map((x, i) => {
           let content;
-          if (x.svgs) {
+          if (x.svgs || x.mediaSvgs) {
             content = <Svg close={null} thumb={true} m={x} key={i} style={style} optProblemId={optProblemId}/>;
           }
           else {

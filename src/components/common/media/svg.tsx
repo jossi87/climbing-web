@@ -95,6 +95,25 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
       );
     });
   }
+
+  function generateDescents(mediaSvgs) {
+    let res = [];
+    if (mediaSvgs && mediaSvgs.length>0) {
+      let deltaPercent = 3;
+      let texts = [];
+      for (var i = 0; i <= 100; i+=deltaPercent) {
+        texts.push(<textPath xlinkHref="#descent" startOffset={i+"%"}>➤</textPath>);
+      }
+      res = mediaSvgs.map((svg, key) => (
+        <g opacity={0.8} key={key}>
+          <path id="descent" style={{fill: "none"}} strokeWidth={0} d={svg.path}/>
+          <text fontSize={0.015*scale*(thumb? 2 : 1)} fontWeight="bolder" style={{ fill: 'black', dominantBaseline: 'central'}}>{texts}</text>
+          <text fontSize={0.015*scale*(thumb? 2 : 1)} style={{ fill: 'white', dominantBaseline: 'central'}}>{texts}</text>
+        </g>
+      ));
+    }
+    return res;
+  }
   
   let info;
   if (!thumb && optProblemId && optProblemId>0 && m.svgs.filter(x => x.problemId===optProblemId).length===1) {
@@ -113,6 +132,7 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
     }
     info = <text xmlSpace="preserve" dominantBaseline="text-before-edge" filter="url(#solid)" fontSize={0.02*scale} fontWeight="bolder" fill="white"> {text} </text>;
   }
+
   return (
     <>
       <canvas className="buldreinfo-svg-canvas" width={m.width} height={m.height} style={style}></canvas>
@@ -128,6 +148,7 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
           </filter>
         </defs>
         <image xlinkHref={getImageUrl(m.id, m.embedUrl)} width="100%" height="100%"/>
+        {generateDescents(m.mediaSvgs)}
         <g key={optProblemId} className={thumb? "" : "buldreinfo-svg-sibling-fade"}>
           {generateShapes(m.svgs, m.width, m.height)}
         </g>
