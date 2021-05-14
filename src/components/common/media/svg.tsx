@@ -96,22 +96,38 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
     });
   }
 
-  function generateDescents(mediaSvgs) {
+  function generateMediaSvgShapes(mediaSvgs) {
     let res = [];
     if (mediaSvgs && mediaSvgs.length>0) {
       let deltaPercent = 3;
       res = mediaSvgs.map((svg, key) => {
-        let texts = [];
-        for (var i = 0; i <= 100; i+=deltaPercent) {
-          texts.push(<textPath xlinkHref={"#descent" + key} startOffset={i+"%"}>➤</textPath>);
+        if (svg.t==='PATH') {
+          let texts = [];
+          for (var i = 0; i <= 100; i+=deltaPercent) {
+            texts.push(<textPath xlinkHref={"#descent" + key} startOffset={i+"%"}>➤</textPath>);
+          }
+          return (
+            <g opacity={0.8} key={key}>
+              <path id={"descent" + key} style={{fill: "none"}} strokeWidth={0} d={svg.path}/>
+              <text fontSize={0.015*scale*(thumb? 2 : 1)} fontWeight="bolder" style={{ fill: 'black', dominantBaseline: 'central'}}>{texts}</text>
+              <text fontSize={0.015*scale*(thumb? 2 : 1)} style={{ fill: 'white', dominantBaseline: 'central'}}>{texts}</text>
+            </g>
+          )
+        } else if (svg.t==='RAPPEL') {
+          const x = svg.rappelX;
+          const y = svg.rappelY;
+          const strokeWidth = 0.0026*m.width;
+          const r = 0.01*m.height;
+          return (
+            <g opacity={0.8} key={key} strokeLinecap="round">
+              <circle cx={x} cy={y} r={r} fill="none" strokeWidth={strokeWidth} stroke="white" />
+              <line x1={x-r} y1={y} x2={x+r} y2={y} strokeWidth={strokeWidth} stroke="white" />
+              <line x1={x} y1={y+r} x2={x} y2={y+r+r+r} strokeWidth={strokeWidth} stroke="white" />
+              <line x1={x-r} y1={y+r+r} x2={x} y2={y+r+r+r} strokeWidth={strokeWidth} stroke="white" />
+              <line x1={x+r} y1={y+r+r} x2={x} y2={y+r+r+r} strokeWidth={strokeWidth} stroke="white" />
+            </g>
+          );
         }
-        return (
-          <g opacity={0.8} key={key}>
-            <path id={"descent" + key} style={{fill: "none"}} strokeWidth={0} d={svg.path}/>
-            <text fontSize={0.015*scale*(thumb? 2 : 1)} fontWeight="bolder" style={{ fill: 'black', dominantBaseline: 'central'}}>{texts}</text>
-            <text fontSize={0.015*scale*(thumb? 2 : 1)} style={{ fill: 'white', dominantBaseline: 'central'}}>{texts}</text>
-          </g>
-        )
       });
     }
     return res;
@@ -150,7 +166,7 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
           </filter>
         </defs>
         <image xlinkHref={getImageUrl(m.id, m.embedUrl)} width="100%" height="100%"/>
-        {generateDescents(m.mediaSvgs)}
+        {generateMediaSvgShapes(m.mediaSvgs)}
         <g key={optProblemId} className={thumb? "" : "buldreinfo-svg-sibling-fade"}>
           {generateShapes(m.svgs, m.width, m.height)}
         </g>

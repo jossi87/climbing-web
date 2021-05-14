@@ -83,6 +83,13 @@ const SvgEdit = () => {
       setActivePoint(points.length - 1);
       setForceUpdate(forceUpdate+1);
     }
+    else if (activeElementIndex>=0 && data.m.mediaSvgs[activeElementIndex].t==='RAPPEL') {
+      let coords = getMouseCoords(e);
+      data.m.mediaSvgs[activeElementIndex].rappelX = coords.x;
+      data.m.mediaSvgs[activeElementIndex].rappelY = coords.y;
+      setData(data);
+      setForceUpdate(forceUpdate+1);
+    }
   };
 
   function generatePath(points) {
@@ -195,8 +202,8 @@ const SvgEdit = () => {
       const p = generatePath(points);
       data.m.mediaSvgs[activeElementIndex].path = p;
       data.m.mediaSvgs[activeElementIndex].points = points;
-      setData(data);
       setActivePoint(data.m.mediaSvgs[activeElementIndex].points.length-1);
+      setData(data);
     }
   };
 
@@ -218,7 +225,7 @@ const SvgEdit = () => {
     return <InsufficientPrivileges />
   }
 
-  var circles = activeElementIndex>=0 && data.m.mediaSvgs[activeElementIndex].points.map((p, i, a) => {
+  const circles = activeElementIndex>=0 && data.m.mediaSvgs[activeElementIndex] && data.m.mediaSvgs[activeElementIndex].t==='PATH' && data.m.mediaSvgs[activeElementIndex].points.map((p, i, a) => {
     var anchors = [];
     if (p.c) {
       anchors.push(
@@ -237,6 +244,24 @@ const SvgEdit = () => {
       </g>
     );
   });
+
+  let rappels = null;
+  if (activeElementIndex>=0 && data.m.mediaSvgs[activeElementIndex] && data.m.mediaSvgs[activeElementIndex].t==='RAPPEL') {
+    const x = data.m.mediaSvgs[activeElementIndex].rappelX;
+    const y = data.m.mediaSvgs[activeElementIndex].rappelY;
+    const strokeWidth = 0.0026*data.m.width;
+    const r = 0.01*data.m.height;
+    rappels = (
+      <g strokeLinecap="round">
+        <circle cx={x} cy={y} r={r} fill="none" strokeWidth={strokeWidth} stroke="red" />
+        <line x1={x-r} y1={y} x2={x+r} y2={y} strokeWidth={strokeWidth} stroke="red" />
+        <line x1={x} y1={y+r} x2={x} y2={y+r+r+r} strokeWidth={strokeWidth} stroke="red" />
+        <line x1={x-r} y1={y+r+r} x2={x} y2={y+r+r+r} strokeWidth={strokeWidth} stroke="red" />
+        <line x1={x+r} y1={y+r+r} x2={x} y2={y+r+r+r} strokeWidth={strokeWidth} stroke="red" />
+      </g>
+    );
+  }
+
   return (
     <Container onMouseUp={cancelDragging} onMouseLeave={cancelDragging}>
       <Segment style={{minHeight: '130px'}}>
@@ -247,10 +272,37 @@ const SvgEdit = () => {
           <Button.Or />
           <Button positive onClick={save}>Save</Button>
         </Button.Group>
+        <Button.Group size="mini">
+          <Button size="mini" onClick={() => {
+            let element = {t: "PATH", id: -1, path: "", points: []};
+            if (!data.m.mediaSvgs) {
+              data.m.mediaSvgs = [];
+            }
+            data.m.mediaSvgs.push(element);
+            setData(data);
+            setActiveElementIndex(data.m.mediaSvgs.length-1);
+            setActivePoint(0);
+            setDraggedPoint(false);
+            setDraggedCubic(false);
+          }}>Add descent</Button>
+          <Button.Or />
+          <Button size="mini" onClick={() => {
+            let element = {t: "RAPPEL", id: -1, rappelX: data.m.width/2, rappelY: data.m.height/2};
+            if (!data.m.mediaSvgs) {
+              data.m.mediaSvgs = [];
+            }
+            data.m.mediaSvgs.push(element);
+            setData(data);
+            setActiveElementIndex(data.m.mediaSvgs.length-1);
+            setActivePoint(0);
+            setDraggedPoint(false);
+            setDraggedCubic(false);
+          }}>Add rappel</Button>
+        </Button.Group>
         <Label.Group>
           {data.m.mediaSvgs && data.m.mediaSvgs.map((svg, index) => (
             <Label as="a" image key={index} color={activeElementIndex===index? "green" : "grey"} onClick={() => {
-              if (!data.m.mediaSvgs[index].points) {
+              if (svg.t==='PATH' && !data.m.mediaSvgs[index].points) {
                 data.m.mediaSvgs[index].points = parsePath(data.m.mediaSvgs[index].path);
                 setData(data);
               }
@@ -270,21 +322,9 @@ const SvgEdit = () => {
               }}/>
             </Label>
           ))}
-          <Button size="mini" color="blue" onClick={() => {
-            let element = {t: "PATH", id: -1, path: "", points: []};
-            if (!data.m.mediaSvgs) {
-              data.m.mediaSvgs = [];
-            }
-            data.m.mediaSvgs.push(element);
-            setData(data);
-            setActiveElementIndex(data.m.mediaSvgs.length-1);
-            setActivePoint(0);
-            setDraggedPoint(false);
-            setDraggedCubic(false);
-          }}>Add descent</Button>
         </Label.Group>
         <br/>
-        {activeElementIndex>=0 && (
+        {activeElementIndex>=0 && data.m.mediaSvgs[activeElementIndex] && data.m.mediaSvgs[activeElementIndex].t==='PATH' && (
           <>
             <strong>CTRL + CLICK</strong> to add a point | <strong>CLICK</strong> to select a point | <strong>CLICK AND DRAG</strong> to move a point<br/>
             {activePoint !== 0 && (
@@ -296,12 +336,16 @@ const SvgEdit = () => {
             {activePoint !== 0 && <Button disabled={activePoint===0} onClick={removeActivePoint}>Remove this point</Button>}
           </>
         )}
+        {activeElementIndex>=0 && data.m.mediaSvgs[activeElementIndex] && data.m.mediaSvgs[activeElementIndex].t==='RAPPEL' && (
+          <><strong>CLICK</strong> to move anchor</>
+        )}
       </Segment>
       <svg viewBox={"0 0 " + data.m.width + " " + data.m.height} onClick={handleOnClick} onMouseMove={handleMouseMove} width="100%" height="100%">
         <image ref={imageRef} xlinkHref={getImageUrl(data.m.id, null)} width="100%" height="100%"/>
-        {activeElementIndex>=0 && <path style={{fill: "none", stroke: "#FF0000"}} d={data.m.mediaSvgs[activeElementIndex].path} strokeWidth={0.002*data.m.width}/>}
+        {activeElementIndex>=0 && data.m.mediaSvgs[activeElementIndex] && <path style={{fill: "none", stroke: "#FF0000"}} d={data.m.mediaSvgs[activeElementIndex].path} strokeWidth={0.002*data.m.width}/>}
         {circles}
-        {data.m.mediaSvgs && parseReadOnlySvgs(data.m.mediaSvgs.filter((svg, index) => index!=activeElementIndex && svg.path), data.m.width, data.m.height)}
+        {rappels}
+        {data.m.mediaSvgs && parseReadOnlySvgs(data.m.mediaSvgs.filter((svg, index) => index!=activeElementIndex), data.m.width, data.m.height)}
       </svg>
     </Container>
   )
