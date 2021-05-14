@@ -29,8 +29,12 @@ function generateSvgNrAndAnchor(path, nr, hasAnchor, w, h) {
   }
   return (
     <g className="buldreinfo-svg-edit-opacity">
-      <rect fill="#000000" x={x-r} y={y-r} width={r*2} height={r*1.9} rx={r/3}/>
-      <text dominantBaseline="central" textAnchor="middle" fontSize={0.015*w} fontWeight="bolder" fill="#FFFFFF" x={x} y={y}>{nr}</text>
+      {nr &&
+        <>
+          <rect fill="#000000" x={x-r} y={y-r} width={r*2} height={r*1.9} rx={r/3}/>
+          <text dominantBaseline="central" textAnchor="middle" fontSize={0.015*w} fontWeight="bolder" fill="#FFFFFF" x={x} y={y}>{nr}</text>
+        </>
+      }
       {hasAnchor && (
         <circle fill={"#000000"} cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.005*w}/>
       )}
@@ -60,7 +64,7 @@ export function parseReadOnlySvgs(readOnlySvgs, w, h) {
     const commands = parseSVG(svg.path);
     makeAbsolute(commands); // Note: mutates the commands in place!
     shapes.push(generateSvgNrAndAnchor(commands, svg.nr, svg.hasAnchor, w, h));
-    svg.anchors.map((a, i) => {
+    svg.anchors && svg.anchors.map((a, i) => {
       shapes.push(<circle key={i} className="buldreinfo-svg-edit-opacity" fill="#000000" cx={a.x} cy={a.y} r={0.006*w} />);
     });
   }

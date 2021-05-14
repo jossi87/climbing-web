@@ -11,6 +11,7 @@ const Browse = lazy(() => import('./components/browse'));
 const Ethics = lazy(() => import('./components/ethics'));
 const Frontpage = lazy(() => import('./components/frontpage'));
 const Filter = lazy(() => import('./components/filter'));
+const MediaSvgEdit = lazy(() => import('./components/media-svg-edit'));
 const Problem = lazy(() => import('./components/problem'));
 const ProblemEdit = lazy(() => import('./components/problem-edit'));
 const ProblemEditMedia = lazy(() => import('./components/problem-edit-media'));
@@ -64,6 +65,7 @@ const App = () => {
                 <Route exact path='/area/edit/:areaId'><AreaEdit/></Route>
                 <Route path='/filter'><Filter/></Route>
                 <Route path='/hse'><ProblemHse/></Route>
+                <Route exact path='/media/svg-edit/:mediaId'><MediaSvgEdit/></Route>
                 <Route path='/permissions'><Permissions/></Route>
                 <Route exact path='/problem/:problemId'><Problem/></Route>
                 <Route exact path='/problem/edit/:sectorIdProblemId'><ProblemEdit/></Route>

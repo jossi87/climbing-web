@@ -171,6 +171,15 @@ export function getGradeDistribution(accessToken: string, idArea: number, idSect
   });
 }
 
+export function getMediaSvg(accessToken: string, idMedia: number): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/media/svg?idMedia=${idMedia}`, null)
+  .then((data) => data.json())
+  .catch((error) => {
+    console.warn(error);
+    return null;
+  });
+}
+
 export function getMeta(accessToken: string): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/meta`, null)
   .then((data) => data.json())
@@ -538,6 +547,16 @@ export function postFilter(accessToken: string, grades: Array<number>, types: Ar
       'Accept': 'application/json'
     }
   }).then((data) => data.json());
+}
+
+export function postMediaSvg(accessToken: string, mediaSvg: any): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/media/svg`,{
+    method: 'POST',
+    body: JSON.stringify(mediaSvg),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
 }
 
 export function postPermissions(accessToken: string, userId: number, adminRead: boolean, adminWrite: boolean, superadminRead: boolean, superadminWrite: boolean): Promise<any> {

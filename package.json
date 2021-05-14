@@ -51,7 +51,7 @@
     "react-player": "^2.9.0",
     "react-router-dom": "^5.2.0",
     "react-router-ga": "^1.2.3",
-    "react-router-hash-link": "^2.4.1",
+    "react-router-hash-link": "^2.4.3",
     "react-select": "^4.3.1",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^2.0.3",

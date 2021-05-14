@@ -100,17 +100,19 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
     let res = [];
     if (mediaSvgs && mediaSvgs.length>0) {
       let deltaPercent = 3;
-      let texts = [];
-      for (var i = 0; i <= 100; i+=deltaPercent) {
-        texts.push(<textPath xlinkHref="#descent" startOffset={i+"%"}>➤</textPath>);
-      }
-      res = mediaSvgs.map((svg, key) => (
-        <g opacity={0.8} key={key}>
-          <path id="descent" style={{fill: "none"}} strokeWidth={0} d={svg.path}/>
-          <text fontSize={0.015*scale*(thumb? 2 : 1)} fontWeight="bolder" style={{ fill: 'black', dominantBaseline: 'central'}}>{texts}</text>
-          <text fontSize={0.015*scale*(thumb? 2 : 1)} style={{ fill: 'white', dominantBaseline: 'central'}}>{texts}</text>
-        </g>
-      ));
+      res = mediaSvgs.map((svg, key) => {
+        let texts = [];
+        for (var i = 0; i <= 100; i+=deltaPercent) {
+          texts.push(<textPath xlinkHref={"#descent" + key} startOffset={i+"%"}>➤</textPath>);
+        }
+        return (
+          <g opacity={0.8} key={key}>
+            <path id={"descent" + key} style={{fill: "none"}} strokeWidth={0} d={svg.path}/>
+            <text fontSize={0.015*scale*(thumb? 2 : 1)} fontWeight="bolder" style={{ fill: 'black', dominantBaseline: 'central'}}>{texts}</text>
+            <text fontSize={0.015*scale*(thumb? 2 : 1)} style={{ fill: 'white', dominantBaseline: 'central'}}>{texts}</text>
+          </g>
+        )
+      });
     }
     return res;
   }

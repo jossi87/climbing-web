@@ -86,14 +86,16 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onMoveImageLeft, onMoveImageRi
 
   const canDelete = isAdmin && m.idType===1 && !m.svgs;
   const canDrawTopo = isAdmin && m.idType===1 && optProblemId;
+  const canDrawMedia = isAdmin && m.idType===1;
   const canOrder = isAdmin && m.idType===1 && length>1;
   return (
     <Dimmer active={true} onClickOutside={onClose} page>
       <ButtonGroup secondary size="small" style={style.actions}>
-        {(canDelete || canDrawTopo || canOrder) && (
+        {(canDelete || canDrawTopo || canDrawMedia || canOrder) && (
           <Dropdown direction='left' icon='bars' button>
             <Dropdown.Menu>
               {canDrawTopo && <Dropdown.Item icon="paint brush" text="Draw topo line" onClick={() => history.push(`/problem/svg-edit/${optProblemId}-${m.id}`)} />}
+              {canDrawMedia && <Dropdown.Item icon="paint brush" text="Draw on image" onClick={() => history.push(`/media/svg-edit/${m.id}`)} />}
               {canOrder && <Dropdown.Item icon="arrow left" text="Move image to the left" onClick={onMoveImageLeft} />}
               {canOrder && <Dropdown.Item icon="arrow right" text="Move image to the right"  onClick={onMoveImageRight} />}
               {canDelete && <><Dropdown.Divider /><Dropdown.Item icon="trash" text="Delete image" onClick={onDelete} /></>}
