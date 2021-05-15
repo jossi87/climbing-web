@@ -2,6 +2,7 @@ import React from 'react';
 import { parseSVG, makeAbsolute } from 'svg-path-parser';
 import { getImageUrl } from '../../../api';
 import { useHistory } from 'react-router-dom';
+import { svgPathProperties } from "svg-path-properties";
 
 const Svg = ({ style, close, m, thumb, optProblemId }) => {
   const { outerWidth, outerHeight } = window;
@@ -99,9 +100,11 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
   function generateMediaSvgShapes(mediaSvgs) {
     let res = [];
     if (mediaSvgs && mediaSvgs.length>0) {
-      let deltaPercent = 3;
       res = mediaSvgs.map((svg, key) => {
         if (svg.t==='PATH') {
+          const properties = new svgPathProperties(svg.path);
+          const deltaPercent = (scale/properties.getTotalLength())*3;
+          console.log(deltaPercent)
           let texts = [];
           for (var i = 0; i <= 100; i+=deltaPercent) {
             texts.push(<textPath xlinkHref={"#descent" + key} startOffset={i+"%"}>➤</textPath>);
