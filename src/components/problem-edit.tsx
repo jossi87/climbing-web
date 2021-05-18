@@ -266,7 +266,8 @@ const ProblemEdit = () => {
               selection
               value={data.originalGrade}
               onChange={onOriginalGradeChanged}
-              options={data.metadata.grades.map((g, i) => ({key: i, value: g.grade, text: g.grade}))}/>
+              options={data.metadata.grades.map((g, i) => ({key: i, value: g.grade, text: g.grade}))}
+              error={data.originalGrade? false : "grade required"}/>
             <Form.Field
               label="FA User(s)"
               control={UserSelector}
