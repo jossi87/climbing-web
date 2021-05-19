@@ -5,7 +5,7 @@ import ReactPlayer from 'react-player';
 import Svg from './svg';
 import { useHistory } from 'react-router-dom';
 import { saveAs } from 'file-saver';
-import { Descent, Rappel } from '../widgets/svg-shapes';
+import { Descent, Rappel } from '../../../utils/svg-utils';
 
 const style = {
   img: {

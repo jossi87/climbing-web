@@ -2,7 +2,7 @@ import React from 'react';
 import { parseSVG, makeAbsolute } from 'svg-path-parser';
 import { getImageUrl } from '../../../api';
 import { useHistory } from 'react-router-dom';
-import { Descent, Rappel } from '../widgets/svg-shapes';
+import { Descent, Rappel } from '../../../utils/svg-utils';
 
 const Svg = ({ style, close, m, thumb, optProblemId }) => {
   const { outerWidth, outerHeight } = window;

@@ -2,10 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Container, Button, Label, Icon, Segment, Dropdown } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getMediaSvg, getImageUrl, postMediaSvg } from '../api';
-import { parseReadOnlySvgs, parsePath } from '../utils/svg';
+import { Rappel, parseReadOnlySvgs, parsePath } from '../utils/svg-utils';
 import { LoadingAndRestoreScroll, InsufficientPrivileges } from './common/widgets/widgets';
 import { useHistory, useParams, useLocation } from 'react-router-dom';
-import { Rappel } from '../components/common/widgets/svg-shapes';
 
 interface MediaIdParams {
   mediaId: number;
