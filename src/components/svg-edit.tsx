@@ -34,6 +34,8 @@ const SvgEdit = () => {
   let { problemIdMediaId } = useParams<ProblemIdMediaIdParams>();
   let history = useHistory();
   let location = useLocation();
+  const { outerWidth, outerHeight } = window;
+  const minWindowScale = Math.min(outerWidth, outerHeight);
   useEffect(() => {
     if (problemIdMediaId && accessToken) {
       getSvgEdit(accessToken, problemIdMediaId).then((data) => {
@@ -330,7 +332,7 @@ const SvgEdit = () => {
       </Segment>
       <svg viewBox={"0 0 " + w + " " + h} onClick={handleOnClick} onMouseMove={handleMouseMove} width="100%" height="100%">
         <image ref={imageRef} xlinkHref={getImageUrl(mediaId, null)} width="100%" height="100%"/>
-        {parseReadOnlySvgs(readOnlySvgs, w, h)}
+        {parseReadOnlySvgs(readOnlySvgs, w, h, minWindowScale)}
         <path style={{fill: "none", stroke: "#FF0000"}} d={path} strokeWidth={0.002*w}/>
         {circles}
         {myTexts}

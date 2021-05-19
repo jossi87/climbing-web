@@ -209,6 +209,23 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onMoveImageLeft, onMoveImageRi
                       </List.Item>
                     </List>
                   </List.Item>
+                  <List.Item>
+                    <List.Header>Other symbols:</List.Header>
+                    <List bulleted>
+                      <List.Item>
+                        <List.Content>
+                          <List.Header>Path of arrows</List.Header>
+                          <List.Description>Descent</List.Description>
+                        </List.Content>
+                      </List.Item>
+                      <List.Item>
+                        <List.Content>
+                          <List.Header>Circle followed by arrow pointing down</List.Header>
+                          <List.Description>Rappel (minus in circle = no fixed anchor, plus in circle = fixed anchor)</List.Description>
+                        </List.Content>
+                      </List.Item>
+                    </List>
+                  </List.Item>
                 </List>
               </Modal.Description>
             </Modal.Content>

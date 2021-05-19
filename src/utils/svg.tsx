@@ -1,5 +1,6 @@
 import React from 'react';
 import { parseSVG, makeAbsolute } from 'svg-path-parser';
+import { Descent, Rappel } from '../components/common/widgets/svg-shapes';
 
 function generateSvgNrAndAnchor(path, nr, hasAnchor, w, h) {
   var ixNr;
@@ -57,31 +58,15 @@ export function parsePath(d) {
   return [];
 }
 
-export function parseReadOnlySvgs(readOnlySvgs, w, h) {
+export function parseReadOnlySvgs(readOnlySvgs, minWindowScale, w, h) {
   const shapes = [];
+  const stroke = "white";
+  const scale = Math.max(w, h, minWindowScale);
   for (let svg of readOnlySvgs) {
     if (svg.path) {
-      shapes.push(<path key={shapes.length} d={svg.path} className={"buldreinfo-svg-edit-opacity"} style={{fill: "none", stroke: "#000000"}} strokeWidth={0.003*w} strokeDasharray={0.006*w}/>);
-      const commands = parseSVG(svg.path);
-      makeAbsolute(commands); // Note: mutates the commands in place!
-      shapes.push(generateSvgNrAndAnchor(commands, svg.nr, svg.hasAnchor, w, h));
-      svg.anchors && svg.anchors.map((a, i) => {
-        shapes.push(<circle key={i} className="buldreinfo-svg-edit-opacity" fill="#000000" cx={a.x} cy={a.y} r={0.006*w} />);
-      });
+      shapes.push(Descent({path: svg.path, scale, thumb: false, key: shapes.length}));
     } else if (svg.rappelX && svg.rappelY) {
-      const x = svg.rappelX;
-      const y = svg.rappelY;
-      const strokeWidth = 0.0026*w;
-      const r = 0.01*h;
-      shapes.push(
-        <g strokeLinecap="round">
-          <circle cx={x} cy={y} r={r} fill="none" strokeWidth={strokeWidth} stroke="#000000" />
-          <line x1={x-r} y1={y} x2={x+r} y2={y} strokeWidth={strokeWidth} stroke="#000000" />
-          <line x1={x} y1={y+r} x2={x} y2={y+r+r+r} strokeWidth={strokeWidth} stroke="#000000" />
-          <line x1={x-r} y1={y+r+r} x2={x} y2={y+r+r+r} strokeWidth={strokeWidth} stroke="#000000" />
-          <line x1={x+r} y1={y+r+r} x2={x} y2={y+r+r+r} strokeWidth={strokeWidth} stroke="#000000" />
-        </g>
-      );
+      shapes.push(Rappel({x: svg.rappelX, y: svg.rappelY, bolted: svg.t==='RAPPEL_BOLTED', scale, thumb: false, stroke, key: shapes.length}));
     }
   }
   return shapes;

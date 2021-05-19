@@ -5,11 +5,15 @@ import { getMediaSvg, getImageUrl, postMediaSvg } from '../api';
 import { parseReadOnlySvgs, parsePath } from '../utils/svg';
 import { LoadingAndRestoreScroll, InsufficientPrivileges } from './common/widgets/widgets';
 import { useHistory, useParams, useLocation } from 'react-router-dom';
+import { Rappel } from '../components/common/widgets/svg-shapes';
 
 interface MediaIdParams {
   mediaId: number;
 }
 const SvgEdit = () => {
+  const TYPE_PATH = "PATH";
+  const TYPE_RAPPEL_BOLTED = "RAPPEL_BOLTED";
+  const TYPE_RAPPEL_NOT_BOLTED = "RAPPEL_NOT_BOLTED";
   const { accessToken, isAuthenticated, loading, loginWithRedirect } = useAuth0();
   const [data, setData] = useState(null);
   const [forceUpdate, setForceUpdate] = useState(0);
@@ -22,6 +26,8 @@ const SvgEdit = () => {
   let { mediaId } = useParams<MediaIdParams>();
   let history = useHistory();
   let location = useLocation();
+  const { outerWidth, outerHeight } = window;
+  const minWindowScale = Math.min(outerWidth, outerHeight);
   useEffect(() => {
     if (mediaId && accessToken) {
       getMediaSvg(accessToken, mediaId).then((data) => {
@@ -83,7 +89,7 @@ const SvgEdit = () => {
       setActivePoint(points.length - 1);
       setForceUpdate(forceUpdate+1);
     }
-    else if (activeElementIndex>=0 && data.m.mediaSvgs[activeElementIndex].t==='RAPPEL') {
+    else if (activeElementIndex>=0 && (data.m.mediaSvgs[activeElementIndex].t===TYPE_RAPPEL_BOLTED || data.m.mediaSvgs[activeElementIndex].t===TYPE_RAPPEL_NOT_BOLTED)) {
       let coords = getMouseCoords(e);
       data.m.mediaSvgs[activeElementIndex].rappelX = coords.x;
       data.m.mediaSvgs[activeElementIndex].rappelY = coords.y;
@@ -245,21 +251,12 @@ const SvgEdit = () => {
     );
   });
 
-  let rappels = null;
-  if (activeElementIndex>=0 && data.m.mediaSvgs[activeElementIndex] && data.m.mediaSvgs[activeElementIndex].t==='RAPPEL') {
+  let activeRappel = null;
+  if (activeElementIndex>=0 && data.m.mediaSvgs[activeElementIndex] && (data.m.mediaSvgs[activeElementIndex].t===TYPE_RAPPEL_BOLTED || data.m.mediaSvgs[activeElementIndex].t===TYPE_RAPPEL_NOT_BOLTED)) {
     const x = data.m.mediaSvgs[activeElementIndex].rappelX;
     const y = data.m.mediaSvgs[activeElementIndex].rappelY;
-    const strokeWidth = 0.0026*data.m.width;
-    const r = 0.01*data.m.height;
-    rappels = (
-      <g strokeLinecap="round">
-        <circle cx={x} cy={y} r={r} fill="none" strokeWidth={strokeWidth} stroke="red" />
-        <line x1={x-r} y1={y} x2={x+r} y2={y} strokeWidth={strokeWidth} stroke="red" />
-        <line x1={x} y1={y+r} x2={x} y2={y+r+r+r} strokeWidth={strokeWidth} stroke="red" />
-        <line x1={x-r} y1={y+r+r} x2={x} y2={y+r+r+r} strokeWidth={strokeWidth} stroke="red" />
-        <line x1={x+r} y1={y+r+r} x2={x} y2={y+r+r+r} strokeWidth={strokeWidth} stroke="red" />
-      </g>
-    );
+    const scale = Math.max(data.m.width, data.m.height, minWindowScale);
+    activeRappel = Rappel({x, y, scale, bolted: data.m.mediaSvgs[activeElementIndex].t===TYPE_RAPPEL_BOLTED, thumb: false, stroke: "red", key: "ACTIVE_RAPPEL"});
   }
 
   return (
@@ -274,7 +271,7 @@ const SvgEdit = () => {
         </Button.Group>
         <Button.Group size="mini">
           <Button size="mini" onClick={() => {
-            let element = {t: "PATH", id: -1, path: "", points: []};
+            let element = {t: TYPE_PATH, id: -1, path: "", points: []};
             if (!data.m.mediaSvgs) {
               data.m.mediaSvgs = [];
             }
@@ -287,7 +284,7 @@ const SvgEdit = () => {
           }}>Add descent</Button>
           <Button.Or />
           <Button size="mini" onClick={() => {
-            let element = {t: "RAPPEL", id: -1, rappelX: data.m.width/2, rappelY: data.m.height/2};
+            let element = {t: TYPE_RAPPEL_BOLTED, id: -1, rappelX: data.m.width/2, rappelY: data.m.height/2};
             if (!data.m.mediaSvgs) {
               data.m.mediaSvgs = [];
             }
@@ -297,7 +294,20 @@ const SvgEdit = () => {
             setActivePoint(0);
             setDraggedPoint(false);
             setDraggedCubic(false);
-          }}>Add rappel</Button>
+          }}>Add rappel (bolted)</Button>
+          <Button.Or />
+          <Button size="mini" onClick={() => {
+            let element = {t: TYPE_RAPPEL_NOT_BOLTED, id: -1, rappelX: data.m.width/2, rappelY: data.m.height/2};
+            if (!data.m.mediaSvgs) {
+              data.m.mediaSvgs = [];
+            }
+            data.m.mediaSvgs.push(element);
+            setData(data);
+            setActiveElementIndex(data.m.mediaSvgs.length-1);
+            setActivePoint(0);
+            setDraggedPoint(false);
+            setDraggedCubic(false);
+          }}>Add rappel (not bolted)</Button>
         </Button.Group>
         <Label.Group>
           {data.m.mediaSvgs && data.m.mediaSvgs.map((svg, index) => (
@@ -311,7 +321,7 @@ const SvgEdit = () => {
               setDraggedPoint(false);
               setDraggedCubic(false);
             }}>
-              {svg.t} #{svg.id}
+              {svg.t} #{index}
               <Icon name='delete' onClick={() => {
                 data.m.mediaSvgs.splice(index, 1);
                 setData(data);
@@ -336,7 +346,7 @@ const SvgEdit = () => {
             {activePoint !== 0 && <Button disabled={activePoint===0} onClick={removeActivePoint}>Remove this point</Button>}
           </>
         )}
-        {activeElementIndex>=0 && data.m.mediaSvgs[activeElementIndex] && data.m.mediaSvgs[activeElementIndex].t==='RAPPEL' && (
+        {activeElementIndex>=0 && data.m.mediaSvgs[activeElementIndex] && (data.m.mediaSvgs[activeElementIndex].t===TYPE_RAPPEL_BOLTED || data.m.mediaSvgs[activeElementIndex].t===TYPE_RAPPEL_NOT_BOLTED) && (
           <><strong>CLICK</strong> to move anchor</>
         )}
       </Segment>
@@ -344,8 +354,8 @@ const SvgEdit = () => {
         <image ref={imageRef} xlinkHref={getImageUrl(data.m.id, null)} width="100%" height="100%"/>
         {activeElementIndex>=0 && data.m.mediaSvgs[activeElementIndex] && <path style={{fill: "none", stroke: "#FF0000"}} d={data.m.mediaSvgs[activeElementIndex].path} strokeWidth={0.002*data.m.width}/>}
         {circles}
-        {rappels}
-        {data.m.mediaSvgs && parseReadOnlySvgs(data.m.mediaSvgs.filter((svg, index) => index!=activeElementIndex), data.m.width, data.m.height)}
+        {activeRappel}
+        {data.m.mediaSvgs && parseReadOnlySvgs(data.m.mediaSvgs.filter((svg, index) => index!=activeElementIndex), data.m.width, data.m.height, minWindowScale)}
       </svg>
     </Container>
   )

@@ -2,7 +2,7 @@ import React from 'react';
 import { parseSVG, makeAbsolute } from 'svg-path-parser';
 import { getImageUrl } from '../../../api';
 import { useHistory } from 'react-router-dom';
-import { svgPathProperties } from "svg-path-properties";
+import { Descent, Rappel } from '../widgets/svg-shapes';
 
 const Svg = ({ style, close, m, thumb, optProblemId }) => {
   const { outerWidth, outerHeight } = window;
@@ -102,34 +102,11 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
     if (mediaSvgs && mediaSvgs.length>0) {
       res = mediaSvgs.map((svg, key) => {
         if (svg.t==='PATH') {
-          const properties = new svgPathProperties(svg.path);
-          const deltaPercent = (scale/properties.getTotalLength())*3;
-          console.log(deltaPercent)
-          let texts = [];
-          for (var i = 0; i <= 100; i+=deltaPercent) {
-            texts.push(<textPath xlinkHref={"#descent" + key} startOffset={i+"%"}>➤</textPath>);
-          }
-          return (
-            <g opacity={0.8} key={key}>
-              <path id={"descent" + key} style={{fill: "none"}} strokeWidth={0} d={svg.path}/>
-              <text fontSize={0.015*scale*(thumb? 2 : 1)} fontWeight="bolder" style={{ fill: 'black', dominantBaseline: 'central'}}>{texts}</text>
-              <text fontSize={0.015*scale*(thumb? 2 : 1)} style={{ fill: 'white', dominantBaseline: 'central'}}>{texts}</text>
-            </g>
-          )
-        } else if (svg.t==='RAPPEL') {
-          const x = svg.rappelX;
-          const y = svg.rappelY;
-          const strokeWidth = 0.0026*m.width;
-          const r = 0.01*m.height;
-          return (
-            <g opacity={0.8} key={key} strokeLinecap="round">
-              <circle cx={x} cy={y} r={r} fill="none" strokeWidth={strokeWidth} stroke="white" />
-              <line x1={x-r} y1={y} x2={x+r} y2={y} strokeWidth={strokeWidth} stroke="white" />
-              <line x1={x} y1={y+r} x2={x} y2={y+r+r+r} strokeWidth={strokeWidth} stroke="white" />
-              <line x1={x-r} y1={y+r+r} x2={x} y2={y+r+r+r} strokeWidth={strokeWidth} stroke="white" />
-              <line x1={x+r} y1={y+r+r} x2={x} y2={y+r+r+r} strokeWidth={strokeWidth} stroke="white" />
-            </g>
-          );
+          return Descent({path: svg.path, scale, thumb, key});
+        } else if (svg.t==='RAPPEL_BOLTED') {
+          return Rappel({x: svg.rappelX, y: svg.rappelY, bolted: true, scale, thumb, stroke: "white", key});
+        } else if (svg.t==='RAPPEL_NOT_BOLTED') {
+          return Rappel({x: svg.rappelX, y: svg.rappelY, bolted: false, scale, thumb, stroke: "white", key});
         }
       });
     }
