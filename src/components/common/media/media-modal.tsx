@@ -222,13 +222,13 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onMoveImageLeft, onMoveImageRi
                       <List.Item>
                         <List.Content>
                           <List.Header><svg width="20" height="24">{Rappel({x: 8, y: 8, bolted: true, scale: 1000, thumb: false, stroke: "black", key: 'bolted-rappel'})}</svg></List.Header>
-                          <List.Description>Bolted rappel</List.Description>
+                          <List.Description>Bolted rappel anchor</List.Description>
                         </List.Content>
                       </List.Item>
                       <List.Item>
                         <List.Content>
                           <List.Header><svg width="20" height="24">{Rappel({x: 8, y: 8, bolted: false, scale: 1000, thumb: false, stroke: "black", key: 'not-bolted-rappel'})}</svg></List.Header>
-                          <List.Description>Rappel without fixed equipment</List.Description>
+                          <List.Description>Traditional rappel anchor (not bolted)</List.Description>
                         </List.Content>
                       </List.Item>
                     </List>
