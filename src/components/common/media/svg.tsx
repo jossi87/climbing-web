@@ -102,7 +102,7 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
     if (mediaSvgs && mediaSvgs.length>0) {
       res = mediaSvgs.map((svg, key) => {
         if (svg.t==='PATH') {
-          return Descent({path: svg.path, scale, thumb, key});
+          return Descent({path: svg.path, whiteNotBlack: true, scale, thumb, key});
         } else if (svg.t==='RAPPEL_BOLTED') {
           return Rappel({x: svg.rappelX, y: svg.rappelY, bolted: true, scale, thumb, stroke: "white", key});
         } else if (svg.t==='RAPPEL_NOT_BOLTED') {

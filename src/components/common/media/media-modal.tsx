@@ -5,6 +5,7 @@ import ReactPlayer from 'react-player';
 import Svg from './svg';
 import { useHistory } from 'react-router-dom';
 import { saveAs } from 'file-saver';
+import { Descent, Rappel } from '../widgets/svg-shapes';
 
 const style = {
   img: {
@@ -214,14 +215,20 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onMoveImageLeft, onMoveImageRi
                     <List bulleted>
                       <List.Item>
                         <List.Content>
-                          <List.Header>Path of arrows</List.Header>
+                          <List.Header><svg width="100" height="24">{Descent({path: 'M 0 10 C 100 10 0 0 200 20', whiteNotBlack: false, scale: 1000, thumb: false, key: 'descent'})}</svg></List.Header>
                           <List.Description>Descent</List.Description>
                         </List.Content>
                       </List.Item>
                       <List.Item>
                         <List.Content>
-                          <List.Header>Circle followed by arrow pointing down</List.Header>
-                          <List.Description>Rappel (minus in circle = no fixed anchor, plus in circle = fixed anchor)</List.Description>
+                          <List.Header><svg width="20" height="24">{Rappel({x: 8, y: 8, bolted: true, scale: 1000, thumb: false, stroke: "black", key: 'bolted-rappel'})}</svg></List.Header>
+                          <List.Description>Bolted rappel</List.Description>
+                        </List.Content>
+                      </List.Item>
+                      <List.Item>
+                        <List.Content>
+                          <List.Header><svg width="20" height="24">{Rappel({x: 8, y: 8, bolted: false, scale: 1000, thumb: false, stroke: "black", key: 'not-bolted-rappel'})}</svg></List.Header>
+                          <List.Description>Rappel without fixed equipment</List.Description>
                         </List.Content>
                       </List.Item>
                     </List>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { svgPathProperties } from "svg-path-properties";
 
-export function Descent({path, scale, thumb, key}) {
+export function Descent({path, whiteNotBlack, scale, thumb, key}) {
   const properties = new svgPathProperties(path);
   const deltaPercent = (scale/properties.getTotalLength())*(thumb? 3 : 2);
   let texts = [];
@@ -12,8 +12,8 @@ export function Descent({path, scale, thumb, key}) {
   return (
     <g opacity={0.9} key={key}>
       <path id={"descent" + key} style={{fill: "none"}} strokeWidth={0} d={path}/>
-      <text fontSize={fontSize} fontWeight="bolder" style={{ fill: 'black', dominantBaseline: 'central'}}>{texts}</text>
-      <text fontSize={fontSize} style={{ fill: 'white', dominantBaseline: 'central'}}>{texts}</text>
+      <text fontSize={fontSize} fontWeight="bolder" style={{ fill: whiteNotBlack? 'black' : 'white', dominantBaseline: 'central'}}>{texts}</text>
+      <text fontSize={fontSize} style={{ fill: whiteNotBlack? 'white' : 'black', dominantBaseline: 'central'}}>{texts}</text>
     </g>
   )
 }

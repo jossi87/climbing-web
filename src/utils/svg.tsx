@@ -58,15 +58,23 @@ export function parsePath(d) {
   return [];
 }
 
-export function parseReadOnlySvgs(readOnlySvgs, minWindowScale, w, h) {
+export function parseReadOnlySvgs(readOnlySvgs, w, h, minWindowScale) {
   const shapes = [];
   const stroke = "white";
   const scale = Math.max(w, h, minWindowScale);
   for (let svg of readOnlySvgs) {
-    if (svg.path) {
-      shapes.push(Descent({path: svg.path, scale, thumb: false, key: shapes.length}));
-    } else if (svg.rappelX && svg.rappelY) {
+    if (svg.t==='PATH') {
+      shapes.push(Descent({path: svg.path, whiteNotBlack: true, scale, thumb: false, key: shapes.length}));
+    } else if (svg.t==="RAPPEL_BOLTED" || svg.t==='RAPPEL_NOT_BOLTED') {
       shapes.push(Rappel({x: svg.rappelX, y: svg.rappelY, bolted: svg.t==='RAPPEL_BOLTED', scale, thumb: false, stroke, key: shapes.length}));
+    } else {
+      shapes.push(<path key={shapes.length} d={svg.path} className={"buldreinfo-svg-edit-opacity"} style={{fill: "none", stroke: "#000000"}} strokeWidth={0.003*w} strokeDasharray={0.006*w}/>);
+      const commands = parseSVG(svg.path);
+      makeAbsolute(commands); // Note: mutates the commands in place!
+      shapes.push(generateSvgNrAndAnchor(commands, svg.nr, svg.hasAnchor, w, h));
+      svg.anchors.map((a, i) => {
+        shapes.push(<circle key={i} className="buldreinfo-svg-edit-opacity" fill="#000000" cx={a.x} cy={a.y} r={0.006*w} />);
+      });
     }
   }
   return shapes;
