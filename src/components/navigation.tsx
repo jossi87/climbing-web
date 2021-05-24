@@ -1,13 +1,17 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth0 } from '../utils/react-auth0-spa';
-import { Container, Dropdown, DropdownDivider, Image, Menu } from 'semantic-ui-react';
+import { Container, Dropdown, Image, Menu } from 'semantic-ui-react';
 import { Link, useLocation } from 'react-router-dom';
 import SearchBox from './common/search-box/search-box';
-import { getBaseUrl } from '../api';
+import { getBaseUrl, getMeta } from '../api';
 
 const Navigation = () => {
-  const { loading, isAuthenticated, loginWithRedirect, logout } = useAuth0();
+  const { loading, isAuthenticated, loginWithRedirect, logout, accessToken } = useAuth0();
+  const [isSuperAdmin, setIsUserAdmin] = useState(false);
   let location = useLocation();
+  useEffect(() => {
+    getMeta(accessToken).then((data) => setIsUserAdmin(data.metadata.isSuperAdmin));
+  }, [accessToken]);
 
   return (
     <Menu attached='top' inverted compact borderless>
@@ -28,7 +32,7 @@ const Navigation = () => {
               <Dropdown.Menu>
                   <Dropdown.Item as={Link} to="/user">Profile</Dropdown.Item>
                   <Dropdown.Item as={Link} to="/todo">To-do list</Dropdown.Item>
-                  <Dropdown.Item as={Link} to="/permissions">Permissions</Dropdown.Item>
+                  {isSuperAdmin && <Dropdown.Item as={Link} to="/permissions">Permissions</Dropdown.Item>}
                   <Dropdown.Item as="a" onClick={() => logout({returnTo: getBaseUrl()})}>Sign out</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
