@@ -36,6 +36,7 @@ const SvgEdit = () => {
   let location = useLocation();
   const { outerWidth, outerHeight } = window;
   const minWindowScale = Math.min(outerWidth, outerHeight);
+  const black = "#000000";
   useEffect(() => {
     if (problemIdMediaId && accessToken) {
       getSvgEdit(accessToken, problemIdMediaId).then((data) => {
@@ -294,13 +295,18 @@ const SvgEdit = () => {
   var circles = points.map((p, i, a) => {
     var anchors = [];
     if (p.c) {
-      const stroke = "#CC0066";
+      const stroke = "#FFFFFF";
       anchors.push(
         <g key={anchors.length} className="buldreinfo-svg-edit-opacity">
-          <line className={"buldreinfo-svg-pointer"} style={{fill: "none", stroke: stroke}} x1={a[i-1].x} y1={a[i-1].y} x2={p.c[0].x} y2={p.c[0].y} strokeWidth={0.0026*w} strokeDasharray={0.003*w}/>
-          <line className={"buldreinfo-svg-pointer"} style={{fill: "none", stroke: stroke}} x1={p.x} y1={p.y} x2={p.c[1].x} y2={p.c[1].y} strokeWidth={0.0026*w} strokeDasharray={0.003*w}/>
-          <circle className={"buldreinfo-svg-pointer"} fill={stroke} cx={p.c[0].x} cy={p.c[0].y} r={0.003*w} onMouseDown={() => setCurrDraggedCubic(i, 0)}/>
-          <circle className={"buldreinfo-svg-pointer"} fill={stroke} cx={p.c[1].x} cy={p.c[1].y} r={0.003*w} onMouseDown={() => setCurrDraggedCubic(i, 1)}/>
+          <line className={"buldreinfo-svg-pointer"} style={{fill: "none", stroke: black}} x1={a[i-1].x} y1={a[i-1].y} x2={p.c[0].x} y2={p.c[0].y} strokeWidth={0.003*w} strokeDasharray={0.003*w}/>
+          <line className={"buldreinfo-svg-pointer"} style={{fill: "none", stroke: black}} x1={p.x} y1={p.y} x2={p.c[1].x} y2={p.c[1].y} strokeWidth={0.003*w} strokeDasharray={0.003*w}/>
+          <circle className={"buldreinfo-svg-pointer"} fill={black} cx={p.c[0].x} cy={p.c[0].y} r={0.003*w} onMouseDown={() => setCurrDraggedCubic(i, 0)}/>
+          <circle className={"buldreinfo-svg-pointer"} fill={black} cx={p.c[1].x} cy={p.c[1].y} r={0.003*w} onMouseDown={() => setCurrDraggedCubic(i, 1)}/>
+
+          <line className={"buldreinfo-svg-pointer"} style={{fill: "none", stroke: stroke}} x1={a[i-1].x} y1={a[i-1].y} x2={p.c[0].x} y2={p.c[0].y} strokeWidth={0.0015*w} strokeDasharray={0.003*w}/>
+          <line className={"buldreinfo-svg-pointer"} style={{fill: "none", stroke: stroke}} x1={p.x} y1={p.y} x2={p.c[1].x} y2={p.c[1].y} strokeWidth={0.0015*w} strokeDasharray={0.003*w}/>
+          <circle className={"buldreinfo-svg-pointer"} fill={stroke} cx={p.c[0].x} cy={p.c[0].y} r={0.002*w} onMouseDown={() => setCurrDraggedCubic(i, 0)}/>
+          <circle className={"buldreinfo-svg-pointer"} fill={stroke} cx={p.c[1].x} cy={p.c[1].y} r={0.002*w} onMouseDown={() => setCurrDraggedCubic(i, 1)}/>
         </g>
       );
     }
@@ -308,6 +314,7 @@ const SvgEdit = () => {
     return (
       <g key={i}>
         {anchors}
+        <circle className={"buldreinfo-svg-pointer"} fill={black} cx={p.x} cy={p.y} r={0.004*w} onMouseDown={() => setCurrDraggedPoint(i)}/>
         <circle className={"buldreinfo-svg-pointer"} fill={fill} cx={p.x} cy={p.y} r={0.003*w} onMouseDown={() => setCurrDraggedPoint(i)}/>
       </g>
     );
@@ -358,6 +365,7 @@ const SvgEdit = () => {
       <svg viewBox={"0 0 " + w + " " + h} onClick={handleOnClick} onMouseMove={handleMouseMove} width="100%" height="100%">
         <image ref={imageRef} xlinkHref={getImageUrl(mediaId, null)} width="100%" height="100%"/>
         {parseReadOnlySvgs(readOnlySvgs, w, h, minWindowScale)}
+        <path style={{fill: "none", stroke: black}} d={path} strokeWidth={0.003*w}/>
         <path style={{fill: "none", stroke: "#FF0000"}} d={path} strokeWidth={0.002*w}/>
         {circles}
         {myTexts}
