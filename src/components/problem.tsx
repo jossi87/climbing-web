@@ -374,27 +374,13 @@ const Problem = () => {
           }
           {problemsOnRock && problemsOnRock.length>0 && data.rock && 
             <Table.Row verticalAlign="top">
-              <Table.Cell>Rock:</Table.Cell>
+              <Table.Cell>Rock «{data.rock}»:</Table.Cell>
               <Table.Cell>
-                {problemsOnRock.length} problems on <b>{data.rock}</b>:<br/>
-                <Breadcrumb size='mini'>
-                  {problemsOnRock.map((p, key) => {
-                    if (p.id===data.id) {
-                      return (
-                        <>
-                          {key>0 && <Breadcrumb.Divider />}
-                          <Breadcrumb.Section key={key} active>#{p.nr} {p.name} ({p.grade})</Breadcrumb.Section>
-                        </>
-                      )
-                    }
-                    return (
-                      <>
-                        {key>0 && <Breadcrumb.Divider />}
-                        <Breadcrumb.Section key={key} link onClick={() => history.push(`/problem/${p.id}`)}>#{p.nr} {p.name} ({p.grade})</Breadcrumb.Section>
-                      </>
-                    )
-                  })}
-                </Breadcrumb>
+                {problemsOnRock.map((p, key) => (
+                  <Label key={key} as={Link} to={`/problem/${p.id}`} active={data.id===p.id}>
+                    <Label.Detail>#{p.nr}</Label.Detail> {p.name} {p.grade}
+                  </Label>
+                ))}
               </Table.Cell>
             </Table.Row>
           }
