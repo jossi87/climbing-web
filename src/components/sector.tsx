@@ -82,7 +82,9 @@ const Sector = () => {
       getSector(accessToken, parseInt(sectorId)).then((data) => {
         if (data.problems) {
           const rocks = data.problems.filter(p => p.rock).map(p => p.rock).filter((value, index, self) => self.indexOf(value) === index).sort();
-          rocks.push("<Without rock>");
+          if (data.problems.filter(p => !p.rocks)) {
+            rocks.push("<Without rock>");
+          }
           setUniqueRocks(rocks);
           let types = data.problems.map(p => p.t.subType).filter((value, index, self) => self.indexOf(value) === index).sort(); 
           setUniqueTypes(types);
