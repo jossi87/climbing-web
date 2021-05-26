@@ -147,6 +147,7 @@ const AreaEdit = () => {
               height={'300px'}
               showSateliteImage={true} 
               clusterMarkers={false}
+              rocks={null}
             />
           </Form.Field>
         </Segment>

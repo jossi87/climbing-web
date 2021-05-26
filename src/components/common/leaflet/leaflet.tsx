@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "leaflet/dist/leaflet.css";
 import { useMapEvents, MapContainer, TileLayer, LayersControl, WMSTileLayer, ScaleControl, FeatureGroup } from 'react-leaflet';
 import { latLngBounds } from 'leaflet';
@@ -8,6 +8,9 @@ import Markers from './markers';
 import Polygons from './polygons';
 import Polylines from './polylines';
 import MarkerClusterGroup from "./react-leaflet-markercluster";
+import { Segment, Checkbox } from 'semantic-ui-react';
+import UseControl from '../../../utils/use-leaflet-control';
+import GetCenterFromDegrees from '../../../utils/map-utils';
 
 function MapEvent({ onClick }) {
   useMapEvents({
@@ -20,7 +23,8 @@ function MapEvent({ onClick }) {
   return null
 }
 
-const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defaultCenter, defaultZoom, onClick, clusterMarkers, showSateliteImage }) => {
+const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defaultCenter, defaultZoom, onClick, clusterMarkers, showSateliteImage, rocks }) => {
+  const [groupByRock, setGroupByRock] = useState(rocks? true : false);
   let bounds = null;
   if (autoZoom && ((markers && markers.length > 0) || (outlines && outlines.length > 0) || (polylines && polylines.length > 0))) {
     bounds = latLngBounds([]);
@@ -39,9 +43,22 @@ const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defa
   }
   let opacity = 0.5;
   let addEventHandlers = onClick == null;
-  let markerGroup = <Markers history={history} opacity={opacity} markers={markers} addEventHandlers={addEventHandlers} />;
-  if (clusterMarkers) {
-    markerGroup = <MarkerClusterGroup>{markerGroup}</MarkerClusterGroup>
+  let markerGroup;
+  if (groupByRock) {
+    let rockMarkers = rocks.map(r => {
+      let coords = markers.filter(m => m.rock===r && m.lat && m.lng).map(m => [m.lat,m.lng]);
+      if (coords && coords.length>0) {
+        let centerCoordinates = GetCenterFromDegrees(coords);
+        return ({lat: centerCoordinates[0], lng: centerCoordinates[1], label: r, red: true});
+      }
+    }).filter(item => item); // Remove undefined
+    let markersWithoutRock = markers.filter(m => !m.rock);
+    markerGroup = <Markers history={history} opacity={opacity} markers={[...rockMarkers, ...markersWithoutRock]} addEventHandlers={null} />;
+  } else {
+    markerGroup = <Markers history={history} opacity={opacity} markers={markers} addEventHandlers={addEventHandlers} />;
+    if (clusterMarkers) {
+      markerGroup = <MarkerClusterGroup>{markerGroup}</MarkerClusterGroup>
+    }
   }
   return (
     <MapContainer
@@ -55,6 +72,13 @@ const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defa
       <FullscreenControl />
       <LocateControl />
       <ScaleControl maxWidth={100} metric={true} imperial={false} />
+      {rocks &&
+        <UseControl position='bottomleft'>
+          <Checkbox as={Segment} label={<label>Group by rock</label>} toggle checked={groupByRock} onChange={(e,d) => {
+            setGroupByRock(d.checked);
+          }} />
+        </UseControl>
+      }
       <LayersControl>
         <LayersControl.BaseLayer checked={showSateliteImage} name="Norge i Bilder">
           <TileLayer

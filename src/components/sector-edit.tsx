@@ -194,6 +194,7 @@ const SectorEdit = () => {
               height={'300px'}
               showSateliteImage={true} 
               clusterMarkers={false}
+              rocks={null}
             />
           </Form.Field>
           <Form.Field>

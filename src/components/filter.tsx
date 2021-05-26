@@ -120,6 +120,7 @@ const Filter = () => {
             onClick={null}
             showSateliteImage={false} 
             clusterMarkers={true}
+            rocks={null}
             />
           <List selection verticalAlign='middle'>
             {res.map((p, i) => (

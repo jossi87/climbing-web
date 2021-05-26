@@ -73,6 +73,7 @@ const Todo = () => {
               onClick={null}
               showSateliteImage={false}
               clusterMarkers={true}
+              rocks={null}
             />
             <List celled>
               {data.areas.map((area, i) => (

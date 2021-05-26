@@ -38,7 +38,7 @@ const SectorListItem = ({ problem, showType, orderByGrade } ) => {
   } else if (orderByGrade) {
     comment = <small><i style={{color: "gray"}}>{' '}#{problem.nr}{' '}</i></small>;
   } else if (problem.comment) {
-    comment = <small><i style={{color: "gray"}}>{' '}{problem.comment}{' '}</i></small>;
+    comment = <small><i style={{color: "gray"}}>{' '}{problem.rock && <>Rock: {problem.rock}. </>}{problem.comment}{' '}</i></small>;
   }
   return (
     <List.Item style={{backgroundColor: problem.ticked? "#d2f8d2" : "#ffffff"}} key={problem.id}>
@@ -87,10 +87,10 @@ const Sector = () => {
           let types = data.problems.map(p => p.t.subType).filter((value, index, self) => self.indexOf(value) === index).sort(); 
           setUniqueTypes(types);
           if (data.metadata.gradeSystem==='BOULDER') {
-            if (rocks && rocks.length>0) {
+            if (rocks && rocks.length>1) {
               setGroupBy(GroupBy.rock);
             }
-          } else if (types && types.length>0) {
+          } else if (types && types.length>1) {
             setGroupBy(GroupBy.type);
           }
         }
@@ -129,7 +129,8 @@ const Sector = () => {
         lat: p.lat,
         lng: p.lng,
         label: p.nr + " - " + p.name + " [" + p.grade + "]",
-        url: '/problem/' + p.id
+        url: '/problem/' + p.id,
+        rock: p.rock
       }
   });
   if (data.lat>0 && data.lng>0) {
@@ -164,7 +165,7 @@ const Sector = () => {
     }
     panes.push({
       menuItem: { key: 'map', icon: 'map', content: 'Map' },
-      render: () => <Tab.Pane><Leaflet key={"sector="+data.id} autoZoom={true} height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} onClick={null} showSateliteImage={true} clusterMarkers={true} /></Tab.Pane>
+      render: () => <Tab.Pane><Leaflet key={"sector="+data.id} autoZoom={true} height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} onClick={null} showSateliteImage={true} clusterMarkers={true} rocks={uniqueRocks && uniqueRocks.length>1? uniqueRocks : null} /></Tab.Pane>
     });
   }
   if (data.problems.length!=0) {

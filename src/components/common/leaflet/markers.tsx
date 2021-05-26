@@ -54,7 +54,7 @@ export default function Markers({ history, opacity, markers, addEventHandlers })
       } else if (m.label) {
         return (
           <Marker
-            icon={markerBlueIcon}
+            icon={m.red? markerRedIcon : markerBlueIcon}
             position={[m.lat, m.lng]}
             key={i}
             eventHandlers={{
