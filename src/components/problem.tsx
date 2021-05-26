@@ -376,7 +376,7 @@ const Problem = () => {
             <Table.Row verticalAlign="top">
               <Table.Cell>Rock:</Table.Cell>
               <Table.Cell>
-                {problemsOnRock.length} problems on <b>{data.rock}</b>:
+                {problemsOnRock.length} problems on <b>{data.rock}</b>:<br/>
                 <Breadcrumb size='mini'>
                   {problemsOnRock.map((p, key) => {
                     if (p.id===data.id) {
