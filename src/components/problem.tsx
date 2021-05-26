@@ -4,10 +4,10 @@ import { Link, useParams, useHistory } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import { calculateDistance } from './common/leaflet/distance-math';
 import Media from './common/media/media';
-import { Button, Grid, Breadcrumb, Tab, Label, Icon, Comment, Header, Segment, Table, Feed } from 'semantic-ui-react';
+import { Button, Grid, Breadcrumb, Tab, Label, Icon, Comment, Header, Segment, Table, Feed, List } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
 import { useAuth0 } from '../utils/react-auth0-spa';
-import { getAreaPdfUrl, getSectorPdfUrl, getProblemPdfUrl, getProblem, postComment, postTodo } from '../api';
+import { getAreaPdfUrl, getSectorPdfUrl, getProblemPdfUrl, getProblem, getSector, postComment, postTodo } from '../api';
 import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
 import Linkify from 'react-linkify';
@@ -18,6 +18,7 @@ interface ProblemIdParams {
 const Problem = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState(null);
+  const [problemsOnRock, setProblemsOnRock] = useState([]);
   const [showTickModal, setShowTickModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(null);
   const [showHiddenMedia, setShowHiddenMedia] = useState(false);
@@ -28,11 +29,22 @@ const Problem = () => {
   useEffect(() => {
     if (!loading && (reload || (data != null && data.id!=problemId))) {
       getProblem(accessToken, parseInt(problemId), showHiddenMedia).then((data) => {
+        setProblemsOnRock([]);
         setData(data);
         setReload(false);
       });
     }
   }, [loading, accessToken, problemId, reload]);
+
+  useEffect(() => {
+    if (data && data.rock) {
+      getSector(accessToken, data.sectorId).then(sector => {
+        if (sector.problems && sector.problems.length>0) {
+          setProblemsOnRock(sector.problems.filter(p => p.rock && p.rock===data.rock));
+        }
+      });
+    }
+  }, [data]);
 
   function onRemoveMedia(idMediaToRemove) {
     let newMedia = data.media.filter(m => m.id!=idMediaToRemove);
@@ -297,12 +309,12 @@ const Problem = () => {
       <Tab panes={panes} />
       <Table definition unstackable>
         <Table.Body>
-          <Table.Row>
+          <Table.Row verticalAlign="top">
             <Table.Cell width={3}>Number:</Table.Cell>
             <Table.Cell>{data.nr}</Table.Cell>
           </Table.Row>
           {data.sectorIdProblemPrev>0 && (
-            <Table.Row>
+            <Table.Row verticalAlign="top">
               <Table.Cell>Jump:</Table.Cell>
               <Table.Cell>
               <Button.Group size="mini">
@@ -319,7 +331,7 @@ const Problem = () => {
             </Table.Row>
           )}
           {data.faAid &&
-            <Table.Row>
+            <Table.Row verticalAlign="top">
               <Table.Cell>First ascent (Aid):</Table.Cell>
               <Table.Cell>
                 {data.faAid.dateHr && <Label basic><Icon name='calendar check' />{data.faAid.dateHr}</Label>}
@@ -332,7 +344,7 @@ const Problem = () => {
               </Table.Cell>
             </Table.Row>
           }
-          <Table.Row>
+          <Table.Row verticalAlign="top">
             <Table.Cell>{data.faAid ? "First free ascent (FFA):" : "First ascent:"}</Table.Cell>
             <Table.Cell>
               <Label basic>Grade:<Label.Detail>{data.originalGrade}</Label.Detail></Label>
@@ -355,24 +367,44 @@ const Problem = () => {
             </Table.Cell>
           </Table.Row>
           {data.trivia && 
-            <Table.Row>
+            <Table.Row verticalAlign="top">
               <Table.Cell>Trivia:</Table.Cell>
               <Table.Cell>{data.trivia}</Table.Cell>
             </Table.Row>
           }
-          {data.rock && 
-            <Table.Row>
+          {problemsOnRock && problemsOnRock.length>0 && data.rock && 
+            <Table.Row verticalAlign="top">
               <Table.Cell>Rock:</Table.Cell>
-              <Table.Cell>{data.rock}</Table.Cell>
+              <Table.Cell>
+                {problemsOnRock.length} problems on <b>{data.rock}</b>:
+                <Breadcrumb size='mini'>
+                  {problemsOnRock.map((p, key) => {
+                    if (p.id===data.id) {
+                      return (
+                        <>
+                          {key>0 && <Breadcrumb.Divider />}
+                          <Breadcrumb.Section key={key} active>#{p.nr} {p.name} ({p.grade})</Breadcrumb.Section>
+                        </>
+                      )
+                    }
+                    return (
+                      <>
+                        {key>0 && <Breadcrumb.Divider />}
+                        <Breadcrumb.Section key={key} link onClick={() => history.push(`/problem/${p.id}`)}>#{p.nr} {p.name} ({p.grade})</Breadcrumb.Section>
+                      </>
+                    )
+                  })}
+                </Breadcrumb>
+              </Table.Cell>
             </Table.Row>
           }
           {data.ticks &&
-            <Table.Row>
+            <Table.Row verticalAlign="top">
               <Table.Cell>Public ascents:</Table.Cell>
               <Table.Cell>{data.ticks.length}</Table.Cell>
             </Table.Row>
           }
-          <Table.Row>
+          <Table.Row verticalAlign="top">
             <Table.Cell>Download PDF:</Table.Cell>
             <Table.Cell>
               <Label href={getProblemPdfUrl(accessToken, data.id)} rel="noreferrer noopener" target="_blank" image basic>
@@ -387,7 +419,7 @@ const Problem = () => {
             </Table.Cell>
           </Table.Row>
           {data.sectorLat>0 && data.sectorLng>0 &&
-            <Table.Row>
+            <Table.Row verticalAlign="top">
               <Table.Cell>Navigate to parking:</Table.Cell>
               <Table.Cell>
                 <Label href={`https://maps.google.com/maps?q=loc:${data.sectorLat},${data.sectorLng}&navigate=yes`} rel="noopener" target="_blank" image basic >
@@ -397,7 +429,7 @@ const Problem = () => {
             </Table.Row>
           }
           {((data.lat>0 && data.lng>0) || (data.sectorLat>0 && data.sectorLng>0)) &&
-            <Table.Row>
+            <Table.Row verticalAlign="top">
               <Table.Cell>Forecast and web camera:</Table.Cell>
               <Table.Cell>
                 <Label href={`/weather/` + JSON.stringify({lat: data.lat>0? data.lat : data.sectorLat, lng: data.lng>0? data.lng : data.sectorLng, label: data.areaName})} rel="noopener" target="_blank" image basic >
@@ -406,12 +438,12 @@ const Problem = () => {
               </Table.Cell>
             </Table.Row>
           }
-          <Table.Row>
+          <Table.Row verticalAlign="top">
             <Table.Cell>Page views:</Table.Cell>
             <Table.Cell>{data.hits}</Table.Cell>
           </Table.Row>
           {data.sections &&
-            <Table.Row>
+            <Table.Row verticalAlign="top">
               <Table.Cell verticalAlign="top">Pitches:</Table.Cell>
               <Table.Cell>
                 <Feed size="small">
