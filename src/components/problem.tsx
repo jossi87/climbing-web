@@ -378,7 +378,14 @@ const Problem = () => {
               <Table.Cell>
                 {problemsOnRock.map((p, key) => (
                   <Label key={key} as={Link} to={`/problem/${p.id}`} active={data.id===p.id}>
-                    <Label.Detail>#{p.nr}</Label.Detail> {p.name} {p.grade}
+                    <Label.Detail>#{p.nr}</Label.Detail>{p.name} {p.grade}{' '}
+                    <Stars numStars={p.stars}/>
+                    {p.lat>0 && p.lng>0 && <Icon size="small" name="map marker alternate"/>}
+                    {p.hasTopo && <Icon size="small" name="paint brush"/>}
+                    {p.hasImages>0 && <Icon size="small" color="black" name="photo"/>}
+                    {p.hasMovies>0 && <Icon size="small" color="black" name="film"/>}
+                    <LockSymbol lockedAdmin={p.lockedAdmin} lockedSuperadmin={p.lockedSuperadmin} />
+                    {p.ticked && <Icon size="small" color="green" name="check"/>}
                   </Label>
                 ))}
               </Table.Cell>
