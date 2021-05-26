@@ -360,6 +360,12 @@ const Problem = () => {
               <Table.Cell>{data.trivia}</Table.Cell>
             </Table.Row>
           }
+          {data.rock && 
+            <Table.Row>
+              <Table.Cell>Rock:</Table.Cell>
+              <Table.Cell>{data.rock}</Table.Cell>
+            </Table.Row>
+          }
           {data.ticks &&
             <Table.Row>
               <Table.Cell>Public ascents:</Table.Cell>

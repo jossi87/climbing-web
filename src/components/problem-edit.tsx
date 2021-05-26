@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import UserSelector from './common/user-selector/user-selector';
+import RockSelector from './common/rock-selector/rock-selector';
 import ProblemSection from './common/problem-section/problem-section';
 import ImageUpload from './common/image-upload/image-upload';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
@@ -17,7 +18,9 @@ interface SectorIdProblemIdParams {
 const ProblemEdit = () => {
   const { accessToken, loading, isAuthenticated, loginWithRedirect } = useAuth0();
   const [data, setData] = useState(null);
-  const [sectorMarkers, setSectorMarkers] = useState(null);
+  const [sectorMarkers, setSectorMarkers] = useState([]);
+  const [sectorRocks, setSectorRocks] = useState([]);
+  const [showSectorMarkers, setShowSectorMarkers] = useState(true);
   const [saving, setSaving] = useState(false);
   let { sectorIdProblemId } = useParams<SectorIdProblemIdParams>();
   let history = useHistory();
@@ -25,6 +28,13 @@ const ProblemEdit = () => {
   useEffect(() => {
     if (sectorIdProblemId && accessToken) {
       getProblemEdit(accessToken, sectorIdProblemId).then((data) => setData(data));
+      let sectorIdProblemIdArray = sectorIdProblemId.split("-");
+        let sectorId = sectorIdProblemIdArray[0];
+        let problemId = sectorIdProblemIdArray[1];
+        getSector(accessToken, parseInt(sectorId)).then((data) => {
+          setSectorMarkers(data.problems.filter(p => p.lat>0 && p.lng>0 && p.id!=problemId).map(p => ({lat: p.lat, lng: p.lng, label: p.name})));
+          setSectorRocks(data.problems.filter(p => p.rock).map(p => p.rock).filter((value, index, self) => self.indexOf(value) === index).sort());
+        });
     }
   }, [accessToken, sectorIdProblemId]);
 
@@ -59,6 +69,10 @@ const ProblemEdit = () => {
       lockedAdmin: value == 1,
       lockedSuperadmin: value == 2
     }));
+  }
+
+  function onRockChanged(rock) {
+    setData(prevState => ({ ...prevState, rock }));
   }
 
   function onCommentChanged(e, { value }) {
@@ -135,6 +149,7 @@ const ProblemEdit = () => {
       data.lockedAdmin,
       data.lockedSuperadmin,
       data.name,
+      data.rock,
       data.comment,
       data.originalGrade,
       data.fa,
@@ -222,7 +237,7 @@ const ProblemEdit = () => {
   if (data.lat!=0 && data.lng!=0) {
     markers.push({lat: data.lat, lng: data.lng});
   }
-  if (sectorMarkers) {
+  if (showSectorMarkers && sectorMarkers) {
     markers.push(...sectorMarkers);
   }
   return (
@@ -283,6 +298,13 @@ const ProblemEdit = () => {
               </Button.Group>
             </Form.Field>
           </Form.Group>
+          {data.metadata.gradeSystem==='BOULDER' &&
+            <Form.Field
+              label="Rock (this field is optional, use to group boulders by rock in sector)"
+              control={RockSelector}
+              placeholder="Add rock"
+              rock={data.rock} onRockUpdated={onRockChanged} rocks={sectorRocks} identity={null} />
+          }
           <Form.Field
             label="Description"
             control={TextArea}
@@ -402,14 +424,11 @@ const ProblemEdit = () => {
             </Form.Field>
             <Form.Field>
               <label>Include all markers in sector</label>
-              <Checkbox toggle onChange={(e,d) => {
+              <Checkbox toggle checked={showSectorMarkers} onChange={(e,d) => {
                 if (d.checked) {
-                  let sectorIdProblemIdArray = sectorIdProblemId.split("-");
-                  let sectorId = sectorIdProblemIdArray[0];
-                  let problemId = sectorIdProblemIdArray[1];
-                  getSector(accessToken, parseInt(sectorId)).then((data) => setSectorMarkers(data.problems.filter(p => p.lat>0 && p.lng>0 && p.id!=problemId).map(p => ({lat: p.lat, lng: p.lng, label: p.name}))));
+                  setShowSectorMarkers(true);
                 } else {
-                  setSectorMarkers(null);
+                  setShowSectorMarkers(false);
                 }
               }} />
             </Form.Field>

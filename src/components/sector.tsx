@@ -65,15 +65,37 @@ const SectorListItem = ({ problem, showType, orderByGrade } ) => {
 interface SectorIdParams {
   sectorId: string;
 }
+enum GroupBy {
+  type, rock
+}
 const Sector = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState(null);
   const [hideTicked, setHideTicked] = useState(false);
+  const [uniqueRocks, setUniqueRocks] = useState([]);
+  const [uniqueTypes, setUniqueTypes] = useState([]);
+  const [groupBy, setGroupBy] = useState(null);
   let history = useHistory();
   let { sectorId } = useParams<SectorIdParams>();
   useEffect(() => {
     if (!loading) {
-      getSector(accessToken, parseInt(sectorId)).then((data) => setData(data));
+      getSector(accessToken, parseInt(sectorId)).then((data) => {
+        if (data.problems) {
+          const rocks = data.problems.filter(p => p.rock).map(p => p.rock).filter((value, index, self) => self.indexOf(value) === index).sort();
+          rocks.push("<Without rock>");
+          setUniqueRocks(rocks);
+          let types = data.problems.map(p => p.t.subType).filter((value, index, self) => self.indexOf(value) === index).sort(); 
+          setUniqueTypes(types);
+          if (data.metadata.gradeSystem==='BOULDER') {
+            if (rocks && rocks.length>0) {
+              setGroupBy(GroupBy.rock);
+            }
+          } else if (types && types.length>0) {
+            setGroupBy(GroupBy.type);
+          }
+        }
+        setData(data);
+      });
     }
   }, [loading, accessToken, sectorId]);
 
@@ -155,8 +177,7 @@ const Sector = () => {
       render: () => <Tab.Pane><Activity metadata={data.metadata} idArea={0} idSector={data.id}/></Tab.Pane>
     });
   }
-  let subTypes = data.problems.map(p => p.t.subType).filter((value, index, self) => self.indexOf(value) === index).sort(); 
-  let content = subTypes.map((subType, i) => {
+  let content = uniqueTypes.map((subType, i) => {
     let problemsOfType = data.problems.filter(p => p.t.subType === subType);
     let numTicked = problemsOfType.filter(p => p.ticked).length;
     let txt = numTicked === 0? problemsOfType.length : problemsOfType.length + " (" + numTicked + " ticked)";
@@ -168,8 +189,18 @@ const Sector = () => {
     );
   })
   let problems;
-  if (data.orderByGrade && subTypes.length>1) {
-    let accordionRows = subTypes.map(subType => {
+  if (data.orderByGrade && groupBy === GroupBy.rock) {
+    let accordionRows = uniqueRocks.map(rock => {
+      let rows = data.problems.filter(p => (rock==='<Without rock>' && !p.rock) || p.rock==rock && (!hideTicked || !p.ticked)).map((p, i) => <SectorListItem key={i} problem={p} orderByGrade={data.orderByGrade} showType={data.metadata.gradeSystem==='CLIMBING'} />);
+      let label = rock + " (" + rows.length + ")";
+      let content = <List selection>{rows}</List>;
+      return (
+        {label, content}
+      );
+    });
+    problems = <AccordionContainer accordionRows={accordionRows}/>;
+  } else if (data.orderByGrade && groupBy === GroupBy.type) {
+    let accordionRows = uniqueTypes.map(subType => {
       let rows = data.problems.filter(p => p.t.subType==subType && (!hideTicked || !p.ticked)).map((p, i) => <SectorListItem key={i} problem={p} orderByGrade={data.orderByGrade} showType={data.metadata.gradeSystem==='CLIMBING'} />);
       let label = subType + " (" + rows.length + ")";
       let content = <List selection>{rows}</List>;
@@ -187,6 +218,12 @@ const Sector = () => {
         </List>
       </Segment>
     )
+  }
+  let gradeOrderText = "Grade";
+  if (groupBy === GroupBy.rock) {
+    gradeOrderText = "Rock and grade";
+  } else if (groupBy === GroupBy.type) {
+    gradeOrderText = "Type and grade";
   }
   return (
     <>
@@ -282,8 +319,9 @@ const Sector = () => {
         <>
           <ButtonGroup size="mini" compact attached="top">
             {data.problems.filter(p => p.ticked).length>0 && 
-              <Button icon labelPosition="left" onClick={() => setHideTicked(!hideTicked)} toggle primary={hideTicked}><Icon name="check"/>Hide ticked</Button>}
-            <Button icon labelPosition="left" onClick={() => sortBy(true)} toggle primary={data.orderByGrade}><Icon name="sort content ascending"/>{data.metadata.gradeSystem==='BOULDER' || subTypes.length===1? "Grade" : "Type and grade"}</Button>
+              <Button icon labelPosition="left" onClick={() => setHideTicked(!hideTicked)} toggle primary={hideTicked}><Icon name="check"/>Hide ticked</Button>
+            }
+            <Button icon labelPosition="left" onClick={() => sortBy(true)} toggle primary={data.orderByGrade}><Icon name="sort content ascending"/>{gradeOrderText}</Button>
             <Button icon labelPosition="left" onClick={() => sortBy(false)} toggle primary={!data.orderByGrade}><Icon name="sort numeric ascending"/>Number</Button>
           </ButtonGroup>
           {problems}
