@@ -47,20 +47,23 @@ const ProblemEdit = () => {
   }
 
   function onLatChanged(e, { value }) {
-    console.log(value.replace(',','.'));
-    let lat = parseFloat(value);
+    let latStr = value.replace(",",".");
+    let lat = parseFloat(latStr);
     if (isNaN(lat)) {
       lat = 0;
+      latStr = '';
     }
-    setData(prevState => ({ ...prevState, lat }));
+    setData(prevState => ({ ...prevState, lat, latStr }));
   }
 
   function onLngChanged(e, { value }) {
-    let lng = parseFloat(value);
+    let lngStr = value.replace(",",".");
+    let lng = parseFloat(lngStr);
     if (isNaN(lng)) {
       lng = 0;
+      lngStr = '';
     }
-    setData(prevState => ({ ...prevState, lng }));
+    setData(prevState => ({ ...prevState, lng, lngStr }));
   }
 
   function onLockedChanged(e, { value }) {
@@ -172,7 +175,7 @@ const ProblemEdit = () => {
   }
 
   function onMapClick(event) {
-    setData(prevState => ({ ...prevState, lat: event.latlng.lat, lng: event.latlng.lng }));
+    setData(prevState => ({ ...prevState, lat: event.latlng.lat, lng: event.latlng.lng, latStr: event.latlng.lat, lngStr: event.latlng.lng }));
   }
 
   function onUsersUpdated(newUsers) {
@@ -417,11 +420,11 @@ const ProblemEdit = () => {
           <Form.Group widths='equal'>
             <Form.Field>
               <label>Latitude</label>
-              <Input placeholder='Latitude' value={data.lat} onChange={onLatChanged} />
+              <Input placeholder='Latitude' value={data.latStr} onChange={onLatChanged} />
             </Form.Field>
             <Form.Field>
               <label>Longitude</label>
-              <Input placeholder='Longitude' value={data.lng} onChange={onLngChanged} />
+              <Input placeholder='Longitude' value={data.lngStr} onChange={onLngChanged} />
             </Form.Field>
             <Form.Field>
               <label>Include all markers in sector</label>
