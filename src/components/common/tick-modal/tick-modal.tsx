@@ -51,8 +51,11 @@ const TickModal = ({ open, onClose, accessToken, idTick, idProblem, grades, comm
               />
             </Form.Field>
             <Form.Field>
-              <label>Stars</label>
-              <Dropdown compact selection value={stars} onChange={(e, data) => { setStars(data.value) }} 
+              {stars?
+                <label>Rating</label>
+                :
+                <label style={{color: 'red'}}>Rating{!stars && " (required)"}</label>
+              }<Dropdown compact selection value={stars} onChange={(e, data) => { setStars(data.value) }} 
                 options={[
                   {key: -1, value: -1, text: <i>I don't want to rate</i>},
                   {key: 0, value: 0, text: <><Icon name="star outline" /><Icon name="star outline" /><Icon name="star outline" /> Zero stars</>},
