@@ -163,6 +163,12 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onMoveImageLeft, onMoveImageRi
                       </List.Item>
                       <List.Item>
                         <List.Content>
+                          <List.Header>Blue</List.Header>
+                          <List.Description>Grade 6</List.Description>
+                        </List.Content>
+                      </List.Item>
+                      <List.Item>
+                        <List.Content>
                           <List.Header>Yellow</List.Header>
                           <List.Description>Grade 7</List.Description>
                         </List.Content>
