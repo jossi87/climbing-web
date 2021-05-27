@@ -37,7 +37,7 @@ const TickModal = ({ open, onClose, accessToken, idTick, idProblem, grades, comm
         <Modal.Description>
           <Form>
             <Form.Field>
-              <label>Date (yyyy-mm-dd)</label>
+              <label>Date</label>
               {dayPicker}<br/>
               <Button.Group>
                 <Button onClick={() => setDate(convertDateToString(yesterday))}>Yesterday</Button>
@@ -52,14 +52,15 @@ const TickModal = ({ open, onClose, accessToken, idTick, idProblem, grades, comm
             </Form.Field>
             <Form.Field>
               <label>Stars</label>
-              <Dropdown selection value={stars} onChange={(e, data) => { setStars(data.value) }} 
+              <Dropdown compact selection value={stars} onChange={(e, data) => { setStars(data.value) }} 
                 options={[
+                  {key: -1, value: -1, text: <i>I don't want to rate</i>},
                   {key: 0, value: 0, text: <><Icon name="star outline" /><Icon name="star outline" /><Icon name="star outline" /> Zero stars</>},
                   {key: 1, value: 1, text: <><Icon name="star" /><Icon name="star outline" /><Icon name="star outline" /> Nice</>},
                   {key: 2, value: 2, text: <><Icon name="star" /><Icon name="star" /><Icon name="star outline" /> Very nice</>},
-                  {key: 3, value: 3, text: <><Icon name="star" /><Icon name="star" /><Icon name="star" /> Fantastic!</>},
-                  {key: -1, value: -1, text: <i>No rating (not the same as zero stars, this will not be used to calculate average stars)</i>}
+                  {key: 3, value: 3, text: <><Icon name="star" /><Icon name="star" /><Icon name="star" /> Fantastic!</>}
                 ]}
+                error={!stars}
               />
             </Form.Field>
             <Form.Field>
@@ -98,6 +99,7 @@ const TickModal = ({ open, onClose, accessToken, idTick, idProblem, grades, comm
           }
           <Button
             positive
+            disabled={!stars}
             icon='checkmark'
             labelPosition='right'
             content="Save"
