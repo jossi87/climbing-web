@@ -42,15 +42,21 @@ function initMap(leaflet) {
     L.control.scale({metric: true, imperial: false}).addTo(map);
     const group = L.featureGroup();
     let num = 0;
+    let parkingIcon = new L.icon({ iconUrl: '../build/png/parking_lot_maps.png', iconAnchor: [15, 15] });
+    let rockIcon = new L.icon({ iconUrl: '../build/png/rock.png', iconAnchor: [15, 15] });
     leaflet.markers.forEach((m) => {
-      if (m.isParking) {
-        let parkingIcon = new L.icon({ iconUrl: '../build/png/parking_lot_maps.png', iconAnchor: [15, 15] });
+      if (m.iconType=='PARKING') {
         let marker = L.marker([m.lat, m.lng], {icon: parkingIcon});
         marker.addTo(group);
         num++;
       }
       else {
-        let marker = L.marker([m.lat, m.lng]);
+        let marker;
+        if (m.iconType=='ROCK') {
+          marker = L.marker([m.lat, m.lng], {icon: rockIcon});
+        } else {
+          marker = L.marker([m.lat, m.lng]);
+        }
         if (m.label) {
           marker.bindTooltip(m.label, {permanent: true, opacity, className: 'buldreinfo-tooltip-compact'}).openTooltip();
         }
