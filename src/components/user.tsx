@@ -19,7 +19,7 @@ const TickListItem = ({ tick } ) => (
         {' '}<small style={{color: 'gray'}}>{tick.areaName} <LockSymbol lockedAdmin={tick.areaLockedAdmin} lockedSuperadmin={tick.areaLockedSuperadmin} /> / {tick.sectorName}<LockSymbol lockedAdmin={tick.sectorLockedAdmin} lockedSuperadmin={tick.sectorLockedSuperadmin} /> /</small>
         {' '}<Link to={`/problem/${tick.idProblem}`}>{tick.name}</Link>
         {' '}{tick.grade}<LockSymbol lockedAdmin={tick.lockedAdmin} lockedSuperadmin={tick.lockedSuperadmin} />
-        {tick.stars>0 && <>{' '}<Stars numStars={tick.stars} />{' '}</>}
+        {tick.stars!=0 && <>{' '}<Stars numStars={tick.stars} includeNoRating={true} />{' '}</>}
         {tick.fa && <Label color="red" size="mini" content="FA"/>}
         {tick.subType && <Label size="mini" content={tick.subType}/>}
         {' '}{tick.comment && <small style={{color: 'gray'}}><i>{tick.comment}</i></small>}

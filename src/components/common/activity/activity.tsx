@@ -231,7 +231,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
                       <Feed.User as={Link} to={`/user/${a.id}`} style={{color: "black"}}>{a.name}</Feed.User> ticked <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}<LockSymbol lockedAdmin={a.problemLockedAdmin} lockedSuperadmin={a.problemLockedSuperadmin} /><Feed.Date>{a.timeAgo}</Feed.Date>
                     </Feed.Summary>
                     {a.description && <Feed.Extra text>{a.description}</Feed.Extra>}
-                    {a.stars>0 && <Feed.Meta><Stars numStars={a.stars} /></Feed.Meta>}
+                    {a.stars!=0 && <Feed.Meta><Stars numStars={a.stars} includeNoRating={true} /></Feed.Meta>}
                   </Feed.Content>
                 </Feed.Event>
               )

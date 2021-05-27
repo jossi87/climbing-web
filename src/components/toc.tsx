@@ -110,7 +110,7 @@ const Toc = () => {
                           {`#${problem.nr} `}
                           <Link to={{pathname: problem.url}} target='_blank'>{problem.name}</Link>
                           {' '}{problem.grade}
-                          {' '}<Stars numStars={problem.stars}/>
+                          {' '}<Stars numStars={problem.stars} includeNoRating={false} />
                           {problem.fa && <small>{problem.fa}</small>}
                           {typeAscents && <small>{typeAscents}</small>}
                           <small><i style={{color: "gray"}}>{problem.description}</i></small>

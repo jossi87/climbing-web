@@ -166,7 +166,7 @@ const Problem = () => {
             <Comment.Content>
               <Comment.Author as={Link} to={`/user/${t.idUser}`}>{t.name}</Comment.Author>
               <Comment.Metadata>{t.date}</Comment.Metadata>
-              <Comment.Text><Stars numStars={t.stars} /> {t.suggestedGrade}<br/><Linkify>{t.comment}</Linkify></Comment.Text>
+              <Comment.Text><Stars numStars={t.stars} includeNoRating={true} /> {t.suggestedGrade}<br/><Linkify>{t.comment}</Linkify></Comment.Text>
             </Comment.Content>
           </Comment>
         ))
@@ -219,11 +219,11 @@ const Problem = () => {
     if (data.ticks) {
       const userTicks = data.ticks.filter(t => t.writable);
       if (userTicks && userTicks.length>0) {
-        tickModal = <TickModal accessToken={accessToken} idTick={userTicks[0].id} idProblem={data.id} date={userTicks[0].date} comment={userTicks[0].comment} grade={userTicks[0].suggestedGrade} grades={data.metadata.grades} stars={userTicks[0].stars} open={showTickModal} onClose={closeTickModal}/>
+        tickModal = <TickModal accessToken={accessToken} idTick={userTicks[0].id} idProblem={data.id} date={userTicks[0].date} comment={userTicks[0].comment} grade={userTicks[0].suggestedGrade} grades={data.metadata.grades} stars={userTicks[0].stars} open={showTickModal} onClose={closeTickModal} />
       }
     }
     if (!tickModal) {
-      tickModal = <TickModal accessToken={accessToken} idTick={-1} idProblem={data.id} grade={data.originalGrade} grades={data.metadata.grades} open={showTickModal} onClose={closeTickModal} comment={null} stars={null} date={null} />;
+      tickModal = <TickModal accessToken={accessToken} idTick={-1} idProblem={data.id} grade={data.originalGrade} grades={data.metadata.grades} open={showTickModal} onClose={closeTickModal} comment={null} stars={-1} date={null} />;
     }
   }
   return (
@@ -380,7 +380,7 @@ const Problem = () => {
                   <Label key={key} as={Link} to={`/problem/${p.id}`} active={data.id===p.id}>
                     #{p.nr} {p.name} {p.grade}
                     <Label.Detail>
-                      <Stars numStars={p.stars}/>
+                      <Stars numStars={p.stars} includeNoRating={false} />
                       {p.lat>0 && p.lng>0 && <Icon size="small" name="map marker alternate"/>}
                       {p.hasTopo && <Icon size="small" name="paint brush"/>}
                       {p.hasImages>0 && <Icon size="small" color="black" name="photo"/>}

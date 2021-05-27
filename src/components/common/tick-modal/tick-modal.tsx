@@ -17,7 +17,7 @@ function convertDateToString(newDate) {
 const TickModal = ({ open, onClose, accessToken, idTick, idProblem, grades, comment: initialComment, grade: initialGrade, stars: initialStars, date: initialDate }) => {
   const [comment, setComment] = useState(initialComment);
   const [grade, setGrade] = useState(initialGrade);
-  const [stars, setStars] = useState(initialStars? initialStars : 0);
+  const [stars, setStars] = useState(initialStars);
   const [date, setDate] = useState(idTick==-1? convertFromDateToString(new Date()) : initialDate);
 
   const yesterday = new Date();
@@ -29,6 +29,7 @@ const TickModal = ({ open, onClose, accessToken, idTick, idProblem, grades, comm
     onDayChange={(newDate) => {setDate(convertFromDateToString(newDate))}}
     value={date && convertFromStringToDate(date)}
   />
+
   return (
     <Modal open={open} onClose={onClose}>
       <Modal.Header>Tick</Modal.Header>
@@ -53,10 +54,11 @@ const TickModal = ({ open, onClose, accessToken, idTick, idProblem, grades, comm
               <label>Stars</label>
               <Dropdown selection value={stars} onChange={(e, data) => { setStars(data.value) }} 
                 options={[
-                  {key: 0, value: 0, text: "No stars"},
-                  {key: 1, value: 1, text: <><Icon name="star" /> Nice</>},
-                  {key: 2, value: 2, text: <><Icon name="star" /><Icon name="star" /> Very nice</>},
-                  {key: 3, value: 3, text: <><Icon name="star" /><Icon name="star" /><Icon name="star" /> Fantastic!</>}
+                  {key: 0, value: 0, text: <><Icon name="star outline" /><Icon name="star outline" /><Icon name="star outline" /> Zero stars</>},
+                  {key: 1, value: 1, text: <><Icon name="star" /><Icon name="star outline" /><Icon name="star outline" /> Nice</>},
+                  {key: 2, value: 2, text: <><Icon name="star" /><Icon name="star" /><Icon name="star outline" /> Very nice</>},
+                  {key: 3, value: 3, text: <><Icon name="star" /><Icon name="star" /><Icon name="star" /> Fantastic!</>},
+                  {key: -1, value: -1, text: <i>No rating (not the same as zero stars, this will not be used to calculate average stars)</i>}
                 ]}
               />
             </Form.Field>

@@ -47,7 +47,7 @@ const SectorListItem = ({ problem, showType, orderByGrade } ) => {
         {!orderByGrade && `#${problem.nr} `}
         <Link to={`/problem/${problem.id}`}>{problem.name}</Link>
         {' '}{problem.grade}
-        {' '}<Stars numStars={problem.stars}/>
+        {' '}<Stars numStars={problem.stars} includeNoRating={false} />
         {problem.fa && <small>{problem.fa}</small>}
         {typeAscents && <small>{typeAscents}</small>}
         {comment}

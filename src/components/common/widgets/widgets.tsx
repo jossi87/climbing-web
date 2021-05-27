@@ -1,5 +1,5 @@
 import React from 'react';
-import { Segment, Message, Icon, Popup } from 'semantic-ui-react';
+import { Segment, Message, Icon, Popup, Label } from 'semantic-ui-react';
 
 export function LockSymbol({lockedAdmin, lockedSuperadmin}) {
   if (lockedSuperadmin) {
@@ -10,9 +10,11 @@ export function LockSymbol({lockedAdmin, lockedSuperadmin}) {
   return null;
 }
 
-export function Stars({numStars}) {
+export function Stars({numStars, includeNoRating}) {
   var stars = null;
-  if (numStars===0.5) {
+  if (includeNoRating && numStars===-1) {
+    stars = <Label icon basic size="mini"><Icon name="x"/>No rating</Label>;
+  } else if (numStars===0.5) {
     stars = <Icon color='black' name="star half" />;
   } else if (numStars===1.0) {
     stars = <div style={{whiteSpace: 'nowrap', display: 'inline-flex'}}><Icon color='black' name="star" /></div>;
@@ -29,12 +31,13 @@ export function Stars({numStars}) {
     return (
       <Popup
         trigger={stars}
-        header="Guidelines"
+        header="Rating:"
         content={
           <div>
             <Icon name="star" /> Nice<br/>
             <Icon name="star" /><Icon name="star" /> Very nice<br/>
-            <Icon name="star" /><Icon name="star" /><Icon name="star" /> Fantastic!
+            <Icon name="star" /><Icon name="star" /><Icon name="star" /> Fantastic!<br/>
+            {includeNoRating && <><Label icon basic size="mini"><Icon name="x"/>No rating</Label> User has not rated</>}
           </div>
         }
       />
