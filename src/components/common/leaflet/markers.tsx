@@ -1,6 +1,6 @@
 import React from "react";
 import { Marker, Tooltip, Popup } from "react-leaflet";
-import { markerBlueIcon, markerRedIcon, parkingIcon, weatherIcon } from './icons';
+import { markerBlueIcon, markerRedIcon, parkingIcon, weatherIcon, rockIcon } from './icons';
 
 export default function Markers({ history, opacity, markers, addEventHandlers }) {
   if (!markers) {
@@ -42,7 +42,7 @@ export default function Markers({ history, opacity, markers, addEventHandlers })
         );
       } else if (m.html) {
         return (
-          <Marker icon={markerBlueIcon} position={[m.lat, m.lng]} key={i}>
+          <Marker icon={m.rock? rockIcon : markerBlueIcon} position={[m.lat, m.lng]} key={i}>
             <Tooltip opacity={opacity} permanent className='buldreinfo-tooltip-compact'>
               {m.label}
             </Tooltip>
@@ -54,7 +54,7 @@ export default function Markers({ history, opacity, markers, addEventHandlers })
       } else if (m.label) {
         return (
           <Marker
-            icon={m.red? markerRedIcon : markerBlueIcon}
+            icon={markerBlueIcon}
             position={[m.lat, m.lng]}
             key={i}
             eventHandlers={{

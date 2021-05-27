@@ -20,4 +20,9 @@ const weatherIcon = new L.Icon({
     iconAnchor: [15, 15]
 });
 
-export { markerBlueIcon, markerRedIcon, parkingIcon, weatherIcon };
+const rockIcon = new L.Icon({
+    iconUrl: "/png/rock.png",
+    iconAnchor: [15, 15]
+});
+
+export { markerBlueIcon, markerRedIcon, parkingIcon, weatherIcon, rockIcon };

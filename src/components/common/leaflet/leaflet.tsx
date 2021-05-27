@@ -41,19 +41,24 @@ const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defa
       bounds = null;
     }
   }
-  let opacity = 0.5;
+  let opacity = 0.6;
   let addEventHandlers = onClick == null;
   let markerGroup;
   if (groupByRock) {
     let rockMarkers = rocks.map(r => {
-      let coords = markers.filter(m => m.rock===r && m.lat && m.lng).map(m => [m.lat,m.lng]);
+      let markersOnRock = markers.filter(m => m.rock===r);
+      let coords = markersOnRock.filter(m => m.lat && m.lng).map(m => [m.lat,m.lng]);
       if (coords && coords.length>0) {
         let centerCoordinates = GetCenterFromDegrees(coords);
-        return ({lat: centerCoordinates[0], lng: centerCoordinates[1], label: r, red: true});
+        let html = <>
+          <b>{r}:</b><br/>
+          {markersOnRock.map(m => <><a rel='noopener' target='_blank' href={m.url}>{m.label}</a><br/></>)}
+        </>;
+        return ({lat: centerCoordinates[0], lng: centerCoordinates[1], label: r, rock: true, html});
       }
     }).filter(item => item); // Remove undefined
     let markersWithoutRock = markers.filter(m => !m.rock);
-    markerGroup = <Markers history={history} opacity={opacity} markers={[...rockMarkers, ...markersWithoutRock]} addEventHandlers={null} />;
+    markerGroup = <Markers history={history} opacity={opacity} markers={[...rockMarkers, ...markersWithoutRock]} addEventHandlers={addEventHandlers} />;
   } else {
     markerGroup = <Markers history={history} opacity={opacity} markers={markers} addEventHandlers={addEventHandlers} />;
     if (clusterMarkers) {
