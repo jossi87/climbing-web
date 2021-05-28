@@ -96,6 +96,7 @@ const Sector = () => {
           if (data.metadata.gradeSystem==='BOULDER') {
             if (rocks && rocks.length>1) {
               setGroupByTitle(GroupBy.rock);
+              setGroupBy(true);
             }
           } else if (types && types.length>1) {
             setGroupByTitle(GroupBy.type);
@@ -341,7 +342,7 @@ const Sector = () => {
                 <Step.Content>
                   <Step.Title>Group by {GroupBy[groupByTitle]}</Step.Title>
                   <Step.Description>
-                    <Checkbox toggle active={groupBy} onClick={() => setGroupBy(!groupBy)} />
+                    <Checkbox toggle active defaultChecked={groupBy} onClick={() => setGroupBy(!groupBy)} />
                   </Step.Description>
                 </Step.Content>
               </Step>
@@ -351,7 +352,7 @@ const Sector = () => {
                 <Step.Content>
                   <Step.Title>Hide ticked</Step.Title>
                   <Step.Description>
-                    <Checkbox toggle active={hideTicked} onClick={() => setHideTicked(!hideTicked)} />
+                    <Checkbox toggle active defaultChecked={hideTicked} onClick={() => setHideTicked(!hideTicked)} />
                   </Step.Description>
                 </Step.Content>
               </Step>
