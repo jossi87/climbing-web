@@ -8,12 +8,12 @@ import Leaflet from './common/leaflet/leaflet';
 import { calculateDistance } from './common/leaflet/distance-math';
 import Media from './common/media/media';
 import { LockSymbol, Stars, LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { Segment, Icon, ButtonGroup, Button, List, Tab, Breadcrumb, Table, Label, TableCell } from 'semantic-ui-react';
+import { Step, Segment, Dropdown, Icon, Button, Checkbox, List, Tab, Breadcrumb, Table, Label, TableCell } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSector, getAreaPdfUrl, getSectorPdfUrl } from '../api';
 import Linkify from 'react-linkify';
 
-const SectorListItem = ({ problem, showType, orderByGrade } ) => {
+const SectorListItem = ({ problem, showType, orderBy } ) => {
   var ascents = problem.numTicks>0 && (problem.numTicks + (problem.numTicks==1? " ascent" : " ascents"));
   var typeAscents;
   if (showType) {
@@ -33,9 +33,9 @@ const SectorListItem = ({ problem, showType, orderByGrade } ) => {
     }
   }
   var comment;
-  if (orderByGrade && problem.comment) {
+  if (orderBy === OrderBy.grade && problem.comment) {
     comment = <small><i style={{color: "gray"}}>{' '}#{problem.nr} - {problem.comment}{' '}</i></small>;
-  } else if (orderByGrade) {
+  } else if (orderBy === OrderBy.grade) {
     comment = <small><i style={{color: "gray"}}>{' '}#{problem.nr}{' '}</i></small>;
   } else if (problem.comment) {
     comment = <small><i style={{color: "gray"}}>{' '}{problem.rock && <>Rock: {problem.rock}. </>}{problem.comment}{' '}</i></small>;
@@ -44,7 +44,7 @@ const SectorListItem = ({ problem, showType, orderByGrade } ) => {
     <List.Item style={{backgroundColor: problem.ticked? "#d2f8d2" : "#ffffff"}} key={problem.id}>
       <List.Header>
         {problem.danger && <Icon color="red" name="warning"/>}
-        {!orderByGrade && `#${problem.nr} `}
+        {orderBy === OrderBy.number && `#${problem.nr} `}
         <Link to={`/problem/${problem.id}`}>{problem.name}</Link>
         {' '}{problem.grade}
         {' '}<Stars numStars={problem.stars} includeNoRating={false} />
@@ -68,13 +68,18 @@ interface SectorIdParams {
 enum GroupBy {
   type, rock
 }
+enum OrderBy {
+  grade, number, ascents, rating, alphabetical
+}
 const Sector = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState(null);
   const [hideTicked, setHideTicked] = useState(false);
   const [uniqueRocks, setUniqueRocks] = useState([]);
   const [uniqueTypes, setUniqueTypes] = useState([]);
-  const [groupBy, setGroupBy] = useState(null);
+  const [groupByTitle, setGroupByTitle] = useState(null);
+  const [groupBy, setGroupBy] = useState(false);
+  const [orderBy, setOrderBy] = useState(OrderBy.number);
   let history = useHistory();
   let { sectorId } = useParams<SectorIdParams>();
   useEffect(() => {
@@ -90,10 +95,13 @@ const Sector = () => {
           setUniqueTypes(types);
           if (data.metadata.gradeSystem==='BOULDER') {
             if (rocks && rocks.length>1) {
-              setGroupBy(GroupBy.rock);
+              setGroupByTitle(GroupBy.rock);
             }
           } else if (types && types.length>1) {
-            setGroupBy(GroupBy.type);
+            setGroupByTitle(GroupBy.type);
+          }
+          if (data.orderByGrade) {
+            setOrderBy(OrderBy.grade);
           }
         }
         setData(data);
@@ -101,17 +109,25 @@ const Sector = () => {
     }
   }, [loading, accessToken, sectorId]);
 
-  function sortBy(orderByGrade : boolean) {
+  function order(newOrderBy: OrderBy) {
+    setOrderBy(newOrderBy);
     let problems = data.problems.sort((a, b) => {
-      if (orderByGrade) {
-        if (a.gradeNumber != b.gradeNumber) {
-          return b.gradeNumber-a.gradeNumber;
-        }
+      if (newOrderBy === OrderBy.grade) {
+        if (a.gradeNumber != b.gradeNumber) return b.gradeNumber-a.gradeNumber;
+        return a.name.localeCompare(b.name);
+      } else if (newOrderBy === OrderBy.number) {
+        return a.nr-b.nr;
+      } else if (newOrderBy === OrderBy.ascents) {
+        if (a.numTicks != b.numTicks) return b.numTicks-a.numTicks;
+        return a.name.localeCompare(b.name);
+      } else if (newOrderBy === OrderBy.rating) {
+        if (a.stars != b.stars) return b.stars-a.stars;
+        return a.name.localeCompare(b.name);
+      } else if (newOrderBy === OrderBy.alphabetical) {
         return a.name.localeCompare(b.name);
       }
-      return a.nr-b.nr;
     });
-    setData(prevState => ({ ...prevState, orderByGrade, problems }));
+    setData(prevState => ({ ...prevState, problems }));
   }
 
   if (!data) {
@@ -192,9 +208,9 @@ const Sector = () => {
     );
   })
   let problems;
-  if (data.orderByGrade && groupBy === GroupBy.rock) {
+  if (groupBy && groupByTitle === GroupBy.rock) {
     let accordionRows = uniqueRocks.map(rock => {
-      let rows = data.problems.filter(p => (rock==='<Without rock>' && !p.rock) || p.rock==rock && (!hideTicked || !p.ticked)).map((p, i) => <SectorListItem key={i} problem={p} orderByGrade={data.orderByGrade} showType={data.metadata.gradeSystem==='CLIMBING'} />);
+      let rows = data.problems.filter(p => (rock==='<Without rock>' && !p.rock) || p.rock==rock && (!hideTicked || !p.ticked)).map((p, i) => <SectorListItem key={i} problem={p} orderBy={orderBy} showType={data.metadata.gradeSystem==='CLIMBING'} />);
       let label = rock + " (" + rows.length + ")";
       let content = <List selection>{rows}</List>;
       return (
@@ -202,9 +218,9 @@ const Sector = () => {
       );
     });
     problems = <AccordionContainer accordionRows={accordionRows}/>;
-  } else if (data.orderByGrade && groupBy === GroupBy.type) {
+  } else if (groupBy && groupByTitle === GroupBy.type) {
     let accordionRows = uniqueTypes.map(subType => {
-      let rows = data.problems.filter(p => p.t.subType==subType && (!hideTicked || !p.ticked)).map((p, i) => <SectorListItem key={i} problem={p} orderByGrade={data.orderByGrade} showType={data.metadata.gradeSystem==='CLIMBING'} />);
+      let rows = data.problems.filter(p => p.t.subType==subType && (!hideTicked || !p.ticked)).map((p, i) => <SectorListItem key={i} problem={p} orderBy={orderBy} showType={data.metadata.gradeSystem==='CLIMBING'} />);
       let label = subType + " (" + rows.length + ")";
       let content = <List selection>{rows}</List>;
       return (
@@ -217,17 +233,12 @@ const Sector = () => {
     problems = (
       <Segment attached="bottom">
         <List selection>
-          {data.problems.filter(p => !hideTicked || !p.ticked).map((p, i) => <SectorListItem key={i} problem={p} orderByGrade={data.orderByGrade} showType={data.metadata.gradeSystem==='CLIMBING'} />)}
+          {data.problems.filter(p => !hideTicked || !p.ticked).map((p, i) => <SectorListItem key={i} problem={p} orderBy={orderBy} showType={data.metadata.gradeSystem==='CLIMBING'} />)}
         </List>
       </Segment>
     )
   }
-  let gradeOrderText = "Grade";
-  if (groupBy === GroupBy.rock) {
-    gradeOrderText = "Rock and grade";
-  } else if (groupBy === GroupBy.type) {
-    gradeOrderText = "Type and grade";
-  }
+
   return (
     <>
       <MetaTags>
@@ -320,13 +331,42 @@ const Sector = () => {
       </Table>
       {data.problems && data.problems.length!=0 &&
         <>
-          <ButtonGroup size="mini" compact attached="top">
-            {data.problems.filter(p => p.ticked).length>0 && 
-              <Button icon labelPosition="left" onClick={() => setHideTicked(!hideTicked)} toggle primary={hideTicked}><Icon name="check"/>Hide ticked</Button>
+          <Step.Group attached="top" size="mini" unstackable fluid>
+            <Step>
+              <Step.Content>
+                <Step.Title>Order by</Step.Title>
+                <Step.Description>
+                  <Dropdown options={[
+                    {key: OrderBy.grade, text: OrderBy[OrderBy.grade], value: OrderBy[OrderBy.grade]},
+                    {key: OrderBy.number, text: OrderBy[OrderBy.number], value: OrderBy[OrderBy.number]},
+                    {key: OrderBy.ascents, text: OrderBy[OrderBy.ascents], value: OrderBy[OrderBy.ascents]},
+                    {key: OrderBy.rating, text: OrderBy[OrderBy.rating], value: OrderBy[OrderBy.rating]},
+                    {key: OrderBy.alphabetical, text: OrderBy[OrderBy.alphabetical], value: OrderBy[OrderBy.alphabetical]}
+                  ]} defaultValue={OrderBy[orderBy]} onChange={(e, { value }) => order(OrderBy[value as keyof typeof OrderBy])} />
+                </Step.Description>
+              </Step.Content>
+            </Step>
+            {groupByTitle != null && 
+              <Step>
+                <Step.Content>
+                  <Step.Title>Group by {GroupBy[groupByTitle]}</Step.Title>
+                  <Step.Description>
+                    <Checkbox toggle active={groupBy} onClick={() => setGroupBy(!groupBy)} />
+                  </Step.Description>
+                </Step.Content>
+              </Step>
             }
-            <Button icon labelPosition="left" onClick={() => sortBy(true)} toggle primary={data.orderByGrade}><Icon name="sort content ascending"/>{gradeOrderText}</Button>
-            <Button icon labelPosition="left" onClick={() => sortBy(false)} toggle primary={!data.orderByGrade}><Icon name="sort numeric ascending"/>Number</Button>
-          </ButtonGroup>
+            {data.problems.filter(p => p.ticked).length>0 && 
+              <Step>
+                <Step.Content>
+                  <Step.Title>Hide ticked</Step.Title>
+                  <Step.Description>
+                    <Checkbox toggle active={hideTicked} onClick={() => setHideTicked(!hideTicked)} />
+                  </Step.Description>
+                </Step.Content>
+              </Step>
+            }
+          </Step.Group>
           {problems}
         </>
       }
