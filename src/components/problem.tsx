@@ -400,7 +400,7 @@ const Problem = () => {
             </Table.Row>
           }
           <Table.Row verticalAlign="top">
-            <Table.Cell>Download PDF:</Table.Cell>
+            <Table.Cell>Files and links:</Table.Cell>
             <Table.Cell>
               <Label href={getProblemPdfUrl(accessToken, data.id)} rel="noreferrer noopener" target="_blank" image basic>
                 <Icon name="file pdf outline"/>{data.metadata.gradeSystem==='BOULDER'? "boulder.pdf" : "route.pdf"}
@@ -411,28 +411,18 @@ const Problem = () => {
               <Label href={getAreaPdfUrl(accessToken, data.areaId)} rel="noreferrer noopener" target="_blank" image basic>
                 <Icon name="file pdf outline"/>area.pdf
               </Label>
-            </Table.Cell>
-          </Table.Row>
-          {data.sectorLat>0 && data.sectorLng>0 &&
-            <Table.Row verticalAlign="top">
-              <Table.Cell>Navigate to parking:</Table.Cell>
-              <Table.Cell>
+              {data.sectorLat>0 && data.sectorLng>0 &&
                 <Label href={`https://maps.google.com/maps?q=loc:${data.sectorLat},${data.sectorLng}&navigate=yes`} rel="noopener" target="_blank" image basic >
-                  <Icon name="map"/>Google Maps
+                  <Icon name="map"/>Google Maps (navigate to parking)
                 </Label>
-              </Table.Cell>
-            </Table.Row>
-          }
-          {((data.lat>0 && data.lng>0) || (data.sectorLat>0 && data.sectorLng>0)) &&
-            <Table.Row verticalAlign="top">
-              <Table.Cell>Forecast and web camera:</Table.Cell>
-              <Table.Cell>
+              }
+              {((data.lat>0 && data.lng>0) || (data.sectorLat>0 && data.sectorLng>0)) &&
                 <Label href={`/weather/` + JSON.stringify({lat: data.lat>0? data.lat : data.sectorLat, lng: data.lng>0? data.lng : data.sectorLng, label: data.areaName})} rel="noopener" target="_blank" image basic >
                   <Icon name="sun"/>Weather map
                 </Label>
-              </Table.Cell>
-            </Table.Row>
-          }
+              }
+            </Table.Cell>
+          </Table.Row>
           <Table.Row verticalAlign="top">
             <Table.Cell>Page views:</Table.Cell>
             <Table.Cell>{data.hits}</Table.Cell>

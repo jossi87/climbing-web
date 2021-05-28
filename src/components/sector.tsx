@@ -293,7 +293,7 @@ const Sector = () => {
             </Table.Row>
           }
           <Table.Row>
-            <Table.Cell>Download PDF:</Table.Cell>
+            <Table.Cell>Files and links:</Table.Cell>
             <Table.Cell>
               <Label href={getSectorPdfUrl(accessToken, data.id)} rel="noreferrer noopener" target="_blank" image basic>
                 <Icon name="file pdf outline"/>sector.pdf
@@ -301,28 +301,18 @@ const Sector = () => {
               <Label href={getAreaPdfUrl(accessToken, data.areaId)} rel="noreferrer noopener" target="_blank" image basic>
                 <Icon name="file pdf outline"/>area.pdf
               </Label>
-            </Table.Cell>
-          </Table.Row>
-          {data.lat>0 && data.lng>0 &&
-            <Table.Row>
-              <Table.Cell>Navigate to parking:</Table.Cell>
-              <Table.Cell>
+              {data.lat>0 && data.lng>0 &&
                 <Label href={`https://maps.google.com/maps?q=loc:${data.lat},${data.lng}&navigate=yes`} rel="noopener" target="_blank" image basic >
-                  <Icon name="map"/>Google Maps
+                  <Icon name="map"/>Google Maps (navigate to parking)
                 </Label>
-              </Table.Cell>
-            </Table.Row>
-          }
-          {data.lat>0 && data.lng>0 &&
-            <Table.Row>
-              <Table.Cell>Forecast and web camera:</Table.Cell>
-              <Table.Cell>
+              }
+              {data.lat>0 && data.lng>0 &&
                 <Label href={`/weather/` + JSON.stringify({lat: data.lat, lng: data.lng, label: data.areaName})} rel="noopener" target="_blank" image basic >
                   <Icon name="sun"/>Weather map
                 </Label>
-              </Table.Cell>
-            </Table.Row>
-          }
+              }
+            </Table.Cell>
+          </Table.Row>
           <Table.Row>
             <Table.Cell width={3}>Page views:</Table.Cell>
             <Table.Cell>{data.hits}</Table.Cell>

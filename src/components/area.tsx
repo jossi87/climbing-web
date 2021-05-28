@@ -125,15 +125,7 @@ const Area = () => {
       <Table definition unstackable>
         <Table.Body>
           <Table.Row>
-            <Table.Cell width={3}>Download PDF:</Table.Cell>
-            <Table.Cell>
-              <Label href={getAreaPdfUrl(accessToken, data.id)} rel="noreferrer noopener" target="_blank" image basic>
-                <Icon name="file pdf outline"/>area.pdf
-              </Label>
-            </Table.Cell>
-          </Table.Row>
-          <Table.Row>
-            <Table.Cell>Sectors:</Table.Cell>
+            <Table.Cell width={3}>Sectors:</Table.Cell>
             <Table.Cell>{data.sectors.length}</Table.Cell>
           </Table.Row>
           {data.typeNumTicked.map((t, i) => (
@@ -142,16 +134,19 @@ const Area = () => {
               <Table.Cell>{t.num}{t.ticked>0 && " (" + t.ticked + " ticked)"}</Table.Cell>
             </Table.Row>
           ))}
-          {data.lat>0 && data.lng>0 &&
-            <Table.Row>
-              <Table.Cell>Forecast and web camera:</Table.Cell>
-              <Table.Cell>
+          <Table.Row>
+            <Table.Cell>Files and links:</Table.Cell>
+            <Table.Cell>
+              <Label href={getAreaPdfUrl(accessToken, data.id)} rel="noreferrer noopener" target="_blank" image basic>
+                <Icon name="file pdf outline"/>area.pdf
+              </Label>
+              {data.lat>0 && data.lng>0 &&
                 <Label href={`/weather/` + JSON.stringify({lat: data.lat, lng: data.lng, label: data.name})} rel="noopener" target="_blank" image basic >
                   <Icon name="sun"/>Weather map
                 </Label>
-              </Table.Cell>
-            </Table.Row>
-          }
+              }
+            </Table.Cell>
+          </Table.Row>
           <Table.Row>
             <Table.Cell>Page views:</Table.Cell>
             <Table.Cell>{data.hits}</Table.Cell>
