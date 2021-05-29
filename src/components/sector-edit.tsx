@@ -52,8 +52,13 @@ const SectorEdit = () => {
     if (!trash || confirm("Are you sure you want to move problem/route to trash?")) {
       setSaving(true);
       postSector(accessToken, data.areaId, data.id, data.trash, data.lockedAdmin, data.lockedSuperadmin, data.name, data.comment, data.lat, data.lng, data.polygonCoords, data.polyline, data.newMedia)
-      .then((response) => {
-        history.push(trash? "/area/"+data.areaId : "/sector/"+response.id);
+      .then((data) => {
+        if (trash) {
+          history.push("/area/"+data.areaId);
+        } else {
+          let res = data.json();
+          history.push("/sector/"+res.id);
+        }
       })
       .catch((error) => {
         console.warn(error);

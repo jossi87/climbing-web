@@ -50,8 +50,13 @@ const AreaEdit = () => {
     if (!trash || confirm("Are you sure you want to move area to trash?")) {
       setSaving(true);
       postArea(accessToken, data.id, data.trash, data.lockedAdmin, data.lockedSuperadmin, data.forDevelopers, data.name, data.comment, data.lat, data.lng, data.newMedia)
-      .then((response) => {
-        history.push(trash? "/" : "/area/" + response.id);
+      .then((data) => {
+        if (trash) {
+          history.push("/");
+        } else {
+          let res = data.json();
+          history.push("/area/"+res.id);
+        }
       })
       .catch((error) => {
         console.warn(error);
