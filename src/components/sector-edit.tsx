@@ -49,7 +49,7 @@ const SectorEdit = () => {
   function save(event) {
     event.preventDefault();
     const trash = data.trash? true : false;
-    if (!trash || confirm("Are you sure you want to move problem/route to trash?")) {
+    if (!trash || confirm("Are you sure you want to move sector to trash?")) {
       setSaving(true);
       postSector(accessToken, data.areaId, data.id, data.trash, data.lockedAdmin, data.lockedSuperadmin, data.name, data.comment, data.lat, data.lng, data.polygonCoords, data.polyline, data.newMedia)
       .then((data) => {
