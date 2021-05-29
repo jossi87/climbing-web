@@ -170,12 +170,7 @@ const ProblemEdit = () => {
         data.trivia,
         data.startingAltitude, data.aspect, data.routeLength, data.descent)
       .then((data) => {
-        if (trash) {
-          history.push("/sector/"+data.sectorId);
-        } else {
-          let res = data.json();
-          history.push("/problem/"+res.id);
-        }
+        history.push(data.destination);
       })
       .catch((error) => {
         console.warn(error);

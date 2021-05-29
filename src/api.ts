@@ -526,7 +526,7 @@ export function postArea(accessToken: string, id: number, trash: boolean, locked
     headers: {
       'Accept': 'application/json'
     }
-  });
+  }).then((data) => data.json());
 }
 
 export function postComment(accessToken: string, id: number, idProblem: number, comment: string, danger: boolean, resolved: boolean, del: boolean, media: any): Promise<any> {
@@ -586,7 +586,7 @@ export function postProblem(accessToken: string, sectorId: number, id: number, t
     headers: {
       'Accept': 'application/json'
     }
-  });
+  }).then((data) => data.json());
 }
 
 export function postProblemMedia(accessToken: string, id: number, media: any): Promise<any> {
@@ -636,7 +636,7 @@ export function postSector(accessToken: string, areaId: number, id: number, tras
     headers: {
       'Accept': 'application/json'
     }
-  });
+  }).then((data) => data.json());
 }
 
 export function postTicks(accessToken: string, del: boolean, id: number, idProblem: number, comment: string, date: string, stars: number, grade: string): Promise<any> {

@@ -53,12 +53,7 @@ const SectorEdit = () => {
       setSaving(true);
       postSector(accessToken, data.areaId, data.id, data.trash, data.lockedAdmin, data.lockedSuperadmin, data.name, data.comment, data.lat, data.lng, data.polygonCoords, data.polyline, data.newMedia)
       .then((data) => {
-        if (trash) {
-          history.push("/area/"+data.areaId);
-        } else {
-          let res = data.json();
-          history.push("/sector/"+res.id);
-        }
+        history.push(data.destination);
       })
       .catch((error) => {
         console.warn(error);
