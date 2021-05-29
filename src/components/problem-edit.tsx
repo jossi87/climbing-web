@@ -170,10 +170,14 @@ const ProblemEdit = () => {
         data.trivia,
         data.startingAltitude, data.aspect, data.routeLength, data.descent)
       .then((response) => {
-        history.push(trash? "/sector/"+data.sectorId : "/problem/"+response.id);
+        history.push("/problem/"+response.id);
       })
       .catch((error) => {
-        console.warn(error);
+        if (trash) {
+          history.push("/sector/"+data.sectorId);
+        } else {
+          console.warn(error);
+        }
       });
     }
   }
