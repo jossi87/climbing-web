@@ -51,14 +51,10 @@ const AreaEdit = () => {
       setSaving(true);
       postArea(accessToken, data.id, data.trash, data.lockedAdmin, data.lockedSuperadmin, data.forDevelopers, data.name, data.comment, data.lat, data.lng, data.newMedia)
       .then((response) => {
-        history.push("/area/" + response.id);
+        history.push(trash? "/" : "/area/" + response.id);
       })
       .catch((error) => {
-        if (trash) {
-          history.push("/");
-        } else {
-          console.warn(error);
-        }
+        console.warn(error);
       });
     }
   }
