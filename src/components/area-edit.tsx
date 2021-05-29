@@ -46,14 +46,17 @@ const AreaEdit = () => {
 
   function save(event) {
     event.preventDefault();
-    setSaving(true);
-    postArea(accessToken, data.id, data.lockedAdmin, data.lockedSuperadmin, data.forDevelopers, data.name, data.comment, data.lat, data.lng, data.newMedia)
-    .then((response) => {
-      history.push("/area/" + response.id);
-    })
-    .catch((error) => {
-      console.warn(error);
-    });
+    const trash = data.trash? true : false;
+    if (!trash || confirm("Are you sure you want to move area to trash?")) {
+      setSaving(true);
+      postArea(accessToken, data.id, data.trash, data.lockedAdmin, data.lockedSuperadmin, data.forDevelopers, data.name, data.comment, data.lat, data.lng, data.newMedia)
+      .then((response) => {
+        history.push(trash? "/" : "/area/" + response.id);
+      })
+      .catch((error) => {
+        console.warn(error);
+      });
+    }
   }
 
   function onMarkerClick(event) {
@@ -89,7 +92,7 @@ const AreaEdit = () => {
       </MetaTags>
       <Message
         size="tiny"
-        content={<><Icon name="info"/>Contact <a href='mailto:jostein.oygarden@gmail.com'>Jostein Øygarden</a> if you want to delete or split area.</>}
+        content={<><Icon name="info"/>Contact <a href='mailto:jostein.oygarden@gmail.com'>Jostein Øygarden</a> if you want to split area.</>}
       />
       <Form>
         <Segment>
@@ -111,7 +114,11 @@ const AreaEdit = () => {
               options={lockedOptions} />
             <Form.Field>
               <label>For developers</label>
-              <Checkbox label="For developers" checked={data.forDevelopers} onChange={() => setData(prevState => ({ ...prevState, forDevelopers: !data.forDevelopers }))} />
+              <Checkbox toggle checked={data.forDevelopers} onChange={() => setData(prevState => ({ ...prevState, forDevelopers: !data.forDevelopers }))} />
+            </Form.Field>
+            <Form.Field>
+              <label>Move to trash</label>
+              <Checkbox disabled={!data.id || data.id<=0} toggle checked={data.trash} onChange={() => setData(prevState => ({ ...prevState, trash: !data.trash }))} />
             </Form.Field>
           </Form.Group>
           <Form.Field

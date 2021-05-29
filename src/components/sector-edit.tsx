@@ -48,14 +48,17 @@ const SectorEdit = () => {
 
   function save(event) {
     event.preventDefault();
-    setSaving(true);
-    postSector(accessToken, data.areaId, data.id, data.lockedAdmin, data.lockedSuperadmin, data.name, data.comment, data.lat, data.lng, data.polygonCoords, data.polyline, data.newMedia)
-    .then((response) => {
-      history.push("/sector/" + response.id);
-    })
-    .catch((error) => {
-      console.warn(error);
-    });
+    const trash = data.trash? true : false;
+    if (!trash || confirm("Are you sure you want to move problem/route to trash?")) {
+      setSaving(true);
+      postSector(accessToken, data.areaId, data.id, data.trash, data.lockedAdmin, data.lockedSuperadmin, data.name, data.comment, data.lat, data.lng, data.polygonCoords, data.polyline, data.newMedia)
+      .then((response) => {
+        history.push(trash? "/area/"+data.areaId : "/sector/"+response.id);
+      })
+      .catch((error) => {
+        console.warn(error);
+      });
+    }
   }
 
   function onMapClick(event) {
@@ -133,7 +136,7 @@ const SectorEdit = () => {
       </MetaTags>
       <Message
         size="tiny"
-        content={<><Icon name="info"/>Contact <a href='mailto:jostein.oygarden@gmail.com'>Jostein Øygarden</a> if you want to delete, move or split sector.</>}
+        content={<><Icon name="info"/>Contact <a href='mailto:jostein.oygarden@gmail.com'>Jostein Øygarden</a> if you want to move or split sector.</>}
       />
       <Form>
         <Segment>
@@ -153,6 +156,10 @@ const SectorEdit = () => {
               value={lockedValue}
               onChange={onLockedChanged}
               options={lockedOptions} />
+            <Form.Field>
+              <label>Move to trash</label>
+              <Checkbox disabled={!data.id || data.id<=0} toggle checked={data.trash} onChange={() => setData(prevState => ({ ...prevState, trash: !data.trash }))} />
+            </Form.Field>
           </Form.Group>
           <Form.Field
             label="Description"

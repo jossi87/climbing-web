@@ -144,34 +144,38 @@ const ProblemEdit = () => {
 
   function save(event) {
     event.preventDefault();
-    setSaving(true);
-    postProblem(
-      accessToken,
-      data.sectorId,
-      data.id,
-      data.lockedAdmin,
-      data.lockedSuperadmin,
-      data.name,
-      data.rock,
-      data.comment,
-      data.originalGrade,
-      data.fa,
-      data.faDate,
-      data.nr,
-      (data.typeId? data.metadata.types.find(t => t.id === data.typeId) : data.metadata.types[0]),
-      data.lat,
-      data.lng,
-      data.sections,
-      data.newMedia,
-      data.faAid,
-      data.trivia,
-      data.startingAltitude, data.aspect, data.routeLength, data.descent)
-    .then((response) => {
-      history.push("/problem/" + response.id);
-    })
-    .catch((error) => {
-      console.warn(error);
-    });
+    const trash = data.trash? true : false;
+    if (!trash || confirm("Are you sure you want to move problem to trash?")) {
+      setSaving(true);
+      postProblem(
+        accessToken,
+        data.sectorId,
+        data.id,
+        data.trash,
+        data.lockedAdmin,
+        data.lockedSuperadmin,
+        data.name,
+        data.rock,
+        data.comment,
+        data.originalGrade,
+        data.fa,
+        data.faDate,
+        data.nr,
+        (data.typeId? data.metadata.types.find(t => t.id === data.typeId) : data.metadata.types[0]),
+        data.lat,
+        data.lng,
+        data.sections,
+        data.newMedia,
+        data.faAid,
+        data.trivia,
+        data.startingAltitude, data.aspect, data.routeLength, data.descent)
+      .then((response) => {
+        history.push(trash? "/sector/"+data.sectorId : "/problem/"+response.id);
+      })
+      .catch((error) => {
+        console.warn(error);
+      });
+    }
   }
 
   function onMapClick(event) {
@@ -250,7 +254,7 @@ const ProblemEdit = () => {
       </MetaTags>
       <Message
         size="tiny"
-        content={<><Icon name="info"/>Contact <a href='mailto:jostein.oygarden@gmail.com'>Jostein Øygarden</a> if you want to delete or move {data.metadata.gradeSystem==='BOULDER'? "problem" : "route"} to an other sector.</>}
+        content={<><Icon name="info"/>Contact <a href='mailto:jostein.oygarden@gmail.com'>Jostein Øygarden</a> if you want to move {data.metadata.gradeSystem==='BOULDER'? "problem" : "route"} to an other sector.</>}
       />
       <Form>
         <Segment>
@@ -276,6 +280,10 @@ const ProblemEdit = () => {
               placeholder='Enter number'
               value={data.nr}
               onChange={onNrChanged} />
+            <Form.Field>
+              <label>Move to trash</label>
+              <Checkbox disabled={!data.id || data.id<=0} toggle checked={data.trash} onChange={() => setData(prevState => ({ ...prevState, trash: !data.trash }))} />
+            </Form.Field>
           </Form.Group>
           <Form.Group widths='equal'>
             <Form.Field
@@ -300,14 +308,16 @@ const ProblemEdit = () => {
                 <Button onClick={() => onFaDateChanged(new Date())}>Today</Button>
               </Button.Group>
             </Form.Field>
+            {data.metadata.gradeSystem==='BOULDER' ?
+              <Form.Field
+                label="Rock (this field is optional, use to group boulders by rock in sector)"
+                control={RockSelector}
+                placeholder="Add rock"
+                rock={data.rock} onRockUpdated={onRockChanged} rocks={sectorRocks} identity={null} />
+              :
+              <Form.Field/>
+            }
           </Form.Group>
-          {data.metadata.gradeSystem==='BOULDER' &&
-            <Form.Field
-              label="Rock (this field is optional, use to group boulders by rock in sector)"
-              control={RockSelector}
-              placeholder="Add rock"
-              rock={data.rock} onRockUpdated={onRockChanged} rocks={sectorRocks} identity={null} />
-          }
           <Form.Field
             label="Description"
             control={TextArea}
