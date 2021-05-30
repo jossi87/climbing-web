@@ -23,6 +23,7 @@ const SvgEdit = lazy(() => import('./components/svg-edit'));
 const Ticks = lazy(() => import('./components/ticks'));
 const Toc = lazy(() => import('./components/toc'));
 const Todo = lazy(() => import('./components/todo'));
+const Trash = lazy(() => import('./components/trash'));
 const User = lazy(() => import('./components/user'));
 const UserMedia = lazy(() => import('./components/user-media'));
 const Permissions = lazy(() => import('./components/permissions'));
@@ -81,6 +82,7 @@ const App = () => {
                 <Route exact path='/toc'><Toc/></Route>
                 <Route exact path='/todo'><Todo/></Route>
                 <Route exact path='/todo/:userId'><Todo/></Route>
+                <Route exact path='/trash'><Trash/></Route>
                 <Route exact path='/weather'><Weather/></Route>
                 <Route exact path='/weather/:json'><Weather/></Route>
               </Switch>

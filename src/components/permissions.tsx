@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 import { getPermissions, postPermissions } from '../api';
-import { Header, Image, Dropdown, Card } from 'semantic-ui-react';
+import { Header, Icon, Segment, Image, Dropdown, Card } from 'semantic-ui-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { InsufficientPrivileges } from './common/widgets/widgets';
@@ -41,9 +41,17 @@ const Permissions = () => {
         <meta property="og:image:height" content={data.metadata.og.imageHeight} />
         <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
       </MetaTags>
-      <Header as="h2">Permissions ({data.users.length} users)</Header>
+      <Segment>
+        <Header as="h2">
+          <Icon name='users' />
+          <Header.Content>
+            Permissions
+            <Header.Subheader>{data.users.length} users</Header.Subheader>
+          </Header.Content>
+        </Header>
+      </Segment>
       {data.users.length == 0?
-        <i>No data</i>
+        <Segment>No data</Segment>
       :
         <Card.Group doubling stackable itemsPerRow={4}>
           {data.users.map((u, key) => {

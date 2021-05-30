@@ -478,6 +478,15 @@ export function getTodo(accessToken: string, id: number): Promise<any> {
   });
 }
 
+export function getTrash(accessToken: string): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/trash`, null)
+  .then((data) => data.json())
+  .catch((error) => {
+    console.warn(error);
+    return null;
+  });
+}
+
 export function getUser(accessToken: string, id: number): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/users?id=${id}`, null)
   .then((data) => data.json())
@@ -658,5 +667,11 @@ export function postTodo(accessToken: string, problemId: number): Promise<any> {
 export function postUserRegion(accessToken: string, regionId: number, del: boolean): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/user/regions?regionId=${regionId}&delete=${del}`,{
     method: 'POST'
+  });
+}
+
+export function putTrash(accessToken: string, idArea: number, idSector: number, idProblem: number): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/trash?idArea=${idArea}&idSector=${idSector}&idProblem=${idProblem}`, {
+    method: 'PUT'
   });
 }

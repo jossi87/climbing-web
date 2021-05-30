@@ -4,7 +4,7 @@ import { Link, useParams, useHistory } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import { calculateDistance } from './common/leaflet/distance-math';
 import Media from './common/media/media';
-import { Button, Grid, Breadcrumb, Tab, Label, Icon, Comment, Header, Segment, Table, Feed, List } from 'semantic-ui-react';
+import { Button, Grid, Breadcrumb, Tab, Label, Icon, Comment, Header, Segment, Table, Feed } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getAreaPdfUrl, getSectorPdfUrl, getProblemPdfUrl, getProblem, getSector, postComment, postTodo } from '../api';
