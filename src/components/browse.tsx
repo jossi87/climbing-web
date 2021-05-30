@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link, useHistory } from 'react-router-dom';
-import { Button, List, Icon, Image, Segment } from 'semantic-ui-react';
+import { Button, List, Icon, Segment } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 import { useAuth0 } from '../utils/react-auth0-spa';
-import { getBrowse, getImageUrl } from '../api';
+import { getBrowse } from '../api';
 
 const Browse = () => {
   const { loading, accessToken } = useAuth0();
@@ -37,7 +37,7 @@ const Browse = () => {
         </>
       }
   });
-  const map = markers.length>0 && <><Leaflet autoZoom={true} height='75vh' markers={markers} defaultCenter={data.metadata.defaultCenter} defaultZoom={data.metadata.defaultZoom} history={history} polylines={null} outlines={null} onClick={null} showSateliteImage={false}  clusterMarkers={true} rocks={null} /><br/></>;
+  const map = markers.length>0 && <><Leaflet autoZoom={true} height='75vh' markers={markers} defaultCenter={data.metadata.defaultCenter} defaultZoom={data.metadata.defaultZoom} history={history} polylines={null} outlines={null} onClick={null} showSateliteImage={false}  clusterMarkers={!showForDevelopers} rocks={null} /><br/></>;
   return (
     <>
       <MetaTags>
