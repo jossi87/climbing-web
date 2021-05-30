@@ -51,7 +51,7 @@ const style = {
   },
 }
 
-const MediaModal = ({ isAdmin, onClose, onDelete, onMoveImageLeft, onMoveImageRight, m, length, gotoPrev, gotoNext, playVideo, autoPlayVideo, optProblemId, isBouldering }) => {
+const MediaModal = ({ isAdmin, onClose, onDelete, onMoveImageLeft, onMoveImageRight, onMoveImageToSector, onMoveImageToProblem, m, length, gotoPrev, gotoNext, playVideo, autoPlayVideo, optProblemId, isBouldering }) => {
   let history = useHistory();
   let myPlayer;
   let content;
@@ -98,7 +98,9 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onMoveImageLeft, onMoveImageRi
               {canDrawTopo && <Dropdown.Item icon="paint brush" text="Draw topo line" onClick={() => history.push(`/problem/svg-edit/${optProblemId}-${m.id}`)} />}
               {canDrawMedia && <Dropdown.Item icon="paint brush" text="Draw on image" onClick={() => history.push(`/media/svg-edit/${m.id}`)} />}
               {canOrder && <Dropdown.Item icon="arrow left" text="Move image to the left" onClick={onMoveImageLeft} />}
-              {canOrder && <Dropdown.Item icon="arrow right" text="Move image to the right"  onClick={onMoveImageRight} />}
+              {canOrder && <Dropdown.Item icon="arrow right" text="Move image to the right" onClick={onMoveImageRight} />}
+              {m.enableMoveToIdSector && <Dropdown.Item icon="arrow right" text={"Move image from " + (isBouldering? "problem" : "route") + " to sector"} onClick={onMoveImageToSector} />}
+              {m.enableMoveToIdProblem && <Dropdown.Item icon="arrow right" text={"Move image from sector to this " + (isBouldering? "problem" : "route")} onClick={onMoveImageToProblem} />}
               {canDelete && <><Dropdown.Divider /><Dropdown.Item icon="trash" text="Delete image" onClick={onDelete} /></>}
             </Dropdown.Menu>
           </Dropdown>

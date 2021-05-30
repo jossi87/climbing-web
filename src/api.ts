@@ -82,8 +82,8 @@ export function deleteMedia(accessToken: string, id: number): Promise<any> {
   });
 }
 
-export function moveMedia(accessToken: string, id: number, left: boolean): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/media?id=${id}&left=${left}`, {
+export function moveMedia(accessToken: string, id: number, left: boolean, toIdSector: number, toIdProblem: number): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/media?id=${id}&left=${left}&toIdSector=${toIdSector}&toIdProblem=${toIdProblem}`, {
     method: 'PUT'
   });
 }

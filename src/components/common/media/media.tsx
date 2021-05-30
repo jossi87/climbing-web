@@ -81,7 +81,7 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
   }
 
   function onMoveImageLeft() {
-    moveMedia(accessToken, m.id, true)
+    moveMedia(accessToken, m.id, true, 0, 0)
     .then((response) => {
       closeModal();
       window.location.reload();
@@ -92,7 +92,29 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
   }
 
   function onMoveImageRight() {
-    moveMedia(accessToken, m.id, false)
+    moveMedia(accessToken, m.id, false, 0, 0)
+    .then((response) => {
+      closeModal();
+      window.location.reload();
+    })
+    .catch ((error) => {
+      console.warn(error);
+    });
+  }
+
+  function onMoveImageToSector() {
+    moveMedia(accessToken, m.id, false, m.enableMoveToIdSector, 0)
+    .then((response) => {
+      closeModal();
+      window.location.reload();
+    })
+    .catch ((error) => {
+      console.warn(error);
+    });
+  }
+
+  function onMoveImageToProblem() {
+    moveMedia(accessToken, m.id, false, 0, m.enableMoveToIdProblem)
     .then((response) => {
       closeModal();
       window.location.reload();
@@ -129,6 +151,8 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
           onDelete={onDeleteImage}
           onMoveImageLeft={onMoveImageLeft}
           onMoveImageRight={onMoveImageRight}
+          onMoveImageToProblem={onMoveImageToProblem}
+          onMoveImageToSector={onMoveImageToSector}
           length={media.length}
           gotoPrev={gotoPrev}
           gotoNext={gotoNext}
