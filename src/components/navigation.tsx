@@ -7,10 +7,14 @@ import { getBaseUrl, getMeta } from '../api';
 
 const Navigation = () => {
   const { loading, isAuthenticated, loginWithRedirect, logout, accessToken } = useAuth0();
+  const [isAdmin, setIsAdmin] = useState(false);
   const [isSuperAdmin, setIsUserAdmin] = useState(false);
   let location = useLocation();
   useEffect(() => {
-    getMeta(accessToken).then((data) => setIsUserAdmin(data.metadata.isSuperAdmin));
+    getMeta(accessToken).then((data) => {
+      setIsAdmin(data.metadata.isAdmin)
+      setIsUserAdmin(data.metadata.isSuperAdmin);
+    });
   }, [accessToken]);
 
   return (
