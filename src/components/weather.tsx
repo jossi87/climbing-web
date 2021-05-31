@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import MetaTags from 'react-meta-tags';
 import Leaflet from './common/leaflet/leaflet';
+import { Segment, Header, Icon } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { getCameras } from '../api';
 
@@ -29,19 +30,18 @@ const Weather = () => {
       urlYr: c.urlYr
     }
   });
-  let header = "Weather map";
   let defaultCenter = data.metadata.defaultCenter;
   let defaultZoom = data.metadata.defaultZoom;
+  let subHeader;
   if (json) {
     let { lat, lng, label } = JSON.parse(json);
-    header += " (" + label + ")";
+    subHeader = label;
     defaultCenter = {lat, lng};
     defaultZoom = 10;
     markers.push({lat, lng, label})
   }
   return (
     <>
-      <h3>{header}</h3>
       <MetaTags>
         <title>{data.metadata.title}</title>
         <meta name="description" content={data.metadata.description} />
@@ -54,7 +54,16 @@ const Weather = () => {
         <meta property="og:image:height" content={data.metadata.og.imageHeight} />
         <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
       </MetaTags>
-      <Leaflet height='85vh' autoZoom={false} outlines={null} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} markers={markers} polylines={null} onClick={null} showSateliteImage={false} clusterMarkers={false} rocks={null} />
+      <Segment>
+        <Header as="h2">
+          <Icon name='sun' />
+          <Header.Content>
+            Weather map
+            {subHeader && <Header.Subheader>{subHeader}</Header.Subheader>}
+          </Header.Content>
+        </Header>
+        <Leaflet height='85vh' autoZoom={false} outlines={null} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} markers={markers} polylines={null} onClick={null} showSateliteImage={false} clusterMarkers={false} rocks={null} />
+      </Segment>
     </>
   );
 }
