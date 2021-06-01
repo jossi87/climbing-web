@@ -147,9 +147,11 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
         </defs>
         <image xlinkHref={getImageUrl(m.id, m.embedUrl)} width="100%" height="100%"/>
         {generateMediaSvgShapes(m.mediaSvgs)}
-        <g key={optProblemId} className={thumb? "" : "buldreinfo-svg-sibling-fade"}>
-          {generateShapes(m.svgs, m.width, m.height)}
-        </g>
+        {m.svgs &&
+          <g key={optProblemId} className={thumb? "" : "buldreinfo-svg-sibling-fade"}>
+            {generateShapes(m.svgs, m.width, m.height)}
+          </g>
+        }
         {info}
       </svg>
     </>

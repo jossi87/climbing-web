@@ -56,7 +56,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onMoveImageLeft, onMoveImageRi
   let myPlayer;
   let content;
   if (m.idType===1) {
-    if (m.svgs) {
+    if (m.svgs || m.mediaSvgs) {
       content = <Image style={style.img}><Svg thumb={false} style={{}} m={m} close={onClose} optProblemId={optProblemId}/></Image>;
     }
     else {
@@ -87,12 +87,12 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onMoveImageLeft, onMoveImageRi
 
   const canDelete = isAdmin && m.idType===1 && !m.svgs;
   const canDrawTopo = isAdmin && m.idType===1 && optProblemId;
-  const canDrawMedia = isAdmin && m.idType===1;
+  const canDrawMedia = isAdmin && m.idType===1 && !isBouldering;
   const canOrder = isAdmin && m.idType===1 && length>1;
   return (
     <Dimmer active={true} onClickOutside={onClose} page>
       <ButtonGroup secondary size="small" style={style.actions}>
-        {(canDelete || canDrawTopo || canDrawMedia || canOrder) && (
+        {(canDelete || canDrawTopo || canDrawMedia || canOrder || m.enableMoveToIdSector || m.enableMoveToIdProblem) && (
           <Dropdown direction='left' icon='bars' button>
             <Dropdown.Menu>
               {canDrawTopo && <Dropdown.Item icon="paint brush" text="Draw topo line" onClick={() => history.push(`/problem/svg-edit/${optProblemId}-${m.id}`)} />}
@@ -101,7 +101,8 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onMoveImageLeft, onMoveImageRi
               {canOrder && <Dropdown.Item icon="arrow right" text="Move image to the right" onClick={onMoveImageRight} />}
               {m.enableMoveToIdSector && <Dropdown.Item icon="move" text={"Move image from " + (isBouldering? "problem" : "route") + " to sector"} onClick={onMoveImageToSector} />}
               {m.enableMoveToIdProblem && <Dropdown.Item icon="move" text={"Move image from sector to this " + (isBouldering? "problem" : "route")} onClick={onMoveImageToProblem} />}
-              {canDelete && <><Dropdown.Divider /><Dropdown.Item icon="trash" text="Delete image" onClick={onDelete} /></>}
+              {(canDrawTopo || canDrawMedia || canOrder || m.enableMoveToIdSector || m.enableMoveToIdProblem) && canDelete && <Dropdown.Divider />}
+              {canDelete && <Dropdown.Item icon="trash" text="Delete image" onClick={onDelete} />}
             </Dropdown.Menu>
           </Dropdown>
         )}
@@ -125,7 +126,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onMoveImageLeft, onMoveImageRi
             </Modal.Description>
           </Modal.Content>
         </Modal>
-        {!isBouldering && m.svgs &&
+        {!isBouldering && (m.mediaSvgs || m.svgs) &&
           <Modal trigger={<Button icon="help" />}>
             <Modal.Content image>
               <Modal.Description>
