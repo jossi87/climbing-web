@@ -92,16 +92,16 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onMoveImageLeft, onMoveImageRi
   return (
     <Dimmer active={true} onClickOutside={onClose} page>
       <ButtonGroup secondary size="small" style={style.actions}>
-        {(canDelete || canDrawTopo || canDrawMedia || canOrder || m.enableMoveToIdSector || m.enableMoveToIdProblem) && (
+        {(canDelete || canDrawTopo || canDrawMedia || canOrder ) && (
           <Dropdown direction='left' icon='bars' button>
             <Dropdown.Menu>
               {canDrawTopo && <Dropdown.Item icon="paint brush" text="Draw topo line" onClick={() => history.push(`/problem/svg-edit/${optProblemId}-${m.id}`)} />}
               {canDrawMedia && <Dropdown.Item icon="paint brush" text="Draw on image" onClick={() => history.push(`/media/svg-edit/${m.id}`)} />}
               {canOrder && <Dropdown.Item icon="arrow left" text="Move image to the left" onClick={onMoveImageLeft} />}
               {canOrder && <Dropdown.Item icon="arrow right" text="Move image to the right" onClick={onMoveImageRight} />}
-              {m.enableMoveToIdSector && <Dropdown.Item icon="move" text={"Move image from " + (isBouldering? "problem" : "route") + " to sector"} onClick={onMoveImageToSector} />}
-              {m.enableMoveToIdProblem && <Dropdown.Item icon="move" text={"Move image from sector to this " + (isBouldering? "problem" : "route")} onClick={onMoveImageToProblem} />}
-              {(canDrawTopo || canDrawMedia || canOrder || m.enableMoveToIdSector || m.enableMoveToIdProblem) && canDelete && <Dropdown.Divider />}
+              {canOrder && m.enableMoveToIdSector && <Dropdown.Item icon="move" text={"Move image from " + (isBouldering? "problem" : "route") + " to sector"} onClick={onMoveImageToSector} />}
+              {canOrder && m.enableMoveToIdProblem && <Dropdown.Item icon="move" text={"Move image from sector to this " + (isBouldering? "problem" : "route")} onClick={onMoveImageToProblem} />}
+              {(canDrawTopo || canDrawMedia || canOrder) && canDelete && <Dropdown.Divider />}
               {canDelete && <Dropdown.Item icon="trash" text="Delete image" onClick={onDelete} />}
             </Dropdown.Menu>
           </Dropdown>
