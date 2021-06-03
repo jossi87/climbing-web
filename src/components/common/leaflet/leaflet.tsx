@@ -24,7 +24,7 @@ function MapEvent({ onClick }) {
 }
 
 const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defaultCenter, defaultZoom, onClick, clusterMarkers, showSateliteImage, rocks }) => {
-  const [groupByRock, setGroupByRock] = useState(rocks != null && rocks.length>0? true : false);
+  const [groupByRock, setGroupByRock] = useState((rocks != null && rocks.length>0)? true : false);
   let bounds = null;
   if (autoZoom && ((markers && markers.length > 0) || (outlines && outlines.length > 0) || (polylines && polylines.length > 0))) {
     bounds = latLngBounds([]);
@@ -77,7 +77,7 @@ const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defa
       <FullscreenControl />
       <LocateControl />
       <ScaleControl maxWidth={100} metric={true} imperial={false} />
-      {rocks &&
+      {rocks != null && rocks.length>0 &&
         <UseControl position='bottomleft'>
           <Checkbox as={Segment} label={<label>Group by rock</label>} toggle checked={groupByRock} onChange={(e,d) => {
             setGroupByRock(d.checked);
