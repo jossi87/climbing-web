@@ -49,7 +49,7 @@ export function Stars({numStars, includeNoRating}) {
 export function LoadingAndRestoreScroll() {
   window.scrollTo(0, 0);
   return (
-    <Message icon>
+    <Message icon style={{backgroundColor: "white"}}>
       <Icon name='circle notched' loading />
       <Message.Content>
         <Message.Header>Just one second</Message.Header>
