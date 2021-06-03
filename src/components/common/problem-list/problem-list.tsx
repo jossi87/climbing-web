@@ -53,7 +53,7 @@ const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[
     setHideTicked(false);
     setOnlyFa(false);
     const rocks = rows.filter(p => p.rock).map(p => p.rock).filter((value, index, self) => self.indexOf(value) === index).sort();
-    if (rocks.length>0 && rows.filter(p => !p.rock)) {
+    if (rocks.length>0 && rows.filter(p => !p.rock).length>0) {
       rocks.push("<Without rock>");
     }
     setUniqueRocks(rocks);
