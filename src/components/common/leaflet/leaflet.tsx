@@ -24,7 +24,7 @@ function MapEvent({ onClick }) {
 }
 
 const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defaultCenter, defaultZoom, onClick, clusterMarkers, showSateliteImage, rocks }) => {
-  const [groupByRock, setGroupByRock] = useState(rocks? true : false);
+  const [groupByRock, setGroupByRock] = useState(rocks != null && rocks.length>0? true : false);
   let bounds = null;
   if (autoZoom && ((markers && markers.length > 0) || (outlines && outlines.length > 0) || (polylines && polylines.length > 0))) {
     bounds = latLngBounds([]);
