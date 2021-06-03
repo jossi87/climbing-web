@@ -22,7 +22,7 @@ const AccordionContainer = ({ accordionRows }) => {
             {d.label}
           </Accordion.Title>
           <Accordion.Content active={activeIndex === i}>
-            {d.content}
+            {d.content != null && d.content.length>0? d.content : <i>No data</i>}
           </Accordion.Content>
         </span>
       ))}

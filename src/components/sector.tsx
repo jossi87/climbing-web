@@ -1,22 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link, useParams, useHistory } from 'react-router-dom';
-import AccordionContainer from './common/accordion-container/accordion-container'
+import ProblemList from './common/problem-list/problem-list';
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
 import Activity from './common/activity/activity';
 import Leaflet from './common/leaflet/leaflet';
 import { calculateDistance } from './common/leaflet/distance-math';
 import Media from './common/media/media';
-import { LockSymbol, Stars, LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { Step, Segment, Dropdown, Icon, Button, Checkbox, List, Tab, Breadcrumb, Table, Label, TableCell } from 'semantic-ui-react';
+import { Stars, LockSymbol, LoadingAndRestoreScroll } from './common/widgets/widgets';
+import { Icon, Button, Tab, Breadcrumb, Table, Label, TableCell, List } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSector, getAreaPdfUrl, getSectorPdfUrl } from '../api';
 import Linkify from 'react-linkify';
 
-const SectorListItem = ({ problem, showType, orderBy } ) => {
+interface SectorIdParams {
+  sectorId: string;
+}
+const SectorListItem = ({ problem, isClimbing }) => {
   var ascents = problem.numTicks>0 && (problem.numTicks + (problem.numTicks==1? " ascent" : " ascents"));
   var typeAscents;
-  if (showType) {
+  if (isClimbing) {
     let t = problem.t.subType;
     if (problem.numPitches>1) t += ", " + problem.numPitches + " pitches";
     if (ascents) {
@@ -24,7 +27,7 @@ const SectorListItem = ({ problem, showType, orderBy } ) => {
     } else {
       typeAscents = " (" + t + ") ";
     }
-  } else if (!showType) {
+  } else {
     if (ascents) {
       typeAscents = " (" + ascents + ") ";
     }
@@ -32,19 +35,12 @@ const SectorListItem = ({ problem, showType, orderBy } ) => {
       typeAscents = " ";
     }
   }
-  var comment;
-  if (orderBy === OrderBy.grade && problem.comment) {
-    comment = <small><i style={{color: "gray"}}>{' '}#{problem.nr} - {problem.comment}{' '}</i></small>;
-  } else if (orderBy === OrderBy.grade) {
-    comment = <small><i style={{color: "gray"}}>{' '}#{problem.nr}{' '}</i></small>;
-  } else if (problem.comment) {
-    comment = <small><i style={{color: "gray"}}>{' '}{problem.rock && <>Rock: {problem.rock}. </>}{problem.comment}{' '}</i></small>;
-  }
+  let comment = <small><i style={{color: "gray"}}>{' '}{problem.rock && <>Rock: {problem.rock}. </>}{problem.comment}{' '}</i></small>;
   return (
     <List.Item style={{backgroundColor: problem.ticked? "#d2f8d2" : "#ffffff"}} key={problem.id}>
       <List.Header>
         {problem.danger && <Icon color="red" name="warning"/>}
-        {orderBy === OrderBy.number && `#${problem.nr} `}
+        {`#${problem.nr} `}
         <Link to={`/problem/${problem.id}`}>{problem.name}</Link>
         {' '}{problem.grade}
         {' '}<Stars numStars={problem.stars} includeNoRating={false} />
@@ -53,83 +49,26 @@ const SectorListItem = ({ problem, showType, orderBy } ) => {
         {comment}
         {problem.lat>0 && problem.lng>0 && <Icon size="small" name="map marker alternate"/>}
         {problem.hasTopo && <Icon size="small" name="paint brush"/>}
-        {problem.hasImages>0 && <Icon size="small" color="black" name="photo"/>}
-        {problem.hasMovies>0 && <Icon size="small" color="black" name="film"/>}
+        {problem && <Icon size="small" color="black" name="photo"/>}
+        {problem && <Icon size="small" color="black" name="film"/>}
         <LockSymbol lockedAdmin={problem.lockedAdmin} lockedSuperadmin={problem.lockedSuperadmin} />
         {problem.ticked && <Icon size="small" color="green" name="check"/>}
       </List.Header>
     </List.Item>
-  ) 
-};
-
-interface SectorIdParams {
-  sectorId: string;
-}
-enum GroupBy {
-  type, rock
-}
-enum OrderBy {
-  grade, number, ascents, rating, alphabetical
+  )
 }
 const Sector = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState(null);
-  const [hideTicked, setHideTicked] = useState(false);
-  const [uniqueRocks, setUniqueRocks] = useState([]);
-  const [uniqueTypes, setUniqueTypes] = useState([]);
-  const [groupByTitle, setGroupByTitle] = useState(null);
-  const [groupBy, setGroupBy] = useState(false);
-  const [orderBy, setOrderBy] = useState(OrderBy.number);
-  let history = useHistory();
   let { sectorId } = useParams<SectorIdParams>();
+  let history = useHistory();
   useEffect(() => {
     if (!loading) {
       getSector(accessToken, parseInt(sectorId)).then((data) => {
-        if (data.problems) {
-          const rocks = data.problems.filter(p => p.rock).map(p => p.rock).filter((value, index, self) => self.indexOf(value) === index).sort();
-          if (data.problems.filter(p => !p.rock).length>0) {
-            rocks.push("<Without rock>");
-          }
-          setUniqueRocks(rocks);
-          let types = data.problems.map(p => p.t.subType).filter((value, index, self) => self.indexOf(value) === index).sort(); 
-          setUniqueTypes(types);
-          if (data.metadata.gradeSystem==='BOULDER') {
-            if (rocks && rocks.length>1) {
-              setGroupByTitle(GroupBy.rock);
-              setGroupBy(true);
-            }
-          } else if (types && types.length>1) {
-            setGroupByTitle(GroupBy.type);
-          }
-          if (data.orderByGrade) {
-            setOrderBy(OrderBy.grade);
-          }
-        }
         setData(data);
       });
     }
   }, [loading, accessToken, sectorId]);
-
-  function order(newOrderBy: OrderBy) {
-    setOrderBy(newOrderBy);
-    let problems = data.problems.sort((a, b) => {
-      if (newOrderBy === OrderBy.grade) {
-        if (a.gradeNumber != b.gradeNumber) return b.gradeNumber-a.gradeNumber;
-        return a.name.localeCompare(b.name);
-      } else if (newOrderBy === OrderBy.number) {
-        return a.nr-b.nr;
-      } else if (newOrderBy === OrderBy.ascents) {
-        if (a.numTicks != b.numTicks) return b.numTicks-a.numTicks;
-        return a.name.localeCompare(b.name);
-      } else if (newOrderBy === OrderBy.rating) {
-        if (a.stars != b.stars) return b.stars-a.stars;
-        return a.name.localeCompare(b.name);
-      } else if (newOrderBy === OrderBy.alphabetical) {
-        return a.name.localeCompare(b.name);
-      }
-    });
-    setData(prevState => ({ ...prevState, problems }));
-  }
 
   if (!data) {
     return <LoadingAndRestoreScroll />;
@@ -182,9 +121,10 @@ const Sector = () => {
       let label = data.name + (polyline? " (" + calculateDistance(polyline) + ")" : "");
       outlines = [{url: '/sector/' + data.id, label, polygon: polygon}];
     }
+    const uniqueRocks = data.problems.filter(p => p.rock).map(p => p.rock).filter((value, index, self) => self.indexOf(value) === index).sort();
     panes.push({
       menuItem: { key: 'map', icon: 'map', content: 'Map' },
-      render: () => <Tab.Pane><Leaflet key={"sector="+data.id} autoZoom={true} height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} onClick={null} showSateliteImage={true} clusterMarkers={true} rocks={uniqueRocks && uniqueRocks.length>1? uniqueRocks : null} /></Tab.Pane>
+      render: () => <Tab.Pane><Leaflet key={"sector="+data.id} autoZoom={true} height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} onClick={null} showSateliteImage={true} clusterMarkers={true} rocks={uniqueRocks} /></Tab.Pane>
     });
   }
   if (data.problems.length!=0) {
@@ -197,6 +137,7 @@ const Sector = () => {
       render: () => <Tab.Pane><Activity metadata={data.metadata} idArea={0} idSector={data.id}/></Tab.Pane>
     });
   }
+  let uniqueTypes = data.problems.map(p => p.t.subType).filter((value, index, self) => self.indexOf(value) === index).sort(); 
   let content = uniqueTypes.map((subType, i) => {
     let problemsOfType = data.problems.filter(p => p.t.subType === subType);
     let numTicked = problemsOfType.filter(p => p.ticked).length;
@@ -208,37 +149,6 @@ const Sector = () => {
       </Table.Row>
     );
   })
-  let problems;
-  if (groupBy && groupByTitle === GroupBy.rock) {
-    let accordionRows = uniqueRocks.map(rock => {
-      let rows = data.problems.filter(p => (rock==='<Without rock>' && !p.rock) || p.rock==rock && (!hideTicked || !p.ticked)).map((p, i) => <SectorListItem key={i} problem={p} orderBy={orderBy} showType={data.metadata.gradeSystem==='CLIMBING'} />);
-      let label = rock + " (" + rows.length + ")";
-      let content = <List selection>{rows}</List>;
-      return (
-        {label, content}
-      );
-    });
-    problems = <AccordionContainer accordionRows={accordionRows}/>;
-  } else if (groupBy && groupByTitle === GroupBy.type) {
-    let accordionRows = uniqueTypes.map(subType => {
-      let rows = data.problems.filter(p => p.t.subType==subType && (!hideTicked || !p.ticked)).map((p, i) => <SectorListItem key={i} problem={p} orderBy={orderBy} showType={data.metadata.gradeSystem==='CLIMBING'} />);
-      let label = subType + " (" + rows.length + ")";
-      let content = <List selection>{rows}</List>;
-      return (
-        {label, content}
-      );
-    });
-    problems = <AccordionContainer accordionRows={accordionRows}/>;
-  }
-  else {
-    problems = (
-      <Segment attached="bottom">
-        <List selection>
-          {data.problems.filter(p => !hideTicked || !p.ticked).map((p, i) => <SectorListItem key={i} problem={p} orderBy={orderBy} showType={data.metadata.gradeSystem==='CLIMBING'} />)}
-        </List>
-      </Segment>
-    )
-  }
 
   return (
     <>
@@ -320,47 +230,17 @@ const Sector = () => {
           </Table.Row>
         </Table.Body>
       </Table>
-      {data.problems && data.problems.length!=0 &&
-        <>
-          <Step.Group attached="top" size="mini" unstackable fluid>
-            <Step>
-              <Step.Content>
-                <Step.Title>Order by</Step.Title>
-                <Step.Description>
-                  <Dropdown options={[
-                    {key: OrderBy.grade, text: OrderBy[OrderBy.grade], value: OrderBy[OrderBy.grade]},
-                    {key: OrderBy.number, text: OrderBy[OrderBy.number], value: OrderBy[OrderBy.number]},
-                    {key: OrderBy.ascents, text: OrderBy[OrderBy.ascents], value: OrderBy[OrderBy.ascents]},
-                    {key: OrderBy.rating, text: OrderBy[OrderBy.rating], value: OrderBy[OrderBy.rating]},
-                    {key: OrderBy.alphabetical, text: OrderBy[OrderBy.alphabetical], value: OrderBy[OrderBy.alphabetical]}
-                  ]} defaultValue={OrderBy[orderBy]} onChange={(e, { value }) => order(OrderBy[value as keyof typeof OrderBy])} />
-                </Step.Description>
-              </Step.Content>
-            </Step>
-            {groupByTitle != null && 
-              <Step>
-                <Step.Content>
-                  <Step.Title>Group by {GroupBy[groupByTitle]}</Step.Title>
-                  <Step.Description>
-                    <Checkbox toggle active defaultChecked={groupBy} onClick={() => setGroupBy(!groupBy)} />
-                  </Step.Description>
-                </Step.Content>
-              </Step>
-            }
-            {data.problems.filter(p => p.ticked).length>0 && 
-              <Step>
-                <Step.Content>
-                  <Step.Title>Hide ticked</Step.Title>
-                  <Step.Description>
-                    <Checkbox toggle active defaultChecked={hideTicked} onClick={() => setHideTicked(!hideTicked)} />
-                  </Step.Description>
-                </Step.Content>
-              </Step>
-            }
-          </Step.Group>
-          {problems}
-        </>
-      }
+      <ProblemList isSectorNotUser={true} preferOrderByGrade={data.orderByGrade}
+        rows={data.problems.map(p => {
+          return ({
+            element: <SectorListItem problem={p} isClimbing={data.metadata.gradeSystem==='CLIMBING'} />,
+            name: p.name, nr: p.nr, gradeNumber: p.gradeNumber, stars: p.stars,
+            numTicks: p.numTicks, ticked: p.ticked,
+            rock: p.rock, subType: p.t.subType,
+            num: null, fa: null
+          });
+        })}
+      />
     </>
   );
 }

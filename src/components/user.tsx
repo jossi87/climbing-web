@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link, useParams } from 'react-router-dom';
 import Chart from './common/chart/chart';
-import AccordionContainer from './common/accordion-container/accordion-container'
+import ProblemList from './common/problem-list/problem-list';
 import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
 import { Icon, List, Label, Header, Segment, Divider, Image, Button, ButtonGroup } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
@@ -31,14 +31,10 @@ const User = () => {
   const { loading, isAuthenticated, accessToken } = useAuth0();
   const [isSaving, setIsSaving] = useState(false);
   const [data, setData] = useState(null);
-  const [sortBy, setSortBy] = useState('date');
   useEffect(() => {
     if (!loading) {
       getUser(accessToken, userId? parseInt(userId) : -1)
-      .then((data) => {
-        setData(data);
-        order('date');
-      });
+      .then((data) => setData(data));
     }
   }, [loading, accessToken, userId]);
 
@@ -49,61 +45,6 @@ const User = () => {
   var numFas = data.ticks.filter(t => t.fa).length;
   const chart = data.ticks.length>0? <Chart data={data.ticks}/> : null;
 
-  function order(type) {
-    data && data.ticks && data.ticks.sort((a, b) => {
-      if (type == 'grade') {
-        if (a.gradeNumber != b.gradeNumber) return b.gradeNumber-a.gradeNumber
-        else if (a.date && !b.date) return -1;
-        else if (!a.date && b.date) return 1;
-        else if (a.date != b.date) return b.date.localeCompare(a.date);
-        return a.name.localeCompare(b.name);
-      } else if (type == 'date') {
-        return a.num-b.num;
-      } else if (type == 'name') {
-        if (a.areaName > b.areaName) return 1;
-        else if (a.areaName < b.areaName) return -1;
-        else if (a.sectorName > b.sectorName) return 1;
-        else if (a.sectorName < b.sectorName) return -1;
-        else if (a.name > b.name) return 1;
-        else if (a.name < b.name) return -1;
-        return 0;
-      } else if (type == 'fa') {
-        if (a.fa && !b.fa) return -1;
-        else if (!a.fa && b.fa) return 1;
-        else if (a.gradeNumber != b.gradeNumber) return b.gradeNumber-a.gradeNumber;
-        else if (a.date && !b.date) return -1;
-        else if (!a.date && b.date) return 1;
-        else if (a.date != b.date) return b.date.localeCompare(a.date);
-        return a.name.localeCompare(b.name);
-      } else {
-        console.log("Wrong type: " + type);
-      }
-    });
-    setSortBy(type);
-  }
-
-  let subTypes = data.ticks.map(t => t.subType).filter((value, index, self) => self.indexOf(value) === index).sort(); 
-  let ticks;
-  if (sortBy==='grade' && subTypes.length>1) {
-    let accordionRows = subTypes.map(subType => {
-      let rows = data.ticks.filter(t => t.subType===subType).map((t, i) => <TickListItem key={i} tick={t} />);
-      let label = subType + " (" + rows.length + ")";
-      let content = <List selection>{rows}</List>;
-      return (
-        {label, content}
-      );
-    });
-    ticks = <AccordionContainer accordionRows={accordionRows}/>;
-  }
-  else {
-    ticks = (
-      <Segment attached="bottom">
-        <List selection>
-          {data.ticks.map((t, i) => <TickListItem key={i} tick={t} />)}
-        </List>
-      </Segment>
-    )
-  }
   return (
     <>
       <MetaTags>
@@ -213,15 +154,17 @@ const User = () => {
         }
       </Segment>
       {data.ticks.length>0 &&
-        <>
-          <ButtonGroup size="mini" compact  attached="top">
-            <Button icon labelPosition="left" onClick={() => order('date')} toggle primary={sortBy==='date'}><Icon name="sort content ascending"/>Date</Button>
-            <Button icon labelPosition="left" onClick={() => order('grade')} toggle primary={sortBy==='grade'}><Icon name="sort content ascending"/>Grade</Button>
-            {numFas>0 && <Button icon labelPosition="left" onClick={() => order('fa')} toggle primary={sortBy==='fa'}><Icon name="sort content ascending"/>FA</Button>}
-            <Button icon labelPosition="left" onClick={() => order('name')} toggle primary={sortBy==='name'}><Icon name="sort alphabet down"/>Name</Button>
-          </ButtonGroup>
-          {ticks}
-        </>
+        <ProblemList isSectorNotUser={false} preferOrderByGrade={data.orderByGrade}
+          rows={data.ticks.map(t => {
+            return ({
+              element: <TickListItem tick={t} />,
+              name: t.name, nr: null, gradeNumber: t.gradeNumber, stars: t.stars,
+              numTicks: null, ticked: null,
+              rock: null, subType: t.subType,
+              num: t.num, fa: t.fa
+            });
+          })}
+        />
       }
     </>
   );
