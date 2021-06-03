@@ -36,6 +36,7 @@ const SectorListItem = ({ problem, isClimbing }) => {
     }
   }
   let comment = <small><i style={{color: "gray"}}>{' '}{problem.rock && <>Rock: {problem.rock}. </>}{problem.comment}{' '}</i></small>;
+  console.log(problem);
   return (
     <List.Item style={{backgroundColor: problem.ticked? "#d2f8d2" : "#ffffff"}} key={problem.id}>
       <List.Header>
@@ -49,8 +50,8 @@ const SectorListItem = ({ problem, isClimbing }) => {
         {comment}
         {problem.lat>0 && problem.lng>0 && <Icon size="small" name="map marker alternate"/>}
         {problem.hasTopo && <Icon size="small" name="paint brush"/>}
-        {problem && <Icon size="small" color="black" name="photo"/>}
-        {problem && <Icon size="small" color="black" name="film"/>}
+        {problem.hasImages && <Icon size="small" color="black" name="photo"/>}
+        {problem.hasMovies && <Icon size="small" color="black" name="film"/>}
         <LockSymbol lockedAdmin={problem.lockedAdmin} lockedSuperadmin={problem.lockedSuperadmin} />
         {problem.ticked && <Icon size="small" color="green" name="check"/>}
       </List.Header>
