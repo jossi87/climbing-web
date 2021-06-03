@@ -8,7 +8,6 @@ const AccordionContainer = ({ accordionRows }) => {
     const newIndex = activeIndex === index? -1 : index;
     setActiveIndex(newIndex);
   }
-
   return (
     <Accordion fluid styled attached="bottom">
       {accordionRows.map((d, i) => (
@@ -22,7 +21,7 @@ const AccordionContainer = ({ accordionRows }) => {
             {d.label}
           </Accordion.Title>
           <Accordion.Content active={activeIndex === i}>
-            {d.content != null && d.content.length>0? d.content : <i>No data</i>}
+            {d.length>0? d.content : <i>No data</i>}
           </Accordion.Content>
         </span>
       ))}

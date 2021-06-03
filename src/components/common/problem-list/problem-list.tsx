@@ -101,11 +101,11 @@ const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[
   let list;
   if (groupBy && groupByTitle === GroupBy.rock) {
     let accordionRows = uniqueRocks.map(rock => {
-      let rows = data.filter(p => (rock==='<Without rock>' && !p.rock) || p.rock==rock && (!hideTicked || !p.ticked) && (!onlyFa || p.fa)).map(p => p.element);
+      let rows = data.filter(p => ((rock==='<Without rock>' && !p.rock) || p.rock==rock) && (!hideTicked || !p.ticked) && (!onlyFa || p.fa)).map(p => p.element);
       let label = rock + " (" + rows.length + ")";
       let content = <List selection>{rows}</List>;
       return (
-        {label, content}
+        {label, length: rows.length, content}
       );
     });
     list = <AccordionContainer accordionRows={accordionRows}/>;
@@ -115,7 +115,7 @@ const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[
       let label = subType + " (" + rows.length + ")";
       let content = <List selection>{rows}</List>;
       return (
-        {label, content}
+        {label, length: rows.length, content}
       );
     });
     list = <AccordionContainer accordionRows={accordionRows}/>;
