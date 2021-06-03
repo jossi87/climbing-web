@@ -36,7 +36,6 @@ const SectorListItem = ({ problem, isClimbing }) => {
     }
   }
   let comment = <small><i style={{color: "gray"}}>{' '}{problem.rock && <>Rock: {problem.rock}. </>}{problem.comment}{' '}</i></small>;
-  console.log(problem);
   return (
     <List.Item style={{backgroundColor: problem.ticked? "#d2f8d2" : "#ffffff"}} key={problem.id}>
       <List.Header>
