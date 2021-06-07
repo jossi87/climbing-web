@@ -77,7 +77,7 @@ const SvgEdit = () => {
   };
 
   function handleOnClick(e) {
-    if (ctrl) {
+    if (ctrl && activeElementIndex!=-1 && data.m.mediaSvgs[activeElementIndex] && data.m.mediaSvgs[activeElementIndex].points) {
       let coords = getMouseCoords(e);
       let points = data.m.mediaSvgs[activeElementIndex].points
       points.push(coords);
@@ -88,7 +88,7 @@ const SvgEdit = () => {
       setActivePoint(points.length - 1);
       setForceUpdate(forceUpdate+1);
     }
-    else if (activeElementIndex>=0 && (data.m.mediaSvgs[activeElementIndex].t===TYPE_RAPPEL_BOLTED || data.m.mediaSvgs[activeElementIndex].t===TYPE_RAPPEL_NOT_BOLTED)) {
+    else if (activeElementIndex!=-1 && data.m.mediaSvgs[activeElementIndex] && (data.m.mediaSvgs[activeElementIndex].t===TYPE_RAPPEL_BOLTED || data.m.mediaSvgs[activeElementIndex].t===TYPE_RAPPEL_NOT_BOLTED)) {
       let coords = getMouseCoords(e);
       data.m.mediaSvgs[activeElementIndex].rappelX = coords.x;
       data.m.mediaSvgs[activeElementIndex].rappelY = coords.y;
@@ -220,6 +220,7 @@ const SvgEdit = () => {
     setActivePoint(0);
     setDraggedPoint(false);
     setDraggedCubic(false);
+    setForceUpdate(forceUpdate+1);
   };
 
   if (loading || (isAuthenticated && !data)) {
@@ -280,6 +281,7 @@ const SvgEdit = () => {
             setActivePoint(0);
             setDraggedPoint(false);
             setDraggedCubic(false);
+            setForceUpdate(forceUpdate+1);
           }}>Add descent</Button>
           <Button.Or />
           <Button size="mini" onClick={() => {
@@ -293,6 +295,7 @@ const SvgEdit = () => {
             setActivePoint(0);
             setDraggedPoint(false);
             setDraggedCubic(false);
+            setForceUpdate(forceUpdate+1);
           }}>Add rappel (bolted)</Button>
           <Button.Or />
           <Button size="mini" onClick={() => {
@@ -306,12 +309,13 @@ const SvgEdit = () => {
             setActivePoint(0);
             setDraggedPoint(false);
             setDraggedCubic(false);
+            setForceUpdate(forceUpdate+1);
           }}>Add rappel (not bolted)</Button>
         </Button.Group>
         <Label.Group>
           {data.m.mediaSvgs && data.m.mediaSvgs.map((svg, index) => (
             <Label as="a" image key={index} color={activeElementIndex===index? "green" : "grey"} onClick={() => {
-              if (svg.t==='PATH' && !data.m.mediaSvgs[index].points) {
+              if (svg.t==='PATH' && data.m.mediaSvgs[index] && !data.m.mediaSvgs[index].points) {
                 data.m.mediaSvgs[index].points = parsePath(data.m.mediaSvgs[index].path);
                 setData(data);
               }
@@ -328,6 +332,7 @@ const SvgEdit = () => {
                 setActivePoint(0);
                 setDraggedPoint(false);
                 setDraggedCubic(false);
+                setForceUpdate(forceUpdate+1);
               }}/>
             </Label>
           ))}
