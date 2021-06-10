@@ -4,6 +4,7 @@ import AccordionContainer from './accordion-container';
 
 interface Row {
   element: any,
+  areaName: string, sectorName: string,
   name: string, nr: number, gradeNumber: number, stars: number,
   numTicks: number, ticked: boolean,
   rock: string, subType: string,
@@ -77,6 +78,8 @@ const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[
     setOrderBy(newOrderBy);
     let problems = data.sort((a, b) => {
       if (newOrderBy === OrderBy.alphabetical) {
+        if (a.areaName != b.areaName) return a.areaName.localeCompare(b.areaName);
+        else if (a.sectorName != b.sectorName) return a.sectorName.localeCompare(b.sectorName);
         return a.name.localeCompare(b.name);
       } else if (newOrderBy === OrderBy.ascents) {
         if (a.numTicks != b.numTicks) return b.numTicks-a.numTicks;
@@ -90,8 +93,8 @@ const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[
         return a.nr-b.nr;
       } else if (newOrderBy === OrderBy.rating) {
         if (a.stars != b.stars) return b.stars-a.stars;
-        if (a.gradeNumber != b.gradeNumber) return b.gradeNumber-a.gradeNumber;
-        if (a.numTicks != b.numTicks) return b.numTicks-a.numTicks;
+        else if (a.gradeNumber != b.gradeNumber) return b.gradeNumber-a.gradeNumber;
+        else if (a.numTicks != b.numTicks) return b.numTicks-a.numTicks;
         return a.name.localeCompare(b.name);
       }
     });

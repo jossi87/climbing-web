@@ -158,6 +158,7 @@ const User = () => {
           rows={data.ticks.map(t => {
             return ({
               element: <TickListItem tick={t} />,
+              areaName: t.areaName, sectorName: t.sectorName,
               name: t.name, nr: null, gradeNumber: t.gradeNumber, stars: t.stars,
               numTicks: null, ticked: null,
               rock: null, subType: t.subType,
