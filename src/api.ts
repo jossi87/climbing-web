@@ -347,6 +347,8 @@ export function getSectorEdit(accessToken: string, areaIdSectorId: string): Prom
         comment: '',
         lat: 0,
         lng: 0,
+        latStr: '',
+        lngStr: '',
         newMedia: [],
         metadata: {title: 'New sector | ' + res.metadata.title, defaultZoom: 12, defaultCenter: defaultCenter, isAdmin: res.metadata.isAdmin, isSuperAdmin: res.metadata.isSuperAdmin}
       };
@@ -358,7 +360,9 @@ export function getSectorEdit(accessToken: string, areaIdSectorId: string): Prom
   } else {
     return getSector(accessToken, sectorId)
     .then((res) => {
-      return {id: res.id, areaId: res.areaId, lockedAdmin: res.lockedAdmin, lockedSuperadmin: res.lockedSuperadmin, name: res.name, comment: res.comment, lat: res.lat, lng: res.lng, polygonCoords: res.polygonCoords, polyline: res.polyline, newMedia: [], metadata: res.metadata};
+      return {id: res.id, areaId: res.areaId, lockedAdmin: res.lockedAdmin, lockedSuperadmin: res.lockedSuperadmin, name: res.name, comment: res.comment,
+        lat: res.lat, lng: res.lng, latStr: res.lat, lngStr: res.lng,
+        polygonCoords: res.polygonCoords, polyline: res.polyline, newMedia: [], metadata: res.metadata};
     })
     .catch((error) => {
       console.warn(error);

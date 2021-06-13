@@ -63,7 +63,7 @@ const SectorEdit = () => {
 
   function onMapClick(event) {
     if (leafletMode == 'PARKING') {
-      setData(prevState => ({ ...prevState, lat: event.latlng.lat, lng: event.latlng.lng }));
+      setData(prevState => ({ ...prevState, lat: event.latlng.lat, lng: event.latlng.lng, latStr: event.latlng.lat, lngStr: event.latlng.lng }));
     } else if (leafletMode == 'POLYGON') {
       const coords = event.latlng.lat + "," + event.latlng.lng;
       let { polygonCoords } = data;
@@ -93,6 +93,26 @@ const SectorEdit = () => {
     } else if (leafletMode == 'POLYLINE') {
       setData(prevState => ({ ...prevState, polyline: null }));
     }
+  }
+
+  function onLatChanged(e, { value }) {
+    let latStr = value.replace(",",".");
+    let lat = parseFloat(latStr);
+    if (isNaN(lat)) {
+      lat = 0;
+      latStr = '';
+    }
+    setData(prevState => ({ ...prevState, lat, latStr }));
+  }
+
+  function onLngChanged(e, { value }) {
+    let lngStr = value.replace(",",".");
+    let lng = parseFloat(lngStr);
+    if (isNaN(lng)) {
+      lng = 0;
+      lngStr = '';
+    }
+    setData(prevState => ({ ...prevState, lng, lngStr }));
   }
 
   if (loading || (isAuthenticated && !data)) {
@@ -180,43 +200,72 @@ const SectorEdit = () => {
         </Segment>
 
         <Segment>
-          <Form.Field>
-            <label>Draw mode (click on map to draw)</label>
-            <Button.Group size="tiny" compact>
-              <Button positive={leafletMode=='PARKING'} onClick={() => setLeafletMode("PARKING")}>Parking</Button>
-              <Button positive={leafletMode=='POLYGON'} onClick={() => setLeafletMode("POLYGON")}>Outline</Button>
-              <Button positive={leafletMode=='POLYLINE'} onClick={() => setLeafletMode("POLYLINE")}>Approach</Button>
-              <Button color="orange" onClick={clearDrawing}>Reset selected</Button>
-            </Button.Group>
-            <br/>
-            <Leaflet
-              autoZoom={true}
-              markers={markers}
-              outlines={polygon && [{polygon: polygon}]}
-              polylines={polyline && [polyline]}
-              defaultCenter={defaultCenter}
-              defaultZoom={defaultZoom}
-              onClick={onMapClick}
-              history={history}
-              height={'300px'}
-              showSateliteImage={true} 
-              clusterMarkers={false}
-              rocks={null}
-            />
-          </Form.Field>
-          <Form.Field>
-              <label>Include all markers in sector</label>
-              <Checkbox toggle onChange={(e,d) => {
-                if (d.checked) {
+          <Form.Group widths='equal'>
+            <Form.Field>
+              <Button.Group size="tiny" compact>
+                <Button positive={leafletMode=='PARKING'} onClick={() => setLeafletMode("PARKING")}>Parking</Button>
+                <Button positive={leafletMode=='POLYGON'} onClick={() => setLeafletMode("POLYGON")}>Outline</Button>
+                <Button positive={leafletMode=='POLYLINE'} onClick={() => setLeafletMode("POLYLINE")}>Approach</Button>
+                <Button color="orange" onClick={clearDrawing}>Reset selected</Button>
+              </Button.Group>
+            </Form.Field>
+            <Form.Field>
+              <Button size="tiny" compact positive={sectorMarkers != null} onClick={() => {
+                if (sectorMarkers == null) {
                   let sectorId = areaIdSectorId.split("-")[1];
                   if (sectorId>0) {
                     getSector(accessToken, parseInt(sectorId)).then((data) => setSectorMarkers(data.problems.filter(p => p.lat>0 && p.lng>0).map(p => ({lat: p.lat, lng: p.lng, label: p.name}))));
                   }
                 } else {
                   setSectorMarkers(null);
-                }
-              }} />
+                }}}>Include all markers in sector
+              </Button>
             </Form.Field>
+          </Form.Group>
+          <Form.Group widths='equal'>
+            <Form.Field>
+              <Leaflet
+                autoZoom={true}
+                markers={markers}
+                outlines={polygon && [{polygon: polygon}]}
+                polylines={polyline && [polyline]}
+                defaultCenter={defaultCenter}
+                defaultZoom={defaultZoom}
+                onClick={onMapClick}
+                history={history}
+                height={'300px'}
+                showSateliteImage={true} 
+                clusterMarkers={false}
+                rocks={null}
+              />
+            </Form.Field>
+          </Form.Group>
+          <Form.Group widths='equal'>
+            {leafletMode === 'PARKING' &&
+              <>
+                <Form.Field>
+                  <label>Latitude</label>
+                  <Input placeholder='Latitude' value={data.latStr} onChange={onLatChanged} />
+                </Form.Field>
+                <Form.Field>
+                  <label>Longitude</label>
+                  <Input placeholder='Longitude' value={data.lngStr} onChange={onLngChanged} />
+                </Form.Field>
+              </>
+            }
+            {leafletMode === 'POLYGON' &&
+              <Form.Field>
+                <label>Outline</label>
+                <Input placeholder='Outline' value={data.polygonCoords} onChange={(e, { value }) => setData(prevState => ({ ...prevState, polygonCoords: value }))}/>
+              </Form.Field>
+            }
+            {leafletMode === 'POLYLINE' &&
+              <Form.Field>
+                <label>Approach</label>
+                <Input placeholder='Approach' value={data.polyline} onChange={(e, { value }) => setData(prevState => ({ ...prevState, polyline: value }))}/>
+              </Form.Field>
+            }
+          </Form.Group>
         </Segment>
         
         <Button.Group>
