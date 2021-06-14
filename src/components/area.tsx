@@ -10,6 +10,8 @@ import { LockSymbol, LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Table, Label, Button, Tab, Item, Icon, Image, Breadcrumb, Segment, Header } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getArea, getImageUrl, getAreaPdfUrl } from '../api';
+import { Remarkable } from 'remarkable';
+import { linkify } from 'remarkable/linkify';
 
 interface AreaIdParams {
   areaId: string;
@@ -19,6 +21,7 @@ const Area = () => {
   const [data, setData] = useState(null);
   let { areaId } = useParams<AreaIdParams>();
   let history = useHistory();
+  let md = new Remarkable({breaks: true}).use(linkify);
   useEffect(() => {
     if (!loading) {
       getArea(accessToken, parseInt(areaId)).then((data) => setData(data));
@@ -156,7 +159,7 @@ const Area = () => {
               <Table.Cell>For developers:</Table.Cell>
               <Table.Cell><strong><i>Under development</i></strong></Table.Cell>
             </Table.Row>}
-          {data.comment && <Table.Row><Table.Cell colSpan={2} style={{fontWeight: 'normal', backgroundColor: 'white'}}><div dangerouslySetInnerHTML={{ __html: data.comment }} /></Table.Cell></Table.Row>}
+          {data.comment && <Table.Row><Table.Cell colSpan={2} style={{fontWeight: 'normal', backgroundColor: 'white'}}><div dangerouslySetInnerHTML={{ __html: md.render(data.comment) }} /></Table.Cell></Table.Row>}
         </Table.Body>
       </Table>
       {data.sectors &&

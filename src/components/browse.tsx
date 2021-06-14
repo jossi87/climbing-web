@@ -7,12 +7,15 @@ import ChartGradeDistribution from './common/chart-grade-distribution/chart-grad
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getBrowse } from '../api';
+import { Remarkable } from 'remarkable';
+import { linkify } from 'remarkable/linkify';
 
 const Browse = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState(null);
   const [showForDevelopers, setShowForDevelopers] = useState(false);
   let history = useHistory();
+  let md = new Remarkable({breaks: true}).use(linkify);
   useEffect(() => {
     if (!loading) {
       getBrowse(accessToken).then((data) => setData(data));
@@ -32,7 +35,7 @@ const Browse = () => {
         html: <>
           <a rel='noopener' target='_blank' href={'/area/' + a.id}><b>{a.name}</b> <LockSymbol lockedAdmin={a.lockedAdmin} lockedSuperadmin={a.lockedSuperadmin} /></a> <i>{`(${a.numSectors} sectors, ${a.numProblems} ${typeDescription})`}</i><br/>
           {a.numProblems>0 && <ChartGradeDistribution accessToken={accessToken} idArea={a.id} idSector={0}/>}
-          {a.comment && <><div dangerouslySetInnerHTML={{ __html: a.comment && a.comment.length>200? a.comment.substring(0,200) + "..." : a.comment }} /><br/></>}
+          {a.comment && <><div dangerouslySetInnerHTML={{ __html: md.render(a.comment && a.comment.length>200? a.comment.substring(0,200) + "..." : a.comment) }} /><br/></>}
           <a rel='noopener' target='_blank' href={'/area/' + a.id}><b>{a.canonical}</b></a>
         </>
       }

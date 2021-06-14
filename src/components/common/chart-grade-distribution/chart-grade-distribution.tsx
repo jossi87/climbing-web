@@ -20,7 +20,7 @@ const ChartGradeDistribution = ({accessToken, idArea, idSector}) => {
     const hPrim = (g.prim/maxValue*80) + '%';
     const hSec = (g.sec/maxValue*80) + '%';
     const col = (
-      <td key={i} style={{height: '100%', verticalAlign: 'bottom', textAlign: 'center'}}>
+      <td key={'chart'+i} style={{height: '100%', verticalAlign: 'bottom', textAlign: 'center'}}>
         {g.num>0 && g.num}
         {g.sec>0 && <div style={{marginLeft: '3px', marginRight: '3px', height: hSec, backgroundColor: '#BD313C'}} />}
         {g.prim>0 && <div style={{marginLeft: '3px', marginRight: '3px', paddingBottom: hSec, height: hPrim, backgroundColor: '#3182bd'}} />}
@@ -56,7 +56,7 @@ const ChartGradeDistribution = ({accessToken, idArea, idSector}) => {
                 </Table.Header>
                 <Table.Body>
                   {g.rows.map((s, i) => (
-                    <Table.Row key={i}>
+                    <Table.Row key={'row'+i}>
                       <Table.Cell>{s.name}</Table.Cell>
                       {hasBoulder && <Table.Cell>{s.numBoulder}</Table.Cell>}
                       {hasSport && <Table.Cell>{s.numSport}</Table.Cell>}
@@ -84,7 +84,7 @@ const ChartGradeDistribution = ({accessToken, idArea, idSector}) => {
           {cols}
         </tr>
         <tr>
-          {gradeDistribution.map((g, i) => <td style={{width: '40px', textAlign: 'center'}} key={i}><strong>{g.grade}</strong></td>)}
+          {gradeDistribution.map((g, i) => <td style={{width: '40px', textAlign: 'center'}} key={'td'+i}><strong>{g.grade}</strong></td>)}
         </tr>
       </tbody>
     </table>
