@@ -135,7 +135,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
                   </Feed.Label>
                   <Feed.Content>
                     <Feed.Summary>
-                      New {typeDescription} <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade} {a.problemSubtype && <Label basic size="mini">{a.problemSubtype}</Label>}<LockSymbol lockedAdmin={a.problemLockedAdmin} lockedSuperadmin={a.problemLockedSuperadmin} /><Feed.Date>{a.timeAgo}</Feed.Date>
+                      New {typeDescription} <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}{a.problemSubtype && <Label basic size="mini">{a.problemSubtype}</Label>}<LockSymbol lockedAdmin={a.problemLockedAdmin} lockedSuperadmin={a.problemLockedSuperadmin} /><Feed.Date>{a.timeAgo}</Feed.Date>
                     </Feed.Summary>
                     <Feed.Extra text>
                       {a.description}
@@ -170,7 +170,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
                   </Feed.Label>
                   <Feed.Content>
                     <Feed.Summary>
-                      <Feed.User as={Link} to={`/user/${a.id}`} style={{color: "black"}}>{a.name}</Feed.User> posted a comment on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade} {a.problemSubtype && <Label basic size="mini">{a.problemSubtype}</Label>}<LockSymbol lockedAdmin={a.problemLockedAdmin} lockedSuperadmin={a.problemLockedSuperadmin} /><Feed.Date>{a.timeAgo}</Feed.Date>
+                      <Feed.User as={Link} to={`/user/${a.id}`} style={{color: "black"}}>{a.name}</Feed.User> posted a comment on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}{a.problemSubtype && <Label basic size="mini">{a.problemSubtype}</Label>}<LockSymbol lockedAdmin={a.problemLockedAdmin} lockedSuperadmin={a.problemLockedSuperadmin} /><Feed.Date>{a.timeAgo}</Feed.Date>
                     </Feed.Summary>
                     <Feed.Extra text>
                       {a.message}
@@ -208,7 +208,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
                   </Feed.Label>
                   <Feed.Content>
                     <Feed.Summary style={{marginBottom: '3px'}}>
-                      {summary}on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade} {a.problemSubtype && <Label basic size="mini">{a.problemSubtype}</Label>}<LockSymbol lockedAdmin={a.problemLockedAdmin} lockedSuperadmin={a.problemLockedSuperadmin} /><Feed.Date>{a.timeAgo}</Feed.Date>
+                      {summary}on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}{a.problemSubtype && <Label basic size="mini">{a.problemSubtype}</Label>}<LockSymbol lockedAdmin={a.problemLockedAdmin} lockedSuperadmin={a.problemLockedSuperadmin} /><Feed.Date>{a.timeAgo}</Feed.Date>
                     </Feed.Summary>
                     <LazyLoad>
                       <Feed.Extra images as={Link} to={`/problem/${a.problemId}`}>
@@ -228,7 +228,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
                   </Feed.Label>
                   <Feed.Content>
                     <Feed.Summary>
-                      <Feed.User as={Link} to={`/user/${a.id}`} style={{color: "black"}}>{a.name}</Feed.User> ticked <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade} {a.problemSubtype && <Label basic size="mini">{a.problemSubtype}</Label>}<LockSymbol lockedAdmin={a.problemLockedAdmin} lockedSuperadmin={a.problemLockedSuperadmin} /><Feed.Date>{a.timeAgo}</Feed.Date>
+                      <Feed.User as={Link} to={`/user/${a.id}`} style={{color: "black"}}>{a.name}</Feed.User> ticked <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}{a.problemSubtype && <Label basic size="mini">{a.problemSubtype}</Label>}<LockSymbol lockedAdmin={a.problemLockedAdmin} lockedSuperadmin={a.problemLockedSuperadmin} /><Feed.Date>{a.timeAgo}</Feed.Date>
                     </Feed.Summary>
                     {a.description && <Feed.Extra text>{a.description}</Feed.Extra>}
                     {a.stars!=0 && <Feed.Meta><Stars numStars={a.stars} includeNoRating={true} /></Feed.Meta>}
