@@ -22,6 +22,14 @@ const Area = () => {
   let { areaId } = useParams<AreaIdParams>();
   let history = useHistory();
   let md = new Remarkable({breaks: true}).use(linkify);
+  // open links in new windows
+  md.renderer.rules.link_open = (function() {
+    var original = md.renderer.rules.link_open;
+    return function() {
+      var link = original.apply(null, arguments);
+      return link.substring(0, link.length - 1) + ' rel="noopener" target="_blank">';
+    };
+  })();
   useEffect(() => {
     if (!loading) {
       getArea(accessToken, parseInt(areaId)).then((data) => setData(data));

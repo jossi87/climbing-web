@@ -6,6 +6,7 @@ import { useLocalStorage } from '../../../utils/use-local-storage';
 import { useAuth0 } from '../../../utils/react-auth0-spa';
 import { getActivity, getImageUrl } from '../../../api';
 import { LockSymbol, Stars } from './../../common/widgets/widgets';
+import Linkify from 'react-linkify';
 
 const Activity = ({ metadata, idArea, idSector }) => {
   const { loading, accessToken } = useAuth0();
@@ -42,6 +43,12 @@ const Activity = ({ metadata, idArea, idSector }) => {
     if (!activityTypeMedia) setActivityTypeMedia(true);
   }
   const imgStyle = {height: "fit-content", maxHeight: '80px', objectFit: 'none'};
+
+  const componentDecorator = (href, text, key) => (
+    <a href={href} key={key} target="_blank">
+      {text}
+    </a>
+  );
 
   return (
     <>
@@ -173,7 +180,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
                       <Feed.User as={Link} to={`/user/${a.id}`} style={{color: "black"}}>{a.name}</Feed.User> posted a comment on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}{a.problemSubtype && <Label basic size="mini">{a.problemSubtype}</Label>}<LockSymbol lockedAdmin={a.problemLockedAdmin} lockedSuperadmin={a.problemLockedSuperadmin} /><Feed.Date>{a.timeAgo}</Feed.Date>
                     </Feed.Summary>
                     <Feed.Extra text>
-                      {a.message}
+                      <Linkify componentDecorator={componentDecorator}>{a.message}</Linkify>
                     </Feed.Extra>
                     {a.media &&
                       <LazyLoad>

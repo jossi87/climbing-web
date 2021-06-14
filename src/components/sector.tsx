@@ -150,6 +150,12 @@ const Sector = () => {
     );
   })
 
+  const componentDecorator = (href, text, key) => (
+    <a href={href} key={key} target="_blank">
+      {text}
+    </a>
+  );
+
   return (
     <>
       <MetaTags>
@@ -200,7 +206,7 @@ const Sector = () => {
           {data.comment &&
             <Table.Row>
               <Table.Cell>Description:</Table.Cell>
-              <Table.Cell><Linkify>{data.comment}</Linkify></Table.Cell>
+              <Table.Cell><Linkify componentDecorator={componentDecorator}>{data.comment}</Linkify></Table.Cell>
             </Table.Row>
           }
           <Table.Row>

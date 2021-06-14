@@ -105,6 +105,12 @@ const Problem = () => {
     setReload(true);
   }
 
+  const componentDecorator = (href, text, key) => (
+    <a href={href} key={key} target="_blank">
+      {text}
+    </a>
+  );
+
   if (!data || reload) {
     return <LoadingAndRestoreScroll />;
   }
@@ -166,7 +172,7 @@ const Problem = () => {
             <Comment.Content>
               <Comment.Author as={Link} to={`/user/${t.idUser}`}>{t.name}</Comment.Author>
               <Comment.Metadata>{t.date}</Comment.Metadata>
-              <Comment.Text><Stars numStars={t.stars} includeNoRating={true} /> {t.suggestedGrade}<br/><Linkify>{t.comment}</Linkify></Comment.Text>
+              <Comment.Text><Stars numStars={t.stars} includeNoRating={true} /> {t.suggestedGrade}<br/><Linkify componentDecorator={componentDecorator}>{t.comment}</Linkify></Comment.Text>
             </Comment.Content>
           </Comment>
         ))
@@ -201,7 +207,7 @@ const Problem = () => {
                 <Comment.Author as={Link} to={`/user/${c.idUser}`}>{c.name}</Comment.Author>
                 <Comment.Metadata>{c.date}</Comment.Metadata>
                 <Comment.Text>
-                  <Linkify>{c.message}</Linkify>
+                  <Linkify componentDecorator={componentDecorator}>{c.message}</Linkify>
                   {c.media && c.media.length>0 && <Media isAdmin={false} removeMedia={() => window.location.reload()} media={c.media} optProblemId={null} isBouldering={data.metadata.gradeSystem==='BOULDER'} />}
                 </Comment.Text>
                 {extra && <Comment.Actions>{extra}</Comment.Actions>}
@@ -340,7 +346,7 @@ const Problem = () => {
                     {u.picture ? <img src={u.picture} /> : <Icon name="user"/>}{u.name}
                   </Label>
                 ))}</>}
-                {data.faAid.description && <Linkify><br/>{data.faAid.description}</Linkify>}
+                {data.faAid.description && <Linkify componentDecorator={componentDecorator}><br/>{data.faAid.description}</Linkify>}
               </Table.Cell>
             </Table.Row>
           }
@@ -355,7 +361,7 @@ const Problem = () => {
                   {u.picture ? <img src={u.picture} /> : <Icon name="user"/>}{u.name}
                 </Label>
               ))}</>}
-              {data.comment && data.comment.trim().length>0 && <Linkify><br/>{data.comment}</Linkify>}
+              {data.comment && data.comment.trim().length>0 && <Linkify componentDecorator={componentDecorator}><br/>{data.comment}</Linkify>}
               {data.metadata.gradeSystem==='ICE' &&
                 <>
                   <br/><b>Starting altitude: </b>{data.startingAltitude}
