@@ -121,13 +121,10 @@ const AreaEdit = () => {
               <Checkbox disabled={!data.id || data.id<=0} toggle checked={data.trash} onChange={() => setData(prevState => ({ ...prevState, trash: !data.trash }))} />
             </Form.Field>
           </Form.Group>
-          <Form.Field
-            label="Description"
-            control={TextArea}
-            placeholder='Enter description'
-            style={{ minHeight: 100 }}
-            value={data.comment}
-            onChange={onCommentChanged} />
+          <Form.Field>
+            <label>Description (supports remarkable formatting, more info <a href="https://jonschlinkert.github.io/remarkable/demo/" rel="noopener" target="_blank">here</a>)</label>
+            <TextArea placeholder='Enter description' style={{ minHeight: 100 }} value={data.comment} onChange={onCommentChanged} />
+          </Form.Field>
         </Segment>
 
         <Segment>
