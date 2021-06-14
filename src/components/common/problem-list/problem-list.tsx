@@ -88,6 +88,7 @@ const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[
         return a.num-b.num;
       } else if (newOrderBy === OrderBy.grade) {
         if (a.gradeNumber != b.gradeNumber) return b.gradeNumber-a.gradeNumber;
+        else if (a.num && b.num && a.num!=b.num) return a.num-b.num;
         return a.name.localeCompare(b.name);
       } else if (newOrderBy === OrderBy.number) {
         return a.nr-b.nr;
