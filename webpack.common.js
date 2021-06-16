@@ -30,6 +30,6 @@ module.exports = {
   output: {
     path: __dirname + '/build/static',
     publicPath: '/static/',
-    filename: 'bundle.[contenthash].js'
+    filename: 'bundle.[fullhash].js'
   }
 };

@@ -63,9 +63,7 @@ const Index = () => (
     <Router>
       <ErrorBoundary
         FallbackComponent={ErrorFallback}
-        onReset={() => {
-          window.location.reload();
-        }}
+        onReset={() => window.location.reload()}
       >
         <App />
       </ErrorBoundary>
