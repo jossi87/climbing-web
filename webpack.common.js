@@ -29,7 +29,9 @@ module.exports = {
   ],
   output: {
     path: __dirname + '/build/static',
+    crossOriginLoading: "anonymous",
     publicPath: '/static/',
-    filename: 'bundle.[contenthash].js'
+    chunkFilename: '[id].[hash].js',
+    filename: '[name].[contenthash].js'
   }
 };
