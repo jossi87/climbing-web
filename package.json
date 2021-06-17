@@ -17,6 +17,7 @@
     "@babel/preset-typescript": "^7.14.5",
     "@types/leaflet": "^1.7.2",
     "@types/react": "^17.0.11",
+    "babel-loader": "^8.2.2",
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^5.2.6",
     "file-loader": "^6.2.0",
