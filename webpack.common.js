@@ -22,7 +22,6 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
-       title: 'Caching',
        template: './src/index.html',
        filename: '../index.html'
     }),
@@ -31,10 +30,10 @@ module.exports = {
   output: {
     path: __dirname + '/build/static',
     publicPath: '/static/',
-    chunkFilename: "[name].[contenthash].js",
-    filename: "[name].[contenthash].js",
+    filename: '[name].[contenthash].js',
   },
   optimization: {
+    moduleIds: 'deterministic',
     runtimeChunk: 'single',
     splitChunks: {
       cacheGroups: {
