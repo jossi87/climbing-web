@@ -9,7 +9,6 @@ module.exports = {
   module: {
     rules: [
       { test: /\.tsx?$/, exclude: /node_modules/, use: 'ts-loader' },
-      { test: /\.(js|jsx)$/, exclude: /node_modules/, use: 'babel-loader' },
       { test: /\.css$/, use: [
         {loader: MiniCssExtractPlugin.loader},
         {loader: 'css-loader'}
