@@ -28,11 +28,12 @@ function getBrowser() {
 
 function ErrorFallback({error, resetErrorBoundary}) {
   let browser = getBrowser();
+  let browserStr = browser? browser.name + " " + browser.version : "<null>";
   return (
     <div role="alert">
       <h1>Something went wrong</h1>
       <b>Browser:</b>
-      <pre>{browser?.name} {browser?.version}</pre>
+      <pre>{browserStr}</pre>
       <b>Error message:</b>
       <pre>{error.message}</pre>
       <b>Stack trace:</b>
@@ -40,7 +41,7 @@ function ErrorFallback({error, resetErrorBoundary}) {
       <button onClick={resetErrorBoundary}>Try again</button>
       <button onClick={() => {
         let body = "URL: " + window.location.href + "%0D%0A%0D%0A"
-                + "Browser: " + browser?.name + " " + browser?.version + "%0D%0A%0D%0A"
+                + "Browser: " + browserStr + "%0D%0A%0D%0A"
                 + "Error message: " + error.message + "%0D%0A%0D%0A"
                 + "Stack trace:%0D%0A" + error.stack;
         let link = "mailto:jostein.oygarden@gmail.com"

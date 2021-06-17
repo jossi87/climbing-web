@@ -8,7 +8,19 @@ module.exports = {
   ],
   module: {
     rules: [
-      { test: /\.tsx?$/, exclude: /node_modules/, use: 'ts-loader' },
+      { test: /\.(js|jsx|tsx|ts)$/,
+        exclude: /node_modules\/(?!(@react-leaflet|react-leaflet)\/)/i,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: [
+              "@babel/preset-env",
+              "@babel/preset-react",
+              "@babel/preset-typescript",
+            ],
+          }
+        }
+      },
       { test: /\.css$/, use: [
         {loader: MiniCssExtractPlugin.loader},
         {loader: 'css-loader'}
@@ -17,7 +29,7 @@ module.exports = {
     ]
   },
   resolve: {
-    extensions: [".js", ".ts", ".tsx"]
+    extensions: [".js", ".jsx", ".ts", ".tsx"]
   },
   plugins: [
     new CleanWebpackPlugin(),

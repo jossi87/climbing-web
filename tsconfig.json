@@ -1,12 +1,12 @@
 {
     "compilerOptions": {
+        "allowJs": true,
         "outDir": "./dist/",
         "module": "ESNext",
-        "target": "es5",
-        "sourceMap": true,
-        "jsx": "react-jsx",
+        "jsx": "react",
         "moduleResolution": "node",
         "noImplicitThis": true,
+        "sourceMap": true,
         "esModuleInterop": true
     },
     "include": [
