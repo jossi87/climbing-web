@@ -35,7 +35,8 @@ const Area = () => {
       getArea(accessToken, parseInt(areaId)).then((data) => setData(data));
     }
   }, [loading, accessToken, areaId]);
-
+let x;
+console.log(x.x);
   if (!data) {
     return <LoadingAndRestoreScroll />;
   }

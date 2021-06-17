@@ -9,6 +9,7 @@ module.exports = {
   module: {
     rules: [
       { test: /\.tsx?$/, exclude: /node_modules/, use: 'ts-loader' },
+      { test: /\.(js|jsx)$/, exclude: /node_modules/, use: ['babel-loader'] },
       { test: /\.css$/, use: [
         {loader: MiniCssExtractPlugin.loader},
         {loader: 'css-loader'}
@@ -31,7 +32,8 @@ module.exports = {
   output: {
     path: __dirname + '/build/static',
     publicPath: '/static/',
-    filename: '[name].[contenthash].js',
+    chunkFilename: "[name].[contenthash].js",
+    filename: "[name].[contenthash].js",
   },
   optimization: {
     runtimeChunk: 'single',
