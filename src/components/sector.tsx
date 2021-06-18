@@ -73,15 +73,8 @@ const Sector = () => {
   if (!data) {
     return <LoadingAndRestoreScroll />;
   }
-  const problemsInTopo = [];
-  if (data.media) {
-    data.media.forEach(m => {
-      if (m.svgs) {
-        m.svgs.forEach(svg => problemsInTopo.push(svg.problemId));
-      }
-    });
-  }
 
+  let isBouldering = data.metadata.gradeSystem==='BOULDER';
   const markers = data.problems.filter(p => p.lat!=0 && p.lng!=0).map(p => {
     return {
         lat: p.lat,
@@ -99,14 +92,20 @@ const Sector = () => {
     });
   }
   const panes = [];
+
+  let topoImages = null;
   if (data.media && data.media.length>0) {
-    panes.push({
-      menuItem: { key: 'topo', icon: 'image', content: 'Topo' },
-      render: () => <Tab.Pane><Media isAdmin={data.metadata.isAdmin} removeMedia={(idMediaToRemove) => {
-        let newMedia = data.media.filter(m => m.id!=idMediaToRemove);
-        setData(prevState => ({ ...prevState, media: newMedia }));
-      }} media={data.media} optProblemId={null} isBouldering={data.metadata.gradeSystem==='BOULDER'} /></Tab.Pane>
-  });
+    let media = data.media;
+    if (isBouldering) {
+      media = data.media.filter(m => m.svgs == null || m.svgs.length === 0);
+      topoImages = data.media.filter(m => m.svgs && m.svgs.length !== 0);
+    }
+    if (media && media.length>0) {
+      panes.push({
+        menuItem: { key: 'topo', icon: 'image' },
+        render: () => <Tab.Pane><Media isAdmin={data.metadata.isAdmin} removeMedia={(idMediaToRemove) => setData(prevState => ({ ...prevState, media: media.filter(m => m.id!=idMediaToRemove) })) } media={media} optProblemId={null} isBouldering={isBouldering} /></Tab.Pane>
+      });
+    }
   }
   if (markers.length>0) {
     const defaultCenter = data.lat && data.lat>0? {lat: data.lat, lng: data.lng} : data.metadata.defaultCenter;
@@ -123,17 +122,23 @@ const Sector = () => {
     }
     const uniqueRocks = data.problems.filter(p => p.rock).map(p => p.rock).filter((value, index, self) => self.indexOf(value) === index).sort();
     panes.push({
-      menuItem: { key: 'map', icon: 'map', content: 'Map' },
+      menuItem: { key: 'map', icon: 'map' },
       render: () => <Tab.Pane><Leaflet key={"sector="+data.id} autoZoom={true} height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} onClick={null} showSateliteImage={true} clusterMarkers={true} rocks={uniqueRocks} /></Tab.Pane>
+    });
+  }
+  if (topoImages && topoImages.length>0) {
+    panes.push({
+      menuItem: { key: 'topo', icon: 'images' },
+      render: () => <Tab.Pane><Media isAdmin={data.metadata.isAdmin} removeMedia={(idMediaToRemove) => setData(prevState => ({ ...prevState, media: topoImages.filter(m => m.id!=idMediaToRemove) })) } media={topoImages} optProblemId={null} isBouldering={isBouldering} /></Tab.Pane>
     });
   }
   if (data.problems.length!=0) {
     panes.push({
-      menuItem: { key: 'distribution', icon: 'area graph', content: 'Distribution' },
+      menuItem: { key: 'distribution', icon: 'area graph' },
       render: () => <Tab.Pane><ChartGradeDistribution accessToken={accessToken} idArea={0} idSector={data.id}/></Tab.Pane>
     });
     panes.push({
-      menuItem: { key: 'activity', icon: 'time', content: 'Activity' },
+      menuItem: { key: 'activity', icon: 'time' },
       render: () => <Tab.Pane><Activity metadata={data.metadata} idArea={0} idSector={data.id}/></Tab.Pane>
     });
   }

@@ -68,26 +68,28 @@ const Area = () => {
   const panes = [];
   const height = '40vh';
   if (data.media && data.media.length>0) {
-    panes.push({ menuItem: 'Topo', render: () => <Tab.Pane><Media isAdmin={data.metadata.isAdmin} removeMedia={(idMediaToRemove) => {
-      let newMedia = data.media.filter(m => m.id!=idMediaToRemove);
-      setData(prevState => ({ ...prevState, media: newMedia }));
-    }} media={data.media} optProblemId={null} isBouldering={data.metadata.gradeSystem==='BOULDER'} /></Tab.Pane> });
+    panes.push({
+      menuItem: { key: 'image', icon: 'image' },
+      render: () => <Tab.Pane><Media isAdmin={data.metadata.isAdmin} removeMedia={(idMediaToRemove) => {
+        let newMedia = data.media.filter(m => m.id!=idMediaToRemove);
+        setData(prevState => ({ ...prevState, media: newMedia }));
+      }} media={data.media} optProblemId={null} isBouldering={data.metadata.gradeSystem==='BOULDER'} /></Tab.Pane> });
   }
   if (markers.length>0 || outlines.length>0 || (data.lat && data.lat>0)) {
     const defaultCenter = data.lat && data.lat>0? {lat: data.lat, lng: data.lng} : data.metadata.defaultCenter;
     const defaultZoom = data.lat && data.lat>0? 14 : data.metadata.defaultZoom;
     panes.push({
-      menuItem: { key: 'map', icon: 'map', content: 'Map' },
+      menuItem: { key: 'map', icon: 'map' },
       render: () => <Tab.Pane><Leaflet key={"area="+data.id} autoZoom={true} height={height} markers={markers} outlines={outlines} polylines={polylines} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} onClick={null} showSateliteImage={true} clusterMarkers={false} rocks={null} /></Tab.Pane>
     });
   }
   if (data.sectors.length!=0) {
     panes.push({
-      menuItem: { key: 'distribution', icon: 'area graph', content: 'Distribution' },
+      menuItem: { key: 'distribution', icon: 'area graph' },
       render: () => <Tab.Pane><ChartGradeDistribution accessToken={accessToken} idArea={data.id} idSector={0}/></Tab.Pane>
     });
     panes.push({
-      menuItem: { key: 'activity', icon: 'time', content: 'Activity' },
+      menuItem: { key: 'activity', icon: 'time' },
       render: () => <Tab.Pane><Activity metadata={data.metadata} idArea={data.id} idSector={0}/></Tab.Pane>
     });
   }

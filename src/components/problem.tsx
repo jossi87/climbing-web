@@ -134,7 +134,7 @@ const Problem = () => {
   const panes = [];
   if (data.media && data.media.length>0) {
     panes.push({
-      menuItem: { key: 'media', icon: 'images', content: 'Media' },
+      menuItem: { key: 'media', icon: 'image' },
       render: () =>
         <Tab.Pane>
           <Media isAdmin={data.metadata.isAdmin}
@@ -157,7 +157,7 @@ const Problem = () => {
       outlines = [{url: '/sector/' + data.sectorId, label, polygon}];
     }
     panes.push({
-      menuItem: { key: 'map', icon: 'map', content: 'Map' },
+      menuItem: { key: 'map', icon: 'map' },
       render: () => <Tab.Pane><Leaflet key={"sector="+data.id} autoZoom={true} height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={{lat: markers[0].lat, lng: markers[0].lng}} defaultZoom={16} history={history} onClick={null} showSateliteImage={true} clusterMarkers={false} rocks={null} /></Tab.Pane>
     });
   }
