@@ -135,6 +135,15 @@ export function getAreaEdit(accessToken: string, id: number): Promise<any> {
   }
 }
 
+export function getAbout(accessToken: string): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/about`, null)
+  .then((data) => data.json())
+  .catch((error) => {
+    console.warn(error);
+    return null;
+  });
+}
+
 export function getBrowse(accessToken: string): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/browse`, null)
   .then((data) => data.json())
@@ -164,15 +173,6 @@ export function getFrontpage(accessToken: string): Promise<any> {
 
 export function getGradeDistribution(accessToken: string, idArea: number, idSector: number): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/grade/distribution?idArea=${idArea}&idSector=${idSector}`, null)
-  .then((data) => data.json())
-  .catch((error) => {
-    console.warn(error);
-    return null;
-  });
-}
-
-export function getHelp(accessToken: string): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/help`, null)
   .then((data) => data.json())
   .catch((error) => {
     console.warn(error);

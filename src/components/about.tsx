@@ -4,13 +4,13 @@ import { Link } from 'react-router-dom';
 import { Segment, Header, Icon, List, Image } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { getHelp } from '../api';
+import { getAbout } from '../api';
 
-const Help = () => {
+const About = () => {
   const { accessToken } = useAuth0();
   const [data, setData] = useState(null);
   useEffect(() => {
-    getHelp(accessToken).then((data) => setData(data));
+    getAbout(accessToken).then((data) => setData(data));
   }, [accessToken]);
 
   if (!data) {
@@ -83,4 +83,4 @@ const Help = () => {
   );
 }
 
-export default Help;
+export default About;

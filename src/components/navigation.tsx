@@ -22,14 +22,14 @@ const Navigation = () => {
       <Container>
         <Menu.Item header as={Link} to='/'><Image size='mini' src='/png/buldreinfo.png' /></Menu.Item>
         <Menu.Item as={SearchBox}  style={{maxWidth: '35vw'}} />
-        <Dropdown item simple icon='database'>
+        <Dropdown item simple icon='ellipsis vertical'>
           <Dropdown.Menu>
               <Dropdown.Item as={Link} to="/browse"><Icon name="list"/>Browse areas</Dropdown.Item>
               <Dropdown.Item as={Link} to="/toc"><Icon name="database"/>Table of Contents</Dropdown.Item>
-              <Dropdown.Divider />
               <Dropdown.Item as={Link} to="/filter"><Icon name="find"/>Filter</Dropdown.Item>
               <Dropdown.Divider />
               <Dropdown.Item as={Link} to="/weather"><Icon name="sun"/>Weather map</Dropdown.Item>
+              <Dropdown.Item as={Link} to="/about"><Icon name="info"/>About</Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
         {!loading && 
@@ -51,7 +51,6 @@ const Navigation = () => {
             <Menu.Item as="a" onClick={() => loginWithRedirect({appState: { targetUrl: location.pathname }})} icon="sign in" />
           )
         }
-        <Menu.Item as={Link} to="/help" icon="help" />
       </Container>
     </Menu>
   );
