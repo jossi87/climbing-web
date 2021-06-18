@@ -3,7 +3,7 @@ import fetch from 'isomorphic-fetch';
 export function getBaseUrl(): string {
   var origin = window.origin;
   if (origin === 'http://localhost:3000') {
-    origin = 'https://buldreinfo.com';
+    origin = 'https://brattelinjer.no';
   }
   return origin;
 }
@@ -164,6 +164,15 @@ export function getFrontpage(accessToken: string): Promise<any> {
 
 export function getGradeDistribution(accessToken: string, idArea: number, idSector: number): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/grade/distribution?idArea=${idArea}&idSector=${idSector}`, null)
+  .then((data) => data.json())
+  .catch((error) => {
+    console.warn(error);
+    return null;
+  });
+}
+
+export function getHelp(accessToken: string): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/help`, null)
   .then((data) => data.json())
   .catch((error) => {
     console.warn(error);

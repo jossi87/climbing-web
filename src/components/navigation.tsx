@@ -51,6 +51,7 @@ const Navigation = () => {
             <Menu.Item as="a" onClick={() => loginWithRedirect({appState: { targetUrl: location.pathname }})} icon="sign in" />
           )
         }
+        <Menu.Item as={Link} to="/help" icon="help" />
       </Container>
     </Menu>
   );

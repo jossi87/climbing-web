@@ -114,6 +114,7 @@ const Problem = () => {
   if (!data || reload) {
     return <LoadingAndRestoreScroll />;
   }
+  let isBouldering = data.metadata.gradeSystem==='BOULDER';
   const markers = [];
   if (data.lat>0 && data.lng>0) {
     markers.push({
@@ -141,7 +142,7 @@ const Problem = () => {
             removeMedia={onRemoveMedia}
             media={data.media}
             optProblemId={data.id}
-            isBouldering={data.metadata.gradeSystem==='BOULDER'} />
+            isBouldering={isBouldering} />
         </Tab.Pane>
     });
   }
@@ -208,7 +209,7 @@ const Problem = () => {
                 <Comment.Metadata>{c.date}</Comment.Metadata>
                 <Comment.Text>
                   <Linkify componentDecorator={componentDecorator}>{c.message}</Linkify>
-                  {c.media && c.media.length>0 && <Media isAdmin={false} removeMedia={() => window.location.reload()} media={c.media} optProblemId={null} isBouldering={data.metadata.gradeSystem==='BOULDER'} />}
+                  {c.media && c.media.length>0 && <Media isAdmin={false} removeMedia={() => window.location.reload()} media={c.media} optProblemId={null} isBouldering={isBouldering} />}
                 </Comment.Text>
                 {extra && <Comment.Actions>{extra}</Comment.Actions>}
               </Comment.Content>
@@ -445,7 +446,7 @@ const Problem = () => {
                         <Feed.Summary>
                           <Feed.Label>{s.grade}</Feed.Label> 
                           <Feed.Date>{s.description}</Feed.Date>
-                          {s.media && <Feed.Extra><Media isAdmin={data.metadata.isAdmin} removeMedia={() => window.location.reload()} media={s.media} optProblemId={null} isBouldering={data.metadata.gradeSystem==='BOULDER'} /></Feed.Extra>}
+                          {s.media && <Feed.Extra><Media isAdmin={data.metadata.isAdmin} removeMedia={() => window.location.reload()} media={s.media} optProblemId={null} isBouldering={isBouldering} /></Feed.Extra>}
                         </Feed.Summary>
                       </Feed.Content>
                     </Feed.Event>

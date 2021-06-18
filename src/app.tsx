@@ -8,9 +8,9 @@ import Navigation from './components/navigation';
 const Area = lazy(() => import('./components/area'));
 const AreaEdit = lazy(() => import('./components/area-edit'));
 const Browse = lazy(() => import('./components/browse'));
-const Ethics = lazy(() => import('./components/ethics'));
 const Frontpage = lazy(() => import('./components/frontpage'));
 const Filter = lazy(() => import('./components/filter'));
+const Help = lazy(() => import('./components/help'));
 const MediaSvgEdit = lazy(() => import('./components/media-svg-edit'));
 const Problem = lazy(() => import('./components/problem'));
 const ProblemEdit = lazy(() => import('./components/problem-edit'));
@@ -61,10 +61,10 @@ const App = () => {
               <Switch>
                 <Route exact path='/'><Frontpage/></Route>
                 <Route path='/browse'><Browse/></Route>
-                <Route path='/ethics'><Ethics/></Route>
                 <Route exact path='/area/:areaId'><Area/></Route>
                 <Route exact path='/area/edit/:areaId'><AreaEdit/></Route>
                 <Route path='/filter'><Filter/></Route>
+                <Route path='/help'><Help/></Route>
                 <Route path='/hse'><ProblemHse/></Route>
                 <Route exact path='/media/svg-edit/:mediaId'><MediaSvgEdit/></Route>
                 <Route path='/permissions'><Permissions/></Route>
@@ -142,7 +142,7 @@ const App = () => {
 
             <Divider inverted section />
             <List horizontal inverted divided link>
-              <List.Item as={Link} to='/ethics'>Ethics</List.Item>
+              <List.Item as={Link} to='/help'>Help</List.Item>
               <List.Item as={Link} to='/hse'>HSE</List.Item>
               <List.Item as='a' href={`mailto:jostein.oygarden@gmail.com?subject=${window.location.href}`}>Contact</List.Item>
               <List.Item as='a' href='/gpl-3.0.txt' rel='noopener' target='_blank'>GNU Public License</List.Item>
