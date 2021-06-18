@@ -37,24 +37,14 @@ module.exports = {
        template: './src/index.html',
        filename: '../index.html'
     }),
-    new MiniCssExtractPlugin(),
+    new MiniCssExtractPlugin({
+      filename:'style.[contenthash].css'
+    }),
   ],
   output: {
     path: __dirname + '/build/static',
     publicPath: '/static/',
     filename: '[name].[contenthash].js',
-  },
-  optimization: {
-    moduleIds: 'deterministic',
-    runtimeChunk: 'single',
-    splitChunks: {
-      cacheGroups: {
-        vendor: {
-          test: /[\\/]node_modules[\\/]/,
-          name: 'vendors',
-          chunks: 'all',
-        },
-      },
-    },
+    chunkFilename: "chunk-[name].[chunkhash].js",
   }
 };
