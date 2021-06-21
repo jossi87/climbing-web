@@ -89,6 +89,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onMoveImageLeft, onMoveImageRi
   const canDrawTopo = isAdmin && m.idType===1 && optProblemId;
   const canDrawMedia = isAdmin && m.idType===1 && !isBouldering;
   const canOrder = isAdmin && m.idType===1 && length>1;
+  const canMove = isAdmin && m.idType===1;
   return (
     <Dimmer active={true} onClickOutside={onClose} page>
       <ButtonGroup secondary size="small" style={style.actions}>
@@ -99,8 +100,8 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onMoveImageLeft, onMoveImageRi
               {canDrawMedia && <Dropdown.Item icon="paint brush" text="Draw on image" onClick={() => history.push(`/media/svg-edit/${m.id}`)} />}
               {canOrder && <Dropdown.Item icon="arrow left" text="Move image to the left" onClick={onMoveImageLeft} />}
               {canOrder && <Dropdown.Item icon="arrow right" text="Move image to the right" onClick={onMoveImageRight} />}
-              {canOrder && m.enableMoveToIdSector && <Dropdown.Item icon="move" text={"Move image from " + (isBouldering? "problem" : "route") + " to sector"} onClick={onMoveImageToSector} />}
-              {canOrder && m.enableMoveToIdProblem && <Dropdown.Item icon="move" text={"Move image from sector to this " + (isBouldering? "problem" : "route")} onClick={onMoveImageToProblem} />}
+              {canMove && m.enableMoveToIdSector && <Dropdown.Item icon="move" text={"Move image from " + (isBouldering? "problem" : "route") + " to sector"} onClick={onMoveImageToSector} />}
+              {canMove && m.enableMoveToIdProblem && <Dropdown.Item icon="move" text={"Move image from sector to this " + (isBouldering? "problem" : "route")} onClick={onMoveImageToProblem} />}
               {(canDrawTopo || canDrawMedia || canOrder) && canDelete && <Dropdown.Divider />}
               {canDelete && <Dropdown.Item icon="trash" text="Delete image" onClick={onDelete} />}
             </Dropdown.Menu>
