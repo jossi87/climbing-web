@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Step, Dropdown, List, Segment, Checkbox, Icon } from 'semantic-ui-react';
+import { Step, Dropdown, List, Segment, Checkbox } from 'semantic-ui-react';
 import AccordionContainer from './accordion-container';
 
 interface Row {
