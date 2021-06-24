@@ -64,7 +64,7 @@ const User = () => {
       <Segment>
         <ButtonGroup floated="right" size="small">
           {isAuthenticated && !userId &&
-            <Button loading={isSaving} icon onClick={() => {
+            <Button animated='fade' loading={isSaving} onClick={() => {
               setIsSaving(true);
               let filename = "ticks.xlsx";
               getUsersTicks(accessToken).then(response => {
@@ -76,14 +76,23 @@ const User = () => {
                 saveAs(blob, filename)
               });
             }}>
-              <Icon name="file excel"/>
+              <Button.Content hidden>Download</Button.Content>
+              <Button.Content visible>
+                <Icon name='file excel' />
+              </Button.Content>
             </Button>
           }
-          <Button icon as={Link} to={`/todo/${data.id}`}>
-            <Icon name="list"/>
+          <Button animated='fade' as={Link} to={`/todo/${data.id}`}>
+            <Button.Content hidden>Todo</Button.Content>
+            <Button.Content visible>
+              <Icon name='list' />
+            </Button.Content>
           </Button>
-          {(data.numImageTags>0 || data.numVideoTags>0) && <Button icon as={Link} to={`/user/media/${data.id}`}>
-            <Icon name="images"/>
+          {(data.numImageTags>0 || data.numVideoTags>0) && <Button animated='fade' as={Link} to={`/user/media/${data.id}`}>
+            <Button.Content hidden>Media</Button.Content>
+            <Button.Content visible>
+              <Icon name='images' />
+            </Button.Content>
           </Button>}
         </ButtonGroup>
         <Header as="h2">
