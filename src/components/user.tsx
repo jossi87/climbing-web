@@ -33,8 +33,10 @@ const User = () => {
   const [data, setData] = useState(null);
   useEffect(() => {
     if (!loading) {
-      getUser(accessToken, userId? parseInt(userId) : -1)
-      .then((data) => setData(data));
+      if (data != null) {
+        setData(null);
+      }
+      getUser(accessToken, userId? parseInt(userId) : -1).then((data) => setData(data));
     }
   }, [loading, accessToken, userId]);
 

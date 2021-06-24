@@ -137,41 +137,41 @@ const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[
   
   return (
     <>
-      <Step.Group attached="top" size="mini" unstackable fluid>
-        <Step>
+      <Step.Group attached="top" size="mini">
+        <Step link onClick={() => document.getElementById('dropdownOrderBy').focus()}>
           <Step.Content>
             <Step.Title>Order by</Step.Title>
             <Step.Description>
-              <Dropdown options={orderByOptions} value={OrderBy[orderBy]} onChange={(e, { value }) => order(OrderBy[value as keyof typeof OrderBy])} />
+              <Dropdown id="dropdownOrderBy" options={orderByOptions} value={OrderBy[orderBy]} onChange={(e, { value }) => order(OrderBy[value as keyof typeof OrderBy])} />
             </Step.Description>
           </Step.Content>
         </Step>
         {groupByTitle != null && 
-          <Step>
+          <Step link onClick={() => setGroupBy(!groupBy)}>
             <Step.Content>
               <Step.Title>Group by {GroupBy[groupByTitle]}</Step.Title>
               <Step.Description>
-                <Checkbox toggle active defaultChecked={groupBy} onClick={() => setGroupBy(!groupBy)} />
+                <Checkbox toggle active defaultChecked={groupBy} checked={groupBy} onClick={() => setGroupBy(!groupBy)} />
               </Step.Description>
             </Step.Content>
           </Step>
         }
         {isSectorNotUser && data.filter(p => p.ticked).length>0 && 
-          <Step>
+          <Step link onClick={() => setHideTicked(!hideTicked)}>
             <Step.Content>
               <Step.Title>Hide ticked</Step.Title>
               <Step.Description>
-                <Checkbox toggle active defaultChecked={hideTicked} onClick={() => setHideTicked(!hideTicked)} />
+                <Checkbox toggle active defaultChecked={hideTicked} checked={hideTicked} onClick={() => setHideTicked(!hideTicked)} />
               </Step.Description>
             </Step.Content>
           </Step>
         }
         {!isSectorNotUser && data.filter(p => p.fa).length>0 && 
-          <Step>
+          <Step link onClick={() => setOnlyFa(!onlyFa)}>
             <Step.Content>
               <Step.Title>Only FA</Step.Title>
               <Step.Description>
-                <Checkbox toggle active defaultChecked={onlyFa} onClick={() => setOnlyFa(!onlyFa)} />
+                <Checkbox toggle active defaultChecked={onlyFa} checked={onlyFa} onClick={() => setOnlyFa(!onlyFa)} />
               </Step.Description>
             </Step.Content>
           </Step>
