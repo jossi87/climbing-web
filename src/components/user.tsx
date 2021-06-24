@@ -62,9 +62,9 @@ const User = () => {
         <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
       </MetaTags>
       <Segment>
-        <ButtonGroup floated="right" size="mini" basic>
+        <ButtonGroup floated="right" size="small">
           {isAuthenticated && !userId &&
-            <Button loading={isSaving} icon labelPosition="left" onClick={() => {
+            <Button loading={isSaving} icon onClick={() => {
               setIsSaving(true);
               let filename = "ticks.xlsx";
               getUsersTicks(accessToken).then(response => {
@@ -77,16 +77,13 @@ const User = () => {
               });
             }}>
               <Icon name="file excel"/>
-              Download
             </Button>
           }
-          <Button icon labelPosition="left" as={Link} to={`/todo/${data.id}`}>
+          <Button icon as={Link} to={`/todo/${data.id}`}>
             <Icon name="list"/>
-            To-do list
           </Button>
-          {(data.numImageTags>0 || data.numVideoTags>0) && <Button icon labelPosition="left" as={Link} to={`/user/media/${data.id}`}>
+          {(data.numImageTags>0 || data.numVideoTags>0) && <Button icon as={Link} to={`/user/media/${data.id}`}>
             <Icon name="images"/>
-            Media
           </Button>}
         </ButtonGroup>
         <Header as="h2">

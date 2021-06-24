@@ -137,7 +137,7 @@ const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[
   
   return (
     <>
-      <Step.Group attached="top" size="mini">
+      <Step.Group attached="top" size="mini" unstackable>
         <Step link onClick={() => document.getElementById('dropdownOrderBy').focus()}>
           <Step.Content>
             <Step.Title>Order by</Step.Title>
