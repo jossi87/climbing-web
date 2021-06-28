@@ -17,36 +17,28 @@ interface SectorIdParams {
   sectorId: string;
 }
 const SectorListItem = ({ problem, isClimbing }) => {
-  var ascents = problem.numTicks>0 && (problem.numTicks + (problem.numTicks==1? " ascent" : " ascents"));
-  var typeAscents;
-  if (isClimbing) {
-    let t = problem.t.subType;
-    if (problem.numPitches>1) t += ", " + problem.numPitches + " pitches";
-    if (ascents) {
-      typeAscents = " (" + t + ", " + ascents + ") ";
-    } else {
-      typeAscents = " (" + t + ") ";
-    }
-  } else {
-    if (ascents) {
-      typeAscents = " (" + ascents + ") ";
-    }
-    else {
-      typeAscents = " ";
-    }
+  let fa = problem.fa;
+  let type = isClimbing? problem.t.subType + (problem.numPitches>1? ", " + problem.numPitches + " pitches" : "") : null;
+  let ascents = problem.numTicks && problem.numTicks + (problem.numTicks==1? " ascent" : " ascents");
+  let faTypeAscents = problem.fa;
+  if (type && ascents) {
+    faTypeAscents = (faTypeAscents != null? faTypeAscents + " (" : "(") + type + ", " + ascents + ")";
+  } else if (type) {
+    faTypeAscents = (faTypeAscents != null? faTypeAscents + " (" : "(") + type + ")";
+  } else if (ascents) {
+    faTypeAscents = (faTypeAscents != null? faTypeAscents + " (" : "(") + ascents + ")";
   }
-  let comment = <small><i style={{color: "gray"}}>{' '}{problem.rock && <>Rock: {problem.rock}. </>}{problem.comment}{' '}</i></small>;
   return (
     <List.Item style={{backgroundColor: problem.ticked? "#d2f8d2" : "#ffffff"}} key={problem.id}>
       <List.Header>
         {problem.danger && <Icon color="red" name="warning"/>}
         {`#${problem.nr} `}
         <Link to={`/problem/${problem.id}`}>{problem.name}</Link>
-        {' '}{problem.grade}
-        {' '}<Stars numStars={problem.stars} includeNoRating={false} />
-        {problem.fa && <small>{problem.fa}</small>}
-        {typeAscents && <small>{typeAscents}</small>}
-        {comment}
+        {' '}
+        {problem.grade}
+        <Stars numStars={problem.stars} includeNoRating={false} />
+        {faTypeAscents && <small>{' '}{faTypeAscents}</small>}
+        <small><i style={{color: "gray"}}>{' '}{problem.rock && <>Rock: {problem.rock}. </>}{problem.comment}{' '}</i></small>
         {problem.lat>0 && problem.lng>0 && <Icon size="small" name="map marker alternate"/>}
         {problem.hasTopo && <Icon size="small" name="paint brush"/>}
         {problem.hasImages && <Icon size="small" color="black" name="photo"/>}

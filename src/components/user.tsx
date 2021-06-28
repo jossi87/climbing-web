@@ -21,7 +21,7 @@ const TickListItem = ({ tick } ) => (
         {' '}{tick.grade}<LockSymbol lockedAdmin={tick.lockedAdmin} lockedSuperadmin={tick.lockedSuperadmin} />
         {tick.stars!=0 && <>{' '}<Stars numStars={tick.stars} includeNoRating={true} />{' '}</>}
         {tick.fa && <Label color="red" size="mini" content="FA"/>}
-        {tick.subType && <Label size="mini" content={tick.subType}/>}
+        {tick.subType && <Label basic size="mini" content={tick.subType} detail={tick.numPitches>1? tick.numPitches + " pitches" : null}/>}
         {' '}{tick.comment && <small style={{color: 'gray'}}><i>{tick.comment}</i></small>}
       </List.Header>
     </List.Item>
@@ -85,7 +85,7 @@ const User = () => {
           <Button animated='fade' as={Link} to={`/todo/${data.id}`}>
             <Button.Content hidden>Todo</Button.Content>
             <Button.Content visible>
-              <Icon name='list' />
+              <Icon name='tasks' />
             </Button.Content>
           </Button>
           {(data.numImageTags>0 || data.numVideoTags>0) && <Button animated='fade' as={Link} to={`/user/media/${data.id}`}>
