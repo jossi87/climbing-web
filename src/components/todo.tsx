@@ -17,6 +17,9 @@ const Todo = () => {
   let history = useHistory();
   useEffect(() => {
     if (!loading) {
+      if (data != null) {
+        setData(null);
+      }
       const id = userId? parseInt(userId) : -1;
       getTodo(accessToken, id).then((data) => setData(data));
     }
