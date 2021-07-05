@@ -38,7 +38,6 @@ const Todo = () => {
       })
     })
   })
-  console.log(markers)
   return (
     <>
       <MetaTags>
@@ -54,10 +53,10 @@ const Todo = () => {
         <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
       </MetaTags>
       <Segment>
-        <Header as="h2">
+        <Header as="h3">
           {data.picture && <Image circular src={data.picture}/>} 
           <Header.Content>
-            {data.name} (To-do list)
+            <Link to={`/user/${data.id}`}>{data.name}</Link> (To-do list)
             <Header.Subheader>{data.metadata.description}</Header.Subheader>
           </Header.Content>
         </Header>
