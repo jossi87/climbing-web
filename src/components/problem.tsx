@@ -376,7 +376,7 @@ const Problem = () => {
           {data.trivia && 
             <Table.Row verticalAlign="top">
               <Table.Cell>Trivia:</Table.Cell>
-              <Table.Cell>{data.trivia}</Table.Cell>
+              <Table.Cell><Linkify componentDecorator={componentDecorator}>{data.trivia}</Linkify></Table.Cell>
             </Table.Row>
           }
           {problemsOnRock && problemsOnRock.length>0 && data.rock && 
