@@ -91,7 +91,7 @@ const Profile = () => {
           Media
         </Menu.Item>
         {isAuthenticated && loggedInProfile &&
-          <Menu.Item name='media' active={activePage === 'settings'} onClick={() => setActivePage('settings')}>
+          <Menu.Item name='settings' active={activePage === 'settings'} onClick={() => onPageChanged('settings')}>
             <Icon name='cogs' />
             Settings
           </Menu.Item>

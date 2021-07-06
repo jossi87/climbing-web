@@ -1,5 +1,5 @@
 import React from 'react';
-import { Segment, Icon, Label } from 'semantic-ui-react';
+import { Segment, Icon, Label, Header } from 'semantic-ui-react';
 import { postUserRegion } from '../../../api';
 
 const ProfileSettings = ({accessToken, userRegions}) => {
@@ -8,7 +8,7 @@ const ProfileSettings = ({accessToken, userRegions}) => {
   }
   return (
     <Segment>
-      Specify the different region(s) you want to show:<br/>
+      <Header as="h4">Specify the different regions you want to show</Header>
       {userRegions.map(ur => {
         if (ur.enabled && ur.readOnly) {
           return (
