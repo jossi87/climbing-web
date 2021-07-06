@@ -10,6 +10,9 @@ import ProfileTodo from './common/profile/profile-todo';
 import ProfileMedia from './common/profile/profile-media';
 import ProfileSettings from './common/profile/profile-settings';
 
+enum Page {
+  user, todo, media, settings
+}
 interface ProfileParams {
   userId: string;
   page: string;
@@ -18,7 +21,7 @@ const Profile = () => {
   let { userId, page } = useParams<ProfileParams>();
   let history = useHistory();
   const { loading, isAuthenticated, accessToken } = useAuth0();
-  const [activePage, setActivePage] = useState(page? page : 'user');
+  const [activePage, setActivePage] = useState(page? page : Page.user);
   const [profile, setProfile] = useState(null);
   useEffect(() => {
     if (!loading) {
@@ -29,9 +32,9 @@ const Profile = () => {
     }
   }, [loading, accessToken, userId]);
 
-  function onPageChanged(page) {
+  function onPageChanged(page: Page) {
     setActivePage(page);
-    history.replace("/user/" + profile.id + "/" + page);
+    history.replace("/user/" + profile.id + "/" + Page[page]);
   }
   
   if (!profile) {
@@ -41,13 +44,13 @@ const Profile = () => {
   const loggedInProfile = profile.userRegions && profile.userRegions.length>0;
 
   let content = null;
-  if (activePage === 'user') {
+  if (activePage === Page.user) {
       content = <ProfileStatistics accessToken={accessToken} userId={profile.id} canDownload={loggedInProfile} />
-  } else if (activePage === 'todo') {
+  } else if (activePage === Page.todo) {
     content = <ProfileTodo accessToken={accessToken} userId={profile.id} defaultCenter={profile.metadata.defaultCenter} defaultZoom={profile.metadata.defaultZoom} />
-  } else if (activePage === 'media') {
+  } else if (activePage === Page.media) {
     content = <ProfileMedia accessToken={accessToken} userId={profile.id} gradeSystem={profile.metadata.gradeSystem} />
-  } else if (activePage === 'settings') {
+  } else if (activePage === Page.settings) {
     content = <ProfileSettings accessToken={accessToken} userRegions={profile.userRegions} />
   }
   
@@ -78,20 +81,20 @@ const Profile = () => {
             <Header.Content>{profile.firstname}<br/>{profile.lastname}</Header.Content>
           </Header>
         </Menu.Item>
-        <Menu.Item name='user' active={activePage === 'user'} onClick={() => onPageChanged('user')}>
+        <Menu.Item name={Page[Page.user]} active={activePage === Page.user} onClick={() => onPageChanged(Page.user)}>
           <Icon name='user' />
           User
         </Menu.Item>
-        <Menu.Item name='todo' active={activePage === 'todo'} onClick={() => onPageChanged('todo')}>
+        <Menu.Item name={Page[Page.todo]} active={activePage === Page.todo} onClick={() => onPageChanged(Page.todo)}>
           <Icon name='tasks' />
           Todo
         </Menu.Item>
-        <Menu.Item name='media' active={activePage === 'media'} onClick={() => onPageChanged('media')}>
+        <Menu.Item name={Page[Page.media]} active={activePage === Page.media} onClick={() => onPageChanged(Page.media)}>
           <Icon name='images' />
           Media
         </Menu.Item>
         {isAuthenticated && loggedInProfile &&
-          <Menu.Item name='settings' active={activePage === 'settings'} onClick={() => onPageChanged('settings')}>
+          <Menu.Item name={Page[Page.settings]} active={activePage === Page.settings} onClick={() => onPageChanged(Page.settings)}>
             <Icon name='cogs' />
             Settings
           </Menu.Item>
