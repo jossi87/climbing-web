@@ -1,4 +1,14 @@
 /* Buldreinfo / Bratte Linjer */
+@media (max-width: 500px) {
+  .buldreinfo-hidden-mobile {
+    display: none !important;
+  }
+}
+@media (min-width: 500px) {
+  .buldreinfo-visible-mobile {
+    display: none !important;
+  }
+}
 
 .buldreinfo-tooltip-compact {
   padding: 0px !important;

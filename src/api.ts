@@ -324,6 +324,42 @@ export function getProblemEdit(accessToken: string, sectorIdProblemId: string): 
   }
 }
 
+export function getProfile(accessToken: string, id: number): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/profile?id=${id}`, null)
+  .then((data) => data.json())
+  .catch((error) => {
+    console.warn(error);
+    return null;
+  });
+}
+
+export function getProfileMedia(accessToken: string, id: number): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/profile/media?id=${id}`, null)
+  .then((data) => data.json())
+  .catch((error) => {
+    console.warn(error);
+    return null;
+  });
+}
+
+export function getProfileStatistics(accessToken: string, id: number): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/profile/statistics?id=${id}`, null)
+  .then((data) => data.json())
+  .catch((error) => {
+    console.warn(error);
+    return null;
+  });
+}
+
+export function getProfileTodo(accessToken: string, id: number): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/profile/todo?id=${id}`, null)
+  .then((data) => data.json())
+  .catch((error) => {
+    console.warn(error);
+    return null;
+  });
+}
+
 export function getSector(accessToken: string, id: number): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/sectors?id=${id}`, null)
   .then((response) => response.json())
@@ -482,35 +518,8 @@ export function getTocXlsx(accessToken: string): Promise<any> {
   });
 }
 
-export function getTodo(accessToken: string, id: number): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/todo?id=${id}`, null)
-  .then((data) => data.json())
-  .catch((error) => {
-    console.warn(error);
-    return null;
-  });
-}
-
 export function getTrash(accessToken: string): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/trash`, null)
-  .then((data) => data.json())
-  .catch((error) => {
-    console.warn(error);
-    return null;
-  });
-}
-
-export function getUser(accessToken: string, id: number): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/users?id=${id}`, null)
-  .then((data) => data.json())
-  .catch((error) => {
-    console.warn(error);
-    return null;
-  });
-}
-
-export function getUserMedia(accessToken: string, id: number): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/users/media?id=${id}`, null)
   .then((data) => data.json())
   .catch((error) => {
     console.warn(error);

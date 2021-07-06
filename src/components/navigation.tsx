@@ -37,7 +37,6 @@ const Navigation = () => {
             <Dropdown item simple icon='user'>
               <Dropdown.Menu>
                   <Dropdown.Item as={Link} to="/user"><Icon name="user"/>Profile</Dropdown.Item>
-                  <Dropdown.Item as={Link} to="/todo"><Icon name="tasks"/>To-do list</Dropdown.Item>
                   {(isAdmin || isSuperAdmin) && <>
                     <Dropdown.Divider/>
                     {isAdmin && <Dropdown.Item as={Link} to="/trash"><Icon name="trash"/>Trash</Dropdown.Item>}

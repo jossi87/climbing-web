@@ -16,16 +16,14 @@ const Problem = lazy(() => import(/* webpackChunkName: "problem" */'./components
 const ProblemEdit = lazy(() => import(/* webpackChunkName: "problem-edit" */'./components/problem-edit'));
 const ProblemEditMedia = lazy(() => import(/* webpackChunkName: "problem-edit-media" */'./components/problem-edit-media'));
 const ProblemHse = lazy(() => import(/* webpackChunkName: "problem-hse" */'./components/problem-hse'));
+const Profile = lazy(() => import(/* webpackChunkName: "profile" */'./components/profile'));
 const Sector = lazy(() => import(/* webpackChunkName: "sector" */'./components/sector'));
 const SectorEdit = lazy(() => import(/* webpackChunkName: "sector-edit" */'./components/sector-edit'));
 const Sites = lazy(() => import(/* webpackChunkName: "sites" */'./components/sites'));
 const SvgEdit = lazy(() => import(/* webpackChunkName: "svg-edit" */'./components/svg-edit'));
 const Ticks = lazy(() => import(/* webpackChunkName: "ticks" */'./components/ticks'));
 const Toc = lazy(() => import(/* webpackChunkName: "toc" */'./components/toc'));
-const Todo = lazy(() => import(/* webpackChunkName: "todo" */'./components/todo'));
 const Trash = lazy(() => import(/* webpackChunkName: "trash" */'./components/trash'));
-const User = lazy(() => import(/* webpackChunkName: "user" */'./components/user'));
-const UserMedia = lazy(() => import(/* webpackChunkName: "user-media" */'./components/user-media'));
 const Permissions = lazy(() => import(/* webpackChunkName: "permissions" */'./components/permissions'));
 const Weather = lazy(() => import(/* webpackChunkName: "weather" */'./components/weather'));
 
@@ -72,16 +70,14 @@ const App = () => {
                 <Route exact path='/problem/edit/:sectorIdProblemId'><ProblemEdit/></Route>
                 <Route exact path='/problem/edit/media/:problemId'><ProblemEditMedia/></Route>
                 <Route exact path='/problem/svg-edit/:problemIdMediaId'><SvgEdit/></Route>
+                <Route exact path='/user'><Profile/></Route>
+                <Route exact path='/user/:userId'><Profile/></Route>
+                <Route exact path='/user/:userId/:page'><Profile/></Route>
                 <Route exact path='/sites/:type'><Sites/></Route>
                 <Route exact path='/sector/:sectorId'><Sector/></Route>
                 <Route exact path='/sector/edit/:areaIdSectorId'><SectorEdit/></Route>
                 <Route path='/ticks/:page'><Ticks/></Route>
-                <Route exact path='/user'><User/></Route>
-                <Route exact path='/user/:userId'><User/></Route>
-                <Route exact path='/user/media/:userId'><UserMedia/></Route>
                 <Route exact path='/toc'><Toc/></Route>
-                <Route exact path='/todo'><Todo/></Route>
-                <Route exact path='/todo/:userId'><Todo/></Route>
                 <Route exact path='/trash'><Trash/></Route>
                 <Route exact path='/weather'><Weather/></Route>
                 <Route exact path='/weather/:json'><Weather/></Route>
