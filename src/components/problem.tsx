@@ -171,7 +171,7 @@ const Problem = () => {
           <Comment key={i}>
             <Comment.Avatar src={t.picture? t.picture : '/png/image.png'} />
             <Comment.Content>
-              <Comment.Author as={Link} to={`/profile/${t.idUser}`}>{t.name}</Comment.Author>
+              <Comment.Author as={Link} to={`/user/${t.idUser}`}>{t.name}</Comment.Author>
               <Comment.Metadata>{t.date}</Comment.Metadata>
               <Comment.Text><Stars numStars={t.stars} includeNoRating={true} /> {t.suggestedGrade}<br/><Linkify componentDecorator={componentDecorator}>{t.comment}</Linkify></Comment.Text>
             </Comment.Content>
@@ -205,7 +205,7 @@ const Problem = () => {
                     <Button onClick={() => deleteComment(c)} icon="trash" />
                   </Button.Group>
                 }
-                <Comment.Author as={Link} to={`/profile/${c.idUser}`}>{c.name}</Comment.Author>
+                <Comment.Author as={Link} to={`/user/${c.idUser}`}>{c.name}</Comment.Author>
                 <Comment.Metadata>{c.date}</Comment.Metadata>
                 <Comment.Text>
                   <Linkify componentDecorator={componentDecorator}>{c.message}</Linkify>
@@ -343,7 +343,7 @@ const Problem = () => {
               <Table.Cell>
                 {data.faAid.dateHr && <Label basic><Icon name='calendar check' />{data.faAid.dateHr}</Label>}
                 {data.faAid.users && <>{data.faAid.users.map((u, i) => (
-                  <Label key={i} as={Link} to={`/profile/${u.id}`} image basic>
+                  <Label key={i} as={Link} to={`/user/${u.id}`} image basic>
                     {u.picture ? <img src={u.picture} /> : <Icon name="user"/>}{u.name}
                   </Label>
                 ))}</>}
@@ -358,7 +358,7 @@ const Problem = () => {
               {data.metadata.gradeSystem==='CLIMBING' && <Label basic><Icon name='tag' />{data.t.subType}</Label>}
               {data.faDateHr && <Label basic><Icon name='calendar check' />{data.faDateHr}</Label>}
               {data.fa && <>{data.fa.map((u, i) => (
-                <Label key={i} as={Link} to={`/profile/${u.id}`} image basic>
+                <Label key={i} as={Link} to={`/user/${u.id}`} image basic>
                   {u.picture ? <img src={u.picture} /> : <Icon name="user"/>}{u.name}
                 </Label>
               ))}</>}

@@ -70,15 +70,15 @@ const App = () => {
                 <Route exact path='/problem/edit/:sectorIdProblemId'><ProblemEdit/></Route>
                 <Route exact path='/problem/edit/media/:problemId'><ProblemEditMedia/></Route>
                 <Route exact path='/problem/svg-edit/:problemIdMediaId'><SvgEdit/></Route>
-                <Route exact path='/user'><Profile/></Route>
-                <Route exact path='/user/:userId'><Profile/></Route>
-                <Route exact path='/user/:userId/:page'><Profile/></Route>
                 <Route exact path='/sites/:type'><Sites/></Route>
                 <Route exact path='/sector/:sectorId'><Sector/></Route>
                 <Route exact path='/sector/edit/:areaIdSectorId'><SectorEdit/></Route>
                 <Route path='/ticks/:page'><Ticks/></Route>
                 <Route exact path='/toc'><Toc/></Route>
                 <Route exact path='/trash'><Trash/></Route>
+                <Route exact path='/user'><Profile/></Route>
+                <Route exact path='/user/:userId'><Profile/></Route>
+                <Route exact path='/user/:userId/:page'><Profile/></Route>
                 <Route exact path='/weather'><Weather/></Route>
                 <Route exact path='/weather/:json'><Weather/></Route>
               </Switch>
