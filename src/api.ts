@@ -137,7 +137,7 @@ export function getAreaEdit(accessToken: string, id: number): Promise<any> {
 
 export function getAbout(accessToken: string): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/about`, null)
-  .then((data) => data.json())
+  .then((data ) => data.json())
   .catch((error) => {
     console.warn(error);
     return null;
