@@ -52,7 +52,7 @@ const Leaflet = ({ autoZoom, history, markers, outlines, polylines, height, defa
         let centerCoordinates = GetCenterFromDegrees(coords);
         let html = <>
           <b>{r}:</b><br/>
-          {markersOnRock.map(m => <><a rel='noopener' target='_blank' href={m.url}>{m.label}</a><br/></>)}
+          {markersOnRock.map((m, i) => <React.Fragment key={i}><a rel='noopener' target='_blank' href={m.url}>{m.label}</a><br/></React.Fragment>)}
         </>;
         return ({lat: centerCoordinates[0], lng: centerCoordinates[1], label: r, rock: true, html});
       }

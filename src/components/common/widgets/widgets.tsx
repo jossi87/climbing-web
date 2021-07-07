@@ -13,7 +13,7 @@ export function LockSymbol({lockedAdmin, lockedSuperadmin}) {
 export function Stars({numStars, includeNoRating}) {
   var stars = null;
   if (includeNoRating && numStars===-1) {
-    stars = <Label icon basic size="mini"><Icon name="x"/>No rating</Label>;
+    stars = <Label basic size="mini"><Icon name="x"/>No rating</Label>;
   } else if (numStars===0.5) {
     stars = <Icon color='black' name="star half" />;
   } else if (numStars===1.0) {
@@ -37,7 +37,7 @@ export function Stars({numStars, includeNoRating}) {
             <Icon name="star" /> Nice<br/>
             <Icon name="star" /><Icon name="star" /> Very nice<br/>
             <Icon name="star" /><Icon name="star" /><Icon name="star" /> Fantastic!<br/>
-            {includeNoRating && <><Label icon basic size="mini"><Icon name="x"/>No rating</Label> User has not rated</>}
+            {includeNoRating && <><Label basic size="mini"><Icon name="x"/>No rating</Label> User has not rated</>}
           </div>
         }
       />

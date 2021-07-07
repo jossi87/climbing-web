@@ -58,8 +58,8 @@ const ChartGradeDistribution = ({accessToken, idArea, idSector}) => {
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                  {g.rows.map((s, j) => (
-                    <Table.Row key={i+'-'+j}>
+                  {g.rows.map((s, i) => (
+                    <Table.Row key={i}>
                       <Table.Cell>{s.name}</Table.Cell>
                       {hasBoulder && <Table.Cell>{s.numBoulder}</Table.Cell>}
                       {hasSport && <Table.Cell>{s.numSport}</Table.Cell>}

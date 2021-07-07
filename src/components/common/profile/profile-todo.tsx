@@ -19,9 +19,9 @@ const ProfileTodo = ({accessToken, userId, defaultCenter, defaultZoom}) => {
     return <LoadingAndRestoreScroll />;
   }
   let markers = [];
-  data.areas.forEach((a) => {
-    a.sectors.forEach((s) => {
-      s.problems.forEach((p) => {
+  data.areas.forEach(a => {
+    a.sectors.forEach(s => {
+      s.problems.forEach(p => {
         if (p.lat!=0 && p.lng!=0) {
           markers.push({lat: p.lat, lng: p.lng, label: p.name, url: '/problem/' + p.id});
         }
@@ -64,7 +64,7 @@ const ProfileTodo = ({accessToken, userId, defaultCenter, defaultZoom}) => {
                           {problem.partners && problem.partners.length>0 &&
                             <small>
                               <i style={{color: "gray"}}>
-                                {problem.partners.map((u, i) => <>{i===0? ' Other users: ' : ', '}<Link key={i} to={`/user/${u.id}/todo`}>{u.name}</Link></>)}
+                                {problem.partners.map((u, i) => <React.Fragment key={i}>{i===0? ' Other users: ' : ', '}<Link to={`/user/${u.id}/todo`}>{u.name}</Link></React.Fragment>)}
                               </i>
                             </small>
                           }
