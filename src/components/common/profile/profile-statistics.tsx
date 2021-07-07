@@ -42,7 +42,7 @@ const ProfileStatistics = ({ accessToken, userId, canDownload }) => {
     <>
       <Segment>
         {canDownload &&
-          <Button floated="right" circular size="small" icon="save" loading={isSaving} onClick={() => {
+          <Button floated="right" circular size="medium" icon="save" loading={isSaving} onClick={() => {
             setIsSaving(true);
             let filename = "ticks.xlsx";
             getUsersTicks(accessToken).then(response => {

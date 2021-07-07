@@ -74,7 +74,7 @@ const Profile = () => {
           <Header.Content>{profile.firstname} {profile.lastname}</Header.Content>
         </Header>
       </Segment>
-      <Menu icon='labeled' size="mini">
+      <Menu pointing icon='labeled' size="mini">
         <Menu.Item header className="buldreinfo-hidden-mobile">
           <Header as="h4">
             {profile.picture && <Image circular src={profile.picture}/>} 

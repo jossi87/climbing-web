@@ -4,7 +4,7 @@
     display: none !important;
   }
 }
-@media (min-width: 500px) {
+@media (min-width: 501px) {
   .buldreinfo-visible-mobile {
     display: none !important;
   }
