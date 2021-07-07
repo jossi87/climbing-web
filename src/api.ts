@@ -162,6 +162,15 @@ export function getCameras(): Promise<any> {
   });
 }
 
+export function getDangerous(accessToken: string): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/dangerous`, null)
+  .then((data) => data.json())
+  .catch((error) => {
+    console.warn(error);
+    return null;
+  });
+}
+
 export function getFrontpage(accessToken: string): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/frontpage`, null)
   .then((data) => data.json())
@@ -200,15 +209,6 @@ export function getMeta(accessToken: string): Promise<any> {
 
 export function getPermissions(accessToken: string): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/permissions`, null)
-  .then((data) => data.json())
-  .catch((error) => {
-    console.warn(error);
-    return null;
-  });
-}
-
-export function getProblemHse(accessToken: string): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/problems/hse`, null)
   .then((data) => data.json())
   .catch((error) => {
     console.warn(error);

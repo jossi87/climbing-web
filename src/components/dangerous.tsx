@@ -5,14 +5,14 @@ import { HashLink } from 'react-router-hash-link';
 import { LockSymbol, LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Segment, Icon, List, Header } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
-import { getProblemHse } from '../api';
+import { getDangerous } from '../api';
 
-const ProblemHse = () => {
+const Dangerous = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState(null);
   useEffect(() => {
     if (!loading) {
-      getProblemHse(accessToken).then((data) => setData(data));
+      getDangerous(accessToken).then((data) => setData(data));
     }
   }, [loading, accessToken]);
 
@@ -37,13 +37,13 @@ const ProblemHse = () => {
         <Header as="h2">
           <Icon name='warning sign' />
           <Header.Content>
-            Health and Safety Executive (HSE) 
+            Marked as dangerous
             <Header.Subheader>{data.metadata.description}</Header.Subheader>
           </Header.Content>
         </Header>
         <List celled link horizontal size="small">
           {data.areas.map((area, i) => (
-            <><List.Item key={i} as={HashLink} to={`#${area.id}`}>{area.name}</List.Item><LockSymbol lockedAdmin={area.lockedAdmin} lockedSuperadmin={area.lockedSuperadmin} /></>
+            <React.Fragment key={i}><List.Item as={HashLink} to={`#${area.id}`}>{area.name}</List.Item><LockSymbol lockedAdmin={area.lockedAdmin} lockedSuperadmin={area.lockedSuperadmin} /></React.Fragment>
           ))}
         </List>
         <List celled>
@@ -78,4 +78,4 @@ const ProblemHse = () => {
   );
 }
 
-export default ProblemHse;
+export default Dangerous;

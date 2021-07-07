@@ -9,13 +9,13 @@ const About = lazy(() => import(/* webpackChunkName: "about" */'./components/abo
 const Area = lazy(() => import(/* webpackChunkName: "area" */ './components/area'));
 const AreaEdit = lazy(() => import(/* webpackChunkName: "area-edit" */ './components/area-edit'));
 const Browse = lazy(() => import(/* webpackChunkName: "browse" */ './components/browse'));
+const Dangerous = lazy(() => import(/* webpackChunkName: "problem-hse" */'./components/dangerous'));
 const Frontpage = lazy(() => import(/* webpackPrefetch: true, webpackChunkName: "frontpage" */'./components/frontpage'));
 const Filter = lazy(() => import(/* webpackChunkName: "filter" */'./components/filter'));
 const MediaSvgEdit = lazy(() => import(/* webpackChunkName: "media-svg-edit" */'./components/media-svg-edit'));
 const Problem = lazy(() => import(/* webpackChunkName: "problem" */'./components/problem'));
 const ProblemEdit = lazy(() => import(/* webpackChunkName: "problem-edit" */'./components/problem-edit'));
 const ProblemEditMedia = lazy(() => import(/* webpackChunkName: "problem-edit-media" */'./components/problem-edit-media'));
-const ProblemHse = lazy(() => import(/* webpackChunkName: "problem-hse" */'./components/problem-hse'));
 const Profile = lazy(() => import(/* webpackChunkName: "profile" */'./components/profile'));
 const Sector = lazy(() => import(/* webpackChunkName: "sector" */'./components/sector'));
 const SectorEdit = lazy(() => import(/* webpackChunkName: "sector-edit" */'./components/sector-edit'));
@@ -62,8 +62,8 @@ const App = () => {
                 <Route path='/browse'><Browse/></Route>
                 <Route exact path='/area/:areaId'><Area/></Route>
                 <Route exact path='/area/edit/:areaId'><AreaEdit/></Route>
+                <Route path='/dangerous'><Dangerous/></Route>
                 <Route path='/filter'><Filter/></Route>
-                <Route path='/hse'><ProblemHse/></Route>
                 <Route exact path='/media/svg-edit/:mediaId'><MediaSvgEdit/></Route>
                 <Route path='/permissions'><Permissions/></Route>
                 <Route exact path='/problem/:problemId'><Problem/></Route>
@@ -138,8 +138,6 @@ const App = () => {
 
             <Divider inverted section />
             <List horizontal inverted divided link>
-              <List.Item as={Link} to='/about'>About</List.Item>
-              <List.Item as={Link} to='/hse'>HSE</List.Item>
               <List.Item as='a' href={`mailto:jostein.oygarden@gmail.com?subject=${window.location.href}`}>Contact</List.Item>
               <List.Item as='a' href='/gpl-3.0.txt' rel='noopener' target='_blank'>GNU Public License</List.Item>
             </List>
