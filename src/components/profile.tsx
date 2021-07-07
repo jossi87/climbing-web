@@ -68,12 +68,10 @@ const Profile = () => {
         <meta property="og:image:height" content={profile.metadata.og.imageHeight} />
         <meta property="fb:app_id" content={profile.metadata.og.fbAppId} />
       </MetaTags>
-      <Segment className="buldreinfo-visible-mobile">
-        <Header as="h5">
-          {profile.picture && <Image circular src={profile.picture}/>} 
-          <Header.Content>{profile.firstname} {profile.lastname}</Header.Content>
-        </Header>
-      </Segment>
+      <Header as="h5" textAlign="center" className="buldreinfo-visible-mobile">
+        {profile.picture && <Image circular src={profile.picture}/>} 
+        <Header.Content>{profile.firstname} {profile.lastname}</Header.Content>
+      </Header>
       <Menu pointing icon='labeled' size="mini">
         <Menu.Item header className="buldreinfo-hidden-mobile">
           <Header as="h4">
