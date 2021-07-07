@@ -9,11 +9,13 @@ const Navigation = () => {
   const { loading, isAuthenticated, loginWithRedirect, logout, accessToken } = useAuth0();
   const [isAdmin, setIsAdmin] = useState(false);
   const [isSuperAdmin, setIsUserAdmin] = useState(false);
+  const [isBouldering, setIsBouldering] = useState(false);
   let location = useLocation();
   useEffect(() => {
     getMeta(accessToken).then((data) => {
       setIsAdmin(data.metadata.isAdmin)
       setIsUserAdmin(data.metadata.isSuperAdmin);
+      setIsBouldering(data.metadata.gradeSystem==='BOULDER');
     });
   }, [accessToken, isAuthenticated]);
 
@@ -27,10 +29,9 @@ const Navigation = () => {
               <Dropdown.Item as={Link} to="/browse"><Icon name="list"/>Browse areas</Dropdown.Item>
               <Dropdown.Item as={Link} to="/toc"><Icon name="database"/>Table of Contents</Dropdown.Item>
               <Dropdown.Item as={Link} to="/filter"><Icon name="find"/>Filter</Dropdown.Item>
+              {!isBouldering && <Dropdown.Item as={Link} to="/dangerous"><Icon name="warning sign"/>Marked as dangerous</Dropdown.Item>}
               <Dropdown.Divider />
               <Dropdown.Item as={Link} to="/weather"><Icon name="sun"/>Weather map</Dropdown.Item>
-              <Dropdown.Item as={Link} to="/dangerous"><Icon name="warning sign"/>Marked as dangerous</Dropdown.Item>
-              <Dropdown.Divider />
               <Dropdown.Item as={Link} to="/about"><Icon name="info"/>About</Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
