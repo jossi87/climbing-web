@@ -234,9 +234,9 @@ const Sector = () => {
         </Table.Body>
       </Table>
       <ProblemList isSectorNotUser={true} preferOrderByGrade={data.orderByGrade}
-        rows={data.problems.map(p => {
+        rows={data.problems.map((p, i) => {
           return ({
-            element: <SectorListItem problem={p} isClimbing={data.metadata.gradeSystem==='CLIMBING'} />,
+            element: <SectorListItem key={i} problem={p} isClimbing={data.metadata.gradeSystem==='CLIMBING'} />,
             name: p.name, nr: p.nr, gradeNumber: p.gradeNumber, stars: p.stars,
             numTicks: p.numTicks, ticked: p.ticked,
             rock: p.rock, subType: p.t.subType,

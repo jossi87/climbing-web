@@ -13,8 +13,8 @@ const ProfileSettings = ({accessToken, userRegions}) => {
         if (ur.enabled && ur.readOnly) {
           return (
             <Label color="blue" key={ur.id} active={false} size="mini">
-            {ur.name}
-            <Label.Detail>{ur.role? ur.role : "Current site"}</Label.Detail>
+              {ur.name}
+              <Label.Detail>{ur.role? ur.role : "Current site"}</Label.Detail>
             </Label>
           );
         } else if (ur.enabled && !ur.readOnly) {
@@ -29,8 +29,8 @@ const ProfileSettings = ({accessToken, userRegions}) => {
                 alert(error.toString());
               });
             }}>
-            {ur.name}
-            <Icon name='delete' />
+              {ur.name}
+              <Icon name='delete' />
             </Label>
           );
         } else {
@@ -45,7 +45,7 @@ const ProfileSettings = ({accessToken, userRegions}) => {
                 alert(error.toString());
               });
             }}>
-            <Icon name='add' />
+              <Icon name='add' />
               {ur.name}
             </Label>
           );

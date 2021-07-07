@@ -151,7 +151,7 @@ const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[
             <Step.Content>
               <Step.Title>Group by {GroupBy[groupByTitle]}</Step.Title>
               <Step.Description>
-                <Checkbox toggle active checked={groupBy} onClick={() => setGroupBy(!groupBy)} />
+                <Checkbox toggle checked={groupBy} onClick={() => setGroupBy(!groupBy)} />
               </Step.Description>
             </Step.Content>
           </Step>
@@ -161,7 +161,7 @@ const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[
             <Step.Content>
               <Step.Title>Hide ticked</Step.Title>
               <Step.Description>
-                <Checkbox toggle active checked={hideTicked} onClick={() => setHideTicked(!hideTicked)} />
+                <Checkbox toggle checked={hideTicked} onClick={() => setHideTicked(!hideTicked)} />
               </Step.Description>
             </Step.Content>
           </Step>
@@ -171,7 +171,7 @@ const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[
             <Step.Content>
               <Step.Title>Only FA</Step.Title>
               <Step.Description>
-                <Checkbox toggle active checked={onlyFa} onClick={() => setOnlyFa(!onlyFa)} />
+                <Checkbox toggle checked={onlyFa} onClick={() => setOnlyFa(!onlyFa)} />
               </Step.Description>
             </Step.Content>
           </Step>

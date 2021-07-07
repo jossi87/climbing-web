@@ -72,9 +72,9 @@ const ProfileStatistics = ({ accessToken, userId, canDownload }) => {
       </Segment>
       {data.ticks.length>0 &&
         <ProblemList isSectorNotUser={false} preferOrderByGrade={data.orderByGrade}
-          rows={data.ticks.map(t => {
+          rows={data.ticks.map((t, key) => {
             return ({
-              element: <TickListItem tick={t} />,
+              element: <TickListItem key={key} tick={t} />,
               areaName: t.areaName, sectorName: t.sectorName,
               name: t.name, nr: null, gradeNumber: t.gradeNumber, stars: t.stars,
               numTicks: null, ticked: null,

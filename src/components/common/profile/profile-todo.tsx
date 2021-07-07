@@ -48,35 +48,35 @@ const ProfileTodo = ({accessToken, userId, defaultCenter, defaultZoom}) => {
             rocks={null}
         />
         <List celled>
-            {data.areas.map((area, i) => (
+          {data.areas.map((area, i) => (
             <List.Item key={i}>
-                <List.Header><Link id={area.id} to={{pathname: area.url}} target='_blank'>{area.name}</Link><LockSymbol lockedAdmin={area.lockedAdmin} lockedSuperadmin={area.lockedSuperadmin} /></List.Header>
-                {area.sectors.map((sector, i) => (
+              <List.Header><Link id={area.id} to={{pathname: area.url}} target='_blank'>{area.name}</Link><LockSymbol lockedAdmin={area.lockedAdmin} lockedSuperadmin={area.lockedSuperadmin} /></List.Header>
+              {area.sectors.map((sector, i) => (
                 <List.List key={i}>
-                    <List.Header><Link to={{pathname: sector.url}} target='_blank'>{sector.name}</Link><LockSymbol lockedAdmin={sector.lockedAdmin} lockedSuperadmin={sector.lockedSuperadmin} /></List.Header>
-                    <List.List>
+                  <List.Header><Link to={{pathname: sector.url}} target='_blank'>{sector.name}</Link><LockSymbol lockedAdmin={sector.lockedAdmin} lockedSuperadmin={sector.lockedSuperadmin} /></List.Header>
+                  <List.List>
                     {sector.problems.map((problem, i) => (
-                    <List.Item key={i}>
+                      <List.Item key={i}>
                         <List.Header>
-                        {`#${problem.nr} `}
-                        <Link to={{pathname: problem.url}} target='_blank'>{problem.name}</Link>
-                        {' '}{problem.grade}
-                        {problem.partners && problem.partners.length>0 &&
+                          {`#${problem.nr} `}
+                          <Link to={{pathname: problem.url}} target='_blank'>{problem.name}</Link>
+                          {' '}{problem.grade}
+                          {problem.partners && problem.partners.length>0 &&
                             <small>
-                            <i style={{color: "gray"}}>
+                              <i style={{color: "gray"}}>
                                 {problem.partners.map((u, i) => <>{i===0? ' Other users: ' : ', '}<Link key={i} to={`/user/${u.id}/todo`}>{u.name}</Link></>)}
-                            </i>
+                              </i>
                             </small>
-                        }
-                        <LockSymbol lockedAdmin={problem.lockedAdmin} lockedSuperadmin={problem.lockedSuperadmin} />
+                          }
+                          <LockSymbol lockedAdmin={problem.lockedAdmin} lockedSuperadmin={problem.lockedSuperadmin} />
                         </List.Header>
-                    </List.Item>
+                      </List.Item>
                     ))}
-                    </List.List>
                 </List.List>
-                ))}
+              </List.List>
+              ))}
             </List.Item>
-            ))}
+          ))}
         </List>
         </>
         :

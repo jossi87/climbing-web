@@ -21,7 +21,7 @@ const Profile = () => {
   let { userId, page } = useParams<ProfileParams>();
   let history = useHistory();
   const { loading, isAuthenticated, accessToken } = useAuth0();
-  const [activePage, setActivePage] = useState(page? page : Page.user);
+  const [activePage, setActivePage] = useState(page? Page[page] : Page.user);
   const [profile, setProfile] = useState(null);
   useEffect(() => {
     if (!loading) {
