@@ -16,6 +16,9 @@ const ProfileMedia = ({accessToken, userId, gradeSystem}) => {
   if (!data) {
     return <LoadingAndRestoreScroll />;
   }
+  else if (data.length === 0) {
+    return <Segment>Empty list.</Segment>;
+  }
 
   return (
     <Segment>

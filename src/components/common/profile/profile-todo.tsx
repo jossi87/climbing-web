@@ -28,10 +28,12 @@ const ProfileTodo = ({accessToken, userId, defaultCenter, defaultZoom}) => {
       })
     })
   })
+  if (data.areas.length===0) {
+    return <Segment>Empty list.</Segment>;
+  }
   return (
     <Segment>
-      {data.areas.length>0?
-        <>
+      <>
         <Leaflet
             key={"todo="+userId} 
             autoZoom={true}
@@ -78,10 +80,7 @@ const ProfileTodo = ({accessToken, userId, defaultCenter, defaultZoom}) => {
             </List.Item>
           ))}
         </List>
-        </>
-        :
-        <i>Empty list</i>
-      }
+      </>
     </Segment>
   );
 }
