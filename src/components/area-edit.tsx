@@ -165,7 +165,7 @@ const AreaEdit = () => {
             }
           }}>Cancel</Button>
           <Button.Or />
-          <Button positive loading={saving} onClick={save} disabled={!data.name}>Save area</Button>
+          <Form.Field control={Button} positive loading={saving} onClick={save} disabled={!data.name}>Save area</Form.Field>
         </Button.Group>
       </Form>
     </>
