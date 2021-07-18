@@ -94,7 +94,7 @@ const AreaEdit = () => {
         size="tiny"
         content={<><Icon name="info"/>Contact <a href='mailto:jostein.oygarden@gmail.com'>Jostein Øygarden</a> if you want to split area.</>}
       />
-      <Form>
+      <Form onSubmit={save}>
         <Segment>
           <Form.Group widths='equal'>
             <Form.Field
@@ -165,7 +165,7 @@ const AreaEdit = () => {
             }
           }}>Cancel</Button>
           <Button.Or />
-          <Form.Field control={Button} positive loading={saving} onClick={save} disabled={!data.name}>Save area</Form.Field>
+          <Form.Button positive loading={saving} disabled={!data.name} content='Save area' />
         </Button.Group>
       </Form>
     </>
