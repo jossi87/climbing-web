@@ -45,7 +45,6 @@ const AreaEdit = () => {
   }
 
   function save(event) {
-    event.preventDefault();
     const trash = data.trash? true : false;
     if (!trash || confirm("Are you sure you want to move area to trash?")) {
       setSaving(true);
