@@ -508,6 +508,15 @@ export function getToc(accessToken: string): Promise<any> {
   });
 }
 
+export function getTop(idArea: number, idSector: number): Promise<any> {
+  return makeAuthenticatedRequest(null, `/top?idArea=${idArea}&idSector=${idSector}`, null)
+  .then((data) => data.json())
+  .catch((error) => {
+    console.warn(error);
+    return null;
+  });
+}
+
 export function getTocXlsx(accessToken: string): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/toc/xlsx`, {
     expose:  ['Content-Disposition']

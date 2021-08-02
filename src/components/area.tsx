@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link, useParams, useHistory } from 'react-router-dom';
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
+import Top from './common/top/top';
 import Activity from './common/activity/activity';
 import Leaflet from './common/leaflet/leaflet';
 import { calculateDistance } from './common/leaflet/distance-math';
@@ -87,6 +88,10 @@ const Area = () => {
     panes.push({
       menuItem: { key: 'distribution', icon: 'area graph' },
       render: () => <Tab.Pane><ChartGradeDistribution accessToken={accessToken} idArea={data.id} idSector={0}/></Tab.Pane>
+    });
+    panes.push({
+      menuItem: { key: 'top', icon: 'trophy' },
+      render: () => <Tab.Pane><Top idArea={data.id} idSector={0}/></Tab.Pane>
     });
     panes.push({
       menuItem: { key: 'activity', icon: 'time' },

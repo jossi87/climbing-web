@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import MetaTags from 'react-meta-tags';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
-import { Header, Image, Menu, Icon, Segment } from 'semantic-ui-react';
+import { Header, Image, Menu, Icon } from 'semantic-ui-react';
 import { getProfile } from '../api';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import ProfileStatistics from './common/profile/profile-statistics';

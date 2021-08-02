@@ -3,6 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { Link, useParams, useHistory } from 'react-router-dom';
 import ProblemList from './common/problem-list/problem-list';
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
+import Top from './common/top/top';
 import Activity from './common/activity/activity';
 import Leaflet from './common/leaflet/leaflet';
 import { calculateDistance } from './common/leaflet/distance-math';
@@ -128,6 +129,10 @@ const Sector = () => {
     panes.push({
       menuItem: { key: 'distribution', icon: 'area graph' },
       render: () => <Tab.Pane><ChartGradeDistribution accessToken={accessToken} idArea={0} idSector={data.id}/></Tab.Pane>
+    });
+    panes.push({
+      menuItem: { key: 'top', icon: 'trophy' },
+      render: () => <Tab.Pane><Top idArea={0} idSector={data.id}/></Tab.Pane>
     });
     panes.push({
       menuItem: { key: 'activity', icon: 'time' },
