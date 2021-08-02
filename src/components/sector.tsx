@@ -18,7 +18,6 @@ interface SectorIdParams {
   sectorId: string;
 }
 const SectorListItem = ({ problem, isClimbing }) => {
-  let fa = problem.fa;
   let type = isClimbing? problem.t.subType + (problem.numPitches>1? ", " + problem.numPitches + " pitches" : "") : null;
   let ascents = problem.numTicks && problem.numTicks + (problem.numTicks==1? " ascent" : " ascents");
   let faTypeAscents = problem.fa;

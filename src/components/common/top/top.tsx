@@ -18,22 +18,21 @@ const Top = ({idArea, idSector}) => {
   }
   const rows = top.map((t, i) =>
     <Table.Row key={i}>
+      <Table.Cell>#{t.rank}</Table.Cell>
       <Table.Cell>
         <Header as='h4' image>
-          <Image src={t.picture} rounded size='mini' />
-          <Header.Content as={Link} to={`/user/${t.userId}`}>
-            {t.name}
-            <Header.Subheader>#{t.rank}</Header.Subheader>
-          </Header.Content>
+          <Image src={t.picture} circular size='tiny' />
+          <Header.Content as={Link} to={`/user/${t.userId}`}>{t.name}</Header.Content>
         </Header>
       </Table.Cell>
       <Table.Cell>{t.percentage}%</Table.Cell>
     </Table.Row>
   );
   return (
-    <Table basic='very' size="small" celled collapsing unstackable>
+    <Table basic='very' size="small" celled collapsing unstackable compact>
       <Table.Header>
         <Table.Row>
+          <Table.HeaderCell>Rank</Table.HeaderCell>
           <Table.HeaderCell>Name</Table.HeaderCell>
           <Table.HeaderCell>Completed</Table.HeaderCell>
         </Table.Row>
