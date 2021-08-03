@@ -182,7 +182,7 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
             content = <Svg close={null} thumb={true} m={x} key={i} style={style} optProblemId={optProblemId}/>;
           }
           else {
-            content = <Image alt={x.description} key={i} style={style} src={getImageUrl(x.id, 205)} onError={i => i.target.src='/png/video_placeholder.png'} rounded />;
+            content = <Image alt={x.description} key={i} style={style} src={getImageUrl(x.id, x.crc32, 205)} onError={i => i.target.src='/png/video_placeholder.png'} rounded />;
           }
           return (
             <Card as="a" onClick={() => openModal(x, true)} key={i} raised style={{backgroundColor: "rgb(245, 245, 245)", border: (x.inherited? "1px solid black" : "1px solid rgb(245, 245, 245)")}}>

@@ -145,7 +145,7 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
             <feComposite in="SourceGraphic"/>
           </filter>
         </defs>
-        <image xlinkHref={getImageUrl(m.id, m.embedUrl)} width="100%" height="100%"/>
+        <image xlinkHref={getImageUrl(m.id, m.crc32, m.embedUrl)} width="100%" height="100%"/>
         {generateMediaSvgShapes(m.mediaSvgs)}
         {m.svgs &&
           <g key={optProblemId} className={thumb? "" : "buldreinfo-svg-sibling-fade"}>

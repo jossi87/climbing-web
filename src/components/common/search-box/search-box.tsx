@@ -34,10 +34,10 @@ const SearchBox = ({ children, ...searchProps} ) => {
         setValue(value);
       }}
       resultRenderer={(data) => {
-        let { mediaid, mediaurl, title, description, lockedadmin, lockedsuperadmin } = data;
+        let { mediaid, crc32, mediaurl, title, description, lockedadmin, lockedsuperadmin } = data;
         var imageSrc = null;
         if (mediaid > 0) {
-          imageSrc = getImageUrl(mediaid, 45);
+          imageSrc = getImageUrl(mediaid, crc32, 45);
         } else if (mediaurl) {
           imageSrc = mediaurl;
         }
@@ -59,6 +59,7 @@ const SearchBox = ({ children, ...searchProps} ) => {
         url: s.url,
         mediaid: s.mediaid,
         mediaurl: s.mediaurl,
+        crc32: s.crc32,
         title: s.title,
         description: s.description,
         lockedadmin: s.lockedadmin.toString(),

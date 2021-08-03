@@ -22,11 +22,12 @@ function makeAuthenticatedRequest(accessToken: string, urlSuffix: string, opts: 
   return fetch(getUrl(urlSuffix), opts);
 }
 
-export function getImageUrl(id: number, minDimention?: number): string {
+export function getImageUrl(id: number, checksum: number, minDimention?: number): string {
+  let crc32 = checksum || 0;
   if (minDimention) {
-    return getUrl(`/images?id=${id}&minDimention=${minDimention}`);
+    return getUrl(`/images?id=${id}&crc32=${crc32}&minDimention=${minDimention}`);
   }
-  return getUrl(`/images?id=${id}`);
+  return getUrl(`/images?id=${id}&crc32=${crc32}`);
 }
 
 export function getBuldreinfoMediaUrl(id: number, suffix: string): string {

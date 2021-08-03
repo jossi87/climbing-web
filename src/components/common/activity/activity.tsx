@@ -138,7 +138,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
               return (
                 <Feed.Event key={i}>
                   <Feed.Label>
-                    {a.problemRandomMediaId>0 && <img style={{height: '35px', objectFit: 'cover'}} src={getImageUrl(a.problemRandomMediaId, 35)} />}
+                    {a.problemRandomMediaId>0 && <img style={{height: '35px', objectFit: 'cover'}} src={getImageUrl(a.problemRandomMediaId, a.problemRandomMediaCrc32, 35)} />}
                   </Feed.Label>
                   <Feed.Content>
                     <Feed.Summary>
@@ -150,7 +150,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
                     {a.media &&
                       <LazyLoad>
                         <Feed.Extra images as={Link} to={`/problem/${a.problemId}`}>
-                          {a.media.map((m, i) => (<Image key={i} style={imgStyle} src={getImageUrl(m.id, 85)}/>))}
+                          {a.media.map((m, i) => (<Image key={i} style={imgStyle} src={getImageUrl(m.id, m.crc32, 85)}/>))}
                         </Feed.Extra>
                         <br/>
                       </LazyLoad>
@@ -185,7 +185,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
                     {a.media &&
                       <LazyLoad>
                         <Feed.Extra images as={Link} to={`/problem/${a.problemId}`}>
-                          {a.media.map((m, i) => (<Image key={i} style={imgStyle} src={getImageUrl(m.id, 85)}/>))}
+                          {a.media.map((m, i) => (<Image key={i} style={imgStyle} src={getImageUrl(m.id, m.crc32, 85)}/>))}
                         </Feed.Extra>
                         <br/>
                       </LazyLoad>
@@ -211,7 +211,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
               return (
                 <Feed.Event key={i}>
                   <Feed.Label>
-                    {a.problemRandomMediaId>0 && <img style={{height: '35px', objectFit: 'cover'}} src={getImageUrl(a.problemRandomMediaId, 35)} />}
+                    {a.problemRandomMediaId>0 && <img style={{height: '35px', objectFit: 'cover'}} src={getImageUrl(a.problemRandomMediaId, a.problemRandomMediaCrc32, 35)} />}
                   </Feed.Label>
                   <Feed.Content>
                     <Feed.Summary style={{marginBottom: '3px'}}>
@@ -219,7 +219,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
                     </Feed.Summary>
                     <LazyLoad>
                       <Feed.Extra images as={Link} to={`/problem/${a.problemId}`}>
-                        {a.media.map((m, i) => (<Image key={i} style={imgStyle} src={getImageUrl(m.id, 85)} onError={i => i.target.src='/png/video_placeholder.png'} />))}
+                        {a.media.map((m, i) => (<Image key={i} style={imgStyle} src={getImageUrl(m.id, m.crc32, 85)} onError={i => i.target.src='/png/video_placeholder.png'} />))}
                       </Feed.Extra>
                     </LazyLoad>
                   </Feed.Content>

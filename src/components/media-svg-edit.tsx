@@ -355,7 +355,7 @@ const SvgEdit = () => {
         )}
       </Segment>
       <svg viewBox={"0 0 " + data.m.width + " " + data.m.height} onClick={handleOnClick} onMouseMove={handleMouseMove} width="100%" height="100%">
-        <image ref={imageRef} xlinkHref={getImageUrl(data.m.id, null)} width="100%" height="100%"/>
+        <image ref={imageRef} xlinkHref={getImageUrl(data.m.id, data.m.crc32, null)} width="100%" height="100%"/>
         {activeElementIndex>=0 && data.m.mediaSvgs[activeElementIndex] && <path style={{fill: "none", stroke: "#FF0000"}} d={data.m.mediaSvgs[activeElementIndex].path} strokeWidth={0.002*data.m.width}/>}
         {circles}
         {activeRappel}

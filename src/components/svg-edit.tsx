@@ -12,6 +12,7 @@ interface ProblemIdMediaIdParams {
 const SvgEdit = () => {
   const { accessToken, isAuthenticated, loading, loginWithRedirect } = useAuth0();
   const [mediaId, setMediaId] = useState(null);
+  const [crc32, setCrc32] = useState(null);
   const [w, setW] = useState(null);
   const [h, setH] = useState(null);
   const [ctrl, setCtrl] = useState(false);
@@ -41,6 +42,7 @@ const SvgEdit = () => {
     if (problemIdMediaId && accessToken) {
       getSvgEdit(accessToken, problemIdMediaId).then((data) => {
         setMediaId(data.mediaId);
+        setCrc32(data.crc32);
         setW(data.w);
         setH(data.h);
         setCtrl(data.ctrl);
@@ -363,7 +365,7 @@ const SvgEdit = () => {
         {activePoint !== 0 && <Button disabled={activePoint===0} onClick={removeActivePoint}>Remove this point</Button>}
       </Segment>
       <svg viewBox={"0 0 " + w + " " + h} onClick={handleOnClick} onMouseMove={handleMouseMove} width="100%" height="100%">
-        <image ref={imageRef} xlinkHref={getImageUrl(mediaId, null)} width="100%" height="100%"/>
+        <image ref={imageRef} xlinkHref={getImageUrl(mediaId, crc32, null)} width="100%" height="100%"/>
         {parseReadOnlySvgs(readOnlySvgs, w, h, minWindowScale)}
         <path style={{fill: "none", stroke: black}} d={path} strokeWidth={0.003*w}/>
         <path style={{fill: "none", stroke: "#FF0000"}} d={path} strokeWidth={0.002*w}/>
