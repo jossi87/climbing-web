@@ -701,6 +701,12 @@ export function postUserRegion(accessToken: string, regionId: number, del: boole
   });
 }
 
+export function putMediaJpegRotate(accessToken: string, idMedia: number, degrees: number): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/media/jpeg/rotate?idMedia=${idMedia}&degrees=${degrees}`, {
+    method: 'PUT'
+  });
+}
+
 export function putTrash(accessToken: string, idArea: number, idSector: number, idProblem: number): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/trash?idArea=${idArea}&idSector=${idSector}&idProblem=${idProblem}`, {
     method: 'PUT'

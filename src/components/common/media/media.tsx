@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import LazyLoad from 'react-lazyload';
 import { useHistory } from 'react-router-dom';
-import { getImageUrl, deleteMedia, moveMedia } from '../../../api';
+import { getImageUrl, deleteMedia, moveMedia, putMediaJpegRotate } from '../../../api';
 import { Card, Image } from 'semantic-ui-react';
 import MediaModal from './media-modal';
 import Svg from './svg';
@@ -80,6 +80,19 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
     }
   }
 
+  function onRotate(degrees) {
+    if (confirm('Are you sure you want to rotate this image ' + degrees + ' degrees?')) {
+      putMediaJpegRotate(accessToken, m.id, degrees)
+      .then((response) => {
+        closeModal();
+        window.location.reload();
+      })
+      .catch ((error) => {
+        console.warn(error);
+      });
+    }
+  }
+
   function onMoveImageLeft() {
     moveMedia(accessToken, m.id, true, 0, 0)
     .then((response) => {
@@ -149,6 +162,7 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
           m={m}
           autoPlayVideo={autoPlayVideo}
           onDelete={onDeleteImage}
+          onRotate={onRotate}
           onMoveImageLeft={onMoveImageLeft}
           onMoveImageRight={onMoveImageRight}
           onMoveImageToProblem={onMoveImageToProblem}

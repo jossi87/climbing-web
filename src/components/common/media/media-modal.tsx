@@ -51,7 +51,7 @@ const style = {
   },
 }
 
-const MediaModal = ({ isAdmin, onClose, onDelete, onMoveImageLeft, onMoveImageRight, onMoveImageToSector, onMoveImageToProblem, m, length, gotoPrev, gotoNext, playVideo, autoPlayVideo, optProblemId, isBouldering }) => {
+const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onMoveImageRight, onMoveImageToSector, onMoveImageToProblem, m, length, gotoPrev, gotoNext, playVideo, autoPlayVideo, optProblemId, isBouldering }) => {
   let history = useHistory();
   let myPlayer;
   let content;
@@ -86,6 +86,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onMoveImageLeft, onMoveImageRi
   }
 
   const canDelete = isAdmin && m.idType===1 && !m.svgs;
+  const canRotate = false; // TODO Not activated, how to ensure browser updates cached image?
   const canDrawTopo = isAdmin && m.idType===1 && optProblemId;
   const canDrawMedia = isAdmin && m.idType===1 && !isBouldering;
   const canOrder = isAdmin && m.idType===1 && length>1;
@@ -93,7 +94,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onMoveImageLeft, onMoveImageRi
   return (
     <Dimmer active={true} onClickOutside={onClose} page>
       <ButtonGroup secondary size="small" style={style.actions}>
-        {(canDelete || canDrawTopo || canDrawMedia || canOrder ) && (
+        {(canDelete || canRotate || canDrawTopo || canDrawMedia || canOrder ) && (
           <Dropdown direction='left' icon='bars' button>
             <Dropdown.Menu>
               {canDrawTopo && <Dropdown.Item icon="paint brush" text="Draw topo line" onClick={() => history.push(`/problem/svg-edit/${optProblemId}-${m.id}`)} />}
@@ -102,7 +103,10 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onMoveImageLeft, onMoveImageRi
               {canOrder && <Dropdown.Item icon="arrow right" text="Move image to the right" onClick={onMoveImageRight} />}
               {canMove && m.enableMoveToIdSector && <Dropdown.Item icon="move" text={"Move image from " + (isBouldering? "problem" : "route") + " to sector"} onClick={onMoveImageToSector} />}
               {canMove && m.enableMoveToIdProblem && <Dropdown.Item icon="move" text={"Move image from sector to this " + (isBouldering? "problem" : "route")} onClick={onMoveImageToProblem} />}
-              {(canDrawTopo || canDrawMedia || canOrder) && canDelete && <Dropdown.Divider />}
+              {(canDrawTopo || canDrawMedia || canOrder) && (canRotate || canDelete) && <Dropdown.Divider />}
+              {canRotate && <Dropdown.Item icon="exchange" text="Rotate 90 degrees" onClick={() => onRotate(90)} />}
+              {canRotate && <Dropdown.Item icon="exchange" text="Rotate 180 degrees" onClick={() => onRotate(180)} />}
+              {canRotate && <Dropdown.Item icon="exchange" text="Rotate 270 degrees" onClick={() => onRotate(270)} />}
               {canDelete && <Dropdown.Item icon="trash" text="Delete image" onClick={onDelete} />}
             </Dropdown.Menu>
           </Dropdown>
