@@ -103,9 +103,9 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
               {canMove && m.enableMoveToIdSector && <Dropdown.Item icon="move" text={"Move image from " + (isBouldering? "problem" : "route") + " to sector"} onClick={onMoveImageToSector} />}
               {canMove && m.enableMoveToIdProblem && <Dropdown.Item icon="move" text={"Move image from sector to this " + (isBouldering? "problem" : "route")} onClick={onMoveImageToProblem} />}
               {(canDrawTopo || canDrawMedia || canOrder) && canCrud && <Dropdown.Divider />}
-              {canCrud && <Dropdown.Item icon="exchange" text="Rotate 90 degrees" onClick={() => onRotate(90)} />}
-              {canCrud && <Dropdown.Item icon="exchange" text="Rotate 180 degrees" onClick={() => onRotate(180)} />}
-              {canCrud && <Dropdown.Item icon="exchange" text="Rotate 270 degrees" onClick={() => onRotate(270)} />}
+              {canCrud && <Dropdown.Item icon="redo" text="Rotate 90 degrees CW" onClick={() => onRotate(90)} />}
+              {canCrud && <Dropdown.Item icon="undo" text="Rotate 90 degrees CCW" onClick={() => onRotate(270)} />}
+              {canCrud && <Dropdown.Item icon="sync" text="Rotate 180 degrees" onClick={() => onRotate(180)} />}
               {canCrud && <Dropdown.Item icon="trash" text="Delete image" onClick={onDelete} />}
             </Dropdown.Menu>
           </Dropdown>
