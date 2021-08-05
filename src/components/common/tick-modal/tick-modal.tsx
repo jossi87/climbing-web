@@ -30,14 +30,21 @@ const TickModal = ({ open, onClose, accessToken, idTick, idProblem, grades, comm
     value={date && convertFromStringToDate(date)}
   />
 
+  const today = new Date();
+  const invalidDate = date && convertFromStringToDate(date) > today;
+
   return (
     <Modal open={open} onClose={onClose}>
       <Modal.Header>Tick</Modal.Header>
       <Modal.Content>
         <Modal.Description>
           <Form>
-            <Form.Field>
-              <label>Date</label>
+            <Form.Field error={invalidDate}>
+              {invalidDate?
+                <label style={{color: 'red'}}>Date (date has not been yet)</label>
+              :
+                <label>Date</label>
+              }
               {dayPicker}<br/>
               <Button.Group>
                 <Button onClick={() => setDate(convertDateToString(yesterday))}>Yesterday</Button>
@@ -103,7 +110,7 @@ const TickModal = ({ open, onClose, accessToken, idTick, idProblem, grades, comm
           }
           <Button
             positive
-            disabled={stars === null}
+            disabled={stars === null || invalidDate}
             icon='checkmark'
             labelPosition='right'
             content="Save"
