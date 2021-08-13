@@ -5,7 +5,6 @@ import { Auth0Provider } from './utils/react-auth0-spa';
 import CookieConsent from "react-cookie-consent";
 import { ErrorBoundary } from 'react-error-boundary'
 import App from './app';
-import 'semantic-ui-css/semantic.min.css';
 import './buldreinfo.css';
 
 function getBrowser() {

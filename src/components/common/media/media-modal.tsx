@@ -226,12 +226,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
                   <List.Item>
                     <List.Header>Other symbols:</List.Header>
                     <List bulleted>
-                      <List.Item>
-                        <List.Content>
-                          <List.Header><svg width="100" height="24">{Descent({path: 'M 0 10 C 100 10 0 0 200 20', whiteNotBlack: false, scale: 1000, thumb: false, key: 'descent'})}</svg></List.Header>
-                          <List.Description>Descent</List.Description>
-                        </List.Content>
-                      </List.Item>
+                      
                       <List.Item>
                         <List.Content>
                           <List.Header><svg width="20" height="24">{Rappel({x: 8, y: 8, bolted: true, scale: 1000, thumb: false, stroke: "black", key: 'bolted-rappel'})}</svg></List.Header>

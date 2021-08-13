@@ -7,7 +7,7 @@ export function Descent({path, whiteNotBlack, scale, thumb, key}) {
   const deltaPercent = (scale/properties.getTotalLength())*(thumb? 3 : 2);
   let texts = [];
   for (var i = 0; i <= 100; i+=deltaPercent) {
-    texts.push(<textPath xlinkHref={"#descent" + key} startOffset={i+"%"}>➤</textPath>);
+    texts.push(<textPath key={i} xlinkHref={"#descent" + key} startOffset={i+"%"}>➤</textPath>);
   }
   const fontSize = 0.012*scale*(thumb? 2 : 1);
   return (
