@@ -334,8 +334,8 @@ export function getProfile(accessToken: string, id: number): Promise<any> {
   });
 }
 
-export function getProfileMedia(accessToken: string, id: number): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/profile/media?id=${id}`, null)
+export function getProfileMedia(accessToken: string, id: number, captured: boolean): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/profile/media?id=${id}&captured=${captured}`, null)
   .then((data) => data.json())
   .catch((error) => {
     console.warn(error);

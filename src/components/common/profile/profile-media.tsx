@@ -4,14 +4,14 @@ import { Segment } from 'semantic-ui-react';
 import { getProfileMedia } from '../../../api';
 import Media from '../../common/media/media';
 
-const ProfileMedia = ({accessToken, userId, gradeSystem}) => {
+const ProfileMedia = ({accessToken, userId, gradeSystem, captured}) => {
   const [data, setData] = useState(null);
   useEffect(() => {
     if (data != null) {
       setData(null);
     }
-    getProfileMedia(accessToken, userId).then((data) => setData(data));
-  }, [accessToken, userId]);
+    getProfileMedia(accessToken, userId, captured).then((data) => setData(data));
+  }, [accessToken, userId, captured]);
 
   if (!data) {
     return <LoadingAndRestoreScroll />;

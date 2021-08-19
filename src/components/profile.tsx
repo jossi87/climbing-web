@@ -11,7 +11,7 @@ import ProfileMedia from './common/profile/profile-media';
 import ProfileSettings from './common/profile/profile-settings';
 
 enum Page {
-  user, todo, media, settings
+  user, todo, media, captured, settings
 }
 interface ProfileParams {
   userId: string;
@@ -49,7 +49,9 @@ const Profile = () => {
   } else if (activePage === Page.todo) {
     content = <ProfileTodo accessToken={accessToken} userId={profile.id} defaultCenter={profile.metadata.defaultCenter} defaultZoom={profile.metadata.defaultZoom} />
   } else if (activePage === Page.media) {
-    content = <ProfileMedia accessToken={accessToken} userId={profile.id} gradeSystem={profile.metadata.gradeSystem} />
+    content = <ProfileMedia accessToken={accessToken} userId={profile.id} gradeSystem={profile.metadata.gradeSystem} captured={false} />
+  } else if (activePage === Page.captured) {
+    content = <ProfileMedia accessToken={accessToken} userId={profile.id} gradeSystem={profile.metadata.gradeSystem} captured={true} />
   } else if (activePage === Page.settings) {
     content = <ProfileSettings accessToken={accessToken} userRegions={profile.userRegions} />
   }
@@ -90,6 +92,10 @@ const Profile = () => {
         <Menu.Item name={Page[Page.media]} active={activePage === Page.media} onClick={() => onPageChanged(Page.media)}>
           <Icon name='images' />
           Media
+        </Menu.Item>
+        <Menu.Item name={Page[Page.captured]} active={activePage === Page.captured} onClick={() => onPageChanged(Page.captured)}>
+          <Icon name='photo' />
+          Captured
         </Menu.Item>
         {isAuthenticated && loggedInProfile &&
           <Menu.Item name={Page[Page.settings]} active={activePage === Page.settings} onClick={() => onPageChanged(Page.settings)}>
