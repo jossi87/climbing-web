@@ -87,7 +87,7 @@ const Area = () => {
   if (data.sectors.length!=0) {
     panes.push({
       menuItem: { key: 'distribution', icon: 'area graph' },
-      render: () => <Tab.Pane><ChartGradeDistribution accessToken={accessToken} idArea={data.id} idSector={0}/></Tab.Pane>
+      render: () => <Tab.Pane><ChartGradeDistribution accessToken={accessToken} idArea={data.id} idSector={0} data={null}/></Tab.Pane>
     });
     panes.push({
       menuItem: { key: 'top', icon: 'trophy' },

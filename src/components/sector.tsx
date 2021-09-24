@@ -127,7 +127,7 @@ const Sector = () => {
   if (data.problems.length!=0) {
     panes.push({
       menuItem: { key: 'distribution', icon: 'area graph' },
-      render: () => <Tab.Pane><ChartGradeDistribution accessToken={accessToken} idArea={0} idSector={data.id}/></Tab.Pane>
+      render: () => <Tab.Pane><ChartGradeDistribution accessToken={accessToken} idArea={0} idSector={data.id} data={null}/></Tab.Pane>
     });
     panes.push({
       menuItem: { key: 'top', icon: 'trophy' },

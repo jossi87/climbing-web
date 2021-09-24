@@ -23,6 +23,7 @@ const Sites = lazy(() => import(/* webpackChunkName: "sites" */'./components/sit
 const SvgEdit = lazy(() => import(/* webpackChunkName: "svg-edit" */'./components/svg-edit'));
 const Ticks = lazy(() => import(/* webpackChunkName: "ticks" */'./components/ticks'));
 const Toc = lazy(() => import(/* webpackChunkName: "toc" */'./components/toc'));
+const ContentGraph = lazy(() => import(/* webpackChunkName: "cg" */'./components/content-graph'));
 const Trash = lazy(() => import(/* webpackChunkName: "trash" */'./components/trash'));
 const Permissions = lazy(() => import(/* webpackChunkName: "permissions" */'./components/permissions'));
 const Weather = lazy(() => import(/* webpackChunkName: "weather" */'./components/weather'));
@@ -75,6 +76,7 @@ const App = () => {
                 <Route exact path='/sector/edit/:areaIdSectorId'><SectorEdit/></Route>
                 <Route path='/ticks/:page'><Ticks/></Route>
                 <Route exact path='/toc'><Toc/></Route>
+                <Route exact path='/cg'><ContentGraph/></Route>
                 <Route exact path='/trash'><Trash/></Route>
                 <Route exact path='/user'><Profile/></Route>
                 <Route exact path='/user/:userId'><Profile/></Route>

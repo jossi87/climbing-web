@@ -3,13 +3,15 @@ import { LoadingAndRestoreScroll } from '../widgets/widgets';
 import { Popup, Table } from 'semantic-ui-react'
 import { getGradeDistribution } from './../../../api';
 
-const ChartGradeDistribution = ({accessToken, idArea, idSector}) => {
-  const [gradeDistribution, setGradeDistribution] = useState([]);
+const ChartGradeDistribution = ({accessToken, idArea, idSector, data}) => {
+  const [gradeDistribution, setGradeDistribution] = useState(data? data : []);
 
   useEffect(() => {
-    getGradeDistribution(accessToken, idArea, idSector).then((res) => {
-      setGradeDistribution(res);
-    });
+    if (idArea > 0 || idSector > 0) {
+      getGradeDistribution(accessToken, idArea, idSector).then((res) => {
+        setGradeDistribution(res);
+      });
+    }
   }, [accessToken, idArea, idSector]);
 
   if (!gradeDistribution) {

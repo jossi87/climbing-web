@@ -163,6 +163,15 @@ export function getCameras(): Promise<any> {
   });
 }
 
+export function getCg(accessToken: string): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/cg`, null)
+  .then((data) => data.json())
+  .catch((error) => {
+    console.warn(error);
+    return null;
+  });
+}
+
 export function getDangerous(accessToken: string): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/dangerous`, null)
   .then((data) => data.json())

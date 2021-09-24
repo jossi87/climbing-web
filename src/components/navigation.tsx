@@ -28,6 +28,8 @@ const Navigation = () => {
           <Dropdown.Menu>
               <Dropdown.Item as={Link} to="/browse"><Icon name="list"/>Browse areas</Dropdown.Item>
               <Dropdown.Item as={Link} to="/toc"><Icon name="database"/>Table of Contents</Dropdown.Item>
+              <Dropdown.Item as={Link} to="/cg"><Icon name="area graph"/>Content Graph</Dropdown.Item>
+              <Dropdown.Divider />
               <Dropdown.Item as={Link} to="/filter"><Icon name="find"/>Filter</Dropdown.Item>
               {!isBouldering && <Dropdown.Item as={Link} to="/dangerous"><Icon name="warning sign"/>Marked as dangerous</Dropdown.Item>}
               <Dropdown.Divider />
