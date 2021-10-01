@@ -209,7 +209,7 @@ const Problem = () => {
                 <Comment.Metadata>{c.date}</Comment.Metadata>
                 <Comment.Text>
                   <Linkify componentDecorator={componentDecorator}>{c.message}</Linkify>
-                  {c.media && c.media.length>0 && <Media isAdmin={false} removeMedia={() => window.location.reload()} media={c.media} optProblemId={null} isBouldering={isBouldering} />}
+                  {c.media && c.media.length>0 && <Media isAdmin={data.metadata.isAdmin} removeMedia={() => window.location.reload()} media={c.media} optProblemId={null} isBouldering={isBouldering} />}
                 </Comment.Text>
                 {extra && <Comment.Actions>{extra}</Comment.Actions>}
               </Comment.Content>

@@ -93,7 +93,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
   return (
     <Dimmer active={true} onClickOutside={onClose} page>
       <ButtonGroup secondary size="small" style={style.actions}>
-        {(canCrud || canDrawTopo || canDrawMedia || canOrder ) && (
+        {(canCrud || canDrawTopo || canDrawMedia || canOrder || canMove ) && (
           <Dropdown direction='left' icon='bars' button>
             <Dropdown.Menu>
               {canDrawTopo && <Dropdown.Item icon="paint brush" text="Draw topo line" onClick={() => history.push(`/problem/svg-edit/${optProblemId}-${m.id}`)} />}
@@ -102,7 +102,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
               {canOrder && <Dropdown.Item icon="arrow right" text="Move image to the right" onClick={onMoveImageRight} />}
               {canMove && m.enableMoveToIdSector && <Dropdown.Item icon="move" text={"Move image from " + (isBouldering? "problem" : "route") + " to sector"} onClick={onMoveImageToSector} />}
               {canMove && m.enableMoveToIdProblem && <Dropdown.Item icon="move" text={"Move image from sector to this " + (isBouldering? "problem" : "route")} onClick={onMoveImageToProblem} />}
-              {(canDrawTopo || canDrawMedia || canOrder) && canCrud && <Dropdown.Divider />}
+              {(canDrawTopo || canDrawMedia || canOrder || canMove) && canCrud && <Dropdown.Divider />}
               {canCrud && <Dropdown.Item icon="redo" text="Rotate 90 degrees CW" onClick={() => onRotate(90)} />}
               {canCrud && <Dropdown.Item icon="undo" text="Rotate 90 degrees CCW" onClick={() => onRotate(270)} />}
               {canCrud && <Dropdown.Item icon="sync" text="Rotate 180 degrees" onClick={() => onRotate(180)} />}
