@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from 'react';
 import { Button, Icon, Container, Divider, Grid, Header, List, Segment } from 'semantic-ui-react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import Analytics from 'react-router-ga';
 import { LoadingAndRestoreScroll } from './components/common/widgets/widgets';
 
@@ -13,6 +13,7 @@ const Dangerous = lazy(() => import(/* webpackChunkName: "problem-hse" */'./comp
 const Frontpage = lazy(() => import(/* webpackPrefetch: true, webpackChunkName: "frontpage" */'./components/frontpage'));
 const Filter = lazy(() => import(/* webpackChunkName: "filter" */'./components/filter'));
 const MediaSvgEdit = lazy(() => import(/* webpackChunkName: "media-svg-edit" */'./components/media-svg-edit'));
+const PrivacyPolicy = lazy(() => import(/* webpackChunkName: "privacy-policy" */'./components/privacy-policy'));
 const Problem = lazy(() => import(/* webpackChunkName: "problem" */'./components/problem'));
 const ProblemEdit = lazy(() => import(/* webpackChunkName: "problem-edit" */'./components/problem-edit'));
 const ProblemEditMedia = lazy(() => import(/* webpackChunkName: "problem-edit-media" */'./components/problem-edit-media'));
@@ -67,6 +68,7 @@ const App = () => {
                 <Route path='/filter'><Filter/></Route>
                 <Route exact path='/media/svg-edit/:mediaId'><MediaSvgEdit/></Route>
                 <Route path='/permissions'><Permissions/></Route>
+                <Route path='/privacy-policy'><PrivacyPolicy/></Route>
                 <Route exact path='/problem/:problemId'><Problem/></Route>
                 <Route exact path='/problem/edit/:sectorIdProblemId'><ProblemEdit/></Route>
                 <Route exact path='/problem/edit/media/:problemId'><ProblemEditMedia/></Route>
@@ -141,6 +143,7 @@ const App = () => {
             <Divider inverted section />
             <List horizontal inverted divided link>
               <List.Item as='a' href={`mailto:jostein.oygarden@gmail.com?subject=${window.location.href}`}>Contact</List.Item>
+              <List.Item as={Link} to='/privacy-policy'>Privacy Policy</List.Item>
               <List.Item as='a' href='/gpl-3.0.txt' rel='noopener' target='_blank'>GNU Public License</List.Item>
             </List>
             <p>

@@ -72,13 +72,6 @@ const About = () => {
           <li>Use common sense!</li>
         </ul>
       </Segment>
-      <Segment>
-        <Header as="h3">
-          <Icon name='eye' />
-          <Header.Content>Privacy policy</Header.Content>
-        </Header>
-        We respect your privacy and handle your data with the care that we would expect our own data to be handled. We will never sell or pass on your information to any third party. You can delete any of your profile information at any time, <a href="mailto:jostein.oygarden@gmail.com">send us an e-mail</a> with the data you want to delete.
-      </Segment>
     </>
   );
 }
