@@ -3,6 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { Segment, Header, Icon, List } from 'semantic-ui-react';
 
 const PrivacyPolicy = () => {
+  window.scrollTo(0, 0);
   return (
     <>
       <MetaTags>
@@ -12,12 +13,13 @@ const PrivacyPolicy = () => {
         <meta property="og:description" content="Privacy Policy" />
       </MetaTags>
       <Segment>
-        <Header as="h3">
+        <Header as="h2">
           <Icon name='law' />
-          <Header.Content>Privacy Policy</Header.Content>
-          <Header.Subheader>This is a non-profit site. We publish your name but we keep your email address private. We do not send spam.</Header.Subheader>
+          <Header.Content>
+            Privacy Policy
+            <Header.Subheader>This is a non-profit site. We publish your name but we keep your email address private. We do not send spam.</Header.Subheader>
+          </Header.Content>
         </Header>
-
         <List ordered>
           <List.Item>
             <List.Header>Introduction</List.Header>
