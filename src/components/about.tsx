@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
-import { Grid, Segment, Header, Icon, List, Image } from 'semantic-ui-react';
+import { Grid, Segment, Header, Icon, List, Card, Image, Label } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { getAbout } from '../api';
@@ -49,32 +49,84 @@ const About = () => {
             <List bulleted>
               <List.Item>
                 2021-now: <a href="https://is.brattelinjer.no" rel='noopener' target='_blank'>is.brattelinjer.no</a>
-                <List.Description>Ice climbing guide, by Jostein Øygarden</List.Description>
+                <List.Description>
+                  Ice climbing guide, by Jostein Øygarden<br/>
+                  <Label size="mini" basic>
+                    <Icon name="camera" />
+                    <a href="/png/archive/20211012_is_brattelinjer.png" rel="noopener" target="_blank">Screenshot (2021.10.12)</a>
+                  </Label>
+                </List.Description>
               </List.Item>
               <List.Item>
                 2018-now: <a href="https://brattelinjer.no" rel='noopener' target='_blank'>brattelinjer.no</a>
-                <List.Description>Sport- and traditional climbing guide, by Jostein Øygarden</List.Description>
+                <List.Description>
+                  Sport- and traditional climbing guide, by Jostein Øygarden<br/>
+                  <Label size="mini" basic>
+                    <Icon name="camera" />
+                    <a href="/png/archive/20211012_brattelinjer.png" rel="noopener" target="_blank">Screenshot (2021.10.12)</a>
+                  </Label>
+                </List.Description>
               </List.Item>
               <List.Item>
                 2016-now: <a href="https://buldreinfo.com" rel='noopener' target='_blank'>buldreinfo.com</a>
-                <List.Description>Bouldering guide, by Jostein Øygarden</List.Description>
+                <List.Description>
+                  Bouldering guide, by Jostein Øygarden<br/>
+                  <Label size="mini" basic>
+                    <Icon name="camera" />
+                    <a href="/png/archive/20211012_buldreinfo.png" rel="noopener" target="_blank">Screenshot (2021.10.12)</a>
+                  </Label>
+                </List.Description>
               </List.Item>
               <List.Item>
                 2012-2016: <a href="https://buldreinfo.com" rel='noopener' target='_blank'>buldreinfo.com</a>
-                <List.Description>Bouldering guide, by Idar Ose</List.Description>
+                <List.Description>
+                  Bouldering guide, by Idar Ose<br/>
+                  <Label size="mini" basic>
+                    <Icon name="camera" />
+                    <a href="/png/archive/20160205_buldreinfo.png" rel="noopener" target="_blank">Screenshot (2016.02.05)</a>
+                    <Label.Detail as={Link} to="https://web.archive.org/web/20160205060357/http://www.buldreinfo.com/" target="_blank">source: archive.net</Label.Detail>
+                  </Label>
+                </List.Description>
               </List.Item>
               <List.Item>
                 2006-2012: <a href="https://buldreinfo.com" rel='noopener' target='_blank'>buldreinfo.com</a>
-                <List.Description>Bouldering guide, by Vegard Aksnes</List.Description>
+                <List.Description>
+                  Bouldering guide, by Vegard Aksnes<br/>
+                  <Label.Group size="mini">
+                    <Label size="mini" basic>
+                      <Icon name="camera" />
+                      <a href="/png/archive/20110923_buldreinfo.png" rel="noopener" target="_blank">Screenshot (2011.09.23)</a>
+                      <Label.Detail as={Link} to="https://web.archive.org/web/20110923004804/http://www.buldreinfo.com/" target="_blank">source: archive.net</Label.Detail>
+                    </Label>
+                    <Label size="mini" basic>
+                      <Icon name="camera" />
+                      <a href="/png/archive/20071104_buldreinfo.png" rel="noopener" target="_blank">Screenshot (2007.11.04)</a>
+                      <Label.Detail as={Link} to="https://web.archive.org/web/20071104020049/http://www.buldreinfo.com/" target="_blank">source: archive.net</Label.Detail>
+                    </Label>
+                  </Label.Group>
+                </List.Description>
+              </List.Item>
+              <List.Item>
+                2003-2006: Predecessor to <a href="https://buldreinfo.com" rel='noopener' target='_blank'>buldreinfo.com</a> (a page located on the <a href="https://brv.no" rel='noopener' target='_blank'>brv.no</a>-site)
+                <List.Description>
+                  Bouldering guide, by Vegard Aksnes<br/>
+                  <Label size="mini" basic>
+                    <Icon name="camera" />
+                    <a href="/png/archive/20040812_brv_bouldering_guide.png" rel="noopener" target="_blank">Screenshot (2004.08.12)</a>
+                    <Label.Detail as={Link} to="https://web.archive.org/web/20050308114436/http://www.brv.no/gammelt/buldring/oversikt.htm" target="_blank">source: archive.net</Label.Detail>
+                  </Label>
+                </List.Description>
               </List.Item>
             </List>
           </Segment>
           <Segment>
             <Header as="h3">
               <Icon name='pencil' />
-              <Header.Content>Ethics</Header.Content>
+              <Header.Content>
+                Ethics
+                <Header.Subheader>If you&#39;re going out climbing, we ask you to please follow these guidelines for the best possible bouldering experience now, and for the future generations of climbers.</Header.Subheader>
+              </Header.Content>
             </Header>
-            If you&#39;re going out climbing, we ask you to please follow these guidelines for the best possible bouldering experience now, and for the future generations of climbers.<br/>
             <List bulleted>
               <List.Item>Show respect for the landowners, issue care and be polite.</List.Item>
               <List.Item>Follow paths where possible, and do not cross cultivated land.</List.Item>
