@@ -411,7 +411,7 @@ const Problem = () => {
               <Table.Cell>On TODO-list:</Table.Cell>
               <Table.Cell>
                 {data.todos.map((u, i) => (
-                  <Label size="mini" key={i} as={Link} to={`/user/${u.user_id}`} image basic>
+                  <Label size="mini" key={i} as={Link} to={`/user/${u.idUser}`} image basic>
                     {u.picture ? <img src={u.picture} /> : <Icon name="user"/>}{u.name}
                   </Label>
                 ))}
