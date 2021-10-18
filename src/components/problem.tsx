@@ -406,6 +406,18 @@ const Problem = () => {
               <Table.Cell>{data.ticks.length}</Table.Cell>
             </Table.Row>
           }
+          {data.todos &&
+            <Table.Row verticalAlign="top">
+              <Table.Cell>On TODO-list:</Table.Cell>
+              <Table.Cell>
+                {data.todos.map((u, i) => (
+                  <Label size="mini" key={i} as={Link} to={`/user/${u.user_id}`} image basic>
+                    {u.picture ? <img src={u.picture} /> : <Icon name="user"/>}{u.name}
+                  </Label>
+                ))}
+              </Table.Cell>
+            </Table.Row>
+          }
           <Table.Row verticalAlign="top">
             <Table.Cell>Files and links:</Table.Cell>
             <Table.Cell>
