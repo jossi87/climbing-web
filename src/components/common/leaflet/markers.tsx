@@ -2,7 +2,7 @@ import React from "react";
 import { Marker, Tooltip, Popup } from "react-leaflet";
 import { markerBlueIcon, markerRedIcon, parkingIcon, weatherIcon, rockIcon } from './icons';
 
-export default function Markers({ history, opacity, markers, addEventHandlers }) {
+export default function Markers({ navigate, opacity, markers, addEventHandlers }) {
   if (!markers) {
     return null;
   }
@@ -17,7 +17,7 @@ export default function Markers({ history, opacity, markers, addEventHandlers })
             eventHandlers={{
               click: () => {
                 if (addEventHandlers) {
-                  history.push(m.url)
+                  navigate(m.url)
                 }
               }
             }}
@@ -60,7 +60,7 @@ export default function Markers({ history, opacity, markers, addEventHandlers })
             eventHandlers={{
               click: () => {
                 if (addEventHandlers) {
-                  history.push(m.url)
+                  navigate(m.url)
                 }
               }
             }}
@@ -79,7 +79,7 @@ export default function Markers({ history, opacity, markers, addEventHandlers })
             eventHandlers={{
               click: () => {
                 if (addEventHandlers) {
-                  history.push(m.url)
+                  navigate(m.url)
                 }
               }
             }}

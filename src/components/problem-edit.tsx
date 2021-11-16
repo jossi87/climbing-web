@@ -10,11 +10,8 @@ import Leaflet from './common/leaflet/leaflet';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getProblemEdit, convertFromDateToString, convertFromStringToDate, postProblem, getSector } from '../api';
 import { LoadingAndRestoreScroll, InsufficientPrivileges } from './common/widgets/widgets';
-import { useHistory, useParams, useLocation } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 
-interface SectorIdProblemIdParams {
-  sectorIdProblemId: string;
-}
 const ProblemEdit = () => {
   const { accessToken, loading, isAuthenticated, loginWithRedirect } = useAuth0();
   const [data, setData] = useState(null);
@@ -22,8 +19,8 @@ const ProblemEdit = () => {
   const [sectorRocks, setSectorRocks] = useState([]);
   const [showSectorMarkers, setShowSectorMarkers] = useState(true);
   const [saving, setSaving] = useState(false);
-  let { sectorIdProblemId } = useParams<SectorIdProblemIdParams>();
-  let history = useHistory();
+  let { sectorIdProblemId } = useParams();
+  let navigate = useNavigate();
   let location = useLocation();
   useEffect(() => {
     if (sectorIdProblemId && accessToken) {
@@ -170,7 +167,7 @@ const ProblemEdit = () => {
         data.trivia,
         data.startingAltitude, data.aspect, data.routeLength, data.descent)
       .then((data) => {
-        history.push(data.destination);
+        navigate(data.destination);
       })
       .catch((error) => {
         console.warn(error);
@@ -418,7 +415,7 @@ const ProblemEdit = () => {
               defaultCenter={defaultCenter}
               defaultZoom={defaultZoom}
               onClick={onMapClick}
-              history={history}
+              navigate={navigate}
               polylines={null}
               outlines={null}
               height={'300px'}
@@ -453,10 +450,10 @@ const ProblemEdit = () => {
           <Button negative onClick={() => {
             let problemId = sectorIdProblemId.split("-")[1];
             if (problemId && problemId != '0') {
-              history.push(`/problem/${problemId}`)
+              navigate(`/problem/${problemId}`)
             } else {
               let sectorId = sectorIdProblemId.split("-")[0];
-              history.push(`/sector/${sectorId}`)
+              navigate(`/sector/${sectorId}`)
             }
           }}>Cancel</Button>
           <Button.Or />

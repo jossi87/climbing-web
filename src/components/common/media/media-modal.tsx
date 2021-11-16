@@ -3,7 +3,7 @@ import { Dimmer, Button, Icon, Image, Modal, Header, ButtonGroup, Embed, Contain
 import { getBuldreinfoMediaUrl, getImageUrl } from '../../../api';
 import ReactPlayer from 'react-player';
 import Svg from './svg';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { saveAs } from 'file-saver';
 import { Descent, Rappel } from '../../../utils/svg-utils';
 
@@ -52,7 +52,7 @@ const style = {
 }
 
 const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onMoveImageRight, onMoveImageToSector, onMoveImageToProblem, m, length, gotoPrev, gotoNext, playVideo, autoPlayVideo, optProblemId, isBouldering }) => {
-  let history = useHistory();
+  let navigate = useNavigate();
   let myPlayer;
   let content;
   if (m.idType===1) {
@@ -96,8 +96,8 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
         {(canCrud || canDrawTopo || canDrawMedia || canOrder || canMove ) && (
           <Dropdown direction='left' icon='bars' button>
             <Dropdown.Menu>
-              {canDrawTopo && <Dropdown.Item icon="paint brush" text="Draw topo line" onClick={() => history.push(`/problem/svg-edit/${optProblemId}-${m.id}`)} />}
-              {canDrawMedia && <Dropdown.Item icon="paint brush" text="Draw on image" onClick={() => history.push(`/media/svg-edit/${m.id}`)} />}
+              {canDrawTopo && <Dropdown.Item icon="paint brush" text="Draw topo line" onClick={() => navigate(`/problem/svg-edit/${optProblemId}-${m.id}`)} />}
+              {canDrawMedia && <Dropdown.Item icon="paint brush" text="Draw on image" onClick={() => navigate(`/media/svg-edit/${m.id}`)} />}
               {canOrder && <Dropdown.Item icon="arrow left" text="Move image to the left" onClick={onMoveImageLeft} />}
               {canOrder && <Dropdown.Item icon="arrow right" text="Move image to the right" onClick={onMoveImageRight} />}
               {canMove && m.enableMoveToIdSector && <Dropdown.Item icon="move" text={"Move image from " + (isBouldering? "problem" : "route") + " to sector"} onClick={onMoveImageToSector} />}

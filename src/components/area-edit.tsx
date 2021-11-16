@@ -6,17 +6,14 @@ import { Form, Button, Checkbox, Input, Dropdown, TextArea, Segment, Icon, Messa
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getAreaEdit, postArea } from '../api';
 import { LoadingAndRestoreScroll, InsufficientPrivileges } from './common/widgets/widgets';
-import { useHistory, useParams, useLocation } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 
-interface AreaParams {
-  areaId: string;
-}
 const AreaEdit = () => {
   const { accessToken, loading, isAuthenticated, loginWithRedirect } = useAuth0();
   const [data, setData] = useState(null);
   const [saving, setSaving] = useState(false);
-  let { areaId } = useParams<AreaParams>();
-  let history = useHistory();
+  let { areaId } = useParams();
+  let navigate = useNavigate();
   let location = useLocation();
   useEffect(() => {
     if (!loading && areaId && accessToken) {
@@ -51,7 +48,7 @@ const AreaEdit = () => {
       setSaving(true);
       postArea(accessToken, data.id, data.trash, data.lockedAdmin, data.lockedSuperadmin, data.forDevelopers, data.name, data.comment, data.lat, data.lng, data.newMedia)
       .then((data) => {
-        history.push(data.destination);
+        navigate(data.destination);
       })
       .catch((error) => {
         console.warn(error);
@@ -145,7 +142,7 @@ const AreaEdit = () => {
               defaultCenter={defaultCenter}
               defaultZoom={defaultZoom}
               onClick={onMarkerClick}
-              history={history}
+              navigate={navigate}
               polylines={null}
               outlines={null}
               height={'300px'}
@@ -159,9 +156,9 @@ const AreaEdit = () => {
         <Button.Group>
           <Button negative onClick={() => {
             if (areaId && areaId != '-1') {
-              history.push(`/area/${areaId}`);
+              navigate(`/area/${areaId}`);
             } else {
-              history.push(`/browse`);
+              navigate(`/browse`);
             }
           }}>Cancel</Button>
           <Button.Or />

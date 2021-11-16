@@ -1,7 +1,7 @@
 import React from "react";
 import { Polygon, Tooltip } from "react-leaflet";
 
-export default function Polygons({ history, opacity, outlines, addEventHandlers }) {
+export default function Polygons({ navigate, opacity, outlines, addEventHandlers }) {
   if (!outlines) {
     return null;
   }
@@ -17,7 +17,7 @@ export default function Polygons({ history, opacity, outlines, addEventHandlers 
                 var win = window.open(o.url, '_blank');
                 win.focus();
               } else {
-                history.push(o.url)
+                navigate(o.url)
               }
             }
           }

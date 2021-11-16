@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
-import { Link, useParams, useHistory } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import { calculateDistance } from './common/leaflet/distance-math';
 import Media from './common/media/media';
@@ -12,9 +12,6 @@ import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
 import Linkify from 'react-linkify';
 
-interface ProblemIdParams {
-  problemId: string;
-}
 const Problem = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState(null);
@@ -23,8 +20,8 @@ const Problem = () => {
   const [showCommentModal, setShowCommentModal] = useState(null);
   const [showHiddenMedia, setShowHiddenMedia] = useState(false);
   const [reload, setReload] = useState(true);
-  let { problemId } = useParams<ProblemIdParams>();
-  let history = useHistory();
+  let { problemId } = useParams();
+  let navigate = useNavigate();
 
   useEffect(() => {
     if (!loading && (reload || (data != null && data.id!=problemId))) {
@@ -159,7 +156,7 @@ const Problem = () => {
     }
     panes.push({
       menuItem: { key: 'map', icon: 'map' },
-      render: () => <Tab.Pane><Leaflet key={"sector="+data.id} autoZoom={true} height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={{lat: markers[0].lat, lng: markers[0].lng}} defaultZoom={16} history={history} onClick={null} showSateliteImage={true} clusterMarkers={false} rocks={null} /></Tab.Pane>
+      render: () => <Tab.Pane><Leaflet key={"sector="+data.id} autoZoom={true} height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={{lat: markers[0].lat, lng: markers[0].lng}} defaultZoom={16} navigate={navigate} onClick={null} showSateliteImage={true} clusterMarkers={false} rocks={null} /></Tab.Pane>
     });
   }
   

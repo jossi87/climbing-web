@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
-import { Link, useParams, useHistory } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
 import Top from './common/top/top';
 import Activity from './common/activity/activity';
@@ -14,14 +14,11 @@ import { getArea, getImageUrl, getAreaPdfUrl } from '../api';
 import { Remarkable } from 'remarkable';
 import { linkify } from 'remarkable/linkify';
 
-interface AreaIdParams {
-  areaId: string;
-}
 const Area = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState(null);
-  let { areaId } = useParams<AreaIdParams>();
-  let history = useHistory();
+  let { areaId } = useParams();
+  let navigate = useNavigate();
   let md = new Remarkable({breaks: true}).use(linkify);
   // open links in new windows
   md.renderer.rules.link_open = (function() {
@@ -81,7 +78,7 @@ const Area = () => {
     const defaultZoom = data.lat && data.lat>0? 14 : data.metadata.defaultZoom;
     panes.push({
       menuItem: { key: 'map', icon: 'map' },
-      render: () => <Tab.Pane><Leaflet key={"area="+data.id} autoZoom={true} height={height} markers={markers} outlines={outlines} polylines={polylines} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} onClick={null} showSateliteImage={true} clusterMarkers={false} rocks={null} /></Tab.Pane>
+      render: () => <Tab.Pane><Leaflet key={"area="+data.id} autoZoom={true} height={height} markers={markers} outlines={outlines} polylines={polylines} defaultCenter={defaultCenter} defaultZoom={defaultZoom} navigate={navigate} onClick={null} showSateliteImage={true} clusterMarkers={false} rocks={null} /></Tab.Pane>
     });
   }
   if (data.sectors.length!=0) {

@@ -3,7 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { getTrash, putTrash } from '../api';
 import { Segment, Icon, Header, List, Button } from 'semantic-ui-react';
-import { useLocation, useHistory } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { InsufficientPrivileges } from './common/widgets/widgets';
 
@@ -11,7 +11,7 @@ const Trash = () => {
   const { isAuthenticated, loading, accessToken, loginWithRedirect } = useAuth0();
   const [data, setData] = useState(null);
   let location = useLocation();
-  let history = useHistory();
+  let navigate = useNavigate();
 
   useEffect(() => {
     if (!loading) {
@@ -67,11 +67,11 @@ const Trash = () => {
                         putTrash(accessToken, t.idArea, t.idSector, t.idProblem)
                         .then((response) => {
                           if (t.idArea>0) {
-                            history.push("/area/" + t.idArea);
+                            navigate("/area/" + t.idArea);
                           } else if (t.idSector>0) {
-                            history.push("/sector/" + t.idSector);
+                            navigate("/sector/" + t.idSector);
                           } else if (t.idProblem>0) {
-                            history.push("/problem/" + t.idProblem);
+                            navigate("/problem/" + t.idProblem);
                           }
                         })
                       }

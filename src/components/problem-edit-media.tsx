@@ -4,7 +4,7 @@ import { useAuth0 } from '../utils/react-auth0-spa';
 import { getProblem, postProblemMedia } from '../api';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Segment, Button } from 'semantic-ui-react';
-import { useHistory, useParams, useLocation } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 
 interface ProblemIdParams {
   problemId: string;
@@ -16,7 +16,7 @@ const ProblemEditMedia = () => {
   const [media, setMedia] = useState();
   const [saving, setSaving] = useState(false);
   let { problemId } = useParams<ProblemIdParams>();
-  let history = useHistory();
+  let navigate = useNavigate();
   let location = useLocation();
   useEffect(() => {
     if (problemId && accessToken) {
@@ -32,7 +32,7 @@ const ProblemEditMedia = () => {
     setSaving(true);
     postProblemMedia(accessToken, id, media)
     .then((response) => {
-      history.push("/problem/" + response.id);
+      navigate("/problem/" + response.id);
     })
     .catch((error) => {
       console.warn(error);
@@ -50,7 +50,7 @@ const ProblemEditMedia = () => {
       <form onSubmit={save}>
         <ImageUpload onMediaChanged={(newMedia) => setMedia(newMedia)} isMultiPitch={isMultiPitch} includeVideoEmbedder={true} />
         <Button.Group>
-          <Button onClick={() => history.push(`/problem/${id}`)}>Cancel</Button>
+          <Button onClick={() => navigate(`/problem/${id}`)}>Cancel</Button>
           <Button.Or />
           <Button type="submit" positive loading={saving}>Save</Button>
         </Button.Group>

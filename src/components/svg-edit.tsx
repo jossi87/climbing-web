@@ -4,7 +4,7 @@ import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSvgEdit, getImageUrl, postProblemSvg } from '../api';
 import { parseReadOnlySvgs, parsePath } from '../utils/svg-utils';
 import { LoadingAndRestoreScroll, InsufficientPrivileges } from './common/widgets/widgets';
-import { useHistory, useParams, useLocation } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 
 interface ProblemIdMediaIdParams {
   problemIdMediaId: string;
@@ -33,7 +33,7 @@ const SvgEdit = () => {
   const [addText, setAddText] = useState(false);
   const imageRef = useRef(null);
   let { problemIdMediaId } = useParams<ProblemIdMediaIdParams>();
-  let history = useHistory();
+  let navigate = useNavigate();
   let location = useLocation();
   const { outerWidth, outerHeight } = window;
   const minWindowScale = Math.min(outerWidth, outerHeight);
@@ -93,7 +93,7 @@ const SvgEdit = () => {
     event.preventDefault();
     postProblemSvg(accessToken, id, mediaId, points.length<2, svgId, path, hasAnchor, JSON.stringify(anchors), JSON.stringify(texts))
     .then(() => {
-      history.push("/problem/" + id);
+      navigate("/problem/" + id);
     })
     .catch((error) => {
       console.warn(error);
@@ -331,7 +331,7 @@ const SvgEdit = () => {
         <Button.Group floated="right">
           <Button negative disabled={points.length===0 && anchors.length===0 && myTexts.length===0} onClick={reset}>Reset</Button>
           <Button.Or />
-          <Button onClick={() => history.push(`/problem/${problemIdMediaId.split("-")[0]}`)}>Cancel</Button>
+          <Button onClick={() => navigate(`/problem/${problemIdMediaId.split("-")[0]}`)}>Cancel</Button>
           <Button.Or />
           <Button positive onClick={save}>Save</Button>
         </Button.Group>

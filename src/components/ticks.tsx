@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import { Segment, Header, Pagination, Loader, Feed } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
-import { Link, useParams, useHistory } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getTicks } from '../api';
 
@@ -14,7 +14,7 @@ const Ticks = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   let { page } = useParams<PageParams>();
-  let history = useHistory();
+  let navigate = useNavigate();
   useEffect(() => {
     setLoading(true);
     getTicks(accessToken, parseInt(page)).then((data) => {
@@ -64,7 +64,7 @@ const Ticks = () => {
         <Pagination size="tiny" siblingRange={0} boundaryRange={0} defaultActivePage={data.currPage} totalPages={data.numPages} onPageChange={(e, data) => {
           const page = data.activePage;
           setLoading(true);
-          history.push("/ticks/" + page);
+          navigate("/ticks/" + page);
         }} />
       </Segment>
     </>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
-import { Link, useParams, useHistory } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import ProblemList from './common/problem-list/problem-list';
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
 import Top from './common/top/top';
@@ -14,9 +14,6 @@ import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSector, getAreaPdfUrl, getSectorPdfUrl } from '../api';
 import Linkify from 'react-linkify';
 
-interface SectorIdParams {
-  sectorId: string;
-}
 const SectorListItem = ({ problem, isClimbing }) => {
   let type = isClimbing? problem.t.subType + (problem.numPitches>1? ", " + problem.numPitches + " pitches" : "") : null;
   let ascents = problem.numTicks && problem.numTicks + (problem.numTicks==1? " ascent" : " ascents");
@@ -52,8 +49,8 @@ const SectorListItem = ({ problem, isClimbing }) => {
 const Sector = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState(null);
-  let { sectorId } = useParams<SectorIdParams>();
-  let history = useHistory();
+  let { sectorId } = useParams();
+  let navigate = useNavigate();
   useEffect(() => {
     if (!loading) {
       getSector(accessToken, parseInt(sectorId)).then((data) => {
@@ -115,7 +112,7 @@ const Sector = () => {
     const uniqueRocks = data.problems.filter(p => p.rock).map(p => p.rock).filter((value, index, self) => self.indexOf(value) === index).sort();
     panes.push({
       menuItem: { key: 'map', icon: 'map' },
-      render: () => <Tab.Pane><Leaflet key={"sector="+data.id} autoZoom={true} height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} onClick={null} showSateliteImage={true} clusterMarkers={true} rocks={uniqueRocks} /></Tab.Pane>
+      render: () => <Tab.Pane><Leaflet key={"sector="+data.id} autoZoom={true} height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={defaultCenter} defaultZoom={defaultZoom} navigate={navigate} onClick={null} showSateliteImage={true} clusterMarkers={true} rocks={uniqueRocks} /></Tab.Pane>
     });
   }
   if (topoImages && topoImages.length>0) {

@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import MetaTags from 'react-meta-tags';
 import Leaflet from './common/leaflet/leaflet';
 import { Segment, Header, Icon } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { getCameras } from '../api';
 
-interface WeatherParams {
-  json: string;
-}
 const Weather = () => {
   const [data, setData] = useState(null);
-  let { json } = useParams<WeatherParams>();
-  let history = useHistory();
+  let { json } = useParams();
+  let navigate = useNavigate();
   useEffect(() => {
     getCameras().then((data) => setData(data));
   }, []);
@@ -62,7 +59,7 @@ const Weather = () => {
             {subHeader && <Header.Subheader>{subHeader}</Header.Subheader>}
           </Header.Content>
         </Header>
-        <Leaflet height='85vh' autoZoom={false} outlines={null} defaultCenter={defaultCenter} defaultZoom={defaultZoom} history={history} markers={markers} polylines={null} onClick={null} showSateliteImage={false} clusterMarkers={false} rocks={null} />
+        <Leaflet height='85vh' autoZoom={false} outlines={null} defaultCenter={defaultCenter} defaultZoom={defaultZoom} navigate={navigate} markers={markers} polylines={null} onClick={null} showSateliteImage={false} clusterMarkers={false} rocks={null} />
       </Segment>
     </>
   );

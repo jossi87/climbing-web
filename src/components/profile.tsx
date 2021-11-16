@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import MetaTags from 'react-meta-tags';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Header, Image, Menu, Icon } from 'semantic-ui-react';
@@ -13,13 +13,9 @@ import ProfileSettings from './common/profile/profile-settings';
 enum Page {
   user, todo, media, captured, settings
 }
-interface ProfileParams {
-  userId: string;
-  page: string;
-}
 const Profile = () => {
-  let { userId, page } = useParams<ProfileParams>();
-  let history = useHistory();
+  let { userId, page } = useParams();
+  let navigate = useNavigate();
   const { loading, isAuthenticated, accessToken } = useAuth0();
   const [activePage, setActivePage] = useState(page? Page[page] : Page.user);
   const [profile, setProfile] = useState(null);
@@ -34,7 +30,7 @@ const Profile = () => {
 
   function onPageChanged(page: Page) {
     setActivePage(page);
-    history.replace("/user/" + profile.id + "/" + Page[page]);
+    navigate("/user/" + profile.id + "/" + Page[page]);
   }
   
   if (!profile) {

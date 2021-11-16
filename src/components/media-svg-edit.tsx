@@ -4,11 +4,9 @@ import { useAuth0 } from '../utils/react-auth0-spa';
 import { getMediaSvg, getImageUrl, postMediaSvg } from '../api';
 import { Rappel, parseReadOnlySvgs, parsePath } from '../utils/svg-utils';
 import { LoadingAndRestoreScroll, InsufficientPrivileges } from './common/widgets/widgets';
-import { useHistory, useParams, useLocation } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 
-interface MediaIdParams {
-  mediaId: number;
-}
+
 const SvgEdit = () => {
   const TYPE_PATH = "PATH";
   const TYPE_RAPPEL_BOLTED = "RAPPEL_BOLTED";
@@ -22,14 +20,14 @@ const SvgEdit = () => {
   const [draggedPoint, setDraggedPoint] = useState(null);
   const [draggedCubic, setDraggedCubic] = useState(false);
   const imageRef = useRef(null);
-  let { mediaId } = useParams<MediaIdParams>();
-  let history = useHistory();
+  let { mediaId } = useParams();
+  let navigate = useNavigate();
   let location = useLocation();
   const { outerWidth, outerHeight } = window;
   const minWindowScale = Math.min(outerWidth, outerHeight);
   useEffect(() => {
     if (mediaId && accessToken) {
-      getMediaSvg(accessToken, mediaId).then((data) => {
+      getMediaSvg(accessToken, parseInt(mediaId)).then((data) => {
         setData(data);
       });
     }
@@ -55,7 +53,7 @@ const SvgEdit = () => {
     event.preventDefault();
     postMediaSvg(accessToken, data)
     .then(() => {
-      history.goBack();
+      navigate(-1);
     })
     .catch((error) => {
       console.warn(error);
@@ -265,7 +263,7 @@ const SvgEdit = () => {
         <Button.Group floated="right">
           <Button negative disabled={!data.m.mediaSvgs || data.m.mediaSvgs.length===0} onClick={reset}>Reset</Button>
           <Button.Or />
-          <Button onClick={() => history.goBack()}>Cancel</Button>
+          <Button onClick={() => navigate(-1)}>Cancel</Button>
           <Button.Or />
           <Button positive onClick={save}>Save</Button>
         </Button.Group>

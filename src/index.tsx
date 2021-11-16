@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import { Auth0Provider } from './utils/react-auth0-spa';
 import CookieConsent from "react-cookie-consent";
 import { ErrorBoundary } from 'react-error-boundary'
@@ -60,7 +60,7 @@ const Index = () => (
       useRefreshTokens
       cacheLocation="localstorage"
     >
-    <Router>
+    <BrowserRouter>
       <ErrorBoundary
         FallbackComponent={ErrorFallback}
         onReset={() => window.location.reload()}
@@ -68,7 +68,7 @@ const Index = () => (
         <App />
       </ErrorBoundary>
       <CookieConsent>This website uses cookies to enhance the user experience.</CookieConsent>
-    </Router>
+    </BrowserRouter>
   </Auth0Provider>
 );
 

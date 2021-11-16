@@ -1,7 +1,6 @@
 import React, { Suspense, lazy } from 'react';
 import { Button, Icon, Container, Divider, Grid, Header, List, Segment } from 'semantic-ui-react';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
-import Analytics from 'react-router-ga';
+import { Routes, Route, Link } from 'react-router-dom';
 import { LoadingAndRestoreScroll } from './components/common/widgets/widgets';
 
 import Navigation from './components/navigation';
@@ -53,106 +52,102 @@ const App = () => {
   }
   return (
     <div style={{background: "#F5F5F5"}}>
-      <Router>
-        <Navigation />
-        <Container style={{ marginTop: '1em' }}>
-          <Analytics id="UA-76534258-1">
-          <Suspense fallback={<LoadingAndRestoreScroll />}>
-              <Switch>
-                <Route exact path='/'><Frontpage/></Route>
-                <Route path='/about'><About/></Route>
-                <Route path='/browse'><Browse/></Route>
-                <Route exact path='/area/:areaId'><Area/></Route>
-                <Route exact path='/area/edit/:areaId'><AreaEdit/></Route>
-                <Route path='/dangerous'><Dangerous/></Route>
-                <Route path='/filter'><Filter/></Route>
-                <Route exact path='/media/svg-edit/:mediaId'><MediaSvgEdit/></Route>
-                <Route path='/permissions'><Permissions/></Route>
-                <Route path='/privacy-policy'><PrivacyPolicy/></Route>
-                <Route exact path='/problem/:problemId'><Problem/></Route>
-                <Route exact path='/problem/edit/:sectorIdProblemId'><ProblemEdit/></Route>
-                <Route exact path='/problem/edit/media/:problemId'><ProblemEditMedia/></Route>
-                <Route exact path='/problem/svg-edit/:problemIdMediaId'><SvgEdit/></Route>
-                <Route exact path='/sites/:type'><Sites/></Route>
-                <Route exact path='/sector/:sectorId'><Sector/></Route>
-                <Route exact path='/sector/edit/:areaIdSectorId'><SectorEdit/></Route>
-                <Route path='/ticks/:page'><Ticks/></Route>
-                <Route exact path='/toc'><Toc/></Route>
-                <Route exact path='/cg'><ContentGraph/></Route>
-                <Route exact path='/trash'><Trash/></Route>
-                <Route exact path='/user'><Profile/></Route>
-                <Route exact path='/user/:userId'><Profile/></Route>
-                <Route exact path='/user/:userId/:page'><Profile/></Route>
-                <Route exact path='/weather'><Weather/></Route>
-                <Route exact path='/weather/:json'><Weather/></Route>
-              </Switch>
-            </Suspense>
-          </Analytics>
-        </Container>
-        <Segment inverted vertical style={{ margin: '5em 0em 0em', padding: '5em 0em' }}>
-          <Container textAlign='center'>
-            <Grid divided inverted stackable>
-              <Grid.Row>
-                <Grid.Column width={4}>
-                  <Header inverted as='h4' content='Bouldering' />
-                  <List link inverted>
-                    <List.Item as='a' href='/sites/boulder'>Map</List.Item>
-                    <br/>
-                    <List.Item as='a' href='https://buldreinfo.com' rel='noopener' target='_blank'>Rogaland</List.Item>
-                    <List.Item as='a' href='https://buldre.forer.no' rel='noopener' target='_blank'>Fredrikstad</List.Item>
-                    <List.Item as='a' href='https://buldreforer.tromsoklatring.no' rel='noopener' target='_blank'>Troms</List.Item>
-                    <List.Item as='a' href='https://buldring.bergen-klatreklubb.no' rel='noopener' target='_blank'>Bergen</List.Item>
-                    <List.Item as='a' href='https://buldring.flatangeradventure.no' rel='noopener' target='_blank'>Trondheim</List.Item>
-                    <List.Item as='a' href='https://buldring.jotunheimenfjellsport.com' rel='noopener' target='_blank'>Jotunheimen</List.Item>
-                    <List.Item as='a' href='https://buldring.narvikklatreklubb.no' rel='noopener' target='_blank'>Narvik</List.Item>
-                    <List.Item as='a' href='https://hkl.buldreinfo.com' rel='noopener' target='_blank'>Haugalandet</List.Item>
-                  </List>
-                </Grid.Column>
-                <Grid.Column width={4}>
-                  <Header inverted as='h4' content='Route climbing' />
-                  <List link inverted>
-                    <List.Item as='a' href='/sites/climbing'>Map</List.Item>
-                    <br/>
-                    <List.Item as='a' href='https://brattelinjer.no' rel='noopener' target='_blank'>Rogaland</List.Item>
-                    <List.Item as='a' href='https://hkl.brattelinjer.no' rel='noopener' target='_blank'>Haugalandet</List.Item>
-                    <List.Item as='a' href='https://klatreforer.narvikklatreklubb.no' rel='noopener' target='_blank'>Narvik</List.Item>
-                    <List.Item as='a' href='https://klatreforer.tromsoklatring.no' rel='noopener' target='_blank'>Troms</List.Item>
-                    <List.Item as='a' href='https://klatring.flatangeradventure.no' rel='noopener' target='_blank'>Trondheim</List.Item>
-                    <List.Item as='a' href='https://klatring.jotunheimenfjellsport.com' rel='noopener' target='_blank'>Jotunheimen</List.Item>
-                    <List.Item as='a' href='https://tau.forer.no' rel='noopener' target='_blank'>Fredrikstad</List.Item>
-                  </List>
-                </Grid.Column>
-                <Grid.Column width={4}>
-                  <Header inverted as='h4' content='Ice climbing' />
-                  <List link inverted>
-                    <List.Item as='a' href='/sites/ice'>Map</List.Item>
-                    <br/>
-                    <List.Item as='a' href='https://is.brattelinjer.no' rel='noopener' target='_blank'>Rogaland</List.Item>
-                    <List.Item as='a' href='https://is.forer.no' rel='noopener' target='_blank'>Fredrikstad</List.Item>
-                  </List>
-                </Grid.Column>
-                <Grid.Column width={4}>
-                  <Header inverted as='h4' content='Links' />
-                  <a href={"https://www.facebook.com/groups/brattelinjer"} rel="noopener" target="_blank"><Button style={styleFacebook} color='facebook'><Icon name='facebook' /> Facebook</Button></a><br/>
-                  <a href={"https://brv.no"} rel="noopener" target="_blank"><img style={styleBrv} src={"/png/brv.png"} alt="Bratte Rogalands venner"/></a><br/>
-                  <a href='https://play.google.com/store/apps/details?id=org.jossi.android.bouldering&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'  rel="noopener" target="_blank"><img style={styleGoogle} alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
-                </Grid.Column>
-              </Grid.Row>
-            </Grid>
+      <Navigation />
+      <Container style={{ marginTop: '1em' }}>
+        <Suspense fallback={<LoadingAndRestoreScroll />}>
+          <Routes>
+            <Route path='/' element={<Frontpage/>}/>
+            <Route path='/about' element={<About/>}/>
+            <Route path='/browse' element={<Browse/>}/>
+            <Route path='/area/:areaId' element={<Area/>}/>
+            <Route path='/area/edit/:areaId' element={<AreaEdit/>}/>
+            <Route path='/dangerous' element={<Dangerous/>}/>
+            <Route path='/filter' element={<Filter/>}/>
+            <Route path='/media/svg-edit/:mediaId' element={<MediaSvgEdit/>}/>
+            <Route path='/permissions' element={<Permissions/>}/>
+            <Route path='/privacy-policy' element={<PrivacyPolicy/>}/>
+            <Route path='/problem/:problemId' element={<Problem/>}/>
+            <Route path='/problem/edit/:sectorIdProblemId' element={<ProblemEdit/>}/>
+            <Route path='/problem/edit/media/:problemId' element={<ProblemEditMedia/>}/>
+            <Route path='/problem/svg-edit/:problemIdMediaId' element={<SvgEdit/>}/>
+            <Route path='/sites/:type' element={<Sites/>}/>
+            <Route path='/sector/:sectorId' element={<Sector/>}/>
+            <Route path='/sector/edit/:areaIdSectorId' element={<SectorEdit/>}/>
+            <Route path='/ticks/:page' element={<Ticks/>}/>
+            <Route path='/toc' element={<Toc/>}/>
+            <Route path='/cg' element={<ContentGraph/>}/>
+            <Route path='/trash' element={<Trash/>}/>
+            <Route path='/user' element={<Profile/>}/>
+            <Route path='/user/:userId' element={<Profile/>}/>
+            <Route path='/user/:userId/:page' element={<Profile/>}/>
+            <Route path='/weather' element={<Weather/>}/>
+            <Route path='/weather/:json' element={<Weather/>}/>
+          </Routes>
+        </Suspense>
+      </Container>
+      <Segment inverted vertical style={{ margin: '5em 0em 0em', padding: '5em 0em' }}>
+        <Container textAlign='center'>
+          <Grid divided inverted stackable>
+            <Grid.Row>
+              <Grid.Column width={4}>
+                <Header inverted as='h4' content='Bouldering' />
+                <List link inverted>
+                  <List.Item as='a' href='/sites/boulder'>Map</List.Item>
+                  <br/>
+                  <List.Item as='a' href='https://buldreinfo.com' rel='noopener' target='_blank'>Rogaland</List.Item>
+                  <List.Item as='a' href='https://buldre.forer.no' rel='noopener' target='_blank'>Fredrikstad</List.Item>
+                  <List.Item as='a' href='https://buldreforer.tromsoklatring.no' rel='noopener' target='_blank'>Troms</List.Item>
+                  <List.Item as='a' href='https://buldring.bergen-klatreklubb.no' rel='noopener' target='_blank'>Bergen</List.Item>
+                  <List.Item as='a' href='https://buldring.flatangeradventure.no' rel='noopener' target='_blank'>Trondheim</List.Item>
+                  <List.Item as='a' href='https://buldring.jotunheimenfjellsport.com' rel='noopener' target='_blank'>Jotunheimen</List.Item>
+                  <List.Item as='a' href='https://buldring.narvikklatreklubb.no' rel='noopener' target='_blank'>Narvik</List.Item>
+                  <List.Item as='a' href='https://hkl.buldreinfo.com' rel='noopener' target='_blank'>Haugalandet</List.Item>
+                </List>
+              </Grid.Column>
+              <Grid.Column width={4}>
+                <Header inverted as='h4' content='Route climbing' />
+                <List link inverted>
+                  <List.Item as='a' href='/sites/climbing'>Map</List.Item>
+                  <br/>
+                  <List.Item as='a' href='https://brattelinjer.no' rel='noopener' target='_blank'>Rogaland</List.Item>
+                  <List.Item as='a' href='https://hkl.brattelinjer.no' rel='noopener' target='_blank'>Haugalandet</List.Item>
+                  <List.Item as='a' href='https://klatreforer.narvikklatreklubb.no' rel='noopener' target='_blank'>Narvik</List.Item>
+                  <List.Item as='a' href='https://klatreforer.tromsoklatring.no' rel='noopener' target='_blank'>Troms</List.Item>
+                  <List.Item as='a' href='https://klatring.flatangeradventure.no' rel='noopener' target='_blank'>Trondheim</List.Item>
+                  <List.Item as='a' href='https://klatring.jotunheimenfjellsport.com' rel='noopener' target='_blank'>Jotunheimen</List.Item>
+                  <List.Item as='a' href='https://tau.forer.no' rel='noopener' target='_blank'>Fredrikstad</List.Item>
+                </List>
+              </Grid.Column>
+              <Grid.Column width={4}>
+                <Header inverted as='h4' content='Ice climbing' />
+                <List link inverted>
+                  <List.Item as='a' href='/sites/ice'>Map</List.Item>
+                  <br/>
+                  <List.Item as='a' href='https://is.brattelinjer.no' rel='noopener' target='_blank'>Rogaland</List.Item>
+                  <List.Item as='a' href='https://is.forer.no' rel='noopener' target='_blank'>Fredrikstad</List.Item>
+                </List>
+              </Grid.Column>
+              <Grid.Column width={4}>
+                <Header inverted as='h4' content='Links' />
+                <a href={"https://www.facebook.com/groups/brattelinjer"} rel="noopener" target="_blank"><Button style={styleFacebook} color='facebook'><Icon name='facebook' /> Facebook</Button></a><br/>
+                <a href={"https://brv.no"} rel="noopener" target="_blank"><img style={styleBrv} src={"/png/brv.png"} alt="Bratte Rogalands venner"/></a><br/>
+                <a href='https://play.google.com/store/apps/details?id=org.jossi.android.bouldering&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'  rel="noopener" target="_blank"><img style={styleGoogle} alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
 
-            <Divider inverted section />
-            <List horizontal inverted divided link>
-              <List.Item as={Link} to='/about'>About</List.Item>
-              <List.Item as='a' href={`mailto:jostein.oygarden@gmail.com?subject=${window.location.href}`}>Contact</List.Item>
-              <List.Item as='a' href='/gpl-3.0.txt' rel='noopener' target='_blank'>GNU Public License</List.Item>
-              <List.Item as={Link} to='/privacy-policy'>Privacy Policy</List.Item>
-            </List>
-            <p>
-              Buldreinfo &amp; Bratte Linjer - 2006-2021
-            </p>
-          </Container>
-        </Segment>
-      </Router>
+          <Divider inverted section />
+          <List horizontal inverted divided link>
+            <List.Item as={Link} to='/about'>About</List.Item>
+            <List.Item as='a' href={`mailto:jostein.oygarden@gmail.com?subject=${window.location.href}`}>Contact</List.Item>
+            <List.Item as='a' href='/gpl-3.0.txt' rel='noopener' target='_blank'>GNU Public License</List.Item>
+            <List.Item as={Link} to='/privacy-policy'>Privacy Policy</List.Item>
+          </List>
+          <p>
+            Buldreinfo &amp; Bratte Linjer - 2006-2021
+          </p>
+        </Container>
+      </Segment>
     </div>
   );
 }

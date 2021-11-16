@@ -1,20 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
-import { useParams, useHistory, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Button } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSites } from '../api';
 
-interface TypeParams {
-  type: string;
-}
 const Sites = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState(null);
-  let { type } = useParams<TypeParams>();
-  let history = useHistory();
+  let { type } = useParams();
+  let navigate = useNavigate();
   useEffect(() => {
     if (data) {
       setData(null);
@@ -34,7 +31,7 @@ const Sites = () => {
     });
     return {url: r.url, label: r.name + " (" + r.numProblems + (type==='boulder'? " boulders" : " routes") + ")", polygon: polygon};
   });
-  const map = <Leaflet autoZoom={true} height='85vh' outlines={outlines} defaultCenter={data.metadata.defaultCenter} defaultZoom={data.metadata.defaultZoom} history={history} markers={null} polylines={null} onClick={null} showSateliteImage={false} clusterMarkers={false} rocks={null} />;
+  const map = <Leaflet autoZoom={true} height='85vh' outlines={outlines} defaultCenter={data.metadata.defaultCenter} defaultZoom={data.metadata.defaultZoom} navigate={navigate} markers={null} polylines={null} onClick={null} showSateliteImage={false} clusterMarkers={false} rocks={null} />;
   return (
     <>
       <MetaTags>

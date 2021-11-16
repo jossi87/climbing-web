@@ -6,19 +6,16 @@ import { Checkbox, Form, Button, Input, Dropdown, TextArea, Segment, Icon, Messa
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSectorEdit, postSector, getSector } from './../api';
 import Leaflet from './common/leaflet/leaflet';
-import { useHistory, useParams, useLocation } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 
-interface AreaIdSectorIdParams {
-  areaIdSectorId: string;
-}
 const SectorEdit = () => {
   const { accessToken, loading, isAuthenticated, loginWithRedirect } = useAuth0();
   const [leafletMode, setLeafletMode] = useState('PARKING');
   const [data, setData] = useState(null);
   const [sectorMarkers, setSectorMarkers] = useState(null);
   const [saving, setSaving] = useState(false);
-  let { areaIdSectorId } = useParams<AreaIdSectorIdParams>();
-  let history = useHistory();
+  let { areaIdSectorId } = useParams();
+  let navigate = useNavigate();
   let location = useLocation();
   useEffect(() => {
     if (areaIdSectorId && accessToken) {
@@ -53,7 +50,7 @@ const SectorEdit = () => {
       setSaving(true);
       postSector(accessToken, data.areaId, data.id, data.trash, data.lockedAdmin, data.lockedSuperadmin, data.name, data.comment, data.lat, data.lng, data.polygonCoords, data.polyline, data.newMedia)
       .then((data) => {
-        history.push(data.destination);
+        navigate(data.destination);
       })
       .catch((error) => {
         console.warn(error);
@@ -213,7 +210,7 @@ const SectorEdit = () => {
               <Button size="tiny" compact positive={sectorMarkers != null} onClick={() => {
                 if (sectorMarkers == null) {
                   let sectorId = areaIdSectorId.split("-")[1];
-                  if (sectorId>0) {
+                  if (parseInt(sectorId)>0) {
                     getSector(accessToken, parseInt(sectorId)).then((data) => setSectorMarkers(data.problems.filter(p => p.lat>0 && p.lng>0).map(p => ({lat: p.lat, lng: p.lng, label: p.name}))));
                   }
                 } else {
@@ -232,7 +229,7 @@ const SectorEdit = () => {
                 defaultCenter={defaultCenter}
                 defaultZoom={defaultZoom}
                 onClick={onMapClick}
-                history={history}
+                navigate={navigate}
                 height={'300px'}
                 showSateliteImage={true} 
                 clusterMarkers={false}
@@ -272,10 +269,10 @@ const SectorEdit = () => {
           <Button negative onClick={() => {
             let sectorId = areaIdSectorId.split("-")[1];
             if (sectorId != '0') {
-              history.push(`/sector/${sectorId}`);
+              navigate(`/sector/${sectorId}`);
             } else {
               let areaId = areaIdSectorId.split("-")[0];
-              history.push(`/area/${areaId}`);
+              navigate(`/area/${areaId}`);
             }
           }}>Cancel</Button>
           <Button.Or />

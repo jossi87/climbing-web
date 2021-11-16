@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button, List, Icon, Segment } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
@@ -14,7 +14,7 @@ const Browse = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState(null);
   const [showForDevelopers, setShowForDevelopers] = useState(false);
-  let history = useHistory();
+  let navigate = useNavigate();
   let md = new Remarkable({breaks: true}).use(linkify);
   // open links in new windows
   md.renderer.rules.link_open = (function() {
@@ -44,12 +44,12 @@ const Browse = () => {
           <Button floated="right" compact size="mini" icon as={Link} to={'/area/' + a.id} target="_blank" rel="noopener noreferrer"><Icon name="external"/></Button>
           <a href={'/area/' + a.id}><b>{a.name}</b> <LockSymbol lockedAdmin={a.lockedAdmin} lockedSuperadmin={a.lockedSuperadmin} /></a>
           <i>{`(${a.numSectors} sectors, ${a.numProblems} ${typeDescription})`}</i><br/>
-          {a.numProblems>0 && <ChartGradeDistribution accessToken={accessToken} idArea={a.id} idSector={0}/>}
+          {a.numProblems>0 && <ChartGradeDistribution accessToken={accessToken} idArea={a.id} idSector={0} data={null}/>}
           {a.comment && <div dangerouslySetInnerHTML={{ __html: md.render(a.comment && a.comment.length>200? a.comment.substring(0,200) + "..." : a.comment) }} />}
         </>
       }
   });
-  const map = markers.length>0 && <><Leaflet autoZoom={true} height='75vh' markers={markers} defaultCenter={data.metadata.defaultCenter} defaultZoom={data.metadata.defaultZoom} history={history} polylines={null} outlines={null} onClick={null} showSateliteImage={false}  clusterMarkers={!showForDevelopers} rocks={null} /><br/></>;
+  const map = markers.length>0 && <><Leaflet autoZoom={true} height='75vh' markers={markers} defaultCenter={data.metadata.defaultCenter} defaultZoom={data.metadata.defaultZoom} navigate={navigate} polylines={null} outlines={null} onClick={null} showSateliteImage={false}  clusterMarkers={!showForDevelopers} rocks={null} /><br/></>;
   return (
     <>
       <MetaTags>

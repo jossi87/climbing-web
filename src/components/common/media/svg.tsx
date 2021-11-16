@@ -1,12 +1,12 @@
 import React from 'react';
 import { parseSVG, makeAbsolute } from 'svg-path-parser';
 import { getImageUrl } from '../../../api';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Descent, Rappel } from '../../../utils/svg-utils';
 
 const Svg = ({ style, close, m, thumb, optProblemId }) => {
   const { outerWidth, outerHeight } = window;
-  let history = useHistory();
+  let navigate = useNavigate();
   const minWindowScale = Math.min(outerWidth, outerHeight);
   const scale = Math.max(m.width, m.height, minWindowScale);
 
@@ -83,7 +83,7 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
       return (
         <g className={gClassName} key={key} style={style} onClick={() => {
           if (close) {
-            history.push("/problem/" + svg.problemId + "?idMedia=" + m.id);
+            navigate("/problem/" + svg.problemId + "?idMedia=" + m.id);
           }
         }}>
           <path d={svg.path} style={{fill: "none", stroke: "#000000"}} strokeWidth={0.003*scale*(thumb? 4 : 1)} strokeDasharray={strokeDasharray} strokeLinecap="round"/>

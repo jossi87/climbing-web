@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import LazyLoad from 'react-lazyload';
-import { useHistory } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { getImageUrl, deleteMedia, moveMedia, putMediaJpegRotate } from '../../../api';
 import { Card, Image } from 'semantic-ui-react';
 import MediaModal from './media-modal';
@@ -11,7 +11,8 @@ import { LoadingAndRestoreScroll } from '../widgets/widgets';
 const style = {objectFit: 'cover', position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, width: '100%', height: '100%'};
 
 const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
-  let history = useHistory();
+  let navigate = useNavigate();
+  let location = useLocation();
   const [m, setM] = useState(null)
   const [autoPlayVideo, setAutoPlayVideo] = useState(false)
   const { loading, accessToken } = useAuth0();
@@ -43,7 +44,7 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
   }
 
   function onMediaIdOpen(idMedia) {
-    history.replace(history.location.pathname + (idMedia ? "?idMedia=" + idMedia : ""));
+    navigate(location.pathname + (idMedia ? "?idMedia=" + idMedia : ""));
   }
 
   function gotoPrev() {
@@ -140,8 +141,8 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
   if (loading) {
     return <LoadingAndRestoreScroll />;
   }
-  if (history.location.search && media) {
-    let id = history.location.search.replace("?idMedia=","");
+  if (location.search && media) {
+    let id = location.search.replace("?idMedia=","");
     if (id.indexOf("&") > 0) {
       id = id.substr(0, id.indexOf("&"));
     }
@@ -150,7 +151,7 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
       setM(x[0]);
     }
   }
-  else if (!history.location.search && media && m) {
+  else if (!location.search && media && m) {
     setM(null);
   }
   return (
