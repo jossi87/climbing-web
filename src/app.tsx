@@ -1,7 +1,8 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import { Button, Icon, Container, Divider, Grid, Header, List, Segment } from 'semantic-ui-react';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { LoadingAndRestoreScroll } from './components/common/widgets/widgets';
+import { useAnalytics } from 'use-analytics';
 
 import Navigation from './components/navigation';
 const About = lazy(() => import(/* webpackChunkName: "about" */'./components/about'));
@@ -29,6 +30,11 @@ const Permissions = lazy(() => import(/* webpackChunkName: "permissions" */'./co
 const Weather = lazy(() => import(/* webpackChunkName: "weather" */'./components/weather'));
 
 const App = () => {
+  let location = useLocation();
+  const analytics = useAnalytics();
+  useEffect(() => {
+    analytics.page()
+  }, [location]);
   const styleFacebook = {
     width: '170px',
     marginTop: '3px',

@@ -32,8 +32,10 @@
     "webpack-serve": "^4.0.0"
   },
   "dependencies": {
+    "@analytics/google-analytics": "^0.5.3",
     "@auth0/auth0-spa-js": "^1.19.2",
     "@react-leaflet/core": "^1.1.1",
+    "analytics": "^0.7.18",
     "atob": "^2.1.2",
     "classnames": "^2.3.1",
     "express": "^4.17.1",
@@ -61,7 +63,8 @@
     "remarkable": "^2.0.1",
     "semantic-ui-react": "^2.0.4",
     "svg-path-parser": "^1.1.0",
-    "svg-path-properties": "^1.0.11"
+    "svg-path-properties": "^1.0.11",
+    "use-analytics": "0.0.5"
   },
   "scripts": {
     "serve": "webpack-serve --port=3000 --static=./build --history-fallback --config webpack.dev.js",

@@ -6,6 +6,18 @@ import CookieConsent from "react-cookie-consent";
 import { ErrorBoundary } from 'react-error-boundary'
 import App from './app';
 import './buldreinfo.css';
+import Analytics from 'analytics';
+import { AnalyticsProvider } from 'use-analytics';
+import googleAnalytics from '@analytics/google-analytics';
+
+const analytics = Analytics({
+  app: 'buldreinfo/brattelinjer',
+  plugins: [
+    googleAnalytics({
+      trackingId: 'UA-76534258-1'
+    })
+  ]
+})
 
 function getBrowser() {
   var ua=navigator.userAgent,tem,M=ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || []; 
@@ -54,21 +66,23 @@ function ErrorFallback({error, resetErrorBoundary}) {
 
 const Index = () => (
   <Auth0Provider
-      domain='climbing.eu.auth0.com'
-      client_id='DNJNVzhxbF7PtaBFh7H6iBSNLh2UJWHt'
-      redirect_uri={window.location.origin}
-      useRefreshTokens
-      cacheLocation="localstorage"
-    >
-    <BrowserRouter>
-      <ErrorBoundary
-        FallbackComponent={ErrorFallback}
-        onReset={() => window.location.reload()}
-      >
-        <App />
-      </ErrorBoundary>
-      <CookieConsent>This website uses cookies to enhance the user experience.</CookieConsent>
-    </BrowserRouter>
+    domain='climbing.eu.auth0.com'
+    client_id='DNJNVzhxbF7PtaBFh7H6iBSNLh2UJWHt'
+    redirect_uri={window.location.origin}
+    useRefreshTokens
+    cacheLocation="localstorage"
+  >
+    <AnalyticsProvider instance={analytics}>
+      <BrowserRouter>
+        <ErrorBoundary
+          FallbackComponent={ErrorFallback}
+          onReset={() => window.location.reload()}
+        >
+          <App />
+        </ErrorBoundary>
+        <CookieConsent>This website uses cookies to enhance the user experience.</CookieConsent>
+      </BrowserRouter>
+    </AnalyticsProvider>
   </Auth0Provider>
 );
 
