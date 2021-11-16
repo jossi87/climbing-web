@@ -42,7 +42,7 @@
     "file-saver": "^2.0.5",
     "isomorphic-fetch": "^3.0.0",
     "leaflet": "^1.7.1",
-    "leaflet.fullscreen": "^2.1.0",
+    "leaflet.fullscreen": "^1.6.0",
     "leaflet.locatecontrol": "^0.74.1",
     "leaflet.markercluster": "^1.5.3",
     "puppeteer": "^11.0.0",
