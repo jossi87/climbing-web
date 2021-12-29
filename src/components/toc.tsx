@@ -79,7 +79,7 @@ const Toc = () => {
         <List celled>
           {data.areas.map((area, i) => (
             <List.Item key={i}>
-              <List.Header><a href={area.url} rel='noreferrer noopener' target='_blank'>{area.name}</a><LockSymbol lockedAdmin={area.lockedAdmin} lockedSuperadmin={area.lockedSuperadmin} /> <HashLink to="#top"><Icon name="arrow alternate circle up outline" color="black"/></HashLink></List.Header>
+              <List.Header><a id={area.id} href={area.url} rel='noreferrer noopener' target='_blank'>{area.name}</a><LockSymbol lockedAdmin={area.lockedAdmin} lockedSuperadmin={area.lockedSuperadmin} /> <HashLink to="#top"><Icon name="arrow alternate circle up outline" color="black"/></HashLink></List.Header>
               {area.sectors.map((sector, i) => (
                 <List.List key={i}>
                   <List.Header><a href={sector.url} rel='noreferrer noopener' target='_blank'>{sector.name}</a><LockSymbol lockedAdmin={sector.lockedAdmin} lockedSuperadmin={sector.lockedSuperadmin} /></List.Header>
