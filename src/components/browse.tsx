@@ -21,7 +21,7 @@ const Browse = () => {
     var original = md.renderer.rules.link_open;
     return function() {
       var link = original.apply(null, arguments);
-      return link.substring(0, link.length - 1) + ' rel="noopener" target="_blank">';
+      return link.substring(0, link.length - 1) + ' rel="noreferrer noopener" target="_blank">';
     };
   })();
   useEffect(() => {
@@ -41,7 +41,7 @@ const Browse = () => {
         label: a.name,
         url: '/area/' + a.id,
         html: <>
-          <Button floated="right" compact size="mini" icon as={Link} to={'/area/' + a.id} target="_blank" rel="noopener noreferrer"><Icon name="external"/></Button>
+          <Button floated="right" compact size="mini" icon as={Link} to={'/area/' + a.id} target="_blank" rel="noreferrer noopener"><Icon name="external"/></Button>
           <a href={'/area/' + a.id}><b>{a.name}</b> <LockSymbol lockedAdmin={a.lockedAdmin} lockedSuperadmin={a.lockedSuperadmin} /></a>
           <i>{`(${a.numSectors} sectors, ${a.numProblems} ${typeDescription})`}</i><br/>
           {a.numProblems>0 && <ChartGradeDistribution accessToken={accessToken} idArea={a.id} idSector={0} data={null}/>}

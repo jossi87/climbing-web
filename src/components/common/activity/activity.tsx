@@ -45,7 +45,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
   const imgStyle = {height: "fit-content", maxHeight: '80px', objectFit: 'none'};
 
   const componentDecorator = (href, text, key) => (
-    <a href={href} key={key} target="_blank">
+    <a href={href} key={key} rel="noreferrer noopener" target="_blank">
       {text}
     </a>
   );

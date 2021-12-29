@@ -48,71 +48,71 @@ const About = () => {
             <b>History:</b>
             <List bulleted>
               <List.Item>
-                2021-now: <a href="https://is.brattelinjer.no" rel='noopener' target='_blank'>is.brattelinjer.no</a>
+                2021-now: <a href="https://is.brattelinjer.no" rel='noreferrer noopener' target='_blank'>is.brattelinjer.no</a>
                 <List.Description>
                   Ice climbing guide, by Jostein Øygarden<br/>
                   <Label size="mini" basic>
                     <Icon name="camera" />
-                    <a href="/png/archive/20211012_is_brattelinjer.png" rel="noopener" target="_blank">Screenshot (2021.10.12)</a>
+                    <a href="/png/archive/20211012_is_brattelinjer.png" rel="noreferrer noopener" target="_blank">Screenshot (2021.10.12)</a>
                   </Label>
                 </List.Description>
               </List.Item>
               <List.Item>
-                2018-now: <a href="https://brattelinjer.no" rel='noopener' target='_blank'>brattelinjer.no</a>
+                2018-now: <a href="https://brattelinjer.no" rel='noreferrer noopener' target='_blank'>brattelinjer.no</a>
                 <List.Description>
                   Sport- and traditional climbing guide, by Jostein Øygarden<br/>
                   <Label size="mini" basic>
                     <Icon name="camera" />
-                    <a href="/png/archive/20211012_brattelinjer.png" rel="noopener" target="_blank">Screenshot (2021.10.12)</a>
+                    <a href="/png/archive/20211012_brattelinjer.png" rel="noreferrer noopener" target="_blank">Screenshot (2021.10.12)</a>
                   </Label>
                 </List.Description>
               </List.Item>
               <List.Item>
-                2016-now: <a href="https://buldreinfo.com" rel='noopener' target='_blank'>buldreinfo.com</a>
+                2016-now: <a href="https://buldreinfo.com" rel='noreferrer noopener' target='_blank'>buldreinfo.com</a>
                 <List.Description>
                   Bouldering guide, by Jostein Øygarden<br/>
                   <Label size="mini" basic>
                     <Icon name="camera" />
-                    <a href="/png/archive/20211012_buldreinfo.png" rel="noopener" target="_blank">Screenshot (2021.10.12)</a>
+                    <a href="/png/archive/20211012_buldreinfo.png" rel="noreferrer noopener" target="_blank">Screenshot (2021.10.12)</a>
                   </Label>
                 </List.Description>
               </List.Item>
               <List.Item>
-                2012-2016: <a href="https://buldreinfo.com" rel='noopener' target='_blank'>buldreinfo.com</a>
+                2012-2016: <a href="https://buldreinfo.com" rel='noreferrer noopener' target='_blank'>buldreinfo.com</a>
                 <List.Description>
                   Bouldering guide, by Idar Ose<br/>
                   <Label size="mini" basic>
                     <Icon name="camera" />
-                    <a href="/png/archive/20160205_buldreinfo.png" rel="noopener" target="_blank">Screenshot (2016.02.05)</a>
+                    <a href="/png/archive/20160205_buldreinfo.png" rel="noreferrer noopener" target="_blank">Screenshot (2016.02.05)</a>
                     <Label.Detail as={Link} to="https://web.archive.org/web/20160205060357/http://www.buldreinfo.com/" target="_blank">source: archive.net</Label.Detail>
                   </Label>
                 </List.Description>
               </List.Item>
               <List.Item>
-                2006-2012: <a href="https://buldreinfo.com" rel='noopener' target='_blank'>buldreinfo.com</a>
+                2006-2012: <a href="https://buldreinfo.com" rel='noreferrer noopener' target='_blank'>buldreinfo.com</a>
                 <List.Description>
                   Bouldering guide, by Vegard Aksnes<br/>
                   <Label.Group size="mini">
                     <Label size="mini" basic>
                       <Icon name="camera" />
-                      <a href="/png/archive/20110923_buldreinfo.png" rel="noopener" target="_blank">Screenshot (2011.09.23)</a>
+                      <a href="/png/archive/20110923_buldreinfo.png" rel="noreferrer noopener" target="_blank">Screenshot (2011.09.23)</a>
                       <Label.Detail as={Link} to="https://web.archive.org/web/20110923004804/http://www.buldreinfo.com/" target="_blank">source: archive.net</Label.Detail>
                     </Label>
                     <Label size="mini" basic>
                       <Icon name="camera" />
-                      <a href="/png/archive/20071104_buldreinfo.png" rel="noopener" target="_blank">Screenshot (2007.11.04)</a>
+                      <a href="/png/archive/20071104_buldreinfo.png" rel="noreferrer noopener" target="_blank">Screenshot (2007.11.04)</a>
                       <Label.Detail as={Link} to="https://web.archive.org/web/20071104020049/http://www.buldreinfo.com/" target="_blank">source: archive.net</Label.Detail>
                     </Label>
                   </Label.Group>
                 </List.Description>
               </List.Item>
               <List.Item>
-                2003-2006: Predecessor to <a href="https://buldreinfo.com" rel='noopener' target='_blank'>buldreinfo.com</a> (a page located on the <a href="https://brv.no" rel='noopener' target='_blank'>brv.no</a>-site)
+                2003-2006: Predecessor to <a href="https://buldreinfo.com" rel='noreferrer noopener' target='_blank'>buldreinfo.com</a> (a page located on the <a href="https://brv.no" rel='noreferrer noopener' target='_blank'>brv.no</a>-site)
                 <List.Description>
                   Bouldering guide, by Vegard Aksnes<br/>
                   <Label size="mini" basic>
                     <Icon name="camera" />
-                    <a href="/png/archive/20040812_brv_bouldering_guide.png" rel="noopener" target="_blank">Screenshot (2004.08.12)</a>
+                    <a href="/png/archive/20040812_brv_bouldering_guide.png" rel="noreferrer noopener" target="_blank">Screenshot (2004.08.12)</a>
                     <Label.Detail as={Link} to="https://web.archive.org/web/20050308114436/http://www.brv.no/gammelt/buldring/oversikt.htm" target="_blank">source: archive.net</Label.Detail>
                   </Label>
                 </List.Description>

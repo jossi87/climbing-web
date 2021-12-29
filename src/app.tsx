@@ -100,14 +100,14 @@ const App = () => {
                 <List link inverted>
                   <List.Item as='a' href='/sites/boulder'>Map</List.Item>
                   <br/>
-                  <List.Item as='a' href='https://buldreinfo.com' rel='noopener' target='_blank'>Rogaland</List.Item>
-                  <List.Item as='a' href='https://buldre.forer.no' rel='noopener' target='_blank'>Fredrikstad</List.Item>
-                  <List.Item as='a' href='https://buldreforer.tromsoklatring.no' rel='noopener' target='_blank'>Troms</List.Item>
-                  <List.Item as='a' href='https://buldring.bergen-klatreklubb.no' rel='noopener' target='_blank'>Bergen</List.Item>
-                  <List.Item as='a' href='https://buldring.flatangeradventure.no' rel='noopener' target='_blank'>Trondheim</List.Item>
-                  <List.Item as='a' href='https://buldring.jotunheimenfjellsport.com' rel='noopener' target='_blank'>Jotunheimen</List.Item>
-                  <List.Item as='a' href='https://buldring.narvikklatreklubb.no' rel='noopener' target='_blank'>Narvik</List.Item>
-                  <List.Item as='a' href='https://hkl.buldreinfo.com' rel='noopener' target='_blank'>Haugalandet</List.Item>
+                  <List.Item as='a' href='https://buldreinfo.com' rel='noreferrer noopener' target='_blank'>Rogaland</List.Item>
+                  <List.Item as='a' href='https://buldre.forer.no' rel='noreferrer noopener' target='_blank'>Fredrikstad</List.Item>
+                  <List.Item as='a' href='https://buldreforer.tromsoklatring.no' rel='noreferrer noopener' target='_blank'>Troms</List.Item>
+                  <List.Item as='a' href='https://buldring.bergen-klatreklubb.no' rel='noreferrer noopener' target='_blank'>Bergen</List.Item>
+                  <List.Item as='a' href='https://buldring.flatangeradventure.no' rel='noreferrer noopener' target='_blank'>Trondheim</List.Item>
+                  <List.Item as='a' href='https://buldring.jotunheimenfjellsport.com' rel='noreferrer noopener' target='_blank'>Jotunheimen</List.Item>
+                  <List.Item as='a' href='https://buldring.narvikklatreklubb.no' rel='noreferrer noopener' target='_blank'>Narvik</List.Item>
+                  <List.Item as='a' href='https://hkl.buldreinfo.com' rel='noreferrer noopener' target='_blank'>Haugalandet</List.Item>
                 </List>
               </Grid.Column>
               <Grid.Column width={4}>
@@ -115,13 +115,13 @@ const App = () => {
                 <List link inverted>
                   <List.Item as='a' href='/sites/climbing'>Map</List.Item>
                   <br/>
-                  <List.Item as='a' href='https://brattelinjer.no' rel='noopener' target='_blank'>Rogaland</List.Item>
-                  <List.Item as='a' href='https://hkl.brattelinjer.no' rel='noopener' target='_blank'>Haugalandet</List.Item>
-                  <List.Item as='a' href='https://klatreforer.narvikklatreklubb.no' rel='noopener' target='_blank'>Narvik</List.Item>
-                  <List.Item as='a' href='https://klatreforer.tromsoklatring.no' rel='noopener' target='_blank'>Troms</List.Item>
-                  <List.Item as='a' href='https://klatring.flatangeradventure.no' rel='noopener' target='_blank'>Trondheim</List.Item>
-                  <List.Item as='a' href='https://klatring.jotunheimenfjellsport.com' rel='noopener' target='_blank'>Jotunheimen</List.Item>
-                  <List.Item as='a' href='https://tau.forer.no' rel='noopener' target='_blank'>Fredrikstad</List.Item>
+                  <List.Item as='a' href='https://brattelinjer.no' rel='noreferrer noopener' target='_blank'>Rogaland</List.Item>
+                  <List.Item as='a' href='https://hkl.brattelinjer.no' rel='noreferrer noopener' target='_blank'>Haugalandet</List.Item>
+                  <List.Item as='a' href='https://klatreforer.narvikklatreklubb.no' rel='noreferrer noopener' target='_blank'>Narvik</List.Item>
+                  <List.Item as='a' href='https://klatreforer.tromsoklatring.no' rel='noreferrer noopener' target='_blank'>Troms</List.Item>
+                  <List.Item as='a' href='https://klatring.flatangeradventure.no' rel='noreferrer noopener' target='_blank'>Trondheim</List.Item>
+                  <List.Item as='a' href='https://klatring.jotunheimenfjellsport.com' rel='noreferrer noopener' target='_blank'>Jotunheimen</List.Item>
+                  <List.Item as='a' href='https://tau.forer.no' rel='noreferrer noopener' target='_blank'>Fredrikstad</List.Item>
                 </List>
               </Grid.Column>
               <Grid.Column width={4}>
@@ -129,15 +129,15 @@ const App = () => {
                 <List link inverted>
                   <List.Item as='a' href='/sites/ice'>Map</List.Item>
                   <br/>
-                  <List.Item as='a' href='https://is.brattelinjer.no' rel='noopener' target='_blank'>Rogaland</List.Item>
-                  <List.Item as='a' href='https://is.forer.no' rel='noopener' target='_blank'>Fredrikstad</List.Item>
+                  <List.Item as='a' href='https://is.brattelinjer.no' rel='noreferrer noopener' target='_blank'>Rogaland</List.Item>
+                  <List.Item as='a' href='https://is.forer.no' rel='noreferrer noopener' target='_blank'>Fredrikstad</List.Item>
                 </List>
               </Grid.Column>
               <Grid.Column width={4}>
                 <Header inverted as='h4' content='Links' />
-                <a href={"https://www.facebook.com/groups/brattelinjer"} rel="noopener" target="_blank"><Button style={styleFacebook} color='facebook'><Icon name='facebook' /> Facebook</Button></a><br/>
-                <a href={"https://brv.no"} rel="noopener" target="_blank"><img style={styleBrv} src={"/png/brv.png"} alt="Bratte Rogalands venner"/></a><br/>
-                <a href='https://play.google.com/store/apps/details?id=org.jossi.android.bouldering&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'  rel="noopener" target="_blank"><img style={styleGoogle} alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
+                <a href={"https://www.facebook.com/groups/brattelinjer"} rel="noreferrer noopener" target="_blank"><Button style={styleFacebook} color='facebook'><Icon name='facebook' /> Facebook</Button></a><br/>
+                <a href={"https://brv.no"} rel="noreferrer noopener" target="_blank"><img style={styleBrv} src={"/png/brv.png"} alt="Bratte Rogalands venner"/></a><br/>
+                <a href='https://play.google.com/store/apps/details?id=org.jossi.android.bouldering&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'  rel="noreferrer noopener" target="_blank"><img style={styleGoogle} alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
               </Grid.Column>
             </Grid.Row>
           </Grid>
@@ -146,7 +146,7 @@ const App = () => {
           <List horizontal inverted divided link>
             <List.Item as={Link} to='/about'>About</List.Item>
             <List.Item as='a' href={`mailto:jostein.oygarden@gmail.com?subject=${window.location.href}`}>Contact</List.Item>
-            <List.Item as='a' href='/gpl-3.0.txt' rel='noopener' target='_blank'>GNU Public License</List.Item>
+            <List.Item as='a' href='/gpl-3.0.txt' rel='noreferrer noopener' target='_blank'>GNU Public License</List.Item>
             <List.Item as={Link} to='/privacy-policy'>Privacy Policy</List.Item>
           </List>
           <p>

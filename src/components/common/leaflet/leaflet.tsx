@@ -52,7 +52,7 @@ const Leaflet = ({ autoZoom, navigate, markers, outlines, polylines, height, def
         let centerCoordinates = GetCenterFromDegrees(coords);
         let html = <>
           <b>{r}:</b><br/>
-          {markersOnRock.map((m, i) => <React.Fragment key={i}><a rel='noopener' target='_blank' href={m.url}>{m.label}</a><br/></React.Fragment>)}
+          {markersOnRock.map((m, i) => <React.Fragment key={i}><a rel='noreferrer noopener' target='_blank' href={m.url}>{m.label}</a><br/></React.Fragment>)}
         </>;
         return ({lat: centerCoordinates[0], lng: centerCoordinates[1], label: r, rock: true, html});
       }
@@ -88,7 +88,7 @@ const Leaflet = ({ autoZoom, navigate, markers, outlines, polylines, height, def
         <LayersControl.BaseLayer checked={showSateliteImage} name="Norge i Bilder">
           <TileLayer
             maxZoom={21}
-            attribution='<a href="https://www.norgeibilder.no/" rel="noopener" target="_blank">Geovekst</a>'
+            attribution='<a href="https://www.norgeibilder.no/" rel="noreferrer noopener" target="_blank">Geovekst</a>'
             url='https://waapi.webatlas.no/maptiles/tiles/webatlas-orto-newup/wa_grid/{z}/{x}/{y}.jpeg?api_key=b8e36d51-119a-423b-b156-d744d54123d5'
           />
         </LayersControl.BaseLayer>
@@ -96,7 +96,7 @@ const Leaflet = ({ autoZoom, navigate, markers, outlines, polylines, height, def
         <LayersControl.BaseLayer checked={!showSateliteImage} name="OpenStreetMap">
           <TileLayer
             maxZoom={19}
-            attribution='<a href="https://openstreetmap.org/copyright" rel="noopener" target="_blank">OpenStreetMap contributors</a>'
+            attribution='<a href="https://openstreetmap.org/copyright" rel="noreferrer noopener" target="_blank">OpenStreetMap contributors</a>'
             url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
           />
         </LayersControl.BaseLayer>

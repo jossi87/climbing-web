@@ -25,7 +25,7 @@ const Area = () => {
     var original = md.renderer.rules.link_open;
     return function() {
       var link = original.apply(null, arguments);
-      return link.substring(0, link.length - 1) + ' rel="noopener" target="_blank">';
+      return link.substring(0, link.length - 1) + ' rel="noreferrer noopener" target="_blank">';
     };
   })();
   useEffect(() => {

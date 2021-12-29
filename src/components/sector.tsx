@@ -217,12 +217,12 @@ const Sector = () => {
                 <Icon name="file pdf outline"/>area.pdf
               </Label>
               {data.lat>0 && data.lng>0 &&
-                <Label href={`https://maps.google.com/maps?q=loc:${data.lat},${data.lng}&navigate=yes`} rel="noopener" target="_blank" image basic >
+                <Label href={`https://maps.google.com/maps?q=loc:${data.lat},${data.lng}&navigate=yes`} rel="noreferrer noopener" target="_blank" image basic >
                   <Icon name="map"/>Google Maps (navigate to parking)
                 </Label>
               }
               {data.lat>0 && data.lng>0 &&
-                <Label href={`/weather/` + JSON.stringify({lat: data.lat, lng: data.lng, label: data.areaName})} rel="noopener" target="_blank" image basic >
+                <Label href={`/weather/` + JSON.stringify({lat: data.lat, lng: data.lng, label: data.areaName})} rel="noreferrer noopener" target="_blank" image basic >
                   <Icon name="sun"/>Weather map
                 </Label>
               }

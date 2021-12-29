@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
-import { Link } from 'react-router-dom';
 import { HashLink } from 'react-router-hash-link';
 import { Header, List, Segment, Icon, Button, ButtonGroup } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
@@ -80,10 +79,10 @@ const Toc = () => {
         <List celled>
           {data.areas.map((area, i) => (
             <List.Item key={i}>
-              <List.Header><Link id={area.id} to={{pathname: area.url}} target='_blank'>{area.name}</Link><LockSymbol lockedAdmin={area.lockedAdmin} lockedSuperadmin={area.lockedSuperadmin} /> <HashLink to="#top"><Icon name="arrow alternate circle up outline" color="black"/></HashLink></List.Header>
+              <List.Header><a href={area.url} rel='noreferrer noopener' target='_blank'>{area.name}</a><LockSymbol lockedAdmin={area.lockedAdmin} lockedSuperadmin={area.lockedSuperadmin} /> <HashLink to="#top"><Icon name="arrow alternate circle up outline" color="black"/></HashLink></List.Header>
               {area.sectors.map((sector, i) => (
                 <List.List key={i}>
-                  <List.Header><Link to={{pathname: sector.url}} target='_blank'>{sector.name}</Link><LockSymbol lockedAdmin={sector.lockedAdmin} lockedSuperadmin={sector.lockedSuperadmin} /></List.Header>
+                  <List.Header><a href={sector.url} rel='noreferrer noopener' target='_blank'>{sector.name}</a><LockSymbol lockedAdmin={sector.lockedAdmin} lockedSuperadmin={sector.lockedSuperadmin} /></List.Header>
                   <List.List>
                   {sector.problems.map((problem, i) => {
                     var ascents = problem.numTicks>0 && (problem.numTicks + (problem.numTicks==1? " ascent" : " ascents"));
@@ -108,7 +107,7 @@ const Toc = () => {
                       <List.Item key={i}>
                         <List.Header>
                           {`#${problem.nr} `}
-                          <Link to={{pathname: problem.url}} target='_blank'>{problem.name}</Link>
+                          <a href={problem.url} rel='noreferrer noopener' target='_blank'>{problem.name}</a>
                           {' '}{problem.grade}
                           {' '}<Stars numStars={problem.stars} includeNoRating={false} />
                           {problem.fa && <small>{problem.fa}</small>}

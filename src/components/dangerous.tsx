@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
-import { Link } from 'react-router-dom';
 import { HashLink } from 'react-router-hash-link';
 import { LockSymbol, LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { Segment, Icon, List, Header } from 'semantic-ui-react';
@@ -49,17 +48,17 @@ const Dangerous = () => {
         <List celled>
           {data.areas.map((area, i) => (
             <List.Item key={i}>
-              <List.Header><Link id={area.id} to={{pathname: area.url}} target='_blank'>{area.name}</Link><LockSymbol lockedAdmin={area.lockedAdmin} lockedSuperadmin={area.lockedSuperadmin} /> <HashLink to="#top"><Icon name="arrow alternate circle up outline" color="black"/></HashLink></List.Header>
+              <List.Header><a href={area.url} rel='noreferrer noopener' target='_blank'>{area.name}</a><LockSymbol lockedAdmin={area.lockedAdmin} lockedSuperadmin={area.lockedSuperadmin} /> <HashLink to="#top"><Icon name="arrow alternate circle up outline" color="black"/></HashLink></List.Header>
               {area.sectors.map((sector, i) => (
                 <List.List key={i}>
-                  <List.Header><Link to={{pathname: sector.url}} target='_blank'>{sector.name}</Link><LockSymbol lockedAdmin={sector.lockedAdmin} lockedSuperadmin={sector.lockedSuperadmin} /></List.Header>
+                  <List.Header><a href={sector.url} rel='noreferrer noopener' target='_blank'>{sector.name}</a><LockSymbol lockedAdmin={sector.lockedAdmin} lockedSuperadmin={sector.lockedSuperadmin} /></List.Header>
                   <List.List>
                   {sector.problems.map((problem, i) => {
                     return (
                       <List.Item key={i}>
                         <List.Header>
                           {`#${problem.nr} `}
-                          <Link to={{pathname: problem.url}} target='_blank'>{problem.name}</Link>
+                          <a href={problem.url} rel='noreferrer noopener' target='_blank'>{problem.name}</a>
                           {' '}{problem.grade}{' '}
                           <small><i style={{color: "gray"}}>{`${problem.postTxt} (${problem.postWhen} - ${problem.postBy})`}</i></small>
                           <LockSymbol lockedAdmin={problem.lockedAdmin} lockedSuperadmin={problem.lockedSuperadmin} />
