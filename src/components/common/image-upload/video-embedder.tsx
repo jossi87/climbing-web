@@ -31,7 +31,7 @@ const VideoEmbedder = ({ addMedia }) => {
         let thumbnailUrl = null;
         let ms = 0;
 
-        var regExp = /(http:|https:|)\/\/(player.|www.)?(vimeo\.com|youtu(be\.com|\.be|be\.googleapis\.com))\/(video\/|embed\/|watch\?v=|v\/)?([A-Za-z0-9._%-]*)(\&\S+)?/;
+        var regExp = /(http:|https:|)\/\/(player.|www.|m.)?(vimeo\.com|youtu(be\.com|\.be|be\.googleapis\.com))\/(video\/|embed\/|watch\?v=|v\/)?([A-Za-z0-9._%-]*)(\&\S+)?/;
         var match = videoUrl.match(regExp);
         if (match) {
           let type = match[3];
