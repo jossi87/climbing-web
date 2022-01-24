@@ -159,8 +159,8 @@ const Area = () => {
               {data.lat>0 && data.lng>0 &&
                 <>
                   <SunLabel lat={data.lat} lng={data.lng} />
-                  <Label href={`/weather/` + JSON.stringify({lat: data.lat, lng: data.lng, label: data.name})} rel="noopener" target="_blank" image basic >
-                    <Icon name="rain"/>Weather map
+                  <Label href={`/webcam-map/` + JSON.stringify({lat: data.lat, lng: data.lng, label: data.name})} rel="noopener" target="_blank" image basic >
+                    <Icon name="camera"/>Webcam Map
                   </Label>
                 </>
               }

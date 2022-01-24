@@ -27,7 +27,7 @@ const Toc = lazy(() => import(/* webpackChunkName: "toc" */'./components/toc'));
 const ContentGraph = lazy(() => import(/* webpackChunkName: "cg" */'./components/content-graph'));
 const Trash = lazy(() => import(/* webpackChunkName: "trash" */'./components/trash'));
 const Permissions = lazy(() => import(/* webpackChunkName: "permissions" */'./components/permissions'));
-const Weather = lazy(() => import(/* webpackChunkName: "weather" */'./components/weather'));
+const WebcamMap = lazy(() => import(/* webpackChunkName: "webcam-map" */'./components/webcam-map'));
 
 const App = () => {
   let location = useLocation();
@@ -86,8 +86,8 @@ const App = () => {
             <Route path='/user' element={<Profile/>}/>
             <Route path='/user/:userId' element={<Profile/>}/>
             <Route path='/user/:userId/:page' element={<Profile/>}/>
-            <Route path='/weather' element={<Weather/>}/>
-            <Route path='/weather/:json' element={<Weather/>}/>
+            <Route path='/webcam-map' element={<WebcamMap/>}/>
+            <Route path='/webcam-map/:json' element={<WebcamMap/>}/>
           </Routes>
         </Suspense>
       </Container>

@@ -6,7 +6,7 @@ import { Segment, Header, Icon } from 'semantic-ui-react';
 import { LoadingAndRestoreScroll } from './common/widgets/widgets';
 import { getCameras } from '../api';
 
-const Weather = () => {
+const WebcamMap = () => {
   const [data, setData] = useState(null);
   let { json } = useParams();
   let navigate = useNavigate();
@@ -53,9 +53,9 @@ const Weather = () => {
       </MetaTags>
       <Segment>
         <Header as="h2">
-          <Icon name='sun' />
+          <Icon name='camera' />
           <Header.Content>
-            Weather map
+            Webcam Map
             {subHeader && <Header.Subheader>{subHeader}</Header.Subheader>}
           </Header.Content>
         </Header>
@@ -65,4 +65,4 @@ const Weather = () => {
   );
 }
 
-export default Weather;
+export default WebcamMap;

@@ -444,8 +444,8 @@ const Problem = () => {
               {lat && lng &&
                 <>
                   <SunLabel lat={lat} lng={lng} />
-                  <Label href={`/weather/` + JSON.stringify({lat, lng, label: data.areaName})} rel="noreferrer noopener" target="_blank" image basic >
-                    <Icon name="rain"/>Weather map
+                  <Label href={`/webcam-map/` + JSON.stringify({lat, lng, label: data.areaName})} rel="noreferrer noopener" target="_blank" image basic >
+                    <Icon name="camera"/>Webcam Map
                   </Label>
                 </>
               }

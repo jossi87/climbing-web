@@ -33,7 +33,7 @@ const Navigation = () => {
               <Dropdown.Item as={Link} to="/filter"><Icon name="find"/>Filter</Dropdown.Item>
               {!isBouldering && <Dropdown.Item as={Link} to="/dangerous"><Icon name="warning sign"/>Marked as dangerous</Dropdown.Item>}
               <Dropdown.Divider />
-              <Dropdown.Item as={Link} to="/weather"><Icon name="sun"/>Weather map</Dropdown.Item>
+              <Dropdown.Item as={Link} to="/webcam-map"><Icon name="camera"/>Webcam Map</Dropdown.Item>
               <Dropdown.Item as={Link} to="/about"><Icon name="info"/>About</Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
