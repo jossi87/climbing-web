@@ -13,6 +13,7 @@ import { useAuth0 } from '../utils/react-auth0-spa';
 import { getArea, getImageUrl, getAreaPdfUrl } from '../api';
 import { Remarkable } from 'remarkable';
 import { linkify } from 'remarkable/linkify';
+import SunCalc from 'suncalc';
 
 const Area = () => {
   const { loading, accessToken } = useAuth0();
@@ -95,6 +96,7 @@ const Area = () => {
       render: () => <Tab.Pane><Activity metadata={data.metadata} idArea={data.id} idSector={0}/></Tab.Pane>
     });
   }
+  const times = (data.lat>0 && data.lng>0) && SunCalc.getTimes(new Date(), data.lat, data.lng);
   return (
     <>
       <MetaTags>
@@ -150,14 +152,20 @@ const Area = () => {
             </Table.Row>
           ))}
           <Table.Row>
-            <Table.Cell>Files and links:</Table.Cell>
+            <Table.Cell>Misc:</Table.Cell>
             <Table.Cell>
               <Label href={getAreaPdfUrl(accessToken, data.id)} rel="noreferrer noopener" target="_blank" image basic>
                 <Icon name="file pdf outline"/>area.pdf
               </Label>
+              {times &&
+                <Label basic>
+                  <Icon name="sun"/>
+                  {times.sunrise.getHours() + ':' + times.sunrise.getMinutes() + ' - ' + times.sunset.getHours() + ':' + times.sunset.getMinutes()}
+                </Label>
+              }
               {data.lat>0 && data.lng>0 &&
                 <Label href={`/weather/` + JSON.stringify({lat: data.lat, lng: data.lng, label: data.name})} rel="noopener" target="_blank" image basic >
-                  <Icon name="sun"/>Weather map
+                  <Icon name="rain"/>Weather map
                 </Label>
               }
             </Table.Cell>

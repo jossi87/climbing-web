@@ -11,6 +11,7 @@ import { getAreaPdfUrl, getSectorPdfUrl, getProblemPdfUrl, getProblem, getSector
 import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
 import Linkify from 'react-linkify';
+import SunCalc from 'suncalc';
 
 const Problem = () => {
   const { loading, accessToken } = useAuth0();
@@ -230,6 +231,16 @@ const Problem = () => {
       tickModal = <TickModal accessToken={accessToken} idTick={-1} idProblem={data.id} grade={data.originalGrade} grades={data.metadata.grades} open={showTickModal} onClose={closeTickModal} comment={null} stars={null} date={null} />;
     }
   }
+  let lat;
+  let lng;
+  if (data.lat>0 && data.lng>0) {
+    lat = data.lat;
+    lng = data.lng;
+  } else if (data.sectorLat>0 && data.sectorLng>0) {
+    lat = data.sectorLat;
+    lng = data.sectorLng;
+  }
+  const times = (lat && lng) && SunCalc.getTimes(new Date(), lat, lng);
   return (
     <>
       <MetaTags>
@@ -416,7 +427,7 @@ const Problem = () => {
             </Table.Row>
           }
           <Table.Row verticalAlign="top">
-            <Table.Cell>Files and links:</Table.Cell>
+            <Table.Cell>Misc:</Table.Cell>
             <Table.Cell>
               <Label href={getProblemPdfUrl(accessToken, data.id)} rel="noreferrer noopener" target="_blank" image basic>
                 <Icon name="file pdf outline"/>{data.metadata.gradeSystem==='BOULDER'? "boulder.pdf" : "route.pdf"}
@@ -432,9 +443,15 @@ const Problem = () => {
                   <Icon name="map"/>Google Maps (navigate to parking)
                 </Label>
               }
-              {((data.lat>0 && data.lng>0) || (data.sectorLat>0 && data.sectorLng>0)) &&
-                <Label href={`/weather/` + JSON.stringify({lat: data.lat>0? data.lat : data.sectorLat, lng: data.lng>0? data.lng : data.sectorLng, label: data.areaName})} rel="noreferrer noopener" target="_blank" image basic >
-                  <Icon name="sun"/>Weather map
+              {times &&
+                <Label basic>
+                  <Icon name="sun"/>
+                  {times.sunrise.getHours() + ':' + times.sunrise.getMinutes() + ' - ' + times.sunset.getHours() + ':' + times.sunset.getMinutes()}
+                </Label>
+              }
+              {lat && lng &&
+                <Label href={`/weather/` + JSON.stringify({lat, lng, label: data.areaName})} rel="noreferrer noopener" target="_blank" image basic >
+                  <Icon name="rain"/>Weather map
                 </Label>
               }
             </Table.Cell>

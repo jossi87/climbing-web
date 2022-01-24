@@ -62,6 +62,7 @@
     "react-select": "^5.2.2",
     "remarkable": "^2.0.1",
     "semantic-ui-react": "^2.0.4",
+    "suncalc": "^1.8.0",
     "svg-path-parser": "^1.1.0",
     "svg-path-properties": "^1.0.11",
     "use-analytics": "0.0.5"
