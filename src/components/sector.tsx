@@ -8,12 +8,11 @@ import Activity from './common/activity/activity';
 import Leaflet from './common/leaflet/leaflet';
 import { calculateDistance } from './common/leaflet/distance-math';
 import Media from './common/media/media';
-import { Stars, LockSymbol, LoadingAndRestoreScroll } from './common/widgets/widgets';
+import { Stars, LockSymbol, LoadingAndRestoreScroll, SunLabel } from './common/widgets/widgets';
 import { Icon, Button, Tab, Breadcrumb, Table, Label, TableCell, List } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSector, getAreaPdfUrl, getSectorPdfUrl } from '../api';
 import Linkify from 'react-linkify';
-import SunCalc from 'suncalc';
 
 const SectorListItem = ({ problem, isClimbing }) => {
   let type = isClimbing? problem.t.subType + (problem.numPitches>1? ", " + problem.numPitches + " pitches" : "") : null;
@@ -154,7 +153,6 @@ const Sector = () => {
       {text}
     </a>
   );
-  const times = (data.lat>0 && data.lng>0) && SunCalc.getTimes(new Date(), data.lat, data.lng);
   return (
     <>
       <MetaTags>
@@ -222,16 +220,13 @@ const Sector = () => {
                   <Icon name="map"/>Google Maps (navigate to parking)
                 </Label>
               }
-              {times &&
-                <Label basic>
-                  <Icon name="sun"/>
-                  {times.sunrise.getHours() + ':' + times.sunrise.getMinutes() + ' - ' + times.sunset.getHours() + ':' + times.sunset.getMinutes()}
-                </Label>
-              }
               {data.lat>0 && data.lng>0 &&
-                <Label href={`/weather/` + JSON.stringify({lat: data.lat, lng: data.lng, label: data.areaName})} rel="noreferrer noopener" target="_blank" image basic >
-                  <Icon name="rain"/>Weather map
-                </Label>
+                <>
+                  <SunLabel lat={data.lat} lng={data.lng} />
+                  <Label href={`/weather/` + JSON.stringify({lat: data.lat, lng: data.lng, label: data.areaName})} rel="noreferrer noopener" target="_blank" image basic >
+                    <Icon name="rain"/>Weather map
+                  </Label>
+                </>
               }
             </Table.Cell>
           </Table.Row>

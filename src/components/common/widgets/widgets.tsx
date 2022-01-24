@@ -1,5 +1,6 @@
 import React from 'react';
 import { Segment, Message, Icon, Popup, Label } from 'semantic-ui-react';
+import SunCalc from 'suncalc';
 
 export function LockSymbol({lockedAdmin, lockedSuperadmin}) {
   if (lockedSuperadmin) {
@@ -66,4 +67,18 @@ export function InsufficientPrivileges() {
       Contact <a href="mailto:jostein.oygarden@gmail.com">Jostein Øygarden</a> if you want permissions.
     </Segment>
   )
+}
+
+export function SunLabel({ lat, lng }) {
+  if (lat && lng) {
+    const times = SunCalc.getTimes(new Date(), lat, lng);
+    return (
+      <Label basic>
+        <Icon name="sun"/>
+        {String(times.sunrise.getHours()).padStart(2,'0') + ':' + String(times.sunrise.getMinutes()).padStart(2,'0') + ' - ' + 
+         String(times.sunset.getHours()).padStart(2,'0') + ':' + String(times.sunset.getMinutes()).padStart(2,'0')}
+      </Label>
+    )
+  }
+  return null;
 }

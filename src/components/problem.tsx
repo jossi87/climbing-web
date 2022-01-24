@@ -5,13 +5,12 @@ import Leaflet from './common/leaflet/leaflet';
 import { calculateDistance } from './common/leaflet/distance-math';
 import Media from './common/media/media';
 import { Button, Grid, Breadcrumb, Tab, Label, Icon, Comment, Header, Segment, Table, Feed } from 'semantic-ui-react';
-import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
+import { LoadingAndRestoreScroll, LockSymbol, Stars, SunLabel } from './common/widgets/widgets';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getAreaPdfUrl, getSectorPdfUrl, getProblemPdfUrl, getProblem, getSector, postComment, postTodo } from '../api';
 import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
 import Linkify from 'react-linkify';
-import SunCalc from 'suncalc';
 
 const Problem = () => {
   const { loading, accessToken } = useAuth0();
@@ -240,7 +239,6 @@ const Problem = () => {
     lat = data.sectorLat;
     lng = data.sectorLng;
   }
-  const times = (lat && lng) && SunCalc.getTimes(new Date(), lat, lng);
   return (
     <>
       <MetaTags>
@@ -443,16 +441,13 @@ const Problem = () => {
                   <Icon name="map"/>Google Maps (navigate to parking)
                 </Label>
               }
-              {times &&
-                <Label basic>
-                  <Icon name="sun"/>
-                  {times.sunrise.getHours() + ':' + times.sunrise.getMinutes() + ' - ' + times.sunset.getHours() + ':' + times.sunset.getMinutes()}
-                </Label>
-              }
               {lat && lng &&
-                <Label href={`/weather/` + JSON.stringify({lat, lng, label: data.areaName})} rel="noreferrer noopener" target="_blank" image basic >
-                  <Icon name="rain"/>Weather map
-                </Label>
+                <>
+                  <SunLabel lat={lat} lng={lng} />
+                  <Label href={`/weather/` + JSON.stringify({lat, lng, label: data.areaName})} rel="noreferrer noopener" target="_blank" image basic >
+                    <Icon name="rain"/>Weather map
+                  </Label>
+                </>
               }
             </Table.Cell>
           </Table.Row>
