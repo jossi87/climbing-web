@@ -5,7 +5,7 @@ import Leaflet from './common/leaflet/leaflet';
 import { calculateDistance } from './common/leaflet/distance-math';
 import Media from './common/media/media';
 import { Button, Grid, Breadcrumb, Tab, Label, Icon, Comment, Header, Segment, Table, Feed } from 'semantic-ui-react';
-import { LoadingAndRestoreScroll, LockSymbol, Stars, SunLabel } from './common/widgets/widgets';
+import { LoadingAndRestoreScroll, LockSymbol, Stars, WeatherLabels } from './common/widgets/widgets';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getAreaPdfUrl, getSectorPdfUrl, getProblemPdfUrl, getProblem, getSector, postComment, postTodo } from '../api';
 import TickModal from './common/tick-modal/tick-modal';
@@ -424,6 +424,14 @@ const Problem = () => {
               </Table.Cell>
             </Table.Row>
           }
+          {lat && lng &&
+            <Table.Row>
+              <Table.Cell>Weather:</Table.Cell>
+              <Table.Cell>
+                <WeatherLabels lat={lat} lng={lng} label={data.name} />
+              </Table.Cell>
+            </Table.Row>
+          }
           <Table.Row verticalAlign="top">
             <Table.Cell>Misc:</Table.Cell>
             <Table.Cell>
@@ -440,14 +448,6 @@ const Problem = () => {
                 <Label href={`https://maps.google.com/maps?q=loc:${data.sectorLat},${data.sectorLng}&navigate=yes`} rel="noreferrer noopener" target="_blank" image basic >
                   <Icon name="map"/>Google Maps (navigate to parking)
                 </Label>
-              }
-              {lat && lng &&
-                <>
-                  <SunLabel lat={lat} lng={lng} />
-                  <Label href={`/webcam-map/` + JSON.stringify({lat, lng, label: data.areaName})} rel="noreferrer noopener" target="_blank" image basic >
-                    <Icon name="camera"/>Webcam Map
-                  </Label>
-                </>
               }
             </Table.Cell>
           </Table.Row>

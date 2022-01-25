@@ -7,7 +7,7 @@ import Activity from './common/activity/activity';
 import Leaflet from './common/leaflet/leaflet';
 import { calculateDistance } from './common/leaflet/distance-math';
 import Media from './common/media/media';
-import { LockSymbol, LoadingAndRestoreScroll, SunLabel } from './common/widgets/widgets';
+import { LockSymbol, LoadingAndRestoreScroll, WeatherLabels } from './common/widgets/widgets';
 import { Table, Label, Button, Tab, Item, Icon, Image, Breadcrumb, Segment, Header } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getArea, getImageUrl, getAreaPdfUrl } from '../api';
@@ -150,20 +150,20 @@ const Area = () => {
               <Table.Cell>{t.num}{t.ticked>0 && " (" + t.ticked + " ticked)"}</Table.Cell>
             </Table.Row>
           ))}
+          {data.lat>0 && data.lng>0 &&
+            <Table.Row>
+              <Table.Cell>Weather:</Table.Cell>
+              <Table.Cell>
+                <WeatherLabels lat={data.lat} lng={data.lng} label={data.name} />
+              </Table.Cell>
+            </Table.Row>
+          }
           <Table.Row>
             <Table.Cell>Misc:</Table.Cell>
             <Table.Cell>
               <Label href={getAreaPdfUrl(accessToken, data.id)} rel="noreferrer noopener" target="_blank" image basic>
                 <Icon name="file pdf outline"/>area.pdf
               </Label>
-              {data.lat>0 && data.lng>0 &&
-                <>
-                  <SunLabel lat={data.lat} lng={data.lng} />
-                  <Label href={`/webcam-map/` + JSON.stringify({lat: data.lat, lng: data.lng, label: data.name})} rel="noopener" target="_blank" image basic >
-                    <Icon name="camera"/>Webcam Map
-                  </Label>
-                </>
-              }
             </Table.Cell>
           </Table.Row>
           <Table.Row>

@@ -8,7 +8,7 @@ import Activity from './common/activity/activity';
 import Leaflet from './common/leaflet/leaflet';
 import { calculateDistance } from './common/leaflet/distance-math';
 import Media from './common/media/media';
-import { Stars, LockSymbol, LoadingAndRestoreScroll, SunLabel } from './common/widgets/widgets';
+import { Stars, LockSymbol, LoadingAndRestoreScroll, WeatherLabels } from './common/widgets/widgets';
 import { Icon, Button, Tab, Breadcrumb, Table, Label, TableCell, List } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSector, getAreaPdfUrl, getSectorPdfUrl } from '../api';
@@ -206,6 +206,14 @@ const Sector = () => {
               <Table.Cell><Linkify componentDecorator={componentDecorator}>{data.comment}</Linkify></Table.Cell>
             </Table.Row>
           }
+          {data.lat>0 && data.lng>0 &&
+            <Table.Row>
+              <Table.Cell>Weather:</Table.Cell>
+              <Table.Cell>
+                <WeatherLabels lat={data.lat} lng={data.lng} label={data.name} />
+              </Table.Cell>
+            </Table.Row>
+          }
           <Table.Row>
             <Table.Cell>Misc:</Table.Cell>
             <Table.Cell>
@@ -219,14 +227,6 @@ const Sector = () => {
                 <Label href={`https://maps.google.com/maps?q=loc:${data.lat},${data.lng}&navigate=yes`} rel="noreferrer noopener" target="_blank" image basic >
                   <Icon name="map"/>Google Maps (navigate to parking)
                 </Label>
-              }
-              {data.lat>0 && data.lng>0 &&
-                <>
-                  <SunLabel lat={data.lat} lng={data.lng} />
-                  <Label href={`/webcam-map/` + JSON.stringify({lat: data.lat, lng: data.lng, label: data.areaName})} rel="noreferrer noopener" target="_blank" image basic >
-                    <Icon name="camera"/>Webcam Map
-                  </Label>
-                </>
               }
             </Table.Cell>
           </Table.Row>

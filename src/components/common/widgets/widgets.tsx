@@ -69,15 +69,28 @@ export function InsufficientPrivileges() {
   )
 }
 
-export function SunLabel({ lat, lng }) {
+export function WeatherLabels({ lat, lng, label }) {
   if (lat && lng) {
     const times = SunCalc.getTimes(new Date(), lat, lng);
     return (
-      <Label basic>
-        <Icon name="sun"/>
-        {String(times.sunrise.getHours()).padStart(2,'0') + ':' + String(times.sunrise.getMinutes()).padStart(2,'0') + ' - ' + 
-         String(times.sunset.getHours()).padStart(2,'0') + ':' + String(times.sunset.getMinutes()).padStart(2,'0')}
-      </Label>
+      <>
+        <Label href={`https://www.yr.no/en/forecast/daily-table/${lat},${lng}`} rel="noopener" target="_blank" image basic >
+          <Icon name="rain"/>Yr.no
+        </Label>
+        <Label href={`/webcam-map/` + JSON.stringify({lat, lng, label})} rel="noopener" target="_blank" image basic >
+          <Icon name="camera"/>Webcam Map
+        </Label>
+        <Popup
+          content="Sunrise and sunset"
+          trigger={
+            <Label basic>
+              <Icon name="sun"/>
+              {String(times.sunrise.getHours()).padStart(2,'0') + ':' + String(times.sunrise.getMinutes()).padStart(2,'0') + ' - ' + 
+               String(times.sunset.getHours()).padStart(2,'0') + ':' + String(times.sunset.getMinutes()).padStart(2,'0')}
+            </Label>
+          }
+        />
+      </>
     )
   }
   return null;
