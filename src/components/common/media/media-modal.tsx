@@ -65,7 +65,14 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
   }
   else {
     if (m.embedUrl) {
-      content = <Embed as={Container} style={{minWidth: '640px', minHeight: '360px', backgroundColor: 'transparent'}} url={m.embedUrl} defaultActive={true} iframe={{allowFullScreen: true, style: {padding: 10}}}/>;
+      let style;
+      if (m.embedUrl.includes("vimeo")) {
+        style = {minWidth: '640px', minHeight: '360px', backgroundColor: 'transparent'};
+      }
+      else {
+        style = {minWidth: '320px', minHeight: '200px', backgroundColor: 'transparent'};
+      }
+      content = <Embed as={Container} style={style} url={m.embedUrl} defaultActive={true} iframe={{allowFullScreen: true, style: {padding: 10}}}/>;
     }
     else if (autoPlayVideo) {
       content = <ReactPlayer
