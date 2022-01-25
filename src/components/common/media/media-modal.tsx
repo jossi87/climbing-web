@@ -65,7 +65,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
   }
   else {
     if (m.embedUrl) {
-      content = <Embed as={Container} style={{minWidth: '640px', minHeight: '360px', backgroundColor: 'transparent'}} url={m.embedUrl} defaultActive={true}/>;
+      content = <Embed as={Container} style={{minWidth: '640px', minHeight: '360px', backgroundColor: 'transparent'}} url={m.embedUrl} defaultActive={true} iframe={{allowFullScreen: true, style: {padding: 10}}}/>;
     }
     else if (autoPlayVideo) {
       content = <ReactPlayer
