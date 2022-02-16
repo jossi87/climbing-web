@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
-import { Label, Grid, Statistic, Icon, Image, Card, Segment, Placeholder } from 'semantic-ui-react';
+import { Label, Grid, Statistic,  Icon, Image, Card, Segment, Placeholder } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getFrontpage, getImageUrl, numberWithCommas } from '../api';
@@ -64,6 +64,10 @@ const Frontpage = () => {
                 <Statistic>
                   <Statistic.Value><Icon name='film' /> {numberWithCommas(frontpage.numMovies)}</Statistic.Value>
                   <Statistic.Label>Ascents on video</Statistic.Label>
+                </Statistic>
+                <Statistic as={Link} to={"/donations"} color="blue">
+                  <Statistic.Value><Icon name='money' /></Statistic.Value>
+                  <Statistic.Label>Donations</Statistic.Label>
                 </Statistic>
               </Statistic.Group>
               {frontpage.randomMedia &&

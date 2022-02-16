@@ -9,7 +9,8 @@ const About = lazy(() => import(/* webpackChunkName: "about" */'./components/abo
 const Area = lazy(() => import(/* webpackChunkName: "area" */ './components/area'));
 const AreaEdit = lazy(() => import(/* webpackChunkName: "area-edit" */ './components/area-edit'));
 const Browse = lazy(() => import(/* webpackChunkName: "browse" */ './components/browse'));
-const Dangerous = lazy(() => import(/* webpackChunkName: "problem-hse" */'./components/dangerous'));
+const Dangerous = lazy(() => import(/* webpackChunkName: "dangerous" */'./components/dangerous'));
+const Donations = lazy(() => import(/* webpackChunkName: "donations" */'./components/donations'));
 const Frontpage = lazy(() => import(/* webpackPrefetch: true, webpackChunkName: "frontpage" */'./components/frontpage'));
 const Filter = lazy(() => import(/* webpackChunkName: "filter" */'./components/filter'));
 const MediaSvgEdit = lazy(() => import(/* webpackChunkName: "media-svg-edit" */'./components/media-svg-edit'));
@@ -68,6 +69,7 @@ const App = () => {
             <Route path='/area/:areaId' element={<Area/>}/>
             <Route path='/area/edit/:areaId' element={<AreaEdit/>}/>
             <Route path='/dangerous' element={<Dangerous/>}/>
+            <Route path='/donations' element={<Donations/>}/>
             <Route path='/filter' element={<Filter/>}/>
             <Route path='/media/svg-edit/:mediaId' element={<MediaSvgEdit/>}/>
             <Route path='/permissions' element={<Permissions/>}/>
