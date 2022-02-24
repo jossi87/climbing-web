@@ -146,7 +146,7 @@ const Problem = () => {
   if (markers.length>0) {
     const polyline = data.sectorPolyline && data.sectorPolyline.split(";").map(e => e.split(",").map(Number));
     var outlines;
-    if (data.sectorPolygonCoords) {
+    if (data.sectorPolygonCoords && (data.lat===0 && data.lng===0)) {
       const polygon = data.sectorPolygonCoords.split(";").map(c => {
         const latLng = c.split(",");
         return ([parseFloat(latLng[0]), parseFloat(latLng[1])]);
