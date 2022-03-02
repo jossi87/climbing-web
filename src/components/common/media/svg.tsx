@@ -104,9 +104,9 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
         if (svg.t==='PATH') {
           return Descent({path: svg.path, whiteNotBlack: true, scale, thumb, key});
         } else if (svg.t==='RAPPEL_BOLTED') {
-          return Rappel({x: svg.rappelX, y: svg.rappelY, bolted: true, scale, thumb, stroke: "white", key});
+          return Rappel({x: svg.rappelX, y: svg.rappelY, bolted: true, scale, thumb, backgroundColor: 'black', color: 'white', key});
         } else if (svg.t==='RAPPEL_NOT_BOLTED') {
-          return Rappel({x: svg.rappelX, y: svg.rappelY, bolted: false, scale, thumb, stroke: "white", key});
+          return Rappel({x: svg.rappelX, y: svg.rappelY, bolted: false, scale, thumb, backgroundColor: 'black', color: 'white', key});
         }
       });
     }
