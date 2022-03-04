@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { Auth0Provider } from './utils/react-auth0-spa';
 import CookieConsent from "react-cookie-consent";
 import { ErrorBoundary } from 'react-error-boundary'
-import App from './app';
+import App from './App';
 import './buldreinfo.css';
 import Analytics from 'analytics';
 import { AnalyticsProvider } from 'use-analytics';
