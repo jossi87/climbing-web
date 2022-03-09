@@ -6,9 +6,6 @@ import { parseReadOnlySvgs, parsePath } from '../utils/svg-utils';
 import { LoadingAndRestoreScroll, InsufficientPrivileges } from './common/widgets/widgets';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 
-interface ProblemIdMediaIdParams {
-  problemIdMediaId: string;
-}
 const SvgEdit = () => {
   const { accessToken, isAuthenticated, loading, loginWithRedirect } = useAuth0();
   const [mediaId, setMediaId] = useState(null);
@@ -26,13 +23,13 @@ const SvgEdit = () => {
   const [activePoint, setActivePoint] = useState(null);
   const [draggedPoint, setDraggedPoint] = useState(null);
   const [draggedCubic, setDraggedCubic] = useState(false);
-  const [hasAnchor, setHasAnchor] = useState(false);
+  const [hasAnchor, setHasAnchor] = useState(true);
   const [id, setId] = useState(null);
   const [metadata, setMetadata] = useState(null);
   const [addAnchor, setAddAnchor] = useState(false);
   const [addText, setAddText] = useState(false);
   const imageRef = useRef(null);
-  let { problemIdMediaId } = useParams<ProblemIdMediaIdParams>();
+  let { problemIdMediaId } = useParams();
   let navigate = useNavigate();
   let location = useLocation();
   const { outerWidth, outerHeight } = window;
@@ -278,7 +275,7 @@ const SvgEdit = () => {
     setActivePoint(0);
     setDraggedPoint(false);
     setDraggedCubic(false);
-    setHasAnchor(false);
+    setHasAnchor(true);
   };
 
   if (loading || (isAuthenticated && !metadata)) {
@@ -376,7 +373,7 @@ const SvgEdit = () => {
         label="SVG Path:"
         action={{
           labelPosition: 'right',
-          color: path===pathTxt? 'gray': 'blue',
+          color: path===pathTxt? 'grey': 'blue',
           icon: 'sync',
           content: 'Update',
           onClick: () => {
@@ -384,7 +381,7 @@ const SvgEdit = () => {
             setPoints(parsePath(pathTxt));
           }
         }}
-        fluid placeholder='SVG Path' value={pathTxt} onChange={(e, { value }) => {
+        fluid placeholder='SVG Path' value={pathTxt || ""} onChange={(e, { value }) => {
           setPathTxt(value);
         }}
       />
