@@ -12,7 +12,7 @@ const SvgEdit = () => {
   const [crc32, setCrc32] = useState(null);
   const [w, setW] = useState(null);
   const [h, setH] = useState(null);
-  const [ctrl, setCtrl] = useState(false);
+  const [shift, setShift] = useState(false);
   const [svgId, setSvgId] = useState(null);
   const [path, setPath] = useState(null);
   const [pathTxt, setPathTxt] = useState(null);
@@ -42,7 +42,7 @@ const SvgEdit = () => {
         setCrc32(data.crc32);
         setW(data.w);
         setH(data.h);
-        setCtrl(data.ctrl);
+        setShift(data.shift);
         setSvgId(data.svgId);
         setPath(data.path);
         setPathTxt(data.path);
@@ -69,11 +69,11 @@ const SvgEdit = () => {
   }, []);
 
   function handleKeyDown(e) {
-    if (e.ctrlKey || e.metaKey) setCtrl(true);
+    if (e.shiftKey) setShift(true);
   };
 
   function handleKeyUp(e) {
-    if (!e.ctrlKey && !e.metaKey) setCtrl(false);
+    if (!e.shiftKey) setShift(false);
   };
 
   function onAddAnchor() {
@@ -112,7 +112,7 @@ const SvgEdit = () => {
   };
 
   function handleOnClick(e) {
-    if (ctrl) {
+    if (shift) {
       points.push(getMouseCoords(e));
       if (points.length > 1) {
         const a = points[points.length-2];
@@ -178,7 +178,7 @@ const SvgEdit = () => {
 
   function handleMouseMove(e) {
     e.preventDefault();
-    if (!ctrl && !addAnchor && !addText) {
+    if (!shift && !addAnchor && !addText) {
       if (draggedPoint) {
         setPointCoords(getMouseCoords(e));
       } else if (draggedCubic !== false) {
@@ -209,14 +209,14 @@ const SvgEdit = () => {
   };
 
   function setCurrDraggedPoint(index) {
-    if (!ctrl && !addAnchor && !addText) {
+    if (!shift && !addAnchor && !addText) {
       setActivePoint(index);
       setDraggedPoint(true);
     }
   };
 
   function setCurrDraggedCubic(index, anchor) {
-    if (!ctrl && !addAnchor && !addText) {
+    if (!shift && !addAnchor && !addText) {
       setActivePoint(index);
       setDraggedCubic(anchor);
     }
@@ -266,7 +266,7 @@ const SvgEdit = () => {
   };
 
   function reset(e) {
-    setCtrl(false);
+    setShift(false);
     setPath(null);
     setPathTxt(null);
     setPoints([]);
@@ -352,7 +352,7 @@ const SvgEdit = () => {
             ]}/>
           </>
         }<br/>
-        <strong>CTRL + CLICK</strong> to add a point (command key on Mac) | <strong>CLICK</strong> to select a point | <strong>CLICK AND DRAG</strong> to move a point<br/>
+        <strong>SHIFT + CLICK</strong> to add a point | <strong>CLICK</strong> to select a point | <strong>CLICK AND DRAG</strong> to move a point<br/>
         {activePoint !== 0 && (
           <Dropdown selection value={!!points[activePoint].c? "C" : "L"} onChange={setPointType} options={[
             {key: 1, value: "L", text: 'Selected point: Line to'},
