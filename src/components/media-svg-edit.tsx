@@ -42,11 +42,11 @@ const SvgEdit = () => {
   }, []);
 
   function handleKeyDown(e) {
-    if (e.ctrlKey) setCtrl(true);
+    if (e.ctrlKey || e.metaKey) setCtrl(true);
   };
 
   function handleKeyUp(e) {
-    if (!e.ctrlKey) setCtrl(false);
+    if (!e.ctrlKey && !e.metaKey) setCtrl(false);
   };
 
   function save(event) {
@@ -338,7 +338,7 @@ const SvgEdit = () => {
         <br/>
         {activeElementIndex>=0 && data.m.mediaSvgs[activeElementIndex] && data.m.mediaSvgs[activeElementIndex].t==='PATH' && (
           <>
-            <strong>CTRL + CLICK</strong> to add a point | <strong>CLICK</strong> to select a point | <strong>CLICK AND DRAG</strong> to move a point<br/>
+            <strong>CTRL + CLICK</strong> to add a point (command key on Mac) | <strong>CLICK</strong> to select a point | <strong>CLICK AND DRAG</strong> to move a point<br/>
             {activePoint !== 0 && (
               <Dropdown selection value={!!data.m.mediaSvgs[activeElementIndex].points[activePoint].c? "C" : "L"} onChange={setPointType} options={[
                 {key: 1, value: "L", text: 'Selected point: Line to'},
