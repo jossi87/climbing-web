@@ -24,7 +24,8 @@ const WebcamMap = () => {
       name: c.name,
       lastUpdated: c.lastUpdated,
       urlStillImage: c.urlStillImage,
-      urlYr: c.urlYr
+      urlYr: c.urlYr,
+      urlOther: c.urlOther
     }
   });
   let defaultCenter = data.metadata.defaultCenter;

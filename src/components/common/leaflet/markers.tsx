@@ -33,10 +33,11 @@ export default function Markers({ navigate, opacity, markers, addEventHandlers }
         return (
           <Marker icon={weatherIcon} position={[m.lat, m.lng]} key={i}>
             <Popup>
-              <b>{m.name}</b> (<i>{m.lastUpdated}</i>)
+              <b>{m.name}</b>{i.lastUpdated && <> (<i>{m.lastUpdated}</i>)</>}
               <a rel='noreferrer noopener' target='_blank' href={m.urlStillImage}><img style={{maxWidth: '225px'}} src={m.urlStillImage}/></a><br/>
               <i>Click on image to open in new tab</i><br/><br/>
-              <a rel='noreferrer noopener' target='_blank' href={m.urlYr}>yr.no weather forecast</a>
+              {m.urlYr && <a rel='noreferrer noopener' target='_blank' href={m.urlYr}>yr.no weather forecast</a>}
+              {m.urlOther && <a rel='noreferrer noopener' target='_blank' href={m.urlOther}>{m.urlOther}</a>}
             </Popup>
           </Marker>
         );
