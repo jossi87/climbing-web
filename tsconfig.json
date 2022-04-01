@@ -1,15 +1,36 @@
 {
-    "compilerOptions": {
-        "allowJs": true,
-        "outDir": "./dist/",
-        "module": "ESNext",
-        "jsx": "react",
-        "moduleResolution": "node",
-        "noImplicitThis": true,
-        "sourceMap": true,
-        "esModuleInterop": true
-    },
-    "include": [
-        "./src/**/*", "server.js"
-    ]
+  "compilerOptions": {
+    // Basic options
+    "rootDir": "./",
+    "module": "ESNext",
+
+    "sourceMap": true,
+    "allowJs": true,
+    "jsx": "preserve",
+    "checkJs": false,
+
+    // we rely on bable for transpiling ts(x) js(x)
+    "noEmit": true,
+
+    // Stict type checking
+    "strict": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noUnusedParameters": false,
+    "alwaysStrict": true,
+
+    // Module Resolution
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ESNext",
+
+    // Error Handling
+    "pretty": true,
+  },
+  "include": [
+    "./src/**/*", "server.js"
+  ]
 }
