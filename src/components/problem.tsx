@@ -445,7 +445,7 @@ const Problem = () => {
                 <Icon name="file pdf outline"/>area.pdf
               </Label>
               {data.sectorLat>0 && data.sectorLng>0 &&
-                <Label href={`https://maps.google.com/maps?q=loc:${data.sectorLat},${data.sectorLng}&navigate=yes`} rel="noreferrer noopener" target="_blank" image basic >
+                <Label href={`https://maps.google.com/maps?q=${data.sectorLat},${data.sectorLng}`} rel="noreferrer noopener" target="_blank" image basic >
                   <Icon name="map"/>Google Maps (navigate to parking)
                 </Label>
               }
