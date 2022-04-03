@@ -6,16 +6,13 @@ import { parseReadOnlySvgs, parsePath } from '../utils/svg-utils';
 import { LoadingAndRestoreScroll, InsufficientPrivileges } from './common/widgets/widgets';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 
-interface ProblemIdMediaIdParams {
-  problemIdMediaId: string;
-}
 const SvgEdit = () => {
   const { accessToken, isAuthenticated, loading, loginWithRedirect } = useAuth0();
   const [mediaId, setMediaId] = useState(null);
   const [crc32, setCrc32] = useState(null);
   const [w, setW] = useState(null);
   const [h, setH] = useState(null);
-  const [ctrl, setCtrl] = useState(false);
+  const [shift, setShift] = useState(false);
   const [svgId, setSvgId] = useState(null);
   const [path, setPath] = useState(null);
   const [pathTxt, setPathTxt] = useState(null);
@@ -26,13 +23,13 @@ const SvgEdit = () => {
   const [activePoint, setActivePoint] = useState(null);
   const [draggedPoint, setDraggedPoint] = useState(null);
   const [draggedCubic, setDraggedCubic] = useState(false);
-  const [hasAnchor, setHasAnchor] = useState(false);
+  const [hasAnchor, setHasAnchor] = useState(true);
   const [id, setId] = useState(null);
   const [metadata, setMetadata] = useState(null);
   const [addAnchor, setAddAnchor] = useState(false);
   const [addText, setAddText] = useState(false);
   const imageRef = useRef(null);
-  let { problemIdMediaId } = useParams<ProblemIdMediaIdParams>();
+  let { problemIdMediaId } = useParams();
   let navigate = useNavigate();
   let location = useLocation();
   const { outerWidth, outerHeight } = window;
@@ -45,7 +42,7 @@ const SvgEdit = () => {
         setCrc32(data.crc32);
         setW(data.w);
         setH(data.h);
-        setCtrl(data.ctrl);
+        setShift(data.shift);
         setSvgId(data.svgId);
         setPath(data.path);
         setPathTxt(data.path);
@@ -72,11 +69,11 @@ const SvgEdit = () => {
   }, []);
 
   function handleKeyDown(e) {
-    if (e.ctrlKey) setCtrl(true);
+    if (e.shiftKey) setShift(true);
   };
 
   function handleKeyUp(e) {
-    if (!e.ctrlKey) setCtrl(false);
+    if (!e.shiftKey) setShift(false);
   };
 
   function onAddAnchor() {
@@ -115,7 +112,7 @@ const SvgEdit = () => {
   };
 
   function handleOnClick(e) {
-    if (ctrl) {
+    if (shift) {
       points.push(getMouseCoords(e));
       if (points.length > 1) {
         const a = points[points.length-2];
@@ -181,7 +178,7 @@ const SvgEdit = () => {
 
   function handleMouseMove(e) {
     e.preventDefault();
-    if (!ctrl && !addAnchor && !addText) {
+    if (!shift && !addAnchor && !addText) {
       if (draggedPoint) {
         setPointCoords(getMouseCoords(e));
       } else if (draggedCubic !== false) {
@@ -212,14 +209,14 @@ const SvgEdit = () => {
   };
 
   function setCurrDraggedPoint(index) {
-    if (!ctrl && !addAnchor && !addText) {
+    if (!shift && !addAnchor && !addText) {
       setActivePoint(index);
       setDraggedPoint(true);
     }
   };
 
   function setCurrDraggedCubic(index, anchor) {
-    if (!ctrl && !addAnchor && !addText) {
+    if (!shift && !addAnchor && !addText) {
       setActivePoint(index);
       setDraggedCubic(anchor);
     }
@@ -269,7 +266,7 @@ const SvgEdit = () => {
   };
 
   function reset(e) {
-    setCtrl(false);
+    setShift(false);
     setPath(null);
     setPathTxt(null);
     setPoints([]);
@@ -278,7 +275,7 @@ const SvgEdit = () => {
     setActivePoint(0);
     setDraggedPoint(false);
     setDraggedCubic(false);
-    setHasAnchor(false);
+    setHasAnchor(true);
   };
 
   if (loading || (isAuthenticated && !metadata)) {
@@ -355,7 +352,7 @@ const SvgEdit = () => {
             ]}/>
           </>
         }<br/>
-        <strong>CTRL + CLICK</strong> to add a point | <strong>CLICK</strong> to select a point | <strong>CLICK AND DRAG</strong> to move a point<br/>
+        <strong>SHIFT + CLICK</strong> to add a point | <strong>CLICK</strong> to select a point | <strong>CLICK AND DRAG</strong> to move a point<br/>
         {activePoint !== 0 && (
           <Dropdown selection value={!!points[activePoint].c? "C" : "L"} onChange={setPointType} options={[
             {key: 1, value: "L", text: 'Selected point: Line to'},
@@ -376,7 +373,7 @@ const SvgEdit = () => {
         label="SVG Path:"
         action={{
           labelPosition: 'right',
-          color: path===pathTxt? 'gray': 'blue',
+          color: path===pathTxt? 'grey': 'blue',
           icon: 'sync',
           content: 'Update',
           onClick: () => {
@@ -384,7 +381,7 @@ const SvgEdit = () => {
             setPoints(parsePath(pathTxt));
           }
         }}
-        fluid placeholder='SVG Path' value={pathTxt} onChange={(e, { value }) => {
+        fluid placeholder='SVG Path' value={pathTxt || ""} onChange={(e, { value }) => {
           setPathTxt(value);
         }}
       />

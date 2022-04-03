@@ -15,7 +15,7 @@ const SvgEdit = () => {
   const [data, setData] = useState(null);
   const [forceUpdate, setForceUpdate] = useState(0);
   const [activeElementIndex, setActiveElementIndex] = useState(-1);
-  const [ctrl, setCtrl] = useState(false);
+  const [shift, setShift] = useState(false);
   const [activePoint, setActivePoint] = useState(null);
   const [draggedPoint, setDraggedPoint] = useState(null);
   const [draggedCubic, setDraggedCubic] = useState(false);
@@ -42,11 +42,11 @@ const SvgEdit = () => {
   }, []);
 
   function handleKeyDown(e) {
-    if (e.ctrlKey) setCtrl(true);
+    if (e.shiftKey) setShift(true);
   };
 
   function handleKeyUp(e) {
-    if (!e.ctrlKey) setCtrl(false);
+    if (!e.shiftKey) setShift(false);
   };
 
   function save(event) {
@@ -75,7 +75,7 @@ const SvgEdit = () => {
   };
 
   function handleOnClick(e) {
-    if (ctrl && activeElementIndex!=-1 && data.m.mediaSvgs[activeElementIndex] && data.m.mediaSvgs[activeElementIndex].points) {
+    if (shift && activeElementIndex!=-1 && data.m.mediaSvgs[activeElementIndex] && data.m.mediaSvgs[activeElementIndex].points) {
       let coords = getMouseCoords(e);
       let points = data.m.mediaSvgs[activeElementIndex].points
       points.push(coords);
@@ -116,7 +116,7 @@ const SvgEdit = () => {
 
   function handleMouseMove(e) {
     e.preventDefault();
-    if (!ctrl) {
+    if (!shift) {
       if (draggedPoint) {
         setPointCoords(getMouseCoords(e));
       } else if (draggedCubic !== false) {
@@ -151,14 +151,14 @@ const SvgEdit = () => {
   };
 
   function setCurrDraggedPoint(index) {
-    if (!ctrl) {
+    if (!shift) {
       setActivePoint(index);
       setDraggedPoint(true);
     }
   };
 
   function setCurrDraggedCubic(index, anchor) {
-    if (!ctrl) {
+    if (!shift) {
       setActivePoint(index);
       setDraggedCubic(anchor);
     }
@@ -214,7 +214,7 @@ const SvgEdit = () => {
     data.m.mediaSvgs = [];
     setData(data);
     setActiveElementIndex(-1);
-    setCtrl(false);
+    setShift(false);
     setActivePoint(0);
     setDraggedPoint(false);
     setDraggedCubic(false);
@@ -338,7 +338,7 @@ const SvgEdit = () => {
         <br/>
         {activeElementIndex>=0 && data.m.mediaSvgs[activeElementIndex] && data.m.mediaSvgs[activeElementIndex].t==='PATH' && (
           <>
-            <strong>CTRL + CLICK</strong> to add a point | <strong>CLICK</strong> to select a point | <strong>CLICK AND DRAG</strong> to move a point<br/>
+            <strong>SHIFT + CLICK</strong> to add a point | <strong>CLICK</strong> to select a point | <strong>CLICK AND DRAG</strong> to move a point<br/>
             {activePoint !== 0 && (
               <Dropdown selection value={!!data.m.mediaSvgs[activeElementIndex].points[activePoint].c? "C" : "L"} onChange={setPointType} options={[
                 {key: 1, value: "L", text: 'Selected point: Line to'},

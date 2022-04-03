@@ -19,11 +19,9 @@ export function Descent({path, whiteNotBlack, scale, thumb, key}) {
   )
 }
 
-export function Rappel({x, y, bolted, scale, thumb, stroke, key}) {
-  const strokeWidth = 0.0015*scale*(thumb? 2 : 1);
-  const r = 0.005*scale*(thumb? 2 : 1);
+function Anchor({strokeWidth, r, x, y, bolted, stroke}) {
   return (
-    <g opacity={0.9} key={key}>
+    <g opacity={0.9}>
       {bolted?
         <circle strokeLinecap="round" cx={x} cy={y} r={r} fill="none" strokeWidth={strokeWidth} stroke={stroke} />
       :
@@ -36,6 +34,17 @@ export function Rappel({x, y, bolted, scale, thumb, stroke, key}) {
       <line strokeLinecap="round" x1={x} y1={y+r} x2={x} y2={y+r+r+r} strokeWidth={strokeWidth} stroke={stroke} />
       <line strokeLinecap="round" x1={x-r} y1={y+r+r} x2={x} y2={y+r+r+r} strokeWidth={strokeWidth} stroke={stroke} />
       <line strokeLinecap="round" x1={x+r} y1={y+r+r} x2={x} y2={y+r+r+r} strokeWidth={strokeWidth} stroke={stroke} />
+    </g>
+  );
+}
+
+export function Rappel({x, y, bolted, scale, thumb, backgroundColor, color, key}) {
+  const strokeWidth = 0.0015*scale*(thumb? 2 : 1);
+  const r = 0.005*scale*(thumb? 2 : 1);
+  return (
+    <g key={key}>
+      {Anchor({strokeWidth: (strokeWidth*2), r, x, y, bolted, stroke: backgroundColor})}
+      {Anchor({strokeWidth, r, x, y, bolted, stroke: color})}
     </g>
   );
 }
@@ -98,13 +107,14 @@ export function parsePath(d) {
 
 export function parseReadOnlySvgs(readOnlySvgs, w, h, minWindowScale) {
   const shapes = [];
-  const stroke = "white";
+  const backgroundColor = "black";
+  const color = "white";
   const scale = Math.max(w, h, minWindowScale);
   for (let svg of readOnlySvgs) {
     if (svg.t==='PATH') {
       shapes.push(Descent({path: svg.path, whiteNotBlack: true, scale, thumb: false, key: shapes.length}));
     } else if (svg.t==="RAPPEL_BOLTED" || svg.t==='RAPPEL_NOT_BOLTED') {
-      shapes.push(Rappel({x: svg.rappelX, y: svg.rappelY, bolted: svg.t==='RAPPEL_BOLTED', scale, thumb: false, stroke, key: shapes.length}));
+      shapes.push(Rappel({x: svg.rappelX, y: svg.rappelY, bolted: svg.t==='RAPPEL_BOLTED', scale, thumb: false, backgroundColor, color, key: shapes.length}));
     } else {
       shapes.push(<path key={shapes.length} d={svg.path} className={"buldreinfo-svg-edit-opacity"} style={{fill: "none", stroke: "#000000"}} strokeWidth={0.003*w} strokeDasharray={0.006*w}/>);
       const commands = parseSVG(svg.path);

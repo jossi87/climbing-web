@@ -146,7 +146,7 @@ const Problem = () => {
   if (markers.length>0) {
     const polyline = data.sectorPolyline && data.sectorPolyline.split(";").map(e => e.split(",").map(Number));
     var outlines;
-    if (data.sectorPolygonCoords) {
+    if (data.sectorPolygonCoords && (data.lat===0 && data.lng===0)) {
       const polygon = data.sectorPolygonCoords.split(";").map(c => {
         const latLng = c.split(",");
         return ([parseFloat(latLng[0]), parseFloat(latLng[1])]);
@@ -445,7 +445,7 @@ const Problem = () => {
                 <Icon name="file pdf outline"/>area.pdf
               </Label>
               {data.sectorLat>0 && data.sectorLng>0 &&
-                <Label href={`https://maps.google.com/maps?q=loc:${data.sectorLat},${data.sectorLng}&navigate=yes`} rel="noreferrer noopener" target="_blank" image basic >
+                <Label href={`https://maps.google.com/maps?q=${data.sectorLat},${data.sectorLng}`} rel="noreferrer noopener" target="_blank" image basic >
                   <Icon name="map"/>Google Maps (navigate to parking)
                 </Label>
               }

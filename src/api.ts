@@ -468,7 +468,7 @@ export function getSvgEdit(accessToken: string, problemIdMediaId: string): Promi
       nr: res.nr,
       w: m.width,
       h: m.height,
-      ctrl: false,
+      shift: false,
       svgId: svgId,
       path: path,
       anchors: anchors,

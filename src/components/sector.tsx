@@ -73,6 +73,8 @@ const Sector = () => {
         rock: p.rock
       }
   });
+  // Only add polygon if problemMarkers=0 or site is showing sport climbing
+  let addPolygon = data.metadata.gradeSystem==='CLIMBING' || markers.length==0;
   if (data.lat>0 && data.lng>0) {
     markers.push({
       lat: data.lat,
@@ -101,7 +103,7 @@ const Sector = () => {
     const defaultZoom = data.lat && data.lat>0? 15 : data.metadata.defaultZoom;
     let polyline = data.polyline && data.polyline.split(";").map(e => e.split(",").map(Number));
     var outlines;
-    if (data.polygonCoords) {
+    if (data.polygonCoords && addPolygon) {
       const polygon = data.polygonCoords.split(";").map(c => {
         const latLng = c.split(",");
         return ([parseFloat(latLng[0]), parseFloat(latLng[1])]);
@@ -224,7 +226,7 @@ const Sector = () => {
                 <Icon name="file pdf outline"/>area.pdf
               </Label>
               {data.lat>0 && data.lng>0 &&
-                <Label href={`https://maps.google.com/maps?q=loc:${data.lat},${data.lng}&navigate=yes`} rel="noreferrer noopener" target="_blank" image basic >
+                <Label href={`https://maps.google.com/maps?q=${data.lat},${data.lng}`} rel="noreferrer noopener" target="_blank" image basic >
                   <Icon name="map"/>Google Maps (navigate to parking)
                 </Label>
               }
