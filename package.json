@@ -42,14 +42,8 @@
     "leaflet.fullscreen": "^1.6.0",
     "leaflet.locatecontrol": "^0.76.0",
     "leaflet.markercluster": "^1.5.3",
-<<<<<<< HEAD
-    "package-lock-only": "^0.0.4",
-    "puppeteer": "^13.3.2",
-    "react": "^17.0.2",
-=======
     "puppeteer": "^13.5.2",
     "react": "^18.0.0",
->>>>>>> f1df3bfeec12d826b1bd2bccd008fd86f81792f7
     "react-cookie-consent": "^7.3.1",
     "react-day-picker": "^7.4.10",
     "react-dom": "^18.0.0",
