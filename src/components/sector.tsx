@@ -8,7 +8,7 @@ import Activity from './common/activity/activity';
 import Leaflet from './common/leaflet/leaflet';
 import { calculateDistance } from './common/leaflet/distance-math';
 import Media from './common/media/media';
-import { Stars, LockSymbol, LoadingAndRestoreScroll, WeatherLabels } from './common/widgets/widgets';
+import { Stars, LockSymbol, Loading, WeatherLabels } from './common/widgets/widgets';
 import { Icon, Button, Tab, Breadcrumb, Table, Label, TableCell, List } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSector, getAreaPdfUrl, getSectorPdfUrl } from '../api';
@@ -60,7 +60,7 @@ const Sector = () => {
   }, [loading, accessToken, sectorId]);
 
   if (!data) {
-    return <LoadingAndRestoreScroll />;
+    return <Loading />;
   }
 
   let isBouldering = data.metadata.gradeSystem==='BOULDER';

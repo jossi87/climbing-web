@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ImageUpload from './common/image-upload/image-upload';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getProblem, postProblemMedia } from '../api';
-import { LoadingAndRestoreScroll } from './common/widgets/widgets';
+import { Loading } from './common/widgets/widgets';
 import { Segment, Button } from 'semantic-ui-react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 
@@ -40,7 +40,7 @@ const ProblemEditMedia = () => {
   }
 
   if (loading || (isAuthenticated && !id)) {
-    return <LoadingAndRestoreScroll />;
+    return <Loading />;
   } else if (!isAuthenticated) {
     loginWithRedirect({appState: { targetUrl: location.pathname }});
   }

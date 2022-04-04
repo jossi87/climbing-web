@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
-import { LoadingAndRestoreScroll } from './common/widgets/widgets';
+import { Loading } from './common/widgets/widgets';
 import { getTrash, putTrash } from '../api';
 import { Segment, Icon, Header, List, Button } from 'semantic-ui-react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -22,7 +22,7 @@ const Trash = () => {
   }, [loading, accessToken]);
 
   if (loading || (isAuthenticated && !data)) {
-    return <LoadingAndRestoreScroll />;
+    return <Loading />;
   } else if (!isAuthenticated) {
     loginWithRedirect({appState: { targetUrl: location.pathname }});
   } else if (!data.metadata.isSuperAdmin) {

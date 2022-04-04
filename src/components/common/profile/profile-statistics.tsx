@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Chart from '../chart/chart';
 import ProblemList from '../problem-list/problem-list';
-import { LoadingAndRestoreScroll, LockSymbol, Stars } from '../widgets/widgets';
+import { Loading, LockSymbol, Stars } from '../widgets/widgets';
 import { Icon, List, Label, Segment, Divider, Button } from 'semantic-ui-react';
 import { getProfileStatistics, numberWithCommas, getUsersTicks } from '../../../api';
 import { saveAs } from 'file-saver';
@@ -32,7 +32,7 @@ const ProfileStatistics = ({ accessToken, userId, canDownload }) => {
   }, [accessToken, userId]);
 
   if (!data) {
-    return <LoadingAndRestoreScroll />;
+    return <Loading />;
   }
   var numTicks = data.ticks.filter(t => !t.fa).length;
   var numFas = data.ticks.filter(t => t.fa).length;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LoadingAndRestoreScroll } from '../widgets/widgets';
+import { Loading } from '../widgets/widgets';
 import { Table, Header, Image } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { getTop } from '../../../api';
@@ -14,7 +14,7 @@ const Top = ({idArea, idSector}) => {
   }, [idArea, idSector]);
 
   if (!top) {
-    return <LoadingAndRestoreScroll />;
+    return <Loading />;
   }
   const rows = top.map((t, i) =>
     <Table.Row key={i}>

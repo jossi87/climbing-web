@@ -1,10 +1,11 @@
 import React, { Suspense, lazy, useEffect } from 'react';
 import { Button, Icon, Container, Divider, Grid, Header, List, Segment } from 'semantic-ui-react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
-import { LoadingAndRestoreScroll } from './components/common/widgets/widgets';
+import { Loading } from './components/common/widgets/widgets';
 import { useAnalytics } from 'use-analytics';
 
 import Navigation from './components/navigation';
+import ScrollToTop from './utils/scroll-to-top';
 const About = lazy(() => import(/* webpackChunkName: "about" */'./components/about'));
 const Area = lazy(() => import(/* webpackChunkName: "area" */ './components/area'));
 const AreaEdit = lazy(() => import(/* webpackChunkName: "area-edit" */ './components/area-edit'));
@@ -61,7 +62,8 @@ const App = () => {
     <div style={{background: "#F5F5F5"}}>
       <Navigation />
       <Container style={{ marginTop: '1em' }}>
-        <Suspense fallback={<LoadingAndRestoreScroll />}>
+        <Suspense fallback={<Loading />}>
+          <ScrollToTop>
           <Routes>
             <Route path='/' element={<Frontpage/>}/>
             <Route path='/about' element={<About/>}/>
@@ -91,6 +93,7 @@ const App = () => {
             <Route path='/webcam-map' element={<WebcamMap/>}/>
             <Route path='/webcam-map/:json' element={<WebcamMap/>}/>
           </Routes>
+          </ScrollToTop>
         </Suspense>
       </Container>
       <Segment inverted vertical style={{ margin: '5em 0em 0em', padding: '5em 0em' }}>

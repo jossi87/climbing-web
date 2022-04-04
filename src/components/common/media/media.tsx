@@ -6,7 +6,7 @@ import { Card, Image } from 'semantic-ui-react';
 import MediaModal from './media-modal';
 import Svg from './svg';
 import { useAuth0 } from '../../../utils/react-auth0-spa';
-import { LoadingAndRestoreScroll } from '../widgets/widgets';
+import { Loading } from '../widgets/widgets';
 
 const style = {objectFit: 'cover', position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, width: '100%', height: '100%'};
 
@@ -139,7 +139,7 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
   }
 
   if (loading) {
-    return <LoadingAndRestoreScroll />;
+    return <Loading />;
   }
   if (location.search && media) {
     let id = location.search.replace("?idMedia=","");

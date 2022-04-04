@@ -3,7 +3,7 @@ import { Container, Button, Label, Icon, Segment, Dropdown } from 'semantic-ui-r
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getMediaSvg, getImageUrl, postMediaSvg } from '../api';
 import { Rappel, parseReadOnlySvgs, parsePath } from '../utils/svg-utils';
-import { LoadingAndRestoreScroll, InsufficientPrivileges } from './common/widgets/widgets';
+import { Loading, InsufficientPrivileges } from './common/widgets/widgets';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 
 
@@ -222,7 +222,7 @@ const SvgEdit = () => {
   };
 
   if (loading || (isAuthenticated && !data)) {
-    return <LoadingAndRestoreScroll />;
+    return <Loading />;
   } else if (!isAuthenticated) {
     loginWithRedirect({appState: { targetUrl: location.pathname }});
   } else if (!data.metadata.isAdmin) {

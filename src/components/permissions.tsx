@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
-import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
+import { Loading, LockSymbol } from './common/widgets/widgets';
 import { getPermissions, postPermissions } from '../api';
 import { Header, Icon, Segment, Image, Dropdown, Card } from 'semantic-ui-react';
 import { Link, useLocation } from 'react-router-dom';
@@ -21,7 +21,7 @@ const Permissions = () => {
   }, [loading, accessToken]);
 
   if (loading || (isAuthenticated && !data)) {
-    return <LoadingAndRestoreScroll />;
+    return <Loading />;
   } else if (!isAuthenticated) {
     loginWithRedirect({appState: { targetUrl: location.pathname }});
   } else if (!data.metadata.isSuperAdmin) {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LoadingAndRestoreScroll } from '../widgets/widgets';
+import { Loading } from '../widgets/widgets';
 import { Popup, Table } from 'semantic-ui-react'
 import { getGradeDistribution } from './../../../api';
 
@@ -15,7 +15,7 @@ const ChartGradeDistribution = ({accessToken, idArea, idSector, data}) => {
   }, [accessToken, idArea, idSector]);
 
   if (!gradeDistribution) {
-    return <LoadingAndRestoreScroll />;
+    return <Loading />;
   }
   const maxValue = Math.max.apply(Math, gradeDistribution.map(d => {return d.num}));
   const cols = gradeDistribution.map((g, i) => {
