@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import { Header, Segment, Icon } from 'semantic-ui-react';
-import { LoadingAndRestoreScroll } from './common/widgets/widgets';
+import { Loading } from './common/widgets/widgets';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getCg } from '../api';
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
@@ -17,7 +17,7 @@ const Toc = () => {
   }, [loading, accessToken]);
 
   if (!data) {
-    return <LoadingAndRestoreScroll />;
+    return <Loading />;
   }
   return (
     <>

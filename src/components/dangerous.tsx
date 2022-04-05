@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import { HashLink } from 'react-router-hash-link';
-import { LockSymbol, LoadingAndRestoreScroll } from './common/widgets/widgets';
+import { LockSymbol, Loading } from './common/widgets/widgets';
 import { Segment, Icon, List, Header } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getDangerous } from '../api';
@@ -16,7 +16,7 @@ const Dangerous = () => {
   }, [loading, accessToken]);
 
   if (!data) {
-    return <LoadingAndRestoreScroll />;
+    return <Loading />;
   }
   return (
     <>

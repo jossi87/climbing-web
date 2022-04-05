@@ -9,7 +9,7 @@ import { Icon, Form, Button, Input, Dropdown, TextArea, Segment, Message, Contai
 import Leaflet from './common/leaflet/leaflet';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getProblemEdit, convertFromDateToString, convertFromStringToDate, postProblem, getSector } from '../api';
-import { LoadingAndRestoreScroll, InsufficientPrivileges } from './common/widgets/widgets';
+import { Loading, InsufficientPrivileges } from './common/widgets/widgets';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 
 const ProblemEdit = () => {
@@ -191,7 +191,7 @@ const ProblemEdit = () => {
   }
 
   if (loading || (isAuthenticated && !data)) {
-    return <LoadingAndRestoreScroll />;
+    return <Loading />;
   } else if (!isAuthenticated) {
     loginWithRedirect({appState: { targetUrl: location.pathname }});
   } else if (!data.metadata.isAdmin) {

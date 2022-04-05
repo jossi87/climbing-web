@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import ImageUpload from './common/image-upload/image-upload';
-import { LoadingAndRestoreScroll, InsufficientPrivileges } from './common/widgets/widgets';
+import { Loading, InsufficientPrivileges } from './common/widgets/widgets';
 import { Checkbox, Form, Button, Input, Dropdown, TextArea, Segment, Icon, Message } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSectorEdit, postSector, getSector } from '../api';
@@ -113,7 +113,7 @@ const SectorEdit = () => {
   }
 
   if (loading || (isAuthenticated && !data)) {
-    return <LoadingAndRestoreScroll />;
+    return <Loading />;
   } else if (!isAuthenticated) {
     loginWithRedirect({appState: { targetUrl: location.pathname }});
   } else if (!data.metadata.isAdmin) {

@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import MetaTags from 'react-meta-tags';
 import Leaflet from './common/leaflet/leaflet';
 import { Segment, Header, Icon } from 'semantic-ui-react';
-import { LoadingAndRestoreScroll } from './common/widgets/widgets';
+import { Loading } from './common/widgets/widgets';
 import { getCameras } from '../api';
 
 const WebcamMap = () => {
@@ -14,7 +14,7 @@ const WebcamMap = () => {
     getCameras().then((data) => setData(data));
   }, []);
   if (!data) {
-    return <LoadingAndRestoreScroll />;
+    return <Loading />;
   }
   const markers = data.cameras.filter(c => c.lat!=0 && c.lng!=0).map(c => {
     return {

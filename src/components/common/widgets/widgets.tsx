@@ -47,8 +47,7 @@ export function Stars({numStars, includeNoRating}) {
   return null;
 }
 
-export function LoadingAndRestoreScroll() {
-  window.scrollTo(0, 0);
+export function Loading() {
   return (
     <Message icon style={{backgroundColor: "white"}}>
       <Icon name='circle notched' loading />

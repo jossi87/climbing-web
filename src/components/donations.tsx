@@ -3,7 +3,6 @@ import MetaTags from 'react-meta-tags';
 import { Segment, Header, Icon } from 'semantic-ui-react';
 
 const Donations = () => {
-  window.scrollTo(0, 0);
   return (
     <>
       <MetaTags>

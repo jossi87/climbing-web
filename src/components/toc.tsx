@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import { HashLink } from 'react-router-hash-link';
 import { Header, List, Segment, Icon, Button, ButtonGroup } from 'semantic-ui-react';
-import { LoadingAndRestoreScroll, LockSymbol, Stars } from './common/widgets/widgets';
+import { Loading, LockSymbol, Stars } from './common/widgets/widgets';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getToc, getTocXlsx } from '../api';
 import { saveAs } from 'file-saver';
@@ -29,7 +29,7 @@ const Toc = () => {
   }, [loading, accessToken]);
 
   if (!data) {
-    return <LoadingAndRestoreScroll />;
+    return <Loading />;
   }
   const showType = data.metadata.gradeSystem==='CLIMBING';
   return (

@@ -3,7 +3,7 @@ import { Container, Button, Segment, Dropdown, Input } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSvgEdit, getImageUrl, postProblemSvg } from '../api';
 import { parseReadOnlySvgs, parsePath } from '../utils/svg-utils';
-import { LoadingAndRestoreScroll, InsufficientPrivileges } from './common/widgets/widgets';
+import { Loading, InsufficientPrivileges } from './common/widgets/widgets';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 
 const SvgEdit = () => {
@@ -279,7 +279,7 @@ const SvgEdit = () => {
   };
 
   if (loading || (isAuthenticated && !metadata)) {
-    return <LoadingAndRestoreScroll />;
+    return <Loading />;
   } else if (!isAuthenticated) {
     loginWithRedirect({appState: { targetUrl: location.pathname }});
   } else if (!metadata.isAdmin) {
@@ -287,7 +287,7 @@ const SvgEdit = () => {
   }
 
   if (!id || !metadata) {
-    return <LoadingAndRestoreScroll />;
+    return <Loading />;
   } else if (!metadata.isAdmin) {
     return <span><h3>Not logged in</h3></span>;
   }

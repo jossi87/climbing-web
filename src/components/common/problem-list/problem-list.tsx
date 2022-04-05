@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Step, Dropdown, List, Segment, Checkbox } from 'semantic-ui-react';
 import AccordionContainer from './accordion-container';
+import { useLocalStorage } from '../../../utils/use-local-storage';
 
 interface Row {
   element: any,
@@ -26,6 +27,7 @@ const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[
   const [groupByTitle, setGroupByTitle] = useState(null);
   const [groupBy, setGroupBy] = useState(false);
   const [orderBy, setOrderBy] = useState(isSectorNotUser? (preferOrderByGrade? OrderBy.grade : OrderBy.number) : OrderBy.date);
+  const [customSectorOrderBy, setCustomSectorOrderBy] = useLocalStorage('sectorOrderBy', OrderBy.grade);
 
   if (data == null || data.length === 0) {
     return null;
@@ -50,7 +52,21 @@ const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[
 
   useEffect(() => {
     setData(rows);
-    setOrderBy(isSectorNotUser? (preferOrderByGrade? OrderBy.grade : OrderBy.number) : OrderBy.date);
+    let newOrderBy = OrderBy.date;
+    if (isSectorNotUser) {
+      if (preferOrderByGrade) {
+        newOrderBy = OrderBy.grade;
+      }
+      else {
+        newOrderBy = OrderBy.number;
+      }
+    }
+    if (isSectorNotUser && customSectorOrderBy !== undefined && customSectorOrderBy!=newOrderBy) {
+      order(customSectorOrderBy); // Sort results and save state
+    }
+    else {
+      setOrderBy(newOrderBy); // Results already sorted by newOrderBy, only update state
+    }
     setHideTicked(false);
     setOnlyFa(false);
     const rocks = rows.filter(p => p.rock).map(p => p.rock).filter((value, index, self) => self.indexOf(value) === index).sort();
@@ -76,6 +92,9 @@ const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[
 
   function order(newOrderBy: OrderBy) {
     setOrderBy(newOrderBy);
+    if (isSectorNotUser) {
+      setCustomSectorOrderBy(newOrderBy);
+    }
     let problems = data.sort((a, b) => {
       if (newOrderBy === OrderBy.alphabetical) {
         if (a.areaName != b.areaName) return a.areaName.localeCompare(b.areaName);

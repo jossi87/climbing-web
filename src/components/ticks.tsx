@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import { Segment, Header, Pagination, Loader, Feed } from 'semantic-ui-react';
-import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
+import { Loading, LockSymbol } from './common/widgets/widgets';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getTicks } from '../api';
@@ -24,7 +24,7 @@ const Ticks = () => {
   }, [accessToken, page]);
 
   if (!data) {
-    return <LoadingAndRestoreScroll />;
+    return <Loading />;
   }
   return (
     <>

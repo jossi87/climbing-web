@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import MetaTags from 'react-meta-tags';
-import { LoadingAndRestoreScroll } from './common/widgets/widgets';
+import { Loading } from './common/widgets/widgets';
 import { Header, Image, Menu, Icon } from 'semantic-ui-react';
 import { getProfile } from '../api';
 import { useAuth0 } from '../utils/react-auth0-spa';
@@ -34,7 +34,7 @@ const Profile = () => {
   }
   
   if (!profile) {
-    return <LoadingAndRestoreScroll />;
+    return <Loading />;
   }
 
   const loggedInProfile = profile.userRegions && profile.userRegions.length>0;

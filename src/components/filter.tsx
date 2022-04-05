@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
-import { LoadingAndRestoreScroll } from './common/widgets/widgets';
+import { Loading } from './common/widgets/widgets';
 import { Header, Segment, Form, Dropdown, Button, Checkbox, Icon, List, Image } from 'semantic-ui-react';
 import { getMeta, getImageUrl, postFilter } from '../api';
 import { useAuth0 } from '../utils/react-auth0-spa';
@@ -28,7 +28,7 @@ const Filter = () => {
   }, [loading, accessToken]);
   
   if (!meta) {
-    return <LoadingAndRestoreScroll />;
+    return <Loading />;
   }
   const gradeOptions = meta.metadata.grades.map(g => ({key: g.id, value: g.id, text: g.grade}));
   const typeOptions = meta.metadata.types.sort((a, b) => a.subType.localeCompare(b.subType)).map(t => ({key: t.id, value: t.id, text: t.subType}));

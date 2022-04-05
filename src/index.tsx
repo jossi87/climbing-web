@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { Auth0Provider } from './utils/react-auth0-spa';
 import CookieConsent from "react-cookie-consent";
@@ -86,4 +86,6 @@ const Index = () => (
   </Auth0Provider>
 );
 
-ReactDOM.render((<Index />), document.getElementById('app'))
+const container = document.getElementById('app');
+const root = createRoot(container);
+root.render(<Index />);

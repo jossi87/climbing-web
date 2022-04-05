@@ -3,7 +3,6 @@ import MetaTags from 'react-meta-tags';
 import { Segment, Header, Icon, List } from 'semantic-ui-react';
 
 const PrivacyPolicy = () => {
-  window.scrollTo(0, 0);
   return (
     <>
       <MetaTags>

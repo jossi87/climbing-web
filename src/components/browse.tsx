@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button, List, Icon, Segment } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
-import { LoadingAndRestoreScroll, LockSymbol } from './common/widgets/widgets';
+import { Loading, LockSymbol } from './common/widgets/widgets';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getBrowse } from '../api';
 import { Remarkable } from 'remarkable';
@@ -31,7 +31,7 @@ const Browse = () => {
   }, [loading, accessToken]);
 
   if (!data) {
-    return <LoadingAndRestoreScroll />;
+    return <Loading />;
   }
   const typeDescription = data.metadata.gradeSystem==='BOULDER'? "problems" : "routes";
   const markers = data.areas.filter(a => a.forDevelopers === showForDevelopers && a.lat!=0 && a.lng!=0).map(a => {

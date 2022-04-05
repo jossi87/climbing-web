@@ -5,7 +5,7 @@ import Leaflet from './common/leaflet/leaflet';
 import { Form, Button, Checkbox, Input, Dropdown, TextArea, Segment, Icon, Message } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getAreaEdit, postArea } from '../api';
-import { LoadingAndRestoreScroll, InsufficientPrivileges } from './common/widgets/widgets';
+import { Loading, InsufficientPrivileges } from './common/widgets/widgets';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 
 const AreaEdit = () => {
@@ -61,7 +61,7 @@ const AreaEdit = () => {
   }
 
   if (loading || (isAuthenticated && !data)) {
-    return <LoadingAndRestoreScroll />;
+    return <Loading />;
   } else if (!isAuthenticated) {
     loginWithRedirect({appState: { targetUrl: location.pathname }});
   } else if (!data.metadata.isAdmin) {

@@ -3,7 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Button } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
-import { LoadingAndRestoreScroll } from './common/widgets/widgets';
+import { Loading } from './common/widgets/widgets';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSites } from '../api';
 
@@ -22,7 +22,7 @@ const Sites = () => {
   }, [loading, accessToken, type]);
 
   if (!data) {
-    return <LoadingAndRestoreScroll />;
+    return <Loading />;
   }
   var outlines = data.regions.map(r => {
     const polygon = r.polygonCoords.split(";").map(c => {

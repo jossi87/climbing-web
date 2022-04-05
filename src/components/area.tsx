@@ -7,7 +7,7 @@ import Activity from './common/activity/activity';
 import Leaflet from './common/leaflet/leaflet';
 import { calculateDistance } from './common/leaflet/distance-math';
 import Media from './common/media/media';
-import { LockSymbol, LoadingAndRestoreScroll, WeatherLabels } from './common/widgets/widgets';
+import { LockSymbol, Loading, WeatherLabels } from './common/widgets/widgets';
 import { Table, Label, Button, Tab, Item, Icon, Image, Breadcrumb, Segment, Header } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getArea, getImageUrl, getAreaPdfUrl } from '../api';
@@ -35,7 +35,7 @@ const Area = () => {
   }, [loading, accessToken, areaId]);
 
   if (!data) {
-    return <LoadingAndRestoreScroll />;
+    return <Loading />;
   }
   const markers = data.sectors.filter(s => s.lat!=0 && s.lng!=0).map(s => {
     return {

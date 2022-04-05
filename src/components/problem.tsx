@@ -5,7 +5,7 @@ import Leaflet from './common/leaflet/leaflet';
 import { calculateDistance } from './common/leaflet/distance-math';
 import Media from './common/media/media';
 import { Button, Grid, Breadcrumb, Tab, Label, Icon, Comment, Header, Segment, Table, Feed } from 'semantic-ui-react';
-import { LoadingAndRestoreScroll, LockSymbol, Stars, WeatherLabels } from './common/widgets/widgets';
+import { Loading, LockSymbol, Stars, WeatherLabels } from './common/widgets/widgets';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getAreaPdfUrl, getSectorPdfUrl, getProblemPdfUrl, getProblem, getSector, postComment, postTodo } from '../api';
 import TickModal from './common/tick-modal/tick-modal';
@@ -109,7 +109,7 @@ const Problem = () => {
   );
 
   if (!data || reload) {
-    return <LoadingAndRestoreScroll />;
+    return <Loading />;
   }
   let isBouldering = data.metadata.gradeSystem==='BOULDER';
   const markers = [];

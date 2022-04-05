@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Leaflet from '../../common/leaflet/leaflet';
-import { LoadingAndRestoreScroll, LockSymbol } from '../../common/widgets/widgets';
+import { Loading, LockSymbol } from '../../common/widgets/widgets';
 import { List, Segment } from 'semantic-ui-react';
 import { getProfileTodo } from '../../../api';
 
@@ -16,7 +16,7 @@ const ProfileTodo = ({accessToken, userId, defaultCenter, defaultZoom}) => {
   }, [accessToken, userId]);
 
   if (!data) {
-    return <LoadingAndRestoreScroll />;
+    return <Loading />;
   }
   let markers = [];
   data.areas.forEach(a => {

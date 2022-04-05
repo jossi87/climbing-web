@@ -3,7 +3,7 @@ import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
 import { Grid, Segment, Header, Icon, List, Card, Image, Label } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
-import { LoadingAndRestoreScroll } from './common/widgets/widgets';
+import { Loading } from './common/widgets/widgets';
 import { getAbout } from '../api';
 
 const About = () => {
@@ -14,7 +14,7 @@ const About = () => {
   }, [accessToken]);
 
   if (!data) {
-    return <LoadingAndRestoreScroll />;
+    return <Loading />;
   }
 
   return (
