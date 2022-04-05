@@ -4,6 +4,7 @@ import { Container, Dropdown, Image, Menu, Icon } from 'semantic-ui-react';
 import { Link, useLocation } from 'react-router-dom';
 import SearchBox from './common/search-box/search-box';
 import { getBaseUrl, getMeta } from '../api';
+import logo from "../../build/png/buldreinfo.png";
 
 const Navigation = () => {
   const { loading, isAuthenticated, loginWithRedirect, logout, accessToken } = useAuth0();
@@ -22,7 +23,7 @@ const Navigation = () => {
   return (
     <Menu attached='top' inverted compact borderless>
       <Container>
-        <Menu.Item header as={Link} to='/'><Image size='mini' src='/png/buldreinfo.png' /></Menu.Item>
+        <Menu.Item header as={Link} to='/'><Image size='mini' src={logo} /></Menu.Item>
         <Menu.Item as={SearchBox}  style={{maxWidth: '35vw'}} />
         <Dropdown item simple icon='ellipsis vertical'>
           <Dropdown.Menu>
