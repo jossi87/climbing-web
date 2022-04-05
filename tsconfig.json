@@ -13,12 +13,12 @@
     "noEmit": true,
 
     // Stict type checking
-    "strict": true,
+    // "strict": true,
     "noImplicitThis": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
+    // "noImplicitAny": true,
+    // "strictNullChecks": true, // will re enable later
     "noUnusedParameters": false,
-    "alwaysStrict": true,
+    // "alwaysStrict": true,
 
     // Module Resolution
     "moduleResolution": "Node",
