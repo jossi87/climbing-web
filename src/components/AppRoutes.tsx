@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom';
-import { LoadingAndRestoreScroll } from './common/widgets/widgets';
+import { Loading } from './common/widgets/widgets';
 import { useAnalytics } from 'use-analytics';
 
 
@@ -37,7 +37,7 @@ function AppRoutes() {
      }, [location]);
 
     return (
-        <Suspense fallback={<LoadingAndRestoreScroll />}>
+        <Suspense fallback={<Loading />}>
             <Routes>
                 <Route path='/' element={<Frontpage/>}/>
                 <Route path='/about' element={<About/>}/>
