@@ -4,7 +4,7 @@ import ImageUpload from './common/image-upload/image-upload';
 import { Loading, InsufficientPrivileges } from './common/widgets/widgets';
 import { Checkbox, Form, Button, Input, Dropdown, TextArea, Segment, Icon, Message } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
-import { getSectorEdit, postSector, getSector } from './../api';
+import { getSectorEdit, postSector, getSector } from '../api';
 import Leaflet from './common/leaflet/leaflet';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 

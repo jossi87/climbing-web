@@ -1,50 +1,62 @@
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
+// let target = "web";
+const plugins = [
+  new HtmlWebpackPlugin({
+    template: "./src/index.html",
+    filename: "index.html",
+    inject: true,
+    favicon: "./build/favicon.ico"
+  }),
+  new MiniCssExtractPlugin(),
+];
+
+const stylesHandler = MiniCssExtractPlugin.loader;
 
 module.exports = {
-  entry: [
-    './src/index.tsx'
-  ],
+  entry: "./src/index.tsx",
+  output: {
+    filename: '[name].bundle.js',
+    chunkFilename: '[name].[contenthash].js',
+    path: path.resolve(__dirname, "build/static"),
+    publicPath: "/",
+    assetModuleFilename: "images/[hash][ext][query]",
+    clean: true,
+  },
   module: {
     rules: [
-      { test: /\.(js|jsx|tsx|ts)$/,
-        exclude: /node_modules\/(?!(@react-leaflet|react-leaflet)\/)/i,
+      {
+        test: /\.(jsx?|tsx?)$/,
+        exclude: /node_modules/,
         use: {
-          loader: 'babel-loader',
-          options: {
-            presets: [
-              "@babel/preset-env",
-              "@babel/preset-react",
-              "@babel/preset-typescript",
-            ],
-          }
-        }
+          loader: "babel-loader",
+        },
       },
-      { test: /\.css$/, use: [
-        {loader: MiniCssExtractPlugin.loader},
-        {loader: 'css-loader'}
-      ]},
-      { test: /\.(jpg|png|gif|woff|eot|ttf|svg)/, type: 'asset/resource' }
-    ]
+      {
+        test: /\.css$/i,
+        use: [
+          {
+            loader: stylesHandler,
+            options: { publicPath: "" },
+          },
+          "css-loader",
+        ],
+      },
+      {
+        test: /\.(eot|svg|ttf|woff|woff2|png|jpe?g|gif)$/i,
+        type: "asset",
+      },
+    ],
+  },
+  plugins: plugins,
+  optimization: {
+    splitChunks: {
+        chunks: "all",
+    },
   },
   resolve: {
-    extensions: [".js", ".jsx", ".ts", ".tsx"]
+    extensions: [".tsx", ".ts", ".js", "jsx"],
   },
-  plugins: [
-    new CleanWebpackPlugin(),
-    new HtmlWebpackPlugin({
-       template: './src/index.html',
-       filename: '../index.html'
-    }),
-    new MiniCssExtractPlugin({
-      filename:'style.[contenthash].css'
-    }),
-  ],
-  output: {
-    path: __dirname + '/build/static',
-    publicPath: '/static/',
-    filename: '[name].[contenthash].js',
-    chunkFilename: "chunk-[name].[chunkhash].js",
-  }
 };
