@@ -6,6 +6,9 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const plugins = [
   new HtmlWebpackPlugin({
     template: "./src/index.html",
+    filename: "index.html",
+    inject: true,
+    favicon: "./build/favicon.ico"
   }),
   new MiniCssExtractPlugin(),
 ];
@@ -16,7 +19,9 @@ module.exports = {
   entry: "./src/index.tsx",
   output: {
     filename: '[name].bundle.js',
+    chunkFilename: '[name].[contenthash].js',
     path: path.resolve(__dirname, "build/static"),
+    publicPath: "/",
     assetModuleFilename: "images/[hash][ext][query]",
     clean: true,
   },
