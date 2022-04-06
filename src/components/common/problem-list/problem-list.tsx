@@ -27,7 +27,7 @@ const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[
   const [groupByTitle, setGroupByTitle] = useState(null);
   const [groupBy, setGroupBy] = useState(false);
   const [orderBy, setOrderBy] = useState(isSectorNotUser? (preferOrderByGrade? OrderBy.grade : OrderBy.number) : OrderBy.date);
-  const [customSectorOrderBy, setCustomSectorOrderBy] = useLocalStorage('sectorOrderBy', OrderBy.grade);
+  const [customSectorOrderBy, setCustomSectorOrderBy] = useLocalStorage('sectorOrderBy', null);
 
   if (data == null || data.length === 0) {
     return null;
