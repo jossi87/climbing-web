@@ -14,7 +14,7 @@ additionalPulgins.forEach(plugin => common.plugins.push(plugin));
    stats: "minimal",
 
    devServer: {
-    static: "./build/static",
+    static: ["./build/static", './build/'],
     port: 3000,
     hot: true,
     historyApiFallback: {
