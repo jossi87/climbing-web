@@ -3,7 +3,7 @@ const common = require('./webpack.common.js');
 const WorkboxWebpackPlugin = require("workbox-webpack-plugin");
 
 const additionalPulgins = [
-    new WorkboxWebpackPlugin.GenerateSW(),
+    // new WorkboxWebpackPlugin.GenerateSW(),
 ]
 
 additionalPulgins.forEach(plugin => common.plugins.push(plugin));

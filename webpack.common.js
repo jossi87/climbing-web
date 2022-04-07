@@ -21,14 +21,14 @@ module.exports = {
     chunkFilename: '[name].[contenthash].js',
     path: path.resolve(__dirname, "build/static"),
     publicPath: "/static/",
-    assetModuleFilename: "images/[hash][ext][query]",
+    // assetModuleFilename: "images/[hash][ext][query]",
     clean: true,
   },
   module: {
     rules: [
       {
         test: /\.(jsx?|tsx?)$/,
-        exclude: /node_modules/,
+        exclude: /node_modules\/(?!(@react-leaflet|react-leaflet)\/)/i,
         use: {
           loader: "babel-loader",
         },

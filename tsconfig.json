@@ -25,12 +25,14 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "target": "ESNext",
 
     // Error Handling
     "pretty": true,
+
+    //Other
+    "skipLibCheck": true,
   },
   "include": [
-    "./src/**/*", "server.js"
+    "src", "server.js"
   ]
 }
