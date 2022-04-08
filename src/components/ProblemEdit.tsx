@@ -290,7 +290,6 @@ const ProblemEdit = () => {
               <DatePicker
                 placeholderText="Click to select a date"
                 dateFormat="dd-MM-yyyy"
-                withPortal portalId="root-portal"
                 showMonthDropdown showYearDropdown dropdownMode="select"
                 selected={convertFromStringToDate(data.faDate)}
                 onChange={(date) => onFaDateChanged(date)}

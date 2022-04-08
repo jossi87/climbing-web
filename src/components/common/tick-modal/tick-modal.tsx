@@ -41,7 +41,6 @@ const TickModal = ({ open, onClose, accessToken, idTick, idProblem, grades, comm
               <DatePicker
                 placeholderText="Click to select a date"
                 dateFormat="dd-MM-yyyy"
-                withPortal portalId="root-portal"
                 showMonthDropdown showYearDropdown dropdownMode="select"
                 selected={date && convertFromStringToDate(date)}
                 onChange={(date) => setDate(convertFromDateToString(date))}
