@@ -1,4 +1,3 @@
-import React from 'react';
 import { parseSVG, makeAbsolute } from 'svg-path-parser';
 import { getImageUrl } from '../../../api';
 import { useNavigate } from 'react-router-dom';

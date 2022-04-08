@@ -1,4 +1,3 @@
-import React from 'react';
 import { parseSVG, makeAbsolute } from 'svg-path-parser';
 import { svgPathProperties } from "svg-path-properties";
 

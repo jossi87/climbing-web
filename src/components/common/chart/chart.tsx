@@ -1,4 +1,4 @@
-import React from 'react';
+import { memo } from 'react';
 
 function Chart({data}) {
   var grades = [];
@@ -51,4 +51,4 @@ function Chart({data}) {
   );
 }
 
-export default React.memo(Chart)
+export default memo(Chart)

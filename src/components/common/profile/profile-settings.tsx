@@ -1,4 +1,3 @@
-import React from 'react';
 import { Segment, Icon, Label, Header } from 'semantic-ui-react';
 import { postUserRegion } from '../../../api';
 

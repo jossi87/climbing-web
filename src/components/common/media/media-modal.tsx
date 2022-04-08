@@ -1,4 +1,3 @@
-import React from 'react';
 import { Dimmer, Button, Icon, Image, Modal, Header, ButtonGroup, Embed, Container, Dropdown, List } from 'semantic-ui-react';
 import { getBuldreinfoMediaUrl, getImageUrl } from '../../../api';
 import ReactPlayer from 'react-player';
@@ -241,13 +240,13 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
                       </List.Item>
                       <List.Item>
                         <List.Content>
-                          <List.Header><svg width="20" height="24">{Rappel({x: 8, y: 8, bolted: true, scale: 1000, thumb: false, stroke: "black", key: 'bolted-rappel'})}</svg></List.Header>
+                          <List.Header><svg width="20" height="24">{Rappel({x: 8, y: 8, bolted: true, scale: 1000, thumb: false, backgroundColor: "black", color: "white", key: 'bolted-rappel'})}</svg></List.Header>
                           <List.Description>Bolted rappel anchor</List.Description>
                         </List.Content>
                       </List.Item>
                       <List.Item>
                         <List.Content>
-                          <List.Header><svg width="20" height="24">{Rappel({x: 8, y: 8, bolted: false, scale: 1000, thumb: false, stroke: "black", key: 'not-bolted-rappel'})}</svg></List.Header>
+                          <List.Header><svg width="20" height="24">{Rappel({x: 8, y: 8, bolted: false, scale: 1000, thumb: false, backgroundColor: "black", color: "white", key: 'not-bolted-rappel'})}</svg></List.Header>
                           <List.Description>Traditional rappel anchor (not bolted)</List.Description>
                         </List.Content>
                       </List.Item>

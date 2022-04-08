@@ -254,7 +254,7 @@ const SvgEdit = () => {
     const x = data.m.mediaSvgs[activeElementIndex].rappelX;
     const y = data.m.mediaSvgs[activeElementIndex].rappelY;
     const scale = Math.max(data.m.width, data.m.height, minWindowScale);
-    activeRappel = Rappel({x, y, scale, bolted: data.m.mediaSvgs[activeElementIndex].t===TYPE_RAPPEL_BOLTED, thumb: false, stroke: "red", key: "ACTIVE_RAPPEL"});
+    activeRappel = Rappel({x, y, scale, bolted: data.m.mediaSvgs[activeElementIndex].t===TYPE_RAPPEL_BOLTED, thumb: false, backgroundColor: "white", color: "red", key: "ACTIVE_RAPPEL"});
   }
 
   return (
