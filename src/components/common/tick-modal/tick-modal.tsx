@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import DayPickerInput from 'react-day-picker/DayPickerInput';
 import { convertFromDateToString, convertFromStringToDate, postTicks } from './../../../api';
 import { Button, Dropdown, Icon, Modal, Form, TextArea } from 'semantic-ui-react';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
 
 function convertDateToString(newDate) {
   var now = new Date();
@@ -22,14 +23,6 @@ const TickModal = ({ open, onClose, accessToken, idTick, idProblem, grades, comm
 
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate()-1);
-
-  //@ts-ignore
-  let dayPicker = <DayPickerInput
-    format="LL"
-    onDayChange={(newDate) => {setDate(convertFromDateToString(newDate))}}
-    value={date && convertFromStringToDate(date)}
-  />
-
   const today = new Date();
   const invalidDate = date && convertFromStringToDate(date) > today;
 
@@ -45,7 +38,14 @@ const TickModal = ({ open, onClose, accessToken, idTick, idProblem, grades, comm
               :
                 <label>Date</label>
               }
-              {dayPicker}<br/>
+              <DatePicker
+                placeholderText="Click to select a date"
+                dateFormat="dd-MM-yyyy"
+                withPortal portalId="root-portal"
+                showMonthDropdown showYearDropdown dropdownMode="select"
+                selected={date && convertFromStringToDate(date)}
+                onChange={(date) => setDate(convertFromDateToString(date))}
+              />
               <Button.Group>
                 <Button onClick={() => setDate(convertDateToString(yesterday))}>Yesterday</Button>
                 <Button onClick={() => setDate(convertDateToString(new Date()))}>Today</Button>

@@ -4,13 +4,14 @@ import UserSelector from './common/user-selector/user-selector';
 import RockSelector from './common/rock-selector/rock-selector';
 import ProblemSection from './common/problem-section/problem-section';
 import ImageUpload from './common/image-upload/image-upload';
-import DayPickerInput from 'react-day-picker/DayPickerInput';
 import { Icon, Form, Button, Input, Dropdown, TextArea, Segment, Message, Container, Checkbox } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getProblemEdit, convertFromDateToString, convertFromStringToDate, postProblem, getSector } from '../api';
 import { Loading, InsufficientPrivileges } from './common/widgets/widgets';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
 
 const ProblemEdit = () => {
   const { accessToken, loading, isAuthenticated, loginWithRedirect } = useAuth0();
@@ -224,19 +225,6 @@ const ProblemEdit = () => {
     lockedValue = 1;
   }
 
-  //@ts-ignore
-  let dayPicker = <DayPickerInput
-      format="LL"
-      onDayChange={onFaDateChanged}
-      value={convertFromStringToDate(data.faDate)}
-    />;
-  //@ts-ignore
-  let dayPickerAid = <DayPickerInput
-    format="LL"
-    onDayChange={onFaAidDateChanged}
-    value={convertFromStringToDate(data.faAid? data.faAid.date : '')}
-  />;
-
   let markers = [];
   if (data.lat!=0 && data.lng!=0) {
     markers.push({lat: data.lat, lng: data.lng});
@@ -299,7 +287,14 @@ const ProblemEdit = () => {
               users={data.fa? data.fa.map(u => {return {value: u.id, label: u.name}}) : []} onUsersUpdated={onUsersUpdated} identity={null} />
             <Form.Field>
               <label>FA Date</label>
-              {dayPicker}<br/>
+              <DatePicker
+                placeholderText="Click to select a date"
+                dateFormat="dd-MM-yyyy"
+                withPortal portalId="root-portal"
+                showMonthDropdown showYearDropdown dropdownMode="select"
+                selected={convertFromStringToDate(data.faDate)}
+                onChange={(date) => onFaDateChanged(date)}
+              />
               <Button.Group size="tiny">
                 <Button onClick={() => onFaDateChanged(yesterday)}>Yesterday</Button>
                 <Button onClick={() => onFaDateChanged(new Date())}>Today</Button>
@@ -393,7 +388,14 @@ const ProblemEdit = () => {
               </Button.Group>
               {data.faAid &&
                 <Container>
-                  {dayPickerAid}
+                  <DatePicker
+                    placeholderText="Click to select a date"
+                    dateFormat="dd-MM-yyyy"
+                    withPortal portalId="root-portal"
+                    showMonthDropdown showYearDropdown dropdownMode="select"
+                    selected={convertFromStringToDate(data.faAid? data.faAid.date : '')}
+                    onChange={(date) => onFaAidDateChanged(date)}
+                  />
                   <TextArea placeholder='Enter description' style={{ minHeight: 75 }} value={data.faAid.description} onChange={onFaAidDescriptionChanged} />
                   <UserSelector isMulti={true} placeholder="Select user(s)" users={data.faAid.users? data.faAid.users.map(u => {return {value: u.id, label: u.name}}) : []} onUsersUpdated={onFaAidUsersUpdated} identity={null} />
                 </Container>
