@@ -1,15 +1,29 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const {CleanWebpackPlugin} = require("clean-webpack-plugin");
 
 // let target = "web";
 const plugins = [
   new HtmlWebpackPlugin({
     template: "./src/index.html",
-    filename: "../index.html",
+    filename: "index.html",
     inject: true
   }),
-  new MiniCssExtractPlugin(),
+  new MiniCssExtractPlugin({
+    filename: 'static/[name].[contenthash].css'
+  }),
+  new CleanWebpackPlugin({
+    cleanOnceBeforeBuildPatterns: [
+      '**/*',
+      '!favicon.ico*',
+      '!google1588c034b4869b96.html',
+      '!gpl-3.0.txt',
+      '!png/**',
+      '!pdf/**'
+  ],
+
+  })
 ];
 
 const stylesHandler = MiniCssExtractPlugin.loader;
@@ -17,28 +31,35 @@ const stylesHandler = MiniCssExtractPlugin.loader;
 module.exports = {
   entry: "./src/index.tsx",
   output: {
-    filename: '[name].bundle.js',
-    chunkFilename: '[name].[contenthash].js',
-    path: path.resolve(__dirname, "build/static"),
-    publicPath: "/static/",
-    assetModuleFilename: "images/[hash][ext][query]",
-    clean: true,
+    filename: 'static/[name].[contenthash].js',
+    chunkFilename: "static/chunk-[name].[chunkhash].js",
+    path: path.resolve(__dirname, "build"),
+    publicPath: "/",
   },
   module: {
     rules: [
       {
         test: /\.(jsx?|tsx?)$/,
-        exclude: /node_modules/,
+        exclude: /node_modules\/(?!(@react-leaflet|react-leaflet)\/)/i,
         use: {
-          loader: "babel-loader",
-        },
+          loader: 'babel-loader',
+          options: {
+            presets: [
+              "@babel/preset-env",
+              "@babel/preset-react",
+              "@babel/preset-typescript",
+            ],
+          }
+        }
       },
       {
         test: /\.css$/i,
         use: [
           {
             loader: stylesHandler,
-            options: { publicPath: "" },
+            options: {
+              publicPath: "/build/static/"
+            }
           },
           "css-loader",
         ],
