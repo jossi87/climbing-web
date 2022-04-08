@@ -11,7 +11,7 @@ const plugins = [
     inject: true
   }),
   new MiniCssExtractPlugin({
-    filename: 'static/[name].css'
+    filename: 'static/[name].[contenthash].css'
   }),
   new CleanWebpackPlugin({
     cleanOnceBeforeBuildPatterns: [
@@ -31,8 +31,8 @@ const stylesHandler = MiniCssExtractPlugin.loader;
 module.exports = {
   entry: "./src/index.tsx",
   output: {
-    filename: 'static/[name].bundle.js',
-    chunkFilename: 'static/[name].[contenthash].js',
+    filename: 'static/[name].[contenthash].js',
+    chunkFilename: "static/chunk-[name].[chunkhash].js",
     path: path.resolve(__dirname, "build"),
     publicPath: "/",
   },
@@ -40,10 +40,17 @@ module.exports = {
     rules: [
       {
         test: /\.(jsx?|tsx?)$/,
-        exclude: [ /node_modules\/(?!(@react-leaflet|react-leaflet)\/)/i, /node_modules/,],
+        exclude: /node_modules\/(?!(@react-leaflet|react-leaflet)\/)/i,
         use: {
-          loader: "babel-loader",
-        },
+          loader: 'babel-loader',
+          options: {
+            presets: [
+              "@babel/preset-env",
+              "@babel/preset-react",
+              "@babel/preset-typescript",
+            ],
+          }
+        }
       },
       {
         test: /\.css$/i,
