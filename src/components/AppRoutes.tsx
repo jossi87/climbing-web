@@ -2,7 +2,7 @@ import React, { lazy, Suspense } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { Loading } from './common/widgets/widgets';
 import { useAnalytics } from 'use-analytics';
-
+import ScrollToTop from '../utils/scroll-to-top';
 
 const About = lazy(() => import(/* webpackChunkName: "about" */'./About'));
 const Area = lazy(() => import(/* webpackChunkName: "area" */ './Area'));
@@ -30,45 +30,47 @@ const Permissions = lazy(() => import(/* webpackChunkName: "permissions" */'./Pe
 const WebcamMap = lazy(() => import(/* webpackChunkName: "webcam-map" */'./WebcamMap'));
 
 function AppRoutes() {
-    const location = useLocation();
-    const analytics = useAnalytics();
-    React.useEffect(() => {
-        analytics.page()
-     }, [location]);
+  const location = useLocation();
+  const analytics = useAnalytics();
+  React.useEffect(() => {
+    analytics.page()
+  }, [location]);
 
-    return (
-        <Suspense fallback={<Loading />}>
-            <Routes>
-                <Route path='/' element={<Frontpage/>}/>
-                <Route path='/about' element={<About/>}/>
-                <Route path='/browse' element={<Browse/>}/>
-                <Route path='/area/:areaId' element={<Area/>}/>
-                <Route path='/area/edit/:areaId' element={<AreaEdit/>}/>
-                <Route path='/dangerous' element={<Dangerous/>}/>
-                <Route path='/donations' element={<Donations/>}/>
-                <Route path='/filter' element={<Filter/>}/>
-                <Route path='/media/svg-edit/:mediaId' element={<MediaSvgEdit/>}/>
-                <Route path='/permissions' element={<Permissions/>}/>
-                <Route path='/privacy-policy' element={<PrivacyPolicy/>}/>
-                <Route path='/problem/:problemId' element={<Problem/>}/>
-                <Route path='/problem/edit/:sectorIdProblemId' element={<ProblemEdit/>}/>
-                <Route path='/problem/edit/media/:problemId' element={<ProblemEditMedia/>}/>
-                <Route path='/problem/svg-edit/:problemIdMediaId' element={<SvgEdit/>}/>
-                <Route path='/sites/:type' element={<Sites/>}/>
-                <Route path='/sector/:sectorId' element={<Sector/>}/>
-                <Route path='/sector/edit/:areaIdSectorId' element={<SectorEdit/>}/>
-                <Route path='/ticks/:page' element={<Ticks/>}/>
-                <Route path='/toc' element={<Toc/>}/>
-                <Route path='/cg' element={<ContentGraph/>}/>
-                <Route path='/trash' element={<Trash/>}/>
-                <Route path='/user' element={<Profile/>}/>
-                <Route path='/user/:userId' element={<Profile/>}/>
-                <Route path='/user/:userId/:page' element={<Profile/>}/>
-                <Route path='/webcam-map' element={<WebcamMap/>}/>
-                <Route path='/webcam-map/:json' element={<WebcamMap/>}/>
-            </Routes>
-        </Suspense>
-    )
+  return (
+    <ScrollToTop>
+      <Suspense fallback={<Loading />}>
+        <Routes>
+          <Route path='/' element={<Frontpage/>}/>
+          <Route path='/about' element={<About/>}/>
+          <Route path='/browse' element={<Browse/>}/>
+          <Route path='/area/:areaId' element={<Area/>}/>
+          <Route path='/area/edit/:areaId' element={<AreaEdit/>}/>
+          <Route path='/dangerous' element={<Dangerous/>}/>
+          <Route path='/donations' element={<Donations/>}/>
+          <Route path='/filter' element={<Filter/>}/>
+          <Route path='/media/svg-edit/:mediaId' element={<MediaSvgEdit/>}/>
+          <Route path='/permissions' element={<Permissions/>}/>
+          <Route path='/privacy-policy' element={<PrivacyPolicy/>}/>
+          <Route path='/problem/:problemId' element={<Problem/>}/>
+          <Route path='/problem/edit/:sectorIdProblemId' element={<ProblemEdit/>}/>
+          <Route path='/problem/edit/media/:problemId' element={<ProblemEditMedia/>}/>
+          <Route path='/problem/svg-edit/:problemIdMediaId' element={<SvgEdit/>}/>
+          <Route path='/sites/:type' element={<Sites/>}/>
+          <Route path='/sector/:sectorId' element={<Sector/>}/>
+          <Route path='/sector/edit/:areaIdSectorId' element={<SectorEdit/>}/>
+          <Route path='/ticks/:page' element={<Ticks/>}/>
+          <Route path='/toc' element={<Toc/>}/>
+          <Route path='/cg' element={<ContentGraph/>}/>
+          <Route path='/trash' element={<Trash/>}/>
+          <Route path='/user' element={<Profile/>}/>
+          <Route path='/user/:userId' element={<Profile/>}/>
+          <Route path='/user/:userId/:page' element={<Profile/>}/>
+          <Route path='/webcam-map' element={<WebcamMap/>}/>
+          <Route path='/webcam-map/:json' element={<WebcamMap/>}/>
+        </Routes>
+      </Suspense>
+    </ScrollToTop>
+  )
 }
 
 export default AppRoutes
