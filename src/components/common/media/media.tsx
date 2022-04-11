@@ -40,6 +40,7 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
   function closeModal() {
     onMediaIdOpen(null, true);
     setM(null);
+    navigate(-1);
   }
 
   function onMediaIdOpen(idMedia, replace) {
