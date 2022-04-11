@@ -1,8 +1,7 @@
-import React, { lazy, Suspense } from 'react'
+import React, { lazy, Suspense, useLayoutEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { Loading } from './common/widgets/widgets';
 import { useAnalytics } from 'use-analytics';
-import ScrollToTop from '../utils/scroll-to-top';
 
 const About = lazy(() => import(/* webpackChunkName: "about" */'./About'));
 const Area = lazy(() => import(/* webpackChunkName: "area" */ './Area'));
@@ -36,9 +35,17 @@ function AppRoutes() {
     analytics.page()
   }, [location]);
 
+  const Wrapper = ({children}) => {
+    const location = useLocation();
+    useLayoutEffect(() => {
+      setTimeout(() => window.scrollTo(0, 0), 1);
+    }, [location.pathname]);
+    return children;
+  } 
+
   return (
-    <ScrollToTop>
-      <Suspense fallback={<Loading />}>
+    <Suspense fallback={<Loading />}>
+      <Wrapper>
         <Routes>
           <Route path='/' element={<Frontpage/>}/>
           <Route path='/about' element={<About/>}/>
@@ -68,8 +75,8 @@ function AppRoutes() {
           <Route path='/webcam-map' element={<WebcamMap/>}/>
           <Route path='/webcam-map/:json' element={<WebcamMap/>}/>
         </Routes>
-      </Suspense>
-    </ScrollToTop>
+      </Wrapper>
+    </Suspense>
   )
 }
 
