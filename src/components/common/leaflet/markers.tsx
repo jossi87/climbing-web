@@ -34,7 +34,7 @@ export default function Markers({ navigate, opacity, markers, addEventHandlers }
           <Marker icon={weatherIcon} position={[m.lat, m.lng]} key={i}>
             <Popup>
               <b>{m.name}</b>{i.lastUpdated && <> (<i>{m.lastUpdated}</i>)</>}
-              <a rel='noreferrer noopener' target='_blank' href={m.urlStillImage}><img style={{maxWidth: '225px'}} src={m.urlStillImage}/></a><br/>
+              <a rel='noreferrer noopener' target='_blank' href={m.urlStillImage}><img style={{maxWidth: '180px'}} src={m.urlStillImage}/></a><br/>
               <i>Click on image to open in new tab</i><br/><br/>
               {m.urlYr && <a rel='noreferrer noopener' target='_blank' href={m.urlYr}>yr.no weather forecast</a>}
               {m.urlOther && <a rel='noreferrer noopener' target='_blank' href={m.urlOther}>{m.urlOther}</a>}
@@ -47,7 +47,7 @@ export default function Markers({ navigate, opacity, markers, addEventHandlers }
             <Tooltip opacity={opacity} permanent className='buldreinfo-tooltip-compact'>
               {m.label}
             </Tooltip>
-            <Popup minWidth={300}>
+            <Popup>
               {m.html}
             </Popup>
           </Marker>
