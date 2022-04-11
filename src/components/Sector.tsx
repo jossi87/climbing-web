@@ -208,6 +208,18 @@ const Sector = () => {
               <Table.Cell><Linkify componentDecorator={componentDecorator}>{data.comment}</Linkify></Table.Cell>
             </Table.Row>
           }
+          {data.sectors.length>1 && (
+            <Table.Row verticalAlign="top">
+              <Table.Cell>Jump:</Table.Cell>
+              <Table.Cell>
+                {data.sectors.map((s, i) => (
+                  <Label key={i} basic as={Link} to={`/sector/${s.id}`} color={data.id === s.id? 'black' : 'gray'}>
+                    {s.name}
+                  </Label>
+                ))}
+              </Table.Cell>
+            </Table.Row>
+          )}
           {data.lat>0 && data.lng>0 &&
             <Table.Row>
               <Table.Cell>Weather:</Table.Cell>
