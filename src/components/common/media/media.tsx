@@ -32,38 +32,37 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
     }
   });
 
-  function openModal(m, autoPlayVideo) {
-    onMediaIdOpen(m.id);
+  function openModal(m, replace) {
+    onMediaIdOpen(m.id, replace);
     setM(m);
-    setAutoPlayVideo(autoPlayVideo);
   }
 
   function closeModal() {
-    onMediaIdOpen(null);
+    onMediaIdOpen(null, true);
     setM(null);
   }
 
-  function onMediaIdOpen(idMedia) {
-    navigate(location.pathname + (idMedia ? "?idMedia=" + idMedia : ""));
+  function onMediaIdOpen(idMedia, replace) {
+    navigate(location.pathname + (idMedia ? "?idMedia=" + idMedia : ""), { replace });
   }
 
   function gotoPrev() {
     if (m && media.length > 1) {
       let ix = (media.findIndex(x => x.id===m.id) - 1 + media.length) % media.length;
-      openModal(media[ix], false);
+      openModal(media[ix], true);
     }
   }
 
   function gotoNext() {
     if (m && media.length > 1) {
       let ix = (media.findIndex(x => x.id===m.id) + 1) % media.length;
-      openModal(media[ix], false);
+      openModal(media[ix], true);
     }
   }
 
   function playVideo() {
     if (m) {
-      openModal(m, true);
+      setAutoPlayVideo(true);
     }
   }
 
@@ -186,7 +185,7 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
             content = <Image alt={x.description} key={i} style={style} src={getImageUrl(x.id, x.crc32, 205)} onError={i => i.target.src='/png/video_placeholder.png'} rounded />;
           }
           return (
-            <Card as="a" onClick={() => openModal(x, true)} key={i} raised style={{backgroundColor: "rgb(245, 245, 245)", border: (x.inherited? "1px solid black" : "1px solid rgb(245, 245, 245)")}}>
+            <Card as="a" onClick={() => openModal(x, false)} key={i} raised style={{backgroundColor: "rgb(245, 245, 245)", border: (x.inherited? "1px solid black" : "1px solid rgb(245, 245, 245)")}}>
               <div style={{paddingTop: '75%'}}>
                 <LazyLoad offset={100}>{content}</LazyLoad>
               </div>
