@@ -210,13 +210,15 @@ const Sector = () => {
           }
           {data.sectors.length>1 && (
             <Table.Row verticalAlign="top">
-              <Table.Cell>Jump:</Table.Cell>
+              <Table.Cell>Sectors:</Table.Cell>
               <Table.Cell>
-                {data.sectors.map((s, i) => (
-                  <Label key={i} basic as={Link} to={`/sector/${s.id}`} color={data.id === s.id? 'black' : 'gray'}>
-                    {s.name}
-                  </Label>
-                ))}
+                <Label.Group size="tiny">
+                  {data.sectors.map((s, i) => (
+                    <Label  key={i}  as={Link} to={`/sector/${s.id}`} active={data.id === s.id}>
+                      <LockSymbol lockedAdmin={s.lockedAdmin} lockedSuperadmin={s.lockedSuperadmin} />{s.name}
+                    </Label>
+                  ))}
+                </Label.Group>
               </Table.Cell>
             </Table.Row>
           )}
