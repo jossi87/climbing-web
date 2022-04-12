@@ -214,7 +214,7 @@ const Sector = () => {
               <Table.Cell>
                 <Label.Group size="tiny">
                   {data.sectors.map((s, i) => (
-                    <Label  key={i}  as={Link} to={`/sector/${s.id}`} active={data.id === s.id}>
+                    <Label key={i}  as={Link} to={`/sector/${s.id}`} active={data.id === s.id}>
                       <LockSymbol lockedAdmin={s.lockedAdmin} lockedSuperadmin={s.lockedSuperadmin} />{s.name}
                     </Label>
                   ))}

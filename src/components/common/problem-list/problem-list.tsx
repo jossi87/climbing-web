@@ -20,14 +20,14 @@ enum OrderBy {
 
 const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[], isSectorNotUser: boolean, preferOrderByGrade: boolean }) => {
   const [data, setData] = useState(rows);
-  const [hideTicked, setHideTicked] = useState(false);
-  const [onlyFa, setOnlyFa] = useState(false);
+  const [hideTicked, setHideTicked] = useLocalStorage('hideTicked', false);
+  const [onlyFa, setOnlyFa] = useLocalStorage('onlyFa', false);
   const [uniqueRocks, setUniqueRocks] = useState([]);
   const [uniqueTypes, setUniqueTypes] = useState([]);
   const [groupByTitle, setGroupByTitle] = useState(null);
-  const [groupBy, setGroupBy] = useState(false);
-  const [orderBy, setOrderBy] = useState(isSectorNotUser? (preferOrderByGrade? OrderBy.grade : OrderBy.number) : OrderBy.date);
-  const [customSectorOrderBy, setCustomSectorOrderBy] = useLocalStorage('sectorOrderBy', null);
+  const [groupBy, setGroupBy] = useLocalStorage('groupBy', null);
+  const [orderBy, setOrderBy] = useState(null);
+  const [sectorCustomOrderBy, setSectorCustomOrderBy] = useLocalStorage('orderBy', null);
 
   if (data == null || data.length === 0) {
     return null;
@@ -61,14 +61,12 @@ const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[
         newOrderBy = OrderBy.number;
       }
     }
-    if (isSectorNotUser && customSectorOrderBy !== undefined && customSectorOrderBy!=newOrderBy) {
-      order(customSectorOrderBy); // Sort results and save state
+    if (isSectorNotUser && sectorCustomOrderBy !== undefined && sectorCustomOrderBy!=newOrderBy) {
+      order(sectorCustomOrderBy); // Sort results and save state
     }
     else {
       setOrderBy(newOrderBy); // Results already sorted by newOrderBy, only update state
     }
-    setHideTicked(false);
-    setOnlyFa(false);
     const rocks = rows.filter(p => p.rock).map(p => p.rock).filter((value, index, self) => self.indexOf(value) === index).sort();
     if (rocks.length>0 && rows.filter(p => !p.rock).length>0) {
       rocks.push("<Without rock>");
@@ -78,22 +76,28 @@ const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[
     setUniqueTypes(types);
     if (isSectorNotUser && rocks.length>0) {
       setGroupByTitle(GroupBy.rock);
-      setGroupBy(true);
+      if (groupBy === undefined) {
+        setGroupBy(true);
+      }
     }
     else if (types && types.length>1) {
       setGroupByTitle(GroupBy.type);
-      setGroupBy(false);
+      if (groupBy === undefined) {
+        setGroupBy(false);
+      }
     }
     else {
       setGroupByTitle(null);
-      setGroupBy(false);
+      if (groupBy === undefined) {
+        setGroupBy(false);
+      }
     }
   }, [rows, isSectorNotUser, preferOrderByGrade]);
 
   function order(newOrderBy: OrderBy) {
     setOrderBy(newOrderBy);
     if (isSectorNotUser) {
-      setCustomSectorOrderBy(newOrderBy);
+      setSectorCustomOrderBy(newOrderBy);
     }
     let problems = data.sort((a, b) => {
       if (newOrderBy === OrderBy.alphabetical) {
@@ -121,10 +125,13 @@ const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[
     setData(problems);
   }
 
+  const containsFa = data.filter(p => p.fa).length>0;
+  const containsTicked = data.filter(p => p.ticked).length>0;
+
   let list;
-  if (groupBy && groupByTitle === GroupBy.rock) {
+  if (groupBy && groupByTitle != null && groupByTitle === GroupBy.rock) {
     let accordionRows = uniqueRocks.map(rock => {
-      let rows = data.filter(p => ((rock==='<Without rock>' && !p.rock) || p.rock==rock) && (!hideTicked || !p.ticked) && (!onlyFa || p.fa)).map(p => p.element);
+      let rows = data.filter(p => ((rock==='<Without rock>' && !p.rock) || p.rock==rock) && (!containsTicked || !hideTicked || !p.ticked) && (!containsFa || !onlyFa || p.fa)).map(p => p.element);
       let label = rock + " (" + rows.length + ")";
       let content = <List selection>{rows}</List>;
       return (
@@ -132,9 +139,9 @@ const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[
       );
     });
     list = <AccordionContainer accordionRows={accordionRows}/>;
-  } else if (groupBy && groupByTitle === GroupBy.type) {
+  } else if (groupBy && groupByTitle != null && groupByTitle === GroupBy.type) {
     let accordionRows = uniqueTypes.map(subType => {
-      let rows = data.filter(p => p.subType==subType && (!hideTicked || !p.ticked) && (!onlyFa || p.fa)).map(p => p.element);
+      let rows = data.filter(p => p.subType==subType && (!containsTicked || !hideTicked || !p.ticked) && (!containsFa || !onlyFa || p.fa)).map(p => p.element);
       let label = subType + " (" + rows.length + ")";
       let content = <List selection>{rows}</List>;
       return (
@@ -144,7 +151,7 @@ const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[
     list = <AccordionContainer accordionRows={accordionRows}/>;
   }
   else {
-    let elements = data.filter(p => (!hideTicked || !p.ticked) && (!onlyFa || p.fa)).map(p => p.element);
+    let elements = data.filter(p => (!containsTicked || !hideTicked || !p.ticked) && (!containsFa || !onlyFa || p.fa)).map(p => p.element);
     list = (
       <Segment attached="bottom">
         <List selection>
@@ -175,17 +182,17 @@ const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[
             </Step.Content>
           </Step>
         }
-        {isSectorNotUser && data.filter(p => p.ticked).length>0 && 
-          <Step link onClick={() => setHideTicked(!hideTicked)}>
+        {isSectorNotUser && containsTicked && 
+          <Step link onClick={() => setHideTicked(!hideTicked) }>
             <Step.Content>
               <Step.Title>Hide ticked</Step.Title>
               <Step.Description>
-                <Checkbox toggle checked={hideTicked} onClick={() => setHideTicked(!hideTicked)} />
+                <Checkbox toggle checked={hideTicked} onClick={() => setHideTicked(!hideTicked) } />
               </Step.Description>
             </Step.Content>
           </Step>
         }
-        {!isSectorNotUser && data.filter(p => p.fa).length>0 && 
+        {!isSectorNotUser && containsFa && 
           <Step link onClick={() => setOnlyFa(!onlyFa)}>
             <Step.Content>
               <Step.Title>Only FA</Step.Title>
