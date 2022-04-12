@@ -61,7 +61,7 @@ const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[
         newOrderBy = OrderBy.number;
       }
     }
-    if (isSectorNotUser && sectorCustomOrderBy !== undefined && sectorCustomOrderBy!=newOrderBy) {
+    if (isSectorNotUser && sectorCustomOrderBy != null && sectorCustomOrderBy!=newOrderBy) {
       order(sectorCustomOrderBy); // Sort results and save state
     }
     else {
@@ -76,19 +76,19 @@ const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[
     setUniqueTypes(types);
     if (isSectorNotUser && rocks.length>0) {
       setGroupByTitle(GroupBy.rock);
-      if (groupBy === undefined) {
+      if (groupBy == null) {
         setGroupBy(true);
       }
     }
     else if (types && types.length>1) {
       setGroupByTitle(GroupBy.type);
-      if (groupBy === undefined) {
+      if (groupBy == null) {
         setGroupBy(false);
       }
     }
     else {
       setGroupByTitle(null);
-      if (groupBy === undefined) {
+      if (groupBy == null) {
         setGroupBy(false);
       }
     }
