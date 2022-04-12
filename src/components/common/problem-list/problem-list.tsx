@@ -20,14 +20,14 @@ enum OrderBy {
 
 const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[], isSectorNotUser: boolean, preferOrderByGrade: boolean }) => {
   const [data, setData] = useState(rows);
-  const [hideTicked, setHideTicked] = useLocalStorage('hideTicked', false);
-  const [onlyFa, setOnlyFa] = useLocalStorage('onlyFa', false);
+  const [hideTicked, setHideTicked] = useLocalStorage('problemList-hideTicked', false);
+  const [onlyFa, setOnlyFa] = useLocalStorage('problemList-onlyFa', false);
   const [uniqueRocks, setUniqueRocks] = useState([]);
   const [uniqueTypes, setUniqueTypes] = useState([]);
   const [groupByTitle, setGroupByTitle] = useState(null);
-  const [groupBy, setGroupBy] = useLocalStorage('groupBy', null);
+  const [groupBy, setGroupBy] = useLocalStorage('problemList-groupBy', null);
   const [orderBy, setOrderBy] = useState(null);
-  const [sectorCustomOrderBy, setSectorCustomOrderBy] = useLocalStorage('orderBy', null);
+  const [sectorCustomOrderBy, setSectorCustomOrderBy] = useLocalStorage('sectorOrderBy', null);
 
   if (data == null || data.length === 0) {
     return null;
