@@ -34,9 +34,9 @@ Distributed under the GNU GENERAL PUBLIC LICENSE (Version 3): https://brattelinj
 
 <!-- Product -->
 ## :link: Product
-* Bouldering: [https://buldreinfo.com/](buldreinfo.com)
-* Route climbing: [https://brattelinjer.no/](brattelinjer.no)
-* Ice climbing: [https://is.brattelinjer.no/](is.brattelinjer.no)
+* Bouldering: [buldreinfo.com](https://buldreinfo.com)
+* Route climbing: [brattelinjer.no](https://brattelinjer.no)
+* Ice climbing: [is.brattelinjer.no](https://is.brattelinjer.no)
 
 <!-- Contact -->
 ## :handshake: Contact
