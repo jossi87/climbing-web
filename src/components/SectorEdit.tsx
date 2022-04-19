@@ -224,8 +224,8 @@ const SectorEdit = () => {
               <Leaflet
                 autoZoom={true}
                 markers={markers}
-                outlines={polygon && [{polygon: polygon}]}
-                polylines={polyline && [polyline]}
+                outlines={polygon && [{polygon}]}
+                polylines={polyline && [{polyline}]}
                 defaultCenter={defaultCenter}
                 defaultZoom={defaultZoom}
                 onClick={onMapClick}
