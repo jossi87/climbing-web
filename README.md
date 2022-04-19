@@ -40,5 +40,5 @@ Distributed under the GNU GENERAL PUBLIC LICENSE (Version 3): https://brattelinj
 
 <!-- Contact -->
 ## :handshake: Contact
-Jostein Oeygarden - jostein.oygarden@gmail.com
-Project Link: [https://bitbucket.org/josteinoygarden/buldreinfo-web/src/master/](https://bitbucket.org/josteinoygarden/buldreinfo-web/src/master/)
+* Jostein Oeygarden (jostein.oygarden@gmail.com)
+* Project Link: [https://bitbucket.org/josteinoygarden/buldreinfo-web/src/master/](https://bitbucket.org/josteinoygarden/buldreinfo-web/src/master/)
