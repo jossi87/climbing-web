@@ -95,6 +95,7 @@ const Permissions = () => {
                         let superadminWrite = data.value===3;
                         postPermissions(accessToken, u.userId, adminRead, adminWrite, superadminRead, superadminWrite)
                         .then((response) => {
+                          window.scrollTo(0, 0);
                           window.location.reload();
                         })
                         .catch((error) => {
