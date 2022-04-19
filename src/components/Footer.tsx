@@ -86,7 +86,7 @@ function Footer() {
             <List.Item as={Link} to='/privacy-policy'>Privacy Policy</List.Item>
           </List>
           <p>
-            Buldreinfo &amp; Bratte Linjer - 2006-2021
+            Buldreinfo &amp; Bratte Linjer - 2006-2022
           </p>
         </Container>
       </Segment>
