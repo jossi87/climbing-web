@@ -3727,10 +3727,10 @@ kuler@1.0.x:
   dependencies:
     colornames "^1.1.1"
 
-leaflet.fullscreen@^2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/leaflet.fullscreen/-/leaflet.fullscreen-2.3.0.tgz#4070995c6f6ac9864e163e11aab3c15fc633bf47"
-  integrity sha512-d/1w8GTHdS9v8+/Pkenb23D68Ra2RVP3Sw65XDCdc5VspveEa+YytOdFcWAEEktVQB6QMrEC+m6K4VpuQDzosQ==
+leaflet.fullscreen@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/leaflet.fullscreen/-/leaflet.fullscreen-1.6.0.tgz#daad9a6e07c8bdbca8e5af7e3d50272d31b0226a"
+  integrity sha512-Mr6STMeyKSfJ1CsKFcPZOm425LOe0c/6EHh0AK93GiTvteTAMFmO/oFDNe+0p1mk4+8yeGLcYgaXTSzPveEGhA==
 
 leaflet.locatecontrol@^0.76.0:
   version "0.76.0"
