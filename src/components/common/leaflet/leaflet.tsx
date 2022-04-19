@@ -35,7 +35,7 @@ const Leaflet = ({ autoZoom, navigate, markers, outlines, polylines, height, def
       outlines.forEach((o) => o.polygon.forEach((p) => bounds.extend([p[0], p[1]])));
     }
     if (polylines && polylines.length > 0) {
-      polylines.forEach((p) => p.forEach((x) => bounds.extend([x[0], x[1]])));
+      polylines.forEach((p) => p.polyline.forEach((x) => bounds.extend([x[0], x[1]])));
     }
     if (bounds._northEast.lat===bounds._southWest.lat || bounds._northEast.lng===bounds._southWest.lng) {
       bounds = null;
@@ -136,7 +136,7 @@ const Leaflet = ({ autoZoom, navigate, markers, outlines, polylines, height, def
       <FeatureGroup>
         {markerGroup}
         <Polygons navigate={navigate} opacity={opacity} outlines={outlines} addEventHandlers={addEventHandlers} />
-        <Polylines polylines={polylines} />
+        <Polylines opacity={opacity} polylines={polylines} />
       </FeatureGroup>
     </MapContainer>
   );

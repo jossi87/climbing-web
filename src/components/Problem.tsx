@@ -145,7 +145,8 @@ const Problem = () => {
   }
   if (markers.length>0) {
     const polyline = data.sectorPolyline && data.sectorPolyline.split(";").map(e => e.split(",").map(Number));
-    var outlines;
+    let outlines;
+    let polylines;
     if (data.sectorPolygonCoords && (data.lat===0 && data.lng===0)) {
       const polygon = data.sectorPolygonCoords.split(";").map(c => {
         const latLng = c.split(",");
@@ -154,9 +155,13 @@ const Problem = () => {
       let label = data.sectorName + (polyline? " (" + calculateDistance(polyline) + ")" : "");
       outlines = [{url: '/sector/' + data.sectorId, label, polygon}];
     }
+    if (polyline) {
+      let label = outlines == null? calculateDistance(polyline) : null;
+      polylines = [{polyline, label: label}];
+    }
     panes.push({
       menuItem: { key: 'map', icon: 'map' },
-      render: () => <Tab.Pane><Leaflet key={"sector="+data.id} autoZoom={true} height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={{lat: markers[0].lat, lng: markers[0].lng}} defaultZoom={16} navigate={navigate} onClick={null} showSateliteImage={true} clusterMarkers={false} rocks={null} /></Tab.Pane>
+      render: () => <Tab.Pane><Leaflet key={"sector="+data.id} autoZoom={true} height='40vh' markers={markers} outlines={outlines} polylines={polylines} defaultCenter={{lat: markers[0].lat, lng: markers[0].lng}} defaultZoom={16} navigate={navigate} onClick={null} showSateliteImage={true} clusterMarkers={false} rocks={null} /></Tab.Pane>
     });
   }
   

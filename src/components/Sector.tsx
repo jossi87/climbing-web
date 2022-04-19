@@ -102,7 +102,8 @@ const Sector = () => {
     const defaultCenter = data.lat && data.lat>0? {lat: data.lat, lng: data.lng} : data.metadata.defaultCenter;
     const defaultZoom = data.lat && data.lat>0? 15 : data.metadata.defaultZoom;
     let polyline = data.polyline && data.polyline.split(";").map(e => e.split(",").map(Number));
-    var outlines;
+    let outlines;
+    let polylines;
     if (data.polygonCoords && addPolygon) {
       const polygon = data.polygonCoords.split(";").map(c => {
         const latLng = c.split(",");
@@ -111,10 +112,14 @@ const Sector = () => {
       let label = data.name + (polyline? " (" + calculateDistance(polyline) + ")" : "");
       outlines = [{url: '/sector/' + data.id, label, polygon: polygon}];
     }
+    if (polyline) {
+      let label = outlines == null? calculateDistance(polyline) : null;
+      polylines = [{polyline, label: label}];
+    }
     const uniqueRocks = data.problems.filter(p => p.rock).map(p => p.rock).filter((value, index, self) => self.indexOf(value) === index).sort();
     panes.push({
       menuItem: { key: 'map', icon: 'map' },
-      render: () => <Tab.Pane><Leaflet key={"sector="+data.id} autoZoom={true} height='40vh' markers={markers} outlines={outlines} polylines={polyline && [polyline]} defaultCenter={defaultCenter} defaultZoom={defaultZoom} navigate={navigate} onClick={null} showSateliteImage={true} clusterMarkers={true} rocks={uniqueRocks} /></Tab.Pane>
+      render: () => <Tab.Pane><Leaflet key={"sector="+data.id} autoZoom={true} height='40vh' markers={markers} outlines={outlines} polylines={polylines} defaultCenter={defaultCenter} defaultZoom={defaultZoom} navigate={navigate} onClick={null} showSateliteImage={true} clusterMarkers={true} rocks={uniqueRocks} /></Tab.Pane>
     });
   }
   if (topoImages && topoImages.length>0) {

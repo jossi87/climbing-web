@@ -52,7 +52,8 @@ const Area = () => {
     if (s.polyline) {
       let polyline = s.polyline.split(";").map(e => e.split(",").map(Number));
       distance = calculateDistance(polyline);
-      polylines.push(polyline);
+      let label = s.polygonCoords == null && distance;
+      polylines.push({polyline, label});
     }
     if (s.polygonCoords) {
       const polygon = s.polygonCoords.split(";").map((c, i) => {
