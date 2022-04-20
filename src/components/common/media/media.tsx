@@ -11,7 +11,6 @@ import { Loading } from '../widgets/widgets';
 const style = {objectFit: 'cover', position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, width: '100%', height: '100%'};
 
 const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
-  let navigate = useNavigate();
   let location = useLocation();
   const [m, setM] = useState(null)
   const [autoPlayVideo, setAutoPlayVideo] = useState(false)
@@ -33,11 +32,15 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
   });
 
   function openModal(m) {
-    navigate(location.pathname + "?idMedia=" + m.id, { replace: true });
+    const url = location.pathname + "?idMedia=" + m.id;
+    setM(m);
+    window.history.replaceState("", "", url);
   }
 
   function closeModal() {
-    navigate(location.pathname, { replace: true});
+    const url = location.pathname;
+    setM(null);
+    window.history.replaceState("", "", url);
   }
 
   function gotoPrev() {
@@ -134,8 +137,8 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
   if (loading) {
     return <Loading />;
   }
-  if (location.search && media) {
-    let id = location.search.replace("?idMedia=","");
+  if (window.location.search && media) {
+    let id = window.location.search.replace("?idMedia=","");
     if (id.indexOf("&") > 0) {
       id = id.substr(0, id.indexOf("&"));
     }
@@ -144,7 +147,7 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
       setM(x[0]);
     }
   }
-  else if (!location.search && media && m) {
+  else if (!window.location.search && media && m) {
     setM(null);
   }
   return (
