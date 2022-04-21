@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link, useNavigate } from 'react-router-dom';
-import { Button, List, Icon, Segment } from 'semantic-ui-react';
+import { Header, Button, List, Icon, Segment, ButtonGroup } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
 import { Loading, LockSymbol } from './common/widgets/widgets';
@@ -13,7 +13,9 @@ import { linkify } from 'remarkable/linkify';
 const Browse = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState(null);
+  const [flyToId, setFlyToId] = useState(null);
   const [showForDevelopers, setShowForDevelopers] = useState(false);
+  let leafletRef = useRef();
   let navigate = useNavigate();
   let md = new Remarkable({breaks: true}).use(linkify);
   // open links in new windows
@@ -36,6 +38,7 @@ const Browse = () => {
   const typeDescription = data.metadata.gradeSystem==='BOULDER'? "problems" : "routes";
   const markers = data.areas.filter(a => a.forDevelopers === showForDevelopers && a.lat!=0 && a.lng!=0).map(a => {
     return {
+        id: a.id,
         lat: a.lat,
         lng: a.lng,
         label: a.name,
@@ -49,7 +52,7 @@ const Browse = () => {
         </>
       }
   });
-  const map = markers.length>0 && <><Leaflet autoZoom={true} height='75vh' markers={markers} defaultCenter={data.metadata.defaultCenter} defaultZoom={data.metadata.defaultZoom} navigate={navigate} polylines={null} outlines={null} onClick={null} showSateliteImage={false}  clusterMarkers={!showForDevelopers} rocks={null} /><br/></>;
+  const map = markers.length>0 && <div ref={leafletRef}><Leaflet autoZoom={true} height='75vh' markers={markers} defaultCenter={data.metadata.defaultCenter} defaultZoom={data.metadata.defaultZoom} navigate={navigate} polylines={null} outlines={null} onClick={null} showSateliteImage={false}  clusterMarkers={!showForDevelopers} rocks={null} flyToId={flyToId} /></div>;
   return (
     <>
       <MetaTags>
@@ -64,36 +67,41 @@ const Browse = () => {
         <meta property="og:image:height" content={data.metadata.og.imageHeight} />
         <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
       </MetaTags>
-      <div style={{float: 'right'}}>
-        {data.metadata.isAdmin &&
-          <Button.Group size="mini" compact>
+      <Segment>
+        <ButtonGroup floated="right" size="mini">
+          <Button active={!showForDevelopers} onClick={() => setShowForDevelopers(false)}>Developed areas</Button>
+          <Button active={showForDevelopers} onClick={() => setShowForDevelopers(true)}>Areas for developers</Button>
+          {data.metadata.isAdmin &&
             <Button animated='fade' as={Link} to={`/area/edit/-1`}>
               <Button.Content hidden>Add</Button.Content>
               <Button.Content visible>
                 <Icon name='plus' />
               </Button.Content>
             </Button>
-          </Button.Group>
-        }
-      </div>
-      <Button.Group>
-        <Button active={!showForDevelopers} onClick={() => setShowForDevelopers(false)}>Developed areas</Button>
-        <Button active={showForDevelopers} onClick={() => setShowForDevelopers(true)}>Areas for developers</Button>
-      </Button.Group>
-      {map}
-      <List divided relaxed as={Segment}>
-        {data.areas.filter(a => a.forDevelopers === showForDevelopers).map((area, i) => (
-          <List.Item key={i}>
-            <List.Content as={Link} to={`/area/${area.id}`}>
-              <List.Header>{area.name} <LockSymbol lockedAdmin={area.lockedAdmin} lockedSuperadmin={area.lockedSuperadmin} /></List.Header>
-              <List.Description>
-                <i>{`${area.numSectors} sectors, ${area.numProblems} ${typeDescription}, ${area.hits} page views`}</i><br/>
-                <div dangerouslySetInnerHTML={{ __html: area.comment && area.comment.length>350? area.comment.substring(0,350) + "..." : area.comment}}/>
-              </List.Description>
-            </List.Content>
-          </List.Item>
-        ))}
-      </List>
+          }
+        </ButtonGroup>
+        <Header as="h2">
+          <Icon name='list' />
+          <Header.Content>
+            Browse areas
+            <Header.Subheader>{data.metadata.description}</Header.Subheader>
+          </Header.Content>
+        </Header>
+        <List celled link horizontal size="small">
+          {data.areas.filter(a => a.forDevelopers === showForDevelopers).map((area, i) => (
+            <React.Fragment key={i}><List.Item key={i} as="a" onClick={() => {
+              if (area.lat && area.lng) {
+                setFlyToId(area.id);
+                leafletRef?.current?.scrollIntoView();
+              }
+              else {
+                navigate("/area/" + area.id);
+              }
+            }}>{area.name}</List.Item><LockSymbol lockedAdmin={area.lockedAdmin} lockedSuperadmin={area.lockedSuperadmin} /></React.Fragment>
+          ))}
+        </List>
+        {map}
+      </Segment>
     </>
   );
 }

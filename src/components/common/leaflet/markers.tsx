@@ -1,8 +1,18 @@
-import React from "react";
-import { Marker, Tooltip, Popup } from "react-leaflet";
+import React, { useRef, useEffect } from "react";
+import { Marker, Tooltip, Popup, useMap } from "react-leaflet";
 import { markerBlueIcon, markerRedIcon, parkingIcon, weatherIcon, rockIcon } from './icons';
 
-export default function Markers({ navigate, opacity, markers, addEventHandlers }) {
+export default function Markers({ navigate, opacity, markers, addEventHandlers, flyToId }) {
+  const map = useMap();
+  const markerRefs = useRef({});
+  useEffect(() => {
+    if (map && flyToId && markerRefs.current[flyToId]) {
+      const marker = markerRefs.current[flyToId];
+      map.flyTo(marker._latlng, 13, {animate: false});
+      marker.openPopup();
+    }
+  }, [flyToId]);
+
   if (!markers) {
     return null;
   }
@@ -43,7 +53,7 @@ export default function Markers({ navigate, opacity, markers, addEventHandlers }
         );
       } else if (m.html) {
         return (
-          <Marker icon={m.rock? rockIcon : markerBlueIcon} position={[m.lat, m.lng]} key={i}>
+          <Marker icon={m.rock? rockIcon : markerBlueIcon} position={[m.lat, m.lng]} key={i} ref={ref => markerRefs.current[m.id]=ref}>
             <Tooltip opacity={opacity} permanent className='buldreinfo-tooltip-compact'>
               {m.label}
             </Tooltip>

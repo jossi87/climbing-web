@@ -23,7 +23,7 @@ function MapEvent({ onClick }) {
   return null
 }
 
-const Leaflet = ({ autoZoom, navigate, markers, outlines, polylines, height, defaultCenter, defaultZoom, onClick, clusterMarkers, showSateliteImage, rocks }) => {
+const Leaflet = ({ autoZoom, navigate, markers, outlines, polylines, height, defaultCenter, defaultZoom, onClick, clusterMarkers, showSateliteImage, rocks, flyToId }) => {
   const [groupByRock, setGroupByRock] = useState((rocks != null && rocks.length>0)? true : false);
   let bounds = null;
   if (autoZoom && ((markers && markers.length > 0) || (outlines && outlines.length > 0) || (polylines && polylines.length > 0))) {
@@ -58,9 +58,9 @@ const Leaflet = ({ autoZoom, navigate, markers, outlines, polylines, height, def
       }
     }).filter(item => item); // Remove undefined
     let markersWithoutRock = markers.filter(m => !m.rock);
-    markerGroup = <Markers navigate={navigate} opacity={opacity} markers={[...rockMarkers, ...markersWithoutRock]} addEventHandlers={addEventHandlers} />;
+    markerGroup = <Markers navigate={navigate} opacity={opacity} markers={[...rockMarkers, ...markersWithoutRock]} addEventHandlers={addEventHandlers} flyToId={flyToId} />;
   } else {
-    markerGroup = <Markers navigate={navigate} opacity={opacity} markers={markers} addEventHandlers={addEventHandlers} />;
+    markerGroup = <Markers navigate={navigate} opacity={opacity} markers={markers} addEventHandlers={addEventHandlers} flyToId={flyToId} />;
     if (clusterMarkers) {
       markerGroup = <MarkerClusterGroup>{markerGroup}</MarkerClusterGroup>
     }
