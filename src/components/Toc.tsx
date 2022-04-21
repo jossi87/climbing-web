@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import MetaTags from 'react-meta-tags';
-import { HashLink } from 'react-router-hash-link';
 import { Header, List, Segment, Icon, Button, ButtonGroup } from 'semantic-ui-react';
 import { Loading, LockSymbol, Stars } from './common/widgets/widgets';
 import { useAuth0 } from '../utils/react-auth0-spa';
@@ -11,20 +10,11 @@ const Toc = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
+  const areaRefs = useRef({});
   useEffect(() => {
     if (!loading) {
       getToc(accessToken)
-      .then((data) => setData(data))
-      .then(() => {
-        const { hash } = window.location;
-        if (hash) {
-          const id = hash.replace("#", "");
-          const element = document.getElementById(id);
-          if (element) {
-            element.scrollIntoView({ block: 'start' })
-          }
-        }
-      });
+      .then((data) => setData(data));
     }
   }, [loading, accessToken]);
 
@@ -73,13 +63,13 @@ const Toc = () => {
         </Header>
         <List celled link horizontal size="small">
           {data.areas.map((area, i) => (
-            <React.Fragment key={i}><List.Item key={i} as={HashLink} to={`#${area.id}`}>{area.name}</List.Item><LockSymbol lockedAdmin={area.lockedAdmin} lockedSuperadmin={area.lockedSuperadmin} /></React.Fragment>
+            <React.Fragment key={i}><List.Item key={i} as='a' onClick={() => areaRefs.current[area.id].scrollIntoView({ block: 'start' })}>{area.name}</List.Item><LockSymbol lockedAdmin={area.lockedAdmin} lockedSuperadmin={area.lockedSuperadmin} /></React.Fragment>
           ))}
         </List>
         <List celled>
           {data.areas.map((area, i) => (
             <List.Item key={i}>
-              <List.Header><a id={area.id} href={area.url} rel='noreferrer noopener' target='_blank'>{area.name}</a><LockSymbol lockedAdmin={area.lockedAdmin} lockedSuperadmin={area.lockedSuperadmin} /> <HashLink to="#top"><Icon name="arrow alternate circle up outline" color="black"/></HashLink></List.Header>
+              <List.Header><a id={area.id} href={area.url} rel='noreferrer noopener' target='_blank' ref={ref => areaRefs.current[area.id]=ref}>{area.name}</a><LockSymbol lockedAdmin={area.lockedAdmin} lockedSuperadmin={area.lockedSuperadmin} /> <a onClick={() => window.scrollTo(0, 0)}><Icon name="arrow alternate circle up outline" color="black"/></a></List.Header>
               {area.sectors.map((sector, i) => (
                 <List.List key={i}>
                   <List.Header><a href={sector.url} rel='noreferrer noopener' target='_blank'>{sector.name}</a><LockSymbol lockedAdmin={sector.lockedAdmin} lockedSuperadmin={sector.lockedSuperadmin} /></List.Header>

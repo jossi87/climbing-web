@@ -92,7 +92,7 @@ const Browse = () => {
             <React.Fragment key={i}><List.Item key={i} as="a" onClick={() => {
               if (area.lat && area.lng) {
                 setFlyToId(area.id);
-                leafletRef?.current?.scrollIntoView();
+                leafletRef?.current?.scrollIntoView({ block: 'center' });
               }
               else {
                 navigate("/area/" + area.id);
