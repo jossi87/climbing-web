@@ -32,7 +32,7 @@ export default function Markers({ navigate, opacity, markers, addEventHandlers }
       } else if (m.isCamera) {
         return (
           <Marker icon={weatherIcon} position={[m.lat, m.lng]} key={i}>
-            <Popup>
+            <Popup closeButton={false}>
               <b>{m.name}</b>{i.lastUpdated && <> (<i>{m.lastUpdated}</i>)</>}
               <a rel='noreferrer noopener' target='_blank' href={m.urlStillImage}><img style={{maxWidth: '180px'}} src={m.urlStillImage}/></a><br/>
               <i>Click on image to open in new tab</i><br/><br/>
@@ -47,7 +47,7 @@ export default function Markers({ navigate, opacity, markers, addEventHandlers }
             <Tooltip opacity={opacity} permanent className='buldreinfo-tooltip-compact'>
               {m.label}
             </Tooltip>
-            <Popup>
+            <Popup closeButton={false}>
               {m.html}
             </Popup>
           </Marker>
