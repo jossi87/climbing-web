@@ -5,10 +5,11 @@ export default function Polylines({ polylines, opacity }) {
   if (!polylines) {
     return null;
   }
+  console.log(polylines)
   return (
     polylines.map((p, i) => {
-      if (p.length === 1) {
-        return <Circle key={i} center={p[0]} radius={0.5} />
+      if (p.polyline.length === 1) {
+        return <Circle color="lime" key={i} center={p.polyline[0]} radius={0.5} />
       }
       else {
         return (
