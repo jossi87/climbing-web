@@ -9,7 +9,7 @@ import Leaflet from './common/leaflet/leaflet';
 import { calculateDistance } from './common/leaflet/distance-math';
 import Media from './common/media/media';
 import { Stars, LockSymbol, Loading, WeatherLabels } from './common/widgets/widgets';
-import { Icon, Button, Tab, Breadcrumb, Table, Label, TableCell, List } from 'semantic-ui-react';
+import { Icon, Button, Tab, Breadcrumb, Table, Label, TableCell, List, Header } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSector, getAreaPdfUrl, getSectorPdfUrl } from '../api';
 import Linkify from 'react-linkify';
@@ -206,6 +206,12 @@ const Sector = () => {
       <Tab panes={panes} />
       <Table definition unstackable>
         <Table.Body>
+          {data.accessInfo &&
+            <Table.Row negative>
+              <Table.Cell>Access restrictions:</Table.Cell>
+              <Table.Cell><Header as="h5" color="red">{data.accessInfo}</Header></Table.Cell>
+            </Table.Row>
+          }
           {content}
           {data.comment &&
             <Table.Row>

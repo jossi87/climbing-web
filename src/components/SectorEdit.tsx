@@ -39,6 +39,10 @@ const SectorEdit = () => {
     setData(prevState => ({ ...prevState, comment: value }));
   }
 
+  function onAccessInfoChanged(e, { value }) {
+    setData(prevState => ({ ...prevState, accessInfo: value }));
+  }
+
   function onNewMediaChanged(newMedia) {
     setData(prevState => ({ ...prevState, newMedia }));
   }
@@ -48,7 +52,7 @@ const SectorEdit = () => {
     const trash = data.trash? true : false;
     if (!trash || confirm("Are you sure you want to move sector to trash?")) {
       setSaving(true);
-      postSector(accessToken, data.areaId, data.id, data.trash, data.lockedAdmin, data.lockedSuperadmin, data.name, data.comment, data.lat, data.lng, data.polygonCoords, data.polyline, data.newMedia)
+      postSector(accessToken, data.areaId, data.id, data.trash, data.lockedAdmin, data.lockedSuperadmin, data.name, data.comment, data.accessInfo, data.lat, data.lng, data.polygonCoords, data.polyline, data.newMedia)
       .then((data) => {
         navigate(data.destination);
       })
@@ -124,7 +128,6 @@ const SectorEdit = () => {
     return ([parseFloat(latLng[0]), parseFloat(latLng[1])]);
   });
   const polyline = data.polyline && data.polyline.split(";").map(e => e.split(",").map(Number));
-  console.log(polyline)
   const defaultCenter = data.lat && parseFloat(data.lat)>0? {lat: parseFloat(data.lat), lng: parseFloat(data.lng)} : data.metadata.defaultCenter;
   const defaultZoom = data.lat && parseFloat(data.lat)>0? 14 : data.metadata.defaultZoom;
   const lockedOptions = [
@@ -186,6 +189,13 @@ const SectorEdit = () => {
             style={{ minHeight: 100 }}
             value={data.comment}
             onChange={onCommentChanged} />
+          <Form.Field
+            label="Access restrictions"
+            control={TextArea}
+            placeholder='Enter access restrictions'
+            style={{ minHeight: 20 }}
+            value={data.accessInfo}
+            onChange={onAccessInfoChanged} />
         </Segment>
 
         <Segment>

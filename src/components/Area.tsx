@@ -194,6 +194,7 @@ const Area = () => {
                     {sector.typeNumTicked.map((x, i) => <p key={i}>{x.type + ": " + x.num}{x.ticked>0 && " (" + x.ticked + " ticked)"}</p>)}
                   </Item.Meta>
                   <Item.Description>
+                    {sector.accessInfo && <Header as="h5" color="red">{sector.accessInfo}</Header>}
                     {sector.comment}
                   </Item.Description>
                 </Item.Content>

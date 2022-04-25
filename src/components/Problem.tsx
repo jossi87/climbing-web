@@ -327,6 +327,12 @@ const Problem = () => {
       <Tab panes={panes} />
       <Table definition unstackable>
         <Table.Body>
+          {data.sectorAccessInfo &&
+            <Table.Row negative>
+              <Table.Cell>Access restrictions:</Table.Cell>
+              <Table.Cell><Header as="h5" color="red">{data.sectorAccessInfo}</Header></Table.Cell>
+            </Table.Row>
+          }
           <Table.Row verticalAlign="top">
             <Table.Cell width={3}>Number:</Table.Cell>
             <Table.Cell>{data.nr}</Table.Cell>
