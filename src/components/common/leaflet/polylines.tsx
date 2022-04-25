@@ -5,7 +5,6 @@ export default function Polylines({ polylines, opacity }) {
   if (!polylines) {
     return null;
   }
-  console.log(polylines)
   return (
     polylines.map((p, i) => {
       if (p.polyline.length === 1) {
