@@ -10,7 +10,7 @@ export default function Polygons({ navigate, opacity, outlines, addEventHandlers
       <Polygon
         key={o.polygon}
         positions={o.polygon}
-        color={o.background===true? "gray" : "#3388ff"}
+        color={o.background===true? "red" : "#3388ff"}
         weight={o.background===true? 1 : 3}
         eventHandlers={{
           click: () => {

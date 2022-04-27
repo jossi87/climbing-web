@@ -15,7 +15,7 @@ export default function Polylines({ opacity, polylines }) {
         let color = "lime";
         let weight = 3;
         if (p.background === true) {
-          color = "gray";
+          color = "red";
           weight = 1;
         }
         return (
