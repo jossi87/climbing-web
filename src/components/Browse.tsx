@@ -101,7 +101,7 @@ const Browse = () => {
           ))}
         </List>
         {map}
-        <List divided relaxed as={Segment}>
+        <List divided relaxed>
           {data.areas.filter(a => a.forDevelopers === showForDevelopers).map((area, i) => (
             <List.Item key={i}>
               <List.Content as={Link} to={`/area/${area.id}`}>
