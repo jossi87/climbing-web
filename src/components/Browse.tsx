@@ -101,6 +101,19 @@ const Browse = () => {
           ))}
         </List>
         {map}
+        <List divided relaxed as={Segment}>
+          {data.areas.filter(a => a.forDevelopers === showForDevelopers).map((area, i) => (
+            <List.Item key={i}>
+              <List.Content as={Link} to={`/area/${area.id}`}>
+                <List.Header>{area.name} <LockSymbol lockedAdmin={area.lockedAdmin} lockedSuperadmin={area.lockedSuperadmin} /></List.Header>
+                <List.Description>
+                  <i>{`${area.numSectors} sectors, ${area.numProblems} ${typeDescription}, ${area.hits} page views`}</i><br/>
+                  <div dangerouslySetInnerHTML={{ __html: area.comment && area.comment.length>350? area.comment.substring(0,350) + "..." : area.comment}}/>
+                </List.Description>
+              </List.Content>
+            </List.Item>
+          ))}
+        </List>
       </Segment>
     </>
   );
