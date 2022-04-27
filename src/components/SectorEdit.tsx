@@ -4,7 +4,7 @@ import ImageUpload from './common/image-upload/image-upload';
 import { Loading, InsufficientPrivileges } from './common/widgets/widgets';
 import { Checkbox, Form, Button, Input, Dropdown, TextArea, Segment, Icon, Message } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
-import { getSectorEdit, postSector, getSector } from '../api';
+import { getSectorEdit, postSector, getSector, getArea } from '../api';
 import Leaflet from './common/leaflet/leaflet';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 
@@ -13,6 +13,7 @@ const SectorEdit = () => {
   const [leafletMode, setLeafletMode] = useState('PARKING');
   const [data, setData] = useState(null);
   const [sectorMarkers, setSectorMarkers] = useState(null);
+  const [area, setArea] = useState(null);
   const [saving, setSaving] = useState(false);
   let { areaIdSectorId } = useParams();
   let navigate = useNavigate();
@@ -20,6 +21,8 @@ const SectorEdit = () => {
   useEffect(() => {
     if (areaIdSectorId && accessToken) {
       getSectorEdit(accessToken, areaIdSectorId).then((data) => setData(data));
+      const areaId = parseInt(areaIdSectorId.split("-")[0]);
+      getArea(accessToken, areaId).then((data) => setArea(data));
     }
   }, [accessToken, areaIdSectorId]);
 
@@ -123,11 +126,36 @@ const SectorEdit = () => {
   } else if (!data.metadata.isAdmin) {
     return <InsufficientPrivileges />
   }
+  const polygons = [];
+  const polylines = [];
+  if (area) {
+    area.sectors.forEach(sector => {
+      if (sector.id != data.id) {
+        if (sector.polygonCoords) {
+          const sectorPolygon = sector.polygonCoords.split(";").map((c, i) => {
+            const latLng = c.split(",");
+            return ([parseFloat(latLng[0]), parseFloat(latLng[1])]);
+          });
+          polygons.push({polygon: sectorPolygon, background: true, label: sector.name});
+        }
+        if (sector.polyline) {
+          const sectorPolyline = sector.polyline.split(";").map(e => e.split(",").map(Number));
+          polylines.push({polyline: sectorPolyline, background: true});
+        }
+      }
+    });
+  }
   const polygon = data.polygonCoords && data.polygonCoords.split(";").map((c, i) => {
     const latLng = c.split(",");
     return ([parseFloat(latLng[0]), parseFloat(latLng[1])]);
   });
+  if (polygon) {
+    polygons.push({polygon, background: false});
+  }
   const polyline = data.polyline && data.polyline.split(";").map(e => e.split(",").map(Number));
+  if (polyline) {
+    polylines.push({polyline, background: false});
+  }
   const defaultCenter = data.lat && parseFloat(data.lat)>0? {lat: parseFloat(data.lat), lng: parseFloat(data.lng)} : data.metadata.defaultCenter;
   const defaultZoom = data.lat && parseFloat(data.lat)>0? 14 : data.metadata.defaultZoom;
   const lockedOptions = [
@@ -150,6 +178,7 @@ const SectorEdit = () => {
   if (sectorMarkers) {
     markers.push(...sectorMarkers);
   }
+  
   return (
     <>
       <MetaTags>
@@ -235,8 +264,8 @@ const SectorEdit = () => {
               <Leaflet
                 autoZoom={true}
                 markers={markers}
-                outlines={polygon && [{polygon}]}
-                polylines={polyline && [{polyline}]}
+                outlines={polygons}
+                polylines={polylines}
                 defaultCenter={defaultCenter}
                 defaultZoom={defaultZoom}
                 onClick={onMapClick}

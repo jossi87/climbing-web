@@ -8,8 +8,10 @@ export default function Polygons({ navigate, opacity, outlines, addEventHandlers
   return (
     outlines.map((o, i) => (
       <Polygon
-        key={i}
+        key={o.polygon}
         positions={o.polygon}
+        color={o.background===true? "gray" : "#3388ff"}
+        weight={o.background===true? 1 : 3}
         eventHandlers={{
           click: () => {
             if (addEventHandlers) {
