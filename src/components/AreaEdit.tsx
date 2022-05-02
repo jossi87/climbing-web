@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import ImageUpload from './common/image-upload/image-upload';
 import Leaflet from './common/leaflet/leaflet';
-import { Form, Button, Checkbox, Input, Dropdown, TextArea, Segment, Icon, Message } from 'semantic-ui-react';
+import { Form, Button, Checkbox, Input, Dropdown, TextArea, Segment, Icon, Message, Accordion } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getAreaEdit, postArea } from '../api';
 import { Loading, InsufficientPrivileges } from './common/widgets/widgets';
@@ -11,6 +11,7 @@ import { useNavigate, useParams, useLocation } from 'react-router-dom';
 const AreaEdit = () => {
   const { accessToken, loading, isAuthenticated, loginWithRedirect } = useAuth0();
   const [data, setData] = useState(null);
+  const [showSectorOrder, setShowSectorOrder] = useState(false);
   const [saving, setSaving] = useState(false);
   let { areaId } = useParams();
   let navigate = useNavigate();
@@ -46,7 +47,7 @@ const AreaEdit = () => {
     const trash = data.trash? true : false;
     if (!trash || confirm("Are you sure you want to move area to trash?")) {
       setSaving(true);
-      postArea(accessToken, data.id, data.trash, data.lockedAdmin, data.lockedSuperadmin, data.forDevelopers, data.name, data.comment, data.lat, data.lng, data.newMedia)
+      postArea(accessToken, data.id, data.trash, data.lockedAdmin, data.lockedSuperadmin, data.forDevelopers, data.name, data.comment, data.lat, data.lng, data.newMedia, data.sectorOrder)
       .then((data) => {
         navigate(data.destination);
       })
@@ -82,6 +83,32 @@ const AreaEdit = () => {
   } else if (data.lockedAdmin) {
     lockedValue = 1;
   }
+
+  let orderForm = data.sectorOrder?.length>1 && (
+    <Form>
+      {data.sectorOrder.map((s, i) => (
+        <Form.Group widths={2} inline key={i} active>
+          <Form.Field>
+            <Input size="mini" icon="hashtag" iconPosition="left" fluid placeholder='Number' value={s.sorting} onChange={(e, { value }) => {
+              let sectorOrder = data.sectorOrder;
+              if (sectorOrder[i].origSorting === undefined) {
+                sectorOrder[i].origSorting = sectorOrder[i].sorting;
+              }
+              sectorOrder[i].sorting = parseInt(value) || 0;
+              setData(prevState => ({ ...prevState, sectorOrder }));
+            }} />
+          </Form.Field>
+          <Form.Field>
+            {s.name}
+          </Form.Field>
+          <Form.Field>
+            {s.origSorting && s.sorting!=s.origSorting && "Changed"}
+          </Form.Field>
+        </Form.Group>
+      ))}
+    </Form>
+  )
+
   return (
     <>
       <MetaTags>
@@ -152,6 +179,18 @@ const AreaEdit = () => {
             />
           </Form.Field>
         </Segment>
+
+        {orderForm &&
+          <Segment>
+            <Accordion>
+              <Accordion.Title active={showSectorOrder} onClick={() => setShowSectorOrder(!showSectorOrder)}>
+                <Icon name='dropdown' />
+                Override order on sector
+              </Accordion.Title>
+              <Accordion.Content active={showSectorOrder} content={orderForm}/>
+            </Accordion>
+          </Segment>
+        }
 
         <Button.Group>
           <Button negative onClick={() => {
