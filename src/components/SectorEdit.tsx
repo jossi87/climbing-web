@@ -181,28 +181,23 @@ const SectorEdit = () => {
   }
 
   const orderForm = data.problemOrder?.length>1 && (
-    <Form>
-      {data.problemOrder.map((p, i) => (
-        <Form.Group widths={2} inline key={i} active>
-          <Form.Field>
-            <Input size="mini" icon="hashtag" iconPosition="left" fluid placeholder='Number' value={p.nr} onChange={(e, { value }) => {
-              let problemOrder = data.problemOrder;
+    <>
+      {data.problemOrder.map((p, i) => {
+        let problemOrder = data.problemOrder;
+        let clr = (problemOrder[i].origNr && problemOrder[i].origNr!=problemOrder[i].nr? 'orange' : 'gray');
+        return (
+          <Input size="small" fluid icon="hashtag" iconPosition="left" placeholder='Number' value={p.nr}
+            label={{basic: true, content: p.name, color: clr}}
+            labelPosition='right'
+            onChange={(e, { value }) => {
               if (problemOrder[i].origNr === undefined) {
                 problemOrder[i].origNr = problemOrder[i].nr;
               }
               problemOrder[i].nr = parseInt(value) || 0;
               setData(prevState => ({ ...prevState, problemOrder }));
-            }} />
-          </Form.Field>
-          <Form.Field>
-            {p.name}
-          </Form.Field>
-          <Form.Field>
-            {p.origNr && p.nr!=p.origNr && "Changed"}
-          </Form.Field>
-        </Form.Group>
-      ))}
-    </Form>
+            }}/>
+      )})}
+    </>
   );
   
   return (

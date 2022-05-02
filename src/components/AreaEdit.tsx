@@ -85,28 +85,23 @@ const AreaEdit = () => {
   }
 
   const orderForm = data.sectorOrder?.length>1 && (
-    <Form>
-      {data.sectorOrder.map((s, i) => (
-        <Form.Group widths={2} inline key={i} active>
-          <Form.Field>
-            <Input size="mini" icon="hashtag" iconPosition="left" fluid placeholder='Number' value={s.sorting} onChange={(e, { value }) => {
-              let sectorOrder = data.sectorOrder;
+    <>
+      {data.sectorOrder.map((p, i) => {
+        let sectorOrder = data.sectorOrder;
+        let clr = (sectorOrder[i].origSorting && sectorOrder[i].origSorting!=sectorOrder[i].sorting? 'orange' : 'gray');
+        return (
+          <Input size="small" fluid icon="hashtag" iconPosition="left" placeholder='Number' value={p.sorting}
+            label={{basic: true, content: p.name, color: clr}}
+            labelPosition='right'
+            onChange={(e, { value }) => {
               if (sectorOrder[i].origSorting === undefined) {
                 sectorOrder[i].origSorting = sectorOrder[i].sorting;
               }
               sectorOrder[i].sorting = parseInt(value) || 0;
               setData(prevState => ({ ...prevState, sectorOrder }));
-            }} />
-          </Form.Field>
-          <Form.Field>
-            {s.name}
-          </Form.Field>
-          <Form.Field>
-            {s.origSorting && s.sorting!=s.origSorting && "Changed"}
-          </Form.Field>
-        </Form.Group>
-      ))}
-    </Form>
+            }}/>
+      )})}
+    </>
   );
 
   return (
