@@ -84,7 +84,7 @@ const AreaEdit = () => {
     lockedValue = 1;
   }
 
-  let orderForm = data.sectorOrder?.length>1 && (
+  const orderForm = data.sectorOrder?.length>1 && (
     <Form>
       {data.sectorOrder.map((s, i) => (
         <Form.Group widths={2} inline key={i} active>
@@ -107,7 +107,7 @@ const AreaEdit = () => {
         </Form.Group>
       ))}
     </Form>
-  )
+  );
 
   return (
     <>
@@ -185,7 +185,7 @@ const AreaEdit = () => {
             <Accordion>
               <Accordion.Title active={showSectorOrder} onClick={() => setShowSectorOrder(!showSectorOrder)}>
                 <Icon name='dropdown' />
-                Override order on sector
+                Change order of sectors in area
               </Accordion.Title>
               <Accordion.Content active={showSectorOrder} content={orderForm}/>
             </Accordion>

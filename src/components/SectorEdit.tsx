@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import ImageUpload from './common/image-upload/image-upload';
 import { Loading, InsufficientPrivileges } from './common/widgets/widgets';
-import { Checkbox, Form, Button, Input, Dropdown, TextArea, Segment, Icon, Message } from 'semantic-ui-react';
+import { Checkbox, Form, Button, Input, Dropdown, TextArea, Segment, Accordion, Icon, Message } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSectorEdit, postSector, getSector, getArea } from '../api';
 import Leaflet from './common/leaflet/leaflet';
@@ -12,6 +12,7 @@ const SectorEdit = () => {
   const { accessToken, loading, isAuthenticated, loginWithRedirect } = useAuth0();
   const [leafletMode, setLeafletMode] = useState('PARKING');
   const [data, setData] = useState(null);
+  const [showProblemOrder, setShowProblemOrder] = useState(false);
   const [sectorMarkers, setSectorMarkers] = useState(null);
   const [area, setArea] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -55,7 +56,7 @@ const SectorEdit = () => {
     const trash = data.trash? true : false;
     if (!trash || confirm("Are you sure you want to move sector to trash?")) {
       setSaving(true);
-      postSector(accessToken, data.areaId, data.id, data.trash, data.lockedAdmin, data.lockedSuperadmin, data.name, data.comment, data.accessInfo, data.lat, data.lng, data.polygonCoords, data.polyline, data.newMedia)
+      postSector(accessToken, data.areaId, data.id, data.trash, data.lockedAdmin, data.lockedSuperadmin, data.name, data.comment, data.accessInfo, data.lat, data.lng, data.polygonCoords, data.polyline, data.newMedia, data.problemOrder)
       .then((data) => {
         navigate(data.destination);
       })
@@ -178,6 +179,31 @@ const SectorEdit = () => {
   if (sectorMarkers) {
     markers.push(...sectorMarkers);
   }
+
+  const orderForm = data.problemOrder?.length>1 && (
+    <Form>
+      {data.problemOrder.map((p, i) => (
+        <Form.Group widths={2} inline key={i} active>
+          <Form.Field>
+            <Input size="mini" icon="hashtag" iconPosition="left" fluid placeholder='Number' value={p.nr} onChange={(e, { value }) => {
+              let problemOrder = data.problemOrder;
+              if (problemOrder[i].origNr === undefined) {
+                problemOrder[i].origNr = problemOrder[i].nr;
+              }
+              problemOrder[i].nr = parseInt(value) || 0;
+              setData(prevState => ({ ...prevState, problemOrder }));
+            }} />
+          </Form.Field>
+          <Form.Field>
+            {p.name}
+          </Form.Field>
+          <Form.Field>
+            {p.origNr && p.nr!=p.origNr && "Changed"}
+          </Form.Field>
+        </Form.Group>
+      ))}
+    </Form>
+  );
   
   return (
     <>
@@ -304,6 +330,18 @@ const SectorEdit = () => {
             }
           </Form.Group>
         </Segment>
+
+        {orderForm &&
+          <Segment>
+            <Accordion>
+              <Accordion.Title active={showProblemOrder} onClick={() => setShowProblemOrder(!showProblemOrder)}>
+                <Icon name='dropdown' />
+                Change order of problems in sector
+              </Accordion.Title>
+              <Accordion.Content active={showProblemOrder} content={orderForm}/>
+            </Accordion>
+          </Segment>
+        }
         
         <Button.Group>
           <Button negative onClick={() => {

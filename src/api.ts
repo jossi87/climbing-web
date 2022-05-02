@@ -418,7 +418,7 @@ export function getSectorEdit(accessToken: string, areaIdSectorId: string): Prom
     .then((res) => {
       return {id: res.id, areaId: res.areaId, lockedAdmin: res.lockedAdmin, lockedSuperadmin: res.lockedSuperadmin, name: res.name, comment: res.comment, accessInfo: res.accessInfo,
         lat: res.lat, lng: res.lng, latStr: res.lat, lngStr: res.lng,
-        polygonCoords: res.polygonCoords, polyline: res.polyline, newMedia: [], metadata: res.metadata};
+        polygonCoords: res.polygonCoords, polyline: res.polyline, newMedia: [], metadata: res.metadata, problemOrder: res.problemOrder};
     })
     .catch((error) => {
       console.warn(error);
@@ -676,10 +676,10 @@ export function postProblemSvg(accessToken: string, problemId: number, mediaId: 
   });
 }
 
-export function postSector(accessToken: string, areaId: number, id: number, trash: boolean, lockedAdmin: number, lockedSuperadmin: number, name: string, comment: string, accessInfo: string, lat: number, lng: number, polygonCoords: any, polyline: any, media: any): Promise<any> {
+export function postSector(accessToken: string, areaId: number, id: number, trash: boolean, lockedAdmin: number, lockedSuperadmin: number, name: string, comment: string, accessInfo: string, lat: number, lng: number, polygonCoords: any, polyline: any, media: any, problemOrder: any): Promise<any> {
   const formData = new FormData();
   const newMedia = media.map(m => {return {name: m.file && m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto, description: m.description, embedVideoUrl: m.embedVideoUrl, embedThumbnailUrl: m.embedThumbnailUrl, embedMilliseconds: m.embedMilliseconds}});
-  formData.append('json', JSON.stringify({areaId, id, trash, lockedAdmin, lockedSuperadmin, name, comment, accessInfo, lat, lng, polygonCoords, polyline, newMedia}));
+  formData.append('json', JSON.stringify({areaId, id, trash, lockedAdmin, lockedSuperadmin, name, comment, accessInfo, lat, lng, polygonCoords, polyline, newMedia, problemOrder}));
   media.forEach(m => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
   return makeAuthenticatedRequest(accessToken, `/sectors`,{
     method: 'POST',
