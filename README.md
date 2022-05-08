@@ -16,6 +16,7 @@ Note: While installing new dependecies, it is necessary to use "yarn add -D" if 
   yarn
   yarn dev
 ```
+*Change origin in api.ts to build different products in development.*
 
 <!-- Deployment -->
 ### :triangular_flag_on_post: Deployment
