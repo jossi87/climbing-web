@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import { Loading } from './common/widgets/widgets';
 import { Header, Segment, Form, Dropdown, Button, Checkbox, Icon, List, Image } from 'semantic-ui-react';
-import { getMeta, getImageUrl, postFilter } from '../api';
+import { getMeta, getImageUrl, postFilter, getLocales } from '../api';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { Stars, LockSymbol } from './common/widgets/widgets';
 import { useLocalStorage } from '../utils/use-local-storage';
@@ -31,7 +31,7 @@ const Filter = () => {
     return <Loading />;
   }
   const gradeOptions = meta.metadata.grades.map(g => ({key: g.id, value: g.id, text: g.grade}));
-  const typeOptions = meta.metadata.types.sort((a, b) => a.subType.localeCompare(b.subType)).map(t => ({key: t.id, value: t.id, text: t.subType}));
+  const typeOptions = meta.metadata.types.sort((a, b) => a.subType.localeCompare(b.subType, getLocales())).map(t => ({key: t.id, value: t.id, text: t.subType}));
   var res = result && result.filter(p => ( (!hideTicked || !p.ticked) && (!onlyWithMedia || p.randomMediaId>0) && (!onlyAdmin || p.lockedAdmin) && (!onlySuperAdmin || p.lockedSuperadmin) ))
   return (
     <>
@@ -97,7 +97,7 @@ const Filter = () => {
                   if (myOrderByStars && a.stars != b.stars) {
                     return b.stars-a.stars;
                   }
-                  return a.problemName.localeCompare(b.problemName);
+                  return a.problemName.localeCompare(b.problemName, getLocales());
                 });
                 setResult(result);
                 setOrderByStars(myOrderByStars);

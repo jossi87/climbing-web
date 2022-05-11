@@ -1,5 +1,9 @@
 import fetch from 'isomorphic-fetch';
 
+export function getLocales() {
+  return "nb-NO";
+}
+
 export function getBaseUrl(): string {
   var origin = window.origin;
   if (origin === 'http://localhost:3000') {
