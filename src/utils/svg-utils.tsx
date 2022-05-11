@@ -90,18 +90,34 @@ function generateSvgNrAndAnchor(path, nr, hasAnchor, w, h) {
 }
 
 export function parsePath(d) {
+  let res = [];
   if (d) {
     const commands: any = parseSVG(d);
     makeAbsolute(commands); // Note: mutates the commands in place!
-    return commands.map(c => {
+    res = commands.map(c => {
       switch (c.code) {
         case "L": case "M": return { x: Math.round(c.x), y: Math.round(c.y) };
         case "C": return { x: Math.round(c.x), y: Math.round(c.y), c: [{x: Math.round(c.x1), y: Math.round(c.y1)}, {x: Math.round(c.x2), y: Math.round(c.y2)}] };
         case "S": return { x: Math.round(c.x), y: Math.round(c.y), c: [{x: Math.round(c.x0), y: Math.round(c.y0)}, {x: Math.round(c.x2), y: Math.round(c.y2)}] };
       }
     });
+    // Reverse path if drawn incorrect direction
+    if (res.length>=2 && res[0].y<res[res.length-1].y) {
+      let tmp = [];
+      for (let i=res.length-1; i>=0; i--) {
+        let p = res[i];
+        let prevP = i!=res.length-1 && res[i+1];
+        if (prevP?.c) {
+          tmp.push({x: p.x, y: p.y, c: [{x: prevP.c[1].x, y: prevP.c[1].y}, {x: prevP.c[0].x, y: prevP.c[0].y}]});
+        }
+        else {
+          tmp.push({x: p.x, y: p.y});
+        }
+      }
+      res = tmp;
+    }
   }
-  return [];
+  return res;
 }
 
 export function parseReadOnlySvgs(readOnlySvgs, w, h, minWindowScale) {

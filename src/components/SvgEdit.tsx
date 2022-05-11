@@ -44,9 +44,11 @@ const SvgEdit = () => {
         setH(data.h);
         setShift(data.shift);
         setSvgId(data.svgId);
-        setPath(data.path);
-        setPathTxt(data.path);
-        setPoints(parsePath(data.path));
+        let correctPoints = parsePath(data.path);
+        let correctPathTxt = generatePath(correctPoints);
+        setPath(correctPathTxt);
+        setPathTxt(correctPathTxt);
+        setPoints(correctPoints);
         setAnchors(data.anchors);
         setTexts(data.texts);
         setReadOnlySvgs(data.readOnlySvgs);
@@ -112,6 +114,7 @@ const SvgEdit = () => {
   };
 
   function handleOnClick(e) {
+    e.preventDefault();
     if (shift) {
       points.push(getMouseCoords(e));
       if (points.length > 1) {
@@ -119,8 +122,8 @@ const SvgEdit = () => {
         const b = points[points.length-1];
         const distance = Math.abs((b.x-a.x)^2 + (b.y-a.y)^2);
         if (distance > 130) { // Convert from 'Line to' to 'Curve to'
-          const deltaX = (b.x-a.x)/3;
-          const deltaY = (b.y-a.y)/3;
+          const deltaX = Math.round((b.x-a.x)/3);
+          const deltaY = Math.round((b.y-a.y)/3);
           // Update points
           points[points.length-1] = {
             x: b.x,
@@ -138,7 +141,7 @@ const SvgEdit = () => {
           };
         }
       }
-      const p = generatePath();
+      const p = generatePath(points);
       setPath(p);
       setPathTxt(p);
       setPoints([...points]);
@@ -157,7 +160,7 @@ const SvgEdit = () => {
     }
   };
 
-  function generatePath() {
+  function generatePath(points) {
     var d = "";
     points.forEach((p, i) => {
       if (i === 0) { // first point
@@ -192,7 +195,7 @@ const SvgEdit = () => {
     const active = activePoint;
     points[active].x = coords.x;
     points[active].y = coords.y;
-    const p = generatePath();
+    const p = generatePath(points);
     setPath(p);
     setPathTxt(p);
     setPoints([...points]);
@@ -202,7 +205,7 @@ const SvgEdit = () => {
     const active = activePoint;
     points[active].c[anchor].x = coords.x;
     points[active].c[anchor].y = coords.y;
-    const p = generatePath();
+    const p = generatePath(points);
     setPath(p);
     setPathTxt(p);
     setPoints([...points]);
@@ -246,7 +249,7 @@ const SvgEdit = () => {
           };
         break;
       }
-      const p = generatePath();
+      const p = generatePath(points);
       setPath(p);
       setPathTxt(p);
       setPoints([...points]);
@@ -255,13 +258,18 @@ const SvgEdit = () => {
 
   function removeActivePoint(e) {
     let active = activePoint;
-    if (points.length > 1 && active !== 0) {
+    if (points.length > 0) {
       points.splice(active, 1);
-      const p = generatePath();
+      if (points.length>0 && points[0].c) {
+        points[0].c = null;
+      }
+      const p = generatePath(points);
       setPath(p);
       setPathTxt(p);
       setPoints([...points]);
-      setActivePoint(points.length-1);
+      if (activePoint==points.length && points.length>0) {
+        setActivePoint(activePoint-1);
+      }
     }
   };
 
@@ -309,7 +317,7 @@ const SvgEdit = () => {
         </g>
       );
     }
-    const fill = activePoint && activePoint === i? "#0000FF" : "#FF0000";
+    const fill = activePoint === i? "#0000FF" : "#FF0000";
     return (
       <g key={i}>
         {anchors}
@@ -359,7 +367,7 @@ const SvgEdit = () => {
             {key: 2, value: "C", text: 'Selected point: Curve to'}
           ]}/>
         )}
-        {activePoint !== 0 && <Button disabled={activePoint===0} onClick={removeActivePoint}>Remove this point</Button>}
+        <Button disabled={!points || points.length===0} onClick={removeActivePoint}>Remove this point</Button>
       </Segment>
       <svg viewBox={"0 0 " + w + " " + h} onClick={handleOnClick} onMouseMove={handleMouseMove} width="100%" height="100%">
         <image ref={imageRef} xlinkHref={getImageUrl(mediaId, crc32, null)} width="100%" height="100%"/>
@@ -377,8 +385,11 @@ const SvgEdit = () => {
           icon: 'sync',
           content: 'Update',
           onClick: () => {
-            setPath(pathTxt);
-            setPoints(parsePath(pathTxt));
+            let correctPoints = parsePath(pathTxt);
+            let correctPathTxt = generatePath(correctPoints);
+            setPath(correctPathTxt);
+            setPathTxt(correctPathTxt);
+            setPoints(correctPoints);
           }
         }}
         fluid placeholder='SVG Path' value={pathTxt || ""} onChange={(e, { value }) => {
