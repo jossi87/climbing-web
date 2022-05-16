@@ -142,14 +142,19 @@ const Sector = () => {
       render: () => <Tab.Pane><Activity metadata={data.metadata} idArea={0} idSector={data.id}/></Tab.Pane>
     });
   }
-  let uniqueTypes = data.problems.map(p => p.t.subType).filter((value, index, self) => self.indexOf(value) === index).sort(); 
+  let uniqueTypes = data.problems.map(p => p.t.subType).filter((value, index, self) => self.indexOf(value) === index); 
+  if (data.problems.filter(p => p.gradeNumber === 0).length > 0) {
+    uniqueTypes.push("Projects")
+  }
+  uniqueTypes.sort();
   let content = uniqueTypes.map((subType, i) => {
-    let problemsOfType = data.problems.filter(p => p.t.subType === subType);
+    let header = subType? subType : "Boulders";
+    let problemsOfType = data.problems.filter(p => subType==='Projects' && p.gradeNumber===0 || p.t.subType===subType && p.gradeNumber!==0);
     let numTicked = problemsOfType.filter(p => p.ticked).length;
     let txt = numTicked === 0? problemsOfType.length : problemsOfType.length + " (" + numTicked + " ticked)";
     return (
       <Table.Row key={i}>
-        <TableCell>{subType? subType : "Boulders"}:</TableCell>
+        <TableCell>{header}:</TableCell>
         <TableCell>{txt}</TableCell>
       </Table.Row>
     );

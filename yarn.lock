@@ -1598,10 +1598,10 @@
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.9.tgz#97edc9037ea0c38585320b28964dde3b39e4660d"
   integrity sha512-qcUXuemtEu+E5wZSJHNxUXeCZhAfXKQ41D+duX+VYPde7xyEVZci+/oXKJL13tnRs9lR2pr4fod59GT6/X1/yQ==
 
-"@types/leaflet@^1.7.9":
-  version "1.7.9"
-  resolved "https://registry.yarnpkg.com/@types/leaflet/-/leaflet-1.7.9.tgz#7993d34f14cfa88c45b3d490daba39a3a1be9a2b"
-  integrity sha512-H8vPgD49HKzqM41ArHGZM70g/tfhp8W+JcPxfnF+5H/Xvp+xiP+KQOUNWU8U89fqS1Jj3cpRY/+nbnaHFzwnFA==
+"@types/leaflet@^1.7.10":
+  version "1.7.10"
+  resolved "https://registry.yarnpkg.com/@types/leaflet/-/leaflet-1.7.10.tgz#092f97af29bb870b7d1ed72d516d4b3dde66a6c8"
+  integrity sha512-RzK5BYwYboOXXxyF01tp8g1J8UbdRvoaf+F/jCnVaWC42+QITB6wKvUklcX7jCMRWkzTnGO9NLg7A6SzrlGALA==
   dependencies:
     "@types/geojson" "*"
 
@@ -4028,10 +4028,10 @@ leaflet.fullscreen@^1.6.0:
   resolved "https://registry.yarnpkg.com/leaflet.fullscreen/-/leaflet.fullscreen-1.6.0.tgz#daad9a6e07c8bdbca8e5af7e3d50272d31b0226a"
   integrity sha512-Mr6STMeyKSfJ1CsKFcPZOm425LOe0c/6EHh0AK93GiTvteTAMFmO/oFDNe+0p1mk4+8yeGLcYgaXTSzPveEGhA==
 
-leaflet.locatecontrol@^0.76.0:
-  version "0.76.0"
-  resolved "https://registry.yarnpkg.com/leaflet.locatecontrol/-/leaflet.locatecontrol-0.76.0.tgz#afca63a3ccf3161bed0e8bf94a98ddba364e90e1"
-  integrity sha512-Mx8uiihBi8KrrW3LgblsNL/pS8HR0gj60m8VFDFrnhSvDuitChazc095XcMSscf/XqZW+TSqQMCTe+AUy/4/eA==
+leaflet.locatecontrol@^0.76.1:
+  version "0.76.1"
+  resolved "https://registry.yarnpkg.com/leaflet.locatecontrol/-/leaflet.locatecontrol-0.76.1.tgz#03eb8e98e0c54fee457f930a63624479a6177de0"
+  integrity sha512-qA92Mxs2N1jgVx+EdmxtDrdzFD+f2llPJbqaKvmW1epZMSIvD6KNsBjpQYUIxz4XtJkOleqRSwWQcrm5P5NnYw==
 
 leaflet.markercluster@^1.5.3:
   version "1.5.3"
@@ -4754,10 +4754,10 @@ punycode@^2.1.0, punycode@^2.1.1:
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.1.1.tgz#b58b010ac40c22c5657616c8d2c2c02c7bf479ec"
   integrity sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==
 
-puppeteer@^14.0.0:
-  version "14.0.0"
-  resolved "https://registry.yarnpkg.com/puppeteer/-/puppeteer-14.0.0.tgz#829e97b70fa81746bb88ec2d72f11a7429cc84ab"
-  integrity sha512-Aj/cySGBMWpUYEWV0YOcwyhq5lOxuuiGScgdj/OvslAm/ydoywiI8OzAIXT4HzKmNTmzm/fKKHHtcsQa/fFgdw==
+puppeteer@^14.1.0:
+  version "14.1.0"
+  resolved "https://registry.yarnpkg.com/puppeteer/-/puppeteer-14.1.0.tgz#319560e20ff451890158d7146c79ab589c6e7031"
+  integrity sha512-T3eB4f6k9HVttYvyy8drGIKb04M+vxhepqM7qqcVCBTNT3T6M9cUaJT4k7P+a6wSonObJSJUP98JkPDQG+3fJw==
   dependencies:
     cross-fetch "3.1.5"
     debug "4.3.4"
