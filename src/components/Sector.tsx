@@ -212,14 +212,14 @@ const Sector = () => {
       <Table definition unstackable>
         <Table.Body>
           {data.accessInfo &&
-            <Table.Row negative>
+            <Table.Row negative verticalAlign="top">
               <Table.Cell>Access restrictions:</Table.Cell>
               <Table.Cell><Header as="h5" color="red">{data.accessInfo}</Header></Table.Cell>
             </Table.Row>
           }
           {content}
           {data.comment &&
-            <Table.Row>
+            <Table.Row verticalAlign="top">
               <Table.Cell>Description:</Table.Cell>
               <Table.Cell><Linkify componentDecorator={componentDecorator}>{data.comment}</Linkify></Table.Cell>
             </Table.Row>
@@ -239,14 +239,14 @@ const Sector = () => {
             </Table.Row>
           )}
           {data.lat>0 && data.lng>0 &&
-            <Table.Row>
+            <Table.Row verticalAlign="top">
               <Table.Cell>Weather:</Table.Cell>
               <Table.Cell>
                 <WeatherLabels lat={data.lat} lng={data.lng} label={data.name} />
               </Table.Cell>
             </Table.Row>
           }
-          <Table.Row>
+          <Table.Row verticalAlign="top">
             <Table.Cell>Misc:</Table.Cell>
             <Table.Cell>
               <Label href={getSectorPdfUrl(accessToken, data.id)} rel="noreferrer noopener" target="_blank" image basic>
@@ -262,7 +262,7 @@ const Sector = () => {
               }
             </Table.Cell>
           </Table.Row>
-          <Table.Row>
+          <Table.Row verticalAlign="top">
             <Table.Cell width={3}>Page views:</Table.Cell>
             <Table.Cell>{data.hits}</Table.Cell>
           </Table.Row>
