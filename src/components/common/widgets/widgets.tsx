@@ -78,16 +78,18 @@ export function WeatherLabels({ lat, lng, label }) {
         <Label href={`/webcam-map/` + JSON.stringify({lat, lng, label})} rel="noopener" target="_blank" image basic >
           <Icon name="camera"/>Webcam Map
         </Label>
-        <Popup
-          content="Sunrise and sunset"
-          trigger={
-            <Label basic>
-              <Icon name="sun"/>
-              {String(times.sunrise.getHours()).padStart(2,'0') + ':' + String(times.sunrise.getMinutes()).padStart(2,'0') + ' - ' + 
-               String(times.sunset.getHours()).padStart(2,'0') + ':' + String(times.sunset.getMinutes()).padStart(2,'0')}
-            </Label>
-          }
-        />
+        {times.sunrise!='Invalid Date' &&
+          <Popup
+            content="Sunrise and sunset"
+            trigger={
+              <Label basic>
+                <Icon name="sun"/>
+                {String(times.sunrise.getHours()).padStart(2,'0') + ':' + String(times.sunrise.getMinutes()).padStart(2,'0') + ' - ' + 
+                String(times.sunset.getHours()).padStart(2,'0') + ':' + String(times.sunset.getMinutes()).padStart(2,'0')}
+              </Label>
+            }
+          />
+        }
       </>
     )
   }
