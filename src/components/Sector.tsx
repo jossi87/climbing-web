@@ -25,8 +25,15 @@ const SectorListItem = ({ problem, isClimbing }) => {
   } else if (ascents) {
     faTypeAscents = (faTypeAscents != null? faTypeAscents + " (" : "(") + ascents + ")";
   }
+  let backgroundColor = "#ffffff";
+  if (problem.ticked) {
+    backgroundColor = "#d2f8d2";
+  }
+  else if (problem.todo) {
+    backgroundColor = "#d2d2f8";
+  }
   return (
-    <List.Item style={{backgroundColor: problem.ticked? "#d2f8d2" : "#ffffff"}} key={problem.id}>
+    <List.Item style={{backgroundColor}} key={problem.id}>
       <List.Header>
         {problem.danger && <Icon color="red" name="warning"/>}
         {`#${problem.nr} `}
@@ -42,6 +49,7 @@ const SectorListItem = ({ problem, isClimbing }) => {
         {problem.hasMovies && <Icon size="small" color="black" name="film"/>}
         <LockSymbol lockedAdmin={problem.lockedAdmin} lockedSuperadmin={problem.lockedSuperadmin} />
         {problem.ticked && <Icon size="small" color="green" name="check"/>}
+        {problem.todo && <Icon size="small" color="blue" name="bookmark"/>}
       </List.Header>
     </List.Item>
   )
@@ -273,7 +281,7 @@ const Sector = () => {
           return ({
             element: <SectorListItem key={i} problem={p} isClimbing={data.metadata.gradeSystem==='CLIMBING'} />,
             name: p.name, nr: p.nr, gradeNumber: p.gradeNumber, stars: p.stars,
-            numTicks: p.numTicks, ticked: p.ticked,
+            numTicks: p.numTicks, ticked: p.ticked, todo: p.todo,
             rock: p.rock, subType: p.t.subType,
             num: null, fa: null
           });
