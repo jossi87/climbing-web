@@ -218,8 +218,8 @@ const Activity = ({ metadata, idArea, idSector }) => {
                       {summary}on <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}{a.problemSubtype && <Label basic size="mini">{a.problemSubtype}</Label>}<LockSymbol lockedAdmin={a.problemLockedAdmin} lockedSuperadmin={a.problemLockedSuperadmin} /><Feed.Date>{a.timeAgo}</Feed.Date>
                     </Feed.Summary>
                     <LazyLoad>
-                      <Feed.Extra images as={Link} to={`/problem/${a.problemId}`}>
-                        {a.media.map((m, i) => (<Image key={i} style={imgStyle} src={getImageUrl(m.id, m.crc32, 85)} onError={i => i.target.src='/png/video_placeholder.png'} />))}
+                      <Feed.Extra images>
+                        {a.media.map((m, i) => (<Link to={`/problem/${a.problemId}?idMedia=${m.id}`}><Image key={i} style={imgStyle} src={getImageUrl(m.id, m.crc32, 85)} onError={i => i.target.src='/png/video_placeholder.png'} /></Link>))}
                       </Feed.Extra>
                     </LazyLoad>
                   </Feed.Content>
