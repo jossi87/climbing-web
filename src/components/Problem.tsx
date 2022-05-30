@@ -390,10 +390,13 @@ const Problem = () => {
               }
             </Table.Cell>
           </Table.Row>
-          {data.trivia && 
+          {(data.trivia || data.triviaMedia?.length>0) && 
             <Table.Row verticalAlign="top">
               <Table.Cell>Trivia:</Table.Cell>
-              <Table.Cell><Linkify componentDecorator={componentDecorator}>{data.trivia}</Linkify></Table.Cell>
+              <Table.Cell>
+                {data.trivia && <Linkify componentDecorator={componentDecorator}>{data.trivia}</Linkify>}
+                {data.triviaMedia && <Feed.Extra><Media isAdmin={data.metadata.isAdmin} removeMedia={() => window.location.reload()} media={data.triviaMedia} optProblemId={null} isBouldering={isBouldering} /></Feed.Extra>}
+              </Table.Cell>
             </Table.Row>
           }
           {problemsOnRock && problemsOnRock.length>0 && data.rock && 
