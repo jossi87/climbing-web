@@ -267,12 +267,12 @@ const Problem = () => {
         <div style={{float: 'right'}}>
           {data.metadata && data.metadata.isAuthenticated &&
             <Button.Group size="mini" compact>
-              {!data.ticked && <Button positive={data.todo} animated='fade' onClick={() => toggleTodo(data.id)}>
+              <Button positive={data.todo} animated='fade' onClick={() => toggleTodo(data.id)}>
                 <Button.Content hidden>To-do</Button.Content>
                 <Button.Content visible>
                   <Icon name='bookmark' />
                 </Button.Content>
-              </Button>}
+              </Button>
               <Button positive={data.ticks && data.ticks.filter(t => t.writable).length>0} animated='fade' onClick={openTickModal}>
                 <Button.Content hidden>Tick</Button.Content>
                 <Button.Content visible>
