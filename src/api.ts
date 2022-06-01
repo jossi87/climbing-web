@@ -486,16 +486,16 @@ export function getSvgEdit(accessToken: string, problemIdMediaId: string): Promi
       areaId: res.areaId,
       areaName: res.areaName,
       areaLockedAdmin: res.areaLockedAdmin,
-	  areaLockedSuperadmin: res.areaLockedSuperadmin,
+	    areaLockedSuperadmin: res.areaLockedSuperadmin,
       sectorId: res.sectorId,
       sectorName: res.sectorName,
       sectorLockedAdmin: res.sectorLockedAdmin,
-	  sectorLockedSuperadmin: res.sectorLockedSuperadmin,
+	    sectorLockedSuperadmin: res.sectorLockedSuperadmin,
       id: res.id,
       name: res.name,
       grade: res.grade,
       lockedAdmin: res.lockedAdmin,
-	  lockedSuperadmin: res.lockedSuperadmin,
+	    lockedSuperadmin: res.lockedSuperadmin,
       metadata: res.metadata
     };
   })
@@ -516,6 +516,15 @@ export function getTicks(accessToken: string, page: number): Promise<any> {
 
 export function getToc(accessToken: string): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/toc`, null)
+  .then((data) => data.json())
+  .catch((error) => {
+    console.warn(error);
+    return null;
+  });
+}
+
+export function getTodo(accessToken: string, idArea: number, idSector: number): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/todo?idArea=${idArea}&idSector=${idSector}`, null)
   .then((data) => data.json())
   .catch((error) => {
     console.warn(error);

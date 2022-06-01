@@ -7,6 +7,7 @@ import Activity from './common/activity/activity';
 import Leaflet from './common/leaflet/leaflet';
 import { calculateDistance } from './common/leaflet/distance-math';
 import Media from './common/media/media';
+import Todo from './common/todo/todo';
 import { LockSymbol, Loading, WeatherLabels } from './common/widgets/widgets';
 import { Table, Label, Button, Tab, Item, Icon, Image, Breadcrumb, Segment, Header } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
@@ -94,6 +95,10 @@ const Area = () => {
     panes.push({
       menuItem: { key: 'activity', icon: 'time' },
       render: () => <Tab.Pane><Activity metadata={data.metadata} idArea={data.id} idSector={0}/></Tab.Pane>
+    });
+    panes.push({
+      menuItem: { key: 'todo', icon: 'bookmark' },
+      render: () => <Tab.Pane><Todo accessToken={accessToken} idArea={data.id} idSector={0}/></Tab.Pane>
     });
   }
   

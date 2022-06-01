@@ -8,6 +8,7 @@ import Activity from './common/activity/activity';
 import Leaflet from './common/leaflet/leaflet';
 import { calculateDistance } from './common/leaflet/distance-math';
 import Media from './common/media/media';
+import Todo from './common/todo/todo';
 import { Stars, LockSymbol, Loading, WeatherLabels } from './common/widgets/widgets';
 import { Icon, Button, Tab, Breadcrumb, Table, Label, TableCell, List, Header } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
@@ -148,6 +149,10 @@ const Sector = () => {
     panes.push({
       menuItem: { key: 'activity', icon: 'time' },
       render: () => <Tab.Pane><Activity metadata={data.metadata} idArea={0} idSector={data.id}/></Tab.Pane>
+    });
+    panes.push({
+      menuItem: { key: 'todo', icon: 'bookmark' },
+      render: () => <Tab.Pane><Todo accessToken={accessToken} idArea={0} idSector={data.id}/></Tab.Pane>
     });
   }
   let uniqueTypes = data.problems.map(p => p.t.subType).filter((value, index, self) => self.indexOf(value) === index); 
