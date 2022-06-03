@@ -82,7 +82,7 @@ const Profile = () => {
           User
         </Menu.Item>
         <Menu.Item name={Page[Page.todo]} active={activePage === Page.todo} onClick={() => onPageChanged(Page.todo)}>
-          <Icon name='tasks' />
+          <Icon name='bookmark' />
           Todo
         </Menu.Item>
         <Menu.Item name={Page[Page.media]} active={activePage === Page.media} onClick={() => onPageChanged(Page.media)}>
