@@ -34,7 +34,7 @@ const Top = ({idArea, idSector}) => {
         <Table.Row>
           <Table.HeaderCell>Rank</Table.HeaderCell>
           <Table.HeaderCell>Name</Table.HeaderCell>
-          <Table.HeaderCell>Climbed</Table.HeaderCell>
+          <Table.HeaderCell>Completed</Table.HeaderCell>
         </Table.Row>
       </Table.Header>
       <Table.Body>
