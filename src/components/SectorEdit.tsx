@@ -193,7 +193,7 @@ const SectorEdit = () => {
               if (problemOrder[i].origNr === undefined) {
                 problemOrder[i].origNr = problemOrder[i].nr;
               }
-              problemOrder[i].nr = parseInt(value) || 0;
+              problemOrder[i].nr = parseInt(value) || "";
               setData(prevState => ({ ...prevState, problemOrder }));
             }}/>
       )})}

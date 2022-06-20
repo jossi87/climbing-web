@@ -97,7 +97,7 @@ const AreaEdit = () => {
               if (sectorOrder[i].origSorting === undefined) {
                 sectorOrder[i].origSorting = sectorOrder[i].sorting;
               }
-              sectorOrder[i].sorting = parseInt(value) || 0;
+              sectorOrder[i].sorting = parseInt(value) || "";
               setData(prevState => ({ ...prevState, sectorOrder }));
             }}/>
       )})}
