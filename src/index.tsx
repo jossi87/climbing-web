@@ -13,7 +13,7 @@ const analytics = Analytics({
   app: 'buldreinfo/brattelinjer',
   plugins: [
     googleAnalytics({
-      trackingId: 'UA-76534258-1'
+      measurementIds: ['UA-76534258-1']
     })
   ]
 })
@@ -85,6 +85,5 @@ const Index = () => (
   </Auth0Provider>
 );
 
-const container = document.getElementById('app');
-const root = createRoot(container);
+const root = createRoot(document.getElementById('app'));
 root.render(<Index />);

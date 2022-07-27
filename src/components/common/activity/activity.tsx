@@ -150,7 +150,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
                     {a.media &&
                       <LazyLoad>
                         <Feed.Extra images>
-                          {a.media.map((m, i) => (<Link to={`/problem/${a.problemId}?idMedia=${m.id}`}><Image key={i} style={imgStyle} src={getImageUrl(m.id, m.crc32, 85)} onError={i => i.target.src='/png/video_placeholder.png'} /></Link>))}
+                          {a.media.map((m, i) => (<Link key={i} to={`/problem/${a.problemId}?idMedia=${m.id}`}><Image style={imgStyle} src={getImageUrl(m.id, m.crc32, 85)} onError={i => i.target.src='/png/video_placeholder.png'} /></Link>))}
                         </Feed.Extra>
                         <br/>
                       </LazyLoad>
@@ -219,7 +219,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
                     </Feed.Summary>
                     <LazyLoad>
                       <Feed.Extra images>
-                        {a.media.map((m, i) => (<Link to={`/problem/${a.problemId}?idMedia=${m.id}`}><Image key={i} style={imgStyle} src={getImageUrl(m.id, m.crc32, 85)} onError={i => i.target.src='/png/video_placeholder.png'} /></Link>))}
+                        {a.media.map((m, i) => (<Link key={i} to={`/problem/${a.problemId}?idMedia=${m.id}`}><Image style={imgStyle} src={getImageUrl(m.id, m.crc32, 85)} onError={i => i.target.src='/png/video_placeholder.png'} /></Link>))}
                       </Feed.Extra>
                     </LazyLoad>
                   </Feed.Content>
