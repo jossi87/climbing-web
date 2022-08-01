@@ -4577,13 +4577,12 @@ raw-body@2.5.1:
     iconv-lite "0.4.24"
     unpipe "1.0.0"
 
-react-cookie-consent@^7.6.0:
-  version "7.6.0"
-  resolved "https://registry.yarnpkg.com/react-cookie-consent/-/react-cookie-consent-7.6.0.tgz#1ef99292b74f85b56ba6b93005cb753cc9016cb7"
-  integrity sha512-FGPZWCMXRQ+1Km+IOg+6+CyBA1OlS5NQ8svbI1B/iQlyon/ZbREGzkPamQmf9PHU+ULBY9Gik9DDhLUtdawMMQ==
+react-cookie-consent@^8.0.1:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/react-cookie-consent/-/react-cookie-consent-8.0.1.tgz#83526a39c19be82872e9374c6fef98d05e12e5ba"
+  integrity sha512-4A2jzPQDFfBhtxIz4hYX+vJ0QnOknGdOXpEoetXzgwUrMtxVJVow8YgBsGerNt5rJI7WhKkHwr8LmxekxgVejg==
   dependencies:
     js-cookie "^2.2.1"
-    prop-types "^15.7.2"
 
 react-datepicker@^4.8.0:
   version "4.8.0"

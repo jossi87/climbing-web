@@ -84,7 +84,7 @@ const About = () => {
                   <Label size="mini" basic>
                     <Icon name="camera" />
                     <a href="/png/archive/20160205_buldreinfo.png" rel="noreferrer noopener" target="_blank">Screenshot (2016.02.05)</a>
-                    <Label.Detail as={Link} to="https://web.archive.org/web/20160205060357/http://www.buldreinfo.com/" target="_blank">source: archive.net</Label.Detail>
+                    <Label.Detail><a href="https://web.archive.org/web/20160205060357/http://www.buldreinfo.com/" target="_blank">source: archive.net</a></Label.Detail>
                   </Label>
                 </List.Description>
               </List.Item>
@@ -96,12 +96,12 @@ const About = () => {
                     <Label size="mini" basic>
                       <Icon name="camera" />
                       <a href="/png/archive/20110923_buldreinfo.png" rel="noreferrer noopener" target="_blank">Screenshot (2011.09.23)</a>
-                      <Label.Detail as={Link} to="https://web.archive.org/web/20110923004804/http://www.buldreinfo.com/" target="_blank">source: archive.net</Label.Detail>
+                      <Label.Detail><a href="https://web.archive.org/web/20110923004804/http://www.buldreinfo.com/" target="_blank">source: archive.net</a></Label.Detail>
                     </Label>
                     <Label size="mini" basic>
                       <Icon name="camera" />
                       <a href="/png/archive/20071104_buldreinfo.png" rel="noreferrer noopener" target="_blank">Screenshot (2007.11.04)</a>
-                      <Label.Detail as={Link} to="https://web.archive.org/web/20071104020049/http://www.buldreinfo.com/" target="_blank">source: archive.net</Label.Detail>
+                      <Label.Detail><a href="https://web.archive.org/web/20071104020049/http://www.buldreinfo.com/" target="_blank">source: archive.net</a></Label.Detail>
                     </Label>
                   </Label.Group>
                 </List.Description>
@@ -113,7 +113,7 @@ const About = () => {
                   <Label size="mini" basic>
                     <Icon name="camera" />
                     <a href="/png/archive/20040812_brv_bouldering_guide.png" rel="noreferrer noopener" target="_blank">Screenshot (2004.08.12)</a>
-                    <Label.Detail as={Link} to="https://web.archive.org/web/20050308114436/http://www.brv.no/gammelt/buldring/oversikt.htm" target="_blank">source: archive.net</Label.Detail>
+                    <Label.Detail><a href="https://web.archive.org/web/20050308114436/http://www.brv.no/gammelt/buldring/oversikt.htm" target="_blank">source: archive.net</a></Label.Detail>
                   </Label>
                 </List.Description>
               </List.Item>
