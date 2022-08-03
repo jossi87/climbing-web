@@ -163,7 +163,8 @@ const AreaEdit = () => {
               markers={data.lat!=0 && data.lng!=0 && [{lat: data.lat, lng: data.lng}]}
               defaultCenter={defaultCenter}
               defaultZoom={defaultZoom}
-              onClick={onMarkerClick}
+              onMouseClick={onMarkerClick}
+              onMouseMove={null}
               navigate={navigate}
               polylines={null}
               outlines={null}
@@ -171,6 +172,7 @@ const AreaEdit = () => {
               showSateliteImage={true} 
               clusterMarkers={false}
               rocks={null}
+              flyToId={null}
             />
           </Form.Field>
         </Segment>

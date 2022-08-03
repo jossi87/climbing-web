@@ -117,10 +117,11 @@ const Filter = () => {
             navigate={navigate}
             polylines={null}
             outlines={null}
-            onClick={null}
+            onMouseClick={null} onMouseMove={null}
             showSateliteImage={false} 
             clusterMarkers={true}
             rocks={null}
+            flyToId={null}
             />
           <List selection verticalAlign='middle'>
             {res.map((p, i) => (

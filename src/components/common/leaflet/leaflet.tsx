@@ -12,18 +12,23 @@ import { Segment, Checkbox } from 'semantic-ui-react';
 import UseControl from '../../../utils/use-leaflet-control';
 import GetCenterFromDegrees from '../../../utils/map-utils';
 
-function MapEvent({ onClick }) {
+function MapEvent({ onMouseClick, onMouseMove }) {
   useMapEvents({
     click: (e) => {
-      if (onClick) {
-        onClick(e);
+      if (onMouseClick) {
+        onMouseClick(e);
+      }
+    },
+    mousemove: (e) => {
+      if (onMouseMove) {
+        onMouseMove(e);
       }
     },
   })
   return null
 }
 
-const Leaflet = ({ autoZoom, navigate, markers, outlines, polylines, height, defaultCenter, defaultZoom, onClick, clusterMarkers, showSateliteImage, rocks, flyToId }) => {
+const Leaflet = ({ autoZoom, navigate, markers, outlines, polylines, height, defaultCenter, defaultZoom, onMouseClick, onMouseMove, clusterMarkers, showSateliteImage, rocks, flyToId }) => {
   const [groupByRock, setGroupByRock] = useState((rocks != null && rocks.length>0)? true : false);
   let bounds = null;
   if (autoZoom && ((markers && markers.length > 0) || (outlines && outlines.length > 0) || (polylines && polylines.length > 0))) {
@@ -42,7 +47,7 @@ const Leaflet = ({ autoZoom, navigate, markers, outlines, polylines, height, def
     }
   }
   let opacity = 0.6;
-  let addEventHandlers = onClick == null;
+  let addEventHandlers = onMouseClick == null && onMouseMove == null;
   let markerGroup;
   if (groupByRock) {
     let rockMarkers = rocks.map(r => {
@@ -73,7 +78,7 @@ const Leaflet = ({ autoZoom, navigate, markers, outlines, polylines, height, def
       center={bounds? null : defaultCenter}
       bounds={bounds}
     >
-      <MapEvent onClick={onClick}/>
+      <MapEvent onMouseClick={onMouseClick} onMouseMove={onMouseMove}/>
       <FullscreenControl />
       <LocateControl />
       <ScaleControl maxWidth={100} metric={true} imperial={false} />

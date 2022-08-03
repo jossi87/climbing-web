@@ -44,10 +44,11 @@ const ProfileTodo = ({accessToken, userId, defaultCenter, defaultZoom}) => {
             navigate={navigate}
             polylines={null}
             outlines={null}
-            onClick={null}
+            onMouseClick={null} onMouseMove={null}
             showSateliteImage={false}
             clusterMarkers={true}
             rocks={null}
+            flyToId={null}
         />
         <List celled>
           {data.areas.map((area, i) => (

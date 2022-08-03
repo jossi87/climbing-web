@@ -66,7 +66,7 @@ const SectorEdit = () => {
     }
   }
 
-  function onMapClick(event) {
+  function onMapMouseClick(event) {
     if (leafletMode == 'PARKING') {
       setData(prevState => ({ ...prevState, lat: event.latlng.lat, lng: event.latlng.lng, latStr: event.latlng.lat, lngStr: event.latlng.lng }));
     } else if (leafletMode == 'POLYGON') {
@@ -289,12 +289,14 @@ const SectorEdit = () => {
                 polylines={polylines}
                 defaultCenter={defaultCenter}
                 defaultZoom={defaultZoom}
-                onClick={onMapClick}
+                onMouseClick={onMapMouseClick}
+                onMouseMove={null}
                 navigate={navigate}
                 height={'300px'}
                 showSateliteImage={true} 
                 clusterMarkers={false}
                 rocks={null}
+                flyToId={null}
               />
             </Form.Field>
           </Form.Group>

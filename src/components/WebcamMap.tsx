@@ -60,7 +60,7 @@ const WebcamMap = () => {
             {subHeader && <Header.Subheader>{subHeader}</Header.Subheader>}
           </Header.Content>
         </Header>
-        <Leaflet height='85vh' autoZoom={false} outlines={null} defaultCenter={defaultCenter} defaultZoom={defaultZoom} navigate={navigate} markers={markers} polylines={null} onClick={null} showSateliteImage={false} clusterMarkers={false} rocks={null} />
+        <Leaflet height='85vh' autoZoom={false} outlines={null} defaultCenter={defaultCenter} defaultZoom={defaultZoom} navigate={navigate} markers={markers} polylines={null} onMouseClick={null} onMouseMove={null} showSateliteImage={false} clusterMarkers={false} rocks={null} flyToId={null} />
       </Segment>
     </>
   );

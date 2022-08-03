@@ -415,7 +415,8 @@ const ProblemEdit = () => {
               markers={markers}
               defaultCenter={defaultCenter}
               defaultZoom={defaultZoom}
-              onClick={onMapClick}
+              onMouseClick={onMapClick}
+              onMouseMove={null}
               navigate={navigate}
               polylines={null}
               outlines={null}
@@ -423,6 +424,7 @@ const ProblemEdit = () => {
               showSateliteImage={true} 
               clusterMarkers={false}
               rocks={null}
+              flyToId={null}
             />
           </Form.Field>
           <Form.Group widths='equal'>

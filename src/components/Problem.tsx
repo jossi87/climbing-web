@@ -161,7 +161,7 @@ const Problem = () => {
     }
     panes.push({
       menuItem: { key: 'map', icon: 'map' },
-      render: () => <Tab.Pane><Leaflet key={"sector="+data.id} autoZoom={true} height='40vh' markers={markers} outlines={outlines} polylines={polylines} defaultCenter={{lat: markers[0].lat, lng: markers[0].lng}} defaultZoom={16} navigate={navigate} onClick={null} showSateliteImage={true} clusterMarkers={false} rocks={null} /></Tab.Pane>
+      render: () => <Tab.Pane><Leaflet key={"sector="+data.id} autoZoom={true} height='40vh' markers={markers} outlines={outlines} polylines={polylines} defaultCenter={{lat: markers[0].lat, lng: markers[0].lng}} defaultZoom={16} navigate={navigate} onMouseClick={null} onMouseMove={null} showSateliteImage={true} clusterMarkers={false} rocks={null} flyToId={null} /></Tab.Pane>
     });
   }
   

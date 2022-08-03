@@ -128,7 +128,7 @@ const Sector = () => {
     const uniqueRocks = data.problems.filter(p => p.rock).map(p => p.rock).filter((value, index, self) => self.indexOf(value) === index).sort();
     panes.push({
       menuItem: { key: 'map', icon: 'map' },
-      render: () => <Tab.Pane><Leaflet key={"sector="+data.id} autoZoom={true} height='40vh' markers={markers} outlines={outlines} polylines={polylines} defaultCenter={defaultCenter} defaultZoom={defaultZoom} navigate={navigate} onClick={null} showSateliteImage={true} clusterMarkers={true} rocks={uniqueRocks} /></Tab.Pane>
+      render: () => <Tab.Pane><Leaflet key={"sector="+data.id} autoZoom={true} height='40vh' markers={markers} outlines={outlines} polylines={polylines} defaultCenter={defaultCenter} defaultZoom={defaultZoom} navigate={navigate} onMouseClick={null} onMouseMove={null} showSateliteImage={true} clusterMarkers={true} rocks={uniqueRocks} flyToId={null} /></Tab.Pane>
     });
   }
   if (topoImages && topoImages.length>0) {

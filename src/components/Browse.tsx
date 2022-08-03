@@ -52,7 +52,7 @@ const Browse = () => {
         </div>
       }
   });
-  const map = markers.length>0 && <div ref={leafletRef}><Leaflet autoZoom={true} height='75vh' markers={markers} defaultCenter={data.metadata.defaultCenter} defaultZoom={data.metadata.defaultZoom} navigate={navigate} polylines={null} outlines={null} onClick={null} showSateliteImage={false}  clusterMarkers={!showForDevelopers} rocks={null} flyToId={flyToId} /></div>;
+  const map = markers.length>0 && <div ref={leafletRef}><Leaflet autoZoom={true} height='75vh' markers={markers} defaultCenter={data.metadata.defaultCenter} defaultZoom={data.metadata.defaultZoom} navigate={navigate} polylines={null} outlines={null} onMouseClick={null} onMouseMove={null} showSateliteImage={false}  clusterMarkers={!showForDevelopers} rocks={null} flyToId={flyToId} /></div>;
   return (
     <>
       <MetaTags>
