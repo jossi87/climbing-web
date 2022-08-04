@@ -20,6 +20,7 @@ const SvgEdit = () => {
   const [anchors, setAnchors] = useState(null);
   const [texts, setTexts] = useState(null);
   const [readOnlySvgs, setReadOnlySvgs] = useState(null);
+  const [readOnlyPoints, setReadOnlyPoints] = useState([]);
   const [activePoint, setActivePoint] = useState(null);
   const [draggedPoint, setDraggedPoint] = useState(null);
   const [draggedCubic, setDraggedCubic] = useState(false);
@@ -52,6 +53,7 @@ const SvgEdit = () => {
         setAnchors(data.anchors);
         setTexts(data.texts);
         setReadOnlySvgs(data.readOnlySvgs);
+        setReadOnlyPoints(data.readOnlySvgs?.map(svg => parsePath(svg.path)).flat());
         setActivePoint(data.activePoint);
         setDraggedPoint(data.draggedPoint);
         setDraggedCubic(data.draggedCubic);
@@ -104,23 +106,30 @@ const SvgEdit = () => {
     setDraggedCubic(false);
   }
 
-  function getMouseCoords(e) {
+  function getMouseCoords(e, convertToNearestPointOnImage) {
     const dim = imageRef.current.getBoundingClientRect();
     const dx = w/dim.width;
     const dy = h/dim.height;
     const x = Math.round((e.clientX - dim.left) * dx);
     const y = Math.round((e.clientY - dim.top) * dy);
-    return {x, y};
+    let p = {x, y};
+    if (convertToNearestPointOnImage) {
+      let foundPoint = readOnlyPoints?.find(p2 => Math.hypot(p.x-p2.x, p.y-p2.y) < 20);
+      if (foundPoint) {
+        p = {x: foundPoint.x, y: foundPoint.y};
+      }
+    }
+    return p;
   };
 
   function handleOnClick(e) {
     e.preventDefault();
     if (shift) {
-      points.push(getMouseCoords(e));
+      points.push(getMouseCoords(e, true));
       if (points.length > 1) {
         const a = points[points.length-2];
         const b = points[points.length-1];
-        const distance = Math.abs((b.x-a.x)^2 + (b.y-a.y)^2);
+        const distance = Math.hypot(a.x-b.x, a.y-b.y);
         if (distance > 130) { // Convert from 'Line to' to 'Curve to'
           const deltaX = Math.round((b.x-a.x)/3);
           const deltaY = Math.round((b.y-a.y)/3);
@@ -147,13 +156,13 @@ const SvgEdit = () => {
       setPoints([...points]);
       setActivePoint(points.length - 1);
     } else if (addText) {
-      let coords = getMouseCoords(e);
+      let coords = getMouseCoords(e, false);
       let txt = prompt("Enter text", "");
       texts.push({txt: txt, x: coords.x, y: coords.y});
       setAddText(false);
       setTexts(texts);
     } else if (addAnchor) {
-      let coords = getMouseCoords(e);
+      let coords = getMouseCoords(e, true);
       anchors.push(coords);
       setAddAnchor(false);
       setAnchors(anchors);
@@ -183,9 +192,9 @@ const SvgEdit = () => {
     e.preventDefault();
     if (!shift && !addAnchor && !addText) {
       if (draggedPoint) {
-        setPointCoords(getMouseCoords(e));
+        setPointCoords(getMouseCoords(e, true));
       } else if (draggedCubic !== false) {
-        setCubicCoords(getMouseCoords(e), draggedCubic);
+        setCubicCoords(getMouseCoords(e, false), draggedCubic);
       }
     }
     return false;
@@ -317,7 +326,7 @@ const SvgEdit = () => {
         </g>
       );
     }
-    const fill = activePoint === i? "#0000FF" : "#FF0000";
+    const fill = activePoint === i? "#00FF00" : "#FF0000";
     return (
       <g key={i}>
         {anchors}
