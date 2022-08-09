@@ -148,12 +148,18 @@ const SectorEdit = () => {
   }
   const polygon = data.polygonCoords && data.polygonCoords.split(";").map((c, i) => {
     const latLng = c.split(",");
-    return ([parseFloat(latLng[0]), parseFloat(latLng[1])]);
-  });
+    if (latLng?.length === 2) {
+      let lat = parseFloat(latLng[0]);
+      let lng = parseFloat(latLng[1]);
+      if (lat > 0 && lng > 0) {
+        return ([lat, lng]);
+      }
+    }
+  }).filter(e => e?.length===2 && e[0]>0 && e[1]>0);
   if (polygon) {
     polygons.push({polygon, background: false});
   }
-  const polyline = data.polyline && data.polyline.split(";").map(e => e.split(",").map(Number));
+  const polyline = data.polyline && data.polyline.split(";").map(e => e.split(",").map(Number)).filter(e => e?.length===2 && e[0]>0 && e[1]>0);
   if (polyline) {
     polylines.push({polyline, background: false});
   }
@@ -184,7 +190,7 @@ const SectorEdit = () => {
     <>
       {data.problemOrder.map((p, i) => {
         let problemOrder = data.problemOrder;
-        let clr = (problemOrder[i].origNr && problemOrder[i].origNr!=problemOrder[i].nr? 'orange' : 'gray');
+        let clr = (problemOrder[i].origNr && problemOrder[i].origNr!=problemOrder[i].nr? 'orange' : 'grey');
         return (
           <Input size="small" fluid icon="hashtag" iconPosition="left" placeholder='Number' value={p.nr}
             label={{basic: true, content: p.name, color: clr}}
