@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import GpxParser from 'gpxparser';
+import Dropzone from 'react-dropzone';
 import MetaTags from 'react-meta-tags';
 import ImageUpload from './common/image-upload/image-upload';
 import { Loading, InsufficientPrivileges } from './common/widgets/widgets';
@@ -311,24 +313,38 @@ const SectorEdit = () => {
               <>
                 <Form.Field>
                   <label>Latitude</label>
-                  <Input placeholder='Latitude' value={data.latStr} onChange={onLatChanged} />
+                  <Input placeholder='Latitude' value={data.latStr || ""} onChange={onLatChanged} />
                 </Form.Field>
                 <Form.Field>
                   <label>Longitude</label>
-                  <Input placeholder='Longitude' value={data.lngStr} onChange={onLngChanged} />
+                  <Input placeholder='Longitude' value={data.lngStr || ""} onChange={onLngChanged} />
                 </Form.Field>
               </>
             }
             {leafletMode === 'POLYGON' &&
               <Form.Field>
                 <label>Outline</label>
-                <Input placeholder='Outline' value={data.polygonCoords} onChange={(e, { value }) => setData(prevState => ({ ...prevState, polygonCoords: value }))}/>
+                <Input placeholder='Outline' value={data.polygonCoords || ""} onChange={(e, { value }) => setData(prevState => ({ ...prevState, polygonCoords: value }))}/>
               </Form.Field>
             }
             {leafletMode === 'POLYLINE' &&
               <Form.Field>
                 <label>Approach</label>
-                <Input placeholder='Approach' value={data.polyline} onChange={(e, { value }) => setData(prevState => ({ ...prevState, polyline: value }))}/>
+                <Input placeholder='Approach' value={data.polyline || ""} onChange={(e, { value }) => setData(prevState => ({ ...prevState, polyline: value }))}/>
+                <Dropzone multiple={false} accept={{'application/gpx+xml': [".gpx"]}} onDrop={(files: any) => {
+                  if (files?.length!==0) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                      let gpx = new GpxParser();
+                      gpx.parse(e.target.result as string);
+                      let polyline = gpx.tracks[0]?.points?.map(e => e.lat + "," + e.lon).join(";");
+                      setData(prevState => ({ ...prevState, polyline }));
+                    };
+                    reader.readAsText(files[0]);
+                  }
+                }}>
+                  {({getRootProps}) => <div {...getRootProps()}><Button size="mini" basic fluid>Upload GPX-file</Button></div>}
+                </Dropzone>
               </Form.Field>
             }
           </Form.Group>
