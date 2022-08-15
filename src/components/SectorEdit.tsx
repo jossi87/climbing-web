@@ -337,6 +337,7 @@ const SectorEdit = () => {
                     reader.onload = (e) => {
                       let gpx = new GpxParser();
                       gpx.parse(e.target.result as string);
+                      console.log(gpx)
                       let polyline = gpx.tracks[0]?.points?.map(e => e.lat + "," + e.lon).join(";");
                       setData(prevState => ({ ...prevState, polyline }));
                     };
