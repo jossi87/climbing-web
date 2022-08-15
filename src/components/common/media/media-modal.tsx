@@ -90,7 +90,6 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
       </>
     }
   }
-
   const canCrud = isAdmin && m.idType===1 && !m.svgs;
   const canDrawTopo = isAdmin && m.idType===1 && optProblemId;
   const canDrawMedia = isAdmin && m.idType===1 && !isBouldering;
@@ -279,6 +278,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
         </>
       }
       {content}
+      {m.mediaMetadata.description && <div style={{position: 'absolute', bottom: '3px'}}>{m.mediaMetadata.description}</div>}
     </Dimmer>
   )
 }
