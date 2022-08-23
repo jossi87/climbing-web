@@ -24,7 +24,7 @@ const Filter = () => {
   const [onlyWithMedia, setOnlyWithMedia] = useLocalStorage("filter_only_with_media", false);
   const [onlyAdmin, setOnlyAdmin] = useLocalStorage("filter_only_admin", false);
   const [onlySuperAdmin, setOnlySuperAdmin] = useLocalStorage("filter_only_sa", false);
-  const [orderBy, setOrderBy] = useLocalStorage('filter_order_by', OrderBy.alphabetical);
+  const [orderBy, setOrderBy] = useLocalStorage('filter_order_by', "0");
 
   const orderByOptions = [
     {key: OrderBy.alphabetical, text: OrderBy[OrderBy.alphabetical], value: OrderBy[OrderBy.alphabetical]},
@@ -106,7 +106,7 @@ const Filter = () => {
             setRefreshing(true);
             const myTypes = typeOptions.length===1? [typeOptions[0].value] : types;
             postFilter(accessToken, grades, myTypes).then((res) => {
-              setData(res, OrderBy[orderBy as keyof typeof OrderBy]);
+              setData(res, orderBy);
               setRefreshing(false);
             });
           }} >
@@ -118,7 +118,7 @@ const Filter = () => {
       {res && (
         <Segment>
           <div style={{paddingBottom: '10px'}}>
-            <Dropdown as={Button} size="mini" id="dropdownOrderBy" style={{float: 'right'}} options={orderByOptions} value={OrderBy[orderBy]} onChange={(e, { value }) => setData(result, OrderBy[value as keyof typeof OrderBy])} />
+            <Dropdown icon="sort" size="mini" id="dropdownOrderBy" style={{float: 'right'}} options={orderByOptions} value={OrderBy[orderBy]} onChange={(e, { value }) => setData(result, OrderBy[value as keyof typeof OrderBy])} />
             <Header as="h3">{res.length} {meta.metadata.gradeSystem==='BOULDER'? "Problems" : "Routes"}</Header>
           </div>
           <Leaflet
