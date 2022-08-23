@@ -24,7 +24,7 @@ const Filter = () => {
   const [onlyWithMedia, setOnlyWithMedia] = useLocalStorage("filter_only_with_media", false);
   const [onlyAdmin, setOnlyAdmin] = useLocalStorage("filter_only_admin", false);
   const [onlySuperAdmin, setOnlySuperAdmin] = useLocalStorage("filter_only_sa", false);
-  const [orderBy, setOrderBy] = useLocalStorage('filter_order_by', OrderBy[OrderBy.alphabetical]);
+  const [orderBy, setOrderBy] = useLocalStorage('filter_order_by', OrderBy.alphabetical);
 
   const orderByOptions = [
     {key: OrderBy.alphabetical, text: OrderBy[OrderBy.alphabetical], value: OrderBy[OrderBy.alphabetical]},
