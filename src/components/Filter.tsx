@@ -8,6 +8,10 @@ import { useAuth0 } from '../utils/react-auth0-spa';
 import { Stars, LockSymbol } from './common/widgets/widgets';
 import { useLocalStorage } from '../utils/use-local-storage';
 
+enum OrderBy {
+  alphabetical, crag, rating
+}
+
 const Filter = () => {
   const { loading, accessToken } = useAuth0();
   let navigate = useNavigate();
@@ -20,12 +24,36 @@ const Filter = () => {
   const [onlyWithMedia, setOnlyWithMedia] = useLocalStorage("filter_only_with_media", false);
   const [onlyAdmin, setOnlyAdmin] = useLocalStorage("filter_only_admin", false);
   const [onlySuperAdmin, setOnlySuperAdmin] = useLocalStorage("filter_only_sa", false);
-  const [orderByStars, setOrderByStars] = useLocalStorage("filter_order_by_stars", false);
+  const [orderBy, setOrderBy] = useLocalStorage('filter_order_by', OrderBy[OrderBy.alphabetical]);
+
+  const orderByOptions = [
+    {key: OrderBy.alphabetical, text: OrderBy[OrderBy.alphabetical], value: OrderBy[OrderBy.alphabetical]},
+    {key: OrderBy.crag, text: OrderBy[OrderBy.crag], value: OrderBy[OrderBy.crag]},
+    {key: OrderBy.rating, text: OrderBy[OrderBy.rating], value: OrderBy[OrderBy.rating]}
+  ];
+
   useEffect(() => {
     if (!loading) {
       getMeta(accessToken).then((meta) => setMeta(meta));
     }
   }, [loading, accessToken]);
+
+  function setData(data, newOrderBy: OrderBy) {
+    setOrderBy(newOrderBy);
+    let result = data.sort((a, b) => {
+      if (newOrderBy === OrderBy.alphabetical) {
+        return a.problemName.localeCompare(b.problemName, getLocales());
+      } else if (newOrderBy === OrderBy.crag) {
+        if (a.areaName != b.areaName) return a.areaName.localeCompare(b.areaName, getLocales());
+        else if (a.sectorName != b.sectorName) return a.sectorName.localeCompare(b.sectorName, getLocales());
+        return a.problemName.localeCompare(b.problemName, getLocales());
+      } else if (newOrderBy === OrderBy.rating) {
+        if (a.stars != b.stars) return b.stars-a.stars;
+        return a.problemName.localeCompare(b.problemName, getLocales());
+      }
+    });
+    setResult(result);
+  }
   
   if (!meta) {
     return <Loading />;
@@ -78,7 +106,7 @@ const Filter = () => {
             setRefreshing(true);
             const myTypes = typeOptions.length===1? [typeOptions[0].value] : types;
             postFilter(accessToken, grades, myTypes).then((res) => {
-              setResult(res);
+              setData(res, OrderBy[orderBy as keyof typeof OrderBy]);
               setRefreshing(false);
             });
           }} >
@@ -90,22 +118,7 @@ const Filter = () => {
       {res && (
         <Segment>
           <div style={{paddingBottom: '10px'}}>
-            <div style={{float: 'right'}}>
-              <Button icon labelPosition="left" size="mini" onClick={() => {
-                const myOrderByStars = !orderByStars;
-                result.sort((a, b) => {
-                  if (myOrderByStars && a.stars != b.stars) {
-                    return b.stars-a.stars;
-                  }
-                  return a.problemName.localeCompare(b.problemName, getLocales());
-                });
-                setResult(result);
-                setOrderByStars(myOrderByStars);
-              }}>
-                <Icon name="filter"/>
-                {!orderByStars? "Order by stars" : "Order by name"}
-              </Button>
-            </div>
+            <Dropdown as={Button} size="mini" id="dropdownOrderBy" style={{float: 'right'}} options={orderByOptions} value={OrderBy[orderBy]} onChange={(e, { value }) => setData(result, OrderBy[value as keyof typeof OrderBy])} />
             <Header as="h3">{res.length} {meta.metadata.gradeSystem==='BOULDER'? "Problems" : "Routes"}</Header>
           </div>
           <Leaflet
