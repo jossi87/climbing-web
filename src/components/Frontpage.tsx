@@ -43,19 +43,20 @@ const Frontpage = () => {
                   <Statistic.Value><Icon name='database' /> {numberWithCommas(frontpage.numProblems)}</Statistic.Value>
                   <Statistic.Label>{frontpage.metadata.gradeSystem==='BOULDER'? "Problems" : "Routes"}</Statistic.Label>
                 </Statistic>
-                <Statistic>
-                  <Statistic.Value><Icon name='map marker' /> {numberWithCommas(frontpage.numProblemsWithCoordinates)}</Statistic.Value>
-                  <Statistic.Label>With coordinates</Statistic.Label>
-                </Statistic>
-                {frontpage.metadata.gradeSystem==='CLIMBING' &&
+                {frontpage.metadata.gradeSystem==='CLIMBING'?
                   <Statistic>
                     <Statistic.Value><Icon name='image outline' /> {numberWithCommas(frontpage.numProblemsWithTopo)}</Statistic.Value>
                     <Statistic.Label>With topo</Statistic.Label>
                   </Statistic>
+                  :
+                  <Statistic>
+                    <Statistic.Value><Icon name='map marker' /> {numberWithCommas(frontpage.numProblemsWithCoordinates)}</Statistic.Value>
+                    <Statistic.Label>Coordinates</Statistic.Label>
+                  </Statistic>
                 }
                 <Statistic as={Link} to="/ticks/1" color="blue">
                   <Statistic.Value><Icon name='check' /> {numberWithCommas(frontpage.numTicks)}</Statistic.Value>
-                  <Statistic.Label>Public ascents</Statistic.Label>
+                  <Statistic.Label>Ticks</Statistic.Label>
                 </Statistic>
                 <Statistic>
                   <Statistic.Value><Icon name='image' /> {numberWithCommas(frontpage.numImages)}</Statistic.Value>
@@ -63,7 +64,7 @@ const Frontpage = () => {
                 </Statistic>
                 <Statistic>
                   <Statistic.Value><Icon name='film' /> {numberWithCommas(frontpage.numMovies)}</Statistic.Value>
-                  <Statistic.Label>Ascents on video</Statistic.Label>
+                  <Statistic.Label>Videos</Statistic.Label>
                 </Statistic>
                 <Statistic as={Link} to={"/donations"} color="blue">
                   <Statistic.Value><Icon name='money' /></Statistic.Value>
