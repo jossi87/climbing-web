@@ -261,8 +261,8 @@ export function getProblemEdit(accessToken: string, sectorIdProblemId: string): 
       return {
         id: -1,
         sectorId: res.id,
-        lockedAdmin: false,
-        lockedSuperadmin: false,
+        lockedAdmin: res.lockedAdmin,
+        lockedSuperadmin: res.lockedSuperadmin,
         name: '',
         comment: '',
         rock: null,
@@ -400,8 +400,8 @@ export function getSectorEdit(accessToken: string, areaIdSectorId: string): Prom
       return {
         areaId: res.id,
         id: -1,
-        lockedAdmin: false,
-        lockedSuperadmin: false,
+        lockedAdmin: res.lockedAdmin,
+        lockedSuperadmin: res.lockedSuperadmin,
         name: '',
         comment: '',
         accessInfo: '',
