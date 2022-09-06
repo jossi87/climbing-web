@@ -3,7 +3,7 @@ import { getImageUrl } from '../../../api';
 import { useNavigate } from 'react-router-dom';
 import { Descent, Rappel } from '../../../utils/svg-utils';
 
-const Svg = ({ style, close, m, thumb, optProblemId }) => {
+const Svg = ({ style, close, m, thumb, optProblemId, showText }) => {
   const { outerWidth, outerHeight } = window;
   let navigate = useNavigate();
   const minWindowScale = Math.min(outerWidth, outerHeight);
@@ -113,7 +113,7 @@ const Svg = ({ style, close, m, thumb, optProblemId }) => {
   }
   
   let info;
-  if (!thumb && optProblemId && optProblemId>0 && m.svgs && m.svgs.filter(x => x.problemId===optProblemId).length===1) {
+  if (showText && !thumb && optProblemId && optProblemId>0 && m.svgs && m.svgs.filter(x => x.problemId===optProblemId).length===1) {
     let svg = m.svgs.filter(x => x.problemId===optProblemId)[0];
     let text = `#${svg.nr} - ${svg.problemName} [${svg.problemGrade}]`;
     if (svg.problemSubtype) {

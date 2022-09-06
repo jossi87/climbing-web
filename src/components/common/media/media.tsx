@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import LazyLoad from 'react-lazyload';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { getImageUrl, deleteMedia, moveMedia, putMediaJpegRotate } from '../../../api';
 import { Card, Image } from 'semantic-ui-react';
 import MediaModal from './media-modal';
@@ -12,8 +12,8 @@ const style = {objectFit: 'cover', position: 'absolute', top: 0, left: 0, bottom
 
 const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
   let location = useLocation();
-  const [m, setM] = useState(null)
-  const [autoPlayVideo, setAutoPlayVideo] = useState(false)
+  const [m, setM] = useState(null);
+  const [autoPlayVideo, setAutoPlayVideo] = useState(false);
   const { loading, accessToken } = useAuth0();
   useEffect(() => {
     function handleKeyPress({ keyCode }) {
@@ -176,7 +176,7 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
         {media.map((x, i) => {
           let content;
           if (x.svgs || x.mediaSvgs) {
-            content = <Svg close={null} thumb={true} m={x} key={i} style={style} optProblemId={optProblemId}/>;
+            content = <Svg close={null} thumb={true} m={x} key={i} style={style} optProblemId={optProblemId} showText={false} />;
           }
           else {
             content = <Image alt={x.description} key={i} style={style} src={getImageUrl(x.id, x.crc32, 205)} onError={i => i.target.src='/png/video_placeholder.png'} rounded />;
