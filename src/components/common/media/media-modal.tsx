@@ -107,7 +107,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
       <Sidebar.Pushable>
         <Sidebar 
           style={{opacity: 0.6}}
-          as={Menu} size='small' compact
+          as={Menu} size='small'
           direction='left'
           animation='overlay'
           inverted
