@@ -127,7 +127,7 @@ const Svg = ({ style, close, m, thumb, optProblemId, showText }) => {
     if (svg.isDangerous) {
       text += " - Flagged as dangerous";
     }
-    info = <text xmlSpace="preserve" dominantBaseline="text-before-edge" filter="url(#solid)" fontSize={0.02*scale} fontWeight="bolder" fill="white"> {text} </text>;
+    info = <text style={{opacity: 0.6}} xmlSpace="preserve" dominantBaseline="text-before-edge" filter="url(#solid)" fontSize={0.02*scale} fontWeight="bolder" fill="white"> {text} </text>;
   }
 
   return (

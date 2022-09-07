@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useLocalStorage } from '../../../utils/use-local-storage';
 import { Dimmer, Button, Icon, Image, Modal, Header, ButtonGroup, Embed, Container, Dropdown, List, Sidebar, Menu } from 'semantic-ui-react';
 import { getBuldreinfoMediaUrl, getImageUrl } from '../../../api';
 import ReactPlayer from 'react-player';
@@ -18,6 +18,7 @@ const style = {
     maxWidth: '100vw'
   },
   actions: {
+    opacity: '0.6',
     zIndex: 2,
     position: 'fixed',
     top: '0px',
@@ -56,7 +57,7 @@ const style = {
 
 const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onMoveImageRight, onMoveImageToSector, onMoveImageToProblem, m, length, gotoPrev, gotoNext, playVideo, autoPlayVideo, optProblemId, isBouldering }) => {
   let navigate = useNavigate();
-  const [showSidebar, setShowSidebar] = useState(false);
+  const [showSidebar, setShowSidebar] = useLocalStorage('showSidebar', false);
   let myPlayer;
   let content;
   if (m.idType===1) {
@@ -106,7 +107,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
       <Sidebar.Pushable>
         <Sidebar 
           style={{opacity: 0.6}}
-          as={Menu}
+          as={Menu} size='small' compact
           direction='left'
           animation='overlay'
           inverted
@@ -117,16 +118,16 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
           {canShowSidebar && m.svgs
             .sort((a, b) => a.nr-b.nr)
             .map(svg => (
-            <Menu.Item style={style.textLeft} as={Link} to={`/problem/${svg.problemId}`} active={optProblemId === svg.problemId}>
+            <Menu.Item style={style.textLeft} as={Link} to={`/problem/${svg.problemId}?idMedia=${m.id}`} active={optProblemId === svg.problemId}>
               {`#${svg.nr} - ${svg.problemName} [${svg.problemGrade}]`}
             </Menu.Item>
           ))}
         </Sidebar>
 
         <Sidebar.Pusher>
-          <ButtonGroup secondary size="small" style={style.actions}>
+          <ButtonGroup secondary size="mini" style={style.actions}>
             {m.problemId && <Button icon="external" onClick={() => window.open("/problem/" + m.problemId, "_blank")}/>}
-            {canShowSidebar && <Button icon="sitemap" onClick={() => setShowSidebar(true)}/>}
+            {canShowSidebar && <Button icon="numbered list" onClick={() => setShowSidebar(true)}/>}
             <Modal trigger={<Button icon="info" />}>
               <Modal.Content image>
                 <Image wrapped size='medium' src={getImageUrl(m.id, 150)} />
@@ -263,7 +264,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
               </Modal>
             }
             {( !m.embedUrl || canCrud || canDrawTopo || canDrawMedia || canOrder || canMove ) && (
-              <Dropdown direction='left' icon='bars' button>
+              <Dropdown direction='left' icon='ellipsis vertical' button>
                 <Dropdown.Menu>
                   {canDrawTopo && <Dropdown.Item icon="paint brush" text="Draw topo line" onClick={() => navigate(`/problem/svg-edit/${optProblemId}-${m.id}`)} />}
                   {canDrawMedia && <Dropdown.Item icon="paint brush" text="Draw on image" onClick={() => navigate(`/media/svg-edit/${m.id}`)} />}
