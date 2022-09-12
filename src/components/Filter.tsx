@@ -142,7 +142,8 @@ const Filter = () => {
                 <Image avatar src={p.randomMediaId>0? getImageUrl(p.randomMediaId, p.randomMediaCrc32, 28) : '/png/image.png'} />
                 <List.Content>
                   <List.Header>
-                    {p.problemName} {p.grade} <LockSymbol lockedAdmin={p.problemLockedAdmin} lockedSuperadmin={p.problemLockedSuperadmin} /> <Stars numStars={p.stars} includeNoRating={false} />
+                    <Link to={`/problem/${p.problemId}`}>{p.problemName}</Link> {p.grade} <LockSymbol lockedAdmin={p.problemLockedAdmin} lockedSuperadmin={p.problemLockedSuperadmin} /> <Stars numStars={p.stars} includeNoRating={false} />
+                    {p.ticks>0 && <small>({p.ticks} ascent{p.ticks>1&&'s'})</small>}
                   </List.Header>
                   <List.Description>
                     {p.areaName} <LockSymbol lockedAdmin={p.areaLockedAdmin} lockedSuperadmin={p.areaLockedSuperadmin} /> / {p.sectorName} <LockSymbol lockedAdmin={p.sectorLockedAdmin} lockedSuperadmin={p.sectorLockedSuperadmin} />
