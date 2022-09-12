@@ -103,7 +103,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
   const canDrawMedia = isAdmin && m.idType===1 && !isBouldering;
   const canOrder = isAdmin && m.idType===1 && length>1;
   const canMove = isAdmin && m.idType===1;
-  const canShowSidebar = (m.mediaSvgs || m.svgs);
+  const canShowSidebar = (m.mediaSvgs?.length>1 || m.svgs?.length>1);
   return (
     <Dimmer active={true} onClickOutside={onClose} page>
       <Sidebar.Pushable>
