@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useLocalStorage } from '../../../utils/use-local-storage';
 import { Dimmer, Button, Icon, Image, Modal, Header, ButtonGroup, Embed, Container, Dropdown, List, Sidebar, Menu } from 'semantic-ui-react';
 import { getBuldreinfoMediaUrl, getImageUrl } from '../../../api';
@@ -18,7 +19,7 @@ const style = {
     maxWidth: '100vw'
   },
   actions: {
-    opacity: '0.6',
+    opacity: 0.7,
     zIndex: 2,
     position: 'fixed',
     top: '0px',
@@ -57,12 +58,13 @@ const style = {
 
 const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onMoveImageRight, onMoveImageToSector, onMoveImageToProblem, m, length, gotoPrev, gotoNext, playVideo, autoPlayVideo, optProblemId, isBouldering }) => {
   let navigate = useNavigate();
-  const [showSidebar, setShowSidebar] = useLocalStorage('showSidebar', false);
+  const [showSidebar, setShowSidebar] = useLocalStorage('showSidebar', true);
+  const [problemIdHovered, setProblemIdHovered] = useState(null);
   let myPlayer;
   let content;
   if (m.idType===1) {
     if (m.svgs || m.mediaSvgs) {
-      content = <Image style={style.img}><Svg thumb={false} style={{}} m={m} close={onClose} optProblemId={optProblemId} showText={!showSidebar} /></Image>;
+      content = <Image style={style.img}><Svg thumb={false} style={{}} m={m} close={onClose} optProblemId={optProblemId} showText={!showSidebar} problemIdHovered={problemIdHovered} setPoblemIdHovered={(id) => setProblemIdHovered(id)} /></Image>;
     }
     else {
       content = <Image style={style.img} alt={m.mediaMetadata.alt} src={getImageUrl(m.id, m.crc32, 1080)} />
@@ -101,12 +103,12 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
   const canDrawMedia = isAdmin && m.idType===1 && !isBouldering;
   const canOrder = isAdmin && m.idType===1 && length>1;
   const canMove = isAdmin && m.idType===1;
-  const canShowSidebar = (m.mediaSvgs || m.svgs) && m.id === 20798; // TODO 2022.09.06 - JOOY - Testing sidebar, implement on all when feature complete
+  const canShowSidebar = (m.mediaSvgs || m.svgs);
   return (
     <Dimmer active={true} onClickOutside={onClose} page>
       <Sidebar.Pushable>
         <Sidebar 
-          style={{opacity: 0.6}}
+          style={{opacity: 0.7}}
           as={Menu} size='small'
           direction='left'
           animation='overlay'
@@ -116,10 +118,12 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
           visible={showSidebar}
         >
           {canShowSidebar && m.svgs
+            .slice(0) // Create copy, dont change svgs-order (used to draw topo in correct order)
             .sort((a, b) => a.nr-b.nr)
             .map(svg => (
-            <Menu.Item style={style.textLeft} as={Link} to={`/problem/${svg.problemId}?idMedia=${m.id}`} active={optProblemId === svg.problemId}>
-              {`#${svg.nr} - ${svg.problemName} [${svg.problemGrade}]`}
+            <Menu.Item fitted='horizontally' style={style.textLeft} as={Link} to={`/problem/${svg.problemId}?idMedia=${m.id}`} active={problemIdHovered===svg.problemId || optProblemId===svg.problemId} color='blue'
+              onMouseEnter={() => setProblemIdHovered(svg.problemId)} onMouseLeave={() => setProblemIdHovered(null)}>
+              {`#${svg.nr} ${svg.problemName}`} <i>{svg.problemGrade}</i>
             </Menu.Item>
           ))}
         </Sidebar>
@@ -127,7 +131,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
         <Sidebar.Pusher>
           <ButtonGroup secondary size="mini" style={style.actions}>
             {m.problemId && <Button icon="external" onClick={() => window.open("/problem/" + m.problemId, "_blank")}/>}
-            {canShowSidebar && <Button icon="numbered list" onClick={() => setShowSidebar(true)}/>}
+            {canShowSidebar && <Button icon="numbered list" inverted={showSidebar} onClick={() => setShowSidebar(true)}/>}
             <Modal trigger={<Button icon="info" />}>
               <Modal.Content image>
                 <Image wrapped size='medium' src={getImageUrl(m.id, 150)} />

@@ -3,7 +3,7 @@ import { getImageUrl } from '../../../api';
 import { useNavigate } from 'react-router-dom';
 import { Descent, Rappel } from '../../../utils/svg-utils';
 
-const Svg = ({ style, close, m, thumb, optProblemId, showText }) => {
+const Svg = ({ style, close, m, thumb, optProblemId, showText, problemIdHovered, setPoblemIdHovered }) => {
   const { outerWidth, outerHeight } = window;
   let navigate = useNavigate();
   const minWindowScale = Math.min(outerWidth, outerHeight);
@@ -15,8 +15,8 @@ const Svg = ({ style, close, m, thumb, optProblemId, showText }) => {
       makeAbsolute(path); // Note: mutates the commands in place!
 
       var gClassName = "buldreinfo-svg-pointer";
-      if (optProblemId) {
-        if (svg.problemId!=optProblemId) {
+      if (optProblemId || problemIdHovered) {
+        if (svg.problemId!=optProblemId && svg.problemId!=problemIdHovered) {
           gClassName += " buldreinfo-svg-opacity-low";
         } else {
           gClassName += " buldreinfo-svg-opacity-high";
@@ -84,7 +84,7 @@ const Svg = ({ style, close, m, thumb, optProblemId, showText }) => {
           if (close) {
             navigate("/problem/" + svg.problemId + "?idMedia=" + m.id);
           }
-        }}>
+        }} onMouseEnter={() => setPoblemIdHovered(svg.problemId)} onMouseLeave={() => setPoblemIdHovered(null)}>
           <path d={svg.path} style={{fill: "none", stroke: "#000000"}} strokeWidth={0.003*scale*(thumb? 4 : 1)} strokeDasharray={strokeDasharray} strokeLinecap="round"/>
           <path d={svg.path} style={{fill: "none", stroke: groupColor}} strokeWidth={0.0015*scale*(thumb? 4 : 1)} strokeDasharray={strokeDasharray} strokeLinecap="round"/>
           <rect fill="#000000" x={x-r} y={y-r} width={r*2} height={r*1.9} rx={r/3}/>
