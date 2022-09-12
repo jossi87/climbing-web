@@ -84,7 +84,7 @@ const Svg = ({ style, close, m, thumb, optProblemId, showText, problemIdHovered,
           if (close) {
             navigate("/problem/" + svg.problemId + "?idMedia=" + m.id);
           }
-        }} onMouseEnter={() => setPoblemIdHovered(svg.problemId)} onMouseLeave={() => setPoblemIdHovered(null)}>
+        }} onMouseEnter={() => setPoblemIdHovered && setPoblemIdHovered(svg.problemId)} onMouseLeave={() => setPoblemIdHovered && setPoblemIdHovered(null)}>
           <path d={svg.path} style={{fill: "none", stroke: "#000000"}} strokeWidth={0.003*scale*(thumb? 4 : 1)} strokeDasharray={strokeDasharray} strokeLinecap="round"/>
           <path d={svg.path} style={{fill: "none", stroke: groupColor}} strokeWidth={0.0015*scale*(thumb? 4 : 1)} strokeDasharray={strokeDasharray} strokeLinecap="round"/>
           <rect fill="#000000" x={x-r} y={y-r} width={r*2} height={r*1.9} rx={r/3}/>

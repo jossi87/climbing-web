@@ -176,7 +176,7 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
         {media.map((x, i) => {
           let content;
           if (x.svgs || x.mediaSvgs) {
-            content = <Svg close={null} thumb={true} m={x} key={i} style={style} optProblemId={optProblemId} showText={false} />;
+            content = <Svg close={null} thumb={true} m={x} key={i} style={style} optProblemId={optProblemId} showText={false} problemIdHovered={null} setPoblemIdHovered={null} />;
           }
           else {
             content = <Image alt={x.description} key={i} style={style} src={getImageUrl(x.id, x.crc32, 205)} onError={i => i.target.src='/png/video_placeholder.png'} rounded />;

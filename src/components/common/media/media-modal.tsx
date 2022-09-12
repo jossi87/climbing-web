@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLocalStorage } from '../../../utils/use-local-storage';
-import { Dimmer, Button, Icon, Image, Modal, Header, ButtonGroup, Embed, Container, Dropdown, List, Sidebar, Menu } from 'semantic-ui-react';
+import { Dimmer, Button, Icon, Image, Modal, Header, ButtonGroup, Embed, Container, Dropdown, List, Sidebar, Menu, Label } from 'semantic-ui-react';
 import { getBuldreinfoMediaUrl, getImageUrl } from '../../../api';
 import ReactPlayer from 'react-player';
 import Svg from './svg';
@@ -115,7 +115,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
           inverted
           onHide={() => setShowSidebar(false)}
           vertical
-          visible={showSidebar}
+          visible={canShowSidebar && showSidebar}
         >
           {canShowSidebar && m.svgs
             .slice(0) // Create copy, dont change svgs-order (used to draw topo in correct order)
@@ -124,6 +124,8 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
             <Menu.Item fitted='horizontally' style={style.textLeft} as={Link} to={`/problem/${svg.problemId}?idMedia=${m.id}`} active={problemIdHovered===svg.problemId || optProblemId===svg.problemId} color='blue'
               onMouseEnter={() => setProblemIdHovered(svg.problemId)} onMouseLeave={() => setProblemIdHovered(null)}>
               {`#${svg.nr} ${svg.problemName}`} <i>{svg.problemGrade}</i>
+              {svg.isTicked && <Icon size="large" color="green" inverted={true} name="check"/>}
+              {svg.isTodo && <Icon size="large" color="blue" inverted={true} name="bookmark"/>}
             </Menu.Item>
           ))}
         </Sidebar>
