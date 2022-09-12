@@ -124,8 +124,8 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
             <Menu.Item fitted='horizontally' style={style.textLeft} as={Link} to={`/problem/${svg.problemId}?idMedia=${m.id}`} active={problemIdHovered===svg.problemId || optProblemId===svg.problemId} color='blue'
               onMouseEnter={() => setProblemIdHovered(svg.problemId)} onMouseLeave={() => setProblemIdHovered(null)}>
               {`#${svg.nr} ${svg.problemName}`} <i>{svg.problemGrade}</i>
-              {svg.isTicked && <Icon size="large" color="green" inverted={true} name="check"/>}
-              {svg.isTodo && <Icon size="large" color="blue" inverted={true} name="bookmark"/>}
+              {svg.isTicked && <Icon color="green" inverted={true} name="check"/>}
+              {svg.isTodo && <Icon color="blue" inverted={true} name="bookmark"/>}
             </Menu.Item>
           ))}
         </Sidebar>
