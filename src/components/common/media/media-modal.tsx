@@ -60,11 +60,12 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
   let navigate = useNavigate();
   const [showSidebar, setShowSidebar] = useLocalStorage('showSidebar', true);
   const [problemIdHovered, setProblemIdHovered] = useState(null);
+  const canShowSidebar = m.svgs?.length>1;
   let myPlayer;
   let content;
   if (m.idType===1) {
     if (m.svgs || m.mediaSvgs) {
-      content = <Image style={style.img}><Svg thumb={false} style={{}} m={m} close={onClose} optProblemId={optProblemId} showText={!showSidebar} problemIdHovered={problemIdHovered} setPoblemIdHovered={(id) => setProblemIdHovered(id)} /></Image>;
+      content = <Image style={style.img}><Svg thumb={false} style={{}} m={m} close={onClose} optProblemId={optProblemId} showText={!canShowSidebar || !showSidebar} problemIdHovered={problemIdHovered} setPoblemIdHovered={(id) => setProblemIdHovered(id)} /></Image>;
     }
     else {
       content = <Image style={style.img} alt={m.mediaMetadata.alt} src={getImageUrl(m.id, m.crc32, 1080)} />
@@ -98,12 +99,11 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
       </>
     }
   }
-  const canCrud = isAdmin && m.idType===1 && !m.svgs;
+  const canCrud = isAdmin && m.idType===1 && !m.svgs && !m.mediaSvgs;
   const canDrawTopo = isAdmin && m.idType===1 && optProblemId;
   const canDrawMedia = isAdmin && m.idType===1 && !isBouldering;
   const canOrder = isAdmin && m.idType===1 && length>1;
   const canMove = isAdmin && m.idType===1;
-  const canShowSidebar = (m.mediaSvgs?.length>1 || m.svgs?.length>1);
   return (
     <Dimmer active={true} onClickOutside={onClose} page>
       <Sidebar.Pushable>
