@@ -39,7 +39,7 @@ const style = {
     top: '50%',
     right: '2px',
     height: '40px',
-    marginTop: '-20px' /* 1/2 the hight of the button */
+    marginTop: '-20px', /* 1/2 the hight of the button */
   },
   play: {
     zIndex: 2,
@@ -61,6 +61,8 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
   const [showSidebar, setShowSidebar] = useLocalStorage('showSidebar', true);
   const [problemIdHovered, setProblemIdHovered] = useState(null);
   const canShowSidebar = m.svgs?.length>1;
+  const [prevHover, setPrevHover] = useState(false);
+  const [nextHover, setNextHover] = useState(false);
   let myPlayer;
   let content;
   if (m.idType===1) {
@@ -99,6 +101,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
       </>
     }
   }
+  console.log(nextHover);
   const canCrud = isAdmin && m.idType===1 && !m.svgs && !m.mediaSvgs;
   const canDrawTopo = isAdmin && m.idType===1 && optProblemId;
   const canDrawMedia = isAdmin && m.idType===1 && !isBouldering;
@@ -296,17 +299,21 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
           {length > 1 &&
             <>
               <Icon
+                onMouseEnter={() => setPrevHover(true)}
+                onMouseLeave={() => setPrevHover(false)}
                 size="big"
                 style={style.prev}
-                name="angle left"
+                name={prevHover? "chevron circle left" : "angle left"}
                 link
                 onClick={gotoPrev}
               />
               <Icon
+                onMouseEnter={() => setNextHover(true)}
+                onMouseLeave={() => setNextHover(false)}
                 as={Icon}
                 size="big"
                 style={style.next}
-                name="angle right"
+                name={nextHover? "chevron circle right" : "angle right"}
                 link
                 onClick={gotoNext}
               />
