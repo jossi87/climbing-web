@@ -16,7 +16,7 @@ const About = () => {
   if (!data) {
     return <Loading />;
   }
-
+  let isBouldering = data.metadata.gradeSystem==='BOULDER';
   return (
     <>
       <MetaTags>
@@ -38,14 +38,56 @@ const About = () => {
             <Header as="h3">
               <Icon name='info' />
               <Header.Content>
-                About
+                Statues
                 <Header.Subheader>This is a nonprofit website created by climbers, for climbers.</Header.Subheader>
               </Header.Content>
             </Header>
-            The webpage is created and maintained by <a href="mailto:jostein.oygarden@gmail.com">Jostein Øygarden</a>.<br/>
-            All data is owned by the local climbing communities. Contact <a href="mailto:jostein.oygarden@gmail.com">Jostein</a> if you want a site for your climbing area.<br/>
-            <br/>
-            <b>History:</b>
+            <List bulleted>
+              <List.Item>The webpage is created and maintained by <a href="mailto:jostein.oygarden@gmail.com">Jostein Øygarden</a>.</List.Item>
+              <List.Item>The aim and purpose of the websites is to create a good solution that provides as good information as possible about the climbing in the region where the solution is used, also called a climbing guide.</List.Item>
+              <List.Item>The site is non-profit and free to use for everyone.</List.Item>
+              <List.Item>The editors are a variety of active climbers in the different regions.</List.Item>
+              <List.Item>The owner of the content is linked to the origin, whether it is a club or individuals. Contact <a href="mailto:jostein.oygarden@gmail.com">Jostein</a> if you want a site for your climbing area.</List.Item>
+              <List.Item>The editors themselves can choose how to cover the costs associated with running the websites, with the aim of ensuring free use for the users.</List.Item>
+            </List>
+          </Segment>
+          <Segment>
+            <Header as="h3">
+              <Icon name='pencil' />
+              <Header.Content>
+                Ethics
+                <Header.Subheader>If you&#39;re going out climbing, we ask you to please follow these guidelines for the best possible bouldering experience now, and for the future generations of climbers.</Header.Subheader>
+              </Header.Content>
+            </Header>
+            <List bulleted>
+              <List.Item>Show respect for the landowners, issue care and be polite.</List.Item>
+              <List.Item>Follow paths where possible, and do not cross cultivated land.</List.Item>
+              <List.Item>Take your trash back with you.</List.Item>
+              <List.Item>Park with reason, and think of others. Make room for potential tractors and such if necessary.</List.Item>
+              <List.Item>No chipping allowed.</List.Item>
+              <List.Item>Remember climbing can be dangerous and always involves risk. Your safety is your own responsibility.</List.Item>
+              {isBouldering?
+                <>
+                  <List.Item>Start where directed, and don&#39;t hesitate to ask if your unsure.</List.Item>
+                  <List.Item>Sit start means that the behind should be the last thing to leave the ground/crashpad.</List.Item>
+                </>
+                :
+                <>
+                  <List.Item>Loose hangers are expected to be tightened by the climbers themselves, it is recommended to have a spanner (17mm) in the bag at all times.</List.Item>
+                  <List.Item>Quickdraws on a route usually means someone is projecting this route, leave them hanging.</List.Item>
+                  <List.Item>If there is a piece of rope or similar hanging from the first bolt, it means that the route has been closed by the developer and should not be climbed.</List.Item>
+                </>
+              }
+            </List>
+          </Segment>
+          <Segment>
+            <Header as="h3">
+              <Icon name='book' />
+              <Header.Content>
+                History
+                <Header.Subheader>The first version of this webpage was published in 2003.</Header.Subheader>
+              </Header.Content>
+            </Header>
             <List bulleted>
               <List.Item>
                 2021-now: <a href="https://is.brattelinjer.no" rel='noreferrer noopener' target='_blank'>is.brattelinjer.no</a>
@@ -117,26 +159,6 @@ const About = () => {
                   </Label>
                 </List.Description>
               </List.Item>
-            </List>
-          </Segment>
-          <Segment>
-            <Header as="h3">
-              <Icon name='pencil' />
-              <Header.Content>
-                Ethics
-                <Header.Subheader>If you&#39;re going out climbing, we ask you to please follow these guidelines for the best possible bouldering experience now, and for the future generations of climbers.</Header.Subheader>
-              </Header.Content>
-            </Header>
-            <List bulleted>
-              <List.Item>Show respect for the landowners, issue care and be polite.</List.Item>
-              <List.Item>Follow paths where possible, and do not cross cultivated land.</List.Item>
-              <List.Item>Take your trash back with you.</List.Item>
-              <List.Item>Park with reason, and think of others. Make room for potential tractors and such if necessary.</List.Item>
-              <List.Item>Start where directed, and don&#39;t hesitate to ask if your unsure.</List.Item>
-              <List.Item>Sit start means that the behind should be the last thing to leave the ground/crashpad.</List.Item>
-              <List.Item>No chipping allowed.</List.Item>
-              <List.Item>Remember climbing can be dangerous and always involves risk. Your safety is your own responsibility.</List.Item>
-              <List.Item>Use common sense!</List.Item>
             </List>
           </Segment>
         </Grid.Column>
