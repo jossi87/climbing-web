@@ -9,7 +9,7 @@ import Leaflet from './common/leaflet/leaflet';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getProblemEdit, convertFromDateToString, convertFromStringToDate, postProblem, getSector } from '../api';
 import { Loading, InsufficientPrivileges } from './common/widgets/widgets';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { useNavigate, useParams, useLocation, useRouteLoaderData } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -140,7 +140,7 @@ const ProblemEdit = () => {
     setData(prevState => ({ ...prevState, descent: value }));
   }
 
-  function save(event) {
+  function save(event, addNew) {
     event.preventDefault();
     const trash = data.trash? true : false;
     if (!trash || confirm("Are you sure you want to move problem/route to trash?")) {
@@ -168,7 +168,12 @@ const ProblemEdit = () => {
         data.trivia,
         data.startingAltitude, data.aspect, data.routeLength, data.descent)
       .then((data) => {
-        navigate(data.destination);
+        if (addNew) {
+          navigate(`/problem/edit/${sectorId}-0`)
+        }
+        else {
+          navigate(data.destination);
+        }
       })
       .catch((error) => {
         console.warn(error);
@@ -232,6 +237,10 @@ const ProblemEdit = () => {
   if (showSectorMarkers && sectorMarkers) {
     markers.push(...sectorMarkers);
   }
+
+  const sectorId = sectorIdProblemId.split("-")[0];
+  const problemId = sectorIdProblemId.split("-")[1];
+
   return (
     <>
       <MetaTags>
@@ -451,16 +460,20 @@ const ProblemEdit = () => {
 
         <Button.Group>
           <Button negative onClick={() => {
-            let problemId = sectorIdProblemId.split("-")[1];
             if (problemId && problemId != '0') {
               navigate(`/problem/${problemId}`)
             } else {
-              let sectorId = sectorIdProblemId.split("-")[0];
               navigate(`/sector/${sectorId}`)
             }
           }}>Cancel</Button>
           <Button.Or />
-          <Button positive loading={saving} onClick={save} disabled={!data.name || (data.metadata.types.length > 1 && !data.typeId)}>Save</Button>
+          <Button positive loading={saving} onClick={(event) => save(event, false)} disabled={!data.name || (data.metadata.types.length > 1 && !data.typeId)}>Save</Button>
+          {problemId==='0' &&
+            <>
+              <Button.Or />
+              <Button positive loading={saving} onClick={(event) => save(event, true)} disabled={!data.name || (data.metadata.types.length > 1 && !data.typeId)}>Save, and add new</Button>
+            </>
+          }
         </Button.Group>
       </Form>
     </>
