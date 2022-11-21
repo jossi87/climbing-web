@@ -228,6 +228,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
             }
             // Tick
             else {
+              const action = a.repeat? "repeated" : "ticked";
               return (
                 <Feed.Event key={i}>
                   <Feed.Label>
@@ -235,7 +236,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
                   </Feed.Label>
                   <Feed.Content>
                     <Feed.Summary>
-                      <Feed.User as={Link} to={`/user/${a.id}`} style={{color: "black"}}>{a.name}</Feed.User> ticked <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}{a.problemSubtype && <Label basic size="mini">{a.problemSubtype}</Label>}<LockSymbol lockedAdmin={a.problemLockedAdmin} lockedSuperadmin={a.problemLockedSuperadmin} /><Feed.Date>{a.timeAgo}</Feed.Date>
+                      <Feed.User as={Link} to={`/user/${a.id}`} style={{color: "black"}}>{a.name}</Feed.User> {action} <Feed.User as={Link} to={`/problem/${a.problemId}`}>{a.problemName}</Feed.User> {a.grade}{a.problemSubtype && <Label basic size="mini">{a.problemSubtype}</Label>}<LockSymbol lockedAdmin={a.problemLockedAdmin} lockedSuperadmin={a.problemLockedSuperadmin} /><Feed.Date>{a.timeAgo}</Feed.Date>
                     </Feed.Summary>
                     {a.description && <Feed.Extra text>{a.description}</Feed.Extra>}
                     {a.stars!=0 && <Feed.Meta><Stars numStars={a.stars} includeNoRating={true} /></Feed.Meta>}

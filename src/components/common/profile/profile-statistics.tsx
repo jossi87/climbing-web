@@ -16,6 +16,7 @@ const TickListItem = ({ tick } ) => (
       {' '}{tick.grade}<LockSymbol lockedAdmin={tick.lockedAdmin} lockedSuperadmin={tick.lockedSuperadmin} />
       {tick.stars!=0 && <>{' '}<Stars numStars={tick.stars} includeNoRating={true} />{' '}</>}
       {tick.fa && <Label color="red" size="mini" content="FA"/>}
+      {tick.idTickRepeat > 0 && <Label size="mini" basic content="Repeat"/>}
       {tick.subType && <Label basic size="mini" content={tick.subType} detail={tick.numPitches>1? tick.numPitches + " pitches" : null}/>}
       {' '}{tick.comment && <small style={{color: 'gray'}}><i>{tick.comment}</i></small>}
     </List.Header>
@@ -34,7 +35,8 @@ const ProfileStatistics = ({ accessToken, userId, canDownload }) => {
   if (!data) {
     return <Loading />;
   }
-  var numTicks = data.ticks.filter(t => !t.fa).length;
+  var numTicks = data.ticks.filter(t => !t.fa && t.idTickRepeat===0).length;
+  var numTickRepeats = data.ticks.filter(t => !t.fa && t.idTickRepeat>0).length;
   var numFas = data.ticks.filter(t => t.fa).length;
   const chart = data.ticks.length>0? <Chart data={data.ticks}/> : null;
 
@@ -58,6 +60,7 @@ const ProfileStatistics = ({ accessToken, userId, canDownload }) => {
         <Label.Group size="small">
           <Label color='orange' image><Icon name='check' />{numberWithCommas(numFas)}<Label.Detail>FA</Label.Detail></Label>
           <Label color='olive' image><Icon name='check' />{numberWithCommas(numTicks)}<Label.Detail>Tick</Label.Detail></Label>
+          {numTickRepeats>0 && <Label color='olive' image><Icon name='check' />{numberWithCommas(numTickRepeats)}<Label.Detail>Repeat</Label.Detail></Label>}
           <Label color='green' image><Icon name='photo' />{numberWithCommas(data.numImageTags)}<Label.Detail>Tag</Label.Detail></Label>
           <Label color='teal' image><Icon name='photo' />{numberWithCommas(data.numImagesCreated)}<Label.Detail>Captured</Label.Detail></Label>
           <Label color='blue' image><Icon name='video' />{numberWithCommas(data.numVideoTags)}<Label.Detail>Tag</Label.Detail></Label>
