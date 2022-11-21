@@ -4,17 +4,6 @@ import { Button, Dropdown, Icon, Modal, Form, TextArea } from 'semantic-ui-react
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 
-function convertDateToString(newDate) {
-  var now = new Date();
-  if (newDate > now) {
-    newDate = now;
-  }
-  if (newDate) {
-    return convertFromDateToString(newDate);
-  }
-  return null;
-}
-
 const TickModal = ({ open, closeWithReload, closeWithoutReload, accessToken, idTick, idProblem, grades, comment: initialComment, grade: initialGrade, stars: initialStars, date: initialDate }) => {
   const [comment, setComment] = useState(initialComment);
   const [grade, setGrade] = useState(initialGrade);
