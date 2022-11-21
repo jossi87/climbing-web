@@ -4,7 +4,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import { calculateDistance } from './common/leaflet/distance-math';
 import Media from './common/media/media';
-import { Button, Grid, Breadcrumb, Tab, Label, Icon, Comment, Header, Segment, Table, Feed, Item } from 'semantic-ui-react';
+import { Button, Grid, Breadcrumb, Tab, Label, Icon, Comment, Header, Segment, Table, Feed } from 'semantic-ui-react';
 import { Loading, LockSymbol, Stars, WeatherLabels } from './common/widgets/widgets';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getAreaPdfUrl, getSectorPdfUrl, getProblemPdfUrl, getProblem, getSector, postComment, postTodo } from '../api';
@@ -183,12 +183,18 @@ const Problem = () => {
           if (t.repeats?.length>0) {
             dt = (dt? dt : "no-date") + ", " + t.repeats.map(x => x.date? x.date : "no-date").join(', ');
             com = (
-              <>
-                <div className="metadata">{t.date? t.date : "no-date"}</div> {t.comment}<br/>
+              <Table compact unstackable size="small">
+                <Table.Row>
+                  <Table.Cell verticalAlign='top' singleLine className="metadata">{t.date? t.date : "no-date"}</Table.Cell>
+                  <Table.Cell verticalAlign='top'>{t.comment}</Table.Cell>
+                </Table.Row>
                 {t.repeats.map((r, i) => (
-                  <span key={i}><div className="metadata">{r.date? r.date : "no-date"}</div> {r.comment}<br/></span>
+                  <Table.Row key={i}>
+                    <Table.Cell verticalAlign='top' singleLine className="metadata">{r.date? r.date : "no-date"}</Table.Cell>
+                    <Table.Cell>{r.comment}</Table.Cell>
+                  </Table.Row>
                 ))}
-              </>
+              </Table>
             )
           }
           else {
