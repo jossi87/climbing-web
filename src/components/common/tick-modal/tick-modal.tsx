@@ -65,7 +65,7 @@ const TickModal = ({ open, closeWithReload, closeWithoutReload, accessToken, idT
       </Modal.Content>
       <Modal.Actions>
         <Button.Group compact size="tiny">
-          <Button color='black' onClick={closeWithoutReload}>
+          <Button onClick={closeWithoutReload}>
             Cancel
           </Button>
           <Button.Or />
@@ -73,7 +73,7 @@ const TickModal = ({ open, closeWithReload, closeWithoutReload, accessToken, idT
             <>
               <Button
                 negative
-                icon='delete'
+                icon='trash'
                 labelPosition='right'
                 content="Delete tick"
                 onClick={() => {

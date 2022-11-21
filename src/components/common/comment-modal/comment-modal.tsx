@@ -48,7 +48,7 @@ const CommentModal = ({ open, showHse, accessToken, closeWithoutReload, closeWit
       </Modal.Content>
       <Modal.Actions>
         <Button.Group compact size="tiny">
-          <Button color='black' onClick={closeWithoutReload}>
+          <Button onClick={closeWithoutReload}>
             Cancel
           </Button>
           <Button.Or />
