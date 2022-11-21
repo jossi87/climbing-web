@@ -718,10 +718,10 @@ export function postSector(accessToken: string, areaId: number, id: number, tras
   .then((data) => data.json());
 }
 
-export function postTicks(accessToken: string, del: boolean, id: number, idProblem: number, comment: string, date: string, stars: number, grade: string): Promise<any> {
+export function postTicks(accessToken: string, del: boolean, id: number, idProblem: number, comment: string, date: string, stars: number, grade: string, repeats: any): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/ticks`,{
     method: 'POST',
-    body: JSON.stringify({delete: del, id, idProblem, comment, date, stars, grade}),
+    body: JSON.stringify({delete: del, id, idProblem, comment, date, stars, grade, repeats}),
     headers: {
       'Content-Type': 'application/json'
     }

@@ -4,7 +4,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import { calculateDistance } from './common/leaflet/distance-math';
 import Media from './common/media/media';
-import { Button, Grid, Breadcrumb, Tab, Label, Icon, Comment, Header, Segment, Table, Feed } from 'semantic-ui-react';
+import { Button, Grid, Breadcrumb, Tab, Label, Icon, Comment, Header, Segment, Table, Feed, Item } from 'semantic-ui-react';
 import { Loading, LockSymbol, Stars, WeatherLabels } from './common/widgets/widgets';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getAreaPdfUrl, getSectorPdfUrl, getProblemPdfUrl, getProblem, getSector, postComment, postTodo } from '../api';
@@ -177,16 +177,34 @@ const Problem = () => {
     <Comment.Group as={Segment}>
       <Header as="h3" dividing>Ticks:</Header>
       {data.ticks?
-        data.ticks.map((t, i) => (
-          <Comment key={i}>
-            <Comment.Avatar src={t.picture? t.picture : '/png/image.png'} />
-            <Comment.Content>
-              <Comment.Author as={Link} to={`/user/${t.idUser}`}>{t.name}</Comment.Author>
-              <Comment.Metadata>{t.date}</Comment.Metadata>
-              <Comment.Text><Stars numStars={t.stars} includeNoRating={true} /> {t.suggestedGrade}<br/><Linkify componentDecorator={componentDecorator}>{t.comment}</Linkify></Comment.Text>
-            </Comment.Content>
-          </Comment>
-        ))
+        data.ticks.map((t, i) => {
+          let dt = t.date;
+          let com = null;
+          if (t.repeats?.length>0) {
+            dt = (dt? dt : "no-date") + ", " + t.repeats.map(x => x.date? x.date : "no-date").join(', ');
+            com = (
+              <>
+                <div className="metadata">{t.date? t.date : "no-date"}</div> {t.comment}<br/>
+                {t.repeats.map((r, i) => (
+                  <span key={i}><div className="metadata">{r.date? r.date : "no-date"}</div> {r.comment}<br/></span>
+                ))}
+              </>
+            )
+          }
+          else {
+            com = t.comment;
+          }
+          return (
+            <Comment key={i}>
+              <Comment.Avatar src={t.picture? t.picture : '/png/image.png'} />
+              <Comment.Content>
+                <Comment.Author as={Link} to={`/user/${t.idUser}`}>{t.name}</Comment.Author>
+                <Comment.Metadata>{dt}</Comment.Metadata>
+                <Comment.Text><Stars numStars={t.stars} includeNoRating={true} /> {t.suggestedGrade}<br/><Linkify componentDecorator={componentDecorator}>{com}</Linkify></Comment.Text>
+              </Comment.Content>
+            </Comment>
+          );
+        })
       :
         <i>No ticks</i>
       }
@@ -233,14 +251,15 @@ const Problem = () => {
   
   var tickModal = null;
   if (showTickModal) {
+    const enableTickRepeats = data.metadata.gradeSystem==='ICE' || (data.sections?.length>0);
     if (data.ticks) {
       const userTicks = data.ticks.filter(t => t.writable);
       if (userTicks && userTicks.length>0) {
-        tickModal = <TickModal accessToken={accessToken} idTick={userTicks[0].id} idProblem={data.id} date={userTicks[0].date} comment={userTicks[0].comment} grade={userTicks[0].suggestedGrade} grades={data.metadata.grades} stars={userTicks[0].stars} open={showTickModal} closeWithoutReload={closeTickModalWithoutReload} closeWithReload={closeTickModalWithReload} />
+        tickModal = <TickModal accessToken={accessToken} idTick={userTicks[0].id} idProblem={data.id} date={userTicks[0].date} comment={userTicks[0].comment} grade={userTicks[0].suggestedGrade} grades={data.metadata.grades} stars={userTicks[0].stars} repeats={userTicks[0].repeats} open={showTickModal} closeWithoutReload={closeTickModalWithoutReload} closeWithReload={closeTickModalWithReload} enableTickRepeats={enableTickRepeats} />
       }
     }
     if (!tickModal) {
-      tickModal = <TickModal accessToken={accessToken} idTick={-1} idProblem={data.id} grade={data.originalGrade} grades={data.metadata.grades} open={showTickModal} closeWithoutReload={closeTickModalWithoutReload} closeWithReload={closeTickModalWithReload} comment={null} stars={null} date={null} />;
+      tickModal = <TickModal accessToken={accessToken} idTick={-1} idProblem={data.id} grade={data.originalGrade} grades={data.metadata.grades} open={showTickModal} closeWithoutReload={closeTickModalWithoutReload} closeWithReload={closeTickModalWithReload} comment={null} stars={null} repeats={null} date={null} enableTickRepeats={enableTickRepeats} />;
     }
   }
   let lat;

@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { convertFromDateToString, convertFromStringToDate, postTicks } from './../../../api';
-import { Button, Dropdown, Icon, Modal, Form, TextArea } from 'semantic-ui-react';
+import { Button, Dropdown, Icon, Modal, Form, TextArea, Input } from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 
-const TickModal = ({ open, closeWithReload, closeWithoutReload, accessToken, idTick, idProblem, grades, comment: initialComment, grade: initialGrade, stars: initialStars, date: initialDate }) => {
+const TickModal = ({ open, closeWithReload, closeWithoutReload, accessToken, idTick, idProblem, grades, comment: initialComment, grade: initialGrade, stars: initialStars, repeats: initialRepeats, date: initialDate, enableTickRepeats }) => {
   const [comment, setComment] = useState(initialComment);
   const [grade, setGrade] = useState(initialGrade);
   const [stars, setStars] = useState(initialStars);
   const [date, setDate] = useState(idTick==-1? convertFromDateToString(new Date()) : initialDate);
-
+  const [repeats, setRepeats] = useState(initialRepeats);
   const today = new Date();
   const invalidDate = date && convertFromStringToDate(date) > today;
 
@@ -60,6 +60,47 @@ const TickModal = ({ open, closeWithReload, closeWithoutReload, accessToken, idT
               <label>Comment</label>
               <TextArea placeholder='Comment' style={{ minHeight: 100 }} value={comment ? comment : ""} onChange={(e, data) => { setComment(data.value) }} />
             </Form.Field>
+            {enableTickRepeats &&
+              <Form.Field>
+                <label>Repeats (enabled on ice climbing and multi pitches for logging additional ascents)</label>
+                {repeats?.map((r, i) => (
+                  <Form.Group key={i} inline unstackable>
+                    <Form.Field width={5}>
+                      <DatePicker
+                        placeholderText="Click to select a date"
+                        dateFormat="dd-MM-yyyy"
+                        showMonthDropdown showYearDropdown dropdownMode="select"
+                        selected={r.date && convertFromStringToDate(r.date)}
+                        onChange={(date) => {
+                          r.date = convertFromDateToString(date);
+                          setRepeats([...repeats]);
+                        }}
+                      />
+                    </Form.Field>
+                    <Form.Field width={10}>
+                      <Input fluid placeholder='Comment' value={r.comment ? r.comment : ""} onChange={(e, data) => {
+                        r.comment = data.value;
+                        setRepeats([...repeats]);
+                      }} />
+                    </Form.Field>
+                    <Form.Field width={1}>
+                      <Button size="mini" circular icon="minus" onClick={() => {
+                        setRepeats([...repeats.filter(x => x!==r)]);
+                      }}/>
+                    </Form.Field>
+                  </Form.Group>
+                ))}
+                <Button size="mini" circular icon="plus" onClick={() => {
+                  const repeat = {date: convertFromDateToString(new Date()), comment: ''};
+                  if (repeats) {
+                    setRepeats([...repeats, repeat]);
+                  }
+                  else {
+                    setRepeats([repeat]);
+                  }
+                }}/>
+              </Form.Field>
+            }
           </Form>
         </Modal.Description>
       </Modal.Content>
@@ -77,7 +118,7 @@ const TickModal = ({ open, closeWithReload, closeWithoutReload, accessToken, idT
                 labelPosition='right'
                 content="Delete tick"
                 onClick={() => {
-                  postTicks(accessToken, true, idTick, idProblem, comment, date, stars, grade)
+                  postTicks(accessToken, true, idTick, idProblem, comment, date, stars, grade, repeats)
                   .then((response) => {
                     closeWithReload();
                   })
@@ -97,7 +138,7 @@ const TickModal = ({ open, closeWithReload, closeWithoutReload, accessToken, idT
             labelPosition='right'
             content="Save"
             onClick={() => {
-              postTicks(accessToken, false, idTick, idProblem, comment, date, stars, grade)
+              postTicks(accessToken, false, idTick, idProblem, comment, date, stars, grade, repeats)
               .then((response) => {
                 closeWithReload();
               })
