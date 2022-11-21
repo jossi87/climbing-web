@@ -15,19 +15,17 @@ function convertDateToString(newDate) {
   return null;
 }
 
-const TickModal = ({ open, onClose, accessToken, idTick, idProblem, grades, comment: initialComment, grade: initialGrade, stars: initialStars, date: initialDate }) => {
+const TickModal = ({ open, closeWithReload, closeWithoutReload, accessToken, idTick, idProblem, grades, comment: initialComment, grade: initialGrade, stars: initialStars, date: initialDate }) => {
   const [comment, setComment] = useState(initialComment);
   const [grade, setGrade] = useState(initialGrade);
   const [stars, setStars] = useState(initialStars);
   const [date, setDate] = useState(idTick==-1? convertFromDateToString(new Date()) : initialDate);
 
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate()-1);
   const today = new Date();
   const invalidDate = date && convertFromStringToDate(date) > today;
 
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal open={open} onClose={closeWithoutReload}>
       <Modal.Header>Tick</Modal.Header>
       <Modal.Content>
         <Modal.Description>
@@ -45,10 +43,6 @@ const TickModal = ({ open, onClose, accessToken, idTick, idProblem, grades, comm
                 selected={date && convertFromStringToDate(date)}
                 onChange={(date) => setDate(convertFromDateToString(date))}
               />
-              <Button.Group>
-                <Button onClick={() => setDate(convertDateToString(yesterday))}>Yesterday</Button>
-                <Button onClick={() => setDate(convertDateToString(new Date()))}>Today</Button>
-              </Button.Group>
             </Form.Field>
             <Form.Field>
               <label>Grade</label>
@@ -82,7 +76,7 @@ const TickModal = ({ open, onClose, accessToken, idTick, idProblem, grades, comm
       </Modal.Content>
       <Modal.Actions>
         <Button.Group compact size="tiny">
-          <Button color='black' onClick={onClose}>
+          <Button color='black' onClick={closeWithoutReload}>
             Cancel
           </Button>
           <Button.Or />
@@ -96,7 +90,7 @@ const TickModal = ({ open, onClose, accessToken, idTick, idProblem, grades, comm
                 onClick={() => {
                   postTicks(accessToken, true, idTick, idProblem, comment, date, stars, grade)
                   .then((response) => {
-                    onClose();
+                    closeWithReload();
                   })
                   .catch((error) => {
                     console.warn(error);
@@ -116,7 +110,7 @@ const TickModal = ({ open, onClose, accessToken, idTick, idProblem, grades, comm
             onClick={() => {
               postTicks(accessToken, false, idTick, idProblem, comment, date, stars, grade)
               .then((response) => {
-                onClose();
+                closeWithReload();
               })
               .catch((error) => {
                 console.warn(error);

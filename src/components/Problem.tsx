@@ -88,7 +88,11 @@ const Problem = () => {
     });
   }
 
-  function closeTickModal() {
+  function closeTickModalWithoutReload() {
+    setShowTickModal(false);
+  }
+
+  function closeTickModalWithReload() {
     setShowTickModal(false);
     setReload(true);
   }
@@ -97,7 +101,11 @@ const Problem = () => {
     setShowTickModal(true);
   }
 
-  function closeCommentModal() {
+  function closeCommentModalWithoutReload() {
+    setShowCommentModal(null);
+  }
+
+  function closeCommentModalWithReload() {
     setShowCommentModal(null);
     setReload(true);
   }
@@ -228,11 +236,11 @@ const Problem = () => {
     if (data.ticks) {
       const userTicks = data.ticks.filter(t => t.writable);
       if (userTicks && userTicks.length>0) {
-        tickModal = <TickModal accessToken={accessToken} idTick={userTicks[0].id} idProblem={data.id} date={userTicks[0].date} comment={userTicks[0].comment} grade={userTicks[0].suggestedGrade} grades={data.metadata.grades} stars={userTicks[0].stars} open={showTickModal} onClose={closeTickModal} />
+        tickModal = <TickModal accessToken={accessToken} idTick={userTicks[0].id} idProblem={data.id} date={userTicks[0].date} comment={userTicks[0].comment} grade={userTicks[0].suggestedGrade} grades={data.metadata.grades} stars={userTicks[0].stars} open={showTickModal} closeWithoutReload={closeTickModalWithoutReload} closeWithReload={closeTickModalWithReload} />
       }
     }
     if (!tickModal) {
-      tickModal = <TickModal accessToken={accessToken} idTick={-1} idProblem={data.id} grade={data.originalGrade} grades={data.metadata.grades} open={showTickModal} onClose={closeTickModal} comment={null} stars={null} date={null} />;
+      tickModal = <TickModal accessToken={accessToken} idTick={-1} idProblem={data.id} grade={data.originalGrade} grades={data.metadata.grades} open={showTickModal} closeWithoutReload={closeTickModalWithoutReload} closeWithReload={closeTickModalWithReload} comment={null} stars={null} date={null} />;
     }
   }
   let lat;
@@ -261,7 +269,7 @@ const Problem = () => {
         <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
       </MetaTags>
       {tickModal}
-      <CommentModal accessToken={accessToken} open={showCommentModal? true : false} onClose={closeCommentModal} showHse={data.metadata.gradeSystem==='CLIMBING'}
+      <CommentModal accessToken={accessToken} open={showCommentModal? true : false} closeWithReload={closeCommentModalWithReload} closeWithoutReload={closeCommentModalWithoutReload} showHse={data.metadata.gradeSystem==='CLIMBING'}
         id={showCommentModal?.id} idProblem={data.id} initMessage={showCommentModal?.message} initDanger={showCommentModal?.danger} initResolved={showCommentModal?.resolved} />
       <div style={{marginBottom: '5px'}}>
         <div style={{float: 'right'}}>

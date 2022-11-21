@@ -3,7 +3,7 @@ import { postComment } from './../../../api';
 import { Button, Modal, Form, TextArea } from 'semantic-ui-react';
 import ImageUpload from '../image-upload/image-upload';
 
-const CommentModal = ({ open, showHse, accessToken, onClose, id, idProblem, initMessage, initDanger, initResolved }) => {
+const CommentModal = ({ open, showHse, accessToken, closeWithoutReload, closeWithReload, id, idProblem, initMessage, initDanger, initResolved }) => {
   const [comment, setComment] = useState(null);
   const [danger, setDanger] = useState(false);
   const [resolved, setResolved] = useState(false);
@@ -17,7 +17,7 @@ const CommentModal = ({ open, showHse, accessToken, onClose, id, idProblem, init
   }, [initMessage, initDanger, initResolved]);
 
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal open={open} onClose={closeWithoutReload}>
       <Modal.Header>Add comment</Modal.Header>
       <Modal.Content>
         <Modal.Description>
@@ -48,7 +48,7 @@ const CommentModal = ({ open, showHse, accessToken, onClose, id, idProblem, init
       </Modal.Content>
       <Modal.Actions>
         <Button.Group compact size="tiny">
-          <Button color='black' onClick={onClose}>
+          <Button color='black' onClick={closeWithoutReload}>
             Cancel
           </Button>
           <Button.Or />
@@ -66,7 +66,7 @@ const CommentModal = ({ open, showHse, accessToken, onClose, id, idProblem, init
                   setComment(null);
                   setDanger(false);
                   setResolved(false);
-                  onClose();
+                  closeWithReload();
                 })
                 .catch((error) => {
                   console.warn(error);

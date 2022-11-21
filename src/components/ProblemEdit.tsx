@@ -204,8 +204,6 @@ const ProblemEdit = () => {
     return <InsufficientPrivileges />
   }
 
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate()-1);
   var defaultCenter;
   var defaultZoom: number;
   if (data.lat!=0 && data.lng!=0) {
@@ -303,10 +301,6 @@ const ProblemEdit = () => {
                 selected={convertFromStringToDate(data.faDate)}
                 onChange={(date) => onFaDateChanged(date)}
               />
-              <Button.Group size="tiny">
-                <Button onClick={() => onFaDateChanged(yesterday)}>Yesterday</Button>
-                <Button onClick={() => onFaDateChanged(new Date())}>Today</Button>
-              </Button.Group>
             </Form.Field>
             {data.metadata.gradeSystem==='BOULDER' ?
               <Form.Field
