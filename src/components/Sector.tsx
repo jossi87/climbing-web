@@ -269,8 +269,8 @@ const Sector = () => {
                 <Icon name="file pdf outline"/>area.pdf
               </Label>
               {data.lat>0 && data.lng>0 &&
-                <Label href={`https://maps.google.com/maps?q=${data.lat},${data.lng}`} rel="noreferrer noopener" target="_blank" image basic >
-                  <Icon name="map"/>Google Maps (navigate to parking)
+                <Label href={`https://www.google.com/maps/search/?api=1&query=${data.lat},${data.lng}`} rel="noreferrer noopener" target="_blank" image basic >
+                  <Icon name="map"/>Parking (Google Maps)
                 </Label>
               }
             </Table.Cell>
