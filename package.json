@@ -46,7 +46,7 @@
     "leaflet.fullscreen": "^2.4.0",
     "leaflet.locatecontrol": "^0.79.0",
     "leaflet.markercluster": "^1.5.3",
-    "puppeteer-core": "^19.3.0",
+    "puppeteer": "^19.3.0",
     "react": "^18.2.0",
     "react-cookie-consent": "^8.0.1",
     "react-datepicker": "^4.8.0",
