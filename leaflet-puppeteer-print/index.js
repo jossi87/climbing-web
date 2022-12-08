@@ -1,5 +1,5 @@
 const path = require('path');
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
 const atob = require('atob');
 const htmlPath = `file://${__dirname}/index.html`;
 
@@ -13,7 +13,7 @@ async function start() {
   const args = process.argv.slice(2);
   const path = args[0];
   const leaflet = JSON.parse(atob(args[1]))
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({executablePath: '/usr/bin/chromium-browser'}); // sudo apt install -y chromium-browser
   const page = await browser.newPage();
   await page.setViewport({
     width: 1280,
