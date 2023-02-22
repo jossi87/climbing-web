@@ -34,6 +34,12 @@ export function getImageUrl(id: number, checksum: number, minDimention?: number)
   return getUrl(`/images?id=${id}&crc32=${crc32}`);
 }
 
+export function getBuldreinfoMediaUrlSupported(id: number): string {
+  const video = document.createElement('video');
+  let webm = video.canPlayType('video/webm');
+  return getBuldreinfoMediaUrl(id, webm? "webm" : "mp4");
+}
+
 export function getBuldreinfoMediaUrl(id: number, suffix: string): string {
   if (suffix==='jpg') {
     return getBaseUrl() + '/buldreinfo_media/original/jpg/' + (Math.floor(id/100)*100) + "/" + id + '.jpg';

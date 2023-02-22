@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLocalStorage } from '../../../utils/use-local-storage';
 import { Dimmer, Button, Icon, Image, Modal, Header, ButtonGroup, Embed, Container, Dropdown, List, Sidebar, Menu, Label } from 'semantic-ui-react';
-import { getBuldreinfoMediaUrl, getImageUrl } from '../../../api';
+import { getBuldreinfoMediaUrlSupported, getBuldreinfoMediaUrl, getImageUrl } from '../../../api';
 import ReactPlayer from 'react-player';
 import Svg from './svg';
 import { Link, useNavigate } from 'react-router-dom';
@@ -88,7 +88,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
       content = <ReactPlayer
         style={style.video}
         ref={player => myPlayer = player }
-        url={[getBuldreinfoMediaUrl(m.id, "webm"), getBuldreinfoMediaUrl(m.id, "mp4")]}
+        url={getBuldreinfoMediaUrlSupported(m.id)}
         controls={true}
         playing={true}
         onDuration={duration => myPlayer.seekTo(m.t/duration)}
@@ -101,7 +101,6 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
       </>
     }
   }
-  console.log(nextHover);
   const canCrud = isAdmin && m.idType===1 && !m.svgs && !m.mediaSvgs;
   const canDrawTopo = isAdmin && m.idType===1 && optProblemId;
   const canDrawMedia = isAdmin && m.idType===1 && !isBouldering;
