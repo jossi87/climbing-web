@@ -149,10 +149,12 @@ const Area = () => {
           {data.noDogsAllowed &&
             <Table.Row negative verticalAlign="top">
               <Table.Cell>Area restrictions:</Table.Cell>
-              <Table.Cell><Header as="h5" color="red">
-                <img src="/svg/no-animals.svg" alt="No dogs allowed" height='35px'/>
-                The access to our crags are at the mercy of the farmers who own the land. Because of conflicts between dog-owners and farmers (loose dogs scaring & killing the farmers animals) we ask you to not bring your dog to this spesific crag, thank you.
-              </Header></Table.Cell>
+              <Table.Cell>
+                <Header as="h5" color="red">
+                  <Image src="/svg/no-animals.svg" alt="No dogs allowed"/><br/>
+                  The access to our crags are at the mercy of the farmers who own the land. Because of conflicts between dog-owners and farmers (loose dogs scaring & killing the farmers animals) we ask you to not bring your dog to this spesific crag, thank you.
+                </Header>
+              </Table.Cell>
             </Table.Row>
           }
           <Table.Row>
