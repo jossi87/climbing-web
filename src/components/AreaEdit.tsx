@@ -47,7 +47,7 @@ const AreaEdit = () => {
     const trash = data.trash? true : false;
     if (!trash || confirm("Are you sure you want to move area to trash?")) {
       setSaving(true);
-      postArea(accessToken, data.id, data.trash, data.lockedAdmin, data.lockedSuperadmin, data.forDevelopers, data.name, data.comment, data.lat, data.lng, data.newMedia, data.sectorOrder)
+      postArea(accessToken, data.id, data.trash, data.lockedAdmin, data.lockedSuperadmin, data.forDevelopers, data.noDogsAllowed, data.name, data.comment, data.lat, data.lng, data.newMedia, data.sectorOrder)
       .then((data) => {
         navigate(data.destination);
       })
@@ -134,6 +134,10 @@ const AreaEdit = () => {
             <Form.Field>
               <label>For developers</label>
               <Checkbox toggle checked={data.forDevelopers} onChange={() => setData(prevState => ({ ...prevState, forDevelopers: !data.forDevelopers }))} />
+            </Form.Field>
+            <Form.Field>
+              <label>No dogs allowed</label>
+              <Checkbox toggle checked={data.noDogsAllowed} onChange={() => setData(prevState => ({ ...prevState, noDogsAllowed: !data.noDogsAllowed }))} />
             </Form.Field>
             <Form.Field>
               <label>Move to trash</label>

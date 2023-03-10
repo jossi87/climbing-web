@@ -20,7 +20,8 @@ const plugins = [
       '!google1588c034b4869b96.html',
       '!gpl-3.0.txt',
       '!png/**',
-      '!pdf/**'
+      '!pdf/**',
+      '!svg/**'
   ],
 
   })

@@ -146,6 +146,15 @@ const Area = () => {
       <Tab panes={panes} />
       <Table definition unstackable>
         <Table.Body>
+          {data.noDogsAllowed &&
+            <Table.Row negative verticalAlign="top">
+              <Table.Cell>Area restrictions:</Table.Cell>
+              <Table.Cell><Header as="h5" color="red">
+                <img src="/svg/no-animals.svg" alt="No dogs allowed" height='35px'/>
+                No dogs allowed!
+              </Header></Table.Cell>
+            </Table.Row>
+          }
           <Table.Row>
             <Table.Cell width={3}>Sectors:</Table.Cell>
             <Table.Cell>{data.sectors.length}</Table.Cell>

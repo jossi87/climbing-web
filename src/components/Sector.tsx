@@ -224,9 +224,18 @@ const Sector = () => {
       <Tab panes={panes} />
       <Table definition unstackable>
         <Table.Body>
+          {data.areaNoDogsAllowed &&
+            <Table.Row negative verticalAlign="top">
+              <Table.Cell>Area restrictions:</Table.Cell>
+              <Table.Cell><Header as="h5" color="red">
+                <img src="/svg/no-animals.svg" alt="No dogs allowed" height='35px'/>
+                No dogs allowed!
+              </Header></Table.Cell>
+            </Table.Row>
+          }
           {data.accessInfo &&
             <Table.Row negative verticalAlign="top">
-              <Table.Cell>Access restrictions:</Table.Cell>
+              <Table.Cell>Sector restrictions:</Table.Cell>
               <Table.Cell><Header as="h5" color="red">{data.accessInfo}</Header></Table.Cell>
             </Table.Row>
           }

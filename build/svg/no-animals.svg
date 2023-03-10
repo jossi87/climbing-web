@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:cc="http://creativecommons.org/ns#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+    xmlns:svg="http://www.w3.org/2000/svg"
+    xmlns:ns1="http://sozi.baierouge.fr"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    id="svg4580"
+    sodipodi:docname="Новий документ 89"
+    viewBox="0 0 531.5 531.5"
+    version="1.1"
+    inkscape:version="0.47 r22583"
+  >
+  <sodipodi:namedview
+      id="base"
+      bordercolor="#666666"
+      inkscape:pageshadow="2"
+      inkscape:window-y="24"
+      pagecolor="#ffffff"
+      inkscape:window-height="1116"
+      inkscape:window-maximized="1"
+      inkscape:zoom="0.35"
+      inkscape:window-x="0"
+      showgrid="false"
+      borderopacity="1.0"
+      inkscape:current-layer="layer1"
+      inkscape:cx="273.4252"
+      inkscape:cy="224.13944"
+      inkscape:window-width="1600"
+      inkscape:pageopacity="0.0"
+      inkscape:document-units="px"
+  />
+  <g
+      id="layer1"
+      inkscape:label="Layer 1"
+      inkscape:groupmode="layer"
+      transform="translate(-101.57 -225.01)"
+    >
+    <path
+        id="path3874-3"
+        sodipodi:rx="48.739861"
+        sodipodi:ry="48.739861"
+        style="fill:#ff0000"
+        sodipodi:type="arc"
+        d="m431.97 388.57a48.74 48.74 0 1 1 -97.48 0 48.74 48.74 0 1 1 97.48 0z"
+        transform="matrix(5.4524 0 0 5.4524 -1722.2 -1627.9)"
+        sodipodi:cy="388.5657"
+        sodipodi:cx="383.22662"
+    />
+    <path
+        id="path3876-8"
+        sodipodi:rx="48.739861"
+        sodipodi:ry="48.739861"
+        style="fill:#ffffff"
+        sodipodi:type="arc"
+        d="m431.97 388.57a48.74 48.74 0 1 1 -97.48 0 48.74 48.74 0 1 1 97.48 0z"
+        transform="matrix(4.5066 0 0 4.5066 -1359.7 -1260.3)"
+        sodipodi:cy="388.5657"
+        sodipodi:cx="383.22662"
+    />
+    <path
+        id="path3720"
+        sodipodi:nodetypes="ccccccccccccccsccccc"
+        style="fill:#000000"
+        d="m236.89 373.78c5.769-6.773 12.657-11.396 16.907-9.7702l0.4789-33.598c22.752 2.0029 22.192 21.441 23.29 40.976l75.25 71.584h158.3l41.812-46.625c22.996 28.883 4.3046 59.237-28.593 84.093-1.3559 70.323 3.3897 79.564-25.083 95.834 0 44.993 0 74.822-43.726 74.822v-74.822h-102.71c0 44.993 0 74.822-42.032 74.822 0-33.264-0.9257-77.473-0.9257-77.473s-31.877-0.21153-32.706-28.902c-1.0838-37.492 0.41287-50.739 0.41287-50.739l-27.162-24.043c-27.68 42.417-41.436 34.024-90.37-7.1408l76.857-89.019h0.0002z"
+    />
+    <rect
+        id="rect3880-9"
+        style="fill:#ff0000"
+        transform="matrix(.69479 -.71921 .71921 .69479 0 0)"
+        ry=".000061082"
+        height="48.133"
+        width="481.33"
+        y="581.09"
+        x="-338.41"
+    />
+  </g
+  >
+  <metadata
+    >
+    <rdf:RDF
+      >
+      <cc:Work
+        >
+        <dc:format
+          >image/svg+xml</dc:format
+        >
+        <dc:type
+            rdf:resource="http://purl.org/dc/dcmitype/StillImage"
+        />
+        <cc:license
+            rdf:resource="http://creativecommons.org/licenses/publicdomain/"
+        />
+        <dc:publisher
+          >
+          <cc:Agent
+              rdf:about="http://openclipart.org/"
+            >
+            <dc:title
+              >Openclipart</dc:title
+            >
+          </cc:Agent
+          >
+        </dc:publisher
+        >
+        <dc:title
+          >Sign "No Animals"</dc:title
+        >
+        <dc:date
+          >2010-05-27T11:31:56</dc:date
+        >
+        <dc:description
+          >Simple standardised "NO ANIMALS" sign. Designed from scratch.</dc:description
+        >
+        <dc:source
+          >https://openclipart.org/detail/63229/sign-no-animals-by-dbdeveloper</dc:source
+        >
+        <dc:creator
+          >
+          <cc:Agent
+            >
+            <dc:title
+              >dbdeveloper</dc:title
+            >
+          </cc:Agent
+          >
+        </dc:creator
+        >
+        <dc:subject
+          >
+          <rdf:Bag
+            >
+            <rdf:li
+              >No animal</rdf:li
+            >
+            <rdf:li
+              >No dogs</rdf:li
+            >
+            <rdf:li
+              >restricted sign</rdf:li
+            >
+          </rdf:Bag
+          >
+        </dc:subject
+        >
+      </cc:Work
+      >
+      <cc:License
+          rdf:about="http://creativecommons.org/licenses/publicdomain/"
+        >
+        <cc:permits
+            rdf:resource="http://creativecommons.org/ns#Reproduction"
+        />
+        <cc:permits
+            rdf:resource="http://creativecommons.org/ns#Distribution"
+        />
+        <cc:permits
+            rdf:resource="http://creativecommons.org/ns#DerivativeWorks"
+        />
+      </cc:License
+      >
+    </rdf:RDF
+    >
+  </metadata
+  >
+</svg
+>
