@@ -110,11 +110,11 @@ const Sector = () => {
   if (markers.length>0) {
     const defaultCenter = data.lat && data.lat>0? {lat: data.lat, lng: data.lng} : data.metadata.defaultCenter;
     const defaultZoom = data.lat && data.lat>0? 15 : data.metadata.defaultZoom;
-    let polyline = data.polyline && data.polyline.split(";").map(e => e.split(",").map(Number));
+    let polyline = data.polyline && data.polyline.split(";").filter(i => i).map(e => e.split(",").map(Number));
     let outlines;
     let polylines;
     if (data.polygonCoords && addPolygon) {
-      const polygon = data.polygonCoords.split(";").map(c => {
+      const polygon = data.polygonCoords.split(";").filter(i => i).map(c => {
         const latLng = c.split(",");
         return ([parseFloat(latLng[0]), parseFloat(latLng[1])]);
       });

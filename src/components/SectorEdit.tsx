@@ -135,20 +135,20 @@ const SectorEdit = () => {
     area.sectors.forEach(sector => {
       if (sector.id != data.id) {
         if (sector.polygonCoords) {
-          const sectorPolygon = sector.polygonCoords.split(";").map((c, i) => {
+          const sectorPolygon = sector.polygonCoords.split(";").filter(i => i).map((c, i) => {
             const latLng = c.split(",");
             return ([parseFloat(latLng[0]), parseFloat(latLng[1])]);
           });
           polygons.push({polygon: sectorPolygon, background: true, label: sector.name});
         }
         if (sector.polyline) {
-          const sectorPolyline = sector.polyline.split(";").map(e => e.split(",").map(Number));
+          const sectorPolyline = sector.polyline.split(";").filter(i => i).map(e => e.split(",").map(Number));
           polylines.push({polyline: sectorPolyline, background: true});
         }
       }
     });
   }
-  const polygon = data.polygonCoords && data.polygonCoords.split(";").map((c, i) => {
+  const polygon = data.polygonCoords && data.polygonCoords.split(";").filter(i => i).map((c, i) => {
     const latLng = c.split(",");
     if (latLng?.length === 2) {
       let lat = parseFloat(latLng[0]);
@@ -161,7 +161,7 @@ const SectorEdit = () => {
   if (polygon) {
     polygons.push({polygon, background: false});
   }
-  const polyline = data.polyline && data.polyline.split(";").map(e => e.split(",").map(Number)).filter(e => e?.length===2 && e[0]>0 && e[1]>0);
+  const polyline = data.polyline && data.polyline.split(";").filter(i => i).map(e => e.split(",").map(Number)).filter(e => e?.length===2 && e[0]>0 && e[1]>0);
   if (polyline) {
     polylines.push({polyline, background: false});
   }

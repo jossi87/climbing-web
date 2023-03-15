@@ -152,11 +152,11 @@ const Problem = () => {
     });
   }
   if (markers.length>0) {
-    const polyline = data.sectorPolyline && data.sectorPolyline.split(";").map(e => e.split(",").map(Number));
+    const polyline = data.sectorPolyline && data.sectorPolyline.split(";").filter(i => i).map(e => e.split(",").map(Number));
     let outlines;
     let polylines;
     if (data.sectorPolygonCoords && (data.lat===0 && data.lng===0)) {
-      const polygon = data.sectorPolygonCoords.split(";").map(c => {
+      const polygon = data.sectorPolygonCoords.split(";").filter(i => i).map(c => {
         const latLng = c.split(",");
         return ([parseFloat(latLng[0]), parseFloat(latLng[1])]);
       });

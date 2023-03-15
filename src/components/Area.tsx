@@ -51,13 +51,13 @@ const Area = () => {
   for (let s of data.sectors) {
     let distance = null;
     if (s.polyline) {
-      let polyline = s.polyline.split(";").map(e => e.split(",").map(Number));
+      let polyline = s.polyline.split(";").filter(i => i).map(e => e.split(",").map(Number));
       distance = calculateDistance(polyline);
       let label = s.polygonCoords == null && distance;
       polylines.push({polyline, label});
     }
     if (s.polygonCoords) {
-      const polygon = s.polygonCoords.split(";").map((c, i) => {
+      const polygon = s.polygonCoords.split(";").filter(i => i).map((c, i) => {
         const latLng = c.split(",");
         return ([parseFloat(latLng[0]), parseFloat(latLng[1])]);
       });
