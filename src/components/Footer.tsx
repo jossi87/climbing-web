@@ -67,6 +67,7 @@ function Footer() {
                   <br/>
                   <List.Item as='a' href='https://is.brattelinjer.no' rel='noreferrer noopener' target='_blank'>Rogaland</List.Item>
                   <List.Item as='a' href='https://is.forer.no' rel='noreferrer noopener' target='_blank'>Fredrikstad</List.Item>
+                  <List.Item as='a' href='https://is.tromsoklatring.no' rel='noreferrer noopener' target='_blank'>Troms</List.Item>
                 </List>
               </Grid.Column>
               <Grid.Column width={4}>
