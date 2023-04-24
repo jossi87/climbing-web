@@ -134,7 +134,7 @@ const MediaModal = ({ isAdmin, onClose, onDelete, onRotate, onMoveImageLeft, onM
 
         <Sidebar.Pusher>
           <ButtonGroup secondary size="mini" style={style.actions}>
-            {m.problemId && <Button icon="external" onClick={() => window.open("/problem/" + m.problemId, "_blank")}/>}
+            {m.url && <Button icon="external" onClick={() => window.open(m.url, "_blank")}/>}
             {canShowSidebar && <Button icon="numbered list" inverted={showSidebar} onClick={() => setShowSidebar(true)}/>}
             <Modal trigger={<Button icon="info" />}>
               <Modal.Content image>
