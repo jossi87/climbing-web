@@ -148,6 +148,7 @@ const SectorEdit = () => {
       }
     });
   }
+  let polygonError = false;
   const polygon = data.polygonCoords && data.polygonCoords.split(";").filter(i => i).map((c, i) => {
     const latLng = c.split(",");
     if (latLng?.length === 2) {
@@ -156,6 +157,12 @@ const SectorEdit = () => {
       if (lat > 0 && lng > 0) {
         return ([lat, lng]);
       }
+      else {
+        polygonError = true;
+      }
+    }
+    else {
+      polygonError = true;
     }
   }).filter(e => e?.length===2 && e[0]>0 && e[1]>0);
   if (polygon) {
@@ -322,10 +329,14 @@ const SectorEdit = () => {
               </>
             }
             {leafletMode === 'POLYGON' &&
-              <Form.Field>
-                <label>Outline</label>
-                <Input placeholder='Outline' value={data.polygonCoords || ""} onChange={(e, { value }) => setData(prevState => ({ ...prevState, polygonCoords: value }))}/>
-              </Form.Field>
+              <Form.Field
+                label="Outline"
+                control={Input}
+                placeholder="Outline"
+                value={data.polygonCoords || ""}
+                onChange={(e, { value }) => setData(prevState => ({ ...prevState, polygonCoords: value }))}
+                error={polygonError && "Invalid outline"}
+              />
             }
             {leafletMode === 'POLYLINE' &&
               <Form.Field>
@@ -374,7 +385,7 @@ const SectorEdit = () => {
             }
           }}>Cancel</Button>
           <Button.Or />
-          <Button positive loading={saving} onClick={save} disabled={!data.name}>Save sector</Button>
+          <Button positive loading={saving} onClick={save} disabled={!data.name || polygonError}>Save sector</Button>
         </Button.Group>
       </Form>
     </>
