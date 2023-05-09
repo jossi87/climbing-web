@@ -44,6 +44,7 @@ function Footer() {
                   <List.Item as='a' href='https://buldring.jotunheimenfjellsport.com' rel='noreferrer noopener' target='_blank'>Jotunheimen</List.Item>
                   <List.Item as='a' href='https://buldring.narvikklatreklubb.no' rel='noreferrer noopener' target='_blank'>Narvik</List.Item>
                   <List.Item as='a' href='https://hkl.buldreinfo.com' rel='noreferrer noopener' target='_blank'>Haugalandet</List.Item>
+                  <List.Item as='a' href='https://sorlandet.buldreinfo.com' rel='noreferrer noopener' target='_blank'>Sørlandet</List.Item>
                 </List>
               </Grid.Column>
               <Grid.Column width={4}>
@@ -58,6 +59,7 @@ function Footer() {
                   <List.Item as='a' href='https://klatring.flatangeradventure.no' rel='noreferrer noopener' target='_blank'>Trondheim</List.Item>
                   <List.Item as='a' href='https://klatring.jotunheimenfjellsport.com' rel='noreferrer noopener' target='_blank'>Jotunheimen</List.Item>
                   <List.Item as='a' href='https://tau.forer.no' rel='noreferrer noopener' target='_blank'>Fredrikstad</List.Item>
+                  <List.Item as='a' href='https://sorlandet.brattelinjer.no' rel='noreferrer noopener' target='_blank'>Sørlandet</List.Item>
                 </List>
               </Grid.Column>
               <Grid.Column width={4}>
