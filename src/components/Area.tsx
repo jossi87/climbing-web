@@ -148,7 +148,7 @@ const Area = () => {
   if (data.sectors) {
     sectorPanes = [];
     sectorPanes.push({
-      menuItem: "Sectors",
+      menuItem: "Sectors (" + data.sectors.length + ")",
       render: () => (
         <Tab.Pane>
           <Item.Group link unstackable>
@@ -174,7 +174,7 @@ const Area = () => {
       )
     });
     sectorPanes.push({
-      menuItem: isBouldering? "Boulders" : "Problems",
+      menuItem: (isBouldering? "Problems (" : "Routes (") + data.typeNumTicked.reduce((count, current) => count + current.num, 0) + ")",
       render: () => (
         <Tab.Pane>
           <ProblemList isSectorNotUser={true} preferOrderByGrade={true}
