@@ -8,13 +8,54 @@ import Leaflet from './common/leaflet/leaflet';
 import { calculateDistance } from './common/leaflet/distance-math';
 import Media from './common/media/media';
 import Todo from './common/todo/todo';
-import { LockSymbol, Loading, WeatherLabels } from './common/widgets/widgets';
-import { Table, Label, Button, Tab, Item, Icon, Image, Breadcrumb, Segment, Header } from 'semantic-ui-react';
+import { Stars, LockSymbol, Loading, WeatherLabels } from './common/widgets/widgets';
+import { Table, Label, Button, Tab, Item, Icon, Image, Breadcrumb, Header, List } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getArea, getImageUrl, getAreaPdfUrl } from '../api';
 import { Remarkable } from 'remarkable';
 import { linkify } from 'remarkable/linkify';
+import ProblemList from './common/problem-list/problem-list';
 
+const SectorListItem = ({ sector, problem, isClimbing }) => {
+  let type = isClimbing? problem.t.subType + (problem.numPitches>1? ", " + problem.numPitches + " pitches" : "") : null;
+  let ascents = problem.numTicks && problem.numTicks + (problem.numTicks==1? " ascent" : " ascents");
+  let faTypeAscents = problem.fa;
+  if (type && ascents) {
+    faTypeAscents = (faTypeAscents != null? faTypeAscents + " (" : "(") + type + ", " + ascents + ")";
+  } else if (type) {
+    faTypeAscents = (faTypeAscents != null? faTypeAscents + " (" : "(") + type + ")";
+  } else if (ascents) {
+    faTypeAscents = (faTypeAscents != null? faTypeAscents + " (" : "(") + ascents + ")";
+  }
+  let backgroundColor = "#ffffff";
+  if (problem.ticked) {
+    backgroundColor = "#d2f8d2";
+  }
+  else if (problem.todo) {
+    backgroundColor = "#d2d2f8";
+  }
+  return (
+    <List.Item style={{backgroundColor}} key={problem.id}>
+      <List.Header>
+        {problem.danger && <Icon color="red" name="warning"/>}
+        <Link to={`/problem/${problem.id}`}>{problem.name}</Link>
+        {' '}
+        {problem.grade}
+        <Stars numStars={problem.stars} includeNoRating={false} />
+        <small><i style={{color: "gray"}}> {sector.name} {`#${problem.nr}`} </i></small>
+        {faTypeAscents && <small>{' '}{faTypeAscents}</small>}
+        <small><i style={{color: "gray"}}>{' '}{problem.rock && <>Rock: {problem.rock}. </>}{problem.comment}{' '}</i></small>
+        {problem.lat>0 && problem.lng>0 && <Icon size="small" name="map marker alternate"/>}
+        {problem.hasTopo && <Icon size="small" name="paint brush"/>}
+        {problem.hasImages && <Icon size="small" color="black" name="photo"/>}
+        {problem.hasMovies && <Icon size="small" color="black" name="film"/>}
+        <LockSymbol lockedAdmin={problem.lockedAdmin} lockedSuperadmin={problem.lockedSuperadmin} />
+        {problem.ticked && <Icon size="small" color="green" name="check"/>}
+        {problem.todo && <Icon size="small" color="blue" name="bookmark"/>}
+      </List.Header>
+    </List.Item>
+  )
+}
 const Area = () => {
   const { loading, accessToken } = useAuth0();
   const [data, setData] = useState(null);
@@ -65,6 +106,7 @@ const Area = () => {
       outlines.push({url: '/sector/' + s.id, label, polygon: polygon});
     }
   }
+  let isBouldering = data.metadata.gradeSystem==='BOULDER';
   const panes = [];
   const height = '40vh';
   if (data.media && data.media.length>0) {
@@ -73,7 +115,7 @@ const Area = () => {
       render: () => <Tab.Pane><Media isAdmin={data.metadata.isAdmin} removeMedia={(idMediaToRemove) => {
         let newMedia = data.media.filter(m => m.id!=idMediaToRemove);
         setData(prevState => ({ ...prevState, media: newMedia }));
-      }} media={data.media} optProblemId={null} isBouldering={data.metadata.gradeSystem==='BOULDER'} /></Tab.Pane> });
+      }} media={data.media} optProblemId={null} isBouldering={isBouldering} /></Tab.Pane> });
   }
   if (markers.length>0 || outlines.length>0 || (data.lat && data.lat>0)) {
     const defaultCenter = data.lat && data.lat>0? {lat: data.lat, lng: data.lng} : data.metadata.defaultCenter;
@@ -99,6 +141,54 @@ const Area = () => {
     panes.push({
       menuItem: { key: 'todo', icon: 'bookmark' },
       render: () => <Tab.Pane><Todo accessToken={accessToken} idArea={data.id} idSector={0}/></Tab.Pane>
+    });
+  }
+
+  let sectorPanes = null;
+  if (data.sectors) {
+    sectorPanes = [];
+    sectorPanes.push({
+      menuItem: "Sectors",
+      render: () => (
+        <Tab.Pane>
+          <Item.Group link unstackable>
+            {data.sectors.map((sector, i) => (
+              <Item as={Link} to={`/sector/${sector.id}`} key={i}>
+                <Image size="small" style={{maxHeight: '150px', objectFit: 'cover'}} src={sector.randomMediaId? getImageUrl(sector.randomMediaId, sector.randomMediaCrc32, 150) : '/png/image.png'} />
+                <Item.Content>
+                  <Item.Header>
+                    {sector.name} <LockSymbol lockedAdmin={sector.lockedAdmin} lockedSuperadmin={sector.lockedSuperadmin} />
+                  </Item.Header>
+                  <Item.Meta>
+                    {sector.typeNumTicked.map((x, i) => <p key={i}>{x.type + ": " + x.num}{x.ticked>0 && " (" + x.ticked + " ticked)"}</p>)}
+                  </Item.Meta>
+                  <Item.Description>
+                    {sector.accessInfo && <Header as="h5" color="red">{sector.accessInfo}</Header>}
+                    {sector.comment}
+                  </Item.Description>
+                </Item.Content>
+              </Item>
+            ))}
+          </Item.Group>
+        </Tab.Pane>
+      )
+    });
+    sectorPanes.push({
+      menuItem: isBouldering? "Boulders" : "Problems",
+      render: () => (
+        <Tab.Pane>
+          <ProblemList isSectorNotUser={true} preferOrderByGrade={true}
+            rows={data.sectors.map(s => (s.problems.map(p => ({
+                element: <SectorListItem key={p.id} sector={s} problem={p} isClimbing={data.metadata.gradeSystem==='CLIMBING'} />,
+                name: p.name, nr: p.nr, gradeNumber: p.gradeNumber, stars: p.stars,
+                numTicks: p.numTicks, ticked: p.ticked, todo: p.todo,
+                rock: p.rock, subType: p.t.subType,
+                num: null, fa: null
+              })))
+            ).flat().sort((a, b) => b.gradeNumber-a.gradeNumber)}
+          />
+        </Tab.Pane>
+      )
     });
   }
   
@@ -198,30 +288,7 @@ const Area = () => {
           {data.comment && <Table.Row><Table.Cell colSpan={2} style={{fontWeight: 'normal', backgroundColor: 'white'}}><div dangerouslySetInnerHTML={{ __html: md.render(data.comment) }} /></Table.Cell></Table.Row>}
         </Table.Body>
       </Table>
-      {data.sectors &&
-        <Segment>
-          <Header as="h3">Sectors:</Header>
-          <Item.Group link unstackable>
-            {data.sectors.map((sector, i) => (
-              <Item as={Link} to={`/sector/${sector.id}`} key={i}>
-                <Image size="small" style={{maxHeight: '150px', objectFit: 'cover'}} src={sector.randomMediaId? getImageUrl(sector.randomMediaId, sector.randomMediaCrc32, 150) : '/png/image.png'} />
-                <Item.Content>
-                  <Item.Header>
-                    {sector.name} <LockSymbol lockedAdmin={sector.lockedAdmin} lockedSuperadmin={sector.lockedSuperadmin} />
-                  </Item.Header>
-                  <Item.Meta>
-                    {sector.typeNumTicked.map((x, i) => <p key={i}>{x.type + ": " + x.num}{x.ticked>0 && " (" + x.ticked + " ticked)"}</p>)}
-                  </Item.Meta>
-                  <Item.Description>
-                    {sector.accessInfo && <Header as="h5" color="red">{sector.accessInfo}</Header>}
-                    {sector.comment}
-                  </Item.Description>
-                </Item.Content>
-              </Item>
-            ))}
-          </Item.Group>
-        </Segment>
-      }
+      {sectorPanes && <Tab panes={sectorPanes}/>}
     </>
   );
 }
