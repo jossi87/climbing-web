@@ -221,7 +221,7 @@ const Sector = () => {
           <Breadcrumb.Section active>{data.name} <LockSymbol lockedAdmin={data.lockedAdmin} lockedSuperadmin={data.lockedSuperadmin} /></Breadcrumb.Section>
         </Breadcrumb>
       </div>
-      {(data.areaAccessClosed || data.accessClosed) && <Message size="huge" negative icon="attention" header="Sector closed" content={(data.areaAccessClosed||'') + (data.accessClosed||'')} />}
+      {(data.areaAccessClosed || data.accessClosed) && <Message size="huge" negative icon="attention" header="Climbing not allowed!" content={(data.areaAccessClosed||'') + (data.accessClosed||'')} />}
       <Tab panes={panes} />
       <Table definition unstackable>
         <Table.Body>

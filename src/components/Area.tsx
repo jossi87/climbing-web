@@ -234,7 +234,7 @@ const Area = () => {
           <Breadcrumb.Section active>{data.name} <LockSymbol lockedAdmin={data.lockedAdmin} lockedSuperadmin={data.lockedSuperadmin} /></Breadcrumb.Section>
         </Breadcrumb>
       </div>
-      {data.accessClosed && <Message size="huge" negative icon="attention" header="Area closed" content={data.accessClosed} />}
+      {data.accessClosed && <Message size="huge" negative icon="attention" header="Climbing not allowed!" content={data.accessClosed} />}
       <Tab panes={panes} />
       <Table definition unstackable>
         <Table.Body>
