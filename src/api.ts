@@ -127,7 +127,7 @@ export function getAreaEdit(accessToken: string, id: number): Promise<any> {
   if (id == -1) {
     return getMeta(accessToken)
     .then((res) => {
-      return {id: -1, lockedAdmin: false, lockedSuperadmin: false, forDevelopers: false, noDogsAllowed: false, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: {title: 'New area | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, isAdmin: res.metadata.isAdmin, isSuperAdmin: res.metadata.isSuperAdmin}};
+      return {id: -1, lockedAdmin: false, lockedSuperadmin: false, forDevelopers: false, accessInfo: '', accessClosed: '', noDogsAllowed: false, name: '', comment: '', lat: 0, lng: 0, newMedia: [], metadata: {title: 'New area | ' + res.metadata.title, defaultZoom: res.metadata.defaultZoom, defaultCenter: res.metadata.defaultCenter, isAdmin: res.metadata.isAdmin, isSuperAdmin: res.metadata.isSuperAdmin}};
     })
     .catch((error) => {
       console.warn(error);
@@ -137,7 +137,7 @@ export function getAreaEdit(accessToken: string, id: number): Promise<any> {
     return makeAuthenticatedRequest(accessToken, `/areas?id=${id}`, null)
     .then((data) => data.json())
     .then((res) => {
-      return {id: res.id, lockedAdmin: res.lockedAdmin, lockedSuperadmin: res.lockedSuperadmin, forDevelopers: res.forDevelopers, noDogsAllowed: res.noDogsAllowed, name: res.name, comment: res.comment, lat: res.lat, lng: res.lng, newMedia: [], metadata: res.metadata, sectorOrder: res.sectorOrder};
+      return {id: res.id, lockedAdmin: res.lockedAdmin, lockedSuperadmin: res.lockedSuperadmin, forDevelopers: res.forDevelopers, accessInfo: res.accessInfo, accessClosed: res.accessClosed, noDogsAllowed: res.noDogsAllowed, name: res.name, comment: res.comment, lat: res.lat, lng: res.lng, newMedia: [], metadata: res.metadata, sectorOrder: res.sectorOrder};
     })
     .catch((error) => {
       console.warn(error);
@@ -411,6 +411,7 @@ export function getSectorEdit(accessToken: string, areaIdSectorId: string): Prom
         name: '',
         comment: '',
         accessInfo: '',
+        accessClosed: '',
         lat: 0,
         lng: 0,
         latStr: '',
@@ -426,7 +427,7 @@ export function getSectorEdit(accessToken: string, areaIdSectorId: string): Prom
   } else {
     return getSector(accessToken, sectorId)
     .then((res) => {
-      return {id: res.id, areaId: res.areaId, lockedAdmin: res.lockedAdmin, lockedSuperadmin: res.lockedSuperadmin, name: res.name, comment: res.comment, accessInfo: res.accessInfo,
+      return {id: res.id, areaId: res.areaId, lockedAdmin: res.lockedAdmin, lockedSuperadmin: res.lockedSuperadmin, name: res.name, comment: res.comment, accessInfo: res.accessInfo, accessClosed: res.accessClosed,
         lat: res.lat, lng: res.lng, latStr: res.lat, lngStr: res.lng,
         polygonCoords: res.polygonCoords, polyline: res.polyline, newMedia: [], metadata: res.metadata, problemOrder: res.problemOrder};
     })
@@ -585,10 +586,10 @@ export function getUsersTicks(accessToken: string): Promise<any> {
   });
 }
 
-export function postArea(accessToken: string, id: number, trash: boolean, lockedAdmin: number, lockedSuperadmin: number, forDevelopers: boolean, noDogsAllowed: boolean, name: string, comment: string, lat: number, lng: number, media: any, sectorOrder: any): Promise<any> {
+export function postArea(accessToken: string, id: number, trash: boolean, lockedAdmin: number, lockedSuperadmin: number, forDevelopers: boolean, accessInfo: string, accessClosed: string, noDogsAllowed: boolean, name: string, comment: string, lat: number, lng: number, media: any, sectorOrder: any): Promise<any> {
   const formData = new FormData();
   const newMedia = media.map(m => {return {name: m.file && m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto, description: m.description, embedVideoUrl: m.embedVideoUrl, embedThumbnailUrl: m.embedThumbnailUrl, embedMilliseconds: m.embedMilliseconds}});
-  formData.append('json', JSON.stringify({id, trash, lockedAdmin, lockedSuperadmin, forDevelopers, noDogsAllowed, name, comment, lat, lng, newMedia, sectorOrder}));
+  formData.append('json', JSON.stringify({id, trash, lockedAdmin, lockedSuperadmin, forDevelopers, accessInfo, accessClosed, noDogsAllowed, name, comment, lat, lng, newMedia, sectorOrder}));
   media.forEach(m => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
   return makeAuthenticatedRequest(accessToken, `/areas`,{
     method: 'POST',
@@ -705,10 +706,10 @@ export function postProblemSvg(accessToken: string, problemId: number, mediaId: 
   });
 }
 
-export function postSector(accessToken: string, areaId: number, id: number, trash: boolean, lockedAdmin: number, lockedSuperadmin: number, name: string, comment: string, accessInfo: string, lat: number, lng: number, polygonCoords: any, polyline: any, media: any, problemOrder: any): Promise<any> {
+export function postSector(accessToken: string, areaId: number, id: number, trash: boolean, lockedAdmin: number, lockedSuperadmin: number, name: string, comment: string, accessInfo: string, accessClosed: string, lat: number, lng: number, polygonCoords: any, polyline: any, media: any, problemOrder: any): Promise<any> {
   const formData = new FormData();
   const newMedia = media.map(m => {return {name: m.file && m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto, description: m.description, embedVideoUrl: m.embedVideoUrl, embedThumbnailUrl: m.embedThumbnailUrl, embedMilliseconds: m.embedMilliseconds}});
-  formData.append('json', JSON.stringify({areaId, id, trash, lockedAdmin, lockedSuperadmin, name, comment, accessInfo, lat, lng, polygonCoords, polyline, newMedia, problemOrder}));
+  formData.append('json', JSON.stringify({areaId, id, trash, lockedAdmin, lockedSuperadmin, name, comment, accessInfo, accessClosed, lat, lng, polygonCoords, polyline, newMedia, problemOrder}));
   media.forEach(m => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
   return makeAuthenticatedRequest(accessToken, `/sectors`,{
     method: 'POST',

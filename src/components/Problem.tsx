@@ -4,7 +4,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import { calculateDistance } from './common/leaflet/distance-math';
 import Media from './common/media/media';
-import { Button, Grid, Breadcrumb, Tab, Label, Icon, Comment, Header, Segment, Table, Feed } from 'semantic-ui-react';
+import { Button, Grid, Breadcrumb, Tab, Label, Icon, Comment, Header, Segment, Table, Feed, Image, Message } from 'semantic-ui-react';
 import { Loading, LockSymbol, Stars, WeatherLabels } from './common/widgets/widgets';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getAreaPdfUrl, getSectorPdfUrl, getProblemPdfUrl, getProblem, getSector, postComment, postTodo } from '../api';
@@ -357,14 +357,28 @@ const Problem = () => {
           <Breadcrumb.Section active>{data.name} {data.grade} <LockSymbol lockedAdmin={data.lockedAdmin} lockedSuperadmin={data.lockedSuperadmin} /></Breadcrumb.Section>
         </Breadcrumb>
       </div>
+      {(data.areaAccessClosed || data.sectorAccessClosed) && <Message size="huge" negative icon="attention" header={isBouldering? "Boulder closed" : "Route closed"} content={(data.areaAccessClosed||'') + (data.sectorAccessClosed||'')} />}
       <Tab panes={panes} />
       <Table definition unstackable>
         <Table.Body>
-          {data.sectorAccessInfo &&
-            <Table.Row negative>
-              <Table.Cell>Access restrictions:</Table.Cell>
-              <Table.Cell><Header as="h5" color="red">{data.sectorAccessInfo}</Header></Table.Cell>
-            </Table.Row>
+          {(data.areaAccessInfo || data.sectorAccessInfo || data.areaNoDogsAllowed) &&
+            <Table.Row warning verticalAlign="top">
+            <Table.Cell><Icon name='attention' /> Restrictions:</Table.Cell>
+            <Table.Cell>
+              {data.areaNoDogsAllowed &&
+                <>
+                  <Header as="h5" color="red" image>
+                    <Image src="/svg/no-animals.svg" alt="No dogs allowed" rounded size='mini'/>
+                    <Header.Content>
+                      The access to our crags are at the mercy of the farmers who own the land.
+                      <Header.Subheader>Because of conflicts between dog-owners and farmers we ask you to not bring your dog to this spesific crag.</Header.Subheader>
+                    </Header.Content>
+                  </Header><br/>
+                </>
+              }
+              {data.areaAccessInfo}{data.sectorAccessInfo}
+            </Table.Cell>
+          </Table.Row>
           }
           <Table.Row verticalAlign="top">
             <Table.Cell width={3}>Number:</Table.Cell>

@@ -49,6 +49,10 @@ const SectorEdit = () => {
     setData(prevState => ({ ...prevState, accessInfo: value }));
   }
 
+  function onAccessClosedChanged(e, { value }) {
+    setData(prevState => ({ ...prevState, accessClosed: value }));
+  }
+
   function onNewMediaChanged(newMedia) {
     setData(prevState => ({ ...prevState, newMedia }));
   }
@@ -58,7 +62,7 @@ const SectorEdit = () => {
     const trash = data.trash? true : false;
     if (!trash || confirm("Are you sure you want to move sector to trash?")) {
       setSaving(true);
-      postSector(accessToken, data.areaId, data.id, data.trash, data.lockedAdmin, data.lockedSuperadmin, data.name, data.comment, data.accessInfo, data.lat, data.lng, data.polygonCoords, data.polyline, data.newMedia, data.problemOrder)
+      postSector(accessToken, data.areaId, data.id, data.trash, data.lockedAdmin, data.lockedSuperadmin, data.name, data.comment, data.accessInfo, data.accessClosed, data.lat, data.lng, data.polygonCoords, data.polyline, data.newMedia, data.problemOrder)
       .then((data) => {
         navigate(data.destination);
       })
@@ -254,13 +258,8 @@ const SectorEdit = () => {
             style={{ minHeight: 100 }}
             value={data.comment}
             onChange={onCommentChanged} />
-          <Form.Field
-            label="Access restrictions"
-            control={TextArea}
-            placeholder='Enter access restrictions'
-            style={{ minHeight: 20 }}
-            value={data.accessInfo}
-            onChange={onAccessInfoChanged} />
+          <Form.Field><Input label="Sector closed:" placeholder="Enter closed-reason..." value={data.accessClosed} onChange={onAccessClosedChanged} icon="attention"/></Form.Field>
+          <Form.Field><Input label="Sector restrictions:" placeholder="Enter specific restrictions..." value={data.accessInfo} onChange={onAccessInfoChanged}/></Form.Field>
         </Segment>
 
         <Segment>

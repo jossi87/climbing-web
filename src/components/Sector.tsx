@@ -10,7 +10,7 @@ import { calculateDistance } from './common/leaflet/distance-math';
 import Media from './common/media/media';
 import Todo from './common/todo/todo';
 import { Stars, LockSymbol, Loading, WeatherLabels } from './common/widgets/widgets';
-import { Icon, Button, Tab, Breadcrumb, Table, Label, TableCell, List, Header, Image } from 'semantic-ui-react';
+import { Icon, Button, Tab, Breadcrumb, Table, Label, TableCell, List, Header, Image, Message } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getSector, getAreaPdfUrl, getSectorPdfUrl } from '../api';
 import Linkify from 'react-linkify';
@@ -221,28 +221,28 @@ const Sector = () => {
           <Breadcrumb.Section active>{data.name} <LockSymbol lockedAdmin={data.lockedAdmin} lockedSuperadmin={data.lockedSuperadmin} /></Breadcrumb.Section>
         </Breadcrumb>
       </div>
+      {(data.areaAccessClosed || data.accessClosed) && <Message size="huge" negative icon="attention" header="Sector closed" content={(data.areaAccessClosed||'') + (data.accessClosed||'')} />}
       <Tab panes={panes} />
       <Table definition unstackable>
         <Table.Body>
-          {data.areaNoDogsAllowed &&
-            <Table.Row negative verticalAlign="top">
-              <Table.Cell>Area restrictions:</Table.Cell>
-              <Table.Cell>
-                <Header as="h5" color="red" image>
-                  <Image src="/svg/no-animals.svg" alt="No dogs allowed" rounded size='mini'/>
-                  <Header.Content>
-                    The access to our crags are at the mercy of the farmers who own the land.
-                    <Header.Subheader>Because of conflicts between dog-owners and farmers we ask you to not bring your dog to this spesific crag.</Header.Subheader>
-                  </Header.Content>
-                </Header>
-              </Table.Cell>
-            </Table.Row>
-          }
-          {data.accessInfo &&
-            <Table.Row negative verticalAlign="top">
-              <Table.Cell>Sector restrictions:</Table.Cell>
-              <Table.Cell><Header as="h5" color="red">{data.accessInfo}</Header></Table.Cell>
-            </Table.Row>
+          {(data.areaAccessInfo || data.accessInfo || data.areaNoDogsAllowed) &&
+            <Table.Row warning verticalAlign="top">
+            <Table.Cell><Icon name='attention' /> Restrictions:</Table.Cell>
+            <Table.Cell>
+              {data.areaNoDogsAllowed &&
+                <>
+                  <Header as="h5" color="red" image>
+                    <Image src="/svg/no-animals.svg" alt="No dogs allowed" rounded size='mini'/>
+                    <Header.Content>
+                      The access to our crags are at the mercy of the farmers who own the land.
+                      <Header.Subheader>Because of conflicts between dog-owners and farmers we ask you to not bring your dog to this spesific crag.</Header.Subheader>
+                    </Header.Content>
+                  </Header><br/>
+                </>
+              }
+              {data.areaAccessInfo}{data.accessInfo}
+            </Table.Cell>
+          </Table.Row>
           }
           {content}
           {data.comment &&

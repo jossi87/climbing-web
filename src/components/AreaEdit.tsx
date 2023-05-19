@@ -38,6 +38,14 @@ const AreaEdit = () => {
     setData(prevState => ({ ...prevState, comment: value }));
   }
 
+  function onAccessInfoChanged(e, { value }) {
+    setData(prevState => ({ ...prevState, accessInfo: value }));
+  }
+
+  function onAccessClosedChanged(e, { value }) {
+    setData(prevState => ({ ...prevState, accessClosed: value }));
+  }
+
   function onNewMediaChanged(newMedia) {
     setData(prevState => ({ ...prevState, newMedia }));
   }
@@ -47,7 +55,7 @@ const AreaEdit = () => {
     const trash = data.trash? true : false;
     if (!trash || confirm("Are you sure you want to move area to trash?")) {
       setSaving(true);
-      postArea(accessToken, data.id, data.trash, data.lockedAdmin, data.lockedSuperadmin, data.forDevelopers, data.noDogsAllowed, data.name, data.comment, data.lat, data.lng, data.newMedia, data.sectorOrder)
+      postArea(accessToken, data.id, data.trash, data.lockedAdmin, data.lockedSuperadmin, data.forDevelopers, data.accessInfo, data.accessClosed, data.noDogsAllowed, data.name, data.comment, data.lat, data.lng, data.newMedia, data.sectorOrder)
       .then((data) => {
         navigate(data.destination);
       })
@@ -148,6 +156,8 @@ const AreaEdit = () => {
             <label>Description (supports remarkable formatting, more info <a href="https://jonschlinkert.github.io/remarkable/demo/" rel="noreferrer noopener" target="_blank">here</a>)</label>
             <TextArea placeholder='Enter description' style={{ minHeight: 100 }} value={data.comment} onChange={onCommentChanged} />
           </Form.Field>
+          <Form.Field><Input label="Area closed:" placeholder="Enter closed-reason..." value={data.accessClosed} onChange={onAccessClosedChanged} icon="attention"/></Form.Field>
+          <Form.Field><Input label="Area restrictions:" placeholder="Enter specific restrictions..." value={data.accessInfo} onChange={onAccessInfoChanged}/></Form.Field>
         </Segment>
 
         <Segment>

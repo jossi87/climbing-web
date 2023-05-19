@@ -9,7 +9,7 @@ import { calculateDistance } from './common/leaflet/distance-math';
 import Media from './common/media/media';
 import Todo from './common/todo/todo';
 import { Stars, LockSymbol, Loading, WeatherLabels } from './common/widgets/widgets';
-import { Table, Label, Button, Tab, Item, Icon, Image, Breadcrumb, Header, List } from 'semantic-ui-react';
+import { Table, Label, Button, Tab, Item, Icon, Image, Breadcrumb, Header, List, Message } from 'semantic-ui-react';
 import { useAuth0 } from '../utils/react-auth0-spa';
 import { getArea, getImageUrl, getAreaPdfUrl } from '../api';
 import { Remarkable } from 'remarkable';
@@ -157,6 +157,7 @@ const Area = () => {
                 <Image size="small" style={{maxHeight: '150px', objectFit: 'cover'}} src={sector.randomMediaId? getImageUrl(sector.randomMediaId, sector.randomMediaCrc32, 150) : '/png/image.png'} />
                 <Item.Content>
                   <Item.Header>
+                    {sector.accessClosed && <Header as="h3" color="red">{sector.accessClosed}</Header>}
                     {sector.name} <LockSymbol lockedAdmin={sector.lockedAdmin} lockedSuperadmin={sector.lockedSuperadmin} />
                   </Item.Header>
                   <Item.Meta>
@@ -233,20 +234,26 @@ const Area = () => {
           <Breadcrumb.Section active>{data.name} <LockSymbol lockedAdmin={data.lockedAdmin} lockedSuperadmin={data.lockedSuperadmin} /></Breadcrumb.Section>
         </Breadcrumb>
       </div>
+      {data.accessClosed && <Message size="huge" negative icon="attention" header="Area closed" content={data.accessClosed} />}
       <Tab panes={panes} />
       <Table definition unstackable>
         <Table.Body>
-          {data.noDogsAllowed &&
-            <Table.Row negative verticalAlign="top">
-              <Table.Cell>Area restrictions:</Table.Cell>
+          {(data.accessInfo || data.noDogsAllowed) &&
+            <Table.Row warning verticalAlign="top">
+              <Table.Cell><Icon name='attention' /> Restrictions:</Table.Cell>
               <Table.Cell>
-                <Header as="h5" color="red" image>
-                  <Image src="/svg/no-animals.svg" alt="No dogs allowed" rounded size='mini'/>
-                  <Header.Content>
-                    The access to our crags are at the mercy of the farmers who own the land.
-                    <Header.Subheader>Because of conflicts between dog-owners and farmers we ask you to not bring your dog to this spesific crag.</Header.Subheader>
-                  </Header.Content>
-                </Header>
+                {data.noDogsAllowed &&
+                  <>
+                    <Header as="h5" color="red" image>
+                      <Image src="/svg/no-animals.svg" alt="No dogs allowed" rounded size='mini'/>
+                      <Header.Content>
+                        The access to our crags are at the mercy of the farmers who own the land.
+                        <Header.Subheader>Because of conflicts between dog-owners and farmers we ask you to not bring your dog to this spesific crag.</Header.Subheader>
+                      </Header.Content>
+                    </Header><br/>
+                  </>
+                }
+                {data.accessInfo}
               </Table.Cell>
             </Table.Row>
           }
