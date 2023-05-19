@@ -366,17 +366,16 @@ const Problem = () => {
             <Table.Cell><Icon name='attention' /> Restrictions:</Table.Cell>
             <Table.Cell>
               {data.areaNoDogsAllowed &&
-                <>
-                  <Header as="h5" color="red" image>
-                    <Image src="/svg/no-animals.svg" alt="No dogs allowed" rounded size='mini'/>
-                    <Header.Content>
-                      The access to our crags are at the mercy of the farmers who own the land.
-                      <Header.Subheader>Because of conflicts between dog-owners and farmers we ask you to not bring your dog to this spesific crag.</Header.Subheader>
-                    </Header.Content>
-                  </Header><br/>
-                </>
+                <Header as="h5" color="red" image>
+                  <Image src="/svg/no-animals.svg" alt="No dogs allowed" rounded size='mini'/>
+                  <Header.Content>
+                    The access to our crags are at the mercy of the farmers who own the land.
+                    <Header.Subheader>Because of conflicts between dog-owners and farmers we ask you to not bring your dog to this specific crag.</Header.Subheader>
+                  </Header.Content>
+                </Header>
               }
-              {data.areaAccessInfo}{data.sectorAccessInfo}
+              {data.areaAccessInfo && <p>{data.areaAccessInfo}</p>}
+              {data.sectorAccessInfo && <p>{data.sectorAccessInfo}</p>}
             </Table.Cell>
           </Table.Row>
           }

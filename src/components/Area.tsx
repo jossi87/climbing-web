@@ -243,17 +243,15 @@ const Area = () => {
               <Table.Cell><Icon name='attention' /> Restrictions:</Table.Cell>
               <Table.Cell>
                 {data.noDogsAllowed &&
-                  <>
-                    <Header as="h5" color="red" image>
-                      <Image src="/svg/no-animals.svg" alt="No dogs allowed" rounded size='mini'/>
-                      <Header.Content>
-                        The access to our crags are at the mercy of the farmers who own the land.
-                        <Header.Subheader>Because of conflicts between dog-owners and farmers we ask you to not bring your dog to this spesific crag.</Header.Subheader>
-                      </Header.Content>
-                    </Header><br/>
-                  </>
+                  <Header as="h5" color="red" image>
+                    <Image src="/svg/no-animals.svg" alt="No dogs allowed" rounded size='mini'/>
+                    <Header.Content>
+                      The access to our crags are at the mercy of the farmers who own the land.
+                      <Header.Subheader>Because of conflicts between dog-owners and farmers we ask you to not bring your dog to this specific crag.</Header.Subheader>
+                    </Header.Content>
+                  </Header>
                 }
-                {data.accessInfo}
+                {data.accessInfo && <p>{data.accessInfo}</p>}
               </Table.Cell>
             </Table.Row>
           }
