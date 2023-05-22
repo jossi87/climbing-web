@@ -113,7 +113,7 @@ const Svg = ({ style, close, m, thumb, optProblemId, showText, problemIdHovered,
   }
   
   let info;
-  if (showText && !thumb && optProblemId && optProblemId>0 && m.svgs && m.svgs.filter(x => x.problemId===optProblemId).length===1) {
+  if (showText && !thumb && optProblemId && optProblemId>0 && m.svgs && m.svgs.filter(x => x.problemId===optProblemId).length!=0) {
     let svg = m.svgs.filter(x => x.problemId===optProblemId)[0];
     let text = `#${svg.nr} - ${svg.problemName} [${svg.problemGrade}]`;
     if (svg.problemSubtype) {

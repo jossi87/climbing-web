@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLocalStorage } from '../../../utils/use-local-storage';
-import { Dimmer, Button, Icon, Image, Modal, Header, ButtonGroup, Embed, Container, Dropdown, List, Sidebar, Menu, Label } from 'semantic-ui-react';
+import { Dimmer, Button, Icon, Image, Modal, Header, ButtonGroup, Embed, Container, Dropdown, List, Sidebar, Menu } from 'semantic-ui-react';
 import { getBuldreinfoMediaUrlSupported, getBuldreinfoMediaUrl, getImageUrl } from '../../../api';
 import ReactPlayer from 'react-player';
 import Svg from './svg';
