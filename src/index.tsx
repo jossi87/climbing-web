@@ -46,8 +46,8 @@ function ErrorFallback({error, resetErrorBoundary}) {
 
 export const Auth0ProviderWithNavigate = ({ children }) => {
   const navigate = useNavigate();
-  const domain = "climbing.eu.auth0.com"; // process.env.REACT_APP_AUTH0_DOMAIN;
-  const clientId = "DNJNVzhxbF7PtaBFh7H6iBSNLh2UJWHt"; // process.env.REACT_APP_AUTH0_CLIENT_ID;
+  const domain = "climbing.eu.auth0.com";
+  const clientId = "DNJNVzhxbF7PtaBFh7H6iBSNLh2UJWHt";
   const onRedirectCallback = (appState) => {
     navigate(appState?.returnTo || window.location.pathname);
   };
