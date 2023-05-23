@@ -10,7 +10,7 @@ import Media from './common/media/media';
 import Todo from './common/todo/todo';
 import { Stars, LockSymbol, Loading, WeatherLabels } from './common/widgets/widgets';
 import { Table, Label, Button, Tab, Item, Icon, Image, Breadcrumb, Header, List, Message } from 'semantic-ui-react';
-import { useAuth0 } from '../utils/react-auth0-spa';
+import { useAuth0 } from '@auth0/auth0-react';
 import { getArea, getImageUrl, getAreaPdfUrl } from '../api';
 import { Remarkable } from 'remarkable';
 import { linkify } from 'remarkable/linkify';
@@ -57,7 +57,7 @@ const SectorListItem = ({ sector, problem, isClimbing }) => {
   )
 }
 const Area = () => {
-  const { loading, accessToken } = useAuth0();
+  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [data, setData] = useState(null);
   let { areaId } = useParams();
   let navigate = useNavigate();
@@ -71,10 +71,14 @@ const Area = () => {
     };
   })();
   useEffect(() => {
-    if (!loading) {
-      getArea(accessToken, parseInt(areaId)).then((data) => setData(data));
+    if (!isLoading) {
+      const update = async() => {
+        const accessToken = isAuthenticated? await getAccessTokenSilently() : null;
+        getArea(accessToken, parseInt(areaId)).then((data) => setData({...data, accessToken}));
+      }
+      update();
     }
-  }, [loading, accessToken, areaId]);
+  }, [isLoading, isAuthenticated, areaId]);
 
   if (!data) {
     return <Loading />;
@@ -128,7 +132,7 @@ const Area = () => {
   if (data.sectors.length!=0) {
     panes.push({
       menuItem: { key: 'distribution', icon: 'area graph' },
-      render: () => <Tab.Pane><ChartGradeDistribution accessToken={accessToken} idArea={data.id} idSector={0} data={null}/></Tab.Pane>
+      render: () => <Tab.Pane><ChartGradeDistribution accessToken={data.accessToken} idArea={data.id} idSector={0} data={null}/></Tab.Pane>
     });
     panes.push({
       menuItem: { key: 'top', icon: 'trophy' },
@@ -140,7 +144,7 @@ const Area = () => {
     });
     panes.push({
       menuItem: { key: 'todo', icon: 'bookmark' },
-      render: () => <Tab.Pane><Todo accessToken={accessToken} idArea={data.id} idSector={0}/></Tab.Pane>
+      render: () => <Tab.Pane><Todo accessToken={data.accessToken} idArea={data.id} idSector={0}/></Tab.Pane>
     });
   }
 
@@ -276,7 +280,7 @@ const Area = () => {
           <Table.Row>
             <Table.Cell>Misc:</Table.Cell>
             <Table.Cell>
-              <Label href={getAreaPdfUrl(accessToken, data.id)} rel="noreferrer noopener" target="_blank" image basic>
+              <Label href={getAreaPdfUrl(data.accessToken, data.id)} rel="noreferrer noopener" target="_blank" image basic>
                 <Icon name="file pdf outline"/>area.pdf
               </Label>
             </Table.Cell>

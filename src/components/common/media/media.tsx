@@ -5,7 +5,7 @@ import { getImageUrl, deleteMedia, moveMedia, putMediaJpegRotate } from '../../.
 import { Card, Image } from 'semantic-ui-react';
 import MediaModal from './media-modal';
 import Svg from './svg';
-import { useAuth0 } from '../../../utils/react-auth0-spa';
+import { useAuth0 } from '@auth0/auth0-react';
 import { Loading } from '../widgets/widgets';
 
 const style = {objectFit: 'cover', position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, width: '100%', height: '100%'};
@@ -14,7 +14,7 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
   let location = useLocation();
   const [m, setM] = useState(null);
   const [autoPlayVideo, setAutoPlayVideo] = useState(false);
-  const { loading, accessToken } = useAuth0();
+  const { isLoading, getAccessTokenSilently } = useAuth0();
   useEffect(() => {
     function handleKeyPress({ keyCode }) {
       if (keyCode === 27) {
@@ -66,20 +66,37 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
   function onDeleteImage() {
     if (confirm('Are you sure you want to delete this image?')) {
       const id = m.id;
-      deleteMedia(accessToken, id)
-      .then((response) => {
-        removeMedia(id);
-        closeModal();
-      })
-      .catch ((error) => {
-        console.warn(error);
+      getAccessTokenSilently().then((accessToken) => {
+        deleteMedia(accessToken, id)
+        .then((response) => {
+          removeMedia(id);
+          closeModal();
+        })
+        .catch ((error) => {
+          console.warn(error);
+        });
       });
     }
   }
 
   function onRotate(degrees) {
     if (confirm('Are you sure you want to rotate this image ' + degrees + ' degrees?')) {
-      putMediaJpegRotate(accessToken, m.id, degrees)
+      getAccessTokenSilently().then((accessToken) => {
+        putMediaJpegRotate(accessToken, m.id, degrees)
+        .then((response) => {
+          closeModal();
+          window.location.reload();
+        })
+        .catch ((error) => {
+          console.warn(error);
+        });
+      });
+    }
+  }
+
+  function onMoveImageLeft() {
+    getAccessTokenSilently().then((accessToken) => {
+      moveMedia(accessToken, m.id, true, 0, 0)
       .then((response) => {
         closeModal();
         window.location.reload();
@@ -87,54 +104,49 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
       .catch ((error) => {
         console.warn(error);
       });
-    }
-  }
-
-  function onMoveImageLeft() {
-    moveMedia(accessToken, m.id, true, 0, 0)
-    .then((response) => {
-      closeModal();
-      window.location.reload();
-    })
-    .catch ((error) => {
-      console.warn(error);
     });
   }
 
   function onMoveImageRight() {
-    moveMedia(accessToken, m.id, false, 0, 0)
-    .then((response) => {
-      closeModal();
-      window.location.reload();
-    })
-    .catch ((error) => {
-      console.warn(error);
+    getAccessTokenSilently().then((accessToken) => {
+      moveMedia(accessToken, m.id, false, 0, 0)
+      .then((response) => {
+        closeModal();
+        window.location.reload();
+      })
+      .catch ((error) => {
+        console.warn(error);
+      });
     });
   }
 
   function onMoveImageToSector() {
-    moveMedia(accessToken, m.id, false, m.enableMoveToIdSector, 0)
-    .then((response) => {
-      closeModal();
-      window.location.reload();
-    })
-    .catch ((error) => {
-      console.warn(error);
+    getAccessTokenSilently().then((accessToken) => {
+      moveMedia(accessToken, m.id, false, m.enableMoveToIdSector, 0)
+      .then((response) => {
+        closeModal();
+        window.location.reload();
+      })
+      .catch ((error) => {
+        console.warn(error);
+      });
     });
   }
 
   function onMoveImageToProblem() {
-    moveMedia(accessToken, m.id, false, 0, m.enableMoveToIdProblem)
-    .then((response) => {
-      closeModal();
-      window.location.reload();
-    })
-    .catch ((error) => {
-      console.warn(error);
+    getAccessTokenSilently().then((accessToken) => {
+      moveMedia(accessToken, m.id, false, 0, m.enableMoveToIdProblem)
+      .then((response) => {
+        closeModal();
+        window.location.reload();
+      })
+      .catch ((error) => {
+        console.warn(error);
+      });
     });
   }
 
-  if (loading) {
+  if (isLoading) {
     return <Loading />;
   }
   if (window.location.search && media) {

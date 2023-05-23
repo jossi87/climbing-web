@@ -4,7 +4,7 @@ import MetaTags from 'react-meta-tags';
 import { Loading } from './common/widgets/widgets';
 import { Header, Image, Menu, Icon } from 'semantic-ui-react';
 import { getProfile } from '../api';
-import { useAuth0 } from '../utils/react-auth0-spa';
+import { useAuth0 } from '@auth0/auth0-react';
 import ProfileStatistics from './common/profile/profile-statistics';
 import ProfileTodo from './common/profile/profile-todo';
 import ProfileMedia from './common/profile/profile-media';
@@ -16,17 +16,21 @@ enum Page {
 const Profile = () => {
   let { userId, page } = useParams();
   let navigate = useNavigate();
-  const { loading, isAuthenticated, accessToken } = useAuth0();
+  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [activePage, setActivePage] = useState(page? Page[page] : Page.user);
   const [profile, setProfile] = useState(null);
   useEffect(() => {
-    if (!loading) {
+    if (!isLoading) {
       if (profile != null) {
         setProfile(null);
       }
-      getProfile(accessToken, userId? parseInt(userId) : -1).then((profile) => setProfile(profile));
+      const update = async() => {
+        const accessToken = isAuthenticated? await getAccessTokenSilently() : null;
+        getProfile(accessToken, userId? parseInt(userId) : -1).then((profile) => setProfile({...profile, accessToken}));
+      }
+      update();
     }
-  }, [loading, accessToken, userId]);
+  }, [isLoading, isAuthenticated, userId]);
 
   function onPageChanged(page: Page) {
     setActivePage(page);
@@ -41,15 +45,15 @@ const Profile = () => {
 
   let content = null;
   if (activePage === Page.user) {
-      content = <ProfileStatistics accessToken={accessToken} userId={profile.id} canDownload={loggedInProfile} />
+      content = <ProfileStatistics accessToken={profile.accessToken} userId={profile.id} canDownload={loggedInProfile} />
   } else if (activePage === Page.todo) {
-    content = <ProfileTodo accessToken={accessToken} userId={profile.id} defaultCenter={profile.metadata.defaultCenter} defaultZoom={profile.metadata.defaultZoom} />
+    content = <ProfileTodo accessToken={profile.accessToken} userId={profile.id} defaultCenter={profile.metadata.defaultCenter} defaultZoom={profile.metadata.defaultZoom} />
   } else if (activePage === Page.media) {
-    content = <ProfileMedia accessToken={accessToken} userId={profile.id} gradeSystem={profile.metadata.gradeSystem} captured={false} />
+    content = <ProfileMedia accessToken={profile.accessToken} userId={profile.id} gradeSystem={profile.metadata.gradeSystem} captured={false} />
   } else if (activePage === Page.captured) {
-    content = <ProfileMedia accessToken={accessToken} userId={profile.id} gradeSystem={profile.metadata.gradeSystem} captured={true} />
+    content = <ProfileMedia accessToken={profile.accessToken} userId={profile.id} gradeSystem={profile.metadata.gradeSystem} captured={true} />
   } else if (activePage === Page.settings) {
-    content = <ProfileSettings accessToken={accessToken} userRegions={profile.userRegions} />
+    content = <ProfileSettings accessToken={profile.accessToken} userRegions={profile.userRegions} />
   }
   
   return (

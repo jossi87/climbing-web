@@ -1,23 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth0 } from '../utils/react-auth0-spa';
+import { useAuth0 } from '@auth0/auth0-react';
 import { Container, Dropdown, Image, Menu, Icon } from 'semantic-ui-react';
 import { Link, useLocation } from 'react-router-dom';
 import SearchBox from './common/search-box/search-box';
 import { getBaseUrl, getMeta } from '../api';
 
 const Navigation = () => {
-  const { loading, isAuthenticated, loginWithRedirect, logout, accessToken } = useAuth0();
+  const { isLoading, isAuthenticated, loginWithRedirect, logout, getAccessTokenSilently } = useAuth0();
   const [isAdmin, setIsAdmin] = useState(false);
   const [isSuperAdmin, setIsUserAdmin] = useState(false);
   const [isBouldering, setIsBouldering] = useState(false);
   let location = useLocation();
   useEffect(() => {
-    getMeta(accessToken).then((data) => {
-      setIsAdmin(data.metadata.isAdmin)
-      setIsUserAdmin(data.metadata.isSuperAdmin);
-      setIsBouldering(data.metadata.gradeSystem==='BOULDER');
-    });
-  }, [accessToken, isAuthenticated]);
+    const update = async() => {
+      const accessToken = isAuthenticated? await getAccessTokenSilently() : null;
+      getMeta(accessToken).then((data) => {
+        setIsAdmin(data.metadata.isAdmin)
+        setIsUserAdmin(data.metadata.isSuperAdmin);
+        setIsBouldering(data.metadata.gradeSystem==='BOULDER');
+      });
+    }
+    update();
+  }, [isAuthenticated]);
 
   return (
     <Menu attached='top' inverted compact borderless>
@@ -37,7 +41,7 @@ const Navigation = () => {
               <Dropdown.Item as={Link} to="/about"><Icon name="info"/>About</Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
-        {!loading && 
+        {!isLoading && 
           (isAuthenticated?
             <Dropdown item simple icon='user'>
               <Dropdown.Menu>
@@ -48,11 +52,11 @@ const Navigation = () => {
                     {isSuperAdmin && <Dropdown.Item as={Link} to="/permissions"><Icon name="users"/>Permissions</Dropdown.Item>}
                   </>}
                   <Dropdown.Divider/>
-                  <Dropdown.Item as="a" onClick={() => logout({returnTo: getBaseUrl()})}><Icon name="sign out"/>Sign out</Dropdown.Item>
+                  <Dropdown.Item as="a" onClick={() => logout({ logoutParams: {returnTo: getBaseUrl()} })}><Icon name="sign out"/>Sign out</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           :
-            <Menu.Item as="a" onClick={() => loginWithRedirect({appState: { targetUrl: location.pathname }})} icon="sign in" />
+            <Menu.Item as="a" onClick={() => loginWithRedirect({appState: { returnTo: location.pathname }})} icon="sign in" />
           )
         }
       </Container>

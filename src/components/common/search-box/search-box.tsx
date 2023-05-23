@@ -3,25 +3,29 @@ import { Search, Image, Icon } from 'semantic-ui-react'
 import { getImageUrl, postSearch } from './../../../api';
 import { LockSymbol } from '../widgets/widgets';
 import { useNavigate } from 'react-router-dom';
-import { useAuth0 } from '../../../utils/react-auth0-spa';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const SearchBox = ({ children, ...searchProps} ) => {
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState([]);
   const [value, setValue] = useState('');
-  const { accessToken } = useAuth0();
+  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   let navigate = useNavigate();
 
   //@ts-ignore
   useEffect(() => {
     let canceled = false;
     setLoading(true);
-    postSearch(accessToken, value).then((res) => {
-      if (!canceled) {
-        setResults(res);
-        setLoading(false);
-      }
-    });
+    const update = async() => {
+      const accessToken = isAuthenticated? await getAccessTokenSilently() : null;
+      postSearch(accessToken, value).then((res) => {
+        if (!canceled) {
+          setResults(res);
+          setLoading(false);
+        }
+      });
+    }
+    update();
     return () => (canceled = true);
   }, [value]);
 

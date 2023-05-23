@@ -6,14 +6,14 @@ import { calculateDistance } from './common/leaflet/distance-math';
 import Media from './common/media/media';
 import { Button, Grid, Breadcrumb, Tab, Label, Icon, Comment, Header, Segment, Table, Feed, Image, Message } from 'semantic-ui-react';
 import { Loading, LockSymbol, Stars, WeatherLabels } from './common/widgets/widgets';
-import { useAuth0 } from '../utils/react-auth0-spa';
+import { useAuth0 } from '@auth0/auth0-react';
 import { getAreaPdfUrl, getSectorPdfUrl, getProblemPdfUrl, getProblem, getSector, postComment, postTodo } from '../api';
 import TickModal from './common/tick-modal/tick-modal';
 import CommentModal from './common/comment-modal/comment-modal';
 import Linkify from 'react-linkify';
 
 const Problem = () => {
-  const { loading, accessToken } = useAuth0();
+  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [data, setData] = useState(null);
   const [problemsOnRock, setProblemsOnRock] = useState([]);
   const [showTickModal, setShowTickModal] = useState(false);
@@ -24,18 +24,22 @@ const Problem = () => {
   let navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && (reload || (data != null && data.id!=problemId))) {
-      getProblem(accessToken, parseInt(problemId), showHiddenMedia).then((data) => {
-        setProblemsOnRock([]);
-        setData(data);
-        setReload(false);
-      });
+    if (!isLoading && (reload || (data != null && data.id!=problemId))) {
+      const update = async() => {
+        const accessToken = isAuthenticated? await getAccessTokenSilently() : null;
+        getProblem(accessToken, parseInt(problemId), showHiddenMedia).then((data) => {
+          setProblemsOnRock([]);
+          setData({...data, accessToken});
+          setReload(false);
+        });
+      }
+      update();
     }
-  }, [loading, accessToken, problemId, reload]);
+  }, [isLoading, isAuthenticated, problemId, reload]);
 
   useEffect(() => {
     if (data && data.rock) {
-      getSector(accessToken, data.sectorId).then(sector => {
+      getSector(data.accessToken, data.sectorId).then(sector => {
         if (sector.problems && sector.problems.length>0) {
           setProblemsOnRock(sector.problems.filter(p => p.rock && p.rock===data.rock));
         }
@@ -51,7 +55,7 @@ const Problem = () => {
   function flagAsDangerous({ id, message }) {
     if (confirm('Are you sure you want to flag this comment?')) {
       setData(null);
-      postComment(accessToken, id, data.id, message, true, false, false, [])
+      postComment(data.accessToken, id, data.id, message, true, false, false, [])
         .then((response) => {
           setReload(true);
         })
@@ -65,7 +69,7 @@ const Problem = () => {
   function deleteComment({ id }) {
     if (confirm('Are you sure you want to delete this comment?')) {
       setData(null);
-      postComment(accessToken, id, data.id, null, false, false, true, [])
+      postComment(data.accessToken, id, data.id, null, false, false, true, [])
         .then((response) => {
           setReload(true);
         })
@@ -78,7 +82,7 @@ const Problem = () => {
 
   function toggleTodo(problemId : number) {
     setData(null);
-    postTodo(accessToken, problemId)
+    postTodo(data.accessToken, problemId)
     .then((response) => {
       setReload(true);
     })
@@ -261,11 +265,11 @@ const Problem = () => {
     if (data.ticks) {
       const userTicks = data.ticks.filter(t => t.writable);
       if (userTicks && userTicks.length>0) {
-        tickModal = <TickModal accessToken={accessToken} idTick={userTicks[0].id} idProblem={data.id} date={userTicks[0].date} comment={userTicks[0].comment} grade={userTicks[0].suggestedGrade} grades={data.metadata.grades} stars={userTicks[0].stars} repeats={userTicks[0].repeats} open={showTickModal} closeWithoutReload={closeTickModalWithoutReload} closeWithReload={closeTickModalWithReload} enableTickRepeats={enableTickRepeats} />
+        tickModal = <TickModal accessToken={data.accessToken} idTick={userTicks[0].id} idProblem={data.id} date={userTicks[0].date} comment={userTicks[0].comment} grade={userTicks[0].suggestedGrade} grades={data.metadata.grades} stars={userTicks[0].stars} repeats={userTicks[0].repeats} open={showTickModal} closeWithoutReload={closeTickModalWithoutReload} closeWithReload={closeTickModalWithReload} enableTickRepeats={enableTickRepeats} />
       }
     }
     if (!tickModal) {
-      tickModal = <TickModal accessToken={accessToken} idTick={-1} idProblem={data.id} grade={data.originalGrade} grades={data.metadata.grades} open={showTickModal} closeWithoutReload={closeTickModalWithoutReload} closeWithReload={closeTickModalWithReload} comment={null} stars={null} repeats={null} date={null} enableTickRepeats={enableTickRepeats} />;
+      tickModal = <TickModal accessToken={data.accessToken} idTick={-1} idProblem={data.id} grade={data.originalGrade} grades={data.metadata.grades} open={showTickModal} closeWithoutReload={closeTickModalWithoutReload} closeWithReload={closeTickModalWithReload} comment={null} stars={null} repeats={null} date={null} enableTickRepeats={enableTickRepeats} />;
     }
   }
   let lat;
@@ -294,7 +298,7 @@ const Problem = () => {
         <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
       </MetaTags>
       {tickModal}
-      <CommentModal accessToken={accessToken} open={showCommentModal? true : false} closeWithReload={closeCommentModalWithReload} closeWithoutReload={closeCommentModalWithoutReload} showHse={data.metadata.gradeSystem==='CLIMBING'}
+      <CommentModal accessToken={data.accessToken} open={showCommentModal? true : false} closeWithReload={closeCommentModalWithReload} closeWithoutReload={closeCommentModalWithoutReload} showHse={data.metadata.gradeSystem==='CLIMBING'}
         id={showCommentModal?.id} idProblem={data.id} initMessage={showCommentModal?.message} initDanger={showCommentModal?.danger} initResolved={showCommentModal?.resolved} />
       <div style={{marginBottom: '5px'}}>
         <div style={{float: 'right'}}>
@@ -495,13 +499,13 @@ const Problem = () => {
           <Table.Row verticalAlign="top">
             <Table.Cell>Misc:</Table.Cell>
             <Table.Cell>
-              <Label href={getProblemPdfUrl(accessToken, data.id)} rel="noreferrer noopener" target="_blank" image basic>
+              <Label href={getProblemPdfUrl(data.accessToken, data.id)} rel="noreferrer noopener" target="_blank" image basic>
                 <Icon name="file pdf outline"/>{data.metadata.gradeSystem==='BOULDER'? "boulder.pdf" : "route.pdf"}
               </Label>
-              <Label href={getSectorPdfUrl(accessToken, data.sectorId)} rel="noreferrer noopener" target="_blank" image basic>
+              <Label href={getSectorPdfUrl(data.accessToken, data.sectorId)} rel="noreferrer noopener" target="_blank" image basic>
                 <Icon name="file pdf outline"/>sector.pdf
               </Label>
-              <Label href={getAreaPdfUrl(accessToken, data.areaId)} rel="noreferrer noopener" target="_blank" image basic>
+              <Label href={getAreaPdfUrl(data.accessToken, data.areaId)} rel="noreferrer noopener" target="_blank" image basic>
                 <Icon name="file pdf outline"/>area.pdf
               </Label>
               {data.sectorLat>0 && data.sectorLng>0 &&

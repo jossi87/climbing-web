@@ -2,18 +2,22 @@ import React, { useState, useEffect, useRef } from 'react';
 import MetaTags from 'react-meta-tags';
 import { LockSymbol, Loading } from './common/widgets/widgets';
 import { Segment, Icon, List, Header } from 'semantic-ui-react';
-import { useAuth0 } from '../utils/react-auth0-spa';
+import { useAuth0 } from '@auth0/auth0-react';
 import { getDangerous } from '../api';
 
 const Dangerous = () => {
-  const { loading, accessToken } = useAuth0();
+  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [data, setData] = useState(null);
   const areaRefs = useRef({});
   useEffect(() => {
-    if (!loading) {
-      getDangerous(accessToken).then((data) => setData(data));
+    if (!isLoading) {
+      const update = async() => {
+        const accessToken = isAuthenticated? await getAccessTokenSilently() : null;
+        getDangerous(accessToken).then((data) => setData(data));
+      }
+      update();
     }
-  }, [loading, accessToken]);
+  }, [isLoading, isAuthenticated]);
 
   if (!data) {
     return <Loading />;

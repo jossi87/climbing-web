@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom';
 import { Label, Icon, Image, Feed, Segment, Placeholder, Button, Dropdown } from 'semantic-ui-react';
 import LazyLoad from 'react-lazyload';
 import { useLocalStorage } from '../../../utils/use-local-storage';
-import { useAuth0 } from '../../../utils/react-auth0-spa';
+import { useAuth0 } from '@auth0/auth0-react';
 import { getActivity, getImageUrl } from '../../../api';
 import { LockSymbol, Stars } from './../../common/widgets/widgets';
 import Linkify from 'react-linkify';
 
 const Activity = ({ metadata, idArea, idSector }) => {
-  const { loading, accessToken } = useAuth0();
+  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [activity, setActivity] = useState(null);
   const [lowerGradeId, setLowerGradeId] = useLocalStorage("lower_grade_id", 0);
   const [lowerGradeText, setLowerGradeText] = useLocalStorage("lower_grade_text", "n/a");
@@ -20,16 +20,20 @@ const Activity = ({ metadata, idArea, idSector }) => {
 
   //@ts-ignore
   useEffect(() => {
-    if (!loading) {
+    if (!isLoading) {
       let canceled = false;
-      getActivity(accessToken, idArea, idSector, lowerGradeId, activityTypeFa, activityTypeComments, activityTypeTicks, activityTypeMedia).then((res) => {
-        if (!canceled) {
+      const update = async() => {
+        const accessToken = isAuthenticated? await getAccessTokenSilently() : null;
+        if (canceled) return;
+        getActivity(accessToken, idArea, idSector, lowerGradeId, activityTypeFa, activityTypeComments, activityTypeTicks, activityTypeMedia).then((res) => {
+          if (canceled) return;
           setActivity(res);
-        }
-      });
+        });
+      }
+      update();
       return () => (canceled = true);
     }
-  }, [loading, accessToken, idArea, idSector, lowerGradeId, activityTypeFa, activityTypeComments, activityTypeTicks, activityTypeMedia]);
+  }, [isAuthenticated, idArea, idSector, lowerGradeId, activityTypeFa, activityTypeComments, activityTypeTicks, activityTypeMedia]);
 
   if (metadata && metadata.grades.filter(g => {
     let gradeText = g.grade.indexOf('(')>0? g.grade.substr(g.grade.indexOf('(')+1).replace(')','') : g.grade;

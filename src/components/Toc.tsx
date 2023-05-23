@@ -2,21 +2,24 @@ import React, { useState, useEffect, useRef } from 'react';
 import MetaTags from 'react-meta-tags';
 import { Header, List, Segment, Icon, Button, ButtonGroup } from 'semantic-ui-react';
 import { Loading, LockSymbol, Stars } from './common/widgets/widgets';
-import { useAuth0 } from '../utils/react-auth0-spa';
+import { useAuth0 } from '@auth0/auth0-react';
 import { getToc, getTocXlsx } from '../api';
 import { saveAs } from 'file-saver';
 
 const Toc = () => {
-  const { loading, accessToken } = useAuth0();
+  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [data, setData] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const areaRefs = useRef({});
   useEffect(() => {
-    if (!loading) {
-      getToc(accessToken)
-      .then((data) => setData(data));
+    if (!isLoading) {
+      const update = async() => {
+        const accessToken = isAuthenticated? await getAccessTokenSilently() : null;
+        getToc(accessToken).then((data) => setData({...data, accessToken}));
+      }
+      update();
     }
-  }, [loading, accessToken]);
+  }, [isLoading, isAuthenticated]);
 
   if (!data) {
     return <Loading />;
@@ -41,7 +44,7 @@ const Toc = () => {
           <Button loading={isSaving} icon labelPosition="left" onClick={() => {
             setIsSaving(true);
             let filename = "toc.xlsx";
-            getTocXlsx(accessToken).then(response => {
+            getTocXlsx(data.accessToken).then(response => {
               filename = response.headers.get("content-disposition").slice(22,-1);
               return response.blob();
             })

@@ -2,19 +2,22 @@ import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import { Header, Segment, Icon } from 'semantic-ui-react';
 import { Loading } from './common/widgets/widgets';
-import { useAuth0 } from '../utils/react-auth0-spa';
+import { useAuth0 } from '@auth0/auth0-react';
 import { getCg } from '../api';
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
 
 const Toc = () => {
-  const { loading, accessToken } = useAuth0();
+  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [data, setData] = useState(null);
   useEffect(() => {
-    if (!loading) {
-      getCg(accessToken)
-      .then((data) => setData(data));
+    if (!isLoading) {
+      const update = async() => {
+        const accessToken = isAuthenticated? await getAccessTokenSilently() : null;
+        getCg(accessToken).then((data) => setData({...data, accessToken}));
+      }
+      update();
     }
-  }, [loading, accessToken]);
+  }, [isLoading, isAuthenticated]);
 
   if (!data) {
     return <Loading />;
@@ -41,7 +44,7 @@ const Toc = () => {
             <Header.Subheader>{data.metadata.description}</Header.Subheader>
           </Header.Content>
         </Header>
-        <ChartGradeDistribution accessToken={accessToken} idArea={0} idSector={0} data={data.gradeDistribution}/>
+        <ChartGradeDistribution accessToken={data.accessToken} idArea={0} idSector={0} data={data.gradeDistribution}/>
       </Segment>
     </>
   );

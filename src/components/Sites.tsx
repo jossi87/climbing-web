@@ -4,11 +4,11 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Button } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
 import { Loading } from './common/widgets/widgets';
-import { useAuth0 } from '../utils/react-auth0-spa';
+import { useAuth0 } from '@auth0/auth0-react';
 import { getSites } from '../api';
 
 const Sites = () => {
-  const { loading, accessToken } = useAuth0();
+  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [data, setData] = useState(null);
   let { type } = useParams();
   let navigate = useNavigate();
@@ -16,12 +16,16 @@ const Sites = () => {
     if (data) {
       setData(null);
     }
-    if (!loading) {
-      getSites(accessToken, type).then((data) => setData(data));
+    if (!isLoading) {
+      const update = async() => {
+        const accessToken = isAuthenticated? await getAccessTokenSilently() : null;
+        getSites(accessToken, type).then((data) => setData(data));
+      }
+      update();
     }
-  }, [loading, accessToken, type]);
+  }, [isLoading, isAuthenticated, type]);
 
-  if (!data) {
+  if (isLoading || !data) {
     return <Loading />;
   }
   var outlines = data.regions.map(r => {

@@ -4,7 +4,7 @@ import Leaflet from './common/leaflet/leaflet';
 import { Loading } from './common/widgets/widgets';
 import { Header, Segment, Form, Dropdown, Button, Checkbox, Icon, List, Image } from 'semantic-ui-react';
 import { getMeta, getImageUrl, postFilter, getLocales } from '../api';
-import { useAuth0 } from '../utils/react-auth0-spa';
+import { useAuth0 } from '@auth0/auth0-react';
 import { Stars, LockSymbol } from './common/widgets/widgets';
 import { useLocalStorage } from '../utils/use-local-storage';
 
@@ -13,7 +13,7 @@ enum OrderBy {
 }
 
 const Filter = () => {
-  const { loading, accessToken } = useAuth0();
+  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   let navigate = useNavigate();
   const [meta, setMeta] = useState(null);
   const [grades, setGrades] = useLocalStorage("filter_grades", null);
@@ -33,10 +33,15 @@ const Filter = () => {
   ];
 
   useEffect(() => {
-    if (!loading) {
-      getMeta(accessToken).then((meta) => setMeta(meta));
+    if (!isLoading) {
+      const update = async() => {
+        const accessToken = isAuthenticated? await getAccessTokenSilently() : null;
+        getMeta(accessToken).then((meta) => setMeta({...meta, accessToken}));
+      }
+      update();
+      
     }
-  }, [loading, accessToken]);
+  }, [isLoading, isAuthenticated]);
 
   function setData(data, newOrderBy: OrderBy) {
     setOrderBy(newOrderBy);
@@ -105,7 +110,7 @@ const Filter = () => {
           <Button icon labelPosition='left' disabled={!grades || grades.length==0 || (typeOptions.length>1 && (!types || types.length==0))} loading={refreshing} onClick={() => {
             setRefreshing(true);
             const myTypes = typeOptions.length===1? [typeOptions[0].value] : types;
-            postFilter(accessToken, grades, myTypes).then((res) => {
+            postFilter(meta.accessToken, grades, myTypes).then((res) => {
               setData(res, orderBy);
               setRefreshing(false);
             });

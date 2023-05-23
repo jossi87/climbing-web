@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import { Link } from 'react-router-dom';
-import { Grid, Segment, Header, Icon, List, Card, Image, Label } from 'semantic-ui-react';
-import { useAuth0 } from '../utils/react-auth0-spa';
+import { Grid, Segment, Header, Icon, List, Image, Label } from 'semantic-ui-react';
+import { useAuth0 } from '@auth0/auth0-react';
 import { Loading } from './common/widgets/widgets';
 import { getAbout } from '../api';
 
 const About = () => {
-  const { accessToken } = useAuth0();
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [data, setData] = useState(null);
   useEffect(() => {
-    getAbout(accessToken).then((data) => setData(data));
-  }, [accessToken]);
+    const update = async() => {
+      const accessToken = isAuthenticated? await getAccessTokenSilently() : null;
+      getAbout(accessToken).then((data) => setData(data));
+    }
+    update();
+  }, [isAuthenticated]);
 
   if (!data) {
     return <Loading />;

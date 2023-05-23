@@ -1,8 +1,8 @@
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
-import { Auth0Provider } from './utils/react-auth0-spa';
+import { BrowserRouter, useNavigate } from 'react-router-dom';
+import { Auth0Provider } from '@auth0/auth0-react';
 import CookieConsent from "react-cookie-consent";
-import { ErrorBoundary } from 'react-error-boundary'
+import { ErrorBoundary } from 'react-error-boundary';
 import App from './App';
 import './buldreinfo.css';
 import Analytics from 'analytics';
@@ -44,26 +44,44 @@ function ErrorFallback({error, resetErrorBoundary}) {
   )
 }
 
+export const Auth0ProviderWithNavigate = ({ children }) => {
+  const navigate = useNavigate();
+  const domain = "climbing.eu.auth0.com"; // process.env.REACT_APP_AUTH0_DOMAIN;
+  const clientId = "DNJNVzhxbF7PtaBFh7H6iBSNLh2UJWHt"; // process.env.REACT_APP_AUTH0_CLIENT_ID;
+  const onRedirectCallback = (appState) => {
+    navigate(appState?.returnTo || window.location.pathname);
+  };
+  if (!(domain && clientId)) {
+    return null;
+  }
+  return (
+    <Auth0Provider
+      domain={domain}
+      clientId={clientId}
+      authorizationParams={{
+        redirect_uri: window.location.origin,
+      }}
+      onRedirectCallback={onRedirectCallback}
+    >
+      {children}
+    </Auth0Provider>
+  );
+};
+
 const Index = () => (
-  <Auth0Provider
-    domain='climbing.eu.auth0.com'
-    client_id='DNJNVzhxbF7PtaBFh7H6iBSNLh2UJWHt'
-    redirect_uri={window.location.origin}
-    useRefreshTokens
-    cacheLocation="localstorage"
-  >
-    <AnalyticsProvider instance={analytics}>
-      <BrowserRouter>
-        <ErrorBoundary
-          FallbackComponent={ErrorFallback}
-          onReset={() => window.location.reload()}
-        >
+  <AnalyticsProvider instance={analytics}>
+    <BrowserRouter>
+      <ErrorBoundary
+        FallbackComponent={ErrorFallback}
+        onReset={() => window.location.reload()}
+      >
+        <Auth0ProviderWithNavigate>
           <App />
-        </ErrorBoundary>
-        <CookieConsent>This website uses cookies to enhance the user experience.</CookieConsent>
-      </BrowserRouter>
-    </AnalyticsProvider>
-  </Auth0Provider>
+        </Auth0ProviderWithNavigate>
+      </ErrorBoundary>
+      <CookieConsent>This website uses cookies to enhance the user experience.</CookieConsent>
+    </BrowserRouter>
+  </AnalyticsProvider>
 );
 
 const root = createRoot(document.getElementById('app'));

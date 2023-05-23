@@ -11,7 +11,7 @@ import Media from './common/media/media';
 import Todo from './common/todo/todo';
 import { Stars, LockSymbol, Loading, WeatherLabels } from './common/widgets/widgets';
 import { Icon, Button, Tab, Breadcrumb, Table, Label, TableCell, List, Header, Image, Message } from 'semantic-ui-react';
-import { useAuth0 } from '../utils/react-auth0-spa';
+import { useAuth0 } from '@auth0/auth0-react';
 import { getSector, getAreaPdfUrl, getSectorPdfUrl } from '../api';
 import Linkify from 'react-linkify';
 
@@ -56,19 +56,21 @@ const SectorListItem = ({ problem, isClimbing }) => {
   )
 }
 const Sector = () => {
-  const { loading, accessToken } = useAuth0();
+  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [data, setData] = useState(null);
   let { sectorId } = useParams();
   let navigate = useNavigate();
   useEffect(() => {
-    if (!loading) {
-      getSector(accessToken, parseInt(sectorId)).then((data) => {
-        setData(data);
-      });
+    if (!isLoading) {
+      const update = async() => {
+        const accessToken = isAuthenticated? await getAccessTokenSilently() : null;
+        getSector(accessToken, parseInt(sectorId)).then((data) => setData({...data, accessToken}));
+      }
+      update();
     }
-  }, [loading, accessToken, sectorId]);
+  }, [isLoading, isAuthenticated, sectorId]);
 
-  if (!data) {
+  if (isLoading || !data) {
     return <Loading />;
   }
 
@@ -140,7 +142,7 @@ const Sector = () => {
   if (data.problems.length!=0) {
     panes.push({
       menuItem: { key: 'distribution', icon: 'area graph' },
-      render: () => <Tab.Pane><ChartGradeDistribution accessToken={accessToken} idArea={0} idSector={data.id} data={null}/></Tab.Pane>
+      render: () => <Tab.Pane><ChartGradeDistribution accessToken={data.accessToken} idArea={0} idSector={data.id} data={null}/></Tab.Pane>
     });
     panes.push({
       menuItem: { key: 'top', icon: 'trophy' },
@@ -152,7 +154,7 @@ const Sector = () => {
     });
     panes.push({
       menuItem: { key: 'todo', icon: 'bookmark' },
-      render: () => <Tab.Pane><Todo accessToken={accessToken} idArea={0} idSector={data.id}/></Tab.Pane>
+      render: () => <Tab.Pane><Todo accessToken={data.accessToken} idArea={0} idSector={data.id}/></Tab.Pane>
     });
   }
   let uniqueTypes = data.problems.map(p => p.t.subType).filter((value, index, self) => self.indexOf(value) === index); 
@@ -275,10 +277,10 @@ const Sector = () => {
           <Table.Row verticalAlign="top">
             <Table.Cell>Misc:</Table.Cell>
             <Table.Cell>
-              <Label href={getSectorPdfUrl(accessToken, data.id)} rel="noreferrer noopener" target="_blank" image basic>
+              <Label href={getSectorPdfUrl(data.accessToken, data.id)} rel="noreferrer noopener" target="_blank" image basic>
                 <Icon name="file pdf outline"/>sector.pdf
               </Label>
-              <Label href={getAreaPdfUrl(accessToken, data.areaId)} rel="noreferrer noopener" target="_blank" image basic>
+              <Label href={getAreaPdfUrl(data.accessToken, data.areaId)} rel="noreferrer noopener" target="_blank" image basic>
                 <Icon name="file pdf outline"/>area.pdf
               </Label>
               {data.lat>0 && data.lng>0 &&

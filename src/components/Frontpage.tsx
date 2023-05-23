@@ -2,21 +2,23 @@ import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import { Label, Grid, Statistic,  Icon, Image, Card, Segment, Placeholder } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
-import { useAuth0 } from '../utils/react-auth0-spa';
+import { useAuth0 } from '@auth0/auth0-react';
 import { getFrontpage, getImageUrl, numberWithCommas } from '../api';
 import Activity from './common/activity/activity';
 
 const Frontpage = () => {
-  const { loading, accessToken } = useAuth0();
+  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [frontpage, setFrontpage] = useState(null);
 
   useEffect(() => {
-    if (!loading) {
-      getFrontpage(accessToken).then((res) => {
-        setFrontpage(res);
-      });
+    if (!isLoading) {
+      const update = async() => {
+        const accessToken = isAuthenticated? await getAccessTokenSilently() : null;
+        getFrontpage(accessToken).then((res) => setFrontpage(res));
+      }
+      update();
     }
-  }, [loading, accessToken]);
+  }, [isLoading, isAuthenticated]);
 
   return (
     <>

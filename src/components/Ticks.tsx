@@ -3,27 +3,28 @@ import MetaTags from 'react-meta-tags';
 import { Segment, Header, Pagination, Loader, Feed } from 'semantic-ui-react';
 import { Loading, LockSymbol } from './common/widgets/widgets';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { useAuth0 } from '../utils/react-auth0-spa';
+import { useAuth0 } from '@auth0/auth0-react';
 import { getTicks } from '../api';
 
-interface PageParams {
-  page: string;
-}
 const Ticks = () => {
-  const { accessToken } = useAuth0();
+  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
-  let { page } = useParams<PageParams>();
+  let { page } = useParams();
   let navigate = useNavigate();
   useEffect(() => {
     setLoading(true);
-    getTicks(accessToken, parseInt(page)).then((data) => {
-      setData(data);
-      setLoading(false);
-    });
-  }, [accessToken, page]);
+    const update = async() => {
+      const accessToken = isAuthenticated? await getAccessTokenSilently() : null;
+      getTicks(accessToken, parseInt(page)).then((data) => {
+        setData(data);
+        setLoading(false);
+      });
+    }
+    update();
+  }, [isLoading, isAuthenticated, page]);
 
-  if (!data) {
+  if (isLoading || !data) {
     return <Loading />;
   }
   return (

@@ -5,13 +5,13 @@ import { Header, Button, List, Icon, Segment, ButtonGroup } from 'semantic-ui-re
 import Leaflet from './common/leaflet/leaflet';
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
 import { Loading, LockSymbol } from './common/widgets/widgets';
-import { useAuth0 } from '../utils/react-auth0-spa';
+import { useAuth0 } from '@auth0/auth0-react';
 import { getBrowse } from '../api';
 import { Remarkable } from 'remarkable';
 import { linkify } from 'remarkable/linkify';
 
 const Browse = () => {
-  const { loading, accessToken } = useAuth0();
+  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [data, setData] = useState(null);
   const [flyToId, setFlyToId] = useState(null);
   const [showForDevelopers, setShowForDevelopers] = useState(false);
@@ -27,10 +27,14 @@ const Browse = () => {
     };
   })();
   useEffect(() => {
-    if (!loading) {
-      getBrowse(accessToken).then((data) => setData(data));
+    if (!isLoading) {
+      const update = async() => {
+        const accessToken = isAuthenticated? await getAccessTokenSilently() : null;
+        getBrowse(accessToken).then((data) => setData({...data, accessToken}));
+      }
+      update();
     }
-  }, [loading, accessToken]);
+  }, [isLoading, isAuthenticated]);
 
   if (!data) {
     return <Loading />;
@@ -47,7 +51,7 @@ const Browse = () => {
           <Button floated="right" compact size="mini" icon as={Link} to={'/area/' + a.id} target="_blank" rel="noreferrer noopener"><Icon name="external"/></Button>
           <a href={'/area/' + a.id}><b>{a.name}</b> <LockSymbol lockedAdmin={a.lockedAdmin} lockedSuperadmin={a.lockedSuperadmin} /></a>
           <i>{`(${a.numSectors} sectors, ${a.numProblems} ${typeDescription})`}</i><br/>
-          {a.numProblems>0 && <ChartGradeDistribution accessToken={accessToken} idArea={a.id} idSector={0} data={null}/>}
+          {a.numProblems>0 && <ChartGradeDistribution accessToken={data.accessToken} idArea={a.id} idSector={0} data={null}/>}
           {a.comment && <div dangerouslySetInnerHTML={{ __html: md.render(a.comment && a.comment.length>200? a.comment.substring(0,200) + "..." : a.comment) }} />}
         </div>
       }
