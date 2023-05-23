@@ -90,11 +90,11 @@ const Permissions = () => {
                           {key: 2, value: 2, icon: "lock", text: "Admin (read+write hidden data)"},
                           {key: 3, value: 3, icon: "user secret", text: "Admin + manage users"}
                         ]}
-                        onChange={(e, data) => {
-                          let adminRead = data.value===1||data.value===2;
-                          let adminWrite = data.value===2;
-                          let superadminRead = data.value===3;
-                          let superadminWrite = data.value===3;
+                        onChange={(e, d) => {
+                          let adminRead = d.value===1||d.value===2;
+                          let adminWrite = d.value===2;
+                          let superadminRead = d.value===3;
+                          let superadminWrite = d.value===3;
                           postPermissions(data.accessToken, u.userId, adminRead, adminWrite, superadminRead, superadminWrite)
                           .then((response) => {
                             window.scrollTo(0, 0);
