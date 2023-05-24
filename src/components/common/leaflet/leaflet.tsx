@@ -98,7 +98,7 @@ const Leaflet = ({ autoZoom, navigate, markers, outlines, polylines, height, def
           />
         </LayersControl.BaseLayer>
 
-        <LayersControl.BaseLayer checked={!showSateliteImage} name="OpenStreetMap">
+        <LayersControl.BaseLayer name="OpenStreetMap">
           <TileLayer
             maxZoom={19}
             attribution='<a href="https://openstreetmap.org/copyright" rel="noreferrer noopener" target="_blank">OpenStreetMap contributors</a>'
@@ -106,7 +106,7 @@ const Leaflet = ({ autoZoom, navigate, markers, outlines, polylines, height, def
           />
         </LayersControl.BaseLayer>
 
-        <LayersControl.BaseLayer name="Kartverket N50 topo">
+        <LayersControl.BaseLayer checked={!showSateliteImage} name="Kartverket N50 topo">
           <TileLayer
             maxZoom={19}
             attribution='<a href="http://www.kartverket.no/">Kartverket</a>'

@@ -309,7 +309,7 @@ const SectorEdit = () => {
                   onMouseMove={null}
                   navigate={navigate}
                   height={'300px'}
-                  showSateliteImage={true} 
+                  showSateliteImage={false}
                   clusterMarkers={false}
                   rocks={null}
                   flyToId={null}

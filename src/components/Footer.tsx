@@ -60,6 +60,7 @@ function Footer() {
                   <List.Item as='a' href='https://klatring.jotunheimenfjellsport.com' rel='noreferrer noopener' target='_blank'>Jotunheimen</List.Item>
                   <List.Item as='a' href='https://tau.forer.no' rel='noreferrer noopener' target='_blank'>Fredrikstad</List.Item>
                   <List.Item as='a' href='https://sorlandet.brattelinjer.no' rel='noreferrer noopener' target='_blank'>Sørlandet</List.Item>
+                  <List.Item as='a' href='https://salten.brattelinjer.no' rel='noreferrer noopener' target='_blank'>Salten</List.Item>
                 </List>
               </Grid.Column>
               <Grid.Column width={4}>
