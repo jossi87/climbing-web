@@ -220,6 +220,7 @@ const SectorEdit = () => {
         )})}
       </>
     );
+    let isBouldering = data.metadata.gradeSystem==='BOULDER';
     
     return (
       <>
@@ -309,7 +310,7 @@ const SectorEdit = () => {
                   onMouseMove={null}
                   navigate={navigate}
                   height={'300px'}
-                  showSateliteImage={false}
+                  showSateliteImage={isBouldering}
                   clusterMarkers={false}
                   rocks={null}
                   flyToId={null}
