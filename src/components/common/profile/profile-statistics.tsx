@@ -81,7 +81,7 @@ const ProfileStatistics = ({ accessToken, userId, canDownload, defaultCenter, de
   let markers = [];
   data.ticks.forEach(t => {
     if (t.lat!=0 && t.lng!=0) {
-      markers.push({lat: t.lat, lng: t.lng, label: t.name, url: '/problem/' + t.id});
+      markers.push({lat: t.lat, lng: t.lng, label: t.name, url: '/problem/' + t.idProblem});
     }
   })
   if (markers.length>0) {
