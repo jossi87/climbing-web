@@ -48,8 +48,9 @@ const Navigation = () => {
                   <Dropdown.Item as={Link} to="/user"><Icon name="user"/>Profile</Dropdown.Item>
                   {(isAdmin || isSuperAdmin) && <>
                     <Dropdown.Divider/>
-                    {isAdmin && <Dropdown.Item as={Link} to="/trash"><Icon name="trash"/>Trash</Dropdown.Item>}
+                    <Dropdown.Item as={Link} to="/trash"><Icon name="trash"/>Trash</Dropdown.Item>
                     {isSuperAdmin && <Dropdown.Item as={Link} to="/permissions"><Icon name="users"/>Permissions</Dropdown.Item>}
+                    <Dropdown.Item as={Link} to="/pdf/20230525_administrator_doc.pdf" target="_blank" rel="noopener noreferrer"><Icon name="help"/>Help</Dropdown.Item>
                   </>}
                   <Dropdown.Divider/>
                   <Dropdown.Item as="a" onClick={() => logout({ logoutParams: {returnTo: getBaseUrl()} })}><Icon name="sign out"/>Sign out</Dropdown.Item>
