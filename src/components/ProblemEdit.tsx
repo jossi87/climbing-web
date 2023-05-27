@@ -169,7 +169,7 @@ const ProblemEdit = () => {
         data.faAid,
         data.trivia,
         data.startingAltitude, data.aspect, data.routeLength, data.descent)
-      .then((data) => {
+      .then((data2) => {
         if (addNew) {
           navigate(`/problem/edit/${data.sectorId}-0`)
         }
