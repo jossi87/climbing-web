@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Chart from '../chart/chart';
 import ProblemList from '../problem-list/problem-list';
+import Leaflet from '../../common/leaflet/leaflet';
 import { Loading, LockSymbol, Stars } from '../widgets/widgets';
-import { Icon, List, Label, Segment, Divider, Button } from 'semantic-ui-react';
+import { Icon, List, Label, Divider, Button, Tab } from 'semantic-ui-react';
 import { getProfileStatistics, numberWithCommas, getUsersTicks } from '../../../api';
 import { saveAs } from 'file-saver';
 
@@ -22,9 +23,10 @@ const TickListItem = ({ tick } ) => (
     </List.Header>
   </List.Item>
 );
-const ProfileStatistics = ({ accessToken, userId, canDownload }) => {
+const ProfileStatistics = ({ accessToken, userId, canDownload, defaultCenter, defaultZoom }) => {
   const [data, setData] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
+  let navigate = useNavigate();
   useEffect(() => {
     if (data != null) {
       setData(null);
@@ -39,10 +41,11 @@ const ProfileStatistics = ({ accessToken, userId, canDownload }) => {
   var numTickRepeats = data.ticks.filter(t => !t.fa && t.idTickRepeat>0).length;
   var numFas = data.ticks.filter(t => t.fa).length;
   const chart = data.ticks.length>0? <Chart data={data.ticks}/> : null;
-
-  return (
-    <>
-      <Segment>
+  const panes = [];
+  panes.push({
+    menuItem: { key: 'stats', icon: 'area graph' },
+    render: () => (
+      <Tab.Pane>
         {canDownload &&
           <Button floated="right" circular size="medium" icon="save" loading={isSaving} onClick={() => {
             setIsSaving(true);
@@ -72,7 +75,44 @@ const ProfileStatistics = ({ accessToken, userId, canDownload }) => {
             {chart}
           </>
         }
-      </Segment>
+      </Tab.Pane>
+    )
+  });
+  let markers = [];
+  data.ticks.forEach(t => {
+    if (t.lat!=0 && t.lng!=0) {
+      markers.push({lat: t.lat, lng: t.lng, label: t.name, url: '/problem/' + t.id});
+    }
+  })
+  if (markers.length>0) {
+    panes.push({
+      menuItem: { key: 'map', icon: 'map' },
+      render: () => (
+        <Tab.Pane>
+          <Leaflet
+              key={"ticked="+userId} 
+              autoZoom={true}
+              height='40vh'
+              markers={markers}
+              defaultCenter={defaultCenter}
+              defaultZoom={defaultZoom}
+              navigate={navigate}
+              polylines={null}
+              outlines={null}
+              onMouseClick={null} onMouseMove={null}
+              showSateliteImage={false}
+              clusterMarkers={true}
+              rocks={null}
+              flyToId={null}
+          />
+        </Tab.Pane>
+      )
+    });
+  }
+
+  return (
+    <>
+      <Tab panes={panes} /><br/>
       {data.ticks.length>0 &&
         <ProblemList isSectorNotUser={false} preferOrderByGrade={data.orderByGrade}
           rows={data.ticks.map((t, key) => {

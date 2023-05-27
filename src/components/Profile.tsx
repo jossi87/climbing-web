@@ -45,7 +45,7 @@ const Profile = () => {
 
   let content = null;
   if (activePage === Page.user) {
-      content = <ProfileStatistics accessToken={profile.accessToken} userId={profile.id} canDownload={loggedInProfile} />
+      content = <ProfileStatistics accessToken={profile.accessToken} userId={profile.id} canDownload={loggedInProfile} defaultCenter={profile.metadata.defaultCenter} defaultZoom={profile.metadata.defaultZoom} />
   } else if (activePage === Page.todo) {
     content = <ProfileTodo accessToken={profile.accessToken} userId={profile.id} defaultCenter={profile.metadata.defaultCenter} defaultZoom={profile.metadata.defaultZoom} />
   } else if (activePage === Page.media) {
