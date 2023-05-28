@@ -171,7 +171,7 @@ const ProblemEdit = () => {
         data.startingAltitude, data.aspect, data.routeLength, data.descent)
       .then((res) => {
         if (addNew) {
-          navigate(`/problem/edit/${data.sectorId}-0`)
+          navigate(0);
         }
         else {
           navigate(res.destination);
