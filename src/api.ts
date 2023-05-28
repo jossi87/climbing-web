@@ -753,8 +753,8 @@ export function putMediaJpegRotate(accessToken: string, idMedia: number, degrees
   });
 }
 
-export function putTrash(accessToken: string, idArea: number, idSector: number, idProblem: number): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/trash?idArea=${idArea}&idSector=${idSector}&idProblem=${idProblem}`, {
+export function putTrash(accessToken: string, idArea: number, idSector: number, idProblem: number, idMedia: number): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/trash?idArea=${idArea}&idSector=${idSector}&idProblem=${idProblem}&idMedia=${idMedia}`, {
     method: 'PUT'
   });
 }

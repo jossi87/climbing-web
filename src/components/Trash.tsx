@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import { Loading } from './common/widgets/widgets';
+import { getImageUrl } from '../api';
 import { getTrash, putTrash } from '../api';
-import { Segment, Icon, Header, List, Button } from 'semantic-ui-react';
+import { Segment, Icon, Header, List, Button, Image } from 'semantic-ui-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import { InsufficientPrivileges } from './common/widgets/widgets';
@@ -58,27 +59,36 @@ const Trash = () => {
             <List divided verticalAlign='middle'>
               {data.trash.map((t, key) => {
                 let label = null;
-                if (t.idArea>0) label = "Area";
+                if (t.idMedia>0) label = "Media";
+                else if (t.idArea>0) label = "Area";
                 else if (t.idSector>0) label = "Sector";
                 else if (t.idProblem>0) label = "Problem";
                 return (
                   <List.Item key={key}>
                     <List.Content floated='right'>
                       <Button onClick={() => {
-                        if (confirm("Are you sure you want to restore " + t.name)) {
-                          putTrash(data.accessToken, t.idArea, t.idSector, t.idProblem)
+                        if (confirm("Are you sure you want to restore item?")) {
+                          putTrash(data.accessToken, t.idArea, t.idSector, t.idProblem, t.idMedia)
                           .then((response) => {
+                            let url;
                             if (t.idArea>0) {
-                              navigate("/area/" + t.idArea);
+                              url = "/area/" + t.idArea;
                             } else if (t.idSector>0) {
-                              navigate("/sector/" + t.idSector);
+                              url = "/sector/" + t.idSector;
                             } else if (t.idProblem>0) {
-                              navigate("/problem/" + t.idProblem);
+                              url = "/problem/" + t.idProblem;
+                            }
+                            if (t.idMedia>0) {
+                              navigate(url + "?idMedia=" + t.idMedia);
+                            }
+                            else {
+                              navigate(url);
                             }
                           })
                         }
                       }}>Restore</Button>
                     </List.Content>
+                    {t.idMedia>0 && <Image alt={t.name} key={t.idMedia} src={getImageUrl(t.idMedia, null, 50)} onError={i => i.target.src='/png/video_placeholder.png'} rounded />}
                     <List.Content>
                       <List.Header>{t.name}</List.Header>
                       <List.Description>
