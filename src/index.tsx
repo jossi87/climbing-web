@@ -1,7 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, useNavigate } from 'react-router-dom';
 import { Auth0Provider } from '@auth0/auth0-react';
-import CookieConsent from "react-cookie-consent";
 import { ErrorBoundary } from 'react-error-boundary';
 import App from './App';
 import './buldreinfo.css';
@@ -66,7 +65,6 @@ const Index = () => (
         <App />
       </Auth0ProviderWithNavigate>
     </ErrorBoundary>
-    <CookieConsent>This website uses cookies to enhance the user experience.</CookieConsent>
   </BrowserRouter>
 );
 

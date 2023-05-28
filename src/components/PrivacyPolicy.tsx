@@ -49,21 +49,6 @@ const PrivacyPolicy = () => {
               <List.Item>If you need help, or want to delete data someone else uploaded, please contact Jostein Øygarden on e-mail <a href="mailto:jostein.oygarden@gmail.com">jostein.oygarden@gmail.com</a> with the data you want to delete.</List.Item>
             </List.List>
           </List.Item>
-          <List.Item>
-            <List.Header>About cookies</List.Header>
-            <List.List>
-              <List.Item>A cookie is a file containing an identifier (a string of letters and numbers) that is sent by a web server to a web browser and is stored by the browser. The identifier is then sent back to the server each time the browser requests a page from the server.</List.Item>
-              <List.Item>Cookies may be either "persistent" cookies or "session" cookies: a persistent cookie will be stored by a web browser and will remain valid until its set expiry date, unless deleted by the user before the expiry date; a session cookie, on the other hand, will expire at the end of the user session, when the web browser is closed.</List.Item>
-              <List.Item>Cookies do not typically contain any information that personally identifies a user, but personal information that we store about you may be linked to the information stored in and obtained from cookies.</List.Item>
-            </List.List>
-          </List.Item>
-          <List.Item>
-            <List.Header>Cookies that we use</List.Header>
-            <List.List>
-              <List.Item>Cookie consent - we use cookies to store your preferences in relation to the use of cookies.</List.Item>
-              <List.Item>We use Google Analytics to analyse the use of our website. Google Analytics gathers information about website use by means of cookies. The information gathered relating to our website is used to create reports about the use of our website. Google's privacy policy is available at: <a href="https://www.google.com/policies/privacy/" rel='noopener' target='_blank'>https://www.google.com/policies/privacy/</a>.</List.Item>
-            </List.List>
-          </List.Item>
         </List>
       </Segment>
     </>
