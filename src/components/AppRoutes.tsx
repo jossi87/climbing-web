@@ -1,7 +1,6 @@
-import React, { lazy, Suspense, useLayoutEffect } from 'react'
+import React, { lazy, Suspense, useLayoutEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { Loading } from './common/widgets/widgets';
-import { useAnalytics } from 'use-analytics';
 
 const About = lazy(() => import(/* webpackChunkName: "about" */'./About'));
 const Area = lazy(() => import(/* webpackChunkName: "area" */ './Area'));
@@ -29,12 +28,6 @@ const Permissions = lazy(() => import(/* webpackChunkName: "permissions" */'./Pe
 const WebcamMap = lazy(() => import(/* webpackChunkName: "webcam-map" */'./WebcamMap'));
 
 function AppRoutes() {
-  const location = useLocation();
-  const analytics = useAnalytics();
-  React.useEffect(() => {
-    analytics.page()
-  }, [location]);
-
   const Wrapper = ({children}) => {
     const location = useLocation();
     useLayoutEffect(() => {

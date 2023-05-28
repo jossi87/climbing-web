@@ -5,18 +5,6 @@ import CookieConsent from "react-cookie-consent";
 import { ErrorBoundary } from 'react-error-boundary';
 import App from './App';
 import './buldreinfo.css';
-import Analytics from 'analytics';
-import { AnalyticsProvider } from 'use-analytics';
-import googleAnalytics from '@analytics/google-analytics';
-
-const analytics = Analytics({
-  app: 'buldreinfo/brattelinjer',
-  plugins: [
-    googleAnalytics({
-      measurementIds: ['UA-76534258-1']
-    })
-  ]
-})
 
 function ErrorFallback({error, resetErrorBoundary}) {
   const userAgent = navigator.userAgent;
@@ -69,19 +57,17 @@ export const Auth0ProviderWithNavigate = ({ children }) => {
 };
 
 const Index = () => (
-  <AnalyticsProvider instance={analytics}>
-    <BrowserRouter>
-      <ErrorBoundary
-        FallbackComponent={ErrorFallback}
-        onReset={() => window.location.reload()}
-      >
-        <Auth0ProviderWithNavigate>
-          <App />
-        </Auth0ProviderWithNavigate>
-      </ErrorBoundary>
-      <CookieConsent>This website uses cookies to enhance the user experience.</CookieConsent>
-    </BrowserRouter>
-  </AnalyticsProvider>
+  <BrowserRouter>
+    <ErrorBoundary
+      FallbackComponent={ErrorFallback}
+      onReset={() => window.location.reload()}
+    >
+      <Auth0ProviderWithNavigate>
+        <App />
+      </Auth0ProviderWithNavigate>
+    </ErrorBoundary>
+    <CookieConsent>This website uses cookies to enhance the user experience.</CookieConsent>
+  </BrowserRouter>
 );
 
 const root = createRoot(document.getElementById('app'));

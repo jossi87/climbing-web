@@ -4,7 +4,6 @@ import AppRoutes from './components/AppRoutes';
 import Footer from "./components/Footer";
 
 const App = () => {
-  
   return (
     <div style={{background: "#F5F5F5"}}>
       <Header />
