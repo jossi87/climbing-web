@@ -31,8 +31,8 @@ const ProblemEditMedia = () => {
     setSaving(true);
     getAccessTokenSilently().then((accessToken) => {
       postProblemMedia(accessToken, id, media)
-      .then((response) => {
-        navigate("/problem/" + response.id);
+      .then((res) => {
+        navigate("/problem/" + res.id);
       })
       .catch((error) => {
         console.warn(error);

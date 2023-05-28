@@ -65,8 +65,8 @@ const SectorEdit = () => {
     if (!trash || confirm("Are you sure you want to move sector to trash?")) {
       setSaving(true);
       postSector(data.accessToken, data.areaId, data.id, data.trash, data.lockedAdmin, data.lockedSuperadmin, data.name, data.comment, data.accessInfo, data.accessClosed, data.lat, data.lng, data.polygonCoords, data.polyline, data.newMedia, data.problemOrder)
-      .then((data) => {
-        navigate(data.destination);
+      .then((res) => {
+        navigate(res.destination);
       })
       .catch((error) => {
         console.warn(error);

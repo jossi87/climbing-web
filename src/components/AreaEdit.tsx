@@ -60,8 +60,8 @@ const AreaEdit = () => {
     if (!trash || confirm("Are you sure you want to move area to trash?")) {
       setSaving(true);
       postArea(data.accessToken, data.id, data.trash, data.lockedAdmin, data.lockedSuperadmin, data.forDevelopers, data.accessInfo, data.accessClosed, data.noDogsAllowed, data.name, data.comment, data.lat, data.lng, data.newMedia, data.sectorOrder)
-      .then((data) => {
-        navigate(data.destination);
+      .then((res) => {
+        navigate(res.destination);
       })
       .catch((error) => {
         console.warn(error);

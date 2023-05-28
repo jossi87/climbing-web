@@ -169,12 +169,12 @@ const ProblemEdit = () => {
         data.faAid,
         data.trivia,
         data.startingAltitude, data.aspect, data.routeLength, data.descent)
-      .then((data2) => {
+      .then((res) => {
         if (addNew) {
-          navigate(`/problem/edit/${data.sectorId}-0`)
+          navigate(`/problem/edit/${res.idSector}-0`)
         }
         else {
-          navigate(data.destination);
+          navigate(res.destination);
         }
       })
       .catch((error) => {
