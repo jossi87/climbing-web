@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import MetaTags from 'react-meta-tags';
+import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { Grid, Segment, Header, Icon, List, Image, Label } from 'semantic-ui-react';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -23,7 +23,7 @@ const About = () => {
   let isBouldering = data.metadata.gradeSystem==='BOULDER';
   return (
     <>
-      <MetaTags>
+      <Helmet>
         {data.metadata.canonical && <link rel="canonical" href={data.metadata.canonical} />}
         <title>{data.metadata.title}</title>
         <meta name="description" content={data.metadata.description} />
@@ -35,7 +35,7 @@ const About = () => {
         <meta property="og:image:width" content={data.metadata.og.imageWidth} />
         <meta property="og:image:height" content={data.metadata.og.imageHeight} />
         <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
-      </MetaTags>
+      </Helmet>
       <Grid columns={2} stackable>
         <Grid.Column>
           <Segment>

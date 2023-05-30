@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import MetaTags from 'react-meta-tags';
+import { Helmet } from 'react-helmet';
 import { Header, List, Segment, Icon, Button, ButtonGroup } from 'semantic-ui-react';
 import { Loading, LockSymbol, Stars } from './common/widgets/widgets';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -27,7 +27,7 @@ const Toc = () => {
   const showType = data.metadata.gradeSystem==='CLIMBING';
   return (
     <>
-      <MetaTags>
+      <Helmet>
         <title>{data.metadata.title}</title>
         <meta name="description" content={data.metadata.description} />
         <meta property="og:type" content="website" />
@@ -38,7 +38,7 @@ const Toc = () => {
         <meta property="og:image:width" content={data.metadata.og.imageWidth} />
         <meta property="og:image:height" content={data.metadata.og.imageHeight} />
         <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
-      </MetaTags>
+      </Helmet>
       <Segment>
         <ButtonGroup floated="right" size="mini">
           <Button loading={isSaving} icon labelPosition="left" onClick={() => {

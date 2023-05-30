@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import MetaTags from 'react-meta-tags';
+import { Helmet } from 'react-helmet';
 import UserSelector from './common/user-selector/user-selector';
 import RockSelector from './common/rock-selector/rock-selector';
 import ProblemSection from './common/problem-section/problem-section';
@@ -242,9 +242,9 @@ const ProblemEdit = () => {
 
     return (
       <>
-        <MetaTags>
+        <Helmet>
           <title>{data.metadata.title}</title>
-        </MetaTags>
+        </Helmet>
         <Message
           size="tiny"
           content={<><Icon name="info"/>Contact <a href='mailto:jostein.oygarden@gmail.com'>Jostein Øygarden</a> if you want to move {data.metadata.gradeSystem==='BOULDER'? "problem" : "route"} to an other sector.</>}

@@ -1,15 +1,15 @@
-import MetaTags from 'react-meta-tags';
+import { Helmet } from 'react-helmet';
 import { Segment, Header, Icon } from 'semantic-ui-react';
 
 const Donations = () => {
   return (
     <>
-      <MetaTags>
+      <Helmet>
         <title>Donations</title>
         <meta name="description" content="Donations" />
         <meta property="og:type" content="website" />
         <meta property="og:description" content="Donations" />
-      </MetaTags>
+      </Helmet>
       <Segment>
         <Header as="h2">
           <Icon name='money' />

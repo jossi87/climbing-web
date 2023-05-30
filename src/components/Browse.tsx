@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import MetaTags from 'react-meta-tags';
+import { Helmet } from 'react-helmet';
 import { Link, useNavigate } from 'react-router-dom';
 import { Header, Button, List, Icon, Segment, ButtonGroup } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
@@ -59,7 +59,7 @@ const Browse = () => {
   const map = markers.length>0 && <div ref={leafletRef}><Leaflet autoZoom={true} height='75vh' markers={markers} defaultCenter={data.metadata.defaultCenter} defaultZoom={data.metadata.defaultZoom} navigate={navigate} polylines={null} outlines={null} onMouseClick={null} onMouseMove={null} showSateliteImage={false}  clusterMarkers={!showForDevelopers} rocks={null} flyToId={flyToId} /></div>;
   return (
     <>
-      <MetaTags>
+      <Helmet>
         <title>{data.metadata.title}</title>
         <meta name="description" content={data.metadata.description} />
         <meta property="og:type" content="website" />
@@ -70,7 +70,7 @@ const Browse = () => {
         <meta property="og:image:width" content={data.metadata.og.imageWidth} />
         <meta property="og:image:height" content={data.metadata.og.imageHeight} />
         <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
-      </MetaTags>
+      </Helmet>
       <Segment>
         <ButtonGroup floated="right" size="mini">
           <Button active={!showForDevelopers} onClick={() => setShowForDevelopers(false)}>Developed areas</Button>

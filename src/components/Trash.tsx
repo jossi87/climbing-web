@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import MetaTags from 'react-meta-tags';
+import { Helmet } from 'react-helmet';
 import { Loading } from './common/widgets/widgets';
 import { getImageUrl } from '../api';
 import { getTrash, putTrash } from '../api';
@@ -33,7 +33,7 @@ const Trash = () => {
   } else {
     return (
       <>
-        <MetaTags>
+        <Helmet>
           <title>{data.metadata.title}</title>
           <meta name="description" content={data.metadata.description} />
           <meta property="og:type" content="website" />
@@ -44,7 +44,7 @@ const Trash = () => {
           <meta property="og:image:width" content={data.metadata.og.imageWidth} />
           <meta property="og:image:height" content={data.metadata.og.imageHeight} />
           <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
-        </MetaTags>
+        </Helmet>
         <Segment>
           <Header as="h2">
             <Icon name='trash' />

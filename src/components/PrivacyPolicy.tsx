@@ -1,15 +1,15 @@
-import MetaTags from 'react-meta-tags';
+import { Helmet } from 'react-helmet';
 import { Segment, Header, Icon, List } from 'semantic-ui-react';
 
 const PrivacyPolicy = () => {
   return (
     <>
-      <MetaTags>
+      <Helmet>
         <title>Privacy Policy</title>
         <meta name="description" content="Privacy Policy" />
         <meta property="og:type" content="website" />
         <meta property="og:description" content="Privacy Policy" />
-      </MetaTags>
+      </Helmet>
       <Segment>
         <Header as="h2">
           <Icon name='law' />

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import MetaTags from 'react-meta-tags';
+import { Helmet } from 'react-helmet';
 import { Loading } from './common/widgets/widgets';
 import { Header, Image, Menu, Icon } from 'semantic-ui-react';
 import { getProfile } from '../api';
@@ -58,7 +58,7 @@ const Profile = () => {
   
   return (
     <>
-      <MetaTags>
+      <Helmet>
         <title>{profile.metadata.title}</title>
         <meta name="description" content={profile.metadata.description} />
         <meta property="og:type" content="website" />
@@ -69,7 +69,7 @@ const Profile = () => {
         <meta property="og:image:width" content={profile.metadata.og.imageWidth} />
         <meta property="og:image:height" content={profile.metadata.og.imageHeight} />
         <meta property="fb:app_id" content={profile.metadata.og.fbAppId} />
-      </MetaTags>
+      </Helmet>
       <Header as="h5" textAlign="center" className="buldreinfo-visible-mobile">
         {profile.picture && <Image circular src={profile.picture}/>} 
         <Header.Content>{profile.firstname} {profile.lastname}</Header.Content>

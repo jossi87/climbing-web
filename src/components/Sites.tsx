@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import MetaTags from 'react-meta-tags';
+import { Helmet } from 'react-helmet';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Button } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
@@ -38,7 +38,7 @@ const Sites = () => {
   const map = <Leaflet autoZoom={true} height='85vh' outlines={outlines} defaultCenter={data.metadata.defaultCenter} defaultZoom={data.metadata.defaultZoom} navigate={navigate} markers={null} polylines={null} onMouseClick={null} onMouseMove={null} showSateliteImage={false} clusterMarkers={false} rocks={null} flyToId={null} />;
   return (
     <>
-      <MetaTags>
+      <Helmet>
         <title>{data.metadata.title}</title>
         <meta name="description" content={data.metadata.description} />
         <meta property="og:type" content="website" />
@@ -49,7 +49,7 @@ const Sites = () => {
         <meta property="og:image:width" content={data.metadata.og.imageWidth} />
         <meta property="og:image:height" content={data.metadata.og.imageHeight} />
         <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
-      </MetaTags>
+      </Helmet>
       <Button.Group fluid>
         <Button as={Link} to={'/sites/boulder'} active={data.type=='BOULDER'}>Bouldering</Button>
         <Button as={Link} to={'/sites/climbing'}  active={data.type=='CLIMBING'}>Route climbing</Button>

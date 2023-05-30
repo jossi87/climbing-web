@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import MetaTags from 'react-meta-tags';
+import { Helmet } from 'react-helmet';
 import { Label, Grid, Statistic,  Icon, Image, Card, Segment, Placeholder } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -23,7 +23,7 @@ const Frontpage = () => {
   return (
     <>
       {frontpage &&
-        <MetaTags>
+        <Helmet>
           <title>{frontpage.metadata.title}</title>
           <meta name="description" content={frontpage.metadata.description} />
           <meta property="og:type" content="website" />
@@ -34,7 +34,7 @@ const Frontpage = () => {
           <meta property="og:image:width" content={frontpage.metadata.og.imageWidth} />
           <meta property="og:image:height" content={frontpage.metadata.og.imageHeight} />
           <meta property="fb:app_id" content={frontpage.metadata.og.fbAppId} />
-        </MetaTags>
+        </Helmet>
       }
       <Grid>
         <Grid.Row>

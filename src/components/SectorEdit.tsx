@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import GpxParser from 'gpxparser';
 import Dropzone from 'react-dropzone';
-import MetaTags from 'react-meta-tags';
+import { Helmet } from 'react-helmet';
 import ImageUpload from './common/image-upload/image-upload';
 import { Loading, InsufficientPrivileges } from './common/widgets/widgets';
 import { Checkbox, Form, Button, Input, Dropdown, TextArea, Segment, Accordion, Icon, Message } from 'semantic-ui-react';
@@ -224,9 +224,9 @@ const SectorEdit = () => {
     
     return (
       <>
-        <MetaTags>
+        <Helmet>
           <title>{data.metadata.title}</title>
-        </MetaTags>
+        </Helmet>
         <Message
           size="tiny"
           content={<><Icon name="info"/>Contact <a href='mailto:jostein.oygarden@gmail.com'>Jostein Øygarden</a> if you want to move or split sector.</>}

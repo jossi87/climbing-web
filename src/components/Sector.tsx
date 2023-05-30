@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import MetaTags from 'react-meta-tags';
+import { Helmet } from 'react-helmet';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import ProblemList from './common/problem-list/problem-list';
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
@@ -182,7 +182,7 @@ const Sector = () => {
   );
   return (
     <>
-      <MetaTags>
+      <Helmet>
         {data.metadata.canonical && <link rel="canonical" href={data.metadata.canonical} />}
         <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(data.metadata.jsonLd)}} />
         <title>{data.metadata.title}</title>
@@ -195,7 +195,7 @@ const Sector = () => {
         <meta property="og:image:width" content={data.metadata.og.imageWidth} />
         <meta property="og:image:height" content={data.metadata.og.imageHeight} />
         <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
-      </MetaTags>
+      </Helmet>
       <div style={{marginBottom: '5px'}}>
         <div style={{float: 'right'}}>
           {data && data.metadata.isAdmin &&

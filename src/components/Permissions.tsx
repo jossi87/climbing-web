@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import MetaTags from 'react-meta-tags';
+import { Helmet } from 'react-helmet';
 import { Loading, LockSymbol } from './common/widgets/widgets';
 import { getPermissions, postPermissions } from '../api';
 import { Header, Icon, Segment, Image, Dropdown, Card } from 'semantic-ui-react';
@@ -31,7 +31,7 @@ const Permissions = () => {
   } else {
     return (
       <>
-        <MetaTags>
+        <Helmet>
           <title>{data.metadata.title}</title>
           <meta name="description" content={data.metadata.description} />
           <meta property="og:type" content="website" />
@@ -42,7 +42,7 @@ const Permissions = () => {
           <meta property="og:image:width" content={data.metadata.og.imageWidth} />
           <meta property="og:image:height" content={data.metadata.og.imageHeight} />
           <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
-        </MetaTags>
+        </Helmet>
         <Segment>
           <Header as="h2">
             <Icon name='users' />

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import MetaTags from 'react-meta-tags';
+import { Helmet } from 'react-helmet';
 import ImageUpload from './common/image-upload/image-upload';
 import Leaflet from './common/leaflet/leaflet';
 import { Form, Button, Checkbox, Input, Dropdown, TextArea, Segment, Icon, Message, Accordion } from 'semantic-ui-react';
@@ -118,9 +118,9 @@ const AreaEdit = () => {
 
     return (
       <>
-        <MetaTags>
+        <Helmet>
           <title>{data.metadata.title}</title>
-        </MetaTags>
+        </Helmet>
         <Message
           size="tiny"
           content={<><Icon name="info"/>Contact <a href='mailto:jostein.oygarden@gmail.com'>Jostein Øygarden</a> if you want to split area.</>}

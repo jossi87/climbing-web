@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import MetaTags from 'react-meta-tags';
+import { Helmet } from 'react-helmet';
 import { LockSymbol, Loading } from './common/widgets/widgets';
 import { Segment, Icon, List, Header } from 'semantic-ui-react';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -24,7 +24,7 @@ const Dangerous = () => {
   }
   return (
     <>
-      <MetaTags>
+      <Helmet>
         <title>{data.metadata.title}</title>
         <meta name="description" content={data.metadata.description} />
         <meta property="og:type" content="website" />
@@ -35,7 +35,7 @@ const Dangerous = () => {
         <meta property="og:image:width" content={data.metadata.og.imageWidth} />
         <meta property="og:image:height" content={data.metadata.og.imageHeight} />
         <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
-      </MetaTags>
+      </Helmet>
       <Segment>
         <Header as="h2">
           <Icon name='warning sign' />
