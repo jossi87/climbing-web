@@ -70,7 +70,7 @@ const Sector = () => {
     }
   }, [isLoading, isAuthenticated, sectorId]);
 
-  if (isLoading || !data) {
+  if (isLoading || !data || !data.id) {
     return <Loading />;
   }
 

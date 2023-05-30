@@ -80,7 +80,7 @@ const Area = () => {
     }
   }, [isLoading, isAuthenticated, areaId]);
 
-  if (!data) {
+  if (!data || !data.id) {
     return <Loading />;
   }
   const markers = data.sectors.filter(s => s.lat!=0 && s.lng!=0).map(s => {

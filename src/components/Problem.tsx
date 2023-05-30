@@ -120,7 +120,7 @@ const Problem = () => {
     </a>
   );
 
-  if (!data || reload) {
+  if (!data || !data.id || reload) {
     return <Loading />;
   }
   let isBouldering = data.metadata.gradeSystem==='BOULDER';
