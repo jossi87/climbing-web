@@ -116,7 +116,7 @@ const Area = () => {
   if (data.media && data.media.length>0) {
     panes.push({
       menuItem: { key: 'image', icon: 'image' },
-      render: () => <Tab.Pane><Media isAdmin={data.metadata.isAdmin} removeMedia={(idMediaToRemove) => {
+      render: () => <Tab.Pane><Media isAdmin={data.metadata.isAdmin} numPitches={0} removeMedia={(idMediaToRemove) => {
         let newMedia = data.media.filter(m => m.id!=idMediaToRemove);
         setData(prevState => ({ ...prevState, media: newMedia }));
       }} media={data.media} optProblemId={null} isBouldering={isBouldering} /></Tab.Pane> });

@@ -148,6 +148,7 @@ const Problem = () => {
       render: () =>
         <Tab.Pane>
           <Media isAdmin={data.metadata.isAdmin}
+            numPitches={data.sections?.length || 0}
             removeMedia={onRemoveMedia}
             media={data.media}
             optProblemId={data.id}
@@ -247,7 +248,7 @@ const Problem = () => {
                 <Comment.Metadata>{c.date}</Comment.Metadata>
                 <Comment.Text>
                   <Linkify componentDecorator={componentDecorator}>{c.message}</Linkify>
-                  {c.media && c.media.length>0 && <Media isAdmin={data.metadata.isAdmin} removeMedia={() => window.location.reload()} media={c.media} optProblemId={null} isBouldering={isBouldering} />}
+                  {c.media && c.media.length>0 && <Media isAdmin={data.metadata.isAdmin} numPitches={data.sections?.length || 0} removeMedia={() => window.location.reload()} media={c.media} optProblemId={null} isBouldering={isBouldering} />}
                 </Comment.Text>
                 {extra && <Comment.Actions>{extra}</Comment.Actions>}
               </Comment.Content>
@@ -445,7 +446,7 @@ const Problem = () => {
               <Table.Cell>Trivia:</Table.Cell>
               <Table.Cell>
                 {data.trivia && <Linkify componentDecorator={componentDecorator}>{data.trivia}</Linkify>}
-                {data.triviaMedia && <Feed.Extra><Media isAdmin={data.metadata.isAdmin} removeMedia={() => window.location.reload()} media={data.triviaMedia} optProblemId={null} isBouldering={isBouldering} /></Feed.Extra>}
+                {data.triviaMedia && <Feed.Extra><Media isAdmin={data.metadata.isAdmin} numPitches={data.sections?.length || 0} removeMedia={() => window.location.reload()} media={data.triviaMedia} optProblemId={null} isBouldering={isBouldering} /></Feed.Extra>}
               </Table.Cell>
             </Table.Row>
           }
@@ -536,7 +537,7 @@ const Problem = () => {
                         <Feed.Summary>
                           <Feed.Label>{s.grade}</Feed.Label> 
                           <Feed.Date>{s.description}</Feed.Date>
-                          {s.media && <Feed.Extra><Media isAdmin={data.metadata.isAdmin} removeMedia={() => window.location.reload()} media={s.media} optProblemId={null} isBouldering={isBouldering} /></Feed.Extra>}
+                          {s.media && <Feed.Extra><Media isAdmin={data.metadata.isAdmin} numPitches={data.sections?.length || 0} removeMedia={() => window.location.reload()} media={s.media} optProblemId={null} isBouldering={isBouldering} /></Feed.Extra>}
                         </Feed.Summary>
                       </Feed.Content>
                     </Feed.Event>

@@ -747,6 +747,16 @@ export function postUserRegion(accessToken: string, regionId: number, del: boole
   });
 }
 
+export function putMediaInfo(accessToken: string, mediaId: number, description: string, pitch: number, trivia: boolean): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/media/info`,{
+    method: 'PUT',
+    body: JSON.stringify({mediaId, description, pitch, trivia}),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
 export function putMediaJpegRotate(accessToken: string, idMedia: number, degrees: number): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/media/jpeg/rotate?idMedia=${idMedia}&degrees=${degrees}`, {
     method: 'PUT'

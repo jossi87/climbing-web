@@ -105,7 +105,7 @@ const Sector = () => {
     if (media && media.length>0) {
       panes.push({
         menuItem: { key: 'topo', icon: 'image' },
-        render: () => <Tab.Pane><Media isAdmin={data.metadata.isAdmin} removeMedia={(idMediaToRemove) => setData(prevState => ({ ...prevState, media: data.media.filter(m => m.id!=idMediaToRemove) })) } media={media} optProblemId={null} isBouldering={isBouldering} /></Tab.Pane>
+        render: () => <Tab.Pane><Media isAdmin={data.metadata.isAdmin} numPitches={0} removeMedia={(idMediaToRemove) => setData(prevState => ({ ...prevState, media: data.media.filter(m => m.id!=idMediaToRemove) })) } media={media} optProblemId={null} isBouldering={isBouldering} /></Tab.Pane>
       });
     }
   }
@@ -136,7 +136,7 @@ const Sector = () => {
   if (topoImages && topoImages.length>0) {
     panes.push({
       menuItem: { key: 'topo', icon: 'images' },
-      render: () => <Tab.Pane><Media isAdmin={data.metadata.isAdmin} removeMedia={(idMediaToRemove) => setData(prevState => ({ ...prevState, media: data.media.filter(m => m.id!=idMediaToRemove) })) } media={topoImages} optProblemId={null} isBouldering={isBouldering} /></Tab.Pane>
+      render: () => <Tab.Pane><Media isAdmin={data.metadata.isAdmin} numPitches={0} removeMedia={(idMediaToRemove) => setData(prevState => ({ ...prevState, media: data.media.filter(m => m.id!=idMediaToRemove) })) } media={topoImages} optProblemId={null} isBouldering={isBouldering} /></Tab.Pane>
     });
   }
   if (data.problems.length!=0) {

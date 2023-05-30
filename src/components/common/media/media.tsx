@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import LazyLoad from 'react-lazyload';
 import { useLocation } from 'react-router-dom';
-import { getImageUrl, deleteMedia, moveMedia, putMediaJpegRotate } from '../../../api';
+import { getImageUrl, deleteMedia, moveMedia, putMediaJpegRotate, putMediaInfo } from '../../../api';
 import { Card, Image } from 'semantic-ui-react';
 import MediaModal from './media-modal';
+import MediaEditModal from './media-edit-modal';
 import Svg from './svg';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Loading } from '../widgets/widgets';
 
 const style = {objectFit: 'cover', position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, width: '100%', height: '100%'};
 
-const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
+const Media = ({ numPitches, media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
   let location = useLocation();
   const [m, setM] = useState(null);
+  const [editM, setEditM] = useState(null);
   const [autoPlayVideo, setAutoPlayVideo] = useState(false);
   const { isLoading, getAccessTokenSilently } = useAuth0();
   useEffect(() => {
@@ -34,6 +36,7 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
   function openModal(m) {
     const url = location.pathname + "?idMedia=" + m.id;
     setM(m);
+    setEditM(null);
     window.history.replaceState("", "", url);
   }
 
@@ -164,12 +167,32 @@ const Media = ({ media, removeMedia, isAdmin, optProblemId, isBouldering }) => {
   }
   return (
     <>
+      {editM && 
+        <MediaEditModal
+          numPitches={numPitches}
+          m={editM}
+          save={(mediaId, description, pitch, trivia) => {
+            getAccessTokenSilently().then((accessToken) => {
+              putMediaInfo(accessToken, mediaId, description, pitch, trivia)
+              .then((response) => {
+                setEditM(null);
+                window.location.reload();
+              })
+              .catch ((error) => {
+                console.warn(error);
+              });
+            });
+          }}
+          onCloseWithoutReload={() => setEditM(null)}
+        />
+      }
       {m &&
         <MediaModal
           isAdmin={isAdmin}
           onClose={closeModal}
           m={m}
           autoPlayVideo={autoPlayVideo}
+          onEdit={() => setEditM(m)}
           onDelete={onDeleteImage}
           onRotate={onRotate}
           onMoveImageLeft={onMoveImageLeft}
