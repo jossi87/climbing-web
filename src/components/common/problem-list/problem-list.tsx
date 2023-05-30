@@ -52,7 +52,6 @@ const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[
   ;
 
   useEffect(() => {
-    setData(rows);
     let newOrderBy = OrderBy.date;
     if (isSectorNotUser) {
       if (preferOrderByGrade) {
@@ -66,6 +65,7 @@ const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[
       order(sectorCustomOrderBy); // Sort results and save state
     }
     else {
+      setData(rows);
       setOrderBy(newOrderBy); // Results already sorted by newOrderBy, only update state
     }
     const rocks = rows.filter(p => p.rock).map(p => p.rock).filter((value, index, self) => self.indexOf(value) === index).sort();
@@ -100,7 +100,7 @@ const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[
     if (isSectorNotUser) {
       setSectorCustomOrderBy(newOrderBy);
     }
-    let problems = data.sort((a, b) => {
+    setData(rows.sort((a, b) => {
       if (newOrderBy === OrderBy.alphabetical) {
         if (a.areaName != b.areaName) return a.areaName.localeCompare(b.areaName, getLocales());
         else if (a.sectorName != b.sectorName) return a.sectorName.localeCompare(b.sectorName, getLocales());
@@ -122,8 +122,7 @@ const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: { rows: Row[
         else if (a.numTicks != b.numTicks) return b.numTicks-a.numTicks;
         return a.name.localeCompare(b.name, getLocales());
       }
-    });
-    setData(problems);
+    }));
   }
 
   const containsFa = data.filter(p => p.fa).length>0;
