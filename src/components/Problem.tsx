@@ -14,6 +14,7 @@ import Linkify from 'react-linkify';
 
 const Problem = () => {
   const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const [error, setError] = useState(null);
   const [data, setData] = useState(null);
   const [problemsOnRock, setProblemsOnRock] = useState([]);
   const [showTickModal, setShowTickModal] = useState(false);
@@ -27,11 +28,13 @@ const Problem = () => {
     if (!isLoading && (reload || (data != null && data.id!=problemId))) {
       const update = async() => {
         const accessToken = isAuthenticated? await getAccessTokenSilently() : null;
-        getProblem(accessToken, parseInt(problemId), showHiddenMedia).then((data) => {
+        getProblem(accessToken, parseInt(problemId), showHiddenMedia)
+        .then((data) => {
           setProblemsOnRock([]);
           setData({...data, accessToken});
           setReload(false);
-        });
+        })
+        .catch(error => setError(error));
       }
       update();
     }
@@ -120,7 +123,10 @@ const Problem = () => {
     </a>
   );
 
-  if (!data || !data.id || reload) {
+  if (error) {
+    return <Message size="huge" style={{backgroundColor: "#FFF"}} icon="meh" header="404" content={error} />;
+  }
+  else if (!data || !data.id || reload) {
     return <Loading />;
   }
   let isBouldering = data.metadata.gradeSystem==='BOULDER';

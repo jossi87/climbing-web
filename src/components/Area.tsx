@@ -58,6 +58,7 @@ const SectorListItem = ({ sector, problem, isClimbing }) => {
 }
 const Area = () => {
   const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const [error, setError] = useState(null);
   const [data, setData] = useState(null);
   let { areaId } = useParams();
   let navigate = useNavigate();
@@ -74,13 +75,18 @@ const Area = () => {
     if (!isLoading) {
       const update = async() => {
         const accessToken = isAuthenticated? await getAccessTokenSilently() : null;
-        getArea(accessToken, parseInt(areaId)).then((data) => setData({...data, accessToken}));
+        getArea(accessToken, parseInt(areaId))
+        .then((data) => setData({...data, accessToken}))
+        .catch(error => setError(error));
       }
       update();
     }
   }, [isLoading, isAuthenticated, areaId]);
 
-  if (!data || !data.id) {
+  if (error) {
+    return <Message size="huge" style={{backgroundColor: "#FFF"}} icon="meh" header="404" content={error} />;
+  }
+  else if (!data || !data.id) {
     return <Loading />;
   }
   const markers = data.sectors.filter(s => s.lat!=0 && s.lng!=0).map(s => {

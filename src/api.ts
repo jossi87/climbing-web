@@ -110,16 +110,17 @@ export function getActivity(accessToken: string, idArea: number, idSector: numbe
 
 export function getArea(accessToken: string, id: number): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/areas?id=${id}`, null)
-  .then((response) => response.json())
+  .then((response) => {
+    if (response.status === 500) {
+      return Promise.reject("Cannot find the specified area because it does not exist or you do not have sufficient permissions.");
+    }
+    return response.json();
+  })
   .then((data) => {
     if (data.redirectUrl && data.redirectUrl!=window.location.href) {
       window.location.href = data.redirectUrl;
     }
     return data;
-  })
-  .catch((error) => {
-    console.warn(error);
-    return null;
   });
 }
 
@@ -238,16 +239,17 @@ export function getPermissions(accessToken: string): Promise<any> {
 
 export function getProblem(accessToken: string, id: number, showHiddenMedia: boolean): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/problems?id=${id}&showHiddenMedia=${showHiddenMedia}`, null)
-  .then((response) => response.json())
+  .then((response) => {
+    if (response.status === 500) {
+      return Promise.reject("Cannot find the specified problem because it does not exist or you do not have sufficient permissions.");
+    }
+    return response.json();
+  })
   .then((data) => {
     if (data.redirectUrl && data.redirectUrl!=window.location.href) {
       window.location.href = data.redirectUrl;
     }
     return data;
-  })
-  .catch((error) => {
-    console.warn(error);
-    return null;
   });
 }
 
@@ -382,16 +384,17 @@ export function getProfileTodo(accessToken: string, id: number): Promise<any> {
 
 export function getSector(accessToken: string, id: number): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/sectors?id=${id}`, null)
-  .then((response) => response.json())
+  .then((response) => {
+    if (response.status === 500) {
+      return Promise.reject("Cannot find the specified sector because it does not exist or you do not have sufficient permissions.");
+    }
+    return response.json();
+  })
   .then((data) => {
     if (data.redirectUrl && data.redirectUrl!=window.location.href) {
       window.location.href = data.redirectUrl;
     }
     return data;
-  })
-  .catch((error) => {
-    console.warn(error);
-    return null;
   });
 }
 

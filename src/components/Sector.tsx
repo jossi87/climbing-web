@@ -57,6 +57,7 @@ const SectorListItem = ({ problem, isClimbing }) => {
 }
 const Sector = () => {
   const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const [error, setError] = useState(null);
   const [data, setData] = useState(null);
   let { sectorId } = useParams();
   let navigate = useNavigate();
@@ -64,13 +65,18 @@ const Sector = () => {
     if (!isLoading) {
       const update = async() => {
         const accessToken = isAuthenticated? await getAccessTokenSilently() : null;
-        getSector(accessToken, parseInt(sectorId)).then((data) => setData({...data, accessToken}));
+        getSector(accessToken, parseInt(sectorId))
+        .then((data) => setData({...data, accessToken}))
+        .catch(error => setError(error));
       }
       update();
     }
   }, [isLoading, isAuthenticated, sectorId]);
 
-  if (isLoading || !data || !data.id) {
+  if (error) {
+    return <Message size="huge" style={{backgroundColor: "#FFF"}} icon="meh" header="404" content={error} />;
+  }
+  else if (isLoading || !data || !data.id) {
     return <Loading />;
   }
 
