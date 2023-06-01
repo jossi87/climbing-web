@@ -19,12 +19,14 @@ const Media = ({ numPitches, media, removeMedia, isAdmin, optProblemId, isBoulde
   const { isLoading, getAccessTokenSilently } = useAuth0();
   useEffect(() => {
     function handleKeyPress({ keyCode }) {
-      if (keyCode === 27) {
-        closeModal();
-      } else if (keyCode === 37) {
-        gotoPrev();
-      } else if (keyCode === 39) {
-        gotoNext();
+      if (editM == null) {
+        if (keyCode === 27) {
+          closeModal();
+        } else if (keyCode === 37) {
+          gotoPrev();
+        } else if (keyCode === 39) {
+          gotoNext();
+        }
       }
     }
     document.addEventListener("keydown", handleKeyPress);
