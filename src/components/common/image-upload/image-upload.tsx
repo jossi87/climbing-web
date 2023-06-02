@@ -1,41 +1,33 @@
-import React, { useState } from 'react';
-import Dropzone from 'react-dropzone';
+import React, { useState, useCallback } from 'react';
+import { useDropzone } from 'react-dropzone';
 import { Button, Card, Image, Input, Checkbox } from 'semantic-ui-react';
 import VideoEmbedder from './video-embedder';
-import classNames from 'classnames';
 import UserSelector from '../user-selector/user-selector';
 
 const ImageUpload = ({ onMediaChanged, isMultiPitch, includeVideoEmbedder }) => {
+  const onDrop = useCallback(acceptedFiles => {
+    const allMedia = media;
+    acceptedFiles.forEach(f => {
+      f.preview = URL.createObjectURL(f);
+      allMedia.push({file: f})
+    });
+    setMedia(allMedia);
+    onMediaChanged(allMedia);
+  }, [])
+  const accept = { 'image/jpeg': ['.jpeg', '.png'] };
+  const {getRootProps, getInputProps, isDragActive} = useDropzone({ onDrop, accept });
   const [media, setMedia] = useState([]);
 
   return (
     <>
-      <Dropzone onDrop={(files: any) => {
-        const allMedia = media;
-        files.forEach(f => {
-          f.preview = URL.createObjectURL(f);
-          allMedia.push({file: f})
-        });
-        setMedia(allMedia);
-        onMediaChanged(allMedia);
-      }}>
-        {({getRootProps, getInputProps, isDragActive}) => {
-          return (
-            <div
-              {...getRootProps()}
-              className={classNames('dropzone', {'dropzone--isActive': isDragActive})}
-              style={{padding: '15px', borderWidth: '1px', borderColor: '#666', borderStyle: 'dashed', borderRadius: '5px', backgroundColor: 'white'}}
-            >
-              <input {...getInputProps()}/>
-              {
-                isDragActive ?
-                  <p>Drop files here...</p> :
-                  <p>Drop images here, or click to select files to upload.</p>
-              }
-            </div>
-          )
-        }}
-      </Dropzone>
+      <div {...getRootProps()} style={{padding: '15px', borderWidth: '1px', borderColor: '#666', borderStyle: 'dashed', borderRadius: '5px', backgroundColor: 'white'}}>
+        <input {...getInputProps()} />
+        {
+          isDragActive ?
+          <p>Drop files here...</p> :
+          <p>Drop images here, or click to select files to upload.</p>
+        }
+      </div>
       {includeVideoEmbedder &&
         <>
           <br/>
