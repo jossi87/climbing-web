@@ -9,7 +9,7 @@ import { calculateDistance } from './common/leaflet/distance-math';
 import Media from './common/media/media';
 import Todo from './common/todo/todo';
 import { Stars, LockSymbol, Loading, WeatherLabels } from './common/widgets/widgets';
-import { Table, Label, Button, Tab, Item, Icon, Image, Breadcrumb, Header, List, Message } from 'semantic-ui-react';
+import { Table, Label, Button, Tab, Item, Icon, Image, Breadcrumb, Header, List, Message, Feed } from 'semantic-ui-react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { getArea, getImageUrl, getAreaPdfUrl } from '../api';
 import { Remarkable } from 'remarkable';
@@ -275,6 +275,14 @@ const Area = () => {
               <Table.Cell>{t.num}{t.ticked>0 && " (" + t.ticked + " ticked)"}</Table.Cell>
             </Table.Row>
           ))}
+          {data.triviaMedia?.length>0 && 
+            <Table.Row verticalAlign="top">
+              <Table.Cell>Trivia:</Table.Cell>
+              <Table.Cell>
+                <Feed.Extra><Media isAdmin={data.metadata.isAdmin} numPitches={0} removeMedia={() => window.location.reload()} media={data.triviaMedia} optProblemId={null} isBouldering={isBouldering} /></Feed.Extra>
+              </Table.Cell>
+            </Table.Row>
+          }
           {data.lat>0 && data.lng>0 &&
             <Table.Row>
               <Table.Cell>Weather:</Table.Cell>

@@ -605,7 +605,7 @@ export function postArea(accessToken: string, id: number, trash: boolean, locked
 
 export function postComment(accessToken: string, id: number, idProblem: number, comment: string, danger: boolean, resolved: boolean, del: boolean, media: any): Promise<any> {
   const formData = new FormData();
-  const newMedia = media.map(m => {return {name: m.file && m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto, pitch: m.pitch, description: m.description, embedVideoUrl: m.embedVideoUrl, embedThumbnailUrl: m.embedThumbnailUrl, embedMilliseconds: m.embedMilliseconds}});
+  const newMedia = media.map(m => {return {name: m.file && m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto, pitch: m.pitch, trivia: m.trivia, description: m.description, embedVideoUrl: m.embedVideoUrl, embedThumbnailUrl: m.embedThumbnailUrl, embedMilliseconds: m.embedMilliseconds}});
   formData.append('json', JSON.stringify({id, idProblem, comment, danger, resolved, delete: del, newMedia}));
   media.forEach(m => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
   
@@ -651,7 +651,7 @@ export function postPermissions(accessToken: string, userId: number, adminRead: 
 
 export function postProblem(accessToken: string, sectorId: number, id: number, trash: boolean, lockedAdmin: number, lockedSuperadmin: number, name: string, rock: string, comment: string, originalGrade: string, fa: any, faDate: string, nr: number, t: any, lat: number, lng: number, sections: any, media: any, faAid: any, trivia: string, startingAltitude: string, aspect: string, routeLength: string, descent: string): Promise<any> {
   const formData = new FormData();
-  const newMedia = media.map(m => {return {name: m.file && m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto, pitch: m.pitch, description: m.description, embedVideoUrl: m.embedVideoUrl, embedThumbnailUrl: m.embedThumbnailUrl, embedMilliseconds: m.embedMilliseconds}});
+  const newMedia = media.map(m => {return {name: m.file && m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto, pitch: m.pitch, trivia: m.trivia, description: m.description, embedVideoUrl: m.embedVideoUrl, embedThumbnailUrl: m.embedThumbnailUrl, embedMilliseconds: m.embedMilliseconds}});
   formData.append('json', JSON.stringify({sectorId, id, trash, lockedAdmin, lockedSuperadmin, name, rock, comment, originalGrade, fa, faDate, nr, t, lat, lng, sections, newMedia, faAid, trivia, startingAltitude, aspect, routeLength, descent}));
   media.forEach(m => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
   return makeAuthenticatedRequest(accessToken, `/problems`,{
@@ -670,7 +670,7 @@ export function postProblem(accessToken: string, sectorId: number, id: number, t
 
 export function postProblemMedia(accessToken: string, id: number, media: any): Promise<any> {
   const formData = new FormData();
-  const newMedia = media.map(m => {return {name: m.file && m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto, pitch: m.pitch, description: m.description, embedVideoUrl: m.embedVideoUrl, embedThumbnailUrl: m.embedThumbnailUrl, embedMilliseconds: m.embedMilliseconds}});
+  const newMedia = media.map(m => {return {name: m.file && m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto, pitch: m.pitch, trivia: m.trivia, description: m.description, embedVideoUrl: m.embedVideoUrl, embedThumbnailUrl: m.embedThumbnailUrl, embedMilliseconds: m.embedMilliseconds}});
   formData.append('json', JSON.stringify({id, newMedia}));
   media.forEach(m => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
   return makeAuthenticatedRequest(accessToken, `/problems/media`,{

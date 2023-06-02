@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Dropzone from 'react-dropzone';
-import { Button, Card, Image, Input } from 'semantic-ui-react';
+import { Button, Card, Image, Input, Checkbox } from 'semantic-ui-react';
 import VideoEmbedder from './video-embedder';
 import classNames from 'classnames';
 import UserSelector from '../user-selector/user-selector';
@@ -18,7 +18,7 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch, includeVideoEmbedder }) => 
         });
         setMedia(allMedia);
         onMediaChanged(allMedia);
-      }} accept={'image/*'}>
+      }}>
         {({getRootProps, getInputProps, isDragActive}) => {
           return (
             <div
@@ -76,6 +76,11 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch, includeVideoEmbedder }) => 
                     }} identity={m} />
                     <Input size="mini" icon="comment" iconPosition="left" fluid placeholder='Description' value={m.description} onChange={(e, { value }) => {
                       m.description = value;
+                      onMediaChanged(media);
+                    }} />
+                    <Checkbox toggle checked={m.trivia} onChange={() => {
+                      m.trivia = !m.trivia;
+                      m.pitch = null;
                       onMediaChanged(media);
                     }} />
                     {m.embedThumbnailUrl &&

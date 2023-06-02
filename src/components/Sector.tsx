@@ -10,7 +10,7 @@ import { calculateDistance } from './common/leaflet/distance-math';
 import Media from './common/media/media';
 import Todo from './common/todo/todo';
 import { Stars, LockSymbol, Loading, WeatherLabels } from './common/widgets/widgets';
-import { Icon, Button, Tab, Breadcrumb, Table, Label, TableCell, List, Header, Image, Message } from 'semantic-ui-react';
+import { Icon, Button, Tab, Breadcrumb, Table, Label, TableCell, List, Header, Image, Message, Feed } from 'semantic-ui-react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { getSector, getAreaPdfUrl, getSectorPdfUrl } from '../api';
 import Linkify from 'react-linkify';
@@ -272,6 +272,14 @@ const Sector = () => {
               </Table.Cell>
             </Table.Row>
           )}
+          {data.triviaMedia?.length>0 && 
+            <Table.Row verticalAlign="top">
+              <Table.Cell>Trivia:</Table.Cell>
+              <Table.Cell>
+                <Feed.Extra><Media isAdmin={data.metadata.isAdmin} numPitches={0} removeMedia={() => window.location.reload()} media={data.triviaMedia} optProblemId={null} isBouldering={isBouldering} /></Feed.Extra>
+              </Table.Cell>
+            </Table.Row>
+          }
           {data.lat>0 && data.lng>0 &&
             <Table.Row verticalAlign="top">
               <Table.Cell>Weather:</Table.Cell>
