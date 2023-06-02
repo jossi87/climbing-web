@@ -58,6 +58,15 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch, includeVideoEmbedder }) => 
                         m.pitch = parseInt(value);
                         onMediaChanged(media);
                       }} />}
+                      <Input size="mini" icon="comment" iconPosition="left" fluid placeholder='Description' value={m.description} onChange={(e, { value }) => {
+                      m.description = value;
+                      onMediaChanged(media);
+                    }} />
+                    <Checkbox label="Trivia" toggle checked={m.trivia} onChange={() => {
+                      m.trivia = !m.trivia;
+                      m.pitch = null;
+                      onMediaChanged(media);
+                    }} />
                     <UserSelector users={[]} isMulti={false} placeholder="In photo/video" onUsersUpdated={(u, m) => {
                       m.inPhoto = u.label;
                       onMediaChanged(media);
@@ -66,15 +75,6 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch, includeVideoEmbedder }) => 
                       m.photographer = u.label;
                       onMediaChanged(media);
                     }} identity={m} />
-                    <Input size="mini" icon="comment" iconPosition="left" fluid placeholder='Description' value={m.description} onChange={(e, { value }) => {
-                      m.description = value;
-                      onMediaChanged(media);
-                    }} />
-                    <Checkbox toggle checked={m.trivia} onChange={() => {
-                      m.trivia = !m.trivia;
-                      m.pitch = null;
-                      onMediaChanged(media);
-                    }} />
                     {m.embedThumbnailUrl &&
                       <>
                         <label>Start video at:</label>
