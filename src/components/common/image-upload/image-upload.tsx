@@ -9,6 +9,7 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch, includeVideoEmbedder }) => 
     const allMedia = media;
     acceptedFiles.forEach(f => {
       f.preview = URL.createObjectURL(f);
+      f.trivia = false;
       allMedia.push({file: f})
     });
     setMedia(allMedia);

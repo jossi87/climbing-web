@@ -591,7 +591,7 @@ export function getUsersTicks(accessToken: string): Promise<any> {
 
 export function postArea(accessToken: string, id: number, trash: boolean, lockedAdmin: number, lockedSuperadmin: number, forDevelopers: boolean, accessInfo: string, accessClosed: string, noDogsAllowed: boolean, name: string, comment: string, lat: number, lng: number, media: any, sectorOrder: any): Promise<any> {
   const formData = new FormData();
-  const newMedia = media.map(m => {return {name: m.file && m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto, description: m.description, embedVideoUrl: m.embedVideoUrl, embedThumbnailUrl: m.embedThumbnailUrl, embedMilliseconds: m.embedMilliseconds}});
+  const newMedia = media.map(m => {return {name: m.file && m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto, description: m.description, trivia: m.trivia, embedVideoUrl: m.embedVideoUrl, embedThumbnailUrl: m.embedThumbnailUrl, embedMilliseconds: m.embedMilliseconds}});
   formData.append('json', JSON.stringify({id, trash, lockedAdmin, lockedSuperadmin, forDevelopers, accessInfo, accessClosed, noDogsAllowed, name, comment, lat, lng, newMedia, sectorOrder}));
   media.forEach(m => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
   return makeAuthenticatedRequest(accessToken, `/areas`,{
@@ -711,7 +711,7 @@ export function postProblemSvg(accessToken: string, problemId: number, mediaId: 
 
 export function postSector(accessToken: string, areaId: number, id: number, trash: boolean, lockedAdmin: number, lockedSuperadmin: number, name: string, comment: string, accessInfo: string, accessClosed: string, lat: number, lng: number, polygonCoords: any, polyline: any, media: any, problemOrder: any): Promise<any> {
   const formData = new FormData();
-  const newMedia = media.map(m => {return {name: m.file && m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto, description: m.description, embedVideoUrl: m.embedVideoUrl, embedThumbnailUrl: m.embedThumbnailUrl, embedMilliseconds: m.embedMilliseconds}});
+  const newMedia = media.map(m => {return {name: m.file && m.file.name.replace(/[^-a-z0-9.]/ig,'_'), photographer: m.photographer, inPhoto: m.inPhoto, description: m.description, trivia: m.trivia, embedVideoUrl: m.embedVideoUrl, embedThumbnailUrl: m.embedThumbnailUrl, embedMilliseconds: m.embedMilliseconds}});
   formData.append('json', JSON.stringify({areaId, id, trash, lockedAdmin, lockedSuperadmin, name, comment, accessInfo, accessClosed, lat, lng, polygonCoords, polyline, newMedia, problemOrder}));
   media.forEach(m => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/ig,'_'), m.file));
   return makeAuthenticatedRequest(accessToken, `/sectors`,{
