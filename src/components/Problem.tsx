@@ -368,7 +368,7 @@ const Problem = () => {
           <Breadcrumb.Section active>{data.name} {data.grade} <LockSymbol lockedAdmin={data.lockedAdmin} lockedSuperadmin={data.lockedSuperadmin} /></Breadcrumb.Section>
         </Breadcrumb>
       </div>
-      {(data.areaAccessClosed || data.sectorAccessClosed) && <Message size="huge" negative icon="attention" header="Climbing not allowed!" content={(data.areaAccessClosed||'') + (data.sectorAccessClosed||'')} />}
+      {(data.areaAccessClosed || data.sectorAccessClosed) && <Message size="huge" negative icon="attention" header={(data.areaAccessClosed? "Area": "Sector") + " closed!"} content={(data.areaAccessClosed||'') + (data.sectorAccessClosed||'')} />}
       <Tab panes={panes} />
       <Table definition unstackable>
         <Table.Body>
