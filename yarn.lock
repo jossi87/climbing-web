@@ -10,11 +10,6 @@
     "@jridgewell/gen-mapping" "^0.1.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@analytics/google-analytics@^1.0.7":
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/@analytics/google-analytics/-/google-analytics-1.0.7.tgz#256658c841af707aabdcfb35858971676115d1ce"
-  integrity sha512-KZ69NaMIi5kOcouzqI8cu7tZgQl7ziGiRahfU6zniUf32G8bv7wQDh73JFz1NwO6gBPloUc+5BzEoWzScM5Rgw==
-
 "@auth0/auth0-react@^2.1.0":
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/@auth0/auth0-react/-/auth0-react-2.1.0.tgz#cadb561fb3994fd3e63040da1bfc714947ac07ea"

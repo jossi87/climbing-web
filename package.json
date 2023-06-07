@@ -32,7 +32,6 @@
     "webpack-merge": "^5.9.0"
   },
   "dependencies": {
-    "@analytics/google-analytics": "^1.0.7",
     "@auth0/auth0-react": "^2.1.0",
     "@react-leaflet/core": "^2.1.0",
     "atob": "^2.1.2",
