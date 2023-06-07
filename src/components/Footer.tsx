@@ -2,27 +2,26 @@ import React from 'react'
 import {Segment, List, Grid, Header, Container, Divider, Button, Icon} from "semantic-ui-react"
 import { Link } from "react-router-dom"
 
+const styleGitHubBrv = {
+  borderTopLeftRadius: '8px',
+  borderTopRightRadius: '8px',
+  borderBottomLeftRadius: '8px',
+  borderBottomRightRadius: '8px',
+  paddingLeft: '10px',
+  paddingRight: '10px',
+  maxWidth: '170px',
+  backgroundColor: '#FFFFFF'
+};
+const styleGoogle = {
+  width: '200px',
+  marginTop: '-13px',
+  marginBottom: '-13px',
+};
 const styleFacebook = {
-    width: '170px',
-    marginTop: '3px',
-    marginLeft: '5px',
-    marginBottom: '5px',
-  }
-  const styleBrv = {
-    marginBottom: '10px',
-    borderTopLeftRadius: '8px',
-    borderTopRightRadius: '8px',
-    borderBottomLeftRadius: '8px',
-    borderBottomRightRadius: '8px',
-    paddingLeft: '10px',
-    paddingRight: '10px',
-    maxWidth: '170px',
-    backgroundColor: '#FFFFFF'
-  };
-  const styleGoogle = {
-    width: '200px',
-    marginTop: '-22px',
-  }
+  width: '175px',
+  marginLeft: '5px',
+  marginBottom: '5px',
+};
 
 function Footer() {
 
@@ -75,9 +74,10 @@ function Footer() {
               </Grid.Column>
               <Grid.Column width={4}>
                 <Header inverted as='h4' content='Links' />
-                <a href={"https://www.facebook.com/groups/brattelinjer"} rel="noreferrer noopener" target="_blank"><Button style={styleFacebook} color='facebook'><Icon name='facebook' /> Facebook</Button></a><br/>
-                <a href={"https://brv.no"} rel="noreferrer noopener" target="_blank"><img style={styleBrv} src={"/png/brv.png"} alt="Bratte Rogalands venner"/></a><br/>
+                <a href={"https://github.com/jossi87/climbing-web"} rel="noreferrer noopener" target="_blank"><img style={styleGitHubBrv} src={"/png/GitHub_Logo.png"} alt="GitHub"/></a><br/>
+                <a href={"https://brv.no"} rel="noreferrer noopener" target="_blank"><img style={styleGitHubBrv} src={"/png/brv.png"} alt="Bratte Rogalands venner"/></a><br/>
                 <a href='https://play.google.com/store/apps/details?id=org.jossi.android.bouldering&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'  rel="noreferrer noopener" target="_blank"><img style={styleGoogle} alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
+                <a href={"https://www.facebook.com/groups/brattelinjer"} rel="noreferrer noopener" target="_blank"><Button style={styleFacebook} color='facebook'><Icon name='facebook' /> Facebook</Button></a><br/>
               </Grid.Column>
             </Grid.Row>
           </Grid>
