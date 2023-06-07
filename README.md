@@ -11,7 +11,7 @@ Note: While installing new dependecies, it is necessary to use "yarn add -D" if 
 <!-- Run Locally -->
 ### :arrow_forward: Run Locally
 ```bash
-  git clone https://bitbucket.org/josteinoygarden/buldreinfo-web.git
+  git clone https://github.com/jossi87/climbing-web.git
   cd buldreinfo-web
   yarn
   yarn dev
