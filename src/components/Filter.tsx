@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet';
 import { Link, useNavigate } from 'react-router-dom';
 import Leaflet from './common/leaflet/leaflet';
 import { Loading } from './common/widgets/widgets';
@@ -66,8 +67,12 @@ const Filter = () => {
   const gradeOptions = meta.metadata.grades.map(g => ({key: g.id, value: g.id, text: g.grade}));
   const typeOptions = meta.metadata.types.sort((a, b) => a.subType.localeCompare(b.subType, getLocales())).map(t => ({key: t.id, value: t.id, text: t.subType}));
   var res = result && result.filter(p => ( (!hideTicked || !p.ticked) && (!onlyWithMedia || p.randomMediaId>0) && (!onlyAdmin || p.lockedAdmin) && (!onlySuperAdmin || p.lockedSuperadmin) ))
+  console.log(meta)
   return (
     <>
+      <Helmet>
+        <title>{meta.metadata.title} | Filter</title>
+      </Helmet>
       <Segment>
         <Header>Filter</Header>
         <Form>
