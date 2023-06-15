@@ -10,15 +10,15 @@ export default function LocateControl() {
     const locateOptions = {
       watch: true,
       enableHighAccuracy: true,
-      position: 'topleft',
+      position: "topleft",
       maxZoom: 19,
       strings: {
-          title: 'Show my location'
+        title: "Show my location",
       },
       iconElementTag: "i",
       icon: "black map marker alternate icon",
-      onActivate: () => {} // callback before engine starts retrieving locations
-    }
+      onActivate: () => {}, // callback before engine starts retrieving locations
+    };
     const lc = new Locate(locateOptions);
     lc.addTo(map);
   }, [map]);

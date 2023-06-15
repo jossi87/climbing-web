@@ -1,11 +1,11 @@
-import { createRoot } from 'react-dom/client';
-import { BrowserRouter, useNavigate } from 'react-router-dom';
-import { Auth0Provider } from '@auth0/auth0-react';
-import { ErrorBoundary } from 'react-error-boundary';
-import App from './App';
-import './buldreinfo.css';
+import { createRoot } from "react-dom/client";
+import { BrowserRouter, useNavigate } from "react-router-dom";
+import { Auth0Provider } from "@auth0/auth0-react";
+import { ErrorBoundary } from "react-error-boundary";
+import App from "./App";
+import "./buldreinfo.css";
 
-function ErrorFallback({error, resetErrorBoundary}) {
+function ErrorFallback({ error, resetErrorBoundary }) {
   const userAgent = navigator.userAgent;
   return (
     <div role="alert">
@@ -17,18 +17,32 @@ function ErrorFallback({error, resetErrorBoundary}) {
       <b>Stack trace:</b>
       <pre>{error.stack}</pre>
       <button onClick={resetErrorBoundary}>Try again</button>
-      <button onClick={() => {
-        let body = "URL: " + window.location.href + "%0D%0A%0D%0A"
-                + "User Agent: " + userAgent + "%0D%0A%0D%0A"
-                + "Error message: " + error.message + "%0D%0A%0D%0A"
-                + "Stack trace:%0D%0A" + error.stack;
-        let link = "mailto:jostein.oygarden@gmail.com"
-                + "?subject=Buldreinfo/Brattelinjer-error"
-                + "&body=" + body;
-        window.location.href = link;
-      }}>Send error to administrator as email</button>
+      <button
+        onClick={() => {
+          let body =
+            "URL: " +
+            window.location.href +
+            "%0D%0A%0D%0A" +
+            "User Agent: " +
+            userAgent +
+            "%0D%0A%0D%0A" +
+            "Error message: " +
+            error.message +
+            "%0D%0A%0D%0A" +
+            "Stack trace:%0D%0A" +
+            error.stack;
+          let link =
+            "mailto:jostein.oygarden@gmail.com" +
+            "?subject=Buldreinfo/Brattelinjer-error" +
+            "&body=" +
+            body;
+          window.location.href = link;
+        }}
+      >
+        Send error to administrator as email
+      </button>
     </div>
-  )
+  );
 }
 
 export const Auth0ProviderWithNavigate = ({ children }) => {
@@ -68,5 +82,5 @@ const Index = () => (
   </BrowserRouter>
 );
 
-const root = createRoot(document.getElementById('app'));
+const root = createRoot(document.getElementById("app"));
 root.render(<Index />);

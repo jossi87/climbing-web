@@ -1,30 +1,42 @@
-import React, { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet';
-import { Link } from 'react-router-dom';
-import { Grid, Segment, Header, Icon, List, Image, Label } from 'semantic-ui-react';
-import { useAuth0 } from '@auth0/auth0-react';
-import { Loading } from './common/widgets/widgets';
-import { getAbout } from '../api';
+import React, { useState, useEffect } from "react";
+import { Helmet } from "react-helmet";
+import { Link } from "react-router-dom";
+import {
+  Grid,
+  Segment,
+  Header,
+  Icon,
+  List,
+  Image,
+  Label,
+} from "semantic-ui-react";
+import { useAuth0 } from "@auth0/auth0-react";
+import { Loading } from "./common/widgets/widgets";
+import { getAbout } from "../api";
 
 const About = () => {
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [data, setData] = useState(null);
   useEffect(() => {
-    const update = async() => {
-      const accessToken = isAuthenticated? await getAccessTokenSilently() : null;
+    const update = async () => {
+      const accessToken = isAuthenticated
+        ? await getAccessTokenSilently()
+        : null;
       getAbout(accessToken).then((data) => setData(data));
-    }
+    };
     update();
   }, [isAuthenticated]);
 
   if (!data) {
     return <Loading />;
   }
-  let isBouldering = data.metadata.gradeSystem==='BOULDER';
+  let isBouldering = data.metadata.gradeSystem === "BOULDER";
   return (
     <>
       <Helmet>
-        {data.metadata.canonical && <link rel="canonical" href={data.metadata.canonical} />}
+        {data.metadata.canonical && (
+          <link rel="canonical" href={data.metadata.canonical} />
+        )}
         <title>{data.metadata.title}</title>
         <meta name="description" content={data.metadata.description} />
         <meta property="og:type" content="website" />
@@ -33,166 +45,360 @@ const About = () => {
         <meta property="og:title" content={data.metadata.title} />
         <meta property="og:image" content={data.metadata.og.image} />
         <meta property="og:image:width" content={data.metadata.og.imageWidth} />
-        <meta property="og:image:height" content={data.metadata.og.imageHeight} />
+        <meta
+          property="og:image:height"
+          content={data.metadata.og.imageHeight}
+        />
         <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
       </Helmet>
       <Grid columns={2} stackable>
         <Grid.Column>
           <Segment>
             <Header as="h3">
-              <Icon name='info' />
+              <Icon name="info" />
               <Header.Content>
                 Statues
-                <Header.Subheader>This is a nonprofit website created by climbers, for climbers.</Header.Subheader>
+                <Header.Subheader>
+                  This is a nonprofit website created by climbers, for climbers.
+                </Header.Subheader>
               </Header.Content>
             </Header>
             <List bulleted>
-              <List.Item>The webpage is created and maintained by <a href="mailto:jostein.oygarden@gmail.com">Jostein Øygarden</a>.</List.Item>
-              <List.Item>The aim and purpose of the websites is to create a good solution that provides as good information as possible about the climbing in the region where the solution is used, also called a climbing guide.</List.Item>
-              <List.Item>The site is non-profit and free to use for everyone.</List.Item>
-              <List.Item>The editors are a variety of active climbers in the different regions.</List.Item>
-              <List.Item>The owner of the content is linked to the origin, whether it is a club or individuals. Contact <a href="mailto:jostein.oygarden@gmail.com">Jostein</a> if you want a site for your climbing area.</List.Item>
-              <List.Item>The editors themselves can choose how to cover the costs associated with running the websites, with the aim of ensuring free use for the users.</List.Item>
+              <List.Item>
+                The webpage is created and maintained by{" "}
+                <a href="mailto:jostein.oygarden@gmail.com">Jostein Øygarden</a>
+                .
+              </List.Item>
+              <List.Item>
+                The aim and purpose of the websites is to create a good solution
+                that provides as good information as possible about the climbing
+                in the region where the solution is used, also called a climbing
+                guide.
+              </List.Item>
+              <List.Item>
+                The site is non-profit and free to use for everyone.
+              </List.Item>
+              <List.Item>
+                The editors are a variety of active climbers in the different
+                regions.
+              </List.Item>
+              <List.Item>
+                The owner of the content is linked to the origin, whether it is
+                a club or individuals. Contact{" "}
+                <a href="mailto:jostein.oygarden@gmail.com">Jostein</a> if you
+                want a site for your climbing area.
+              </List.Item>
+              <List.Item>
+                The editors themselves can choose how to cover the costs
+                associated with running the websites, with the aim of ensuring
+                free use for the users.
+              </List.Item>
             </List>
           </Segment>
           <Segment>
             <Header as="h3">
-              <Icon name='pencil' />
+              <Icon name="pencil" />
               <Header.Content>
                 Ethics
-                <Header.Subheader>If you&#39;re going out climbing, we ask you to please follow these guidelines for the best possible bouldering experience now, and for the future generations of climbers.</Header.Subheader>
+                <Header.Subheader>
+                  If you&#39;re going out climbing, we ask you to please follow
+                  these guidelines for the best possible bouldering experience
+                  now, and for the future generations of climbers.
+                </Header.Subheader>
               </Header.Content>
             </Header>
             <List bulleted>
-              <List.Item>Show respect for the landowners, issue care and be polite.</List.Item>
-              <List.Item>Follow paths where possible, and do not cross cultivated land.</List.Item>
+              <List.Item>
+                Show respect for the landowners, issue care and be polite.
+              </List.Item>
+              <List.Item>
+                Follow paths where possible, and do not cross cultivated land.
+              </List.Item>
               <List.Item>Take your trash back with you.</List.Item>
-              <List.Item>Park with reason, and think of others. Make room for potential tractors and such if necessary.</List.Item>
+              <List.Item>
+                Park with reason, and think of others. Make room for potential
+                tractors and such if necessary.
+              </List.Item>
               <List.Item>No chipping allowed.</List.Item>
-              <List.Item>Remember climbing can be dangerous and always involves risk. Your safety is your own responsibility.</List.Item>
-              {isBouldering?
+              <List.Item>
+                Remember climbing can be dangerous and always involves risk.
+                Your safety is your own responsibility.
+              </List.Item>
+              {isBouldering ? (
                 <>
-                  <List.Item>Start where directed, and don&#39;t hesitate to ask if your unsure.</List.Item>
-                  <List.Item>Sit start means that the behind should be the last thing to leave the ground/crashpad.</List.Item>
+                  <List.Item>
+                    Start where directed, and don&#39;t hesitate to ask if your
+                    unsure.
+                  </List.Item>
+                  <List.Item>
+                    Sit start means that the behind should be the last thing to
+                    leave the ground/crashpad.
+                  </List.Item>
                 </>
-                :
+              ) : (
                 <>
-                  <List.Item>Loose hangers are expected to be tightened by the climbers themselves, it is recommended to have a spanner (17mm) in the bag at all times.</List.Item>
-                  <List.Item>Quickdraws on a route usually means someone is projecting this route, leave them hanging.</List.Item>
-                  <List.Item>If there is a piece of rope or similar hanging from the first bolt, it means that the route has been closed by the developer and should not be climbed.</List.Item>
+                  <List.Item>
+                    Loose hangers are expected to be tightened by the climbers
+                    themselves, it is recommended to have a spanner (17mm) in
+                    the bag at all times.
+                  </List.Item>
+                  <List.Item>
+                    Quickdraws on a route usually means someone is projecting
+                    this route, leave them hanging.
+                  </List.Item>
+                  <List.Item>
+                    If there is a piece of rope or similar hanging from the
+                    first bolt, it means that the route has been closed by the
+                    developer and should not be climbed.
+                  </List.Item>
                 </>
-              }
+              )}
             </List>
           </Segment>
           <Segment>
             <Header as="h3">
-              <Icon name='book' />
+              <Icon name="book" />
               <Header.Content>
                 History
-                <Header.Subheader>The first version of this webpage was published in 2003.</Header.Subheader>
+                <Header.Subheader>
+                  The first version of this webpage was published in 2003.
+                </Header.Subheader>
               </Header.Content>
             </Header>
             <List bulleted>
               <List.Item>
-                2021-now: <a href="https://is.brattelinjer.no" rel='noreferrer noopener' target='_blank'>is.brattelinjer.no</a>
+                2021-now:{" "}
+                <a
+                  href="https://is.brattelinjer.no"
+                  rel="noreferrer noopener"
+                  target="_blank"
+                >
+                  is.brattelinjer.no
+                </a>
                 <List.Description>
-                  Ice climbing guide, by Jostein Øygarden<br/>
+                  Ice climbing guide, by Jostein Øygarden
+                  <br />
                   <Label size="mini" basic>
                     <Icon name="camera" />
-                    <a href="/png/archive/20211012_is_brattelinjer.png" rel="noreferrer noopener" target="_blank">Screenshot (2021.10.12)</a>
+                    <a
+                      href="/png/archive/20211012_is_brattelinjer.png"
+                      rel="noreferrer noopener"
+                      target="_blank"
+                    >
+                      Screenshot (2021.10.12)
+                    </a>
                   </Label>
                 </List.Description>
               </List.Item>
               <List.Item>
-                2018-now: <a href="https://brattelinjer.no" rel='noreferrer noopener' target='_blank'>brattelinjer.no</a>
+                2018-now:{" "}
+                <a
+                  href="https://brattelinjer.no"
+                  rel="noreferrer noopener"
+                  target="_blank"
+                >
+                  brattelinjer.no
+                </a>
                 <List.Description>
-                  Sport- and traditional climbing guide, by Jostein Øygarden<br/>
+                  Sport- and traditional climbing guide, by Jostein Øygarden
+                  <br />
                   <Label size="mini" basic>
                     <Icon name="camera" />
-                    <a href="/png/archive/20211012_brattelinjer.png" rel="noreferrer noopener" target="_blank">Screenshot (2021.10.12)</a>
+                    <a
+                      href="/png/archive/20211012_brattelinjer.png"
+                      rel="noreferrer noopener"
+                      target="_blank"
+                    >
+                      Screenshot (2021.10.12)
+                    </a>
                   </Label>
                 </List.Description>
               </List.Item>
               <List.Item>
-                2016-now: <a href="https://buldreinfo.com" rel='noreferrer noopener' target='_blank'>buldreinfo.com</a>
+                2016-now:{" "}
+                <a
+                  href="https://buldreinfo.com"
+                  rel="noreferrer noopener"
+                  target="_blank"
+                >
+                  buldreinfo.com
+                </a>
                 <List.Description>
-                  Bouldering guide, by Jostein Øygarden<br/>
+                  Bouldering guide, by Jostein Øygarden
+                  <br />
                   <Label size="mini" basic>
                     <Icon name="camera" />
-                    <a href="/png/archive/20211012_buldreinfo.png" rel="noreferrer noopener" target="_blank">Screenshot (2021.10.12)</a>
+                    <a
+                      href="/png/archive/20211012_buldreinfo.png"
+                      rel="noreferrer noopener"
+                      target="_blank"
+                    >
+                      Screenshot (2021.10.12)
+                    </a>
                   </Label>
                 </List.Description>
               </List.Item>
               <List.Item>
-                2012-2016: <a href="https://buldreinfo.com" rel='noreferrer noopener' target='_blank'>buldreinfo.com</a>
+                2012-2016:{" "}
+                <a
+                  href="https://buldreinfo.com"
+                  rel="noreferrer noopener"
+                  target="_blank"
+                >
+                  buldreinfo.com
+                </a>
                 <List.Description>
-                  Bouldering guide, by Idar Ose<br/>
+                  Bouldering guide, by Idar Ose
+                  <br />
                   <Label size="mini" basic>
                     <Icon name="camera" />
-                    <a href="/png/archive/20160205_buldreinfo.png" rel="noreferrer noopener" target="_blank">Screenshot (2016.02.05)</a>
-                    <Label.Detail><a href="https://web.archive.org/web/20160205060357/http://www.buldreinfo.com/" target="_blank">source: archive.net</a></Label.Detail>
+                    <a
+                      href="/png/archive/20160205_buldreinfo.png"
+                      rel="noreferrer noopener"
+                      target="_blank"
+                    >
+                      Screenshot (2016.02.05)
+                    </a>
+                    <Label.Detail>
+                      <a
+                        href="https://web.archive.org/web/20160205060357/http://www.buldreinfo.com/"
+                        target="_blank"
+                      >
+                        source: archive.net
+                      </a>
+                    </Label.Detail>
                   </Label>
                 </List.Description>
               </List.Item>
               <List.Item>
-                2006-2012: <a href="https://buldreinfo.com" rel='noreferrer noopener' target='_blank'>buldreinfo.com</a>
+                2006-2012:{" "}
+                <a
+                  href="https://buldreinfo.com"
+                  rel="noreferrer noopener"
+                  target="_blank"
+                >
+                  buldreinfo.com
+                </a>
                 <List.Description>
-                  Bouldering guide, by Vegard Aksnes<br/>
+                  Bouldering guide, by Vegard Aksnes
+                  <br />
                   <Label.Group size="mini">
                     <Label size="mini" basic>
                       <Icon name="camera" />
-                      <a href="/png/archive/20110923_buldreinfo.png" rel="noreferrer noopener" target="_blank">Screenshot (2011.09.23)</a>
-                      <Label.Detail><a href="https://web.archive.org/web/20110923004804/http://www.buldreinfo.com/" target="_blank">source: archive.net</a></Label.Detail>
+                      <a
+                        href="/png/archive/20110923_buldreinfo.png"
+                        rel="noreferrer noopener"
+                        target="_blank"
+                      >
+                        Screenshot (2011.09.23)
+                      </a>
+                      <Label.Detail>
+                        <a
+                          href="https://web.archive.org/web/20110923004804/http://www.buldreinfo.com/"
+                          target="_blank"
+                        >
+                          source: archive.net
+                        </a>
+                      </Label.Detail>
                     </Label>
                     <Label size="mini" basic>
                       <Icon name="camera" />
-                      <a href="/png/archive/20071104_buldreinfo.png" rel="noreferrer noopener" target="_blank">Screenshot (2007.11.04)</a>
-                      <Label.Detail><a href="https://web.archive.org/web/20071104020049/http://www.buldreinfo.com/" target="_blank">source: archive.net</a></Label.Detail>
+                      <a
+                        href="/png/archive/20071104_buldreinfo.png"
+                        rel="noreferrer noopener"
+                        target="_blank"
+                      >
+                        Screenshot (2007.11.04)
+                      </a>
+                      <Label.Detail>
+                        <a
+                          href="https://web.archive.org/web/20071104020049/http://www.buldreinfo.com/"
+                          target="_blank"
+                        >
+                          source: archive.net
+                        </a>
+                      </Label.Detail>
                     </Label>
                   </Label.Group>
                 </List.Description>
               </List.Item>
               <List.Item>
-                2003-2006: Predecessor to <a href="https://buldreinfo.com" rel='noreferrer noopener' target='_blank'>buldreinfo.com</a> (a page located on the <a href="https://brv.no" rel='noreferrer noopener' target='_blank'>brv.no</a>-site)
+                2003-2006: Predecessor to{" "}
+                <a
+                  href="https://buldreinfo.com"
+                  rel="noreferrer noopener"
+                  target="_blank"
+                >
+                  buldreinfo.com
+                </a>{" "}
+                (a page located on the{" "}
+                <a
+                  href="https://brv.no"
+                  rel="noreferrer noopener"
+                  target="_blank"
+                >
+                  brv.no
+                </a>
+                -site)
                 <List.Description>
-                  Bouldering guide, by Vegard Aksnes<br/>
+                  Bouldering guide, by Vegard Aksnes
+                  <br />
                   <Label size="mini" basic>
                     <Icon name="camera" />
-                    <a href="/png/archive/20040812_brv_bouldering_guide.png" rel="noreferrer noopener" target="_blank">Screenshot (2004.08.12)</a>
-                    <Label.Detail><a href="https://web.archive.org/web/20050308114436/http://www.brv.no/gammelt/buldring/oversikt.htm" target="_blank">source: archive.net</a></Label.Detail>
+                    <a
+                      href="/png/archive/20040812_brv_bouldering_guide.png"
+                      rel="noreferrer noopener"
+                      target="_blank"
+                    >
+                      Screenshot (2004.08.12)
+                    </a>
+                    <Label.Detail>
+                      <a
+                        href="https://web.archive.org/web/20050308114436/http://www.brv.no/gammelt/buldring/oversikt.htm"
+                        target="_blank"
+                      >
+                        source: archive.net
+                      </a>
+                    </Label.Detail>
                   </Label>
                 </List.Description>
               </List.Item>
             </List>
           </Segment>
         </Grid.Column>
-        {data.administrators && data.administrators.length>0 &&
+        {data.administrators && data.administrators.length > 0 && (
           <Grid.Column>
             <Segment>
               <Header as="h3">
-                <Icon name='users' />
+                <Icon name="users" />
                 <Header.Content>
                   Administrators
-                  <Header.Subheader>{data.administrators.length} users</Header.Subheader>
+                  <Header.Subheader>
+                    {data.administrators.length} users
+                  </Header.Subheader>
                 </Header.Content>
               </Header>
               <List>
                 {data.administrators.map((u, key) => (
                   <List.Item key={key}>
-                    <Image src={u.picture? u.picture : '/png/image.png'} />
+                    <Image src={u.picture ? u.picture : "/png/image.png"} />
                     <List.Content>
-                      <List.Header as={Link} to={`/user/${u.userId}`}>{u.name}</List.Header>
-                      <List.Description>Last seen {u.lastLogin}</List.Description>
+                      <List.Header as={Link} to={`/user/${u.userId}`}>
+                        {u.name}
+                      </List.Header>
+                      <List.Description>
+                        Last seen {u.lastLogin}
+                      </List.Description>
                     </List.Content>
                   </List.Item>
                 ))}
               </List>
             </Segment>
           </Grid.Column>
-        }
+        )}
       </Grid>
     </>
   );
-}
+};
 
 export default About;
