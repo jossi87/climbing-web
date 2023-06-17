@@ -1,9 +1,9 @@
-import { memo } from "react";
+import React, { memo } from "react";
 
 function Chart({ data }) {
-  var grades = [];
+  const grades = [];
   data.map((t) => {
-    var d = grades.filter((val) => {
+    const d = grades.filter((val) => {
       return val.gradeNumber === t.gradeNumber;
     });
     if (!d[0]) {
@@ -24,9 +24,8 @@ function Chart({ data }) {
   grades.sort((a, b) => {
     return b.gradeNumber - a.gradeNumber;
   });
-  const maxValue = Math.max.apply(
-    Math,
-    grades.map((d) => {
+  const maxValue = Math.max(
+    ...grades.map((d) => {
       return d.fa + d.tick;
     })
   );

@@ -31,9 +31,9 @@ const SvgEdit = () => {
   const [draggedPoint, setDraggedPoint] = useState(null);
   const [draggedCubic, setDraggedCubic] = useState(false);
   const imageRef = useRef(null);
-  let { mediaId } = useParams();
-  let navigate = useNavigate();
-  let location = useLocation();
+  const { mediaId } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { outerWidth, outerHeight } = window;
   const minWindowScale = Math.min(outerWidth, outerHeight);
   useEffect(() => {
@@ -94,8 +94,8 @@ const SvgEdit = () => {
       data.m.mediaSvgs[activeElementIndex] &&
       data.m.mediaSvgs[activeElementIndex].points
     ) {
-      let coords = getMouseCoords(e);
-      let points = data.m.mediaSvgs[activeElementIndex].points;
+      const coords = getMouseCoords(e);
+      const points = data.m.mediaSvgs[activeElementIndex].points;
       points.push(coords);
       const p = generatePath(points);
       data.m.mediaSvgs[activeElementIndex].path = p;
@@ -109,7 +109,7 @@ const SvgEdit = () => {
       (data.m.mediaSvgs[activeElementIndex].t === TYPE_RAPPEL_BOLTED ||
         data.m.mediaSvgs[activeElementIndex].t === TYPE_RAPPEL_NOT_BOLTED)
     ) {
-      let coords = getMouseCoords(e);
+      const coords = getMouseCoords(e);
       data.m.mediaSvgs[activeElementIndex].rappelX = coords.x;
       data.m.mediaSvgs[activeElementIndex].rappelY = coords.y;
       setData(data);
@@ -118,7 +118,7 @@ const SvgEdit = () => {
   }
 
   function generatePath(points) {
-    var d = "";
+    let d = "";
     points.forEach((p, i) => {
       if (i === 0) {
         // first point
@@ -154,7 +154,7 @@ const SvgEdit = () => {
 
   function setPointCoords(coords) {
     const active = activePoint;
-    let points = data.m.mediaSvgs[activeElementIndex].points;
+    const points = data.m.mediaSvgs[activeElementIndex].points;
     points[active].x = coords.x;
     points[active].y = coords.y;
     const p = generatePath(points);
@@ -166,7 +166,7 @@ const SvgEdit = () => {
 
   function setCubicCoords(coords, anchor) {
     const active = activePoint;
-    let points = data.m.mediaSvgs[activeElementIndex].points;
+    const points = data.m.mediaSvgs[activeElementIndex].points;
     points[active].c[anchor].x = coords.x;
     points[active].c[anchor].y = coords.y;
     const p = generatePath(points);
@@ -192,7 +192,7 @@ const SvgEdit = () => {
 
   function setPointType(e, { value }) {
     const active = activePoint;
-    let points = data.m.mediaSvgs[activeElementIndex].points;
+    const points = data.m.mediaSvgs[activeElementIndex].points;
     if (active !== 0) {
       // not the first point
       switch (value) {
@@ -225,8 +225,8 @@ const SvgEdit = () => {
   }
 
   function removeActivePoint(e) {
-    let active = activePoint;
-    let points = data.m.mediaSvgs[activeElementIndex].points;
+    const active = activePoint;
+    const points = data.m.mediaSvgs[activeElementIndex].points;
     if (points.length > 1 && active !== 0) {
       points.splice(active, 1);
       const p = generatePath(points);
@@ -260,7 +260,7 @@ const SvgEdit = () => {
       data.m.mediaSvgs[activeElementIndex] &&
       data.m.mediaSvgs[activeElementIndex].t === "PATH" &&
       data.m.mediaSvgs[activeElementIndex].points.map((p, i, a) => {
-        var anchors = [];
+        const anchors = [];
         if (p.c) {
           anchors.push(
             <g key={anchors.length} className="buldreinfo-svg-edit-opacity">
@@ -362,7 +362,7 @@ const SvgEdit = () => {
             <Button
               size="mini"
               onClick={() => {
-                let element = { t: TYPE_PATH, id: -1, path: "", points: [] };
+                const element = { t: TYPE_PATH, id: -1, path: "", points: [] };
                 if (!data.m.mediaSvgs) {
                   data.m.mediaSvgs = [];
                 }
@@ -381,7 +381,7 @@ const SvgEdit = () => {
             <Button
               size="mini"
               onClick={() => {
-                let element = {
+                const element = {
                   t: TYPE_RAPPEL_BOLTED,
                   id: -1,
                   rappelX: data.m.width / 2,
@@ -405,7 +405,7 @@ const SvgEdit = () => {
             <Button
               size="mini"
               onClick={() => {
-                let element = {
+                const element = {
                   t: TYPE_RAPPEL_NOT_BOLTED,
                   id: -1,
                   rappelX: data.m.width / 2,
@@ -480,7 +480,7 @@ const SvgEdit = () => {
                   <Dropdown
                     selection
                     value={
-                      !!data.m.mediaSvgs[activeElementIndex].points[activePoint]
+                      data.m.mediaSvgs[activeElementIndex].points[activePoint]
                         .c
                         ? "C"
                         : "L"

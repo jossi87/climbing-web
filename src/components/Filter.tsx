@@ -27,7 +27,7 @@ enum OrderBy {
 
 const Filter = () => {
   const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   const [meta, setMeta] = useState(null);
   const [grades, setGrades] = useLocalStorage("filter_grades", null);
   const [types, setTypes] = useLocalStorage("filter_types", null);
@@ -77,7 +77,7 @@ const Filter = () => {
 
   function setData(data, newOrderBy: OrderBy) {
     setOrderBy(newOrderBy);
-    let result = data.sort((a, b) => {
+    const result = data.sort((a, b) => {
       if (newOrderBy === OrderBy.alphabetical) {
         return a.problemName.localeCompare(b.problemName, getLocales());
       } else if (newOrderBy === OrderBy.crag) {
@@ -105,7 +105,7 @@ const Filter = () => {
   const typeOptions = meta.metadata.types
     .sort((a, b) => a.subType.localeCompare(b.subType, getLocales()))
     .map((t) => ({ key: t.id, value: t.id, text: t.subType }));
-  var res =
+  const res =
     result &&
     result.filter(
       (p) =>

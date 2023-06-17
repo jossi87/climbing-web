@@ -16,7 +16,7 @@ const Navigation = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isSuperAdmin, setIsUserAdmin] = useState(false);
   const [isBouldering, setIsBouldering] = useState(false);
-  let location = useLocation();
+  const location = useLocation();
   useEffect(() => {
     const update = async () => {
       const accessToken = isAuthenticated

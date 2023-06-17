@@ -16,6 +16,22 @@ import {
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+type TickModalProps = {
+  open: boolean;
+  closeWithReload: () => void;
+  closeWithoutReload: () => void;
+  accessToken: string;
+  idTick: number;
+  idProblem: number;
+  grades: { grade: number }[];
+  comment: string;
+  grade: string;
+  stars: number;
+  repeats: { date: string | null; comment: string }[] | undefined;
+  date: string;
+  enableTickRepeats: boolean;
+};
+
 const TickModal = ({
   open,
   closeWithReload,
@@ -30,7 +46,7 @@ const TickModal = ({
   repeats: initialRepeats,
   date: initialDate,
   enableTickRepeats,
-}) => {
+}: TickModalProps) => {
   const [comment, setComment] = useState(initialComment);
   const [grade, setGrade] = useState(initialGrade);
   const [stars, setStars] = useState(initialStars);
@@ -39,7 +55,8 @@ const TickModal = ({
   );
   const [repeats, setRepeats] = useState(initialRepeats);
   const today = new Date();
-  const invalidDate = date && convertFromStringToDate(date) > today;
+  const invalidDate =
+    date && (convertFromStringToDate(date) ?? new Date()) > today;
 
   return (
     <Modal open={open} onClose={closeWithoutReload}>
@@ -71,7 +88,7 @@ const TickModal = ({
                 selection
                 value={grade}
                 onChange={(e, data) => {
-                  setGrade(data.value);
+                  setGrade(String(data.value));
                 }}
                 options={grades.map((g, i) => ({
                   key: i,
@@ -91,10 +108,14 @@ const TickModal = ({
                 selection
                 value={stars}
                 onChange={(e, data) => {
-                  setStars(data.value);
+                  setStars(Number(data.value));
                 }}
                 options={[
-                  { key: -1, value: -1, text: <i>I don't want to rate</i> },
+                  {
+                    key: -1,
+                    value: -1,
+                    text: <i>I don&quot;t want to rate</i>,
+                  },
                   {
                     key: 0,
                     value: 0,
@@ -150,7 +171,7 @@ const TickModal = ({
                 style={{ minHeight: 100 }}
                 value={comment ? comment : ""}
                 onChange={(e, data) => {
-                  setComment(data.value);
+                  setComment(String(data.value));
                 }}
               />
             </Form.Field>
@@ -232,6 +253,9 @@ const TickModal = ({
                 labelPosition="right"
                 content="Delete tick"
                 onClick={() => {
+                  if (!date) {
+                    return;
+                  }
                   postTicks(
                     accessToken,
                     true,
@@ -243,7 +267,7 @@ const TickModal = ({
                     grade,
                     repeats
                   )
-                    .then((response) => {
+                    .then(() => {
                       closeWithReload();
                     })
                     .catch((error) => {
@@ -257,11 +281,14 @@ const TickModal = ({
           )}
           <Button
             positive
-            disabled={stars === null || invalidDate}
+            disabled={!!(stars === null || invalidDate)}
             icon="checkmark"
             labelPosition="right"
             content="Save"
             onClick={() => {
+              if (!date) {
+                return;
+              }
               postTicks(
                 accessToken,
                 false,
@@ -273,7 +300,7 @@ const TickModal = ({
                 grade,
                 repeats
               )
-                .then((response) => {
+                .then(() => {
                   closeWithReload();
                 })
                 .catch((error) => {

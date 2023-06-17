@@ -3,11 +3,11 @@ import { Input } from "semantic-ui-react";
 import fetch from "isomorphic-fetch";
 
 const VideoEmbedder = ({ addMedia }) => {
-  const [embedVideoUrl, setEmbedVideoUrl] = useState(null);
-  const [embedThumbnailUrl, setEmbedThumbnailUrl] = useState(null);
+  const [embedVideoUrl, setEmbedVideoUrl] = useState<string>();
+  const [embedThumbnailUrl, setEmbedThumbnailUrl] = useState<string>();
   const [embedMilliseconds, setEmbedMilliseconds] = useState(0);
 
-  let enabled = embedVideoUrl && embedThumbnailUrl;
+  const enabled = embedVideoUrl && embedThumbnailUrl;
 
   return (
     <Input
@@ -20,25 +20,25 @@ const VideoEmbedder = ({ addMedia }) => {
         disabled: !enabled,
         onClick: () => {
           addMedia(embedVideoUrl, embedThumbnailUrl, embedMilliseconds);
-          setEmbedVideoUrl(null);
-          setEmbedThumbnailUrl(null);
+          setEmbedVideoUrl(undefined);
+          setEmbedThumbnailUrl(undefined);
           setEmbedMilliseconds(0);
         },
       }}
       defaultValue={embedVideoUrl}
       onChange={(e) => {
         let videoUrl = e.target.value;
-        let thumbnailUrl = null;
+        let thumbnailUrl: string | undefined = undefined;
         let ms = 0;
 
-        var regExp =
-          /(http:|https:|)\/\/(player.|www.|m.)?(vimeo\.com|youtu(be\.com|\.be|be\.googleapis\.com))\/(video\/|shorts\/|embed\/|watch\?v=|v\/)?([A-Za-z0-9._%-]*)(\&\S+)?/;
-        var match = videoUrl.match(regExp);
+        const regExp =
+          /(http:|https:|)\/\/(player.|www.|m.)?(vimeo\.com|youtu(be\.com|\.be|be\.googleapis\.com))\/(video\/|shorts\/|embed\/|watch\?v=|v\/)?([A-Za-z0-9._%-]*)(&\S+)?/;
+        const match = videoUrl.match(regExp);
         if (match) {
-          let type = match[3];
-          let id = match[6];
+          const type = match[3];
+          const id = match[6];
           if (type && id) {
-            var urlObj = new URL(videoUrl);
+            const urlObj = new URL(videoUrl);
             let start = urlObj.searchParams.get("t");
             if (!start) {
               start = urlObj.searchParams.get("start");
@@ -48,18 +48,18 @@ const VideoEmbedder = ({ addMedia }) => {
               videoUrl.includes("vimeo") &&
               videoUrl.includes("#t=")
             ) {
-              let ix = videoUrl.lastIndexOf("#t=");
+              const ix = videoUrl.lastIndexOf("#t=");
               start = videoUrl.substr(ix + 3);
             }
             if (start) {
               start = start.toUpperCase();
-              var total = 0;
+              let total = 0;
               if (/^\d+$/.test(start)) {
                 total = parseInt(start);
               } else {
-                var hours = start.match(/(\d+)H/);
-                var minutes = start.match(/(\d+)M/);
-                var seconds = start.match(/(\d+)S/);
+                const hours = start.match(/(\d+)H/);
+                const minutes = start.match(/(\d+)M/);
+                const seconds = start.match(/(\d+)S/);
                 if (hours) total += parseInt(hours[1]) * 3600;
                 if (minutes) total += parseInt(minutes[1]) * 60;
                 if (seconds) total += parseInt(seconds[1]);

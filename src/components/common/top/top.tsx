@@ -4,8 +4,13 @@ import { Table, Header, Image } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { getTop } from "../../../api";
 
-const Top = ({ idArea, idSector }) => {
-  const [top, setTop] = useState([]);
+type TopProps = {
+  idArea: number;
+  idSector: number;
+};
+
+const Top = ({ idArea, idSector }: TopProps) => {
+  const [top, setTop] = useState<Awaited<ReturnType<typeof getTop>>>();
 
   useEffect(() => {
     getTop(idArea, idSector).then((res) => {
@@ -16,6 +21,7 @@ const Top = ({ idArea, idSector }) => {
   if (!top) {
     return <Loading />;
   }
+
   const rows = top.map((t, i) => (
     <Table.Row key={i}>
       <Table.Cell>#{t.rank}</Table.Cell>
@@ -30,6 +36,7 @@ const Top = ({ idArea, idSector }) => {
       <Table.Cell>{t.percentage}%</Table.Cell>
     </Table.Row>
   ));
+
   return (
     <Table basic="very" size="small" celled collapsing unstackable compact>
       <Table.Header>

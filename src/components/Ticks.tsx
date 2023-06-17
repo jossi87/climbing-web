@@ -10,8 +10,8 @@ const Ticks = () => {
   const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
-  let { page } = useParams();
-  let navigate = useNavigate();
+  const { page } = useParams();
+  const navigate = useNavigate();
   useEffect(() => {
     setLoading(true);
     const update = async () => {

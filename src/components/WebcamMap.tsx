@@ -8,8 +8,8 @@ import { getCameras } from "../api";
 
 const WebcamMap = () => {
   const [data, setData] = useState(null);
-  let { json } = useParams();
-  let navigate = useNavigate();
+  const { json } = useParams();
+  const navigate = useNavigate();
   useEffect(() => {
     getCameras().then((data) => setData(data));
   }, []);
@@ -34,7 +34,7 @@ const WebcamMap = () => {
   let defaultZoom = data.metadata.defaultZoom;
   let subHeader;
   if (json) {
-    let { lat, lng, label } = JSON.parse(json);
+    const { lat, lng, label } = JSON.parse(json);
     subHeader = label;
     defaultCenter = { lat, lng };
     defaultZoom = 10;

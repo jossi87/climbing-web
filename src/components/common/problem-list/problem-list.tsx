@@ -9,7 +9,7 @@ interface Row {
   areaName: string;
   sectorName: string;
   name: string;
-  nr: number;
+  nr: number | null;
   gradeNumber: number;
   stars: number;
   numTicks: number;
@@ -135,7 +135,7 @@ const ProblemList = ({
       rocks.push("<Without rock>");
     }
     setUniqueRocks(rocks);
-    let types = rows
+    const types = rows
       .map((p) => p.subType)
       .filter((value, index, self) => self.indexOf(value) === index)
       .sort();
@@ -203,8 +203,8 @@ const ProblemList = ({
 
   let list;
   if (groupBy && groupByTitle != null && groupByTitle === GroupBy.rock) {
-    let accordionRows = uniqueRocks.map((rock) => {
-      let rows = data
+    const accordionRows = uniqueRocks.map((rock) => {
+      const rows = data
         .filter(
           (p) =>
             ((rock === "<Without rock>" && !p.rock) || p.rock == rock) &&
@@ -212,14 +212,14 @@ const ProblemList = ({
             (!containsFa || !onlyFa || p.fa)
         )
         .map((p) => p.element);
-      let label = rock + " (" + rows.length + ")";
-      let content = <List selection>{rows}</List>;
+      const label = rock + " (" + rows.length + ")";
+      const content = <List selection>{rows}</List>;
       return { label, length: rows.length, content };
     });
     list = <AccordionContainer accordionRows={accordionRows} />;
   } else if (groupBy && groupByTitle != null && groupByTitle === GroupBy.type) {
-    let accordionRows = uniqueTypes.map((subType) => {
-      let rows = data
+    const accordionRows = uniqueTypes.map((subType) => {
+      const rows = data
         .filter(
           (p) =>
             p.subType == subType &&
@@ -227,13 +227,13 @@ const ProblemList = ({
             (!containsFa || !onlyFa || p.fa)
         )
         .map((p) => p.element);
-      let label = subType + " (" + rows.length + ")";
-      let content = <List selection>{rows}</List>;
+      const label = subType + " (" + rows.length + ")";
+      const content = <List selection>{rows}</List>;
       return { label, length: rows.length, content };
     });
     list = <AccordionContainer accordionRows={accordionRows} />;
   } else {
-    let elements = data
+    const elements = data
       .filter(
         (p) =>
           (!containsTicked || !hideTicked || !p.ticked) &&

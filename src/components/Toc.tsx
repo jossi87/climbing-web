@@ -144,11 +144,11 @@ const Toc = () => {
                   </List.Header>
                   <List.List>
                     {sector.problems.map((problem, i) => {
-                      var ascents =
+                      const ascents =
                         problem.numTicks > 0 &&
                         problem.numTicks +
                           (problem.numTicks == 1 ? " ascent" : " ascents");
-                      var typeAscents;
+                      let typeAscents;
                       if (showType) {
                         let t = problem.t.subType;
                         if (problem.numPitches > 1)

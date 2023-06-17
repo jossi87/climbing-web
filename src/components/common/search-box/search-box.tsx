@@ -5,14 +5,37 @@ import { LockSymbol } from "../widgets/widgets";
 import { useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 
-const SearchBox = ({ children, ...searchProps }) => {
-  const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState([]);
-  const [value, setValue] = useState("");
-  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
-  let navigate = useNavigate();
+type SearchBoxProps = Omit<
+  React.ComponentProps<typeof Search>,
+  | "id"
+  | "loading"
+  | "minCharacters"
+  | "onResultSelect"
+  | "onSearchChange"
+  | "resultRenderer"
+  | "results"
+  | "value"
+>;
 
-  //@ts-ignore
+type SearchResult = {
+  url?: string;
+  externalurl?: string;
+  mediaid?: string;
+  mediaurl?: string;
+  crc32: string;
+  title: string;
+  description: string;
+  lockedadmin: boolean;
+  lockedsuperadmin: boolean;
+};
+
+const SearchBox = (searchProps: SearchBoxProps) => {
+  const [loading, setLoading] = useState(false);
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [value, setValue] = useState<string>();
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const navigate = useNavigate();
+
   useEffect(() => {
     let canceled = false;
     setLoading(true);
@@ -20,7 +43,7 @@ const SearchBox = ({ children, ...searchProps }) => {
       const accessToken = isAuthenticated
         ? await getAccessTokenSilently()
         : null;
-      postSearch(accessToken, value).then((res) => {
+      postSearch(accessToken, value ?? "").then((res) => {
         if (!canceled) {
           setResults(res);
           setLoading(false);
@@ -28,7 +51,9 @@ const SearchBox = ({ children, ...searchProps }) => {
       });
     };
     update();
-    return () => (canceled = true);
+    return () => {
+      canceled = true;
+    };
   }, [value]);
 
   return (
@@ -44,7 +69,7 @@ const SearchBox = ({ children, ...searchProps }) => {
         setValue(value);
       }}
       resultRenderer={(data) => {
-        let {
+        const {
           mediaid,
           crc32,
           mediaurl,
@@ -54,7 +79,7 @@ const SearchBox = ({ children, ...searchProps }) => {
           lockedsuperadmin,
           externalurl,
         } = data;
-        var imageSrc = null;
+        let imageSrc = null;
         if (mediaid > 0) {
           imageSrc = getImageUrl(mediaid, crc32, 45);
         } else if (mediaurl) {
@@ -116,8 +141,8 @@ const SearchBox = ({ children, ...searchProps }) => {
         crc32: s.crc32,
         title: s.title,
         description: s.description,
-        lockedadmin: s.lockedadmin.toString(),
-        lockedsuperadmin: s.lockedsuperadmin.toString(),
+        lockedadmin: String(s.lockedadmin),
+        lockedsuperadmin: String(s.lockedsuperadmin),
       }))}
       value={value}
       {...searchProps}

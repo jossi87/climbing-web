@@ -18,8 +18,8 @@ enum Page {
   settings,
 }
 const Profile = () => {
-  let { userId, page } = useParams();
-  let navigate = useNavigate();
+  const { userId, page } = useParams();
+  const navigate = useNavigate();
   const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [activePage, setActivePage] = useState(page ? Page[page] : Page.user);
   const [profile, setProfile] = useState(null);

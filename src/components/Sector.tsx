@@ -34,11 +34,11 @@ import { getSector, getAreaPdfUrl, getSectorPdfUrl } from "../api";
 import Linkify from "react-linkify";
 
 const SectorListItem = ({ problem, isClimbing }) => {
-  let type = isClimbing
+  const type = isClimbing
     ? problem.t.subType +
       (problem.numPitches > 1 ? ", " + problem.numPitches + " pitches" : "")
     : null;
-  let ascents =
+  const ascents =
     problem.numTicks &&
     problem.numTicks + (problem.numTicks == 1 ? " ascent" : " ascents");
   let faTypeAscents = problem.fa;
@@ -98,8 +98,8 @@ const Sector = () => {
   const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
-  let { sectorId } = useParams();
-  let navigate = useNavigate();
+  const { sectorId } = useParams();
+  const navigate = useNavigate();
   useEffect(() => {
     if (!isLoading) {
       const update = async () => {
@@ -128,7 +128,7 @@ const Sector = () => {
     return <Loading />;
   }
 
-  let isBouldering = data.metadata.gradeSystem === "BOULDER";
+  const isBouldering = data.metadata.gradeSystem === "BOULDER";
   const markers = data.problems
     .filter((p) => p.lat != 0 && p.lng != 0)
     .map((p) => {
@@ -141,7 +141,7 @@ const Sector = () => {
       };
     });
   // Only add polygon if problemMarkers=0 or site is showing sport climbing
-  let addPolygon =
+  const addPolygon =
     data.metadata.gradeSystem === "CLIMBING" || markers.length == 0;
   if (data.lat > 0 && data.lng > 0) {
     markers.push({
@@ -189,7 +189,7 @@ const Sector = () => {
         : data.metadata.defaultCenter;
     const defaultZoom =
       data.lat && data.lat > 0 ? 15 : data.metadata.defaultZoom;
-    let polyline =
+    const polyline =
       data.polyline &&
       data.polyline
         .split(";")
@@ -205,12 +205,12 @@ const Sector = () => {
           const latLng = c.split(",");
           return [parseFloat(latLng[0]), parseFloat(latLng[1])];
         });
-      let label =
+      const label =
         data.name + (polyline ? " (" + calculateDistance(polyline) + ")" : "");
       outlines = [{ url: "/sector/" + data.id, label, polygon: polygon }];
     }
     if (polyline) {
-      let label = outlines == null ? calculateDistance(polyline) : null;
+      const label = outlines == null ? calculateDistance(polyline) : null;
       polylines = [{ polyline, label: label }];
     }
     const uniqueRocks = data.problems
@@ -304,22 +304,22 @@ const Sector = () => {
       ),
     });
   }
-  let uniqueTypes = data.problems
+  const uniqueTypes = data.problems
     .map((p) => p.t.subType)
     .filter((value, index, self) => self.indexOf(value) === index);
   if (data.problems.filter((p) => p.gradeNumber === 0).length > 0) {
     uniqueTypes.push("Projects");
   }
   uniqueTypes.sort();
-  let content = uniqueTypes.map((subType, i) => {
-    let header = subType ? subType : "Boulders";
-    let problemsOfType = data.problems.filter(
+  const content = uniqueTypes.map((subType, i) => {
+    const header = subType ? subType : "Boulders";
+    const problemsOfType = data.problems.filter(
       (p) =>
         (subType === "Projects" && p.gradeNumber === 0) ||
         (p.t.subType === subType && p.gradeNumber !== 0)
     );
-    let numTicked = problemsOfType.filter((p) => p.ticked).length;
-    let txt =
+    const numTicked = problemsOfType.filter((p) => p.ticked).length;
+    const txt =
       numTicked === 0
         ? problemsOfType.length
         : problemsOfType.length + " (" + numTicked + " ticked)";
@@ -332,7 +332,7 @@ const Sector = () => {
   });
 
   const componentDecorator = (href, text, key) => (
-    <a href={href} key={key} target="_blank">
+    <a href={href} key={key} target="_blank" rel="noreferrer">
       {text}
     </a>
   );

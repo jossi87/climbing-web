@@ -147,8 +147,8 @@ const ImageUpload = ({
                           label="Min"
                           value={min}
                           onChange={(e, { value }) => {
-                            let val = parseInt(value);
-                            let ms = (val * 60 + sec) * 1000;
+                            const val = parseInt(value);
+                            const ms = (val * 60 + sec) * 1000;
                             m.embedMilliseconds = ms;
                             onMediaChanged(media);
                           }}
@@ -158,8 +158,8 @@ const ImageUpload = ({
                           label="Sec"
                           value={sec}
                           onChange={(e, { value }) => {
-                            let val = parseInt(value);
-                            let ms = (min * 60 + val) * 1000;
+                            const val = parseInt(value);
+                            const ms = (min * 60 + val) * 1000;
                             m.embedMilliseconds = ms;
                             onMediaChanged(media);
                           }}

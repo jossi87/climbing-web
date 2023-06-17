@@ -16,7 +16,7 @@ function getUrl(urlSuffix: string): string {
 }
 
 function makeAuthenticatedRequest(
-  accessToken: string,
+  accessToken: string | null,
   urlSuffix: string,
   opts: any
 ) {
@@ -34,7 +34,7 @@ export function getImageUrl(
   checksum: number,
   minDimention?: number
 ): string {
-  let crc32 = checksum || 0;
+  const crc32 = checksum || 0;
   if (minDimention) {
     return getUrl(
       `/images?id=${id}&crc32=${crc32}&minDimention=${minDimention}`
@@ -45,7 +45,7 @@ export function getImageUrl(
 
 export function getBuldreinfoMediaUrlSupported(id: number): string {
   const video = document.createElement("video");
-  let webm = video.canPlayType("video/webm");
+  const webm = video.canPlayType("video/webm");
   return getBuldreinfoMediaUrl(id, webm ? "webm" : "mp4");
 }
 
@@ -88,15 +88,21 @@ export function getBuldreinfoMediaUrl(id: number, suffix: string): string {
   );
 }
 
-export function getAreaPdfUrl(accessToken: string, id: number): string {
+export function getAreaPdfUrl(accessToken: string | null, id: number): string {
   return getUrl(`/areas/pdf?accessToken=${accessToken}&id=${id}`);
 }
 
-export function getSectorPdfUrl(accessToken: string, id: number): string {
+export function getSectorPdfUrl(
+  accessToken: string | null,
+  id: number
+): string {
   return getUrl(`/sectors/pdf?accessToken=${accessToken}&id=${id}`);
 }
 
-export function getProblemPdfUrl(accessToken: string, id: number): string {
+export function getProblemPdfUrl(
+  accessToken: string | null,
+  id: number
+): string {
   return getUrl(`/problems/pdf?accessToken=${accessToken}&id=${id}`);
 }
 
@@ -104,34 +110,37 @@ export function numberWithCommas(number: number) {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-export function convertFromDateToString(date: Date): string {
+export function convertFromDateToString(date: Date): string | null {
   if (!date) {
     return null;
   }
-  var d = date.getDate();
-  var m = date.getMonth() + 1;
-  var y = date.getFullYear();
+  const d = date.getDate();
+  const m = date.getMonth() + 1;
+  const y = date.getFullYear();
   return y + "-" + (m <= 9 ? "0" + m : m) + "-" + (d <= 9 ? "0" + d : d);
 }
 
-export function convertFromStringToDate(yyyy_MM_dd: string): Date {
+export function convertFromStringToDate(yyyy_MM_dd: string): Date | null {
   if (!yyyy_MM_dd) {
     return null;
   }
-  var year = parseInt(yyyy_MM_dd.substring(0, 4));
-  var month = parseInt(yyyy_MM_dd.substring(5, 7));
-  var day = parseInt(yyyy_MM_dd.substring(8, 10));
+  const year = parseInt(yyyy_MM_dd.substring(0, 4));
+  const month = parseInt(yyyy_MM_dd.substring(5, 7));
+  const day = parseInt(yyyy_MM_dd.substring(8, 10));
   return new Date(year, month - 1, day);
 }
 
-export function deleteMedia(accessToken: string, id: number): Promise<any> {
+export function deleteMedia(
+  accessToken: string | null,
+  id: number
+): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/media?id=${id}`, {
     method: "DELETE",
   });
 }
 
 export function moveMedia(
-  accessToken: string,
+  accessToken: string | null,
   id: number,
   left: boolean,
   toIdSector: number,
@@ -147,7 +156,7 @@ export function moveMedia(
 }
 
 export function getActivity(
-  accessToken: string,
+  accessToken: string | null,
   idArea: number,
   idSector: number,
   lowerGrade: number,
@@ -168,7 +177,7 @@ export function getActivity(
     });
 }
 
-export function getArea(accessToken: string, id: number): Promise<any> {
+export function getArea(accessToken: string | null, id: number): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/areas?id=${id}`, null)
     .then((response) => {
       if (response.status === 500) {
@@ -186,7 +195,10 @@ export function getArea(accessToken: string, id: number): Promise<any> {
     });
 }
 
-export function getAreaEdit(accessToken: string, id: number): Promise<any> {
+export function getAreaEdit(
+  accessToken: string | null,
+  id: number
+): Promise<any> {
   if (id == -1) {
     return getMeta(accessToken)
       .then((res) => {
@@ -244,7 +256,7 @@ export function getAreaEdit(accessToken: string, id: number): Promise<any> {
   }
 }
 
-export function getAbout(accessToken: string): Promise<any> {
+export function getAbout(accessToken: string | null): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/about`, null)
     .then((data) => data.json())
     .catch((error) => {
@@ -253,7 +265,7 @@ export function getAbout(accessToken: string): Promise<any> {
     });
 }
 
-export function getBrowse(accessToken: string): Promise<any> {
+export function getBrowse(accessToken: string | null): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/browse`, null)
     .then((data) => data.json())
     .catch((error) => {
@@ -271,7 +283,7 @@ export function getCameras(): Promise<any> {
     });
 }
 
-export function getCg(accessToken: string): Promise<any> {
+export function getCg(accessToken: string | null): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/cg`, null)
     .then((data) => data.json())
     .catch((error) => {
@@ -280,7 +292,7 @@ export function getCg(accessToken: string): Promise<any> {
     });
 }
 
-export function getDangerous(accessToken: string): Promise<any> {
+export function getDangerous(accessToken: string | null): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/dangerous`, null)
     .then((data) => data.json())
     .catch((error) => {
@@ -289,7 +301,7 @@ export function getDangerous(accessToken: string): Promise<any> {
     });
 }
 
-export function getFrontpage(accessToken: string): Promise<any> {
+export function getFrontpage(accessToken: string | null): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/frontpage`, null)
     .then((data) => data.json())
     .catch((error) => {
@@ -299,7 +311,7 @@ export function getFrontpage(accessToken: string): Promise<any> {
 }
 
 export function getGradeDistribution(
-  accessToken: string,
+  accessToken: string | null,
   idArea: number,
   idSector: number
 ): Promise<any> {
@@ -316,7 +328,7 @@ export function getGradeDistribution(
 }
 
 export function getMediaSvg(
-  accessToken: string,
+  accessToken: string | null,
   idMedia: number
 ): Promise<any> {
   return makeAuthenticatedRequest(
@@ -331,7 +343,7 @@ export function getMediaSvg(
     });
 }
 
-export function getMeta(accessToken: string): Promise<any> {
+export function getMeta(accessToken: string | null): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/meta`, null)
     .then((data) => data.json())
     .catch((error) => {
@@ -340,7 +352,7 @@ export function getMeta(accessToken: string): Promise<any> {
     });
 }
 
-export function getPermissions(accessToken: string): Promise<any> {
+export function getPermissions(accessToken: string | null): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/permissions`, null)
     .then((data) => data.json())
     .catch((error) => {
@@ -350,7 +362,7 @@ export function getPermissions(accessToken: string): Promise<any> {
 }
 
 export function getProblem(
-  accessToken: string,
+  accessToken: string | null,
   id: number,
   showHiddenMedia: boolean
 ): Promise<any> {
@@ -376,7 +388,7 @@ export function getProblem(
 }
 
 export function getProblemEdit(
-  accessToken: string,
+  accessToken: string | null,
   sectorIdProblemId: string
 ): Promise<any> {
   const parts = sectorIdProblemId.split("-");
@@ -435,7 +447,7 @@ export function getProblemEdit(
   } else {
     return getProblem(accessToken, problemId, false)
       .then((res) => {
-        let m = res.metadata;
+        const m = res.metadata;
         if (res.sectorLat && res.sectorLng && parseFloat(res.sectorLat) > 0) {
           m.defaultCenter = {
             lat: parseFloat(res.sectorLat),
@@ -478,7 +490,10 @@ export function getProblemEdit(
   }
 }
 
-export function getProfile(accessToken: string, id: number): Promise<any> {
+export function getProfile(
+  accessToken: string | null,
+  id: number
+): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/profile?id=${id}`, null)
     .then((data) => data.json())
     .catch((error) => {
@@ -488,7 +503,7 @@ export function getProfile(accessToken: string, id: number): Promise<any> {
 }
 
 export function getProfileMedia(
-  accessToken: string,
+  accessToken: string | null,
   id: number,
   captured: boolean
 ): Promise<any> {
@@ -505,9 +520,40 @@ export function getProfileMedia(
 }
 
 export function getProfileStatistics(
-  accessToken: string,
+  accessToken: string | null,
   id: number
-): Promise<any> {
+): Promise<{
+  numImageTags: number;
+  numImagesCreated: number;
+  numVideoTags: number;
+  numVideosCreated: number;
+  orderByGrade: boolean;
+  ticks: {
+    idProblem: number;
+    dateHr: string;
+    areaName: string;
+    areaLockedAdmin: boolean;
+    areaLockedSuperadmin: boolean;
+    sectorName: string;
+    sectorLockedAdmin: boolean;
+    sectorLockedSuperadmin: boolean;
+    name: string;
+    grade: string;
+    lockedAdmin: boolean;
+    lockedSuperadmin: boolean;
+    stars: number;
+    idTick: number;
+    fa: boolean;
+    idTickRepeat: number;
+    subType: string;
+    numPitches: number;
+    comment: string;
+    lat: number;
+    lng: number;
+    gradeNumber: number;
+    num: number;
+  }[];
+}> {
   return makeAuthenticatedRequest(
     accessToken,
     `/profile/statistics?id=${id}`,
@@ -520,7 +566,38 @@ export function getProfileStatistics(
     });
 }
 
-export function getProfileTodo(accessToken: string, id: number): Promise<any> {
+export function getProfileTodo(
+  accessToken: string | null,
+  id: number
+): Promise<{
+  areas: {
+    name: string;
+    lockedAdmin: boolean;
+    lockedSuperadmin: boolean;
+    url: string;
+    sectors: {
+      name: string;
+      lockedAdmin: boolean;
+      lockedSuperadmin: boolean;
+      url: string;
+      problems: {
+        name: string;
+        lockedAdmin: boolean;
+        lockedSuperadmin: boolean;
+        url: string;
+        nr: number;
+        grade: number;
+        partners?: {
+          name: string;
+          id: string;
+        }[];
+        lat: number;
+        lng: number;
+        id: number;
+      }[];
+    }[];
+  }[];
+}> {
   return makeAuthenticatedRequest(accessToken, `/profile/todo?id=${id}`, null)
     .then((data) => data.json())
     .catch((error) => {
@@ -529,7 +606,10 @@ export function getProfileTodo(accessToken: string, id: number): Promise<any> {
     });
 }
 
-export function getSector(accessToken: string, id: number): Promise<any> {
+export function getSector(
+  accessToken: string | null,
+  id: number
+): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/sectors?id=${id}`, null)
     .then((response) => {
       if (response.status === 500) {
@@ -548,7 +628,7 @@ export function getSector(accessToken: string, id: number): Promise<any> {
 }
 
 export function getSectorEdit(
-  accessToken: string,
+  accessToken: string | null,
   areaIdSectorId: string
 ): Promise<any> {
   const parts = areaIdSectorId.split("-");
@@ -618,7 +698,10 @@ export function getSectorEdit(
   }
 }
 
-export function getSites(accessToken: string, type: string): Promise<any> {
+export function getSites(
+  accessToken: string | null,
+  type: string
+): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/sites?type=${type}`, null)
     .then((data) => data.json())
     .catch((error) => {
@@ -628,7 +711,7 @@ export function getSites(accessToken: string, type: string): Promise<any> {
 }
 
 export function getSvgEdit(
-  accessToken: string,
+  accessToken: string | null,
   problemIdMediaId: string
 ): Promise<any> {
   const parts = problemIdMediaId.split("-");
@@ -642,14 +725,20 @@ export function getSvgEdit(
     .then((data) => data.json())
     .then((res) => {
       const m = res.media.filter((x) => x.id == mediaId)[0];
-      const readOnlySvgs = [];
-      var svgId = 0;
-      var hasAnchor = true;
-      var path = null;
-      var anchors = [];
-      var texts = [];
+      const readOnlySvgs: {
+        nr: number;
+        hasAnchor: boolean;
+        path: string;
+        anchors: unknown[];
+        texts: string[];
+      }[] = [];
+      let svgId = 0;
+      let hasAnchor = true;
+      let path = null;
+      let anchors = [];
+      let texts = [];
       if (m.svgs) {
-        for (let svg of m.svgs) {
+        for (const svg of m.svgs) {
           if (svg.problemId === res.id) {
             svgId = svg.id;
             path = svg.path;
@@ -704,7 +793,10 @@ export function getSvgEdit(
     });
 }
 
-export function getTicks(accessToken: string, page: number): Promise<any> {
+export function getTicks(
+  accessToken: string | null,
+  page: number
+): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/ticks?page=${page}`, null)
     .then((data) => data.json())
     .catch((error) => {
@@ -713,7 +805,7 @@ export function getTicks(accessToken: string, page: number): Promise<any> {
     });
 }
 
-export function getToc(accessToken: string): Promise<any> {
+export function getToc(accessToken: string | null): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/toc`, null)
     .then((data) => data.json())
     .catch((error) => {
@@ -723,7 +815,7 @@ export function getToc(accessToken: string): Promise<any> {
 }
 
 export function getTodo(
-  accessToken: string,
+  accessToken: string | null,
   idArea: number,
   idSector: number
 ): Promise<any> {
@@ -739,7 +831,18 @@ export function getTodo(
     });
 }
 
-export function getTop(idArea: number, idSector: number): Promise<any> {
+export function getTop(
+  idArea: number,
+  idSector: number
+): Promise<
+  {
+    rank: number;
+    picture: string;
+    userId: string | number;
+    name: string;
+    percentage: string | number;
+  }[]
+> {
   return makeAuthenticatedRequest(
     null,
     `/top?idArea=${idArea}&idSector=${idSector}`,
@@ -752,7 +855,7 @@ export function getTop(idArea: number, idSector: number): Promise<any> {
     });
 }
 
-export function getTocXlsx(accessToken: string): Promise<any> {
+export function getTocXlsx(accessToken: string | null): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/toc/xlsx`, {
     expose: ["Content-Disposition"],
   }).catch((error) => {
@@ -761,7 +864,7 @@ export function getTocXlsx(accessToken: string): Promise<any> {
   });
 }
 
-export function getTrash(accessToken: string): Promise<any> {
+export function getTrash(accessToken: string | null): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/trash`, null)
     .then((data) => data.json())
     .catch((error) => {
@@ -771,7 +874,7 @@ export function getTrash(accessToken: string): Promise<any> {
 }
 
 export function getUserSearch(
-  accessToken: string,
+  accessToken: string | null,
   value: string
 ): Promise<any> {
   return makeAuthenticatedRequest(
@@ -786,7 +889,7 @@ export function getUserSearch(
     });
 }
 
-export function getUsersTicks(accessToken: string): Promise<any> {
+export function getUsersTicks(accessToken: string | null): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/users/ticks`, {
     expose: ["Content-Disposition"],
   }).catch((error) => {
@@ -796,7 +899,7 @@ export function getUsersTicks(accessToken: string): Promise<any> {
 }
 
 export function postArea(
-  accessToken: string,
+  accessToken: string | null,
   id: number,
   trash: boolean,
   lockedAdmin: number,
@@ -859,7 +962,7 @@ export function postArea(
 }
 
 export function postComment(
-  accessToken: string,
+  accessToken: string | null,
   id: number,
   idProblem: number,
   comment: string,
@@ -910,7 +1013,7 @@ export function postComment(
 }
 
 export function postFilter(
-  accessToken: string,
+  accessToken: string | null,
   grades: Array<number>,
   types: Array<number>
 ): Promise<any> {
@@ -924,7 +1027,10 @@ export function postFilter(
   }).then((data) => data.json());
 }
 
-export function postMediaSvg(accessToken: string, mediaSvg: any): Promise<any> {
+export function postMediaSvg(
+  accessToken: string | null,
+  mediaSvg: any
+): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/media/svg`, {
     method: "POST",
     body: JSON.stringify(mediaSvg),
@@ -935,7 +1041,7 @@ export function postMediaSvg(accessToken: string, mediaSvg: any): Promise<any> {
 }
 
 export function postPermissions(
-  accessToken: string,
+  accessToken: string | null,
   userId: number,
   adminRead: boolean,
   adminWrite: boolean,
@@ -958,7 +1064,7 @@ export function postPermissions(
 }
 
 export function postProblem(
-  accessToken: string,
+  accessToken: string | null,
   sectorId: number,
   id: number,
   trash: boolean,
@@ -1045,7 +1151,7 @@ export function postProblem(
 }
 
 export function postProblemMedia(
-  accessToken: string,
+  accessToken: string | null,
   id: number,
   media: any
 ): Promise<any> {
@@ -1083,7 +1189,10 @@ export function postProblemMedia(
     .then((data) => data.json());
 }
 
-export function postSearch(accessToken: string, value: string): Promise<any> {
+export function postSearch(
+  accessToken: string | null,
+  value: string
+): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/search`, {
     method: "POST",
     body: JSON.stringify({ value }),
@@ -1095,7 +1204,7 @@ export function postSearch(accessToken: string, value: string): Promise<any> {
 }
 
 export function postProblemSvg(
-  accessToken: string,
+  accessToken: string | null,
   problemId: number,
   mediaId: number,
   del: boolean,
@@ -1127,7 +1236,7 @@ export function postProblemSvg(
 }
 
 export function postSector(
-  accessToken: string,
+  accessToken: string | null,
   areaId: number,
   id: number,
   trash: boolean,
@@ -1197,7 +1306,7 @@ export function postSector(
 }
 
 export function postTicks(
-  accessToken: string,
+  accessToken: string | null,
   del: boolean,
   id: number,
   idProblem: number,
@@ -1225,14 +1334,17 @@ export function postTicks(
   });
 }
 
-export function postTodo(accessToken: string, problemId: number): Promise<any> {
+export function postTodo(
+  accessToken: string | null,
+  problemId: number
+): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/todo?idProblem=${problemId}`, {
     method: "POST",
   });
 }
 
 export function postUserRegion(
-  accessToken: string,
+  accessToken: string | null,
   regionId: number,
   del: boolean
 ): Promise<any> {
@@ -1246,7 +1358,7 @@ export function postUserRegion(
 }
 
 export function putMediaInfo(
-  accessToken: string,
+  accessToken: string | null,
   mediaId: number,
   description: string,
   pitch: number,
@@ -1262,7 +1374,7 @@ export function putMediaInfo(
 }
 
 export function putMediaJpegRotate(
-  accessToken: string,
+  accessToken: string | null,
   idMedia: number,
   degrees: number
 ): Promise<any> {
@@ -1276,7 +1388,7 @@ export function putMediaJpegRotate(
 }
 
 export function putTrash(
-  accessToken: string,
+  accessToken: string | null,
   idArea: number,
   idSector: number,
   idProblem: number,

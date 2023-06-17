@@ -1,12 +1,24 @@
 import React, { useState } from "react";
 import CreatableSelect from "react-select/creatable";
 
-const RockSelector = ({ rock, rocks, onRockUpdated, placeholder }) => {
+type RockSelectorProps = {
+  rock: string | null;
+  rocks: string[] | null;
+  onRockUpdated: (_: any) => void;
+  placeholder: string;
+};
+
+const RockSelector = ({
+  rock,
+  rocks,
+  onRockUpdated,
+  placeholder,
+}: RockSelectorProps) => {
   const [value, setValue] = useState(
     rock ? { label: rock, value: rock } : null
   );
 
-  function handleChange(newValue: any, actionMeta: any) {
+  function handleChange(newValue: any) {
     if (!newValue) {
       newValue = null;
     }

@@ -19,7 +19,7 @@ function ErrorFallback({ error, resetErrorBoundary }) {
       <button onClick={resetErrorBoundary}>Try again</button>
       <button
         onClick={() => {
-          let body =
+          const body =
             "URL: " +
             window.location.href +
             "%0D%0A%0D%0A" +
@@ -31,7 +31,7 @@ function ErrorFallback({ error, resetErrorBoundary }) {
             "%0D%0A%0D%0A" +
             "Stack trace:%0D%0A" +
             error.stack;
-          let link =
+          const link =
             "mailto:jostein.oygarden@gmail.com" +
             "?subject=Buldreinfo/Brattelinjer-error" +
             "&body=" +

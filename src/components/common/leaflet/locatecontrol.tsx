@@ -17,7 +17,7 @@ export default function LocateControl() {
       },
       iconElementTag: "i",
       icon: "black map marker alternate icon",
-      onActivate: () => {}, // callback before engine starts retrieving locations
+      onActivate: () => undefined, // callback before engine starts retrieving locations
     };
     const lc = new Locate(locateOptions);
     lc.addTo(map);

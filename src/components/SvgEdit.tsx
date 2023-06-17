@@ -35,9 +35,9 @@ const SvgEdit = () => {
   const [addAnchor, setAddAnchor] = useState(false);
   const [addText, setAddText] = useState(false);
   const imageRef = useRef(null);
-  let { problemIdMediaId } = useParams();
-  let navigate = useNavigate();
-  let location = useLocation();
+  const { problemIdMediaId } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { outerWidth, outerHeight } = window;
   const minWindowScale = Math.min(outerWidth, outerHeight);
   const black = "#000000";
@@ -51,8 +51,8 @@ const SvgEdit = () => {
           setH(data.h);
           setShift(data.shift);
           setSvgId(data.svgId);
-          let correctPoints = parsePath(data.path);
-          let correctPathTxt = generatePath(correctPoints);
+          const correctPoints = parsePath(data.path);
+          const correctPathTxt = generatePath(correctPoints);
           setPath(correctPathTxt);
           setPathTxt(correctPathTxt);
           setPoints(correctPoints);
@@ -135,7 +135,7 @@ const SvgEdit = () => {
     const y = Math.round((e.clientY - dim.top) * dy);
     let p = { x, y };
     if (convertToNearestPointOnImage) {
-      let foundPoint = readOnlyPoints?.find(
+      const foundPoint = readOnlyPoints?.find(
         (p2) => Math.hypot(p.x - p2.x, p.y - p2.y) < 20
       );
       if (foundPoint) {
@@ -180,13 +180,13 @@ const SvgEdit = () => {
       setPoints([...points]);
       setActivePoint(points.length - 1);
     } else if (addText) {
-      let coords = getMouseCoords(e, false);
-      let txt = prompt("Enter text", "");
+      const coords = getMouseCoords(e, false);
+      const txt = prompt("Enter text", "");
       texts.push({ txt: txt, x: coords.x, y: coords.y });
       setAddText(false);
       setTexts(texts);
     } else if (addAnchor) {
-      let coords = getMouseCoords(e, true);
+      const coords = getMouseCoords(e, true);
       anchors.push(coords);
       setAddAnchor(false);
       setAnchors(anchors);
@@ -194,7 +194,7 @@ const SvgEdit = () => {
   }
 
   function generatePath(points) {
-    var d = "";
+    let d = "";
     points.forEach((p, i) => {
       if (i === 0) {
         // first point
@@ -295,7 +295,7 @@ const SvgEdit = () => {
   }
 
   function removeActivePoint(e) {
-    let active = activePoint;
+    const active = activePoint;
     if (points.length > 0) {
       points.splice(active, 1);
       if (points.length > 0 && points[0].c) {
@@ -332,15 +332,9 @@ const SvgEdit = () => {
     return <InsufficientPrivileges />;
   } else if (!id || !metadata) {
     return <Loading />;
-  } else if (!metadata.isAdmin) {
-    return (
-      <span>
-        <h3>Not logged in</h3>
-      </span>
-    );
   } else {
-    var circles = points.map((p, i, a) => {
-      var anchors = [];
+    const circles = points.map((p, i, a) => {
+      const anchors = [];
       if (p.c) {
         const stroke = "#FFFFFF";
         anchors.push(
@@ -530,7 +524,7 @@ const SvgEdit = () => {
           {activePoint !== 0 && (
             <Dropdown
               selection
-              value={!!points[activePoint].c ? "C" : "L"}
+              value={points[activePoint].c ? "C" : "L"}
               onChange={setPointType}
               options={[
                 { key: 1, value: "L", text: "Selected point: Line to" },
@@ -581,8 +575,8 @@ const SvgEdit = () => {
             icon: "sync",
             content: "Update",
             onClick: () => {
-              let correctPoints = parsePath(pathTxt);
-              let correctPathTxt = generatePath(correctPoints);
+              const correctPoints = parsePath(pathTxt);
+              const correctPathTxt = generatePath(correctPoints);
               setPath(correctPathTxt);
               setPathTxt(correctPathTxt);
               setPoints(correctPoints);

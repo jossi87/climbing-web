@@ -22,7 +22,7 @@ const Permissions = () => {
     loginWithRedirect,
   } = useAuth0();
   const [data, setData] = useState(null);
-  let location = useLocation();
+  const location = useLocation();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -75,7 +75,7 @@ const Permissions = () => {
         ) : (
           <Card.Group doubling stackable itemsPerRow={4}>
             {data.users.map((u, key) => {
-              var color: any = "white";
+              let color: any = "white";
               if (u.write == 2) {
                 color = "black";
               } else if (u.write == 1) {
@@ -140,10 +140,10 @@ const Permissions = () => {
                           },
                         ]}
                         onChange={(e, d) => {
-                          let adminRead = d.value === 1 || d.value === 2;
-                          let adminWrite = d.value === 2;
-                          let superadminRead = d.value === 3;
-                          let superadminWrite = d.value === 3;
+                          const adminRead = d.value === 1 || d.value === 2;
+                          const adminWrite = d.value === 2;
+                          const superadminRead = d.value === 3;
+                          const superadminWrite = d.value === 3;
                           postPermissions(
                             data.accessToken,
                             u.userId,

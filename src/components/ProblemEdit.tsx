@@ -42,18 +42,18 @@ const ProblemEdit = () => {
   const [sectorRocks, setSectorRocks] = useState([]);
   const [showSectorMarkers, setShowSectorMarkers] = useState(true);
   const [saving, setSaving] = useState(false);
-  let { sectorIdProblemId } = useParams();
-  let navigate = useNavigate();
-  let location = useLocation();
+  const { sectorIdProblemId } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
   useEffect(() => {
     if (sectorIdProblemId && isAuthenticated) {
       getAccessTokenSilently().then((accessToken) => {
         getProblemEdit(accessToken, sectorIdProblemId).then((data) =>
           setData({ ...data, accessToken })
         );
-        let sectorIdProblemIdArray = sectorIdProblemId.split("-");
-        let sectorId = sectorIdProblemIdArray[0];
-        let problemId = sectorIdProblemIdArray[1];
+        const sectorIdProblemIdArray = sectorIdProblemId.split("-");
+        const sectorId = sectorIdProblemIdArray[0];
+        const problemId = sectorIdProblemIdArray[1];
         getSector(accessToken, parseInt(sectorId)).then((data) => {
           setSectorMarkers(
             data.problems
@@ -117,7 +117,7 @@ const ProblemEdit = () => {
   }
 
   function onFaDateChanged(newFaDate) {
-    let faDate = newFaDate ? convertFromDateToString(newFaDate) : null;
+    const faDate = newFaDate ? convertFromDateToString(newFaDate) : null;
     setData((prevState) => ({ ...prevState, faDate }));
   }
 
@@ -126,7 +126,7 @@ const ProblemEdit = () => {
   }
 
   function onTypeIdChanged(e, { value }) {
-    let typeId = parseInt(value);
+    const typeId = parseInt(value);
     setData((prevState) => ({ ...prevState, typeId }));
   }
 
@@ -135,20 +135,20 @@ const ProblemEdit = () => {
   }
 
   function onFaAidDateChanged(newFaDate) {
-    let faDate = newFaDate ? convertFromDateToString(newFaDate) : null;
-    let faAid = data.faAid;
+    const faDate = newFaDate ? convertFromDateToString(newFaDate) : null;
+    const faAid = data.faAid;
     data.faAid.date = faDate;
     setData((prevState) => ({ ...prevState, faAid }));
   }
 
   function onFaAidDescriptionChanged(e, { value }) {
-    let faAid = data.faAid;
+    const faAid = data.faAid;
     faAid.description = value;
     setData((prevState) => ({ ...prevState, faAid }));
   }
 
   function onFaAidUsersUpdated(newUsers) {
-    let fa = newUsers.map((u) => {
+    const fa = newUsers.map((u) => {
       return {
         id:
           typeof u.value === "string" || u.value instanceof String
@@ -157,7 +157,7 @@ const ProblemEdit = () => {
         name: u.label,
       };
     });
-    let faAid = data.faAid;
+    const faAid = data.faAid;
     faAid.users = fa;
     setData((prevState) => ({ ...prevState, faAid }));
   }
@@ -242,7 +242,7 @@ const ProblemEdit = () => {
   }
 
   function onUsersUpdated(newUsers) {
-    let fa = newUsers.map((u) => {
+    const fa = newUsers.map((u) => {
       return {
         id:
           typeof u.value === "string" || u.value instanceof String
@@ -265,8 +265,8 @@ const ProblemEdit = () => {
   } else if (!data.metadata.isAdmin) {
     return <InsufficientPrivileges />;
   } else {
-    var defaultCenter;
-    var defaultZoom: number;
+    let defaultCenter;
+    let defaultZoom: number;
     if (data.lat != 0 && data.lng != 0) {
       defaultCenter = { lat: data.lat, lng: data.lng };
       defaultZoom = 15;
@@ -292,7 +292,7 @@ const ProblemEdit = () => {
       lockedValue = 1;
     }
 
-    let markers = [];
+    const markers = [];
     if (data.lat != 0 && data.lng != 0) {
       markers.push({ lat: data.lat, lng: data.lng });
     }

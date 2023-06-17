@@ -4,8 +4,8 @@ import { svgPathProperties } from "svg-path-properties";
 export function Descent({ path, whiteNotBlack, scale, thumb, key }) {
   const properties = new svgPathProperties(path);
   const deltaPercent = (scale / properties.getTotalLength()) * (thumb ? 3 : 2);
-  let texts = [];
-  for (var i = 0; i <= 100; i += deltaPercent) {
+  const texts: JSX.Element[] = [];
+  for (let i = 0; i <= 100; i += deltaPercent) {
     texts.push(
       <textPath key={i} xlinkHref={"#descent" + key} startOffset={i + "%"}>
         ➤
@@ -147,11 +147,11 @@ export function Rappel({
 }
 
 function generateSvgNrAndAnchor(path, nr, hasAnchor, w, h) {
-  var ixNr;
-  var maxY = 0;
-  var ixAnchor;
-  var minY = 99999999;
-  for (var i = 0, len = path.length; i < len; i++) {
+  let ixNr;
+  let maxY = 0;
+  let ixAnchor;
+  let minY = 99999999;
+  for (let i = 0, len = path.length; i < len; i++) {
     if (path[i].y > maxY) {
       ixNr = i;
       maxY = path[i].y;
@@ -161,14 +161,14 @@ function generateSvgNrAndAnchor(path, nr, hasAnchor, w, h) {
       minY = path[i].y;
     }
   }
-  var x = path[ixNr].x;
-  var y = path[ixNr].y;
+  let x = path[ixNr].x;
+  let y = path[ixNr].y;
   const r = 0.012 * w;
   if (x < r) x = r;
   if (x > w - r) x = w - r;
   if (y < r) y = r;
   if (y > h - r) y = h - r;
-  var anchor = null;
+  let anchor = null;
   if (hasAnchor === true) {
     anchor = (
       <circle
@@ -248,10 +248,10 @@ export function parsePath(d) {
     });
     // Reverse path if drawn incorrect direction
     if (res.length >= 2 && res[0].y < res[res.length - 1].y) {
-      let tmp = [];
+      const tmp = [];
       for (let i = res.length - 1; i >= 0; i--) {
-        let p = res[i];
-        let prevP = i != res.length - 1 && res[i + 1];
+        const p = res[i];
+        const prevP = i != res.length - 1 && res[i + 1];
         if (prevP?.c) {
           tmp.push({
             x: p.x,
@@ -276,7 +276,7 @@ export function parseReadOnlySvgs(readOnlySvgs, w, h, minWindowScale) {
   const backgroundColor = "black";
   const color = "white";
   const scale = Math.max(w, h, minWindowScale);
-  for (let svg of readOnlySvgs) {
+  for (const svg of readOnlySvgs) {
     if (svg.t === "PATH") {
       shapes.push(
         Descent({

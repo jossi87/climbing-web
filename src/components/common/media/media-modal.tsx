@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useLocalStorage } from "../../../utils/use-local-storage";
 import {
   Dimmer,
@@ -93,7 +93,7 @@ const MediaModal = ({
   optProblemId,
   isBouldering,
 }) => {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   const [showSidebar, setShowSidebar] = useLocalStorage("showSidebar", true);
   const [problemIdHovered, setProblemIdHovered] = useState(null);
   const canShowSidebar = m.svgs?.length > 1;
@@ -207,29 +207,33 @@ const MediaModal = ({
             m.svgs
               .slice(0) // Create copy, dont change svgs-order (used to draw topo in correct order)
               .sort((a, b) => a.nr - b.nr)
-              .map((svg) => (
-                <Menu.Item
-                  fitted="horizontally"
-                  style={style.textLeft}
-                  as={Link}
-                  to={`/problem/${svg.problemId}?idMedia=${m.id}`}
-                  active={
-                    problemIdHovered === svg.problemId ||
-                    optProblemId === svg.problemId
-                  }
-                  color="blue"
-                  onMouseEnter={() => setProblemIdHovered(svg.problemId)}
-                  onMouseLeave={() => setProblemIdHovered(null)}
-                >
-                  {`#${svg.nr} ${svg.problemName}`} <i>{svg.problemGrade}</i>
-                  {svg.isTicked && (
-                    <Icon color="green" inverted={true} name="check" />
-                  )}
-                  {svg.isTodo && (
-                    <Icon color="blue" inverted={true} name="bookmark" />
-                  )}
-                </Menu.Item>
-              ))}
+              .map((svg) => {
+                const url = `/problem/${svg.problemId}?idMedia=${m.id}`;
+                return (
+                  <Menu.Item
+                    key={url}
+                    fitted="horizontally"
+                    style={style.textLeft}
+                    as={Link}
+                    to={url}
+                    active={
+                      problemIdHovered === svg.problemId ||
+                      optProblemId === svg.problemId
+                    }
+                    color="blue"
+                    onMouseEnter={() => setProblemIdHovered(svg.problemId)}
+                    onMouseLeave={() => setProblemIdHovered(null)}
+                  >
+                    {`#${svg.nr} ${svg.problemName}`} <i>{svg.problemGrade}</i>
+                    {svg.isTicked && (
+                      <Icon color="green" inverted={true} name="check" />
+                    )}
+                    {svg.isTodo && (
+                      <Icon color="blue" inverted={true} name="bookmark" />
+                    )}
+                  </Menu.Item>
+                );
+              })}
         </Sidebar>
 
         <Sidebar.Pusher>
@@ -533,8 +537,8 @@ const MediaModal = ({
                       icon="download"
                       text="Download original"
                       onClick={() => {
-                        let isMovie = m.idType !== 1;
-                        let ext = isMovie ? "mp4" : "jpg";
+                        const isMovie = m.idType !== 1;
+                        const ext = isMovie ? "mp4" : "jpg";
                         saveAs(
                           getBuldreinfoMediaUrl(m.id, ext),
                           "buldreinfo_brattelinjer_" + m.id + "." + ext
