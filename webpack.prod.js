@@ -1,11 +1,8 @@
-const { merge } = require('webpack-merge');
-const common = require('./webpack.common.js');
+const { merge } = require("webpack-merge");
+const common = require("./webpack.common.js");
+const { EnvironmentPlugin } = require("webpack");
 
-const additionalPulgins = [
-]
-
-additionalPulgins.forEach(plugin => common.plugins.push(plugin));
-
- module.exports = merge(common, {
-   mode: 'production',
- });
+module.exports = merge(common, {
+  mode: "production",
+  plugins: [new EnvironmentPlugin({ REACT_APP_ENV: "production" })],
+});

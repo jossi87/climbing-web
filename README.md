@@ -16,7 +16,15 @@ Note: While installing new dependecies, it is necessary to use "yarn add -D" if 
   yarn
   yarn dev
 ```
-*Change origin in api.ts to build different products in development.*
+
+#### Different API origins
+
+To use different environments, use the `REACT_APP_API_URL` environment variable.
+For example, here's one way to start a dev server pointing to a different site:
+
+```bash
+REACT_APP_API_URL=https://klatreforer.tromsoklatring.no yarn dev
+```
 
 <!-- Deployment -->
 ### :triangular_flag_on_post: Deployment

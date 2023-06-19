@@ -5,11 +5,10 @@ export function getLocales() {
 }
 
 export function getBaseUrl(): string {
-  var origin = window.origin;
-  if (origin === "http://localhost:3000") {
-    origin = "https://brattelinjer.no";
+  if (process.env.REACT_APP_ENV === "development") {
+    return process.env.REACT_APP_API_URL ?? "https://brattelinjer.no";
   }
-  return origin;
+  return window.origin;
 }
 
 function getUrl(urlSuffix: string): string {
