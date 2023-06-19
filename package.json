@@ -17,7 +17,7 @@
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.10",
     "@types/helmet": "^4.0.0",
     "@types/leaflet": "^1.9.3",
-    "@types/react": "^18.2.12",
+    "@types/react": "^18.2.13",
     "@typescript-eslint/eslint-plugin": "^5.59.11",
     "@typescript-eslint/parser": "^5.59.11",
     "babel-loader": "^9.1.2",
