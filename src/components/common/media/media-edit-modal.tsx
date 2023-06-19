@@ -21,7 +21,7 @@ const MediaEditModal = ({ save, onCloseWithoutReload, m, numPitches }) => {
                 placeholder="Description"
                 value={media.mediaMetadata.description}
                 onChange={(e, { value }) => {
-                  let newMedia = media;
+                  const newMedia = media;
                   newMedia.mediaMetadata.description = value;
                   setMedia({ ...newMedia });
                 }}
@@ -38,7 +38,7 @@ const MediaEditModal = ({ save, onCloseWithoutReload, m, numPitches }) => {
                   placeholder="Pitch"
                   value={media.pitch}
                   onChange={(e, { value }) => {
-                    let newMedia = media;
+                    const newMedia = media;
                     newMedia.pitch = parseInt(value);
                     setMedia({ ...newMedia });
                   }}

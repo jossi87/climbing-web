@@ -48,8 +48,8 @@ const Problem = () => {
   const [showCommentModal, setShowCommentModal] = useState(null);
   const [showHiddenMedia, setShowHiddenMedia] = useState(false);
   const [reload, setReload] = useState(true);
-  let { problemId } = useParams();
-  let navigate = useNavigate();
+  const { problemId } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!isLoading && (reload || (data != null && data.id != problemId))) {
@@ -82,7 +82,7 @@ const Problem = () => {
   }, [data]);
 
   function onRemoveMedia(idMediaToRemove) {
-    let newMedia = data.media.filter((m) => m.id != idMediaToRemove);
+    const newMedia = data.media.filter((m) => m.id != idMediaToRemove);
     setData((prevState) => ({ ...prevState, media: newMedia }));
   }
 
@@ -158,7 +158,7 @@ const Problem = () => {
   }
 
   const componentDecorator = (href, text, key) => (
-    <a href={href} key={key} target="_blank">
+    <a href={href} key={key} target="_blank" rel="noreferrer">
       {text}
     </a>
   );
@@ -176,7 +176,7 @@ const Problem = () => {
   } else if (!data || !data.id || reload) {
     return <Loading />;
   }
-  let isBouldering = data.metadata.gradeSystem === "BOULDER";
+  const isBouldering = data.metadata.gradeSystem === "BOULDER";
   const markers = [];
   if (data.lat > 0 && data.lng > 0) {
     markers.push({
@@ -229,13 +229,13 @@ const Problem = () => {
           const latLng = c.split(",");
           return [parseFloat(latLng[0]), parseFloat(latLng[1])];
         });
-      let label =
+      const label =
         data.sectorName +
         (polyline ? " (" + calculateDistance(polyline) + ")" : "");
       outlines = [{ url: "/sector/" + data.sectorId, label, polygon }];
     }
     if (polyline) {
-      let label = outlines == null ? calculateDistance(polyline) : null;
+      const label = outlines == null ? calculateDistance(polyline) : null;
       polylines = [{ polyline, label: label }];
     }
     panes.push({
@@ -339,7 +339,7 @@ const Problem = () => {
       </Header>
       {data.comments ? (
         data.comments.map((c, i) => {
-          var extra = null;
+          let extra = null;
           if (c.danger) {
             extra = <Label color="red">Flagged as dangerous</Label>;
           } else if (c.resolved) {
@@ -403,7 +403,7 @@ const Problem = () => {
     </Comment.Group>
   );
 
-  var tickModal = null;
+  let tickModal = null;
   if (showTickModal) {
     const enableTickRepeats =
       data.metadata.gradeSystem === "ICE" || data.sections?.length > 0;

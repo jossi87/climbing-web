@@ -5,12 +5,25 @@ import { Loading, LockSymbol } from "../../common/widgets/widgets";
 import { List, Segment } from "semantic-ui-react";
 import { getProfileTodo } from "../../../api";
 
-const ProfileTodo = ({ accessToken, userId, defaultCenter, defaultZoom }) => {
-  const [data, setData] = useState(null);
-  let navigate = useNavigate();
+type ProfileTodoProps = {
+  accessToken: string;
+  userId: number;
+  defaultCenter: [number, number];
+  defaultZoom: number;
+};
+
+const ProfileTodo = ({
+  accessToken,
+  userId,
+  defaultCenter,
+  defaultZoom,
+}: ProfileTodoProps) => {
+  const [data, setData] =
+    useState<Awaited<ReturnType<typeof getProfileTodo>>>();
+  const navigate = useNavigate();
   useEffect(() => {
-    if (data != null) {
-      setData(null);
+    if (data) {
+      setData(undefined);
     }
     getProfileTodo(accessToken, userId).then((data) => setData(data));
   }, [accessToken, userId]);
@@ -18,7 +31,8 @@ const ProfileTodo = ({ accessToken, userId, defaultCenter, defaultZoom }) => {
   if (!data) {
     return <Loading />;
   }
-  let markers = [];
+  const markers: NonNullable<React.ComponentProps<typeof Leaflet>["markers"]> =
+    [];
   data.areas.forEach((a) => {
     a.sectors.forEach((s) => {
       s.problems.forEach((p) => {

@@ -83,19 +83,19 @@ const Leaflet = ({
       bounds = null;
     }
   }
-  let opacity = 0.6;
-  let addEventHandlers = onMouseClick == null && onMouseMove == null;
+  const opacity = 0.6;
+  const addEventHandlers = onMouseClick == null && onMouseMove == null;
   let markerGroup;
   if (groupByRock) {
-    let rockMarkers = rocks
+    const rockMarkers = rocks
       .map((r) => {
-        let markersOnRock = markers.filter((m) => m.rock === r);
-        let coords = markersOnRock
+        const markersOnRock = markers.filter((m) => m.rock === r);
+        const coords = markersOnRock
           .filter((m) => m.lat && m.lng)
           .map((m) => [m.lat, m.lng]);
         if (coords && coords.length > 0) {
-          let centerCoordinates = GetCenterFromDegrees(coords);
-          let html = (
+          const centerCoordinates = GetCenterFromDegrees(coords);
+          const html = (
             <>
               <b>{r}:</b>
               <br />
@@ -119,7 +119,7 @@ const Leaflet = ({
         }
       })
       .filter((item) => item); // Remove undefined
-    let markersWithoutRock = markers.filter((m) => !m.rock);
+    const markersWithoutRock = markers.filter((m) => !m.rock);
     markerGroup = (
       <Markers
         navigate={navigate}

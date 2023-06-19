@@ -29,9 +29,9 @@ const AreaEdit = () => {
   const [data, setData] = useState(null);
   const [showSectorOrder, setShowSectorOrder] = useState(false);
   const [saving, setSaving] = useState(false);
-  let { areaId } = useParams();
-  let navigate = useNavigate();
-  let location = useLocation();
+  const { areaId } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
   useEffect(() => {
     if (!isLoading && areaId && isAuthenticated) {
       getAccessTokenSilently().then((accessToken) => {
@@ -143,14 +143,15 @@ const AreaEdit = () => {
     const orderForm = data.sectorOrder?.length > 1 && (
       <>
         {data.sectorOrder.map((p, i) => {
-          let sectorOrder = data.sectorOrder;
-          let clr =
+          const sectorOrder = data.sectorOrder;
+          const clr =
             sectorOrder[i].origSorting &&
             sectorOrder[i].origSorting != sectorOrder[i].sorting
               ? "orange"
               : "gray";
           return (
             <Input
+              key={p.sorting}
               size="small"
               fluid
               icon="hashtag"

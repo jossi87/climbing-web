@@ -42,7 +42,6 @@ const Activity = ({ metadata, idArea, idSector }) => {
     true
   );
 
-  //@ts-ignore
   useEffect(() => {
     if (!isLoading) {
       let canceled = false;
@@ -66,7 +65,9 @@ const Activity = ({ metadata, idArea, idSector }) => {
         });
       };
       update();
-      return () => (canceled = true);
+      return () => {
+        canceled = true;
+      };
     }
   }, [
     isAuthenticated,
@@ -82,7 +83,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
   if (
     metadata &&
     metadata.grades.filter((g) => {
-      let gradeText =
+      const gradeText =
         g.grade.indexOf("(") > 0
           ? g.grade.substr(g.grade.indexOf("(") + 1).replace(")", "")
           : g.grade;
@@ -129,7 +130,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
                       key={i}
                       text={a.grade}
                       onClick={() => {
-                        let gradeText =
+                        const gradeText =
                           a.grade.indexOf("(") > 0
                             ? a.grade
                                 .substr(a.grade.indexOf("(") + 1)
@@ -413,7 +414,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
                   {numMov} new <Icon name="film" />
                 </>
               );
-              var summary;
+              let summary;
               if (img && mov) {
                 summary = (
                   <>

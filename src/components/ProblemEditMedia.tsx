@@ -17,9 +17,9 @@ const ProblemEditMedia = () => {
   const [isMultiPitch, setIsMultiPitch] = useState(false);
   const [media, setMedia] = useState(null);
   const [saving, setSaving] = useState(false);
-  let { problemId } = useParams();
-  let navigate = useNavigate();
-  let location = useLocation();
+  const { problemId } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
   useEffect(() => {
     if (problemId && isAuthenticated) {
       getAccessTokenSilently().then((accessToken) => {

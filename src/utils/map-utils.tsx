@@ -16,19 +16,19 @@ function GetCenterFromDegrees(data) {
     return false;
   }
 
-  var num_coords = data.length;
+  const num_coords = data.length;
 
-  var X = 0.0;
-  var Y = 0.0;
-  var Z = 0.0;
+  let X = 0.0;
+  let Y = 0.0;
+  let Z = 0.0;
 
   for (let i = 0; i < data.length; i++) {
-    var lat = (data[i][0] * Math.PI) / 180;
-    var lon = (data[i][1] * Math.PI) / 180;
+    const lat = (data[i][0] * Math.PI) / 180;
+    const lon = (data[i][1] * Math.PI) / 180;
 
-    var a = Math.cos(lat) * Math.cos(lon);
-    var b = Math.cos(lat) * Math.sin(lon);
-    var c = Math.sin(lat);
+    const a = Math.cos(lat) * Math.cos(lon);
+    const b = Math.cos(lat) * Math.sin(lon);
+    const c = Math.sin(lat);
 
     X += a;
     Y += b;
@@ -39,14 +39,14 @@ function GetCenterFromDegrees(data) {
   Y /= num_coords;
   Z /= num_coords;
 
-  var lon = Math.atan2(Y, X);
-  var hyp = Math.sqrt(X * X + Y * Y);
-  var lat = Math.atan2(Z, hyp);
+  const lon = Math.atan2(Y, X);
+  const hyp = Math.sqrt(X * X + Y * Y);
+  const lat = Math.atan2(Z, hyp);
 
-  var newX = (lat * 180) / Math.PI;
-  var newY = (lon * 180) / Math.PI;
+  const newX = (lat * 180) / Math.PI;
+  const newY = (lon * 180) / Math.PI;
 
-  return new Array(newX, newY);
+  return [newX, newY];
 }
 
 export default GetCenterFromDegrees;

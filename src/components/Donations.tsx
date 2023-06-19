@@ -1,3 +1,4 @@
+import React from "react";
 import { Helmet } from "react-helmet";
 import { Segment, Header, Icon } from "semantic-ui-react";
 
@@ -32,7 +33,7 @@ const Donations = () => {
         You can help out by{" "}
         <a
           href="https://brv.no/om-brv/medlemskap/"
-          rel="norefferer noopener"
+          rel="norefferer noopener noreferrer"
           target="_blank"
         >
           joining BRV
@@ -45,7 +46,7 @@ const Donations = () => {
         >
           here
         </a>{" "}
-        (see "Støtte nettfører").
+        (see &quot;Støtte nettfører&quot;).
       </Segment>
     </>
   );

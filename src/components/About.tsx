@@ -30,7 +30,7 @@ const About = () => {
   if (!data) {
     return <Loading />;
   }
-  let isBouldering = data.metadata.gradeSystem === "BOULDER";
+  const isBouldering = data.metadata.gradeSystem === "BOULDER";
   return (
     <>
       <Helmet>
@@ -262,7 +262,7 @@ const About = () => {
                     <Label.Detail>
                       <a
                         href="https://web.archive.org/web/20160205060357/http://www.buldreinfo.com/"
-                        target="_blank"
+                        target="_blank" rel="noreferrer"
                       >
                         source: archive.net
                       </a>
@@ -295,7 +295,7 @@ const About = () => {
                       <Label.Detail>
                         <a
                           href="https://web.archive.org/web/20110923004804/http://www.buldreinfo.com/"
-                          target="_blank"
+                          target="_blank" rel="noreferrer"
                         >
                           source: archive.net
                         </a>
@@ -313,7 +313,7 @@ const About = () => {
                       <Label.Detail>
                         <a
                           href="https://web.archive.org/web/20071104020049/http://www.buldreinfo.com/"
-                          target="_blank"
+                          target="_blank" rel="noreferrer"
                         >
                           source: archive.net
                         </a>
@@ -355,7 +355,7 @@ const About = () => {
                     <Label.Detail>
                       <a
                         href="https://web.archive.org/web/20050308114436/http://www.brv.no/gammelt/buldring/oversikt.htm"
-                        target="_blank"
+                        target="_blank" rel="noreferrer"
                       >
                         source: archive.net
                       </a>

@@ -1,7 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import CreatableSelect from "react-select/creatable";
 import { getUserSearch } from "./../../../api";
+
+type UserSelectorProps = {
+  users: any[];
+  onUsersUpdated: (_1: any, _2: any) => void;
+  identity: any;
+  placeholder: string;
+  isMulti: boolean;
+};
 
 const UserSelector = ({
   users,
@@ -9,9 +18,9 @@ const UserSelector = ({
   identity,
   placeholder,
   isMulti,
-}) => {
+}: UserSelectorProps) => {
   const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const [options, setOptions] = useState([]);
+  const [options, setOptions] = useState<{ label: string }[]>([]);
   const [multiValue, setMultiValue] = useState(users);
   useEffect(() => {
     if (!isLoading) {
@@ -19,7 +28,7 @@ const UserSelector = ({
         const accessToken = isAuthenticated
           ? await getAccessTokenSilently()
           : null;
-        getUserSearch(accessToken, "").then((res) =>
+        getUserSearch(accessToken ?? "", "").then((res) =>
           setOptions(res.map((u) => ({ value: u.id, label: u.name })))
         );
       };
@@ -27,7 +36,7 @@ const UserSelector = ({
     }
   }, []);
 
-  function handleChange(newValue: any, actionMeta: any) {
+  function handleChange(newValue: any) {
     if (!newValue) {
       newValue = [];
     }

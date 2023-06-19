@@ -22,14 +22,14 @@ const Browse = () => {
   const [data, setData] = useState(null);
   const [flyToId, setFlyToId] = useState(null);
   const [showForDevelopers, setShowForDevelopers] = useState(false);
-  let leafletRef = useRef();
-  let navigate = useNavigate();
-  let md = new Remarkable({ breaks: true }).use(linkify);
+  const leafletRef = useRef();
+  const navigate = useNavigate();
+  const md = new Remarkable({ breaks: true }).use(linkify);
   // open links in new windows
   md.renderer.rules.link_open = (function () {
-    var original = md.renderer.rules.link_open;
-    return function () {
-      var link = original.apply(null, arguments);
+    const original = md.renderer.rules.link_open;
+    return function (...args: Parameters<typeof original>) {
+      const link = original(...args);
       return (
         link.substring(0, link.length - 1) +
         ' rel="noreferrer noopener" target="_blank">'

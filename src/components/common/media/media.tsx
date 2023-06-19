@@ -34,7 +34,7 @@ const Media = ({
   optProblemId,
   isBouldering,
 }) => {
-  let location = useLocation();
+  const location = useLocation();
   const [m, setM] = useState(null);
   const [editM, setEditM] = useState(null);
   const [autoPlayVideo, setAutoPlayVideo] = useState(false);
@@ -72,7 +72,7 @@ const Media = ({
 
   function gotoPrev() {
     if (m && media.length > 1) {
-      let ix =
+      const ix =
         (media.findIndex((x) => x.id === m.id) - 1 + media.length) %
         media.length;
       openModal(media[ix]);
@@ -81,7 +81,7 @@ const Media = ({
 
   function gotoNext() {
     if (m && media.length > 1) {
-      let ix = (media.findIndex((x) => x.id === m.id) + 1) % media.length;
+      const ix = (media.findIndex((x) => x.id === m.id) + 1) % media.length;
       openModal(media[ix]);
     }
   }
@@ -187,7 +187,7 @@ const Media = ({
     if (id.indexOf("&") > 0) {
       id = id.substr(0, id.indexOf("&"));
     }
-    let x = media.filter((m) => m.id == id);
+    const x = media.filter((m) => m.id == id);
     if (x && x.length === 1 && (!m || m.id != x[0].id)) {
       setM(x[0]);
     }

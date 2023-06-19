@@ -12,7 +12,33 @@ import {
 } from "../../../api";
 import { saveAs } from "file-saver";
 
-const TickListItem = ({ tick }) => (
+type Tick = {
+  idProblem: number;
+  dateHr: string;
+  areaName: string;
+  areaLockedAdmin: boolean;
+  areaLockedSuperadmin: boolean;
+  sectorName: string;
+  sectorLockedAdmin: boolean;
+  sectorLockedSuperadmin: boolean;
+  name: string;
+  grade: string;
+  lockedAdmin: boolean;
+  lockedSuperadmin: boolean;
+  stars: number;
+  idTick: number;
+  fa: boolean;
+  idTickRepeat: number;
+  subType: string;
+  numPitches: number;
+  comment: string;
+};
+
+type TickListItemProps = {
+  tick: Tick;
+};
+
+const TickListItem = ({ tick }: TickListItemProps) => (
   <List.Item key={tick.idProblem}>
     <List.Header>
       <small>{tick.dateHr}</small>{" "}
@@ -58,19 +84,29 @@ const TickListItem = ({ tick }) => (
     </List.Header>
   </List.Item>
 );
+
+type ProfileStatisticsProps = {
+  accessToken: string;
+  userId: number;
+  canDownload: boolean;
+  defaultCenter: [number, number];
+  defaultZoom: number;
+};
+
 const ProfileStatistics = ({
   accessToken,
   userId,
   canDownload,
   defaultCenter,
   defaultZoom,
-}) => {
-  const [data, setData] = useState(null);
+}: ProfileStatisticsProps) => {
+  const [data, setData] =
+    useState<Awaited<ReturnType<typeof getProfileStatistics>>>();
   const [isSaving, setIsSaving] = useState(false);
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   useEffect(() => {
-    if (data != null) {
-      setData(null);
+    if (data) {
+      setData(undefined);
     }
     getProfileStatistics(accessToken, userId).then((data) => setData(data));
   }, [accessToken, userId]);
@@ -78,13 +114,16 @@ const ProfileStatistics = ({
   if (!data) {
     return <Loading />;
   }
-  var numTicks = data.ticks.filter((t) => !t.fa && t.idTickRepeat === 0).length;
-  var numTickRepeats = data.ticks.filter(
+
+  const numTicks = data.ticks.filter(
+    (t) => !t.fa && t.idTickRepeat === 0
+  ).length;
+  const numTickRepeats = data.ticks.filter(
     (t) => !t.fa && t.idTickRepeat > 0
   ).length;
-  var numFas = data.ticks.filter((t) => t.fa).length;
+  const numFas = data.ticks.filter((t) => t.fa).length;
   const chart = data.ticks.length > 0 ? <Chart data={data.ticks} /> : null;
-  const panes = [];
+  const panes: NonNullable<React.ComponentProps<typeof Tab>["panes"]> = [];
   panes.push({
     menuItem: { key: "stats", icon: "area graph" },
     render: () => (
@@ -161,9 +200,10 @@ const ProfileStatistics = ({
       </Tab.Pane>
     ),
   });
-  let markers = [];
+  const markers: NonNullable<React.ComponentProps<typeof Leaflet>["markers"]> =
+    [];
   data.ticks.forEach((t) => {
-    if (t.lat != 0 && t.lng != 0) {
+    if (t.lat && t.lng) {
       markers.push({
         lat: t.lat,
         lng: t.lng,

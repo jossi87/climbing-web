@@ -17,9 +17,8 @@ const ChartGradeDistribution = ({ accessToken, idArea, idSector, data }) => {
   if (!gradeDistribution) {
     return <Loading />;
   }
-  const maxValue = Math.max.apply(
-    Math,
-    gradeDistribution.map((d) => {
+  const maxValue = Math.max(
+    ...gradeDistribution.map((d) => {
       return d.num;
     })
   );

@@ -14,7 +14,7 @@ const Svg = ({
   setPoblemIdHovered,
 }) => {
   const { outerWidth, outerHeight } = window;
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   const minWindowScale = Math.min(outerWidth, outerHeight);
   const scale = Math.max(m.width, m.height, minWindowScale);
 
@@ -23,7 +23,7 @@ const Svg = ({
       const path: any = parseSVG(svg.path);
       makeAbsolute(path); // Note: mutates the commands in place!
 
-      var gClassName = "buldreinfo-svg-pointer";
+      let gClassName = "buldreinfo-svg-pointer";
       if (optProblemId || problemIdHovered) {
         if (
           svg.problemId != optProblemId &&
@@ -36,7 +36,7 @@ const Svg = ({
       }
       let strokeDasharray = null;
       if (svg.primary) {
-        let x = thumb ? 0.013 : 0.006;
+        const x = thumb ? 0.013 : 0.006;
         strokeDasharray = x * scale;
       }
       let groupColor;
@@ -72,11 +72,11 @@ const Svg = ({
         textColor = "#FF0000";
       }
 
-      var ixNr;
-      var maxY = 0;
-      var ixAnchor;
-      var minY = 99999999;
-      for (var i = 0, len = path.length; i < len; i++) {
+      let ixNr;
+      let maxY = 0;
+      let ixAnchor;
+      let minY = 99999999;
+      for (let i = 0, len = path.length; i < len; i++) {
         if (path[i].y > maxY) {
           ixNr = i;
           maxY = path[i].y;
@@ -86,14 +86,14 @@ const Svg = ({
           minY = path[i].y;
         }
       }
-      var x = path[ixNr].x;
-      var y = path[ixNr].y;
+      let x = path[ixNr].x;
+      let y = path[ixNr].y;
       const r = 0.01 * scale * (thumb ? 2 : 1);
       if (x < r) x = r;
       if (x > w - r) x = w - r;
       if (y < r) y = r;
       if (y > h - r) y = h - r;
-      let anchors = [];
+      const anchors = [];
       if (svg.hasAnchor) {
         anchors.push(
           <circle
@@ -136,7 +136,7 @@ const Svg = ({
           );
         });
       }
-      let texts =
+      const texts =
         svg.texts &&
         JSON.parse(svg.texts).map((t, i) => (
           <text key={i} x={t.x} y={t.y} fontSize="5em" fill="red">
@@ -247,7 +247,7 @@ const Svg = ({
     m.svgs &&
     m.svgs.filter((x) => x.problemId === optProblemId).length != 0
   ) {
-    let svg = m.svgs.filter((x) => x.problemId === optProblemId)[0];
+    const svg = m.svgs.filter((x) => x.problemId === optProblemId)[0];
     let text = `#${svg.nr} - ${svg.problemName} [${svg.problemGrade}]`;
     if (svg.problemSubtype) {
       text += " - " + svg.problemSubtype;

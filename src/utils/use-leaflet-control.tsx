@@ -1,4 +1,4 @@
-import React, { Ref, useState, forwardRef, useEffect } from "react";
+import { useState, forwardRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { createElementHook, createControlHook } from "@react-leaflet/core";
 import { Control, DomUtil, DomEvent } from "leaflet";
@@ -7,11 +7,11 @@ const DumbControl = Control.extend({
   options: {
     className: "",
     onOff: "",
-    handleOff: function noop() {},
+    handleOff: () => undefined,
   },
 
   onAdd(/* map */) {
-    var _controlDiv = DomUtil.create("div", this.options.className);
+    const _controlDiv = DomUtil.create("div", this.options.className);
     DomEvent.disableClickPropagation(_controlDiv);
     return _controlDiv;
   },
@@ -35,7 +35,7 @@ const useControl = createControlHook(useControlElement);
 
 //create your forceUpdate hook
 const useForceUpdate = () => {
-  const [value, setValue] = useState(0); // integer state
+  const [_, setValue] = useState(0); // integer state
   return () => setValue((value) => value + 1); // update the state to force render
 };
 

@@ -1,6 +1,6 @@
 export function calculateDistance(polyline) {
-  var km = 0;
-  for (var i = 1; i < polyline.length; i++) {
+  let km = 0;
+  for (let i = 1; i < polyline.length; i++) {
     const lat1 = polyline[i - 1][0];
     const lng1 = polyline[i - 1][1];
     const lat2 = polyline[i][0];

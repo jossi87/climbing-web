@@ -22,7 +22,7 @@ const MarkerClusterGroup = createPathComponent(
     );
 
     // Creating markerClusterGroup Leaflet element
-    //@ts-ignore
+    // @ts-expect-error - I'm not sure why we're new-ing this.
     const markerClusterGroup = new L.markerClusterGroup(clusterProps);
 
     // Initializing event listeners

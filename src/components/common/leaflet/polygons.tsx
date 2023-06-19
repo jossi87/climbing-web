@@ -20,7 +20,7 @@ export default function Polygons({
         click: () => {
           if (addEventHandlers) {
             if (o.url.startsWith("https")) {
-              var win = window.open(o.url, "_blank");
+              const win = window.open(o.url, "_blank");
               win.focus();
             } else {
               navigate(o.url);

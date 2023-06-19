@@ -16,8 +16,8 @@ const Trash = () => {
     loginWithRedirect,
   } = useAuth0();
   const [data, setData] = useState(null);
-  let location = useLocation();
-  let navigate = useNavigate();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!isLoading) {

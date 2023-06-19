@@ -35,11 +35,11 @@ import { linkify } from "remarkable/linkify";
 import ProblemList from "./common/problem-list/problem-list";
 
 const SectorListItem = ({ sector, problem, isClimbing }) => {
-  let type = isClimbing
+  const type = isClimbing
     ? problem.t.subType +
       (problem.numPitches > 1 ? ", " + problem.numPitches + " pitches" : "")
     : null;
-  let ascents =
+  const ascents =
     problem.numTicks &&
     problem.numTicks + (problem.numTicks == 1 ? " ascent" : " ascents");
   let faTypeAscents = problem.fa;
@@ -104,14 +104,14 @@ const Area = () => {
   const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
-  let { areaId } = useParams();
-  let navigate = useNavigate();
-  let md = new Remarkable({ breaks: true }).use(linkify);
+  const { areaId } = useParams();
+  const navigate = useNavigate();
+  const md = new Remarkable({ breaks: true }).use(linkify);
   // open links in new windows
   md.renderer.rules.link_open = (function () {
-    var original = md.renderer.rules.link_open;
-    return function () {
-      var link = original.apply(null, arguments);
+    const original = md.renderer.rules.link_open;
+    return function (...args: Parameters<typeof original>) {
+      const link = original(...args);
       return (
         link.substring(0, link.length - 1) +
         ' rel="noreferrer noopener" target="_blank">'
@@ -155,17 +155,17 @@ const Area = () => {
         isParking: true,
       };
     });
-  let outlines = [];
-  let polylines = [];
-  for (let s of data.sectors) {
+  const outlines = [];
+  const polylines = [];
+  for (const s of data.sectors) {
     let distance = null;
     if (s.polyline) {
-      let polyline = s.polyline
+      const polyline = s.polyline
         .split(";")
         .filter((i) => i)
         .map((e) => e.split(",").map(Number));
       distance = calculateDistance(polyline);
-      let label = s.polygonCoords == null && distance;
+      const label = s.polygonCoords == null && distance;
       polylines.push({ polyline, label });
     }
     if (s.polygonCoords) {
@@ -176,11 +176,11 @@ const Area = () => {
           const latLng = c.split(",");
           return [parseFloat(latLng[0]), parseFloat(latLng[1])];
         });
-      let label = s.name + (distance ? " (" + distance + ")" : "");
+      const label = s.name + (distance ? " (" + distance + ")" : "");
       outlines.push({ url: "/sector/" + s.id, label, polygon: polygon });
     }
   }
-  let isBouldering = data.metadata.gradeSystem === "BOULDER";
+  const isBouldering = data.metadata.gradeSystem === "BOULDER";
   const panes = [];
   const height = "40vh";
   if (data.media && data.media.length > 0) {
@@ -192,7 +192,9 @@ const Area = () => {
             isAdmin={data.metadata.isAdmin}
             numPitches={0}
             removeMedia={(idMediaToRemove) => {
-              let newMedia = data.media.filter((m) => m.id != idMediaToRemove);
+              const newMedia = data.media.filter(
+                (m) => m.id != idMediaToRemove
+              );
               setData((prevState) => ({ ...prevState, media: newMedia }));
             }}
             media={data.media}

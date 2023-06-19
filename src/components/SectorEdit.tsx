@@ -34,9 +34,9 @@ const SectorEdit = () => {
   const [sectorMarkers, setSectorMarkers] = useState(null);
   const [area, setArea] = useState(null);
   const [saving, setSaving] = useState(false);
-  let { areaIdSectorId } = useParams();
-  let navigate = useNavigate();
-  let location = useLocation();
+  const { areaIdSectorId } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
   useEffect(() => {
     if (areaIdSectorId && isAuthenticated) {
       getAccessTokenSilently().then((accessToken) => {
@@ -214,8 +214,8 @@ const SectorEdit = () => {
         .map((c, i) => {
           const latLng = c.split(",");
           if (latLng?.length === 2) {
-            let lat = parseFloat(latLng[0]);
-            let lng = parseFloat(latLng[1]);
+            const lat = parseFloat(latLng[0]);
+            const lng = parseFloat(latLng[1]);
             if (lat > 0 && lng > 0) {
               return [lat, lng];
             } else {
@@ -262,7 +262,7 @@ const SectorEdit = () => {
     } else if (data.lockedAdmin) {
       lockedValue = 1;
     }
-    let markers = [];
+    const markers = [];
     if (data.lat != 0 && data.lng != 0) {
       markers.push({ lat: data.lat, lng: data.lng, isParking: true });
     }
@@ -273,14 +273,15 @@ const SectorEdit = () => {
     const orderForm = data.problemOrder?.length > 1 && (
       <>
         {data.problemOrder.map((p, i) => {
-          let problemOrder = data.problemOrder;
-          let clr =
+          const problemOrder = data.problemOrder;
+          const clr =
             problemOrder[i].origNr &&
             problemOrder[i].origNr != problemOrder[i].nr
               ? "orange"
               : "grey";
           return (
             <Input
+              key={p.nr}
               size="small"
               fluid
               icon="hashtag"
@@ -301,7 +302,7 @@ const SectorEdit = () => {
         })}
       </>
     );
-    let isBouldering = data.metadata.gradeSystem === "BOULDER";
+    const isBouldering = data.metadata.gradeSystem === "BOULDER";
 
     return (
       <>
@@ -426,7 +427,7 @@ const SectorEdit = () => {
                   positive={sectorMarkers != null}
                   onClick={() => {
                     if (sectorMarkers == null) {
-                      let sectorId = areaIdSectorId.split("-")[1];
+                      const sectorId = areaIdSectorId.split("-")[1];
                       if (parseInt(sectorId) > 0) {
                         getSector(data.accessToken, parseInt(sectorId)).then(
                           (data) =>
@@ -526,10 +527,10 @@ const SectorEdit = () => {
                       if (files?.length !== 0) {
                         const reader = new FileReader();
                         reader.onload = (e) => {
-                          let gpx = new GpxParser();
+                          const gpx = new GpxParser();
                           gpx.parse(e.target.result as string);
                           console.log(gpx);
-                          let polyline = gpx.tracks[0]?.points
+                          const polyline = gpx.tracks[0]?.points
                             ?.map((e) => e.lat + "," + e.lon)
                             .join(";");
                           setData((prevState) => ({ ...prevState, polyline }));
@@ -573,11 +574,11 @@ const SectorEdit = () => {
             <Button
               negative
               onClick={() => {
-                let sectorId = areaIdSectorId.split("-")[1];
+                const sectorId = areaIdSectorId.split("-")[1];
                 if (sectorId != "0") {
                   navigate(`/sector/${sectorId}`);
                 } else {
-                  let areaId = areaIdSectorId.split("-")[0];
+                  const areaId = areaIdSectorId.split("-")[0];
                   navigate(`/area/${areaId}`);
                 }
               }}

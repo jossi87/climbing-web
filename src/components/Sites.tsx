@@ -10,8 +10,8 @@ import { getSites } from "../api";
 const Sites = () => {
   const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [data, setData] = useState(null);
-  let { type } = useParams();
-  let navigate = useNavigate();
+  const { type } = useParams();
+  const navigate = useNavigate();
   useEffect(() => {
     if (data) {
       setData(null);
@@ -30,7 +30,7 @@ const Sites = () => {
   if (isLoading || !data) {
     return <Loading />;
   }
-  var outlines = data.regions.map((r) => {
+  const outlines = data.regions.map((r) => {
     const polygon = r.polygonCoords.split(";").map((c) => {
       const latLng = c.split(",");
       return [parseFloat(latLng[0]), parseFloat(latLng[1])];
