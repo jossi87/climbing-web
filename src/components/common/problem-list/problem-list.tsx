@@ -57,10 +57,6 @@ const ProblemList = ({
     null
   );
 
-  if (data == null || data.length === 0) {
-    return null;
-  }
-
   const orderByOptions = isSectorNotUser
     ? [
         {
@@ -196,6 +192,10 @@ const ProblemList = ({
         }
       })
     );
+  }
+
+  if (data == null || data.length === 0) {
+    return null;
   }
 
   const containsFa = data.filter((p) => p.fa).length > 0;
