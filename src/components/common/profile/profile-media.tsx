@@ -5,7 +5,7 @@ import { getProfileMedia } from "../../../api";
 import Media from "../../common/media/media";
 
 const ProfileMedia = ({ accessToken, userId, gradeSystem, captured }) => {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<any[] | null>(null);
   useEffect(() => {
     if (data != null) {
       setData(null);
@@ -24,6 +24,7 @@ const ProfileMedia = ({ accessToken, userId, gradeSystem, captured }) => {
   return (
     <Segment>
       <Media
+        numPitches={0}
         isAdmin={false}
         removeMedia={null}
         media={data}

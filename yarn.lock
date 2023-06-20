@@ -2101,6 +2101,13 @@
   dependencies:
     "@types/node" "*"
 
+"@types/swagger-ui-react@^4.18.0":
+  version "4.18.0"
+  resolved "https://registry.yarnpkg.com/@types/swagger-ui-react/-/swagger-ui-react-4.18.0.tgz#6668a7f44c825f9dbd46e3ecb8a9a40f745ce861"
+  integrity sha512-XtvFXmj46Zibe89tFQwSQknrq1NxEtOep2rZuxth7K88tyPEP00FnoA6H7ATYhocAEA4XUWaNHNFWFRl1KX8aQ==
+  dependencies:
+    "@types/react" "*"
+
 "@types/unist@*":
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/@types/unist/-/unist-2.0.6.tgz#250a7b16c3b91f672a24552ec64678eeb1d3a08d"
