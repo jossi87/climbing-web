@@ -90,10 +90,16 @@ const Navigation = () => {
                       Trash
                     </Dropdown.Item>
                     {isSuperAdmin && (
-                      <Dropdown.Item as={Link} to="/permissions">
-                        <Icon name="users" />
-                        Permissions
-                      </Dropdown.Item>
+                      <>
+                        <Dropdown.Item as={Link} to="/permissions">
+                          <Icon name="users" />
+                          Permissions
+                        </Dropdown.Item>
+                        <Dropdown.Item as={Link} to="/swagger">
+                          <Icon name="code" />
+                          Swagger
+                        </Dropdown.Item>
+                      </>
                     )}
                     <Dropdown.Item
                       as={Link}
