@@ -1,21 +1,19 @@
-import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import Leaflet from "./common/leaflet/leaflet";
 import { Segment, Header, Icon } from "semantic-ui-react";
 import { Loading } from "./common/widgets/widgets";
-import { getCameras } from "../api";
+import { useData } from "../api";
 
 const WebcamMap = () => {
-  const [data, setData] = useState(null);
+  const { data } = useData(`/cameras`);
   const { json } = useParams();
   const navigate = useNavigate();
-  useEffect(() => {
-    getCameras().then((data) => setData(data));
-  }, []);
+
   if (!data) {
     return <Loading />;
   }
+
   const markers = data.cameras
     .filter((c) => c.lat != 0 && c.lng != 0)
     .map((c) => {

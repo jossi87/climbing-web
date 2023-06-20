@@ -4,6 +4,7 @@ import { Auth0Provider } from "@auth0/auth0-react";
 import { ErrorBoundary } from "react-error-boundary";
 import App from "./App";
 import "./buldreinfo.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   const userAgent = navigator.userAgent;
@@ -69,17 +70,27 @@ export const Auth0ProviderWithNavigate = ({ children }) => {
   );
 };
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 60 * 24, // 24 hours
+    },
+  },
+});
+
 const Index = () => (
-  <BrowserRouter>
-    <ErrorBoundary
-      FallbackComponent={ErrorFallback}
-      onReset={() => window.location.reload()}
-    >
-      <Auth0ProviderWithNavigate>
-        <App />
-      </Auth0ProviderWithNavigate>
-    </ErrorBoundary>
-  </BrowserRouter>
+  <QueryClientProvider client={queryClient}>
+    <BrowserRouter>
+      <ErrorBoundary
+        FallbackComponent={ErrorFallback}
+        onReset={() => window.location.reload()}
+      >
+        <Auth0ProviderWithNavigate>
+          <App />
+        </Auth0ProviderWithNavigate>
+      </ErrorBoundary>
+    </BrowserRouter>
+  </QueryClientProvider>
 );
 
 const root = createRoot(document.getElementById("app"));

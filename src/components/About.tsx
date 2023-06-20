@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 import {
@@ -10,22 +9,11 @@ import {
   Image,
   Label,
 } from "semantic-ui-react";
-import { useAuth0 } from "@auth0/auth0-react";
 import { Loading } from "./common/widgets/widgets";
-import { getAbout } from "../api";
+import { useData } from "../api";
 
 const About = () => {
-  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const [data, setData] = useState(null);
-  useEffect(() => {
-    const update = async () => {
-      const accessToken = isAuthenticated
-        ? await getAccessTokenSilently()
-        : null;
-      getAbout(accessToken).then((data) => setData(data));
-    };
-    update();
-  }, [isAuthenticated]);
+  const { data } = useData(`/about`);
 
   if (!data) {
     return <Loading />;
@@ -262,7 +250,8 @@ const About = () => {
                     <Label.Detail>
                       <a
                         href="https://web.archive.org/web/20160205060357/http://www.buldreinfo.com/"
-                        target="_blank" rel="noreferrer"
+                        target="_blank"
+                        rel="noreferrer"
                       >
                         source: archive.net
                       </a>
@@ -295,7 +284,8 @@ const About = () => {
                       <Label.Detail>
                         <a
                           href="https://web.archive.org/web/20110923004804/http://www.buldreinfo.com/"
-                          target="_blank" rel="noreferrer"
+                          target="_blank"
+                          rel="noreferrer"
                         >
                           source: archive.net
                         </a>
@@ -313,7 +303,8 @@ const About = () => {
                       <Label.Detail>
                         <a
                           href="https://web.archive.org/web/20071104020049/http://www.buldreinfo.com/"
-                          target="_blank" rel="noreferrer"
+                          target="_blank"
+                          rel="noreferrer"
                         >
                           source: archive.net
                         </a>
@@ -355,7 +346,8 @@ const About = () => {
                     <Label.Detail>
                       <a
                         href="https://web.archive.org/web/20050308114436/http://www.brv.no/gammelt/buldring/oversikt.htm"
-                        target="_blank" rel="noreferrer"
+                        target="_blank"
+                        rel="noreferrer"
                       >
                         source: archive.net
                       </a>
