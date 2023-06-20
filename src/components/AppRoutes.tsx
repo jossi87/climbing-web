@@ -48,6 +48,7 @@ const Sites = lazy(() => import(/* webpackChunkName: "sites" */ "./Sites"));
 const SvgEdit = lazy(
   () => import(/* webpackChunkName: "svg-edit" */ "./SvgEdit")
 );
+const Swagger = lazy(() => import(/* webpackChunkName: "swagger" */ "./Swagger"));
 const Ticks = lazy(() => import(/* webpackChunkName: "ticks" */ "./Ticks"));
 const Toc = lazy(() => import(/* webpackChunkName: "toc" */ "./Toc"));
 const ContentGraph = lazy(
@@ -102,6 +103,7 @@ function AppRoutes() {
           <Route path="/sector/:sectorId" element={<Sector />} />
           <Route path="/sector/edit/:areaIdSectorId" element={<SectorEdit />} />
           <Route path="/ticks/:page" element={<Ticks />} />
+          <Route path="/swagger" element={<Swagger />} />
           <Route path="/toc" element={<Toc />} />
           <Route path="/cg" element={<ContentGraph />} />
           <Route path="/trash" element={<Trash />} />
