@@ -190,26 +190,26 @@ export function moveMedia(
   );
 }
 
-export function getActivity(
-  accessToken: string | null,
-  idArea: number,
-  idSector: number,
-  lowerGrade: number,
-  fa: boolean,
-  comments: boolean,
-  ticks: boolean,
-  media: boolean
-): Promise<any> {
-  return makeAuthenticatedRequest(
-    accessToken,
-    `/activity?idArea=${idArea}&idSector=${idSector}&lowerGrade=${lowerGrade}&fa=${fa}&comments=${comments}&ticks=${ticks}&media=${media}`,
-    null
-  )
-    .then((data) => data.json())
-    .catch((error) => {
-      console.warn(error);
-      return null;
-    });
+export function useActivity({
+  idArea,
+  idSector,
+  lowerGrade,
+  fa,
+  comments,
+  ticks,
+  media,
+}: {
+  idArea: number;
+  idSector: number;
+  lowerGrade: number;
+  fa: boolean;
+  comments: boolean;
+  ticks: boolean;
+  media: boolean;
+}) {
+  return useData(
+    `/activity?idArea=${idArea}&idSector=${idSector}&lowerGrade=${lowerGrade}&fa=${fa}&comments=${comments}&ticks=${ticks}&media=${media}`
+  );
 }
 
 export function getArea(accessToken: string | null, id: number): Promise<any> {
