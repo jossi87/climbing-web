@@ -22,7 +22,7 @@ const Browse = () => {
   const [data, setData] = useState(null);
   const [flyToId, setFlyToId] = useState(null);
   const [showForDevelopers, setShowForDevelopers] = useState(false);
-  const leafletRef = useRef();
+  const leafletRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
   const md = new Remarkable({ breaks: true }).use(linkify);
   // open links in new windows
