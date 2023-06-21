@@ -1,25 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { Helmet } from "react-helmet";
 import { LockSymbol, Loading } from "./common/widgets/widgets";
 import { Segment, Icon, List, Header } from "semantic-ui-react";
-import { useAuth0 } from "@auth0/auth0-react";
-import { getDangerous } from "../api";
+import { useData } from "../api";
 
 const Dangerous = () => {
-  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const [data, setData] = useState(null);
+  const { data } = useData(`/dangerous`);
   const areaRefs = useRef({});
-  useEffect(() => {
-    if (!isLoading) {
-      const update = async () => {
-        const accessToken = isAuthenticated
-          ? await getAccessTokenSilently()
-          : null;
-        getDangerous(accessToken).then((data) => setData(data));
-      };
-      update();
-    }
-  }, [isLoading, isAuthenticated]);
 
   if (!data) {
     return <Loading />;

@@ -1,4 +1,7 @@
+import { useAuth0 } from "@auth0/auth0-react";
+import { QueryOptions, useQuery } from "@tanstack/react-query";
 import fetch from "isomorphic-fetch";
+import { useState, useEffect } from "react";
 
 export function getLocales() {
   return "nb-NO";
@@ -18,15 +21,47 @@ function getUrl(urlSuffix: string): string {
 function makeAuthenticatedRequest(
   accessToken: string | null,
   urlSuffix: string,
-  opts: any
+  opts?: Partial<Parameters<typeof fetch>[1]>
 ) {
-  opts = opts || {};
-  opts.headers = opts.headers || {};
-  opts.mode = "cors";
-  if (accessToken) {
-    opts.headers.Authorization = `Bearer ${accessToken}`;
-  }
-  return fetch(getUrl(urlSuffix), opts);
+  const options = {
+    ...opts,
+    mode: "cors",
+    headers: {
+      ...opts?.headers,
+      Authorization: accessToken ? `Bearer ${accessToken}` : undefined,
+    },
+  };
+  return fetch(getUrl(urlSuffix), options);
+}
+
+export function useAccessToken() {
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+  useEffect(() => {
+    if (isAuthenticated) {
+      getAccessTokenSilently().then((token) => setAccessToken(token));
+    }
+  }, [getAccessTokenSilently, isAuthenticated]);
+  return accessToken;
+}
+
+export function useData(
+  urlSuffix: string,
+  options: Partial<QueryOptions> = {}
+) {
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+  return useQuery<any>({
+    queryKey: [urlSuffix, isAuthenticated],
+    queryHash: `auth=${isAuthenticated}/${urlSuffix}`,
+    queryFn: async () => {
+      const accessToken = isAuthenticated
+        ? await getAccessTokenSilently()
+        : null;
+      const res = await makeAuthenticatedRequest(accessToken, urlSuffix);
+      return res.json() as T;
+    },
+    ...options,
+  });
 }
 
 export function getImageUrl(
@@ -254,60 +289,6 @@ export function getAreaEdit(
         return null;
       });
   }
-}
-
-export function getAbout(accessToken: string | null): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/about`, null)
-    .then((data) => data.json())
-    .catch((error) => {
-      console.warn(error);
-      return null;
-    });
-}
-
-export function getBrowse(accessToken: string | null): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/browse`, null)
-    .then((data) => data.json())
-    .catch((error) => {
-      console.warn(error);
-      return null;
-    });
-}
-
-export function getCameras(): Promise<any> {
-  return makeAuthenticatedRequest(null, `/cameras`, null)
-    .then((data) => data.json())
-    .catch((error) => {
-      console.warn(error);
-      return null;
-    });
-}
-
-export function getCg(accessToken: string | null): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/cg`, null)
-    .then((data) => data.json())
-    .catch((error) => {
-      console.warn(error);
-      return null;
-    });
-}
-
-export function getDangerous(accessToken: string | null): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/dangerous`, null)
-    .then((data) => data.json())
-    .catch((error) => {
-      console.warn(error);
-      return null;
-    });
-}
-
-export function getFrontpage(accessToken: string | null): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/frontpage`, null)
-    .then((data) => data.json())
-    .catch((error) => {
-      console.warn(error);
-      return null;
-    });
 }
 
 export function getGradeDistribution(
@@ -805,15 +786,6 @@ export function getTicks(
     });
 }
 
-export function getToc(accessToken: string | null): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/toc`, null)
-    .then((data) => data.json())
-    .catch((error) => {
-      console.warn(error);
-      return null;
-    });
-}
-
 export function getTodo(
   accessToken: string | null,
   idArea: number,
@@ -862,15 +834,6 @@ export function getTocXlsx(accessToken: string | null): Promise<any> {
     console.warn(error);
     return null;
   });
-}
-
-export function getTrash(accessToken: string | null): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/trash`, null)
-    .then((data) => data.json())
-    .catch((error) => {
-      console.warn(error);
-      return null;
-    });
 }
 
 export function getUserSearch(

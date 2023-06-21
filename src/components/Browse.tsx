@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -12,14 +12,12 @@ import {
 import Leaflet from "./common/leaflet/leaflet";
 import ChartGradeDistribution from "./common/chart-grade-distribution/chart-grade-distribution";
 import { Loading, LockSymbol } from "./common/widgets/widgets";
-import { useAuth0 } from "@auth0/auth0-react";
-import { getBrowse } from "../api";
+import { useData } from "../api";
 import { Remarkable } from "remarkable";
 import { linkify } from "remarkable/linkify";
 
 const Browse = () => {
-  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const [data, setData] = useState(null);
+  const { data } = useData(`/browse`);
   const [flyToId, setFlyToId] = useState(null);
   const [showForDevelopers, setShowForDevelopers] = useState(false);
   const leafletRef = useRef<HTMLDivElement | null>(null);
@@ -36,19 +34,6 @@ const Browse = () => {
       );
     };
   })();
-  useEffect(() => {
-    if (!isLoading) {
-      const update = async () => {
-        const accessToken = isAuthenticated
-          ? await getAccessTokenSilently()
-          : null;
-        getBrowse(accessToken).then((data) =>
-          setData({ ...data, accessToken })
-        );
-      };
-      update();
-    }
-  }, [isLoading, isAuthenticated]);
 
   if (!data) {
     return <Loading />;
@@ -80,13 +65,13 @@ const Browse = () => {
             >
               <Icon name="external" />
             </Button>
-            <a href={"/area/" + a.id}>
+            <Link to={"/area/" + a.id}>
               <b>{a.name}</b>{" "}
               <LockSymbol
                 lockedAdmin={a.lockedAdmin}
                 lockedSuperadmin={a.lockedSuperadmin}
               />
-            </a>
+            </Link>
             <i>{`(${a.numSectors} sectors, ${a.numProblems} ${typeDescription})`}</i>
             <br />
             {a.numProblems > 0 && (

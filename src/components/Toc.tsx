@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { Helmet } from "react-helmet";
 import {
   Header,
@@ -9,26 +9,14 @@ import {
   ButtonGroup,
 } from "semantic-ui-react";
 import { Loading, LockSymbol, Stars } from "./common/widgets/widgets";
-import { useAuth0 } from "@auth0/auth0-react";
-import { getToc, getTocXlsx } from "../api";
+import { getTocXlsx, useAccessToken, useData } from "../api";
 import { saveAs } from "file-saver";
 
 const Toc = () => {
-  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const [data, setData] = useState(null);
+  const accessToken = useAccessToken();
+  const { data } = useData(`/toc`);
   const [isSaving, setIsSaving] = useState(false);
   const areaRefs = useRef({});
-  useEffect(() => {
-    if (!isLoading) {
-      const update = async () => {
-        const accessToken = isAuthenticated
-          ? await getAccessTokenSilently()
-          : null;
-        getToc(accessToken).then((data) => setData({ ...data, accessToken }));
-      };
-      update();
-    }
-  }, [isLoading, isAuthenticated]);
 
   if (!data) {
     return <Loading />;
@@ -60,7 +48,7 @@ const Toc = () => {
             onClick={() => {
               setIsSaving(true);
               let filename = "toc.xlsx";
-              getTocXlsx(data.accessToken)
+              getTocXlsx(accessToken)
                 .then((response) => {
                   filename = response.headers
                     .get("content-disposition")

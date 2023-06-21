@@ -1,35 +1,17 @@
-import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { Loading } from "./common/widgets/widgets";
-import { getImageUrl } from "../api";
-import { getTrash, putTrash } from "../api";
+import { getImageUrl, useData } from "../api";
+import { putTrash } from "../api";
 import { Segment, Icon, Header, List, Button, Image } from "semantic-ui-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import { InsufficientPrivileges } from "./common/widgets/widgets";
 
 const Trash = () => {
-  const {
-    isLoading,
-    isAuthenticated,
-    getAccessTokenSilently,
-    loginWithRedirect,
-  } = useAuth0();
-  const [data, setData] = useState(null);
+  const { isLoading, isAuthenticated, loginWithRedirect } = useAuth0();
+  const { data } = useData(`/trash`);
   const location = useLocation();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!isLoading) {
-      const update = async () => {
-        const accessToken = isAuthenticated
-          ? await getAccessTokenSilently()
-          : null;
-        getTrash(accessToken).then((data) => setData({ ...data, accessToken }));
-      };
-      update();
-    }
-  }, [isLoading, isAuthenticated]);
 
   if (isLoading || (isAuthenticated && !data)) {
     return <Loading />;
