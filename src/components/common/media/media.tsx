@@ -35,8 +35,8 @@ const Media = ({
   isBouldering,
 }) => {
   const location = useLocation();
-  const [m, setM] = useState(null);
-  const [editM, setEditM] = useState(null);
+  const [m, setM] = useState<any>(null);
+  const [editM, setEditM] = useState<any>(null);
   const [autoPlayVideo, setAutoPlayVideo] = useState(false);
   const { isLoading, getAccessTokenSilently } = useAuth0();
   useEffect(() => {
@@ -97,7 +97,7 @@ const Media = ({
       const id = m.id;
       getAccessTokenSilently().then((accessToken) => {
         deleteMedia(accessToken, id)
-          .then((response) => {
+          .then(() => {
             removeMedia(id);
             closeModal();
           })
@@ -116,7 +116,7 @@ const Media = ({
     ) {
       getAccessTokenSilently().then((accessToken) => {
         putMediaJpegRotate(accessToken, m.id, degrees)
-          .then((response) => {
+          .then(() => {
             closeModal();
             window.location.reload();
           })
@@ -130,7 +130,7 @@ const Media = ({
   function onMoveImageLeft() {
     getAccessTokenSilently().then((accessToken) => {
       moveMedia(accessToken, m.id, true, 0, 0)
-        .then((response) => {
+        .then(() => {
           closeModal();
           window.location.reload();
         })
@@ -143,7 +143,7 @@ const Media = ({
   function onMoveImageRight() {
     getAccessTokenSilently().then((accessToken) => {
       moveMedia(accessToken, m.id, false, 0, 0)
-        .then((response) => {
+        .then(() => {
           closeModal();
           window.location.reload();
         })
@@ -156,7 +156,7 @@ const Media = ({
   function onMoveImageToSector() {
     getAccessTokenSilently().then((accessToken) => {
       moveMedia(accessToken, m.id, false, m.enableMoveToIdSector, 0)
-        .then((response) => {
+        .then(() => {
           closeModal();
           window.location.reload();
         })
@@ -169,7 +169,7 @@ const Media = ({
   function onMoveImageToProblem() {
     getAccessTokenSilently().then((accessToken) => {
       moveMedia(accessToken, m.id, false, 0, m.enableMoveToIdProblem)
-        .then((response) => {
+        .then(() => {
           closeModal();
           window.location.reload();
         })
@@ -203,7 +203,7 @@ const Media = ({
           save={(mediaId, description, pitch, trivia) => {
             getAccessTokenSilently().then((accessToken) => {
               putMediaInfo(accessToken, mediaId, description, pitch, trivia)
-                .then((response) => {
+                .then(() => {
                   setEditM(null);
                   window.location.reload();
                 })

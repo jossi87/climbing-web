@@ -22,7 +22,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [activePage, setActivePage] = useState(page ? Page[page] : Page.user);
-  const [profile, setProfile] = useState(null);
+  const [profile, setProfile] = useState<any>(null);
   useEffect(() => {
     if (!isLoading) {
       if (profile != null) {

@@ -28,7 +28,7 @@ enum OrderBy {
 const Filter = () => {
   const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
-  const [meta, setMeta] = useState(null);
+  const [meta, setMeta] = useState<any>(null);
   const [grades, setGrades] = useLocalStorage("filter_grades", null);
   const [types, setTypes] = useLocalStorage("filter_types", null);
   const [result, setResult] = useLocalStorage("filter_result", null);

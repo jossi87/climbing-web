@@ -24,7 +24,7 @@ const ProfileMedia = ({ accessToken, userId, gradeSystem, captured }) => {
   return (
     <Segment>
       <Media
-        numPitches={0}
+        numPitches={null}
         isAdmin={false}
         removeMedia={null}
         media={data}

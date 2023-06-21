@@ -21,7 +21,7 @@ const Permissions = () => {
     getAccessTokenSilently,
     loginWithRedirect,
   } = useAuth0();
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<any>(null);
   const location = useLocation();
 
   useEffect(() => {
@@ -152,7 +152,7 @@ const Permissions = () => {
                             superadminRead,
                             superadminWrite
                           )
-                            .then((response) => {
+                            .then(() => {
                               window.scrollTo(0, 0);
                               window.location.reload();
                             })

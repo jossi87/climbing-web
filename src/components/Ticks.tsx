@@ -8,7 +8,7 @@ import { getTicks } from "../api";
 
 const Ticks = () => {
   const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const { page } = useParams();
   const navigate = useNavigate();

@@ -40,7 +40,7 @@ const useForceUpdate = () => {
 };
 
 const createLeafletControl = (useElement) => {
-  const Component = (props, ref) => {
+  const Component = (props, _ref) => {
     const forceUpdate = useForceUpdate();
     const { instance } = useElement(props).current;
 

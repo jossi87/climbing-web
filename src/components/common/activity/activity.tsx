@@ -19,7 +19,7 @@ import Linkify from "react-linkify";
 
 const Activity = ({ metadata, idArea, idSector }) => {
   const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const [activity, setActivity] = useState(null);
+  const [activity, setActivity] = useState<any>(null);
   const [lowerGradeId, setLowerGradeId] = useLocalStorage("lower_grade_id", 0);
   const [lowerGradeText, setLowerGradeText] = useLocalStorage(
     "lower_grade_text",

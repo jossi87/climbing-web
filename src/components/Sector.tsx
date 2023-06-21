@@ -96,8 +96,8 @@ const SectorListItem = ({ problem, isClimbing }) => {
 };
 const Sector = () => {
   const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const [error, setError] = useState(null);
-  const [data, setData] = useState(null);
+  const [error, setError] = useState<any>(null);
+  const [data, setData] = useState<any>(null);
   const { sectorId } = useParams();
   const navigate = useNavigate();
   useEffect(() => {

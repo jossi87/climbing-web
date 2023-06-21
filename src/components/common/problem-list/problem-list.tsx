@@ -49,9 +49,9 @@ const ProblemList = ({
   const [onlyFa, setOnlyFa] = useLocalStorage("problemList-onlyFa", false);
   const [uniqueRocks, setUniqueRocks] = useState([]);
   const [uniqueTypes, setUniqueTypes] = useState([]);
-  const [groupByTitle, setGroupByTitle] = useState(null);
+  const [groupByTitle, setGroupByTitle] = useState<any>(null);
   const [groupBy, setGroupBy] = useLocalStorage("problemList-groupBy", null);
-  const [orderBy, setOrderBy] = useState(null);
+  const [orderBy, setOrderBy] = useState<any>(null);
   const [sectorCustomOrderBy, setSectorCustomOrderBy] = useLocalStorage(
     "sectorOrderBy",
     null

@@ -1,3 +1,4 @@
+import React from "react";
 import { Segment, Icon, Label, Header } from "semantic-ui-react";
 import { postUserRegion } from "../../../api";
 
@@ -26,7 +27,7 @@ const ProfileSettings = ({ accessToken, userRegions }) => {
               as="a"
               onClick={() => {
                 postUserRegion(accessToken, ur.id, true)
-                  .then((response) => {
+                  .then(() => {
                     window.location.reload();
                   })
                   .catch((error) => {
@@ -48,7 +49,7 @@ const ProfileSettings = ({ accessToken, userRegions }) => {
               as="a"
               onClick={() => {
                 postUserRegion(accessToken, ur.id, false)
-                  .then((response) => {
+                  .then(() => {
                     window.location.reload();
                   })
                   .catch((error) => {

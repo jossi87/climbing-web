@@ -13,28 +13,28 @@ const SvgEdit = () => {
     getAccessTokenSilently,
     loginWithRedirect,
   } = useAuth0();
-  const [mediaId, setMediaId] = useState(null);
-  const [crc32, setCrc32] = useState(null);
-  const [w, setW] = useState(null);
-  const [h, setH] = useState(null);
+  const [mediaId, setMediaId] = useState<any>(null);
+  const [crc32, setCrc32] = useState<any>(null);
+  const [w, setW] = useState<any>(null);
+  const [h, setH] = useState<any>(null);
   const [shift, setShift] = useState(false);
-  const [svgId, setSvgId] = useState(null);
-  const [path, setPath] = useState(null);
-  const [pathTxt, setPathTxt] = useState(null);
-  const [points, setPoints] = useState(null);
-  const [anchors, setAnchors] = useState(null);
-  const [texts, setTexts] = useState(null);
-  const [readOnlySvgs, setReadOnlySvgs] = useState(null);
-  const [readOnlyPoints, setReadOnlyPoints] = useState([]);
-  const [activePoint, setActivePoint] = useState(null);
-  const [draggedPoint, setDraggedPoint] = useState(null);
+  const [svgId, setSvgId] = useState<any>(null);
+  const [path, setPath] = useState<any>(null);
+  const [pathTxt, setPathTxt] = useState<any>(null);
+  const [points, setPoints] = useState<any>(null);
+  const [anchors, setAnchors] = useState<any>(null);
+  const [texts, setTexts] = useState<any>(null);
+  const [readOnlySvgs, setReadOnlySvgs] = useState<any>(null);
+  const [readOnlyPoints, setReadOnlyPoints] = useState<any[]>([]);
+  const [activePoint, setActivePoint] = useState<any>(null);
+  const [draggedPoint, setDraggedPoint] = useState<any>(null);
   const [draggedCubic, setDraggedCubic] = useState(false);
   const [hasAnchor, setHasAnchor] = useState(true);
-  const [id, setId] = useState(null);
-  const [metadata, setMetadata] = useState(null);
+  const [id, setId] = useState<any>(null);
+  const [metadata, setMetadata] = useState<any>(null);
   const [addAnchor, setAddAnchor] = useState(false);
   const [addText, setAddText] = useState(false);
-  const imageRef = useRef(null);
+  const imageRef = useRef<SVGImageElement>(null);
   const { problemIdMediaId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -122,13 +122,16 @@ const SvgEdit = () => {
     });
   }
 
-  function cancelDragging(e) {
+  function cancelDragging() {
     setDraggedPoint(false);
     setDraggedCubic(false);
   }
 
   function getMouseCoords(e, convertToNearestPointOnImage) {
-    const dim = imageRef.current.getBoundingClientRect();
+    const dim = imageRef.current?.getBoundingClientRect();
+    if (!dim) {
+      return { x: 0, y: 0 };
+    }
     const dx = w / dim.width;
     const dy = h / dim.height;
     const x = Math.round((e.clientX - dim.left) * dx);
@@ -294,7 +297,7 @@ const SvgEdit = () => {
     }
   }
 
-  function removeActivePoint(e) {
+  function removeActivePoint() {
     const active = activePoint;
     if (points.length > 0) {
       points.splice(active, 1);
@@ -311,7 +314,7 @@ const SvgEdit = () => {
     }
   }
 
-  function reset(e) {
+  function reset() {
     setShift(false);
     setPath(null);
     setPathTxt(null);
@@ -334,7 +337,7 @@ const SvgEdit = () => {
     return <Loading />;
   } else {
     const circles = points.map((p, i, a) => {
-      const anchors = [];
+      const anchors: JSX.Element[] = [];
       if (p.c) {
         const stroke = "#FFFFFF";
         anchors.push(
@@ -466,7 +469,7 @@ const SvgEdit = () => {
             <Button.Or />
             <Button
               onClick={() =>
-                navigate(`/problem/${problemIdMediaId.split("-")[0]}`)
+                navigate(`/problem/${problemIdMediaId?.split("-")[0]}`)
               }
             >
               Cancel
@@ -525,7 +528,10 @@ const SvgEdit = () => {
             <Dropdown
               selection
               value={points[activePoint].c ? "C" : "L"}
-              onChange={setPointType}
+              onChange={(...args) => {
+                // @ts-expect-error - I don't know how to fix this right now.
+                return setPointType(...args);
+              }}
               options={[
                 { key: 1, value: "L", text: "Selected point: Line to" },
                 { key: 2, value: "C", text: "Selected point: Curve to" },
@@ -548,7 +554,7 @@ const SvgEdit = () => {
         >
           <image
             ref={imageRef}
-            xlinkHref={getImageUrl(mediaId, crc32, null)}
+            xlinkHref={getImageUrl(mediaId, crc32, undefined)}
             width="100%"
             height="100%"
           />
