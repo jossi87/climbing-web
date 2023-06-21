@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { ComponentProps } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import ChartGradeDistribution from "./common/chart-grade-distribution/chart-grade-distribution";
@@ -28,8 +28,7 @@ import {
   Message,
   Feed,
 } from "semantic-ui-react";
-import { useAuth0 } from "@auth0/auth0-react";
-import { getArea, getImageUrl, getAreaPdfUrl } from "../api";
+import { getImageUrl, getAreaPdfUrl, useArea, useAccessToken } from "../api";
 import { Remarkable } from "remarkable";
 import { linkify } from "remarkable/linkify";
 import ProblemList from "./common/problem-list/problem-list";
@@ -101,11 +100,11 @@ const SectorListItem = ({ sector, problem, isClimbing }) => {
   );
 };
 const Area = () => {
-  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const [error, setError] = useState<any>(null);
-  const [data, setData] = useState<any>(null);
+  const accessToken = useAccessToken();
   const { areaId } = useParams();
+  const { data, error, refetch } = useArea(parseInt(areaId ?? "0"));
   const navigate = useNavigate();
+
   const md = new Remarkable({ breaks: true }).use(linkify);
   // open links in new windows
   md.renderer.rules.link_open = (function () {
@@ -118,19 +117,6 @@ const Area = () => {
       );
     };
   })();
-  useEffect(() => {
-    if (!isLoading) {
-      const update = async () => {
-        const accessToken = isAuthenticated
-          ? await getAccessTokenSilently()
-          : null;
-        getArea(accessToken, parseInt(areaId))
-          .then((data) => setData({ ...data, accessToken }))
-          .catch((error) => setError(error));
-      };
-      update();
-    }
-  }, [isLoading, isAuthenticated, areaId]);
 
   if (error) {
     return (
@@ -139,7 +125,7 @@ const Area = () => {
         style={{ backgroundColor: "#FFF" }}
         icon="meh"
         header="404"
-        content={error}
+        content={String(error)}
       />
     );
   } else if (!data || !data.id) {
@@ -155,10 +141,10 @@ const Area = () => {
         isParking: true,
       };
     });
-  const outlines = [];
-  const polylines = [];
+  const outlines: ComponentProps<typeof Leaflet>["outlines"] = [];
+  const polylines: ComponentProps<typeof Leaflet>["polylines"] = [];
   for (const s of data.sectors) {
-    let distance = null;
+    let distance: string | null = null;
     if (s.polyline) {
       const polyline = s.polyline
         .split(";")
@@ -181,7 +167,7 @@ const Area = () => {
     }
   }
   const isBouldering = data.metadata.gradeSystem === "BOULDER";
-  const panes = [];
+  const panes: ComponentProps<typeof Tab>["panes"] = [];
   const height = "40vh";
   if (data.media && data.media.length > 0) {
     panes.push({
@@ -191,12 +177,7 @@ const Area = () => {
           <Media
             isAdmin={data.metadata.isAdmin}
             numPitches={0}
-            removeMedia={(idMediaToRemove) => {
-              const newMedia = data.media.filter(
-                (m) => m.id != idMediaToRemove
-              );
-              setData((prevState) => ({ ...prevState, media: newMedia }));
-            }}
+            removeMedia={() => refetch()}
             media={data.media}
             optProblemId={null}
             isBouldering={isBouldering}
@@ -243,7 +224,7 @@ const Area = () => {
       render: () => (
         <Tab.Pane>
           <ChartGradeDistribution
-            accessToken={data.accessToken}
+            accessToken={accessToken}
             idArea={data.id}
             idSector={0}
             data={null}
@@ -271,15 +252,14 @@ const Area = () => {
       menuItem: { key: "todo", icon: "bookmark" },
       render: () => (
         <Tab.Pane>
-          <Todo accessToken={data.accessToken} idArea={data.id} idSector={0} />
+          <Todo accessToken={accessToken} idArea={data.id} idSector={0} />
         </Tab.Pane>
       ),
     });
   }
 
-  let sectorPanes = null;
+  const sectorPanes: ComponentProps<typeof Tab>["panes"] = [];
   if (data.sectors) {
-    sectorPanes = [];
     sectorPanes.push({
       menuItem: "Sectors (" + data.sectors.length + ")",
       render: () => (
@@ -527,7 +507,7 @@ const Area = () => {
             <Table.Cell>Misc:</Table.Cell>
             <Table.Cell>
               <Label
-                href={getAreaPdfUrl(data.accessToken, data.id)}
+                href={getAreaPdfUrl(accessToken, data.id)}
                 rel="noreferrer noopener"
                 target="_blank"
                 image
@@ -566,7 +546,7 @@ const Area = () => {
           )}
         </Table.Body>
       </Table>
-      {sectorPanes && <Tab panes={sectorPanes} />}
+      {sectorPanes.length > 0 && <Tab panes={sectorPanes} />}
     </>
   );
 };

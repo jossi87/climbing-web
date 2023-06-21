@@ -1,5 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { QueryOptions, useQuery } from "@tanstack/react-query";
+import { UseQueryOptions, useQuery } from "@tanstack/react-query";
 import fetch from "isomorphic-fetch";
 import { useState, useEffect } from "react";
 
@@ -47,7 +47,12 @@ export function useAccessToken() {
 
 export function useData<T = any>(
   urlSuffix: string,
-  options: Partial<QueryOptions> = {}
+  {
+    transform = (res) => res.json() as Promise<T>,
+    ...options
+  }: Partial<UseQueryOptions> & {
+    transform?: (response: Awaited<ReturnType<typeof fetch>>) => Promise<any>;
+  } = {}
 ) {
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   return useQuery<any>({
@@ -58,7 +63,7 @@ export function useData<T = any>(
         ? await getAccessTokenSilently()
         : null;
       const res = await makeAuthenticatedRequest(accessToken, urlSuffix);
-      return res.json() as T;
+      return transform(res);
     },
     ...options,
   });
@@ -210,6 +215,24 @@ export function getActivity(
       console.warn(error);
       return null;
     });
+}
+
+export function useArea(id: number) {
+  return useData(`/areas?id=${id}`, {
+    transform: (response) => {
+      if (response.status === 500) {
+        return Promise.reject(
+          "Cannot find the specified area because it does not exist or you do not have sufficient permissions."
+        );
+      }
+      return response.json().then((data) => {
+        if (data.redirectUrl && data.redirectUrl != window.location.href) {
+          window.location.href = data.redirectUrl;
+        }
+        return data;
+      });
+    },
+  });
 }
 
 export function getArea(accessToken: string | null, id: number): Promise<any> {
