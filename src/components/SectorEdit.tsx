@@ -281,7 +281,7 @@ const SectorEdit = () => {
               : "grey";
           return (
             <Input
-              key={p.nr}
+              key={p.id}
               size="small"
               fluid
               icon="hashtag"
