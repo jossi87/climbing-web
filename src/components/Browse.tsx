@@ -18,7 +18,7 @@ import { linkify } from "remarkable/linkify";
 
 const Browse = () => {
   const { data } = useData(`/browse`);
-  const [flyToId, setFlyToId] = useState(null);
+  const [flyToId, setFlyToId] = useState<any>(null);
   const [showForDevelopers, setShowForDevelopers] = useState(false);
   const leafletRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();

@@ -23,14 +23,14 @@ const SvgEdit = () => {
     getAccessTokenSilently,
     loginWithRedirect,
   } = useAuth0();
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<any>(null);
   const [forceUpdate, setForceUpdate] = useState(0);
   const [activeElementIndex, setActiveElementIndex] = useState(-1);
   const [shift, setShift] = useState(false);
-  const [activePoint, setActivePoint] = useState(null);
-  const [draggedPoint, setDraggedPoint] = useState(null);
+  const [activePoint, setActivePoint] = useState<any>(null);
+  const [draggedPoint, setDraggedPoint] = useState<any>(null);
   const [draggedCubic, setDraggedCubic] = useState(false);
-  const imageRef = useRef(null);
+  const imageRef = useRef<SVGImageElement | null>(null);
   const { mediaId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -73,13 +73,16 @@ const SvgEdit = () => {
       });
   }
 
-  function cancelDragging(e) {
+  function cancelDragging() {
     setDraggedPoint(false);
     setDraggedCubic(false);
   }
 
   function getMouseCoords(e) {
-    const dim = imageRef.current.getBoundingClientRect();
+    const dim = imageRef.current?.getBoundingClientRect();
+    if (!dim) {
+      return { x: 0, y: 0 };
+    }
     const dx = data.m.width / dim.width;
     const dy = data.m.height / dim.height;
     const x = Math.round((e.clientX - dim.left) * dx);
@@ -224,7 +227,7 @@ const SvgEdit = () => {
     }
   }
 
-  function removeActivePoint(e) {
+  function removeActivePoint() {
     const active = activePoint;
     const points = data.m.mediaSvgs[activeElementIndex].points;
     if (points.length > 1 && active !== 0) {
@@ -237,7 +240,7 @@ const SvgEdit = () => {
     }
   }
 
-  function reset(e) {
+  function reset() {
     data.m.mediaSvgs = [];
     setData(data);
     setActiveElementIndex(-1);
@@ -260,7 +263,7 @@ const SvgEdit = () => {
       data.m.mediaSvgs[activeElementIndex] &&
       data.m.mediaSvgs[activeElementIndex].t === "PATH" &&
       data.m.mediaSvgs[activeElementIndex].points.map((p, i, a) => {
-        const anchors = [];
+        const anchors: JSX.Element[] = [];
         if (p.c) {
           anchors.push(
             <g key={anchors.length} className="buldreinfo-svg-edit-opacity">
@@ -318,7 +321,7 @@ const SvgEdit = () => {
         );
       });
 
-    let activeRappel = null;
+    let activeRappel: JSX.Element | null = null;
     if (
       activeElementIndex >= 0 &&
       data.m.mediaSvgs[activeElementIndex] &&
@@ -480,12 +483,14 @@ const SvgEdit = () => {
                   <Dropdown
                     selection
                     value={
-                      data.m.mediaSvgs[activeElementIndex].points[activePoint]
-                        .c
+                      data.m.mediaSvgs[activeElementIndex].points[activePoint].c
                         ? "C"
                         : "L"
                     }
-                    onChange={setPointType}
+                    onChange={(...args) => {
+                      // @ts-expect-error - I don't know why this works right now.
+                      return setPointType(...args);
+                    }}
                     options={[
                       { key: 1, value: "L", text: "Selected point: Line to" },
                       { key: 2, value: "C", text: "Selected point: Curve to" },
@@ -521,7 +526,7 @@ const SvgEdit = () => {
         >
           <image
             ref={imageRef}
-            xlinkHref={getImageUrl(data.m.id, data.m.crc32, null)}
+            xlinkHref={getImageUrl(data.m.id, data.m.crc32, undefined)}
             width="100%"
             height="100%"
           />

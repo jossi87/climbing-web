@@ -24,11 +24,11 @@ type TickModalProps = {
   idTick: number;
   idProblem: number;
   grades: { grade: number }[];
-  comment: string;
+  comment: string | null;
   grade: string;
-  stars: number;
+  stars: number | null;
   repeats: { date: string | null; comment: string }[] | undefined;
-  date: string;
+  date: string | null;
   enableTickRepeats: boolean;
 };
 

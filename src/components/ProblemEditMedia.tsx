@@ -13,9 +13,9 @@ const ProblemEditMedia = () => {
     getAccessTokenSilently,
     loginWithRedirect,
   } = useAuth0();
-  const [id, setId] = useState(null);
+  const [id, setId] = useState<any>(null);
   const [isMultiPitch, setIsMultiPitch] = useState(false);
-  const [media, setMedia] = useState(null);
+  const [media, setMedia] = useState<any>(null);
   const [saving, setSaving] = useState(false);
   const { problemId } = useParams();
   const navigate = useNavigate();

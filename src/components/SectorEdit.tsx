@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ComponentProps } from "react";
 import GpxParser from "gpxparser";
 import Dropzone from "react-dropzone";
 import { Helmet } from "react-helmet";
@@ -29,10 +29,10 @@ const SectorEdit = () => {
     loginWithRedirect,
   } = useAuth0();
   const [leafletMode, setLeafletMode] = useState("PARKING");
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<any>(null);
   const [showProblemOrder, setShowProblemOrder] = useState(false);
-  const [sectorMarkers, setSectorMarkers] = useState(null);
-  const [area, setArea] = useState(null);
+  const [sectorMarkers, setSectorMarkers] = useState<any>(null);
+  const [area, setArea] = useState<any>(null);
   const [saving, setSaving] = useState(false);
   const { areaIdSectorId } = useParams();
   const navigate = useNavigate();
@@ -176,8 +176,8 @@ const SectorEdit = () => {
   } else if (!data.metadata.isAdmin) {
     return <InsufficientPrivileges />;
   } else {
-    const polygons = [];
-    const polylines = [];
+    const polygons: ComponentProps<typeof Leaflet>["outlines"] = [];
+    const polylines: ComponentProps<typeof Leaflet>["polylines"] = [];
     if (area) {
       area.sectors.forEach((sector) => {
         if (sector.id != data.id) {
@@ -185,7 +185,7 @@ const SectorEdit = () => {
             const sectorPolygon = sector.polygonCoords
               .split(";")
               .filter((i) => i)
-              .map((c, i) => {
+              .map((c) => {
                 const latLng = c.split(",");
                 return [parseFloat(latLng[0]), parseFloat(latLng[1])];
               });
@@ -211,7 +211,7 @@ const SectorEdit = () => {
       data.polygonCoords
         .split(";")
         .filter((i) => i)
-        .map((c, i) => {
+        .map((c) => {
           const latLng = c.split(",");
           if (latLng?.length === 2) {
             const lat = parseFloat(latLng[0]);
@@ -262,7 +262,7 @@ const SectorEdit = () => {
     } else if (data.lockedAdmin) {
       lockedValue = 1;
     }
-    const markers = [];
+    const markers: ComponentProps<typeof Leaflet>["markers"] = [];
     if (data.lat != 0 && data.lng != 0) {
       markers.push({ lat: data.lat, lng: data.lng, isParking: true });
     }
@@ -427,19 +427,20 @@ const SectorEdit = () => {
                   positive={sectorMarkers != null}
                   onClick={() => {
                     if (sectorMarkers == null) {
-                      const sectorId = areaIdSectorId.split("-")[1];
-                      if (parseInt(sectorId) > 0) {
-                        getSector(data.accessToken, parseInt(sectorId)).then(
-                          (data) =>
-                            setSectorMarkers(
-                              data.problems
-                                .filter((p) => p.lat > 0 && p.lng > 0)
-                                .map((p) => ({
-                                  lat: p.lat,
-                                  lng: p.lng,
-                                  label: p.name,
-                                }))
-                            )
+                      const sectorId = parseInt(
+                        areaIdSectorId?.split("-")[1] ?? "0"
+                      );
+                      if (sectorId > 0) {
+                        getSector(data.accessToken, sectorId).then((data) =>
+                          setSectorMarkers(
+                            data.problems
+                              .filter((p) => p.lat > 0 && p.lng > 0)
+                              .map((p) => ({
+                                lat: p.lat,
+                                lng: p.lng,
+                                label: p.name,
+                              }))
+                          )
                         );
                       }
                     } else {
@@ -528,7 +529,7 @@ const SectorEdit = () => {
                         const reader = new FileReader();
                         reader.onload = (e) => {
                           const gpx = new GpxParser();
-                          gpx.parse(e.target.result as string);
+                          gpx.parse(e.target?.result as string);
                           console.log(gpx);
                           const polyline = gpx.tracks[0]?.points
                             ?.map((e) => e.lat + "," + e.lon)
@@ -574,11 +575,11 @@ const SectorEdit = () => {
             <Button
               negative
               onClick={() => {
-                const sectorId = areaIdSectorId.split("-")[1];
+                const sectorId = areaIdSectorId?.split("-")[1] ?? "0";
                 if (sectorId != "0") {
                   navigate(`/sector/${sectorId}`);
                 } else {
-                  const areaId = areaIdSectorId.split("-")[0];
+                  const areaId = areaIdSectorId?.split("-")[0] ?? "0";
                   navigate(`/area/${areaId}`);
                 }
               }}

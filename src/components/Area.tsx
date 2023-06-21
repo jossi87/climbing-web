@@ -102,8 +102,8 @@ const SectorListItem = ({ sector, problem, isClimbing }) => {
 };
 const Area = () => {
   const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const [error, setError] = useState(null);
-  const [data, setData] = useState(null);
+  const [error, setError] = useState<any>(null);
+  const [data, setData] = useState<any>(null);
   const { areaId } = useParams();
   const navigate = useNavigate();
   const md = new Remarkable({ breaks: true }).use(linkify);
@@ -172,7 +172,7 @@ const Area = () => {
       const polygon = s.polygonCoords
         .split(";")
         .filter((i) => i)
-        .map((c, i) => {
+        .map((c) => {
           const latLng = c.split(",");
           return [parseFloat(latLng[0]), parseFloat(latLng[1])];
         });

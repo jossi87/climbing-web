@@ -10,7 +10,7 @@ export default function Polygons({
   if (!outlines) {
     return null;
   }
-  return outlines.map((o, i) => (
+  return outlines.map((o) => (
     <Polygon
       key={o.polygon}
       positions={o.polygon}
@@ -21,7 +21,7 @@ export default function Polygons({
           if (addEventHandlers) {
             if (o.url.startsWith("https")) {
               const win = window.open(o.url, "_blank");
-              win.focus();
+              win?.focus();
             } else {
               navigate(o.url);
             }

@@ -1,3 +1,4 @@
+import React from "react";
 import { parseSVG, makeAbsolute } from "svg-path-parser";
 import { svgPathProperties } from "svg-path-properties";
 
@@ -168,8 +169,9 @@ function generateSvgNrAndAnchor(path, nr, hasAnchor, w, h) {
   if (x > w - r) x = w - r;
   if (y < r) y = r;
   if (y > h - r) y = h - r;
-  let anchor = null;
+  let anchor: JSX.Element | null = null;
   if (hasAnchor === true) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     anchor = (
       <circle
         fill="#E2011A"
@@ -217,7 +219,7 @@ function generateSvgNrAndAnchor(path, nr, hasAnchor, w, h) {
 }
 
 export function parsePath(d) {
-  let res = [];
+  let res: any[] = [];
   if (d) {
     const commands: any = parseSVG(d);
     makeAbsolute(commands); // Note: mutates the commands in place!
@@ -248,7 +250,7 @@ export function parsePath(d) {
     });
     // Reverse path if drawn incorrect direction
     if (res.length >= 2 && res[0].y < res[res.length - 1].y) {
-      const tmp = [];
+      const tmp: any[] = [];
       for (let i = res.length - 1; i >= 0; i--) {
         const p = res[i];
         const prevP = i != res.length - 1 && res[i + 1];
@@ -272,7 +274,7 @@ export function parsePath(d) {
 }
 
 export function parseReadOnlySvgs(readOnlySvgs, w, h, minWindowScale) {
-  const shapes = [];
+  const shapes: JSX.Element[] = [];
   const backgroundColor = "black";
   const color = "white";
   const scale = Math.max(w, h, minWindowScale);

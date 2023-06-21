@@ -9,7 +9,7 @@ import { getSites } from "../api";
 
 const Sites = () => {
   const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<any>(null);
   const { type } = useParams();
   const navigate = useNavigate();
   useEffect(() => {

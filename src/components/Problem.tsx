@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ComponentProps } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import Leaflet from "./common/leaflet/leaflet";
@@ -41,11 +41,11 @@ import Linkify from "react-linkify";
 
 const Problem = () => {
   const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const [error, setError] = useState(null);
-  const [data, setData] = useState(null);
-  const [problemsOnRock, setProblemsOnRock] = useState([]);
+  const [error, setError] = useState<any>(null);
+  const [data, setData] = useState<any>(null);
+  const [problemsOnRock, setProblemsOnRock] = useState<any[]>([]);
   const [showTickModal, setShowTickModal] = useState(false);
-  const [showCommentModal, setShowCommentModal] = useState(null);
+  const [showCommentModal, setShowCommentModal] = useState<any>(null);
   const [showHiddenMedia, setShowHiddenMedia] = useState(false);
   const [reload, setReload] = useState(true);
   const { problemId } = useParams();
@@ -57,7 +57,7 @@ const Problem = () => {
         const accessToken = isAuthenticated
           ? await getAccessTokenSilently()
           : null;
-        getProblem(accessToken, parseInt(problemId), showHiddenMedia)
+        getProblem(accessToken, parseInt(problemId ?? "0"), showHiddenMedia)
           .then((data) => {
             setProblemsOnRock([]);
             setData({ ...data, accessToken });
@@ -99,7 +99,7 @@ const Problem = () => {
         false,
         []
       )
-        .then((response) => {
+        .then(() => {
           setReload(true);
         })
         .catch((error) => {
@@ -113,7 +113,7 @@ const Problem = () => {
     if (confirm("Are you sure you want to delete this comment?")) {
       setData(null);
       postComment(data.accessToken, id, data.id, null, false, false, true, [])
-        .then((response) => {
+        .then(() => {
           setReload(true);
         })
         .catch((error) => {
@@ -126,7 +126,7 @@ const Problem = () => {
   function toggleTodo(problemId: number) {
     setData(null);
     postTodo(data.accessToken, problemId)
-      .then((response) => {
+      .then(() => {
         setReload(true);
       })
       .catch((error) => {
@@ -177,7 +177,7 @@ const Problem = () => {
     return <Loading />;
   }
   const isBouldering = data.metadata.gradeSystem === "BOULDER";
-  const markers = [];
+  const markers: ComponentProps<typeof Leaflet>["markers"] = [];
   if (data.lat > 0 && data.lng > 0) {
     markers.push({
       lat: data.lat,
@@ -194,7 +194,7 @@ const Problem = () => {
       isParking: true,
     });
   }
-  const panes = [];
+  const panes: ComponentProps<typeof Tab>["panes"] = [];
   if (data.media && data.media.length > 0) {
     panes.push({
       menuItem: { key: "media", icon: "image" },
@@ -339,7 +339,7 @@ const Problem = () => {
       </Header>
       {data.comments ? (
         data.comments.map((c, i) => {
-          let extra = null;
+          let extra: JSX.Element | null = null;
           if (c.danger) {
             extra = <Label color="red">Flagged as dangerous</Label>;
           } else if (c.resolved) {
@@ -403,7 +403,7 @@ const Problem = () => {
     </Comment.Group>
   );
 
-  let tickModal = null;
+  let tickModal: JSX.Element | null = null;
   if (showTickModal) {
     const enableTickRepeats =
       data.metadata.gradeSystem === "ICE" || data.sections?.length > 0;
@@ -442,7 +442,7 @@ const Problem = () => {
           closeWithReload={closeTickModalWithReload}
           comment={null}
           stars={null}
-          repeats={null}
+          repeats={undefined}
           date={null}
           enableTickRepeats={enableTickRepeats}
         />

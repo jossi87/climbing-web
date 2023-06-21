@@ -26,7 +26,7 @@ const AreaEdit = () => {
     getAccessTokenSilently,
     loginWithRedirect,
   } = useAuth0();
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<any>(null);
   const [showSectorOrder, setShowSectorOrder] = useState(false);
   const [saving, setSaving] = useState(false);
   const { areaId } = useParams();

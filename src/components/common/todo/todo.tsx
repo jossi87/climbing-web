@@ -5,7 +5,7 @@ import { Header, Icon, List } from "semantic-ui-react";
 import { getTodo } from "../../../api";
 
 const Todo = ({ accessToken, idArea, idSector }) => {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<any>(null);
   useEffect(() => {
     if (data != null) {
       setData(null);

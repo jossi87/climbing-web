@@ -37,7 +37,7 @@ const ProblemEdit = () => {
     getAccessTokenSilently,
     loginWithRedirect,
   } = useAuth0();
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<any>(null);
   const [sectorMarkers, setSectorMarkers] = useState([]);
   const [sectorRocks, setSectorRocks] = useState([]);
   const [showSectorMarkers, setShowSectorMarkers] = useState(true);

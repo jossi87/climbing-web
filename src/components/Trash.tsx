@@ -72,7 +72,7 @@ const Trash = () => {
                               t.idSector,
                               t.idProblem,
                               t.idMedia
-                            ).then((response) => {
+                            ).then(() => {
                               let url;
                               if (t.idArea > 0) {
                                 url = "/area/" + t.idArea;

@@ -15,7 +15,7 @@ const CommentModal = ({
   initDanger,
   initResolved,
 }) => {
-  const [comment, setComment] = useState(null);
+  const [comment, setComment] = useState<any>(null);
   const [danger, setDanger] = useState(false);
   const [resolved, setResolved] = useState(false);
   const [media, setMedia] = useState([]);
@@ -114,7 +114,7 @@ const CommentModal = ({
                   false,
                   media
                 )
-                  .then((response) => {
+                  .then(() => {
                     setComment(null);
                     setDanger(false);
                     setResolved(false);

@@ -45,7 +45,7 @@ export function useAccessToken() {
   return accessToken;
 }
 
-export function useData(
+export function useData<T = any>(
   urlSuffix: string,
   options: Partial<QueryOptions> = {}
 ) {
@@ -928,7 +928,7 @@ export function postComment(
   accessToken: string | null,
   id: number,
   idProblem: number,
-  comment: string,
+  comment: string | null,
   danger: boolean,
   resolved: boolean,
   del: boolean,
