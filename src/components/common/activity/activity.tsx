@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import {
   Label,
@@ -12,14 +12,11 @@ import {
 } from "semantic-ui-react";
 import LazyLoad from "react-lazyload";
 import { useLocalStorage } from "../../../utils/use-local-storage";
-import { useAuth0 } from "@auth0/auth0-react";
-import { getActivity, getImageUrl } from "../../../api";
+import { getImageUrl, useActivity } from "../../../api";
 import { LockSymbol, Stars } from "./../../common/widgets/widgets";
 import Linkify from "react-linkify";
 
 const Activity = ({ metadata, idArea, idSector }) => {
-  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const [activity, setActivity] = useState<any>(null);
   const [lowerGradeId, setLowerGradeId] = useLocalStorage("lower_grade_id", 0);
   const [lowerGradeText, setLowerGradeText] = useLocalStorage(
     "lower_grade_text",
@@ -42,43 +39,15 @@ const Activity = ({ metadata, idArea, idSector }) => {
     true
   );
 
-  useEffect(() => {
-    if (!isLoading) {
-      let canceled = false;
-      const update = async () => {
-        const accessToken = isAuthenticated
-          ? await getAccessTokenSilently()
-          : null;
-        if (canceled) return;
-        getActivity(
-          accessToken,
-          idArea,
-          idSector,
-          lowerGradeId,
-          activityTypeFa,
-          activityTypeComments,
-          activityTypeTicks,
-          activityTypeMedia
-        ).then((res) => {
-          if (canceled) return;
-          setActivity(res);
-        });
-      };
-      update();
-      return () => {
-        canceled = true;
-      };
-    }
-  }, [
-    isAuthenticated,
+  const { data: activity, refetch } = useActivity({
     idArea,
     idSector,
-    lowerGradeId,
-    activityTypeFa,
-    activityTypeComments,
-    activityTypeTicks,
-    activityTypeMedia,
-  ]);
+    lowerGrade: lowerGradeId,
+    fa: activityTypeFa,
+    comments: activityTypeComments,
+    ticks: activityTypeTicks,
+    media: activityTypeMedia,
+  });
 
   if (
     metadata &&
@@ -104,9 +73,9 @@ const Activity = ({ metadata, idArea, idSector }) => {
   };
 
   const componentDecorator = (href, text, key) => (
-    <a href={href} key={key} rel="noreferrer noopener" target="_blank">
+    <Link to={href} key={key} rel="noreferrer noopener" target="_blank">
       {text}
-    </a>
+    </Link>
   );
 
   return (
@@ -136,7 +105,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
                                 .substr(a.grade.indexOf("(") + 1)
                                 .replace(")", "")
                             : a.grade;
-                        setActivity(null);
+                        refetch();
                         setLowerGradeId(a.id);
                         setLowerGradeText(gradeText);
                       }}
@@ -149,7 +118,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
             animated="fade"
             inverted={!activityTypeFa}
             onClick={() => {
-              setActivity(null);
+              refetch();
               setActivityTypeFa(!activityTypeFa);
             }}
           >
@@ -162,7 +131,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
             animated="fade"
             inverted={!activityTypeTicks}
             onClick={() => {
-              setActivity(null);
+              refetch();
               setActivityTypeTicks(!activityTypeTicks);
             }}
           >
@@ -175,7 +144,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
             animated="fade"
             inverted={!activityTypeMedia}
             onClick={() => {
-              setActivity(null);
+              refetch();
               setActivityTypeMedia(!activityTypeMedia);
             }}
           >
@@ -188,7 +157,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
             animated="fade"
             inverted={!activityTypeComments}
             onClick={() => {
-              setActivity(null);
+              refetch();
               setActivityTypeComments(!activityTypeComments);
             }}
           >

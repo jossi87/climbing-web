@@ -29,9 +29,9 @@ const Filter = () => {
   const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
   const [meta, setMeta] = useState<any>(null);
-  const [grades, setGrades] = useLocalStorage("filter_grades", null);
-  const [types, setTypes] = useLocalStorage("filter_types", null);
-  const [result, setResult] = useLocalStorage("filter_result", null);
+  const [grades, setGrades] = useLocalStorage<number[]>("filter_grades", []);
+  const [types, setTypes] = useLocalStorage<number[]>("filter_types", []);
+  const [result, setResult] = useLocalStorage<any[]>("filter_result", []);
   const [refreshing, setRefreshing] = useState(false);
   const [hideTicked, setHideTicked] = useLocalStorage("filter_ticked", false);
   const [onlyWithMedia, setOnlyWithMedia] = useLocalStorage(
@@ -43,7 +43,10 @@ const Filter = () => {
     "filter_only_sa",
     false
   );
-  const [orderBy, setOrderBy] = useLocalStorage("filter_order_by", "0");
+  const [orderBy, setOrderBy] = useLocalStorage<OrderBy>(
+    "filter_order_by",
+    OrderBy.alphabetical
+  );
 
   const orderByOptions = [
     {
@@ -106,15 +109,13 @@ const Filter = () => {
     .sort((a, b) => a.subType.localeCompare(b.subType, getLocales()))
     .map((t) => ({ key: t.id, value: t.id, text: t.subType }));
   const res =
-    result &&
-    result.filter(
+    result?.filter(
       (p) =>
         (!hideTicked || !p.ticked) &&
         (!onlyWithMedia || p.randomMediaId > 0) &&
         (!onlyAdmin || p.lockedAdmin) &&
         (!onlySuperAdmin || p.lockedSuperadmin)
-    );
-  console.log(meta);
+    ) ?? [];
   return (
     <>
       <Helmet>
@@ -132,8 +133,8 @@ const Filter = () => {
               options={gradeOptions}
               value={grades ? grades : []}
               onChange={(e, { value }) => {
-                setGrades(value);
-                setResult(null);
+                setGrades(value as number[]);
+                setResult([]);
               }}
             />
           </Form.Field>
@@ -147,8 +148,8 @@ const Filter = () => {
                 options={typeOptions}
                 value={types ? types : []}
                 onChange={(e, { value }) => {
-                  setTypes(value);
-                  setResult(null);
+                  setTypes(value as number[]);
+                  setResult([]);
                 }}
               />
             </Form.Field>
@@ -216,7 +217,7 @@ const Filter = () => {
           </Button>
         </Form>
       </Segment>
-      {res && (
+      {res.length > 0 && (
         <Segment>
           <div style={{ paddingBottom: "10px" }}>
             <Dropdown
