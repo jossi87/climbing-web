@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Helmet } from "react-helmet";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import ProblemList from "./common/problem-list/problem-list";
@@ -29,8 +29,12 @@ import {
   Message,
   Feed,
 } from "semantic-ui-react";
-import { useAuth0 } from "@auth0/auth0-react";
-import { getSector, getAreaPdfUrl, getSectorPdfUrl } from "../api";
+import {
+  getAreaPdfUrl,
+  getSectorPdfUrl,
+  useAccessToken,
+  useSector,
+} from "../api";
 import Linkify from "react-linkify";
 
 const SectorListItem = ({ problem, isClimbing }) => {
@@ -94,25 +98,12 @@ const SectorListItem = ({ problem, isClimbing }) => {
     </List.Item>
   );
 };
+
 const Sector = () => {
-  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const [error, setError] = useState<any>(null);
-  const [data, setData] = useState<any>(null);
+  const accessToken = useAccessToken();
   const { sectorId } = useParams();
+  const { data: data, error, refetch, isLoading } = useSector(sectorId);
   const navigate = useNavigate();
-  useEffect(() => {
-    if (!isLoading) {
-      const update = async () => {
-        const accessToken = isAuthenticated
-          ? await getAccessTokenSilently()
-          : null;
-        getSector(accessToken, parseInt(sectorId))
-          .then((data) => setData({ ...data, accessToken }))
-          .catch((error) => setError(error));
-      };
-      update();
-    }
-  }, [isLoading, isAuthenticated, sectorId]);
 
   if (error) {
     return (
@@ -121,7 +112,7 @@ const Sector = () => {
         style={{ backgroundColor: "#FFF" }}
         icon="meh"
         header="404"
-        content={error}
+        content={String(error)}
       />
     );
   } else if (isLoading || !data || !data.id) {
@@ -167,12 +158,7 @@ const Sector = () => {
             <Media
               isAdmin={data.metadata.isAdmin}
               numPitches={0}
-              removeMedia={(idMediaToRemove) =>
-                setData((prevState) => ({
-                  ...prevState,
-                  media: data.media.filter((m) => m.id != idMediaToRemove),
-                }))
-              }
+              removeMedia={() => refetch()}
               media={media}
               optProblemId={null}
               isBouldering={isBouldering}
@@ -251,12 +237,7 @@ const Sector = () => {
           <Media
             isAdmin={data.metadata.isAdmin}
             numPitches={0}
-            removeMedia={(idMediaToRemove) =>
-              setData((prevState) => ({
-                ...prevState,
-                media: data.media.filter((m) => m.id != idMediaToRemove),
-              }))
-            }
+            removeMedia={() => refetch()}
             media={topoImages}
             optProblemId={null}
             isBouldering={isBouldering}
@@ -271,7 +252,7 @@ const Sector = () => {
       render: () => (
         <Tab.Pane>
           <ChartGradeDistribution
-            accessToken={data.accessToken}
+            accessToken={accessToken}
             idArea={0}
             idSector={data.id}
             data={null}
@@ -521,7 +502,7 @@ const Sector = () => {
             <Table.Cell>Misc:</Table.Cell>
             <Table.Cell>
               <Label
-                href={getSectorPdfUrl(data.accessToken, data.id)}
+                href={getSectorPdfUrl(accessToken, data.id)}
                 rel="noreferrer noopener"
                 target="_blank"
                 image
@@ -531,7 +512,7 @@ const Sector = () => {
                 sector.pdf
               </Label>
               <Label
-                href={getAreaPdfUrl(data.accessToken, data.areaId)}
+                href={getAreaPdfUrl(accessToken, data.areaId)}
                 rel="noreferrer noopener"
                 target="_blank"
                 image

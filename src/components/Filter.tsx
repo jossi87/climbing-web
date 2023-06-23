@@ -30,8 +30,14 @@ const Filter = () => {
   const navigate = useNavigate();
   const [meta, setMeta] = useState<any>(null);
   const [grades, setGrades] = useLocalStorage<number[]>("filter_grades", []);
-  const [disciplines, setDisciplines] = useLocalStorage<number[]>("filter_disciplines", []);
-  const [routeTypes, setRouteTypes] = useLocalStorage<number[]>("filter_route_types", []);
+  const [disciplines, setDisciplines] = useLocalStorage<number[]>(
+    "filter_disciplines",
+    []
+  );
+  const [routeTypes, setRouteTypes] = useLocalStorage<number[]>(
+    "filter_route_types",
+    []
+  );
   const [result, setResult] = useLocalStorage<any[]>("filter_result", []);
   const [refreshing, setRefreshing] = useState(false);
   const [hideTicked, setHideTicked] = useLocalStorage("filter_ticked", false);
@@ -164,12 +170,20 @@ const Filter = () => {
                 multiple
                 selection
                 options={[
-                  {key: 'Single-pitch', value: 'Single-pitch',text: 'Single-pitch'},
-                  {key: 'Multi-pitch', value: 'Multi-pitch',text: 'Multi-pitch'},
+                  {
+                    key: "Single-pitch",
+                    value: "Single-pitch",
+                    text: "Single-pitch",
+                  },
+                  {
+                    key: "Multi-pitch",
+                    value: "Multi-pitch",
+                    text: "Multi-pitch",
+                  },
                 ]}
                 value={routeTypes || []}
                 onChange={(e, { value }) => {
-                  setRouteTypes(value as string[]);
+                  setRouteTypes(value as number[]);
                   setResult([]);
                 }}
               />
@@ -220,14 +234,23 @@ const Filter = () => {
             disabled={
               !grades ||
               grades.length == 0 ||
-              (disciplineOptions.length > 1 && (!disciplines || disciplines.length == 0)) ||
-              (!isBouldering && routeTypes?.length===0)
+              (disciplineOptions.length > 1 &&
+                (!disciplines || disciplines.length == 0)) ||
+              (!isBouldering && routeTypes?.length === 0)
             }
             loading={refreshing}
             onClick={() => {
               setRefreshing(true);
-              const myDisciplines = disciplineOptions.length === 1 ? [disciplineOptions[0].value] : disciplines;
-              postFilter(meta.accessToken, grades, myDisciplines, routeTypes).then((res) => {
+              const myDisciplines =
+                disciplineOptions.length === 1
+                  ? [disciplineOptions[0].value]
+                  : disciplines;
+              postFilter(
+                meta.accessToken,
+                grades,
+                myDisciplines,
+                routeTypes.map((v) => String(v))
+              ).then((res) => {
                 setData(res, orderBy);
                 setRefreshing(false);
               });
@@ -253,8 +276,7 @@ const Filter = () => {
               }
             />
             <Header as="h3">
-              {res.length}{" "}
-              {isBouldering ? "Problems" : "Routes"}
+              {res.length} {isBouldering ? "Problems" : "Routes"}
             </Header>
           </div>
           <Leaflet
