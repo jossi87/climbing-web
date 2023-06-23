@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Loading } from "../widgets/widgets";
 import { Table, Header, Image } from "semantic-ui-react";
 import { Link } from "react-router-dom";
-import { getTop } from "../../../api";
+import { useTop } from "../../../api";
 
 type TopProps = {
   idArea: number;
@@ -10,13 +10,7 @@ type TopProps = {
 };
 
 const Top = ({ idArea, idSector }: TopProps) => {
-  const [top, setTop] = useState<Awaited<ReturnType<typeof getTop>>>();
-
-  useEffect(() => {
-    getTop(idArea, idSector).then((res) => {
-      setTop(res);
-    });
-  }, [idArea, idSector]);
+  const { data: top } = useTop({ idArea, idSector });
 
   if (!top) {
     return <Loading />;

@@ -299,7 +299,7 @@ const Sector = () => {
       menuItem: { key: "todo", icon: "bookmark" },
       render: () => (
         <Tab.Pane>
-          <Todo accessToken={data.accessToken} idArea={0} idSector={data.id} />
+          <Todo idArea={0} idSector={data.id} />
         </Tab.Pane>
       ),
     });

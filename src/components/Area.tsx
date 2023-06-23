@@ -252,7 +252,7 @@ const Area = () => {
       menuItem: { key: "todo", icon: "bookmark" },
       render: () => (
         <Tab.Pane>
-          <Todo accessToken={accessToken} idArea={data.id} idSector={0} />
+          <Todo idArea={data.id} idSector={0} />
         </Tab.Pane>
       ),
     });
