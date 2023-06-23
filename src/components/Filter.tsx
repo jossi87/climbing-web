@@ -30,7 +30,8 @@ const Filter = () => {
   const navigate = useNavigate();
   const [meta, setMeta] = useState<any>(null);
   const [grades, setGrades] = useLocalStorage<number[]>("filter_grades", []);
-  const [types, setTypes] = useLocalStorage<number[]>("filter_types", []);
+  const [disciplines, setDisciplines] = useLocalStorage<number[]>("filter_disciplines", []);
+  const [routeTypes, setRouteTypes] = useLocalStorage<number[]>("filter_route_types", []);
   const [result, setResult] = useLocalStorage<any[]>("filter_result", []);
   const [refreshing, setRefreshing] = useState(false);
   const [hideTicked, setHideTicked] = useLocalStorage("filter_ticked", false);
@@ -100,12 +101,13 @@ const Filter = () => {
   if (!meta) {
     return <Loading />;
   }
+  const isBouldering = meta.metadata.gradeSystem === "BOULDER";
   const gradeOptions = meta.metadata.grades.map((g) => ({
     key: g.id,
     value: g.id,
     text: g.grade,
   }));
-  const typeOptions = meta.metadata.types
+  const disciplineOptions = meta.metadata.types
     .sort((a, b) => a.subType.localeCompare(b.subType, getLocales()))
     .map((t) => ({ key: t.id, value: t.id, text: t.subType }));
   const res =
@@ -138,17 +140,36 @@ const Filter = () => {
               }}
             />
           </Form.Field>
-          {typeOptions.length > 1 && (
+          {disciplineOptions.length > 1 && (
+            <Form.Field>
+              <Dropdown
+                placeholder="Select discipline(s)"
+                fluid
+                multiple
+                selection
+                options={disciplineOptions}
+                value={disciplines || []}
+                onChange={(e, { value }) => {
+                  setDisciplines(value as number[]);
+                  setResult([]);
+                }}
+              />
+            </Form.Field>
+          )}
+          {!isBouldering && (
             <Form.Field>
               <Dropdown
                 placeholder="Select type(s)"
                 fluid
                 multiple
                 selection
-                options={typeOptions}
-                value={types ? types : []}
+                options={[
+                  {key: 'Single-pitch', value: 'Single-pitch',text: 'Single-pitch'},
+                  {key: 'Multi-pitch', value: 'Multi-pitch',text: 'Multi-pitch'},
+                ]}
+                value={routeTypes || []}
                 onChange={(e, { value }) => {
-                  setTypes(value as number[]);
+                  setRouteTypes(value as string[]);
                   setResult([]);
                 }}
               />
@@ -199,14 +220,14 @@ const Filter = () => {
             disabled={
               !grades ||
               grades.length == 0 ||
-              (typeOptions.length > 1 && (!types || types.length == 0))
+              (disciplineOptions.length > 1 && (!disciplines || disciplines.length == 0)) ||
+              (!isBouldering && routeTypes?.length===0)
             }
             loading={refreshing}
             onClick={() => {
               setRefreshing(true);
-              const myTypes =
-                typeOptions.length === 1 ? [typeOptions[0].value] : types;
-              postFilter(meta.accessToken, grades, myTypes).then((res) => {
+              const myDisciplines = disciplineOptions.length === 1 ? [disciplineOptions[0].value] : disciplines;
+              postFilter(meta.accessToken, grades, myDisciplines, routeTypes).then((res) => {
                 setData(res, orderBy);
                 setRefreshing(false);
               });
@@ -233,7 +254,7 @@ const Filter = () => {
             />
             <Header as="h3">
               {res.length}{" "}
-              {meta.metadata.gradeSystem === "BOULDER" ? "Problems" : "Routes"}
+              {isBouldering ? "Problems" : "Routes"}
             </Header>
           </div>
           <Leaflet

@@ -1001,11 +1001,12 @@ export function postComment(
 export function postFilter(
   accessToken: string | null,
   grades: Array<number>,
-  types: Array<number>
+  disciplines: Array<number>,
+  routeTypes: Array<string>
 ): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/filter`, {
     method: "POST",
-    body: JSON.stringify({ grades, types }),
+    body: JSON.stringify({ grades, disciplines, routeTypes }),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
