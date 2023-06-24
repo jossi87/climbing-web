@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 import Leaflet from "./common/leaflet/leaflet";
-import { Loading } from "./common/widgets/widgets";
 import {
   Header,
   Segment,
@@ -14,10 +13,10 @@ import {
   List,
   Image,
 } from "semantic-ui-react";
-import { getMeta, getImageUrl, postFilter, getLocales } from "../api";
-import { useAuth0 } from "@auth0/auth0-react";
+import { getImageUrl, postFilter, getLocales, useAccessToken } from "../api";
 import { Stars, LockSymbol } from "./common/widgets/widgets";
 import { useLocalStorage } from "../utils/use-local-storage";
+import { useMeta } from "./common/meta";
 
 enum OrderBy {
   alphabetical,
@@ -25,15 +24,96 @@ enum OrderBy {
   rating,
 }
 
+const ORDER_BY_OPTIONS = [
+  {
+    key: OrderBy.alphabetical,
+    text: OrderBy[OrderBy.alphabetical],
+    value: OrderBy[OrderBy.alphabetical],
+  },
+  {
+    key: OrderBy.crag,
+    text: OrderBy[OrderBy.crag],
+    value: OrderBy[OrderBy.crag],
+  },
+  {
+    key: OrderBy.rating,
+    text: OrderBy[OrderBy.rating],
+    value: OrderBy[OrderBy.rating],
+  },
+];
+
+const CLIMBING_OPTIONS = [
+  {
+    key: "Single-pitch",
+    value: "Single-pitch",
+    text: "Single-pitch",
+  },
+  {
+    key: "Multi-pitch",
+    value: "Multi-pitch",
+    text: "Multi-pitch",
+  },
+];
+
+const Results = ({ results }: { results: any[] }) => {
+  if (results.length === 0) {
+    return null;
+  }
+  return (
+    <List selection verticalAlign="middle">
+      {results.map((p) => (
+        <List.Item key={p.problemId} as={Link} to={`/problem/${p.problemId}`}>
+          <Image
+            avatar
+            src={
+              p.randomMediaId > 0
+                ? getImageUrl(p.randomMediaId, p.randomMediaCrc32, 28)
+                : "/png/image.png"
+            }
+          />
+          <List.Content>
+            <List.Header>
+              <Link to={`/problem/${p.problemId}`}>{p.problemName}</Link>{" "}
+              {p.grade}{" "}
+              <LockSymbol
+                lockedAdmin={p.problemLockedAdmin}
+                lockedSuperadmin={p.problemLockedSuperadmin}
+              />{" "}
+              <Stars numStars={p.stars} includeNoRating={false} />
+              {p.ticks > 0 && (
+                <small>
+                  ({p.ticks} ascent{p.ticks > 1 && "s"})
+                </small>
+              )}
+            </List.Header>
+            <List.Description>
+              {p.areaName}{" "}
+              <LockSymbol
+                lockedAdmin={p.areaLockedAdmin}
+                lockedSuperadmin={p.areaLockedSuperadmin}
+              />{" "}
+              / {p.sectorName}{" "}
+              <LockSymbol
+                lockedAdmin={p.sectorLockedAdmin}
+                lockedSuperadmin={p.sectorLockedSuperadmin}
+              />
+            </List.Description>
+          </List.Content>
+        </List.Item>
+      ))}
+    </List>
+  );
+};
+
 const Filter = () => {
-  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const [meta, setMeta] = useState<any>(null);
+  const accessToken = useAccessToken();
+  const meta = useMeta();
   const [grades, setGrades] = useLocalStorage<number[]>("filter_grades", []);
   const [disciplines, setDisciplines] = useLocalStorage<number[]>(
     "filter_disciplines",
     []
   );
-  const [routeTypes, setRouteTypes] = useLocalStorage<number[]>(
+  const [routeTypes, setRouteTypes] = useLocalStorage<string[]>(
     "filter_route_types",
     []
   );
@@ -54,36 +134,6 @@ const Filter = () => {
     OrderBy.alphabetical
   );
 
-  const orderByOptions = [
-    {
-      key: OrderBy.alphabetical,
-      text: OrderBy[OrderBy.alphabetical],
-      value: OrderBy[OrderBy.alphabetical],
-    },
-    {
-      key: OrderBy.crag,
-      text: OrderBy[OrderBy.crag],
-      value: OrderBy[OrderBy.crag],
-    },
-    {
-      key: OrderBy.rating,
-      text: OrderBy[OrderBy.rating],
-      value: OrderBy[OrderBy.rating],
-    },
-  ];
-
-  useEffect(() => {
-    if (!isLoading) {
-      const update = async () => {
-        const accessToken = isAuthenticated
-          ? await getAccessTokenSilently()
-          : null;
-        getMeta(accessToken).then((meta) => setMeta({ ...meta, accessToken }));
-      };
-      update();
-    }
-  }, [isLoading, isAuthenticated]);
-
   function setData(data, newOrderBy: OrderBy) {
     setOrderBy(newOrderBy);
     const result = data.sort((a, b) => {
@@ -103,16 +153,13 @@ const Filter = () => {
     setResult(result);
   }
 
-  if (!meta) {
-    return <Loading />;
-  }
-  const isBouldering = meta.metadata.gradeSystem === "BOULDER";
-  const gradeOptions = meta.metadata.grades.map((g) => ({
+  const isBouldering = meta.gradeSystem === "BOULDER";
+  const gradeOptions = meta.grades.map((g) => ({
     key: g.id,
     value: g.id,
     text: g.grade,
   }));
-  const disciplineOptions = meta.metadata.types
+  const disciplineOptions = meta.types
     .sort((a, b) => a.subType.localeCompare(b.subType, getLocales()))
     .map((t) => ({ key: t.id, value: t.id, text: t.subType }));
   const res =
@@ -126,7 +173,7 @@ const Filter = () => {
   return (
     <>
       <Helmet>
-        <title>{meta.metadata.title} | Filter</title>
+        <title>{meta.title} | Filter</title>
       </Helmet>
       <Segment>
         <Header>Filter</Header>
@@ -168,21 +215,10 @@ const Filter = () => {
                 fluid
                 multiple
                 selection
-                options={[
-                  {
-                    key: "Single-pitch",
-                    value: "Single-pitch",
-                    text: "Single-pitch",
-                  },
-                  {
-                    key: "Multi-pitch",
-                    value: "Multi-pitch",
-                    text: "Multi-pitch",
-                  },
-                ]}
+                options={CLIMBING_OPTIONS}
                 value={routeTypes || []}
                 onChange={(e, { value }) => {
-                  setRouteTypes(value as number[]);
+                  setRouteTypes(value as string[]);
                   setResult([]);
                 }}
               />
@@ -192,7 +228,7 @@ const Filter = () => {
             <Checkbox
               label="Hide ticked"
               checked={hideTicked}
-              disabled={!meta.metadata.isAuthenticated}
+              disabled={!meta.isAuthenticated}
               onChange={() => setHideTicked(!hideTicked)}
             />
           </Form.Field>
@@ -203,7 +239,7 @@ const Filter = () => {
               onChange={() => setOnlyWithMedia(!onlyWithMedia)}
             />
           </Form.Field>
-          {meta.metadata.isAdmin && (
+          {meta.isAdmin && (
             <Form.Field>
               <Checkbox
                 label="Only admin"
@@ -215,7 +251,7 @@ const Filter = () => {
               />
             </Form.Field>
           )}
-          {meta.metadata.isSuperAdmin && (
+          {meta.isSuperAdmin && (
             <Form.Field>
               <Checkbox
                 label="Only superadmin"
@@ -245,7 +281,7 @@ const Filter = () => {
                   ? [disciplineOptions[0].value]
                   : disciplines;
               postFilter(
-                meta.accessToken,
+                accessToken,
                 grades,
                 myDisciplines,
                 routeTypes.map((v) => String(v))
@@ -268,7 +304,7 @@ const Filter = () => {
               size="mini"
               id="dropdownOrderBy"
               style={{ float: "right" }}
-              options={orderByOptions}
+              options={ORDER_BY_OPTIONS}
               value={OrderBy[orderBy]}
               onChange={(e, { value }) =>
                 setData(result, OrderBy[value as keyof typeof OrderBy])
@@ -289,8 +325,8 @@ const Filter = () => {
                 label: p.problemName,
                 url: "/problem/" + p.problemId,
               }))}
-            defaultCenter={meta.metadata.defaultCenter}
-            defaultZoom={meta.metadata.defaultZoom}
+            defaultCenter={meta.defaultCenter}
+            defaultZoom={meta.defaultZoom}
             polylines={null}
             outlines={null}
             onMouseClick={null}
@@ -300,48 +336,7 @@ const Filter = () => {
             rocks={null}
             flyToId={null}
           />
-          <List selection verticalAlign="middle">
-            {res.map((p, i) => (
-              <List.Item key={i} as={Link} to={`/problem/${p.problemId}`}>
-                <Image
-                  avatar
-                  src={
-                    p.randomMediaId > 0
-                      ? getImageUrl(p.randomMediaId, p.randomMediaCrc32, 28)
-                      : "/png/image.png"
-                  }
-                />
-                <List.Content>
-                  <List.Header>
-                    <Link to={`/problem/${p.problemId}`}>{p.problemName}</Link>{" "}
-                    {p.grade}{" "}
-                    <LockSymbol
-                      lockedAdmin={p.problemLockedAdmin}
-                      lockedSuperadmin={p.problemLockedSuperadmin}
-                    />{" "}
-                    <Stars numStars={p.stars} includeNoRating={false} />
-                    {p.ticks > 0 && (
-                      <small>
-                        ({p.ticks} ascent{p.ticks > 1 && "s"})
-                      </small>
-                    )}
-                  </List.Header>
-                  <List.Description>
-                    {p.areaName}{" "}
-                    <LockSymbol
-                      lockedAdmin={p.areaLockedAdmin}
-                      lockedSuperadmin={p.areaLockedSuperadmin}
-                    />{" "}
-                    / {p.sectorName}{" "}
-                    <LockSymbol
-                      lockedAdmin={p.sectorLockedAdmin}
-                      lockedSuperadmin={p.sectorLockedSuperadmin}
-                    />
-                  </List.Description>
-                </List.Content>
-              </List.Item>
-            ))}
-          </List>
+          <Results results={res} />
         </Segment>
       )}
     </>
