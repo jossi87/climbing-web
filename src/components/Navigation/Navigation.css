@@ -1,0 +1,32 @@
+/* The first menu items to be collapsed. */
+.nav-container .collapse-1 span {
+  display: unset;
+}
+
+@media screen and (max-width: 1199px) {
+  .nav-container .collapse-1 span {
+    display: none !important;
+  }
+}
+
+@media screen and (max-width: 991px) {
+  .nav-container .item span {
+    display: none !important;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .nav-container .item span {
+    display: unset !important;
+  }
+
+  .nav-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .nav-container .row-1 {
+    flex-basis: 100% !important;
+  }
+}
