@@ -1,6 +1,6 @@
 import React, { useState, useEffect, ComponentProps } from "react";
 import { Helmet } from "react-helmet";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Leaflet from "./common/leaflet/leaflet";
 import { calculateDistance } from "./common/leaflet/distance-math";
 import Media from "./common/media/media";
@@ -49,7 +49,6 @@ const Problem = () => {
   const [showHiddenMedia, setShowHiddenMedia] = useState(false);
   const [reload, setReload] = useState(true);
   const { problemId } = useParams();
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (!isLoading && (reload || (data != null && data.id != problemId))) {
@@ -251,7 +250,6 @@ const Problem = () => {
             polylines={polylines}
             defaultCenter={{ lat: markers[0].lat, lng: markers[0].lng }}
             defaultZoom={16}
-            navigate={navigate}
             onMouseClick={null}
             onMouseMove={null}
             showSateliteImage={true}

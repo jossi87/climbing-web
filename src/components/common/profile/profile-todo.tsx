@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Leaflet from "../../common/leaflet/leaflet";
 import { Loading, LockSymbol } from "../../common/widgets/widgets";
 import { List, Segment } from "semantic-ui-react";
@@ -20,7 +20,7 @@ const ProfileTodo = ({
 }: ProfileTodoProps) => {
   const [data, setData] =
     useState<Awaited<ReturnType<typeof getProfileTodo>>>();
-  const navigate = useNavigate();
+
   useEffect(() => {
     if (data) {
       setData(undefined);
@@ -60,7 +60,6 @@ const ProfileTodo = ({
           markers={markers}
           defaultCenter={defaultCenter}
           defaultZoom={defaultZoom}
-          navigate={navigate}
           polylines={null}
           outlines={null}
           onMouseClick={null}

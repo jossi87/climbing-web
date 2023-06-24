@@ -1,6 +1,6 @@
 import React from "react";
 import { Helmet } from "react-helmet";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import ProblemList from "./common/problem-list/problem-list";
 import ChartGradeDistribution from "./common/chart-grade-distribution/chart-grade-distribution";
 import Top from "./common/top/top";
@@ -103,7 +103,6 @@ const Sector = () => {
   const accessToken = useAccessToken();
   const { sectorId } = useParams();
   const { data: data, error, refetch, isLoading } = useSector(sectorId);
-  const navigate = useNavigate();
 
   if (error) {
     return (
@@ -217,7 +216,6 @@ const Sector = () => {
             polylines={polylines}
             defaultCenter={defaultCenter}
             defaultZoom={defaultZoom}
-            navigate={navigate}
             onMouseClick={null}
             onMouseMove={null}
             showSateliteImage={isBouldering}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Leaflet from "./common/leaflet/leaflet";
 import { Loading } from "./common/widgets/widgets";
 import {
@@ -27,7 +27,6 @@ enum OrderBy {
 
 const Filter = () => {
   const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const navigate = useNavigate();
   const [meta, setMeta] = useState<any>(null);
   const [grades, setGrades] = useLocalStorage<number[]>("filter_grades", []);
   const [disciplines, setDisciplines] = useLocalStorage<number[]>(
@@ -292,7 +291,6 @@ const Filter = () => {
               }))}
             defaultCenter={meta.metadata.defaultCenter}
             defaultZoom={meta.metadata.defaultZoom}
-            navigate={navigate}
             polylines={null}
             outlines={null}
             onMouseClick={null}

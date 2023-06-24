@@ -38,7 +38,6 @@ function MapEvent({ onMouseClick, onMouseMove }) {
 
 const Leaflet = ({
   autoZoom,
-  navigate,
   markers,
   outlines,
   polylines,
@@ -122,7 +121,6 @@ const Leaflet = ({
     const markersWithoutRock = markers.filter((m) => !m.rock);
     markerGroup = (
       <Markers
-        navigate={navigate}
         opacity={opacity}
         markers={[...rockMarkers, ...markersWithoutRock]}
         addEventHandlers={addEventHandlers}
@@ -132,7 +130,6 @@ const Leaflet = ({
   } else {
     markerGroup = (
       <Markers
-        navigate={navigate}
         opacity={opacity}
         markers={markers}
         addEventHandlers={addEventHandlers}
@@ -226,7 +223,6 @@ const Leaflet = ({
       <FeatureGroup>
         {markerGroup}
         <Polygons
-          navigate={navigate}
           opacity={opacity}
           outlines={outlines}
           addEventHandlers={addEventHandlers}

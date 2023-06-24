@@ -312,7 +312,6 @@ const AreaEdit = () => {
                 defaultZoom={defaultZoom}
                 onMouseClick={onMarkerClick}
                 onMouseMove={null}
-                navigate={navigate}
                 polylines={null}
                 outlines={null}
                 height={"300px"}

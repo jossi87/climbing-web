@@ -581,7 +581,6 @@ const ProblemEdit = () => {
                 defaultZoom={defaultZoom}
                 onMouseClick={onMapClick}
                 onMouseMove={null}
-                navigate={navigate}
                 polylines={null}
                 outlines={null}
                 height={"300px"}
