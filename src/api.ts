@@ -610,6 +610,24 @@ export function getProfileTodo(
     });
 }
 
+export function useSector(id: number | string) {
+  return useData(`/sectors?id=${id}`, {
+    transform: (response) => {
+      if (response.status === 500) {
+        return Promise.reject(
+          "Cannot find the specified sector because it does not exist or you do not have sufficient permissions."
+        );
+      }
+      return response.json().then((data) => {
+        if (data.redirectUrl && data.redirectUrl != window.location.href) {
+          window.location.href = data.redirectUrl;
+        }
+        return data;
+      });
+    },
+  });
+}
+
 export function getSector(
   accessToken: string | null,
   id: number
