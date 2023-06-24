@@ -219,18 +219,11 @@ export function useActivity({
 
 export function useArea(id: number) {
   return useData(`/areas?id=${id}`, {
-    transform: (response) => {
-      if (response.status === 500) {
-        return Promise.reject(
-          "Cannot find the specified area because it does not exist or you do not have sufficient permissions."
-        );
+    select: (data: any) => {
+      if (data.redirectUrl && data.redirectUrl != window.location.href) {
+        window.location.href = data.redirectUrl;
       }
-      return response.json().then((data) => {
-        if (data.redirectUrl && data.redirectUrl != window.location.href) {
-          window.location.href = data.redirectUrl;
-        }
-        return data;
-      });
+      return data;
     },
   });
 }

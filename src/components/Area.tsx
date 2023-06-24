@@ -125,7 +125,9 @@ const Area = () => {
         style={{ backgroundColor: "#FFF" }}
         icon="meh"
         header="404"
-        content={String(error)}
+        content={
+          "Cannot find the specified area because it does not exist or you do not have sufficient permissions."
+        }
       />
     );
   } else if (!data || !data.id) {
