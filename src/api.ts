@@ -809,6 +809,16 @@ export function getTicks(
     });
 }
 
+export function useTodo({
+  idArea,
+  idSector,
+}: {
+  idArea: number;
+  idSector: number;
+}) {
+  return useData(`/todo?idArea=${idArea}&idSector=${idSector}`);
+}
+
 export function getTodo(
   accessToken: string | null,
   idArea: number,
@@ -826,28 +836,14 @@ export function getTodo(
     });
 }
 
-export function getTop(
-  idArea: number,
-  idSector: number
-): Promise<
-  {
-    rank: number;
-    picture: string;
-    userId: string | number;
-    name: string;
-    percentage: string | number;
-  }[]
-> {
-  return makeAuthenticatedRequest(
-    null,
-    `/top?idArea=${idArea}&idSector=${idSector}`,
-    null
-  )
-    .then((data) => data.json())
-    .catch((error) => {
-      console.warn(error);
-      return null;
-    });
+export function useTop({
+  idArea,
+  idSector,
+}: {
+  idArea: number;
+  idSector: number;
+}) {
+  return useData(`/top?idArea=${idArea}&idSector=${idSector}`);
 }
 
 export function getTocXlsx(accessToken: string | null): Promise<any> {

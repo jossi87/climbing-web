@@ -1,24 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { Loading, LockSymbol } from "../widgets/widgets";
 import { Header, Icon, List } from "semantic-ui-react";
-import { getTodo } from "../../../api";
+import { useTodo } from "../../../api";
 
-const Todo = ({ accessToken, idArea, idSector }) => {
-  const [data, setData] = useState<any>(null);
-  useEffect(() => {
-    if (data != null) {
-      setData(null);
-    }
-    getTodo(accessToken, idArea, idSector).then((data) => setData(data));
-  }, [accessToken, idArea, idSector]);
+const Todo = ({ idArea, idSector }: { idArea: number; idSector: number }) => {
+  const { data } = useTodo({ idArea, idSector });
 
   if (!data) {
     return <Loading />;
   }
+
   if (data.sectors.length === 0) {
     return <>Empty list.</>;
   }
+
   return (
     <>
       <Header as="h4">
