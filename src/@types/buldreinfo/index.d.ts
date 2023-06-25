@@ -20,3 +20,14 @@ interface Media {
   autoPlayVideo: boolean;
   description: string;
 }
+
+type Grade = {
+  id: number;
+  grade: string;
+};
+
+type Type = {
+  id: number;
+  type: string;
+  subType: string;
+};

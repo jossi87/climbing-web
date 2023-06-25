@@ -358,6 +358,23 @@ export function getPermissions(accessToken: string | null): Promise<any> {
     });
 }
 
+export function useProblem({
+  id,
+  showHiddenMedia,
+}: {
+  id: number;
+  showHiddenMedia: boolean;
+}) {
+  return useData(`/problems?id=${id}&showHiddenMedia=${showHiddenMedia}`, {
+    select: (data: any) => {
+      if (data.redirectUrl && data.redirectUrl != window.location.href) {
+        window.location.href = data.redirectUrl;
+      }
+      return data;
+    },
+  });
+}
+
 export function getProblem(
   accessToken: string | null,
   id: number,
@@ -603,8 +620,12 @@ export function getProfileTodo(
     });
 }
 
-export function useSector(id: number | string) {
+export function useSector(
+  id: number | string | undefined,
+  options?: Parameters<typeof useData>[1]
+) {
   return useData(`/sectors?id=${id}`, {
+    ...(options ?? {}),
     transform: (response) => {
       if (response.status === 500) {
         return Promise.reject(
