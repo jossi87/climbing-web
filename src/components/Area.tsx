@@ -1,6 +1,6 @@
 import React, { ComponentProps } from "react";
 import { Helmet } from "react-helmet";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import ChartGradeDistribution from "./common/chart-grade-distribution/chart-grade-distribution";
 import Top from "./common/top/top";
 import Activity from "./common/activity/activity";
@@ -103,7 +103,6 @@ const Area = () => {
   const accessToken = useAccessToken();
   const { areaId } = useParams();
   const { data, error, refetch } = useArea(parseInt(areaId ?? "0"));
-  const navigate = useNavigate();
 
   const md = new Remarkable({ breaks: true }).use(linkify);
   // open links in new windows
@@ -208,7 +207,6 @@ const Area = () => {
             polylines={polylines}
             defaultCenter={defaultCenter}
             defaultZoom={defaultZoom}
-            navigate={navigate}
             onMouseClick={null}
             onMouseMove={null}
             showSateliteImage={false}

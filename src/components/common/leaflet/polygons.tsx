@@ -1,12 +1,9 @@
 import React from "react";
 import { Polygon, Tooltip } from "react-leaflet";
+import { useNavigate } from "react-router";
 
-export default function Polygons({
-  navigate,
-  opacity,
-  outlines,
-  addEventHandlers,
-}) {
+export default function Polygons({ opacity, outlines, addEventHandlers }) {
+  const navigate = useNavigate();
   if (!outlines) {
     return null;
   }

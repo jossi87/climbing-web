@@ -463,7 +463,6 @@ const SectorEdit = () => {
                   defaultZoom={defaultZoom}
                   onMouseClick={onMapMouseClick}
                   onMouseMove={null}
-                  navigate={navigate}
                   height={"300px"}
                   showSateliteImage={isBouldering}
                   clusterMarkers={false}

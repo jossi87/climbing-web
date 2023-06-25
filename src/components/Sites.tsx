@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { Button } from "semantic-ui-react";
 import Leaflet from "./common/leaflet/leaflet";
 import { Loading } from "./common/widgets/widgets";
@@ -11,7 +11,7 @@ const Sites = () => {
   const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [data, setData] = useState<any>(null);
   const { type } = useParams();
-  const navigate = useNavigate();
+
   useEffect(() => {
     if (data) {
       setData(null);
@@ -53,7 +53,6 @@ const Sites = () => {
       outlines={outlines}
       defaultCenter={data.metadata.defaultCenter}
       defaultZoom={data.metadata.defaultZoom}
-      navigate={navigate}
       markers={null}
       polylines={null}
       onMouseClick={null}

@@ -7,14 +7,15 @@ import {
   weatherIcon,
   rockIcon,
 } from "./icons";
+import { useNavigate } from "react-router";
 
 export default function Markers({
-  navigate,
   opacity,
   markers,
   addEventHandlers,
   flyToId,
 }) {
+  const navigate = useNavigate();
   const map = useMap();
   const markerRefs = useRef({});
   useEffect(() => {

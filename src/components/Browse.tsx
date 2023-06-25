@@ -105,7 +105,6 @@ const Browse = () => {
         markers={markers}
         defaultCenter={data.metadata.defaultCenter}
         defaultZoom={data.metadata.defaultZoom}
-        navigate={navigate}
         polylines={null}
         outlines={null}
         onMouseClick={null}

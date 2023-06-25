@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import Leaflet from "./common/leaflet/leaflet";
 import { Segment, Header, Icon } from "semantic-ui-react";
@@ -8,7 +8,6 @@ import { useData } from "../api";
 const WebcamMap = () => {
   const { data } = useData(`/cameras`);
   const { json } = useParams();
-  const navigate = useNavigate();
 
   if (!data) {
     return <Loading />;
@@ -69,7 +68,6 @@ const WebcamMap = () => {
           outlines={null}
           defaultCenter={defaultCenter}
           defaultZoom={defaultZoom}
-          navigate={navigate}
           markers={markers}
           polylines={null}
           onMouseClick={null}

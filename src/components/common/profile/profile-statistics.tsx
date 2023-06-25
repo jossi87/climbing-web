@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Chart from "../chart/chart";
 import ProblemList from "../problem-list/problem-list";
 import Leaflet from "../../common/leaflet/leaflet";
@@ -103,7 +103,7 @@ const ProfileStatistics = ({
   const [data, setData] =
     useState<Awaited<ReturnType<typeof getProfileStatistics>>>();
   const [isSaving, setIsSaving] = useState(false);
-  const navigate = useNavigate();
+
   useEffect(() => {
     if (data) {
       setData(undefined);
@@ -224,7 +224,6 @@ const ProfileStatistics = ({
             markers={markers}
             defaultCenter={defaultCenter}
             defaultZoom={defaultZoom}
-            navigate={navigate}
             polylines={null}
             outlines={null}
             onMouseClick={null}
