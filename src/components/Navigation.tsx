@@ -1,35 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Container, Dropdown, Image, Menu, Icon } from "semantic-ui-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import SearchBox from "./common/search-box/search-box";
-import { getBaseUrl, getMeta } from "../api";
+import { getBaseUrl } from "../api";
+import { useMeta } from "./common/meta";
 
 const Navigation = () => {
-  const {
-    isLoading,
-    isAuthenticated,
-    loginWithRedirect,
-    logout,
-    getAccessTokenSilently,
-  } = useAuth0();
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isSuperAdmin, setIsUserAdmin] = useState(false);
-  const [isBouldering, setIsBouldering] = useState(false);
-  const location = useLocation();
-  useEffect(() => {
-    const update = async () => {
-      const accessToken = isAuthenticated
-        ? await getAccessTokenSilently()
-        : null;
-      getMeta(accessToken).then((data) => {
-        setIsAdmin(data.metadata.isAdmin);
-        setIsUserAdmin(data.metadata.isSuperAdmin);
-        setIsBouldering(data.metadata.gradeSystem === "BOULDER");
-      });
-    };
-    update();
-  }, [isAuthenticated]);
+  const { isAdmin, isSuperAdmin, isAuthenticated, isBouldering } = useMeta();
+
+  const { isLoading, loginWithRedirect, logout } = useAuth0();
 
   return (
     <Menu attached="top" inverted compact borderless>
