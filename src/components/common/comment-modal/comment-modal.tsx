@@ -1,34 +1,34 @@
-import React, { useState, useEffect } from "react";
-import { postComment } from "./../../../api";
+import React, { useRef, useState } from "react";
+import { postComment, useAccessToken } from "./../../../api";
 import { Button, Modal, Form, TextArea } from "semantic-ui-react";
 import ImageUpload from "../image-upload/image-upload";
 
 const CommentModal = ({
-  open,
+  comment,
+  onClose,
   showHse,
-  accessToken,
-  closeWithoutReload,
-  closeWithReload,
   id,
   idProblem,
-  initMessage,
-  initDanger,
-  initResolved,
+}: {
+  onClose: (reload?: boolean) => void;
+  showHse: boolean;
+  id: number;
+  idProblem: number;
+  comment?: {
+    message: string;
+    danger: boolean;
+    resolved: boolean;
+  };
 }) => {
-  const [comment, setComment] = useState<any>(null);
-  const [danger, setDanger] = useState(false);
-  const [resolved, setResolved] = useState(false);
+  const accessToken = useAccessToken();
+  const message = useRef(comment?.message ?? "");
+  const [danger, setDanger] = useState(comment?.danger);
+  const [resolved, setResolved] = useState(comment?.resolved);
   const [media, setMedia] = useState([]);
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    setComment(initMessage);
-    setDanger(initDanger);
-    setResolved(initResolved);
-  }, [initMessage, initDanger, initResolved]);
-
   return (
-    <Modal open={open} onClose={closeWithoutReload}>
+    <Modal open={true} onClose={() => onClose(false)}>
       <Modal.Header>Add comment</Modal.Header>
       <Modal.Content>
         <Modal.Description>
@@ -38,9 +38,9 @@ const CommentModal = ({
               <TextArea
                 placeholder="Comment"
                 style={{ minHeight: 100 }}
-                value={comment ? comment : ""}
-                onChange={(e, data) => {
-                  setComment(data.value);
+                defaultValue={message.current}
+                onChange={(_, data) => {
+                  message.current = String(data.value);
                 }}
               />
             </Form.Field>
@@ -93,7 +93,7 @@ const CommentModal = ({
       </Modal.Content>
       <Modal.Actions>
         <Button.Group compact size="tiny">
-          <Button onClick={closeWithoutReload}>Cancel</Button>
+          <Button onClick={() => onClose(false)}>Cancel</Button>
           <Button.Or />
           <Button
             positive
@@ -101,30 +101,29 @@ const CommentModal = ({
             icon="checkmark"
             labelPosition="right"
             content="Save"
+            disabled={!message.current.trim()}
             onClick={() => {
-              if (comment) {
-                setSaving(true);
-                postComment(
-                  accessToken,
-                  id,
-                  idProblem,
-                  comment,
-                  danger,
-                  resolved,
-                  false,
-                  media
-                )
-                  .then(() => {
-                    setComment(null);
-                    setDanger(false);
-                    setResolved(false);
-                    closeWithReload();
-                  })
-                  .catch((error) => {
-                    console.warn(error);
-                    alert(error.toString());
-                  });
+              if (!message.current) {
+                return;
               }
+              setSaving(true);
+              postComment(
+                accessToken,
+                id,
+                idProblem,
+                message.current,
+                danger,
+                resolved,
+                false,
+                media
+              )
+                .then(() => {
+                  onClose(true);
+                })
+                .catch((error) => {
+                  console.warn(error);
+                  alert(error.toString());
+                });
             }}
           />
         </Button.Group>

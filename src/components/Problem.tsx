@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ComponentProps } from "react";
+import React, { useState, ComponentProps } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useParams } from "react-router-dom";
 import Leaflet from "./common/leaflet/leaflet";
@@ -25,250 +25,112 @@ import {
   Stars,
   WeatherLabels,
 } from "./common/widgets/widgets";
-import { useAuth0 } from "@auth0/auth0-react";
 import {
   getAreaPdfUrl,
   getSectorPdfUrl,
   getProblemPdfUrl,
-  getProblem,
-  getSector,
   postComment,
   postTodo,
+  useProblem,
+  useAccessToken,
+  useSector,
 } from "../api";
 import TickModal from "./common/tick-modal/tick-modal";
 import CommentModal from "./common/comment-modal/comment-modal";
 import Linkify from "react-linkify";
 
-const Problem = () => {
-  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const [error, setError] = useState<any>(null);
-  const [data, setData] = useState<any>(null);
-  const [problemsOnRock, setProblemsOnRock] = useState<any[]>([]);
-  const [showTickModal, setShowTickModal] = useState(false);
-  const [showCommentModal, setShowCommentModal] = useState<any>(null);
-  const [showHiddenMedia, setShowHiddenMedia] = useState(false);
-  const [reload, setReload] = useState(true);
-  const { problemId } = useParams();
+const componentDecorator = (href, text, key) => (
+  <a href={href} key={key} target="_blank" rel="noreferrer">
+    {text}
+  </a>
+);
 
-  useEffect(() => {
-    if (!isLoading && (reload || (data != null && data.id != problemId))) {
-      const update = async () => {
-        const accessToken = isAuthenticated
-          ? await getAccessTokenSilently()
-          : null;
-        getProblem(accessToken, parseInt(problemId ?? "0"), showHiddenMedia)
-          .then((data) => {
-            setProblemsOnRock([]);
-            setData({ ...data, accessToken });
-            setReload(false);
-          })
-          .catch((error) => setError(error));
-      };
-      update();
-    }
-  }, [isLoading, isAuthenticated, problemId, reload]);
+const ProblemsOnRock = ({
+  sectorId,
+  rock,
+  problemId,
+}: {
+  problemId: number;
+  sectorId: number | undefined;
+  rock: string | undefined;
+}) => {
+  const { data: problemsOnRock } = useSector(sectorId, {
+    enabled: !!sectorId,
+    select: (sectorData: any) => {
+      return sectorData?.problems?.filter(
+        (problem) => problem.rock && problem.rock === rock
+      );
+    },
+    suspense: false,
+  });
 
-  useEffect(() => {
-    if (data && data.rock) {
-      getSector(data.accessToken, data.sectorId).then((sector) => {
-        if (sector.problems && sector.problems.length > 0) {
-          setProblemsOnRock(
-            sector.problems.filter((p) => p.rock && p.rock === data.rock)
-          );
-        }
-      });
-    }
-  }, [data]);
-
-  function onRemoveMedia(idMediaToRemove) {
-    const newMedia = data.media.filter((m) => m.id != idMediaToRemove);
-    setData((prevState) => ({ ...prevState, media: newMedia }));
+  if (!problemsOnRock?.length || !rock) {
+    return null;
   }
 
-  function flagAsDangerous({ id, message }) {
-    if (confirm("Are you sure you want to flag this comment?")) {
-      setData(null);
-      postComment(
-        data.accessToken,
-        id,
-        data.id,
-        message,
-        true,
-        false,
-        false,
-        []
-      )
-        .then(() => {
-          setReload(true);
-        })
-        .catch((error) => {
-          console.warn(error);
-          alert(error.toString());
-        });
-    }
-  }
-
-  function deleteComment({ id }) {
-    if (confirm("Are you sure you want to delete this comment?")) {
-      setData(null);
-      postComment(data.accessToken, id, data.id, null, false, false, true, [])
-        .then(() => {
-          setReload(true);
-        })
-        .catch((error) => {
-          console.warn(error);
-          alert(error.toString());
-        });
-    }
-  }
-
-  function toggleTodo(problemId: number) {
-    setData(null);
-    postTodo(data.accessToken, problemId)
-      .then(() => {
-        setReload(true);
-      })
-      .catch((error) => {
-        console.warn(error);
-        alert(error.toString());
-      });
-  }
-
-  function closeTickModalWithoutReload() {
-    setShowTickModal(false);
-  }
-
-  function closeTickModalWithReload() {
-    setShowTickModal(false);
-    setReload(true);
-  }
-
-  function openTickModal() {
-    setShowTickModal(true);
-  }
-
-  function closeCommentModalWithoutReload() {
-    setShowCommentModal(null);
-  }
-
-  function closeCommentModalWithReload() {
-    setShowCommentModal(null);
-    setReload(true);
-  }
-
-  const componentDecorator = (href, text, key) => (
-    <a href={href} key={key} target="_blank" rel="noreferrer">
-      {text}
-    </a>
+  return (
+    <Table.Row verticalAlign="top">
+      <Table.Cell>Rock «{rock}»:</Table.Cell>
+      <Table.Cell>
+        {problemsOnRock.map((p, key) => (
+          <Label
+            key={key}
+            as={Link}
+            to={`/problem/${p.id}`}
+            active={problemId === p.id}
+          >
+            #{p.nr} {p.name} {p.grade}
+            <Label.Detail>
+              <Stars numStars={p.stars} includeNoRating={false} />
+              {p.lat > 0 && p.lng > 0 && (
+                <Icon size="small" name="map marker alternate" />
+              )}
+              {p.hasTopo && <Icon size="small" name="paint brush" />}
+              {p.hasImages > 0 && (
+                <Icon size="small" color="black" name="photo" />
+              )}
+              {p.hasMovies > 0 && (
+                <Icon size="small" color="black" name="film" />
+              )}
+              <LockSymbol
+                lockedAdmin={p.lockedAdmin}
+                lockedSuperadmin={p.lockedSuperadmin}
+              />
+              {p.ticked && <Icon size="small" color="green" name="check" />}
+            </Label.Detail>
+          </Label>
+        ))}
+      </Table.Cell>
+    </Table.Row>
   );
+};
 
-  if (error) {
-    return (
-      <Message
-        size="huge"
-        style={{ backgroundColor: "#FFF" }}
-        icon="meh"
-        header="404"
-        content={error}
-      />
-    );
-  } else if (!data || !data.id || reload) {
-    return <Loading />;
-  }
-  const isBouldering = data.metadata.gradeSystem === "BOULDER";
-  const markers: ComponentProps<typeof Leaflet>["markers"] = [];
-  if (data.lat > 0 && data.lng > 0) {
-    markers.push({
-      lat: data.lat,
-      lng: data.lng,
-      label: data.name + " [" + data.grade + "]",
-      url: "/problem/" + data.id,
-    });
-  }
-  if (data.sectorLat > 0 && data.sectorLng > 0) {
-    markers.push({
-      lat: data.sectorLat,
-      lng: data.sectorLng,
-      url: "/sector/" + data.sectorId,
-      isParking: true,
-    });
-  }
-  const panes: ComponentProps<typeof Tab>["panes"] = [];
-  if (data.media && data.media.length > 0) {
-    panes.push({
-      menuItem: { key: "media", icon: "image" },
-      render: () => (
-        <Tab.Pane>
-          <Media
-            isAdmin={data.metadata.isAdmin}
-            numPitches={data.sections?.length || 0}
-            removeMedia={onRemoveMedia}
-            media={data.media}
-            optProblemId={data.id}
-            isBouldering={isBouldering}
-          />
-        </Tab.Pane>
-      ),
-    });
-  }
-  if (markers.length > 0) {
-    const polyline =
-      data.sectorPolyline &&
-      data.sectorPolyline
-        .split(";")
-        .filter((i) => i)
-        .map((e) => e.split(",").map(Number));
-    let outlines;
-    let polylines;
-    if (data.sectorPolygonCoords && data.lat === 0 && data.lng === 0) {
-      const polygon = data.sectorPolygonCoords
-        .split(";")
-        .filter((i) => i)
-        .map((c) => {
-          const latLng = c.split(",");
-          return [parseFloat(latLng[0]), parseFloat(latLng[1])];
-        });
-      const label =
-        data.sectorName +
-        (polyline ? " (" + calculateDistance(polyline) + ")" : "");
-      outlines = [{ url: "/sector/" + data.sectorId, label, polygon }];
-    }
-    if (polyline) {
-      const label = outlines == null ? calculateDistance(polyline) : null;
-      polylines = [{ polyline, label: label }];
-    }
-    panes.push({
-      menuItem: { key: "map", icon: "map" },
-      render: () => (
-        <Tab.Pane>
-          <Leaflet
-            key={"sector=" + data.id}
-            autoZoom={true}
-            height="40vh"
-            markers={markers}
-            outlines={outlines}
-            polylines={polylines}
-            defaultCenter={{ lat: markers[0].lat, lng: markers[0].lng }}
-            defaultZoom={16}
-            onMouseClick={null}
-            onMouseMove={null}
-            showSateliteImage={true}
-            clusterMarkers={false}
-            rocks={null}
-            flyToId={null}
-          />
-        </Tab.Pane>
-      ),
-    });
-  }
-
-  const ticks = (
+const ProblemTicks = ({
+  ticks,
+}: {
+  ticks:
+    | {
+        comment: string;
+        date?: string;
+        idUser: number;
+        name: string;
+        picture?: string;
+        stars: number;
+        suggestedGrade: string;
+        repeats?: {
+          comment: string;
+          date?: string;
+        }[];
+      }[]
+    | undefined;
+}) => {
+  return (
     <Comment.Group as={Segment}>
       <Header as="h3" dividing>
         Ticks:
       </Header>
-      {data.ticks ? (
-        data.ticks.map((t, i) => {
+      {ticks?.length ? (
+        ticks.map((t, i) => {
           let dt = t.date;
           let com = null;
           if (t.repeats?.length > 0) {
@@ -330,12 +192,58 @@ const Problem = () => {
       )}
     </Comment.Group>
   );
-  const comments = (
+};
+
+const ProblemComments = ({
+  problemId,
+  showHiddenMedia,
+  onShowCommentModal,
+}: {
+  problemId: number;
+  showHiddenMedia: boolean;
+  onShowCommentModal: (comment: any) => void;
+}) => {
+  const accessToken = useAccessToken();
+  const { data, refetch } = useProblem({ id: problemId, showHiddenMedia });
+
+  function flagAsDangerous({ id, message }) {
+    if (confirm("Are you sure you want to flag this comment?")) {
+      postComment(accessToken, id, data.id, message, true, false, false, [])
+        .then(() => {
+          refetch();
+        })
+        .catch((error) => {
+          console.warn(error);
+          alert(error.toString());
+        });
+    }
+  }
+
+  function deleteComment({ id }) {
+    if (confirm("Are you sure you want to delete this comment?")) {
+      postComment(accessToken, id, data.id, null, false, false, true, [])
+        .then(() => {
+          refetch();
+        })
+        .catch((error) => {
+          console.warn(error);
+          alert(error.toString());
+        });
+    }
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  const isBouldering = data.metadata.gradeSystem === "BOULDER";
+
+  return (
     <Comment.Group as={Segment}>
       <Header as="h3" dividing>
         Comments:
       </Header>
-      {data.comments ? (
+      {data.comments?.length ? (
         data.comments.map((c, i) => {
           let extra: JSX.Element | null = null;
           if (c.danger) {
@@ -364,10 +272,7 @@ const Problem = () => {
               <Comment.Content>
                 {c.editable && (
                   <Button.Group size="tiny" basic compact floated="right">
-                    <Button
-                      onClick={() => setShowCommentModal(c)}
-                      icon="edit"
-                    />
+                    <Button onClick={() => onShowCommentModal(c)} icon="edit" />
                     <Button onClick={() => deleteComment(c)} icon="trash" />
                   </Button.Group>
                 )}
@@ -400,62 +305,203 @@ const Problem = () => {
       )}
     </Comment.Group>
   );
+};
 
-  let tickModal: JSX.Element | null = null;
-  if (showTickModal) {
+const Problem = () => {
+  const accessToken = useAccessToken();
+  const { problemId } = useParams();
+  const [showHiddenMedia, setShowHiddenMedia] = useState(false);
+  const { data, error, refetch } = useProblem({
+    id: +problemId,
+    showHiddenMedia,
+  });
+
+  const [showTickModal, setShowTickModal] = useState(false);
+  const [showCommentModal, setShowCommentModal] = useState<any>(null);
+
+  function toggleTodo(problemId: number) {
+    postTodo(accessToken, problemId)
+      .then(() => {
+        refetch();
+      })
+      .catch((error) => {
+        console.warn(error);
+        alert(error.toString());
+      });
+  }
+
+  const onTickModalClose = (reload: boolean) => {
+    setShowTickModal(false);
+    if (reload) {
+      refetch();
+    }
+  };
+
+  function openTickModal() {
+    setShowTickModal(true);
+  }
+
+  const onCommentModalClosed = (reload: boolean) => {
+    setShowCommentModal(null);
+    if (reload) {
+      refetch();
+    }
+  };
+
+  if (error) {
+    return (
+      <Message
+        size="huge"
+        style={{ backgroundColor: "#FFF" }}
+        icon="meh"
+        header="404"
+        content={
+          "Cannot find the specified problem because it does not exist or you do not have sufficient permissions."
+        }
+      />
+    );
+  } else if (!data?.id) {
+    return <Loading />;
+  }
+
+  const isBouldering = data.metadata.gradeSystem === "BOULDER";
+  const markers: ComponentProps<typeof Leaflet>["markers"] = [];
+  if (data.lat > 0 && data.lng > 0) {
+    markers.push({
+      lat: data.lat,
+      lng: data.lng,
+      label: data.name + " [" + data.grade + "]",
+      url: "/problem/" + data.id,
+    });
+  }
+  if (data.sectorLat > 0 && data.sectorLng > 0) {
+    markers.push({
+      lat: data.sectorLat,
+      lng: data.sectorLng,
+      url: "/sector/" + data.sectorId,
+      isParking: true,
+    });
+  }
+  const panes: ComponentProps<typeof Tab>["panes"] = [];
+  if (data.media && data.media.length > 0) {
+    panes.push({
+      menuItem: { key: "media", icon: "image" },
+      render: () => (
+        <Tab.Pane>
+          <Media
+            isAdmin={data.metadata.isAdmin}
+            numPitches={data.sections?.length || 0}
+            removeMedia={() => refetch()}
+            media={data.media}
+            optProblemId={data.id}
+            isBouldering={isBouldering}
+          />
+        </Tab.Pane>
+      ),
+    });
+  }
+  if (markers.length > 0) {
+    const polyline =
+      data.sectorPolyline &&
+      data.sectorPolyline
+        .split(";")
+        .filter((i) => i)
+        .map((e) => e.split(",").map(Number));
+    let outlines;
+    let polylines;
+    if (data.sectorPolygonCoords && data.lat === 0 && data.lng === 0) {
+      const polygon = data.sectorPolygonCoords
+        .split(";")
+        .filter((i) => i)
+        .map((c) => {
+          const latLng = c.split(",");
+          return [parseFloat(latLng[0]), parseFloat(latLng[1])];
+        });
+      const label =
+        data.sectorName +
+        (polyline ? " (" + calculateDistance(polyline) + ")" : "");
+      outlines = [{ url: "/sector/" + data.sectorId, label, polygon }];
+    }
+    if (polyline) {
+      const label = outlines == null ? calculateDistance(polyline) : null;
+      polylines = [{ polyline, label: label }];
+    }
+    panes.push({
+      menuItem: { key: "map", icon: "map" },
+      render: () => (
+        <Tab.Pane>
+          <Leaflet
+            key={"sector=" + data.id}
+            autoZoom={true}
+            height="40vh"
+            markers={markers}
+            outlines={outlines}
+            polylines={polylines}
+            defaultCenter={{ lat: markers[0].lat, lng: markers[0].lng }}
+            defaultZoom={16}
+            onMouseClick={null}
+            onMouseMove={null}
+            showSateliteImage={true}
+            clusterMarkers={false}
+            rocks={null}
+            flyToId={null}
+          />
+        </Tab.Pane>
+      ),
+    });
+  }
+
+  const tickModal = (() => {
+    if (!showTickModal) {
+      return null;
+    }
     const enableTickRepeats =
       data.metadata.gradeSystem === "ICE" || data.sections?.length > 0;
-    if (data.ticks) {
-      const userTicks = data.ticks.filter((t) => t.writable);
-      if (userTicks && userTicks.length > 0) {
-        tickModal = (
-          <TickModal
-            accessToken={data.accessToken}
-            idTick={userTicks[0].id}
-            idProblem={data.id}
-            date={userTicks[0].date}
-            comment={userTicks[0].comment}
-            grade={userTicks[0].suggestedGrade}
-            grades={data.metadata.grades}
-            stars={userTicks[0].stars}
-            repeats={userTicks[0].repeats}
-            open={showTickModal}
-            closeWithoutReload={closeTickModalWithoutReload}
-            closeWithReload={closeTickModalWithReload}
-            enableTickRepeats={enableTickRepeats}
-          />
-        );
-      }
-    }
-    if (!tickModal) {
-      tickModal = (
+    const userTicks = data.ticks?.filter((t) => t.writable);
+    if (userTicks && userTicks.length > 0) {
+      return (
         <TickModal
-          accessToken={data.accessToken}
-          idTick={-1}
+          idTick={userTicks[0].id}
           idProblem={data.id}
-          grade={data.originalGrade}
+          date={userTicks[0].date}
+          comment={userTicks[0].comment}
+          grade={userTicks[0].suggestedGrade}
           grades={data.metadata.grades}
+          stars={userTicks[0].stars}
+          repeats={userTicks[0].repeats}
           open={showTickModal}
-          closeWithoutReload={closeTickModalWithoutReload}
-          closeWithReload={closeTickModalWithReload}
-          comment={null}
-          stars={null}
-          repeats={undefined}
-          date={null}
+          onClose={onTickModalClose}
           enableTickRepeats={enableTickRepeats}
         />
       );
     }
-  }
-  let lat;
-  let lng;
-  if (data.lat > 0 && data.lng > 0) {
-    lat = data.lat;
-    lng = data.lng;
-  } else if (data.sectorLat > 0 && data.sectorLng > 0) {
-    lat = data.sectorLat;
-    lng = data.sectorLng;
-  }
+    return (
+      <TickModal
+        idTick={-1}
+        idProblem={data.id}
+        grade={data.originalGrade}
+        grades={data.metadata.grades}
+        open={showTickModal}
+        onClose={onTickModalClose}
+        comment={null}
+        stars={null}
+        repeats={undefined}
+        date={null}
+        enableTickRepeats={enableTickRepeats}
+      />
+    );
+  })();
+
+  const [lat, lng] = (() => {
+    if (data.lat > 0 && data.lng > 0) {
+      return [+data.lat, +data.lng];
+    }
+    if (data.sectorLat > 0 && data.sectorLng > 0) {
+      return [+data.sectorLat, +data.sectorLng];
+    }
+    return [0, 0];
+  })();
+
   return (
     <>
       <Helmet>
@@ -475,26 +521,28 @@ const Problem = () => {
         <meta property="og:url" content={data.metadata.og.url} />
         <meta property="og:title" content={data.metadata.title} />
         <meta property="og:image" content={data.metadata.og.image} />
-        <meta property="og:image:width" content={data.metadata.og.imageWidth} />
+        <meta
+          property="og:image:width"
+          content={String(data.metadata.og.imageWidth)}
+        />
         <meta
           property="og:image:height"
-          content={data.metadata.og.imageHeight}
+          content={String(data.metadata.og.imageHeight)}
         />
         <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
       </Helmet>
       {tickModal}
-      <CommentModal
-        accessToken={data.accessToken}
-        open={showCommentModal ? true : false}
-        closeWithReload={closeCommentModalWithReload}
-        closeWithoutReload={closeCommentModalWithoutReload}
-        showHse={data.metadata.gradeSystem === "CLIMBING"}
-        id={showCommentModal?.id}
-        idProblem={data.id}
-        initMessage={showCommentModal?.message}
-        initDanger={showCommentModal?.danger}
-        initResolved={showCommentModal?.resolved}
-      />
+      {showCommentModal && (
+        <CommentModal
+          // Ensure that a fresh instance is made each time
+          key={JSON.stringify(showCommentModal)}
+          comment={showCommentModal}
+          onClose={onCommentModalClosed}
+          showHse={data.metadata.gradeSystem === "CLIMBING"}
+          id={showCommentModal?.id}
+          idProblem={data.id}
+        />
+      )}
       <div style={{ marginBottom: "5px" }}>
         <div style={{ float: "right" }}>
           {data.metadata && data.metadata.isAuthenticated && (
@@ -543,7 +591,7 @@ const Problem = () => {
                   animated="fade"
                   onClick={() => {
                     setShowHiddenMedia(!showHiddenMedia);
-                    setReload(true);
+                    refetch();
                   }}
                 >
                   <Button.Content hidden>Images</Button.Content>
@@ -801,43 +849,11 @@ const Problem = () => {
               </Table.Cell>
             </Table.Row>
           )}
-          {problemsOnRock && problemsOnRock.length > 0 && data.rock && (
-            <Table.Row verticalAlign="top">
-              <Table.Cell>Rock «{data.rock}»:</Table.Cell>
-              <Table.Cell>
-                {problemsOnRock.map((p, key) => (
-                  <Label
-                    key={key}
-                    as={Link}
-                    to={`/problem/${p.id}`}
-                    active={data.id === p.id}
-                  >
-                    #{p.nr} {p.name} {p.grade}
-                    <Label.Detail>
-                      <Stars numStars={p.stars} includeNoRating={false} />
-                      {p.lat > 0 && p.lng > 0 && (
-                        <Icon size="small" name="map marker alternate" />
-                      )}
-                      {p.hasTopo && <Icon size="small" name="paint brush" />}
-                      {p.hasImages > 0 && (
-                        <Icon size="small" color="black" name="photo" />
-                      )}
-                      {p.hasMovies > 0 && (
-                        <Icon size="small" color="black" name="film" />
-                      )}
-                      <LockSymbol
-                        lockedAdmin={p.lockedAdmin}
-                        lockedSuperadmin={p.lockedSuperadmin}
-                      />
-                      {p.ticked && (
-                        <Icon size="small" color="green" name="check" />
-                      )}
-                    </Label.Detail>
-                  </Label>
-                ))}
-              </Table.Cell>
-            </Table.Row>
-          )}
+          <ProblemsOnRock
+            sectorId={data?.sectorId}
+            problemId={+problemId}
+            rock={data?.rock}
+          />
           {data.ticks && (
             <Table.Row verticalAlign="top">
               <Table.Cell>Public ascents:</Table.Cell>
@@ -876,7 +892,7 @@ const Problem = () => {
             <Table.Cell>Misc:</Table.Cell>
             <Table.Cell>
               <Label
-                href={getProblemPdfUrl(data.accessToken, data.id)}
+                href={getProblemPdfUrl(accessToken, data.id)}
                 rel="noreferrer noopener"
                 target="_blank"
                 image
@@ -888,7 +904,7 @@ const Problem = () => {
                   : "route.pdf"}
               </Label>
               <Label
-                href={getSectorPdfUrl(data.accessToken, data.sectorId)}
+                href={getSectorPdfUrl(accessToken, data.sectorId)}
                 rel="noreferrer noopener"
                 target="_blank"
                 image
@@ -898,7 +914,7 @@ const Problem = () => {
                 sector.pdf
               </Label>
               <Label
-                href={getAreaPdfUrl(data.accessToken, data.areaId)}
+                href={getAreaPdfUrl(accessToken, data.areaId)}
                 rel="noreferrer noopener"
                 target="_blank"
                 image
@@ -975,10 +991,14 @@ const Problem = () => {
       </Table>
       <Grid>
         <Grid.Column mobile={16} tablet={8} computer={8}>
-          {ticks}
+          <ProblemTicks ticks={data.ticks} />
         </Grid.Column>
         <Grid.Column mobile={16} tablet={8} computer={8}>
-          {comments}
+          <ProblemComments
+            onShowCommentModal={setShowCommentModal}
+            problemId={+problemId}
+            showHiddenMedia={showHiddenMedia}
+          />
         </Grid.Column>
       </Grid>
     </>

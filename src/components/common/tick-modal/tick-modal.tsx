@@ -3,6 +3,7 @@ import {
   convertFromDateToString,
   convertFromStringToDate,
   postTicks,
+  useAccessToken,
 } from "./../../../api";
 import {
   Button,
@@ -18,12 +19,10 @@ import "react-datepicker/dist/react-datepicker.css";
 
 type TickModalProps = {
   open: boolean;
-  closeWithReload: () => void;
-  closeWithoutReload: () => void;
-  accessToken: string;
+  onClose: (reload: boolean) => void;
   idTick: number;
   idProblem: number;
-  grades: { grade: number }[];
+  grades: Grade[];
   comment: string | null;
   grade: string;
   stars: number | null;
@@ -34,9 +33,7 @@ type TickModalProps = {
 
 const TickModal = ({
   open,
-  closeWithReload,
-  closeWithoutReload,
-  accessToken,
+  onClose,
   idTick,
   idProblem,
   grades,
@@ -47,6 +44,7 @@ const TickModal = ({
   date: initialDate,
   enableTickRepeats,
 }: TickModalProps) => {
+  const accessToken = useAccessToken();
   const [comment, setComment] = useState(initialComment);
   const [grade, setGrade] = useState(initialGrade);
   const [stars, setStars] = useState(initialStars);
@@ -59,7 +57,7 @@ const TickModal = ({
     date && (convertFromStringToDate(date) ?? new Date()) > today;
 
   return (
-    <Modal open={open} onClose={closeWithoutReload}>
+    <Modal open={open} onClose={() => onClose(false)}>
       <Modal.Header>Tick</Modal.Header>
       <Modal.Content>
         <Modal.Description>
@@ -243,7 +241,7 @@ const TickModal = ({
       </Modal.Content>
       <Modal.Actions>
         <Button.Group compact size="tiny">
-          <Button onClick={closeWithoutReload}>Cancel</Button>
+          <Button onClick={() => onClose(false)}>Cancel</Button>
           <Button.Or />
           {idTick > 1 && (
             <>
@@ -268,7 +266,7 @@ const TickModal = ({
                     repeats
                   )
                     .then(() => {
-                      closeWithReload();
+                      onClose(true);
                     })
                     .catch((error) => {
                       console.warn(error);
@@ -301,7 +299,7 @@ const TickModal = ({
                 repeats
               )
                 .then(() => {
-                  closeWithReload();
+                  onClose(true);
                 })
                 .catch((error) => {
                   console.warn(error);
