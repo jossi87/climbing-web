@@ -148,14 +148,14 @@ export function WeatherLabels({ lat, lng, label }: WeatherLabelsProps) {
           Yr.no
         </Label>
         <Label
-          href={`/webcam-map/` + JSON.stringify({ lat, lng, label })}
+          href={`/webcams/` + JSON.stringify({ lat, lng, label })}
           rel="noopener"
           target="_blank"
           image
           basic
         >
           <Icon name="camera" />
-          Webcam Map
+          Webcams
         </Label>
         {times.sunrise != "Invalid Date" && (
           <Popup

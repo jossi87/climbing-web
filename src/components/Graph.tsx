@@ -4,7 +4,7 @@ import { Loading } from "./common/widgets/widgets";
 import { useData } from "../api";
 import ChartGradeDistribution from "./common/chart-grade-distribution/chart-grade-distribution";
 
-const Toc = () => {
+const Graph = () => {
   const { data } = useData(`/cg`);
 
   if (!data) {
@@ -32,7 +32,7 @@ const Toc = () => {
         <Header as="h2">
           <Icon name="area graph" />
           <Header.Content>
-            Content Graph
+            Graph
             <Header.Subheader>{data.metadata.description}</Header.Subheader>
           </Header.Content>
         </Header>
@@ -47,4 +47,4 @@ const Toc = () => {
   );
 };
 
-export default Toc;
+export default Graph;

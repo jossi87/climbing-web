@@ -5,8 +5,8 @@ import { Segment, Header, Icon } from "semantic-ui-react";
 import { Loading } from "./common/widgets/widgets";
 import { useData } from "../api";
 
-const WebcamMap = () => {
-  const { data } = useData(`/cameras`);
+const Webcams = () => {
+  const { data } = useData(`/webcams`);
   const { json } = useParams();
 
   if (!data) {
@@ -58,7 +58,7 @@ const WebcamMap = () => {
         <Header as="h2">
           <Icon name="camera" />
           <Header.Content>
-            Webcam Map
+            Webcams
             {subHeader && <Header.Subheader>{subHeader}</Header.Subheader>}
           </Header.Content>
         </Header>
@@ -82,4 +82,4 @@ const WebcamMap = () => {
   );
 };
 
-export default WebcamMap;
+export default Webcams;

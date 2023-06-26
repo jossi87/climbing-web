@@ -51,15 +51,15 @@ const SvgEdit = lazy(
 const Swagger = lazy(() => import(/* webpackChunkName: "swagger" */ "./Swagger"));
 const Ticks = lazy(() => import(/* webpackChunkName: "ticks" */ "./Ticks"));
 const Toc = lazy(() => import(/* webpackChunkName: "toc" */ "./Toc"));
-const ContentGraph = lazy(
-  () => import(/* webpackChunkName: "cg" */ "./ContentGraph")
+const Graph = lazy(
+  () => import(/* webpackChunkName: "graph" */ "./Graph")
 );
 const Trash = lazy(() => import(/* webpackChunkName: "trash" */ "./Trash"));
 const Permissions = lazy(
   () => import(/* webpackChunkName: "permissions" */ "./Permissions")
 );
-const WebcamMap = lazy(
-  () => import(/* webpackChunkName: "webcam-map" */ "./WebcamMap")
+const Webcams = lazy(
+  () => import(/* webpackChunkName: "webcams" */ "./Webcams")
 );
 
 function AppRoutes() {
@@ -105,13 +105,13 @@ function AppRoutes() {
           <Route path="/ticks/:page" element={<Ticks />} />
           <Route path="/swagger" element={<Swagger />} />
           <Route path="/toc" element={<Toc />} />
-          <Route path="/cg" element={<ContentGraph />} />
+          <Route path="/graph" element={<Graph />} />
           <Route path="/trash" element={<Trash />} />
           <Route path="/user" element={<Profile />} />
           <Route path="/user/:userId" element={<Profile />} />
           <Route path="/user/:userId/:page" element={<Profile />} />
-          <Route path="/webcam-map" element={<WebcamMap />} />
-          <Route path="/webcam-map/:json" element={<WebcamMap />} />
+          <Route path="/webcams" element={<Webcams />} />
+          <Route path="/webcams/:json" element={<Webcams />} />
         </Routes>
       </Wrapper>
     </Suspense>

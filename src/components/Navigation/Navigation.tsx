@@ -31,17 +31,17 @@ export const Navigation = () => {
           <Icon name="database" />
           <span>{isBouldering ? "Problems" : "Routes"}</span>
         </Menu.Item>
+        <Menu.Item as={Link} to="/filter">
+          <Icon name="find" />
+          <span>Filter</span>
+        </Menu.Item>
         {!isBouldering && (
           <Menu.Item as={Link} to="/dangerous">
             <Icon name="warning sign" />
             <span>Dangerous</span>
           </Menu.Item>
         )}
-        <Menu.Item as={Link} to="/filter">
-          <Icon name="find" />
-          <span>Filter</span>
-        </Menu.Item>
-        <Menu.Item as={Link} to="/cg" className="collapse-1">
+        <Menu.Item as={Link} to="/graph" className="collapse-1">
           <Icon name="chart bar" />
           <span>Graph</span>
         </Menu.Item>
