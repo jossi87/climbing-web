@@ -45,7 +45,7 @@ export const Navigation = () => {
           <Icon name="chart bar" />
           <span>Graph</span>
         </Menu.Item>
-        <Menu.Item as={Link} to="/webcam-map" className="collapse-1">
+        <Menu.Item as={Link} to="/webcams" className="collapse-1">
           <Icon name="camera" />
           <span>Webcams</span>
         </Menu.Item>
