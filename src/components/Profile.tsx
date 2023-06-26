@@ -78,7 +78,7 @@ const Profile = () => {
       <ProfileMedia
         accessToken={profile.accessToken}
         userId={profile.id}
-        gradeSystem={meta.gradeSystem}
+        isBouldering={meta.isBouldering}
         captured={false}
       />
     );
@@ -87,7 +87,7 @@ const Profile = () => {
       <ProfileMedia
         accessToken={profile.accessToken}
         userId={profile.id}
-        gradeSystem={meta.gradeSystem}
+        isBouldering={meta.isBouldering}
         captured={true}
       />
     );

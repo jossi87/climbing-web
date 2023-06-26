@@ -226,7 +226,7 @@ const Activity = ({ idArea, idSector }) => {
             // FA
             if (a.users) {
               const typeDescription =
-                meta.gradeSystem === "BOULDER"
+                meta.isBouldering
                   ? "problem"
                   : "route";
               return (

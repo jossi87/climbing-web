@@ -304,7 +304,6 @@ const SectorEdit = () => {
         })}
       </>
     );
-    const isBouldering = meta.gradeSystem === "BOULDER";
 
     return (
       <>
@@ -466,7 +465,7 @@ const SectorEdit = () => {
                   onMouseClick={onMapMouseClick}
                   onMouseMove={null}
                   height={"300px"}
-                  showSateliteImage={isBouldering}
+                  showSateliteImage={meta.isBouldering}
                   clusterMarkers={false}
                   rocks={null}
                   flyToId={null}

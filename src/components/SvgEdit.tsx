@@ -491,7 +491,7 @@ const SvgEdit = () => {
               Remove all texts
             </Button>
           </Button.Group>
-          {meta.gradeSystem === "CLIMBING" && (
+          {meta.isClimbing && (
             <>
               {" "}
               <Button.Group size="tiny">

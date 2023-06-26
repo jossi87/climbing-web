@@ -23,8 +23,7 @@ const Problems = () => {
   if (!data) {
     return <Loading />;
   }
-  const isClimbing = meta.gradeSystem === "CLIMBING";
-  const title = isClimbing? "Routes" : "Boulders";
+  const title = meta.isClimbing? "Routes" : "Boulders";
   return (
     <>
       <Helmet>
@@ -127,7 +126,7 @@ const Problems = () => {
                         problem.numTicks +
                           (problem.numTicks == 1 ? " ascent" : " ascents");
                       let typeAscents;
-                      if (isClimbing) {
+                      if (meta.isClimbing) {
                         let t = problem.t.subType;
                         if (problem.numPitches > 1)
                           t += ", " + problem.numPitches + " pitches";
@@ -136,7 +135,7 @@ const Problems = () => {
                         } else {
                           typeAscents = " (" + t + ") ";
                         }
-                      } else if (!isClimbing) {
+                      } else if (!meta.isClimbing) {
                         if (ascents) {
                           typeAscents = " (" + ascents + ") ";
                         } else {

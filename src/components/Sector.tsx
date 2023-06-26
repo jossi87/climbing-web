@@ -120,7 +120,7 @@ const Sector = () => {
     return <Loading />;
   }
 
-  const isBouldering = meta.gradeSystem === "BOULDER";
+  const isBouldering = meta.isBouldering;
   const markers = data.problems
     .filter((p) => p.lat != 0 && p.lng != 0)
     .map((p) => {
@@ -134,7 +134,7 @@ const Sector = () => {
     });
   // Only add polygon if problemMarkers=0 or site is showing sport climbing
   const addPolygon =
-    meta.gradeSystem === "CLIMBING" || markers.length == 0;
+    meta.isClimbing || markers.length == 0;
   if (data.lat > 0 && data.lng > 0) {
     markers.push({
       lat: data.lat,
@@ -529,7 +529,7 @@ const Sector = () => {
               <SectorListItem
                 key={i}
                 problem={p}
-                isClimbing={meta.gradeSystem === "CLIMBING"}
+                isClimbing={meta.isClimbing}
               />
             ),
             name: p.name,

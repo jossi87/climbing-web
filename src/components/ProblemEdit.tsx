@@ -320,7 +320,7 @@ const ProblemEdit = () => {
                 Jostein Øygarden
               </a>{" "}
               if you want to move{" "}
-              {meta.gradeSystem === "BOULDER" ? "problem" : "route"} to
+              {meta.isBouldering ? "problem" : "route"} to
               an other sector.
             </>
           }
@@ -407,7 +407,7 @@ const ProblemEdit = () => {
                   onChange={(date) => onFaDateChanged(date)}
                 />
               </Form.Field>
-              {meta.gradeSystem === "BOULDER" ? (
+              {meta.isBouldering ? (
                 <Form.Field
                   label="Rock (this field is optional, use to group boulders by rock in sector)"
                   control={RockSelector}
@@ -437,7 +437,7 @@ const ProblemEdit = () => {
               value={data.trivia}
               onChange={onTriviaChanged}
             />
-            {meta.gradeSystem === "ICE" && (
+            {meta.isIce && (
               <>
                 <Form.Field
                   label="Starting altitude"
@@ -483,7 +483,7 @@ const ProblemEdit = () => {
             </Form.Field>
           </Segment>
 
-          {meta.gradeSystem === "CLIMBING" && (
+          {meta.isClimbing && (
             <Segment>
               <Form.Field
                 label="Type"

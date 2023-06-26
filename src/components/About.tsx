@@ -9,44 +9,48 @@ import {
   Image,
   Label,
 } from "semantic-ui-react";
-import { Loading } from "./common/widgets/widgets";
 import { useMeta } from "./common/meta";
 import { useData } from "../api";
 
 const About = () => {
   const meta = useMeta();
   const { data } = useData(`/administrators`);
-  const administrators = data?
+  const administrators = (
     <Grid.Column>
       <Segment>
         <Header as="h3">
           <Icon name="users" />
           <Header.Content>
             Administrators
-            <Header.Subheader>
-              {data.length} users
-            </Header.Subheader>
+            {data &&
+              <Header.Subheader>
+                {data.length} users
+              </Header.Subheader>
+            }
           </Header.Content>
         </Header>
         <List>
-          {data.map((u, key) => (
-            <List.Item key={key}>
-              <Image src={u.picture ? u.picture : "/png/image.png"} />
-              <List.Content>
-                <List.Header as={Link} to={`/user/${u.userId}`}>
-                  {u.name}
-                </List.Header>
-                <List.Description>
-                  Last seen {u.lastLogin}
-                </List.Description>
-              </List.Content>
-            </List.Item>
-          ))}
+          {data? 
+            data.map((u, key) => (
+              <List.Item key={key}>
+                <Image src={u.picture ? u.picture : "/png/image.png"} />
+                <List.Content>
+                  <List.Header as={Link} to={`/user/${u.userId}`}>
+                    {u.name}
+                  </List.Header>
+                  <List.Description>
+                    Last seen {u.lastLogin}
+                  </List.Description>
+                </List.Content>
+              </List.Item>
+            ))
+            :
+            <Icon name="circle notched" loading />
+          }
         </List>
       </Segment>
     </Grid.Column>
-  :
-  <Loading />;
+  );
 
   return (
     <>

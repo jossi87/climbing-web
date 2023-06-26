@@ -40,8 +40,7 @@ const Areas = () => {
   if (!data) {
     return <Loading />;
   }
-  const typeDescription =
-    meta.gradeSystem === "BOULDER" ? "problems" : "routes";
+  const typeDescription = meta.isBouldering ? "problems" : "routes";
   const markers = data
     .filter(
       (a) => a.forDevelopers === showForDevelopers && a.lat != 0 && a.lng != 0

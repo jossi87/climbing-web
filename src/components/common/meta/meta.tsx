@@ -20,7 +20,6 @@ type Metadata = {
   grades: Grade[];
   defaultZoom: number;
   defaultCenter: { lat: number; lng: number };
-  gradeSystem: "CLIMBING" | "BOULDER" | "ICE";
   isBouldering: boolean;
   isClimbing: boolean;
   isIce: boolean;
@@ -38,7 +37,6 @@ const DEFAULT_VALUE: Metadata = {
     lat: 60.893256420810616,
     lng: 8.842601762708886,
   },
-  gradeSystem: "CLIMBING",
   isBouldering: false,
   isClimbing: true,
   isIce: false,

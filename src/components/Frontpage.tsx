@@ -36,12 +36,12 @@ const Frontpage = () => {
                     {numberWithCommas(frontpage.numProblems)}
                   </Statistic.Value>
                   <Statistic.Label>
-                    {meta.gradeSystem === "BOULDER"
+                    {meta.isBouldering
                       ? "Problems"
                       : "Routes"}
                   </Statistic.Label>
                 </Statistic>
-                {meta.gradeSystem === "CLIMBING" ? (
+                {meta.isClimbing ? (
                   <Statistic>
                     <Statistic.Value>
                       <Icon name="image outline" />{" "}

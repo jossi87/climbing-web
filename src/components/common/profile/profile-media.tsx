@@ -4,7 +4,7 @@ import { Segment } from "semantic-ui-react";
 import { getProfileMedia } from "../../../api";
 import Media from "../../common/media/media";
 
-const ProfileMedia = ({ accessToken, userId, gradeSystem, captured }) => {
+const ProfileMedia = ({ accessToken, userId, isBouldering, captured }) => {
   const [data, setData] = useState<any[] | null>(null);
   useEffect(() => {
     if (data != null) {
@@ -29,7 +29,7 @@ const ProfileMedia = ({ accessToken, userId, gradeSystem, captured }) => {
         removeMedia={null}
         media={data}
         optProblemId={null}
-        isBouldering={gradeSystem === "BOULDER"}
+        isBouldering={isBouldering}
       />
     </Segment>
   );

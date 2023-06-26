@@ -238,8 +238,6 @@ const ProblemComments = ({
     return null;
   }
 
-  const isBouldering = meta.gradeSystem === "BOULDER";
-
   return (
     <Comment.Group as={Segment}>
       <Header as="h3" dividing>
@@ -254,7 +252,7 @@ const ProblemComments = ({
             extra = <Label color="green">Flagged as safe</Label>;
           } else if (
             meta.isAuthenticated &&
-            meta.gradeSystem === "CLIMBING"
+            meta.isClimbing
           ) {
             extra = (
               <Button
@@ -292,7 +290,7 @@ const ProblemComments = ({
                       removeMedia={() => window.location.reload()}
                       media={c.media}
                       optProblemId={null}
-                      isBouldering={isBouldering}
+                      isBouldering={meta.isBouldering}
                     />
                   )}
                 </Comment.Text>
@@ -366,7 +364,6 @@ const Problem = () => {
     return <Loading />;
   }
 
-  const isBouldering = meta.gradeSystem === "BOULDER";
   const markers: ComponentProps<typeof Leaflet>["markers"] = [];
   if (data.lat > 0 && data.lng > 0) {
     markers.push({
@@ -396,7 +393,7 @@ const Problem = () => {
             removeMedia={() => refetch()}
             media={data.media}
             optProblemId={data.id}
-            isBouldering={isBouldering}
+            isBouldering={meta.isBouldering}
           />
         </Tab.Pane>
       ),
@@ -458,7 +455,7 @@ const Problem = () => {
       return null;
     }
     const enableTickRepeats =
-      meta.gradeSystem === "ICE" || data.sections?.length > 0;
+      meta.isIce || data.sections?.length > 0;
     const userTicks = data.ticks?.filter((t) => t.writable);
     if (userTicks && userTicks.length > 0) {
       return (
@@ -516,7 +513,7 @@ const Problem = () => {
           key={JSON.stringify(showCommentModal)}
           comment={showCommentModal}
           onClose={onCommentModalClosed}
-          showHse={meta.gradeSystem === "CLIMBING"}
+          showHse={meta.isClimbing}
           id={showCommentModal?.id}
           idProblem={data.id}
         />
@@ -753,7 +750,7 @@ const Problem = () => {
               <Label basic>
                 Grade:<Label.Detail>{data.originalGrade}</Label.Detail>
               </Label>
-              {meta.gradeSystem === "CLIMBING" && (
+              {meta.isClimbing && (
                 <Label basic>
                   <Icon name="tag" />
                   {data.t.subType}
@@ -785,7 +782,7 @@ const Problem = () => {
                   {data.comment}
                 </Linkify>
               )}
-              {meta.gradeSystem === "ICE" && (
+              {meta.isIce && (
                 <>
                   <br />
                   <b>Starting altitude: </b>
@@ -820,7 +817,7 @@ const Problem = () => {
                       removeMedia={() => window.location.reload()}
                       media={data.triviaMedia}
                       optProblemId={null}
-                      isBouldering={isBouldering}
+                      isBouldering={meta.isBouldering}
                     />
                   </Feed.Extra>
                 )}
@@ -877,7 +874,7 @@ const Problem = () => {
                 basic
               >
                 <Icon name="file pdf outline" />
-                {meta.gradeSystem === "BOULDER"
+                {meta.isBouldering
                   ? "boulder.pdf"
                   : "route.pdf"}
               </Label>
@@ -922,7 +919,7 @@ const Problem = () => {
                   basic
                 >
                   <Icon name="map" />
-                  {isBouldering ? "Boulder" : "Route"} (Google Maps)
+                  {meta.isBouldering ? "Boulder" : "Route"} (Google Maps)
                 </Label>
               )}
             </Table.Cell>
@@ -953,7 +950,7 @@ const Problem = () => {
                                 removeMedia={() => window.location.reload()}
                                 media={s.media}
                                 optProblemId={null}
-                                isBouldering={isBouldering}
+                                isBouldering={meta.isBouldering}
                               />
                             </Feed.Extra>
                           )}
