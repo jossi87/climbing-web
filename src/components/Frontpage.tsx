@@ -46,7 +46,7 @@ const Frontpage = () => {
           {frontpage ? (
             <Grid.Column mobile={16} tablet={8} computer={4}>
               <Statistic.Group size="mini" horizontal as={Segment}>
-                <Statistic as={Link} to="/toc" color="blue">
+                <Statistic as={Link} to="/problems" color="blue">
                   <Statistic.Value>
                     <Icon name="database" />{" "}
                     {numberWithCommas(frontpage.numProblems)}

@@ -146,6 +146,15 @@ export function getProblemPdfUrl(
   return getUrl(`/problems/pdf?accessToken=${accessToken}&id=${id}`);
 }
 
+export function getProblemsXlsx(accessToken: string | null): Promise<any> {
+  return makeAuthenticatedRequest(accessToken, `/problems/xlsx`, {
+    expose: ["Content-Disposition"],
+  }).catch((error) => {
+    console.warn(error);
+    return null;
+  });
+}
+
 export function numberWithCommas(number: number) {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
@@ -876,15 +885,6 @@ export function useTop({
   idSector: number;
 }) {
   return useData(`/top?idArea=${idArea}&idSector=${idSector}`);
-}
-
-export function getTocXlsx(accessToken: string | null): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/toc/xlsx`, {
-    expose: ["Content-Disposition"],
-  }).catch((error) => {
-    console.warn(error);
-    return null;
-  });
 }
 
 export function getUserSearch(

@@ -348,7 +348,7 @@ const AreaEdit = () => {
                 if (areaId && areaId != "-1") {
                   navigate(`/area/${areaId}`);
                 } else {
-                  navigate(`/browse`);
+                  navigate(`/areas`);
                 }
               }}
             >

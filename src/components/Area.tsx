@@ -409,7 +409,7 @@ const Area = () => {
         </div>
         <Breadcrumb>
           <Breadcrumb.Section>
-            <Link to="/browse">Browse</Link>
+            <Link to="/areas">Areas</Link>
           </Breadcrumb.Section>
           <Breadcrumb.Divider icon="right angle" />
           <Breadcrumb.Section active>

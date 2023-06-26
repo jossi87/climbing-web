@@ -7,7 +7,7 @@ const Area = lazy(() => import(/* webpackChunkName: "area" */ "./Area"));
 const AreaEdit = lazy(
   () => import(/* webpackChunkName: "area-edit" */ "./AreaEdit")
 );
-const Browse = lazy(() => import(/* webpackChunkName: "browse" */ "./Browse"));
+const Areas = lazy(() => import(/* webpackChunkName: "areas" */ "./Areas"));
 const Dangerous = lazy(
   () => import(/* webpackChunkName: "dangerous" */ "./Dangerous")
 );
@@ -21,6 +21,9 @@ const Frontpage = lazy(
     )
 );
 const Filter = lazy(() => import(/* webpackChunkName: "filter" */ "./Filter"));
+const Graph = lazy(
+  () => import(/* webpackChunkName: "graph" */ "./Graph")
+);
 const MediaSvgEdit = lazy(
   () => import(/* webpackChunkName: "media-svg-edit" */ "./MediaSvgEdit")
 );
@@ -37,6 +40,7 @@ const ProblemEditMedia = lazy(
   () =>
     import(/* webpackChunkName: "problem-edit-media" */ "./ProblemEditMedia")
 );
+const Problems = lazy(() => import(/* webpackChunkName: "problems" */ "./Problems"));
 const Profile = lazy(
   () => import(/* webpackChunkName: "profile" */ "./Profile")
 );
@@ -50,10 +54,6 @@ const SvgEdit = lazy(
 );
 const Swagger = lazy(() => import(/* webpackChunkName: "swagger" */ "./Swagger"));
 const Ticks = lazy(() => import(/* webpackChunkName: "ticks" */ "./Ticks"));
-const Toc = lazy(() => import(/* webpackChunkName: "toc" */ "./Toc"));
-const Graph = lazy(
-  () => import(/* webpackChunkName: "graph" */ "./Graph")
-);
 const Trash = lazy(() => import(/* webpackChunkName: "trash" */ "./Trash"));
 const Permissions = lazy(
   () => import(/* webpackChunkName: "permissions" */ "./Permissions")
@@ -77,12 +77,13 @@ function AppRoutes() {
         <Routes>
           <Route path="/" element={<Frontpage />} />
           <Route path="/about" element={<About />} />
-          <Route path="/browse" element={<Browse />} />
           <Route path="/area/:areaId" element={<Area />} />
           <Route path="/area/edit/:areaId" element={<AreaEdit />} />
+          <Route path="/areas" element={<Areas />} />
           <Route path="/dangerous" element={<Dangerous />} />
           <Route path="/donations" element={<Donations />} />
           <Route path="/filter" element={<Filter />} />
+          <Route path="/graph" element={<Graph />} />
           <Route path="/media/svg-edit/:mediaId" element={<MediaSvgEdit />} />
           <Route path="/permissions" element={<Permissions />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
@@ -99,13 +100,12 @@ function AppRoutes() {
             path="/problem/svg-edit/:problemIdMediaId"
             element={<SvgEdit />}
           />
+          <Route path="/problems" element={<Problems />} />
           <Route path="/sites/:type" element={<Sites />} />
           <Route path="/sector/:sectorId" element={<Sector />} />
           <Route path="/sector/edit/:areaIdSectorId" element={<SectorEdit />} />
           <Route path="/ticks/:page" element={<Ticks />} />
           <Route path="/swagger" element={<Swagger />} />
-          <Route path="/toc" element={<Toc />} />
-          <Route path="/graph" element={<Graph />} />
           <Route path="/trash" element={<Trash />} />
           <Route path="/user" element={<Profile />} />
           <Route path="/user/:userId" element={<Profile />} />

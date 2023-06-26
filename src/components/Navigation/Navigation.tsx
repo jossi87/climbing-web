@@ -23,11 +23,11 @@ export const Navigation = () => {
           </Menu.Item>
           <Menu.Item as={SearchBox} style={{ flex: 1 }} />
         </div>
-        <Menu.Item as={Link} to="/browse">
+        <Menu.Item as={Link} to="/areas">
           <Icon name="list" />
           <span>Areas</span>
         </Menu.Item>
-        <Menu.Item as={Link} to="/toc">
+        <Menu.Item as={Link} to="/problems">
           <Icon name="database" />
           <span>{isBouldering ? "Problems" : "Routes"}</span>
         </Menu.Item>
