@@ -23,6 +23,7 @@ const Permissions = () => {
     loginWithRedirect,
   } = useAuth0();
   const meta = useMeta();
+  const [accessToken, setAccessToken] = useState<any>(null);
   const [data, setData] = useState<any>(null);
   const location = useLocation();
 
@@ -30,7 +31,8 @@ const Permissions = () => {
     if (isAuthenticated) {
       getAccessTokenSilently().then((accessToken) => {
         getPermissions(accessToken).then((data) => {
-          setData({ ...data, accessToken });
+          setData(data);
+          setAccessToken(accessToken);
         });
       });
     }
@@ -132,7 +134,7 @@ const Permissions = () => {
                           const superadminRead = d.value === 3;
                           const superadminWrite = d.value === 3;
                           postPermissions(
-                            data.accessToken,
+                            accessToken,
                             u.userId,
                             adminRead,
                             adminWrite,

@@ -46,7 +46,7 @@ const SectorEdit = () => {
           setData({ ...data, accessToken })
         );
         const areaId = parseInt(areaIdSectorId.split("-")[0]);
-        getArea(accessToken, areaId).then((data) => setArea(data));
+        getArea(accessToken, areaId).then((data) => setArea(data[0]));
       });
     }
   }, [isAuthenticated, areaIdSectorId]);

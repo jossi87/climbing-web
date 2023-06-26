@@ -286,19 +286,19 @@ export function getAreaEdit(
       .then((data) => data.json())
       .then((res) => {
         return {
-          id: res.id,
-          lockedAdmin: res.lockedAdmin,
-          lockedSuperadmin: res.lockedSuperadmin,
-          forDevelopers: res.forDevelopers,
-          accessInfo: res.accessInfo,
-          accessClosed: res.accessClosed,
-          noDogsAllowed: res.noDogsAllowed,
-          name: res.name,
-          comment: res.comment,
-          lat: res.lat,
-          lng: res.lng,
+          id: res[0].id,
+          lockedAdmin: res[0].lockedAdmin,
+          lockedSuperadmin: res[0].lockedSuperadmin,
+          forDevelopers: res[0].forDevelopers,
+          accessInfo: res[0].accessInfo,
+          accessClosed: res[0].accessClosed,
+          noDogsAllowed: res[0].noDogsAllowed,
+          name: res[0].name,
+          comment: res[0].comment,
+          lat: res[0].lat,
+          lng: res[0].lng,
           newMedia: [],
-          sectorOrder: res.sectorOrder,
+          sectorOrder: res[0].sectorOrder,
         };
       })
       .catch((error) => {
@@ -656,10 +656,10 @@ export function getSectorEdit(
     return getArea(accessToken, areaId)
       .then((res) => {
         return {
-          areaId: res.id,
+          areaId: res[0].id,
           id: -1,
-          lockedAdmin: res.lockedAdmin,
-          lockedSuperadmin: res.lockedSuperadmin,
+          lockedAdmin: res[0].lockedAdmin,
+          lockedSuperadmin: res[0].lockedSuperadmin,
           name: "",
           comment: "",
           accessInfo: "",
