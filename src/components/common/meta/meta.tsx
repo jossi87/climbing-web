@@ -22,6 +22,8 @@ type Metadata = {
   defaultCenter: { lat: number; lng: number };
   gradeSystem: "CLIMBING" | "BOULDER" | "ICE";
   isBouldering: boolean;
+  isClimbing: boolean;
+  isIce: boolean;
   types: Type[];
 };
 
@@ -38,6 +40,8 @@ const DEFAULT_VALUE: Metadata = {
   },
   gradeSystem: "CLIMBING",
   isBouldering: false,
+  isClimbing: true,
+  isIce: false,
   types: [],
 };
 
@@ -56,19 +60,10 @@ export const useMeta = (): Metadata => {
 };
 
 export const MetaProvider = ({ children }: Props) => {
-  const { data: meta } = useData<{ metadata: Metadata }>(`/meta`, {
-    transform: (resp) =>
-      resp.json().then((json) => ({
-        ...json,
-        metadata: {
-          ...json.metadata,
-          isBouldering: json.metadata.gradeSystem === "BOULDER",
-        },
-      })),
-  });
+  const { data: meta } = useData<Metadata>(`/meta`);
 
   return (
-    <MetaContext.Provider value={meta?.metadata ?? DEFAULT_VALUE}>
+    <MetaContext.Provider value={meta || DEFAULT_VALUE}>
       {children}
     </MetaContext.Provider>
   );

@@ -169,7 +169,6 @@ const Area = () => {
       outlines.push({ url: "/sector/" + s.id, label, polygon: polygon });
     }
   }
-  const isBouldering = meta.gradeSystem === "BOULDER";
   const panes: ComponentProps<typeof Tab>["panes"] = [];
   const height = "40vh";
   if (data.media && data.media.length > 0) {
@@ -183,7 +182,7 @@ const Area = () => {
             removeMedia={() => refetch()}
             media={data.media}
             optProblemId={null}
-            isBouldering={isBouldering}
+            isBouldering={meta.isBouldering}
           />
         </Tab.Pane>
       ),
@@ -320,7 +319,7 @@ const Area = () => {
     });
     sectorPanes.push({
       menuItem:
-        (isBouldering ? "Problems (" : "Routes (") +
+        (meta.isBouldering ? "Problems (" : "Routes (") +
         data.typeNumTicked.reduce((count, current) => count + current.num, 0) +
         ")",
       render: () => (
@@ -336,7 +335,7 @@ const Area = () => {
                       key={p.id}
                       sector={s}
                       problem={p}
-                      isClimbing={meta.gradeSystem === "CLIMBING"}
+                      isClimbing={meta.isClimbing}
                     />
                   ),
                   name: p.name,
@@ -466,7 +465,7 @@ const Area = () => {
                     removeMedia={() => window.location.reload()}
                     media={data.triviaMedia}
                     optProblemId={null}
-                    isBouldering={isBouldering}
+                    isBouldering={meta.isBouldering}
                   />
                 </Feed.Extra>
               </Table.Cell>

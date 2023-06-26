@@ -16,8 +16,6 @@ import { useData } from "../api";
 const About = () => {
   const meta = useMeta();
   const { data } = useData(`/administrators`);
-  const isBouldering = meta.gradeSystem === "BOULDER";
-
   const administrators = data?
     <Grid.Column>
       <Segment>
@@ -128,7 +126,7 @@ const About = () => {
                 Remember climbing can be dangerous and always involves risk.
                 Your safety is your own responsibility.
               </List.Item>
-              {isBouldering ? (
+              {meta.isBouldering ? (
                 <>
                   <List.Item>
                     Start where directed, and don&#39;t hesitate to ask if your
