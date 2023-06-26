@@ -17,6 +17,7 @@ import {
   Message,
 } from "semantic-ui-react";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useMeta } from "./common/meta";
 import { getSectorEdit, postSector, getSector, getArea } from "../api";
 import Leaflet from "./common/leaflet/leaflet";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
@@ -37,6 +38,7 @@ const SectorEdit = () => {
   const { areaIdSectorId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const meta = useMeta();
   useEffect(() => {
     if (areaIdSectorId && isAuthenticated) {
       getAccessTokenSilently().then((accessToken) => {
@@ -173,7 +175,7 @@ const SectorEdit = () => {
     return <Loading />;
   } else if (!isAuthenticated) {
     loginWithRedirect({ appState: { returnTo: location.pathname } });
-  } else if (!data.metadata.isAdmin) {
+  } else if (!meta.isAdmin) {
     return <InsufficientPrivileges />;
   } else {
     const polygons: ComponentProps<typeof Leaflet>["outlines"] = [];
@@ -242,14 +244,14 @@ const SectorEdit = () => {
     const defaultCenter =
       data.lat && parseFloat(data.lat) > 0
         ? { lat: parseFloat(data.lat), lng: parseFloat(data.lng) }
-        : data.metadata.defaultCenter;
+        : meta.defaultCenter;
     const defaultZoom =
-      data.lat && parseFloat(data.lat) > 0 ? 14 : data.metadata.defaultZoom;
+      data.lat && parseFloat(data.lat) > 0 ? 14 : meta.defaultZoom;
     const lockedOptions = [
       { key: 0, value: 0, text: "Visible for everyone" },
       { key: 1, value: 1, text: "Only visible for administrators" },
     ];
-    if (data.metadata.isSuperAdmin) {
+    if (meta.isSuperAdmin) {
       lockedOptions.push({
         key: 2,
         value: 2,
@@ -302,12 +304,12 @@ const SectorEdit = () => {
         })}
       </>
     );
-    const isBouldering = data.metadata.gradeSystem === "BOULDER";
+    const isBouldering = meta.gradeSystem === "BOULDER";
 
     return (
       <>
         <Helmet>
-          <title>{data.metadata.title}</title>
+          <title>Edit {data.name} | {meta.title}</title>
         </Helmet>
         <Message
           size="tiny"

@@ -25,6 +25,7 @@ import {
   Stars,
   WeatherLabels,
 } from "./common/widgets/widgets";
+import { useMeta } from "./common/meta";
 import {
   getAreaPdfUrl,
   getSectorPdfUrl,
@@ -204,6 +205,7 @@ const ProblemComments = ({
   onShowCommentModal: (comment: any) => void;
 }) => {
   const accessToken = useAccessToken();
+  const meta = useMeta();
   const { data, refetch } = useProblem({ id: problemId, showHiddenMedia });
 
   function flagAsDangerous({ id, message }) {
@@ -236,7 +238,7 @@ const ProblemComments = ({
     return null;
   }
 
-  const isBouldering = data.metadata.gradeSystem === "BOULDER";
+  const isBouldering = meta.gradeSystem === "BOULDER";
 
   return (
     <Comment.Group as={Segment}>
@@ -251,9 +253,8 @@ const ProblemComments = ({
           } else if (c.resolved) {
             extra = <Label color="green">Flagged as safe</Label>;
           } else if (
-            data.metadata &&
-            data.metadata.isAuthenticated &&
-            data.metadata.gradeSystem === "CLIMBING"
+            meta.isAuthenticated &&
+            meta.gradeSystem === "CLIMBING"
           ) {
             extra = (
               <Button
@@ -286,7 +287,7 @@ const ProblemComments = ({
                   </Linkify>
                   {c.media && c.media.length > 0 && (
                     <Media
-                      isAdmin={data.metadata.isAdmin}
+                      isAdmin={meta.isAdmin}
                       numPitches={data.sections?.length || 0}
                       removeMedia={() => window.location.reload()}
                       media={c.media}
@@ -311,6 +312,7 @@ const Problem = () => {
   const accessToken = useAccessToken();
   const { problemId } = useParams();
   const [showHiddenMedia, setShowHiddenMedia] = useState(false);
+  const meta = useMeta();
   const { data, error, refetch } = useProblem({
     id: +problemId,
     showHiddenMedia,
@@ -364,7 +366,7 @@ const Problem = () => {
     return <Loading />;
   }
 
-  const isBouldering = data.metadata.gradeSystem === "BOULDER";
+  const isBouldering = meta.gradeSystem === "BOULDER";
   const markers: ComponentProps<typeof Leaflet>["markers"] = [];
   if (data.lat > 0 && data.lng > 0) {
     markers.push({
@@ -389,7 +391,7 @@ const Problem = () => {
       render: () => (
         <Tab.Pane>
           <Media
-            isAdmin={data.metadata.isAdmin}
+            isAdmin={meta.isAdmin}
             numPitches={data.sections?.length || 0}
             removeMedia={() => refetch()}
             media={data.media}
@@ -456,7 +458,7 @@ const Problem = () => {
       return null;
     }
     const enableTickRepeats =
-      data.metadata.gradeSystem === "ICE" || data.sections?.length > 0;
+      meta.gradeSystem === "ICE" || data.sections?.length > 0;
     const userTicks = data.ticks?.filter((t) => t.writable);
     if (userTicks && userTicks.length > 0) {
       return (
@@ -466,7 +468,7 @@ const Problem = () => {
           date={userTicks[0].date}
           comment={userTicks[0].comment}
           grade={userTicks[0].suggestedGrade}
-          grades={data.metadata.grades}
+          grades={meta.grades}
           stars={userTicks[0].stars}
           repeats={userTicks[0].repeats}
           open={showTickModal}
@@ -480,7 +482,7 @@ const Problem = () => {
         idTick={-1}
         idProblem={data.id}
         grade={data.originalGrade}
-        grades={data.metadata.grades}
+        grades={meta.grades}
         open={showTickModal}
         onClose={onTickModalClose}
         comment={null}
@@ -505,31 +507,7 @@ const Problem = () => {
   return (
     <>
       <Helmet>
-        {data.metadata.canonical && (
-          <link rel="canonical" href={data.metadata.canonical} />
-        )}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(data.metadata.jsonLd),
-          }}
-        />
-        <title>{data.metadata.title}</title>
-        <meta name="description" content={data.metadata.description} />
-        <meta property="og:type" content="website" />
-        <meta property="og:description" content={data.metadata.description} />
-        <meta property="og:url" content={data.metadata.og.url} />
-        <meta property="og:title" content={data.metadata.title} />
-        <meta property="og:image" content={data.metadata.og.image} />
-        <meta
-          property="og:image:width"
-          content={String(data.metadata.og.imageWidth)}
-        />
-        <meta
-          property="og:image:height"
-          content={String(data.metadata.og.imageHeight)}
-        />
-        <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
+        <title>{data.name} | {meta.title}</title>
       </Helmet>
       {tickModal}
       {showCommentModal && (
@@ -538,14 +516,14 @@ const Problem = () => {
           key={JSON.stringify(showCommentModal)}
           comment={showCommentModal}
           onClose={onCommentModalClosed}
-          showHse={data.metadata.gradeSystem === "CLIMBING"}
+          showHse={meta.gradeSystem === "CLIMBING"}
           id={showCommentModal?.id}
           idProblem={data.id}
         />
       )}
       <div style={{ marginBottom: "5px" }}>
         <div style={{ float: "right" }}>
-          {data.metadata && data.metadata.isAuthenticated && (
+          {meta.isAuthenticated && (
             <Button.Group size="mini" compact>
               <Button
                 positive={data.todo}
@@ -585,7 +563,7 @@ const Problem = () => {
                   <Icon name="comment" />
                 </Button.Content>
               </Button>
-              {data.metadata.isAdmin && (
+              {meta.isAdmin && (
                 <Button
                   positive={showHiddenMedia}
                   animated="fade"
@@ -600,7 +578,7 @@ const Problem = () => {
                   </Button.Content>
                 </Button>
               )}
-              {data.metadata.isAdmin ? (
+              {meta.isAdmin ? (
                 <Button
                   animated="fade"
                   as={Link}
@@ -775,7 +753,7 @@ const Problem = () => {
               <Label basic>
                 Grade:<Label.Detail>{data.originalGrade}</Label.Detail>
               </Label>
-              {data.metadata.gradeSystem === "CLIMBING" && (
+              {meta.gradeSystem === "CLIMBING" && (
                 <Label basic>
                   <Icon name="tag" />
                   {data.t.subType}
@@ -807,7 +785,7 @@ const Problem = () => {
                   {data.comment}
                 </Linkify>
               )}
-              {data.metadata.gradeSystem === "ICE" && (
+              {meta.gradeSystem === "ICE" && (
                 <>
                   <br />
                   <b>Starting altitude: </b>
@@ -837,7 +815,7 @@ const Problem = () => {
                 {data.triviaMedia && (
                   <Feed.Extra>
                     <Media
-                      isAdmin={data.metadata.isAdmin}
+                      isAdmin={meta.isAdmin}
                       numPitches={data.sections?.length || 0}
                       removeMedia={() => window.location.reload()}
                       media={data.triviaMedia}
@@ -899,7 +877,7 @@ const Problem = () => {
                 basic
               >
                 <Icon name="file pdf outline" />
-                {data.metadata.gradeSystem === "BOULDER"
+                {meta.gradeSystem === "BOULDER"
                   ? "boulder.pdf"
                   : "route.pdf"}
               </Label>
@@ -970,7 +948,7 @@ const Problem = () => {
                           {s.media && (
                             <Feed.Extra>
                               <Media
-                                isAdmin={data.metadata.isAdmin}
+                                isAdmin={meta.isAdmin}
                                 numPitches={data.sections?.length || 0}
                                 removeMedia={() => window.location.reload()}
                                 media={s.media}

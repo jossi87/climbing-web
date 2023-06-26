@@ -28,11 +28,11 @@ import {
   Message,
   Feed,
 } from "semantic-ui-react";
+import { useMeta } from "./common/meta";
 import { getImageUrl, getAreaPdfUrl, useArea, useAccessToken } from "../api";
 import { Remarkable } from "remarkable";
 import { linkify } from "remarkable/linkify";
 import ProblemList from "./common/problem-list/problem-list";
-import { useMeta } from "./common/meta";
 
 const SectorListItem = ({ sector, problem, isClimbing }) => {
   const type = isClimbing
@@ -102,9 +102,9 @@ const SectorListItem = ({ sector, problem, isClimbing }) => {
 };
 const Area = () => {
   const accessToken = useAccessToken();
+  const meta = useMeta();
   const { areaId } = useParams();
   const { data, error, refetch } = useArea(parseInt(areaId ?? "0"));
-  const meta = useMeta();
 
   const md = new Remarkable({ breaks: true }).use(linkify);
   // open links in new windows
@@ -246,7 +246,7 @@ const Area = () => {
       menuItem: { key: "activity", icon: "time" },
       render: () => (
         <Tab.Pane>
-          <Activity metadata={meta} idArea={data.id} idSector={0} />
+          <Activity idArea={data.id} idSector={0} />
         </Tab.Pane>
       ),
     });

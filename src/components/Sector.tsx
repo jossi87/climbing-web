@@ -29,6 +29,7 @@ import {
   Message,
   Feed,
 } from "semantic-ui-react";
+import { useMeta } from "./common/meta";
 import {
   getAreaPdfUrl,
   getSectorPdfUrl,
@@ -102,6 +103,7 @@ const SectorListItem = ({ problem, isClimbing }) => {
 const Sector = () => {
   const accessToken = useAccessToken();
   const { sectorId } = useParams();
+  const meta = useMeta();
   const { data: data, error, refetch, isLoading } = useSector(sectorId);
 
   if (error) {
@@ -118,7 +120,7 @@ const Sector = () => {
     return <Loading />;
   }
 
-  const isBouldering = data.metadata.gradeSystem === "BOULDER";
+  const isBouldering = meta.gradeSystem === "BOULDER";
   const markers = data.problems
     .filter((p) => p.lat != 0 && p.lng != 0)
     .map((p) => {
@@ -132,7 +134,7 @@ const Sector = () => {
     });
   // Only add polygon if problemMarkers=0 or site is showing sport climbing
   const addPolygon =
-    data.metadata.gradeSystem === "CLIMBING" || markers.length == 0;
+    meta.gradeSystem === "CLIMBING" || markers.length == 0;
   if (data.lat > 0 && data.lng > 0) {
     markers.push({
       lat: data.lat,
@@ -155,7 +157,7 @@ const Sector = () => {
         render: () => (
           <Tab.Pane>
             <Media
-              isAdmin={data.metadata.isAdmin}
+              isAdmin={meta.isAdmin}
               numPitches={0}
               removeMedia={() => refetch()}
               media={media}
@@ -171,9 +173,9 @@ const Sector = () => {
     const defaultCenter =
       data.lat && data.lat > 0
         ? { lat: data.lat, lng: data.lng }
-        : data.metadata.defaultCenter;
+        : meta.defaultCenter;
     const defaultZoom =
-      data.lat && data.lat > 0 ? 15 : data.metadata.defaultZoom;
+      data.lat && data.lat > 0 ? 15 : meta.defaultZoom;
     const polyline =
       data.polyline &&
       data.polyline
@@ -233,7 +235,7 @@ const Sector = () => {
       render: () => (
         <Tab.Pane>
           <Media
-            isAdmin={data.metadata.isAdmin}
+            isAdmin={meta.isAdmin}
             numPitches={0}
             removeMedia={() => refetch()}
             media={topoImages}
@@ -270,7 +272,7 @@ const Sector = () => {
       menuItem: { key: "activity", icon: "time" },
       render: () => (
         <Tab.Pane>
-          <Activity metadata={data.metadata} idArea={0} idSector={data.id} />
+          <Activity idArea={0} idSector={data.id} />
         </Tab.Pane>
       ),
     });
@@ -318,32 +320,11 @@ const Sector = () => {
   return (
     <>
       <Helmet>
-        {data.metadata.canonical && (
-          <link rel="canonical" href={data.metadata.canonical} />
-        )}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(data.metadata.jsonLd),
-          }}
-        />
-        <title>{data.metadata.title}</title>
-        <meta name="description" content={data.metadata.description} />
-        <meta property="og:type" content="website" />
-        <meta property="og:description" content={data.metadata.description} />
-        <meta property="og:url" content={data.metadata.og.url} />
-        <meta property="og:title" content={data.metadata.title} />
-        <meta property="og:image" content={data.metadata.og.image} />
-        <meta property="og:image:width" content={data.metadata.og.imageWidth} />
-        <meta
-          property="og:image:height"
-          content={data.metadata.og.imageHeight}
-        />
-        <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
+        <title>{data.name} | {meta.title}</title>
       </Helmet>
       <div style={{ marginBottom: "5px" }}>
         <div style={{ float: "right" }}>
-          {data && data.metadata.isAdmin && (
+          {data && meta.isAdmin && (
             <Button.Group size="mini" compact>
               <Button
                 animated="fade"
@@ -473,7 +454,7 @@ const Sector = () => {
               <Table.Cell>
                 <Feed.Extra>
                   <Media
-                    isAdmin={data.metadata.isAdmin}
+                    isAdmin={meta.isAdmin}
                     numPitches={0}
                     removeMedia={() => window.location.reload()}
                     media={data.triviaMedia}
@@ -548,7 +529,7 @@ const Sector = () => {
               <SectorListItem
                 key={i}
                 problem={p}
-                isClimbing={data.metadata.gradeSystem === "CLIMBING"}
+                isClimbing={meta.gradeSystem === "CLIMBING"}
               />
             ),
             name: p.name,

@@ -5,10 +5,12 @@ import { Button } from "semantic-ui-react";
 import Leaflet from "./common/leaflet/leaflet";
 import { Loading } from "./common/widgets/widgets";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useMeta } from "./common/meta";
 import { getSites } from "../api";
 
 const Sites = () => {
   const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const meta = useMeta();
   const [data, setData] = useState<any>(null);
   const { type } = useParams();
 
@@ -30,7 +32,7 @@ const Sites = () => {
   if (isLoading || !data) {
     return <Loading />;
   }
-  const outlines = data.regions.map((r) => {
+  const outlines = data.map((r) => {
     const polygon = r.polygonCoords.split(";").map((c) => {
       const latLng = c.split(",");
       return [parseFloat(latLng[0]), parseFloat(latLng[1])];
@@ -51,8 +53,8 @@ const Sites = () => {
       autoZoom={true}
       height="85vh"
       outlines={outlines}
-      defaultCenter={data.metadata.defaultCenter}
-      defaultZoom={data.metadata.defaultZoom}
+      defaultCenter={meta.defaultCenter}
+      defaultZoom={meta.defaultZoom}
       markers={null}
       polylines={null}
       onMouseClick={null}
@@ -66,32 +68,20 @@ const Sites = () => {
   return (
     <>
       <Helmet>
-        <title>{data.metadata.title}</title>
-        <meta name="description" content={data.metadata.description} />
-        <meta property="og:type" content="website" />
-        <meta property="og:description" content={data.metadata.description} />
-        <meta property="og:url" content={data.metadata.og.url} />
-        <meta property="og:title" content={data.metadata.title} />
-        <meta property="og:image" content={data.metadata.og.image} />
-        <meta property="og:image:width" content={data.metadata.og.imageWidth} />
-        <meta
-          property="og:image:height"
-          content={data.metadata.og.imageHeight}
-        />
-        <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
+        <title>Sites | {meta.title}</title>
       </Helmet>
       <Button.Group fluid>
-        <Button as={Link} to={"/sites/boulder"} active={data.type == "BOULDER"}>
+        <Button as={Link} to={"/sites/boulder"} active={data[0].system == "BOULDER"}>
           Bouldering
         </Button>
         <Button
           as={Link}
           to={"/sites/climbing"}
-          active={data.type == "CLIMBING"}
+          active={data[0].system == "CLIMBING"}
         >
           Route climbing
         </Button>
-        <Button as={Link} to={"/sites/ice"} active={data.type == "ICE"}>
+        <Button as={Link} to={"/sites/ice"} active={data[0].system == "ICE"}>
           Ice climbing
         </Button>
       </Button.Group>

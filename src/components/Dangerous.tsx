@@ -2,9 +2,11 @@ import React, { useRef } from "react";
 import { Helmet } from "react-helmet";
 import { LockSymbol, Loading } from "./common/widgets/widgets";
 import { Segment, Icon, List, Header } from "semantic-ui-react";
+import { useMeta } from "./common/meta";
 import { useData } from "../api";
 
 const Dangerous = () => {
+  const meta = useMeta();
   const { data } = useData(`/dangerous`);
   const areaRefs = useRef({});
 
@@ -14,30 +16,17 @@ const Dangerous = () => {
   return (
     <>
       <Helmet>
-        <title>{data.metadata.title}</title>
-        <meta name="description" content={data.metadata.description} />
-        <meta property="og:type" content="website" />
-        <meta property="og:description" content={data.metadata.description} />
-        <meta property="og:url" content={data.metadata.og.url} />
-        <meta property="og:title" content={data.metadata.title} />
-        <meta property="og:image" content={data.metadata.og.image} />
-        <meta property="og:image:width" content={data.metadata.og.imageWidth} />
-        <meta
-          property="og:image:height"
-          content={data.metadata.og.imageHeight}
-        />
-        <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
+      <title>Dangerous | {meta.title}</title>
       </Helmet>
       <Segment>
         <Header as="h2">
           <Icon name="warning sign" />
           <Header.Content>
             Marked as dangerous
-            <Header.Subheader>{data.metadata.description}</Header.Subheader>
           </Header.Content>
         </Header>
         <List celled link horizontal size="small">
-          {data.areas.map((area, i) => (
+          {data.map((area, i) => (
             <React.Fragment key={i}>
               <List.Item
                 as="a"
@@ -55,7 +44,7 @@ const Dangerous = () => {
           ))}
         </List>
         <List celled>
-          {data.areas.map((area, i) => (
+          {data.map((area, i) => (
             <List.Item key={i}>
               <List.Header>
                 <a

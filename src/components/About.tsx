@@ -10,34 +10,50 @@ import {
   Label,
 } from "semantic-ui-react";
 import { Loading } from "./common/widgets/widgets";
+import { useMeta } from "./common/meta";
 import { useData } from "../api";
 
 const About = () => {
-  const { data } = useData(`/about`);
+  const meta = useMeta();
+  const { data } = useData(`/administrators`);
+  const isBouldering = meta.gradeSystem === "BOULDER";
 
-  if (!data) {
-    return <Loading />;
-  }
-  const isBouldering = data.metadata.gradeSystem === "BOULDER";
+  const administrators = data?
+    <Grid.Column>
+      <Segment>
+        <Header as="h3">
+          <Icon name="users" />
+          <Header.Content>
+            Administrators
+            <Header.Subheader>
+              {data.length} users
+            </Header.Subheader>
+          </Header.Content>
+        </Header>
+        <List>
+          {data.map((u, key) => (
+            <List.Item key={key}>
+              <Image src={u.picture ? u.picture : "/png/image.png"} />
+              <List.Content>
+                <List.Header as={Link} to={`/user/${u.userId}`}>
+                  {u.name}
+                </List.Header>
+                <List.Description>
+                  Last seen {u.lastLogin}
+                </List.Description>
+              </List.Content>
+            </List.Item>
+          ))}
+        </List>
+      </Segment>
+    </Grid.Column>
+  :
+  <Loading />;
+
   return (
     <>
       <Helmet>
-        {data.metadata.canonical && (
-          <link rel="canonical" href={data.metadata.canonical} />
-        )}
-        <title>{data.metadata.title}</title>
-        <meta name="description" content={data.metadata.description} />
-        <meta property="og:type" content="website" />
-        <meta property="og:description" content={data.metadata.description} />
-        <meta property="og:url" content={data.metadata.og.url} />
-        <meta property="og:title" content={data.metadata.title} />
-        <meta property="og:image" content={data.metadata.og.image} />
-        <meta property="og:image:width" content={data.metadata.og.imageWidth} />
-        <meta
-          property="og:image:height"
-          content={data.metadata.og.imageHeight}
-        />
-        <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
+        <title>About | {meta.title}</title>
       </Helmet>
       <Grid columns={2} stackable>
         <Grid.Column>
@@ -358,36 +374,7 @@ const About = () => {
             </List>
           </Segment>
         </Grid.Column>
-        {data.administrators && data.administrators.length > 0 && (
-          <Grid.Column>
-            <Segment>
-              <Header as="h3">
-                <Icon name="users" />
-                <Header.Content>
-                  Administrators
-                  <Header.Subheader>
-                    {data.administrators.length} users
-                  </Header.Subheader>
-                </Header.Content>
-              </Header>
-              <List>
-                {data.administrators.map((u, key) => (
-                  <List.Item key={key}>
-                    <Image src={u.picture ? u.picture : "/png/image.png"} />
-                    <List.Content>
-                      <List.Header as={Link} to={`/user/${u.userId}`}>
-                        {u.name}
-                      </List.Header>
-                      <List.Description>
-                        Last seen {u.lastLogin}
-                      </List.Description>
-                    </List.Content>
-                  </List.Item>
-                ))}
-              </List>
-            </Segment>
-          </Grid.Column>
-        )}
+        {administrators}
       </Grid>
     </>
   );

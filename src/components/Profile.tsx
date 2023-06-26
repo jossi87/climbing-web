@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { Loading } from "./common/widgets/widgets";
 import { Header, Image, Menu, Icon } from "semantic-ui-react";
+import { useMeta } from "./common/meta";
 import { getProfile } from "../api";
 import { useAuth0 } from "@auth0/auth0-react";
 import ProfileStatistics from "./common/profile/profile-statistics";
@@ -23,6 +24,7 @@ const Profile = () => {
   const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [activePage, setActivePage] = useState(page ? Page[page] : Page.user);
   const [profile, setProfile] = useState<any>(null);
+  const meta = useMeta();
   useEffect(() => {
     if (!isLoading) {
       if (profile != null) {
@@ -58,8 +60,8 @@ const Profile = () => {
         accessToken={profile.accessToken}
         userId={profile.id}
         canDownload={loggedInProfile}
-        defaultCenter={profile.metadata.defaultCenter}
-        defaultZoom={profile.metadata.defaultZoom}
+        defaultCenter={meta.defaultCenter}
+        defaultZoom={meta.defaultZoom}
       />
     );
   } else if (activePage === Page.todo) {
@@ -67,8 +69,8 @@ const Profile = () => {
       <ProfileTodo
         accessToken={profile.accessToken}
         userId={profile.id}
-        defaultCenter={profile.metadata.defaultCenter}
-        defaultZoom={profile.metadata.defaultZoom}
+        defaultCenter={meta.defaultCenter}
+        defaultZoom={meta.defaultZoom}
       />
     );
   } else if (activePage === Page.media) {
@@ -76,7 +78,7 @@ const Profile = () => {
       <ProfileMedia
         accessToken={profile.accessToken}
         userId={profile.id}
-        gradeSystem={profile.metadata.gradeSystem}
+        gradeSystem={meta.gradeSystem}
         captured={false}
       />
     );
@@ -85,7 +87,7 @@ const Profile = () => {
       <ProfileMedia
         accessToken={profile.accessToken}
         userId={profile.id}
-        gradeSystem={profile.metadata.gradeSystem}
+        gradeSystem={meta.gradeSystem}
         captured={true}
       />
     );
@@ -101,25 +103,7 @@ const Profile = () => {
   return (
     <>
       <Helmet>
-        <title>{profile.metadata.title}</title>
-        <meta name="description" content={profile.metadata.description} />
-        <meta property="og:type" content="website" />
-        <meta
-          property="og:description"
-          content={profile.metadata.description}
-        />
-        <meta property="og:url" content={profile.metadata.og.url} />
-        <meta property="og:title" content={profile.metadata.title} />
-        <meta property="og:image" content={profile.metadata.og.image} />
-        <meta
-          property="og:image:width"
-          content={profile.metadata.og.imageWidth}
-        />
-        <meta
-          property="og:image:height"
-          content={profile.metadata.og.imageHeight}
-        />
-        <meta property="fb:app_id" content={profile.metadata.og.fbAppId} />
+        <title>{profile.firstname} {profile.lastname} | {meta.title}</title>
       </Helmet>
       <Header as="h5" textAlign="center" className="buldreinfo-visible-mobile">
         {profile.picture && <Image circular src={profile.picture} />}

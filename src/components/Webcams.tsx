@@ -3,9 +3,11 @@ import { Helmet } from "react-helmet";
 import Leaflet from "./common/leaflet/leaflet";
 import { Segment, Header, Icon } from "semantic-ui-react";
 import { Loading } from "./common/widgets/widgets";
+import { useMeta } from "./common/meta";
 import { useData } from "../api";
 
 const Webcams = () => {
+  const meta = useMeta();
   const { data } = useData(`/webcams`);
   const { json } = useParams();
 
@@ -13,7 +15,7 @@ const Webcams = () => {
     return <Loading />;
   }
 
-  const markers = data.cameras
+  const markers = data
     .filter((c) => c.lat != 0 && c.lng != 0)
     .map((c) => {
       return {
@@ -27,8 +29,8 @@ const Webcams = () => {
         urlOther: c.urlOther,
       };
     });
-  let defaultCenter = data.metadata.defaultCenter;
-  let defaultZoom = data.metadata.defaultZoom;
+  let defaultCenter = meta.defaultCenter;
+  let defaultZoom = meta.defaultZoom;
   let subHeader;
   if (json) {
     const { lat, lng, label } = JSON.parse(json);
@@ -40,19 +42,7 @@ const Webcams = () => {
   return (
     <>
       <Helmet>
-        <title>{data.metadata.title}</title>
-        <meta name="description" content={data.metadata.description} />
-        <meta property="og:type" content="website" />
-        <meta property="og:description" content={data.metadata.description} />
-        <meta property="og:url" content={data.metadata.og.url} />
-        <meta property="og:title" content={data.metadata.title} />
-        <meta property="og:image" content={data.metadata.og.image} />
-        <meta property="og:image:width" content={data.metadata.og.imageWidth} />
-        <meta
-          property="og:image:height"
-          content={data.metadata.og.imageHeight}
-        />
-        <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
+        <title>Webcams | {meta.title}</title>
       </Helmet>
       <Segment>
         <Header as="h2">

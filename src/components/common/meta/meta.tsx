@@ -20,7 +20,7 @@ type Metadata = {
   grades: Grade[];
   defaultZoom: number;
   defaultCenter: { lat: number; lng: number };
-  gradeSystem: "CLIMBING" | "BOULDER";
+  gradeSystem: "CLIMBING" | "BOULDER" | "ICE";
   isBouldering: boolean;
   types: Type[];
 };

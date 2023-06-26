@@ -12,11 +12,12 @@ import {
 } from "semantic-ui-react";
 import LazyLoad from "react-lazyload";
 import { useLocalStorage } from "../../../utils/use-local-storage";
+import { useMeta } from "../../common/meta";
 import { getImageUrl, useActivity } from "../../../api";
 import { LockSymbol, Stars } from "./../../common/widgets/widgets";
 import Linkify from "react-linkify";
 
-const Activity = ({ metadata, idArea, idSector }) => {
+const Activity = ({ idArea, idSector }) => {
   const [lowerGradeId, setLowerGradeId] = useLocalStorage("lower_grade_id", 0);
   const [lowerGradeText, setLowerGradeText] = useLocalStorage(
     "lower_grade_text",
@@ -39,6 +40,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
     true
   );
 
+  const meta = useMeta();
   const { data: activity, refetch } = useActivity({
     idArea,
     idSector,
@@ -50,8 +52,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
   });
 
   if (
-    metadata &&
-    metadata.grades.filter((g) => {
+    meta.grades.filter((g) => {
       const gradeText =
         g.grade.indexOf("(") > 0
           ? g.grade.substr(g.grade.indexOf("(") + 1).replace(")", "")
@@ -93,24 +94,23 @@ const Activity = ({ metadata, idArea, idSector }) => {
           >
             <Dropdown.Menu>
               <Dropdown.Menu scrolling>
-                {metadata &&
-                  metadata.grades.map((a, i) => (
-                    <Dropdown.Item
-                      key={i}
-                      text={a.grade}
-                      onClick={() => {
-                        const gradeText =
-                          a.grade.indexOf("(") > 0
-                            ? a.grade
-                                .substr(a.grade.indexOf("(") + 1)
-                                .replace(")", "")
-                            : a.grade;
-                        refetch();
-                        setLowerGradeId(a.id);
-                        setLowerGradeText(gradeText);
-                      }}
-                    />
-                  ))}
+                {meta.grades.map((a, i) => (
+                  <Dropdown.Item
+                    key={i}
+                    text={a.grade}
+                    onClick={() => {
+                      const gradeText =
+                        a.grade.indexOf("(") > 0
+                          ? a.grade
+                              .substr(a.grade.indexOf("(") + 1)
+                              .replace(")", "")
+                          : a.grade;
+                      refetch();
+                      setLowerGradeId(a.id);
+                      setLowerGradeText(gradeText);
+                    }}
+                  />
+                ))}
               </Dropdown.Menu>
             </Dropdown.Menu>
           </Dropdown>
@@ -226,7 +226,7 @@ const Activity = ({ metadata, idArea, idSector }) => {
             // FA
             if (a.users) {
               const typeDescription =
-                metadata && metadata.gradeSystem === "BOULDER"
+                meta.gradeSystem === "BOULDER"
                   ? "problem"
                   : "route";
               return (

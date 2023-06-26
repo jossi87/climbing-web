@@ -275,13 +275,6 @@ export function getAreaEdit(
           lat: 0,
           lng: 0,
           newMedia: [],
-          metadata: {
-            title: "New area | " + res.metadata.title,
-            defaultZoom: res.metadata.defaultZoom,
-            defaultCenter: res.metadata.defaultCenter,
-            isAdmin: res.metadata.isAdmin,
-            isSuperAdmin: res.metadata.isSuperAdmin,
-          },
         };
       })
       .catch((error) => {
@@ -305,7 +298,6 @@ export function getAreaEdit(
           lat: res.lat,
           lng: res.lng,
           newMedia: [],
-          metadata: res.metadata,
           sectorOrder: res.sectorOrder,
         };
       })
@@ -333,13 +325,13 @@ export function getGradeDistribution(
     });
 }
 
-export function getMediaSvg(
+export function getMedia(
   accessToken: string | null,
   idMedia: number
 ): Promise<any> {
   return makeAuthenticatedRequest(
     accessToken,
-    `/media/svg?idMedia=${idMedia}`,
+    `/media?idMedia=${idMedia}`,
     null
   )
     .then((data) => data.json())
@@ -420,8 +412,8 @@ export function getProblemEdit(
   if (problemId === 0) {
     return getSector(accessToken, sectorId)
       .then((res) => {
-        let defaultCenter = res.metadata.defaultCenter;
-        let defaultZoom = res.metadata.defaultZoom;
+        let defaultCenter;
+        let defaultZoom;
         if (res.lat && res.lng && parseFloat(res.lat) > 0) {
           defaultCenter = {
             lat: parseFloat(res.lat),
@@ -451,16 +443,6 @@ export function getProblemEdit(
           routeLength: "",
           descent: "",
           newMedia: [],
-          metadata: {
-            title: "New problem | " + res.metadata.title,
-            defaultZoom: defaultZoom,
-            defaultCenter: defaultCenter,
-            grades: res.metadata.grades,
-            types: res.metadata.types,
-            isAdmin: res.metadata.isAdmin,
-            isSuperAdmin: res.metadata.isSuperAdmin,
-            gradeSystem: res.metadata.gradeSystem,
-          },
         };
       })
       .catch((error) => {
@@ -470,14 +452,6 @@ export function getProblemEdit(
   } else {
     return getProblem(accessToken, problemId, false)
       .then((res) => {
-        const m = res.metadata;
-        if (res.sectorLat && res.sectorLng && parseFloat(res.sectorLat) > 0) {
-          m.defaultCenter = {
-            lat: parseFloat(res.sectorLat),
-            lng: parseFloat(res.sectorLng),
-          };
-          m.defaultZoom = 15;
-        }
         return {
           id: res.id,
           sectorId: res.sectorId,
@@ -497,7 +471,6 @@ export function getProblemEdit(
           lngStr: res.lng,
           sections: res.sections,
           faAid: res.faAid,
-          metadata: m,
           newMedia: [],
           trivia: res.trivia,
           startingAltitude: res.startingAltitude,
@@ -682,10 +655,6 @@ export function getSectorEdit(
   if (sectorId === 0) {
     return getArea(accessToken, areaId)
       .then((res) => {
-        const defaultCenter =
-          res.lat && res.lng && parseFloat(res.lat) > 0
-            ? { lat: parseFloat(res.lat), lng: parseFloat(res.lng) }
-            : res.metadata.defaultCenter;
         return {
           areaId: res.id,
           id: -1,
@@ -700,13 +669,6 @@ export function getSectorEdit(
           latStr: "",
           lngStr: "",
           newMedia: [],
-          metadata: {
-            title: "New sector | " + res.metadata.title,
-            defaultZoom: 12,
-            defaultCenter: defaultCenter,
-            isAdmin: res.metadata.isAdmin,
-            isSuperAdmin: res.metadata.isSuperAdmin,
-          },
         };
       })
       .catch((error) => {
@@ -732,7 +694,6 @@ export function getSectorEdit(
           polygonCoords: res.polygonCoords,
           polyline: res.polyline,
           newMedia: [],
-          metadata: res.metadata,
           problemOrder: res.problemOrder,
         };
       })
@@ -764,7 +725,7 @@ export function getSvgEdit(
   const mediaId = parts[1];
   return makeAuthenticatedRequest(
     accessToken,
-    `/problems?id=${problemId}&showHiddenMedia=true`,
+    `/problem?id=${problemId}&showHiddenMedia=true`,
     null
   )
     .then((data) => data.json())
@@ -828,8 +789,7 @@ export function getSvgEdit(
         name: res.name,
         grade: res.grade,
         lockedAdmin: res.lockedAdmin,
-        lockedSuperadmin: res.lockedSuperadmin,
-        metadata: res.metadata,
+        lockedSuperadmin: res.lockedSuperadmin
       };
     })
     .catch((error) => {

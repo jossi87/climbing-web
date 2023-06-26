@@ -10,35 +10,19 @@ import {
   Placeholder,
 } from "semantic-ui-react";
 import { Link } from "react-router-dom";
+import { useMeta } from "./common/meta";
 import { getImageUrl, numberWithCommas, useData } from "../api";
 import Activity from "./common/activity/activity";
 
 const Frontpage = () => {
+  const meta = useMeta();
   const { data: frontpage } = useData(`/frontpage`);
 
   return (
     <>
       {frontpage && (
         <Helmet>
-          <title>{frontpage.metadata.title}</title>
-          <meta name="description" content={frontpage.metadata.description} />
-          <meta property="og:type" content="website" />
-          <meta
-            property="og:description"
-            content={frontpage.metadata.description}
-          />
-          <meta property="og:url" content={frontpage.metadata.og.url} />
-          <meta property="og:title" content={frontpage.metadata.title} />
-          <meta property="og:image" content={frontpage.metadata.og.image} />
-          <meta
-            property="og:image:width"
-            content={frontpage.metadata.og.imageWidth}
-          />
-          <meta
-            property="og:image:height"
-            content={frontpage.metadata.og.imageHeight}
-          />
-          <meta property="fb:app_id" content={frontpage.metadata.og.fbAppId} />
+          <title>{meta.title}</title>
         </Helmet>
       )}
       <Grid>
@@ -52,12 +36,12 @@ const Frontpage = () => {
                     {numberWithCommas(frontpage.numProblems)}
                   </Statistic.Value>
                   <Statistic.Label>
-                    {frontpage.metadata.gradeSystem === "BOULDER"
+                    {meta.gradeSystem === "BOULDER"
                       ? "Problems"
                       : "Routes"}
                   </Statistic.Label>
                 </Statistic>
-                {frontpage.metadata.gradeSystem === "CLIMBING" ? (
+                {meta.gradeSystem === "CLIMBING" ? (
                   <Statistic>
                     <Statistic.Value>
                       <Icon name="image outline" />{" "}
@@ -204,7 +188,6 @@ const Frontpage = () => {
           <Grid.Column mobile={16} tablet={8} computer={12}>
             <Segment>
               <Activity
-                metadata={frontpage ? frontpage.metadata : null}
                 idArea={0}
                 idSector={0}
               />

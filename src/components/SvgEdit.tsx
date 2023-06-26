@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Container, Button, Segment, Dropdown, Input } from "semantic-ui-react";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useMeta } from "./common/meta";
 import { getSvgEdit, getImageUrl, postProblemSvg } from "../api";
 import { parseReadOnlySvgs, parsePath } from "../utils/svg-utils";
 import { Loading, InsufficientPrivileges } from "./common/widgets/widgets";
@@ -31,7 +32,6 @@ const SvgEdit = () => {
   const [draggedCubic, setDraggedCubic] = useState(false);
   const [hasAnchor, setHasAnchor] = useState(true);
   const [id, setId] = useState<any>(null);
-  const [metadata, setMetadata] = useState<any>(null);
   const [addAnchor, setAddAnchor] = useState(false);
   const [addText, setAddText] = useState(false);
   const imageRef = useRef<SVGImageElement>(null);
@@ -41,6 +41,7 @@ const SvgEdit = () => {
   const { outerWidth, outerHeight } = window;
   const minWindowScale = Math.min(outerWidth, outerHeight);
   const black = "#000000";
+  const meta = useMeta();
   useEffect(() => {
     if (problemIdMediaId && isAuthenticated) {
       getAccessTokenSilently().then((accessToken) => {
@@ -67,7 +68,6 @@ const SvgEdit = () => {
           setDraggedCubic(data.draggedCubic);
           setHasAnchor(data.hasAnchor);
           setId(data.id);
-          setMetadata(data.metadata);
         });
       });
     }
@@ -327,13 +327,13 @@ const SvgEdit = () => {
     setHasAnchor(true);
   }
 
-  if (isLoading || (isAuthenticated && !metadata)) {
+  if (isLoading || (isAuthenticated && !mediaId)) {
     return <Loading />;
   } else if (!isAuthenticated) {
     loginWithRedirect({ appState: { returnTo: location.pathname } });
-  } else if (!metadata.isAdmin) {
+  } else if (!meta.isAdmin) {
     return <InsufficientPrivileges />;
-  } else if (!id || !metadata) {
+  } else if (!id || !meta) {
     return <Loading />;
   } else {
     const circles = points.map((p, i, a) => {
@@ -491,7 +491,7 @@ const SvgEdit = () => {
               Remove all texts
             </Button>
           </Button.Group>
-          {metadata.gradeSystem === "CLIMBING" && (
+          {meta.gradeSystem === "CLIMBING" && (
             <>
               {" "}
               <Button.Group size="tiny">

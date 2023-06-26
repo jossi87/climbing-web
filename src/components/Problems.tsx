@@ -9,11 +9,13 @@ import {
   ButtonGroup,
 } from "semantic-ui-react";
 import { Loading, LockSymbol, Stars } from "./common/widgets/widgets";
+import { useMeta } from "./common/meta";
 import { getProblemsXlsx, useAccessToken, useData } from "../api";
 import { saveAs } from "file-saver";
 
 const Problems = () => {
   const accessToken = useAccessToken();
+  const meta = useMeta();
   const { data } = useData(`/problems`);
   const [isSaving, setIsSaving] = useState(false);
   const areaRefs = useRef({});
@@ -21,23 +23,12 @@ const Problems = () => {
   if (!data) {
     return <Loading />;
   }
-  const showType = data.metadata.gradeSystem === "CLIMBING";
+  const isClimbing = meta.gradeSystem === "CLIMBING";
+  const title = isClimbing? "Routes" : "Boulders";
   return (
     <>
       <Helmet>
-        <title>{data.metadata.title}</title>
-        <meta name="description" content={data.metadata.description} />
-        <meta property="og:type" content="website" />
-        <meta property="og:description" content={data.metadata.description} />
-        <meta property="og:url" content={data.metadata.og.url} />
-        <meta property="og:title" content={data.metadata.title} />
-        <meta property="og:image" content={data.metadata.og.image} />
-        <meta property="og:image:width" content={data.metadata.og.imageWidth} />
-        <meta
-          property="og:image:height"
-          content={data.metadata.og.imageHeight}
-        />
-        <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
+        <title>{title} | {meta.title}</title>
       </Helmet>
       <Segment>
         <ButtonGroup floated="right" size="mini">
@@ -68,8 +59,7 @@ const Problems = () => {
         <Header as="h2">
           <Icon name="database" />
           <Header.Content>
-            Table of Contents
-            <Header.Subheader>{data.metadata.description}</Header.Subheader>
+            {title}
           </Header.Content>
         </Header>
         <List celled link horizontal size="small">
@@ -137,7 +127,7 @@ const Problems = () => {
                         problem.numTicks +
                           (problem.numTicks == 1 ? " ascent" : " ascents");
                       let typeAscents;
-                      if (showType) {
+                      if (isClimbing) {
                         let t = problem.t.subType;
                         if (problem.numPitches > 1)
                           t += ", " + problem.numPitches + " pitches";
@@ -146,7 +136,7 @@ const Problems = () => {
                         } else {
                           typeAscents = " (" + t + ") ";
                         }
-                      } else if (!showType) {
+                      } else if (!isClimbing) {
                         if (ascents) {
                           typeAscents = " (" + ascents + ") ";
                         } else {

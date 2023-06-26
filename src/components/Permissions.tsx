@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { Loading, LockSymbol } from "./common/widgets/widgets";
+import { useMeta } from "./common/meta";
 import { getPermissions, postPermissions } from "../api";
 import {
   Header,
@@ -21,6 +22,7 @@ const Permissions = () => {
     getAccessTokenSilently,
     loginWithRedirect,
   } = useAuth0();
+  const meta = useMeta();
   const [data, setData] = useState<any>(null);
   const location = useLocation();
 
@@ -38,43 +40,28 @@ const Permissions = () => {
     return <Loading />;
   } else if (!isAuthenticated) {
     loginWithRedirect({ appState: { returnTo: location.pathname } });
-  } else if (!data.metadata.isSuperAdmin) {
+  } else if (!meta.isSuperAdmin) {
     return <InsufficientPrivileges />;
   } else {
     return (
       <>
         <Helmet>
-          <title>{data.metadata.title}</title>
-          <meta name="description" content={data.metadata.description} />
-          <meta property="og:type" content="website" />
-          <meta property="og:description" content={data.metadata.description} />
-          <meta property="og:url" content={data.metadata.og.url} />
-          <meta property="og:title" content={data.metadata.title} />
-          <meta property="og:image" content={data.metadata.og.image} />
-          <meta
-            property="og:image:width"
-            content={data.metadata.og.imageWidth}
-          />
-          <meta
-            property="og:image:height"
-            content={data.metadata.og.imageHeight}
-          />
-          <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
+          <title>Permissions | {meta.title}</title>
         </Helmet>
         <Segment>
           <Header as="h2">
             <Icon name="users" />
             <Header.Content>
               Permissions
-              <Header.Subheader>{data.users.length} users</Header.Subheader>
+              <Header.Subheader>{data.length} users</Header.Subheader>
             </Header.Content>
           </Header>
         </Segment>
-        {data.users.length == 0 ? (
+        {data.length == 0 ? (
           <Segment>No data</Segment>
         ) : (
           <Card.Group doubling stackable itemsPerRow={4}>
-            {data.users.map((u, key) => {
+            {data.map((u, key) => {
               let color: any = "white";
               if (u.write == 2) {
                 color = "black";

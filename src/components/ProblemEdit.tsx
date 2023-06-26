@@ -18,6 +18,7 @@ import {
 } from "semantic-ui-react";
 import Leaflet from "./common/leaflet/leaflet";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useMeta } from "./common/meta";
 import {
   getProblemEdit,
   convertFromDateToString,
@@ -45,6 +46,7 @@ const ProblemEdit = () => {
   const { sectorIdProblemId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const meta = useMeta();
   useEffect(() => {
     if (sectorIdProblemId && isAuthenticated) {
       getAccessTokenSilently().then((accessToken) => {
@@ -205,8 +207,8 @@ const ProblemEdit = () => {
         data.faDate,
         data.nr,
         data.typeId
-          ? data.metadata.types.find((t) => t.id === data.typeId)
-          : data.metadata.types[0],
+          ? meta.types.find((t) => t.id === data.typeId)
+          : meta.types[0],
         data.lat,
         data.lng,
         data.sections,
@@ -262,7 +264,7 @@ const ProblemEdit = () => {
     return <Loading />;
   } else if (!isAuthenticated) {
     loginWithRedirect({ appState: { returnTo: location.pathname } });
-  } else if (!data.metadata.isAdmin) {
+  } else if (!meta.isAdmin) {
     return <InsufficientPrivileges />;
   } else {
     let defaultCenter;
@@ -271,14 +273,14 @@ const ProblemEdit = () => {
       defaultCenter = { lat: data.lat, lng: data.lng };
       defaultZoom = 15;
     } else {
-      defaultCenter = data.metadata.defaultCenter;
-      defaultZoom = data.metadata.defaultZoom;
+      defaultCenter = meta.defaultCenter;
+      defaultZoom = meta.defaultZoom;
     }
     const lockedOptions = [
       { key: 0, value: 0, text: "Visible for everyone" },
       { key: 1, value: 1, text: "Only visible for administrators" },
     ];
-    if (data.metadata.isSuperAdmin) {
+    if (meta.isSuperAdmin) {
       lockedOptions.push({
         key: 2,
         value: 2,
@@ -306,7 +308,7 @@ const ProblemEdit = () => {
     return (
       <>
         <Helmet>
-          <title>{data.metadata.title}</title>
+          <title>Edit {data.name} | {meta.title}</title>
         </Helmet>
         <Message
           size="tiny"
@@ -318,7 +320,7 @@ const ProblemEdit = () => {
                 Jostein Øygarden
               </a>{" "}
               if you want to move{" "}
-              {data.metadata.gradeSystem === "BOULDER" ? "problem" : "route"} to
+              {meta.gradeSystem === "BOULDER" ? "problem" : "route"} to
               an other sector.
             </>
           }
@@ -371,7 +373,7 @@ const ProblemEdit = () => {
                 selection
                 value={data.originalGrade}
                 onChange={onOriginalGradeChanged}
-                options={data.metadata.grades.map((g, i) => ({
+                options={meta.grades.map((g, i) => ({
                   key: i,
                   value: g.grade,
                   text: g.grade,
@@ -405,7 +407,7 @@ const ProblemEdit = () => {
                   onChange={(date) => onFaDateChanged(date)}
                 />
               </Form.Field>
-              {data.metadata.gradeSystem === "BOULDER" ? (
+              {meta.gradeSystem === "BOULDER" ? (
                 <Form.Field
                   label="Rock (this field is optional, use to group boulders by rock in sector)"
                   control={RockSelector}
@@ -435,7 +437,7 @@ const ProblemEdit = () => {
               value={data.trivia}
               onChange={onTriviaChanged}
             />
-            {data.metadata.gradeSystem === "ICE" && (
+            {meta.gradeSystem === "ICE" && (
               <>
                 <Form.Field
                   label="Starting altitude"
@@ -481,7 +483,7 @@ const ProblemEdit = () => {
             </Form.Field>
           </Segment>
 
-          {data.metadata.gradeSystem === "CLIMBING" && (
+          {meta.gradeSystem === "CLIMBING" && (
             <Segment>
               <Form.Field
                 label="Type"
@@ -489,7 +491,7 @@ const ProblemEdit = () => {
                 selection
                 value={data.typeId}
                 onChange={onTypeIdChanged}
-                options={data.metadata.types.map((t, i) => {
+                options={meta.types.map((t, i) => {
                   const text = t.type + (t.subType ? " - " + t.subType : "");
                   return { key: i, value: t.id, text: text };
                 })}
@@ -564,7 +566,7 @@ const ProblemEdit = () => {
                 <label>Pitches</label>
                 <ProblemSection
                   sections={data.sections}
-                  grades={data.metadata.grades}
+                  grades={meta.grades}
                   onSectionsUpdated={onSectionsUpdated}
                 />
               </Form.Field>
@@ -643,7 +645,7 @@ const ProblemEdit = () => {
               loading={saving}
               onClick={(event) => save(event, false)}
               disabled={
-                !data.name || (data.metadata.types.length > 1 && !data.typeId)
+                !data.name || (meta.types.length > 1 && !data.typeId)
               }
             >
               Save
@@ -657,7 +659,7 @@ const ProblemEdit = () => {
                   onClick={(event) => save(event, true)}
                   disabled={
                     !data.name ||
-                    (data.metadata.types.length > 1 && !data.typeId)
+                    (meta.types.length > 1 && !data.typeId)
                   }
                 >
                   Save, and add new

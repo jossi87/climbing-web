@@ -8,7 +8,7 @@ import { getProfileTodo } from "../../../api";
 type ProfileTodoProps = {
   accessToken: string;
   userId: number;
-  defaultCenter: [number, number];
+  defaultCenter: { lat: number; lng: number };
   defaultZoom: number;
 };
 

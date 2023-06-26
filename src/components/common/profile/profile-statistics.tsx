@@ -89,7 +89,7 @@ type ProfileStatisticsProps = {
   accessToken: string;
   userId: number;
   canDownload: boolean;
-  defaultCenter: [number, number];
+  defaultCenter: { lat: number; lng: number };
   defaultZoom: number;
 };
 

@@ -15,6 +15,7 @@ import {
   Accordion,
 } from "semantic-ui-react";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useMeta } from "./common/meta";
 import { getAreaEdit, postArea } from "../api";
 import { Loading, InsufficientPrivileges } from "./common/widgets/widgets";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
@@ -26,6 +27,7 @@ const AreaEdit = () => {
     getAccessTokenSilently,
     loginWithRedirect,
   } = useAuth0();
+  const meta = useMeta();
   const [data, setData] = useState<any>(null);
   const [showSectorOrder, setShowSectorOrder] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -113,20 +115,20 @@ const AreaEdit = () => {
     return <Loading />;
   } else if (!isAuthenticated) {
     loginWithRedirect({ appState: { returnTo: location.pathname } });
-  } else if (!data.metadata.isAdmin) {
+  } else if (!meta.isAdmin) {
     return <InsufficientPrivileges />;
   } else {
     const defaultCenter =
       data.lat && data.lng && parseFloat(data.lat) > 0
         ? { lat: parseFloat(data.lat), lng: parseFloat(data.lng) }
-        : data.metadata.defaultCenter;
+        : meta.defaultCenter;
     const defaultZoom: number =
-      data.lat && parseFloat(data.lat) > 0 ? 8 : data.metadata.defaultZoom;
+      data.lat && parseFloat(data.lat) > 0 ? 8 : meta.defaultZoom;
     const lockedOptions = [
       { key: 0, value: 0, text: "Visible for everyone" },
       { key: 1, value: 1, text: "Only visible for administrators" },
     ];
-    if (data.metadata.isSuperAdmin) {
+    if (meta.isSuperAdmin) {
       lockedOptions.push({
         key: 2,
         value: 2,
@@ -176,7 +178,7 @@ const AreaEdit = () => {
     return (
       <>
         <Helmet>
-          <title>{data.metadata.title}</title>
+          <title>Edit {data.name} | {meta.title}</title>
         </Helmet>
         <Message
           size="tiny"
