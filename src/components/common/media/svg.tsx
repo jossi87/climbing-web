@@ -174,7 +174,7 @@ const Svg = ({
           />
           <rect
             fill="#000000"
-            stroke-width={r / 6}
+            strokeWidth={r / 6}
             stroke={svg.problemId === optProblemId ? '#FFFFFF' : 'none'}
             x={x - r}
             y={y - r}
