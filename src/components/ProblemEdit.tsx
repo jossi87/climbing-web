@@ -30,8 +30,10 @@ import { Loading, InsufficientPrivileges } from "./common/widgets/widgets";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ProblemEdit = () => {
+  const client = useQueryClient();
   const {
     isLoading,
     isAuthenticated,
@@ -220,7 +222,18 @@ const ProblemEdit = () => {
         data.routeLength,
         data.descent
       )
-        .then((res) => {
+        .then(async (res) => {
+          // TODO: Remove this and use mutations instead.
+          await client.invalidateQueries({
+            predicate: (query) => {
+              const [urlSuffix] = query.queryKey;
+              if (!urlSuffix || !(typeof urlSuffix === "string")) {
+                return false;
+              }
+
+              return urlSuffix.startsWith(`/problem?id=${data.id}`);
+            },
+          });
           if (addNew) {
             navigate(0);
           } else {
@@ -308,7 +321,9 @@ const ProblemEdit = () => {
     return (
       <>
         <Helmet>
-          <title>Edit {data.name} | {meta.title}</title>
+          <title>
+            Edit {data.name} | {meta.title}
+          </title>
         </Helmet>
         <Message
           size="tiny"
@@ -319,8 +334,7 @@ const ProblemEdit = () => {
               <a href="mailto:jostein.oygarden@gmail.com">
                 Jostein Øygarden
               </a>{" "}
-              if you want to move{" "}
-              {meta.isBouldering ? "problem" : "route"} to
+              if you want to move {meta.isBouldering ? "problem" : "route"} to
               an other sector.
             </>
           }
@@ -644,9 +658,7 @@ const ProblemEdit = () => {
               positive
               loading={saving}
               onClick={(event) => save(event, false)}
-              disabled={
-                !data.name || (meta.types.length > 1 && !data.typeId)
-              }
+              disabled={!data.name || (meta.types.length > 1 && !data.typeId)}
             >
               Save
             </Button>
@@ -658,8 +670,7 @@ const ProblemEdit = () => {
                   loading={saving}
                   onClick={(event) => save(event, true)}
                   disabled={
-                    !data.name ||
-                    (meta.types.length > 1 && !data.typeId)
+                    !data.name || (meta.types.length > 1 && !data.typeId)
                   }
                 >
                   Save, and add new

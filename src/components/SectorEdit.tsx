@@ -21,8 +21,10 @@ import { useMeta } from "./common/meta";
 import { getSectorEdit, postSector, getSector, getArea } from "../api";
 import Leaflet from "./common/leaflet/leaflet";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 
 const SectorEdit = () => {
+  const client = useQueryClient();
   const {
     isLoading,
     isAuthenticated,
@@ -102,7 +104,18 @@ const SectorEdit = () => {
         data.newMedia,
         data.problemOrder
       )
-        .then((res) => {
+        .then(async (res) => {
+          // TODO: Remove this and use mutations instead.
+          await client.invalidateQueries({
+            predicate: (query) => {
+              const [urlSuffix] = query.queryKey;
+              if (!urlSuffix || !(typeof urlSuffix === "string")) {
+                return false;
+              }
+
+              return urlSuffix.startsWith(`/sectors?id=${data.id}`);
+            },
+          });
           navigate(res.destination);
         })
         .catch((error) => {
@@ -308,7 +321,9 @@ const SectorEdit = () => {
     return (
       <>
         <Helmet>
-          <title>Edit {data.name} | {meta.title}</title>
+          <title>
+            Edit {data.name} | {meta.title}
+          </title>
         </Helmet>
         <Message
           size="tiny"
