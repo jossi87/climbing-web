@@ -32,6 +32,7 @@ import { getImageUrl, getAreaPdfUrl, useArea, useAccessToken } from "../api";
 import { Remarkable } from "remarkable";
 import { linkify } from "remarkable/linkify";
 import ProblemList from "./common/problem-list/problem-list";
+import { useMeta } from "./common/meta";
 
 const SectorListItem = ({ sector, problem, isClimbing }) => {
   const type = isClimbing
@@ -103,6 +104,7 @@ const Area = () => {
   const accessToken = useAccessToken();
   const { areaId } = useParams();
   const { data, error, refetch } = useArea(parseInt(areaId ?? "0"));
+  const meta = useMeta();
 
   const md = new Remarkable({ breaks: true }).use(linkify);
   // open links in new windows
@@ -116,7 +118,7 @@ const Area = () => {
       );
     };
   })();
-
+  
   if (error) {
     return (
       <Message
@@ -167,7 +169,7 @@ const Area = () => {
       outlines.push({ url: "/sector/" + s.id, label, polygon: polygon });
     }
   }
-  const isBouldering = data.metadata.gradeSystem === "BOULDER";
+  const isBouldering = meta.gradeSystem === "BOULDER";
   const panes: ComponentProps<typeof Tab>["panes"] = [];
   const height = "40vh";
   if (data.media && data.media.length > 0) {
@@ -176,7 +178,7 @@ const Area = () => {
       render: () => (
         <Tab.Pane>
           <Media
-            isAdmin={data.metadata.isAdmin}
+            isAdmin={meta.isAdmin}
             numPitches={0}
             removeMedia={() => refetch()}
             media={data.media}
@@ -191,9 +193,9 @@ const Area = () => {
     const defaultCenter =
       data.lat && data.lat > 0
         ? { lat: data.lat, lng: data.lng }
-        : data.metadata.defaultCenter;
+        : meta.defaultCenter;
     const defaultZoom =
-      data.lat && data.lat > 0 ? 14 : data.metadata.defaultZoom;
+      data.lat && data.lat > 0 ? 14 : meta.defaultZoom;
     panes.push({
       menuItem: { key: "map", icon: "map" },
       render: () => (
@@ -244,7 +246,7 @@ const Area = () => {
       menuItem: { key: "activity", icon: "time" },
       render: () => (
         <Tab.Pane>
-          <Activity metadata={data.metadata} idArea={data.id} idSector={0} />
+          <Activity metadata={meta} idArea={data.id} idSector={0} />
         </Tab.Pane>
       ),
     });
@@ -334,7 +336,7 @@ const Area = () => {
                       key={p.id}
                       sector={s}
                       problem={p}
-                      isClimbing={data.metadata.gradeSystem === "CLIMBING"}
+                      isClimbing={meta.gradeSystem === "CLIMBING"}
                     />
                   ),
                   name: p.name,
@@ -361,32 +363,11 @@ const Area = () => {
   return (
     <>
       <Helmet>
-        {data.metadata.canonical && (
-          <link rel="canonical" href={data.metadata.canonical} />
-        )}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(data.metadata.jsonLd),
-          }}
-        />
-        <title>{data.metadata.title}</title>
-        <meta name="description" content={data.metadata.description} />
-        <meta property="og:type" content="website" />
-        <meta property="og:description" content={data.metadata.description} />
-        <meta property="og:url" content={data.metadata.og.url} />
-        <meta property="og:title" content={data.metadata.title} />
-        <meta property="og:image" content={data.metadata.og.image} />
-        <meta property="og:image:width" content={data.metadata.og.imageWidth} />
-        <meta
-          property="og:image:height"
-          content={data.metadata.og.imageHeight}
-        />
-        <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
+        <title>{data.name} | {meta.title}</title>
       </Helmet>
       <div style={{ marginBottom: "5px" }}>
         <div style={{ float: "right" }}>
-          {data.metadata.isAdmin && (
+          {meta.isAdmin && (
             <Button.Group size="mini" compact>
               <Button
                 animated="fade"
@@ -480,7 +461,7 @@ const Area = () => {
               <Table.Cell>
                 <Feed.Extra>
                   <Media
-                    isAdmin={data.metadata.isAdmin}
+                    isAdmin={meta.isAdmin}
                     numPitches={0}
                     removeMedia={() => window.location.reload()}
                     media={data.triviaMedia}

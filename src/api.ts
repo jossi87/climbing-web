@@ -143,7 +143,7 @@ export function getProblemPdfUrl(
   accessToken: string | null,
   id: number
 ): string {
-  return getUrl(`/problems/pdf?accessToken=${accessToken}&id=${id}`);
+  return getUrl(`/problem/pdf?accessToken=${accessToken}&id=${id}`);
 }
 
 export function getProblemsXlsx(accessToken: string | null): Promise<any> {
@@ -232,7 +232,7 @@ export function useArea(id: number) {
       if (data.redirectUrl && data.redirectUrl != window.location.href) {
         window.location.href = data.redirectUrl;
       }
-      return data;
+      return data[0];
     },
   });
 }
@@ -391,7 +391,7 @@ export function getProblem(
 ): Promise<any> {
   return makeAuthenticatedRequest(
     accessToken,
-    `/problems?id=${id}&showHiddenMedia=${showHiddenMedia}`,
+    `/problem?id=${id}&showHiddenMedia=${showHiddenMedia}`,
     null
   )
     .then((response) => {

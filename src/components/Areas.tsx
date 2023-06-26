@@ -15,9 +15,11 @@ import { Loading, LockSymbol } from "./common/widgets/widgets";
 import { useData } from "../api";
 import { Remarkable } from "remarkable";
 import { linkify } from "remarkable/linkify";
+import { useMeta } from "./common/meta";
 
 const Areas = () => {
   const { data } = useData(`/areas`);
+  const meta = useMeta();
   const [flyToId, setFlyToId] = useState<any>(null);
   const [showForDevelopers, setShowForDevelopers] = useState(false);
   const leafletRef = useRef<HTMLDivElement | null>(null);
@@ -39,8 +41,8 @@ const Areas = () => {
     return <Loading />;
   }
   const typeDescription =
-    data.metadata.gradeSystem === "BOULDER" ? "problems" : "routes";
-  const markers = data.areas
+    meta.gradeSystem === "BOULDER" ? "problems" : "routes";
+  const markers = data
     .filter(
       (a) => a.forDevelopers === showForDevelopers && a.lat != 0 && a.lng != 0
     )
@@ -103,8 +105,8 @@ const Areas = () => {
         autoZoom={true}
         height="75vh"
         markers={markers}
-        defaultCenter={data.metadata.defaultCenter}
-        defaultZoom={data.metadata.defaultZoom}
+        defaultCenter={meta.defaultCenter}
+        defaultZoom={meta.defaultZoom}
         polylines={null}
         outlines={null}
         onMouseClick={null}
@@ -119,19 +121,7 @@ const Areas = () => {
   return (
     <>
       <Helmet>
-        <title>{data.metadata.title}</title>
-        <meta name="description" content={data.metadata.description} />
-        <meta property="og:type" content="website" />
-        <meta property="og:description" content={data.metadata.description} />
-        <meta property="og:url" content={data.metadata.og.url} />
-        <meta property="og:title" content={data.metadata.title} />
-        <meta property="og:image" content={data.metadata.og.image} />
-        <meta property="og:image:width" content={data.metadata.og.imageWidth} />
-        <meta
-          property="og:image:height"
-          content={data.metadata.og.imageHeight}
-        />
-        <meta property="fb:app_id" content={data.metadata.og.fbAppId} />
+        <title>Areas | {meta.title}</title>
       </Helmet>
       <Segment>
         <ButtonGroup floated="right" size="mini">
@@ -147,7 +137,7 @@ const Areas = () => {
           >
             Areas for developers
           </Button>
-          {data.metadata.isAdmin && (
+          {meta.isAdmin && (
             <Button animated="fade" as={Link} to={`/area/edit/-1`}>
               <Button.Content hidden>Add</Button.Content>
               <Button.Content visible>
@@ -160,11 +150,11 @@ const Areas = () => {
           <Icon name="list" />
           <Header.Content>
             Areas
-            <Header.Subheader>{data.metadata.description}</Header.Subheader>
+            <Header.Subheader>{data.length} areas</Header.Subheader>
           </Header.Content>
         </Header>
         <List celled link horizontal size="small">
-          {data.areas
+          {data
             .filter((a) => a.forDevelopers === showForDevelopers)
             .map((area, i) => (
               <React.Fragment key={i}>
@@ -191,7 +181,7 @@ const Areas = () => {
         </List>
         {map}
         <List divided relaxed>
-          {data.areas
+          {data
             .filter((a) => a.forDevelopers === showForDevelopers)
             .map((area, i) => (
               <List.Item key={i}>
