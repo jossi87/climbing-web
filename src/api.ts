@@ -374,7 +374,7 @@ export function useProblem({
   id: number;
   showHiddenMedia: boolean;
 }) {
-  return useData(`/problems?id=${id}&showHiddenMedia=${showHiddenMedia}`, {
+  return useData(`/problem?id=${id}&showHiddenMedia=${showHiddenMedia}`, {
     select: (data: any) => {
       if (data.redirectUrl && data.redirectUrl != window.location.href) {
         window.location.href = data.redirectUrl;
