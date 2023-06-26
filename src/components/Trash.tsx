@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet";
 import { Loading } from "./common/widgets/widgets";
 import { useMeta } from "./common/meta";
-import { getImageUrl, useData, putTrash } from "../api";
+import { getImageUrl, useData, putTrash, useAccessToken } from "../api";
 import { Segment, Icon, Header, List, Button, Image } from "semantic-ui-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -9,6 +9,7 @@ import { InsufficientPrivileges } from "./common/widgets/widgets";
 
 const Trash = () => {
   const { isLoading, isAuthenticated, loginWithRedirect } = useAuth0();
+  const accessToken = useAccessToken();
   const meta = useMeta();
   const { data } = useData(`/trash`);
   const location = useLocation();
@@ -53,7 +54,7 @@ const Trash = () => {
                             confirm("Are you sure you want to restore item?")
                           ) {
                             putTrash(
-                              data.accessToken,
+                              accessToken,
                               t.idArea,
                               t.idSector,
                               t.idProblem,

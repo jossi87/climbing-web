@@ -8,6 +8,7 @@ const ChartGradeDistribution = ({ accessToken, idArea, idSector, data }) => {
 
   useEffect(() => {
     if (idArea > 0 || idSector > 0) {
+      console.log(accessToken)
       getGradeDistribution(accessToken, idArea, idSector).then((res) => {
         setGradeDistribution(res);
       });
