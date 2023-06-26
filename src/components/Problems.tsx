@@ -63,7 +63,7 @@ const Problems = () => {
           </Header.Content>
         </Header>
         <List celled link horizontal size="small">
-          {data.areas.map((area, i) => (
+          {data.map((area, i) => (
             <React.Fragment key={i}>
               <List.Item
                 key={i}
@@ -82,7 +82,7 @@ const Problems = () => {
           ))}
         </List>
         <List celled>
-          {data.areas.map((area, i) => (
+          {data.map((area, i) => (
             <List.Item key={i}>
               <List.Header>
                 <a

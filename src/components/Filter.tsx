@@ -153,7 +153,6 @@ const Filter = () => {
     setResult(result);
   }
 
-  const isBouldering = meta.gradeSystem === "BOULDER";
   const gradeOptions = meta.grades.map((g) => ({
     key: g.id,
     value: g.id,
@@ -208,7 +207,7 @@ const Filter = () => {
               />
             </Form.Field>
           )}
-          {!isBouldering && (
+          {!meta.isBouldering && (
             <Form.Field>
               <Dropdown
                 placeholder="Select type(s)"
@@ -271,7 +270,7 @@ const Filter = () => {
               grades.length == 0 ||
               (disciplineOptions.length > 1 &&
                 (!disciplines || disciplines.length == 0)) ||
-              (!isBouldering && routeTypes?.length === 0)
+              (!meta.isBouldering && routeTypes?.length === 0)
             }
             loading={refreshing}
             onClick={() => {
@@ -311,7 +310,7 @@ const Filter = () => {
               }
             />
             <Header as="h3">
-              {res.length} {isBouldering ? "Problems" : "Routes"}
+              {res.length} {meta.isBouldering ? "Problems" : "Routes"}
             </Header>
           </div>
           <Leaflet
