@@ -56,8 +56,7 @@ export function useData<T = any>(
 ) {
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   return useQuery<any>({
-    queryKey: [urlSuffix, isAuthenticated],
-    queryHash: `auth=${isAuthenticated}/${urlSuffix}`,
+    queryKey: [urlSuffix, { isAuthenticated }],
     queryFn: async () => {
       const accessToken = isAuthenticated
         ? await getAccessTokenSilently()
@@ -789,7 +788,7 @@ export function getSvgEdit(
         name: res.name,
         grade: res.grade,
         lockedAdmin: res.lockedAdmin,
-        lockedSuperadmin: res.lockedSuperadmin
+        lockedSuperadmin: res.lockedSuperadmin,
       };
     })
     .catch((error) => {

@@ -5,6 +5,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import App from "./App";
 import "./buldreinfo.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   const userAgent = navigator.userAgent;
@@ -90,6 +91,7 @@ const Index = () => (
         </Auth0ProviderWithNavigate>
       </ErrorBoundary>
     </BrowserRouter>
+    {process.env.REACT_APP_ENV === "development" && <ReactQueryDevtools />}
   </QueryClientProvider>
 );
 

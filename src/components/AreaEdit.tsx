@@ -19,8 +19,10 @@ import { useMeta } from "./common/meta";
 import { getAreaEdit, postArea } from "../api";
 import { Loading, InsufficientPrivileges } from "./common/widgets/widgets";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 
 const AreaEdit = () => {
+  const client = useQueryClient();
   const {
     isLoading,
     isAuthenticated,
@@ -94,8 +96,19 @@ const AreaEdit = () => {
         data.newMedia,
         data.sectorOrder
       )
-        .then((res) => {
-          navigate(res.destination);
+        .then(async (res) => {
+          // TODO: Remove this and use mutations instead.
+          await client.invalidateQueries({
+            predicate: (query) => {
+              const [urlSuffix] = query.queryKey;
+              if (!urlSuffix || !(typeof urlSuffix === "string")) {
+                return false;
+              }
+
+              return urlSuffix.startsWith(`/areas?id=${areaId}`);
+            },
+          });
+          return navigate(res.destination);
         })
         .catch((error) => {
           console.warn(error);
@@ -178,7 +191,9 @@ const AreaEdit = () => {
     return (
       <>
         <Helmet>
-          <title>Edit {data.name} | {meta.title}</title>
+          <title>
+            Edit {data.name} | {meta.title}
+          </title>
         </Helmet>
         <Message
           size="tiny"
