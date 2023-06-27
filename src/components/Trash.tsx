@@ -6,8 +6,10 @@ import { Segment, Icon, Header, List, Button, Image } from "semantic-ui-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import { InsufficientPrivileges } from "./common/widgets/widgets";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Trash = () => {
+  const client = useQueryClient();
   const { isLoading, isAuthenticated, loginWithRedirect } = useAuth0();
   const accessToken = useAccessToken();
   const meta = useMeta();
@@ -59,21 +61,35 @@ const Trash = () => {
                               t.idSector,
                               t.idProblem,
                               t.idMedia
-                            ).then(() => {
-                              let url;
-                              if (t.idArea > 0) {
-                                url = "/area/" + t.idArea;
-                              } else if (t.idSector > 0) {
-                                url = "/sector/" + t.idSector;
-                              } else if (t.idProblem > 0) {
-                                url = "/problem/" + t.idProblem;
-                              }
-                              if (t.idMedia > 0) {
-                                navigate(url + "?idMedia=" + t.idMedia);
-                              } else {
-                                navigate(url);
-                              }
-                            });
+                            )
+                              .then(async (res) => {
+                                // TODO: Remove this and use mutations instead.
+                                await client.invalidateQueries({
+                                  predicate: (query) => {
+                                    const [urlSuffix] = query.queryKey;
+                                    if (!urlSuffix || !(typeof urlSuffix === "string")) {
+                                      return false;
+                                    }
+                                    return true;
+                                  },
+                                });
+                                let url;
+                                if (t.idArea > 0) {
+                                  url = "/area/" + t.idArea;
+                                } else if (t.idSector > 0) {
+                                  url = "/sector/" + t.idSector;
+                                } else if (t.idProblem > 0) {
+                                  url = "/problem/" + t.idProblem;
+                                }
+                                if (t.idMedia > 0) {
+                                  navigate(url + "?idMedia=" + t.idMedia);
+                                } else {
+                                  navigate(url);
+                                }
+                              })
+                              .catch((error) => {
+                                console.warn(error);
+                              });
                           }
                         }}
                       >

@@ -594,7 +594,7 @@ const Problem = () => {
                 >
                   <Button.Content hidden>Image</Button.Content>
                   <Button.Content visible>
-                    <Icon name="edit" />
+                    <Icon name="plus" />
                   </Button.Content>
                 </Button>
               )}

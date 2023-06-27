@@ -5,8 +5,10 @@ import { getProblem, postProblemMedia } from "../api";
 import { Loading } from "./common/widgets/widgets";
 import { Segment, Button } from "semantic-ui-react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ProblemEditMedia = () => {
+  const client = useQueryClient();
   const {
     isLoading,
     isAuthenticated,
@@ -36,8 +38,19 @@ const ProblemEditMedia = () => {
     setSaving(true);
     getAccessTokenSilently().then((accessToken) => {
       postProblemMedia(accessToken, id, media)
-        .then((res) => {
-          navigate("/problem/" + res.id);
+        .then(async (res) => {
+          // TODO: Remove this and use mutations instead.
+          await client.invalidateQueries({
+            predicate: (query) => {
+              const [urlSuffix] = query.queryKey;
+              if (!urlSuffix || !(typeof urlSuffix === "string")) {
+                return false;
+              }
+
+              return urlSuffix.startsWith(`/problem?id=${res.id}`);
+            },
+          });
+          navigate(`/problem/${res.id}`);
         })
         .catch((error) => {
           console.warn(error);
@@ -51,23 +64,25 @@ const ProblemEditMedia = () => {
     loginWithRedirect({ appState: { returnTo: location.pathname } });
   } else {
     return (
-      <Segment>
-        <h3>Upload image(s) or embed video(s)</h3>
-        <form onSubmit={save}>
-          <ImageUpload
-            onMediaChanged={(newMedia) => setMedia(newMedia)}
-            isMultiPitch={isMultiPitch}
-            includeVideoEmbedder={true}
-          />
-          <Button.Group>
-            <Button onClick={() => navigate(`/problem/${id}`)}>Cancel</Button>
-            <Button.Or />
-            <Button type="submit" positive loading={saving}>
-              Save
-            </Button>
-          </Button.Group>
-        </form>
-      </Segment>
+      <>
+        <Segment>
+          <h3>Upload image(s) or embed video(s)</h3>
+          <form onSubmit={save}>
+            <ImageUpload
+              onMediaChanged={(newMedia) => setMedia(newMedia)}
+              isMultiPitch={isMultiPitch}
+              includeVideoEmbedder={true}
+            />
+          </form>
+        </Segment>
+        <Button.Group>
+          <Button onClick={() => navigate(`/problem/${id}`)}>Cancel</Button>
+          <Button.Or />
+          <Button type="submit" positive loading={saving}>
+            Save
+          </Button>
+        </Button.Group>
+      </>
     );
   }
 };

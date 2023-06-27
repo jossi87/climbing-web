@@ -6,8 +6,10 @@ import { getSvgEdit, getImageUrl, postProblemSvg } from "../api";
 import { parseReadOnlySvgs, parsePath } from "../utils/svg-utils";
 import { Loading, InsufficientPrivileges } from "./common/widgets/widgets";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 
 const SvgEdit = () => {
+  const client = useQueryClient();
   const {
     isLoading,
     isAuthenticated,
@@ -113,8 +115,19 @@ const SvgEdit = () => {
         JSON.stringify(anchors),
         JSON.stringify(texts)
       )
-        .then(() => {
-          navigate("/problem/" + id);
+        .then(async (res) => {
+          // TODO: Remove this and use mutations instead.
+          await client.invalidateQueries({
+            predicate: (query) => {
+              const [urlSuffix] = query.queryKey;
+              if (!urlSuffix || !(typeof urlSuffix === "string")) {
+                return false;
+              }
+
+              return urlSuffix.startsWith(`/problem?id=${id}`);
+            },
+          });
+          navigate(`/problem/${id}`);
         })
         .catch((error) => {
           console.warn(error);
