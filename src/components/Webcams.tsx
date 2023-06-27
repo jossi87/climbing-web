@@ -37,7 +37,7 @@ const Webcams = () => {
     defaultZoom = 10;
     markers.push({ lat, lng, label });
   }
-  const description = markers.length + " cameras.";
+  const description = markers.length + " cameras";
   return (
     <>
       <Helmet>
