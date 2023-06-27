@@ -56,6 +56,7 @@ const About = () => {
     <>
       <Helmet>
         <title>About | {meta.title}</title>
+        <meta name="description" content="History, information and administrators."></meta>
       </Helmet>
       <Grid columns={2} stackable>
         <Grid.Column>

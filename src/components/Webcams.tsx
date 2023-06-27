@@ -31,25 +31,27 @@ const Webcams = () => {
     });
   let defaultCenter = meta.defaultCenter;
   let defaultZoom = meta.defaultZoom;
-  let subHeader;
   if (json) {
     const { lat, lng, label } = JSON.parse(json);
-    subHeader = label;
     defaultCenter = { lat, lng };
     defaultZoom = 10;
     markers.push({ lat, lng, label });
   }
+  const description = markers.length + " cameras.";
   return (
     <>
       <Helmet>
         <title>Webcams | {meta.title}</title>
+        <meta name="description" content={description}></meta>
       </Helmet>
       <Segment>
         <Header as="h2">
           <Icon name="camera" />
           <Header.Content>
             Webcams
-            {subHeader && <Header.Subheader>{subHeader}</Header.Subheader>}
+            <Header.Subheader>
+              {description}
+            </Header.Subheader>
           </Header.Content>
         </Header>
         <Leaflet
