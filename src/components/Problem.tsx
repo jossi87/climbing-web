@@ -855,7 +855,7 @@ const Problem = () => {
               </Table.Cell>
             </Table.Row>
           )}
-          {lat && lng && (
+          {lat>0 && lng>0 && (
             <Table.Row>
               <Table.Cell>Weather:</Table.Cell>
               <Table.Cell>
