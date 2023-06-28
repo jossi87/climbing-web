@@ -28,7 +28,6 @@ const Svg = ({
       }
       return b.nr-a.nr;
     });
-    console.log(topoLines)
     return topoLines.map((svg, key) => {
       const path: any = parseSVG(svg.path);
       makeAbsolute(path); // Note: mutates the commands in place!
