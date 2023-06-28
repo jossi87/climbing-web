@@ -32,11 +32,12 @@ const Problems = () => {
       numProblems += s.problems.length;
     })
   });
+  const title = meta.isBouldering? "Routes" : "Problems";
   const description = `${numAreas} areas, ${numSectors} sectors, ${numProblems} ${meta.isClimbing? "routes" : "boulders"}`;
   return (
     <>
       <Helmet>
-        <title>Table of Contents | {meta.title}</title>
+        <title>{title} | {meta.title}</title>
         <meta name="description" content={description}></meta>
       </Helmet>
       <Segment>
@@ -68,7 +69,7 @@ const Problems = () => {
         <Header as="h2">
           <Icon name="database" />
           <Header.Content>
-            Table of Contents
+            {title}
             <Header.Subheader>
              {description}
             </Header.Subheader>
