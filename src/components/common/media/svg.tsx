@@ -19,7 +19,17 @@ const Svg = ({
   const scale = Math.max(m.width, m.height, minWindowScale);
 
   function generateShapes(svgs, w, h) {
-    return svgs.map((svg, key) => {
+    // Order of topoLines matter when drawing overlapping routes with different opacity
+    let topoLines = svgs.sort((a, b) => {
+      if (optProblemId > 0 && a.problemId === optProblemId) {
+        return 1;
+      } else if (optProblemId > 0 && b.problemId === optProblemId) {
+        return -1;
+      }
+      return b.nr-a.nr;
+    });
+    console.log(topoLines)
+    return topoLines.map((svg, key) => {
       const path: any = parseSVG(svg.path);
       makeAbsolute(path); // Note: mutates the commands in place!
 
