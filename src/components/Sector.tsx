@@ -320,7 +320,7 @@ const Sector = () => {
   return (
     <>
       <Helmet>
-        <title>{data.name} | {meta.title}</title>
+        <title>{data.name} ({data.areaName}) | {meta.title}</title>
         <meta name="description" content={data.comment}></meta>
       </Helmet>
       <div style={{ marginBottom: "5px" }}>
