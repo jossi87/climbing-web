@@ -9,44 +9,56 @@ import {
 } from "semantic-ui-react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useMeta } from "./common/meta";
-import { getMedia, getImageUrl, postMediaSvg } from "../api";
+import { getImageUrl, useMediaSvg } from "../api";
 import { Rappel, parseReadOnlySvgs, parsePath } from "../utils/svg-utils";
-import { Loading, InsufficientPrivileges } from "./common/widgets/widgets";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import {
+  Loading,
+  InsufficientPrivileges,
+  NotLoggedIn,
+} from "./common/widgets/widgets";
+import { useNavigate, useParams } from "react-router-dom";
 
-const SvgEdit = () => {
-  const TYPE_PATH = "PATH";
-  const TYPE_RAPPEL_BOLTED = "RAPPEL_BOLTED";
-  const TYPE_RAPPEL_NOT_BOLTED = "RAPPEL_NOT_BOLTED";
-  const {
-    isLoading,
-    isAuthenticated,
-    getAccessTokenSilently,
-    loginWithRedirect,
-  } = useAuth0();
+const TYPE_PATH = "PATH";
+const TYPE_RAPPEL_BOLTED = "RAPPEL_BOLTED";
+const TYPE_RAPPEL_NOT_BOLTED = "RAPPEL_NOT_BOLTED";
+
+const MediaSvgEdit = () => {
+  const { isAuthenticated } = useAuth0();
   const meta = useMeta();
-  const [data, setData] = useState<any>(null);
+  const navigate = useNavigate();
+  const { mediaId } = useParams();
+  const { outerWidth, outerHeight } = window;
+  const minWindowScale = Math.min(outerWidth, outerHeight);
+  const {
+    media: data,
+    status,
+    isLoading,
+    save: newSave,
+  } = useMediaSvg(+mediaId);
+
+  const [modifiedData, setData] = useState<any>(null);
+
+  useEffect(() => {
+    switch (status) {
+      case "success": {
+        setData(data);
+        break;
+      }
+      case "loading": {
+        setData(undefined);
+        break;
+      }
+    }
+  }, [status]);
+
   const [forceUpdate, setForceUpdate] = useState(0);
   const [activeElementIndex, setActiveElementIndex] = useState(-1);
-  const [shift, setShift] = useState(false);
+  const shift = useRef<boolean>(false);
   const [activePoint, setActivePoint] = useState<any>(null);
   const [draggedPoint, setDraggedPoint] = useState<any>(null);
   const [draggedCubic, setDraggedCubic] = useState(false);
   const imageRef = useRef<SVGImageElement | null>(null);
-  const { mediaId } = useParams();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { outerWidth, outerHeight } = window;
-  const minWindowScale = Math.min(outerWidth, outerHeight);
-  useEffect(() => {
-    if (mediaId && isAuthenticated) {
-      getAccessTokenSilently().then((accessToken) => {
-        getMedia(accessToken, parseInt(mediaId)).then((data) => {
-          setData({ ...data, accessToken });
-        });
-      });
-    }
-  }, [isAuthenticated, mediaId]);
+
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
@@ -57,22 +69,20 @@ const SvgEdit = () => {
   }, []);
 
   function handleKeyDown(e) {
-    if (e.shiftKey) setShift(true);
+    if (e.shiftKey) {
+      shift.current = true;
+    }
   }
 
   function handleKeyUp(e) {
-    if (!e.shiftKey) setShift(false);
+    if (!e.shiftKey) {
+      shift.current = false;
+    }
   }
 
   function save(event) {
     event.preventDefault();
-    postMediaSvg(data.accessToken, data)
-      .then(() => {
-        navigate(-1);
-      })
-      .catch((error) => {
-        console.warn(error);
-      });
+    newSave(modifiedData).then(() => navigate(-1));
   }
 
   function cancelDragging() {
@@ -246,314 +256,316 @@ const SvgEdit = () => {
     data.mediaSvgs = [];
     setData(data);
     setActiveElementIndex(-1);
-    setShift(false);
+    shift.current = false;
     setActivePoint(0);
     setDraggedPoint(false);
     setDraggedCubic(false);
     setForceUpdate(forceUpdate + 1);
   }
 
-  if (isLoading || (isAuthenticated && !data)) {
+  if (!data || isLoading) {
     return <Loading />;
-  } else if (!isAuthenticated) {
-    loginWithRedirect({ appState: { returnTo: location.pathname } });
-  } else if (!meta.isAdmin) {
+  }
+
+  if (!isAuthenticated) {
+    return <NotLoggedIn />;
+  }
+
+  if (!meta.isAdmin) {
     return <InsufficientPrivileges />;
-  } else {
-    const circles =
-      activeElementIndex >= 0 &&
-      data.mediaSvgs[activeElementIndex] &&
-      data.mediaSvgs[activeElementIndex].t === "PATH" &&
-      data.mediaSvgs[activeElementIndex].points.map((p, i, a) => {
-        const anchors: JSX.Element[] = [];
-        if (p.c) {
-          anchors.push(
-            <g key={anchors.length} className="buldreinfo-svg-edit-opacity">
-              <line
-                className={"buldreinfo-svg-pointer"}
-                style={{ fill: "none", stroke: "#E2011A" }}
-                x1={a[i - 1].x}
-                y1={a[i - 1].y}
-                x2={p.c[0].x}
-                y2={p.c[0].y}
-                strokeWidth={0.0026 * data.width}
-                strokeDasharray={0.003 * data.width}
-              />
-              <line
-                className={"buldreinfo-svg-pointer"}
-                style={{ fill: "none", stroke: "#E2011A" }}
-                x1={p.x}
-                y1={p.y}
-                x2={p.c[1].x}
-                y2={p.c[1].y}
-                strokeWidth={0.0026 * data.width}
-                strokeDasharray={0.003 * data.width}
-              />
-              <circle
-                className={"buldreinfo-svg-pointer"}
-                fill="#E2011A"
-                cx={p.c[0].x}
-                cy={p.c[0].y}
-                r={0.003 * data.width}
-                onMouseDown={() => setCurrDraggedCubic(i, 0)}
-              />
-              <circle
-                className={"buldreinfo-svg-pointer"}
-                fill="#E2011A"
-                cx={p.c[1].x}
-                cy={p.c[1].y}
-                r={0.003 * data.width}
-                onMouseDown={() => setCurrDraggedCubic(i, 1)}
-              />
-            </g>
-          );
-        }
-        return (
-          <g key={i}>
-            {anchors}
+  }
+
+  const circles =
+    activeElementIndex >= 0 &&
+    data.mediaSvgs[activeElementIndex] &&
+    data.mediaSvgs[activeElementIndex].t === "PATH" &&
+    data.mediaSvgs[activeElementIndex].points.map((p, i, a) => {
+      const anchors: JSX.Element[] = [];
+      if (p.c) {
+        anchors.push(
+          <g key={anchors.length} className="buldreinfo-svg-edit-opacity">
+            <line
+              className={"buldreinfo-svg-pointer"}
+              style={{ fill: "none", stroke: "#E2011A" }}
+              x1={a[i - 1].x}
+              y1={a[i - 1].y}
+              x2={p.c[0].x}
+              y2={p.c[0].y}
+              strokeWidth={0.0026 * data.width}
+              strokeDasharray={0.003 * data.width}
+            />
+            <line
+              className={"buldreinfo-svg-pointer"}
+              style={{ fill: "none", stroke: "#E2011A" }}
+              x1={p.x}
+              y1={p.y}
+              x2={p.c[1].x}
+              y2={p.c[1].y}
+              strokeWidth={0.0026 * data.width}
+              strokeDasharray={0.003 * data.width}
+            />
             <circle
               className={"buldreinfo-svg-pointer"}
-              fill="#FF0000"
-              cx={p.x}
-              cy={p.y}
+              fill="#E2011A"
+              cx={p.c[0].x}
+              cy={p.c[0].y}
               r={0.003 * data.width}
-              onMouseDown={() => setCurrDraggedPoint(i)}
+              onMouseDown={() => setCurrDraggedCubic(i, 0)}
+            />
+            <circle
+              className={"buldreinfo-svg-pointer"}
+              fill="#E2011A"
+              cx={p.c[1].x}
+              cy={p.c[1].y}
+              r={0.003 * data.width}
+              onMouseDown={() => setCurrDraggedCubic(i, 1)}
             />
           </g>
         );
-      });
+      }
+      return (
+        <g key={i}>
+          {anchors}
+          <circle
+            className={"buldreinfo-svg-pointer"}
+            fill="#FF0000"
+            cx={p.x}
+            cy={p.y}
+            r={0.003 * data.width}
+            onMouseDown={() => setCurrDraggedPoint(i)}
+          />
+        </g>
+      );
+    });
 
-    let activeRappel: JSX.Element | null = null;
-    if (
-      activeElementIndex >= 0 &&
-      data.mediaSvgs[activeElementIndex] &&
-      (data.mediaSvgs[activeElementIndex].t === TYPE_RAPPEL_BOLTED ||
-        data.mediaSvgs[activeElementIndex].t === TYPE_RAPPEL_NOT_BOLTED)
-    ) {
-      const x = data.mediaSvgs[activeElementIndex].rappelX;
-      const y = data.mediaSvgs[activeElementIndex].rappelY;
-      const scale = Math.max(data.width, data.height, minWindowScale);
-      activeRappel = Rappel({
-        x,
-        y,
-        scale,
-        bolted: data.mediaSvgs[activeElementIndex].t === TYPE_RAPPEL_BOLTED,
-        thumb: false,
-        backgroundColor: "white",
-        color: "red",
-        key: "ACTIVE_RAPPEL",
-      });
-    }
+  let activeRappel: JSX.Element | null = null;
+  if (
+    activeElementIndex >= 0 &&
+    data.mediaSvgs[activeElementIndex] &&
+    (data.mediaSvgs[activeElementIndex].t === TYPE_RAPPEL_BOLTED ||
+      data.mediaSvgs[activeElementIndex].t === TYPE_RAPPEL_NOT_BOLTED)
+  ) {
+    const x = data.mediaSvgs[activeElementIndex].rappelX;
+    const y = data.mediaSvgs[activeElementIndex].rappelY;
+    const scale = Math.max(data.width, data.height, minWindowScale);
+    activeRappel = Rappel({
+      x,
+      y,
+      scale,
+      bolted: data.mediaSvgs[activeElementIndex].t === TYPE_RAPPEL_BOLTED,
+      thumb: false,
+      backgroundColor: "white",
+      color: "red",
+      key: "ACTIVE_RAPPEL",
+    });
+  }
 
-    return (
-      <Container onMouseUp={cancelDragging} onMouseLeave={cancelDragging}>
-        <Segment style={{ minHeight: "130px" }}>
-          <Button.Group floated="right">
-            <Button
-              negative
-              disabled={!data.mediaSvgs || data.mediaSvgs.length === 0}
-              onClick={reset}
-            >
-              Reset
-            </Button>
-            <Button.Or />
-            <Button onClick={() => navigate(-1)}>Cancel</Button>
-            <Button.Or />
-            <Button positive onClick={save}>
-              Save
-            </Button>
-          </Button.Group>
-          <Button.Group size="mini">
-            <Button
-              size="mini"
-              onClick={() => {
-                const element = { t: TYPE_PATH, id: -1, path: "", points: [] };
-                if (!data.mediaSvgs) {
-                  data.mediaSvgs = [];
-                }
-                data.mediaSvgs.push(element);
-                setData(data);
-                setActiveElementIndex(data.mediaSvgs.length - 1);
-                setActivePoint(0);
-                setDraggedPoint(false);
-                setDraggedCubic(false);
-                setForceUpdate(forceUpdate + 1);
-              }}
-            >
-              Add descent
-            </Button>
-            <Button.Or />
-            <Button
-              size="mini"
-              onClick={() => {
-                const element = {
-                  t: TYPE_RAPPEL_BOLTED,
-                  id: -1,
-                  rappelX: data.width / 2,
-                  rappelY: data.height / 2,
-                };
-                if (!data.mediaSvgs) {
-                  data.mediaSvgs = [];
-                }
-                data.mediaSvgs.push(element);
-                setData(data);
-                setActiveElementIndex(data.mediaSvgs.length - 1);
-                setActivePoint(0);
-                setDraggedPoint(false);
-                setDraggedCubic(false);
-                setForceUpdate(forceUpdate + 1);
-              }}
-            >
-              Add rappel (bolted)
-            </Button>
-            <Button.Or />
-            <Button
-              size="mini"
-              onClick={() => {
-                const element = {
-                  t: TYPE_RAPPEL_NOT_BOLTED,
-                  id: -1,
-                  rappelX: data.width / 2,
-                  rappelY: data.height / 2,
-                };
-                if (!data.mediaSvgs) {
-                  data.mediaSvgs = [];
-                }
-                data.mediaSvgs.push(element);
-                setData(data);
-                setActiveElementIndex(data.mediaSvgs.length - 1);
-                setActivePoint(0);
-                setDraggedPoint(false);
-                setDraggedCubic(false);
-                setForceUpdate(forceUpdate + 1);
-              }}
-            >
-              Add rappel (not bolted)
-            </Button>
-          </Button.Group>
-          <Label.Group>
-            {data.mediaSvgs &&
-              data.mediaSvgs.map((svg, index) => (
-                <Label
-                  as="a"
-                  image
-                  key={index}
-                  color={activeElementIndex === index ? "green" : "grey"}
+  return (
+    <Container onMouseUp={cancelDragging} onMouseLeave={cancelDragging}>
+      <Segment style={{ minHeight: "130px" }}>
+        <Button.Group floated="right">
+          <Button
+            negative
+            disabled={!data.mediaSvgs || data.mediaSvgs.length === 0}
+            onClick={reset}
+          >
+            Reset
+          </Button>
+          <Button.Or />
+          <Button onClick={() => navigate(-1)}>Cancel</Button>
+          <Button.Or />
+          <Button positive onClick={save}>
+            Save
+          </Button>
+        </Button.Group>
+        <Button.Group size="mini">
+          <Button
+            size="mini"
+            onClick={() => {
+              const element = { t: TYPE_PATH, id: -1, path: "", points: [] };
+              if (!data.mediaSvgs) {
+                data.mediaSvgs = [];
+              }
+              data.mediaSvgs.push(element);
+              setData(data);
+              setActiveElementIndex(data.mediaSvgs.length - 1);
+              setActivePoint(0);
+              setDraggedPoint(false);
+              setDraggedCubic(false);
+              setForceUpdate(forceUpdate + 1);
+            }}
+          >
+            Add descent
+          </Button>
+          <Button.Or />
+          <Button
+            size="mini"
+            onClick={() => {
+              const element = {
+                t: TYPE_RAPPEL_BOLTED,
+                id: -1,
+                rappelX: data.width / 2,
+                rappelY: data.height / 2,
+              };
+              if (!data.mediaSvgs) {
+                data.mediaSvgs = [];
+              }
+              data.mediaSvgs.push(element);
+              setData(data);
+              setActiveElementIndex(data.mediaSvgs.length - 1);
+              setActivePoint(0);
+              setDraggedPoint(false);
+              setDraggedCubic(false);
+              setForceUpdate(forceUpdate + 1);
+            }}
+          >
+            Add rappel (bolted)
+          </Button>
+          <Button.Or />
+          <Button
+            size="mini"
+            onClick={() => {
+              const element = {
+                t: TYPE_RAPPEL_NOT_BOLTED,
+                id: -1,
+                rappelX: data.width / 2,
+                rappelY: data.height / 2,
+              };
+              if (!data.mediaSvgs) {
+                data.mediaSvgs = [];
+              }
+              data.mediaSvgs.push(element);
+              setData(data);
+              setActiveElementIndex(data.mediaSvgs.length - 1);
+              setActivePoint(0);
+              setDraggedPoint(false);
+              setDraggedCubic(false);
+              setForceUpdate(forceUpdate + 1);
+            }}
+          >
+            Add rappel (not bolted)
+          </Button>
+        </Button.Group>
+        <Label.Group>
+          {data.mediaSvgs &&
+            data.mediaSvgs.map((svg, index) => (
+              <Label
+                as="a"
+                image
+                key={index}
+                color={activeElementIndex === index ? "green" : "grey"}
+                onClick={() => {
+                  if (
+                    svg.t === "PATH" &&
+                    data.mediaSvgs[index] &&
+                    !data.mediaSvgs[index].points
+                  ) {
+                    data.mediaSvgs[index].points = parsePath(
+                      data.mediaSvgs[index].path
+                    );
+                    setData(data);
+                  }
+                  setActiveElementIndex(index);
+                  setActivePoint(0);
+                  setDraggedPoint(false);
+                  setDraggedCubic(false);
+                }}
+              >
+                {svg.t} #{index}
+                <Icon
+                  name="delete"
                   onClick={() => {
-                    if (
-                      svg.t === "PATH" &&
-                      data.mediaSvgs[index] &&
-                      !data.mediaSvgs[index].points
-                    ) {
-                      data.mediaSvgs[index].points = parsePath(
-                        data.mediaSvgs[index].path
-                      );
-                      setData(data);
-                    }
-                    setActiveElementIndex(index);
+                    data.mediaSvgs.splice(index, 1);
+                    setData(data);
+                    setActiveElementIndex(-1);
                     setActivePoint(0);
                     setDraggedPoint(false);
                     setDraggedCubic(false);
+                    setForceUpdate(forceUpdate + 1);
                   }}
+                />
+              </Label>
+            ))}
+        </Label.Group>
+        <br />
+        {activeElementIndex >= 0 &&
+          data.mediaSvgs[activeElementIndex] &&
+          data.mediaSvgs[activeElementIndex].t === "PATH" && (
+            <>
+              <strong>SHIFT + CLICK</strong> to add a point |{" "}
+              <strong>CLICK</strong> to select a point |{" "}
+              <strong>CLICK AND DRAG</strong> to move a point
+              <br />
+              {activePoint !== 0 && (
+                <Dropdown
+                  selection
+                  value={
+                    data.mediaSvgs[activeElementIndex].points[activePoint].c
+                      ? "C"
+                      : "L"
+                  }
+                  onChange={(...args) => {
+                    // @ts-expect-error - I don't know why this works right now.
+                    return setPointType(...args);
+                  }}
+                  options={[
+                    { key: 1, value: "L", text: "Selected point: Line to" },
+                    { key: 2, value: "C", text: "Selected point: Curve to" },
+                  ]}
+                />
+              )}
+              {activePoint !== 0 && (
+                <Button
+                  disabled={activePoint === 0}
+                  onClick={removeActivePoint}
                 >
-                  {svg.t} #{index}
-                  <Icon
-                    name="delete"
-                    onClick={() => {
-                      data.mediaSvgs.splice(index, 1);
-                      setData(data);
-                      setActiveElementIndex(-1);
-                      setActivePoint(0);
-                      setDraggedPoint(false);
-                      setDraggedCubic(false);
-                      setForceUpdate(forceUpdate + 1);
-                    }}
-                  />
-                </Label>
-              ))}
-          </Label.Group>
-          <br />
-          {activeElementIndex >= 0 &&
-            data.mediaSvgs[activeElementIndex] &&
-            data.mediaSvgs[activeElementIndex].t === "PATH" && (
-              <>
-                <strong>SHIFT + CLICK</strong> to add a point |{" "}
-                <strong>CLICK</strong> to select a point |{" "}
-                <strong>CLICK AND DRAG</strong> to move a point
-                <br />
-                {activePoint !== 0 && (
-                  <Dropdown
-                    selection
-                    value={
-                      data.mediaSvgs[activeElementIndex].points[activePoint].c
-                        ? "C"
-                        : "L"
-                    }
-                    onChange={(...args) => {
-                      // @ts-expect-error - I don't know why this works right now.
-                      return setPointType(...args);
-                    }}
-                    options={[
-                      { key: 1, value: "L", text: "Selected point: Line to" },
-                      { key: 2, value: "C", text: "Selected point: Curve to" },
-                    ]}
-                  />
-                )}
-                {activePoint !== 0 && (
-                  <Button
-                    disabled={activePoint === 0}
-                    onClick={removeActivePoint}
-                  >
-                    Remove this point
-                  </Button>
-                )}
-              </>
-            )}
-          {activeElementIndex >= 0 &&
-            data.mediaSvgs[activeElementIndex] &&
-            (data.mediaSvgs[activeElementIndex].t === TYPE_RAPPEL_BOLTED ||
-              data.mediaSvgs[activeElementIndex].t ===
-                TYPE_RAPPEL_NOT_BOLTED) && (
-              <>
-                <strong>CLICK</strong> to move anchor
-              </>
-            )}
-        </Segment>
-        <svg
-          viewBox={"0 0 " + data.width + " " + data.height}
-          onClick={handleOnClick}
-          onMouseMove={handleMouseMove}
+                  Remove this point
+                </Button>
+              )}
+            </>
+          )}
+        {activeElementIndex >= 0 &&
+          data.mediaSvgs[activeElementIndex] &&
+          (data.mediaSvgs[activeElementIndex].t === TYPE_RAPPEL_BOLTED ||
+            data.mediaSvgs[activeElementIndex].t ===
+              TYPE_RAPPEL_NOT_BOLTED) && (
+            <>
+              <strong>CLICK</strong> to move anchor
+            </>
+          )}
+      </Segment>
+      <svg
+        viewBox={"0 0 " + data.width + " " + data.height}
+        onClick={handleOnClick}
+        onMouseMove={handleMouseMove}
+        width="100%"
+        height="100%"
+      >
+        <image
+          ref={imageRef}
+          xlinkHref={getImageUrl(data.id, data.crc32, undefined)}
           width="100%"
           height="100%"
-        >
-          <image
-            ref={imageRef}
-            xlinkHref={getImageUrl(data.id, data.crc32, undefined)}
-            width="100%"
-            height="100%"
+        />
+        {activeElementIndex >= 0 && data.mediaSvgs[activeElementIndex] && (
+          <path
+            style={{ fill: "none", stroke: "#FF0000" }}
+            d={data.mediaSvgs[activeElementIndex].path}
+            strokeWidth={0.002 * data.width}
           />
-          {activeElementIndex >= 0 && data.mediaSvgs[activeElementIndex] && (
-            <path
-              style={{ fill: "none", stroke: "#FF0000" }}
-              d={data.mediaSvgs[activeElementIndex].path}
-              strokeWidth={0.002 * data.width}
-            />
+        )}
+        {circles}
+        {activeRappel}
+        {data.mediaSvgs &&
+          parseReadOnlySvgs(
+            data.mediaSvgs.filter((svg, index) => index != activeElementIndex),
+            data.width,
+            data.height,
+            minWindowScale
           )}
-          {circles}
-          {activeRappel}
-          {data.mediaSvgs &&
-            parseReadOnlySvgs(
-              data.mediaSvgs.filter(
-                (svg, index) => index != activeElementIndex
-              ),
-              data.width,
-              data.height,
-              minWindowScale
-            )}
-        </svg>
-      </Container>
-    );
-  }
+      </svg>
+    </Container>
+  );
 };
 
-export default SvgEdit;
+export default MediaSvgEdit;
