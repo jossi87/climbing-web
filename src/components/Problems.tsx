@@ -32,7 +32,7 @@ const Problems = () => {
       numProblems += s.problems.length;
     })
   });
-  const title = meta.isBouldering? "Routes" : "Problems";
+  const title = meta.isBouldering? "Problems" : "Routes";
   const description = `${numAreas} areas, ${numSectors} sectors, ${numProblems} ${meta.isClimbing? "routes" : "boulders"}`;
   return (
     <>
