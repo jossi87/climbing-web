@@ -49,7 +49,7 @@ const VideoEmbedder = ({ addMedia }) => {
               videoUrl.includes("#t=")
             ) {
               const ix = videoUrl.lastIndexOf("#t=");
-              start = videoUrl.substr(ix + 3);
+              start = videoUrl.substring(ix + 3);
             }
             if (start) {
               start = start.toUpperCase();

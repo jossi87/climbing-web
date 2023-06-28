@@ -55,7 +55,7 @@ const Activity = ({ idArea, idSector }) => {
     meta.grades.filter((g) => {
       const gradeText =
         g.grade.indexOf("(") > 0
-          ? g.grade.substr(g.grade.indexOf("(") + 1).replace(")", "")
+          ? g.grade.substring(g.grade.indexOf("(") + 1).replace(")", "")
           : g.grade;
       return gradeText == lowerGradeText && g.id == lowerGradeId;
     }).length === 0
@@ -102,7 +102,7 @@ const Activity = ({ idArea, idSector }) => {
                       const gradeText =
                         a.grade.indexOf("(") > 0
                           ? a.grade
-                              .substr(a.grade.indexOf("(") + 1)
+                              .substring(a.grade.indexOf("(") + 1)
                               .replace(")", "")
                           : a.grade;
                       refetch();
@@ -171,51 +171,12 @@ const Activity = ({ idArea, idSector }) => {
       {!activity && (
         <Segment vertical>
           <Placeholder fluid>
-            <Placeholder.Header image>
-              <Placeholder.Line />
-            </Placeholder.Header>
-            <Placeholder.Header image>
-              <Placeholder.Line />
-            </Placeholder.Header>
-            <Placeholder.Header image>
-              <Placeholder.Line />
-            </Placeholder.Header>
-            <Placeholder.Header image>
-              <Placeholder.Line />
-            </Placeholder.Header>
-            <Placeholder.Header image>
-              <Placeholder.Line />
-            </Placeholder.Header>
-            <Placeholder.Header image>
-              <Placeholder.Line />
-            </Placeholder.Header>
-            <Placeholder.Header image>
-              <Placeholder.Line />
-            </Placeholder.Header>
-            <Placeholder.Header image>
-              <Placeholder.Line />
-            </Placeholder.Header>
-            <Placeholder.Header image>
-              <Placeholder.Line />
-            </Placeholder.Header>
-            <Placeholder.Header image>
-              <Placeholder.Line />
-            </Placeholder.Header>
-            <Placeholder.Header image>
-              <Placeholder.Line />
-            </Placeholder.Header>
-            <Placeholder.Header image>
-              <Placeholder.Line />
-            </Placeholder.Header>
-            <Placeholder.Header image>
-              <Placeholder.Line />
-            </Placeholder.Header>
-            <Placeholder.Header image>
-              <Placeholder.Line />
-            </Placeholder.Header>
-            <Placeholder.Header image>
-              <Placeholder.Line />
-            </Placeholder.Header>
+            {[...Array(15)].map((e, i) => (
+              <Placeholder.Header image key={i}>
+                <Placeholder.Line length="medium" />
+                <Placeholder.Line length="short" />
+              </Placeholder.Header>
+            ))}
           </Placeholder>
         </Segment>
       )}

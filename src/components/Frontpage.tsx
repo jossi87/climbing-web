@@ -154,21 +154,11 @@ const Frontpage = () => {
             >
               <Segment>
                 <Placeholder>
-                  <Placeholder.Header image>
-                    <Placeholder.Line />
-                  </Placeholder.Header>
-                  <Placeholder.Header image>
-                    <Placeholder.Line />
-                  </Placeholder.Header>
-                  <Placeholder.Header image>
-                    <Placeholder.Line />
-                  </Placeholder.Header>
-                  <Placeholder.Header image>
-                    <Placeholder.Line />
-                  </Placeholder.Header>
-                  <Placeholder.Header image>
-                    <Placeholder.Line />
-                  </Placeholder.Header>
+                  {[...Array(6)].map((e, i) => (
+                    <Placeholder.Header image key={i}>
+                      <Placeholder.Line />
+                    </Placeholder.Header>
+                  ))}
                 </Placeholder>
               </Segment>
               <Card>

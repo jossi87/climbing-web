@@ -8,6 +8,7 @@ import {
   List,
   Image,
   Label,
+  Placeholder,
 } from "semantic-ui-react";
 import { useMeta } from "./common/meta";
 import { useData } from "../api";
@@ -45,7 +46,14 @@ const About = () => {
               </List.Item>
             ))
             :
-            <Icon name="circle notched" loading />
+            <Placeholder>
+              {[...Array(10)].map((e, i) => (
+                <Placeholder.Header image key={i}>
+                  <Placeholder.Line length="medium" />
+                  <Placeholder.Line length="short" />
+                </Placeholder.Header>
+              ))}
+            </Placeholder>
           }
         </List>
       </Segment>

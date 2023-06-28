@@ -185,7 +185,7 @@ const Media = ({
   if (window.location.search && media) {
     let id = window.location.search.replace("?idMedia=", "");
     if (id.indexOf("&") > 0) {
-      id = id.substr(0, id.indexOf("&"));
+      id = id.substring(0, id.indexOf("&"));
     }
     const x = media.filter((m) => m.id == id);
     if (x && x.length === 1 && (!m || m.id != x[0].id)) {
