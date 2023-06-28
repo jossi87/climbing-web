@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { useParams, Link } from "react-router-dom";
-import { Button } from "semantic-ui-react";
+import { Segment, Button, Header, Icon } from "semantic-ui-react";
 import Leaflet from "./common/leaflet/leaflet";
 import { Loading } from "./common/widgets/widgets";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -65,27 +65,47 @@ const Sites = () => {
       flyToId={null}
     />
   );
+  let description = data.length;
+  if (data[0].system === "BOULDER") {
+    description += " bouldering sites";
+  } else if (data[0].system === "CLIMBING") {
+    description += " rock climbing sites";
+  } else if (data[0].system === "ICE") {
+    description += " ice climbing sites";
+  }
   return (
     <>
       <Helmet>
         <title>Sites | {meta.title}</title>
+        <meta name="description" content={description}></meta>
       </Helmet>
-      <Button.Group fluid>
-        <Button as={Link} to={"/sites/boulder"} active={data[0].system == "BOULDER"}>
-          Bouldering
-        </Button>
-        <Button
-          as={Link}
-          to={"/sites/climbing"}
-          active={data[0].system == "CLIMBING"}
-        >
-          Route climbing
-        </Button>
-        <Button as={Link} to={"/sites/ice"} active={data[0].system == "ICE"}>
-          Ice climbing
-        </Button>
-      </Button.Group>
-      {map}
+      <Segment>
+        <Header as="h2">
+          <Icon name="sitemap" />
+          <Header.Content>
+            Sites
+            <Header.Subheader>
+              {description}
+            </Header.Subheader>
+          </Header.Content>
+        </Header>
+        <Button.Group fluid>
+          <Button as={Link} to={"/sites/boulder"} active={data[0].system == "BOULDER"}>
+            Bouldering
+          </Button>
+          <Button
+            as={Link}
+            to={"/sites/climbing"}
+            active={data[0].system == "CLIMBING"}
+          >
+            Route climbing
+          </Button>
+          <Button as={Link} to={"/sites/ice"} active={data[0].system == "ICE"}>
+            Ice climbing
+          </Button>
+        </Button.Group>
+        {map}
+      </Segment>
     </>
   );
 };

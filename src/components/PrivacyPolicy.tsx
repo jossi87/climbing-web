@@ -7,8 +7,6 @@ const PrivacyPolicy = () => {
       <Helmet>
         <title>Privacy Policy</title>
         <meta name="description" content="Privacy Policy" />
-        <meta property="og:type" content="website" />
-        <meta property="og:description" content="Privacy Policy" />
       </Helmet>
       <Segment>
         <Header as="h2">

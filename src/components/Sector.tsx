@@ -321,6 +321,7 @@ const Sector = () => {
     <>
       <Helmet>
         <title>{data.name} | {meta.title}</title>
+        <meta name="description" content={data.comment}></meta>
       </Helmet>
       <div style={{ marginBottom: "5px" }}>
         <div style={{ float: "right" }}>

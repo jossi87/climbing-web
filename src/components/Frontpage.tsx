@@ -17,12 +17,15 @@ import Activity from "./common/activity/activity";
 const Frontpage = () => {
   const meta = useMeta();
   const { data: frontpage } = useData(`/frontpage`);
+  const type = meta.isBouldering? "bouldering problems" : "climbing routes";
+  const description = `${frontpage?.numProblems} ${type}, ${frontpage?.numTicks} public ascents, ${frontpage?.numImages} images, ${frontpage?.numMovies} ascents on video.`;
 
   return (
     <>
       {frontpage && (
         <Helmet>
           <title>{meta.title}</title>
+          <meta name="description" content={description}></meta>
         </Helmet>
       )}
       <Grid>

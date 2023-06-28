@@ -8,8 +8,6 @@ const Donations = () => {
       <Helmet>
         <title>Donations</title>
         <meta name="description" content="Donations" />
-        <meta property="og:type" content="website" />
-        <meta property="og:description" content="Donations" />
       </Helmet>
       <Segment>
         <Header as="h2">

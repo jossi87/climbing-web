@@ -19,7 +19,7 @@ export const Navigation = () => {
           className="row-1"
         >
           <Menu.Item header as={Link} to="/">
-            <Image size="mini" src="/png/buldreinfo.png" />
+            <Image size="mini" src="/png/buldreinfo.png" alt="Logo" />
           </Menu.Item>
           <Menu.Item as={SearchBox} style={{ flex: 1 }} />
         </div>

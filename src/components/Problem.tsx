@@ -505,6 +505,7 @@ const Problem = () => {
     <>
       <Helmet>
         <title>{data.name} | {meta.title}</title>
+        <meta name="description" content={data.comment}></meta>
       </Helmet>
       {tickModal}
       {showCommentModal && (
