@@ -250,10 +250,7 @@ const ProblemComments = ({
             extra = <Label color="red">Flagged as dangerous</Label>;
           } else if (c.resolved) {
             extra = <Label color="green">Flagged as safe</Label>;
-          } else if (
-            meta.isAuthenticated &&
-            meta.isClimbing
-          ) {
+          } else if (meta.isAuthenticated && meta.isClimbing) {
             extra = (
               <Button
                 basic
@@ -451,8 +448,7 @@ const Problem = () => {
     if (!showTickModal) {
       return null;
     }
-    const enableTickRepeats =
-      meta.isIce || data.sections?.length > 0;
+    const enableTickRepeats = meta.isIce || data.sections?.length > 0;
     const userTicks = data.ticks?.filter((t) => t.writable);
     if (userTicks && userTicks.length > 0) {
       return (
@@ -853,7 +849,7 @@ const Problem = () => {
               </Table.Cell>
             </Table.Row>
           )}
-          {lat>0 && lng>0 && (
+          {lat > 0 && lng > 0 && (
             <Table.Row>
               <Table.Cell>Weather:</Table.Cell>
               <Table.Cell>
@@ -872,9 +868,7 @@ const Problem = () => {
                 basic
               >
                 <Icon name="file pdf outline" />
-                {meta.isBouldering
-                  ? "boulder.pdf"
-                  : "route.pdf"}
+                {meta.isBouldering ? "boulder.pdf" : "route.pdf"}
               </Label>
               <Label
                 href={getSectorPdfUrl(accessToken, data.sectorId)}

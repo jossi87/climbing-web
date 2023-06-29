@@ -16,6 +16,7 @@ import {
 } from "semantic-ui-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useQueryClient } from "@tanstack/react-query";
 
 type TickModalProps = {
   open: boolean;
@@ -44,6 +45,7 @@ const TickModal = ({
   date: initialDate,
   enableTickRepeats,
 }: TickModalProps) => {
+  const client = useQueryClient();
   const accessToken = useAccessToken();
   const [comment, setComment] = useState(initialComment);
   const [grade, setGrade] = useState(initialGrade);
@@ -265,8 +267,9 @@ const TickModal = ({
                     grade,
                     repeats
                   )
-                    .then(() => {
+                    .then(async () => {
                       onClose(true);
+                      await client.invalidateQueries({ predicate: () => true });
                     })
                     .catch((error) => {
                       console.warn(error);
@@ -298,8 +301,9 @@ const TickModal = ({
                 grade,
                 repeats
               )
-                .then(() => {
+                .then(async () => {
                   onClose(true);
+                  await client.invalidateQueries({ predicate: () => true });
                 })
                 .catch((error) => {
                   console.warn(error);
