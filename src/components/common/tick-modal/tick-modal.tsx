@@ -112,7 +112,7 @@ const TickModal = ({
                   {
                     key: -1,
                     value: -1,
-                    text: <i>I don&quot;t want to rate</i>,
+                    text: <i>I don&apos;t want to rate</i>,
                   },
                   {
                     key: 0,
