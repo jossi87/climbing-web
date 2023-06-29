@@ -14,8 +14,10 @@ import {
 import { Link, useLocation } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import { InsufficientPrivileges } from "./common/widgets/widgets";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Permissions = () => {
+  const client = useQueryClient();
   const {
     isLoading,
     isAuthenticated,
@@ -142,6 +144,9 @@ const Permissions = () => {
                             superadminWrite
                           )
                             .then(() => {
+                              client.invalidateQueries({
+                                predicate: () => true,
+                              });
                               window.scrollTo(0, 0);
                               window.location.reload();
                             })

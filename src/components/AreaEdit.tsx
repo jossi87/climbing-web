@@ -99,19 +99,7 @@ const AreaEdit = () => {
         .then(async (res) => {
           // TODO: Remove this and use mutations instead.
           await client.invalidateQueries({
-            predicate: (query) => {
-              const queryKey = query.queryKey;
-              if (
-                Array.isArray(queryKey) &&
-                queryKey[1] &&
-                typeof queryKey[1] === "object"
-              ) {
-                if (queryKey[0] == '/areas' && (query.queryKey[1] as any).id == areaId) {
-                  return true;
-                }
-              }
-              return false;
-            },
+            predicate: () => true,
           });
           return navigate(res.destination);
         })

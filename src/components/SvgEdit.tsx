@@ -116,19 +116,7 @@ const SvgEdit = () => {
         .then(async () => {
           // TODO: Remove this and use mutations instead.
           await client.refetchQueries({
-            predicate: (query) => {
-              const queryKey = query.queryKey;
-              if (
-                Array.isArray(queryKey) &&
-                queryKey[1] &&
-                typeof queryKey[1] === "object"
-              ) {
-                if (queryKey[0] == '/problem' && (query.queryKey[1] as any).id == id) {
-                  return true;
-                }
-              }
-              return false;
-            },
+            predicate: () => true,
           });
           navigate(`/problem/${id}`);
         })
