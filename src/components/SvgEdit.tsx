@@ -4,18 +4,17 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useMeta } from "./common/meta";
 import { getSvgEdit, getImageUrl, postProblemSvg } from "../api";
 import { parseReadOnlySvgs, parsePath } from "../utils/svg-utils";
-import { Loading, InsufficientPrivileges } from "./common/widgets/widgets";
+import {
+  Loading,
+  InsufficientPrivileges,
+  NotLoggedIn,
+} from "./common/widgets/widgets";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 
 const SvgEdit = () => {
   const client = useQueryClient();
-  const {
-    isLoading,
-    isAuthenticated,
-    getAccessTokenSilently,
-    loginWithRedirect,
-  } = useAuth0();
+  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [mediaId, setMediaId] = useState<any>(null);
   const [crc32, setCrc32] = useState<any>(null);
   const [w, setW] = useState<any>(null);
@@ -39,7 +38,6 @@ const SvgEdit = () => {
   const imageRef = useRef<SVGImageElement>(null);
   const { problemIdMediaId } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
   const { outerWidth, outerHeight } = window;
   const minWindowScale = Math.min(outerWidth, outerHeight);
   const black = "#000000";
@@ -115,9 +113,9 @@ const SvgEdit = () => {
         JSON.stringify(anchors),
         JSON.stringify(texts)
       )
-        .then(async (res) => {
+        .then(async () => {
           // TODO: Remove this and use mutations instead.
-          await client.invalidateQueries({
+          await client.refetchQueries({
             predicate: (query) => {
               const [urlSuffix] = query.queryKey;
               if (!urlSuffix || !(typeof urlSuffix === "string")) {
@@ -343,7 +341,7 @@ const SvgEdit = () => {
   if (isLoading || (isAuthenticated && !mediaId)) {
     return <Loading />;
   } else if (!isAuthenticated) {
-    loginWithRedirect({ appState: { returnTo: location.pathname } });
+    return <NotLoggedIn />;
   } else if (!meta.isAdmin) {
     return <InsufficientPrivileges />;
   } else if (!id || !meta) {
