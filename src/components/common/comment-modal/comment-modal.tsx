@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { postComment, useAccessToken } from "./../../../api";
 import { Button, Modal, Form, TextArea } from "semantic-ui-react";
 import ImageUpload from "../image-upload/image-upload";
@@ -21,7 +21,7 @@ const CommentModal = ({
   };
 }) => {
   const accessToken = useAccessToken();
-  const message = useRef(comment?.message ?? "");
+  const [message, setMessage] = useState(comment?.message ?? "");
   const [danger, setDanger] = useState(comment?.danger);
   const [resolved, setResolved] = useState(comment?.resolved);
   const [media, setMedia] = useState([]);
@@ -38,9 +38,9 @@ const CommentModal = ({
               <TextArea
                 placeholder="Comment"
                 style={{ minHeight: 100 }}
-                defaultValue={message.current}
+                defaultValue={message}
                 onChange={(_, data) => {
-                  message.current = String(data.value);
+                  setMessage(String(data.value));
                 }}
               />
             </Form.Field>
@@ -101,17 +101,14 @@ const CommentModal = ({
             icon="checkmark"
             labelPosition="right"
             content="Save"
-            disabled={!message.current.trim()}
+            disabled={!message.trim()}
             onClick={() => {
-              if (!message.current) {
-                return;
-              }
               setSaving(true);
               postComment(
                 accessToken,
                 id,
                 idProblem,
-                message.current,
+                message,
                 danger,
                 resolved,
                 false,
