@@ -1,5 +1,11 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
+import {
+  UseMutationOptions,
+  UseQueryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import fetch from "isomorphic-fetch";
 import { useState, useEffect } from "react";
 
@@ -45,6 +51,43 @@ export function useAccessToken() {
   return accessToken;
 }
 
+function usePostData<TData = any>(
+  urlSuffix: string,
+  options?: Partial<UseMutationOptions<TData>>
+) {
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const mutationKey = options.mutationKey ?? [urlSuffix, { isAuthenticated }];
+  if (
+    Array.isArray(mutationKey) &&
+    mutationKey[1] &&
+    typeof mutationKey[1] === "object"
+  ) {
+    // Spread them in this order so that callers can choose to ignore the
+    // isAuthenticated variable if they choose to.
+    mutationKey[1] = {
+      isAuthenticated,
+      ...mutationKey[1],
+    };
+  }
+  return useMutation<TData>({
+    mutationKey,
+    mutationFn: async (data) => {
+      const accessToken = isAuthenticated
+        ? await getAccessTokenSilently()
+        : null;
+
+      return makeAuthenticatedRequest(accessToken, urlSuffix, {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    },
+    ...options,
+  });
+}
+
 export function useData<T = any>(
   urlSuffix: string,
   {
@@ -55,8 +98,22 @@ export function useData<T = any>(
   } = {}
 ) {
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const queryKey = options.queryKey ?? [urlSuffix, { isAuthenticated }];
+  if (
+    Array.isArray(queryKey) &&
+    queryKey[1] &&
+    typeof queryKey[1] === "object"
+  ) {
+    // Spread them in this order so that callers can choose to ignore the
+    // isAuthenticated variable if they choose to.
+    queryKey[1] = {
+      isAuthenticated,
+      ...queryKey[1],
+    };
+  }
+
   return useQuery<any>({
-    queryKey: [urlSuffix, { isAuthenticated }],
+    queryKey,
     queryFn: async () => {
       const accessToken = isAuthenticated
         ? await getAccessTokenSilently()
@@ -324,20 +381,22 @@ export function getGradeDistribution(
     });
 }
 
-export function getMedia(
-  accessToken: string | null,
-  idMedia: number
-): Promise<any> {
-  return makeAuthenticatedRequest(
-    accessToken,
-    `/media?idMedia=${idMedia}`,
-    null
-  )
-    .then((data) => data.json())
-    .catch((error) => {
-      console.warn(error);
-      return null;
-    });
+export function useMediaSvg(idMedia: number) {
+  const client = useQueryClient();
+  const { data, ...dataResult } = useData(`/media?idMedia=${idMedia}`, {
+    queryKey: [`/media`, { idMedia }],
+  });
+
+  const mutation = usePostData(`/media/svg`, {
+    onSuccess: async () => {
+      await client.refetchQueries({
+        queryKey: [`/sectors`],
+        exact: false,
+      });
+    },
+  });
+
+  return { media: data, save: mutation.mutateAsync, ...dataResult };
 }
 
 export function getMeta(accessToken: string | null): Promise<any> {
@@ -607,6 +666,7 @@ export function useSector(
 ) {
   return useData(`/sectors?id=${id}`, {
     ...(options ?? {}),
+    queryKey: [`/sectors`, { id }],
     transform: (response) => {
       if (response.status === 500) {
         return Promise.reject(
@@ -999,19 +1059,6 @@ export function postFilter(
       Accept: "application/json",
     },
   }).then((data) => data.json());
-}
-
-export function postMediaSvg(
-  accessToken: string | null,
-  mediaSvg: any
-): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/media/svg`, {
-    method: "POST",
-    body: JSON.stringify(mediaSvg),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
 }
 
 export function postPermissions(

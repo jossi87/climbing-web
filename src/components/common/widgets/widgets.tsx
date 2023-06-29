@@ -1,5 +1,13 @@
+import { useAuth0 } from "@auth0/auth0-react";
 import React from "react";
-import { Segment, Message, Icon, Popup, Label } from "semantic-ui-react";
+import {
+  Segment,
+  Message,
+  Icon,
+  Popup,
+  Label,
+  Button,
+} from "semantic-ui-react";
 import SunCalc from "suncalc";
 
 type LockSymbolProps = {
@@ -111,6 +119,23 @@ export function Loading() {
         We are fetching that content for you.
       </Message.Content>
     </Message>
+  );
+}
+
+export function NotLoggedIn() {
+  const { loginWithRedirect } = useAuth0();
+
+  return (
+    <Segment>
+      <h3>Authentication required</h3>
+      <Button
+        onClick={() => {
+          loginWithRedirect({ appState: { returnTo: location.pathname } });
+        }}
+      >
+        Log in
+      </Button>
+    </Segment>
   );
 }
 
