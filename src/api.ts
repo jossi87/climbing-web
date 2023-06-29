@@ -508,6 +508,7 @@ export function getProblemEdit(
         }
         return {
           id: -1,
+          areaId: res.areaId,
           sectorId: res.id,
           lockedAdmin: res.lockedAdmin,
           lockedSuperadmin: res.lockedSuperadmin,
@@ -539,6 +540,7 @@ export function getProblemEdit(
       .then((res) => {
         return {
           id: res.id,
+          areaId: res.areaId,
           sectorId: res.sectorId,
           lockedAdmin: res.lockedAdmin,
           lockedSuperadmin: res.lockedSuperadmin,
