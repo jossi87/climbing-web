@@ -225,25 +225,7 @@ const ProblemEdit = () => {
         .then(async (res) => {
           // TODO: Remove this and use mutations instead.
           await client.invalidateQueries({
-            predicate: (query) => {
-              const queryKey = query.queryKey;
-              if (
-                Array.isArray(queryKey) &&
-                queryKey[1] &&
-                typeof queryKey[1] === "object"
-              ) {
-                if (queryKey[0] == '/problem' && (query.queryKey[1] as any).id == data.id) {
-                  return true;
-                }
-                else if (queryKey[0] == '/sectors' && (query.queryKey[1] as any).id == data.sectorId) {
-                  return true;
-                }
-                else if (queryKey[0] == '/areas' && (query.queryKey[1] as any).id == data.areaId) {
-                  return true;
-                }
-              }
-              return false;
-            },
+            predicate: () => true,
           });
           if (addNew) {
             navigate(0);
