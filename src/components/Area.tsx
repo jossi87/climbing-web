@@ -29,7 +29,7 @@ import {
   Feed,
 } from "semantic-ui-react";
 import { useMeta } from "./common/meta";
-import { getImageUrl, getAreaPdfUrl, useArea, useAccessToken } from "../api";
+import { getImageUrl, getAreaPdfUrl, useAreas, useAccessToken } from "../api";
 import { Remarkable } from "remarkable";
 import { linkify } from "remarkable/linkify";
 import ProblemList from "./common/problem-list/problem-list";
@@ -104,7 +104,7 @@ const Area = () => {
   const accessToken = useAccessToken();
   const meta = useMeta();
   const { areaId } = useParams();
-  const { data, error, refetch } = useArea(parseInt(areaId ?? "0"));
+  const { data, error, refetch } = useAreas(parseInt(areaId ?? "0"));
 
   const md = new Remarkable({ breaks: true }).use(linkify);
   // open links in new windows
@@ -131,10 +131,10 @@ const Area = () => {
         }
       />
     );
-  } else if (!data || !data.id) {
+  } else if (!data || data[0].length === 0) {
     return <Loading />;
   }
-  const markers = data.sectors
+  const markers = data[0].sectors
     .filter((s) => s.lat != 0 && s.lng != 0)
     .map((s) => {
       return {
@@ -146,7 +146,7 @@ const Area = () => {
     });
   const outlines: ComponentProps<typeof Leaflet>["outlines"] = [];
   const polylines: ComponentProps<typeof Leaflet>["polylines"] = [];
-  for (const s of data.sectors) {
+  for (const s of data[0].sectors) {
     let distance: string | null = null;
     if (s.polyline) {
       const polyline = s.polyline
@@ -171,7 +171,7 @@ const Area = () => {
   }
   const panes: ComponentProps<typeof Tab>["panes"] = [];
   const height = "40vh";
-  if (data.media && data.media.length > 0) {
+  if (data[0].media && data[0].media.length > 0) {
     panes.push({
       menuItem: { key: "image", icon: "image" },
       render: () => (
@@ -180,7 +180,7 @@ const Area = () => {
             isAdmin={meta.isAdmin}
             numPitches={0}
             removeMedia={() => refetch()}
-            media={data.media}
+            media={data[0].media}
             optProblemId={null}
             isBouldering={meta.isBouldering}
           />
@@ -188,19 +188,19 @@ const Area = () => {
       ),
     });
   }
-  if (markers.length > 0 || outlines.length > 0 || (data.lat && data.lat > 0)) {
+  if (markers.length > 0 || outlines.length > 0 || (data[0].lat && data[0].lat > 0)) {
     const defaultCenter =
-      data.lat && data.lat > 0
-        ? { lat: data.lat, lng: data.lng }
+      data[0].lat && data[0].lat > 0
+        ? { lat: data[0].lat, lng: data[0].lng }
         : meta.defaultCenter;
     const defaultZoom =
-      data.lat && data.lat > 0 ? 14 : meta.defaultZoom;
+      data[0].lat && data[0].lat > 0 ? 14 : meta.defaultZoom;
     panes.push({
       menuItem: { key: "map", icon: "map" },
       render: () => (
         <Tab.Pane>
           <Leaflet
-            key={"area=" + data.id}
+            key={"area=" + data[0].id}
             autoZoom={true}
             height={height}
             markers={markers}
@@ -219,14 +219,14 @@ const Area = () => {
       ),
     });
   }
-  if (data.sectors.length != 0) {
+  if (data[0].sectors.length != 0) {
     panes.push({
       menuItem: { key: "distribution", icon: "area graph" },
       render: () => (
         <Tab.Pane>
           <ChartGradeDistribution
             accessToken={accessToken}
-            idArea={data.id}
+            idArea={data[0].id}
             idSector={0}
             data={null}
           />
@@ -237,7 +237,7 @@ const Area = () => {
       menuItem: { key: "top", icon: "trophy" },
       render: () => (
         <Tab.Pane>
-          <Top idArea={data.id} idSector={0} />
+          <Top idArea={data[0].id} idSector={0} />
         </Tab.Pane>
       ),
     });
@@ -245,7 +245,7 @@ const Area = () => {
       menuItem: { key: "activity", icon: "time" },
       render: () => (
         <Tab.Pane>
-          <Activity idArea={data.id} idSector={0} />
+          <Activity idArea={data[0].id} idSector={0} />
         </Tab.Pane>
       ),
     });
@@ -253,20 +253,20 @@ const Area = () => {
       menuItem: { key: "todo", icon: "bookmark" },
       render: () => (
         <Tab.Pane>
-          <Todo idArea={data.id} idSector={0} />
+          <Todo idArea={data[0].id} idSector={0} />
         </Tab.Pane>
       ),
     });
   }
 
   const sectorPanes: ComponentProps<typeof Tab>["panes"] = [];
-  if (data.sectors) {
+  if (data[0].sectors) {
     sectorPanes.push({
-      menuItem: "Sectors (" + data.sectors.length + ")",
+      menuItem: "Sectors (" + data[0].sectors.length + ")",
       render: () => (
         <Tab.Pane>
           <Item.Group link unstackable>
-            {data.sectors.map((sector, i) => (
+            {data[0].sectors.map((sector, i) => (
               <Item as={Link} to={`/sector/${sector.id}`} key={i}>
                 <Image
                   size="small"
@@ -320,14 +320,14 @@ const Area = () => {
     sectorPanes.push({
       menuItem:
         (meta.isBouldering ? "Problems (" : "Routes (") +
-        data.typeNumTicked.reduce((count, current) => count + current.num, 0) +
+        data[0].typeNumTicked.reduce((count, current) => count + current.num, 0) +
         ")",
       render: () => (
         <Tab.Pane>
           <ProblemList
             isSectorNotUser={true}
             preferOrderByGrade={true}
-            rows={data.sectors
+            rows={data[0].sectors
               .map((s) =>
                 s.problems.map((p) => ({
                   element: (
@@ -362,8 +362,8 @@ const Area = () => {
   return (
     <>
       <Helmet>
-        <title>{data.name} | {meta.title}</title>
-        <meta name="description" content={data.comment}></meta>
+        <title>{data[0].name} | {meta.title}</title>
+        <meta name="description" content={data[0].comment}></meta>
       </Helmet>
       <div style={{ marginBottom: "5px" }}>
         <div style={{ float: "right" }}>
@@ -372,14 +372,14 @@ const Area = () => {
               <Button
                 animated="fade"
                 as={Link}
-                to={`/sector/edit/${data.id}-0`}
+                to={`/sector/edit/${data[0].id}-0`}
               >
                 <Button.Content hidden>Add</Button.Content>
                 <Button.Content visible>
                   <Icon name="plus" />
                 </Button.Content>
               </Button>
-              <Button animated="fade" as={Link} to={`/area/edit/${data.id}`}>
+              <Button animated="fade" as={Link} to={`/area/edit/${data[0].id}`}>
                 <Button.Content hidden>Edit</Button.Content>
                 <Button.Content visible>
                   <Icon name="edit" />
@@ -394,33 +394,33 @@ const Area = () => {
           </Breadcrumb.Section>
           <Breadcrumb.Divider icon="right angle" />
           <Breadcrumb.Section active>
-            {data.name}{" "}
+            {data[0].name}{" "}
             <LockSymbol
-              lockedAdmin={data.lockedAdmin}
-              lockedSuperadmin={data.lockedSuperadmin}
+              lockedAdmin={data[0].lockedAdmin}
+              lockedSuperadmin={data[0].lockedSuperadmin}
             />
           </Breadcrumb.Section>
         </Breadcrumb>
       </div>
-      {data.accessClosed && (
+      {data[0].accessClosed && (
         <Message
           size="huge"
           negative
           icon="attention"
           header="Area closed!"
-          content={data.accessClosed}
+          content={data[0].accessClosed}
         />
       )}
       <Tab panes={panes} />
       <Table definition unstackable>
         <Table.Body>
-          {(data.accessInfo || data.noDogsAllowed) && (
+          {(data[0].accessInfo || data[0].noDogsAllowed) && (
             <Table.Row warning verticalAlign="top">
               <Table.Cell>
                 <Icon name="attention" /> Restrictions:
               </Table.Cell>
               <Table.Cell>
-                {data.noDogsAllowed && (
+                {data[0].noDogsAllowed && (
                   <Header as="h5" color="red" image>
                     <Image
                       src="/svg/no-animals.svg"
@@ -438,15 +438,15 @@ const Area = () => {
                     </Header.Content>
                   </Header>
                 )}
-                {data.accessInfo && <p>{data.accessInfo}</p>}
+                {data[0].accessInfo && <p>{data[0].accessInfo}</p>}
               </Table.Cell>
             </Table.Row>
           )}
           <Table.Row>
             <Table.Cell width={3}>Sectors:</Table.Cell>
-            <Table.Cell>{data.sectors.length}</Table.Cell>
+            <Table.Cell>{data[0].sectors.length}</Table.Cell>
           </Table.Row>
-          {data.typeNumTicked.map((t, i) => (
+          {data[0].typeNumTicked.map((t, i) => (
             <Table.Row key={i}>
               <Table.Cell>{t.type + ":"}</Table.Cell>
               <Table.Cell>
@@ -455,7 +455,7 @@ const Area = () => {
               </Table.Cell>
             </Table.Row>
           ))}
-          {data.triviaMedia?.length > 0 && (
+          {data[0].triviaMedia?.length > 0 && (
             <Table.Row verticalAlign="top">
               <Table.Cell>Trivia:</Table.Cell>
               <Table.Cell>
@@ -464,7 +464,7 @@ const Area = () => {
                     isAdmin={meta.isAdmin}
                     numPitches={0}
                     removeMedia={() => window.location.reload()}
-                    media={data.triviaMedia}
+                    media={data[0].triviaMedia}
                     optProblemId={null}
                     isBouldering={meta.isBouldering}
                   />
@@ -472,14 +472,14 @@ const Area = () => {
               </Table.Cell>
             </Table.Row>
           )}
-          {data.lat > 0 && data.lng > 0 && (
+          {data[0].lat > 0 && data[0].lng > 0 && (
             <Table.Row>
               <Table.Cell>Weather:</Table.Cell>
               <Table.Cell>
                 <WeatherLabels
-                  lat={data.lat}
-                  lng={data.lng}
-                  label={data.name}
+                  lat={data[0].lat}
+                  lng={data[0].lng}
+                  label={data[0].name}
                 />
               </Table.Cell>
             </Table.Row>
@@ -488,7 +488,7 @@ const Area = () => {
             <Table.Cell>Misc:</Table.Cell>
             <Table.Cell>
               <Label
-                href={getAreaPdfUrl(accessToken, data.id)}
+                href={getAreaPdfUrl(accessToken, data[0].id)}
                 rel="noreferrer noopener"
                 target="_blank"
                 image
@@ -501,9 +501,9 @@ const Area = () => {
           </Table.Row>
           <Table.Row>
             <Table.Cell>Page views:</Table.Cell>
-            <Table.Cell>{data.hits}</Table.Cell>
+            <Table.Cell>{data[0].hits}</Table.Cell>
           </Table.Row>
-          {data.forDevelopers && (
+          {data[0].forDevelopers && (
             <Table.Row>
               <Table.Cell>For developers:</Table.Cell>
               <Table.Cell>
@@ -513,14 +513,14 @@ const Area = () => {
               </Table.Cell>
             </Table.Row>
           )}
-          {data.comment && (
+          {data[0].comment && (
             <Table.Row>
               <Table.Cell
                 colSpan={2}
                 style={{ fontWeight: "normal", backgroundColor: "white" }}
               >
                 <div
-                  dangerouslySetInnerHTML={{ __html: md.render(data.comment) }}
+                  dangerouslySetInnerHTML={{ __html: md.render(data[0].comment) }}
                 />
               </Table.Cell>
             </Table.Row>

@@ -12,14 +12,14 @@ import {
 import Leaflet from "./common/leaflet/leaflet";
 import ChartGradeDistribution from "./common/chart-grade-distribution/chart-grade-distribution";
 import { Loading, LockSymbol } from "./common/widgets/widgets";
-import { useData, useAccessToken } from "../api";
+import { useAreas, useAccessToken } from "../api";
 import { Remarkable } from "remarkable";
 import { linkify } from "remarkable/linkify";
 import { useMeta } from "./common/meta";
 
 const Areas = () => {
   const accessToken = useAccessToken();
-  const { data } = useData(`/areas`);
+  const { data } = useAreas();
   const meta = useMeta();
   const [flyToId, setFlyToId] = useState<any>(null);
   const [showForDevelopers, setShowForDevelopers] = useState(false);

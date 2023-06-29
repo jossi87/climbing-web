@@ -282,13 +282,25 @@ export function useActivity({
   );
 }
 
-export function useArea(id: number) {
-  return useData(`/areas?id=${id}`, {
-    select: (data: any) => {
-      if (data.redirectUrl && data.redirectUrl != window.location.href) {
-        window.location.href = data.redirectUrl;
+export function useAreas(
+  id?: number | string | undefined,
+  options?: Parameters<typeof useData>[1]
+) {
+  return useData(id? `/areas?id=${id}` : `/areas`, {
+    ...(options ?? {}),
+    queryKey: [`/areas`, { id }],
+    transform: (response) => {
+      if (response.status === 500) {
+        return Promise.reject(
+          "Cannot find the specified area because it does not exist or you do not have sufficient permissions."
+        );
       }
-      return data[0];
+      return response.json().then((data) => {
+        if (data.redirectUrl && data.redirectUrl != window.location.href) {
+          window.location.href = data.redirectUrl;
+        }
+        return data;
+      });
     },
   });
 }
@@ -390,7 +402,15 @@ export function useMediaSvg(idMedia: number) {
   const mutation = usePostData(`/media/svg`, {
     onSuccess: async () => {
       await client.refetchQueries({
+        queryKey: [`/areas`],
+        exact: false,
+      });
+      await client.refetchQueries({
         queryKey: [`/sectors`],
+        exact: false,
+      });
+      await client.refetchQueries({
+        queryKey: [`/problem`],
         exact: false,
       });
     },
@@ -417,19 +437,26 @@ export function getPermissions(accessToken: string | null): Promise<any> {
     });
 }
 
-export function useProblem({
-  id,
-  showHiddenMedia,
-}: {
-  id: number;
-  showHiddenMedia: boolean;
-}) {
+export function useProblem(
+  id: number | string,
+  showHiddenMedia: boolean,
+  options?: Parameters<typeof useData>[1]
+) {
   return useData(`/problem?id=${id}&showHiddenMedia=${showHiddenMedia}`, {
-    select: (data: any) => {
-      if (data.redirectUrl && data.redirectUrl != window.location.href) {
-        window.location.href = data.redirectUrl;
+    ...(options ?? {}),
+    queryKey: [`/problem`, { id, showHiddenMedia }],
+    transform: (response) => {
+      if (response.status === 500) {
+        return Promise.reject(
+          "Cannot find the specified problem because it does not exist or you do not have sufficient permissions."
+        );
       }
-      return data;
+      return response.json().then((data) => {
+        if (data.redirectUrl && data.redirectUrl != window.location.href) {
+          window.location.href = data.redirectUrl;
+        }
+        return data;
+      });
     },
   });
 }

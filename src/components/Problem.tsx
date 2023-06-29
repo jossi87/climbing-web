@@ -206,7 +206,7 @@ const ProblemComments = ({
 }) => {
   const accessToken = useAccessToken();
   const meta = useMeta();
-  const { data, refetch } = useProblem({ id: problemId, showHiddenMedia });
+  const { data, refetch } = useProblem(problemId, showHiddenMedia);
 
   function flagAsDangerous({ id, message }) {
     if (confirm("Are you sure you want to flag this comment?")) {
@@ -311,10 +311,7 @@ const Problem = () => {
   const { problemId } = useParams();
   const [showHiddenMedia, setShowHiddenMedia] = useState(false);
   const meta = useMeta();
-  const { data, error, refetch } = useProblem({
-    id: +problemId,
-    showHiddenMedia,
-  });
+  const { data, error, refetch } = useProblem(problemId, showHiddenMedia);
 
   const [showTickModal, setShowTickModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState<any>(null);
