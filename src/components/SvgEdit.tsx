@@ -117,12 +117,14 @@ const SvgEdit = () => {
           // TODO: Remove this and use mutations instead.
           await client.refetchQueries({
             predicate: (query) => {
-              const [urlSuffix] = query.queryKey;
-              if (!urlSuffix || !(typeof urlSuffix === "string")) {
-                return false;
+              if (query.queryKey && query.queryKey.length >= 2) {
+                if (query.queryKey[0] == '/problem') {
+                  if (typeof query.queryKey[1] === "object" && (query.queryKey[1] as any).id == id) {
+                    return true;
+                  }
+                }
               }
-
-              return urlSuffix.startsWith(`/problem?id=${id}`);
+              return false;
             },
           });
           navigate(`/problem/${id}`);
