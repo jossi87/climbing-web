@@ -65,11 +65,8 @@ const Trash = () => {
                               .then(async (res) => {
                                 // TODO: Remove this and use mutations instead.
                                 await client.invalidateQueries({
-                                  predicate: (query) => {
-                                    const [urlSuffix] = query.queryKey;
-                                    if (!urlSuffix || !(typeof urlSuffix === "string")) {
-                                      return false;
-                                    }
+                                  predicate: () => {
+                                    // Invalidate everything, restored item can be media (on area/sector/problem) or an area/sector/problem
                                     return true;
                                   },
                                 });

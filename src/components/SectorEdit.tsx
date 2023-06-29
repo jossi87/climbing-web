@@ -108,12 +108,14 @@ const SectorEdit = () => {
           // TODO: Remove this and use mutations instead.
           await client.invalidateQueries({
             predicate: (query) => {
-              const [urlSuffix] = query.queryKey;
-              if (!urlSuffix || !(typeof urlSuffix === "string")) {
-                return false;
+              if (query.queryKey && query.queryKey.length >= 2) {
+                if (query.queryKey[0] == '/sectors') {
+                  if (typeof query.queryKey[1] === "object" && (query.queryKey[1] as any).id == data.id) {
+                    return true;
+                  }
+                }
               }
-
-              return urlSuffix.startsWith(`/sectors?id=${data.id}`);
+              return false;
             },
           });
           navigate(res.destination);
