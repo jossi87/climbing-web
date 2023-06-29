@@ -49,9 +49,7 @@ const Webcams = () => {
           <Icon name="camera" />
           <Header.Content>
             Webcams
-            <Header.Subheader>
-              {description}
-            </Header.Subheader>
+            <Header.Subheader>{description}</Header.Subheader>
           </Header.Content>
         </Header>
         <Leaflet

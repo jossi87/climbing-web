@@ -49,7 +49,7 @@ const MediaSvgEdit = () => {
         break;
       }
     }
-  }, [status]);
+  }, [data, status]);
 
   const [forceUpdate, setForceUpdate] = useState(0);
   const [activeElementIndex, setActiveElementIndex] = useState(-1);

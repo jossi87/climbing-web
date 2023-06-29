@@ -13,7 +13,9 @@ const Dangerous = () => {
   if (!data) {
     return <Loading />;
   }
-  const description = meta.isBouldering? "Problems flagged as dangerous" : "Routes flagged as dangerous";
+  const description = meta.isBouldering
+    ? "Problems flagged as dangerous"
+    : "Routes flagged as dangerous";
   return (
     <>
       <Helmet>
@@ -25,9 +27,7 @@ const Dangerous = () => {
           <Icon name="warning sign" />
           <Header.Content>
             Dangerous
-            <Header.Subheader>
-              {description}
-            </Header.Subheader>
+            <Header.Subheader>{description}</Header.Subheader>
           </Header.Content>
         </Header>
         <List celled link horizontal size="small">

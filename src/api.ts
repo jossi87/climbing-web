@@ -286,7 +286,7 @@ export function useAreas(
   id?: number | string | undefined,
   options?: Parameters<typeof useData>[1]
 ) {
-  return useData(id? `/areas?id=${id}` : `/areas`, {
+  return useData(id ? `/areas?id=${id}` : `/areas`, {
     ...(options ?? {}),
     queryKey: [`/areas`, { id }],
     transform: (response) => {
@@ -340,8 +340,8 @@ export function getAreaEdit(
           noDogsAllowed: false,
           name: "",
           comment: "",
-          lat: 0,
-          lng: 0,
+          lat: res.defaultCenter?.lat || 0,
+          lng: res.defaultCenter?.lng || 0,
           newMedia: [],
         };
       })
@@ -495,17 +495,13 @@ export function getProblemEdit(
   const sectorId = parseInt(parts[0]);
   const problemId = parseInt(parts[1]);
   if (problemId === 0) {
-    return getSector(accessToken, sectorId)
-      .then((res) => {
-        let defaultCenter;
-        let defaultZoom;
-        if (res.lat && res.lng && parseFloat(res.lat) > 0) {
-          defaultCenter = {
-            lat: parseFloat(res.lat),
-            lng: parseFloat(res.lng),
-          };
-          defaultZoom = 15;
-        }
+    return Promise.all([getMeta(accessToken), getSector(accessToken, sectorId)])
+      .then((results) => Promise.all(results.map((res) => res.json())))
+      .then(([metaRes, res]) => {
+        const { lat, lng } =
+          res.lat && res.lng
+            ? { lat: +res.lat, lng: +res.lng }
+            : metaRes.defaultCenter ?? { lat: 0, lng: 0 };
         return {
           id: -1,
           areaId: res.areaId,
@@ -519,8 +515,8 @@ export function getProblemEdit(
           fa: [],
           faDate: convertFromDateToString(new Date()),
           nr: 0,
-          lat: 0,
-          lng: 0,
+          lat,
+          lng,
           latStr: "",
           lngStr: "",
           trivia: "",

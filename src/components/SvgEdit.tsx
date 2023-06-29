@@ -9,7 +9,7 @@ import {
   InsufficientPrivileges,
   NotLoggedIn,
 } from "./common/widgets/widgets";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 
 const SvgEdit = () => {
@@ -71,7 +71,7 @@ const SvgEdit = () => {
         });
       });
     }
-  }, [isAuthenticated, problemIdMediaId]);
+  }, [getAccessTokenSilently, isAuthenticated, problemIdMediaId]);
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);

@@ -118,7 +118,7 @@ const Area = () => {
       );
     };
   })();
-  
+
   if (error) {
     return (
       <Message
@@ -188,13 +188,16 @@ const Area = () => {
       ),
     });
   }
-  if (markers.length > 0 || outlines.length > 0 || (data[0].lat && data[0].lat > 0)) {
+  if (
+    markers.length > 0 ||
+    outlines.length > 0 ||
+    (data[0].lat && data[0].lat > 0)
+  ) {
     const defaultCenter =
       data[0].lat && data[0].lat > 0
         ? { lat: data[0].lat, lng: data[0].lng }
         : meta.defaultCenter;
-    const defaultZoom =
-      data[0].lat && data[0].lat > 0 ? 14 : meta.defaultZoom;
+    const defaultZoom = data[0].lat && data[0].lat > 0 ? 14 : meta.defaultZoom;
     panes.push({
       menuItem: { key: "map", icon: "map" },
       render: () => (
@@ -320,7 +323,10 @@ const Area = () => {
     sectorPanes.push({
       menuItem:
         (meta.isBouldering ? "Problems (" : "Routes (") +
-        data[0].typeNumTicked.reduce((count, current) => count + current.num, 0) +
+        data[0].typeNumTicked.reduce(
+          (count, current) => count + current.num,
+          0
+        ) +
         ")",
       render: () => (
         <Tab.Pane>
@@ -362,7 +368,9 @@ const Area = () => {
   return (
     <>
       <Helmet>
-        <title>{data[0].name} | {meta.title}</title>
+        <title>
+          {data[0].name} | {meta.title}
+        </title>
         <meta name="description" content={data[0].comment}></meta>
       </Helmet>
       <div style={{ marginBottom: "5px" }}>
@@ -520,7 +528,9 @@ const Area = () => {
                 style={{ fontWeight: "normal", backgroundColor: "white" }}
               >
                 <div
-                  dangerouslySetInnerHTML={{ __html: md.render(data[0].comment) }}
+                  dangerouslySetInnerHTML={{
+                    __html: md.render(data[0].comment),
+                  }}
                 />
               </Table.Cell>
             </Table.Row>

@@ -38,7 +38,7 @@ const Permissions = () => {
         });
       });
     }
-  }, [isAuthenticated]);
+  }, [getAccessTokenSilently, isAuthenticated]);
 
   if (isLoading || (isAuthenticated && !data)) {
     return <Loading />;

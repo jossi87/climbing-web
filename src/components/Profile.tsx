@@ -40,7 +40,7 @@ const Profile = () => {
       };
       update();
     }
-  }, [isLoading, isAuthenticated, userId]);
+  }, [isLoading, isAuthenticated, userId, profile, getAccessTokenSilently]);
 
   function onPageChanged(page: Page) {
     setActivePage(page);
@@ -103,8 +103,13 @@ const Profile = () => {
   return (
     <>
       <Helmet>
-        <title>{profile.firstname} {profile.lastname} | {meta.title}</title>
-        <meta name="description" content="Profile with public ascents, media, and other statistics."></meta>
+        <title>
+          {profile.firstname} {profile.lastname} | {meta.title}
+        </title>
+        <meta
+          name="description"
+          content="Profile with public ascents, media, and other statistics."
+        ></meta>
       </Helmet>
       <Header as="h5" textAlign="center" className="buldreinfo-visible-mobile">
         {profile.picture && <Image circular src={profile.picture} />}

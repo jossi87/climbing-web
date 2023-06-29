@@ -1,4 +1,4 @@
-import { useState, forwardRef, useEffect } from "react";
+import { useState, forwardRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { createElementHook, createControlHook } from "@react-leaflet/core";
 import { Control, DomUtil, DomEvent } from "leaflet";
@@ -36,7 +36,7 @@ const useControl = createControlHook(useControlElement);
 //create your forceUpdate hook
 const useForceUpdate = () => {
   const [_, setValue] = useState(0); // integer state
-  return () => setValue((value) => value + 1); // update the state to force render
+  return useCallback(() => setValue((value) => value + 1), []); // update the state to force render
 };
 
 const createLeafletControl = (useElement) => {
@@ -51,7 +51,7 @@ const createLeafletControl = (useElement) => {
       // until this is called. We need to now force a render so that the
       // portal and children are actually rendered.
       forceUpdate();
-    }, []);
+    }, [forceUpdate]);
 
     const contentNode = instance.getContainer();
     return contentNode ? createPortal(props.children, contentNode) : null;

@@ -1,0 +1,31 @@
+# This is the simplest-possible PR validation -- all it does (right now) is
+# check that the PR installs deps cleanly, lints without any errors, and builds.
+# There's no other validation yet.
+
+name: validate-pull-requests
+run-name: "Simple validation of pull requests"
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  check-build-and-lint:
+    name: "Check that it builds & lints"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+      - name: "Install dependencies"
+        run: |
+          yarn install --frozen-lock-file
+      - name: "Run lint"
+        run: |
+          yarn lint
+      - name: "Run prettier"
+        run: |
+          yarn prettier --check src/
+      - name: "Run the build"
+        run: |
+          yarn tsc

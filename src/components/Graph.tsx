@@ -13,7 +13,9 @@ const Graph = () => {
   if (!data) {
     return <Loading />;
   }
-  const description = meta.isBouldering? "Problems grouped by grade" : "Routes grouped by grade";
+  const description = meta.isBouldering
+    ? "Problems grouped by grade"
+    : "Routes grouped by grade";
   return (
     <>
       <Helmet>
@@ -25,9 +27,7 @@ const Graph = () => {
           <Icon name="area graph" />
           <Header.Content>
             Graph
-            <Header.Subheader>
-              {description}
-            </Header.Subheader>
+            <Header.Subheader>{description}</Header.Subheader>
           </Header.Content>
         </Header>
         <ChartGradeDistribution

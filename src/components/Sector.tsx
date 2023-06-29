@@ -133,8 +133,7 @@ const Sector = () => {
       };
     });
   // Only add polygon if problemMarkers=0 or site is showing sport climbing
-  const addPolygon =
-    meta.isClimbing || markers.length == 0;
+  const addPolygon = meta.isClimbing || markers.length == 0;
   if (data.lat > 0 && data.lng > 0) {
     markers.push({
       lat: data.lat,
@@ -174,8 +173,7 @@ const Sector = () => {
       data.lat && data.lat > 0
         ? { lat: data.lat, lng: data.lng }
         : meta.defaultCenter;
-    const defaultZoom =
-      data.lat && data.lat > 0 ? 15 : meta.defaultZoom;
+    const defaultZoom = data.lat && data.lat > 0 ? 15 : meta.defaultZoom;
     const polyline =
       data.polyline &&
       data.polyline
@@ -320,7 +318,9 @@ const Sector = () => {
   return (
     <>
       <Helmet>
-        <title>{data.name} ({data.areaName}) | {meta.title}</title>
+        <title>
+          {data.name} ({data.areaName}) | {meta.title}
+        </title>
         <meta name="description" content={data.comment}></meta>
       </Helmet>
       <div style={{ marginBottom: "5px" }}>

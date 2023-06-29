@@ -186,10 +186,7 @@ const Activity = ({ idArea, idSector }) => {
           {activity.map((a, i) => {
             // FA
             if (a.users) {
-              const typeDescription =
-                meta.isBouldering
-                  ? "problem"
-                  : "route";
+              const typeDescription = meta.isBouldering ? "problem" : "route";
               return (
                 <Feed.Event key={i}>
                   <Feed.Label>

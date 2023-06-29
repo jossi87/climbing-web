@@ -17,7 +17,7 @@ import Activity from "./common/activity/activity";
 const Frontpage = () => {
   const meta = useMeta();
   const { data: frontpage } = useData(`/frontpage`);
-  const type = meta.isBouldering? "bouldering problems" : "climbing routes";
+  const type = meta.isBouldering ? "bouldering problems" : "climbing routes";
   const description = `${frontpage?.numProblems} ${type}, ${frontpage?.numTicks} public ascents, ${frontpage?.numImages} images, ${frontpage?.numMovies} ascents on video.`;
 
   return (
@@ -39,9 +39,7 @@ const Frontpage = () => {
                     {numberWithCommas(frontpage.numProblems)}
                   </Statistic.Value>
                   <Statistic.Label>
-                    {meta.isBouldering
-                      ? "Problems"
-                      : "Routes"}
+                    {meta.isBouldering ? "Problems" : "Routes"}
                   </Statistic.Label>
                 </Statistic>
                 {meta.isClimbing ? (
@@ -180,10 +178,7 @@ const Frontpage = () => {
           )}
           <Grid.Column mobile={16} tablet={8} computer={12}>
             <Segment>
-              <Activity
-                idArea={0}
-                idSector={0}
-              />
+              <Activity idArea={0} idSector={0} />
             </Segment>
           </Grid.Column>
         </Grid.Row>

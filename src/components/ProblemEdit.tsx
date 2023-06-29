@@ -74,7 +74,7 @@ const ProblemEdit = () => {
         });
       });
     }
-  }, [isAuthenticated, sectorIdProblemId]);
+  }, [getAccessTokenSilently, isAuthenticated, sectorIdProblemId]);
 
   function onNameChanged(e, { value }) {
     setData((prevState) => ({ ...prevState, name: value }));

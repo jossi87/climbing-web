@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Step, Dropdown, List, Segment, Checkbox } from "semantic-ui-react";
 import AccordionContainer from "./accordion-container";
 import { useLocalStorage } from "../../../utils/use-local-storage";
@@ -107,6 +107,46 @@ const ProblemList = ({
           value: OrderBy[OrderBy.rating],
         },
       ];
+
+  const order = useCallback(
+    (newOrderBy: OrderBy) => {
+      setOrderBy(newOrderBy);
+      if (isSectorNotUser) {
+        setSectorCustomOrderBy(newOrderBy);
+      }
+      setData(
+        rows.sort((a, b) => {
+          if (newOrderBy === OrderBy.alphabetical) {
+            if (a.areaName != b.areaName)
+              return a.areaName.localeCompare(b.areaName, getLocales());
+            else if (a.sectorName != b.sectorName)
+              return a.sectorName.localeCompare(b.sectorName, getLocales());
+            return a.name.localeCompare(b.name, getLocales());
+          } else if (newOrderBy === OrderBy.ascents) {
+            if (a.numTicks != b.numTicks) return b.numTicks - a.numTicks;
+            return a.name.localeCompare(b.name, getLocales());
+          } else if (newOrderBy === OrderBy.date) {
+            return a.num - b.num;
+          } else if (newOrderBy === OrderBy.grade) {
+            if (a.gradeNumber != b.gradeNumber)
+              return b.gradeNumber - a.gradeNumber;
+            else if (a.num && b.num && a.num != b.num) return a.num - b.num;
+            return a.name.localeCompare(b.name, getLocales());
+          } else if (newOrderBy === OrderBy.number) {
+            return a.nr - b.nr;
+          } else if (newOrderBy === OrderBy.rating) {
+            if (a.stars != b.stars) return b.stars - a.stars;
+            else if (a.gradeNumber != b.gradeNumber)
+              return b.gradeNumber - a.gradeNumber;
+            else if (a.numTicks != b.numTicks) return b.numTicks - a.numTicks;
+            return a.name.localeCompare(b.name, getLocales());
+          }
+        })
+      );
+    },
+    [isSectorNotUser, rows, setSectorCustomOrderBy]
+  );
+
   useEffect(() => {
     let newOrderBy = OrderBy.date;
     if (isSectorNotUser) {
@@ -156,43 +196,15 @@ const ProblemList = ({
         setGroupBy(false);
       }
     }
-  }, [rows, isSectorNotUser, preferOrderByGrade]);
-
-  function order(newOrderBy: OrderBy) {
-    setOrderBy(newOrderBy);
-    if (isSectorNotUser) {
-      setSectorCustomOrderBy(newOrderBy);
-    }
-    setData(
-      rows.sort((a, b) => {
-        if (newOrderBy === OrderBy.alphabetical) {
-          if (a.areaName != b.areaName)
-            return a.areaName.localeCompare(b.areaName, getLocales());
-          else if (a.sectorName != b.sectorName)
-            return a.sectorName.localeCompare(b.sectorName, getLocales());
-          return a.name.localeCompare(b.name, getLocales());
-        } else if (newOrderBy === OrderBy.ascents) {
-          if (a.numTicks != b.numTicks) return b.numTicks - a.numTicks;
-          return a.name.localeCompare(b.name, getLocales());
-        } else if (newOrderBy === OrderBy.date) {
-          return a.num - b.num;
-        } else if (newOrderBy === OrderBy.grade) {
-          if (a.gradeNumber != b.gradeNumber)
-            return b.gradeNumber - a.gradeNumber;
-          else if (a.num && b.num && a.num != b.num) return a.num - b.num;
-          return a.name.localeCompare(b.name, getLocales());
-        } else if (newOrderBy === OrderBy.number) {
-          return a.nr - b.nr;
-        } else if (newOrderBy === OrderBy.rating) {
-          if (a.stars != b.stars) return b.stars - a.stars;
-          else if (a.gradeNumber != b.gradeNumber)
-            return b.gradeNumber - a.gradeNumber;
-          else if (a.numTicks != b.numTicks) return b.numTicks - a.numTicks;
-          return a.name.localeCompare(b.name, getLocales());
-        }
-      })
-    );
-  }
+  }, [
+    rows,
+    isSectorNotUser,
+    preferOrderByGrade,
+    sectorCustomOrderBy,
+    order,
+    groupBy,
+    setGroupBy,
+  ]);
 
   if (data == null || data.length === 0) {
     return null;

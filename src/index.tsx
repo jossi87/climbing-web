@@ -66,7 +66,7 @@ export const Auth0ProviderWithNavigate = ({ children }) => {
       }}
       onRedirectCallback={onRedirectCallback}
       useRefreshTokens={true}
-      cacheLocation={'localstorage'}
+      cacheLocation={"localstorage"}
     >
       {children}
     </Auth0Provider>

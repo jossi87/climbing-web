@@ -31,7 +31,7 @@ const ProblemEditMedia = () => {
         });
       });
     }
-  }, [isAuthenticated, problemId]);
+  }, [getAccessTokenSilently, isAuthenticated, problemId]);
 
   function save(event) {
     event.preventDefault();

@@ -21,9 +21,7 @@ const Frontpage = lazy(
     )
 );
 const Filter = lazy(() => import(/* webpackChunkName: "filter" */ "./Filter"));
-const Graph = lazy(
-  () => import(/* webpackChunkName: "graph" */ "./Graph")
-);
+const Graph = lazy(() => import(/* webpackChunkName: "graph" */ "./Graph"));
 const MediaSvgEdit = lazy(
   () => import(/* webpackChunkName: "media-svg-edit" */ "./MediaSvgEdit")
 );
@@ -40,7 +38,9 @@ const ProblemEditMedia = lazy(
   () =>
     import(/* webpackChunkName: "problem-edit-media" */ "./ProblemEditMedia")
 );
-const Problems = lazy(() => import(/* webpackChunkName: "problems" */ "./Problems"));
+const Problems = lazy(
+  () => import(/* webpackChunkName: "problems" */ "./Problems")
+);
 const Profile = lazy(
   () => import(/* webpackChunkName: "profile" */ "./Profile")
 );
@@ -52,7 +52,9 @@ const Sites = lazy(() => import(/* webpackChunkName: "sites" */ "./Sites"));
 const SvgEdit = lazy(
   () => import(/* webpackChunkName: "svg-edit" */ "./SvgEdit")
 );
-const Swagger = lazy(() => import(/* webpackChunkName: "swagger" */ "./Swagger"));
+const Swagger = lazy(
+  () => import(/* webpackChunkName: "swagger" */ "./Swagger")
+);
 const Ticks = lazy(() => import(/* webpackChunkName: "ticks" */ "./Ticks"));
 const Trash = lazy(() => import(/* webpackChunkName: "trash" */ "./Trash"));
 const Permissions = lazy(

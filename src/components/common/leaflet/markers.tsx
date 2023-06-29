@@ -24,7 +24,7 @@ export default function Markers({
       map.flyTo(marker._latlng, 13, { animate: false });
       marker.openPopup();
     }
-  }, [flyToId]);
+  }, [flyToId, map]);
 
   if (!markers) {
     return null;
