@@ -287,7 +287,9 @@ const ProblemComments = ({
                       isAdmin={meta.isAdmin}
                       numPitches={data.sections?.length || 0}
                       removeMedia={async () =>
-                        await client.invalidateQueries({ predicate: () => true })
+                        await client.invalidateQueries({
+                          predicate: () => true,
+                        })
                       }
                       media={c.media}
                       optProblemId={null}
