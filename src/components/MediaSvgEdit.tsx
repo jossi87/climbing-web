@@ -52,6 +52,7 @@ const MediaSvgEdit = () => {
   }, [data, status]);
 
   const [forceUpdate, setForceUpdate] = useState(0);
+  const [saving, setSaving] = useState(false);
   const [activeElementIndex, setActiveElementIndex] = useState(-1);
   const shift = useRef<boolean>(false);
   const [activePoint, setActivePoint] = useState<any>(null);
@@ -82,6 +83,7 @@ const MediaSvgEdit = () => {
 
   function save(event) {
     event.preventDefault();
+    setSaving(true);
     newSave(modifiedData).then(() => navigate(-1));
   }
 
@@ -374,7 +376,7 @@ const MediaSvgEdit = () => {
           <Button.Or />
           <Button onClick={() => navigate(-1)}>Cancel</Button>
           <Button.Or />
-          <Button positive onClick={save}>
+          <Button positive loading={saving} onClick={save}>
             Save
           </Button>
         </Button.Group>

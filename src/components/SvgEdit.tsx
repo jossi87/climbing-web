@@ -14,6 +14,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 const SvgEdit = () => {
   const client = useQueryClient();
+  const [saving, setSaving] = useState(false);
   const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [mediaId, setMediaId] = useState<any>(null);
   const [crc32, setCrc32] = useState<any>(null);
@@ -101,6 +102,7 @@ const SvgEdit = () => {
 
   function save(event) {
     event.preventDefault();
+    setSaving(true);
     getAccessTokenSilently().then((accessToken) => {
       postProblemSvg(
         accessToken,
@@ -479,7 +481,7 @@ const SvgEdit = () => {
               Cancel
             </Button>
             <Button.Or />
-            <Button positive onClick={save}>
+            <Button positive loading={saving} onClick={save}>
               Save
             </Button>
           </Button.Group>
