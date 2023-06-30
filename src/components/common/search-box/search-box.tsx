@@ -54,7 +54,7 @@ const SearchBox = (searchProps: SearchBoxProps) => {
     return () => {
       canceled = true;
     };
-  }, [value]);
+  }, [getAccessTokenSilently, isAuthenticated, value]);
 
   return (
     <Search

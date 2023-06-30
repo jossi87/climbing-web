@@ -23,15 +23,11 @@ const About = () => {
           <Icon name="users" />
           <Header.Content>
             Administrators
-            {data &&
-              <Header.Subheader>
-                {data.length} users
-              </Header.Subheader>
-            }
+            {data && <Header.Subheader>{data.length} users</Header.Subheader>}
           </Header.Content>
         </Header>
         <List>
-          {data? 
+          {data ? (
             data.map((u, key) => (
               <List.Item key={key}>
                 <Image src={u.picture ? u.picture : "/png/image.png"} />
@@ -39,13 +35,11 @@ const About = () => {
                   <List.Header as={Link} to={`/user/${u.userId}`}>
                     {u.name}
                   </List.Header>
-                  <List.Description>
-                    Last seen {u.lastLogin}
-                  </List.Description>
+                  <List.Description>Last seen {u.lastLogin}</List.Description>
                 </List.Content>
               </List.Item>
             ))
-            :
+          ) : (
             <Placeholder>
               {[...Array(10)].map((e, i) => (
                 <Placeholder.Header image key={i}>
@@ -54,7 +48,7 @@ const About = () => {
                 </Placeholder.Header>
               ))}
             </Placeholder>
-          }
+          )}
         </List>
       </Segment>
     </Grid.Column>
@@ -64,7 +58,10 @@ const About = () => {
     <>
       <Helmet>
         <title>About | {meta.title}</title>
-        <meta name="description" content="History, information and administrators."></meta>
+        <meta
+          name="description"
+          content="History, information and administrators."
+        ></meta>
       </Helmet>
       <Grid columns={2} stackable>
         <Grid.Column>

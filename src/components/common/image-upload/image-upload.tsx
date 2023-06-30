@@ -9,22 +9,25 @@ const ImageUpload = ({
   isMultiPitch,
   includeVideoEmbedder,
 }) => {
-  const onDrop = useCallback((acceptedFiles) => {
-    const allMedia = media;
-    acceptedFiles.forEach((f) => {
-      f.preview = URL.createObjectURL(f);
-      f.trivia = false;
-      allMedia.push({ file: f });
-    });
-    setMedia(allMedia);
-    onMediaChanged(allMedia);
-  }, []);
+  const [media, setMedia] = useState([]);
+  const onDrop = useCallback(
+    (acceptedFiles) => {
+      const allMedia = media;
+      acceptedFiles.forEach((f) => {
+        f.preview = URL.createObjectURL(f);
+        f.trivia = false;
+        allMedia.push({ file: f });
+      });
+      setMedia(allMedia);
+      onMediaChanged(allMedia);
+    },
+    [media, onMediaChanged]
+  );
   const accept = { "image/jpeg": [".jpeg", ".png"] };
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept,
   });
-  const [media, setMedia] = useState([]);
 
   return (
     <>

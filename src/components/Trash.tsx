@@ -62,7 +62,7 @@ const Trash = () => {
                               t.idProblem,
                               t.idMedia
                             )
-                              .then(async (res) => {
+                              .then(async () => {
                                 // TODO: Remove this and use mutations instead.
                                 await client.invalidateQueries({
                                   predicate: () => {

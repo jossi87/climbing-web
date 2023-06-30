@@ -109,7 +109,7 @@ const ProfileStatistics = ({
       setData(undefined);
     }
     getProfileStatistics(accessToken, userId).then((data) => setData(data));
-  }, [accessToken, userId]);
+  }, [accessToken, data, userId]);
 
   if (!data) {
     return <Loading />;

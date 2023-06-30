@@ -20,13 +20,13 @@ const Svg = ({
 
   function generateShapes(svgs, w, h) {
     // Order of topoLines matter when drawing overlapping routes with different opacity
-    let topoLines = svgs.sort((a, b) => {
+    const topoLines = svgs.sort((a, b) => {
       if (optProblemId > 0 && a.problemId === optProblemId) {
         return 1;
       } else if (optProblemId > 0 && b.problemId === optProblemId) {
         return -1;
       }
-      return b.nr-a.nr;
+      return b.nr - a.nr;
     });
     return topoLines.map((svg, key) => {
       const path: any = parseSVG(svg.path);
@@ -184,7 +184,7 @@ const Svg = ({
           <rect
             fill="#000000"
             strokeWidth={r / 6}
-            stroke={svg.problemId === optProblemId ? '#FFFFFF' : 'none'}
+            stroke={svg.problemId === optProblemId ? "#FFFFFF" : "none"}
             x={x - r}
             y={y - r}
             width={r * 2.1}

@@ -122,7 +122,10 @@ const Areas = () => {
     <>
       <Helmet>
         <title>Areas | {meta.title}</title>
-        <meta name="description" content={`${data.length} areas for climbing.`}></meta>
+        <meta
+          name="description"
+          content={`${data.length} areas for climbing.`}
+        ></meta>
       </Helmet>
       <Segment>
         <ButtonGroup floated="right" size="mini">

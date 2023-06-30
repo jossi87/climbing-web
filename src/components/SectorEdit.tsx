@@ -51,7 +51,7 @@ const SectorEdit = () => {
         getArea(accessToken, areaId).then((data) => setArea(data[0]));
       });
     }
-  }, [isAuthenticated, areaIdSectorId]);
+  }, [isAuthenticated, areaIdSectorId, getAccessTokenSilently]);
 
   function onNameChanged(e, { value }) {
     setData((prevState) => ({ ...prevState, name: value }));

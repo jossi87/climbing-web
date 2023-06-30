@@ -27,7 +27,7 @@ const Sites = () => {
       };
       update();
     }
-  }, [isLoading, isAuthenticated, type]);
+  }, [isLoading, isAuthenticated, type, data, getAccessTokenSilently]);
 
   if (isLoading || !data) {
     return <Loading />;
@@ -84,13 +84,15 @@ const Sites = () => {
           <Icon name="sitemap" />
           <Header.Content>
             Sites
-            <Header.Subheader>
-              {description}
-            </Header.Subheader>
+            <Header.Subheader>{description}</Header.Subheader>
           </Header.Content>
         </Header>
         <Button.Group fluid>
-          <Button as={Link} to={"/sites/boulder"} active={data[0].system == "BOULDER"}>
+          <Button
+            as={Link}
+            to={"/sites/boulder"}
+            active={data[0].system == "BOULDER"}
+          >
             Bouldering
           </Button>
           <Button

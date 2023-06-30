@@ -34,7 +34,7 @@ const UserSelector = ({
       };
       update();
     }
-  }, []);
+  }, [getAccessTokenSilently, isAuthenticated, isLoading]);
 
   function handleChange(newValue: any) {
     if (!newValue) {

@@ -173,7 +173,10 @@ const Filter = () => {
     <>
       <Helmet>
         <title>{meta.title} | Filter</title>
-        <meta name="description" content="Filter on routes/boulders by grade and metadata."></meta>
+        <meta
+          name="description"
+          content="Filter on routes/boulders by grade and metadata."
+        ></meta>
       </Helmet>
       <Segment>
         <Header>Filter</Header>

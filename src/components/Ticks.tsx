@@ -26,7 +26,7 @@ const Ticks = () => {
       });
     };
     update();
-  }, [isLoading, isAuthenticated, page]);
+  }, [isLoading, isAuthenticated, page, getAccessTokenSilently]);
 
   if (isLoading || !data) {
     return <Loading />;

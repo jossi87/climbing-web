@@ -44,7 +44,7 @@ const AreaEdit = () => {
         });
       });
     }
-  }, [isAuthenticated, isLoading, areaId]);
+  }, [isAuthenticated, isLoading, areaId, getAccessTokenSilently]);
 
   function onNameChanged(e, { value }) {
     setData((prevState) => ({ ...prevState, name: value }));

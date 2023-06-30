@@ -23,21 +23,25 @@ const Problems = () => {
   if (!data) {
     return <Loading />;
   }
-  let numAreas = data.length;
+  const numAreas = data.length;
   let numSectors = 0;
   let numProblems = 0;
-  data.forEach(a => {
+  data.forEach((a) => {
     numSectors += a.sectors.length;
-    a.sectors.forEach(s => {
+    a.sectors.forEach((s) => {
       numProblems += s.problems.length;
-    })
+    });
   });
-  const title = meta.isBouldering? "Problems" : "Routes";
-  const description = `${numAreas} areas, ${numSectors} sectors, ${numProblems} ${meta.isClimbing? "routes" : "boulders"}`;
+  const title = meta.isBouldering ? "Problems" : "Routes";
+  const description = `${numAreas} areas, ${numSectors} sectors, ${numProblems} ${
+    meta.isClimbing ? "routes" : "boulders"
+  }`;
   return (
     <>
       <Helmet>
-        <title>{title} | {meta.title}</title>
+        <title>
+          {title} | {meta.title}
+        </title>
         <meta name="description" content={description}></meta>
       </Helmet>
       <Segment>
@@ -70,9 +74,7 @@ const Problems = () => {
           <Icon name="database" />
           <Header.Content>
             {title}
-            <Header.Subheader>
-             {description}
-            </Header.Subheader>
+            <Header.Subheader>{description}</Header.Subheader>
           </Header.Content>
         </Header>
         <List celled link horizontal size="small">

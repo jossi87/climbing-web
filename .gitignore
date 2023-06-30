@@ -1,3 +1,6 @@
 /node_modules
 /build/static/*
 /build/index.html
+
+.yarnrc
+yarn-error.log
