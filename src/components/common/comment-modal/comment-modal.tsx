@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { postComment, useAccessToken } from "./../../../api";
 import { Button, Modal, Form, TextArea } from "semantic-ui-react";
 import ImageUpload from "../image-upload/image-upload";
+import { useQueryClient } from "@tanstack/react-query";
 
 const CommentModal = ({
   comment,
@@ -10,7 +11,7 @@ const CommentModal = ({
   id,
   idProblem,
 }: {
-  onClose: (reload?: boolean) => void;
+  onClose: () => void;
   showHse: boolean;
   id: number;
   idProblem: number;
@@ -20,6 +21,7 @@ const CommentModal = ({
     resolved: boolean;
   };
 }) => {
+  const client = useQueryClient();
   const accessToken = useAccessToken();
   const [message, setMessage] = useState(comment?.message ?? "");
   const [danger, setDanger] = useState(comment?.danger);
@@ -28,7 +30,7 @@ const CommentModal = ({
   const [saving, setSaving] = useState(false);
 
   return (
-    <Modal open={true} onClose={() => onClose(false)}>
+    <Modal open={true} onClose={onClose}>
       <Modal.Header>Add comment</Modal.Header>
       <Modal.Content>
         <Modal.Description>
@@ -93,7 +95,7 @@ const CommentModal = ({
       </Modal.Content>
       <Modal.Actions>
         <Button.Group compact size="tiny">
-          <Button onClick={() => onClose(false)}>Cancel</Button>
+          <Button onClick={onClose}>Cancel</Button>
           <Button.Or />
           <Button
             positive
@@ -114,8 +116,9 @@ const CommentModal = ({
                 false,
                 media
               )
-                .then(() => {
-                  onClose(true);
+                .then(async () => {
+                  onClose();
+                  await client.invalidateQueries({ predicate: () => true });
                 })
                 .catch((error) => {
                   console.warn(error);

@@ -20,7 +20,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 type TickModalProps = {
   open: boolean;
-  onClose: (reload: boolean) => void;
+  onClose: () => void;
   idTick: number;
   idProblem: number;
   grades: Grade[];
@@ -59,7 +59,7 @@ const TickModal = ({
     date && (convertFromStringToDate(date) ?? new Date()) > today;
 
   return (
-    <Modal open={open} onClose={() => onClose(false)}>
+    <Modal open={open} onClose={onClose}>
       <Modal.Header>Tick</Modal.Header>
       <Modal.Content>
         <Modal.Description>
@@ -243,7 +243,7 @@ const TickModal = ({
       </Modal.Content>
       <Modal.Actions>
         <Button.Group compact size="tiny">
-          <Button onClick={() => onClose(false)}>Cancel</Button>
+          <Button onClick={onClose}>Cancel</Button>
           <Button.Or />
           {idTick > 1 && (
             <>
@@ -268,7 +268,7 @@ const TickModal = ({
                     repeats
                   )
                     .then(async () => {
-                      onClose(true);
+                      onClose();
                       await client.invalidateQueries({ predicate: () => true });
                     })
                     .catch((error) => {
@@ -302,7 +302,7 @@ const TickModal = ({
                 repeats
               )
                 .then(async () => {
-                  onClose(true);
+                  onClose();
                   await client.invalidateQueries({ predicate: () => true });
                 })
                 .catch((error) => {

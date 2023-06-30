@@ -39,6 +39,7 @@ import {
 import TickModal from "./common/tick-modal/tick-modal";
 import CommentModal from "./common/comment-modal/comment-modal";
 import Linkify from "react-linkify";
+import { useQueryClient } from "@tanstack/react-query";
 
 const componentDecorator = (href, text, key) => (
   <a href={href} key={key} target="_blank" rel="noreferrer">
@@ -204,15 +205,16 @@ const ProblemComments = ({
   showHiddenMedia: boolean;
   onShowCommentModal: (comment: any) => void;
 }) => {
+  const client = useQueryClient();
   const accessToken = useAccessToken();
   const meta = useMeta();
-  const { data, refetch } = useProblem(problemId, showHiddenMedia);
+  const { data } = useProblem(problemId, showHiddenMedia);
 
   function flagAsDangerous({ id, message }) {
     if (confirm("Are you sure you want to flag this comment?")) {
       postComment(accessToken, id, data.id, message, true, false, false, [])
-        .then(() => {
-          refetch();
+        .then(async () => {
+          await client.invalidateQueries({ predicate: () => true });
         })
         .catch((error) => {
           console.warn(error);
@@ -224,8 +226,8 @@ const ProblemComments = ({
   function deleteComment({ id }) {
     if (confirm("Are you sure you want to delete this comment?")) {
       postComment(accessToken, id, data.id, null, false, false, true, [])
-        .then(() => {
-          refetch();
+        .then(async () => {
+          await client.invalidateQueries({ predicate: () => true });
         })
         .catch((error) => {
           console.warn(error);
@@ -304,19 +306,20 @@ const ProblemComments = ({
 };
 
 const Problem = () => {
+  const client = useQueryClient();
   const accessToken = useAccessToken();
   const { problemId } = useParams();
   const [showHiddenMedia, setShowHiddenMedia] = useState(false);
   const meta = useMeta();
-  const { data, error, refetch } = useProblem(problemId, showHiddenMedia);
+  const { data, error } = useProblem(problemId, showHiddenMedia);
 
   const [showTickModal, setShowTickModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState<any>(null);
 
   function toggleTodo(problemId: number) {
     postTodo(accessToken, problemId)
-      .then(() => {
-        refetch();
+      .then(async () => {
+        await client.invalidateQueries({ predicate: () => true });
       })
       .catch((error) => {
         console.warn(error);
@@ -324,22 +327,16 @@ const Problem = () => {
       });
   }
 
-  const onTickModalClose = (reload: boolean) => {
+  const onTickModalClose = () => {
     setShowTickModal(false);
-    if (reload) {
-      refetch();
-    }
   };
 
   function openTickModal() {
     setShowTickModal(true);
   }
 
-  const onCommentModalClosed = (reload: boolean) => {
+  const onCommentModalClosed = () => {
     setShowCommentModal(null);
-    if (reload) {
-      refetch();
-    }
   };
 
   if (error) {
@@ -384,7 +381,7 @@ const Problem = () => {
           <Media
             isAdmin={meta.isAdmin}
             numPitches={data.sections?.length || 0}
-            removeMedia={() => refetch()}
+            removeMedia={async () => await client.invalidateQueries({ predicate: () => true })}
             media={data.media}
             optProblemId={data.id}
             isBouldering={meta.isBouldering}
@@ -558,9 +555,9 @@ const Problem = () => {
                 <Button
                   positive={showHiddenMedia}
                   animated="fade"
-                  onClick={() => {
+                  onClick={async () => {
                     setShowHiddenMedia(!showHiddenMedia);
-                    refetch();
+                    await client.invalidateQueries({ predicate: () => true });
                   }}
                 >
                   <Button.Content hidden>Images</Button.Content>
