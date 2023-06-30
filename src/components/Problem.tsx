@@ -286,7 +286,9 @@ const ProblemComments = ({
                     <Media
                       isAdmin={meta.isAdmin}
                       numPitches={data.sections?.length || 0}
-                      removeMedia={() => window.location.reload()}
+                      removeMedia={async () =>
+                        await client.invalidateQueries({ predicate: () => true })
+                      }
                       media={c.media}
                       optProblemId={null}
                       isBouldering={meta.isBouldering}
@@ -381,7 +383,9 @@ const Problem = () => {
           <Media
             isAdmin={meta.isAdmin}
             numPitches={data.sections?.length || 0}
-            removeMedia={async () => await client.invalidateQueries({ predicate: () => true })}
+            removeMedia={async () =>
+              await client.invalidateQueries({ predicate: () => true })
+            }
             media={data.media}
             optProblemId={data.id}
             isBouldering={meta.isBouldering}
@@ -805,7 +809,9 @@ const Problem = () => {
                     <Media
                       isAdmin={meta.isAdmin}
                       numPitches={data.sections?.length || 0}
-                      removeMedia={() => window.location.reload()}
+                      removeMedia={async () =>
+                        await client.invalidateQueries({ predicate: () => true })
+                      }
                       media={data.triviaMedia}
                       optProblemId={null}
                       isBouldering={meta.isBouldering}
@@ -936,7 +942,9 @@ const Problem = () => {
                               <Media
                                 isAdmin={meta.isAdmin}
                                 numPitches={data.sections?.length || 0}
-                                removeMedia={() => window.location.reload()}
+                                removeMedia={async () =>
+                                  await client.invalidateQueries({ predicate: () => true })
+                                }
                                 media={s.media}
                                 optProblemId={null}
                                 isBouldering={meta.isBouldering}
