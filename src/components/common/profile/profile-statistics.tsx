@@ -105,11 +105,8 @@ const ProfileStatistics = ({
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    if (data) {
-      setData(undefined);
-    }
     getProfileStatistics(accessToken, userId).then((data) => setData(data));
-  }, [userId]);
+  }, [accessToken, userId]);
 
   if (!data) {
     return <Loading />;

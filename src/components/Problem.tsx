@@ -812,7 +812,9 @@ const Problem = () => {
                       isAdmin={meta.isAdmin}
                       numPitches={data.sections?.length || 0}
                       removeMedia={async () =>
-                        await client.invalidateQueries({ predicate: () => true })
+                        await client.invalidateQueries({
+                          predicate: () => true,
+                        })
                       }
                       media={data.triviaMedia}
                       optProblemId={null}
@@ -945,7 +947,9 @@ const Problem = () => {
                                 isAdmin={meta.isAdmin}
                                 numPitches={data.sections?.length || 0}
                                 removeMedia={async () =>
-                                  await client.invalidateQueries({ predicate: () => true })
+                                  await client.invalidateQueries({
+                                    predicate: () => true,
+                                  })
                                 }
                                 media={s.media}
                                 optProblemId={null}

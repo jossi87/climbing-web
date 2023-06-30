@@ -27,9 +27,6 @@ const Profile = () => {
   const meta = useMeta();
   useEffect(() => {
     if (!isLoading) {
-      if (profile != null) {
-        setProfile(null);
-      }
       const update = async () => {
         const accessToken = isAuthenticated
           ? await getAccessTokenSilently()
@@ -40,7 +37,7 @@ const Profile = () => {
       };
       update();
     }
-  }, [isLoading, isAuthenticated, userId]);
+  }, [isLoading, isAuthenticated, userId, getAccessTokenSilently]);
 
   function onPageChanged(page: Page) {
     setActivePage(page);

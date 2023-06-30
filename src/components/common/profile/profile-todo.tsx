@@ -22,11 +22,8 @@ const ProfileTodo = ({
     useState<Awaited<ReturnType<typeof getProfileTodo>>>();
 
   useEffect(() => {
-    if (data) {
-      setData(undefined);
-    }
     getProfileTodo(accessToken, userId).then((data) => setData(data));
-  }, [userId]);
+  }, [accessToken, userId]);
 
   if (!data) {
     return <Loading />;

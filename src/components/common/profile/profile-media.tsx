@@ -7,13 +7,10 @@ import Media from "../../common/media/media";
 const ProfileMedia = ({ accessToken, userId, isBouldering, captured }) => {
   const [data, setData] = useState<any[] | null>(null);
   useEffect(() => {
-    if (data != null) {
-      setData(null);
-    }
     getProfileMedia(accessToken, userId, captured).then((data) =>
       setData(data)
     );
-  }, [userId, captured]);
+  }, [userId, captured, accessToken]);
 
   if (!data) {
     return <Loading />;
