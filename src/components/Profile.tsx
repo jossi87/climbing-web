@@ -40,7 +40,7 @@ const Profile = () => {
       };
       update();
     }
-  }, [isLoading, isAuthenticated, userId, profile, getAccessTokenSilently]);
+  }, [isLoading, isAuthenticated, userId]);
 
   function onPageChanged(page: Page) {
     setActivePage(page);

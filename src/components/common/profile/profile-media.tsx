@@ -13,7 +13,7 @@ const ProfileMedia = ({ accessToken, userId, isBouldering, captured }) => {
     getProfileMedia(accessToken, userId, captured).then((data) =>
       setData(data)
     );
-  }, [accessToken, userId, captured, data]);
+  }, [userId, captured]);
 
   if (!data) {
     return <Loading />;

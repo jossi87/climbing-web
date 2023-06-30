@@ -26,7 +26,7 @@ const ProfileTodo = ({
       setData(undefined);
     }
     getProfileTodo(accessToken, userId).then((data) => setData(data));
-  }, [accessToken, data, userId]);
+  }, [userId]);
 
   if (!data) {
     return <Loading />;
