@@ -1,10 +1,12 @@
 import React from "react";
 import { Segment, Icon, Label, Header } from "semantic-ui-react";
 import { postUserRegion } from "../../../api";
+import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 
 const ProfileSettings = ({ accessToken, userRegions }) => {
   const client = useQueryClient();
+  const navigate = useNavigate();
   if (!accessToken || !userRegions || userRegions.length === 0) {
     return <Segment>No data</Segment>;
   }
@@ -31,6 +33,7 @@ const ProfileSettings = ({ accessToken, userRegions }) => {
                 postUserRegion(accessToken, ur.id, true)
                   .then(async () => {
                     await client.invalidateQueries({ predicate: () => true });
+                    navigate(0);
                   })
                   .catch((error) => {
                     console.warn(error);
@@ -53,6 +56,7 @@ const ProfileSettings = ({ accessToken, userRegions }) => {
                 postUserRegion(accessToken, ur.id, false)
                   .then(async () => {
                     await client.invalidateQueries({ predicate: () => true });
+                    navigate(0);
                   })
                   .catch((error) => {
                     console.warn(error);
