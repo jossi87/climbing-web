@@ -7,6 +7,24 @@ import "./buldreinfo.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { DataReloader } from "./components/DataReloader";
+import * as Sentry from "@sentry/react";
+import { getBaseUrl } from "./api";
+
+Sentry.init({
+  dsn: "https://32152968271f46afa0efa8608b252e42@o4505452714786816.ingest.sentry.io/4505452716556288",
+  integrations: [
+    new Sentry.BrowserTracing({
+      tracePropagationTargets: ["localhost", getBaseUrl()],
+    }),
+    new Sentry.Replay(),
+  ],
+  // Performance Monitoring
+  tracesSampleRate: process.env.REACT_APP_ENV === "production" ? 0.5 : 1.0,
+  // Session Replay
+  replaysSessionSampleRate:
+    process.env.REACT_APP_ENV === "production" ? 0.1 : 1.0,
+  replaysOnErrorSampleRate: 1.0,
+});
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   const userAgent = navigator.userAgent;
