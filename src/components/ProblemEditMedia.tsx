@@ -5,10 +5,8 @@ import { getProblem, postProblemMedia } from "../api";
 import { Loading } from "./common/widgets/widgets";
 import { Segment, Button } from "semantic-ui-react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
 
 const ProblemEditMedia = () => {
-  const client = useQueryClient();
   const {
     isLoading,
     isAuthenticated,
@@ -39,10 +37,6 @@ const ProblemEditMedia = () => {
     getAccessTokenSilently().then((accessToken) => {
       postProblemMedia(accessToken, id, media)
         .then(async (res) => {
-          // TODO: Remove this and use mutations instead.
-          await client.invalidateQueries({
-            predicate: () => true,
-          });
           navigate(`/problem/${res.id}`);
         })
         .catch((error) => {

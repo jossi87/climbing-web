@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { postComment, useAccessToken } from "./../../../api";
 import { Button, Modal, Form, TextArea } from "semantic-ui-react";
 import ImageUpload from "../image-upload/image-upload";
-import { useQueryClient } from "@tanstack/react-query";
 
 const CommentModal = ({
   comment,
@@ -21,7 +20,6 @@ const CommentModal = ({
     resolved: boolean;
   };
 }) => {
-  const client = useQueryClient();
   const accessToken = useAccessToken();
   const [message, setMessage] = useState(comment?.message ?? "");
   const [danger, setDanger] = useState(comment?.danger);
@@ -116,9 +114,8 @@ const CommentModal = ({
                 false,
                 media
               )
-                .then(async () => {
+                .then(() => {
                   onClose();
-                  await client.invalidateQueries({ predicate: () => true });
                 })
                 .catch((error) => {
                   console.warn(error);

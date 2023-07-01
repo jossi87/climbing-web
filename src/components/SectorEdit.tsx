@@ -21,10 +21,8 @@ import { useMeta } from "./common/meta";
 import { getSectorEdit, postSector, getSector, getArea } from "../api";
 import Leaflet from "./common/leaflet/leaflet";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
 
 const SectorEdit = () => {
-  const client = useQueryClient();
   const {
     isLoading,
     isAuthenticated,
@@ -105,10 +103,6 @@ const SectorEdit = () => {
         data.problemOrder
       )
         .then(async (res) => {
-          // TODO: Remove this and use mutations instead.
-          await client.invalidateQueries({
-            predicate: () => true,
-          });
           navigate(res.destination);
         })
         .catch((error) => {

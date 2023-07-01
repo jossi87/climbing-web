@@ -4,10 +4,13 @@ import {
   UseQueryOptions,
   useMutation,
   useQuery,
-  useQueryClient,
 } from "@tanstack/react-query";
 import fetch from "isomorphic-fetch";
 import { useState, useEffect } from "react";
+import {
+  ConsistencyAction,
+  DATA_MUTATION_EVENT,
+} from "./components/DataReloader";
 
 export function getLocales() {
   return "nb-NO";
@@ -27,8 +30,11 @@ function getUrl(urlSuffix: string): string {
 function makeAuthenticatedRequest(
   accessToken: string | null,
   urlSuffix: string,
-  opts?: Partial<Parameters<typeof fetch>[1]>
+  extraOptions?: Partial<Parameters<typeof fetch>[1]> & {
+    consistencyAction?: ConsistencyAction;
+  }
 ) {
+  const { consistencyAction, ...opts } = extraOptions || {};
   const options = {
     ...opts,
     mode: "cors",
@@ -37,7 +43,16 @@ function makeAuthenticatedRequest(
       Authorization: accessToken ? `Bearer ${accessToken}` : undefined,
     },
   };
-  return fetch(getUrl(urlSuffix), options);
+  return fetch(getUrl(urlSuffix), options).then((res) => {
+    if ((options.method ?? "GET") !== "GET") {
+      window.dispatchEvent(
+        new CustomEvent(DATA_MUTATION_EVENT, {
+          detail: { mode: consistencyAction ?? "refetch" },
+        })
+      );
+    }
+    return res;
+  });
 }
 
 export function useAccessToken() {
@@ -306,7 +321,7 @@ export function useAreas(
 }
 
 export function getArea(accessToken: string | null, id: number): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/areas?id=${id}`, null)
+  return makeAuthenticatedRequest(accessToken, `/areas?id=${id}`)
     .then((response) => {
       if (response.status === 500) {
         return Promise.reject(
@@ -350,7 +365,7 @@ export function getAreaEdit(
         return null;
       });
   } else {
-    return makeAuthenticatedRequest(accessToken, `/areas?id=${id}`, null)
+    return makeAuthenticatedRequest(accessToken, `/areas?id=${id}`)
       .then((data) => data.json())
       .then((res) => {
         return {
@@ -394,33 +409,17 @@ export function getGradeDistribution(
 }
 
 export function useMediaSvg(idMedia: number) {
-  const client = useQueryClient();
   const { data, ...dataResult } = useData(`/media?idMedia=${idMedia}`, {
     queryKey: [`/media`, { idMedia }],
   });
 
-  const mutation = usePostData(`/media/svg`, {
-    onSuccess: async () => {
-      await client.refetchQueries({
-        queryKey: [`/areas`],
-        exact: false,
-      });
-      await client.refetchQueries({
-        queryKey: [`/sectors`],
-        exact: false,
-      });
-      await client.refetchQueries({
-        queryKey: [`/problem`],
-        exact: false,
-      });
-    },
-  });
+  const mutation = usePostData(`/media/svg`);
 
   return { media: data, save: mutation.mutateAsync, ...dataResult };
 }
 
 export function getMeta(accessToken: string | null): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/meta`, null)
+  return makeAuthenticatedRequest(accessToken, `/meta`)
     .then((data) => data.json())
     .catch((error) => {
       console.warn(error);
@@ -429,7 +428,7 @@ export function getMeta(accessToken: string | null): Promise<any> {
 }
 
 export function getPermissions(accessToken: string | null): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/permissions`, null)
+  return makeAuthenticatedRequest(accessToken, `/permissions`)
     .then((data) => data.json())
     .catch((error) => {
       console.warn(error);
@@ -573,7 +572,7 @@ export function getProfile(
   accessToken: string | null,
   id: number
 ): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/profile?id=${id}`, null)
+  return makeAuthenticatedRequest(accessToken, `/profile?id=${id}`)
     .then((data) => data.json())
     .catch((error) => {
       console.warn(error);
@@ -677,7 +676,7 @@ export function getProfileTodo(
     }[];
   }[];
 }> {
-  return makeAuthenticatedRequest(accessToken, `/profile/todo?id=${id}`, null)
+  return makeAuthenticatedRequest(accessToken, `/profile/todo?id=${id}`)
     .then((data) => data.json())
     .catch((error) => {
       console.warn(error);
@@ -712,7 +711,7 @@ export function getSector(
   accessToken: string | null,
   id: number
 ): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/sectors?id=${id}`, null)
+  return makeAuthenticatedRequest(accessToken, `/sectors?id=${id}`)
     .then((response) => {
       if (response.status === 500) {
         return Promise.reject(
@@ -792,7 +791,7 @@ export function getSites(
   accessToken: string | null,
   type: string
 ): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/sites?type=${type}`, null)
+  return makeAuthenticatedRequest(accessToken, `/sites?type=${type}`)
     .then((data) => data.json())
     .catch((error) => {
       console.warn(error);
@@ -886,7 +885,7 @@ export function getTicks(
   accessToken: string | null,
   page: number
 ): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/ticks?page=${page}`, null)
+  return makeAuthenticatedRequest(accessToken, `/ticks?page=${page}`)
     .then((data) => data.json())
     .catch((error) => {
       console.warn(error);

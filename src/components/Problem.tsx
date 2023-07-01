@@ -39,7 +39,6 @@ import {
 import TickModal from "./common/tick-modal/tick-modal";
 import CommentModal from "./common/comment-modal/comment-modal";
 import Linkify from "react-linkify";
-import { useQueryClient } from "@tanstack/react-query";
 
 const componentDecorator = (href, text, key) => (
   <a href={href} key={key} target="_blank" rel="noreferrer">
@@ -205,34 +204,36 @@ const ProblemComments = ({
   showHiddenMedia: boolean;
   onShowCommentModal: (comment: any) => void;
 }) => {
-  const client = useQueryClient();
   const accessToken = useAccessToken();
   const meta = useMeta();
   const { data } = useProblem(problemId, showHiddenMedia);
 
   function flagAsDangerous({ id, message }) {
     if (confirm("Are you sure you want to flag this comment?")) {
-      postComment(accessToken, id, data.id, message, true, false, false, [])
-        .then(async () => {
-          await client.invalidateQueries({ predicate: () => true });
-        })
-        .catch((error) => {
-          console.warn(error);
-          alert(error.toString());
-        });
+      postComment(
+        accessToken,
+        id,
+        data.id,
+        message,
+        true,
+        false,
+        false,
+        []
+      ).catch((error) => {
+        console.warn(error);
+        alert(error.toString());
+      });
     }
   }
 
   function deleteComment({ id }) {
     if (confirm("Are you sure you want to delete this comment?")) {
-      postComment(accessToken, id, data.id, null, false, false, true, [])
-        .then(async () => {
-          await client.invalidateQueries({ predicate: () => true });
-        })
-        .catch((error) => {
+      postComment(accessToken, id, data.id, null, false, false, true, []).catch(
+        (error) => {
           console.warn(error);
           alert(error.toString());
-        });
+        }
+      );
     }
   }
 
@@ -286,11 +287,6 @@ const ProblemComments = ({
                     <Media
                       isAdmin={meta.isAdmin}
                       numPitches={data.sections?.length || 0}
-                      removeMedia={async () =>
-                        await client.invalidateQueries({
-                          predicate: () => true,
-                        })
-                      }
                       media={c.media}
                       optProblemId={null}
                       isBouldering={meta.isBouldering}
@@ -310,7 +306,6 @@ const ProblemComments = ({
 };
 
 const Problem = () => {
-  const client = useQueryClient();
   const accessToken = useAccessToken();
   const { problemId } = useParams();
   const [showHiddenMedia, setShowHiddenMedia] = useState(false);
@@ -321,14 +316,10 @@ const Problem = () => {
   const [showCommentModal, setShowCommentModal] = useState<any>(null);
 
   function toggleTodo(problemId: number) {
-    postTodo(accessToken, problemId)
-      .then(async () => {
-        await client.invalidateQueries({ predicate: () => true });
-      })
-      .catch((error) => {
-        console.warn(error);
-        alert(error.toString());
-      });
+    postTodo(accessToken, problemId).catch((error) => {
+      console.warn(error);
+      alert(error.toString());
+    });
   }
 
   const onTickModalClose = () => {
@@ -385,9 +376,6 @@ const Problem = () => {
           <Media
             isAdmin={meta.isAdmin}
             numPitches={data.sections?.length || 0}
-            removeMedia={async () =>
-              await client.invalidateQueries({ predicate: () => true })
-            }
             media={data.media}
             optProblemId={data.id}
             isBouldering={meta.isBouldering}
@@ -563,7 +551,6 @@ const Problem = () => {
                   animated="fade"
                   onClick={async () => {
                     setShowHiddenMedia(!showHiddenMedia);
-                    await client.invalidateQueries({ predicate: () => true });
                   }}
                 >
                   <Button.Content hidden>Images</Button.Content>
@@ -811,11 +798,6 @@ const Problem = () => {
                     <Media
                       isAdmin={meta.isAdmin}
                       numPitches={data.sections?.length || 0}
-                      removeMedia={async () =>
-                        await client.invalidateQueries({
-                          predicate: () => true,
-                        })
-                      }
                       media={data.triviaMedia}
                       optProblemId={null}
                       isBouldering={meta.isBouldering}
@@ -946,11 +928,6 @@ const Problem = () => {
                               <Media
                                 isAdmin={meta.isAdmin}
                                 numPitches={data.sections?.length || 0}
-                                removeMedia={async () =>
-                                  await client.invalidateQueries({
-                                    predicate: () => true,
-                                  })
-                                }
                                 media={s.media}
                                 optProblemId={null}
                                 isBouldering={meta.isBouldering}

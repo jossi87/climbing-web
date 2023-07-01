@@ -104,7 +104,7 @@ const Area = () => {
   const accessToken = useAccessToken();
   const meta = useMeta();
   const { areaId } = useParams();
-  const { data, error, refetch } = useAreas(parseInt(areaId ?? "0"));
+  const { data, error } = useAreas(parseInt(areaId ?? "0"));
 
   const md = new Remarkable({ breaks: true }).use(linkify);
   // open links in new windows
@@ -179,7 +179,6 @@ const Area = () => {
           <Media
             isAdmin={meta.isAdmin}
             numPitches={0}
-            removeMedia={() => refetch()}
             media={data[0].media}
             optProblemId={null}
             isBouldering={meta.isBouldering}
@@ -471,7 +470,6 @@ const Area = () => {
                   <Media
                     isAdmin={meta.isAdmin}
                     numPitches={0}
-                    removeMedia={() => window.location.reload()}
                     media={data[0].triviaMedia}
                     optProblemId={null}
                     isBouldering={meta.isBouldering}

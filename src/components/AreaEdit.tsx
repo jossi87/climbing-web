@@ -19,10 +19,8 @@ import { useMeta } from "./common/meta";
 import { getAreaEdit, postArea } from "../api";
 import { Loading, InsufficientPrivileges } from "./common/widgets/widgets";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
 
 const AreaEdit = () => {
-  const client = useQueryClient();
   const {
     isLoading,
     isAuthenticated,
@@ -97,10 +95,6 @@ const AreaEdit = () => {
         data.sectorOrder
       )
         .then(async (res) => {
-          // TODO: Remove this and use mutations instead.
-          await client.invalidateQueries({
-            predicate: () => true,
-          });
           return navigate(res.destination);
         })
         .catch((error) => {

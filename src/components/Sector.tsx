@@ -104,7 +104,7 @@ const Sector = () => {
   const accessToken = useAccessToken();
   const { sectorId } = useParams();
   const meta = useMeta();
-  const { data: data, error, refetch, isLoading } = useSector(sectorId);
+  const { data: data, error, isLoading } = useSector(sectorId);
 
   if (error) {
     return (
@@ -158,7 +158,6 @@ const Sector = () => {
             <Media
               isAdmin={meta.isAdmin}
               numPitches={0}
-              removeMedia={() => refetch()}
               media={media}
               optProblemId={null}
               isBouldering={isBouldering}
@@ -235,7 +234,6 @@ const Sector = () => {
           <Media
             isAdmin={meta.isAdmin}
             numPitches={0}
-            removeMedia={() => refetch()}
             media={topoImages}
             optProblemId={null}
             isBouldering={isBouldering}
@@ -457,7 +455,6 @@ const Sector = () => {
                   <Media
                     isAdmin={meta.isAdmin}
                     numPitches={0}
-                    removeMedia={() => window.location.reload()}
                     media={data.triviaMedia}
                     optProblemId={null}
                     isBouldering={isBouldering}
