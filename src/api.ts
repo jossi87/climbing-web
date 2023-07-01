@@ -4,6 +4,7 @@ import {
   UseQueryOptions,
   useMutation,
   useQuery,
+  useQueryClient,
 } from "@tanstack/react-query";
 import fetch from "isomorphic-fetch";
 import { useState, useEffect } from "react";
@@ -27,12 +28,14 @@ function getUrl(urlSuffix: string): string {
   return encodeURI(`${getBaseUrl()}/com.buldreinfo.jersey.jaxb/v2${urlSuffix}`);
 }
 
+type FetchOptions = Partial<Parameters<typeof fetch>[1]> & {
+  consistencyAction?: ConsistencyAction;
+};
+
 function makeAuthenticatedRequest(
   accessToken: string | null,
   urlSuffix: string,
-  extraOptions?: Partial<Parameters<typeof fetch>[1]> & {
-    consistencyAction?: ConsistencyAction;
-  }
+  extraOptions?: FetchOptions
 ) {
   const { consistencyAction, ...opts } = extraOptions || {};
   const options = {
@@ -68,7 +71,12 @@ export function useAccessToken() {
 
 function usePostData<TData = any>(
   urlSuffix: string,
-  options?: Partial<UseMutationOptions<TData>>
+  {
+    fetchOptions,
+    ...options
+  }: Partial<UseMutationOptions<TData>> & {
+    fetchOptions?: FetchOptions;
+  } = {}
 ) {
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const mutationKey = options.mutationKey ?? [urlSuffix, { isAuthenticated }];
@@ -96,7 +104,9 @@ function usePostData<TData = any>(
         body: JSON.stringify(data),
         headers: {
           "Content-Type": "application/json",
+          ...fetchOptions?.headers,
         },
+        ...fetchOptions,
       });
     },
     ...options,
@@ -301,12 +311,14 @@ export function useActivity({
   );
 }
 
-export function useAreas(
-  id?: number | string | undefined,
-  options?: Parameters<typeof useData>[1]
-) {
-  return useData(id ? `/areas?id=${id}` : `/areas`, {
-    ...(options ?? {}),
+export function useAreas() {
+  return useData(`/areas`, {
+    queryKey: [`/areas`],
+  });
+}
+
+export function useArea(id: number) {
+  return useData(`/areas?id=${id}`, {
     queryKey: [`/areas`, { id }],
     transform: (response) => {
       if (response.status === 500) {
@@ -440,28 +452,67 @@ export function getPermissions(accessToken: string | null): Promise<any> {
     });
 }
 
-export function useProblem(
-  id: number | string,
-  showHiddenMedia: boolean,
-  options?: Parameters<typeof useData>[1]
-) {
-  return useData(`/problem?id=${id}&showHiddenMedia=${showHiddenMedia}`, {
-    ...(options ?? {}),
-    queryKey: [`/problem`, { id, showHiddenMedia }],
-    transform: (response) => {
-      if (response.status === 500) {
-        return Promise.reject(
-          "Cannot find the specified problem because it does not exist or you do not have sufficient permissions."
-        );
-      }
-      return response.json().then((data) => {
-        if (data.redirectUrl && data.redirectUrl != window.location.href) {
-          window.location.href = data.redirectUrl;
+export function useProblem(id: number, showHiddenMedia: boolean) {
+  const client = useQueryClient();
+  const problem = useData(
+    `/problem?id=${id}&showHiddenMedia=${showHiddenMedia}`,
+    {
+      queryKey: [`/problem`, { id, showHiddenMedia }],
+      transform: (response) => {
+        if (response.status === 500) {
+          return Promise.reject(
+            "Cannot find the specified problem because it does not exist or you do not have sufficient permissions."
+          );
         }
-        return data;
-      });
+        return response.json().then((data) => {
+          if (data.redirectUrl && data.redirectUrl != window.location.href) {
+            window.location.href = data.redirectUrl;
+          }
+          return data;
+        });
+      },
+    }
+  );
+
+  const { data: profile } = useProfile(-1);
+  const toggleTodo = usePostData<any>(`/todo?idProblem=${id}`, {
+    mutationKey: [`/todo`, { id }],
+    onSuccess: () => {
+      problem.refetch();
+      if (problem.data?.sectorId) {
+        client.refetchQueries({
+          queryKey: [
+            `/sectors`,
+            {
+              isAuthenticated: true,
+              id: problem.data.sectorId,
+            },
+          ],
+        });
+      }
+      if (problem.data?.areaId) {
+        client.refetchQueries({
+          queryKey: [
+            `/areas`,
+            {
+              isAuthenticated: true,
+              id: problem.data.areaId,
+            },
+          ],
+        });
+      }
+      if (profile?.id) {
+        client.refetchQueries({
+          queryKey: [`/profile/todo`, { id: +profile.id }],
+        });
+      }
+    },
+    fetchOptions: {
+      consistencyAction: "nop",
     },
   });
+
+  return { ...problem, toggleTodo: toggleTodo.mutateAsync };
 }
 
 export function getProblem(
@@ -603,7 +654,7 @@ export function useProfileTodo(id: number) {
 }
 
 export function useSector(
-  id: number | string | undefined,
+  id: number | undefined,
   options?: Parameters<typeof useData>[1]
 ) {
   return useData(`/sectors?id=${id}`, {
@@ -819,23 +870,6 @@ export function useTodo({
   idSector: number;
 }) {
   return useData(`/todo?idArea=${idArea}&idSector=${idSector}`);
-}
-
-export function getTodo(
-  accessToken: string | null,
-  idArea: number,
-  idSector: number
-): Promise<any> {
-  return makeAuthenticatedRequest(
-    accessToken,
-    `/todo?idArea=${idArea}&idSector=${idSector}`,
-    null
-  )
-    .then((data) => data.json())
-    .catch((error) => {
-      console.warn(error);
-      return null;
-    });
 }
 
 export function useTop({
@@ -1294,15 +1328,6 @@ export function postTicks(
     headers: {
       "Content-Type": "application/json",
     },
-  });
-}
-
-export function postTodo(
-  accessToken: string | null,
-  problemId: number
-): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/todo?idProblem=${problemId}`, {
-    method: "POST",
   });
 }
 

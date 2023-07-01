@@ -104,7 +104,7 @@ const Sector = () => {
   const accessToken = useAccessToken();
   const { sectorId } = useParams();
   const meta = useMeta();
-  const { data: data, error, isLoading } = useSector(sectorId);
+  const { data: data, error, isLoading } = useSector(+sectorId);
 
   if (error) {
     return (

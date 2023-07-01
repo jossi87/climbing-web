@@ -29,7 +29,7 @@ import {
   Feed,
 } from "semantic-ui-react";
 import { useMeta } from "./common/meta";
-import { getImageUrl, getAreaPdfUrl, useAreas, useAccessToken } from "../api";
+import { getImageUrl, getAreaPdfUrl, useAccessToken, useArea } from "../api";
 import { Remarkable } from "remarkable";
 import { linkify } from "remarkable/linkify";
 import ProblemList from "./common/problem-list/problem-list";
@@ -104,7 +104,7 @@ const Area = () => {
   const accessToken = useAccessToken();
   const meta = useMeta();
   const { areaId } = useParams();
-  const { data, error } = useAreas(parseInt(areaId ?? "0"));
+  const { data, error } = useArea(+areaId);
 
   const md = new Remarkable({ breaks: true }).use(linkify);
   // open links in new windows

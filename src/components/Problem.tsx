@@ -31,7 +31,6 @@ import {
   getSectorPdfUrl,
   getProblemPdfUrl,
   postComment,
-  postTodo,
   useProblem,
   useAccessToken,
   useSector,
@@ -206,7 +205,7 @@ const ProblemComments = ({
 }) => {
   const accessToken = useAccessToken();
   const meta = useMeta();
-  const { data } = useProblem(problemId, showHiddenMedia);
+  const { data } = useProblem(+problemId, showHiddenMedia);
 
   function flagAsDangerous({ id, message }) {
     if (confirm("Are you sure you want to flag this comment?")) {
@@ -310,17 +309,10 @@ const Problem = () => {
   const { problemId } = useParams();
   const [showHiddenMedia, setShowHiddenMedia] = useState(false);
   const meta = useMeta();
-  const { data, error } = useProblem(problemId, showHiddenMedia);
+  const { data, error, toggleTodo } = useProblem(+problemId, showHiddenMedia);
 
   const [showTickModal, setShowTickModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState<any>(null);
-
-  function toggleTodo(problemId: number) {
-    postTodo(accessToken, problemId).catch((error) => {
-      console.warn(error);
-      alert(error.toString());
-    });
-  }
 
   const onTickModalClose = () => {
     setShowTickModal(false);
