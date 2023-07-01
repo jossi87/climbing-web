@@ -371,8 +371,8 @@ export function getAreaEdit(
           noDogsAllowed: false,
           name: "",
           comment: "",
-          lat: res.defaultCenter?.lat || 0,
-          lng: res.defaultCenter?.lng || 0,
+          lat: 0,
+          lng: 0,
           newMedia: [],
         };
       })
@@ -549,13 +549,8 @@ export function getProblemEdit(
   const sectorId = parseInt(parts[0]);
   const problemId = parseInt(parts[1]);
   if (problemId === 0) {
-    return Promise.all([getMeta(accessToken), getSector(accessToken, sectorId)])
-      .then((results) => Promise.all(results.map((res) => res.json())))
-      .then(([metaRes, res]) => {
-        const { lat, lng } =
-          res.lat && res.lng
-            ? { lat: +res.lat, lng: +res.lng }
-            : metaRes.defaultCenter ?? { lat: 0, lng: 0 };
+    return getSector(accessToken, sectorId)
+      .then((res) => {
         return {
           id: -1,
           areaId: res.areaId,
@@ -569,8 +564,8 @@ export function getProblemEdit(
           fa: [],
           faDate: convertFromDateToString(new Date()),
           nr: 0,
-          lat,
-          lng,
+          lat: 0,
+          lng: 0,
           latStr: "",
           lngStr: "",
           trivia: "",

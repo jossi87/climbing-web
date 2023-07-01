@@ -260,7 +260,7 @@ const ProblemEdit = () => {
     setData((prevState) => ({ ...prevState, sections }));
   }
 
-  if (isLoading || (isAuthenticated && !data)) {
+  if (isLoading || (isAuthenticated && !data?.sectorId)) {
     return <Loading />;
   } else if (!isAuthenticated) {
     loginWithRedirect({ appState: { returnTo: location.pathname } });
