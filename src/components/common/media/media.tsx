@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ComponentProps } from "react";
 import LazyLoad from "react-lazyload";
 import { useLocation } from "react-router-dom";
 import {
@@ -14,7 +14,6 @@ import MediaEditModal from "./media-edit-modal";
 import Svg from "./svg";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Loading } from "../widgets/widgets";
-import { useQueryClient } from "@tanstack/react-query";
 
 const style = {
   objectFit: "cover",
@@ -30,12 +29,15 @@ const style = {
 const Media = ({
   numPitches,
   media,
-  removeMedia,
   isAdmin,
   optProblemId,
   isBouldering,
-}) => {
-  const client = useQueryClient();
+}: Pick<ComponentProps<typeof MediaEditModal>, "numPitches"> &
+  Pick<ComponentProps<typeof MediaModal>, "optProblemId"> & {
+    media: any[];
+    isAdmin: boolean;
+    isBouldering: boolean;
+  }) => {
   const location = useLocation();
   const [m, setM] = useState<any>(null);
   const [editM, setEditM] = useState<any>(null);
@@ -100,7 +102,6 @@ const Media = ({
       getAccessTokenSilently().then((accessToken) => {
         deleteMedia(accessToken, id)
           .then(() => {
-            removeMedia(id);
             closeModal();
           })
           .catch((error) => {
@@ -118,8 +119,7 @@ const Media = ({
     ) {
       getAccessTokenSilently().then((accessToken) => {
         putMediaJpegRotate(accessToken, m.id, degrees)
-          .then(async () => {
-            await client.invalidateQueries({ predicate: () => true });
+          .then(() => {
             closeModal();
           })
           .catch((error) => {
@@ -132,8 +132,7 @@ const Media = ({
   function onMoveImageLeft() {
     getAccessTokenSilently().then((accessToken) => {
       moveMedia(accessToken, m.id, true, 0, 0)
-        .then(async () => {
-          await client.invalidateQueries({ predicate: () => true });
+        .then(() => {
           closeModal();
         })
         .catch((error) => {
@@ -145,8 +144,7 @@ const Media = ({
   function onMoveImageRight() {
     getAccessTokenSilently().then((accessToken) => {
       moveMedia(accessToken, m.id, false, 0, 0)
-        .then(async () => {
-          await client.invalidateQueries({ predicate: () => true });
+        .then(() => {
           closeModal();
         })
         .catch((error) => {
@@ -158,8 +156,7 @@ const Media = ({
   function onMoveImageToSector() {
     getAccessTokenSilently().then((accessToken) => {
       moveMedia(accessToken, m.id, false, m.enableMoveToIdSector, 0)
-        .then(async () => {
-          await client.invalidateQueries({ predicate: () => true });
+        .then(() => {
           closeModal();
         })
         .catch((error) => {
@@ -171,8 +168,7 @@ const Media = ({
   function onMoveImageToProblem() {
     getAccessTokenSilently().then((accessToken) => {
       moveMedia(accessToken, m.id, false, 0, m.enableMoveToIdProblem)
-        .then(async () => {
-          await client.invalidateQueries({ predicate: () => true });
+        .then(() => {
           closeModal();
         })
         .catch((error) => {
@@ -205,8 +201,7 @@ const Media = ({
           save={(mediaId, description, pitch, trivia) => {
             getAccessTokenSilently().then((accessToken) => {
               putMediaInfo(accessToken, mediaId, description, pitch, trivia)
-                .then(async () => {
-                  await client.invalidateQueries({ predicate: () => true });
+                .then(() => {
                   setEditM(null);
                 })
                 .catch((error) => {

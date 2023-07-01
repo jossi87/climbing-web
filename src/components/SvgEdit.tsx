@@ -10,10 +10,8 @@ import {
   NotLoggedIn,
 } from "./common/widgets/widgets";
 import { useNavigate, useParams } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
 
 const SvgEdit = () => {
-  const client = useQueryClient();
   const [saving, setSaving] = useState(false);
   const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [mediaId, setMediaId] = useState<any>(null);
@@ -115,11 +113,7 @@ const SvgEdit = () => {
         JSON.stringify(anchors),
         JSON.stringify(texts)
       )
-        .then(async () => {
-          // TODO: Remove this and use mutations instead.
-          await client.refetchQueries({
-            predicate: () => true,
-          });
+        .then(() => {
           navigate(`/problem/${id}`);
         })
         .catch((error) => {

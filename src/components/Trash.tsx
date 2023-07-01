@@ -6,10 +6,8 @@ import { Segment, Icon, Header, List, Button, Image } from "semantic-ui-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import { InsufficientPrivileges } from "./common/widgets/widgets";
-import { useQueryClient } from "@tanstack/react-query";
 
 const Trash = () => {
-  const client = useQueryClient();
   const { isLoading, isAuthenticated, loginWithRedirect } = useAuth0();
   const accessToken = useAccessToken();
   const meta = useMeta();
@@ -62,14 +60,7 @@ const Trash = () => {
                               t.idProblem,
                               t.idMedia
                             )
-                              .then(async () => {
-                                // TODO: Remove this and use mutations instead.
-                                await client.invalidateQueries({
-                                  predicate: () => {
-                                    // Invalidate everything, restored item can be media (on area/sector/problem) or an area/sector/problem
-                                    return true;
-                                  },
-                                });
+                              .then(() => {
                                 let url;
                                 if (t.idArea > 0) {
                                   url = "/area/" + t.idArea;

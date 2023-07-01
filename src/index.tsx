@@ -6,6 +6,7 @@ import App from "./App";
 import "./buldreinfo.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { DataReloader } from "./components/DataReloader";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   const userAgent = navigator.userAgent;
@@ -88,9 +89,11 @@ const Index = () => (
         FallbackComponent={ErrorFallback}
         onReset={() => window.location.reload()}
       >
-        <Auth0ProviderWithNavigate>
-          <App />
-        </Auth0ProviderWithNavigate>
+        <DataReloader>
+          <Auth0ProviderWithNavigate>
+            <App />
+          </Auth0ProviderWithNavigate>
+        </DataReloader>
       </ErrorBoundary>
     </BrowserRouter>
     {process.env.REACT_APP_ENV === "development" && <ReactQueryDevtools />}

@@ -38,8 +38,12 @@ const SearchBox = (searchProps: SearchBoxProps) => {
 
   useEffect(() => {
     let canceled = false;
-    setLoading(true);
     const update = async () => {
+      if (!value) {
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
       const accessToken = isAuthenticated
         ? await getAccessTokenSilently()
         : null;

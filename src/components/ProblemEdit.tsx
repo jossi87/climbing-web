@@ -30,10 +30,8 @@ import { Loading, InsufficientPrivileges } from "./common/widgets/widgets";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useQueryClient } from "@tanstack/react-query";
 
 const ProblemEdit = () => {
-  const client = useQueryClient();
   const {
     isLoading,
     isAuthenticated,
@@ -223,10 +221,6 @@ const ProblemEdit = () => {
         data.descent
       )
         .then(async (res) => {
-          // TODO: Remove this and use mutations instead.
-          await client.invalidateQueries({
-            predicate: () => true,
-          });
           if (addNew) {
             navigate(0);
           } else {

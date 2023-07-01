@@ -23,7 +23,6 @@ const ProfileMedia = ({ accessToken, userId, isBouldering, captured }) => {
       <Media
         numPitches={null}
         isAdmin={false}
-        removeMedia={null}
         media={data}
         optProblemId={null}
         isBouldering={isBouldering}
