@@ -54,7 +54,6 @@ const Profile = () => {
   if (activePage === Page.user) {
     content = (
       <ProfileStatistics
-        accessToken={profile.accessToken}
         userId={profile.id}
         canDownload={loggedInProfile}
         defaultCenter={meta.defaultCenter}
@@ -64,7 +63,6 @@ const Profile = () => {
   } else if (activePage === Page.todo) {
     content = (
       <ProfileTodo
-        accessToken={profile.accessToken}
         userId={profile.id}
         defaultCenter={meta.defaultCenter}
         defaultZoom={meta.defaultZoom}
@@ -73,7 +71,6 @@ const Profile = () => {
   } else if (activePage === Page.media) {
     content = (
       <ProfileMedia
-        accessToken={profile.accessToken}
         userId={profile.id}
         isBouldering={meta.isBouldering}
         captured={false}
@@ -82,19 +79,13 @@ const Profile = () => {
   } else if (activePage === Page.captured) {
     content = (
       <ProfileMedia
-        accessToken={profile.accessToken}
         userId={profile.id}
         isBouldering={meta.isBouldering}
         captured={true}
       />
     );
   } else if (activePage === Page.settings) {
-    content = (
-      <ProfileSettings
-        accessToken={profile.accessToken}
-        userRegions={profile.userRegions}
-      />
-    );
+    content = <ProfileSettings userRegions={profile.userRegions} />;
   }
 
   return (

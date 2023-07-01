@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Loading } from "../widgets/widgets";
 import { Popup, Table } from "semantic-ui-react";
-import { getGradeDistribution } from "./../../../api";
+import { getGradeDistribution, useAccessToken } from "./../../../api";
 
-const ChartGradeDistribution = ({ accessToken, idArea, idSector, data }) => {
+const ChartGradeDistribution = ({ idArea, idSector, data }) => {
+  const accessToken = useAccessToken();
   const [gradeDistribution, setGradeDistribution] = useState(data ? data : []);
 
   useEffect(() => {

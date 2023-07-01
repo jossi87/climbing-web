@@ -3,21 +3,20 @@ import { Link } from "react-router-dom";
 import Leaflet from "../../common/leaflet/leaflet";
 import { Loading, LockSymbol } from "../../common/widgets/widgets";
 import { List, Segment } from "semantic-ui-react";
-import { getProfileTodo } from "../../../api";
+import { getProfileTodo, useAccessToken } from "../../../api";
 
 type ProfileTodoProps = {
-  accessToken: string;
   userId: number;
   defaultCenter: { lat: number; lng: number };
   defaultZoom: number;
 };
 
 const ProfileTodo = ({
-  accessToken,
   userId,
   defaultCenter,
   defaultZoom,
 }: ProfileTodoProps) => {
+  const accessToken = useAccessToken();
   const [data, setData] =
     useState<Awaited<ReturnType<typeof getProfileTodo>>>();
 
