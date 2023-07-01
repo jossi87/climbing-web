@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import Leaflet from "../../common/leaflet/leaflet";
 import { Loading, LockSymbol } from "../../common/widgets/widgets";
 import { List, Segment } from "semantic-ui-react";
-import { getProfileTodo, useAccessToken } from "../../../api";
+import { useProfileTodo } from "../../../api";
 
 type ProfileTodoProps = {
   userId: number;
@@ -16,17 +16,12 @@ const ProfileTodo = ({
   defaultCenter,
   defaultZoom,
 }: ProfileTodoProps) => {
-  const accessToken = useAccessToken();
-  const [data, setData] =
-    useState<Awaited<ReturnType<typeof getProfileTodo>>>();
-
-  useEffect(() => {
-    getProfileTodo(accessToken, userId).then((data) => setData(data));
-  }, [accessToken, userId]);
+  const { data } = useProfileTodo(userId);
 
   if (!data) {
     return <Loading />;
   }
+
   const markers: NonNullable<React.ComponentProps<typeof Leaflet>["markers"]> =
     [];
   data.areas.forEach((a) => {

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { Loading } from "./common/widgets/widgets";
-import { Header, Image, Menu, Icon } from "semantic-ui-react";
+import { Header, Image, Menu, Icon, Message } from "semantic-ui-react";
 import { useMeta } from "./common/meta";
-import { getProfile } from "../api";
+import { useProfile } from "../api";
 import { useAuth0 } from "@auth0/auth0-react";
 import ProfileStatistics from "./common/profile/profile-statistics";
 import ProfileTodo from "./common/profile/profile-todo";
@@ -21,31 +21,30 @@ enum Page {
 const Profile = () => {
   const { userId, page } = useParams();
   const navigate = useNavigate();
-  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const { data: profile, isLoading, error } = useProfile(userId ? +userId : -1);
+  const { isAuthenticated } = useAuth0();
   const [activePage, setActivePage] = useState(page ? Page[page] : Page.user);
-  const [profile, setProfile] = useState<any>(null);
   const meta = useMeta();
-  useEffect(() => {
-    if (!isLoading) {
-      const update = async () => {
-        const accessToken = isAuthenticated
-          ? await getAccessTokenSilently()
-          : null;
-        getProfile(accessToken, userId ? parseInt(userId) : -1).then(
-          (profile) => setProfile({ ...profile, accessToken })
-        );
-      };
-      update();
-    }
-  }, [isLoading, isAuthenticated, userId, getAccessTokenSilently]);
 
   function onPageChanged(page: Page) {
     setActivePage(page);
     navigate("/user/" + profile.id + "/" + Page[page]);
   }
 
-  if (!profile) {
+  if (isLoading) {
     return <Loading />;
+  }
+
+  if (error) {
+    return (
+      <Message
+        size="huge"
+        style={{ backgroundColor: "#FFF" }}
+        icon="meh"
+        header="404"
+        content={String(error)}
+      />
+    );
   }
 
   const loggedInProfile = profile.userRegions && profile.userRegions.length > 0;

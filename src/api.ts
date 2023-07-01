@@ -109,7 +109,7 @@ export function useData<T = any>(
     transform = (res) => res.json() as Promise<T>,
     ...options
   }: Partial<UseQueryOptions> & {
-    transform?: (response: Awaited<ReturnType<typeof fetch>>) => Promise<any>;
+    transform?: (response: Awaited<ReturnType<typeof fetch>>) => Promise<T>;
   } = {}
 ) {
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
@@ -127,7 +127,11 @@ export function useData<T = any>(
     };
   }
 
-  return useQuery<any>({
+  return useQuery<
+    any, // TQueryFnData
+    unknown, // TError
+    any // TData -- this should be T, but that creates a weird TS error.
+  >({
     queryKey,
     queryFn: async () => {
       const accessToken = isAuthenticated
@@ -568,120 +572,34 @@ export function getProblemEdit(
   }
 }
 
-export function getProfile(
-  accessToken: string | null,
-  id: number
-): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/profile?id=${id}`)
-    .then((data) => data.json())
-    .catch((error) => {
-      console.warn(error);
-      return null;
-    });
+export function useProfile(userId: number) {
+  return useData<Profile>(`/profile?id=${userId}`, {
+    queryKey: [`/profile`, { id: userId }],
+  });
 }
 
-export function getProfileMedia(
-  accessToken: string | null,
-  id: number,
-  captured: boolean
-): Promise<any> {
-  return makeAuthenticatedRequest(
-    accessToken,
-    `/profile/media?id=${id}&captured=${captured}`,
-    null
-  )
-    .then((data) => data.json())
-    .catch((error) => {
-      console.warn(error);
-      return null;
-    });
+export function useProfileMedia({
+  userId,
+  captured,
+}: {
+  userId: number;
+  captured: boolean;
+}) {
+  return useData(`/profile/media?id=${userId}&captured=${captured}`, {
+    queryKey: [`/profile/media`, { id: userId, captured }],
+  });
 }
 
-export function getProfileStatistics(
-  accessToken: string | null,
-  id: number
-): Promise<{
-  numImageTags: number;
-  numImagesCreated: number;
-  numVideoTags: number;
-  numVideosCreated: number;
-  orderByGrade: boolean;
-  ticks: {
-    idProblem: number;
-    dateHr: string;
-    areaName: string;
-    areaLockedAdmin: boolean;
-    areaLockedSuperadmin: boolean;
-    sectorName: string;
-    sectorLockedAdmin: boolean;
-    sectorLockedSuperadmin: boolean;
-    name: string;
-    grade: string;
-    lockedAdmin: boolean;
-    lockedSuperadmin: boolean;
-    stars: number;
-    idTick: number;
-    fa: boolean;
-    idTickRepeat: number;
-    subType: string;
-    numPitches: number;
-    comment: string;
-    lat: number;
-    lng: number;
-    gradeNumber: number;
-    num: number;
-  }[];
-}> {
-  return makeAuthenticatedRequest(
-    accessToken,
-    `/profile/statistics?id=${id}`,
-    null
-  )
-    .then((data) => data.json())
-    .catch((error) => {
-      console.warn(error);
-      return null;
-    });
+export function useProfileStatistics(id: number) {
+  return useData<ProfileStatistics>(`/profile/statistics?id=${id}`, {
+    queryKey: [`/profile/statistics`, { id }],
+  });
 }
 
-export function getProfileTodo(
-  accessToken: string | null,
-  id: number
-): Promise<{
-  areas: {
-    name: string;
-    lockedAdmin: boolean;
-    lockedSuperadmin: boolean;
-    url: string;
-    sectors: {
-      name: string;
-      lockedAdmin: boolean;
-      lockedSuperadmin: boolean;
-      url: string;
-      problems: {
-        name: string;
-        lockedAdmin: boolean;
-        lockedSuperadmin: boolean;
-        url: string;
-        nr: number;
-        grade: number;
-        partners?: {
-          name: string;
-          id: string;
-        }[];
-        lat: number;
-        lng: number;
-        id: number;
-      }[];
-    }[];
-  }[];
-}> {
-  return makeAuthenticatedRequest(accessToken, `/profile/todo?id=${id}`)
-    .then((data) => data.json())
-    .catch((error) => {
-      console.warn(error);
-      return null;
-    });
+export function useProfileTodo(id: number) {
+  return useData(`/profile/todo?id=${id}`, {
+    queryKey: [`/profile/todo`, { id }],
+  });
 }
 
 export function useSector(
