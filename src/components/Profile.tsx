@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { Loading } from "./common/widgets/widgets";
@@ -18,16 +18,16 @@ enum Page {
   captured,
   settings,
 }
+
 const Profile = () => {
   const { userId, page } = useParams();
   const navigate = useNavigate();
   const { data: profile, isLoading, error } = useProfile(userId ? +userId : -1);
   const { isAuthenticated } = useAuth0();
-  const [activePage, setActivePage] = useState(page ? Page[page] : Page.user);
+  const activePage = Page[page] ?? Page.user;
   const meta = useMeta();
 
   function onPageChanged(page: Page) {
-    setActivePage(page);
     navigate("/user/" + profile.id + "/" + Page[page]);
   }
 
