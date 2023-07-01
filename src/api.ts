@@ -360,7 +360,7 @@ export function getAreaEdit(
 ): Promise<any> {
   if (id == -1) {
     return getMeta(accessToken)
-      .then((res) => {
+      .then(() => {
         return {
           id: -1,
           lockedAdmin: false,
