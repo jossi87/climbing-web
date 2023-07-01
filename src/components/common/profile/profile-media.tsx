@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Loading } from "./../../common/widgets/widgets";
 import { Segment } from "semantic-ui-react";
-import { getProfileMedia } from "../../../api";
+import { getProfileMedia, useAccessToken } from "../../../api";
 import Media from "../../common/media/media";
 
-const ProfileMedia = ({ accessToken, userId, isBouldering, captured }) => {
+const ProfileMedia = ({ userId, isBouldering, captured }) => {
+  const accessToken = useAccessToken();
   const [data, setData] = useState<any[] | null>(null);
   useEffect(() => {
     getProfileMedia(accessToken, userId, captured).then((data) =>

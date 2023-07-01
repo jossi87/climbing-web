@@ -247,12 +247,7 @@ const Sector = () => {
       menuItem: { key: "distribution", icon: "area graph" },
       render: () => (
         <Tab.Pane>
-          <ChartGradeDistribution
-            accessToken={accessToken}
-            idArea={0}
-            idSector={data.id}
-            data={null}
-          />
+          <ChartGradeDistribution idArea={0} idSector={data.id} data={null} />
         </Tab.Pane>
       ),
     });

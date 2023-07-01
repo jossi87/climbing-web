@@ -9,6 +9,7 @@ import {
   getProfileStatistics,
   numberWithCommas,
   getUsersTicks,
+  useAccessToken,
 } from "../../../api";
 import { saveAs } from "file-saver";
 
@@ -86,7 +87,6 @@ const TickListItem = ({ tick }: TickListItemProps) => (
 );
 
 type ProfileStatisticsProps = {
-  accessToken: string;
   userId: number;
   canDownload: boolean;
   defaultCenter: { lat: number; lng: number };
@@ -94,12 +94,12 @@ type ProfileStatisticsProps = {
 };
 
 const ProfileStatistics = ({
-  accessToken,
   userId,
   canDownload,
   defaultCenter,
   defaultZoom,
 }: ProfileStatisticsProps) => {
+  const accessToken = useAccessToken();
   const [data, setData] =
     useState<Awaited<ReturnType<typeof getProfileStatistics>>>();
   const [isSaving, setIsSaving] = useState(false);

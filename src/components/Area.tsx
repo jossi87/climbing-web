@@ -227,7 +227,6 @@ const Area = () => {
       render: () => (
         <Tab.Pane>
           <ChartGradeDistribution
-            accessToken={accessToken}
             idArea={data[0].id}
             idSector={0}
             data={null}

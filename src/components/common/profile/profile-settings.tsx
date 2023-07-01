@@ -1,9 +1,10 @@
 import React from "react";
 import { Segment, Icon, Label, Header } from "semantic-ui-react";
-import { postUserRegion } from "../../../api";
+import { postUserRegion, useAccessToken } from "../../../api";
 import { useNavigate } from "react-router-dom";
 
-const ProfileSettings = ({ accessToken, userRegions }) => {
+const ProfileSettings = ({ userRegions }) => {
+  const accessToken = useAccessToken();
   const navigate = useNavigate();
   if (!accessToken || !userRegions || userRegions.length === 0) {
     return <Segment>No data</Segment>;
