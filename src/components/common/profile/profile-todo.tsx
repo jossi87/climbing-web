@@ -11,6 +11,14 @@ type ProfileTodoProps = {
   defaultZoom: number;
 };
 
+const cleanUrl = (url: string) => {
+  const origin = process.env.REACT_APP_API_URL || window.location.origin;
+  if (url.startsWith(origin)) {
+    return url.substring(origin.length);
+  }
+  return url;
+};
+
 const ProfileTodo = ({
   userId,
   defaultCenter,
@@ -41,6 +49,7 @@ const ProfileTodo = ({
   if (data.areas.length === 0) {
     return <Segment>Empty list.</Segment>;
   }
+
   return (
     <Segment>
       <>
@@ -61,50 +70,38 @@ const ProfileTodo = ({
           flyToId={null}
         />
         <List celled>
-          {data.areas.map((area, i) => (
-            <List.Item key={i}>
+          {data.areas.map((area) => (
+            <List.Item key={area.id}>
               <List.Header>
-                <a href={area.url} rel="noreferrer noopener" target="_blank">
-                  {area.name}
-                </a>
+                <Link to={cleanUrl(area.url)}>{area.name}</Link>
                 <LockSymbol
                   lockedAdmin={area.lockedAdmin}
                   lockedSuperadmin={area.lockedSuperadmin}
                 />
               </List.Header>
-              {area.sectors.map((sector, i) => (
-                <List.List key={i}>
+              {area.sectors.map((sector) => (
+                <List.List key={sector.id}>
                   <List.Header>
-                    <a
-                      href={sector.url}
-                      rel="noreferrer noopener"
-                      target="_blank"
-                    >
-                      {sector.name}
-                    </a>
+                    <Link to={cleanUrl(sector.url)}>{sector.name}</Link>
                     <LockSymbol
                       lockedAdmin={sector.lockedAdmin}
                       lockedSuperadmin={sector.lockedSuperadmin}
                     />
                   </List.Header>
                   <List.List>
-                    {sector.problems.map((problem, i) => (
-                      <List.Item key={i}>
+                    {sector.problems.map((problem) => (
+                      <List.Item key={problem.id}>
                         <List.Header>
                           {`#${problem.nr} `}
-                          <a
-                            href={problem.url}
-                            rel="noreferrer noopener"
-                            target="_blank"
-                          >
+                          <Link to={cleanUrl(problem.url)}>
                             {problem.name}
-                          </a>{" "}
+                          </Link>{" "}
                           {problem.grade}
                           {problem.partners && problem.partners.length > 0 && (
                             <small>
                               <i style={{ color: "gray" }}>
                                 {problem.partners.map((u, i) => (
-                                  <React.Fragment key={i}>
+                                  <React.Fragment key={u.id}>
                                     {i === 0 ? " Other users: " : ", "}
                                     <Link to={`/user/${u.id}/todo`}>
                                       {u.name}
