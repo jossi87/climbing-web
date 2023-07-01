@@ -31,3 +31,53 @@ type Type = {
   type: string;
   subType: string;
 };
+
+type Region = {
+  id: number;
+  name: string;
+  enabled: boolean;
+  readOnly: boolean;
+};
+
+type Profile = {
+  id: number;
+  picture: string;
+  firstname: string;
+  lastname: string;
+  userRegions: Region[];
+};
+
+type Tick = {
+  idProblem: number;
+  dateHr: string;
+  areaName: string;
+  areaLockedAdmin: boolean;
+  areaLockedSuperadmin: boolean;
+  sectorName: string;
+  sectorLockedAdmin: boolean;
+  sectorLockedSuperadmin: boolean;
+  name: string;
+  grade: string;
+  lockedAdmin: boolean;
+  lockedSuperadmin: boolean;
+  stars: number;
+  idTick: number;
+  fa: boolean;
+  idTickRepeat: number;
+  subType: string;
+  numPitches: number;
+  comment: string;
+  lat: number;
+  lng: number;
+  gradeNumber: number;
+  num: number;
+};
+
+type ProfileStatistics = {
+  numImageTags: number;
+  numImagesCreated: number;
+  numVideoTags: number;
+  numVideosCreated: number;
+  orderByGrade: boolean;
+  ticks: Tick[];
+};

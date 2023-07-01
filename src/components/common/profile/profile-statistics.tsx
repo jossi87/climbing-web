@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Chart from "../chart/chart";
 import ProblemList from "../problem-list/problem-list";
@@ -6,34 +6,12 @@ import Leaflet from "../../common/leaflet/leaflet";
 import { Loading, LockSymbol, Stars } from "../widgets/widgets";
 import { Icon, List, Label, Divider, Button, Tab } from "semantic-ui-react";
 import {
-  getProfileStatistics,
   numberWithCommas,
   getUsersTicks,
   useAccessToken,
+  useProfileStatistics,
 } from "../../../api";
 import { saveAs } from "file-saver";
-
-type Tick = {
-  idProblem: number;
-  dateHr: string;
-  areaName: string;
-  areaLockedAdmin: boolean;
-  areaLockedSuperadmin: boolean;
-  sectorName: string;
-  sectorLockedAdmin: boolean;
-  sectorLockedSuperadmin: boolean;
-  name: string;
-  grade: string;
-  lockedAdmin: boolean;
-  lockedSuperadmin: boolean;
-  stars: number;
-  idTick: number;
-  fa: boolean;
-  idTickRepeat: number;
-  subType: string;
-  numPitches: number;
-  comment: string;
-};
 
 type TickListItemProps = {
   tick: Tick;
@@ -100,15 +78,10 @@ const ProfileStatistics = ({
   defaultZoom,
 }: ProfileStatisticsProps) => {
   const accessToken = useAccessToken();
-  const [data, setData] =
-    useState<Awaited<ReturnType<typeof getProfileStatistics>>>();
+  const { data, isLoading } = useProfileStatistics(userId);
   const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    getProfileStatistics(accessToken, userId).then((data) => setData(data));
-  }, [accessToken, userId]);
-
-  if (!data) {
+  if (isLoading) {
     return <Loading />;
   }
 

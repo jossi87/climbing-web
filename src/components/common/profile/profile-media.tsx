@@ -1,21 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Loading } from "./../../common/widgets/widgets";
 import { Segment } from "semantic-ui-react";
-import { getProfileMedia, useAccessToken } from "../../../api";
+import { useProfileMedia } from "../../../api";
 import Media from "../../common/media/media";
 
-const ProfileMedia = ({ userId, isBouldering, captured }) => {
-  const accessToken = useAccessToken();
-  const [data, setData] = useState<any[] | null>(null);
-  useEffect(() => {
-    getProfileMedia(accessToken, userId, captured).then((data) =>
-      setData(data)
-    );
-  }, [userId, captured, accessToken]);
+type Props = {
+  userId: number;
+  isBouldering: boolean;
+  captured: boolean;
+};
 
-  if (!data) {
+const ProfileMedia = ({ userId, isBouldering, captured }: Props) => {
+  const { data, isLoading } = useProfileMedia({ userId, captured });
+
+  if (isLoading) {
     return <Loading />;
-  } else if (data.length === 0) {
+  }
+
+  if (data.length === 0) {
     return <Segment>Empty list.</Segment>;
   }
 
