@@ -331,7 +331,7 @@ const Sector = () => {
               <Button
                 animated="fade"
                 as={Link}
-                to={`/problem/edit/${data.id}-0`}
+                to={`/problem/edit/${data.id}/0`}
               >
                 <Button.Content hidden>Add</Button.Content>
                 <Button.Content visible>
@@ -341,7 +341,7 @@ const Sector = () => {
               <Button
                 animated="fade"
                 as={Link}
-                to={`/sector/edit/${data.areaId}-${data.id}`}
+                to={`/sector/edit/${data.areaId}/${data.id}`}
               >
                 <Button.Content hidden>Edit</Button.Content>
                 <Button.Content visible>

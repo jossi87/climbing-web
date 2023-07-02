@@ -3,7 +3,11 @@ import GpxParser from "gpxparser";
 import Dropzone from "react-dropzone";
 import { Helmet } from "react-helmet";
 import ImageUpload from "./common/image-upload/image-upload";
-import { Loading, InsufficientPrivileges } from "./common/widgets/widgets";
+import {
+  Loading,
+  InsufficientPrivileges,
+  NotLoggedIn,
+} from "./common/widgets/widgets";
 import {
   Checkbox,
   Form,
@@ -18,38 +22,52 @@ import {
 } from "semantic-ui-react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useMeta } from "./common/meta";
-import { getSectorEdit, postSector, getSector, getArea } from "../api";
+import {
+  getSectorEdit,
+  postSector,
+  getSector,
+  getArea,
+  useAccessToken,
+} from "../api";
 import Leaflet from "./common/leaflet/leaflet";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+
+const useIds = (): { areaId: number; sectorId: number } => {
+  const { sectorId, areaId, areaIdSectorId } = useParams();
+  if (sectorId && areaId) {
+    return { sectorId: +sectorId, areaId: +areaId };
+  }
+  {
+    const [areaId, sectorId] = areaIdSectorId.split("-").map((v) => +v);
+    return { areaId, sectorId };
+  }
+};
 
 const SectorEdit = () => {
-  const {
-    isLoading,
-    isAuthenticated,
-    getAccessTokenSilently,
-    loginWithRedirect,
-  } = useAuth0();
+  const accessToken = useAccessToken();
+  const { isLoading, isAuthenticated } = useAuth0();
+  const { areaId, sectorId } = useIds();
   const [leafletMode, setLeafletMode] = useState("PARKING");
   const [data, setData] = useState<any>(null);
   const [showProblemOrder, setShowProblemOrder] = useState(false);
   const [sectorMarkers, setSectorMarkers] = useState<any>(null);
   const [area, setArea] = useState<any>(null);
   const [saving, setSaving] = useState(false);
-  const { areaIdSectorId } = useParams();
+  const [error, setError] = useState("");
   const navigate = useNavigate();
-  const location = useLocation();
   const meta = useMeta();
   useEffect(() => {
-    if (areaIdSectorId && isAuthenticated) {
-      getAccessTokenSilently().then((accessToken) => {
-        getSectorEdit(accessToken, areaIdSectorId).then((data) =>
-          setData({ ...data, accessToken })
-        );
-        const areaId = parseInt(areaIdSectorId.split("-")[0]);
-        getArea(accessToken, areaId).then((data) => setArea(data[0]));
-      });
+    if (accessToken) {
+      getSectorEdit(accessToken, areaId, sectorId)
+        .then((data) => setData(data))
+        .then(() => {
+          getArea(accessToken, areaId).then((data) => setArea(data[0]));
+        })
+        .catch((e) => {
+          setError(String(e));
+        });
     }
-  }, [isAuthenticated, areaIdSectorId, getAccessTokenSilently]);
+  }, [accessToken, areaId, sectorId]);
 
   function onNameChanged(e, { value }) {
     setData((prevState) => ({ ...prevState, name: value }));
@@ -85,7 +103,7 @@ const SectorEdit = () => {
     if (!trash || confirm("Are you sure you want to move sector to trash?")) {
       setSaving(true);
       postSector(
-        data.accessToken,
+        accessToken,
         data.areaId,
         data.id,
         data.trash,
@@ -171,437 +189,447 @@ const SectorEdit = () => {
     setData((prevState) => ({ ...prevState, lng, lngStr }));
   }
 
-  if (isLoading || (isAuthenticated && !data)) {
-    return <Loading />;
-  } else if (!isAuthenticated) {
-    loginWithRedirect({ appState: { returnTo: location.pathname } });
-  } else if (!meta.isAdmin) {
+  if (!isAuthenticated) {
+    return <NotLoggedIn />;
+  }
+
+  if (!meta.isAdmin) {
     return <InsufficientPrivileges />;
-  } else {
-    const polygons: ComponentProps<typeof Leaflet>["outlines"] = [];
-    const polylines: ComponentProps<typeof Leaflet>["polylines"] = [];
-    if (area) {
-      area.sectors.forEach((sector) => {
-        if (sector.id != data.id) {
-          if (sector.polygonCoords) {
-            const sectorPolygon = sector.polygonCoords
-              .split(";")
-              .filter((i) => i)
-              .map((c) => {
-                const latLng = c.split(",");
-                return [parseFloat(latLng[0]), parseFloat(latLng[1])];
-              });
-            polygons.push({
-              polygon: sectorPolygon,
-              background: true,
-              label: sector.name,
-            });
-          }
-          if (sector.polyline) {
-            const sectorPolyline = sector.polyline
-              .split(";")
-              .filter((i) => i)
-              .map((e) => e.split(",").map(Number));
-            polylines.push({ polyline: sectorPolyline, background: true });
-          }
+  }
+
+  if (error) {
+    return (
+      <Message
+        size="huge"
+        style={{ backgroundColor: "#FFF" }}
+        icon="meh"
+        header="404"
+        content={
+          "Cannot find the specified sector because it does not exist or you do not have sufficient permissions."
         }
-      });
-    }
-    let polygonError = false;
-    const polygon =
-      data.polygonCoords &&
-      data.polygonCoords
-        .split(";")
-        .filter((i) => i)
-        .map((c) => {
-          const latLng = c.split(",");
-          if (latLng?.length === 2) {
-            const lat = parseFloat(latLng[0]);
-            const lng = parseFloat(latLng[1]);
-            if (lat > 0 && lng > 0) {
-              return [lat, lng];
-            } else {
-              polygonError = true;
-            }
+      />
+    );
+  }
+
+  if (isLoading || !data) {
+    return <Loading />;
+  }
+
+  const polygons: ComponentProps<typeof Leaflet>["outlines"] = [];
+  const polylines: ComponentProps<typeof Leaflet>["polylines"] = [];
+  if (area) {
+    area.sectors.forEach((sector) => {
+      if (sector.id != data.id) {
+        if (sector.polygonCoords) {
+          const sectorPolygon = sector.polygonCoords
+            .split(";")
+            .filter((i) => i)
+            .map((c) => {
+              const latLng = c.split(",");
+              return [parseFloat(latLng[0]), parseFloat(latLng[1])];
+            });
+          polygons.push({
+            polygon: sectorPolygon,
+            background: true,
+            label: sector.name,
+          });
+        }
+        if (sector.polyline) {
+          const sectorPolyline = sector.polyline
+            .split(";")
+            .filter((i) => i)
+            .map((e) => e.split(",").map(Number));
+          polylines.push({ polyline: sectorPolyline, background: true });
+        }
+      }
+    });
+  }
+  let polygonError = false;
+  const polygon =
+    data.polygonCoords &&
+    data.polygonCoords
+      .split(";")
+      .filter((i) => i)
+      .map((c) => {
+        const latLng = c.split(",");
+        if (latLng?.length === 2) {
+          const lat = parseFloat(latLng[0]);
+          const lng = parseFloat(latLng[1]);
+          if (lat > 0 && lng > 0) {
+            return [lat, lng];
           } else {
             polygonError = true;
           }
-        })
-        .filter((e) => e?.length === 2 && e[0] > 0 && e[1] > 0);
-    if (polygon) {
-      polygons.push({ polygon, background: false });
-    }
-    const polyline =
-      data.polyline &&
-      data.polyline
-        .split(";")
-        .filter((i) => i)
-        .map((e) => e.split(",").map(Number))
-        .filter((e) => e?.length === 2 && e[0] > 0 && e[1] > 0);
-    if (polyline) {
-      polylines.push({ polyline, background: false });
-    }
-    const defaultCenter =
-      data.lat && parseFloat(data.lat) > 0
-        ? { lat: parseFloat(data.lat), lng: parseFloat(data.lng) }
-        : meta.defaultCenter;
-    const defaultZoom =
-      data.lat && parseFloat(data.lat) > 0 ? 14 : meta.defaultZoom;
-    const lockedOptions = [
-      { key: 0, value: 0, text: "Visible for everyone" },
-      { key: 1, value: 1, text: "Only visible for administrators" },
-    ];
-    if (meta.isSuperAdmin) {
-      lockedOptions.push({
-        key: 2,
-        value: 2,
-        text: "Only visible for super administrators",
-      });
-    }
-    let lockedValue = 0;
-    if (data.lockedSuperadmin) {
-      lockedValue = 2;
-    } else if (data.lockedAdmin) {
-      lockedValue = 1;
-    }
-    const markers: ComponentProps<typeof Leaflet>["markers"] = [];
-    if (data.lat != 0 && data.lng != 0) {
-      markers.push({ lat: data.lat, lng: data.lng, isParking: true });
-    }
-    if (sectorMarkers) {
-      markers.push(...sectorMarkers);
-    }
+        } else {
+          polygonError = true;
+        }
+      })
+      .filter((e) => e?.length === 2 && e[0] > 0 && e[1] > 0);
+  if (polygon) {
+    polygons.push({ polygon, background: false });
+  }
+  const polyline =
+    data.polyline &&
+    data.polyline
+      .split(";")
+      .filter((i) => i)
+      .map((e) => e.split(",").map(Number))
+      .filter((e) => e?.length === 2 && e[0] > 0 && e[1] > 0);
+  if (polyline) {
+    polylines.push({ polyline, background: false });
+  }
+  const defaultCenter =
+    data.lat && parseFloat(data.lat) > 0
+      ? { lat: parseFloat(data.lat), lng: parseFloat(data.lng) }
+      : meta.defaultCenter;
+  const defaultZoom =
+    data.lat && parseFloat(data.lat) > 0 ? 14 : meta.defaultZoom;
+  const lockedOptions = [
+    { key: 0, value: 0, text: "Visible for everyone" },
+    { key: 1, value: 1, text: "Only visible for administrators" },
+  ];
+  if (meta.isSuperAdmin) {
+    lockedOptions.push({
+      key: 2,
+      value: 2,
+      text: "Only visible for super administrators",
+    });
+  }
+  let lockedValue = 0;
+  if (data.lockedSuperadmin) {
+    lockedValue = 2;
+  } else if (data.lockedAdmin) {
+    lockedValue = 1;
+  }
+  const markers: ComponentProps<typeof Leaflet>["markers"] = [];
+  if (data.lat != 0 && data.lng != 0) {
+    markers.push({ lat: data.lat, lng: data.lng, isParking: true });
+  }
+  if (sectorMarkers) {
+    markers.push(...sectorMarkers);
+  }
 
-    const orderForm = data.problemOrder?.length > 1 && (
-      <>
-        {data.problemOrder.map((p, i) => {
-          const problemOrder = data.problemOrder;
-          const clr =
-            problemOrder[i].origNr &&
-            problemOrder[i].origNr != problemOrder[i].nr
-              ? "orange"
-              : "grey";
-          return (
-            <Input
-              key={p.id}
-              size="small"
-              fluid
-              icon="hashtag"
-              iconPosition="left"
-              placeholder="Number"
-              value={p.nr}
-              label={{ basic: true, content: p.name, color: clr }}
-              labelPosition="right"
-              onChange={(e, { value }) => {
-                if (problemOrder[i].origNr === undefined) {
-                  problemOrder[i].origNr = problemOrder[i].nr;
+  const orderForm = data.problemOrder?.length > 1 && (
+    <>
+      {data.problemOrder.map((p, i) => {
+        const problemOrder = data.problemOrder;
+        const clr =
+          problemOrder[i].origNr && problemOrder[i].origNr != problemOrder[i].nr
+            ? "orange"
+            : "grey";
+        return (
+          <Input
+            key={p.id}
+            size="small"
+            fluid
+            icon="hashtag"
+            iconPosition="left"
+            placeholder="Number"
+            value={p.nr}
+            label={{ basic: true, content: p.name, color: clr }}
+            labelPosition="right"
+            onChange={(e, { value }) => {
+              if (problemOrder[i].origNr === undefined) {
+                problemOrder[i].origNr = problemOrder[i].nr;
+              }
+              problemOrder[i].nr = parseInt(value) || "";
+              setData((prevState) => ({ ...prevState, problemOrder }));
+            }}
+          />
+        );
+      })}
+    </>
+  );
+
+  return (
+    <>
+      <Helmet>
+        <title>
+          Edit {data.name} | {meta.title}
+        </title>
+      </Helmet>
+      <Message
+        size="tiny"
+        content={
+          <>
+            <Icon name="info" />
+            Contact{" "}
+            <a href="mailto:jostein.oygarden@gmail.com">Jostein Øygarden</a> if
+            you want to move or split sector.
+          </>
+        }
+      />
+      <Form>
+        <Segment>
+          <Form.Group widths="equal">
+            <Form.Field
+              label="Sector name"
+              control={Input}
+              placeholder="Enter name"
+              value={data.name}
+              onChange={onNameChanged}
+              error={data.name ? false : "Sector name required"}
+            />
+            <Form.Field
+              label="Visibility"
+              control={Dropdown}
+              selection
+              value={lockedValue}
+              onChange={onLockedChanged}
+              options={lockedOptions}
+            />
+            <Form.Field>
+              <label>Move to trash</label>
+              <Checkbox
+                disabled={!data.id || data.id <= 0}
+                toggle
+                checked={data.trash}
+                onChange={() =>
+                  setData((prevState) => ({
+                    ...prevState,
+                    trash: !data.trash,
+                  }))
                 }
-                problemOrder[i].nr = parseInt(value) || "";
-                setData((prevState) => ({ ...prevState, problemOrder }));
-              }}
-            />
-          );
-        })}
-      </>
-    );
-
-    return (
-      <>
-        <Helmet>
-          <title>
-            Edit {data.name} | {meta.title}
-          </title>
-        </Helmet>
-        <Message
-          size="tiny"
-          content={
-            <>
-              <Icon name="info" />
-              Contact{" "}
-              <a href="mailto:jostein.oygarden@gmail.com">
-                Jostein Øygarden
-              </a>{" "}
-              if you want to move or split sector.
-            </>
-          }
-        />
-        <Form>
-          <Segment>
-            <Form.Group widths="equal">
-              <Form.Field
-                label="Sector name"
-                control={Input}
-                placeholder="Enter name"
-                value={data.name}
-                onChange={onNameChanged}
-                error={data.name ? false : "Sector name required"}
-              />
-              <Form.Field
-                label="Visibility"
-                control={Dropdown}
-                selection
-                value={lockedValue}
-                onChange={onLockedChanged}
-                options={lockedOptions}
-              />
-              <Form.Field>
-                <label>Move to trash</label>
-                <Checkbox
-                  disabled={!data.id || data.id <= 0}
-                  toggle
-                  checked={data.trash}
-                  onChange={() =>
-                    setData((prevState) => ({
-                      ...prevState,
-                      trash: !data.trash,
-                    }))
-                  }
-                />
-              </Form.Field>
-            </Form.Group>
-            <Form.Field
-              label="Description"
-              control={TextArea}
-              placeholder="Enter description"
-              style={{ minHeight: 100 }}
-              value={data.comment}
-              onChange={onCommentChanged}
-            />
-            <Form.Field>
-              <Input
-                label="Sector closed:"
-                placeholder="Enter closed-reason..."
-                value={data.accessClosed}
-                onChange={onAccessClosedChanged}
-                icon="attention"
               />
             </Form.Field>
-            <Form.Field>
-              <Input
-                label="Sector restrictions:"
-                placeholder="Enter specific restrictions..."
-                value={data.accessInfo}
-                onChange={onAccessInfoChanged}
-              />
-            </Form.Field>
-          </Segment>
-
-          <Segment>
-            <Form.Field
-              label="Upload image(s)"
-              control={ImageUpload}
-              onMediaChanged={onNewMediaChanged}
-              isMultiPitch={false}
-              includeVideoEmbedder={false}
+          </Form.Group>
+          <Form.Field
+            label="Description"
+            control={TextArea}
+            placeholder="Enter description"
+            style={{ minHeight: 100 }}
+            value={data.comment}
+            onChange={onCommentChanged}
+          />
+          <Form.Field>
+            <Input
+              label="Sector closed:"
+              placeholder="Enter closed-reason..."
+              value={data.accessClosed}
+              onChange={onAccessClosedChanged}
+              icon="attention"
             />
-          </Segment>
+          </Form.Field>
+          <Form.Field>
+            <Input
+              label="Sector restrictions:"
+              placeholder="Enter specific restrictions..."
+              value={data.accessInfo}
+              onChange={onAccessInfoChanged}
+            />
+          </Form.Field>
+        </Segment>
 
-          <Segment>
-            <Form.Group widths="equal">
-              <Form.Field>
-                <Button.Group size="tiny" compact>
-                  <Button
-                    positive={leafletMode == "PARKING"}
-                    onClick={() => setLeafletMode("PARKING")}
-                  >
-                    Parking
-                  </Button>
-                  <Button
-                    positive={leafletMode == "POLYGON"}
-                    onClick={() => setLeafletMode("POLYGON")}
-                  >
-                    Outline
-                  </Button>
-                  <Button
-                    positive={leafletMode == "POLYLINE"}
-                    onClick={() => setLeafletMode("POLYLINE")}
-                  >
-                    Approach
-                  </Button>
-                  <Button color="orange" onClick={clearDrawing}>
-                    Reset selected
-                  </Button>
-                </Button.Group>
-              </Form.Field>
-              <Form.Field>
+        <Segment>
+          <Form.Field
+            label="Upload image(s)"
+            control={ImageUpload}
+            onMediaChanged={onNewMediaChanged}
+            isMultiPitch={false}
+            includeVideoEmbedder={false}
+          />
+        </Segment>
+
+        <Segment>
+          <Form.Group widths="equal">
+            <Form.Field>
+              <Button.Group size="tiny" compact>
                 <Button
-                  size="tiny"
-                  compact
-                  positive={sectorMarkers != null}
-                  onClick={() => {
-                    if (sectorMarkers == null) {
-                      const sectorId = parseInt(
-                        areaIdSectorId?.split("-")[1] ?? "0"
-                      );
-                      if (sectorId > 0) {
-                        getSector(data.accessToken, sectorId).then((data) =>
-                          setSectorMarkers(
-                            data.problems
-                              .filter((p) => p.lat > 0 && p.lng > 0)
-                              .map((p) => ({
-                                lat: p.lat,
-                                lng: p.lng,
-                                label: p.name,
-                              }))
-                          )
-                        );
-                      }
-                    } else {
-                      setSectorMarkers(null);
-                    }
-                  }}
+                  positive={leafletMode == "PARKING"}
+                  onClick={() => setLeafletMode("PARKING")}
                 >
-                  Include all markers in sector
+                  Parking
                 </Button>
-              </Form.Field>
-            </Form.Group>
-            <Form.Group widths="equal">
+                <Button
+                  positive={leafletMode == "POLYGON"}
+                  onClick={() => setLeafletMode("POLYGON")}
+                >
+                  Outline
+                </Button>
+                <Button
+                  positive={leafletMode == "POLYLINE"}
+                  onClick={() => setLeafletMode("POLYLINE")}
+                >
+                  Approach
+                </Button>
+                <Button color="orange" onClick={clearDrawing}>
+                  Reset selected
+                </Button>
+              </Button.Group>
+            </Form.Field>
+            <Form.Field>
+              <Button
+                size="tiny"
+                compact
+                positive={sectorMarkers != null}
+                onClick={() => {
+                  if (sectorMarkers == null) {
+                    if (sectorId) {
+                      getSector(accessToken, sectorId).then((data) =>
+                        setSectorMarkers(
+                          data.problems
+                            .filter((p) => p.lat > 0 && p.lng > 0)
+                            .map((p) => ({
+                              lat: p.lat,
+                              lng: p.lng,
+                              label: p.name,
+                            }))
+                        )
+                      );
+                    }
+                  } else {
+                    setSectorMarkers(null);
+                  }
+                }}
+              >
+                Include all markers in sector
+              </Button>
+            </Form.Field>
+          </Form.Group>
+          <Form.Group widths="equal">
+            <Form.Field>
+              <Leaflet
+                autoZoom={true}
+                markers={markers}
+                outlines={polygons}
+                polylines={polylines}
+                defaultCenter={defaultCenter}
+                defaultZoom={defaultZoom}
+                onMouseClick={onMapMouseClick}
+                onMouseMove={null}
+                height={"300px"}
+                showSateliteImage={meta.isBouldering}
+                clusterMarkers={false}
+                rocks={null}
+                flyToId={null}
+              />
+            </Form.Field>
+          </Form.Group>
+          <Form.Group widths="equal">
+            {leafletMode === "PARKING" && (
+              <>
+                <Form.Field>
+                  <label>Latitude</label>
+                  <Input
+                    placeholder="Latitude"
+                    value={data.latStr || ""}
+                    onChange={onLatChanged}
+                  />
+                </Form.Field>
+                <Form.Field>
+                  <label>Longitude</label>
+                  <Input
+                    placeholder="Longitude"
+                    value={data.lngStr || ""}
+                    onChange={onLngChanged}
+                  />
+                </Form.Field>
+              </>
+            )}
+            {leafletMode === "POLYGON" && (
+              <Form.Field
+                label="Outline"
+                control={Input}
+                placeholder="Outline"
+                value={data.polygonCoords || ""}
+                onChange={(e, { value }) =>
+                  setData((prevState) => ({
+                    ...prevState,
+                    polygonCoords: value,
+                  }))
+                }
+                error={polygonError && "Invalid outline"}
+              />
+            )}
+            {leafletMode === "POLYLINE" && (
               <Form.Field>
-                <Leaflet
-                  autoZoom={true}
-                  markers={markers}
-                  outlines={polygons}
-                  polylines={polylines}
-                  defaultCenter={defaultCenter}
-                  defaultZoom={defaultZoom}
-                  onMouseClick={onMapMouseClick}
-                  onMouseMove={null}
-                  height={"300px"}
-                  showSateliteImage={meta.isBouldering}
-                  clusterMarkers={false}
-                  rocks={null}
-                  flyToId={null}
-                />
-              </Form.Field>
-            </Form.Group>
-            <Form.Group widths="equal">
-              {leafletMode === "PARKING" && (
-                <>
-                  <Form.Field>
-                    <label>Latitude</label>
-                    <Input
-                      placeholder="Latitude"
-                      value={data.latStr || ""}
-                      onChange={onLatChanged}
-                    />
-                  </Form.Field>
-                  <Form.Field>
-                    <label>Longitude</label>
-                    <Input
-                      placeholder="Longitude"
-                      value={data.lngStr || ""}
-                      onChange={onLngChanged}
-                    />
-                  </Form.Field>
-                </>
-              )}
-              {leafletMode === "POLYGON" && (
-                <Form.Field
-                  label="Outline"
-                  control={Input}
-                  placeholder="Outline"
-                  value={data.polygonCoords || ""}
+                <label>Approach</label>
+                <Input
+                  placeholder="Approach"
+                  value={data.polyline || ""}
                   onChange={(e, { value }) =>
                     setData((prevState) => ({
                       ...prevState,
-                      polygonCoords: value,
+                      polyline: value,
                     }))
                   }
-                  error={polygonError && "Invalid outline"}
                 />
-              )}
-              {leafletMode === "POLYLINE" && (
-                <Form.Field>
-                  <label>Approach</label>
-                  <Input
-                    placeholder="Approach"
-                    value={data.polyline || ""}
-                    onChange={(e, { value }) =>
-                      setData((prevState) => ({
-                        ...prevState,
-                        polyline: value,
-                      }))
+                <Dropzone
+                  multiple={false}
+                  accept={{ "application/gpx+xml": [".gpx"] }}
+                  onDrop={(files: any) => {
+                    if (files?.length !== 0) {
+                      const reader = new FileReader();
+                      reader.onload = (e) => {
+                        const gpx = new GpxParser();
+                        gpx.parse(e.target?.result as string);
+                        console.log(gpx);
+                        const polyline = gpx.tracks[0]?.points
+                          ?.map((e) => e.lat + "," + e.lon)
+                          .join(";");
+                        setData((prevState) => ({ ...prevState, polyline }));
+                      };
+                      reader.readAsText(files[0]);
                     }
-                  />
-                  <Dropzone
-                    multiple={false}
-                    accept={{ "application/gpx+xml": [".gpx"] }}
-                    onDrop={(files: any) => {
-                      if (files?.length !== 0) {
-                        const reader = new FileReader();
-                        reader.onload = (e) => {
-                          const gpx = new GpxParser();
-                          gpx.parse(e.target?.result as string);
-                          console.log(gpx);
-                          const polyline = gpx.tracks[0]?.points
-                            ?.map((e) => e.lat + "," + e.lon)
-                            .join(";");
-                          setData((prevState) => ({ ...prevState, polyline }));
-                        };
-                        reader.readAsText(files[0]);
-                      }
-                    }}
-                  >
-                    {({ getRootProps }) => (
-                      <div {...getRootProps()}>
-                        <Button size="mini" basic fluid>
-                          Upload GPX-file
-                        </Button>
-                      </div>
-                    )}
-                  </Dropzone>
-                </Form.Field>
-              )}
-            </Form.Group>
-          </Segment>
-
-          {orderForm && (
-            <Segment>
-              <Accordion>
-                <Accordion.Title
-                  active={showProblemOrder}
-                  onClick={() => setShowProblemOrder(!showProblemOrder)}
+                  }}
                 >
-                  <Icon name="dropdown" />
-                  Change order of problems in sector
-                </Accordion.Title>
-                <Accordion.Content
-                  active={showProblemOrder}
-                  content={orderForm}
-                />
-              </Accordion>
-            </Segment>
-          )}
+                  {({ getRootProps }) => (
+                    <div {...getRootProps()}>
+                      <Button size="mini" basic fluid>
+                        Upload GPX-file
+                      </Button>
+                    </div>
+                  )}
+                </Dropzone>
+              </Form.Field>
+            )}
+          </Form.Group>
+        </Segment>
 
-          <Button.Group>
-            <Button
-              negative
-              onClick={() => {
-                const sectorId = areaIdSectorId?.split("-")[1] ?? "0";
-                if (sectorId != "0") {
-                  navigate(`/sector/${sectorId}`);
-                } else {
-                  const areaId = areaIdSectorId?.split("-")[0] ?? "0";
-                  navigate(`/area/${areaId}`);
-                }
-              }}
-            >
-              Cancel
-            </Button>
-            <Button.Or />
-            <Button
-              positive
-              loading={saving}
-              onClick={save}
-              disabled={!data.name || polygonError}
-            >
-              Save sector
-            </Button>
-          </Button.Group>
-        </Form>
-      </>
-    );
-  }
+        {orderForm && (
+          <Segment>
+            <Accordion>
+              <Accordion.Title
+                active={showProblemOrder}
+                onClick={() => setShowProblemOrder(!showProblemOrder)}
+              >
+                <Icon name="dropdown" />
+                Change order of problems in sector
+              </Accordion.Title>
+              <Accordion.Content
+                active={showProblemOrder}
+                content={orderForm}
+              />
+            </Accordion>
+          </Segment>
+        )}
+
+        <Button.Group>
+          <Button
+            negative
+            onClick={() => {
+              if (sectorId) {
+                navigate(`/sector/${sectorId}`);
+              } else {
+                navigate(`/area/${areaId}`);
+              }
+            }}
+          >
+            Cancel
+          </Button>
+          <Button.Or />
+          <Button
+            positive
+            loading={saving}
+            onClick={save}
+            disabled={!data.name || polygonError}
+          >
+            Save sector
+          </Button>
+        </Button.Group>
+      </Form>
+    </>
+  );
 };
 
 export default SectorEdit;

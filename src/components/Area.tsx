@@ -387,7 +387,7 @@ const Area = () => {
               <Button
                 animated="fade"
                 as={Link}
-                to={`/sector/edit/${data[0].id}-0`}
+                to={`/sector/edit/${data[0].id}/0`}
               >
                 <Button.Content hidden>Add</Button.Content>
                 <Button.Content visible>
