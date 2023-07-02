@@ -25,54 +25,63 @@ import {
   convertFromStringToDate,
   postProblem,
   getSector,
+  useAccessToken,
 } from "../api";
-import { Loading, InsufficientPrivileges } from "./common/widgets/widgets";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import {
+  Loading,
+  InsufficientPrivileges,
+  NotLoggedIn,
+} from "./common/widgets/widgets";
+import { useNavigate, useParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+const useIds = (): { sectorId: number; problemId: number } => {
+  const { sectorId, problemId, sectorIdProblemId } = useParams();
+  if (sectorId && problemId) {
+    return { sectorId: +sectorId, problemId: +problemId };
+  }
+  {
+    const [sectorId, problemId] = sectorIdProblemId.split("-").map((v) => +v);
+    return { sectorId, problemId };
+  }
+};
+
 const ProblemEdit = () => {
-  const {
-    isLoading,
-    isAuthenticated,
-    getAccessTokenSilently,
-    loginWithRedirect,
-  } = useAuth0();
+  const accessToken = useAccessToken();
+  const { isAuthenticated } = useAuth0();
+  const { sectorId, problemId } = useIds();
   const [data, setData] = useState<any>(null);
   const [sectorMarkers, setSectorMarkers] = useState([]);
   const [sectorRocks, setSectorRocks] = useState([]);
   const [showSectorMarkers, setShowSectorMarkers] = useState(true);
   const [saving, setSaving] = useState(false);
-  const { sectorIdProblemId } = useParams();
+  const [error, setError] = useState("");
   const navigate = useNavigate();
-  const location = useLocation();
   const meta = useMeta();
   useEffect(() => {
-    if (sectorIdProblemId && isAuthenticated) {
-      getAccessTokenSilently().then((accessToken) => {
-        getProblemEdit(accessToken, sectorIdProblemId).then((data) =>
-          setData({ ...data, accessToken })
-        );
-        const sectorIdProblemIdArray = sectorIdProblemId.split("-");
-        const sectorId = sectorIdProblemIdArray[0];
-        const problemId = sectorIdProblemIdArray[1];
-        getSector(accessToken, parseInt(sectorId)).then((data) => {
-          setSectorMarkers(
-            data.problems
-              .filter((p) => p.lat > 0 && p.lng > 0 && p.id != problemId)
-              .map((p) => ({ lat: p.lat, lng: p.lng, label: p.name }))
-          );
-          setSectorRocks(
-            data.problems
-              .filter((p) => p.rock)
-              .map((p) => p.rock)
-              .filter((value, index, self) => self.indexOf(value) === index)
-              .sort()
-          );
-        });
-      });
+    if (accessToken) {
+      getProblemEdit(accessToken, sectorId, problemId)
+        .then((data) => setData(data))
+        .then(() =>
+          getSector(accessToken, sectorId).then((data) => {
+            setSectorMarkers(
+              data.problems
+                .filter((p) => p.lat > 0 && p.lng > 0 && p.id != problemId)
+                .map((p) => ({ lat: p.lat, lng: p.lng, label: p.name }))
+            );
+            setSectorRocks(
+              data.problems
+                .filter((p) => p.rock)
+                .map((p) => p.rock)
+                .filter((value, index, self) => self.indexOf(value) === index)
+                .sort()
+            );
+          })
+        )
+        .catch((e) => setError(String(e)));
     }
-  }, [getAccessTokenSilently, isAuthenticated, sectorIdProblemId]);
+  }, [accessToken, problemId, sectorId]);
 
   function onNameChanged(e, { value }) {
     setData((prevState) => ({ ...prevState, name: value }));
@@ -260,415 +269,426 @@ const ProblemEdit = () => {
     setData((prevState) => ({ ...prevState, sections }));
   }
 
-  if (isLoading || (isAuthenticated && !data?.sectorId)) {
-    return <Loading />;
-  } else if (!isAuthenticated) {
-    loginWithRedirect({ appState: { returnTo: location.pathname } });
-  } else if (!meta.isAdmin) {
+  if (!isAuthenticated) {
+    return <NotLoggedIn />;
+  }
+
+  if (!meta.isAdmin) {
     return <InsufficientPrivileges />;
-  } else {
-    let defaultCenter;
-    let defaultZoom: number;
-    if (data.lat != 0 && data.lng != 0) {
-      defaultCenter = { lat: data.lat, lng: data.lng };
-      defaultZoom = 15;
-    } else {
-      defaultCenter = meta.defaultCenter;
-      defaultZoom = meta.defaultZoom;
-    }
-    const lockedOptions = [
-      { key: 0, value: 0, text: "Visible for everyone" },
-      { key: 1, value: 1, text: "Only visible for administrators" },
-    ];
-    if (meta.isSuperAdmin) {
-      lockedOptions.push({
-        key: 2,
-        value: 2,
-        text: "Only visible for super administrators",
-      });
-    }
-    let lockedValue = 0;
-    if (data.lockedSuperadmin) {
-      lockedValue = 2;
-    } else if (data.lockedAdmin) {
-      lockedValue = 1;
-    }
+  }
 
-    const markers = [];
-    if (data.lat != 0 && data.lng != 0) {
-      markers.push({ lat: data.lat, lng: data.lng });
-    }
-    if (showSectorMarkers && sectorMarkers) {
-      markers.push(...sectorMarkers);
-    }
-
-    const sectorId = sectorIdProblemId.split("-")[0];
-    const problemId = sectorIdProblemId.split("-")[1];
-
+  if (error) {
     return (
-      <>
-        <Helmet>
-          <title>
-            Edit {data.name} | {meta.title}
-          </title>
-        </Helmet>
-        <Message
-          size="tiny"
-          content={
-            <>
-              <Icon name="info" />
-              Contact{" "}
-              <a href="mailto:jostein.oygarden@gmail.com">
-                Jostein Øygarden
-              </a>{" "}
-              if you want to move {meta.isBouldering ? "problem" : "route"} to
-              an other sector.
-            </>
-          }
-        />
-        <Form>
-          <Segment>
-            <Form.Group widths="equal">
-              <Form.Field
-                label="Name"
-                control={Input}
-                placeholder="Enter name"
-                value={data.name}
-                onChange={onNameChanged}
-                error={data.name ? false : "Name required"}
-              />
-              <Form.Field
-                label="Visibility"
-                control={Dropdown}
-                selection
-                value={lockedValue}
-                onChange={onLockedChanged}
-                options={lockedOptions}
-              />
-              <Form.Field
-                label="Number"
-                control={Input}
-                placeholder="Enter number"
-                value={data.nr}
-                onChange={onNrChanged}
-              />
-              <Form.Field>
-                <label>Move to trash</label>
-                <Checkbox
-                  disabled={!data.id || data.id <= 0}
-                  toggle
-                  checked={data.trash}
-                  onChange={() =>
-                    setData((prevState) => ({
-                      ...prevState,
-                      trash: !data.trash,
-                    }))
-                  }
-                />
-              </Form.Field>
-            </Form.Group>
-            <Form.Group widths="equal">
-              <Form.Field
-                label="Grade"
-                control={Dropdown}
-                selection
-                value={data.originalGrade}
-                onChange={onOriginalGradeChanged}
-                options={meta.grades.map((g, i) => ({
-                  key: i,
-                  value: g.grade,
-                  text: g.grade,
-                }))}
-                error={data.originalGrade ? false : "grade required"}
-              />
-              <Form.Field
-                label="FA User(s)"
-                control={UserSelector}
-                isMulti={true}
-                placeholder="Select user(s)"
-                users={
-                  data.fa
-                    ? data.fa.map((u) => {
-                        return { value: u.id, label: u.name };
-                      })
-                    : []
-                }
-                onUsersUpdated={onUsersUpdated}
-                identity={null}
-              />
-              <Form.Field>
-                <label>FA Date</label>
-                <DatePicker
-                  placeholderText="Click to select a date"
-                  dateFormat="dd-MM-yyyy"
-                  showMonthDropdown
-                  showYearDropdown
-                  dropdownMode="select"
-                  selected={convertFromStringToDate(data.faDate)}
-                  onChange={(date) => onFaDateChanged(date)}
-                />
-              </Form.Field>
-              {meta.isBouldering ? (
-                <Form.Field
-                  label="Rock (this field is optional, use to group boulders by rock in sector)"
-                  control={RockSelector}
-                  placeholder="Add rock"
-                  rock={data.rock}
-                  onRockUpdated={onRockChanged}
-                  rocks={sectorRocks}
-                  identity={null}
-                />
-              ) : (
-                <Form.Field />
-              )}
-            </Form.Group>
-            <Form.Field
-              label="Description"
-              control={TextArea}
-              placeholder="Enter description"
-              style={{ minHeight: 100 }}
-              value={data.comment}
-              onChange={onCommentChanged}
-            />
-            <Form.Field
-              label="Trivia (e.g. name origin)"
-              control={TextArea}
-              placeholder="Enter trivia"
-              style={{ minHeight: 100 }}
-              value={data.trivia}
-              onChange={onTriviaChanged}
-            />
-            {meta.isIce && (
-              <>
-                <Form.Field
-                  label="Starting altitude"
-                  control={Input}
-                  placeholder="Enter starting altitude"
-                  value={data.startingAltitude}
-                  onChange={onStartingAltitudeChanged}
-                />
-                <Form.Field
-                  label="Aspect"
-                  control={Input}
-                  placeholder="Enter aspect"
-                  value={data.aspect}
-                  onChange={onAspectChanged}
-                />
-                <Form.Field
-                  label="Route length"
-                  control={Input}
-                  placeholder="Enter route length"
-                  value={data.routeLength}
-                  onChange={onRouteLengthChanged}
-                />
-                <Form.Field
-                  label="Descent"
-                  control={Input}
-                  placeholder="Enter descent"
-                  value={data.descent}
-                  onChange={onDescentChanged}
-                />
-              </>
-            )}
-          </Segment>
-
-          <Segment>
-            <Form.Field>
-              <label>Upload image(s) or embed video(s)</label>
-              <br />
-              <ImageUpload
-                onMediaChanged={onNewMediaChanged}
-                isMultiPitch={data.sections && data.sections.length > 1}
-                includeVideoEmbedder={true}
-              />
-            </Form.Field>
-          </Segment>
-
-          {meta.isClimbing && (
-            <Segment>
-              <Form.Field
-                label="Type"
-                control={Dropdown}
-                selection
-                value={data.typeId}
-                onChange={onTypeIdChanged}
-                options={meta.types.map((t, i) => {
-                  const text = t.type + (t.subType ? " - " + t.subType : "");
-                  return { key: i, value: t.id, text: text };
-                })}
-                error={data.typeId ? false : "Type required"}
-              ></Form.Field>
-              <Form.Field>
-                <label>First AID ascent?</label>
-                <Button.Group size="tiny">
-                  <Button
-                    onClick={() =>
-                      setData((prevState) => ({
-                        ...prevState,
-                        faAid: {
-                          problemId: data.id,
-                          date: "",
-                          description: "",
-                        },
-                      }))
-                    }
-                    positive={data.faAid ? true : false}
-                  >
-                    Yes
-                  </Button>
-                  <Button.Or />
-                  <Button
-                    onClick={() =>
-                      setData((prevState) => ({ ...prevState, faAid: null }))
-                    }
-                    positive={data.faAid ? false : true}
-                  >
-                    No
-                  </Button>
-                </Button.Group>
-                {data.faAid && (
-                  <Container>
-                    <DatePicker
-                      placeholderText="Click to select a date"
-                      dateFormat="dd-MM-yyyy"
-                      withPortal
-                      portalId="root-portal"
-                      showMonthDropdown
-                      showYearDropdown
-                      dropdownMode="select"
-                      selected={convertFromStringToDate(
-                        data.faAid ? data.faAid.date : ""
-                      )}
-                      onChange={(date) => onFaAidDateChanged(date)}
-                    />
-                    <TextArea
-                      placeholder="Enter description"
-                      style={{ minHeight: 75 }}
-                      value={data.faAid.description}
-                      onChange={onFaAidDescriptionChanged}
-                    />
-                    <UserSelector
-                      isMulti={true}
-                      placeholder="Select user(s)"
-                      users={
-                        data.faAid.users
-                          ? data.faAid.users.map((u) => {
-                              return { value: u.id, label: u.name };
-                            })
-                          : []
-                      }
-                      onUsersUpdated={onFaAidUsersUpdated}
-                      identity={null}
-                    />
-                  </Container>
-                )}
-              </Form.Field>
-              <Form.Field>
-                <label>Pitches</label>
-                <ProblemSection
-                  sections={data.sections}
-                  grades={meta.grades}
-                  onSectionsUpdated={onSectionsUpdated}
-                />
-              </Form.Field>
-            </Segment>
-          )}
-
-          <Segment>
-            <Form.Field>
-              <label>Click to mark problem on map</label>
-              <Leaflet
-                autoZoom={true}
-                markers={markers}
-                defaultCenter={defaultCenter}
-                defaultZoom={defaultZoom}
-                onMouseClick={onMapClick}
-                onMouseMove={null}
-                polylines={null}
-                outlines={null}
-                height={"300px"}
-                showSateliteImage={true}
-                clusterMarkers={false}
-                rocks={null}
-                flyToId={null}
-              />
-            </Form.Field>
-            <Form.Group widths="equal">
-              <Form.Field>
-                <label>Latitude</label>
-                <Input
-                  placeholder="Latitude"
-                  value={data.latStr}
-                  onChange={onLatChanged}
-                />
-              </Form.Field>
-              <Form.Field>
-                <label>Longitude</label>
-                <Input
-                  placeholder="Longitude"
-                  value={data.lngStr}
-                  onChange={onLngChanged}
-                />
-              </Form.Field>
-              <Form.Field>
-                <label>Include all markers in sector</label>
-                <Checkbox
-                  toggle
-                  checked={showSectorMarkers}
-                  onChange={(e, d) => {
-                    if (d.checked) {
-                      setShowSectorMarkers(true);
-                    } else {
-                      setShowSectorMarkers(false);
-                    }
-                  }}
-                />
-              </Form.Field>
-            </Form.Group>
-          </Segment>
-
-          <Button.Group>
-            <Button
-              negative
-              onClick={() => {
-                if (problemId && problemId != "0") {
-                  navigate(`/problem/${problemId}`);
-                } else {
-                  navigate(`/sector/${sectorId}`);
-                }
-              }}
-            >
-              Cancel
-            </Button>
-            <Button.Or />
-            <Button
-              positive
-              loading={saving}
-              onClick={(event) => save(event, false)}
-              disabled={!data.name || (meta.types.length > 1 && !data.typeId)}
-            >
-              Save
-            </Button>
-            {problemId === "0" && (
-              <>
-                <Button.Or />
-                <Button
-                  positive
-                  loading={saving}
-                  onClick={(event) => save(event, true)}
-                  disabled={
-                    !data.name || (meta.types.length > 1 && !data.typeId)
-                  }
-                >
-                  Save, and add new
-                </Button>
-              </>
-            )}
-          </Button.Group>
-        </Form>
-      </>
+      <Message
+        size="huge"
+        style={{ backgroundColor: "#FFF" }}
+        icon="meh"
+        header="404"
+        content={
+          "Cannot find the specified problem because it does not exist or you do not have sufficient permissions."
+        }
+      />
     );
   }
+
+  if (!data) {
+    return <Loading />;
+  }
+
+  let defaultCenter;
+  let defaultZoom: number;
+  if (data.lat != 0 && data.lng != 0) {
+    defaultCenter = { lat: data.lat, lng: data.lng };
+    defaultZoom = 15;
+  } else {
+    defaultCenter = meta.defaultCenter;
+    defaultZoom = meta.defaultZoom;
+  }
+  const lockedOptions = [
+    { key: 0, value: 0, text: "Visible for everyone" },
+    { key: 1, value: 1, text: "Only visible for administrators" },
+  ];
+  if (meta.isSuperAdmin) {
+    lockedOptions.push({
+      key: 2,
+      value: 2,
+      text: "Only visible for super administrators",
+    });
+  }
+  let lockedValue = 0;
+  if (data.lockedSuperadmin) {
+    lockedValue = 2;
+  } else if (data.lockedAdmin) {
+    lockedValue = 1;
+  }
+
+  const markers = [];
+  if (data.lat != 0 && data.lng != 0) {
+    markers.push({ lat: data.lat, lng: data.lng });
+  }
+  if (showSectorMarkers && sectorMarkers) {
+    markers.push(...sectorMarkers);
+  }
+
+  return (
+    <>
+      <Helmet>
+        <title>
+          Edit {data.name} | {meta.title}
+        </title>
+      </Helmet>
+      <Message
+        size="tiny"
+        content={
+          <>
+            <Icon name="info" />
+            Contact{" "}
+            <a href="mailto:jostein.oygarden@gmail.com">Jostein Øygarden</a> if
+            you want to move {meta.isBouldering ? "problem" : "route"} to an
+            other sector.
+          </>
+        }
+      />
+      <Form>
+        <Segment>
+          <Form.Group widths="equal">
+            <Form.Field
+              label="Name"
+              control={Input}
+              placeholder="Enter name"
+              value={data.name}
+              onChange={onNameChanged}
+              error={data.name ? false : "Name required"}
+            />
+            <Form.Field
+              label="Visibility"
+              control={Dropdown}
+              selection
+              value={lockedValue}
+              onChange={onLockedChanged}
+              options={lockedOptions}
+            />
+            <Form.Field
+              label="Number"
+              control={Input}
+              placeholder="Enter number"
+              value={data.nr}
+              onChange={onNrChanged}
+            />
+            <Form.Field>
+              <label>Move to trash</label>
+              <Checkbox
+                disabled={!data.id || data.id <= 0}
+                toggle
+                checked={data.trash}
+                onChange={() =>
+                  setData((prevState) => ({
+                    ...prevState,
+                    trash: !data.trash,
+                  }))
+                }
+              />
+            </Form.Field>
+          </Form.Group>
+          <Form.Group widths="equal">
+            <Form.Field
+              label="Grade"
+              control={Dropdown}
+              selection
+              value={data.originalGrade}
+              onChange={onOriginalGradeChanged}
+              options={meta.grades.map((g, i) => ({
+                key: i,
+                value: g.grade,
+                text: g.grade,
+              }))}
+              error={data.originalGrade ? false : "grade required"}
+            />
+            <Form.Field
+              label="FA User(s)"
+              control={UserSelector}
+              isMulti={true}
+              placeholder="Select user(s)"
+              users={
+                data.fa
+                  ? data.fa.map((u) => {
+                      return { value: u.id, label: u.name };
+                    })
+                  : []
+              }
+              onUsersUpdated={onUsersUpdated}
+              identity={null}
+            />
+            <Form.Field>
+              <label>FA Date</label>
+              <DatePicker
+                placeholderText="Click to select a date"
+                dateFormat="dd-MM-yyyy"
+                showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
+                selected={convertFromStringToDate(data.faDate)}
+                onChange={(date) => onFaDateChanged(date)}
+              />
+            </Form.Field>
+            {meta.isBouldering ? (
+              <Form.Field
+                label="Rock (this field is optional, use to group boulders by rock in sector)"
+                control={RockSelector}
+                placeholder="Add rock"
+                rock={data.rock}
+                onRockUpdated={onRockChanged}
+                rocks={sectorRocks}
+                identity={null}
+              />
+            ) : (
+              <Form.Field />
+            )}
+          </Form.Group>
+          <Form.Field
+            label="Description"
+            control={TextArea}
+            placeholder="Enter description"
+            style={{ minHeight: 100 }}
+            value={data.comment}
+            onChange={onCommentChanged}
+          />
+          <Form.Field
+            label="Trivia (e.g. name origin)"
+            control={TextArea}
+            placeholder="Enter trivia"
+            style={{ minHeight: 100 }}
+            value={data.trivia}
+            onChange={onTriviaChanged}
+          />
+          {meta.isIce && (
+            <>
+              <Form.Field
+                label="Starting altitude"
+                control={Input}
+                placeholder="Enter starting altitude"
+                value={data.startingAltitude}
+                onChange={onStartingAltitudeChanged}
+              />
+              <Form.Field
+                label="Aspect"
+                control={Input}
+                placeholder="Enter aspect"
+                value={data.aspect}
+                onChange={onAspectChanged}
+              />
+              <Form.Field
+                label="Route length"
+                control={Input}
+                placeholder="Enter route length"
+                value={data.routeLength}
+                onChange={onRouteLengthChanged}
+              />
+              <Form.Field
+                label="Descent"
+                control={Input}
+                placeholder="Enter descent"
+                value={data.descent}
+                onChange={onDescentChanged}
+              />
+            </>
+          )}
+        </Segment>
+
+        <Segment>
+          <Form.Field>
+            <label>Upload image(s) or embed video(s)</label>
+            <br />
+            <ImageUpload
+              onMediaChanged={onNewMediaChanged}
+              isMultiPitch={data.sections && data.sections.length > 1}
+              includeVideoEmbedder={true}
+            />
+          </Form.Field>
+        </Segment>
+
+        {meta.isClimbing && (
+          <Segment>
+            <Form.Field
+              label="Type"
+              control={Dropdown}
+              selection
+              value={data.typeId}
+              onChange={onTypeIdChanged}
+              options={meta.types.map((t, i) => {
+                const text = t.type + (t.subType ? " - " + t.subType : "");
+                return { key: i, value: t.id, text: text };
+              })}
+              error={data.typeId ? false : "Type required"}
+            />
+            <Form.Field>
+              <label>First AID ascent?</label>
+              <Button.Group size="tiny">
+                <Button
+                  onClick={() =>
+                    setData((prevState) => ({
+                      ...prevState,
+                      faAid: {
+                        problemId: data.id,
+                        date: "",
+                        description: "",
+                      },
+                    }))
+                  }
+                  positive={data.faAid ? true : false}
+                >
+                  Yes
+                </Button>
+                <Button.Or />
+                <Button
+                  onClick={() =>
+                    setData((prevState) => ({ ...prevState, faAid: null }))
+                  }
+                  positive={data.faAid ? false : true}
+                >
+                  No
+                </Button>
+              </Button.Group>
+              {data.faAid && (
+                <Container>
+                  <DatePicker
+                    placeholderText="Click to select a date"
+                    dateFormat="dd-MM-yyyy"
+                    withPortal
+                    portalId="root-portal"
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
+                    selected={convertFromStringToDate(
+                      data.faAid ? data.faAid.date : ""
+                    )}
+                    onChange={(date) => onFaAidDateChanged(date)}
+                  />
+                  <TextArea
+                    placeholder="Enter description"
+                    style={{ minHeight: 75 }}
+                    value={data.faAid.description}
+                    onChange={onFaAidDescriptionChanged}
+                  />
+                  <UserSelector
+                    isMulti={true}
+                    placeholder="Select user(s)"
+                    users={
+                      data.faAid.users
+                        ? data.faAid.users.map((u) => {
+                            return { value: u.id, label: u.name };
+                          })
+                        : []
+                    }
+                    onUsersUpdated={onFaAidUsersUpdated}
+                    identity={null}
+                  />
+                </Container>
+              )}
+            </Form.Field>
+            <Form.Field>
+              <label>Pitches</label>
+              <ProblemSection
+                sections={data.sections}
+                grades={meta.grades}
+                onSectionsUpdated={onSectionsUpdated}
+              />
+            </Form.Field>
+          </Segment>
+        )}
+
+        <Segment>
+          <Form.Field>
+            <label>Click to mark problem on map</label>
+            <Leaflet
+              autoZoom={true}
+              markers={markers}
+              defaultCenter={defaultCenter}
+              defaultZoom={defaultZoom}
+              onMouseClick={onMapClick}
+              onMouseMove={null}
+              polylines={null}
+              outlines={null}
+              height={"300px"}
+              showSateliteImage={true}
+              clusterMarkers={false}
+              rocks={null}
+              flyToId={null}
+            />
+          </Form.Field>
+          <Form.Group widths="equal">
+            <Form.Field>
+              <label>Latitude</label>
+              <Input
+                placeholder="Latitude"
+                value={data.latStr}
+                onChange={onLatChanged}
+              />
+            </Form.Field>
+            <Form.Field>
+              <label>Longitude</label>
+              <Input
+                placeholder="Longitude"
+                value={data.lngStr}
+                onChange={onLngChanged}
+              />
+            </Form.Field>
+            <Form.Field>
+              <label>Include all markers in sector</label>
+              <Checkbox
+                toggle
+                checked={showSectorMarkers}
+                onChange={(e, d) => {
+                  if (d.checked) {
+                    setShowSectorMarkers(true);
+                  } else {
+                    setShowSectorMarkers(false);
+                  }
+                }}
+              />
+            </Form.Field>
+          </Form.Group>
+        </Segment>
+
+        <Button.Group>
+          <Button
+            negative
+            onClick={() => {
+              if (problemId && !!problemId) {
+                navigate(`/problem/${problemId}`);
+              } else {
+                navigate(`/sector/${sectorId}`);
+              }
+            }}
+          >
+            Cancel
+          </Button>
+          <Button.Or />
+          <Button
+            positive
+            loading={saving}
+            onClick={(event) => save(event, false)}
+            disabled={!data.name || (meta.types.length > 1 && !data.typeId)}
+          >
+            Save
+          </Button>
+          {!problemId && (
+            <>
+              <Button.Or />
+              <Button
+                positive
+                loading={saving}
+                onClick={(event) => save(event, true)}
+                disabled={!data.name || (meta.types.length > 1 && !data.typeId)}
+              >
+                Save, and add new
+              </Button>
+            </>
+          )}
+        </Button.Group>
+      </Form>
+    </>
+  );
 };
 
 export default ProblemEdit;

@@ -515,12 +515,10 @@ export function getProblem(
 
 export function getProblemEdit(
   accessToken: string | null,
-  sectorIdProblemId: string
+  sectorId: number,
+  problemId: number
 ): Promise<any> {
-  const parts = sectorIdProblemId.split("-");
-  const sectorId = parseInt(parts[0]);
-  const problemId = parseInt(parts[1]);
-  if (problemId === 0) {
+  if (!problemId) {
     return getSector(accessToken, sectorId)
       .then((res) => {
         return {
@@ -653,12 +651,10 @@ export function getSector(
 
 export function getSectorEdit(
   accessToken: string | null,
-  areaIdSectorId: string
+  areaId: number,
+  sectorId: number
 ): Promise<any> {
-  const parts = areaIdSectorId.split("-");
-  const areaId = parseInt(parts[0]);
-  const sectorId = parseInt(parts[1]);
-  if (sectorId === 0) {
+  if (!sectorId) {
     return getArea(accessToken, areaId)
       .then((res) => {
         return {
@@ -724,11 +720,9 @@ export function getSites(
 
 export function getSvgEdit(
   accessToken: string | null,
-  problemIdMediaId: string
+  problemId: number,
+  mediaId: number
 ): Promise<any> {
-  const parts = problemIdMediaId.split("-");
-  const problemId = parts[0];
-  const mediaId = parts[1];
   return makeAuthenticatedRequest(
     accessToken,
     `/problem?id=${problemId}&showHiddenMedia=true`,

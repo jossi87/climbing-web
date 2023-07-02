@@ -90,6 +90,10 @@ function AppRoutes() {
           <Route path="/permissions" element={<Permissions />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/problem/:problemId" element={<Problem />} />
+          {/*
+            Deprecated. Remove this after July 15 or so - just in case anyone
+            has active sessions or something.
+          */}
           <Route
             path="/problem/edit/:sectorIdProblemId"
             element={<ProblemEdit />}
@@ -99,13 +103,33 @@ function AppRoutes() {
             element={<ProblemEditMedia />}
           />
           <Route
+            path="/problem/edit/:sectorId/:problemId"
+            element={<ProblemEdit />}
+          />
+          {/*
+            Deprecated. Remove this after July 15 or so - just in case anyone
+            has active sessions or something.
+          */}
+          <Route
             path="/problem/svg-edit/:problemIdMediaId"
+            element={<SvgEdit />}
+          />
+          <Route
+            path="/problem/svg-edit/:problemId/:mediaId"
             element={<SvgEdit />}
           />
           <Route path="/problems" element={<Problems />} />
           <Route path="/sites/:type" element={<Sites />} />
           <Route path="/sector/:sectorId" element={<Sector />} />
+          {/*
+            Deprecated. Remove this after July 15 or so - just in case anyone
+            has active sessions or something.
+          */}
           <Route path="/sector/edit/:areaIdSectorId" element={<SectorEdit />} />
+          <Route
+            path="/sector/edit/:areaId/:sectorId"
+            element={<SectorEdit />}
+          />
           <Route path="/ticks/:page" element={<Ticks />} />
           <Route path="/swagger" element={<Swagger />} />
           <Route path="/trash" element={<Trash />} />
