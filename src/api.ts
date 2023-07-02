@@ -320,19 +320,6 @@ export function useAreas() {
 export function useArea(id: number) {
   return useData(`/areas?id=${id}`, {
     queryKey: [`/areas`, { id }],
-    transform: (response) => {
-      if (response.status === 500) {
-        return Promise.reject(
-          "Cannot find the specified area because it does not exist or you do not have sufficient permissions."
-        );
-      }
-      return response.json().then((data) => {
-        if (data.redirectUrl && data.redirectUrl != window.location.href) {
-          window.location.href = data.redirectUrl;
-        }
-        return data;
-      });
-    },
   });
 }
 
@@ -456,22 +443,7 @@ export function useProblem(id: number, showHiddenMedia: boolean) {
   const client = useQueryClient();
   const problem = useData(
     `/problem?id=${id}&showHiddenMedia=${showHiddenMedia}`,
-    {
-      queryKey: [`/problem`, { id, showHiddenMedia }],
-      transform: (response) => {
-        if (response.status === 500) {
-          return Promise.reject(
-            "Cannot find the specified problem because it does not exist or you do not have sufficient permissions."
-          );
-        }
-        return response.json().then((data) => {
-          if (data.redirectUrl && data.redirectUrl != window.location.href) {
-            window.location.href = data.redirectUrl;
-          }
-          return data;
-        });
-      },
-    }
+    { queryKey: [`/problem`, { id, showHiddenMedia }] }
   );
 
   const { data: profile } = useProfile(-1);
@@ -655,19 +627,6 @@ export function useSector(
   return useData(`/sectors?id=${id}`, {
     ...(options ?? {}),
     queryKey: [`/sectors`, { id }],
-    transform: (response) => {
-      if (response.status === 500) {
-        return Promise.reject(
-          "Cannot find the specified sector because it does not exist or you do not have sufficient permissions."
-        );
-      }
-      return response.json().then((data) => {
-        if (data.redirectUrl && data.redirectUrl != window.location.href) {
-          window.location.href = data.redirectUrl;
-        }
-        return data;
-      });
-    },
   });
 }
 

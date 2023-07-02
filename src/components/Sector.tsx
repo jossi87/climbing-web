@@ -37,6 +37,7 @@ import {
   useSector,
 } from "../api";
 import Linkify from "react-linkify";
+import { useRedirect } from "../utils/useRedirect";
 
 const SectorListItem = ({ problem, isClimbing }) => {
   const type = isClimbing
@@ -105,6 +106,11 @@ const Sector = () => {
   const { sectorId } = useParams();
   const meta = useMeta();
   const { data: data, error, isLoading } = useSector(+sectorId);
+  const redirect = useRedirect(data);
+
+  if (redirect) {
+    return redirect;
+  }
 
   if (error) {
     return (
@@ -116,7 +122,9 @@ const Sector = () => {
         content={String(error)}
       />
     );
-  } else if (isLoading || !data || !data.id) {
+  }
+
+  if (isLoading || !data) {
     return <Loading />;
   }
 

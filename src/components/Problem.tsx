@@ -38,6 +38,7 @@ import {
 import TickModal from "./common/tick-modal/tick-modal";
 import CommentModal from "./common/comment-modal/comment-modal";
 import Linkify from "react-linkify";
+import { useRedirect } from "../utils/useRedirect";
 
 const componentDecorator = (href, text, key) => (
   <a href={href} key={key} target="_blank" rel="noreferrer">
@@ -310,6 +311,7 @@ const Problem = () => {
   const [showHiddenMedia, setShowHiddenMedia] = useState(false);
   const meta = useMeta();
   const { data, error, toggleTodo } = useProblem(+problemId, showHiddenMedia);
+  const redirecting = useRedirect(data);
 
   const [showTickModal, setShowTickModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState<any>(null);
@@ -325,6 +327,10 @@ const Problem = () => {
   const onCommentModalClosed = () => {
     setShowCommentModal(null);
   };
+
+  if (redirecting) {
+    return redirecting;
+  }
 
   if (error) {
     return (
