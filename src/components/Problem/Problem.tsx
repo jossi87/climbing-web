@@ -1,9 +1,9 @@
 import React, { useState, ComponentProps } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useParams } from "react-router-dom";
-import Leaflet from "./common/leaflet/leaflet";
-import { calculateDistance } from "./common/leaflet/distance-math";
-import Media from "./common/media/media";
+import Leaflet from "../common/leaflet/leaflet";
+import { calculateDistance } from "../common/leaflet/distance-math";
+import Media from "../common/media/media";
 import {
   Button,
   Grid,
@@ -11,301 +11,31 @@ import {
   Tab,
   Label,
   Icon,
-  Comment,
   Header,
-  Segment,
   Table,
   Feed,
   Image,
   Message,
 } from "semantic-ui-react";
-import {
-  Loading,
-  LockSymbol,
-  Stars,
-  WeatherLabels,
-} from "./common/widgets/widgets";
-import { useMeta } from "./common/meta";
+import { Loading, LockSymbol, WeatherLabels } from "../common/widgets/widgets";
+import { useMeta } from "../common/meta";
 import {
   getAreaPdfUrl,
   getSectorPdfUrl,
   getProblemPdfUrl,
-  postComment,
   useProblem,
   useAccessToken,
-  useSector,
-} from "../api";
-import TickModal from "./common/tick-modal/tick-modal";
-import CommentModal from "./common/comment-modal/comment-modal";
+} from "../../api";
+import TickModal from "../common/tick-modal/tick-modal";
+import CommentModal from "../common/comment-modal/comment-modal";
 import Linkify from "react-linkify";
-import { useRedirect } from "../utils/useRedirect";
+import { useRedirect } from "../../utils/useRedirect";
+import { ProblemsOnRock } from "./ProblemsOnRock";
+import { ProblemTicks } from "./ProblemTicks";
+import { ProblemComments } from "./ProblemComments";
+import { componentDecorator } from "../../utils/componentDecorator";
 
-const componentDecorator = (href, text, key) => (
-  <a href={href} key={key} target="_blank" rel="noreferrer">
-    {text}
-  </a>
-);
-
-const ProblemsOnRock = ({
-  sectorId,
-  rock,
-  problemId,
-}: {
-  problemId: number;
-  sectorId: number | undefined;
-  rock: string | undefined;
-}) => {
-  const { data: problemsOnRock } = useSector(sectorId, {
-    enabled: !!sectorId,
-    select: (sectorData: any) => {
-      return sectorData?.problems?.filter(
-        (problem) => problem.rock && problem.rock === rock
-      );
-    },
-    suspense: false,
-  });
-
-  if (!problemsOnRock?.length || !rock) {
-    return null;
-  }
-
-  return (
-    <Table.Row verticalAlign="top">
-      <Table.Cell>Rock «{rock}»:</Table.Cell>
-      <Table.Cell>
-        {problemsOnRock.map((p, key) => (
-          <Label
-            key={key}
-            as={Link}
-            to={`/problem/${p.id}`}
-            active={problemId === p.id}
-          >
-            #{p.nr} {p.name} {p.grade}
-            <Label.Detail>
-              <Stars numStars={p.stars} includeNoRating={false} />
-              {p.lat > 0 && p.lng > 0 && (
-                <Icon size="small" name="map marker alternate" />
-              )}
-              {p.hasTopo && <Icon size="small" name="paint brush" />}
-              {p.hasImages > 0 && (
-                <Icon size="small" color="black" name="photo" />
-              )}
-              {p.hasMovies > 0 && (
-                <Icon size="small" color="black" name="film" />
-              )}
-              <LockSymbol
-                lockedAdmin={p.lockedAdmin}
-                lockedSuperadmin={p.lockedSuperadmin}
-              />
-              {p.ticked && <Icon size="small" color="green" name="check" />}
-            </Label.Detail>
-          </Label>
-        ))}
-      </Table.Cell>
-    </Table.Row>
-  );
-};
-
-const ProblemTicks = ({
-  ticks,
-}: {
-  ticks:
-    | {
-        comment: string;
-        date?: string;
-        idUser: number;
-        name: string;
-        picture?: string;
-        stars: number;
-        suggestedGrade: string;
-        repeats?: {
-          comment: string;
-          date?: string;
-        }[];
-      }[]
-    | undefined;
-}) => {
-  return (
-    <Comment.Group as={Segment}>
-      <Header as="h3" dividing>
-        Ticks:
-      </Header>
-      {ticks?.length ? (
-        ticks.map((t, i) => {
-          let dt = t.date;
-          let com = null;
-          if (t.repeats?.length > 0) {
-            dt =
-              (dt ? dt : "no-date") +
-              ", " +
-              t.repeats.map((x) => (x.date ? x.date : "no-date")).join(", ");
-            com = (
-              <Table compact unstackable size="small">
-                <Table.Row>
-                  <Table.Cell
-                    verticalAlign="top"
-                    singleLine
-                    className="metadata"
-                  >
-                    {t.date ? t.date : "no-date"}
-                  </Table.Cell>
-                  <Table.Cell verticalAlign="top">{t.comment}</Table.Cell>
-                </Table.Row>
-                {t.repeats.map((r, i) => (
-                  <Table.Row key={i}>
-                    <Table.Cell
-                      verticalAlign="top"
-                      singleLine
-                      className="metadata"
-                    >
-                      {r.date ? r.date : "no-date"}
-                    </Table.Cell>
-                    <Table.Cell>{r.comment}</Table.Cell>
-                  </Table.Row>
-                ))}
-              </Table>
-            );
-          } else {
-            com = t.comment;
-          }
-          return (
-            <Comment key={i}>
-              <Comment.Avatar src={t.picture ? t.picture : "/png/image.png"} />
-              <Comment.Content>
-                <Comment.Author as={Link} to={`/user/${t.idUser}`}>
-                  {t.name}
-                </Comment.Author>
-                <Comment.Metadata>{dt}</Comment.Metadata>
-                <Comment.Text>
-                  <Stars numStars={t.stars} includeNoRating={true} />{" "}
-                  {t.suggestedGrade}
-                  <br />
-                  <Linkify componentDecorator={componentDecorator}>
-                    {com}
-                  </Linkify>
-                </Comment.Text>
-              </Comment.Content>
-            </Comment>
-          );
-        })
-      ) : (
-        <i>No ticks</i>
-      )}
-    </Comment.Group>
-  );
-};
-
-const ProblemComments = ({
-  problemId,
-  showHiddenMedia,
-  onShowCommentModal,
-}: {
-  problemId: number;
-  showHiddenMedia: boolean;
-  onShowCommentModal: (comment: any) => void;
-}) => {
-  const accessToken = useAccessToken();
-  const meta = useMeta();
-  const { data } = useProblem(+problemId, showHiddenMedia);
-
-  function flagAsDangerous({ id, message }) {
-    if (confirm("Are you sure you want to flag this comment?")) {
-      postComment(
-        accessToken,
-        id,
-        data.id,
-        message,
-        true,
-        false,
-        false,
-        []
-      ).catch((error) => {
-        console.warn(error);
-        alert(error.toString());
-      });
-    }
-  }
-
-  function deleteComment({ id }) {
-    if (confirm("Are you sure you want to delete this comment?")) {
-      postComment(accessToken, id, data.id, null, false, false, true, []).catch(
-        (error) => {
-          console.warn(error);
-          alert(error.toString());
-        }
-      );
-    }
-  }
-
-  if (!data) {
-    return null;
-  }
-
-  return (
-    <Comment.Group as={Segment}>
-      <Header as="h3" dividing>
-        Comments:
-      </Header>
-      {data.comments?.length ? (
-        data.comments.map((c, i) => {
-          let extra: JSX.Element | null = null;
-          if (c.danger) {
-            extra = <Label color="red">Flagged as dangerous</Label>;
-          } else if (c.resolved) {
-            extra = <Label color="green">Flagged as safe</Label>;
-          } else if (meta.isAuthenticated && meta.isClimbing) {
-            extra = (
-              <Button
-                basic
-                size="tiny"
-                compact
-                onClick={() => flagAsDangerous(c)}
-              >
-                Flag as dangerous
-              </Button>
-            );
-          }
-          return (
-            <Comment key={i}>
-              <Comment.Avatar src={c.picture ? c.picture : "/png/image.png"} />
-              <Comment.Content>
-                {c.editable && (
-                  <Button.Group size="tiny" basic compact floated="right">
-                    <Button onClick={() => onShowCommentModal(c)} icon="edit" />
-                    <Button onClick={() => deleteComment(c)} icon="trash" />
-                  </Button.Group>
-                )}
-                <Comment.Author as={Link} to={`/user/${c.idUser}`}>
-                  {c.name}
-                </Comment.Author>
-                <Comment.Metadata>{c.date}</Comment.Metadata>
-                <Comment.Text>
-                  <Linkify componentDecorator={componentDecorator}>
-                    {c.message}
-                  </Linkify>
-                  {c.media && c.media.length > 0 && (
-                    <Media
-                      isAdmin={meta.isAdmin}
-                      numPitches={data.sections?.length || 0}
-                      media={c.media}
-                      optProblemId={null}
-                      isBouldering={meta.isBouldering}
-                    />
-                  )}
-                </Comment.Text>
-                {extra && <Comment.Actions>{extra}</Comment.Actions>}
-              </Comment.Content>
-            </Comment>
-          );
-        })
-      ) : (
-        <i>No comments</i>
-      )}
-    </Comment.Group>
-  );
-};
-
-const Problem = () => {
+export const Problem = () => {
   const accessToken = useAccessToken();
   const { problemId } = useParams();
   const [showHiddenMedia, setShowHiddenMedia] = useState(false);
@@ -944,7 +674,7 @@ const Problem = () => {
       </Table>
       <Grid>
         <Grid.Column mobile={16} tablet={8} computer={8}>
-          <ProblemTicks ticks={data.ticks} />
+          <ProblemTicks ticks={data.ticks ?? []} />
         </Grid.Column>
         <Grid.Column mobile={16} tablet={8} computer={8}>
           <ProblemComments
@@ -957,5 +687,3 @@ const Problem = () => {
     </>
   );
 };
-
-export default Problem;

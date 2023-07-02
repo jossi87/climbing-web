@@ -49,6 +49,7 @@ type Profile = {
 
 type Tick = {
   idProblem: number;
+  date: string;
   dateHr: string;
   areaName: string;
   areaLockedAdmin: boolean;
@@ -71,6 +72,15 @@ type Tick = {
   lng: number;
   gradeNumber: number;
   num: number;
+  repeats?: TickRepeat[];
+  picture?: string;
+  suggestedGrade: string;
+  idUser: number;
+};
+
+type TickRepeat = {
+  date?: string;
+  comment: string;
 };
 
 type ProfileStatistics = {
