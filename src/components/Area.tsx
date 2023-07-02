@@ -33,6 +33,7 @@ import { getImageUrl, getAreaPdfUrl, useAccessToken, useArea } from "../api";
 import { Remarkable } from "remarkable";
 import { linkify } from "remarkable/linkify";
 import ProblemList from "./common/problem-list/problem-list";
+import { useRedirect } from "../utils/useRedirect";
 
 const SectorListItem = ({ sector, problem, isClimbing }) => {
   const type = isClimbing
@@ -105,6 +106,7 @@ const Area = () => {
   const meta = useMeta();
   const { areaId } = useParams();
   const { data, error } = useArea(+areaId);
+  const redirecting = useRedirect(data);
 
   const md = new Remarkable({ breaks: true }).use(linkify);
   // open links in new windows
@@ -119,6 +121,10 @@ const Area = () => {
     };
   })();
 
+  if (redirecting) {
+    return redirecting;
+  }
+
   if (error) {
     return (
       <Message
@@ -131,9 +137,12 @@ const Area = () => {
         }
       />
     );
-  } else if (!data || data[0].length === 0) {
+  }
+
+  if (!data || !data?.length) {
     return <Loading />;
   }
+
   const markers = data[0].sectors
     .filter((s) => s.lat != 0 && s.lng != 0)
     .map((s) => {
