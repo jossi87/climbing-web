@@ -16,6 +16,7 @@ import { useMeta } from "../../common/meta";
 import { getImageUrl, useActivity } from "../../../api";
 import { LockSymbol, Stars } from "./../../common/widgets/widgets";
 import Linkify from "react-linkify";
+import { componentDecorator } from "../../../utils/componentDecorator";
 
 const Activity = ({ idArea, idSector }) => {
   const [lowerGradeId, setLowerGradeId] = useLocalStorage("lower_grade_id", 0);
@@ -72,12 +73,6 @@ const Activity = ({ idArea, idSector }) => {
     maxHeight: "80px",
     objectFit: "none",
   };
-
-  const componentDecorator = (href, text, key) => (
-    <Link to={href} key={key} rel="noreferrer noopener" target="_blank">
-      {text}
-    </Link>
-  );
 
   return (
     <>

@@ -38,6 +38,7 @@ import {
 } from "../api";
 import Linkify from "react-linkify";
 import { useRedirect } from "../utils/useRedirect";
+import { componentDecorator } from "../utils/componentDecorator";
 
 const SectorListItem = ({ problem, isClimbing }) => {
   const type = isClimbing
@@ -311,11 +312,6 @@ const Sector = () => {
     );
   });
 
-  const componentDecorator = (href, text, key) => (
-    <a href={href} key={key} target="_blank" rel="noreferrer">
-      {text}
-    </a>
-  );
   return (
     <>
       <Helmet>
