@@ -202,7 +202,7 @@ const ProblemEdit = () => {
     ) {
       setSaving(true);
       postProblem(
-        data.accessToken,
+        accessToken,
         data.sectorId,
         data.id,
         data.trash,
