@@ -144,7 +144,7 @@ const AreaEdit = () => {
 
     const orderForm = data.sectorOrder?.length > 1 && (
       <>
-        {data.sectorOrder.map((p, i) => {
+        {data.sectorOrder.map((s, i) => {
           const sectorOrder = data.sectorOrder;
           const clr =
             sectorOrder[i].origSorting &&
@@ -153,14 +153,14 @@ const AreaEdit = () => {
               : "gray";
           return (
             <Input
-              key={p.sorting}
+              key={s.id}
               size="small"
               fluid
               icon="hashtag"
               iconPosition="left"
               placeholder="Number"
-              value={p.sorting}
-              label={{ basic: true, content: p.name, color: clr }}
+              value={s.sorting}
+              label={{ basic: true, content: s.name, color: clr }}
               labelPosition="right"
               onChange={(e, { value }) => {
                 if (sectorOrder[i].origSorting === undefined) {
