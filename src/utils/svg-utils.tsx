@@ -147,7 +147,7 @@ export function Rappel({
   );
 }
 
-function generateSvgNrAndAnchor(path, nr, hasAnchor, w, h) {
+function generateSvgNrAndAnchor(key, path, nr, hasAnchor, w, h) {
   let ixNr;
   let maxY = 0;
   let ixAnchor;
@@ -182,7 +182,7 @@ function generateSvgNrAndAnchor(path, nr, hasAnchor, w, h) {
     );
   }
   return (
-    <g className="buldreinfo-svg-edit-opacity">
+    <g key={key} className="buldreinfo-svg-edit-opacity">
       {nr && (
         <>
           <rect
@@ -316,7 +316,7 @@ export function parseReadOnlySvgs(readOnlySvgs, w, h, minWindowScale) {
       const commands = parseSVG(svg.path);
       makeAbsolute(commands); // Note: mutates the commands in place!
       shapes.push(
-        generateSvgNrAndAnchor(commands, svg.nr, svg.hasAnchor, w, h)
+        generateSvgNrAndAnchor(svg.nr + "_path", commands, svg.nr, svg.hasAnchor, w, h)
       );
       svg.anchors.map((a, i) => {
         shapes.push(
