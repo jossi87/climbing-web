@@ -7,15 +7,9 @@ import {
   Segment,
   Dropdown,
 } from "semantic-ui-react";
-import { useAuth0 } from "@auth0/auth0-react";
-import { useMeta } from "./common/meta";
 import { getImageUrl, useMediaSvg } from "../api";
 import { Rappel, parseReadOnlySvgs, parsePath } from "../utils/svg-utils";
-import {
-  Loading,
-  InsufficientPrivileges,
-  NotLoggedIn,
-} from "./common/widgets/widgets";
+import { Loading } from "./common/widgets/widgets";
 import { useNavigate, useParams } from "react-router-dom";
 
 const TYPE_PATH = "PATH";
@@ -23,8 +17,6 @@ const TYPE_RAPPEL_BOLTED = "RAPPEL_BOLTED";
 const TYPE_RAPPEL_NOT_BOLTED = "RAPPEL_NOT_BOLTED";
 
 const MediaSvgEdit = () => {
-  const { isAuthenticated } = useAuth0();
-  const meta = useMeta();
   const navigate = useNavigate();
   const { mediaId } = useParams();
   const { outerWidth, outerHeight } = window;
@@ -267,14 +259,6 @@ const MediaSvgEdit = () => {
 
   if (!data || isLoading) {
     return <Loading />;
-  }
-
-  if (!isAuthenticated) {
-    return <NotLoggedIn />;
-  }
-
-  if (!meta.isAdmin) {
-    return <InsufficientPrivileges />;
   }
 
   const circles =

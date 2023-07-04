@@ -3,11 +3,7 @@ import GpxParser from "gpxparser";
 import Dropzone from "react-dropzone";
 import { Helmet } from "react-helmet";
 import ImageUpload from "./common/image-upload/image-upload";
-import {
-  Loading,
-  InsufficientPrivileges,
-  NotLoggedIn,
-} from "./common/widgets/widgets";
+import { Loading } from "./common/widgets/widgets";
 import {
   Checkbox,
   Form,
@@ -20,7 +16,6 @@ import {
   Icon,
   Message,
 } from "semantic-ui-react";
-import { useAuth0 } from "@auth0/auth0-react";
 import { useMeta } from "./common/meta";
 import {
   getSectorEdit,
@@ -45,7 +40,6 @@ const useIds = (): { areaId: number; sectorId: number } => {
 
 const SectorEdit = () => {
   const accessToken = useAccessToken();
-  const { isLoading, isAuthenticated } = useAuth0();
   const { areaId, sectorId } = useIds();
   const [leafletMode, setLeafletMode] = useState("PARKING");
   const [data, setData] = useState<any>(null);
@@ -189,14 +183,6 @@ const SectorEdit = () => {
     setData((prevState) => ({ ...prevState, lng, lngStr }));
   }
 
-  if (!isAuthenticated) {
-    return <NotLoggedIn />;
-  }
-
-  if (!meta.isAdmin) {
-    return <InsufficientPrivileges />;
-  }
-
   if (error) {
     return (
       <Message
@@ -211,7 +197,7 @@ const SectorEdit = () => {
     );
   }
 
-  if (isLoading || !data) {
+  if (!data) {
     return <Loading />;
   }
 
