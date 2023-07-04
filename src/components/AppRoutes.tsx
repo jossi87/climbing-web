@@ -115,18 +115,6 @@ function AppRoutes() {
           />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/problem/:problemId" element={<Problem />} />
-          {/*
-            Deprecated. Remove this after July 15 or so - just in case anyone
-            has active sessions or something.
-          */}
-          <Route
-            path="/problem/edit/:sectorIdProblemId"
-            element={
-              <AuthContainer level="admin">
-                <ProblemEdit />
-              </AuthContainer>
-            }
-          />
           <Route
             path="/problem/edit/media/:problemId"
             element={
@@ -143,18 +131,6 @@ function AppRoutes() {
               </AuthContainer>
             }
           />
-          {/*
-            Deprecated. Remove this after July 15 or so - just in case anyone
-            has active sessions or something.
-          */}
-          <Route
-            path="/problem/svg-edit/:problemIdMediaId"
-            element={
-              <AuthContainer level="admin">
-                <SvgEdit />
-              </AuthContainer>
-            }
-          />
           <Route
             path="/problem/svg-edit/:problemId/:mediaId"
             element={
@@ -166,18 +142,6 @@ function AppRoutes() {
           <Route path="/problems" element={<Problems />} />
           <Route path="/sites/:type" element={<Sites />} />
           <Route path="/sector/:sectorId" element={<Sector />} />
-          {/*
-            Deprecated. Remove this after July 15 or so - just in case anyone
-            has active sessions or something.
-          */}
-          <Route
-            path="/sector/edit/:areaIdSectorId"
-            element={
-              <AuthContainer level="admin">
-                <SectorEdit />
-              </AuthContainer>
-            }
-          />
           <Route
             path="/sector/edit/:areaId/:sectorId"
             element={
