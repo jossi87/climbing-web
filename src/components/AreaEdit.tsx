@@ -14,14 +14,17 @@ import {
   Message,
   Accordion,
 } from "semantic-ui-react";
-import { useAuth0 } from "@auth0/auth0-react";
 import { useMeta } from "./common/meta";
-import { getAreaEdit, postArea } from "../api";
+import {
+  getAreaEdit,
+  postArea,
+  useAccessToken
+} from "../api";
 import { Loading } from "./common/widgets/widgets";
 import { useNavigate, useParams } from "react-router-dom";
 
 const AreaEdit = () => {
-  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const accessToken = useAccessToken();
   const meta = useMeta();
   const [data, setData] = useState<any>(null);
   const [showSectorOrder, setShowSectorOrder] = useState(false);
@@ -30,14 +33,12 @@ const AreaEdit = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isLoading && areaId && isAuthenticated) {
-      getAccessTokenSilently().then((accessToken) => {
-        getAreaEdit(accessToken, parseInt(areaId)).then((data) => {
-          setData({ ...data, accessToken });
-        });
+    if (accessToken) {
+      getAreaEdit(accessToken, parseInt(areaId)).then((data) => {
+        setData(data);
       });
     }
-  }, [isAuthenticated, isLoading, areaId, getAccessTokenSilently]);
+  }, [accessToken, areaId]);
 
   function onNameChanged(e, { value }) {
     setData((prevState) => ({ ...prevState, name: value }));
@@ -73,7 +74,7 @@ const AreaEdit = () => {
     if (!trash || confirm("Are you sure you want to move area to trash?")) {
       setSaving(true);
       postArea(
-        data.accessToken,
+        accessToken,
         data.id,
         data.trash,
         data.lockedAdmin,
