@@ -28,14 +28,8 @@ import Leaflet from "./common/leaflet/leaflet";
 import { useNavigate, useParams } from "react-router-dom";
 
 const useIds = (): { areaId: number; sectorId: number } => {
-  const { sectorId, areaId, areaIdSectorId } = useParams();
-  if (sectorId && areaId) {
-    return { sectorId: +sectorId, areaId: +areaId };
-  }
-  {
-    const [areaId, sectorId] = areaIdSectorId.split("-").map((v) => +v);
-    return { areaId, sectorId };
-  }
+  const { sectorId, areaId } = useParams();
+  return { sectorId: +sectorId, areaId: +areaId };
 };
 
 const SectorEdit = () => {

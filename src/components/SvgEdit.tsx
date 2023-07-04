@@ -12,14 +12,8 @@ import { Loading } from "./common/widgets/widgets";
 import { useNavigate, useParams } from "react-router-dom";
 
 const useIds = (): { problemId: number; mediaId: number } => {
-  const { mediaId, problemId, problemIdMediaId } = useParams();
-  if (mediaId && problemId) {
-    return { mediaId: +mediaId, problemId: +problemId };
-  }
-  {
-    const [problemId, mediaId] = problemIdMediaId.split("-").map((v) => +v);
-    return { problemId, mediaId };
-  }
+  const { mediaId, problemId } = useParams();
+  return { mediaId: +mediaId, problemId: +problemId };
 };
 
 const SvgEdit = () => {

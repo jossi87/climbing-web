@@ -32,14 +32,8 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 const useIds = (): { sectorId: number; problemId: number } => {
-  const { sectorId, problemId, sectorIdProblemId } = useParams();
-  if (sectorId && problemId) {
-    return { sectorId: +sectorId, problemId: +problemId };
-  }
-  {
-    const [sectorId, problemId] = sectorIdProblemId.split("-").map((v) => +v);
-    return { sectorId, problemId };
-  }
+  const { sectorId, problemId } = useParams();
+  return { sectorId: +sectorId, problemId: +problemId };
 };
 
 const ProblemEdit = () => {
