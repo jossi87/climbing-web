@@ -123,7 +123,7 @@ export const Navigation = () => {
               }
               className="collapse-1"
             >
-              <Icon name="user outline" />
+              <Icon name="sign in" />
               <span>Sign in</span>
             </Menu.Item>
           ))}

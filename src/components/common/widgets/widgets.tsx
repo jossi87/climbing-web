@@ -2,6 +2,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import React from "react";
 import {
   Segment,
+  Header,
   Message,
   Icon,
   Popup,
@@ -127,13 +128,20 @@ export function NotLoggedIn() {
 
   return (
     <Segment>
-      <h3>Authentication required</h3>
-      <Button
+      <Header as="h3">
+          <Icon name="lock" />
+          <Header.Content>
+            Authentication required
+            <Header.Subheader>You must be logged in to access this page</Header.Subheader>
+          </Header.Content>
+        </Header>
+      <Button primary icon labelPosition="left"
         onClick={() => {
           loginWithRedirect({ appState: { returnTo: location.pathname } });
         }}
       >
-        Log in
+        <Icon name="sign in" />
+        Sign in
       </Button>
     </Segment>
   );
@@ -142,11 +150,17 @@ export function NotLoggedIn() {
 export function InsufficientPrivileges() {
   return (
     <Segment>
-      <h3>Insufficient privileges</h3>
+      <Header as="h3">
+        <Icon name="warning sign" />
+        <Header.Content>
+          Insufficient privileges
+          <Header.Subheader>You don't have access to this page</Header.Subheader>
+        </Header.Content>
+      </Header>
       Contact <a href="mailto:jostein.oygarden@gmail.com">
         Jostein Øygarden
       </a>{" "}
-      if you want permissions.
+      if you want access.
     </Segment>
   );
 }
