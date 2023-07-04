@@ -17,7 +17,6 @@ import {
   Checkbox,
 } from "semantic-ui-react";
 import Leaflet from "./common/leaflet/leaflet";
-import { useAuth0 } from "@auth0/auth0-react";
 import { useMeta } from "./common/meta";
 import {
   getProblemEdit,
@@ -27,11 +26,7 @@ import {
   getSector,
   useAccessToken,
 } from "../api";
-import {
-  Loading,
-  InsufficientPrivileges,
-  NotLoggedIn,
-} from "./common/widgets/widgets";
+import { Loading } from "./common/widgets/widgets";
 import { useNavigate, useParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -49,7 +44,6 @@ const useIds = (): { sectorId: number; problemId: number } => {
 
 const ProblemEdit = () => {
   const accessToken = useAccessToken();
-  const { isAuthenticated } = useAuth0();
   const { sectorId, problemId } = useIds();
   const [data, setData] = useState<any>(null);
   const [sectorMarkers, setSectorMarkers] = useState([]);
@@ -267,14 +261,6 @@ const ProblemEdit = () => {
 
   function onSectionsUpdated(sections) {
     setData((prevState) => ({ ...prevState, sections }));
-  }
-
-  if (!isAuthenticated) {
-    return <NotLoggedIn />;
-  }
-
-  if (!meta.isAdmin) {
-    return <InsufficientPrivileges />;
   }
 
   if (error) {

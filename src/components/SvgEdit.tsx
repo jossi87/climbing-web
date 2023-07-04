@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Container, Button, Segment, Dropdown, Input } from "semantic-ui-react";
-import { useAuth0 } from "@auth0/auth0-react";
 import { useMeta } from "./common/meta";
 import {
   getSvgEdit,
@@ -9,11 +8,7 @@ import {
   useAccessToken,
 } from "../api";
 import { parseReadOnlySvgs, parsePath } from "../utils/svg-utils";
-import {
-  Loading,
-  InsufficientPrivileges,
-  NotLoggedIn,
-} from "./common/widgets/widgets";
+import { Loading } from "./common/widgets/widgets";
 import { useNavigate, useParams } from "react-router-dom";
 
 const useIds = (): { problemId: number; mediaId: number } => {
@@ -31,7 +26,6 @@ const SvgEdit = () => {
   const accessToken = useAccessToken();
   const { problemId, mediaId } = useIds();
   const [saving, setSaving] = useState(false);
-  const { isAuthenticated } = useAuth0();
   const [crc32, setCrc32] = useState<any>(null);
   const [w, setW] = useState<any>(null);
   const [h, setH] = useState<any>(null);
@@ -338,14 +332,6 @@ const SvgEdit = () => {
     setDraggedPoint(false);
     setDraggedCubic(false);
     setHasAnchor(true);
-  }
-
-  if (!isAuthenticated) {
-    return <NotLoggedIn />;
-  }
-
-  if (!meta.isAdmin) {
-    return <InsufficientPrivileges />;
   }
 
   if (!id || !meta) {

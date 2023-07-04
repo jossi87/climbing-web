@@ -2,6 +2,10 @@ import React, { lazy, Suspense, useLayoutEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { Loading } from "./common/widgets/widgets";
 
+const AuthContainer = lazy(
+  () => import(/* webpackChunkName: "auth" */ "./AuthContainer")
+);
+
 const About = lazy(() => import(/* webpackChunkName: "about" */ "./About"));
 const Area = lazy(() => import(/* webpackChunkName: "area" */ "./Area"));
 const AreaEdit = lazy(
@@ -80,14 +84,35 @@ function AppRoutes() {
           <Route path="/" element={<Frontpage />} />
           <Route path="/about" element={<About />} />
           <Route path="/area/:areaId" element={<Area />} />
-          <Route path="/area/edit/:areaId" element={<AreaEdit />} />
+          <Route
+            path="/area/edit/:areaId"
+            element={
+              <AuthContainer level="admin">
+                <AreaEdit />
+              </AuthContainer>
+            }
+          />
           <Route path="/areas" element={<Areas />} />
           <Route path="/dangerous" element={<Dangerous />} />
           <Route path="/donations" element={<Donations />} />
           <Route path="/filter" element={<Filter />} />
           <Route path="/graph" element={<Graph />} />
-          <Route path="/media/svg-edit/:mediaId" element={<MediaSvgEdit />} />
-          <Route path="/permissions" element={<Permissions />} />
+          <Route
+            path="/media/svg-edit/:mediaId"
+            element={
+              <AuthContainer level="admin">
+                <MediaSvgEdit />
+              </AuthContainer>
+            }
+          />
+          <Route
+            path="/permissions"
+            element={
+              <AuthContainer level="super-admin">
+                <Permissions />
+              </AuthContainer>
+            }
+          />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/problem/:problemId" element={<Problem />} />
           {/*
@@ -96,15 +121,27 @@ function AppRoutes() {
           */}
           <Route
             path="/problem/edit/:sectorIdProblemId"
-            element={<ProblemEdit />}
+            element={
+              <AuthContainer level="admin">
+                <ProblemEdit />
+              </AuthContainer>
+            }
           />
           <Route
             path="/problem/edit/media/:problemId"
-            element={<ProblemEditMedia />}
+            element={
+              <AuthContainer level="logged-in">
+                <ProblemEditMedia />
+              </AuthContainer>
+            }
           />
           <Route
             path="/problem/edit/:sectorId/:problemId"
-            element={<ProblemEdit />}
+            element={
+              <AuthContainer level="admin">
+                <ProblemEdit />
+              </AuthContainer>
+            }
           />
           {/*
             Deprecated. Remove this after July 15 or so - just in case anyone
@@ -112,11 +149,19 @@ function AppRoutes() {
           */}
           <Route
             path="/problem/svg-edit/:problemIdMediaId"
-            element={<SvgEdit />}
+            element={
+              <AuthContainer level="admin">
+                <SvgEdit />
+              </AuthContainer>
+            }
           />
           <Route
             path="/problem/svg-edit/:problemId/:mediaId"
-            element={<SvgEdit />}
+            element={
+              <AuthContainer level="admin">
+                <SvgEdit />
+              </AuthContainer>
+            }
           />
           <Route path="/problems" element={<Problems />} />
           <Route path="/sites/:type" element={<Sites />} />
@@ -125,17 +170,56 @@ function AppRoutes() {
             Deprecated. Remove this after July 15 or so - just in case anyone
             has active sessions or something.
           */}
-          <Route path="/sector/edit/:areaIdSectorId" element={<SectorEdit />} />
+          <Route
+            path="/sector/edit/:areaIdSectorId"
+            element={
+              <AuthContainer level="admin">
+                <SectorEdit />
+              </AuthContainer>
+            }
+          />
           <Route
             path="/sector/edit/:areaId/:sectorId"
-            element={<SectorEdit />}
+            element={
+              <AuthContainer level="admin">
+                <SectorEdit />
+              </AuthContainer>
+            }
           />
           <Route path="/ticks/:page" element={<Ticks />} />
           <Route path="/swagger" element={<Swagger />} />
-          <Route path="/trash" element={<Trash />} />
-          <Route path="/user" element={<Profile />} />
-          <Route path="/user/:userId" element={<Profile />} />
-          <Route path="/user/:userId/:page" element={<Profile />} />
+          <Route
+            path="/trash"
+            element={
+              <AuthContainer level="super-admin">
+                <Trash />
+              </AuthContainer>
+            }
+          />
+          <Route
+            path="/user"
+            element={
+              <AuthContainer level="logged-in">
+                <Profile />
+              </AuthContainer>
+            }
+          />
+          <Route
+            path="/user/:userId"
+            element={
+              <AuthContainer level="logged-in">
+                <Profile />
+              </AuthContainer>
+            }
+          />
+          <Route
+            path="/user/:userId/:page"
+            element={
+              <AuthContainer level="logged-in">
+                <Profile />
+              </AuthContainer>
+            }
+          />
           <Route path="/webcams" element={<Webcams />} />
           <Route path="/webcams/:json" element={<Webcams />} />
         </Routes>
