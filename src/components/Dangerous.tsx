@@ -19,7 +19,7 @@ const Dangerous = () => {
   return (
     <>
       <Helmet>
-        <title>Dangerous | {meta.title}</title>
+        <title>Dangerous</title>
         <meta name="description" content={description}></meta>
       </Helmet>
       <Segment>

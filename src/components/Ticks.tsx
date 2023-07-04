@@ -4,7 +4,6 @@ import { Segment, Header, Pagination, Loader, Feed } from "semantic-ui-react";
 import { Loading, LockSymbol } from "./common/widgets/widgets";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useMeta } from "./common/meta";
 import { getTicks } from "../api";
 
 const Ticks = () => {
@@ -13,7 +12,6 @@ const Ticks = () => {
   const [loading, setLoading] = useState(false);
   const { page } = useParams();
   const navigate = useNavigate();
-  const meta = useMeta();
   useEffect(() => {
     setLoading(true);
     const update = async () => {
@@ -34,7 +32,7 @@ const Ticks = () => {
   return (
     <>
       <Helmet>
-        <title>Ticks | {meta.title}</title>
+        <title>Ticks</title>
       </Helmet>
       <Segment>
         <div>

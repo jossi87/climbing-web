@@ -41,7 +41,7 @@ const Webcams = () => {
   return (
     <>
       <Helmet>
-        <title>Webcams | {meta.title}</title>
+        <title>Webcams</title>
         <meta name="description" content={description}></meta>
       </Helmet>
       <Segment>

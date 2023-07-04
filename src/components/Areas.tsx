@@ -115,11 +115,11 @@ const Areas = () => {
   return (
     <>
       <Helmet>
-        <title>Areas | {meta.title}</title>
+        <title>Areas</title>
         <meta
           name="description"
           content={`${data.length} areas for climbing.`}
-        ></meta>
+        />
       </Helmet>
       <Segment>
         <ButtonGroup floated="right" size="mini">

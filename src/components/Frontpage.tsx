@@ -24,7 +24,6 @@ const Frontpage = () => {
     <>
       {frontpage && (
         <Helmet>
-          <title>{meta.title}</title>
           <meta name="description" content={description}></meta>
         </Helmet>
       )}

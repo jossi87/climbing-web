@@ -172,7 +172,7 @@ const Filter = () => {
   return (
     <>
       <Helmet>
-        <title>{meta.title} | Filter</title>
+        <title>Filter</title>
         <meta
           name="description"
           content="Filter on routes/boulders by grade and metadata."

@@ -324,9 +324,7 @@ const SectorEdit = () => {
   return (
     <>
       <Helmet>
-        <title>
-          Edit {data.name} | {meta.title}
-        </title>
+        <title>Edit {data.name}</title>
       </Helmet>
       <Message
         size="tiny"

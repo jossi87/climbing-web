@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { Loading, LockSymbol } from "./common/widgets/widgets";
-import { useMeta } from "./common/meta";
 import { getPermissions, postPermissions } from "../api";
 import {
   Header,
@@ -16,7 +15,6 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 const Permissions = () => {
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const meta = useMeta();
   const [accessToken, setAccessToken] = useState<any>(null);
   const [data, setData] = useState<any>(null);
 
@@ -37,7 +35,7 @@ const Permissions = () => {
   return (
     <>
       <Helmet>
-        <title>Permissions | {meta.title}</title>
+        <title>Permissions</title>
       </Helmet>
       <Segment>
         <Header as="h2">

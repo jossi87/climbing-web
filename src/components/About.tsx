@@ -57,7 +57,7 @@ const About = () => {
   return (
     <>
       <Helmet>
-        <title>About | {meta.title}</title>
+        <title>About</title>
         <meta
           name="description"
           content="History, information and administrators."

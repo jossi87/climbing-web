@@ -216,7 +216,9 @@ export const Problem = () => {
   return (
     <>
       <Helmet>
-        <title>{`${data.name} [${data.grade}] (${data.areaName} / ${data.sectorName}) | ${meta.title}`}</title>
+        <title>
+          {data.name} [{data.grade}] ({data.areaName} / {data.sectorName})
+        </title>
         <meta name="description" content={data.comment}></meta>
       </Helmet>
       {tickModal}

@@ -18,7 +18,7 @@ const Graph = () => {
   return (
     <>
       <Helmet>
-        <title>Graph | {meta.title}</title>
+        <title>Graph</title>
         <meta name="description" content={description}></meta>
       </Helmet>
       <Segment>

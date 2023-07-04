@@ -76,7 +76,7 @@ const Sites = () => {
   return (
     <>
       <Helmet>
-        <title>Sites | {meta.title}</title>
+        <title>Sites</title>
         <meta name="description" content={description}></meta>
       </Helmet>
       <Segment>

@@ -316,7 +316,7 @@ const Sector = () => {
     <>
       <Helmet>
         <title>
-          {data.name} ({data.areaName}) | {meta.title}
+          {data.name} ({data.areaName})
         </title>
         <meta name="description" content={data.comment}></meta>
       </Helmet>
