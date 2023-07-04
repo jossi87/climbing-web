@@ -5,7 +5,7 @@ import { Segment, Header, Icon } from "semantic-ui-react";
 const Donations = () => {
   return (
     <>
-      <Helmet>
+      <Helmet titleTemplate={undefined}>
         <title>Donations</title>
         <meta name="description" content="Donations" />
       </Helmet>

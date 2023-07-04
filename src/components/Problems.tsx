@@ -39,9 +39,7 @@ const Problems = () => {
   return (
     <>
       <Helmet>
-        <title>
-          {title} | {meta.title}
-        </title>
+        <title>{title}</title>
         <meta name="description" content={description}></meta>
       </Helmet>
       <Segment>

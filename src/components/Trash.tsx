@@ -1,13 +1,11 @@
 import { Helmet } from "react-helmet";
 import { Loading } from "./common/widgets/widgets";
-import { useMeta } from "./common/meta";
 import { getImageUrl, useData, putTrash, useAccessToken } from "../api";
 import { Segment, Icon, Header, List, Button, Image } from "semantic-ui-react";
 import { useNavigate } from "react-router-dom";
 
 const Trash = () => {
   const accessToken = useAccessToken();
-  const meta = useMeta();
   const { data } = useData(`/trash`);
   const navigate = useNavigate();
 
@@ -18,7 +16,7 @@ const Trash = () => {
   return (
     <>
       <Helmet>
-        <title>Trash | {meta.title}</title>
+        <title>Trash</title>
       </Helmet>
       <Segment>
         <Header as="h2">

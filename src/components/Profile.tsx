@@ -91,7 +91,7 @@ const Profile = () => {
     <>
       <Helmet>
         <title>
-          {profile.firstname} {profile.lastname} | {meta.title}
+          {profile.firstname} {profile.lastname}
         </title>
         <meta
           name="description"

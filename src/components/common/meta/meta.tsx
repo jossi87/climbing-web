@@ -1,5 +1,6 @@
 import { createContext, useContext } from "react";
 import { useData } from "../../../api";
+import { Helmet } from "react-helmet";
 
 type Grade = {
   id: number;
@@ -62,6 +63,10 @@ export const MetaProvider = ({ children }: Props) => {
 
   return (
     <MetaContext.Provider value={meta || DEFAULT_VALUE}>
+      <Helmet
+        titleTemplate={`%s | ${meta?.title}`}
+        defaultTitle={meta?.title ?? "Loading ..."}
+      />
       {children}
     </MetaContext.Provider>
   );

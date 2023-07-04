@@ -4,7 +4,7 @@ import { Segment, Header, Icon, List } from "semantic-ui-react";
 const PrivacyPolicy = () => {
   return (
     <>
-      <Helmet>
+      <Helmet titleTemplate={undefined}>
         <title>Privacy Policy</title>
         <meta name="description" content="Privacy Policy" />
       </Helmet>

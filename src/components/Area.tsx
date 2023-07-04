@@ -375,9 +375,7 @@ const Area = () => {
   return (
     <>
       <Helmet>
-        <title>
-          {data[0].name} | {meta.title}
-        </title>
+        <title>{data[0].name}</title>
         <meta name="description" content={data[0].comment}></meta>
       </Helmet>
       <div style={{ marginBottom: "5px" }}>
