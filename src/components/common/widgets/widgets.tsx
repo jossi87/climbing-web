@@ -129,13 +129,18 @@ export function NotLoggedIn() {
   return (
     <Segment>
       <Header as="h3">
-          <Icon name="lock" />
-          <Header.Content>
-            Authentication required
-            <Header.Subheader>You must be logged in to access this page</Header.Subheader>
-          </Header.Content>
-        </Header>
-      <Button primary icon labelPosition="left"
+        <Icon name="lock" />
+        <Header.Content>
+          Authentication required
+          <Header.Subheader>
+            You must be logged in to access this page
+          </Header.Subheader>
+        </Header.Content>
+      </Header>
+      <Button
+        primary
+        icon
+        labelPosition="left"
         onClick={() => {
           loginWithRedirect({ appState: { returnTo: location.pathname } });
         }}
@@ -154,12 +159,12 @@ export function InsufficientPrivileges() {
         <Icon name="warning sign" />
         <Header.Content>
           Insufficient privileges
-          <Header.Subheader>You don't have access to this page</Header.Subheader>
+          <Header.Subheader>
+            You don&apos;t have access to this page
+          </Header.Subheader>
         </Header.Content>
       </Header>
-      Contact <a href="mailto:jostein.oygarden@gmail.com">
-        Jostein Øygarden
-      </a>{" "}
+      Contact <a href="mailto:jostein.oygarden@gmail.com">Jostein Øygarden</a>{" "}
       if you want access.
     </Segment>
   );
