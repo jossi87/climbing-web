@@ -15,11 +15,7 @@ import {
   Accordion,
 } from "semantic-ui-react";
 import { useMeta } from "./common/meta";
-import {
-  getAreaEdit,
-  postArea,
-  useAccessToken
-} from "../api";
+import { getAreaEdit, postArea, useAccessToken } from "../api";
 import { Loading } from "./common/widgets/widgets";
 import { useNavigate, useParams } from "react-router-dom";
 

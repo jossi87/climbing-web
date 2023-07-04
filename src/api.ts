@@ -346,27 +346,20 @@ export function getAreaEdit(
   id: number
 ): Promise<any> {
   if (id == -1) {
-    return getMeta(accessToken)
-      .then(() => {
-        return {
-          id: -1,
-          lockedAdmin: false,
-          lockedSuperadmin: false,
-          forDevelopers: false,
-          accessInfo: "",
-          accessClosed: "",
-          noDogsAllowed: false,
-          name: "",
-          comment: "",
-          lat: 0,
-          lng: 0,
-          newMedia: [],
-        };
-      })
-      .catch((error) => {
-        console.warn(error);
-        return null;
-      });
+    return Promise.resolve({
+      id: -1,
+      lockedAdmin: false,
+      lockedSuperadmin: false,
+      forDevelopers: false,
+      accessInfo: "",
+      accessClosed: "",
+      noDogsAllowed: false,
+      name: "",
+      comment: "",
+      lat: 0,
+      lng: 0,
+      newMedia: [],
+    });
   } else {
     return makeAuthenticatedRequest(accessToken, `/areas?id=${id}`)
       .then((data) => data.json())

@@ -316,7 +316,14 @@ export function parseReadOnlySvgs(readOnlySvgs, w, h, minWindowScale) {
       const commands = parseSVG(svg.path);
       makeAbsolute(commands); // Note: mutates the commands in place!
       shapes.push(
-        generateSvgNrAndAnchor(svg.nr + "_path", commands, svg.nr, svg.hasAnchor, w, h)
+        generateSvgNrAndAnchor(
+          svg.nr + "_path",
+          commands,
+          svg.nr,
+          svg.hasAnchor,
+          w,
+          h
+        )
       );
       svg.anchors.map((a, i) => {
         shapes.push(
