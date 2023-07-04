@@ -18,11 +18,9 @@ Sentry.init({
     }),
     new Sentry.Replay(),
   ],
+  environment: process.env.REACT_APP_ENV ?? "unknown",
   // Performance Monitoring
   tracesSampleRate: process.env.REACT_APP_ENV === "production" ? 0.5 : 1.0,
-  // Session Replay
-  replaysSessionSampleRate:
-    process.env.REACT_APP_ENV === "production" ? 0.1 : 1.0,
   replaysOnErrorSampleRate: 1.0,
 });
 
