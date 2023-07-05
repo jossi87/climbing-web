@@ -9,27 +9,49 @@ import {
   Image,
   Dropdown,
   Card,
+  Input
 } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 
+type PermissionsData = {
+  userId: number;
+  name: string;
+  picture?: string;
+  lastLogin?: string;
+  adminRead: boolean;
+  adminWrite: boolean;
+  superadminRead: boolean;
+  superadminWrite: boolean;
+  readOnly: boolean;
+  write?: number;
+};
+
 const Permissions = () => {
+  const [loading, setLoading] = useState(false);
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [accessToken, setAccessToken] = useState<any>(null);
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<PermissionsData[]>([]);
+  const [query, setQuery] = useState<string>("");
+
+  const filteredData = data.filter(item=>{
+    return item.name.toLowerCase().includes(query.toLowerCase())
+  })
 
   useEffect(() => {
     if (isAuthenticated) {
       getAccessTokenSilently().then((accessToken) => {
+        setLoading(true);
         getPermissions(accessToken).then((data) => {
           setData(data);
           setAccessToken(accessToken);
+          setLoading(false);
         });
       });
     }
   }, [getAccessTokenSilently, isAuthenticated]);
 
-  if (!data) {
+  if (loading) {
     return <Loading />;
   }
   return (
@@ -45,12 +67,18 @@ const Permissions = () => {
             <Header.Subheader>{data.length} users</Header.Subheader>
           </Header.Content>
         </Header>
+      <Input 
+        icon='search'
+        placeholder='Search...'
+        onChange={(e => setQuery(e.target.value))}
+        value={query}
+      />
       </Segment>
-      {data.length == 0 ? (
+      {filteredData.length == 0 ? (
         <Segment>No data</Segment>
       ) : (
         <Card.Group doubling stackable itemsPerRow={4}>
-          {data.map((u, key) => {
+          {filteredData.map((u, key) => {
             let color: any = "white";
             if (u.write == 2) {
               color = "black";
