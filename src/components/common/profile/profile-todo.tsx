@@ -4,19 +4,12 @@ import Leaflet from "../../common/leaflet/leaflet";
 import { Loading, LockSymbol } from "../../common/widgets/widgets";
 import { List, Segment } from "semantic-ui-react";
 import { useProfileTodo } from "../../../api";
+import { SmartLink } from "../SmartLink";
 
 type ProfileTodoProps = {
   userId: number;
   defaultCenter: { lat: number; lng: number };
   defaultZoom: number;
-};
-
-const cleanUrl = (url: string) => {
-  const origin = process.env.REACT_APP_API_URL || window.location.origin;
-  if (url.startsWith(origin)) {
-    return url.substring(origin.length);
-  }
-  return url;
 };
 
 const ProfileTodo = ({
@@ -73,7 +66,7 @@ const ProfileTodo = ({
           {data.areas.map((area) => (
             <List.Item key={area.id}>
               <List.Header>
-                <Link to={cleanUrl(area.url)}>{area.name}</Link>
+                <SmartLink to={area.url}>{area.name}</SmartLink>
                 <LockSymbol
                   lockedAdmin={area.lockedAdmin}
                   lockedSuperadmin={area.lockedSuperadmin}
@@ -82,7 +75,7 @@ const ProfileTodo = ({
               {area.sectors.map((sector) => (
                 <List.List key={sector.id}>
                   <List.Header>
-                    <Link to={cleanUrl(sector.url)}>{sector.name}</Link>
+                    <SmartLink to={sector.url}>{sector.name}</SmartLink>
                     <LockSymbol
                       lockedAdmin={sector.lockedAdmin}
                       lockedSuperadmin={sector.lockedSuperadmin}
@@ -93,9 +86,9 @@ const ProfileTodo = ({
                       <List.Item key={problem.id}>
                         <List.Header>
                           {`#${problem.nr} `}
-                          <Link to={cleanUrl(problem.url)}>
+                          <SmartLink to={problem.url}>
                             {problem.name}
-                          </Link>{" "}
+                          </SmartLink>{" "}
                           {problem.grade}
                           {problem.partners && problem.partners.length > 0 && (
                             <small>

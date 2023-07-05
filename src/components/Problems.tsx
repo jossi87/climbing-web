@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { Helmet } from "react-helmet";
 import {
   Header,
@@ -12,30 +12,40 @@ import { Loading, LockSymbol, Stars } from "./common/widgets/widgets";
 import { useMeta } from "./common/meta";
 import { getProblemsXlsx, useAccessToken, useData } from "../api";
 import { saveAs } from "file-saver";
+import { SmartLink } from "./common/SmartLink";
+
+const JumpToTop = () => (
+  <a href="#">
+    <Icon name="arrow alternate circle up outline" color="black" />
+  </a>
+);
 
 const Problems = () => {
   const accessToken = useAccessToken();
   const meta = useMeta();
   const { data } = useData(`/problems`);
   const [isSaving, setIsSaving] = useState(false);
-  const areaRefs = useRef({});
 
   if (!data) {
     return <Loading />;
   }
+
   const numAreas = data.length;
-  let numSectors = 0;
-  let numProblems = 0;
-  data.forEach((a) => {
-    numSectors += a.sectors.length;
-    a.sectors.forEach((s) => {
-      numProblems += s.problems.length;
-    });
-  });
+
+  const [numSectors, numProblems] = data.reduce(
+    ([sectors, problems], area) => [
+      sectors + area.sectors.length,
+      problems +
+        area.sectors.reduce((acc, sector) => sector.problems.length + acc, 0),
+    ],
+    [0, 0]
+  );
+
   const title = meta.isBouldering ? "Problems" : "Routes";
   const description = `${numAreas} areas, ${numSectors} sectors, ${numProblems} ${
     meta.isClimbing ? "routes" : "boulders"
   }`;
+
   return (
     <>
       <Helmet>
@@ -76,15 +86,9 @@ const Problems = () => {
           </Header.Content>
         </Header>
         <List celled link horizontal size="small">
-          {data.map((area, i) => (
-            <React.Fragment key={i}>
-              <List.Item
-                key={i}
-                as="a"
-                onClick={() =>
-                  areaRefs.current[area.id].scrollIntoView({ block: "start" })
-                }
-              >
+          {data.map((area) => (
+            <React.Fragment key={area.id}>
+              <List.Item as="a" href={`#${area.id}`}>
                 {area.name}
               </List.Item>
               <LockSymbol
@@ -95,46 +99,29 @@ const Problems = () => {
           ))}
         </List>
         <List celled>
-          {data.map((area, i) => (
-            <List.Item key={i}>
-              <List.Header>
-                <a
-                  id={area.id}
-                  href={area.url}
-                  rel="noreferrer noopener"
-                  target="_blank"
-                  ref={(ref) => (areaRefs.current[area.id] = ref)}
-                >
+          {data.map((area) => (
+            <List.Item key={area.id}>
+              <List.Header key={area.id}>
+                <SmartLink id={area.id} to={area.url}>
                   {area.name}
-                </a>
+                </SmartLink>
                 <LockSymbol
                   lockedAdmin={area.lockedAdmin}
                   lockedSuperadmin={area.lockedSuperadmin}
                 />{" "}
-                <a onClick={() => window.scrollTo(0, 0)}>
-                  <Icon
-                    name="arrow alternate circle up outline"
-                    color="black"
-                  />
-                </a>
+                <JumpToTop />
               </List.Header>
-              {area.sectors.map((sector, i) => (
-                <List.List key={i}>
+              {area.sectors.map((sector) => (
+                <List.List key={sector.id}>
                   <List.Header>
-                    <a
-                      href={sector.url}
-                      rel="noreferrer noopener"
-                      target="_blank"
-                    >
-                      {sector.name}
-                    </a>
+                    <SmartLink to={sector.url}>{sector.name}</SmartLink>
                     <LockSymbol
                       lockedAdmin={sector.lockedAdmin}
                       lockedSuperadmin={sector.lockedSuperadmin}
                     />
                   </List.Header>
                   <List.List>
-                    {sector.problems.map((problem, i) => {
+                    {sector.problems.map((problem) => {
                       const ascents =
                         problem.numTicks > 0 &&
                         problem.numTicks +
@@ -157,16 +144,12 @@ const Problems = () => {
                         }
                       }
                       return (
-                        <List.Item key={i}>
+                        <List.Item key={problem.id}>
                           <List.Header>
                             {`#${problem.nr} `}
-                            <a
-                              href={problem.url}
-                              rel="noreferrer noopener"
-                              target="_blank"
-                            >
+                            <SmartLink to={problem.url}>
                               {problem.name}
-                            </a>{" "}
+                            </SmartLink>{" "}
                             {problem.grade}{" "}
                             <Stars
                               numStars={problem.stars}
