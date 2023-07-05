@@ -102,11 +102,9 @@ export const Problem = () => {
       render: () => (
         <Tab.Pane>
           <Media
-            isAdmin={meta.isAdmin}
             numPitches={data.sections?.length || 0}
             media={data.media}
             optProblemId={data.id}
-            isBouldering={meta.isBouldering}
           />
         </Tab.Pane>
       ),
@@ -526,11 +524,9 @@ export const Problem = () => {
                 {data.triviaMedia && (
                   <Feed.Extra>
                     <Media
-                      isAdmin={meta.isAdmin}
                       numPitches={data.sections?.length || 0}
                       media={data.triviaMedia}
                       optProblemId={null}
-                      isBouldering={meta.isBouldering}
                     />
                   </Feed.Extra>
                 )}
@@ -656,11 +652,9 @@ export const Problem = () => {
                           {s.media && (
                             <Feed.Extra>
                               <Media
-                                isAdmin={meta.isAdmin}
                                 numPitches={data.sections?.length || 0}
                                 media={s.media}
                                 optProblemId={null}
-                                isBouldering={meta.isBouldering}
                               />
                             </Feed.Extra>
                           )}

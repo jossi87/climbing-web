@@ -25,6 +25,7 @@ import Svg from "./svg";
 import { Link, useNavigate } from "react-router-dom";
 import { saveAs } from "file-saver";
 import { Descent, Rappel } from "../../../utils/svg-utils";
+import { useMeta } from "../meta";
 
 const style = {
   img: {
@@ -49,7 +50,7 @@ const style = {
     top: "50%",
     left: "2px",
     height: "40px",
-    marginTop: "-20px" /* 1/2 the hight of the button */,
+    marginTop: "-20px" /* 1/2 the height of the button */,
   },
   next: {
     zIndex: 2,
@@ -57,7 +58,7 @@ const style = {
     top: "50%",
     right: "2px",
     height: "40px",
-    marginTop: "-20px" /* 1/2 the hight of the button */,
+    marginTop: "-20px" /* 1/2 the height of the button */,
   },
   play: {
     zIndex: 2,
@@ -66,7 +67,7 @@ const style = {
     left: "50%",
     height: "60px",
     width: "60px",
-    marginTop: "-30px" /* 1/2 the hight of the button */,
+    marginTop: "-30px" /* 1/2 the height of the button */,
     marginLeft: "-30px" /* 1/2 the width of the button */,
   },
   textLeft: {
@@ -74,8 +75,25 @@ const style = {
   },
 };
 
+type Props = {
+  onClose: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+  onRotate: (deg: number) => void;
+  onMoveImageLeft: () => void;
+  onMoveImageRight: () => void;
+  onMoveImageToSector: () => void;
+  onMoveImageToProblem: () => void;
+  m: any;
+  length: number;
+  gotoPrev: () => void;
+  gotoNext: () => void;
+  playVideo: () => void;
+  autoPlayVideo: boolean;
+  optProblemId: number | null;
+};
+
 const MediaModal = ({
-  isAdmin,
   onClose,
   onEdit,
   onDelete,
@@ -91,8 +109,8 @@ const MediaModal = ({
   playVideo,
   autoPlayVideo,
   optProblemId,
-  isBouldering,
-}) => {
+}: Props) => {
+  const { isAdmin, isBouldering } = useMeta();
   const navigate = useNavigate();
   const [showSidebar, setShowSidebar] = useLocalStorage("showSidebar", true);
   const [problemIdHovered, setProblemIdHovered] = useState<any>(null);
@@ -571,7 +589,7 @@ const MediaModal = ({
                     <Dropdown.Item
                       icon="edit"
                       text="Edit image"
-                      onClick={() => onEdit(true)}
+                      onClick={() => onEdit()}
                     />
                   )}
                   {canDelete && (

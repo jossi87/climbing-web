@@ -26,18 +26,12 @@ const style = {
   height: "100%",
 };
 
-const Media = ({
-  numPitches,
-  media,
-  isAdmin,
-  optProblemId,
-  isBouldering,
-}: Pick<ComponentProps<typeof MediaEditModal>, "numPitches"> &
+type Props = Pick<ComponentProps<typeof MediaEditModal>, "numPitches"> &
   Pick<ComponentProps<typeof MediaModal>, "optProblemId"> & {
     media: any[];
-    isAdmin: boolean;
-    isBouldering: boolean;
-  }) => {
+  };
+
+const Media = ({ numPitches, media, optProblemId }: Props) => {
   const location = useLocation();
   const [m, setM] = useState<any>(null);
   const [editM, setEditM] = useState<any>(null);
@@ -214,7 +208,6 @@ const Media = ({
       )}
       {m && (
         <MediaModal
-          isAdmin={isAdmin}
           onClose={closeModal}
           m={m}
           autoPlayVideo={autoPlayVideo}
@@ -230,7 +223,6 @@ const Media = ({
           gotoNext={gotoNext}
           playVideo={playVideo}
           optProblemId={optProblemId}
-          isBouldering={isBouldering}
         />
       )}
       <Card.Group itemsPerRow={5} doubling>

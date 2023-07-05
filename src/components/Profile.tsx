@@ -68,21 +68,9 @@ const Profile = () => {
       />
     );
   } else if (activePage === Page.media) {
-    content = (
-      <ProfileMedia
-        userId={profile.id}
-        isBouldering={meta.isBouldering}
-        captured={false}
-      />
-    );
+    content = <ProfileMedia userId={profile.id} captured={false} />;
   } else if (activePage === Page.captured) {
-    content = (
-      <ProfileMedia
-        userId={profile.id}
-        isBouldering={meta.isBouldering}
-        captured={true}
-      />
-    );
+    content = <ProfileMedia userId={profile.id} captured={true} />;
   } else if (activePage === Page.settings) {
     content = <ProfileSettings userRegions={profile.userRegions} />;
   }

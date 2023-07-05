@@ -35,7 +35,13 @@ import { linkify } from "remarkable/linkify";
 import ProblemList from "./common/problem-list/problem-list";
 import { useRedirect } from "../utils/useRedirect";
 
-const SectorListItem = ({ sector, problem, isClimbing }) => {
+type Props = {
+  sector: any;
+  problem: any;
+};
+
+const SectorListItem = ({ sector, problem }: Props) => {
+  const { isClimbing } = useMeta();
   const type = isClimbing
     ? problem.t.subType +
       (problem.numPitches > 1 ? ", " + problem.numPitches + " pitches" : "")
@@ -185,13 +191,7 @@ const Area = () => {
       menuItem: { key: "image", icon: "image" },
       render: () => (
         <Tab.Pane>
-          <Media
-            isAdmin={meta.isAdmin}
-            numPitches={0}
-            media={data[0].media}
-            optProblemId={null}
-            isBouldering={meta.isBouldering}
-          />
+          <Media numPitches={0} media={data[0].media} optProblemId={null} />
         </Tab.Pane>
       ),
     });
@@ -343,14 +343,7 @@ const Area = () => {
             rows={data[0].sectors
               .map((s) =>
                 s.problems.map((p) => ({
-                  element: (
-                    <SectorListItem
-                      key={p.id}
-                      sector={s}
-                      problem={p}
-                      isClimbing={meta.isClimbing}
-                    />
-                  ),
+                  element: <SectorListItem key={p.id} sector={s} problem={p} />,
                   name: p.name,
                   nr: p.nr,
                   gradeNumber: p.gradeNumber,
@@ -474,11 +467,9 @@ const Area = () => {
               <Table.Cell>
                 <Feed.Extra>
                   <Media
-                    isAdmin={meta.isAdmin}
                     numPitches={0}
                     media={data[0].triviaMedia}
                     optProblemId={null}
-                    isBouldering={meta.isBouldering}
                   />
                 </Feed.Extra>
               </Table.Cell>
