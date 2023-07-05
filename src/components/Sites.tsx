@@ -15,9 +15,6 @@ const Sites = () => {
   const { type } = useParams();
 
   useEffect(() => {
-    if (data) {
-      setData(null);
-    }
     if (!isLoading) {
       const update = async () => {
         const accessToken = isAuthenticated
@@ -27,7 +24,7 @@ const Sites = () => {
       };
       update();
     }
-  }, [isLoading, isAuthenticated, type, data, getAccessTokenSilently]);
+  }, [isLoading, isAuthenticated, type, getAccessTokenSilently]);
 
   if (isLoading || !data) {
     return <Loading />;
