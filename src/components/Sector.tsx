@@ -40,7 +40,12 @@ import Linkify from "react-linkify";
 import { useRedirect } from "../utils/useRedirect";
 import { componentDecorator } from "../utils/componentDecorator";
 
-const SectorListItem = ({ problem, isClimbing }) => {
+type Props = {
+  problem: any;
+};
+
+const SectorListItem = ({ problem }: Props) => {
+  const { isClimbing } = useMeta();
   const type = isClimbing
     ? problem.t.subType +
       (problem.numPitches > 1 ? ", " + problem.numPitches + " pitches" : "")
@@ -164,13 +169,7 @@ const Sector = () => {
         menuItem: { key: "topo", icon: "image" },
         render: () => (
           <Tab.Pane>
-            <Media
-              isAdmin={meta.isAdmin}
-              numPitches={0}
-              media={media}
-              optProblemId={null}
-              isBouldering={isBouldering}
-            />
+            <Media numPitches={0} media={media} optProblemId={null} />
           </Tab.Pane>
         ),
       });
@@ -240,13 +239,7 @@ const Sector = () => {
       menuItem: { key: "topo", icon: "images" },
       render: () => (
         <Tab.Pane>
-          <Media
-            isAdmin={meta.isAdmin}
-            numPitches={0}
-            media={topoImages}
-            optProblemId={null}
-            isBouldering={isBouldering}
-          />
+          <Media numPitches={0} media={topoImages} optProblemId={null} />
         </Tab.Pane>
       ),
     });
@@ -452,11 +445,9 @@ const Sector = () => {
               <Table.Cell>
                 <Feed.Extra>
                   <Media
-                    isAdmin={meta.isAdmin}
                     numPitches={0}
                     media={data.triviaMedia}
                     optProblemId={null}
-                    isBouldering={isBouldering}
                   />
                 </Feed.Extra>
               </Table.Cell>
@@ -520,15 +511,9 @@ const Sector = () => {
       <ProblemList
         isSectorNotUser={true}
         preferOrderByGrade={data.orderByGrade}
-        rows={data.problems.map((p, i) => {
+        rows={data.problems.map((p) => {
           return {
-            element: (
-              <SectorListItem
-                key={i}
-                problem={p}
-                isClimbing={meta.isClimbing}
-              />
-            ),
+            element: <SectorListItem key={p.id} problem={p} />,
             name: p.name,
             nr: p.nr,
             gradeNumber: p.gradeNumber,

@@ -44,7 +44,7 @@ const DEFAULT_VALUE: Metadata = {
   types: [],
 };
 
-const MetaContext = createContext<Metadata | undefined>(undefined);
+export const MetaContext = createContext<Metadata | undefined>(undefined);
 
 type Props = {
   children: React.ReactNode;

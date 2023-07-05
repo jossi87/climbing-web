@@ -30,6 +30,7 @@ import { Loading } from "./common/widgets/widgets";
 import { useNavigate, useParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { VisibilitySelectorField } from "./common/VisibilitySelector";
 
 const useIds = (): { sectorId: number; problemId: number } => {
   const { sectorId, problemId } = useParams();
@@ -99,11 +100,11 @@ const ProblemEdit = () => {
     setData((prevState) => ({ ...prevState, lng, lngStr }));
   }
 
-  function onLockedChanged(e, { value }) {
+  function onLockedChanged({ lockedAdmin, lockedSuperadmin }) {
     setData((prevState) => ({
       ...prevState,
-      lockedAdmin: value == 1,
-      lockedSuperadmin: value == 2,
+      lockedAdmin,
+      lockedSuperadmin,
     }));
   }
 
@@ -284,23 +285,6 @@ const ProblemEdit = () => {
     defaultCenter = meta.defaultCenter;
     defaultZoom = meta.defaultZoom;
   }
-  const lockedOptions = [
-    { key: 0, value: 0, text: "Visible for everyone" },
-    { key: 1, value: 1, text: "Only visible for administrators" },
-  ];
-  if (meta.isSuperAdmin) {
-    lockedOptions.push({
-      key: 2,
-      value: 2,
-      text: "Only visible for super administrators",
-    });
-  }
-  let lockedValue = 0;
-  if (data.lockedSuperadmin) {
-    lockedValue = 2;
-  } else if (data.lockedAdmin) {
-    lockedValue = 1;
-  }
 
   const markers = [];
   if (data.lat != 0 && data.lng != 0) {
@@ -338,13 +322,11 @@ const ProblemEdit = () => {
               onChange={onNameChanged}
               error={data.name ? false : "Name required"}
             />
-            <Form.Field
+            <VisibilitySelectorField
               label="Visibility"
-              control={Dropdown}
               selection
-              value={lockedValue}
+              value={data}
               onChange={onLockedChanged}
-              options={lockedOptions}
             />
             <Form.Field
               label="Number"

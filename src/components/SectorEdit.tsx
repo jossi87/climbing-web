@@ -9,7 +9,6 @@ import {
   Form,
   Button,
   Input,
-  Dropdown,
   TextArea,
   Segment,
   Accordion,
@@ -26,6 +25,7 @@ import {
 } from "../api";
 import Leaflet from "./common/leaflet/leaflet";
 import { useNavigate, useParams } from "react-router-dom";
+import { VisibilitySelectorField } from "./common/VisibilitySelector";
 
 const useIds = (): { areaId: number; sectorId: number } => {
   const { sectorId, areaId } = useParams();
@@ -61,11 +61,11 @@ const SectorEdit = () => {
     setData((prevState) => ({ ...prevState, name: value }));
   }
 
-  function onLockedChanged(e, { value }) {
+  function onLockedChanged({ lockedAdmin, lockedSuperadmin }) {
     setData((prevState) => ({
       ...prevState,
-      lockedAdmin: value == 1,
-      lockedSuperadmin: value == 2,
+      lockedAdmin,
+      lockedSuperadmin,
     }));
   }
 
@@ -264,23 +264,7 @@ const SectorEdit = () => {
       : meta.defaultCenter;
   const defaultZoom =
     data.lat && parseFloat(data.lat) > 0 ? 14 : meta.defaultZoom;
-  const lockedOptions = [
-    { key: 0, value: 0, text: "Visible for everyone" },
-    { key: 1, value: 1, text: "Only visible for administrators" },
-  ];
-  if (meta.isSuperAdmin) {
-    lockedOptions.push({
-      key: 2,
-      value: 2,
-      text: "Only visible for super administrators",
-    });
-  }
-  let lockedValue = 0;
-  if (data.lockedSuperadmin) {
-    lockedValue = 2;
-  } else if (data.lockedAdmin) {
-    lockedValue = 1;
-  }
+
   const markers: ComponentProps<typeof Leaflet>["markers"] = [];
   if (data.lat != 0 && data.lng != 0) {
     markers.push({ lat: data.lat, lng: data.lng, isParking: true });
@@ -348,13 +332,11 @@ const SectorEdit = () => {
               onChange={onNameChanged}
               error={data.name ? false : "Sector name required"}
             />
-            <Form.Field
+            <VisibilitySelectorField
               label="Visibility"
-              control={Dropdown}
               selection
-              value={lockedValue}
+              value={data}
               onChange={onLockedChanged}
-              options={lockedOptions}
             />
             <Form.Field>
               <label>Move to trash</label>

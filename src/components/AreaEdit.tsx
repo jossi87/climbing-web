@@ -7,7 +7,6 @@ import {
   Button,
   Checkbox,
   Input,
-  Dropdown,
   TextArea,
   Segment,
   Icon,
@@ -18,6 +17,7 @@ import { useMeta } from "./common/meta";
 import { getAreaEdit, postArea, useAccessToken } from "../api";
 import { Loading } from "./common/widgets/widgets";
 import { useNavigate, useParams } from "react-router-dom";
+import { VisibilitySelectorField } from "./common/VisibilitySelector";
 
 const AreaEdit = () => {
   const accessToken = useAccessToken();
@@ -40,11 +40,11 @@ const AreaEdit = () => {
     setData((prevState) => ({ ...prevState, name: value }));
   }
 
-  function onLockedChanged(e, { value }) {
+  function onLockedChanged({ lockedAdmin, lockedSuperadmin }) {
     setData((prevState) => ({
       ...prevState,
-      lockedAdmin: value == 1,
-      lockedSuperadmin: value == 2,
+      lockedAdmin,
+      lockedSuperadmin,
     }));
   }
 
@@ -113,23 +113,6 @@ const AreaEdit = () => {
       : meta.defaultCenter;
   const defaultZoom: number =
     data.lat && parseFloat(data.lat) > 0 ? 8 : meta.defaultZoom;
-  const lockedOptions = [
-    { key: 0, value: 0, text: "Visible for everyone" },
-    { key: 1, value: 1, text: "Only visible for administrators" },
-  ];
-  if (meta.isSuperAdmin) {
-    lockedOptions.push({
-      key: 2,
-      value: 2,
-      text: "Only visible for super administrators",
-    });
-  }
-  let lockedValue = 0;
-  if (data.lockedSuperadmin) {
-    lockedValue = 2;
-  } else if (data.lockedAdmin) {
-    lockedValue = 1;
-  }
 
   const orderForm = data.sectorOrder?.length > 1 && (
     <>
@@ -191,13 +174,11 @@ const AreaEdit = () => {
               onChange={onNameChanged}
               error={data.name ? false : "Area name required"}
             />
-            <Form.Field
+            <VisibilitySelectorField
               label="Visibility"
-              control={Dropdown}
               selection
-              value={lockedValue}
+              value={data}
               onChange={onLockedChanged}
-              options={lockedOptions}
             />
             <Form.Field>
               <label>For developers</label>
