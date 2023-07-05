@@ -3,15 +3,17 @@ import { Loading } from "./../../common/widgets/widgets";
 import { Segment } from "semantic-ui-react";
 import { useProfileMedia } from "../../../api";
 import Media from "../../common/media/media";
+import { useMeta } from "../meta";
+import { MetaContext } from "../meta/meta";
 
 type Props = {
   userId: number;
-  isBouldering: boolean;
   captured: boolean;
 };
 
-const ProfileMedia = ({ userId, isBouldering, captured }: Props) => {
+const ProfileMedia = ({ userId, captured }: Props) => {
   const { data, isLoading } = useProfileMedia({ userId, captured });
+  const meta = useMeta();
 
   if (isLoading) {
     return <Loading />;
@@ -23,13 +25,19 @@ const ProfileMedia = ({ userId, isBouldering, captured }: Props) => {
 
   return (
     <Segment>
-      <Media
-        numPitches={null}
-        isAdmin={false}
-        media={data}
-        optProblemId={null}
-        isBouldering={isBouldering}
-      />
+      <MetaContext.Provider
+        value={{
+          ...meta,
+          // Do a little hack to force the image to be read-only in this mode. We
+          // should remove this at some point and support a "readonly"-type mode on
+          // the Media component itself .. some day.
+          // <MetaContext.Provider
+          isAdmin: false,
+          isSuperAdmin: false,
+        }}
+      >
+        <Media numPitches={null} media={data} optProblemId={null} />
+      </MetaContext.Provider>
     </Segment>
   );
 };

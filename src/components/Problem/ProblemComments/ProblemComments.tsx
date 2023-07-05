@@ -97,11 +97,9 @@ export const ProblemComments = ({
                   </Linkify>
                   {c.media && c.media.length > 0 && (
                     <Media
-                      isAdmin={meta.isAdmin}
                       numPitches={data.sections?.length || 0}
                       media={c.media}
                       optProblemId={null}
-                      isBouldering={meta.isBouldering}
                     />
                   )}
                 </Comment.Text>
