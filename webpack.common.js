@@ -45,6 +45,7 @@ module.exports = {
     path: path.resolve(__dirname, "build"),
     publicPath: "/",
   },
+  devtool: "source-map",
   module: {
     rules: [
       {
