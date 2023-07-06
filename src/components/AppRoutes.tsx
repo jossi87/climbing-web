@@ -170,11 +170,7 @@ function AppRoutes() {
           />
           <Route
             path="/user/:userId"
-            element={
-              <AuthContainer level="logged-in">
-                <Profile />
-              </AuthContainer>
-            }
+            element={<Profile />}
           />
           <Route
             path="/user/:userId/:page"
