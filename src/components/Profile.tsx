@@ -75,12 +75,14 @@ const Profile = () => {
     content = <ProfileSettings userRegions={profile.userRegions} />;
   }
 
+  const firstLast = [profile.firstname, profile.lastname]
+    .filter(Boolean)
+    .join(" ");
+
   return (
     <>
       <Helmet>
-        <title>
-          {profile.firstname} {profile.lastname}
-        </title>
+        <title>{firstLast}</title>
         <meta
           name="description"
           content="Profile with public ascents, media, and other statistics."
@@ -88,9 +90,7 @@ const Profile = () => {
       </Helmet>
       <Header as="h5" textAlign="center" className="buldreinfo-visible-mobile">
         {profile.picture && <Image circular src={profile.picture} />}
-        <Header.Content>
-          {profile.firstname} {profile.lastname}
-        </Header.Content>
+        <Header.Content>{firstLast}</Header.Content>
       </Header>
       <Menu pointing icon="labeled" size="mini">
         <Menu.Item header className="buldreinfo-hidden-mobile">
@@ -98,8 +98,12 @@ const Profile = () => {
             {profile.picture && <Image circular src={profile.picture} />}
             <Header.Content>
               {profile.firstname}
-              <br />
-              {profile.lastname}
+              {profile.lastname && (
+                <>
+                  <br />
+                  {profile.lastname}
+                </>
+              )}
             </Header.Content>
           </Header>
         </Menu.Item>
