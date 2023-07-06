@@ -1,7 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, useNavigate } from "react-router-dom";
 import { Auth0Provider } from "@auth0/auth0-react";
-import { ErrorBoundary } from "react-error-boundary";
 import App from "./App";
 import "./buldreinfo.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -24,7 +23,15 @@ Sentry.init({
   replaysOnErrorSampleRate: 1.0,
 });
 
-function ErrorFallback({ error, resetErrorBoundary }) {
+function ErrorFallback({
+  error,
+  componentStack,
+  resetError,
+}: {
+  error: Error;
+  componentStack: string;
+  resetError: () => void;
+}) {
   const userAgent = navigator.userAgent;
   return (
     <div role="alert">
@@ -34,8 +41,8 @@ function ErrorFallback({ error, resetErrorBoundary }) {
       <b>Error message:</b>
       <pre>{error.message}</pre>
       <b>Stack trace:</b>
-      <pre>{error.stack}</pre>
-      <button onClick={resetErrorBoundary}>Try again</button>
+      <pre>{componentStack}</pre>
+      <button onClick={resetError}>Try again</button>
       <button
         onClick={() => {
           const body =
@@ -49,7 +56,7 @@ function ErrorFallback({ error, resetErrorBoundary }) {
             error.message +
             "%0D%0A%0D%0A" +
             "Stack trace:%0D%0A" +
-            error.stack;
+            componentStack;
           const link =
             "mailto:jostein.oygarden@gmail.com" +
             "?subject=Buldreinfo/Brattelinjer-error" +
@@ -101,8 +108,8 @@ const queryClient = new QueryClient({
 const Index = () => (
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
-      <ErrorBoundary
-        FallbackComponent={ErrorFallback}
+      <Sentry.ErrorBoundary
+        fallback={ErrorFallback}
         onReset={() => window.location.reload()}
       >
         <DataReloader>
@@ -110,7 +117,7 @@ const Index = () => (
             <App />
           </Auth0ProviderWithNavigate>
         </DataReloader>
-      </ErrorBoundary>
+      </Sentry.ErrorBoundary>
     </BrowserRouter>
     {process.env.REACT_APP_ENV === "development" && <ReactQueryDevtools />}
   </QueryClientProvider>

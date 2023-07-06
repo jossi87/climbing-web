@@ -62,7 +62,6 @@
     "react-datepicker": "^4.15.0",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
-    "react-error-boundary": "^4.0.10",
     "react-helmet": "^6.1.0",
     "react-lazyload": "^3.2.0",
     "react-leaflet": "^4.2.1",
