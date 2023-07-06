@@ -9,7 +9,7 @@ import {
   Image,
   Dropdown,
   Card,
-  Input
+  Input,
 } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -34,9 +34,11 @@ const Permissions = () => {
   const [data, setData] = useState<PermissionsData[]>([]);
   const [query, setQuery] = useState<string>("");
 
-  const filteredData = data.filter(item=>{
-    return item.name.toLowerCase().includes(query.toLowerCase())
-  })
+  const filteredData = query
+    ? data.filter((item) => {
+        return item.name.toLowerCase().includes(query.toLowerCase());
+      })
+    : data;
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -54,6 +56,9 @@ const Permissions = () => {
   if (loading) {
     return <Loading />;
   }
+  const subHeader = query
+    ? `${filteredData.length}/${data.length} users`
+    : `${data.length} users`;
   return (
     <>
       <Helmet>
@@ -64,15 +69,15 @@ const Permissions = () => {
           <Icon name="users" />
           <Header.Content>
             Permissions
-            <Header.Subheader>{data.length} users</Header.Subheader>
+            <Header.Subheader>{subHeader}</Header.Subheader>
           </Header.Content>
         </Header>
-      <Input 
-        icon='search'
-        placeholder='Search...'
-        onChange={(e => setQuery(e.target.value))}
-        value={query}
-      />
+        <Input
+          icon="search"
+          placeholder="Search..."
+          onChange={(e) => setQuery(e.target.value)}
+          value={query}
+        />
       </Segment>
       {filteredData.length == 0 ? (
         <Segment>No data</Segment>
