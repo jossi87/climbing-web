@@ -1,23 +1,13 @@
-var path = require('path')
-var webpack = require('webpack')
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+const BundleAnalyzerPlugin =
+  require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
-module.exports = [{
-  entry: './src/index.tsx',
-  output: {
-    path: path.resolve(__dirname, 'build/js'),
-    filename: 'bundle.js',
-    publicPath: '/'
-  },
-  resolve: {
-    extensions: [".ts", ".tsx", ".json", ".js"]
-  },
-  module: {
-    rules: [
-      { test: /\.tsx?$/, exclude: /node_modules/, use: 'ts-loader' },
-    ]
-  },
+const { merge } = require("webpack-merge");
+const prod = require("./webpack.prod.js");
+const { EnvironmentPlugin } = require("webpack");
+
+module.exports = merge(prod, {
   plugins: [
-    new webpack.DefinePlugin({__isBrowser__: "true"}), new BundleAnalyzerPlugin()
-  ]
-}]
+    new EnvironmentPlugin({ REACT_APP_ENV: "production" }),
+    new BundleAnalyzerPlugin(),
+  ],
+});
