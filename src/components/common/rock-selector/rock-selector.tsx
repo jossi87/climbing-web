@@ -15,7 +15,7 @@ const RockSelector = ({
   placeholder,
 }: RockSelectorProps) => {
   const [value, setValue] = useState(
-    rock ? { label: rock, value: rock } : null
+    rock ? { label: rock, value: rock } : null,
   );
 
   function handleChange(newValue: any) {

@@ -3,69 +3,69 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import { Loading } from "./common/widgets/widgets";
 
 const AuthContainer = lazy(
-  () => import(/* webpackChunkName: "auth" */ "./AuthContainer")
+  () => import(/* webpackChunkName: "auth" */ "./AuthContainer"),
 );
 
 const About = lazy(() => import(/* webpackChunkName: "about" */ "./About"));
 const Area = lazy(() => import(/* webpackChunkName: "area" */ "./Area"));
 const AreaEdit = lazy(
-  () => import(/* webpackChunkName: "area-edit" */ "./AreaEdit")
+  () => import(/* webpackChunkName: "area-edit" */ "./AreaEdit"),
 );
 const Areas = lazy(() => import(/* webpackChunkName: "areas" */ "./Areas"));
 const Dangerous = lazy(
-  () => import(/* webpackChunkName: "dangerous" */ "./Dangerous")
+  () => import(/* webpackChunkName: "dangerous" */ "./Dangerous"),
 );
 const Donations = lazy(
-  () => import(/* webpackChunkName: "donations" */ "./Donations")
+  () => import(/* webpackChunkName: "donations" */ "./Donations"),
 );
 const Frontpage = lazy(
   () =>
     import(
       /* webpackPrefetch: true, webpackChunkName: "frontpage" */ "./Frontpage"
-    )
+    ),
 );
 const Filter = lazy(() => import(/* webpackChunkName: "filter" */ "./Filter"));
 const Graph = lazy(() => import(/* webpackChunkName: "graph" */ "./Graph"));
 const MediaSvgEdit = lazy(
-  () => import(/* webpackChunkName: "media-svg-edit" */ "./MediaSvgEdit")
+  () => import(/* webpackChunkName: "media-svg-edit" */ "./MediaSvgEdit"),
 );
 const PrivacyPolicy = lazy(
-  () => import(/* webpackChunkName: "privacy-policy" */ "./PrivacyPolicy")
+  () => import(/* webpackChunkName: "privacy-policy" */ "./PrivacyPolicy"),
 );
 const Problem = lazy(
-  () => import(/* webpackChunkName: "problem" */ "./Problem")
+  () => import(/* webpackChunkName: "problem" */ "./Problem"),
 );
 const ProblemEdit = lazy(
-  () => import(/* webpackChunkName: "problem-edit" */ "./ProblemEdit")
+  () => import(/* webpackChunkName: "problem-edit" */ "./ProblemEdit"),
 );
 const ProblemEditMedia = lazy(
   () =>
-    import(/* webpackChunkName: "problem-edit-media" */ "./ProblemEditMedia")
+    import(/* webpackChunkName: "problem-edit-media" */ "./ProblemEditMedia"),
 );
 const Problems = lazy(
-  () => import(/* webpackChunkName: "problems" */ "./Problems")
+  () => import(/* webpackChunkName: "problems" */ "./Problems"),
 );
 const Profile = lazy(
-  () => import(/* webpackChunkName: "profile" */ "./Profile")
+  () => import(/* webpackChunkName: "profile" */ "./Profile"),
 );
 const Sector = lazy(() => import(/* webpackChunkName: "sector" */ "./Sector"));
 const SectorEdit = lazy(
-  () => import(/* webpackChunkName: "sector-edit" */ "./SectorEdit")
+  () => import(/* webpackChunkName: "sector-edit" */ "./SectorEdit"),
 );
 const Sites = lazy(() => import(/* webpackChunkName: "sites" */ "./Sites"));
 const SvgEdit = lazy(
-  () => import(/* webpackChunkName: "svg-edit" */ "./SvgEdit")
+  () => import(/* webpackChunkName: "svg-edit" */ "./SvgEdit"),
 );
 const Swagger = lazy(
-  () => import(/* webpackChunkName: "swagger" */ "./Swagger")
+  () => import(/* webpackChunkName: "swagger" */ "./Swagger"),
 );
 const Ticks = lazy(() => import(/* webpackChunkName: "ticks" */ "./Ticks"));
 const Trash = lazy(() => import(/* webpackChunkName: "trash" */ "./Trash"));
 const Permissions = lazy(
-  () => import(/* webpackChunkName: "permissions" */ "./Permissions")
+  () => import(/* webpackChunkName: "permissions" */ "./Permissions"),
 );
 const Webcams = lazy(
-  () => import(/* webpackChunkName: "webcams" */ "./Webcams")
+  () => import(/* webpackChunkName: "webcams" */ "./Webcams"),
 );
 
 function AppRoutes() {

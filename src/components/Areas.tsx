@@ -43,7 +43,7 @@ const Areas = () => {
   const typeDescription = meta.isBouldering ? "problems" : "routes";
   const markers = data
     .filter(
-      (a) => a.forDevelopers === showForDevelopers && a.lat != 0 && a.lng != 0
+      (a) => a.forDevelopers === showForDevelopers && a.lat != 0 && a.lng != 0,
     )
     .map((a) => {
       return {
@@ -84,7 +84,7 @@ const Areas = () => {
                   __html: md.render(
                     a.comment && a.comment.length > 200
                       ? a.comment.substring(0, 200) + "..."
-                      : a.comment
+                      : a.comment,
                   ),
                 }}
               />

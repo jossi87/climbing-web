@@ -86,10 +86,10 @@ const ProfileStatistics = ({
   }
 
   const numTicks = data.ticks.filter(
-    (t) => !t.fa && t.idTickRepeat === 0
+    (t) => !t.fa && t.idTickRepeat === 0,
   ).length;
   const numTickRepeats = data.ticks.filter(
-    (t) => !t.fa && t.idTickRepeat > 0
+    (t) => !t.fa && t.idTickRepeat > 0,
   ).length;
   const numFas = data.ticks.filter((t) => t.fa).length;
   const chart = data.ticks.length > 0 ? <Chart data={data.ticks} /> : null;

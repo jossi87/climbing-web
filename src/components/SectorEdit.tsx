@@ -106,7 +106,7 @@ const SectorEdit = () => {
         data.polygonCoords,
         data.polyline,
         data.newMedia,
-        data.problemOrder
+        data.problemOrder,
       )
         .then(async (res) => {
           navigate(res.destination);
@@ -433,8 +433,8 @@ const SectorEdit = () => {
                               lat: p.lat,
                               lng: p.lng,
                               label: p.name,
-                            }))
-                        )
+                            })),
+                        ),
                       );
                     }
                   } else {

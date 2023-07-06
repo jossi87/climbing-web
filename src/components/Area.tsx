@@ -286,7 +286,7 @@ const Area = () => {
                       ? getImageUrl(
                           sector.randomMediaId,
                           sector.randomMediaCrc32,
-                          150
+                          150,
                         )
                       : "/png/image.png"
                   }
@@ -332,7 +332,7 @@ const Area = () => {
         (meta.isBouldering ? "Problems (" : "Routes (") +
         data[0].typeNumTicked.reduce(
           (count, current) => count + current.num,
-          0
+          0,
         ) +
         ")",
       render: () => (
@@ -355,7 +355,7 @@ const Area = () => {
                   subType: p.t.subType,
                   num: null,
                   fa: null,
-                }))
+                })),
               )
               .flat()
               .sort((a, b) => b.gradeNumber - a.gradeNumber)}

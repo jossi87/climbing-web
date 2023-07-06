@@ -10,7 +10,7 @@ export function Descent({ path, whiteNotBlack, scale, thumb, key }) {
     texts.push(
       <textPath key={i} xlinkHref={"#descent" + key} startOffset={i + "%"}>
         ➤
-      </textPath>
+      </textPath>,
     );
   }
   const fontSize = 0.012 * scale * (thumb ? 2 : 1);
@@ -287,7 +287,7 @@ export function parseReadOnlySvgs(readOnlySvgs, w, h, minWindowScale) {
           scale,
           thumb: false,
           key: shapes.length,
-        })
+        }),
       );
     } else if (svg.t === "RAPPEL_BOLTED" || svg.t === "RAPPEL_NOT_BOLTED") {
       shapes.push(
@@ -300,7 +300,7 @@ export function parseReadOnlySvgs(readOnlySvgs, w, h, minWindowScale) {
           backgroundColor,
           color,
           key: shapes.length,
-        })
+        }),
       );
     } else {
       shapes.push(
@@ -311,7 +311,7 @@ export function parseReadOnlySvgs(readOnlySvgs, w, h, minWindowScale) {
           style={{ fill: "none", stroke: "#000000" }}
           strokeWidth={0.003 * w}
           strokeDasharray={0.006 * w}
-        />
+        />,
       );
       const commands = parseSVG(svg.path);
       makeAbsolute(commands); // Note: mutates the commands in place!
@@ -322,8 +322,8 @@ export function parseReadOnlySvgs(readOnlySvgs, w, h, minWindowScale) {
           svg.nr,
           svg.hasAnchor,
           w,
-          h
-        )
+          h,
+        ),
       );
       svg.anchors.map((a, i) => {
         shapes.push(
@@ -334,7 +334,7 @@ export function parseReadOnlySvgs(readOnlySvgs, w, h, minWindowScale) {
             cx={a.x}
             cy={a.y}
             r={0.006 * w}
-          />
+          />,
         );
       });
     }

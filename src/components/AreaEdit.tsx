@@ -84,7 +84,7 @@ const AreaEdit = () => {
         data.lat,
         data.lng,
         data.newMedia,
-        data.sectorOrder
+        data.sectorOrder,
       )
         .then(async (res) => {
           return navigate(res.destination);

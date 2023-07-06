@@ -111,27 +111,27 @@ const Filter = () => {
   const [grades, setGrades] = useLocalStorage<number[]>("filter_grades", []);
   const [disciplines, setDisciplines] = useLocalStorage<number[]>(
     "filter_disciplines",
-    []
+    [],
   );
   const [routeTypes, setRouteTypes] = useLocalStorage<string[]>(
     "filter_route_types",
-    []
+    [],
   );
   const [result, setResult] = useLocalStorage<any[]>("filter_result", []);
   const [refreshing, setRefreshing] = useState(false);
   const [hideTicked, setHideTicked] = useLocalStorage("filter_ticked", false);
   const [onlyWithMedia, setOnlyWithMedia] = useLocalStorage(
     "filter_only_with_media",
-    false
+    false,
   );
   const [onlyAdmin, setOnlyAdmin] = useLocalStorage("filter_only_admin", false);
   const [onlySuperAdmin, setOnlySuperAdmin] = useLocalStorage(
     "filter_only_sa",
-    false
+    false,
   );
   const [orderBy, setOrderBy] = useLocalStorage<OrderBy>(
     "filter_order_by",
-    OrderBy.alphabetical
+    OrderBy.alphabetical,
   );
 
   function setData(data, newOrderBy: OrderBy) {
@@ -167,7 +167,7 @@ const Filter = () => {
         (!hideTicked || !p.ticked) &&
         (!onlyWithMedia || p.randomMediaId > 0) &&
         (!onlyAdmin || p.lockedAdmin) &&
-        (!onlySuperAdmin || p.lockedSuperadmin)
+        (!onlySuperAdmin || p.lockedSuperadmin),
     ) ?? [];
   return (
     <>
@@ -287,7 +287,7 @@ const Filter = () => {
                 accessToken,
                 grades,
                 myDisciplines,
-                routeTypes.map((v) => String(v))
+                routeTypes.map((v) => String(v)),
               ).then((res) => {
                 setData(res, orderBy);
                 setRefreshing(false);

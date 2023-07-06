@@ -52,7 +52,7 @@ const Leaflet = ({
   flyToId,
 }) => {
   const [groupByRock, setGroupByRock] = useState(
-    rocks != null && rocks.length > 0 ? true : false
+    rocks != null && rocks.length > 0 ? true : false,
   );
   let bounds = null;
   if (
@@ -67,12 +67,12 @@ const Leaflet = ({
     }
     if (outlines && outlines.length > 0) {
       outlines.forEach((o) =>
-        o.polygon.forEach((p) => bounds.extend([p[0], p[1]]))
+        o.polygon.forEach((p) => bounds.extend([p[0], p[1]])),
       );
     }
     if (polylines && polylines.length > 0) {
       polylines.forEach((p) =>
-        p.polyline.forEach((x) => bounds.extend([x[0], x[1]]))
+        p.polyline.forEach((x) => bounds.extend([x[0], x[1]])),
       );
     }
     if (

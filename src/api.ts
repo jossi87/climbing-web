@@ -35,7 +35,7 @@ type FetchOptions = Partial<Parameters<typeof fetch>[1]> & {
 function makeAuthenticatedRequest(
   accessToken: string | null,
   urlSuffix: string,
-  extraOptions?: FetchOptions
+  extraOptions?: FetchOptions,
 ) {
   const { consistencyAction, ...opts } = extraOptions || {};
   const options = {
@@ -51,7 +51,7 @@ function makeAuthenticatedRequest(
       window.dispatchEvent(
         new CustomEvent(DATA_MUTATION_EVENT, {
           detail: { mode: consistencyAction ?? "refetch" },
-        })
+        }),
       );
     }
     return res;
@@ -76,7 +76,7 @@ function usePostData<TData = any>(
     ...options
   }: Partial<UseMutationOptions<TData>> & {
     fetchOptions?: FetchOptions;
-  } = {}
+  } = {},
 ) {
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const mutationKey = options.mutationKey ?? [urlSuffix, { isAuthenticated }];
@@ -120,7 +120,7 @@ export function useData<T = any>(
     ...options
   }: Partial<UseQueryOptions> & {
     transform?: (response: Awaited<ReturnType<typeof fetch>>) => Promise<T>;
-  } = {}
+  } = {},
 ) {
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const queryKey = options.queryKey ?? [urlSuffix, { isAuthenticated }];
@@ -157,12 +157,12 @@ export function useData<T = any>(
 export function getImageUrl(
   id: number,
   checksum: number,
-  minDimention?: number
+  minDimention?: number,
 ): string {
   const crc32 = checksum || 0;
   if (minDimention) {
     return getUrl(
-      `/images?id=${id}&crc32=${crc32}&minDimention=${minDimention}`
+      `/images?id=${id}&crc32=${crc32}&minDimention=${minDimention}`,
     );
   }
   return getUrl(`/images?id=${id}&crc32=${crc32}`);
@@ -219,14 +219,14 @@ export function getAreaPdfUrl(accessToken: string | null, id: number): string {
 
 export function getSectorPdfUrl(
   accessToken: string | null,
-  id: number
+  id: number,
 ): string {
   return getUrl(`/sectors/pdf?accessToken=${accessToken}&id=${id}`);
 }
 
 export function getProblemPdfUrl(
   accessToken: string | null,
-  id: number
+  id: number,
 ): string {
   return getUrl(`/problem/pdf?accessToken=${accessToken}&id=${id}`);
 }
@@ -266,7 +266,7 @@ export function convertFromStringToDate(yyyy_MM_dd: string): Date | null {
 
 export function deleteMedia(
   accessToken: string | null,
-  id: number
+  id: number,
 ): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/media?id=${id}`, {
     method: "DELETE",
@@ -278,14 +278,14 @@ export function moveMedia(
   id: number,
   left: boolean,
   toIdSector: number,
-  toIdProblem: number
+  toIdProblem: number,
 ): Promise<any> {
   return makeAuthenticatedRequest(
     accessToken,
     `/media?id=${id}&left=${left}&toIdSector=${toIdSector}&toIdProblem=${toIdProblem}`,
     {
       method: "PUT",
-    }
+    },
   );
 }
 
@@ -307,7 +307,7 @@ export function useActivity({
   media: boolean;
 }) {
   return useData(
-    `/activity?idArea=${idArea}&idSector=${idSector}&lowerGrade=${lowerGrade}&fa=${fa}&comments=${comments}&ticks=${ticks}&media=${media}`
+    `/activity?idArea=${idArea}&idSector=${idSector}&lowerGrade=${lowerGrade}&fa=${fa}&comments=${comments}&ticks=${ticks}&media=${media}`,
   );
 }
 
@@ -328,7 +328,7 @@ export function getArea(accessToken: string | null, id: number): Promise<any> {
     .then((response) => {
       if (response.status === 500) {
         return Promise.reject(
-          "Cannot find the specified area because it does not exist or you do not have sufficient permissions."
+          "Cannot find the specified area because it does not exist or you do not have sufficient permissions.",
         );
       }
       return response.json();
@@ -343,7 +343,7 @@ export function getArea(accessToken: string | null, id: number): Promise<any> {
 
 export function getAreaEdit(
   accessToken: string | null,
-  id: number
+  id: number,
 ): Promise<any> {
   if (id == -1) {
     return Promise.resolve({
@@ -390,12 +390,12 @@ export function getAreaEdit(
 export function getGradeDistribution(
   accessToken: string | null,
   idArea: number,
-  idSector: number
+  idSector: number,
 ): Promise<any> {
   return makeAuthenticatedRequest(
     accessToken,
     `/grade/distribution?idArea=${idArea}&idSector=${idSector}`,
-    null
+    null,
   )
     .then((data) => data.json())
     .catch((error) => {
@@ -436,7 +436,7 @@ export function useProblem(id: number, showHiddenMedia: boolean) {
   const client = useQueryClient();
   const problem = useData(
     `/problem?id=${id}&showHiddenMedia=${showHiddenMedia}`,
-    { queryKey: [`/problem`, { id, showHiddenMedia }] }
+    { queryKey: [`/problem`, { id, showHiddenMedia }] },
   );
 
   const { data: profile } = useProfile(-1);
@@ -483,17 +483,17 @@ export function useProblem(id: number, showHiddenMedia: boolean) {
 export function getProblem(
   accessToken: string | null,
   id: number,
-  showHiddenMedia: boolean
+  showHiddenMedia: boolean,
 ): Promise<any> {
   return makeAuthenticatedRequest(
     accessToken,
     `/problem?id=${id}&showHiddenMedia=${showHiddenMedia}`,
-    null
+    null,
   )
     .then((response) => {
       if (response.status === 500) {
         return Promise.reject(
-          "Cannot find the specified problem because it does not exist or you do not have sufficient permissions."
+          "Cannot find the specified problem because it does not exist or you do not have sufficient permissions.",
         );
       }
       return response.json();
@@ -509,7 +509,7 @@ export function getProblem(
 export function getProblemEdit(
   accessToken: string | null,
   sectorId: number,
-  problemId: number
+  problemId: number,
 ): Promise<any> {
   if (!problemId) {
     return getSector(accessToken, sectorId)
@@ -613,7 +613,7 @@ export function useProfileTodo(id: number) {
 
 export function useSector(
   id: number | undefined,
-  options?: Parameters<typeof useData>[1]
+  options?: Parameters<typeof useData>[1],
 ) {
   return useData(`/sectors?id=${id}`, {
     ...(options ?? {}),
@@ -623,13 +623,13 @@ export function useSector(
 
 export function getSector(
   accessToken: string | null,
-  id: number
+  id: number,
 ): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/sectors?id=${id}`)
     .then((response) => {
       if (response.status === 500) {
         return Promise.reject(
-          "Cannot find the specified sector because it does not exist or you do not have sufficient permissions."
+          "Cannot find the specified sector because it does not exist or you do not have sufficient permissions.",
         );
       }
       return response.json();
@@ -645,7 +645,7 @@ export function getSector(
 export function getSectorEdit(
   accessToken: string | null,
   areaId: number,
-  sectorId: number
+  sectorId: number,
 ): Promise<any> {
   if (!sectorId) {
     return getArea(accessToken, areaId)
@@ -701,7 +701,7 @@ export function getSectorEdit(
 
 export function getSites(
   accessToken: string | null,
-  type: string
+  type: string,
 ): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/sites?type=${type}`)
     .then((data) => data.json())
@@ -714,12 +714,12 @@ export function getSites(
 export function getSvgEdit(
   accessToken: string | null,
   problemId: number,
-  mediaId: number
+  mediaId: number,
 ): Promise<any> {
   return makeAuthenticatedRequest(
     accessToken,
     `/problem?id=${problemId}&showHiddenMedia=true`,
-    null
+    null,
   )
     .then((data) => data.json())
     .then((res) => {
@@ -793,7 +793,7 @@ export function getSvgEdit(
 
 export function getTicks(
   accessToken: string | null,
-  page: number
+  page: number,
 ): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/ticks?page=${page}`)
     .then((data) => data.json())
@@ -825,12 +825,12 @@ export function useTop({
 
 export function getUserSearch(
   accessToken: string | null,
-  value: string
+  value: string,
 ): Promise<any> {
   return makeAuthenticatedRequest(
     accessToken,
     `/users/search?value=${value}`,
-    null
+    null,
   )
     .then((data) => data.json())
     .catch((error) => {
@@ -863,7 +863,7 @@ export function postArea(
   lat: number,
   lng: number,
   media: any,
-  sectorOrder: any
+  sectorOrder: any,
 ): Promise<any> {
   const formData = new FormData();
   const newMedia = media.map((m) => {
@@ -895,12 +895,12 @@ export function postArea(
       lng,
       newMedia,
       sectorOrder,
-    })
+    }),
   );
   media.forEach(
     (m) =>
       m.file &&
-      formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, "_"), m.file)
+      formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, "_"), m.file),
   );
   return makeAuthenticatedRequest(accessToken, `/areas`, {
     method: "POST",
@@ -919,7 +919,7 @@ export function postComment(
   danger: boolean,
   resolved: boolean,
   del: boolean,
-  media: any
+  media: any,
 ): Promise<any> {
   const formData = new FormData();
   const newMedia = media.map((m) => {
@@ -945,12 +945,12 @@ export function postComment(
       resolved,
       delete: del,
       newMedia,
-    })
+    }),
   );
   media.forEach(
     (m) =>
       m.file &&
-      formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, "_"), m.file)
+      formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, "_"), m.file),
   );
 
   return makeAuthenticatedRequest(accessToken, `/comments`, {
@@ -966,7 +966,7 @@ export function postFilter(
   accessToken: string | null,
   grades: Array<number>,
   disciplines: Array<number>,
-  routeTypes: Array<string>
+  routeTypes: Array<string>,
 ): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/filter`, {
     method: "POST",
@@ -984,7 +984,7 @@ export function postPermissions(
   adminRead: boolean,
   adminWrite: boolean,
   superadminRead: boolean,
-  superadminWrite: boolean
+  superadminWrite: boolean,
 ): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/permissions`, {
     method: "POST",
@@ -1025,7 +1025,7 @@ export function postProblem(
   startingAltitude: string,
   aspect: string,
   routeLength: string,
-  descent: string
+  descent: string,
 ): Promise<any> {
   const formData = new FormData();
   const newMedia = media.map((m) => {
@@ -1067,12 +1067,12 @@ export function postProblem(
       aspect,
       routeLength,
       descent,
-    })
+    }),
   );
   media.forEach(
     (m) =>
       m.file &&
-      formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, "_"), m.file)
+      formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, "_"), m.file),
   );
   return makeAuthenticatedRequest(accessToken, `/problems`, {
     method: "POST",
@@ -1091,7 +1091,7 @@ export function postProblem(
 export function postProblemMedia(
   accessToken: string | null,
   id: number,
-  media: any
+  media: any,
 ): Promise<any> {
   const formData = new FormData();
   const newMedia = media.map((m) => {
@@ -1111,7 +1111,7 @@ export function postProblemMedia(
   media.forEach(
     (m) =>
       m.file &&
-      formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, "_"), m.file)
+      formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, "_"), m.file),
   );
   return makeAuthenticatedRequest(accessToken, `/problems/media`, {
     method: "POST",
@@ -1129,7 +1129,7 @@ export function postProblemMedia(
 
 export function postSearch(
   accessToken: string | null,
-  value: string
+  value: string,
 ): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/search`, {
     method: "POST",
@@ -1150,7 +1150,7 @@ export function postProblemSvg(
   path: string,
   hasAnchor: boolean,
   anchors: string,
-  texts: string
+  texts: string,
 ): Promise<any> {
   return makeAuthenticatedRequest(
     accessToken,
@@ -1169,7 +1169,7 @@ export function postProblemSvg(
         "Content-Type": "application/json",
         Accept: "application/json",
       },
-    }
+    },
   );
 }
 
@@ -1189,7 +1189,7 @@ export function postSector(
   polygonCoords: any,
   polyline: any,
   media: any,
-  problemOrder: any
+  problemOrder: any,
 ): Promise<any> {
   const formData = new FormData();
   const newMedia = media.map((m) => {
@@ -1222,12 +1222,12 @@ export function postSector(
       polyline,
       newMedia,
       problemOrder,
-    })
+    }),
   );
   media.forEach(
     (m) =>
       m.file &&
-      formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, "_"), m.file)
+      formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, "_"), m.file),
   );
   return makeAuthenticatedRequest(accessToken, `/sectors`, {
     method: "POST",
@@ -1252,7 +1252,7 @@ export function postTicks(
   date: string,
   stars: number,
   grade: string,
-  repeats: any
+  repeats: any,
 ): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/ticks`, {
     method: "POST",
@@ -1275,14 +1275,14 @@ export function postTicks(
 export function postUserRegion(
   accessToken: string | null,
   regionId: number,
-  del: boolean
+  del: boolean,
 ): Promise<any> {
   return makeAuthenticatedRequest(
     accessToken,
     `/user/regions?regionId=${regionId}&delete=${del}`,
     {
       method: "POST",
-    }
+    },
   );
 }
 
@@ -1291,7 +1291,7 @@ export function putMediaInfo(
   mediaId: number,
   description: string,
   pitch: number,
-  trivia: boolean
+  trivia: boolean,
 ): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/media/info`, {
     method: "PUT",
@@ -1305,14 +1305,14 @@ export function putMediaInfo(
 export function putMediaJpegRotate(
   accessToken: string | null,
   idMedia: number,
-  degrees: number
+  degrees: number,
 ): Promise<any> {
   return makeAuthenticatedRequest(
     accessToken,
     `/media/jpeg/rotate?idMedia=${idMedia}&degrees=${degrees}`,
     {
       method: "PUT",
-    }
+    },
   );
 }
 
@@ -1321,13 +1321,13 @@ export function putTrash(
   idArea: number,
   idSector: number,
   idProblem: number,
-  idMedia: number
+  idMedia: number,
 ): Promise<any> {
   return makeAuthenticatedRequest(
     accessToken,
     `/trash?idArea=${idArea}&idSector=${idSector}&idProblem=${idProblem}&idMedia=${idMedia}`,
     {
       method: "PUT",
-    }
+    },
   );
 }

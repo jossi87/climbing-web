@@ -559,7 +559,7 @@ const MediaModal = ({
                         const ext = isMovie ? "mp4" : "jpg";
                         saveAs(
                           getBuldreinfoMediaUrl(m.id, ext),
-                          "buldreinfo_brattelinjer_" + m.id + "." + ext
+                          "buldreinfo_brattelinjer_" + m.id + "." + ext,
                         );
                       }}
                     />

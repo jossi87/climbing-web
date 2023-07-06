@@ -17,7 +17,7 @@ export const ProblemsOnRock = ({
     enabled: !!sectorId,
     select: (sectorData: any) => {
       return sectorData?.problems?.filter(
-        (problem) => problem.rock && problem.rock === rock
+        (problem) => problem.rock && problem.rock === rock,
       );
     },
     suspense: false,

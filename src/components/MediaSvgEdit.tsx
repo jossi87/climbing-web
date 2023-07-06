@@ -306,7 +306,7 @@ const MediaSvgEdit = () => {
               r={0.003 * data.width}
               onMouseDown={() => setCurrDraggedCubic(i, 1)}
             />
-          </g>
+          </g>,
         );
       }
       return (
@@ -447,7 +447,7 @@ const MediaSvgEdit = () => {
                     !data.mediaSvgs[index].points
                   ) {
                     data.mediaSvgs[index].points = parsePath(
-                      data.mediaSvgs[index].path
+                      data.mediaSvgs[index].path,
                     );
                     setData(data);
                   }
@@ -547,7 +547,7 @@ const MediaSvgEdit = () => {
             data.mediaSvgs.filter((svg, index) => index != activeElementIndex),
             data.width,
             data.height,
-            minWindowScale
+            minWindowScale,
           )}
       </svg>
     </Container>

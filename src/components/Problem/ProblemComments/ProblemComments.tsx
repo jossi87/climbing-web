@@ -30,7 +30,7 @@ export const ProblemComments = ({
         true,
         false,
         false,
-        []
+        [],
       ).catch((error) => {
         console.warn(error);
         alert(error.toString());
@@ -44,7 +44,7 @@ export const ProblemComments = ({
         (error) => {
           console.warn(error);
           alert(error.toString());
-        }
+        },
       );
     }
   }

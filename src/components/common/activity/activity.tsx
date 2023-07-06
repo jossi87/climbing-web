@@ -22,23 +22,23 @@ const Activity = ({ idArea, idSector }) => {
   const [lowerGradeId, setLowerGradeId] = useLocalStorage("lower_grade_id", 0);
   const [lowerGradeText, setLowerGradeText] = useLocalStorage(
     "lower_grade_text",
-    "n/a"
+    "n/a",
   );
   const [activityTypeTicks, setActivityTypeTicks] = useLocalStorage(
     "activity_type_ticks",
-    true
+    true,
   );
   const [activityTypeFa, setActivityTypeFa] = useLocalStorage(
     "activity_type_fa",
-    true
+    true,
   );
   const [activityTypeComments, setActivityTypeComments] = useLocalStorage(
     "activity_type_comments",
-    true
+    true,
   );
   const [activityTypeMedia, setActivityTypeMedia] = useLocalStorage(
     "activity_type_media",
-    true
+    true,
   );
 
   const meta = useMeta();
@@ -191,7 +191,7 @@ const Activity = ({ idArea, idSector }) => {
                         src={getImageUrl(
                           a.problemRandomMediaId,
                           a.problemRandomMediaCrc32,
-                          35
+                          35,
                         )}
                       />
                     )}
@@ -357,7 +357,7 @@ const Activity = ({ idArea, idSector }) => {
                         src={getImageUrl(
                           a.problemRandomMediaId,
                           a.problemRandomMediaCrc32,
-                          35
+                          35,
                         )}
                       />
                     )}

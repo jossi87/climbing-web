@@ -29,7 +29,7 @@ const UserSelector = ({
           ? await getAccessTokenSilently()
           : null;
         getUserSearch(accessToken ?? "", "").then((res) =>
-          setOptions(res.map((u) => ({ value: u.id, label: u.name })))
+          setOptions(res.map((u) => ({ value: u.id, label: u.name }))),
         );
       };
       update();
@@ -47,7 +47,7 @@ const UserSelector = ({
   function isValidNewOption(inputValue) {
     return (
       options.filter(
-        (u) => u.label && inputValue.toLowerCase() === u.label.toLowerCase()
+        (u) => u.label && inputValue.toLowerCase() === u.label.toLowerCase(),
       ).length == 0
     );
   }

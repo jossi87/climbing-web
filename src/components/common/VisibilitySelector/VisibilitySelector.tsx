@@ -65,7 +65,7 @@ export const VisibilitySelectorField = (
     Omit<
       ComponentProps<typeof Form.Field>,
       "options" | "value" | "onChange" | "control"
-    >
+    >,
 ) => {
   return (
     <Form.Field
