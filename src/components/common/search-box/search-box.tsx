@@ -39,7 +39,7 @@ const SearchBox = (searchProps: SearchBoxProps) => {
   useEffect(() => {
     let canceled = false;
     const update = async () => {
-      if (!value) {
+      if (!value || !value.trim()) {
         setLoading(false);
         return;
       }
