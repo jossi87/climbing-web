@@ -4,7 +4,6 @@ import Leaflet from "../../common/leaflet/leaflet";
 import { Loading, LockSymbol } from "../../common/widgets/widgets";
 import { List, Segment } from "semantic-ui-react";
 import { useProfileTodo } from "../../../api";
-import { SmartLink } from "../SmartLink";
 
 type ProfileTodoProps = {
   userId: number;
@@ -66,7 +65,7 @@ const ProfileTodo = ({
           {data.areas.map((area) => (
             <List.Item key={area.id}>
               <List.Header>
-                <SmartLink to={area.url}>{area.name}</SmartLink>
+                <Link to={`/area/${area.id}`}>{area.name}</Link>
                 <LockSymbol
                   lockedAdmin={area.lockedAdmin}
                   lockedSuperadmin={area.lockedSuperadmin}
@@ -75,7 +74,7 @@ const ProfileTodo = ({
               {area.sectors.map((sector) => (
                 <List.List key={sector.id}>
                   <List.Header>
-                    <SmartLink to={sector.url}>{sector.name}</SmartLink>
+                    <Link to={`/sector/${sector.id}`}>{sector.name}</Link>
                     <LockSymbol
                       lockedAdmin={sector.lockedAdmin}
                       lockedSuperadmin={sector.lockedSuperadmin}
@@ -86,9 +85,9 @@ const ProfileTodo = ({
                       <List.Item key={problem.id}>
                         <List.Header>
                           {`#${problem.nr} `}
-                          <SmartLink to={problem.url}>
+                          <Link to={`/problem/${problem.id}`}>
                             {problem.name}
-                          </SmartLink>{" "}
+                          </Link>{" "}
                           {problem.grade}
                           {problem.partners && problem.partners.length > 0 && (
                             <small>

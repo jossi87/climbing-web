@@ -168,14 +168,8 @@ function AppRoutes() {
               </AuthContainer>
             }
           />
-          <Route
-            path="/user/:userId"
-            element={<Profile />}
-          />
-          <Route
-            path="/user/:userId/:page"
-            element={<Profile />}
-          />
+          <Route path="/user/:userId" element={<Profile />} />
+          <Route path="/user/:userId/:page" element={<Profile />} />
           <Route path="/webcams" element={<Webcams />} />
           <Route path="/webcams/:json" element={<Webcams />} />
         </Routes>

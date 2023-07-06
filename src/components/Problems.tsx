@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Helmet } from "react-helmet";
+import { Link } from "react-router-dom";
 import {
   Header,
   List,
@@ -12,10 +13,9 @@ import { Loading, LockSymbol, Stars } from "./common/widgets/widgets";
 import { useMeta } from "./common/meta";
 import { getProblemsXlsx, useAccessToken, useData } from "../api";
 import { saveAs } from "file-saver";
-import { SmartLink } from "./common/SmartLink";
 
 const JumpToTop = () => (
-  <a href="#">
+  <a onClick={() => window.scrollTo(0, 0)}>
     <Icon name="arrow alternate circle up outline" color="black" />
   </a>
 );
@@ -25,6 +25,7 @@ const Problems = () => {
   const meta = useMeta();
   const { data } = useData(`/problems`);
   const [isSaving, setIsSaving] = useState(false);
+  const areaRefs = useRef({});
 
   if (!data) {
     return <Loading />;
@@ -88,7 +89,12 @@ const Problems = () => {
         <List celled link horizontal size="small">
           {data.map((area) => (
             <React.Fragment key={area.id}>
-              <List.Item as="a" href={`#${area.id}`}>
+              <List.Item
+                as="a"
+                onClick={() =>
+                  areaRefs.current[area.id].scrollIntoView({ block: "start" })
+                }
+              >
                 {area.name}
               </List.Item>
               <LockSymbol
@@ -101,10 +107,13 @@ const Problems = () => {
         <List celled>
           {data.map((area) => (
             <List.Item key={area.id}>
-              <List.Header key={area.id}>
-                <SmartLink id={area.id} to={area.url}>
+              <List.Header>
+                <Link
+                  to={`/area/${area.id}`}
+                  ref={(ref) => (areaRefs.current[area.id] = ref)}
+                >
                   {area.name}
-                </SmartLink>
+                </Link>
                 <LockSymbol
                   lockedAdmin={area.lockedAdmin}
                   lockedSuperadmin={area.lockedSuperadmin}
@@ -114,7 +123,7 @@ const Problems = () => {
               {area.sectors.map((sector) => (
                 <List.List key={sector.id}>
                   <List.Header>
-                    <SmartLink to={sector.url}>{sector.name}</SmartLink>
+                    <Link to={`/sector/${sector.id}`}>{sector.name}</Link>
                     <LockSymbol
                       lockedAdmin={sector.lockedAdmin}
                       lockedSuperadmin={sector.lockedSuperadmin}
@@ -147,9 +156,9 @@ const Problems = () => {
                         <List.Item key={problem.id}>
                           <List.Header>
                             {`#${problem.nr} `}
-                            <SmartLink to={problem.url}>
+                            <Link to={`/problem/${problem.id}`}>
                               {problem.name}
-                            </SmartLink>{" "}
+                            </Link>{" "}
                             {problem.grade}{" "}
                             <Stars
                               numStars={problem.stars}
