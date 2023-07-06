@@ -112,7 +112,7 @@ const CommentModal = ({
                 danger,
                 resolved,
                 false,
-                media
+                media,
               )
                 .then(() => {
                   onClose();

@@ -39,7 +39,7 @@ const Problems = () => {
       problems +
         area.sectors.reduce((acc, sector) => sector.problems.length + acc, 0),
     ],
-    [0, 0]
+    [0, 0],
   );
 
   const title = meta.isBouldering ? "Problems" : "Routes";

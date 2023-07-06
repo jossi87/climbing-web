@@ -22,7 +22,7 @@ export function useLocalStorage<T = any>(key: string, initialValue: T) {
         console.log(error);
       }
     },
-    [key, storedValue]
+    [key, storedValue],
   );
 
   return [storedValue, setValue] as const;

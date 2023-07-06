@@ -27,7 +27,7 @@ function Chart({ data }) {
   const maxValue = Math.max(
     ...grades.map((d) => {
       return d.fa + d.tick;
-    })
+    }),
   );
   const rows = grades.map((g, i) => {
     const faWidth = (g.fa / maxValue) * 100 + "%";

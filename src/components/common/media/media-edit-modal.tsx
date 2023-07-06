@@ -78,7 +78,7 @@ const MediaEditModal = ({ save, onCloseWithoutReload, m, numPitches }) => {
                 media.id,
                 media.mediaMetadata.description,
                 media.pitch,
-                media.trivia
+                media.trivia,
               );
             }}
           />

@@ -21,7 +21,7 @@ const ChartGradeDistribution = ({ idArea, idSector, data }) => {
   const maxValue = Math.max(
     ...gradeDistribution.map((d) => {
       return d.num;
-    })
+    }),
   );
   const cols = gradeDistribution.map((g, i) => {
     const hPrim = (g.prim / maxValue) * 80 + "%";

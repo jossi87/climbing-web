@@ -21,7 +21,7 @@ const ImageUpload = ({
       setMedia(allMedia);
       onMediaChanged(allMedia);
     },
-    [media, onMediaChanged]
+    [media, onMediaChanged],
   );
   const accept = { "image/jpeg": [".jpeg", ".png"] };
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

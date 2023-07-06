@@ -111,7 +111,7 @@ const Svg = ({
             cx={path[ixAnchor].x}
             cy={path[ixAnchor].y}
             r={0.005 * scale * (thumb ? 4 : 1)}
-          />
+          />,
         );
         anchors.push(
           <circle
@@ -120,7 +120,7 @@ const Svg = ({
             cx={path[ixAnchor].x}
             cy={path[ixAnchor].y}
             r={0.004 * scale * (thumb ? 4 : 1)}
-          />
+          />,
         );
       }
       if (svg.anchors) {
@@ -132,7 +132,7 @@ const Svg = ({
               cx={a.x}
               cy={a.y}
               r={0.005 * scale * (thumb ? 4 : 1)}
-            />
+            />,
           );
           anchors.push(
             <circle
@@ -141,7 +141,7 @@ const Svg = ({
               cx={a.x}
               cy={a.y}
               r={0.004 * scale * (thumb ? 4 : 1)}
-            />
+            />,
           );
         });
       }

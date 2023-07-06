@@ -159,7 +159,7 @@ const Permissions = () => {
                           adminRead,
                           adminWrite,
                           superadminRead,
-                          superadminWrite
+                          superadminWrite,
                         )
                           .then(() => {
                             window.scrollTo(0, 0);

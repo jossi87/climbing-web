@@ -47,7 +47,7 @@ const Trash = () => {
                             t.idArea,
                             t.idSector,
                             t.idProblem,
-                            t.idMedia
+                            t.idMedia,
                           )
                             .then(() => {
                               let url;

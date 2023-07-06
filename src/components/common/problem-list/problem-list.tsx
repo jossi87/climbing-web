@@ -44,7 +44,7 @@ const ProblemList = ({
   const [data, setData] = useState(rows);
   const [hideTicked, setHideTicked] = useLocalStorage(
     "problemList-hideTicked",
-    false
+    false,
   );
   const [onlyFa, setOnlyFa] = useLocalStorage("problemList-onlyFa", false);
   const [uniqueRocks, setUniqueRocks] = useState([]);
@@ -54,7 +54,7 @@ const ProblemList = ({
   const [orderBy, setOrderBy] = useState<any>(null);
   const [sectorCustomOrderBy, setSectorCustomOrderBy] = useLocalStorage(
     "sectorOrderBy",
-    null
+    null,
   );
 
   const orderByOptions = isSectorNotUser
@@ -141,10 +141,10 @@ const ProblemList = ({
             else if (a.numTicks != b.numTicks) return b.numTicks - a.numTicks;
             return a.name.localeCompare(b.name, getLocales());
           }
-        })
+        }),
       );
     },
-    [isSectorNotUser, rows, setSectorCustomOrderBy]
+    [isSectorNotUser, rows, setSectorCustomOrderBy],
   );
 
   useEffect(() => {
@@ -221,7 +221,7 @@ const ProblemList = ({
           (p) =>
             ((rock === "<Without rock>" && !p.rock) || p.rock == rock) &&
             (!containsTicked || !hideTicked || !p.ticked) &&
-            (!containsFa || !onlyFa || p.fa)
+            (!containsFa || !onlyFa || p.fa),
         )
         .map((p) => p.element);
       const label = rock + " (" + rows.length + ")";
@@ -236,7 +236,7 @@ const ProblemList = ({
           (p) =>
             p.subType == subType &&
             (!containsTicked || !hideTicked || !p.ticked) &&
-            (!containsFa || !onlyFa || p.fa)
+            (!containsFa || !onlyFa || p.fa),
         )
         .map((p) => p.element);
       const label = subType + " (" + rows.length + ")";
@@ -249,7 +249,7 @@ const ProblemList = ({
       .filter(
         (p) =>
           (!containsTicked || !hideTicked || !p.ticked) &&
-          (!containsFa || !onlyFa || p.fa)
+          (!containsFa || !onlyFa || p.fa),
       )
       .map((p) => p.element);
     list = (

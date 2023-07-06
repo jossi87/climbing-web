@@ -290,7 +290,7 @@ const Sector = () => {
     const problemsOfType = data.problems.filter(
       (p) =>
         (subType === "Projects" && p.gradeNumber === 0) ||
-        (p.t.subType === subType && p.gradeNumber !== 0)
+        (p.t.subType === subType && p.gradeNumber !== 0),
     );
     const numTicked = problemsOfType.filter((p) => p.ticked).length;
     const txt =

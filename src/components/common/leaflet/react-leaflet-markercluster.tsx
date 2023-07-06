@@ -18,7 +18,7 @@ const MarkerClusterGroup = createPathComponent(
     Object.entries(props).forEach(([propName, prop]) =>
       propName.startsWith("on")
         ? (clusterEvents[propName] = prop)
-        : (clusterProps[propName] = prop)
+        : (clusterProps[propName] = prop),
     );
 
     // Creating markerClusterGroup Leaflet element
@@ -35,7 +35,7 @@ const MarkerClusterGroup = createPathComponent(
       instance: markerClusterGroup,
       context: { ...ctx, layerContainer: markerClusterGroup },
     };
-  }
+  },
 );
 
 export default MarkerClusterGroup;

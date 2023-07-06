@@ -94,7 +94,7 @@ const Frontpage = () => {
                         src={getImageUrl(
                           frontpage.randomMedia.idMedia,
                           frontpage.randomMedia.crc32,
-                          275
+                          275,
                         )}
                       />
                     </Link>

@@ -108,7 +108,7 @@ const Media = ({ numPitches, media, optProblemId }: Props) => {
   function onRotate(degrees) {
     if (
       confirm(
-        "Are you sure you want to rotate this image " + degrees + " degrees?"
+        "Are you sure you want to rotate this image " + degrees + " degrees?",
       )
     ) {
       getAccessTokenSilently().then((accessToken) => {

@@ -49,7 +49,7 @@ const TickModal = ({
   const [grade, setGrade] = useState(initialGrade);
   const [stars, setStars] = useState(initialStars);
   const [date, setDate] = useState(
-    idTick == -1 ? convertFromDateToString(new Date()) : initialDate
+    idTick == -1 ? convertFromDateToString(new Date()) : initialDate,
   );
   const [repeats, setRepeats] = useState(initialRepeats);
   const today = new Date();
@@ -263,7 +263,7 @@ const TickModal = ({
                     date,
                     stars,
                     grade,
-                    repeats
+                    repeats,
                   )
                     .then(() => {
                       onClose();
@@ -296,7 +296,7 @@ const TickModal = ({
                 date,
                 stars,
                 grade,
-                repeats
+                repeats,
               )
                 .then(() => {
                   onClose();

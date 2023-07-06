@@ -57,16 +57,16 @@ const ProblemEdit = () => {
             setSectorMarkers(
               data.problems
                 .filter((p) => p.lat > 0 && p.lng > 0 && p.id != problemId)
-                .map((p) => ({ lat: p.lat, lng: p.lng, label: p.name }))
+                .map((p) => ({ lat: p.lat, lng: p.lng, label: p.name })),
             );
             setSectorRocks(
               data.problems
                 .filter((p) => p.rock)
                 .map((p) => p.rock)
                 .filter((value, index, self) => self.indexOf(value) === index)
-                .sort()
+                .sort(),
             );
-          })
+          }),
         )
         .catch((e) => setError(String(e)));
     }
@@ -216,7 +216,7 @@ const ProblemEdit = () => {
         data.startingAltitude,
         data.aspect,
         data.routeLength,
-        data.descent
+        data.descent,
       )
         .then(async (res) => {
           if (addNew) {
@@ -520,7 +520,7 @@ const ProblemEdit = () => {
                     showYearDropdown
                     dropdownMode="select"
                     selected={convertFromStringToDate(
-                      data.faAid ? data.faAid.date : ""
+                      data.faAid ? data.faAid.date : "",
                     )}
                     onChange={(date) => onFaAidDateChanged(date)}
                   />

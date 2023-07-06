@@ -63,7 +63,7 @@ const SvgEdit = () => {
         setTexts(data.texts);
         setReadOnlySvgs(data.readOnlySvgs);
         setReadOnlyPoints(
-          data.readOnlySvgs?.map((svg) => parsePath(svg.path)).flat()
+          data.readOnlySvgs?.map((svg) => parsePath(svg.path)).flat(),
         );
         setActivePoint(data.activePoint);
         setDraggedPoint(data.draggedPoint);
@@ -113,7 +113,7 @@ const SvgEdit = () => {
       path,
       hasAnchor,
       JSON.stringify(anchors),
-      JSON.stringify(texts)
+      JSON.stringify(texts),
     )
       .then(() => {
         navigate(`/problem/${id}`);
@@ -140,7 +140,7 @@ const SvgEdit = () => {
     let p = { x, y };
     if (convertToNearestPointOnImage) {
       const foundPoint = readOnlyPoints?.find(
-        (p2) => Math.hypot(p.x - p2.x, p.y - p2.y) < 20
+        (p2) => Math.hypot(p.x - p2.x, p.y - p2.y) < 20,
       );
       if (foundPoint) {
         p = { x: foundPoint.x, y: foundPoint.y };
@@ -411,7 +411,7 @@ const SvgEdit = () => {
             r={0.002 * w}
             onMouseDown={() => setCurrDraggedCubic(i, 1)}
           />
-        </g>
+        </g>,
       );
     }
     const fill = activePoint === i ? "#00FF00" : "#FF0000";
@@ -439,7 +439,7 @@ const SvgEdit = () => {
   });
   anchors.map((a, i) => {
     circles.push(
-      <circle key={i} fill="#E2011A" cx={a.x} cy={a.y} r={0.006 * w} />
+      <circle key={i} fill="#E2011A" cx={a.x} cy={a.y} r={0.006 * w} />,
     );
   });
   const myTexts = texts.map((t, i) => (
