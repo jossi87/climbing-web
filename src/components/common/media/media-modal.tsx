@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useLocalStorage } from "../../../utils/use-local-storage";
 import {
   Dimmer,
@@ -117,26 +117,28 @@ const MediaModal = ({
   const canShowSidebar = m.svgs?.length > 1;
   const [prevHover, setPrevHover] = useState(false);
   const [nextHover, setNextHover] = useState(false);
-  let myPlayer;
-  let content;
-  if (m.idType === 1) {
-    if (m.svgs || m.mediaSvgs) {
-      content = (
-        <Image style={style.img}>
-          <Svg
-            thumb={false}
-            style={{}}
-            m={m}
-            close={onClose}
-            optProblemId={optProblemId}
-            showText={!canShowSidebar || !showSidebar}
-            problemIdHovered={problemIdHovered}
-            setPoblemIdHovered={(id) => setProblemIdHovered(id)}
-          />
-        </Image>
-      );
-    } else {
-      content = (
+  const playerRef = useRef<ReactPlayer | null>();
+  const isImage = m?.idType === 1;
+
+  const content = (() => {
+    if (isImage) {
+      if (m.svgs || m.mediaSvgs) {
+        return (
+          <Image style={style.img}>
+            <Svg
+              thumb={false}
+              style={{}}
+              m={m}
+              close={onClose}
+              optProblemId={optProblemId}
+              showText={!canShowSidebar || !showSidebar}
+              problemIdHovered={problemIdHovered}
+              setPoblemIdHovered={(id) => setProblemIdHovered(id)}
+            />
+          </Image>
+        );
+      }
+      return (
         <Image
           style={style.img}
           alt={m.mediaMetadata.alt}
@@ -144,7 +146,6 @@ const MediaModal = ({
         />
       );
     }
-  } else {
     if (m.embedUrl) {
       let style;
       if (m.embedUrl.includes("vimeo")) {
@@ -160,7 +161,7 @@ const MediaModal = ({
           backgroundColor: "transparent",
         };
       }
-      content = (
+      return (
         <Embed
           as={Container}
           style={style}
@@ -169,44 +170,54 @@ const MediaModal = ({
           iframe={{ allowFullScreen: true, style: { padding: 10 } }}
         />
       );
-    } else if (autoPlayVideo) {
-      content = (
+    }
+    if (autoPlayVideo) {
+      return (
         <ReactPlayer
           style={style.video}
-          ref={(player) => (myPlayer = player)}
+          ref={playerRef}
           url={getBuldreinfoMediaUrlSupported(m.id)}
           controls={true}
           playing={true}
-          onDuration={(duration) => myPlayer.seekTo(m.t / duration)}
+          onDuration={(duration) => {
+            const amount = m.t / duration;
+            if (
+              Number.isNaN(amount) ||
+              !Number.isFinite(amount) ||
+              !playerRef.current
+            ) {
+              return;
+            }
+            playerRef.current.seekTo(amount);
+          }}
         />
       );
-    } else {
-      content = (
-        <>
-          <Image
-            style={style.img}
-            alt={m.description}
-            src={getImageUrl(m.id, 360)}
-          />
-          <Button
-            size="massive"
-            color="youtube"
-            circular
-            style={style.play}
-            icon="play"
-            onClick={playVideo}
-          />
-        </>
-      );
     }
-  }
-  const canEdit = isAdmin && m.idType === 1;
-  const canDelete = isAdmin && m.idType === 1;
-  const canRotate = isAdmin && m.idType === 1 && !m.svgs && !m.mediaSvgs;
-  const canDrawTopo = isAdmin && m.idType === 1 && optProblemId;
-  const canDrawMedia = isAdmin && m.idType === 1 && !isBouldering;
-  const canOrder = isAdmin && m.idType === 1 && length > 1;
-  const canMove = isAdmin && m.idType === 1;
+    return (
+      <>
+        <Image
+          style={style.img}
+          alt={m.description}
+          src={getImageUrl(m.id, 360)}
+        />
+        <Button
+          size="massive"
+          color="youtube"
+          circular
+          style={style.play}
+          icon="play"
+          onClick={playVideo}
+        />
+      </>
+    );
+  })();
+  const canEdit = isAdmin && isImage;
+  const canDelete = isAdmin && isImage;
+  const canRotate = isAdmin && isImage && !m.svgs && !m.mediaSvgs;
+  const canDrawTopo = isAdmin && isImage && optProblemId;
+  const canDrawMedia = isAdmin && isImage && !isBouldering;
+  const canOrder = isAdmin && isImage && length > 1;
+  const canMove = isAdmin && isImage;
   return (
     <Dimmer active={true} onClickOutside={onClose} page>
       <Sidebar.Pushable>
