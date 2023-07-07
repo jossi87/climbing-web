@@ -1,31 +1,17 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { Helmet } from "react-helmet";
-import { Link } from "react-router-dom";
-import {
-  Header,
-  List,
-  Segment,
-  Icon,
-  Button,
-  ButtonGroup,
-} from "semantic-ui-react";
-import { Loading, LockSymbol, Stars } from "./common/widgets/widgets";
+import { Header, Segment, Icon, Button, ButtonGroup } from "semantic-ui-react";
+import { Loading } from "./common/widgets/widgets";
 import { useMeta } from "./common/meta";
 import { getProblemsXlsx, useAccessToken, useData } from "../api";
 import { saveAs } from "file-saver";
-
-const JumpToTop = () => (
-  <a onClick={() => window.scrollTo(0, 0)}>
-    <Icon name="arrow alternate circle up outline" color="black" />
-  </a>
-);
+import TableOfContents from "./common/TableOfContents";
 
 const Problems = () => {
   const accessToken = useAccessToken();
   const meta = useMeta();
   const { data } = useData(`/problems`);
   const [isSaving, setIsSaving] = useState(false);
-  const areaRefs = useRef({});
 
   if (!data) {
     return <Loading />;
@@ -46,6 +32,54 @@ const Problems = () => {
   const description = `${numAreas} areas, ${numSectors} sectors, ${numProblems} ${
     meta.isClimbing ? "routes" : "boulders"
   }`;
+
+  const areas = data.map((area) => ({
+    id: area.id,
+    lockedAdmin: area.lockedAdmin,
+    lockedSuperAdmin: area.lockedSuperAdmin,
+    name: area.name,
+    sectors: area.sectors.map((sector) => ({
+      id: sector.id,
+      lockedAdmin: sector.lockedAdmin,
+      lockedSuperAdmin: sector.lockedSuperAdmin,
+      name: sector.name,
+      problems: sector.problems.map((problem) => {
+        const ascents =
+          problem.numTicks > 0 &&
+          problem.numTicks + (problem.numTicks == 1 ? " ascent" : " ascents");
+        let typeAscents;
+        if (meta.isClimbing) {
+          let t = problem.t.subType;
+          if (problem.numPitches > 1)
+            t += ", " + problem.numPitches + " pitches";
+          if (ascents) {
+            typeAscents = " (" + t + ", " + ascents + ") ";
+          } else {
+            typeAscents = " (" + t + ") ";
+          }
+        } else if (!meta.isClimbing) {
+          if (ascents) {
+            typeAscents = " (" + ascents + ") ";
+          } else {
+            typeAscents = " ";
+          }
+        }
+        const text = [problem.fa, typeAscents].filter(Boolean).join(" ");
+        return {
+          id: problem.id,
+          lockedAdmin: problem.lockedAdmin,
+          lockedSuperAdmin: problem.lockedSuperAdmin,
+          name: problem.name,
+          nr: problem.nr,
+          grade: problem.grade,
+          stars: problem.stars,
+          ticked: problem.ticked,
+          text: text,
+          subText: problem.description,
+        };
+      }),
+    })),
+  }));
 
   return (
     <>
@@ -86,108 +120,7 @@ const Problems = () => {
             <Header.Subheader>{description}</Header.Subheader>
           </Header.Content>
         </Header>
-        <List celled link horizontal size="small">
-          {data.map((area) => (
-            <React.Fragment key={area.id}>
-              <List.Item
-                as="a"
-                onClick={() =>
-                  areaRefs.current[area.id].scrollIntoView({ block: "start" })
-                }
-              >
-                {area.name}
-              </List.Item>
-              <LockSymbol
-                lockedAdmin={area.lockedAdmin}
-                lockedSuperadmin={area.lockedSuperadmin}
-              />
-            </React.Fragment>
-          ))}
-        </List>
-        <List celled>
-          {data.map((area) => (
-            <List.Item key={area.id}>
-              <List.Header>
-                <Link
-                  to={`/area/${area.id}`}
-                  ref={(ref) => (areaRefs.current[area.id] = ref)}
-                >
-                  {area.name}
-                </Link>
-                <LockSymbol
-                  lockedAdmin={area.lockedAdmin}
-                  lockedSuperadmin={area.lockedSuperadmin}
-                />{" "}
-                <JumpToTop />
-              </List.Header>
-              {area.sectors.map((sector) => (
-                <List.List key={sector.id}>
-                  <List.Header>
-                    <Link to={`/sector/${sector.id}`}>{sector.name}</Link>
-                    <LockSymbol
-                      lockedAdmin={sector.lockedAdmin}
-                      lockedSuperadmin={sector.lockedSuperadmin}
-                    />
-                  </List.Header>
-                  <List.List>
-                    {sector.problems.map((problem) => {
-                      const ascents =
-                        problem.numTicks > 0 &&
-                        problem.numTicks +
-                          (problem.numTicks == 1 ? " ascent" : " ascents");
-                      let typeAscents;
-                      if (meta.isClimbing) {
-                        let t = problem.t.subType;
-                        if (problem.numPitches > 1)
-                          t += ", " + problem.numPitches + " pitches";
-                        if (ascents) {
-                          typeAscents = " (" + t + ", " + ascents + ") ";
-                        } else {
-                          typeAscents = " (" + t + ") ";
-                        }
-                      } else if (!meta.isClimbing) {
-                        if (ascents) {
-                          typeAscents = " (" + ascents + ") ";
-                        } else {
-                          typeAscents = " ";
-                        }
-                      }
-                      return (
-                        <List.Item key={problem.id}>
-                          <List.Header>
-                            {`#${problem.nr} `}
-                            <Link to={`/problem/${problem.id}`}>
-                              {problem.name}
-                            </Link>{" "}
-                            {problem.grade}{" "}
-                            <Stars
-                              numStars={problem.stars}
-                              includeNoRating={false}
-                            />
-                            {problem.fa && <small>{problem.fa}</small>}
-                            {typeAscents && <small>{typeAscents}</small>}
-                            <small>
-                              <i style={{ color: "gray" }}>
-                                {problem.description}
-                              </i>
-                            </small>
-                            <LockSymbol
-                              lockedAdmin={problem.lockedAdmin}
-                              lockedSuperadmin={problem.lockedSuperadmin}
-                            />
-                            {problem.ticked && (
-                              <Icon color="green" name="check" />
-                            )}
-                          </List.Header>
-                        </List.Item>
-                      );
-                    })}
-                  </List.List>
-                </List.List>
-              ))}
-            </List.Item>
-          ))}
-        </List>
+        <TableOfContents areas={areas} />
       </Segment>
     </>
   );
