@@ -31,6 +31,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { VisibilitySelectorField } from "./common/VisibilitySelector";
+import { useQueryClient } from "@tanstack/react-query";
 
 const useIds = (): { sectorId: number; problemId: number } => {
   const { sectorId, problemId } = useParams();
@@ -38,6 +39,7 @@ const useIds = (): { sectorId: number; problemId: number } => {
 };
 
 const ProblemEdit = () => {
+  const client = useQueryClient();
   const accessToken = useAccessToken();
   const { sectorId, problemId } = useIds();
   const [data, setData] = useState<any>(null);
@@ -190,6 +192,17 @@ const ProblemEdit = () => {
       confirm("Are you sure you want to move problem/route to trash?")
     ) {
       setSaving(true);
+
+      // If the item is being moved to the trash, remove the query so that the
+      // mutation doesn't trigger an immediate fetch of the now-deleted item.
+      // This is handled fine by the client, but it's extra chatter for the
+      // service that we can easily avoid.
+      if (data.trash) {
+        client.removeQueries({
+          queryKey: [`/problem`, { id: data.id }],
+        });
+      }
+
       postProblem(
         accessToken,
         data.sectorId,
