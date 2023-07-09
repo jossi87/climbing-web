@@ -40,7 +40,7 @@ function makeAuthenticatedRequest(
   const { consistencyAction, ...opts } = extraOptions || {};
   const options = {
     ...opts,
-    mode: "cors",
+    mode: "cors" as const,
     headers: {
       ...opts?.headers,
       Authorization: accessToken ? `Bearer ${accessToken}` : undefined,
@@ -99,7 +99,7 @@ function usePostData<TData = any>(
         ? await getAccessTokenSilently()
         : null;
 
-      return makeAuthenticatedRequest(accessToken, urlSuffix, {
+      const res = await makeAuthenticatedRequest(accessToken, urlSuffix, {
         method: "POST",
         body: JSON.stringify(data),
         headers: {
@@ -108,6 +108,7 @@ function usePostData<TData = any>(
         },
         ...fetchOptions,
       });
+      return res.json();
     },
     ...options,
   });
@@ -233,6 +234,8 @@ export function getProblemPdfUrl(
 
 export function getProblemsXlsx(accessToken: string | null): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/problems/xlsx`, {
+    // @ts-expect-error - I don't think that this is necessary, but I'm going
+    //                    to investigate this later.
     expose: ["Content-Disposition"],
   }).catch((error) => {
     console.warn(error);
@@ -841,6 +844,8 @@ export function getUserSearch(
 
 export function getUsersTicks(accessToken: string | null): Promise<any> {
   return makeAuthenticatedRequest(accessToken, `/users/ticks`, {
+    // @ts-expect-error - I don't think that this is necessary, but I'm going
+    //                    to investigate this later.
     expose: ["Content-Disposition"],
   }).catch((error) => {
     console.warn(error);
@@ -1081,11 +1086,11 @@ export function postProblem(
       Accept: "application/json",
     },
   })
+    .then((data) => data.json())
     .catch((error) => {
       console.warn(error);
       alert(error);
-    })
-    .then((data) => data.json());
+    });
 }
 
 export function postProblemMedia(
@@ -1120,11 +1125,11 @@ export function postProblemMedia(
       Accept: "application/json",
     },
   })
+    .then((data) => data.json())
     .catch((error) => {
       console.warn(error);
       alert(error);
-    })
-    .then((data) => data.json());
+    });
 }
 
 export function postSearch(
@@ -1236,11 +1241,11 @@ export function postSector(
       Accept: "application/json",
     },
   })
+    .then((data) => data.json())
     .catch((error) => {
       console.warn(error);
       alert(error);
-    })
-    .then((data) => data.json());
+    });
 }
 
 export function postTicks(
