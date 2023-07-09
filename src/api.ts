@@ -1,5 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import {
+  MutationFunction,
   UseMutationOptions,
   UseQueryOptions,
   useMutation,
@@ -69,90 +70,94 @@ export function useAccessToken() {
   return accessToken;
 }
 
-function usePostData<TData = any>(
+function useKey(
+  customKey: readonly unknown[] | undefined,
+  urlSuffix: string,
+): readonly unknown[] {
+  const { isAuthenticated } = useAuth0();
+  const key = customKey ?? [urlSuffix, { isAuthenticated }];
+  if (Array.isArray(key) && key[1] && typeof key[1] === "object") {
+    // Spread them in this order so that callers can choose to ignore the
+    // isAuthenticated variable if they choose to.
+    key[1] = {
+      isAuthenticated,
+      ...key[1],
+    };
+  }
+  return key;
+}
+
+function usePostData<TVariables, TData = Response>(
   urlSuffix: string,
   {
     fetchOptions,
+    createUrl = () => urlSuffix,
+    select = (resp) => resp as TData,
     ...options
-  }: Partial<UseMutationOptions<TData>> & {
-    fetchOptions?: FetchOptions;
-  } = {},
+  }: Partial<
+    UseMutationOptions<TData, unknown, TVariables> & {
+      fetchOptions: FetchOptions;
+      createUrl: (variables: TVariables) => string;
+      select: (response: Response, variables: TVariables) => TData;
+    }
+  > = {},
 ) {
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const mutationKey = options.mutationKey ?? [urlSuffix, { isAuthenticated }];
-  if (
-    Array.isArray(mutationKey) &&
-    mutationKey[1] &&
-    typeof mutationKey[1] === "object"
-  ) {
-    // Spread them in this order so that callers can choose to ignore the
-    // isAuthenticated variable if they choose to.
-    mutationKey[1] = {
-      isAuthenticated,
-      ...mutationKey[1],
-    };
-  }
-  return useMutation<TData>({
-    mutationKey,
-    mutationFn: async (data) => {
-      const accessToken = isAuthenticated
-        ? await getAccessTokenSilently()
-        : null;
+  const mutationKey = useKey(options.mutationKey, urlSuffix);
 
-      const res = await makeAuthenticatedRequest(accessToken, urlSuffix, {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json",
-          ...fetchOptions?.headers,
-        },
-        ...fetchOptions,
-      });
-      return res.json();
-    },
+  const mutationFn: MutationFunction<TData, TVariables> = async (variables) => {
+    const accessToken = isAuthenticated ? await getAccessTokenSilently() : null;
+
+    const url = createUrl(variables);
+
+    const res = await makeAuthenticatedRequest(accessToken, url, {
+      method: "POST",
+      body: JSON.stringify(variables),
+      headers: {
+        "Content-Type": "application/json",
+        ...fetchOptions?.headers,
+      },
+      ...fetchOptions,
+    });
+
+    return select(res, variables);
+  };
+
+  return useMutation<TData, unknown, TVariables>(mutationKey, mutationFn, {
     ...options,
   });
 }
 
-export function useData<T = any>(
+export function useData<TQueryData = any, TData = TQueryData>(
   urlSuffix: string,
   {
-    transform = (res) => res.json() as Promise<T>,
+    queryKey: customQueryKey,
     ...options
-  }: Partial<UseQueryOptions> & {
-    transform?: (response: Awaited<ReturnType<typeof fetch>>) => Promise<T>;
-  } = {},
+  }: Partial<
+    Omit<
+      UseQueryOptions,
+      | "queryFn"
+      | "select"
+      | "placeholderData"
+      | "initialData"
+      | "structuralSharing"
+    > & {
+      select: (queryData: TQueryData) => TData;
+      placeholderData: TQueryData | (() => TQueryData);
+      initialData: TQueryData | (() => TQueryData);
+    }
+  > = {},
 ) {
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const queryKey = options.queryKey ?? [urlSuffix, { isAuthenticated }];
-  if (
-    Array.isArray(queryKey) &&
-    queryKey[1] &&
-    typeof queryKey[1] === "object"
-  ) {
-    // Spread them in this order so that callers can choose to ignore the
-    // isAuthenticated variable if they choose to.
-    queryKey[1] = {
-      isAuthenticated,
-      ...queryKey[1],
-    };
-  }
+  const queryKey = useKey(customQueryKey, urlSuffix);
 
-  return useQuery<
-    any, // TQueryFnData
-    unknown, // TError
-    any // TData -- this should be T, but that creates a weird TS error.
-  >({
-    queryKey,
-    queryFn: async () => {
-      const accessToken = isAuthenticated
-        ? await getAccessTokenSilently()
-        : null;
-      const res = await makeAuthenticatedRequest(accessToken, urlSuffix);
-      return transform(res);
-    },
-    ...options,
-  });
+  const queryFn: () => Promise<TQueryData> = async (): Promise<TQueryData> => {
+    const accessToken = isAuthenticated ? await getAccessTokenSilently() : null;
+    const res = await makeAuthenticatedRequest(accessToken, urlSuffix);
+    return res.json();
+  };
+
+  return useQuery<TQueryData, unknown, TData>(queryKey, queryFn, options);
 }
 
 export function getImageUrl(
@@ -443,7 +448,7 @@ export function useProblem(id: number, showHiddenMedia: boolean) {
   );
 
   const { data: profile } = useProfile(-1);
-  const toggleTodo = usePostData<any>(`/todo?idProblem=${id}`, {
+  const toggleTodo = usePostData(`/todo?idProblem=${id}`, {
     mutationKey: [`/todo`, { id }],
     onSuccess: () => {
       problem.refetch();
@@ -618,7 +623,7 @@ export function useSector(
   id: number | undefined,
   options?: Parameters<typeof useData>[1],
 ) {
-  return useData(`/sectors?id=${id}`, {
+  return useData<any>(`/sectors?id=${id}`, {
     ...(options ?? {}),
     queryKey: [`/sectors`, { id }],
   });
@@ -1321,18 +1326,34 @@ export function putMediaJpegRotate(
   );
 }
 
-export function putTrash(
-  accessToken: string | null,
-  idArea: number,
-  idSector: number,
-  idProblem: number,
-  idMedia: number,
-): Promise<any> {
-  return makeAuthenticatedRequest(
-    accessToken,
-    `/trash?idArea=${idArea}&idSector=${idSector}&idProblem=${idProblem}&idMedia=${idMedia}`,
-    {
+export function useTrash() {
+  const { data } = useData<Trash[]>(`/trash`, { select: (v) => v });
+
+  const restore = usePostData<Trash, string>(`/trash`, {
+    fetchOptions: {
       method: "PUT",
+      body: undefined,
     },
-  );
+    createUrl: ({ idArea, idProblem, idSector, idMedia }) =>
+      `/trash?idArea=${idArea}&idSector=${idSector}&idProblem=${idProblem}&idMedia=${idMedia}`,
+    select(_response, { idArea, idSector, idProblem, idMedia }) {
+      let url = `/`;
+      if (idArea) {
+        url = `/area/${idArea}`;
+      } else if (idSector) {
+        url = `/sector/${idSector}`;
+      } else if (idProblem) {
+        url = `/problem/${idProblem}`;
+      }
+      if (idMedia) {
+        url += `?idMedia=${idMedia}`;
+      }
+      return url;
+    },
+  });
+
+  return {
+    data,
+    restore: restore.mutateAsync,
+  };
 }

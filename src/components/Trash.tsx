@@ -1,13 +1,36 @@
 import { Helmet } from "react-helmet";
 import { Loading } from "./common/widgets/widgets";
-import { getImageUrl, useData, putTrash, useAccessToken } from "../api";
+import { getImageUrl, useTrash } from "../api";
 import { Segment, Icon, Header, List, Button, Image } from "semantic-ui-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
+
+const getKey = ({ idArea, idSector, idProblem, idMedia }: Trash) => {
+  return [idArea, idSector, idProblem, idMedia].join("/");
+};
+
+const getLabel = ({ idMedia, idArea, idSector, idProblem }: Trash): string => {
+  if (idMedia) {
+    return "Media";
+  }
+
+  if (idArea) {
+    return "Area";
+  }
+
+  if (idSector) {
+    return "Sector";
+  }
+
+  if (idProblem) {
+    return "Problem";
+  }
+
+  return "";
+};
 
 const Trash = () => {
-  const accessToken = useAccessToken();
-  const { data } = useData(`/trash`);
   const navigate = useNavigate();
+  const { data, restore } = useTrash();
 
   if (!data) {
     return <Loading />;
@@ -26,60 +49,35 @@ const Trash = () => {
             <Header.Subheader>{data.length} items</Header.Subheader>
           </Header.Content>
         </Header>
-        {data.length == 0 ? (
+        {!data.length ? (
           <i>No data</i>
         ) : (
           <List divided verticalAlign="middle">
-            {data.map((t, key) => {
-              let label = null;
-              if (t.idMedia > 0) label = "Media";
-              else if (t.idArea > 0) label = "Area";
-              else if (t.idSector > 0) label = "Sector";
-              else if (t.idProblem > 0) label = "Problem";
+            {data.map((t) => {
+              const key = getKey(t);
+
               return (
                 <List.Item key={key}>
                   <List.Content floated="right">
                     <Button
                       onClick={() => {
                         if (confirm("Are you sure you want to restore item?")) {
-                          putTrash(
-                            accessToken,
-                            t.idArea,
-                            t.idSector,
-                            t.idProblem,
-                            t.idMedia,
-                          )
-                            .then(() => {
-                              let url;
-                              if (t.idArea > 0) {
-                                url = "/area/" + t.idArea;
-                              } else if (t.idSector > 0) {
-                                url = "/sector/" + t.idSector;
-                              } else if (t.idProblem > 0) {
-                                url = "/problem/" + t.idProblem;
-                              }
-                              if (t.idMedia > 0) {
-                                navigate(url + "?idMedia=" + t.idMedia);
-                              } else {
-                                navigate(url);
-                              }
-                            })
-                            .catch((error) => {
-                              console.warn(error);
-                            });
+                          restore(t).then((url) => {
+                            navigate(url);
+                          });
                         }
                       }}
                     >
                       Restore
                     </Button>
                   </List.Content>
-                  {t.idMedia > 0 && (
+                  {!!t.idMedia && (
                     <Image
                       alt={t.name}
                       key={t.idMedia}
                       src={getImageUrl(t.idMedia, null, 50)}
-                      onError={(i) =>
-                        (i.target.src = "/png/video_placeholder.png")
+                      onError={(e) =>
+                        (e.target.src = "/png/video_placeholder.png")
                       }
                       rounded
                     />
@@ -87,7 +85,7 @@ const Trash = () => {
                   <List.Content>
                     <List.Header>{t.name}</List.Header>
                     <List.Description>
-                      {label + " deleted by " + t.by + " (" + t.when + ")"}
+                      {`${getLabel(t)} deleted by ${t.by} (${t.when})`}
                     </List.Description>
                   </List.Content>
                 </List.Item>

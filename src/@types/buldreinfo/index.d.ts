@@ -91,3 +91,14 @@ type ProfileStatistics = {
   orderByGrade: boolean;
   ticks: Tick[];
 };
+
+type Trash = {
+  idMedia: number;
+  name: string;
+  when: string;
+  by: string;
+} & (
+  | { idArea: number; idSector: 0; idProblem: 0 }
+  | { idArea: 0; idSector: number; idProblem: 0 }
+  | { idArea: 0; idSector: 0; idProblem: number }
+);
