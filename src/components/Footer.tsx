@@ -274,6 +274,7 @@ function Footer() {
                   src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png"
                 />
               </a>
+              <br />
               <a
                 href={"https://www.facebook.com/groups/brattelinjer"}
                 rel="noreferrer noopener"
