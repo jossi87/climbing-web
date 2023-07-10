@@ -3,7 +3,6 @@ import {
   Segment,
   List,
   Grid,
-  Header,
   Container,
   Divider,
   Button,
