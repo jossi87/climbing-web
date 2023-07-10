@@ -7,20 +7,49 @@ import { useMeta } from "../common/meta";
 import "./Navigation.css";
 
 export const Navigation = () => {
-  const { isAdmin, isSuperAdmin, isAuthenticated, isBouldering } = useMeta();
-
+  const { isAdmin, isSuperAdmin, isAuthenticated, isBouldering, sites } = useMeta();
   const { isLoading, loginWithRedirect, logout } = useAuth0();
+  const siteOptions = sites.map((s, i) => (
+    {
+      key: i,
+      text: s.shortName,
+      value: s.shortName,
+      content: s.shortName,
+      active: s.active
+    }
+  ));
+  if (siteOptions?.length<2) {
+    return null;
+  }
 
   return (
     <Menu attached="top" inverted compact borderless>
       <Container className="nav-container">
         <div
-          style={{ display: "flex", flexDirection: "row", flex: 1 }}
+          style={{ display: "flex", flexDirection: "row", flex: 1, paddingRight: "20px" }}
           className="row-1"
         >
           <Menu.Item header as={Link} to="/">
             <Image size="mini" src="/png/buldreinfo.png" alt="Logo" />
           </Menu.Item>
+          <Dropdown
+            item
+            simple
+            labeled
+            trigger={
+              <>
+                <Icon name="world" />
+                <span>{sites.filter(s => s.active).map(s => s.shortName)[0]}</span>
+              </>
+            }
+            icon={null}
+          >
+            <Dropdown.Menu>
+              {sites.map((s, i) => (
+                <Dropdown.Item active={s.active} key={i} as={Link} to={s.url}>{s.shortName}</Dropdown.Item>
+              ))}
+            </Dropdown.Menu>
+          </Dropdown>
           <Menu.Item as={SearchBox} style={{ flex: 1 }} />
         </div>
         <Menu.Item as={Link} to="/areas">

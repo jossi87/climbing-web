@@ -13,6 +13,12 @@ type Type = {
   subType: string;
 };
 
+type Site = {
+  shortName: string;
+  url: string;
+  active: boolean;
+}
+
 type Metadata = {
   isAuthenticated: boolean;
   isAdmin: boolean;
@@ -25,6 +31,7 @@ type Metadata = {
   isClimbing: boolean;
   isIce: boolean;
   types: Type[];
+  sites: Site[];
 };
 
 const DEFAULT_VALUE: Metadata = {
@@ -42,6 +49,7 @@ const DEFAULT_VALUE: Metadata = {
   isClimbing: true,
   isIce: false,
   types: [],
+  sites: [],
 };
 
 export const MetaContext = createContext<Metadata | undefined>(undefined);

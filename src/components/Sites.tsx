@@ -78,7 +78,7 @@ const Sites = () => {
       </Helmet>
       <Segment>
         <Header as="h2">
-          <Icon name="sitemap" />
+          <Icon name="world" />
           <Header.Content>
             Sites
             <Header.Subheader>{description}</Header.Subheader>
