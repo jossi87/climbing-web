@@ -446,7 +446,6 @@ export function useProblem(id: number, showHiddenMedia: boolean) {
     `/problem?id=${id}&showHiddenMedia=${showHiddenMedia}`,
     { queryKey: [`/problem`, { id, showHiddenMedia }] },
   );
-
   const { data: profile } = useProfile(-1);
   const toggleTodo = usePostData(`/todo?idProblem=${id}`, {
     mutationKey: [`/todo`, { id }],
@@ -590,8 +589,10 @@ export function getProblemEdit(
 }
 
 export function useProfile(userId: number) {
+  const { isAuthenticated } = useAuth0();
   return useData<Profile>(`/profile?id=${userId}`, {
     queryKey: [`/profile`, { id: userId }],
+    enabled: userId > 0 || isAuthenticated,
   });
 }
 
