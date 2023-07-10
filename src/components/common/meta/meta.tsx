@@ -14,10 +14,12 @@ type Type = {
 };
 
 type Site = {
-  shortName: string;
+  group: string;
+  name: string;
   url: string;
+  polygonCoords: string;
   active: boolean;
-}
+};
 
 type Metadata = {
   isAuthenticated: boolean;

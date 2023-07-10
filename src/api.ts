@@ -707,18 +707,6 @@ export function getSectorEdit(
   }
 }
 
-export function getSites(
-  accessToken: string | null,
-  type: string,
-): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/sites?type=${type}`)
-    .then((data) => data.json())
-    .catch((error) => {
-      console.warn(error);
-      return null;
-    });
-}
-
 export function getSvgEdit(
   accessToken: string | null,
   problemId: number,

@@ -7,49 +7,71 @@ import { useMeta } from "../common/meta";
 import "./Navigation.css";
 
 export const Navigation = () => {
-  const { isAdmin, isSuperAdmin, isAuthenticated, isBouldering, sites } = useMeta();
+  const { isAdmin, isSuperAdmin, isAuthenticated, isBouldering, sites } =
+    useMeta();
   const { isLoading, loginWithRedirect, logout } = useAuth0();
-  const siteOptions = sites.map((s, i) => (
-    {
-      key: i,
-      text: s.shortName,
-      value: s.shortName,
-      content: s.shortName,
-      active: s.active
-    }
-  ));
-  if (siteOptions?.length<2) {
-    return null;
-  }
+  const activeSite = sites?.filter((s) => s.active)[0];
 
   return (
     <Menu attached="top" inverted compact borderless>
       <Container className="nav-container">
         <div
-          style={{ display: "flex", flexDirection: "row", flex: 1, paddingRight: "20px" }}
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            flex: 1,
+            paddingRight: "20px",
+          }}
           className="row-1"
         >
           <Menu.Item header as={Link} to="/">
             <Image size="mini" src="/png/buldreinfo.png" alt="Logo" />
           </Menu.Item>
-          <Dropdown
-            item
-            simple
-            labeled
-            trigger={
-              <>
-                <Icon name="world" />
-                <span>{sites.filter(s => s.active).map(s => s.shortName)[0]}</span>
-              </>
-            }
-            icon={null}
-          >
-            <Dropdown.Menu>
-              {sites.map((s, i) => (
-                <Dropdown.Item active={s.active} key={i} as={Link} to={s.url}>{s.shortName}</Dropdown.Item>
-              ))}
-            </Dropdown.Menu>
-          </Dropdown>
+          {activeSite && (
+            <Dropdown
+              item
+              simple
+              labeled
+              trigger={
+                <>
+                  <Icon name="world" />
+                  <span>{activeSite.name}</span>
+                </>
+              }
+              icon={null}
+            >
+              <Dropdown.Menu>
+                <Dropdown.Header>{activeSite.group}</Dropdown.Header>
+                {sites
+                  .filter((s) => s.group === activeSite.group)
+                  .map((s, i) => (
+                    <Dropdown.Item
+                      active={s.active}
+                      key={i}
+                      as={Link}
+                      to={s.url}
+                    >
+                      {s.name}
+                    </Dropdown.Item>
+                  ))}
+                <Dropdown.Divider />
+                <Dropdown.Header>Others</Dropdown.Header>
+                {sites
+                  .filter((g) => g.group !== activeSite.group)
+                  .map((g) => g.group)
+                  .filter((x, i, a) => a.indexOf(x) == i)
+                  .map((g, i) => (
+                    <Dropdown.Item
+                      key={i}
+                      as={Link}
+                      to={"/sites/" + g.toLowerCase()}
+                    >
+                      {g}
+                    </Dropdown.Item>
+                  ))}
+              </Dropdown.Menu>
+            </Dropdown>
+          )}
           <Menu.Item as={SearchBox} style={{ flex: 1 }} />
         </div>
         <Menu.Item as={Link} to="/areas">
