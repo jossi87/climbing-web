@@ -40,6 +40,26 @@ const AreaEdit = () => {
     setData((prevState) => ({ ...prevState, name: value }));
   }
 
+  function onLatChanged(e, { value }) {
+    let latStr = value.replace(",", ".");
+    let lat = parseFloat(latStr);
+    if (isNaN(lat)) {
+      lat = 0;
+      latStr = "";
+    }
+    setData((prevState) => ({ ...prevState, lat, latStr }));
+  }
+
+  function onLngChanged(e, { value }) {
+    let lngStr = value.replace(",", ".");
+    let lng = parseFloat(lngStr);
+    if (isNaN(lng)) {
+      lng = 0;
+      lngStr = "";
+    }
+    setData((prevState) => ({ ...prevState, lng, lngStr }));
+  }
+
   function onLockedChanged({ lockedAdmin, lockedSuperadmin }) {
     setData((prevState) => ({
       ...prevState,
@@ -95,11 +115,13 @@ const AreaEdit = () => {
     }
   }
 
-  function onMarkerClick(event) {
+  function onMapClick(event) {
     setData((prevState) => ({
       ...prevState,
       lat: event.latlng.lat,
       lng: event.latlng.lng,
+      latStr: event.latlng.lat,
+      lngStr: event.latlng.lng,
     }));
   }
 
@@ -280,7 +302,7 @@ const AreaEdit = () => {
               }
               defaultCenter={defaultCenter}
               defaultZoom={defaultZoom}
-              onMouseClick={onMarkerClick}
+              onMouseClick={onMapClick}
               onMouseMove={null}
               polylines={null}
               outlines={null}
@@ -291,6 +313,24 @@ const AreaEdit = () => {
               flyToId={null}
             />
           </Form.Field>
+          <Form.Group widths="equal">
+            <Form.Field>
+              <label>Latitude</label>
+              <Input
+                placeholder="Latitude"
+                value={data.latStr}
+                onChange={onLatChanged}
+              />
+            </Form.Field>
+            <Form.Field>
+              <label>Longitude</label>
+              <Input
+                placeholder="Longitude"
+                value={data.lngStr}
+                onChange={onLngChanged}
+              />
+            </Form.Field>
+          </Form.Group>
         </Segment>
 
         {orderForm && (

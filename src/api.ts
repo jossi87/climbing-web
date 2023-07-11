@@ -366,6 +366,8 @@ export function getAreaEdit(
       comment: "",
       lat: 0,
       lng: 0,
+      latStr: "",
+      lngStr: "",
       newMedia: [],
     });
   } else {
@@ -384,6 +386,8 @@ export function getAreaEdit(
           comment: res[0].comment,
           lat: res[0].lat,
           lng: res[0].lng,
+          latStr: res[0].lat,
+          lngStr: res[0].lng,
           newMedia: [],
           sectorOrder: res[0].sectorOrder,
         };
