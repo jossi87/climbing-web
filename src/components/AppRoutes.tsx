@@ -38,10 +38,6 @@ const Frontpage = lazy(
     ),
   "frontpage",
 );
-const Filter = lazy(
-  () => import(/* webpackChunkName: "filter" */ "./Filter"),
-  "filter",
-);
 const Graph = lazy(
   () => import(/* webpackChunkName: "graph" */ "./Graph"),
   "graph",
@@ -139,7 +135,7 @@ function AppRoutes() {
           <Route path="/areas" element={<Areas />} />
           <Route path="/dangerous" element={<Dangerous />} />
           <Route path="/donations" element={<Donations />} />
-          <Route path="/filter" element={<Filter />} />
+          <Route path="/filter" element={<Problems filterOpen />} />
           <Route path="/graph" element={<Graph />} />
           <Route
             path="/media/svg-edit/:mediaId"

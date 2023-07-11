@@ -114,3 +114,59 @@ type SearchResult = {
   lockedadmin: boolean;
   lockedsuperadmin: boolean;
 };
+
+type FilterResult = {
+  areaLockedAdmin: boolean;
+  areaLockedSuperadmin: boolean;
+  areaName: string;
+  sectorLockedAdmin: boolean;
+  sectorLockedSuperadmin: boolean;
+  sectorName: string;
+  problemId: number;
+  lockedAdmin: boolean;
+  lockedSuperadmin: boolean;
+  problemName: string;
+  latitude: number;
+  longitude: number;
+  stars: number;
+  grade: string;
+  ticked: boolean;
+  ticks: number;
+  randomMediaId: number;
+  randomMediaCrc32: number;
+};
+
+type ProblemArea_Problem = {
+  id: int;
+  url: string;
+  lockedAdmin: boolean;
+  lockedSuperadmin: boolean;
+  nr: int;
+  name: string;
+  description: string;
+  grade: string;
+  fa: string;
+  numTicks: int;
+  stars: double;
+  ticked: boolean;
+  t: Type;
+  numPitches: int;
+};
+
+type ProblemArea_Sector = {
+  id: int;
+  url: string;
+  name: string;
+  lockedAdmin: boolean;
+  lockedSuperadmin: boolean;
+  problems: ProblemArea_Problem[];
+};
+
+type ProblemArea = {
+  id: number;
+  url: string;
+  name: string;
+  lockedAdmin: boolean;
+  lockedSuperadmin: boolean;
+  sectors: ProblemArea_Sector[];
+};
