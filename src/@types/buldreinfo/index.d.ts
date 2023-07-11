@@ -102,3 +102,15 @@ type Trash = {
   | { idArea: 0; idSector: number; idProblem: 0 }
   | { idArea: 0; idSector: 0; idProblem: number }
 );
+
+type SearchResult = {
+  url?: string;
+  externalurl?: string;
+  mediaid?: string;
+  mediaurl?: string;
+  crc32: string;
+  title: string;
+  description: string;
+  lockedadmin: boolean;
+  lockedsuperadmin: boolean;
+};
