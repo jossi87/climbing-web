@@ -14,7 +14,9 @@ async function start() {
   const leaflet = JSON.parse(atob(args[1]));
   const browser = await puppeteer.launch({
     headless: "new",
-  });
+    executablePath:
+      "/var/lib/jenkins/.cache/puppeteer/chrome/linux-1108766/chrome-linux/chrome",
+  }); // TODO Fix this, now referencing directly to chrome path with version...
   const page = await browser.newPage();
   await page.setViewport({
     width: 1280,
