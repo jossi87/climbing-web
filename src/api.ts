@@ -98,7 +98,10 @@ function usePostData<TVariables, TData = Response>(
     UseMutationOptions<TData, unknown, TVariables> & {
       fetchOptions: FetchOptions;
       createUrl: (variables: TVariables) => string;
-      select: (response: Response, variables: TVariables) => TData;
+      select: (
+        response: Response,
+        variables: TVariables,
+      ) => TData | Promise<TData>;
     }
   > = {},
 ) {
@@ -1152,6 +1155,22 @@ export function postProblemMedia(
       console.warn(error);
       alert(error);
     });
+}
+
+export function useSearch() {
+  const { mutateAsync, data, ...rest } = usePostData<
+    { value: string },
+    SearchResult[]
+  >(`/search`, {
+    select(response) {
+      return response.json();
+    },
+    fetchOptions: {
+      consistencyAction: "nop",
+    },
+  });
+
+  return { search: mutateAsync, ...rest, data: data ?? [] };
 }
 
 export function postSearch(

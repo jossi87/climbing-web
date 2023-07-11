@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Search, Image, Icon } from "semantic-ui-react";
-import { getImageUrl, postSearch } from "./../../../api";
+import { getImageUrl, useSearch } from "./../../../api";
 import { LockSymbol } from "../widgets/widgets";
 import { useNavigate } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
 
 type SearchBoxProps = Omit<
   React.ComponentProps<typeof Search>,
@@ -17,61 +16,25 @@ type SearchBoxProps = Omit<
   | "value"
 >;
 
-type SearchResult = {
-  url?: string;
-  externalurl?: string;
-  mediaid?: string;
-  mediaurl?: string;
-  crc32: string;
-  title: string;
-  description: string;
-  lockedadmin: boolean;
-  lockedsuperadmin: boolean;
-};
-
 const SearchBox = (searchProps: SearchBoxProps) => {
-  const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const [value, setValue] = useState<string>();
-  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    let canceled = false;
-    const update = async () => {
-      if (!value || !value.trim()) {
-        setLoading(false);
-        return;
-      }
-      setLoading(true);
-      const accessToken = isAuthenticated
-        ? await getAccessTokenSilently()
-        : null;
-      postSearch(accessToken, value ?? "").then((res) => {
-        if (!canceled) {
-          setResults(res);
-          setLoading(false);
-        }
-      });
-    };
-    update();
-    return () => {
-      canceled = true;
-    };
-  }, [getAccessTokenSilently, isAuthenticated, value]);
+  const { search, isLoading, data } = useSearch();
 
   return (
     <Search
       id="mySearch"
-      loading={loading}
+      loading={isLoading}
       onResultSelect={(e, { result }) =>
         result.externalurl
           ? window.open(result.externalurl, "_blank")
           : navigate(result.url)
       }
       onSearchChange={(e, { value }) => {
-        setValue(value);
+        if (value.trim().length > 0) {
+          search({ value });
+        }
       }}
+      placeholder="Search"
       resultRenderer={(data) => {
         const {
           mediaid,
@@ -136,7 +99,7 @@ const SearchBox = (searchProps: SearchBoxProps) => {
         );
       }}
       minCharacters={1}
-      results={results.map((s) => ({
+      results={data.map((s) => ({
         key: s.url || s.externalurl,
         url: s.url,
         externalurl: s.externalurl,
@@ -148,7 +111,6 @@ const SearchBox = (searchProps: SearchBoxProps) => {
         lockedadmin: String(s.lockedadmin),
         lockedsuperadmin: String(s.lockedsuperadmin),
       }))}
-      value={value}
       {...searchProps}
     />
   );
