@@ -369,6 +369,8 @@ export function getAreaEdit(
       latStr: "",
       lngStr: "",
       newMedia: [],
+      polygons: null,
+      polylines: null,
     });
   } else {
     return makeAuthenticatedRequest(accessToken, `/areas?id=${id}`)
@@ -390,6 +392,28 @@ export function getAreaEdit(
           lngStr: res[0].lng,
           newMedia: [],
           sectorOrder: res[0].sectorOrder,
+          polygons: res[0].sectors
+            ?.filter((s) => s.polygonCoords)
+            .map((s) => ({
+              polygon: s.polygonCoords
+                .split(";")
+                .filter((i) => i)
+                .map((c) => {
+                  const latLng = c.split(",");
+                  return [parseFloat(latLng[0]), parseFloat(latLng[1])];
+                }),
+              background: true,
+              label: s.name,
+            })),
+          polylines: res[0].sectors
+            ?.filter((s) => s.polyline)
+            .map((s) => ({
+              polyline: s.polyline
+                .split(";")
+                .filter((i) => i)
+                .map((e) => e.split(",").map(Number)),
+              background: true,
+            })),
         };
       })
       .catch((error) => {

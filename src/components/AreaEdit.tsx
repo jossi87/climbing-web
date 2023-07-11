@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ComponentProps } from "react";
 import { Helmet } from "react-helmet";
 import ImageUpload from "./common/image-upload/image-upload";
 import Leaflet from "./common/leaflet/leaflet";
@@ -144,7 +144,7 @@ const AreaEdit = () => {
           sectorOrder[i].origSorting &&
           sectorOrder[i].origSorting != sectorOrder[i].sorting
             ? "orange"
-            : "gray";
+            : "grey";
         return (
           <Input
             key={s.id}
@@ -304,8 +304,8 @@ const AreaEdit = () => {
               defaultZoom={defaultZoom}
               onMouseClick={onMapClick}
               onMouseMove={null}
-              polylines={null}
-              outlines={null}
+              outlines={data.polygons}
+              polylines={data.polylines}
               height={"300px"}
               showSateliteImage={false}
               clusterMarkers={false}
