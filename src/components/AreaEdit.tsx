@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ComponentProps } from "react";
+import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import ImageUpload from "./common/image-upload/image-upload";
 import Leaflet from "./common/leaflet/leaflet";
