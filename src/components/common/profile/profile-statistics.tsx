@@ -4,7 +4,15 @@ import Chart from "../chart/chart";
 import ProblemList from "../problem-list/problem-list";
 import Leaflet from "../../common/leaflet/leaflet";
 import { Loading, LockSymbol, Stars } from "../widgets/widgets";
-import { Icon, List, Label, Divider, Button, Tab } from "semantic-ui-react";
+import {
+  Icon,
+  List,
+  Label,
+  Divider,
+  Button,
+  Tab,
+  Message,
+} from "semantic-ui-react";
 import {
   numberWithCommas,
   getUsersTicks,
@@ -12,6 +20,8 @@ import {
   useProfileStatistics,
 } from "../../../api";
 import { saveAs } from "file-saver";
+import { useMeta } from "../meta";
+import * as Sentry from "@sentry/react";
 
 type TickListItemProps = {
   tick: Tick;
@@ -67,22 +77,29 @@ const TickListItem = ({ tick }: TickListItemProps) => (
 type ProfileStatisticsProps = {
   userId: number;
   canDownload: boolean;
-  defaultCenter: { lat: number; lng: number };
-  defaultZoom: number;
 };
 
-const ProfileStatistics = ({
-  userId,
-  canDownload,
-  defaultCenter,
-  defaultZoom,
-}: ProfileStatisticsProps) => {
+const ProfileStatistics = ({ userId, canDownload }: ProfileStatisticsProps) => {
+  const { defaultCenter, defaultZoom } = useMeta();
   const accessToken = useAccessToken();
-  const { data, isLoading } = useProfileStatistics(userId);
+  const { data, isLoading, error } = useProfileStatistics(userId);
   const [isSaving, setIsSaving] = useState(false);
 
   if (isLoading) {
     return <Loading />;
+  }
+
+  if (error || !data) {
+    Sentry.captureException(error, { extra: { userId } });
+    return (
+      <Message
+        size="huge"
+        style={{ backgroundColor: "#FFF" }}
+        icon="meh"
+        header="Error"
+        content={"Unable to load profile statistics."}
+      />
+    );
   }
 
   const numTicks = data.ticks.filter(

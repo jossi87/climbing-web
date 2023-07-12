@@ -52,12 +52,7 @@ const Profile = () => {
   let content = null;
   if (activePage === Page.user) {
     content = (
-      <ProfileStatistics
-        userId={profile.id}
-        canDownload={loggedInProfile}
-        defaultCenter={meta.defaultCenter}
-        defaultZoom={meta.defaultZoom}
-      />
+      <ProfileStatistics userId={profile.id} canDownload={loggedInProfile} />
     );
   } else if (activePage === Page.todo) {
     content = (
