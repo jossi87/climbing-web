@@ -9,40 +9,34 @@ const JumpToTop = () => (
   </a>
 );
 
-export const TableOfContents = ({
-  areas,
-}: {
-  areas: [
-    {
+type Props = {
+  areas: {
+    id: number;
+    lockedAdmin: boolean;
+    lockedSuperadmin: boolean;
+    name: string;
+    sectors: {
       id: number;
       lockedAdmin: boolean;
       lockedSuperadmin: boolean;
       name: string;
-      sectors: [
-        {
-          id: number;
-          lockedAdmin: boolean;
-          lockedSuperadmin: boolean;
-          name: string;
-          problems: [
-            {
-              id: number;
-              lockedAdmin: boolean;
-              lockedSuperadmin: boolean;
-              name: string;
-              nr: number;
-              grade: string;
-              stars?: number;
-              ticked?: boolean;
-              text?: string;
-              subText?: string;
-            },
-          ];
-        },
-      ];
-    },
-  ];
-}) => {
+      problems: {
+        id: number;
+        lockedAdmin: boolean;
+        lockedSuperadmin: boolean;
+        name: string;
+        nr: number;
+        grade: string;
+        stars?: number;
+        ticked?: boolean;
+        text?: string;
+        subText?: string;
+      }[];
+    }[];
+  }[];
+};
+
+export const TableOfContents = ({ areas }: Props) => {
   const areaRefs = useRef({});
 
   return (

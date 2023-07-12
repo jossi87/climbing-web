@@ -82,10 +82,6 @@ export const Navigation = () => {
           <Icon name="database" />
           <span>{isBouldering ? "Problems" : "Routes"}</span>
         </Menu.Item>
-        <Menu.Item as={Link} to="/filter">
-          <Icon name="find" />
-          <span>Filter</span>
-        </Menu.Item>
         {!isBouldering && (
           <Menu.Item as={Link} to="/dangerous">
             <Icon name="warning sign" />

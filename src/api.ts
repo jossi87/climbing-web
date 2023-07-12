@@ -13,6 +13,7 @@ import {
   ConsistencyAction,
   DATA_MUTATION_EVENT,
 } from "./components/DataReloader";
+import { useLocalStorage } from "./utils/use-local-storage";
 
 export function getLocales() {
   return "nb-NO";
@@ -238,6 +239,20 @@ export function getProblemPdfUrl(
   id: number,
 ): string {
   return getUrl(`/problem/pdf?accessToken=${accessToken}&id=${id}`);
+}
+
+export function useProblems() {
+  const [cachedData, _, writeCachedData] = useLocalStorage<ProblemArea[]>(
+    "cache/problems",
+    [],
+  );
+  return useData<ProblemArea[]>("/problems", {
+    placeholderData: cachedData,
+    select(data) {
+      writeCachedData(data);
+      return data;
+    },
+  });
 }
 
 export function getProblemsXlsx(accessToken: string | null): Promise<any> {
