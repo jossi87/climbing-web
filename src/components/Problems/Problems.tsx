@@ -40,10 +40,6 @@ export const Problems = ({ filterOpen }: Props) => {
     }
   }, [dispatch, loadedData, status]);
 
-  if (!loadedData) {
-    return <Loading />;
-  }
-
   const {
     totalAreas,
     totalSectors,
@@ -52,7 +48,12 @@ export const Problems = ({ filterOpen }: Props) => {
     filteredAreas,
     filteredSectors,
     filteredProblems,
+    visible,
   } = state;
+
+  if (!loadedData || totalProblems === 0) {
+    return <Loading />;
+  }
 
   const title = isBouldering ? "Problems" : "Routes";
   const things = isBouldering ? "problems" : "routes";
@@ -118,9 +119,9 @@ export const Problems = ({ filterOpen }: Props) => {
           labelPosition="left"
           icon
           toggle
-          active={state.visible}
+          active={visible}
           onClick={() => dispatch({ action: "toggle-filter" })}
-          primary={state.filteredProblems > 0}
+          primary={filteredProblems > 0}
         >
           <Icon name="filter" />
           Filter {things}
@@ -156,14 +157,14 @@ export const Problems = ({ filterOpen }: Props) => {
           <Header.Subheader>{totalDescription}</Header.Subheader>
         </Header.Content>
       </Header>
-      {state.visible && (
+      {visible && (
         <>
           <Divider />
           <FilterForm />
           <Divider />
         </>
       )}
-      {!state.visible && state.filteredProblems > 0 && (
+      {!visible && filteredProblems > 0 && (
         <Message warning raised>
           There is an active filter which is hiding{" "}
           <strong>
@@ -194,7 +195,7 @@ export const Problems = ({ filterOpen }: Props) => {
 
   const mainContents = <TableOfContents areas={areas} />;
 
-  const content = state.visible ? (
+  const content = visible ? (
     <>
       <Segment>{preamble}</Segment>
       <Segment>{mainContents}</Segment>

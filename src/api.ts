@@ -246,6 +246,7 @@ export function useProblems() {
     "cache/problems",
     [],
   );
+
   return useData<ProblemArea[]>("/problems", {
     placeholderData: cachedData,
     select(data) {
