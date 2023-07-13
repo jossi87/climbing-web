@@ -10,9 +10,9 @@
     "url": "https://github.com/jossi87/climbing-web"
   },
   "devDependencies": {
-    "@babel/core": "^7.22.8",
-    "@babel/plugin-transform-runtime": "^7.22.7",
-    "@babel/preset-env": "^7.22.7",
+    "@babel/core": "^7.22.9",
+    "@babel/plugin-transform-runtime": "^7.22.9",
+    "@babel/preset-env": "^7.22.9",
     "@babel/preset-react": "^7.22.5",
     "@babel/preset-typescript": "^7.22.5",
     "@babel/runtime": "^7.22.6",
@@ -45,7 +45,7 @@
   "dependencies": {
     "@auth0/auth0-react": "^2.1.1",
     "@react-leaflet/core": "^2.1.0",
-    "@sentry/react": "^7.57.0",
+    "@sentry/react": "^7.58.0",
     "@tanstack/react-query": "^4.29.19",
     "@tanstack/react-query-devtools": "^4.29.19",
     "atob": "^2.1.2",
@@ -58,9 +58,9 @@
     "leaflet.fullscreen": "^2.4.0",
     "leaflet.locatecontrol": "^0.79.0",
     "leaflet.markercluster": "^1.5.3",
-    "puppeteer": "^20.8.0",
+    "puppeteer": "^20.8.1",
     "react": "^18.2.0",
-    "react-datepicker": "^4.15.0",
+    "react-datepicker": "^4.16.0",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
     "react-helmet": "^6.1.0",
