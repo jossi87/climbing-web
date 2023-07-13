@@ -1008,22 +1008,6 @@ export function postComment(
   });
 }
 
-export function postFilter(
-  accessToken: string | null,
-  grades: Array<number>,
-  disciplines: Array<number>,
-  routeTypes: Array<string>,
-): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/filter`, {
-    method: "POST",
-    body: JSON.stringify({ grades, disciplines, routeTypes }),
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-  }).then((data) => data.json());
-}
-
 export function postPermissions(
   accessToken: string | null,
   userId: number,
@@ -1187,20 +1171,6 @@ export function useSearch() {
   });
 
   return { search: mutateAsync, ...rest, data: data ?? [] };
-}
-
-export function postSearch(
-  accessToken: string | null,
-  value: string,
-): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/search`, {
-    method: "POST",
-    body: JSON.stringify({ value }),
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-  }).then((data) => data.json());
 }
 
 export function postProblemSvg(
