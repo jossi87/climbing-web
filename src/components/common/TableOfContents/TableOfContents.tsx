@@ -86,7 +86,12 @@ export const TableOfContents = ({ areas }: Props) => {
                 </List.Header>
                 <List.List>
                   {sector.problems.map((problem) => (
-                    <List.Item key={problem.id}>
+                    <List.Item
+                      key={problem.id}
+                      style={{
+                        backgroundColor: problem.ticked ? "#d2f8d2" : "#ffffff",
+                      }}
+                    >
                       <List.Header>
                         {`#${problem.nr} `}
                         <Link to={`/problem/${problem.id}`}>
@@ -109,7 +114,6 @@ export const TableOfContents = ({ areas }: Props) => {
                           lockedAdmin={problem.lockedAdmin}
                           lockedSuperadmin={problem.lockedSuperadmin}
                         />
-                        {problem.ticked && <Icon color="green" name="check" />}
                       </List.Header>
                     </List.Item>
                   ))}
