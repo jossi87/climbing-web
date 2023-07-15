@@ -76,6 +76,7 @@ type Tick = {
   picture?: string;
   suggestedGrade: string;
   idUser: number;
+  writable: boolean;
 };
 
 type TickRepeat = {

@@ -50,7 +50,10 @@ export const ProblemTicks = ({ ticks }: { ticks: Tick[] }) => {
             com = t.comment;
           }
           return (
-            <Comment key={i}>
+            <Comment
+              key={i}
+              style={{ backgroundColor: t.writable ? "#d2f8d2" : "#ffffff" }}
+            >
               <Comment.Avatar src={t.picture ? t.picture : "/png/image.png"} />
               <Comment.Content>
                 <Comment.Author as={Link} to={`/user/${t.idUser}`}>
