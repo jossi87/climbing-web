@@ -4,8 +4,6 @@ import {
   Header,
   Checkbox,
   Button,
-  Container,
-  ButtonGroup,
   Icon,
   Divider,
 } from "semantic-ui-react";
@@ -13,6 +11,7 @@ import { GradeSelect } from "./GradeSelect";
 import { getLocales } from "../../../api";
 import { useMeta } from "../meta";
 import { useFilter } from "./context";
+import { HeaderButtons } from "../HeaderButtons";
 
 const CLIMBING_OPTIONS = [
   {
@@ -45,38 +44,26 @@ export const FilterForm = () => {
 
   return (
     <Form>
-      <Container
-        as="div"
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-        }}
-      >
-        <Header as="h2" style={{ flex: 1, margin: "0" }}>
-          Filter
-        </Header>
-        <ButtonGroup size="mini">
-          {filteredProblems > 0 && (
-            <Button
-              icon
-              labelPosition="left"
-              onClick={() => dispatch({ action: "reset" })}
-            >
-              <Icon name="trash alternate outline" />
-              Clear filter
-            </Button>
-          )}
+      <HeaderButtons header="Filter">
+        {filteredProblems > 0 && (
           <Button
             icon
             labelPosition="left"
-            onClick={() => dispatch({ action: "close-filter" })}
+            onClick={() => dispatch({ action: "reset" })}
           >
-            <Icon name="close" />
-            Close
+            <Icon name="trash alternate outline" />
+            Clear filter
           </Button>
-        </ButtonGroup>
-      </Container>
+        )}
+        <Button
+          icon
+          labelPosition="left"
+          onClick={() => dispatch({ action: "close-filter" })}
+        >
+          <Icon name="close" />
+          Close
+        </Button>
+      </HeaderButtons>
       <Divider />
       <Form.Field>
         <Header as="h3">Grades</Header>

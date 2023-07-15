@@ -1,14 +1,7 @@
 import React, { useState, useRef } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  Header,
-  Button,
-  List,
-  Icon,
-  Segment,
-  ButtonGroup,
-} from "semantic-ui-react";
+import { Button, List, Icon, Segment } from "semantic-ui-react";
 import Leaflet from "./common/leaflet/leaflet";
 import ChartGradeDistribution from "./common/chart-grade-distribution/chart-grade-distribution";
 import { Loading, LockSymbol } from "./common/widgets/widgets";
@@ -16,6 +9,7 @@ import { useAreas } from "../api";
 import { Remarkable } from "remarkable";
 import { linkify } from "remarkable/linkify";
 import { useMeta } from "./common/meta";
+import { HeaderButtons } from "./common/HeaderButtons";
 
 const Areas = () => {
   const { data } = useAreas();
@@ -122,7 +116,11 @@ const Areas = () => {
         />
       </Helmet>
       <Segment>
-        <ButtonGroup floated="right" size="mini">
+        <HeaderButtons
+          header="Areas"
+          subheader={data.length ? `${data.length} areas` : ""}
+          icon="list"
+        >
           <Button
             active={!showForDevelopers}
             onClick={() => setShowForDevelopers(false)}
@@ -143,14 +141,7 @@ const Areas = () => {
               </Button.Content>
             </Button>
           )}
-        </ButtonGroup>
-        <Header as="h2">
-          <Icon name="list" />
-          <Header.Content>
-            Areas
-            <Header.Subheader>{data.length} areas</Header.Subheader>
-          </Header.Content>
-        </Header>
+        </HeaderButtons>
         <List celled link horizontal size="small">
           {data
             .filter((a) => a.forDevelopers === showForDevelopers)
