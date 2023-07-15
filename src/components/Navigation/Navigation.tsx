@@ -20,7 +20,6 @@ export const Navigation = () => {
             display: "flex",
             flexDirection: "row",
             flex: 1,
-            paddingRight: "20px",
           }}
           className="row-1"
         >

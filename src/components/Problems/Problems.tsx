@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import {
-  Header,
   Segment,
   Icon,
   Button,
@@ -16,6 +15,7 @@ import { saveAs } from "file-saver";
 import TableOfContents from "../common/TableOfContents";
 import { useFilterState } from "./reducer";
 import { FilterContext, FilterForm } from "../common/FilterForm";
+import { HeaderButtons } from "../common/HeaderButtons";
 
 type Props = { filterOpen?: boolean };
 
@@ -114,7 +114,11 @@ export const Problems = ({ filterOpen }: Props) => {
 
   const preamble = (
     <>
-      <ButtonGroup size="mini" floated="right">
+      <HeaderButtons
+        header={title}
+        subheader={totalDescription}
+        icon="database"
+      >
         <Button
           labelPosition="left"
           icon
@@ -149,19 +153,11 @@ export const Problems = ({ filterOpen }: Props) => {
           <Icon name="file excel" />
           Download
         </Button>
-      </ButtonGroup>
-      <Header as="h2">
-        <Icon name="database" />
-        <Header.Content>
-          {title}
-          <Header.Subheader>{totalDescription}</Header.Subheader>
-        </Header.Content>
-      </Header>
+      </HeaderButtons>
       {visible && (
         <>
           <Divider />
           <FilterForm />
-          <Divider />
         </>
       )}
       {!visible && filteredProblems > 0 && (
