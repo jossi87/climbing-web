@@ -179,6 +179,27 @@ const About = () => {
             </Header>
             <List bulleted>
               <List.Item>
+                2023-now:{" "}
+                <a
+                  href="https://github.com/jossi87/climbing-web"
+                  rel="noreferrer noopener"
+                  target="_blank"
+                >
+                  https://github.com/jossi87/climbing-web
+                </a>
+                <List.Description>
+                  The project is now open source. See contributors{" "}
+                  <a
+                    href="https://github.com/jossi87/climbing-web/graphs/contributors"
+                    rel="norefferer noopener"
+                    target="_blank"
+                  >
+                    here
+                  </a>
+                  .
+                </List.Description>
+              </List.Item>
+              <List.Item>
                 2021-now:{" "}
                 <a
                   href="https://is.brattelinjer.no"
