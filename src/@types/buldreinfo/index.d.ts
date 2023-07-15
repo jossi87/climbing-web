@@ -37,6 +37,7 @@ type Region = {
   name: string;
   enabled: boolean;
   readOnly: boolean;
+  role: string;
 };
 
 type Profile = {

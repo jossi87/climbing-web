@@ -67,7 +67,7 @@ const Profile = () => {
   } else if (activePage === Page.captured) {
     content = <ProfileMedia userId={profile.id} captured={true} />;
   } else if (activePage === Page.settings) {
-    content = <ProfileSettings userRegions={profile.userRegions} />;
+    content = <ProfileSettings />;
   }
 
   const firstLast = [profile.firstname, profile.lastname]
