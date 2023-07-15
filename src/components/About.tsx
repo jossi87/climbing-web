@@ -191,7 +191,7 @@ const About = () => {
                   The project is now open source. See contributors{" "}
                   <a
                     href="https://github.com/jossi87/climbing-web/graphs/contributors"
-                    rel="norefferer noopener"
+                    rel="noreferrer noopener"
                     target="_blank"
                   >
                     here
