@@ -108,20 +108,18 @@ const filter = (state: State): State => {
                   }
                 }
 
-                if (filterOnlyAdmin) {
-                  const locked = problem.lockedAdmin;
-                  if (!locked) {
-                    filteredOut.problems += 1;
-                  }
-                  return locked;
-                }
-
                 if (filterOnlySuperAdmin) {
                   const locked = problem.lockedSuperadmin;
                   if (!locked) {
                     filteredOut.problems += 1;
+                    return false;
                   }
-                  return locked;
+                } else if (filterOnlyAdmin) {
+                  const locked = problem.lockedAdmin;
+                  if (!locked) {
+                    filteredOut.problems += 1;
+                    return false;
+                  }
                 }
 
                 if (
