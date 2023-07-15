@@ -122,13 +122,13 @@ const Areas = () => {
           icon="list"
         >
           <Button
-            active={!showForDevelopers}
+            positive={!showForDevelopers}
             onClick={() => setShowForDevelopers(false)}
           >
             Developed areas
           </Button>
           <Button
-            active={showForDevelopers}
+            positive={showForDevelopers}
             onClick={() => setShowForDevelopers(true)}
           >
             Areas for developers
