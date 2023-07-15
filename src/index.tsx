@@ -15,8 +15,8 @@ Sentry.init({
     new Sentry.BrowserTracing({
       tracePropagationTargets: ["localhost", getBaseUrl()],
     }),
-    new Sentry.Replay(),
-  ],
+    process.env.REACT_APP_ENV !== "development" && new Sentry.Replay(),
+  ].filter(Boolean),
   environment: process.env.REACT_APP_ENV ?? "unknown",
   // Performance Monitoring
   tracesSampleRate: process.env.REACT_APP_ENV === "production" ? 0.5 : 1.0,

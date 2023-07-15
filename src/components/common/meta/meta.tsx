@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useMemo } from "react";
 import { useData } from "../../../api";
 import { Helmet } from "react-helmet";
 
@@ -66,6 +66,24 @@ export const useMeta = (): Metadata => {
     throw new Error("useMeta() can only be used inside of <MetaProvider />");
   }
   return metadata;
+};
+
+export const useGrades = () => {
+  const { grades } = useMeta();
+  const [gradesLowHigh, indexMapping] = useMemo(() => {
+    const easyToHard = grades.map(({ grade }) => grade).reverse();
+    const indexMapping = easyToHard.reduce(
+      (acc, grade, i) => ({ ...acc, [grade]: i }),
+      {},
+    );
+    return [easyToHard, indexMapping];
+  }, [grades]);
+
+  return {
+    hardToEasy: grades.map(({ grade }) => grade),
+    easyToHard: gradesLowHigh,
+    mapping: indexMapping,
+  };
 };
 
 export const MetaProvider = ({ children }: Props) => {

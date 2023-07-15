@@ -161,7 +161,7 @@ export const Problems = ({ filterOpen }: Props) => {
         </>
       )}
       {!visible && filteredProblems > 0 && (
-        <Message warning raised>
+        <Message warning>
           There is an active filter which is hiding{" "}
           <strong>
             {description(

@@ -1,6 +1,7 @@
-import { useReducer } from "react";
+import { useEffect, useReducer } from "react";
 import { neverGuard } from "../../utils/neverGuard";
 import * as Sentry from "@sentry/react";
+import { useGrades } from "../common/meta/meta";
 import { itemLocalStorage } from "../../utils/use-local-storage";
 
 export type State = {
@@ -40,18 +41,14 @@ export type Update =
       checked: boolean;
     }
   | {
-      action: "set-grades";
-      low: string;
-      high: string;
+      action: "set-grade-mapping";
       gradeDifficultyLookup: State["gradeDifficultyLookup"];
     }
+  | { action: "set-grades"; low: string; high: string }
   | { action: "set-hide-ticked"; checked: boolean }
   | { action: "set-only-admin"; checked: boolean }
   | { action: "set-only-super-admin"; checked: boolean }
-  | ({
-      action: "set-grade";
-      gradeDifficultyLookup: State["gradeDifficultyLookup"];
-    } & ({ low: string } | { high: string }))
+  | ({ action: "set-grade" } & ({ low: string } | { high: string }))
   | { action: "close-filter" }
   | { action: "open-filter" }
   | { action: "toggle-filter" }
@@ -113,7 +110,7 @@ const filter = (state: State): State => {
 
                 if (filterOnlyAdmin) {
                   const locked = problem.lockedAdmin;
-                  if (locked) {
+                  if (!locked) {
                     filteredOut.problems += 1;
                   }
                   return locked;
@@ -121,7 +118,7 @@ const filter = (state: State): State => {
 
                 if (filterOnlySuperAdmin) {
                   const locked = problem.lockedSuperadmin;
-                  if (locked) {
+                  if (!locked) {
                     filteredOut.problems += 1;
                   }
                   return locked;
@@ -167,7 +164,7 @@ const filter = (state: State): State => {
                     Number.MAX_SAFE_INTEGER;
                   const test = gradeDifficultyLookup[problem.grade];
 
-                  if (test !== undefined && (test < low || test > high)) {
+                  if (test === undefined || test < low || test > high) {
                     filteredOut.problems += 1;
                     return false;
                   }
@@ -224,7 +221,6 @@ const reducer = (state: State, update: Update): State => {
         totalSectors,
         totalProblems,
         unfilteredData: data,
-        filteredData: data,
       };
     }
 
@@ -251,11 +247,18 @@ const reducer = (state: State, update: Update): State => {
       };
     }
 
-    case "set-grades": {
-      const { low, high, gradeDifficultyLookup } = update;
+    case "set-grade-mapping": {
+      const { gradeDifficultyLookup } = update;
       return {
         ...state,
-        gradeDifficultyLookup: gradeDifficultyLookup,
+        gradeDifficultyLookup,
+      };
+    }
+
+    case "set-grades": {
+      const { low, high } = update;
+      return {
+        ...state,
         filterGradeLow: low,
         filterGradeHigh: high,
       };
@@ -266,7 +269,6 @@ const reducer = (state: State, update: Update): State => {
       const high = "high" in update ? update.high : undefined;
       return {
         ...state,
-        gradeDifficultyLookup: update.gradeDifficultyLookup,
         filterGradeLow: low ?? state.filterGradeLow ?? undefined,
         filterGradeHigh: high ?? state.filterGradeHigh ?? undefined,
       };
@@ -306,7 +308,6 @@ const reducer = (state: State, update: Update): State => {
         filterTypes: undefined,
         filterOnlyAdmin: undefined,
         filterOnlySuperAdmin: undefined,
-        filteredData: state.unfilteredData,
       };
     }
 
@@ -337,10 +338,9 @@ const reducer = (state: State, update: Update): State => {
   }
 };
 
-const localStorageItems = {
+const storageItems = {
   onlyAdmin: itemLocalStorage("filter/only-admin", false),
   onlySuperAdmin: itemLocalStorage("filter/only-super-admin", false),
-  grades: itemLocalStorage("filter/grades", undefined),
   gradeLow: itemLocalStorage("filter/grades/low", undefined),
   gradeHigh: itemLocalStorage("filter/grades/high", undefined),
   types: itemLocalStorage("filter/types", undefined),
@@ -351,19 +351,21 @@ const localStorageItems = {
 const wrappedReducer: typeof reducer = (state, update) => {
   const reduced = reducer(state, update);
 
-  localStorageItems.onlyAdmin.set(reduced.filterOnlyAdmin);
-  localStorageItems.onlySuperAdmin.set(reduced.filterOnlySuperAdmin);
-  localStorageItems.gradeLow.set(reduced.filterGradeLow);
-  localStorageItems.gradeHigh.set(reduced.filterGradeHigh);
-  localStorageItems.types.set(reduced.filterTypes);
-  localStorageItems.pitches.set(reduced.filterPitches);
-  localStorageItems.hideTicked.set(reduced.filterHideTicked);
+  storageItems.onlyAdmin.set(reduced.filterOnlyAdmin);
+  storageItems.onlySuperAdmin.set(reduced.filterOnlySuperAdmin);
+  storageItems.gradeLow.set(reduced.filterGradeLow);
+  storageItems.gradeHigh.set(reduced.filterGradeHigh);
+  storageItems.types.set(reduced.filterTypes);
+  storageItems.pitches.set(reduced.filterPitches);
+  storageItems.hideTicked.set(reduced.filterHideTicked);
 
   return filter(reduced);
 };
 
 export const useFilterState = (init?: Partial<State>) => {
-  return useReducer(wrappedReducer, {
+  const { mapping } = useGrades();
+
+  const [state, dispatch] = useReducer(wrappedReducer, {
     visible: false,
     gradeDifficultyLookup: {},
     totalAreas: 0,
@@ -372,13 +374,13 @@ export const useFilterState = (init?: Partial<State>) => {
     unfilteredData: [],
 
     // Information about the filters
-    filterOnlyAdmin: localStorageItems.onlyAdmin.get(),
-    filterOnlySuperAdmin: localStorageItems.onlySuperAdmin.get(),
-    filterGradeLow: localStorageItems.gradeLow.get(),
-    filterGradeHigh: localStorageItems.gradeHigh.get(),
-    filterTypes: localStorageItems.types.get(),
-    filterPitches: localStorageItems.pitches.get(),
-    filterHideTicked: localStorageItems.hideTicked.get(),
+    filterOnlyAdmin: storageItems.onlyAdmin.get(),
+    filterOnlySuperAdmin: storageItems.onlySuperAdmin.get(),
+    filterGradeLow: storageItems.gradeLow.get(),
+    filterGradeHigh: storageItems.gradeHigh.get(),
+    filterTypes: storageItems.types.get(),
+    filterPitches: storageItems.pitches.get(),
+    filterHideTicked: storageItems.hideTicked.get(),
     filteredData: [],
     filteredAreas: 0,
     filteredSectors: 0,
@@ -387,4 +389,10 @@ export const useFilterState = (init?: Partial<State>) => {
     // Customizations
     ...init,
   });
+
+  useEffect(() => {
+    dispatch({ action: "set-grade-mapping", gradeDifficultyLookup: mapping });
+  }, [mapping]);
+
+  return [state, dispatch] as const;
 };

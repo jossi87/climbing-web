@@ -1,25 +1,15 @@
-import React, { useMemo } from "react";
+import React from "react";
 import RangeSlider from "react-range-slider-input";
-import { useMeta } from "../../meta";
 import "react-range-slider-input/dist/style.css";
 import { useFilter } from "../context";
 import { Dropdown } from "semantic-ui-react";
+import { useGrades } from "../../meta/meta";
 
 export const GradeSelect = () => {
   const { filterGradeLow, filterGradeHigh, dispatch } = useFilter();
-  const { grades } = useMeta();
-  const [gradesLowHigh, indexMapping] = useMemo(() => {
-    const easyToHard = grades.map(({ grade }) => grade).reverse();
-    const indexMapping = easyToHard.reduce(
-      (acc, grade, i) => ({ ...acc, [grade]: i }),
-      {},
-    );
-    return [easyToHard, indexMapping];
-  }, [grades]);
+  const { easyToHard: sorted, mapping: gradeIndexMapping } = useGrades();
 
-  const max = Math.max(grades.length - 1, 0);
-  const sorted = gradesLowHigh;
-  const mapped = indexMapping;
+  const max = Math.max(sorted.length - 1, 0);
   const low = filterGradeLow || sorted[0];
   const high = filterGradeHigh || sorted[max];
 
@@ -30,13 +20,12 @@ export const GradeSelect = () => {
           key={`${0}-${max}`}
           min={0}
           max={max}
-          value={[mapped[low] ?? 0, mapped[high] ?? max]}
+          value={[gradeIndexMapping[low] ?? 0, gradeIndexMapping[high] ?? max]}
           onInput={([l, h]) => {
             dispatch({
               action: "set-grades",
               low: sorted[l] ?? sorted[0],
               high: sorted[h] ?? sorted[max],
-              gradeDifficultyLookup: indexMapping,
             });
           }}
           disabled={max === 0}
@@ -53,15 +42,14 @@ export const GradeSelect = () => {
             pointing="top left"
             options={(sorted as unknown as string[])
               .filter((label) => {
-                const rank = mapped[label];
-                return rank < (mapped[high] ?? max);
+                const rank = gradeIndexMapping[label];
+                return rank < (gradeIndexMapping[high] ?? max);
               })
               .map((label) => ({ key: label, text: label, value: label }))}
             onChange={(_, { value }) => {
               dispatch({
                 action: "set-grade",
                 low: String(value),
-                gradeDifficultyLookup: indexMapping,
               });
             }}
           />
@@ -74,15 +62,14 @@ export const GradeSelect = () => {
             pointing="top right"
             options={(sorted as unknown as string[])
               .filter((label) => {
-                const rank = mapped[label];
-                return rank > (mapped[low] ?? 0);
+                const rank = gradeIndexMapping[label];
+                return rank > (gradeIndexMapping[low] ?? 0);
               })
               .map((label) => ({ key: label, text: label, value: label }))}
             onChange={(_, { value }) => {
               dispatch({
                 action: "set-grade",
                 high: String(value),
-                gradeDifficultyLookup: indexMapping,
               });
             }}
           />
