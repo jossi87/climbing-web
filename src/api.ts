@@ -635,12 +635,80 @@ export function getProblemEdit(
   }
 }
 
-export function useProfile(userId: number) {
+export function useProfile(userId: number = -1) {
+  const client = useQueryClient();
   const { isAuthenticated } = useAuth0();
-  return useData<Profile>(`/profile?id=${userId}`, {
+  const profile = useData<Profile>(`/profile?id=${userId}`, {
     queryKey: [`/profile`, { id: userId }],
     enabled: userId > 0 || isAuthenticated,
   });
+
+  const addRegion = usePostData<number>(`/user/regions`, {
+    createUrl: (regionId) =>
+      `/user/regions?regionId=${regionId}&delete=${false}`,
+  });
+
+  const removeRegion = usePostData<number>(`/user/regions`, {
+    createUrl: (regionId) =>
+      `/user/regions?regionId=${regionId}&delete=${true}`,
+  });
+
+  const setRegion = usePostData<{ region: Region; del: boolean }>(
+    `/user/regions`,
+    {
+      createUrl: ({ region: { id }, del }) =>
+        `/user/regions?regionId=${id}&delete=${del}`,
+      fetchOptions: {
+        consistencyAction: "nop",
+      },
+      onMutate: ({ region, del }) => {
+        client.setQueryData<Profile>(
+          [`/profile`, { id: userId, isAuthenticated }],
+          (old) => {
+            if (old && typeof old === "object") {
+              const next = {
+                ...old,
+                userRegions: old.userRegions.map((oldRegion) => {
+                  if (oldRegion.id !== region.id) {
+                    return oldRegion;
+                  }
+                  return {
+                    ...oldRegion,
+                    enabled: !del,
+                  };
+                }),
+              };
+              return next;
+            }
+            return old;
+          },
+        );
+      },
+      onError: () => {
+        client.refetchQueries({
+          queryKey: [`/profile`, { id: -1 }],
+        });
+      },
+      onSettled: () => {
+        client.refetchQueries({
+          queryKey: [`/areas`],
+        });
+        client.refetchQueries({
+          queryKey: [`/problems`],
+        });
+        client.refetchQueries({
+          queryKey: [`/dangerous`],
+        });
+      },
+    },
+  );
+
+  return {
+    ...profile,
+    addRegion: addRegion.mutateAsync,
+    removeRegion: removeRegion.mutateAsync,
+    setRegion: setRegion.mutateAsync,
+  };
 }
 
 export function useProfileMedia({
