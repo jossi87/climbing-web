@@ -108,20 +108,6 @@ const filter = (state: State): State => {
                   }
                 }
 
-                if (filterOnlySuperAdmin) {
-                  const locked = problem.lockedSuperadmin;
-                  if (!locked) {
-                    filteredOut.problems += 1;
-                    return false;
-                  }
-                } else if (filterOnlyAdmin) {
-                  const locked = problem.lockedAdmin;
-                  if (!locked) {
-                    filteredOut.problems += 1;
-                    return false;
-                  }
-                }
-
                 if (
                   filterTypes &&
                   Object.values(filterTypes).some((v) => !!v)
@@ -168,31 +154,49 @@ const filter = (state: State): State => {
                   }
                 }
 
+                if (filterOnlySuperAdmin) {
+                  const locked = problem.lockedSuperadmin;
+                  if (!locked) {
+                    filteredOut.problems += 1;
+                    return false;
+                  }
+                }
+
+                if (filterOnlyAdmin) {
+                  const locked = problem.lockedAdmin;
+                  if (!locked) {
+                    filteredOut.problems += 1;
+                    return false;
+                  }
+                }
+
                 return true;
               }),
             };
           })
           .filter(({ lockedAdmin, lockedSuperadmin, problems }) => {
-            const include =
-              problems.length > 0 ||
-              (filterOnlyAdmin && lockedAdmin) ||
-              (filterOnlySuperAdmin && lockedSuperadmin);
-            if (!include) {
+            if (
+              problems.length === 0 ||
+              (filterOnlyAdmin && !lockedAdmin) ||
+              (filterOnlySuperAdmin && !lockedSuperadmin)
+            ) {
               filteredOut.sectors += 1;
+              return false;
             }
-            return include;
+            return true;
           }),
       };
     })
     .filter(({ lockedAdmin, lockedSuperadmin, sectors }) => {
-      const include =
-        sectors.length > 0 ||
-        (filterOnlyAdmin && lockedAdmin) ||
-        (filterOnlySuperAdmin && lockedSuperadmin);
-      if (!include) {
+      if (
+        sectors.length === 0 ||
+        (filterOnlyAdmin && !lockedAdmin) ||
+        (filterOnlySuperAdmin && !lockedSuperadmin)
+      ) {
         filteredOut.areas += 1;
+        return false;
       }
-      return include;
+      return true;
     });
   span.finish();
   transaction.finish();
