@@ -289,6 +289,7 @@ const reducer = (state: State, update: Update): State => {
       return {
         ...state,
         filterOnlyAdmin: checked,
+        filterOnlySuperAdmin: undefined,
       };
     }
 
@@ -296,6 +297,7 @@ const reducer = (state: State, update: Update): State => {
       const { checked } = update;
       return {
         ...state,
+        filterOnlyAdmin: undefined,
         filterOnlySuperAdmin: checked,
       };
     }
