@@ -6,12 +6,14 @@ import {
   Button,
   Icon,
   Divider,
+  Container,
 } from "semantic-ui-react";
 import { GradeSelect } from "./GradeSelect";
 import { getLocales } from "../../../api";
 import { useMeta } from "../meta";
 import { useFilter } from "./context";
 import { HeaderButtons } from "../HeaderButtons";
+import { ResetField } from "../../Problems/reducer";
 
 const CLIMBING_OPTIONS = [
   {
@@ -26,9 +28,43 @@ const CLIMBING_OPTIONS = [
   },
 ] as const;
 
+const GroupHeader = ({
+  title,
+  reset,
+}: {
+  title: string;
+  reset: ResetField;
+}) => {
+  const { dispatch } = useFilter();
+
+  return (
+    <Container
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        margin: 4,
+      }}
+    >
+      <Header as="h3" style={{ flex: 1, margin: 0 }}>
+        {title}
+      </Header>
+      <Button
+        icon="trash alternate outline"
+        onClick={() => dispatch({ action: "reset", section: reset })}
+        size="mini"
+        basic
+        compact
+      />
+    </Container>
+  );
+};
+
 export const FilterForm = () => {
   const meta = useMeta();
   const {
+    unfilteredData,
+    filterAreaIds,
     filterOnlyAdmin,
     filterOnlySuperAdmin,
     filterHideTicked,
@@ -49,7 +85,7 @@ export const FilterForm = () => {
           <Button
             icon
             labelPosition="left"
-            onClick={() => dispatch({ action: "reset" })}
+            onClick={() => dispatch({ action: "reset", section: "all" })}
           >
             <Icon name="trash alternate outline" />
             Clear filter
@@ -66,12 +102,12 @@ export const FilterForm = () => {
       </HeaderButtons>
       <Divider />
       <Form.Field>
-        <Header as="h3">Grades</Header>
+        <GroupHeader title="Grades" reset="grades" />
         <GradeSelect />
       </Form.Field>
       {disciplineOptions.length > 1 && (
         <>
-          <Header as="h3">Types</Header>
+          <GroupHeader title="Types" reset="types" />
           <Form.Group inline>
             {disciplineOptions.map((discipline) => (
               <Form.Field key={discipline.key}>
@@ -93,29 +129,27 @@ export const FilterForm = () => {
       )}
       {!meta.isBouldering && (
         <>
-          <Header as="h3">Pitches</Header>
+          <GroupHeader title="Pitches" reset="pitches" />
           <Form.Group inline>
-            {CLIMBING_OPTIONS.map((option) => {
-              return (
-                <Form.Field key={option.key}>
-                  <Checkbox
-                    label={option.text}
-                    checked={!!filterPitches?.[option.value]}
-                    onChange={(_, { checked }) => {
-                      dispatch?.({
-                        action: "toggle-pitches",
-                        option: option.value,
-                        checked,
-                      });
-                    }}
-                  />
-                </Form.Field>
-              );
-            })}
+            {CLIMBING_OPTIONS.map((option) => (
+              <Form.Field key={option.key}>
+                <Checkbox
+                  label={option.text}
+                  checked={!!filterPitches?.[option.value]}
+                  onChange={(_, { checked }) => {
+                    dispatch?.({
+                      action: "toggle-pitches",
+                      option: option.value,
+                      checked,
+                    });
+                  }}
+                />
+              </Form.Field>
+            ))}
           </Form.Group>
         </>
       )}
-      <Header as="h3">Options</Header>
+      <GroupHeader title="Options" reset="options" />
       <Form.Group inline>
         <Form.Field>
           <Checkbox
@@ -149,6 +183,24 @@ export const FilterForm = () => {
             />
           </Form.Field>
         )}
+      </Form.Group>
+      <GroupHeader title="Areas" reset="areas" />
+      <Form.Group inline style={{ display: "flex", flexWrap: "wrap" }}>
+        {unfilteredData.map((area) => (
+          <Form.Field key={area.id}>
+            <Checkbox
+              label={area.name}
+              checked={!!filterAreaIds[area.id]}
+              onChange={(_, { checked }) =>
+                dispatch({
+                  action: "toggle-area",
+                  areaId: area.id,
+                  enabled: checked,
+                })
+              }
+            />
+          </Form.Field>
+        ))}
       </Form.Group>
     </Form>
   );

@@ -179,7 +179,10 @@ export const Problems = ({ filterOpen }: Props) => {
               Edit filter
             </Button>
             <Button.Or />
-            <Button compact onClick={() => dispatch({ action: "reset" })}>
+            <Button
+              compact
+              onClick={() => dispatch({ action: "reset", section: "all" })}
+            >
               <Icon name="trash alternate outline" />
               Clear filter
             </Button>
