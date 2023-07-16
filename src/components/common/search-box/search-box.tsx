@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 type SearchBoxProps = Omit<
   React.ComponentProps<typeof Search>,
+  | "children"
   | "id"
   | "loading"
   | "minCharacters"
@@ -16,7 +17,7 @@ type SearchBoxProps = Omit<
   | "value"
 >;
 
-const SearchBox = (searchProps: SearchBoxProps) => {
+const SearchBox = ({ children: _, ...searchProps }: SearchBoxProps) => {
   const navigate = useNavigate();
   const { search, isLoading, data } = useSearch();
 
