@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Search, Image, Icon } from "semantic-ui-react";
 import { getImageUrl, useSearch } from "./../../../api";
 import { LockSymbol } from "../widgets/widgets";
@@ -20,20 +20,27 @@ type SearchBoxProps = Omit<
 const SearchBox = ({ children: _, ...searchProps }: SearchBoxProps) => {
   const navigate = useNavigate();
   const { search, isLoading, data } = useSearch();
+  const [value, setValue] = useState("");
+
+  useEffect(() => {
+    if (value.trim().length > 0) {
+      search({ value });
+    }
+  }, [search, value]);
 
   return (
     <Search
       id="mySearch"
       loading={isLoading}
-      onResultSelect={(e, { result }) =>
-        result.externalurl
-          ? window.open(result.externalurl, "_blank")
-          : navigate(result.url)
-      }
-      onSearchChange={(e, { value }) => {
-        if (value.trim().length > 0) {
-          search({ value });
+      onResultSelect={(_, { result }) => {
+        if (result.externalurl) {
+          window.open(result.externalurl, "_blank");
+        } else {
+          navigate(result.url);
         }
+      }}
+      onSearchChange={(_, { value }) => {
+        setValue(value);
       }}
       placeholder="Search"
       resultRenderer={(data) => {
@@ -113,6 +120,7 @@ const SearchBox = ({ children: _, ...searchProps }: SearchBoxProps) => {
         lockedsuperadmin: String(s.lockedsuperadmin),
       }))}
       {...searchProps}
+      value={value}
     />
   );
 };
