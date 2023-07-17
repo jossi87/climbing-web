@@ -117,7 +117,7 @@ function Footer() {
             Privacy Policy
           </List.Item>
         </List>
-        <p>Buldreinfo &amp; Bratte Linjer - 2006-2023</p>
+        <p>Buldreinfo &amp; Bratte Linjer - 2003-2023</p>
       </Container>
     </Segment>
   );

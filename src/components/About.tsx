@@ -179,7 +179,7 @@ const About = () => {
             </Header>
             <List bulleted>
               <List.Item>
-                2023-now:{" "}
+                2023:{" "}
                 <a
                   href="https://github.com/jossi87/climbing-web"
                   rel="noreferrer noopener"
@@ -200,7 +200,7 @@ const About = () => {
                 </List.Description>
               </List.Item>
               <List.Item>
-                2021-now:{" "}
+                2021:{" "}
                 <a
                   href="https://is.brattelinjer.no"
                   rel="noreferrer noopener"
@@ -224,7 +224,7 @@ const About = () => {
                 </List.Description>
               </List.Item>
               <List.Item>
-                2018-now:{" "}
+                2018:{" "}
                 <a
                   href="https://brattelinjer.no"
                   rel="noreferrer noopener"
@@ -248,7 +248,7 @@ const About = () => {
                 </List.Description>
               </List.Item>
               <List.Item>
-                2016-now:{" "}
+                2016:{" "}
                 <a
                   href="https://buldreinfo.com"
                   rel="noreferrer noopener"
