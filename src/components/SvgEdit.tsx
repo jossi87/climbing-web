@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Container, Button, Segment, Dropdown, Input } from "semantic-ui-react";
+import { Link } from "react-router-dom";
 import { useMeta } from "./common/meta";
 import {
   getSvgEdit,
@@ -487,6 +488,16 @@ const SvgEdit = () => {
     <Container onMouseUp={cancelDragging} onMouseLeave={cancelDragging}>
       <Segment style={{ minHeight: "130px" }}>
         <Button.Group floated="right">
+          <Button
+            primary
+            as={Link}
+            to="/mp4/20230718_SvgEditExample.mp4"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Example-video
+          </Button>
+          <Button.Or />
           <Button
             negative
             disabled={

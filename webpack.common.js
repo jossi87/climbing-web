@@ -20,6 +20,7 @@ const plugins = [
       "!favicon.ico*",
       "!google1588c034b4869b96.html",
       "!gpl-3.0.txt",
+      "!mp4/**",
       "!png/**",
       "!pdf/**",
       "!svg/**",
