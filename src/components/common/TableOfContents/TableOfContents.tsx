@@ -38,7 +38,9 @@ type Props = {
 
 export const TableOfContents = ({ areas }: Props) => {
   const areaRefs = useRef({});
-
+  if (areas?.length === 0) {
+    return <i>No results match your search criteria.</i>;
+  }
   return (
     <>
       <List celled link horizontal size="small">
