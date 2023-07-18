@@ -63,7 +63,13 @@ const SvgEdit = () => {
         setTexts(data.texts);
         setReadOnlySvgs(data.readOnlySvgs);
         setReadOnlyPoints(
-          data.readOnlySvgs?.map((svg) => parsePath(svg.path)).flat(),
+          data.readOnlySvgs
+            ?.map((svg) => {
+              return parsePath(svg.path).map((p, ix) => {
+                return { ...p, ix };
+              });
+            })
+            .flat(),
         );
         setActivePoint(data.activePoint);
         setDraggedPoint(data.draggedPoint);
@@ -227,6 +233,36 @@ const SvgEdit = () => {
         setPointCoords(getMouseCoords(e, true));
       } else if (draggedCubic !== false) {
         setCubicCoords(getMouseCoords(e, false), draggedCubic);
+      }
+    }
+    return false;
+  }
+
+  function handleMouseUp(e) {
+    // Remove selection caused by shift-button used to create new points
+    document.getSelection().removeAllRanges();
+    e.preventDefault();
+    // Overlap with an existing path if the two last points overlap
+    if (readOnlyPoints?.length >= 1 && points.length >= 2 && activePoint > 0) {
+      const p0 = points[activePoint - 1];
+      const p1 = points[activePoint];
+      const ix = readOnlyPoints?.findIndex((p) => p1.x === p.x && p1.y === p.y);
+      if (
+        ix > 0 &&
+        readOnlyPoints[ix - 1].x === p0.x &&
+        readOnlyPoints[ix - 1].y === p0.y
+      ) {
+        points[activePoint] = readOnlyPoints[ix];
+        // Also add a new start if previous point overlaps with existing
+        if (activePoint === 1 && readOnlyPoints[ix - 1].ix === 0) {
+          const y = Math.min(p0.y + 90, h);
+          points.splice(0, 0, { x: p0.x, y });
+          setActivePoint(2);
+        }
+        const p = generatePath(points);
+        setPath(p);
+        setPathTxt(p);
+        setPoints([...points]);
       }
     }
     return false;
@@ -538,6 +574,7 @@ const SvgEdit = () => {
         viewBox={"0 0 " + w + " " + h}
         onClick={handleOnClick}
         onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
         width="100%"
         height="100%"
       >
