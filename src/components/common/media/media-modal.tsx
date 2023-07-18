@@ -640,7 +640,13 @@ const MediaModal = ({
           )}
           {content}
           {m.mediaMetadata.description && (
-            <div style={{ position: "absolute", bottom: "0px", backgroundColor: "rgba(0,0,0,0.6)" }}>
+            <div
+              style={{
+                position: "absolute",
+                bottom: "0px",
+                backgroundColor: "rgba(0,0,0,0.6)",
+              }}
+            >
               {m.mediaMetadata.description}
             </div>
           )}
