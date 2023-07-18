@@ -10,6 +10,7 @@ import { Remarkable } from "remarkable";
 import { linkify } from "remarkable/linkify";
 import { useMeta } from "./common/meta";
 import { HeaderButtons } from "./common/HeaderButtons";
+import "./Areas.css";
 
 const Areas = () => {
   const { data } = useAreas();
@@ -74,12 +75,9 @@ const Areas = () => {
             )}
             {a.comment && (
               <div
+                className="area-description"
                 dangerouslySetInnerHTML={{
-                  __html: md.render(
-                    a.comment && a.comment.length > 200
-                      ? a.comment.substring(0, 200) + "..."
-                      : a.comment,
-                  ),
+                  __html: md.render(a.comment),
                 }}
               />
             )}
@@ -186,11 +184,9 @@ const Areas = () => {
                     <i>{`${area.numSectors} sectors, ${area.numProblems} ${typeDescription}, ${area.hits} page views`}</i>
                     <br />
                     <div
+                      className="area-description"
                       dangerouslySetInnerHTML={{
-                        __html:
-                          area.comment && area.comment.length > 350
-                            ? area.comment.substring(0, 350) + "..."
-                            : area.comment,
+                        __html: area.comment,
                       }}
                     />
                   </List.Description>
