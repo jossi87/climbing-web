@@ -2,6 +2,35 @@ import { parseSVG, makeAbsolute } from "svg-path-parser";
 import { getImageUrl } from "../../../api";
 import { useNavigate } from "react-router-dom";
 import { Descent, Rappel } from "../../../utils/svg-utils";
+import { CSSProperties } from "react";
+
+type SvgProps = {
+  style?: CSSProperties;
+  close: () => void;
+  m: {
+    id: number;
+    width: number;
+    height: number;
+    svgs: {
+      problemId: number;
+      nr: number;
+      problemName: string;
+      problemGrade: string;
+      problemSubtype: string;
+      isTicked: boolean;
+      isTodo: boolean;
+      isDangerous: boolean;
+    }[];
+    crc32: number;
+    embedUrl: number;
+    mediaSvgs: unknown[];
+  };
+  thumb: boolean;
+  optProblemId: number;
+  showText: boolean;
+  problemIdHovered: number;
+  setPoblemIdHovered: (problemId: number) => void;
+};
 
 const Svg = ({
   style,
@@ -12,7 +41,7 @@ const Svg = ({
   showText,
   problemIdHovered,
   setPoblemIdHovered,
-}) => {
+}: SvgProps) => {
   const { outerWidth, outerHeight } = window;
   const navigate = useNavigate();
   const minWindowScale = Math.min(outerWidth, outerHeight);
@@ -220,37 +249,47 @@ const Svg = ({
   function generateMediaSvgShapes(mediaSvgs) {
     let res = [];
     if (mediaSvgs && mediaSvgs.length > 0) {
-      res = mediaSvgs.map((svg, key) => {
-        if (svg.t === "PATH") {
-          return Descent({
-            path: svg.path,
-            whiteNotBlack: true,
-            scale,
-            thumb,
-            key,
-          });
-        } else if (svg.t === "RAPPEL_BOLTED") {
-          return Rappel({
-            x: svg.rappelX,
-            y: svg.rappelY,
-            bolted: true,
-            scale,
-            thumb,
-            backgroundColor: "black",
-            color: "white",
-            key,
-          });
-        } else if (svg.t === "RAPPEL_NOT_BOLTED") {
-          return Rappel({
-            x: svg.rappelX,
-            y: svg.rappelY,
-            bolted: false,
-            scale,
-            thumb,
-            backgroundColor: "black",
-            color: "white",
-            key,
-          });
+      res = mediaSvgs.map((svg) => {
+        switch (svg.t) {
+          case "PATH": {
+            return (
+              <Descent
+                key={svg.path}
+                path={svg.path}
+                whiteNotBlack={true}
+                scale={scale}
+                thumb={thumb}
+              />
+            );
+          }
+          case "RAPPEL_BOLTED": {
+            return (
+              <Rappel
+                key={[svg.rappelX, svg.rappelY].join("x")}
+                x={svg.rappelX}
+                y={svg.rappelY}
+                bolted={true}
+                scale={scale}
+                thumb={thumb}
+                backgroundColor={"black"}
+                color={"white"}
+              />
+            );
+          }
+          case "RAPPEL_NOT_BOLTED": {
+            return (
+              <Rappel
+                key={[svg.rappelX, svg.rappelY].join("x")}
+                x={svg.rappelX}
+                y={svg.rappelY}
+                bolted={false}
+                scale={scale}
+                thumb={thumb}
+                backgroundColor={"black"}
+                color={"white"}
+              />
+            );
+          }
         }
       });
     }
@@ -302,7 +341,7 @@ const Svg = ({
         width={m.width}
         height={m.height}
         style={style}
-      ></canvas>
+      />
       <svg
         overflow="visible"
         className="buldreinfo-svg"

@@ -1,4 +1,9 @@
-import React, { useState, useEffect, ComponentProps } from "react";
+import React, {
+  useState,
+  useEffect,
+  ComponentProps,
+  CSSProperties,
+} from "react";
 import LazyLoad from "react-lazyload";
 import { useLocation } from "react-router-dom";
 import {
@@ -15,7 +20,7 @@ import Svg from "./svg";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Loading } from "../widgets/widgets";
 
-const style = {
+const style: CSSProperties = {
   objectFit: "cover",
   position: "absolute",
   top: 0,

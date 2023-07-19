@@ -334,16 +334,18 @@ const MediaSvgEdit = () => {
     const x = data.mediaSvgs[activeElementIndex].rappelX;
     const y = data.mediaSvgs[activeElementIndex].rappelY;
     const scale = Math.max(data.width, data.height, minWindowScale);
-    activeRappel = Rappel({
-      x,
-      y,
-      scale,
-      bolted: data.mediaSvgs[activeElementIndex].t === TYPE_RAPPEL_BOLTED,
-      thumb: false,
-      backgroundColor: "white",
-      color: "red",
-      key: "ACTIVE_RAPPEL",
-    });
+    activeRappel = (
+      <Rappel
+        key={"ACTIVE_RAPPEL"}
+        backgroundColor={"white"}
+        bolted={data.mediaSvgs[activeElementIndex].t === TYPE_RAPPEL_BOLTED}
+        color={"red"}
+        scale={scale}
+        thumb={false}
+        x={x}
+        y={y}
+      />
+    );
   }
 
   return (
