@@ -307,7 +307,7 @@ const AreaEdit = () => {
               outlines={data.polygons}
               polylines={data.polylines}
               height={"300px"}
-              showSateliteImage={false}
+              showSatelliteImage={false}
               clusterMarkers={false}
               rocks={null}
               flyToId={null}

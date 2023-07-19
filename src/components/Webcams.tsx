@@ -62,7 +62,7 @@ const Webcams = () => {
           polylines={null}
           onMouseClick={null}
           onMouseMove={null}
-          showSateliteImage={false}
+          showSatelliteImage={false}
           clusterMarkers={false}
           rocks={null}
           flyToId={null}

@@ -97,7 +97,7 @@ const Areas = () => {
         outlines={null}
         onMouseClick={null}
         onMouseMove={null}
-        showSateliteImage={false}
+        showSatelliteImage={false}
         clusterMarkers={!showForDevelopers}
         rocks={null}
         flyToId={flyToId}

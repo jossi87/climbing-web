@@ -195,7 +195,7 @@ const SectorEdit = () => {
     return <Loading />;
   }
 
-  const polygons: ComponentProps<typeof Leaflet>["outlines"] = [];
+  const outlines: ComponentProps<typeof Leaflet>["outlines"] = [];
   const polylines: ComponentProps<typeof Leaflet>["polylines"] = [];
   if (area) {
     area.sectors.forEach((sector) => {
@@ -208,7 +208,7 @@ const SectorEdit = () => {
               const latLng = c.split(",");
               return [parseFloat(latLng[0]), parseFloat(latLng[1])];
             });
-          polygons.push({
+          outlines.push({
             polygon: sectorPolygon,
             background: true,
             label: sector.name,
@@ -246,7 +246,7 @@ const SectorEdit = () => {
       })
       .filter((e) => e?.length === 2 && e[0] > 0 && e[1] > 0);
   if (polygon) {
-    polygons.push({ polygon, background: false });
+    outlines.push({ polygon, background: false });
   }
   const polyline =
     data.polyline &&
@@ -451,14 +451,14 @@ const SectorEdit = () => {
               <Leaflet
                 autoZoom={true}
                 markers={markers}
-                outlines={polygons}
+                outlines={outlines}
                 polylines={polylines}
                 defaultCenter={defaultCenter}
                 defaultZoom={defaultZoom}
                 onMouseClick={onMapMouseClick}
                 onMouseMove={null}
                 height={"300px"}
-                showSateliteImage={meta.isBouldering}
+                showSatelliteImage={meta.isBouldering}
                 clusterMarkers={false}
                 rocks={null}
                 flyToId={null}
