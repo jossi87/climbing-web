@@ -70,14 +70,18 @@ const Sites = () => {
           <Button
             as={Link}
             to={"/sites/bouldering"}
-            active={type === "bouldering"}
+            primary={type === "bouldering"}
           >
             Bouldering
           </Button>
-          <Button as={Link} to={"/sites/climbing"} active={type === "climbing"}>
+          <Button
+            as={Link}
+            to={"/sites/climbing"}
+            primary={type === "climbing"}
+          >
             Route climbing
           </Button>
-          <Button as={Link} to={"/sites/ice"} active={type === "ice"}>
+          <Button as={Link} to={"/sites/ice"} primary={type === "ice"}>
             Ice climbing
           </Button>
         </Button.Group>
