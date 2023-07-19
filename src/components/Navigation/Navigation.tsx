@@ -40,7 +40,7 @@ export const Navigation = () => {
               icon={null}
             >
               <Dropdown.Menu>
-                <Dropdown.Header>{activeSite.group}</Dropdown.Header>
+                <Dropdown.Header>{activeSite.group} REGIONS</Dropdown.Header>
                 {sites
                   .filter((s) => s.group === activeSite.group)
                   .map((s, i) => (
@@ -54,9 +54,8 @@ export const Navigation = () => {
                     </Dropdown.Item>
                   ))}
                 <Dropdown.Divider />
-                <Dropdown.Header>Others</Dropdown.Header>
+                <Dropdown.Header>ALL SITES (MAP)</Dropdown.Header>
                 {sites
-                  .filter((g) => g.group !== activeSite.group)
                   .map((g) => g.group)
                   .filter((x, i, a) => a.indexOf(x) == i)
                   .map((g, i) => (
