@@ -215,7 +215,7 @@ const ProfileStatistics = ({ userId, canDownload }: ProfileStatisticsProps) => {
             outlines={null}
             onMouseClick={null}
             onMouseMove={null}
-            showSateliteImage={false}
+            showSatelliteImage={false}
             clusterMarkers={true}
             rocks={null}
             flyToId={null}

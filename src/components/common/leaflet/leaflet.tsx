@@ -9,10 +9,10 @@ import {
   ScaleControl,
   FeatureGroup,
 } from "react-leaflet";
-import { latLngBounds } from "leaflet";
+import { LatLngExpression, LeafletEventHandlerFn, latLngBounds } from "leaflet";
 import LocateControl from "./locatecontrol";
 import FullscreenControl from "./fullscreencontrol";
-import Markers from "./markers";
+import Markers, { MarkerDef } from "./markers";
 import Polygons from "./polygons";
 import Polylines from "./polylines";
 import MarkerClusterGroup from "./react-leaflet-markercluster";
@@ -20,7 +20,13 @@ import { Segment, Checkbox } from "semantic-ui-react";
 import UseControl from "../../../utils/use-leaflet-control";
 import GetCenterFromDegrees from "../../../utils/map-utils";
 
-function MapEvent({ onMouseClick, onMouseMove }) {
+function MapEvent({
+  onMouseClick,
+  onMouseMove,
+}: {
+  onMouseClick?: LeafletEventHandlerFn;
+  onMouseMove?: LeafletEventHandlerFn;
+}) {
   useMapEvents({
     click: (e) => {
       if (onMouseClick) {
@@ -36,30 +42,51 @@ function MapEvent({ onMouseClick, onMouseMove }) {
   return null;
 }
 
+type Props = {
+  autoZoom: boolean;
+  clusterMarkers: boolean;
+  defaultCenter: { lat: number; lng: number };
+  defaultZoom: number;
+  flyToId: number | null;
+  height: number | string;
+  markers: MarkerDef[];
+  onMouseClick: LeafletEventHandlerFn | null;
+  onMouseMove: LeafletEventHandlerFn | null;
+  outlines: {
+    background?: boolean;
+    polygon: LatLngExpression[];
+    url?: string;
+    label?: string;
+  }[];
+  polylines: {
+    background?: boolean;
+    label?: string;
+    polyline: LatLngExpression[];
+  }[];
+  rocks: never[] | null;
+  showSatelliteImage?: boolean;
+};
+
 const Leaflet = ({
   autoZoom,
-  markers,
-  outlines,
-  polylines,
-  height,
+  clusterMarkers,
   defaultCenter,
   defaultZoom,
+  flyToId,
+  height,
+  markers,
   onMouseClick,
   onMouseMove,
-  clusterMarkers,
-  showSateliteImage,
+  outlines,
+  polylines,
   rocks,
-  flyToId,
-}) => {
-  const [groupByRock, setGroupByRock] = useState(
-    rocks != null && rocks.length > 0 ? true : false,
-  );
+  showSatelliteImage,
+}: Props) => {
+  const [groupByRock, setGroupByRock] = useState(!!rocks?.length);
   let bounds = null;
   if (
     autoZoom &&
-    ((markers && markers.length > 0) ||
-      (outlines && outlines.length > 0) ||
-      (polylines && polylines.length > 0))
+    (!!markers?.length || !!outlines?.length || !!polylines?.length)
   ) {
     bounds = latLngBounds([]);
     if (markers && markers.length > 0) {
@@ -86,9 +113,11 @@ const Leaflet = ({
   const addEventHandlers = onMouseClick == null && onMouseMove == null;
   let markerGroup;
   if (groupByRock) {
-    const rockMarkers = rocks
+    const rockMarkers: MarkerDef[] = rocks
       .map((r) => {
-        const markersOnRock = markers.filter((m) => m.rock === r);
+        const markersOnRock = markers.filter(
+          (m) => "rock" in m && m.rock === r,
+        );
         const coords = markersOnRock
           .filter((m) => m.lat && m.lng)
           .map((m) => [m.lat, m.lng]);
@@ -98,14 +127,16 @@ const Leaflet = ({
             <>
               <b>{r}:</b>
               <br />
-              {markersOnRock.map((m) => (
-                <React.Fragment key={m.url}>
-                  <a rel="noreferrer noopener" target="_blank" href={m.url}>
-                    {m.label}
-                  </a>
-                  <br />
-                </React.Fragment>
-              ))}
+              {markersOnRock
+                .filter((m) => "url" in m)
+                .map((m: MarkerDef & { url: string }) => (
+                  <React.Fragment key={m.url}>
+                    <a rel="noreferrer noopener" target="_blank" href={m.url}>
+                      {m.label}
+                    </a>
+                    <br />
+                  </React.Fragment>
+                ))}
             </>
           );
           return {
@@ -118,7 +149,7 @@ const Leaflet = ({
         }
       })
       .filter((item) => item); // Remove undefined
-    const markersWithoutRock = markers.filter((m) => !m.rock);
+    const markersWithoutRock = markers.filter((m) => !("rock" in m) || !m.rock);
     markerGroup = (
       <Markers
         opacity={opacity}
@@ -167,7 +198,7 @@ const Leaflet = ({
       )}
       <LayersControl>
         <LayersControl.BaseLayer
-          checked={showSateliteImage}
+          checked={showSatelliteImage}
           name="Norge i Bilder"
         >
           <TileLayer
@@ -186,7 +217,7 @@ const Leaflet = ({
         </LayersControl.BaseLayer>
 
         <LayersControl.BaseLayer
-          checked={!showSateliteImage}
+          checked={!showSatelliteImage}
           name="Kartverket N50 topo"
         >
           <TileLayer

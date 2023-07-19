@@ -151,7 +151,7 @@ export const Problem = () => {
             defaultZoom={16}
             onMouseClick={null}
             onMouseMove={null}
-            showSateliteImage={true}
+            showSatelliteImage={true}
             clusterMarkers={false}
             rocks={null}
             flyToId={null}

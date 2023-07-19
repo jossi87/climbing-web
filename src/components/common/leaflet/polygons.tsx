@@ -1,22 +1,38 @@
+import { LatLngExpression } from "leaflet";
 import React from "react";
 import { Polygon, Tooltip } from "react-leaflet";
 import { useNavigate } from "react-router";
 
-export default function Polygons({ opacity, outlines, addEventHandlers }) {
+type Props = {
+  opacity: number;
+  outlines: {
+    polygon: LatLngExpression[];
+    background?: boolean;
+    url?: string;
+    label?: string;
+  }[];
+  addEventHandlers?: boolean;
+};
+
+export default function Polygons({
+  opacity,
+  outlines,
+  addEventHandlers,
+}: Props) {
   const navigate = useNavigate();
   if (!outlines) {
     return null;
   }
   return outlines.map((o) => (
     <Polygon
-      key={o.polygon}
+      key={o.polygon.map((latlng) => latlng.toString()).join(" -> ")}
       positions={o.polygon}
-      color={o.background === true ? "red" : "#3388ff"}
-      weight={o.background === true ? 1 : 3}
+      color={o.background ? "red" : "#3388ff"}
+      weight={o.background ? 1 : 3}
       eventHandlers={{
         click: () => {
           if (addEventHandlers) {
-            if (o.url.startsWith("https")) {
+            if (o.url?.startsWith("https")) {
               const win = window.open(o.url, "_blank");
               win?.focus();
             } else {

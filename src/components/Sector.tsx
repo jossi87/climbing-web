@@ -225,7 +225,7 @@ const Sector = () => {
             defaultZoom={defaultZoom}
             onMouseClick={null}
             onMouseMove={null}
-            showSateliteImage={isBouldering}
+            showSatelliteImage={isBouldering}
             clusterMarkers={true}
             rocks={uniqueRocks}
             flyToId={null}

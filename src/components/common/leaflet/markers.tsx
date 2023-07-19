@@ -8,20 +8,92 @@ import {
   rockIcon,
 } from "./icons";
 import { useNavigate } from "react-router";
+import { LatLngExpression } from "leaflet";
+
+type ParkingMarker = {
+  lat: number;
+  lng: number;
+  label?: string;
+  isParking: true;
+  url?: string;
+};
+
+type CameraMarker = {
+  lat: number;
+  lng: number;
+  label: string;
+  isCamera: true;
+  name: string;
+  lastUpdated: string;
+  urlStillImage: string;
+  urlYr?: string;
+  urlOther?: string;
+};
+
+type HtmlMarker = {
+  id: number;
+  lat: number;
+  lng: number;
+  label: string;
+  html: React.ReactNode;
+  rock?: boolean;
+};
+
+type LabelMarker = {
+  lat: number;
+  lng: number;
+  label: string;
+  url: string;
+};
+
+type GenericMarker = {
+  lat: number;
+  lng: number;
+  label?: string;
+  url?: string;
+};
+
+export type MarkerDef =
+  | CameraMarker
+  | GenericMarker
+  | HtmlMarker
+  | LabelMarker
+  | ParkingMarker;
+
+type Props = {
+  markers: MarkerDef[];
+  opacity: number;
+  addEventHandlers: boolean;
+  flyToId: number | null;
+};
+
+const isParkingMarker = (m: MarkerDef): m is ParkingMarker =>
+  (m as ParkingMarker).isParking;
+
+const isCameraMarker = (m: MarkerDef): m is CameraMarker =>
+  (m as CameraMarker).isCamera;
+
+const isHtmlMarker = (m: MarkerDef): m is HtmlMarker =>
+  !!(m as HtmlMarker).html;
+
+const isLabelMarker = (m: MarkerDef): m is LabelMarker =>
+  !!(m as LabelMarker).label;
 
 export default function Markers({
   opacity,
   markers,
   addEventHandlers,
   flyToId,
-}) {
+}: Props) {
   const navigate = useNavigate();
   const map = useMap();
-  const markerRefs = useRef({});
+  const markerRefs = useRef<
+    Record<number, { getLatLng: () => LatLngExpression; openPopup: () => void }>
+  >({});
   useEffect(() => {
     if (map && flyToId && markerRefs.current[flyToId]) {
       const marker = markerRefs.current[flyToId];
-      map.flyTo(marker._latlng, 13, { animate: false });
+      map.flyTo(marker.getLatLng(), 13, { animate: false });
       marker.openPopup();
     }
   }, [flyToId, map]);
@@ -30,7 +102,7 @@ export default function Markers({
     return null;
   }
   return markers.map((m) => {
-    if (m.isParking) {
+    if (isParkingMarker(m)) {
       return (
         <Marker
           icon={parkingIcon}
@@ -55,7 +127,8 @@ export default function Markers({
           )}
         </Marker>
       );
-    } else if (m.isCamera) {
+    }
+    if (isCameraMarker(m)) {
       return (
         <Marker
           icon={weatherIcon}
@@ -90,7 +163,8 @@ export default function Markers({
           </Popup>
         </Marker>
       );
-    } else if (m.html) {
+    }
+    if (isHtmlMarker(m)) {
       return (
         <Marker
           icon={m.rock ? rockIcon : markerBlueIcon}
@@ -108,7 +182,8 @@ export default function Markers({
           <Popup closeButton={false}>{m.html}</Popup>
         </Marker>
       );
-    } else if (m.label) {
+    }
+    if (isLabelMarker(m)) {
       return (
         <Marker
           icon={markerBlueIcon}
@@ -132,22 +207,22 @@ export default function Markers({
           </Tooltip>
         </Marker>
       );
-    } else {
-      return (
-        <Marker
-          icon={markerRedIcon}
-          position={[m.lat, m.lng]}
-          key={["red", m.lat, m.lng].join("/")}
-          eventHandlers={{
-            click: () => {
-              if (addEventHandlers) {
-                navigate(m.url);
-              }
-            },
-          }}
-          draggable={false}
-        ></Marker>
-      );
     }
+
+    return (
+      <Marker
+        icon={markerRedIcon}
+        position={[m.lat, m.lng]}
+        key={["red", m.lat, m.lng].join("/")}
+        eventHandlers={{
+          click: () => {
+            if (addEventHandlers && m.url) {
+              navigate(m.url);
+            }
+          },
+        }}
+        draggable={false}
+      />
+    );
   });
 }

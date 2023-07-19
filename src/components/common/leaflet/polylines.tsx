@@ -1,7 +1,17 @@
+import { LatLngExpression } from "leaflet";
 import React from "react";
 import { Circle, Polyline, Tooltip } from "react-leaflet";
 
-export default function Polylines({ opacity, polylines }) {
+type Props = {
+  opacity: number;
+  polylines: {
+    background?: boolean;
+    polyline: LatLngExpression[];
+    label?: string;
+  }[];
+};
+
+export default function Polylines({ opacity, polylines }: Props) {
   if (!polylines) {
     return null;
   }
@@ -27,7 +37,7 @@ export default function Polylines({ opacity, polylines }) {
       }
       return (
         <Polyline
-          key={p.polyline}
+          key={p.polyline.map((latlng) => latlng.toString()).join(" -> ")}
           color={color}
           weight={weight}
           positions={p.polyline}

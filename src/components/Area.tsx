@@ -221,7 +221,7 @@ const Area = () => {
             defaultZoom={defaultZoom}
             onMouseClick={null}
             onMouseMove={null}
-            showSateliteImage={false}
+            showSatelliteImage={false}
             clusterMarkers={false}
             rocks={null}
             flyToId={null}
