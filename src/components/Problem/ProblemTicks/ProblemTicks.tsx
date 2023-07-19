@@ -12,7 +12,7 @@ export const ProblemTicks = ({ ticks }: { ticks: Tick[] }) => {
         Ticks:
       </Header>
       {ticks?.length ? (
-        ticks.map((t, i) => {
+        ticks.map((t) => {
           let dt = t.date;
           let com: React.ReactNode | null = null;
           if (t.repeats?.length > 0) {
@@ -32,8 +32,8 @@ export const ProblemTicks = ({ ticks }: { ticks: Tick[] }) => {
                   </Table.Cell>
                   <Table.Cell verticalAlign="top">{t.comment}</Table.Cell>
                 </Table.Row>
-                {t.repeats.map((r, i) => (
-                  <Table.Row key={i}>
+                {t.repeats.map((r) => (
+                  <Table.Row key={[r.date, r.comment].join("/")}>
                     <Table.Cell
                       verticalAlign="top"
                       singleLine
@@ -51,7 +51,7 @@ export const ProblemTicks = ({ ticks }: { ticks: Tick[] }) => {
           }
           return (
             <Comment
-              key={i}
+              key={[t.idUser, t.date].join("@")}
               style={{ backgroundColor: t.writable ? "#d2f8d2" : "#ffffff" }}
             >
               <Comment.Avatar src={t.picture ? t.picture : "/png/image.png"} />

@@ -11,7 +11,7 @@ const AccordionContainer = ({ accordionRows }) => {
   return (
     <Accordion fluid styled attached="bottom">
       {accordionRows.map((d, i) => (
-        <span key={i}>
+        <span key={d.label}>
           <Accordion.Title
             active={activeIndex === i}
             index={i}

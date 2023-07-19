@@ -233,9 +233,14 @@ const ProfileStatistics = ({ userId, canDownload }: ProfileStatisticsProps) => {
         <ProblemList
           isSectorNotUser={false}
           preferOrderByGrade={data.orderByGrade}
-          rows={data.ticks.map((t, key) => {
+          rows={data.ticks.map((t) => {
             return {
-              element: <TickListItem key={key} tick={t} />,
+              element: (
+                <TickListItem
+                  key={[t.areaName, t.sectorName, t.name].join("/")}
+                  tick={t}
+                />
+              ),
               areaName: t.areaName,
               sectorName: t.sectorName,
               name: t.name,

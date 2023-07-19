@@ -71,7 +71,7 @@ const ImageUpload = ({
           <br />
           <br />
           <Card.Group itemsPerRow={4} stackable>
-            {media.map((m, i) => {
+            {media.map((m) => {
               let min = 0;
               let sec = 0;
               if (
@@ -83,7 +83,7 @@ const ImageUpload = ({
                   (sec = Math.floor((m.embedMilliseconds / 1000) % 60));
               }
               return (
-                <Card key={i}>
+                <Card key={m.file?.preview ?? m.embedThumbnailUrl}>
                   <Image src={m.file ? m.file.preview : m.embedThumbnailUrl} />
                   <Card.Content>
                     {isMultiPitch && (

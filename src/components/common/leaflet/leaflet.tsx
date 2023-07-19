@@ -98,8 +98,8 @@ const Leaflet = ({
             <>
               <b>{r}:</b>
               <br />
-              {markersOnRock.map((m, i) => (
-                <React.Fragment key={i}>
+              {markersOnRock.map((m) => (
+                <React.Fragment key={m.url}>
                   <a rel="noreferrer noopener" target="_blank" href={m.url}>
                     {m.label}
                   </a>

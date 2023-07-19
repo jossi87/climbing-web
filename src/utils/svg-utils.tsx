@@ -325,10 +325,10 @@ export function parseReadOnlySvgs(readOnlySvgs, w, h, minWindowScale) {
           h,
         ),
       );
-      svg.anchors.map((a, i) => {
+      svg.anchors.map((a) => {
         shapes.push(
           <circle
-            key={i}
+            key={`${a.x}x${a.y}`}
             className="buldreinfo-svg-edit-opacity"
             fill="#000000"
             cx={a.x}

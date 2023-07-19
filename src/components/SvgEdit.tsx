@@ -453,7 +453,7 @@ const SvgEdit = () => {
     }
     const fill = activePoint === i ? "#00FF00" : "#FF0000";
     return (
-      <g key={i}>
+      <g key={[p.x, p.y].join("x")}>
         {anchors}
         <circle
           className={"buldreinfo-svg-pointer"}
@@ -474,13 +474,25 @@ const SvgEdit = () => {
       </g>
     );
   });
-  anchors.map((a, i) => {
+  anchors.map((a) => {
     circles.push(
-      <circle key={i} fill="#E2011A" cx={a.x} cy={a.y} r={0.006 * w} />,
+      <circle
+        key={[a.x, a.y].join("x")}
+        fill="#E2011A"
+        cx={a.x}
+        cy={a.y}
+        r={0.006 * w}
+      />,
     );
   });
-  const myTexts = texts.map((t, i) => (
-    <text key={i} x={t.x} y={t.y} fontSize="5em" fill={"red"}>
+  const myTexts = texts.map((t) => (
+    <text
+      key={[t.x, t.y].join("x")}
+      x={t.x}
+      y={t.y}
+      fontSize="5em"
+      fill={"red"}
+    >
       {t.txt}
     </text>
   ));

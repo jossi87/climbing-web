@@ -29,13 +29,13 @@ export default function Markers({
   if (!markers) {
     return null;
   }
-  return markers.map((m, i) => {
+  return markers.map((m) => {
     if (m.isParking) {
       return (
         <Marker
           icon={parkingIcon}
           position={[m.lat, m.lng]}
-          key={i}
+          key={["parking", m.lat, m.lng].join("/")}
           eventHandlers={{
             click: () => {
               if (addEventHandlers) {
@@ -57,10 +57,14 @@ export default function Markers({
       );
     } else if (m.isCamera) {
       return (
-        <Marker icon={weatherIcon} position={[m.lat, m.lng]} key={i}>
+        <Marker
+          icon={weatherIcon}
+          position={[m.lat, m.lng]}
+          key={["camera", m.lat, m.lng].join("/")}
+        >
           <Popup closeButton={false}>
             <b>{m.name}</b>
-            {i.lastUpdated && (
+            {m.lastUpdated && (
               <>
                 {" "}
                 (<i>{m.lastUpdated}</i>)
@@ -91,7 +95,7 @@ export default function Markers({
         <Marker
           icon={m.rock ? rockIcon : markerBlueIcon}
           position={[m.lat, m.lng]}
-          key={i}
+          key={["html", m.lat, m.lng].join("/")}
           ref={(ref) => (markerRefs.current[m.id] = ref)}
         >
           <Tooltip
@@ -109,7 +113,7 @@ export default function Markers({
         <Marker
           icon={markerBlueIcon}
           position={[m.lat, m.lng]}
-          key={i}
+          key={["label", m.lat, m.lng].join("/")}
           eventHandlers={{
             click: () => {
               if (addEventHandlers) {
@@ -133,7 +137,7 @@ export default function Markers({
         <Marker
           icon={markerRedIcon}
           position={[m.lat, m.lng]}
-          key={i}
+          key={["red", m.lat, m.lng].join("/")}
           eventHandlers={{
             click: () => {
               if (addEventHandlers) {

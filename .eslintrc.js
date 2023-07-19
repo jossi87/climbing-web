@@ -27,6 +27,7 @@ module.exports = {
   },
   plugins: ["@typescript-eslint", "react"],
   rules: {
+    "react/no-array-index-key": "error",
     "react/react-in-jsx-scope": ["off"],
     "react/prop-types": ["warn"], // Until we get to zero
     "@typescript-eslint/no-explicit-any": ["warn"],

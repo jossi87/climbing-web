@@ -28,8 +28,8 @@ const Todo = ({ idArea, idSector }: { idArea: number; idSector: number }) => {
       </Header>
       <List>
         <List.Item>
-          {data.sectors.map((sector, i) => (
-            <List.List key={i}>
+          {data.sectors.map((sector) => (
+            <List.List key={sector.id}>
               {idArea > 0 && (
                 <List.Header>
                   <Link to={`/sector/${sector.id}`}>{sector.name}</Link>
@@ -40,8 +40,8 @@ const Todo = ({ idArea, idSector }: { idArea: number; idSector: number }) => {
                 </List.Header>
               )}
               <List.List>
-                {sector.problems.map((problem, i) => (
-                  <List.Item key={i}>
+                {sector.problems.map((problem) => (
+                  <List.Item key={problem.id}>
                     <List.Header>
                       {`#${problem.nr} `}
                       <Link to={`/problem/${problem.id}`}>
@@ -52,7 +52,7 @@ const Todo = ({ idArea, idSector }: { idArea: number; idSector: number }) => {
                         <small>
                           <i style={{ color: "gray" }}>
                             {problem.partners.map((u, i) => (
-                              <React.Fragment key={i}>
+                              <React.Fragment key={u.id}>
                                 {i === 0 ? " User(s): " : ", "}
                                 <Link to={`/user/${u.id}/todo`}>{u.name}</Link>
                               </React.Fragment>

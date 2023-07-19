@@ -89,9 +89,9 @@ const Activity = ({ idArea, idSector }) => {
           >
             <Dropdown.Menu>
               <Dropdown.Menu scrolling>
-                {meta.grades.map((a, i) => (
+                {meta.grades.map((a) => (
                   <Dropdown.Item
-                    key={i}
+                    key={a.grade}
                     text={a.grade}
                     onClick={() => {
                       const gradeText =
@@ -166,7 +166,8 @@ const Activity = ({ idArea, idSector }) => {
       {!activity && (
         <Segment vertical>
           <Placeholder fluid>
-            {[...Array(15)].map((e, i) => (
+            {[...Array(15)].map((_, i) => (
+              // eslint-disable-next-line react/no-array-index-key
               <Placeholder.Header image key={i}>
                 <Placeholder.Line length="medium" />
                 <Placeholder.Line length="short" />
@@ -178,12 +179,12 @@ const Activity = ({ idArea, idSector }) => {
       {activity && activity.length === 0 && <Segment vertical>No data</Segment>}
       {activity && activity.length != 0 && (
         <Feed>
-          {activity.map((a, i) => {
+          {activity.map((a) => {
             // FA
             if (a.users) {
               const typeDescription = meta.isBouldering ? "problem" : "route";
               return (
-                <Feed.Event key={i}>
+                <Feed.Event key={a.activityIds.join("+")}>
                   <Feed.Label>
                     {a.problemRandomMediaId > 0 && (
                       <img
@@ -218,9 +219,9 @@ const Activity = ({ idArea, idSector }) => {
                     {a.media && (
                       <LazyLoad>
                         <Feed.Extra images>
-                          {a.media.map((m, i) => (
+                          {a.media.map((m) => (
                             <Link
-                              key={i}
+                              key={m.id}
                               to={`/problem/${a.problemId}?idMedia=${m.id}`}
                             >
                               <Image
@@ -238,10 +239,10 @@ const Activity = ({ idArea, idSector }) => {
                     )}
                     {a.users && (
                       <Feed.Meta>
-                        {a.users.map((u, i) => (
+                        {a.users.map((u) => (
                           <Label
                             basic
-                            key={i}
+                            key={u.id}
                             as={Link}
                             to={`/user/${u.id}`}
                             image
@@ -263,7 +264,7 @@ const Activity = ({ idArea, idSector }) => {
             // Guestbook
             else if (a.message) {
               return (
-                <Feed.Event key={i}>
+                <Feed.Event key={a.activityIds.join("+")}>
                   <Feed.Label>
                     {a.picture && <img src={a.picture} />}
                   </Feed.Label>
@@ -300,9 +301,9 @@ const Activity = ({ idArea, idSector }) => {
                     {a.media && (
                       <LazyLoad>
                         <Feed.Extra images>
-                          {a.media.map((m, i) => (
+                          {a.media.map((m) => (
                             <Link
-                              key={i}
+                              key={m.id}
                               to={`/problem/${a.problemId}?idMedia=${m.id}`}
                             >
                               <Image
@@ -349,7 +350,7 @@ const Activity = ({ idArea, idSector }) => {
                 summary = img;
               }
               return (
-                <Feed.Event key={i}>
+                <Feed.Event key={a.activityIds.join("+")}>
                   <Feed.Label>
                     {a.problemRandomMediaId > 0 && (
                       <img
@@ -382,9 +383,9 @@ const Activity = ({ idArea, idSector }) => {
                     </Feed.Summary>
                     <LazyLoad>
                       <Feed.Extra images>
-                        {a.media.map((m, i) => (
+                        {a.media.map((m) => (
                           <Link
-                            key={i}
+                            key={m.id}
                             to={`/problem/${a.problemId}?idMedia=${m.id}`}
                           >
                             <Image
@@ -406,7 +407,7 @@ const Activity = ({ idArea, idSector }) => {
             else {
               const action = a.repeat ? "repeated" : "ticked";
               return (
-                <Feed.Event key={i}>
+                <Feed.Event key={a.activityIds.join("+")}>
                   <Feed.Label>
                     {a.picture && <img src={a.picture} />}
                   </Feed.Label>

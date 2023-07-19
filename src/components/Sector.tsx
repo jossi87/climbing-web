@@ -285,7 +285,7 @@ const Sector = () => {
     uniqueTypes.push("Projects");
   }
   uniqueTypes.sort();
-  const content = uniqueTypes.map((subType, i) => {
+  const content = uniqueTypes.map((subType) => {
     const header = subType ? subType : "Boulders";
     const problemsOfType = data.problems.filter(
       (p) =>
@@ -298,7 +298,7 @@ const Sector = () => {
         ? problemsOfType.length
         : problemsOfType.length + " (" + numTicked + " ticked)";
     return (
-      <Table.Row key={i}>
+      <Table.Row key={[header, txt].join("/")}>
         <TableCell>{header}:</TableCell>
         <TableCell>{txt}</TableCell>
       </Table.Row>
@@ -421,9 +421,9 @@ const Sector = () => {
               <Table.Cell>Sectors:</Table.Cell>
               <Table.Cell>
                 <Label.Group size="tiny">
-                  {data.sectors.map((s, i) => (
+                  {data.sectors.map((s) => (
                     <Label
-                      key={i}
+                      key={s.id}
                       as={Link}
                       to={`/sector/${s.id}`}
                       active={data.id === s.id}

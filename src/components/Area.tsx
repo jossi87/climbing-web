@@ -276,8 +276,8 @@ const Area = () => {
       render: () => (
         <Tab.Pane>
           <Item.Group link unstackable>
-            {data[0].sectors.map((sector, i) => (
-              <Item as={Link} to={`/sector/${sector.id}`} key={i}>
+            {data[0].sectors.map((sector) => (
+              <Item as={Link} to={`/sector/${sector.id}`} key={sector.id}>
                 <Image
                   size="small"
                   style={{ maxHeight: "150px", objectFit: "cover" }}
@@ -305,8 +305,8 @@ const Area = () => {
                     />
                   </Item.Header>
                   <Item.Meta>
-                    {sector.typeNumTicked.map((x, i) => (
-                      <p key={i}>
+                    {sector.typeNumTicked.map((x) => (
+                      <p key={`${x.type}/${x.num}/${x.ticked}`}>
                         {x.type + ": " + x.num}
                         {x.ticked > 0 && " (" + x.ticked + " ticked)"}
                       </p>
@@ -452,8 +452,8 @@ const Area = () => {
             <Table.Cell width={3}>Sectors:</Table.Cell>
             <Table.Cell>{data[0].sectors.length}</Table.Cell>
           </Table.Row>
-          {data[0].typeNumTicked.map((t, i) => (
-            <Table.Row key={i}>
+          {data[0].typeNumTicked.map((t) => (
+            <Table.Row key={[t.num, t.ticked].join("/")}>
               <Table.Cell>{t.type + ":"}</Table.Cell>
               <Table.Cell>
                 {t.num}

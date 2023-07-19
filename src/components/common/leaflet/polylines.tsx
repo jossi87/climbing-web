@@ -5,10 +5,18 @@ export default function Polylines({ opacity, polylines }) {
   if (!polylines) {
     return null;
   }
-  return polylines.map((p, i) => {
+  return polylines.map((p) => {
     if (p.polyline.length === 1) {
       return (
-        <Circle color="lime" key={i} center={p.polyline[0]} radius={0.5} />
+        <Circle
+          color="lime"
+          // It's not great to use JSON.stringify(..) for this, but I don't
+          // know what type we're actually working with here. This is easier
+          // for now and shouldn't cause any major performance issues.
+          key={JSON.stringify(p.polyline[0])}
+          center={p.polyline[0]}
+          radius={0.5}
+        />
       );
     } else {
       let color = "lime";

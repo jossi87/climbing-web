@@ -43,10 +43,10 @@ export const Navigation = () => {
                 <Dropdown.Header>{activeSite.group} REGIONS</Dropdown.Header>
                 {sites
                   .filter((s) => s.group === activeSite.group)
-                  .map((s, i) => (
+                  .map((s) => (
                     <Dropdown.Item
                       active={s.active}
-                      key={i}
+                      key={s.name}
                       as={Link}
                       to={s.url}
                     >
@@ -58,9 +58,9 @@ export const Navigation = () => {
                 {sites
                   .map((g) => g.group)
                   .filter((x, i, a) => a.indexOf(x) == i)
-                  .map((g, i) => (
+                  .map((g) => (
                     <Dropdown.Item
-                      key={i}
+                      key={g}
                       as={Link}
                       to={"/sites/" + g.toLowerCase()}
                     >

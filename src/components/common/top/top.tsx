@@ -16,8 +16,8 @@ const Top = ({ idArea, idSector }: TopProps) => {
     return <Loading />;
   }
 
-  const rows = top.map((t, i) => (
-    <Table.Row key={i}>
+  const rows = top.map((t) => (
+    <Table.Row key={t.userId}>
       <Table.Cell>#{t.rank}</Table.Cell>
       <Table.Cell>
         <Header as="h4" image>
