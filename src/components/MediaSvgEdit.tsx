@@ -310,7 +310,7 @@ const MediaSvgEdit = () => {
         );
       }
       return (
-        <g key={i}>
+        <g key={[p.c[0].x, p.c[0]].join("x")}>
           {anchors}
           <circle
             className={"buldreinfo-svg-pointer"}
@@ -438,7 +438,7 @@ const MediaSvgEdit = () => {
               <Label
                 as="a"
                 image
-                key={index}
+                key={svg.t}
                 color={activeElementIndex === index ? "green" : "grey"}
                 onClick={() => {
                   if (

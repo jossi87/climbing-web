@@ -142,11 +142,10 @@ const Areas = () => {
         </HeaderButtons>
         <List celled link horizontal size="small">
           {data
-            .filter((a) => a.forDevelopers === showForDevelopers)
-            .map((area, i) => (
-              <React.Fragment key={i}>
+            .filter((area) => area.forDevelopers === showForDevelopers)
+            .map((area) => (
+              <React.Fragment key={area.id}>
                 <List.Item
-                  key={i}
                   as="a"
                   onClick={() => {
                     if (area.lat && area.lng) {
@@ -169,9 +168,9 @@ const Areas = () => {
         {map}
         <List divided relaxed>
           {data
-            .filter((a) => a.forDevelopers === showForDevelopers)
-            .map((area, i) => (
-              <List.Item key={i}>
+            .filter((area) => area.forDevelopers === showForDevelopers)
+            .map((area) => (
+              <List.Item key={area.id}>
                 <List.Content as={Link} to={`/area/${area.id}`}>
                   <List.Header>
                     {area.name}{" "}

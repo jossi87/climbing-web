@@ -226,7 +226,7 @@ const Media = ({ numPitches, media, optProblemId }: Props) => {
         />
       )}
       <Card.Group itemsPerRow={5} doubling>
-        {media.map((x, i) => {
+        {media.map((x) => {
           let content;
           if (x.svgs || x.mediaSvgs) {
             content = (
@@ -234,7 +234,6 @@ const Media = ({ numPitches, media, optProblemId }: Props) => {
                 close={null}
                 thumb={true}
                 m={x}
-                key={i}
                 style={style}
                 optProblemId={optProblemId}
                 showText={false}
@@ -246,10 +245,11 @@ const Media = ({ numPitches, media, optProblemId }: Props) => {
             content = (
               <Image
                 alt={x.description}
-                key={i}
                 style={style}
                 src={getImageUrl(x.id, x.crc32, 205)}
-                onError={(i) => (i.target.src = "/png/video_placeholder.png")}
+                onError={(img) =>
+                  (img.target.src = "/png/video_placeholder.png")
+                }
                 rounded
               />
             );
@@ -258,7 +258,7 @@ const Media = ({ numPitches, media, optProblemId }: Props) => {
             <Card
               as="a"
               onClick={() => openModal(x)}
-              key={i}
+              key={x.id}
               raised
               style={{
                 backgroundColor: "rgb(245, 245, 245)",

@@ -29,11 +29,11 @@ function Chart({ data }) {
       return d.fa + d.tick;
     }),
   );
-  const rows = grades.map((g, i) => {
+  const rows = grades.map((g) => {
     const faWidth = (g.fa / maxValue) * 100 + "%";
     const tickWidth = (g.tick / maxValue) * 100 + "%";
     return (
-      <tr key={i}>
+      <tr key={[g.grade, g.fa, g.tick].join("/")}>
         <td style={{ padding: 0, textAlign: "center", whiteSpace: "nowrap" }}>
           {g.grade}
         </td>

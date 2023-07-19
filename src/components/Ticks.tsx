@@ -49,8 +49,8 @@ const Ticks = () => {
           </>
         ) : (
           <Feed>
-            {data.ticks.map((t, i) => (
-              <Feed.Event key={i} as={Link} to={`/problem/${t.problemId}`}>
+            {data.ticks.map((t) => (
+              <Feed.Event key={t.id} as={Link} to={`/problem/${t.problemId}`}>
                 <Feed.Content>
                   <Feed.Summary>
                     <Feed.Date>{t.date}</Feed.Date> {t.areaName}{" "}

@@ -83,7 +83,7 @@ const Permissions = () => {
         <Segment>No data</Segment>
       ) : (
         <Card.Group doubling stackable itemsPerRow={4}>
-          {filteredData.map((u, key) => {
+          {filteredData.map((u) => {
             let color: any = "white";
             if (u.write == 2) {
               color = "black";
@@ -103,7 +103,7 @@ const Permissions = () => {
               value = 1;
             }
             return (
-              <Card color={color} key={key} raised>
+              <Card color={color} key={u.userId} raised>
                 <Card.Content>
                   <Image
                     floated="right"

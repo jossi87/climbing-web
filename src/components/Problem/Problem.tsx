@@ -433,8 +433,14 @@ export const Problem = () => {
                 )}
                 {data.faAid.users && (
                   <>
-                    {data.faAid.users.map((u, i) => (
-                      <Label key={i} as={Link} to={`/user/${u.id}`} image basic>
+                    {data.faAid.users.map((u) => (
+                      <Label
+                        key={u.id}
+                        as={Link}
+                        to={`/user/${u.id}`}
+                        image
+                        basic
+                      >
                         {u.picture ? (
                           <img src={u.picture} />
                         ) : (
@@ -476,8 +482,14 @@ export const Problem = () => {
               )}
               {data.fa && (
                 <>
-                  {data.fa.map((u, i) => (
-                    <Label key={i} as={Link} to={`/user/${u.id}`} image basic>
+                  {data.fa.map((u) => (
+                    <Label
+                      key={u.id}
+                      as={Link}
+                      to={`/user/${u.id}`}
+                      image
+                      basic
+                    >
                       {u.picture ? (
                         <img src={u.picture} />
                       ) : (
@@ -548,10 +560,10 @@ export const Problem = () => {
             <Table.Row verticalAlign="top">
               <Table.Cell>On TODO-list:</Table.Cell>
               <Table.Cell>
-                {data.todos.map((u, i) => (
+                {data.todos.map((u) => (
                   <Label
                     size="mini"
-                    key={i}
+                    key={u.idUser}
                     as={Link}
                     to={`/user/${u.idUser}`}
                     image
@@ -640,8 +652,8 @@ export const Problem = () => {
               <Table.Cell verticalAlign="top">Pitches:</Table.Cell>
               <Table.Cell>
                 <Feed size="small">
-                  {data.sections.map((s, i) => (
-                    <Feed.Event key={i}>
+                  {data.sections.map((s) => (
+                    <Feed.Event key={s.nr}>
                       <Feed.Label style={{ marginTop: "8px" }}>
                         {s.nr}
                       </Feed.Label>

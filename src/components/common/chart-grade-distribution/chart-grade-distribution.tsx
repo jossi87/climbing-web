@@ -23,12 +23,12 @@ const ChartGradeDistribution = ({ idArea, idSector, data }) => {
       return d.num;
     }),
   );
-  const cols = gradeDistribution.map((g, i) => {
+  const cols = gradeDistribution.map((g) => {
     const hPrim = (g.prim / maxValue) * 80 + "%";
     const hSec = (g.sec / maxValue) * 80 + "%";
     const col = (
       <td
-        key={i}
+        key={[g.grade, g.prim, g.sec, g.num, g.sec].join("/")}
         style={{ height: "100%", verticalAlign: "bottom", textAlign: "center" }}
       >
         {g.num > 0 && g.num}
@@ -66,7 +66,7 @@ const ChartGradeDistribution = ({ idArea, idSector, data }) => {
       const hasIce = g.rows.filter((x) => x.numIce > 0).length > 0;
       return (
         <Popup
-          key={i}
+          key={[g.grade, g.prim, g.sec, g.num, g.sec].join("/")}
           inverted
           position="bottom center"
           offset={[0, 20]}
@@ -87,8 +87,8 @@ const ChartGradeDistribution = ({ idArea, idSector, data }) => {
                 </Table.Row>
               </Table.Header>
               <Table.Body>
-                {g.rows.map((s, i) => (
-                  <Table.Row key={i}>
+                {g.rows.map((s) => (
+                  <Table.Row key={s.name}>
                     <Table.Cell>{s.name}</Table.Cell>
                     {hasBoulder && <Table.Cell>{s.numBoulder}</Table.Cell>}
                     {hasSport && <Table.Cell>{s.numSport}</Table.Cell>}
@@ -121,8 +121,8 @@ const ChartGradeDistribution = ({ idArea, idSector, data }) => {
       <tbody>
         <tr>{cols}</tr>
         <tr>
-          {gradeDistribution.map((g, i) => (
-            <td style={{ width: "40px", textAlign: "center" }} key={"td" + i}>
+          {gradeDistribution.map((g) => (
+            <td style={{ width: "40px", textAlign: "center" }} key={g.grade}>
               <strong>{g.grade}</strong>
             </td>
           ))}

@@ -119,8 +119,13 @@ const Frontpage = () => {
                     <Card.Content extra>
                       <Label.Group size="mini">
                         {frontpage.randomMedia.tagged &&
-                          frontpage.randomMedia.tagged.map((x, i) => (
-                            <Label basic key={i} as={Link} to={`/user/${x.id}`}>
+                          frontpage.randomMedia.tagged.map((x) => (
+                            <Label
+                              basic
+                              key={x.id}
+                              as={Link}
+                              to={`/user/${x.id}`}
+                            >
                               <Icon name="user" />
                               {x.name}
                             </Label>
@@ -151,7 +156,8 @@ const Frontpage = () => {
             >
               <Segment>
                 <Placeholder>
-                  {[...Array(6)].map((e, i) => (
+                  {[...Array(6)].map((_, i) => (
+                    // eslint-disable-next-line react/no-array-index-key
                     <Placeholder.Header image key={i}>
                       <Placeholder.Line />
                     </Placeholder.Header>

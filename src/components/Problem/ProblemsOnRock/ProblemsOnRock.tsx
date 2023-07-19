@@ -31,9 +31,9 @@ export const ProblemsOnRock = ({
     <Table.Row verticalAlign="top">
       <Table.Cell>Rock «{rock}»:</Table.Cell>
       <Table.Cell>
-        {problemsOnRock.map((p, key) => (
+        {problemsOnRock.map((p) => (
           <Label
-            key={key}
+            key={p.id}
             as={Link}
             to={`/problem/${p.id}`}
             active={problemId === p.id}

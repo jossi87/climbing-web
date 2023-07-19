@@ -28,8 +28,8 @@ const About = () => {
         </Header>
         <List>
           {data ? (
-            data.map((u, key) => (
-              <List.Item key={key}>
+            data.map((u) => (
+              <List.Item key={u.userId}>
                 <Image src={u.picture ? u.picture : "/png/image.png"} />
                 <List.Content>
                   <List.Header as={Link} to={`/user/${u.userId}`}>
@@ -41,7 +41,8 @@ const About = () => {
             ))
           ) : (
             <Placeholder>
-              {[...Array(10)].map((e, i) => (
+              {[...Array(10)].map((_, i) => (
+                // eslint-disable-next-line react/no-array-index-key
                 <Placeholder.Header image key={i}>
                   <Placeholder.Line length="medium" />
                   <Placeholder.Line length="short" />

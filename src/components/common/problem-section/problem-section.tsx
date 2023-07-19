@@ -70,8 +70,8 @@ const ProblemSection = ({
       />
       {sections &&
         sections.length > 1 &&
-        sections.map((s, i) => (
-          <Form.Group widths="equal" key={i} inline>
+        sections.map((s) => (
+          <Form.Group widths="equal" key={s.nr} inline>
             <Form.Field>
               <Input
                 size="mini"

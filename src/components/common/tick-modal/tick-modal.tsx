@@ -179,8 +179,8 @@ const TickModal = ({
                   Repeats (enabled on ice climbing and multi pitches for logging
                   additional ascents)
                 </label>
-                {repeats?.map((r, i) => (
-                  <Form.Group key={i} inline unstackable>
+                {repeats?.map((r) => (
+                  <Form.Group key={r.date ?? "undated"} inline unstackable>
                     <Form.Field width={5}>
                       <DatePicker
                         placeholderText="Click to select a date"

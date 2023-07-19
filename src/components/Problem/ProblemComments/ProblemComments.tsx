@@ -59,7 +59,7 @@ export const ProblemComments = ({
         Comments:
       </Header>
       {data.comments?.length ? (
-        data.comments.map((c, i) => {
+        data.comments.map((c) => {
           let extra: JSX.Element | null = null;
           if (c.danger) {
             extra = <Label color="red">Flagged as dangerous</Label>;
@@ -78,7 +78,7 @@ export const ProblemComments = ({
             );
           }
           return (
-            <Comment key={i}>
+            <Comment key={[c.idUser, c.date].join("@")}>
               <Comment.Avatar src={c.picture ? c.picture : "/png/image.png"} />
               <Comment.Content>
                 {c.editable && (

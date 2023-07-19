@@ -28,7 +28,7 @@ const Svg = ({
       }
       return b.nr - a.nr;
     });
-    return topoLines.map((svg, key) => {
+    return topoLines.map((svg) => {
       const path: any = parseSVG(svg.path);
       makeAbsolute(path); // Note: mutates the commands in place!
 
@@ -104,6 +104,7 @@ const Svg = ({
       if (y > h - r) y = h - r;
       const anchors = [];
       if (svg.hasAnchor) {
+        const key = [path[ixAnchor].x, path[ixAnchor].y].join("x");
         anchors.push(
           <circle
             key={key + "_1"}
@@ -124,10 +125,11 @@ const Svg = ({
         );
       }
       if (svg.anchors) {
-        JSON.parse(svg.anchors).map((a, i) => {
+        JSON.parse(svg.anchors).map((a) => {
+          const key = [a.x, a.y].join("x");
           anchors.push(
             <circle
-              key={i + "_1"}
+              key={key + "_1"}
               fill={"#000000"}
               cx={a.x}
               cy={a.y}
@@ -136,7 +138,7 @@ const Svg = ({
           );
           anchors.push(
             <circle
-              key={i + "_2"}
+              key={key + "_2"}
               fill={groupColor}
               cx={a.x}
               cy={a.y}
@@ -147,15 +149,21 @@ const Svg = ({
       }
       const texts =
         svg.texts &&
-        JSON.parse(svg.texts).map((t, i) => (
-          <text key={i} x={t.x} y={t.y} fontSize="5em" fill="red">
+        JSON.parse(svg.texts).map((t) => (
+          <text
+            key={[t.x, t.y].join("x")}
+            x={t.x}
+            y={t.y}
+            fontSize="5em"
+            fill="red"
+          >
             {t.txt}
           </text>
         ));
       return (
         <g
           className={gClassName}
-          key={key}
+          key={svg.path}
           style={style}
           onClick={() => {
             if (close) {
