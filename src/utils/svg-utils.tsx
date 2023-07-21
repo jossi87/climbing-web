@@ -2,22 +2,29 @@ import React from "react";
 import { parseSVG, makeAbsolute } from "svg-path-parser";
 import { svgPathProperties } from "svg-path-properties";
 
-export function Descent({ path, whiteNotBlack, scale, thumb, key }) {
+type DescentProps = {
+  path: React.SVGProps<SVGPathElement>["d"];
+  whiteNotBlack: boolean;
+  scale: number;
+  thumb: boolean;
+};
+
+export function Descent({ path, whiteNotBlack, scale, thumb }: DescentProps) {
   const properties = new svgPathProperties(path);
   const deltaPercent = (scale / properties.getTotalLength()) * (thumb ? 3 : 2);
   const texts: JSX.Element[] = [];
   for (let i = 0; i <= 100; i += deltaPercent) {
     texts.push(
-      <textPath key={i} xlinkHref={"#descent" + key} startOffset={i + "%"}>
+      <textPath key={i} xlinkHref={"#descent" + path} startOffset={i + "%"}>
         ➤
       </textPath>,
     );
   }
   const fontSize = 0.012 * scale * (thumb ? 2 : 1);
   return (
-    <g opacity={0.9} key={key}>
+    <g opacity={0.9} key={path}>
       <path
-        id={"descent" + key}
+        id={"descent" + path}
         style={{ fill: "none" }}
         strokeWidth={0}
         d={path}
@@ -45,7 +52,12 @@ export function Descent({ path, whiteNotBlack, scale, thumb, key }) {
   );
 }
 
-function Anchor({ strokeWidth, r, x, y, bolted, stroke }) {
+type AnchorProps = Pick<
+  React.SVGProps<SVGCircleElement>,
+  "strokeWidth" | "stroke"
+> & { bolted: boolean; r: number; x: number; y: number };
+
+function Anchor({ strokeWidth, r, x, y, bolted, stroke }: AnchorProps) {
   return (
     <g opacity={0.9}>
       {bolted ? (
@@ -120,6 +132,13 @@ function Anchor({ strokeWidth, r, x, y, bolted, stroke }) {
   );
 }
 
+type RappelProps = Omit<AnchorProps, "r"> & {
+  scale: number;
+  backgroundColor: string;
+  thumb: boolean;
+  color: string;
+};
+
 export function Rappel({
   x,
   y,
@@ -128,12 +147,11 @@ export function Rappel({
   thumb,
   backgroundColor,
   color,
-  key,
-}) {
+}: RappelProps) {
   const strokeWidth = 0.0015 * scale * (thumb ? 2 : 1);
   const r = 0.005 * scale * (thumb ? 2 : 1);
   return (
-    <g key={key}>
+    <g key={[x, y, bolted].join("/")}>
       {Anchor({
         strokeWidth: strokeWidth * 2,
         r,
@@ -147,7 +165,14 @@ export function Rappel({
   );
 }
 
-function generateSvgNrAndAnchor(key, path, nr, hasAnchor, w, h) {
+function generateSvgNrAndAnchor(
+  key: string,
+  path: { x: number; y: number }[],
+  nr: string | number,
+  hasAnchor: boolean,
+  w: number,
+  h: number,
+) {
   let ixNr;
   let maxY = 0;
   let ixAnchor;
@@ -218,7 +243,7 @@ function generateSvgNrAndAnchor(key, path, nr, hasAnchor, w, h) {
   );
 }
 
-export function parsePath(d) {
+export function parsePath(d: string) {
   let res: any[] = [];
   if (d) {
     const commands: any = parseSVG(d);
@@ -273,71 +298,96 @@ export function parsePath(d) {
   return res;
 }
 
-export function parseReadOnlySvgs(readOnlySvgs, w, h, minWindowScale) {
-  const shapes: JSX.Element[] = [];
+type SvgType = {
+  path: string;
+  anchors: { x: number; y: number }[];
+  nr: number;
+  hasAnchor: boolean;
+} & (
+  | { t: "PATH" }
+  | (({ t: "RAPPEL_BOLTED" } | { t: "RAPPEL_NOT_BOLTED" }) & {
+      rappelX: number;
+      rappelY: number;
+    })
+  | { t: "other" }
+);
+
+export function parseReadOnlySvgs(
+  readOnlySvgs: SvgType[],
+  w: number,
+  h: number,
+  minWindowScale: number,
+) {
   const backgroundColor = "black";
   const color = "white";
   const scale = Math.max(w, h, minWindowScale);
-  for (const svg of readOnlySvgs) {
-    if (svg.t === "PATH") {
-      shapes.push(
-        Descent({
-          path: svg.path,
-          whiteNotBlack: true,
-          scale,
-          thumb: false,
-          key: shapes.length,
-        }),
-      );
-    } else if (svg.t === "RAPPEL_BOLTED" || svg.t === "RAPPEL_NOT_BOLTED") {
-      shapes.push(
-        Rappel({
-          x: svg.rappelX,
-          y: svg.rappelY,
-          bolted: svg.t === "RAPPEL_BOLTED",
-          scale,
-          thumb: false,
-          backgroundColor,
-          color,
-          key: shapes.length,
-        }),
-      );
-    } else {
-      shapes.push(
-        <path
-          key={shapes.length}
-          d={svg.path}
-          className={"buldreinfo-svg-edit-opacity"}
-          style={{ fill: "none", stroke: "#000000" }}
-          strokeWidth={0.003 * w}
-          strokeDasharray={0.006 * w}
-        />,
-      );
-      const commands = parseSVG(svg.path);
-      makeAbsolute(commands); // Note: mutates the commands in place!
-      shapes.push(
-        generateSvgNrAndAnchor(
-          svg.nr + "_path",
-          commands,
-          svg.nr,
-          svg.hasAnchor,
-          w,
-          h,
-        ),
-      );
-      svg.anchors.map((a) => {
-        shapes.push(
-          <circle
-            key={`${a.x}x${a.y}`}
-            className="buldreinfo-svg-edit-opacity"
-            fill="#000000"
-            cx={a.x}
-            cy={a.y}
-            r={0.006 * w}
+  const shapes = readOnlySvgs.reduce<JSX.Element[]>((acc, svg) => {
+    const { t } = svg;
+    switch (t) {
+      case "PATH": {
+        return [
+          ...acc,
+          <Descent
+            key={svg.path}
+            path={svg.path}
+            whiteNotBlack={true}
+            scale={scale}
+            thumb={false}
           />,
+        ];
+      }
+      case "RAPPEL_BOLTED":
+      case "RAPPEL_NOT_BOLTED": {
+        return [
+          ...acc,
+          <Rappel
+            key={[svg.rappelX, svg.rappelY].join("x")}
+            x={svg.rappelX}
+            y={svg.rappelY}
+            bolted={t === "RAPPEL_BOLTED"}
+            scale={scale}
+            thumb={false}
+            backgroundColor={backgroundColor}
+            color={color}
+          />,
+        ];
+      }
+      default: {
+        const commands = parseSVG(svg.path);
+        makeAbsolute(commands); // Note: mutates the commands in place!
+        shapes.push(
+          generateSvgNrAndAnchor(
+            svg.nr + "_path",
+            commands,
+            svg.nr,
+            svg.hasAnchor,
+            w,
+            h,
+          ),
         );
-      });
+        return [
+          ...acc,
+          <path
+            key={svg.path}
+            d={svg.path}
+            className={"buldreinfo-svg-edit-opacity"}
+            style={{ fill: "none", stroke: "#000000" }}
+            strokeWidth={0.003 * w}
+            strokeDasharray={0.006 * w}
+          />,
+          ...svg.anchors.map((a) => (
+            <circle
+              key={`${a.x}x${a.y}`}
+              className="buldreinfo-svg-edit-opacity"
+              fill="#000000"
+              cx={a.x}
+              cy={a.y}
+              r={0.006 * w}
+            />
+          )),
+        ];
+      }
     }
-  }
+  }, []);
   return shapes;
 }

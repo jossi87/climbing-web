@@ -71,7 +71,11 @@ function ErrorFallback({
   );
 }
 
-export const Auth0ProviderWithNavigate = ({ children }) => {
+export const Auth0ProviderWithNavigate = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const navigate = useNavigate();
   const domain = "climbing.eu.auth0.com";
   const clientId = "DNJNVzhxbF7PtaBFh7H6iBSNLh2UJWHt";

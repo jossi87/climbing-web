@@ -167,12 +167,12 @@ export function useData<TQueryData = any, TData = TQueryData>(
 export function getImageUrl(
   id: number,
   checksum: number,
-  minDimention?: number,
+  minDimension?: number,
 ): string {
   const crc32 = checksum || 0;
-  if (minDimention) {
+  if (minDimension) {
     return getUrl(
-      `/images?id=${id}&crc32=${crc32}&minDimention=${minDimention}`,
+      `/images?id=${id}&crc32=${crc32}&minDimention=${minDimension}`,
     );
   }
   return getUrl(`/images?id=${id}&crc32=${crc32}`);
