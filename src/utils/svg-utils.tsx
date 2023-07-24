@@ -353,18 +353,6 @@ export function parseReadOnlySvgs(
         ];
       }
       default: {
-        const commands = parseSVG(svg.path);
-        makeAbsolute(commands); // Note: mutates the commands in place!
-        shapes.push(
-          generateSvgNrAndAnchor(
-            svg.nr + "_path",
-            commands,
-            svg.nr,
-            svg.hasAnchor,
-            w,
-            h,
-          ),
-        );
         return [
           ...acc,
           <path
