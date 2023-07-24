@@ -293,7 +293,6 @@ const Svg = ({
         }
       });
     }
-    console.log(res)
     return res;
   }
 
