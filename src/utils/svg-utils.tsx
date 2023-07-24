@@ -11,12 +11,16 @@ type DescentProps = {
 
 export function Descent({ path, whiteNotBlack, scale, thumb }: DescentProps) {
   const properties = new svgPathProperties(path);
-  const descentKey = path.replace(/\s/g, ''); // Key cannot contains spaces
+  const descentKey = path.replace(/\s/g, ""); // Key cannot contains spaces
   const deltaPercent = (scale / properties.getTotalLength()) * (thumb ? 3 : 2);
   const texts: JSX.Element[] = [];
   for (let i = 0; i <= 100; i += deltaPercent) {
     texts.push(
-      <textPath key={i} xlinkHref={"#descent" + descentKey} startOffset={i + "%"}>
+      <textPath
+        key={i}
+        xlinkHref={"#descent" + descentKey}
+        startOffset={i + "%"}
+      >
         ➤
       </textPath>,
     );
