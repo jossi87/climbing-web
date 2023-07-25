@@ -5,7 +5,7 @@ type Props = {
   icon?: ComponentProps<typeof Icon>["name"];
   header: string;
   subheader?: React.ReactNode;
-  children: React.ReactNode | React.ReactNode[];
+  children?: React.ReactNode | React.ReactNode[];
 };
 
 export const HeaderButtons = ({ header, subheader, icon, children }: Props) => {

@@ -903,16 +903,29 @@ export function getSvgEdit(
     });
 }
 
-export function getTicks(
-  accessToken: string | null,
-  page: number,
-): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/ticks?page=${page}`)
-    .then((data) => data.json())
-    .catch((error) => {
-      console.warn(error);
-      return null;
-    });
+export function useTicks(page: number) {
+  return useData<{
+    ticks: {
+      problemId: number;
+      date: string;
+      areaName: string;
+      areaLockedAdmin: boolean;
+      areaLockedSuperadmin: boolean;
+      sectorName: string;
+      sectorLockedAdmin: boolean;
+      sectorLockedSuperadmin: boolean;
+      problemName: string;
+      problemLockedAdmin: boolean;
+      problemLockedSuperadmin: boolean;
+      name: string;
+      problemGrade: string;
+    }[];
+    currPage: number | string;
+    numPages: number;
+    activePage: number;
+  }>(`/ticks?page=${page}`, {
+    queryKey: [`/ticks`, { page }],
+  });
 }
 
 export function useTodo({

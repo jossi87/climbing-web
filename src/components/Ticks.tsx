@@ -1,56 +1,45 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Helmet } from "react-helmet";
-import { Segment, Header, Pagination, Loader, Feed } from "semantic-ui-react";
-import { Loading, LockSymbol } from "./common/widgets/widgets";
+import { Segment, Pagination, Feed, Placeholder } from "semantic-ui-react";
+import { LockSymbol } from "./common/widgets/widgets";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
-import { getTicks } from "../api";
+import { useTicks } from "../api";
+import { HeaderButtons } from "./common/HeaderButtons";
+
+const PlaceholderFeed = () => {
+  return (
+    <Placeholder>
+      {new Array(20).fill(0).map((_, i) => (
+        // eslint-disable-next-line react/no-array-index-key
+        <Placeholder.Header key={i}>
+          <Placeholder.Line length="full" />
+        </Placeholder.Header>
+      ))}
+    </Placeholder>
+  );
+};
 
 const Ticks = () => {
-  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
   const { page } = useParams();
+  const { data, isLoading } = useTicks(+page);
   const navigate = useNavigate();
-  useEffect(() => {
-    setLoading(true);
-    const update = async () => {
-      const accessToken = isAuthenticated
-        ? await getAccessTokenSilently()
-        : null;
-      getTicks(accessToken, parseInt(page)).then((data) => {
-        setData(data);
-        setLoading(false);
-      });
-    };
-    update();
-  }, [isLoading, isAuthenticated, page, getAccessTokenSilently]);
 
-  if (isLoading || !data) {
-    return <Loading />;
-  }
   return (
     <>
       <Helmet>
         <title>Ticks</title>
       </Helmet>
       <Segment>
-        <div>
-          <Header as="h3">Public ascents</Header>
-        </div>
-        {loading ? (
-          <>
-            <Loader
-              active
-              inline
-              style={{ marginTop: "20px", marginBottom: "20px" }}
-            />
-            <br />
-          </>
-        ) : (
-          <Feed>
-            {data.ticks.map((t) => (
-              <Feed.Event key={t.id} as={Link} to={`/problem/${t.problemId}`}>
+        <HeaderButtons header="Public ascents" icon="checkmark" />
+        <Feed>
+          {isLoading && <PlaceholderFeed />}
+          {data &&
+            data.ticks.map((t) => (
+              <Feed.Event
+                key={[t.date, t.name].join(" - ")}
+                as={Link}
+                to={`/problem/${t.problemId}`}
+              >
                 <Feed.Content>
                   <Feed.Summary>
                     <Feed.Date>{t.date}</Feed.Date> {t.areaName}{" "}
@@ -75,20 +64,20 @@ const Ticks = () => {
                 </Feed.Content>
               </Feed.Event>
             ))}
-          </Feed>
+        </Feed>
+        {data && (
+          <Pagination
+            size="tiny"
+            siblingRange={0}
+            boundaryRange={0}
+            defaultActivePage={data.currPage}
+            totalPages={data.numPages}
+            onPageChange={(e, data) => {
+              const page = data.activePage;
+              navigate("/ticks/" + page);
+            }}
+          />
         )}
-        <Pagination
-          size="tiny"
-          siblingRange={0}
-          boundaryRange={0}
-          defaultActivePage={data.currPage}
-          totalPages={data.numPages}
-          onPageChange={(e, data) => {
-            const page = data.activePage;
-            setLoading(true);
-            navigate("/ticks/" + page);
-          }}
-        />
       </Segment>
     </>
   );
