@@ -22,9 +22,10 @@ import {
 import { saveAs } from "file-saver";
 import { useMeta } from "../meta";
 import * as Sentry from "@sentry/react";
+import { definitions } from "../../../@types/buldreinfo/swagger";
 
 type TickListItemProps = {
-  tick: Tick;
+  tick: definitions["ProfileStatistics"]["ticks"][number];
 };
 
 const TickListItem = ({ tick }: TickListItemProps) => (
@@ -232,7 +233,7 @@ const ProfileStatistics = ({ userId, canDownload }: ProfileStatisticsProps) => {
       {data.ticks.length > 0 && (
         <ProblemList
           isSectorNotUser={false}
-          preferOrderByGrade={data.orderByGrade}
+          preferOrderByGrade={false}
           rows={data.ticks.map((t) => {
             return {
               element: (

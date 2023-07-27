@@ -16,13 +16,14 @@ import {
 } from "semantic-ui-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { definitions } from "../../../@types/buldreinfo/swagger";
 
 type TickModalProps = {
   open: boolean;
   onClose: () => void;
   idTick: number;
   idProblem: number;
-  grades: Grade[];
+  grades: definitions["Grade"][];
   comment: string | null;
   grade: string;
   stars: number | null;

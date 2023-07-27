@@ -14,6 +14,7 @@ import {
   DATA_MUTATION_EVENT,
 } from "./components/DataReloader";
 import { useLocalStorage } from "./utils/use-local-storage";
+import { definitions } from "./@types/buldreinfo/swagger";
 
 export function getLocales() {
   return "nb-NO";
@@ -242,12 +243,11 @@ export function getProblemPdfUrl(
 }
 
 export function useProblems() {
-  const [cachedData, _, writeCachedData] = useLocalStorage<ProblemArea[]>(
-    "cache/problems",
-    [],
-  );
+  const [cachedData, _, writeCachedData] = useLocalStorage<
+    definitions["ProblemArea"][]
+  >("cache/problems", []);
 
-  return useData<ProblemArea[]>("/problems", {
+  return useData<definitions["ProblemArea"][]>("/problems", {
     placeholderData: cachedData,
     select(data) {
       writeCachedData(data);
@@ -371,7 +371,7 @@ export function getArea(accessToken: string | null, id: number): Promise<any> {
 export function getAreaEdit(
   accessToken: string | null,
   id: number,
-): Promise<any> {
+): Promise<definitions["Area"]> {
   if (id == -1) {
     return Promise.resolve({
       id: -1,
@@ -638,7 +638,7 @@ export function getProblemEdit(
 export function useProfile(userId: number = -1) {
   const client = useQueryClient();
   const { isAuthenticated } = useAuth0();
-  const profile = useData<Profile>(`/profile?id=${userId}`, {
+  const profile = useData<definitions["Profile"]>(`/profile?id=${userId}`, {
     queryKey: [`/profile`, { id: userId }],
     enabled: userId > 0 || isAuthenticated,
   });
@@ -653,55 +653,55 @@ export function useProfile(userId: number = -1) {
       `/user/regions?regionId=${regionId}&delete=${true}`,
   });
 
-  const setRegion = usePostData<{ region: Region; del: boolean }>(
-    `/user/regions`,
-    {
-      createUrl: ({ region: { id }, del }) =>
-        `/user/regions?regionId=${id}&delete=${del}`,
-      fetchOptions: {
-        consistencyAction: "nop",
-      },
-      onMutate: ({ region, del }) => {
-        client.setQueryData<Profile>(
-          [`/profile`, { id: userId, isAuthenticated }],
-          (old) => {
-            if (old && typeof old === "object") {
-              const next = {
-                ...old,
-                userRegions: old.userRegions.map((oldRegion) => {
-                  if (oldRegion.id !== region.id) {
-                    return oldRegion;
-                  }
-                  return {
-                    ...oldRegion,
-                    enabled: !del,
-                  };
-                }),
-              };
-              return next;
-            }
-            return old;
-          },
-        );
-      },
-      onError: () => {
-        client.refetchQueries({
-          queryKey: [`/profile`, { id: -1 }],
-        });
-      },
-      onSettled: () => {
-        client.refetchQueries({
-          queryKey: [`/areas`],
-        });
-        client.refetchQueries({
-          queryKey: [`/problems`],
-        });
-        client.refetchQueries({
-          queryKey: [`/dangerous`],
-        });
-      },
+  const setRegion = usePostData<{
+    region: definitions["UserRegion"];
+    del: boolean;
+  }>(`/user/regions`, {
+    createUrl: ({ region: { id }, del }) =>
+      `/user/regions?regionId=${id}&delete=${del}`,
+    fetchOptions: {
+      consistencyAction: "nop",
     },
-  );
+    onMutate: ({ region, del }) => {
+      client.setQueryData<definitions["Profile"]>(
+        [`/profile`, { id: userId, isAuthenticated }],
+        (old) => {
+          if (old && typeof old === "object") {
+            const next = {
+              ...old,
+              userRegions: old.userRegions.map((oldRegion) => {
+                if (oldRegion.id !== region.id) {
+                  return oldRegion;
+                }
+                return {
+                  ...oldRegion,
+                  enabled: !del,
+                };
+              }),
+            };
+            return next;
+          }
+          return old;
+        },
+      );
+    },
+    onError: () => {
+      client.refetchQueries({
+        queryKey: [`/profile`, { id: -1 }],
+      });
+    },
+    onSettled: () => {
+      client.refetchQueries({
+        queryKey: [`/areas`],
+      });
+      client.refetchQueries({
+        queryKey: [`/problems`],
+      });
+      client.refetchQueries({
+        queryKey: [`/dangerous`],
+      });
+    },
+  });
 
   return {
     ...profile,
@@ -724,9 +724,12 @@ export function useProfileMedia({
 }
 
 export function useProfileStatistics(id: number) {
-  return useData<ProfileStatistics>(`/profile/statistics?id=${id}`, {
-    queryKey: [`/profile/statistics`, { id }],
-  });
+  return useData<definitions["ProfileStatistics"]>(
+    `/profile/statistics?id=${id}`,
+    {
+      queryKey: [`/profile/statistics`, { id }],
+    },
+  );
 }
 
 export function useProfileTodo(id: number) {
@@ -979,8 +982,8 @@ export function postArea(
   accessToken: string | null,
   id: number,
   trash: boolean,
-  lockedAdmin: number,
-  lockedSuperadmin: number,
+  lockedAdmin: boolean,
+  lockedSuperadmin: boolean,
   forDevelopers: boolean,
   accessInfo: string,
   accessClosed: string,
@@ -1241,7 +1244,7 @@ export function postProblemMedia(
 export function useSearch() {
   const { mutateAsync, data, ...rest } = usePostData<
     { value: string },
-    SearchResult[]
+    definitions["Search"][]
   >(`/search`, {
     select(response) {
       return response.json();
@@ -1419,7 +1422,7 @@ export function putMediaJpegRotate(
   accessToken: string | null,
   idMedia: number,
   degrees: number,
-): Promise<any> {
+): Promise<unknown> {
   return makeAuthenticatedRequest(
     accessToken,
     `/media/jpeg/rotate?idMedia=${idMedia}&degrees=${degrees}`,
@@ -1430,9 +1433,9 @@ export function putMediaJpegRotate(
 }
 
 export function useTrash() {
-  const { data } = useData<Trash[]>(`/trash`, { select: (v) => v });
+  const { data } = useData<definitions["Trash"][]>(`/trash`);
 
-  const restore = usePostData<Trash, string>(`/trash`, {
+  const restore = usePostData<definitions["Trash"], string>(`/trash`, {
     fetchOptions: {
       method: "PUT",
       body: undefined,

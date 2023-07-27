@@ -3,12 +3,23 @@ import { Loading } from "./common/widgets/widgets";
 import { getImageUrl, useTrash } from "../api";
 import { Segment, Icon, Header, List, Button, Image } from "semantic-ui-react";
 import { useNavigate } from "react-router";
+import { definitions } from "../@types/buldreinfo/swagger";
 
-const getKey = ({ idArea, idSector, idProblem, idMedia }: Trash) => {
+const getKey = ({
+  idArea,
+  idSector,
+  idProblem,
+  idMedia,
+}: definitions["Trash"]) => {
   return [idArea, idSector, idProblem, idMedia].join("/");
 };
 
-const getLabel = ({ idMedia, idArea, idSector, idProblem }: Trash): string => {
+const getLabel = ({
+  idMedia,
+  idArea,
+  idSector,
+  idProblem,
+}: definitions["Trash"]): string => {
   if (idMedia) {
     return "Media";
   }

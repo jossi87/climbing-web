@@ -22,7 +22,7 @@ import { VisibilitySelectorField } from "./common/VisibilitySelector";
 const AreaEdit = () => {
   const accessToken = useAccessToken();
   const meta = useMeta();
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState(null);
   const [showSectorOrder, setShowSectorOrder] = useState(false);
   const [saving, setSaving] = useState(false);
   const { areaId } = useParams();
@@ -107,7 +107,7 @@ const AreaEdit = () => {
         data.sectorOrder,
       )
         .then(async (res) => {
-          return navigate(res.destination);
+          return navigate(res.destination ?? "/areas");
         })
         .catch((error) => {
           console.warn(error);
@@ -130,11 +130,10 @@ const AreaEdit = () => {
   }
 
   const defaultCenter =
-    data.lat && data.lng && parseFloat(data.lat) > 0
-      ? { lat: parseFloat(data.lat), lng: parseFloat(data.lng) }
+    data.lat && data.lng && +data.lat > 0
+      ? { lat: +data.lat, lng: +data.lng }
       : meta.defaultCenter;
-  const defaultZoom: number =
-    data.lat && parseFloat(data.lat) > 0 ? 8 : meta.defaultZoom;
+  const defaultZoom: number = data.lat && +data.lat > 0 ? 8 : meta.defaultZoom;
 
   const orderForm = data.sectorOrder?.length > 1 && (
     <>

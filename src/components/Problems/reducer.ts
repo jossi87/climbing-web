@@ -3,6 +3,7 @@ import { neverGuard } from "../../utils/neverGuard";
 import * as Sentry from "@sentry/react";
 import { useGrades } from "../common/meta/meta";
 import { itemLocalStorage } from "../../utils/use-local-storage";
+import { definitions } from "../../@types/buldreinfo/swagger";
 
 export type State = {
   visible: boolean;
@@ -10,7 +11,7 @@ export type State = {
   totalAreas: number;
   totalSectors: number;
   totalProblems: number;
-  unfilteredData: ProblemArea[];
+  unfilteredData: definitions["ProblemArea"][];
 } & {
   filterAreaIds: Record<number, true>;
   filterGradeLow: string | undefined;
@@ -22,7 +23,7 @@ export type State = {
   filterHideTicked: boolean | undefined;
   filterOnlyAdmin: boolean | undefined;
   filterOnlySuperAdmin: boolean | undefined;
-  filteredData: ProblemArea[];
+  filteredData: definitions["ProblemArea"][];
 
   filteredAreas: number;
   filteredSectors: number;
@@ -38,7 +39,7 @@ export type ResetField =
   | "grades";
 
 export type Update =
-  | { action: "set-data"; data: ProblemArea[] }
+  | { action: "set-data"; data: definitions["ProblemArea"][] }
   | {
       action: "toggle-pitches";
       option: keyof State["filterPitches"];
@@ -64,7 +65,9 @@ export type Update =
   | { action: "toggle-filter" }
   | { action: "reset"; section: ResetField };
 
-const count = (data: ProblemArea[]): [number, number, number] => {
+const count = (
+  data: definitions["ProblemArea"][],
+): [number, number, number] => {
   return data.reduce(
     ([areas, sectors, problems], area) => [
       areas,
