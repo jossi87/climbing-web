@@ -1,3 +1,7 @@
+# About
+Frontend (written in React) for climbing websites.
+Backend: [https://github.com/jossi87/climbing-ws](https://github.com/jossi87/climbing-ws).
+
 <!-- Prerequisites -->
 ### :bangbang: Prerequisites
 

@@ -188,16 +188,17 @@ const About = () => {
                 >
                   https://github.com/jossi87/climbing-web
                 </a>
+                {" (frontend) "}
+                <a
+                  href="https://github.com/jossi87/climbing-ws"
+                  rel="noreferrer noopener"
+                  target="_blank"
+                >
+                  https://github.com/jossi87/climbing-ws
+                </a>
+                {" (backend)"}
                 <List.Description>
-                  The project is now open source. See contributors{" "}
-                  <a
-                    href="https://github.com/jossi87/climbing-web/graphs/contributors"
-                    rel="noreferrer noopener"
-                    target="_blank"
-                  >
-                    here
-                  </a>
-                  .
+                  The project is now open source.
                 </List.Description>
               </List.Item>
               <List.Item>
