@@ -4,8 +4,13 @@ import { Comment, Segment, Header, Table } from "semantic-ui-react";
 import { Stars } from "../../common/widgets/widgets";
 import Linkify from "react-linkify";
 import { componentDecorator } from "../../../utils/componentDecorator";
+import { definitions } from "../../../@types/buldreinfo/swagger";
 
-export const ProblemTicks = ({ ticks }: { ticks: Tick[] }) => {
+type Props = {
+  ticks: definitions["ProblemTick"][];
+};
+
+export const ProblemTicks = ({ ticks }: Props) => {
   return (
     <Comment.Group as={Segment}>
       <Header as="h3" dividing>
