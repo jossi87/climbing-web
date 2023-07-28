@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Helmet } from "react-helmet";
-import UserSelector from "./common/user-selector/user-selector";
+import { UsersSelector } from "./common/user-selector/user-selector";
 import RockSelector from "./common/rock-selector/rock-selector";
 import ProblemSection from "./common/problem-section/problem-section";
 import ImageUpload from "./common/image-upload/image-upload";
@@ -149,7 +149,7 @@ const ProblemEdit = () => {
     setData((prevState) => ({ ...prevState, faAid }));
   }
 
-  function onFaAidUsersUpdated(newUsers) {
+  const onFaAidUsersUpdated = useCallback((newUsers) => {
     const fa = newUsers.map((u) => {
       return {
         id:
@@ -159,10 +159,14 @@ const ProblemEdit = () => {
         name: u.label,
       };
     });
-    const faAid = data.faAid;
-    faAid.users = fa;
-    setData((prevState) => ({ ...prevState, faAid }));
-  }
+    setData((prevState) => ({
+      ...prevState,
+      faAid: {
+        ...prevState.faAid,
+        users: fa,
+      },
+    }));
+  }, []);
 
   function onTriviaChanged(e, { value }) {
     setData((prevState) => ({ ...prevState, trivia: value }));
@@ -377,21 +381,13 @@ const ProblemEdit = () => {
               }))}
               error={data.originalGrade ? false : "grade required"}
             />
-            <Form.Field
-              label="FA User(s)"
-              control={UserSelector}
-              isMulti={true}
-              placeholder="Select user(s)"
-              users={
-                data.fa
-                  ? data.fa.map((u) => {
-                      return { value: u.id, label: u.name };
-                    })
-                  : []
-              }
-              onUsersUpdated={onUsersUpdated}
-              identity={null}
-            />
+            <Form.Field label="FA User(s)">
+              <UsersSelector
+                placeholder="Select user(s)"
+                users={data.fa ?? []}
+                onUsersUpdated={onUsersUpdated}
+              />
+            </Form.Field>
             <Form.Field>
               <label>FA Date</label>
               <DatePicker
@@ -543,18 +539,10 @@ const ProblemEdit = () => {
                     value={data.faAid.description}
                     onChange={onFaAidDescriptionChanged}
                   />
-                  <UserSelector
-                    isMulti={true}
+                  <UsersSelector
                     placeholder="Select user(s)"
-                    users={
-                      data.faAid.users
-                        ? data.faAid.users.map((u) => {
-                            return { value: u.id, label: u.name };
-                          })
-                        : []
-                    }
+                    users={data.faAid.users ?? []}
                     onUsersUpdated={onFaAidUsersUpdated}
-                    identity={null}
                   />
                 </Container>
               )}
