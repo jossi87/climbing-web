@@ -9,7 +9,11 @@ import {
   ScaleControl,
   FeatureGroup,
 } from "react-leaflet";
-import { LatLngExpression, LeafletEventHandlerFn, latLngBounds } from "leaflet";
+import {
+  LatLngExpression,
+  LeafletMouseEventHandlerFn,
+  latLngBounds,
+} from "leaflet";
 import LocateControl from "./locatecontrol";
 import FullscreenControl from "./fullscreencontrol";
 import Markers, { MarkerDef } from "./markers";
@@ -24,8 +28,8 @@ function MapEvent({
   onMouseClick,
   onMouseMove,
 }: {
-  onMouseClick?: LeafletEventHandlerFn;
-  onMouseMove?: LeafletEventHandlerFn;
+  onMouseClick?: LeafletMouseEventHandlerFn;
+  onMouseMove?: LeafletMouseEventHandlerFn;
 }) {
   useMapEvents({
     click: (e) => {
@@ -50,8 +54,8 @@ type Props = {
   flyToId: number | null;
   height: number | string;
   markers: MarkerDef[];
-  onMouseClick: LeafletEventHandlerFn | null;
-  onMouseMove: LeafletEventHandlerFn | null;
+  onMouseClick: LeafletMouseEventHandlerFn | null;
+  onMouseMove: LeafletMouseEventHandlerFn | null;
   outlines: {
     background?: boolean;
     polygon: LatLngExpression[];

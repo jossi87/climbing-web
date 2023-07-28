@@ -89,7 +89,7 @@ function useKey(
   return key;
 }
 
-function usePostData<TVariables, TData = Response>(
+export function usePostData<TVariables, TData = Response>(
   urlSuffix: string,
   {
     fetchOptions,
@@ -104,6 +104,7 @@ function usePostData<TVariables, TData = Response>(
         response: Response,
         variables: TVariables,
       ) => TData | Promise<TData>;
+      createBody: (variables: TVariables) => BodyInit;
     }
   > = {},
 ) {
@@ -114,10 +115,11 @@ function usePostData<TVariables, TData = Response>(
     const accessToken = isAuthenticated ? await getAccessTokenSilently() : null;
 
     const url = createUrl(variables);
+    const createBody = options.createBody ?? JSON.stringify;
 
     const res = await makeAuthenticatedRequest(accessToken, url, {
       method: "POST",
-      body: JSON.stringify(variables),
+      body: createBody(variables),
       headers: {
         "Content-Type": "application/json",
         ...fetchOptions?.headers,
@@ -164,6 +166,7 @@ export function useData<TQueryData = any, TData = TQueryData>(
 
   return useQuery<TQueryData, unknown, TData>(queryKey, queryFn, options);
 }
+type UseDataOptions = Parameters<typeof useData>[1];
 
 export function getImageUrl(
   id: number,
@@ -344,9 +347,15 @@ export function useAreas() {
   });
 }
 
-export function useArea(id: number) {
+export function useArea(
+  id: number,
+  options?: Omit<UseDataOptions, "queryKey">,
+) {
   return useData(`/areas?id=${id}`, {
     queryKey: [`/areas`, { id }],
+    enabled: id > 0,
+    ...options,
+    select: (res) => res[0],
   });
 }
 
@@ -366,80 +375,6 @@ export function getArea(accessToken: string | null, id: number): Promise<any> {
       }
       return data;
     });
-}
-
-export function getAreaEdit(
-  accessToken: string | null,
-  id: number,
-): Promise<definitions["Area"]> {
-  if (id == -1) {
-    return Promise.resolve({
-      id: -1,
-      lockedAdmin: false,
-      lockedSuperadmin: false,
-      forDevelopers: false,
-      accessInfo: "",
-      accessClosed: "",
-      noDogsAllowed: false,
-      name: "",
-      comment: "",
-      lat: 0,
-      lng: 0,
-      latStr: "",
-      lngStr: "",
-      newMedia: [],
-      polygons: null,
-      polylines: null,
-    });
-  } else {
-    return makeAuthenticatedRequest(accessToken, `/areas?id=${id}`)
-      .then((data) => data.json())
-      .then((res) => {
-        return {
-          id: res[0].id,
-          lockedAdmin: res[0].lockedAdmin,
-          lockedSuperadmin: res[0].lockedSuperadmin,
-          forDevelopers: res[0].forDevelopers,
-          accessInfo: res[0].accessInfo,
-          accessClosed: res[0].accessClosed,
-          noDogsAllowed: res[0].noDogsAllowed,
-          name: res[0].name,
-          comment: res[0].comment,
-          lat: res[0].lat,
-          lng: res[0].lng,
-          latStr: res[0].lat,
-          lngStr: res[0].lng,
-          newMedia: [],
-          sectorOrder: res[0].sectorOrder,
-          polygons: res[0].sectors
-            ?.filter((s) => s.polygonCoords)
-            .map((s) => ({
-              polygon: s.polygonCoords
-                .split(";")
-                .filter((i) => i)
-                .map((c) => {
-                  const latLng = c.split(",");
-                  return [parseFloat(latLng[0]), parseFloat(latLng[1])];
-                }),
-              background: true,
-              label: s.name,
-            })),
-          polylines: res[0].sectors
-            ?.filter((s) => s.polyline)
-            .map((s) => ({
-              polyline: s.polyline
-                .split(";")
-                .filter((i) => i)
-                .map((e) => e.split(",").map(Number)),
-              background: true,
-            })),
-        };
-      })
-      .catch((error) => {
-        console.warn(error);
-        return null;
-      });
-  }
 }
 
 export function getGradeDistribution(
@@ -976,69 +911,6 @@ export function getUsersTicks(accessToken: string | null): Promise<any> {
     console.warn(error);
     return null;
   });
-}
-
-export function postArea(
-  accessToken: string | null,
-  id: number,
-  trash: boolean,
-  lockedAdmin: boolean,
-  lockedSuperadmin: boolean,
-  forDevelopers: boolean,
-  accessInfo: string,
-  accessClosed: string,
-  noDogsAllowed: boolean,
-  name: string,
-  comment: string,
-  lat: number,
-  lng: number,
-  media: ({ file: File } & definitions["NewMedia"])[],
-  sectorOrder: any,
-): Promise<any> {
-  const formData = new FormData();
-  const newMedia = media.map((m) => {
-    return {
-      name: m.file && m.file.name.replace(/[^-a-z0-9.]/gi, "_"),
-      photographer: m.photographer,
-      inPhoto: m.inPhoto,
-      description: m.description,
-      trivia: m.trivia,
-      embedVideoUrl: m.embedVideoUrl,
-      embedThumbnailUrl: m.embedThumbnailUrl,
-      embedMilliseconds: m.embedMilliseconds,
-    };
-  });
-  formData.append(
-    "json",
-    JSON.stringify({
-      id,
-      trash,
-      lockedAdmin,
-      lockedSuperadmin,
-      forDevelopers,
-      accessInfo,
-      accessClosed,
-      noDogsAllowed,
-      name,
-      comment,
-      lat,
-      lng,
-      newMedia,
-      sectorOrder,
-    }),
-  );
-  media.forEach(
-    (m) =>
-      m.file &&
-      formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, "_"), m.file),
-  );
-  return makeAuthenticatedRequest(accessToken, `/areas`, {
-    method: "POST",
-    body: formData,
-    headers: {
-      Accept: "application/json",
-    },
-  }).then((data) => data.json());
 }
 
 export function postComment(
