@@ -1,72 +1,109 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ComponentProps } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import CreatableSelect from "react-select/creatable";
 import { getUserSearch } from "./../../../api";
+import { definitions } from "../../../@types/buldreinfo/swagger";
 
-type UserSelectorProps = {
-  users: any[];
-  onUsersUpdated: (_1: any, _2: any) => void;
-  identity: any;
+type User = definitions["User"];
+
+type MultiUserProps = {
+  onUsersUpdated: (user: User[]) => void;
   placeholder: string;
-  isMulti: boolean;
+  users: User[];
 };
 
-const UserSelector = ({
-  users,
-  onUsersUpdated,
-  identity,
-  placeholder,
-  isMulti,
-}: UserSelectorProps) => {
+type SingleUserProps = {
+  onUserUpdated: (user: User) => void;
+  placeholder: string;
+};
+
+const useUsers = () => {
   const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const [options, setOptions] = useState<{ label: string }[]>([]);
-  const [multiValue, setMultiValue] = useState(users);
+  const [options, setOptions] = useState<User[]>([]);
   useEffect(() => {
     if (!isLoading) {
       const update = async () => {
         const accessToken = isAuthenticated
           ? await getAccessTokenSilently()
           : null;
-        getUserSearch(accessToken ?? "", "").then((res) =>
-          setOptions(res.map((u) => ({ value: u.id, label: u.name }))),
-        );
+        getUserSearch(accessToken ?? "", "").then((res) => setOptions(res));
       };
       update();
     }
   }, [getAccessTokenSilently, isAuthenticated, isLoading]);
+  return options;
+};
 
-  function handleChange(newValue: any) {
-    if (!newValue) {
-      newValue = [];
-    }
-    onUsersUpdated(newValue, identity);
-    setMultiValue(newValue);
-  }
-
-  function isValidNewOption(inputValue) {
-    return (
-      options.filter(
-        (u) => u.label && inputValue.toLowerCase() === u.label.toLowerCase(),
-      ).length == 0
-    );
-  }
+const UserSelect = (
+  props:
+    | Required<
+        Pick<
+          ComponentProps<typeof CreatableSelect<User, true>>,
+          "onChange" | "placeholder" | "value"
+        > & { isMulti: true }
+      >
+    | Required<
+        Pick<
+          ComponentProps<typeof CreatableSelect<User, false>>,
+          "onChange" | "placeholder"
+        > & { isMulti: false }
+      >,
+) => {
+  const options = useUsers();
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
       <div style={{ width: "100%" }}>
-        <CreatableSelect
+        <CreatableSelect<User, boolean>
           isClearable
-          placeholder={placeholder}
-          isMulti={isMulti}
-          options={options}
-          onChange={handleChange}
-          isValidNewOption={isValidNewOption}
-          value={multiValue}
+          options={options
+            .filter((user) => user.id && user.name)
+            .map((user) => ({
+              ...user,
+              value: user.id ?? 0,
+              label: user.name ?? "",
+            }))}
+          isValidNewOption={(inputValue) =>
+            !!options.find(
+              (u) =>
+                u.name && inputValue.toLowerCase() === u.name.toLowerCase(),
+            )
+          }
+          {...props}
         />
       </div>
     </div>
   );
 };
 
-export default UserSelector;
+export const UserSelector = ({
+  placeholder,
+  onUserUpdated,
+}: SingleUserProps) => {
+  return (
+    <UserSelect
+      isMulti={false}
+      placeholder={placeholder}
+      onChange={onUserUpdated}
+    />
+  );
+};
+
+export const UsersSelector = ({
+  placeholder,
+  users,
+  onUsersUpdated,
+}: MultiUserProps) => {
+  return (
+    <UserSelect
+      isMulti={true}
+      placeholder={placeholder}
+      value={users?.map((user) => ({
+        ...user,
+        value: user.id ?? 0,
+        label: user.name ?? "",
+      }))}
+      onChange={onUsersUpdated}
+    />
+  );
+};

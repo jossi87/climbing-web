@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Button, Card, Image, Input, Checkbox } from "semantic-ui-react";
 import VideoEmbedder from "./video-embedder";
-import UserSelector from "../user-selector/user-selector";
+import { UserSelector } from "../user-selector/user-selector";
 
 const ImageUpload = ({
   onMediaChanged,
@@ -72,6 +72,7 @@ const ImageUpload = ({
           <br />
           <Card.Group itemsPerRow={4} stackable>
             {media.map((m) => {
+              const key = m.file?.preview ?? m.embedThumbnailUrl;
               let min = 0;
               let sec = 0;
               if (
@@ -83,7 +84,7 @@ const ImageUpload = ({
                   (sec = Math.floor((m.embedMilliseconds / 1000) % 60));
               }
               return (
-                <Card key={m.file?.preview ?? m.embedThumbnailUrl}>
+                <Card key={key}>
                   <Image src={m.file ? m.file.preview : m.embedThumbnailUrl} />
                   <Card.Content>
                     {isMultiPitch && (
@@ -123,24 +124,32 @@ const ImageUpload = ({
                       }}
                     />
                     <UserSelector
-                      users={[]}
-                      isMulti={false}
                       placeholder="In photo/video"
-                      onUsersUpdated={(u, m) => {
-                        m.inPhoto = u.label;
-                        onMediaChanged(media);
+                      onUserUpdated={(u) => {
+                        setMedia((old) => {
+                          const newMedia = old.map((item) =>
+                            item.file?.preview ?? item.embedThumbnailUrl !== key
+                              ? item
+                              : { ...item, inPhoto: u.name ?? "" },
+                          );
+                          onMediaChanged(newMedia);
+                          return newMedia;
+                        });
                       }}
-                      identity={m}
                     />
                     <UserSelector
-                      users={[]}
-                      isMulti={false}
                       placeholder="Photographer"
-                      onUsersUpdated={(u, m) => {
-                        m.photographer = u.label;
-                        onMediaChanged(media);
+                      onUserUpdated={(u) => {
+                        setMedia((old) => {
+                          const newMedia = old.map((item) =>
+                            item.file?.preview ?? item.embedThumbnailUrl !== key
+                              ? item
+                              : { ...item, photographer: u.name ?? "" },
+                          );
+                          onMediaChanged(newMedia);
+                          return newMedia;
+                        });
                       }}
-                      identity={m}
                     />
                     {m.embedThumbnailUrl && (
                       <>
