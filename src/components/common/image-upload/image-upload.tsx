@@ -1,49 +1,59 @@
-import React, { useState, useCallback, ComponentProps } from "react";
-import { useDropzone } from "react-dropzone";
+import React, { useEffect, useState, useCallback, ComponentProps } from "react";
+import { DropzoneOptions, useDropzone } from "react-dropzone";
 import { Button, Card, Image, Input, Checkbox } from "semantic-ui-react";
 import VideoEmbedder from "./video-embedder";
 import { UserSelector } from "../user-selector/user-selector";
+import { definitions } from "../../../@types/buldreinfo/swagger";
+
+type UploadedMedia = {
+  file?: File;
+  preview?: string;
+} & definitions["NewMedia"];
+
+type Props = {
+  onMediaChanged: (newMedia: UploadedMedia[]) => void;
+  isMultiPitch: boolean;
+  includeVideoEmbedder: boolean;
+};
+
+const different = (a: UploadedMedia, b: UploadedMedia) => {
+  return a.preview !== b.preview || a.embedThumbnailUrl !== b.embedThumbnailUrl;
+};
 
 const ImageUpload = ({
   onMediaChanged,
   isMultiPitch,
   includeVideoEmbedder,
-}) => {
-  const [media, setMedia] = useState([]);
-  const onDrop = useCallback(
-    (acceptedFiles) => {
-      const allMedia = media;
-      acceptedFiles.forEach((f) => {
-        f.preview = URL.createObjectURL(f);
-        f.trivia = false;
-        allMedia.push({ file: f });
-      });
-      setMedia(allMedia);
-      onMediaChanged(allMedia);
-    },
-    [media, onMediaChanged],
-  );
-  const accept = { "image/jpeg": [".jpeg", ".png"] };
+}: Props) => {
+  const [media, setMedia] = useState<UploadedMedia[]>([]);
+
+  useEffect(() => {
+    onMediaChanged(media);
+  }, [media, onMediaChanged]);
+
+  const onDrop = useCallback<DropzoneOptions["onDrop"]>((acceptedFiles) => {
+    setMedia((existing) => [
+      ...existing,
+      ...acceptedFiles.map((file) => ({
+        file,
+        preview: URL.createObjectURL(file),
+      })),
+    ]);
+  }, []);
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept,
+    accept: { "image/jpeg": [".jpeg", ".png"] },
   });
 
   const addMedia = useCallback<
     ComponentProps<typeof VideoEmbedder>["addMedia"]
-  >(
-    ({ embedVideoUrl, embedThumbnailUrl, embedMilliseconds }) => {
-      setMedia((old) => {
-        const newMedia = [
-          ...old,
-          { embedVideoUrl, embedThumbnailUrl, embedMilliseconds },
-        ];
-        onMediaChanged(newMedia);
-        return newMedia;
-      });
-    },
-    [onMediaChanged],
-  );
+  >(({ embedVideoUrl, embedThumbnailUrl, embedMilliseconds }) => {
+    setMedia((old) => [
+      ...old,
+      { embedVideoUrl, embedThumbnailUrl, embedMilliseconds },
+    ]);
+  }, []);
 
   return (
     <>
@@ -77,7 +87,15 @@ const ImageUpload = ({
           <br />
           <Card.Group itemsPerRow={4} stackable>
             {media.map((m) => {
-              const key = m.file?.preview ?? m.embedThumbnailUrl;
+              const key = m.preview ?? m.embedThumbnailUrl;
+
+              const updateItem = (patch: Partial<typeof m>) =>
+                setMedia((oldValue) =>
+                  oldValue.map((item) =>
+                    different(item, m) ? item : { ...item, ...patch },
+                  ),
+                );
+
               let min = 0;
               let sec = 0;
               if (
@@ -85,12 +103,13 @@ const ImageUpload = ({
                 m.embedMilliseconds &&
                 m.embedMilliseconds > 0
               ) {
-                (min = Math.floor((m.embedMilliseconds / 1000 / 60) << 0)),
-                  (sec = Math.floor((m.embedMilliseconds / 1000) % 60));
+                min = Math.floor((m.embedMilliseconds / 1000 / 60) << 0);
+                sec = Math.floor((m.embedMilliseconds / 1000) % 60);
               }
+
               return (
                 <Card key={key}>
-                  <Image src={m.file ? m.file.preview : m.embedThumbnailUrl} />
+                  <Image src={m.preview ?? m.embedThumbnailUrl} />
                   <Card.Content>
                     {isMultiPitch && (
                       <Input
@@ -100,9 +119,8 @@ const ImageUpload = ({
                         fluid
                         placeholder="Pitch"
                         value={m.pitch}
-                        onChange={(e, { value }) => {
-                          m.pitch = parseInt(value);
-                          onMediaChanged(media);
+                        onChange={(_, { value }) => {
+                          updateItem({ pitch: +value });
                         }}
                       />
                     )}
@@ -112,10 +130,9 @@ const ImageUpload = ({
                       iconPosition="left"
                       fluid
                       placeholder="Description"
-                      value={m.description}
-                      onChange={(e, { value }) => {
-                        m.description = value;
-                        onMediaChanged(media);
+                      value={m.description ?? ""}
+                      onChange={(_, { value }) => {
+                        updateItem({ description: value });
                       }}
                     />
                     <Checkbox
@@ -123,37 +140,19 @@ const ImageUpload = ({
                       toggle
                       checked={m.trivia}
                       onChange={() => {
-                        m.trivia = !m.trivia;
-                        m.pitch = null;
-                        onMediaChanged(media);
+                        updateItem({ trivia: !m.trivia });
                       }}
                     />
                     <UserSelector
                       placeholder="In photo/video"
                       onUserUpdated={(u) => {
-                        setMedia((old) => {
-                          const newMedia = old.map((item) =>
-                            item.file?.preview ?? item.embedThumbnailUrl !== key
-                              ? item
-                              : { ...item, inPhoto: u.name ?? "" },
-                          );
-                          onMediaChanged(newMedia);
-                          return newMedia;
-                        });
+                        updateItem({ inPhoto: u.name });
                       }}
                     />
                     <UserSelector
                       placeholder="Photographer"
                       onUserUpdated={(u) => {
-                        setMedia((old) => {
-                          const newMedia = old.map((item) =>
-                            item.file?.preview ?? item.embedThumbnailUrl !== key
-                              ? item
-                              : { ...item, photographer: u.name ?? "" },
-                          );
-                          onMediaChanged(newMedia);
-                          return newMedia;
-                        });
+                        updateItem({ photographer: u.name });
                       }}
                     />
                     {m.embedThumbnailUrl && (
@@ -163,22 +162,20 @@ const ImageUpload = ({
                           size="mini"
                           label="Min"
                           value={min}
-                          onChange={(e, { value }) => {
-                            const val = parseInt(value);
+                          onChange={(_, { value }) => {
+                            const val = +value;
                             const ms = (val * 60 + sec) * 1000;
-                            m.embedMilliseconds = ms;
-                            onMediaChanged(media);
+                            updateItem({ embedMilliseconds: ms });
                           }}
                         />
                         <Input
                           size="mini"
                           label="Sec"
                           value={sec}
-                          onChange={(e, { value }) => {
-                            const val = parseInt(value);
+                          onChange={(_, { value }) => {
+                            const val = +value;
                             const ms = (min * 60 + val) * 1000;
-                            m.embedMilliseconds = ms;
-                            onMediaChanged(media);
+                            updateItem({ embedMilliseconds: ms });
                           }}
                         />
                       </>
@@ -190,9 +187,9 @@ const ImageUpload = ({
                       basic
                       negative
                       onClick={() => {
-                        const allMedia = media.filter((m2) => m != m2);
-                        setMedia(allMedia);
-                        onMediaChanged(allMedia);
+                        setMedia((old) =>
+                          old.filter((item) => different(m, item)),
+                        );
                       }}
                     >
                       Remove

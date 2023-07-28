@@ -132,9 +132,9 @@ const ProblemEdit = () => {
     setData((prevState) => ({ ...prevState, typeId }));
   }
 
-  function onNewMediaChanged(newMedia) {
+  const onNewMediaChanged = useCallback((newMedia) => {
     setData((prevState) => ({ ...prevState, newMedia }));
-  }
+  }, []);
 
   function onFaAidDateChanged(newFaDate) {
     const faDate = newFaDate ? convertFromDateToString(newFaDate) : null;
