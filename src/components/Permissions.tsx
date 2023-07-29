@@ -13,19 +13,43 @@ import {
 } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
+import { definitions } from "../@types/buldreinfo/swagger";
 
-type PermissionsData = {
-  userId: number;
-  name: string;
-  picture?: string;
-  lastLogin?: string;
-  adminRead: boolean;
-  adminWrite: boolean;
-  superadminRead: boolean;
-  superadminWrite: boolean;
-  readOnly: boolean;
-  write?: number;
-};
+type PermissionsData = definitions["PermissionUser"];
+
+const COLORS = [
+  "yellow", // default user
+  "green", // admin read
+  "red", // admin write
+  "black", // superadmin write
+] as const;
+
+const OPTIONS = [
+  {
+    key: 0,
+    value: 0,
+    icon: "user",
+    text: "Default user",
+  },
+  {
+    key: 1,
+    value: 1,
+    icon: "user plus",
+    text: "Read hidden data",
+  },
+  {
+    key: 2,
+    value: 2,
+    icon: "lock",
+    text: "Admin (read+write hidden data)",
+  },
+  {
+    key: 3,
+    value: 3,
+    icon: "user secret",
+    text: "Admin + manage users",
+  },
+] as const;
 
 const Permissions = () => {
   const [loading, setLoading] = useState(false);
@@ -84,24 +108,18 @@ const Permissions = () => {
       ) : (
         <Card.Group doubling stackable itemsPerRow={4}>
           {filteredData.map((u) => {
-            let color: any = "white";
-            if (u.write == 2) {
-              color = "black";
-            } else if (u.write == 1) {
-              color = "red";
-            } else if (u.write == 0) {
-              color = "green";
-            } else {
-              color = "yellow";
-            }
-            let value = 0;
-            if (u.superadminWrite) {
-              value = 3;
-            } else if (u.adminWrite) {
-              value = 2;
-            } else if (u.adminRead) {
-              value = 1;
-            }
+            const value = (() => {
+              if (u.superadminWrite) {
+                return 3;
+              } else if (u.adminWrite) {
+                return 2;
+              } else if (u.adminRead) {
+                return 1;
+              } else {
+                return 0;
+              }
+            })();
+            const color = COLORS[value];
             return (
               <Card color={color} key={u.userId} raised>
                 <Card.Content>
@@ -122,32 +140,7 @@ const Permissions = () => {
                     <Dropdown
                       value={value}
                       disabled={u.readOnly}
-                      options={[
-                        {
-                          key: 0,
-                          value: 0,
-                          icon: "user",
-                          text: "Default user",
-                        },
-                        {
-                          key: 1,
-                          value: 1,
-                          icon: "user plus",
-                          text: "Read hidden data",
-                        },
-                        {
-                          key: 2,
-                          value: 2,
-                          icon: "lock",
-                          text: "Admin (read+write hidden data)",
-                        },
-                        {
-                          key: 3,
-                          value: 3,
-                          icon: "user secret",
-                          text: "Admin + manage users",
-                        },
-                      ]}
+                      options={OPTIONS as Mutable<typeof OPTIONS>}
                       onChange={(e, d) => {
                         const adminRead = d.value === 1 || d.value === 2;
                         const adminWrite = d.value === 2;

@@ -14,7 +14,7 @@ import {
   DATA_MUTATION_EVENT,
 } from "./components/DataReloader";
 import { useLocalStorage } from "./utils/use-local-storage";
-import { definitions } from "./@types/buldreinfo/swagger";
+import { definitions, operations } from "./@types/buldreinfo/swagger";
 
 export function getLocales() {
   return "nb-NO";
@@ -359,7 +359,10 @@ export function useArea(
   });
 }
 
-export function getArea(accessToken: string | null, id: number): Promise<any> {
+export function getArea(
+  accessToken: string | null,
+  id: number,
+): Promise<operations["getAreas"]["responses"]["200"]["schema"]> {
   return makeAuthenticatedRequest(accessToken, `/areas?id=${id}`)
     .then((response) => {
       if (response.status === 500) {
@@ -381,7 +384,7 @@ export function getGradeDistribution(
   accessToken: string | null,
   idArea: number,
   idSector: number,
-): Promise<any> {
+): Promise<operations["getGradeDistribution"]["responses"]["200"]["schema"]> {
   return makeAuthenticatedRequest(
     accessToken,
     `/grade/distribution?idArea=${idArea}&idSector=${idSector}`,
@@ -395,7 +398,7 @@ export function getGradeDistribution(
 }
 
 export function useMediaSvg(idMedia: number) {
-  const { data, ...dataResult } = useData(`/media?idMedia=${idMedia}`, {
+  const { data, ...dataResult } = useData<any>(`/media?idMedia=${idMedia}`, {
     queryKey: [`/media`, { idMedia }],
   });
 
@@ -404,16 +407,9 @@ export function useMediaSvg(idMedia: number) {
   return { media: data, save: mutation.mutateAsync, ...dataResult };
 }
 
-export function getMeta(accessToken: string | null): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/meta`)
-    .then((data) => data.json())
-    .catch((error) => {
-      console.warn(error);
-      return null;
-    });
-}
-
-export function getPermissions(accessToken: string | null): Promise<any> {
+export function getPermissions(
+  accessToken: string | null,
+): Promise<operations["getPermissions"]["responses"]["200"]["schema"]> {
   return makeAuthenticatedRequest(accessToken, `/permissions`)
     .then((data) => data.json())
     .catch((error) => {
@@ -922,7 +918,7 @@ export function postComment(
   resolved: boolean,
   del: boolean,
   media: any,
-): Promise<any> {
+): Promise<operations["postComments"]["responses"]["default"]> {
   const formData = new FormData();
   const newMedia = media.map((m) => {
     return {

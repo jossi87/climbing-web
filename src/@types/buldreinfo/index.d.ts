@@ -8,3 +8,6 @@ declare namespace JSX {
     center: any;
   }
 }
+type Mutable<T> = {
+  -readonly [P in keyof T]: T[P];
+};
