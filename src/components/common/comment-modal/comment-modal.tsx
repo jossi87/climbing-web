@@ -44,13 +44,14 @@ const CommentModal = ({
                 }}
               />
             </Form.Field>
-            <Form.Field
-              label="Attach image(s)"
-              control={ImageUpload}
-              onMediaChanged={(media) => setMedia(media)}
-              isMultiPitch={false}
-              includeVideoEmbedder={false}
-            />
+            <Form.Field>
+              <label>Attach image(s)</label>
+              <ImageUpload
+                onMediaChanged={setMedia}
+                isMultiPitch={false}
+                includeVideoEmbedder={false}
+              />
+            </Form.Field>
             {showHse && (
               <Form.Field>
                 <Button.Group size="mini" compact>

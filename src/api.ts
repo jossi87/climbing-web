@@ -954,7 +954,7 @@ export function useTop({
 export function getUserSearch(
   accessToken: string | null,
   value: string,
-): Promise<any> {
+): Promise<definitions["UserSearch"][]> {
   return makeAuthenticatedRequest(
     accessToken,
     `/users/search?value=${value}`,
@@ -992,7 +992,7 @@ export function postArea(
   comment: string,
   lat: number,
   lng: number,
-  media: any,
+  media: ({ file: File } & definitions["NewMedia"])[],
   sectorOrder: any,
 ): Promise<any> {
   const formData = new FormData();

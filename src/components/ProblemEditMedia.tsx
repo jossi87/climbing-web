@@ -49,7 +49,7 @@ const ProblemEditMedia = () => {
         <h3>Upload image(s) or embed video(s)</h3>
         <form onSubmit={save}>
           <ImageUpload
-            onMediaChanged={(newMedia) => setMedia(newMedia)}
+            onMediaChanged={setMedia}
             isMultiPitch={isMultiPitch}
             includeVideoEmbedder={true}
           />

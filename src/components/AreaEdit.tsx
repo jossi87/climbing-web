@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Helmet } from "react-helmet";
 import ImageUpload from "./common/image-upload/image-upload";
 import Leaflet from "./common/leaflet/leaflet";
@@ -80,9 +80,9 @@ const AreaEdit = () => {
     setData((prevState) => ({ ...prevState, accessClosed: value }));
   }
 
-  function onNewMediaChanged(newMedia) {
+  const onNewMediaChanged = useCallback((newMedia) => {
     setData((prevState) => ({ ...prevState, newMedia }));
-  }
+  }, []);
 
   function save(event) {
     event.preventDefault();
@@ -191,7 +191,7 @@ const AreaEdit = () => {
               label="Area name"
               control={Input}
               placeholder="Enter name"
-              value={data.name}
+              value={data.name ?? ""}
               onChange={onNameChanged}
               error={data.name ? false : "Area name required"}
             />
@@ -257,7 +257,7 @@ const AreaEdit = () => {
             <TextArea
               placeholder="Enter description"
               style={{ minHeight: 100 }}
-              value={data.comment}
+              value={data.comment ?? ""}
               onChange={onCommentChanged}
             />
           </Form.Field>
@@ -265,7 +265,7 @@ const AreaEdit = () => {
             <Input
               label="Area closed:"
               placeholder="Enter closed-reason..."
-              value={data.accessClosed}
+              value={data.accessClosed ?? ""}
               onChange={onAccessClosedChanged}
               icon="attention"
             />
@@ -274,20 +274,21 @@ const AreaEdit = () => {
             <Input
               label="Area restrictions:"
               placeholder="Enter specific restrictions..."
-              value={data.accessInfo}
+              value={data.accessInfo ?? ""}
               onChange={onAccessInfoChanged}
             />
           </Form.Field>
         </Segment>
 
         <Segment>
-          <Form.Field
-            label="Upload image(s)"
-            control={ImageUpload}
-            onMediaChanged={onNewMediaChanged}
-            isMultiPitch={false}
-            includeVideoEmbedder={false}
-          />
+          <Form.Field>
+            <label>Upload image(s)</label>
+            <ImageUpload
+              onMediaChanged={onNewMediaChanged}
+              isMultiPitch={false}
+              includeVideoEmbedder={false}
+            />
+          </Form.Field>
         </Segment>
 
         <Segment>

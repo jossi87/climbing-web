@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ComponentProps } from "react";
+import React, { useState, useEffect, ComponentProps, useCallback } from "react";
 import GpxParser from "gpxparser";
 import Dropzone from "react-dropzone";
 import { Helmet } from "react-helmet";
@@ -81,9 +81,9 @@ const SectorEdit = () => {
     setData((prevState) => ({ ...prevState, accessClosed: value }));
   }
 
-  function onNewMediaChanged(newMedia) {
+  const onNewMediaChanged = useCallback((newMedia) => {
     setData((prevState) => ({ ...prevState, newMedia }));
-  }
+  }, []);
 
   function save(event) {
     event.preventDefault();
@@ -381,13 +381,14 @@ const SectorEdit = () => {
         </Segment>
 
         <Segment>
-          <Form.Field
-            label="Upload image(s)"
-            control={ImageUpload}
-            onMediaChanged={onNewMediaChanged}
-            isMultiPitch={false}
-            includeVideoEmbedder={false}
-          />
+          <Form.Field>
+            <label>Upload image(s)</label>
+            <ImageUpload
+              onMediaChanged={onNewMediaChanged}
+              isMultiPitch={false}
+              includeVideoEmbedder={false}
+            />
+          </Form.Field>
         </Segment>
 
         <Segment>
