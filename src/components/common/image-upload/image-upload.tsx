@@ -10,8 +10,11 @@ type UploadedMedia = {
   preview?: string;
 } & definitions["NewMedia"];
 
+type UploadedMediaWithFile = UploadedMedia &
+  Required<Pick<UploadedMedia, "file">>;
+
 type Props = {
-  onMediaChanged: (newMedia: UploadedMedia[]) => void;
+  onMediaChanged: (newMedia: UploadedMediaWithFile[]) => void;
   isMultiPitch: boolean;
   includeVideoEmbedder: boolean;
 };
@@ -28,7 +31,9 @@ const ImageUpload = ({
   const [media, setMedia] = useState<UploadedMedia[]>([]);
 
   useEffect(() => {
-    onMediaChanged(media);
+    onMediaChanged(
+      media.filter((media) => !!media.file) as UploadedMediaWithFile[],
+    );
   }, [media, onMediaChanged]);
 
   const onDrop = useCallback<DropzoneOptions["onDrop"]>((acceptedFiles) => {
