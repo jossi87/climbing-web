@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, ComponentProps } from "react";
 import { useDropzone } from "react-dropzone";
 import { Button, Card, Image, Input, Checkbox } from "semantic-ui-react";
 import VideoEmbedder from "./video-embedder";
@@ -29,6 +29,22 @@ const ImageUpload = ({
     accept,
   });
 
+  const addMedia = useCallback<
+    ComponentProps<typeof VideoEmbedder>["addMedia"]
+  >(
+    ({ embedVideoUrl, embedThumbnailUrl, embedMilliseconds }) => {
+      setMedia((old) => {
+        const newMedia = [
+          ...old,
+          { embedVideoUrl, embedThumbnailUrl, embedMilliseconds },
+        ];
+        onMediaChanged(newMedia);
+        return newMedia;
+      });
+    },
+    [onMediaChanged],
+  );
+
   return (
     <>
       <div
@@ -52,18 +68,7 @@ const ImageUpload = ({
       {includeVideoEmbedder && (
         <>
           <br />
-          <VideoEmbedder
-            addMedia={(embedVideoUrl, embedThumbnailUrl, embedMilliseconds) => {
-              const allMedia = media;
-              allMedia.push({
-                embedVideoUrl,
-                embedThumbnailUrl,
-                embedMilliseconds,
-              });
-              setMedia(allMedia);
-              onMediaChanged(allMedia);
-            }}
-          />
+          <VideoEmbedder addMedia={addMedia} />
         </>
       )}
       {media.length > 0 && (
