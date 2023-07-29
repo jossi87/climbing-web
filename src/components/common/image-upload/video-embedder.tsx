@@ -2,10 +2,25 @@ import React, { useState } from "react";
 import { Input } from "semantic-ui-react";
 import fetch from "isomorphic-fetch";
 
-const VideoEmbedder = ({ addMedia }) => {
-  const [embedVideoUrl, setEmbedVideoUrl] = useState<string>();
-  const [embedThumbnailUrl, setEmbedThumbnailUrl] = useState<string>();
-  const [embedMilliseconds, setEmbedMilliseconds] = useState(0);
+type Info = {
+  embedVideoUrl: string | undefined;
+  embedThumbnailUrl: string | undefined;
+  embedMilliseconds: number;
+};
+
+type Props = {
+  addMedia: (_: Info) => void;
+};
+
+const INIT: Info = {
+  embedVideoUrl: undefined,
+  embedThumbnailUrl: undefined,
+  embedMilliseconds: 0,
+};
+
+const VideoEmbedder = ({ addMedia }: Props) => {
+  const [{ embedVideoUrl, embedThumbnailUrl, embedMilliseconds }, setInfo] =
+    useState<Info>(INIT);
 
   const enabled = embedVideoUrl && embedThumbnailUrl;
 
@@ -19,10 +34,8 @@ const VideoEmbedder = ({ addMedia }) => {
         content: "Add",
         disabled: !enabled,
         onClick: () => {
-          addMedia(embedVideoUrl, embedThumbnailUrl, embedMilliseconds);
-          setEmbedVideoUrl(undefined);
-          setEmbedThumbnailUrl(undefined);
-          setEmbedMilliseconds(0);
+          addMedia({ embedVideoUrl, embedThumbnailUrl, embedMilliseconds });
+          setInfo(INIT);
         },
       }}
       defaultValue={embedVideoUrl}
@@ -75,16 +88,23 @@ const VideoEmbedder = ({ addMedia }) => {
               videoUrl = "https://player.vimeo.com/video/" + id;
               fetch("https://vimeo.com/api/v2/video/" + id + ".json")
                 .then((data) => data.json())
-                .then((json) => setEmbedThumbnailUrl(json[0].thumbnail_large));
+                .then((json) =>
+                  setInfo((old) => ({
+                    ...old,
+                    embedThumbnailUrl: json[0].thumbnail_large,
+                  })),
+                );
             } else {
               console.log(type + " - " + id);
             }
           }
-        }
 
-        setEmbedVideoUrl(videoUrl);
-        setEmbedThumbnailUrl(thumbnailUrl);
-        setEmbedMilliseconds(ms);
+          setInfo({
+            embedVideoUrl: videoUrl,
+            embedThumbnailUrl: thumbnailUrl,
+            embedMilliseconds: ms,
+          });
+        }
       }}
     />
   );
