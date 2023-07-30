@@ -13,10 +13,11 @@ import { Link } from "react-router-dom";
 import { useMeta } from "./common/meta";
 import { getImageUrl, numberWithCommas, useData } from "../api";
 import Activity from "./common/activity/activity";
+import { Success } from "../@types/buldreinfo";
 
 const Frontpage = () => {
   const meta = useMeta();
-  const { data: frontpage } = useData(`/frontpage`);
+  const { data: frontpage } = useData<Success<"getFrontpage">>(`/frontpage`);
   const type = meta.isBouldering ? "bouldering problems" : "climbing routes";
   const description = `${frontpage?.numProblems} ${type}, ${frontpage?.numTicks} public ascents, ${frontpage?.numImages} images, ${frontpage?.numMovies} ascents on video.`;
 

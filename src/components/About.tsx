@@ -12,10 +12,11 @@ import {
 } from "semantic-ui-react";
 import { useMeta } from "./common/meta";
 import { useData } from "../api";
+import { Success } from "../@types/buldreinfo";
 
 const About = () => {
   const meta = useMeta();
-  const { data } = useData(`/administrators`);
+  const { data } = useData<Success<"getAdministrators">>(`/administrators`);
   const administrators = (
     <Grid.Column>
       <Segment>

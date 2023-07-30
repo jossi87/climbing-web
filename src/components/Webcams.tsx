@@ -5,17 +5,19 @@ import { Segment, Header, Icon } from "semantic-ui-react";
 import { Loading } from "./common/widgets/widgets";
 import { useMeta } from "./common/meta";
 import { useData } from "../api";
+import { Success } from "../@types/buldreinfo";
+import { ComponentProps } from "react";
 
 const Webcams = () => {
   const meta = useMeta();
-  const { data } = useData(`/webcams`);
+  const { data } = useData<Success<"getCameras">>(`/webcams`);
   const { json } = useParams();
 
   if (!data) {
     return <Loading />;
   }
 
-  const markers = data
+  const markers: ComponentProps<typeof Leaflet>["markers"] = data
     .filter((c) => c.lat != 0 && c.lng != 0)
     .map((c) => {
       return {
