@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 
-function readLocalStorage<T = any>(key: string, initialValue: T): T {
+function readLocalStorage<T = unknown>(key: string, initialValue: T): T {
   try {
     const item = window.localStorage.getItem(key);
     return item ? (JSON.parse(item) as T) : initialValue;
@@ -10,7 +10,7 @@ function readLocalStorage<T = any>(key: string, initialValue: T): T {
   }
 }
 
-export function itemLocalStorage<T = any>(
+export function itemLocalStorage<T = unknown>(
   key: string,
   initialValue: T,
 ): { get: () => T; set: (v: T) => void } {
@@ -30,7 +30,7 @@ export function itemLocalStorage<T = any>(
   };
 }
 
-export function useLocalStorage<T = any>(key: string, initialValue: T) {
+export function useLocalStorage<T = unknown>(key: string, initialValue: T) {
   const [storedValue, setStoredValue] = useState(() => {
     return readLocalStorage(key, initialValue);
   });
