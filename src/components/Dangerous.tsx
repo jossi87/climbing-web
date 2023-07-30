@@ -5,10 +5,11 @@ import { Segment, Icon, Header } from "semantic-ui-react";
 import { useMeta } from "./common/meta";
 import { useData } from "../api";
 import TableOfContents from "./common/TableOfContents";
+import { Success } from "../@types/buldreinfo";
 
 const Dangerous = () => {
   const meta = useMeta();
-  const { data } = useData(`/dangerous`);
+  const { data } = useData<Success<"getDangerous">>(`/dangerous`);
 
   if (!data) {
     return <Loading />;
@@ -28,22 +29,20 @@ const Dangerous = () => {
   const areas = data.map((area) => ({
     id: area.id,
     lockedAdmin: area.lockedAdmin,
-    lockedSuperAdmin: area.lockedSuperAdmin,
+    lockedSuperadmin: area.lockedSuperadmin,
     name: area.name,
     sectors: area.sectors.map((sector) => ({
       id: sector.id,
       lockedAdmin: sector.lockedAdmin,
-      lockedSuperAdmin: sector.lockedSuperAdmin,
+      lockedSuperadmin: sector.lockedSuperadmin,
       name: sector.name,
       problems: sector.problems.map((problem) => ({
         id: problem.id,
         lockedAdmin: problem.lockedAdmin,
-        lockedSuperAdmin: problem.lockedSuperAdmin,
+        lockedSuperadmin: problem.lockedSuperadmin,
         name: problem.name,
         nr: problem.nr,
         grade: problem.grade,
-        stars: problem.stars,
-        ticked: problem.ticked,
         text: problem.postTxt,
         subText: "(" + problem.postWhen + " - " + problem.postBy + ")",
       })),

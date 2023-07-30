@@ -27,7 +27,7 @@ type TickModalProps = {
   comment: string | null;
   grade: string;
   stars: number | null;
-  repeats: { date: string | null; comment: string }[] | undefined;
+  repeats: { date?: string; comment?: string }[] | undefined;
   date: string | null;
   enableTickRepeats: boolean;
 };

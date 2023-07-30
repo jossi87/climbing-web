@@ -4,7 +4,13 @@ import { Popup, Table } from "semantic-ui-react";
 import { getGradeDistribution, useAccessToken } from "./../../../api";
 import { definitions } from "../../../@types/buldreinfo/swagger";
 
-const ChartGradeDistribution = ({ idArea, idSector, data }) => {
+type Props = {
+  idArea: number;
+  idSector: number;
+  data?: definitions["GradeDistribution"][];
+};
+
+const ChartGradeDistribution = ({ idArea, idSector, data }: Props) => {
   const accessToken = useAccessToken();
   const [gradeDistribution, setGradeDistribution] = useState<
     definitions["GradeDistribution"][]

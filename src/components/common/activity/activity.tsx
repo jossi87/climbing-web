@@ -227,8 +227,9 @@ const Activity = ({ idArea, idSector }) => {
                               <Image
                                 style={imgStyle}
                                 src={getImageUrl(m.id, m.crc32, 85)}
-                                onError={(i) =>
-                                  (i.target.src = "/png/video_placeholder.png")
+                                onError={(img) =>
+                                  (img.target.src =
+                                    "/png/video_placeholder.png")
                                 }
                               />
                             </Link>
@@ -237,26 +238,24 @@ const Activity = ({ idArea, idSector }) => {
                         <br />
                       </LazyLoad>
                     )}
-                    {a.users && (
-                      <Feed.Meta>
-                        {a.users.map((u) => (
-                          <Label
-                            basic
-                            key={u.id}
-                            as={Link}
-                            to={`/user/${u.id}`}
-                            image
-                          >
-                            {u.picture ? (
-                              <img src={u.picture} />
-                            ) : (
-                              <Icon name="user" />
-                            )}{" "}
-                            {u.name}
-                          </Label>
-                        ))}
-                      </Feed.Meta>
-                    )}
+                    <Feed.Meta>
+                      {a.users.map((u) => (
+                        <Label
+                          basic
+                          key={u.id}
+                          as={Link}
+                          to={`/user/${u.id}`}
+                          image
+                        >
+                          {u.picture ? (
+                            <img src={u.picture} />
+                          ) : (
+                            <Icon name="user" />
+                          )}{" "}
+                          {u.name}
+                        </Label>
+                      ))}
+                    </Feed.Meta>
                   </Feed.Content>
                 </Feed.Event>
               );
@@ -325,13 +324,21 @@ const Activity = ({ idArea, idSector }) => {
             }
             // Media
             else if (a.media) {
-              const numImg = a.media.filter((m) => !m.isMovie).length;
+              const [numImg, numMov] = a.media.reduce(
+                (acc, { isMovie }) => {
+                  if (isMovie) {
+                    return [acc[0], acc[1] + 1];
+                  } else {
+                    return [acc[0] + 1, acc[1]];
+                  }
+                },
+                [0, 0],
+              );
               const img = numImg > 0 && (
                 <>
                   {numImg} new <Icon name="photo" />
                 </>
               );
-              const numMov = a.media.filter((m) => m.isMovie).length;
               const mov = numMov > 0 && (
                 <>
                   {numMov} new <Icon name="film" />
@@ -341,7 +348,7 @@ const Activity = ({ idArea, idSector }) => {
               if (img && mov) {
                 summary = (
                   <>
-                    {img}and {mov}
+                    {img} and {mov}
                   </>
                 );
               } else if (mov) {
@@ -391,8 +398,8 @@ const Activity = ({ idArea, idSector }) => {
                             <Image
                               style={imgStyle}
                               src={getImageUrl(m.id, m.crc32, 85)}
-                              onError={(i) =>
-                                (i.target.src = "/png/video_placeholder.png")
+                              onError={(img) =>
+                                (img.target.src = "/png/video_placeholder.png")
                               }
                             />
                           </Link>

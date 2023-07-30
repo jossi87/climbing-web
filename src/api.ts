@@ -15,6 +15,7 @@ import {
 } from "./components/DataReloader";
 import { useLocalStorage } from "./utils/use-local-storage";
 import { definitions, operations } from "./@types/buldreinfo/swagger";
+import { Success } from "./@types/buldreinfo";
 
 export function getLocales() {
   return "nb-NO";
@@ -135,7 +136,7 @@ export function usePostData<TVariables, TData = Response>(
   });
 }
 
-export function useData<TQueryData = any, TData = TQueryData>(
+export function useData<TQueryData = unknown, TData = TQueryData>(
   urlSuffix: string,
   {
     queryKey: customQueryKey,
@@ -336,13 +337,24 @@ export function useActivity({
   ticks: boolean;
   media: boolean;
 }) {
-  return useData(
+  return useData<
+    (Success<"getActivity">[number] & {
+      media: { isMovie?: boolean; id: number; crc32: number }[];
+      users: { id: number; picture: string; name: string }[];
+    })[]
+  >(
     `/activity?idArea=${idArea}&idSector=${idSector}&lowerGrade=${lowerGrade}&fa=${fa}&comments=${comments}&ticks=${ticks}&media=${media}`,
+    {
+      queryKey: [
+        `/activity`,
+        { idArea, idSector, lowerGrade, fa, comments, ticks, media },
+      ],
+    },
   );
 }
 
 export function useAreas() {
-  return useData(`/areas`, {
+  return useData<Success<"getAreas">>(`/areas`, {
     queryKey: [`/areas`],
   });
 }
@@ -362,7 +374,7 @@ export function useArea(
 export function getArea(
   accessToken: string | null,
   id: number,
-): Promise<operations["getAreas"]["responses"]["200"]["schema"]> {
+): Promise<Success<"getAreas">> {
   return makeAuthenticatedRequest(accessToken, `/areas?id=${id}`)
     .then((response) => {
       if (response.status === 500) {
@@ -384,7 +396,7 @@ export function getGradeDistribution(
   accessToken: string | null,
   idArea: number,
   idSector: number,
-): Promise<operations["getGradeDistribution"]["responses"]["200"]["schema"]> {
+): Promise<Success<"getGradeDistribution">> {
   return makeAuthenticatedRequest(
     accessToken,
     `/grade/distribution?idArea=${idArea}&idSector=${idSector}`,
@@ -409,7 +421,7 @@ export function useMediaSvg(idMedia: number) {
 
 export function getPermissions(
   accessToken: string | null,
-): Promise<operations["getPermissions"]["responses"]["200"]["schema"]> {
+): Promise<Success<"getPermissions">> {
   return makeAuthenticatedRequest(accessToken, `/permissions`)
     .then((data) => data.json())
     .catch((error) => {
@@ -420,9 +432,11 @@ export function getPermissions(
 
 export function useProblem(id: number, showHiddenMedia: boolean) {
   const client = useQueryClient();
-  const problem = useData(
+  const problem = useData<Success<"getProblem">>(
     `/problem?id=${id}&showHiddenMedia=${showHiddenMedia}`,
-    { queryKey: [`/problem`, { id, showHiddenMedia }] },
+    {
+      queryKey: [`/problem`, { id, showHiddenMedia }],
+    },
   );
   const { data: profile } = useProfile(-1);
   const toggleTodo = usePostData(`/todo?idProblem=${id}`, {
@@ -649,9 +663,12 @@ export function useProfileMedia({
   userId: number;
   captured: boolean;
 }) {
-  return useData(`/profile/media?id=${userId}&captured=${captured}`, {
-    queryKey: [`/profile/media`, { id: userId, captured }],
-  });
+  return useData<Success<"getProfilemedia">>(
+    `/profile/media?id=${userId}&captured=${captured}`,
+    {
+      queryKey: [`/profile/media`, { id: userId, captured }],
+    },
+  );
 }
 
 export function useProfileStatistics(id: number) {
@@ -664,7 +681,7 @@ export function useProfileStatistics(id: number) {
 }
 
 export function useProfileTodo(id: number) {
-  return useData(`/profile/todo?id=${id}`, {
+  return useData<Success<"getProfileTodo">>(`/profile/todo?id=${id}`, {
     queryKey: [`/profile/todo`, { id }],
   });
 }
@@ -869,7 +886,9 @@ export function useTodo({
   idArea: number;
   idSector: number;
 }) {
-  return useData(`/todo?idArea=${idArea}&idSector=${idSector}`);
+  return useData<Success<"getTodo">>(
+    `/todo?idArea=${idArea}&idSector=${idSector}`,
+  );
 }
 
 export function useTop({
@@ -879,7 +898,9 @@ export function useTop({
   idArea: number;
   idSector: number;
 }) {
-  return useData(`/top?idArea=${idArea}&idSector=${idSector}`);
+  return useData<Success<"getTop">>(
+    `/top?idArea=${idArea}&idSector=${idSector}`,
+  );
 }
 
 export function getUserSearch(

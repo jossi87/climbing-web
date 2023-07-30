@@ -4,10 +4,11 @@ import { Loading } from "./common/widgets/widgets";
 import { useData } from "../api";
 import { useMeta } from "./common/meta";
 import ChartGradeDistribution from "./common/chart-grade-distribution/chart-grade-distribution";
+import { Success } from "../@types/buldreinfo";
 
 const Graph = () => {
   const meta = useMeta();
-  const { data } = useData(`/graph`);
+  const { data } = useData<Success<"getGraph">>(`/graph`);
 
   if (!data) {
     return <Loading />;

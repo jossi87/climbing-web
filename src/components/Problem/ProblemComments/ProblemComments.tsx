@@ -20,7 +20,10 @@ export const ProblemComments = ({
   const meta = useMeta();
   const { data } = useProblem(+problemId, showHiddenMedia);
 
-  function flagAsDangerous({ id, message }) {
+  function flagAsDangerous({ id, message }: { id?: number; message?: string }) {
+    if (!id || !message) {
+      return;
+    }
     if (confirm("Are you sure you want to flag this comment?")) {
       postComment(
         accessToken,
@@ -38,7 +41,11 @@ export const ProblemComments = ({
     }
   }
 
-  function deleteComment({ id }) {
+  function deleteComment(id?: number) {
+    if (!id) {
+      return;
+    }
+
     if (confirm("Are you sure you want to delete this comment?")) {
       postComment(accessToken, id, data.id, null, false, false, true, []).catch(
         (error) => {
@@ -84,7 +91,7 @@ export const ProblemComments = ({
                 {c.editable && (
                   <Button.Group size="tiny" basic compact floated="right">
                     <Button onClick={() => onShowCommentModal(c)} icon="edit" />
-                    <Button onClick={() => deleteComment(c)} icon="trash" />
+                    <Button onClick={() => deleteComment(c.id)} icon="trash" />
                   </Button.Group>
                 )}
                 <Comment.Author as={Link} to={`/user/${c.idUser}`}>
