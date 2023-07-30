@@ -175,7 +175,7 @@ const Sector = () => {
       });
     }
   }
-  if (markers.length > 0) {
+  if (markers.length > 0 || data.polygonCoords) {
     const defaultCenter =
       data.lat && data.lat > 0
         ? { lat: data.lat, lng: data.lng }
