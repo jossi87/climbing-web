@@ -28,9 +28,7 @@ const ImageUpload = ({
   const [media, setMedia] = useState<UploadedMedia[]>([]);
 
   useEffect(() => {
-    onMediaChanged(
-      media as UploadedMedia[],
-    );
+    onMediaChanged(media as UploadedMedia[]);
   }, [media, onMediaChanged]);
 
   const onDrop = useCallback<DropzoneOptions["onDrop"]>((acceptedFiles) => {
