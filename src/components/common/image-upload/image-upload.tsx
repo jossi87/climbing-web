@@ -10,11 +10,8 @@ type UploadedMedia = {
   preview?: string;
 } & definitions["NewMedia"];
 
-type UploadedMediaWithFile = UploadedMedia &
-  Required<Pick<UploadedMedia, "file">>;
-
 type Props = {
-  onMediaChanged: (newMedia: UploadedMediaWithFile[]) => void;
+  onMediaChanged: (newMedia: UploadedMedia[]) => void;
   isMultiPitch: boolean;
   includeVideoEmbedder: boolean;
 };
@@ -32,7 +29,7 @@ const ImageUpload = ({
 
   useEffect(() => {
     onMediaChanged(
-      media.filter((media) => !!media.file) as UploadedMediaWithFile[],
+      media as UploadedMedia[],
     );
   }, [media, onMediaChanged]);
 
