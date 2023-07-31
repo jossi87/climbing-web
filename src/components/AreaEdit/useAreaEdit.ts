@@ -237,7 +237,7 @@ export const useAreaEdit = ({ areaId }: { areaId: number }) => {
     ),
     setNewMedia: useCallback<
       ComponentProps<typeof ImageUpload>["onMediaChanged"]
-    // @ts-expect-error - Evan should fix this
+      // @ts-expect-error - Evan should fix this
     >((newMedia) => dispatch({ action: "set-media", newMedia }), []),
   };
 };
