@@ -381,7 +381,8 @@ const ProblemEdit = () => {
               }))}
               error={data.originalGrade ? false : "grade required"}
             />
-            <Form.Field label="FA User(s)">
+            <Form.Field>
+              <label>FA User(s)</label>
               <UsersSelector
                 placeholder="Select user(s)"
                 users={data.fa ?? []}
