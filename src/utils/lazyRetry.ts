@@ -71,5 +71,17 @@ export const lazy = function (
   componentImport: Parameters<typeof reactLazy>[0],
   componentName: string,
 ) {
+  // Prefetch the chunks when the browser is otherwise idle. Note that this
+  // isn't supported on Safari/Mobile Safari, so we'll just fetch it after a
+  // random interval when the browser is hopefully idle.
+  if (
+    "requestIdleCallback" in window &&
+    typeof window.requestIdleCallback === "function"
+  ) {
+    window.requestIdleCallback(componentImport);
+  } else {
+    window.setTimeout(componentImport, 1000 + Math.random() * 1500);
+  }
+
   return reactLazy(() => lazyRetry(componentImport, componentName));
 };
