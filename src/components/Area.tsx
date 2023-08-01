@@ -26,6 +26,7 @@ import {
   Header,
   List,
   Message,
+  Progress,
   Feed,
 } from "semantic-ui-react";
 import { useMeta } from "./common/meta";
@@ -262,58 +263,80 @@ const Area = () => {
 
   const sectorPanes: ComponentProps<typeof Tab>["panes"] = [];
   if (data.sectors) {
+    const hasTickedProblem =
+      data.sectors.filter((s) => s.problems.filter((p) => p.ticked)).length > 0;
     sectorPanes.push({
       menuItem: "Sectors (" + data.sectors.length + ")",
       render: () => (
         <Tab.Pane>
           <Item.Group link unstackable>
-            {data.sectors.map((sector) => (
-              <Item as={Link} to={`/sector/${sector.id}`} key={sector.id}>
-                <Image
-                  size="small"
-                  style={{ maxHeight: "150px", objectFit: "cover" }}
-                  src={
-                    sector.randomMediaId
-                      ? getImageUrl(
-                          sector.randomMediaId,
-                          sector.randomMediaCrc32,
-                          150,
-                        )
-                      : "/png/image.png"
-                  }
-                />
-                <Item.Content>
-                  <Item.Header>
-                    {sector.accessClosed && (
-                      <Header as="h3" color="red">
-                        {sector.accessClosed}
-                      </Header>
-                    )}
-                    {sector.name}{" "}
-                    <LockSymbol
-                      lockedAdmin={sector.lockedAdmin}
-                      lockedSuperadmin={sector.lockedSuperadmin}
-                    />
-                  </Item.Header>
-                  <Item.Meta>
-                    {sector.typeNumTicked.map((x) => (
-                      <p key={`${x.type}/${x.num}/${x.ticked}`}>
-                        {x.type + ": " + x.num}
-                        {x.ticked > 0 && " (" + x.ticked + " ticked)"}
-                      </p>
-                    ))}
-                  </Item.Meta>
-                  <Item.Description>
-                    {sector.accessInfo && (
-                      <Header as="h5" color="red">
-                        {sector.accessInfo}
-                      </Header>
-                    )}
-                    {sector.comment}
-                  </Item.Description>
-                </Item.Content>
-              </Item>
-            ))}
+            {data.sectors.map((sector) => {
+              let percent;
+              if (hasTickedProblem) {
+                const [total, ticked] = sector.typeNumTicked.reduce(
+                  ([total, failure], d) => [total + d.num, failure + d.ticked],
+                  [0, 0],
+                );
+                percent = Math.round((ticked / total) * 100 * 100) / 100;
+              }
+              return (
+                <Item as={Link} to={`/sector/${sector.id}`} key={sector.id}>
+                  <Image
+                    size="small"
+                    style={{ maxHeight: "150px", objectFit: "cover" }}
+                    src={
+                      sector.randomMediaId
+                        ? getImageUrl(
+                            sector.randomMediaId,
+                            sector.randomMediaCrc32,
+                            150,
+                          )
+                        : "/png/image.png"
+                    }
+                  />
+                  <Item.Content>
+                    <Item.Header>
+                      {sector.accessClosed && (
+                        <Header as="h3" color="red">
+                          {sector.accessClosed}
+                        </Header>
+                      )}
+                      {sector.name}{" "}
+                      <LockSymbol
+                        lockedAdmin={sector.lockedAdmin}
+                        lockedSuperadmin={sector.lockedSuperadmin}
+                      />
+                    </Item.Header>
+                    <Item.Extra>
+                      {hasTickedProblem && (
+                        <Progress
+                          percent={percent}
+                          progress={true}
+                          autoSuccess
+                          size="small"
+                          inverted={true}
+                        />
+                      )}
+                      {sector.typeNumTicked.map((x) => (
+                        <p key={`${x.type}/${x.num}/${x.ticked}`}>
+                          {x.type + ": " + x.num}
+                          {x.ticked > 0 && " (" + x.ticked + " ticked)"}
+                        </p>
+                      ))}
+                    </Item.Extra>
+                    <Item.Meta></Item.Meta>
+                    <Item.Description>
+                      {sector.accessInfo && (
+                        <Header as="h5" color="red">
+                          {sector.accessInfo}
+                        </Header>
+                      )}
+                      {sector.comment}
+                    </Item.Description>
+                  </Item.Content>
+                </Item>
+              );
+            })}
           </Item.Group>
         </Tab.Pane>
       ),
