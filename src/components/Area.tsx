@@ -113,7 +113,7 @@ const Area = () => {
   const { areaId } = useParams();
   const { data, error } = useArea(+areaId);
   const redirecting = useRedirect(data);
-
+  console.log(data);
   const md = new Remarkable({ breaks: true }).use(linkify);
   // open links in new windows
   md.renderer.rules.link_open = (function () {

@@ -367,7 +367,8 @@ export function useArea(
     queryKey: [`/areas`, { id }],
     enabled: id > 0,
     ...options,
-    select: (res) => res[0],
+    // @ts-expect-error - Evan should fix this
+    select: (res) => (res.length > 0 ? res[0] : res),
   });
 }
 
