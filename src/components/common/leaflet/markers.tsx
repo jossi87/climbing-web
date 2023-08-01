@@ -36,7 +36,7 @@ type HtmlMarker = {
   lng: number;
   label: string;
   html: React.ReactNode;
-  rock?: boolean;
+  rock?: string;
 };
 
 type LabelMarker = {

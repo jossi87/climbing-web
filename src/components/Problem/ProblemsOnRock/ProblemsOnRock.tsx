@@ -4,6 +4,19 @@ import { useSector } from "../../../api";
 import { LockSymbol, Stars } from "../../common/widgets/widgets";
 import { Link } from "react-router-dom";
 
+const useProblemsOnRock = ({
+  sectorId,
+  rock,
+}: {
+  sectorId: number | undefined;
+  rock: string | undefined;
+}) => {
+  const { data } = useSector(sectorId);
+  return data?.problems?.filter(
+    (problem) => problem.rock && problem.rock === rock,
+  );
+};
+
 export const ProblemsOnRock = ({
   sectorId,
   rock,
@@ -13,15 +26,7 @@ export const ProblemsOnRock = ({
   sectorId: number | undefined;
   rock: string | undefined;
 }) => {
-  const { data: problemsOnRock } = useSector(sectorId, {
-    enabled: !!sectorId,
-    select: (sectorData: any) => {
-      return sectorData?.problems?.filter(
-        (problem) => problem.rock && problem.rock === rock,
-      );
-    },
-    suspense: false,
-  });
+  const problemsOnRock = useProblemsOnRock({ sectorId, rock });
 
   if (!problemsOnRock?.length || !rock) {
     return null;
@@ -45,12 +50,8 @@ export const ProblemsOnRock = ({
                 <Icon size="small" name="map marker alternate" />
               )}
               {p.hasTopo && <Icon size="small" name="paint brush" />}
-              {p.hasImages > 0 && (
-                <Icon size="small" color="black" name="photo" />
-              )}
-              {p.hasMovies > 0 && (
-                <Icon size="small" color="black" name="film" />
-              )}
+              {p.hasImages && <Icon size="small" color="black" name="photo" />}
+              {p.hasMovies && <Icon size="small" color="black" name="film" />}
               <LockSymbol
                 lockedAdmin={p.lockedAdmin}
                 lockedSuperadmin={p.lockedSuperadmin}

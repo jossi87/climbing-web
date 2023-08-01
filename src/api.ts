@@ -143,14 +143,9 @@ export function useData<TQueryData = unknown, TData = TQueryData>(
     ...options
   }: Partial<
     Omit<
-      UseQueryOptions,
-      | "queryFn"
-      | "select"
-      | "placeholderData"
-      | "initialData"
-      | "structuralSharing"
+      UseQueryOptions<TQueryData, unknown, TData>,
+      "queryFn" | "placeholderData" | "initialData" | "structuralSharing"
     > & {
-      select: (queryData: TQueryData) => TData;
       placeholderData: TQueryData | (() => TQueryData);
       initialData: TQueryData | (() => TQueryData);
     }
@@ -167,7 +162,6 @@ export function useData<TQueryData = unknown, TData = TQueryData>(
 
   return useQuery<TQueryData, unknown, TData>(queryKey, queryFn, options);
 }
-type UseDataOptions = Parameters<typeof useData>[1];
 
 export function getImageUrl(
   id: number,
@@ -337,12 +331,7 @@ export function useActivity({
   ticks: boolean;
   media: boolean;
 }) {
-  return useData<
-    (Success<"getActivity">[number] & {
-      media: { isMovie?: boolean; id: number; crc32: number }[];
-      users: { id: number; picture: string; name: string }[];
-    })[]
-  >(
+  return useData<Success<"getActivity">>(
     `/activity?idArea=${idArea}&idSector=${idSector}&lowerGrade=${lowerGrade}&fa=${fa}&comments=${comments}&ticks=${ticks}&media=${media}`,
     {
       queryKey: [
@@ -359,17 +348,15 @@ export function useAreas() {
   });
 }
 
-export function useArea(
-  id: number,
-  options?: Omit<UseDataOptions, "queryKey">,
-) {
-  return useData(`/areas?id=${id}`, {
-    queryKey: [`/areas`, { id }],
-    enabled: id > 0,
-    ...options,
-    // @ts-expect-error - Evan should fix this
-    select: (res) => (res.length > 0 ? res[0] : res),
-  });
+export function useArea(id: number) {
+  return useData<Success<"getAreas">, Success<"getAreas">[number] | undefined>(
+    `/areas?id=${id}`,
+    {
+      queryKey: [`/areas`, { id }],
+      enabled: id > 0,
+      select: (res) => res?.[0],
+    },
+  );
 }
 
 export function getArea(
@@ -687,12 +674,9 @@ export function useProfileTodo(id: number) {
   });
 }
 
-export function useSector(
-  id: number | undefined,
-  options?: Parameters<typeof useData>[1],
-) {
-  return useData<any>(`/sectors?id=${id}`, {
-    ...(options ?? {}),
+export function useSector(id: number | undefined) {
+  return useData<Success<"getSectors"> | undefined>(`/sectors?id=${id}`, {
+    enabled: !!id && id > 0,
     queryKey: [`/sectors`, { id }],
   });
 }
@@ -700,7 +684,7 @@ export function useSector(
 export function getSector(
   accessToken: string | null,
   id: number,
-): Promise<any> {
+): Promise<Success<"getSectors">> {
   return makeAuthenticatedRequest(accessToken, `/sectors?id=${id}`)
     .then((response) => {
       if (response.status === 500) {

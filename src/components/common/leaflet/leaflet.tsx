@@ -67,7 +67,7 @@ type Props = {
     label?: string;
     polyline: LatLngExpression[];
   }[];
-  rocks: never[] | null;
+  rocks: string[] | null;
   showSatelliteImage?: boolean;
 };
 
