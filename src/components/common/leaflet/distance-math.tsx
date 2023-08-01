@@ -1,4 +1,6 @@
-export function calculateDistance(polyline) {
+import { LatLngExpression } from "leaflet";
+
+export function calculateDistance(polyline: LatLngExpression[]) {
   let km = 0;
   for (let i = 1; i < polyline.length; i++) {
     const lat1 = polyline[i - 1][0];

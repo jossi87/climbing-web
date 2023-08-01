@@ -26,6 +26,7 @@ import {
 import Leaflet from "./common/leaflet/leaflet";
 import { useNavigate, useParams } from "react-router-dom";
 import { VisibilitySelectorField } from "./common/VisibilitySelector";
+import { parsePolyline } from "../utils/polyline";
 
 const useIds = (): { areaId: number; sectorId: number } => {
   const { sectorId, areaId } = useParams();
@@ -201,13 +202,7 @@ const SectorEdit = () => {
     area.sectors.forEach((sector) => {
       if (sector.id != data.id) {
         if (sector.polygonCoords) {
-          const sectorPolygon = sector.polygonCoords
-            .split(";")
-            .filter((i) => i)
-            .map((c) => {
-              const latLng = c.split(",");
-              return [parseFloat(latLng[0]), parseFloat(latLng[1])];
-            });
+          const sectorPolygon = parsePolyline(sector.polygonCoords);
           outlines.push({
             polygon: sectorPolygon,
             background: true,
@@ -215,46 +210,20 @@ const SectorEdit = () => {
           });
         }
         if (sector.polyline) {
-          const sectorPolyline = sector.polyline
-            .split(";")
-            .filter((i) => i)
-            .map((e) => e.split(",").map(Number));
+          const sectorPolyline = parsePolyline(sector.polyline);
           polylines.push({ polyline: sectorPolyline, background: true });
         }
       }
     });
   }
   let polygonError = false;
-  const polygon =
-    data.polygonCoords &&
-    data.polygonCoords
-      .split(";")
-      .filter((i) => i)
-      .map((c) => {
-        const latLng = c.split(",");
-        if (latLng?.length === 2) {
-          const lat = parseFloat(latLng[0]);
-          const lng = parseFloat(latLng[1]);
-          if (lat > 0 && lng > 0) {
-            return [lat, lng];
-          } else {
-            polygonError = true;
-          }
-        } else {
-          polygonError = true;
-        }
-      })
-      .filter((e) => e?.length === 2 && e[0] > 0 && e[1] > 0);
+  const polygon = parsePolyline(data.polygonCoords, () => {
+    polygonError = true;
+  });
   if (polygon) {
     outlines.push({ polygon, background: false });
   }
-  const polyline =
-    data.polyline &&
-    data.polyline
-      .split(";")
-      .filter((i) => i)
-      .map((e) => e.split(",").map(Number))
-      .filter((e) => e?.length === 2 && e[0] > 0 && e[1] > 0);
+  const polyline = parsePolyline(data.polyline);
   if (polyline) {
     polylines.push({ polyline, background: false });
   }

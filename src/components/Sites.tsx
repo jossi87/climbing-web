@@ -5,7 +5,7 @@ import { Segment, Button, Header, Icon } from "semantic-ui-react";
 import Leaflet from "./common/leaflet/leaflet";
 import { Loading } from "./common/widgets/widgets";
 import { useMeta } from "./common/meta";
-import { LatLngTuple } from "leaflet";
+import { parsePolyline } from "../utils/polyline";
 
 const Sites = () => {
   const meta = useMeta();
@@ -16,17 +16,11 @@ const Sites = () => {
   }
   const outlines = meta.sites
     .filter((s) => s.group.toLowerCase() === type)
-    .map((s) => {
-      const polygon: LatLngTuple[] = s.polygonCoords.split(";").map((c) => {
-        const [lat, lng] = c.split(",").map((v) => +v);
-        return [lat, lng] as LatLngTuple;
-      });
-      return {
-        url: s.url,
-        label: s.name,
-        polygon: polygon,
-      };
-    });
+    .map((s) => ({
+      url: s.url,
+      label: s.name,
+      polygon: parsePolyline(s.polygonCoords),
+    }));
   const map = (
     <Leaflet
       autoZoom={true}

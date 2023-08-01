@@ -19,6 +19,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { VisibilitySelectorField } from "../common/VisibilitySelector";
 import { captureException } from "@sentry/react";
 import { useAreaEdit } from "./useAreaEdit";
+import { parsePolyline } from "../../utils/polyline";
 
 export const AreaEdit = () => {
   const meta = useMeta();
@@ -195,16 +196,7 @@ export const AreaEdit = () => {
                 .filter(({ polygonCoords }) => !!polygonCoords)
                 .map(({ polygonCoords }) => ({
                   background: true,
-                  polygon: polygonCoords
-                    .split(";")
-                    .map(
-                      (latlng) =>
-                        latlng.split(",").map((v) => +v) as unknown as [
-                          number,
-                          number,
-                        ],
-                    )
-                    .filter(Boolean),
+                  polygon: parsePolyline(polygonCoords),
                 }))}
               polylines={[]}
               height={"300px"}

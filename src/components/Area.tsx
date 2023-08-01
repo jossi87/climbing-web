@@ -35,6 +35,7 @@ import { Remarkable } from "remarkable";
 import { linkify } from "remarkable/linkify";
 import ProblemList from "./common/problem-list/problem-list";
 import { useRedirect } from "../utils/useRedirect";
+import { parsePolyline } from "../utils/polyline";
 
 type Props = {
   sector: any;
@@ -164,22 +165,13 @@ const Area = () => {
   for (const s of data.sectors) {
     let distance: string | null = null;
     if (s.polyline) {
-      const polyline = s.polyline
-        .split(";")
-        .filter((i) => i)
-        .map((e) => e.split(",").map(Number));
+      const polyline = parsePolyline(s.polyline);
       distance = calculateDistance(polyline);
       const label = s.polygonCoords == null && distance;
       polylines.push({ polyline, label });
     }
     if (s.polygonCoords) {
-      const polygon = s.polygonCoords
-        .split(";")
-        .filter((i) => i)
-        .map((c) => {
-          const latLng = c.split(",");
-          return [parseFloat(latLng[0]), parseFloat(latLng[1])];
-        });
+      const polygon = parsePolyline(s.polygonCoords);
       const label = s.name + (distance ? " (" + distance + ")" : "");
       outlines.push({ url: "/sector/" + s.id, label, polygon: polygon });
     }
