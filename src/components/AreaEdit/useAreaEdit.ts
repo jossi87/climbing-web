@@ -6,11 +6,12 @@ import { VisibilitySelectorField } from "../common/VisibilitySelector";
 import { definitions } from "../../@types/buldreinfo/swagger";
 import { neverGuard } from "../../utils/neverGuard";
 
-type NewMedia = definitions["NewMedia"] & { file: File };
+type NewMedia = definitions["NewMedia"] & { file?: File };
 
 type State = Omit<definitions["Area"], "newMedia"> & {
   newMedia: NewMedia[];
 };
+
 type Update =
   | { action: "set-data"; data: definitions["Area"] }
   | {
@@ -237,7 +238,6 @@ export const useAreaEdit = ({ areaId }: { areaId: number }) => {
     ),
     setNewMedia: useCallback<
       ComponentProps<typeof ImageUpload>["onMediaChanged"]
-      // @ts-expect-error - Evan should fix this
     >((newMedia) => dispatch({ action: "set-media", newMedia }), []),
   };
 };
