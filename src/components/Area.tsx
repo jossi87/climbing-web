@@ -273,10 +273,15 @@ const Area = () => {
             {data.sectors.map((sector) => {
               let percent;
               if (hasTickedProblem) {
-                const [total, ticked] = sector.typeNumTicked.reduce(
-                  ([total, failure], d) => [total + d.num, failure + d.ticked],
-                  [0, 0],
-                );
+                const [total, ticked] = sector.typeNumTicked
+                  .filter((s) => s.type != "Projects")
+                  .reduce(
+                    ([total, failure], d) => [
+                      total + d.num,
+                      failure + d.ticked,
+                    ],
+                    [0, 0],
+                  );
                 percent = Math.round((ticked / total) * 100 * 100) / 100;
               }
               return (
