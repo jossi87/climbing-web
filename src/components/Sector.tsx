@@ -39,6 +39,7 @@ import {
 import Linkify from "react-linkify";
 import { useRedirect } from "../utils/useRedirect";
 import { componentDecorator } from "../utils/componentDecorator";
+import { parsePolyline } from "../utils/polyline";
 
 type Props = {
   problem: any;
@@ -181,25 +182,14 @@ const Sector = () => {
         ? { lat: data.lat, lng: data.lng }
         : meta.defaultCenter;
     const defaultZoom = data.lat && data.lat > 0 ? 15 : meta.defaultZoom;
-    const polyline =
-      data.polyline &&
-      data.polyline
-        .split(";")
-        .filter((i) => i)
-        .map((e) => e.split(",").map(Number));
+    const polyline = parsePolyline(data.polyline);
     let outlines;
     let polylines;
     if (data.polygonCoords && addPolygon) {
-      const polygon = data.polygonCoords
-        .split(";")
-        .filter((i) => i)
-        .map((c) => {
-          const latLng = c.split(",");
-          return [parseFloat(latLng[0]), parseFloat(latLng[1])];
-        });
+      const polygon = parsePolyline(data.polygonCoords);
       const label =
         data.name + (polyline ? " (" + calculateDistance(polyline) + ")" : "");
-      outlines = [{ url: "/sector/" + data.id, label, polygon: polygon }];
+      outlines = [{ url: "/sector/" + data.id, label, polygon }];
     }
     if (polyline) {
       const label = outlines == null ? calculateDistance(polyline) : null;
