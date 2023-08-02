@@ -1,11 +1,18 @@
 import React, { useState } from "react";
 import { Form, Input, Dropdown } from "semantic-ui-react";
+import { definitions } from "../../../@types/buldreinfo/swagger";
+import { useMeta } from "../meta";
+
+type Props = {
+  sections: definitions["ProblemSection"][];
+  onSectionsUpdated: (sections: definitions["ProblemSection"][]) => void;
+};
 
 const ProblemSection = ({
   sections: initSections,
-  grades,
   onSectionsUpdated,
-}) => {
+}: Props) => {
+  const { grades } = useMeta();
   const [sections, setSections] = useState(initSections);
 
   function onNumberOfSectionsChange(e, { value }) {
@@ -95,7 +102,7 @@ const ProblemSection = ({
                 selection
                 value={s.grade}
                 onChange={(e, { value }) => {
-                  s.grade = value;
+                  s.grade = String(value);
                   setSections([...sections]);
                   onSectionsUpdated(sections);
                 }}

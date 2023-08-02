@@ -18,7 +18,12 @@ import { LockSymbol, Stars } from "./../../common/widgets/widgets";
 import Linkify from "react-linkify";
 import { componentDecorator } from "../../../utils/componentDecorator";
 
-const Activity = ({ idArea, idSector }) => {
+type Props = {
+  idArea: number;
+  idSector: number;
+};
+
+const Activity = ({ idArea, idSector }: Props) => {
   const [lowerGradeId, setLowerGradeId] = useLocalStorage("lower_grade_id", 0);
   const [lowerGradeText, setLowerGradeText] = useLocalStorage(
     "lower_grade_text",

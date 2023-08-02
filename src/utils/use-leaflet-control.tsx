@@ -54,6 +54,7 @@ const createLeafletControl = (useElement) => {
     }, [forceUpdate]);
 
     const contentNode = instance.getContainer();
+    // eslint-disable-next-line react/prop-types
     return contentNode ? createPortal(props.children, contentNode) : null;
   };
   return forwardRef(Component);

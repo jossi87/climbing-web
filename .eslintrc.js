@@ -29,7 +29,8 @@ module.exports = {
   rules: {
     "react/no-array-index-key": "error",
     "react/react-in-jsx-scope": ["off"],
-    "react/prop-types": ["warn"], // Until we get to zero
+    "react/prop-types": ["error"],
+    // Change this to "error" once we get to zero violations.
     "@typescript-eslint/no-explicit-any": ["warn"],
     "@typescript-eslint/no-unused-vars": [
       "error",
