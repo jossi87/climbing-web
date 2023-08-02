@@ -74,13 +74,19 @@ export const lazy = function (
   // Prefetch the chunks when the browser is otherwise idle. Note that this
   // isn't supported on Safari/Mobile Safari, so we'll just fetch it after a
   // random interval when the browser is hopefully idle.
+  const prefetch = () =>
+    componentImport().catch((error) => {
+      Sentry.captureMessage("Failed to prefetch chunk", {
+        extra: { componentName, error },
+      });
+    });
   if (
     "requestIdleCallback" in window &&
     typeof window.requestIdleCallback === "function"
   ) {
-    window.requestIdleCallback(componentImport);
+    window.requestIdleCallback(prefetch);
   } else {
-    window.setTimeout(componentImport, 1000 + Math.random() * 1500);
+    window.setTimeout(prefetch, 1000 + Math.random() * 1500);
   }
 
   return reactLazy(() => lazyRetry(componentImport, componentName));
