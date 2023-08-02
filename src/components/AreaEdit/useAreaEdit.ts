@@ -70,27 +70,31 @@ const getCoord = (value: string | number) => {
   return +str;
 };
 
+const DEFAULT_STATE: NonNullable<State> = {
+  accessClosed: "",
+  accessInfo: "",
+  comment: "",
+  forDevelopers: false,
+  id: -1,
+  lat: 0,
+  lng: 0,
+  lockedAdmin: false,
+  lockedSuperadmin: false,
+  name: "",
+  noDogsAllowed: false,
+  sectorOrder: [],
+  sectors: [],
+  trash: false,
+  newMedia: [],
+};
+
 const reducer = (state: State, update: Update): State => {
   const { action } = update;
   switch (action) {
     case "set-data": {
       const { data } = update;
       return {
-        accessClosed: "",
-        accessInfo: "",
-        comment: "",
-        forDevelopers: false,
-        id: -1,
-        lat: 0,
-        lng: 0,
-        lockedAdmin: false,
-        lockedSuperadmin: false,
-        name: "",
-        noDogsAllowed: false,
-        sectorOrder: [],
-        sectors: [],
-        trash: false,
-        newMedia: [],
+        ...DEFAULT_STATE,
         ...data,
       };
     }
@@ -158,7 +162,10 @@ type UseAreaEdit = (_: { areaId: number }) => {
 };
 
 export const useAreaEdit: UseAreaEdit = ({ areaId }) => {
-  const [state, dispatch] = useReducer(reducer, undefined);
+  const [state, dispatch] = useReducer(
+    reducer,
+    areaId > 0 ? undefined : DEFAULT_STATE,
+  );
   const { data, status, isLoading } = useArea(areaId);
 
   useEffect(() => {
@@ -234,7 +241,7 @@ export const useAreaEdit: UseAreaEdit = ({ areaId }) => {
 
   return {
     area: state,
-    isLoading,
+    isLoading: areaId > 0 ? isLoading : false,
     isSaving: save.isLoading,
     save: save.mutateAsync,
     setString: useCallback(
