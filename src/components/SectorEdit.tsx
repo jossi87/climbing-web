@@ -192,7 +192,7 @@ const SectorEdit = () => {
     );
   }
 
-  if (!data) {
+  if (!data || !area) {
     return <Loading />;
   }
 
@@ -203,15 +203,19 @@ const SectorEdit = () => {
       if (sector.id != data.id) {
         if (sector.polygonCoords) {
           const sectorPolygon = parsePolyline(sector.polygonCoords);
-          outlines.push({
-            polygon: sectorPolygon,
-            background: true,
-            label: sector.name,
-          });
+          if (sectorPolygon?.length > 0) {
+            outlines.push({
+              polygon: sectorPolygon,
+              background: true,
+              label: sector.name,
+            });
+          }
         }
         if (sector.polyline) {
           const sectorPolyline = parsePolyline(sector.polyline);
-          polylines.push({ polyline: sectorPolyline, background: true });
+          if (sectorPolyline?.length > 0) {
+            polylines.push({ polyline: sectorPolyline, background: true });
+          }
         }
       }
     });
@@ -220,19 +224,27 @@ const SectorEdit = () => {
   const polygon = parsePolyline(data.polygonCoords, () => {
     polygonError = true;
   });
-  if (polygon) {
+
+  if (polygon?.length > 0) {
     outlines.push({ polygon, background: false });
   }
   const polyline = parsePolyline(data.polyline);
-  if (polyline) {
+  if (polyline?.length > 0) {
     polylines.push({ polyline, background: false });
   }
-  const defaultCenter =
-    data.lat && parseFloat(data.lat) > 0
-      ? { lat: parseFloat(data.lat), lng: parseFloat(data.lng) }
-      : meta.defaultCenter;
-  const defaultZoom =
-    data.lat && parseFloat(data.lat) > 0 ? 14 : meta.defaultZoom;
+
+  let defaultCenter;
+  let defaultZoom;
+  if (data.lat && parseFloat(data.lat) > 0) {
+    defaultCenter = { lat: parseFloat(data.lat), lng: parseFloat(data.lng) };
+    defaultZoom = 14;
+  } else if (area?.lat && parseFloat(area.lat) > 0) {
+    defaultCenter = { lat: parseFloat(area.lat), lng: parseFloat(area.lng) };
+    defaultZoom = 14;
+  } else {
+    defaultCenter = meta.defaultCenter;
+    defaultZoom = meta.defaultZoom;
+  }
 
   const markers: ComponentProps<typeof Leaflet>["markers"] = [];
   if (data.lat != 0 && data.lng != 0) {
@@ -493,7 +505,6 @@ const SectorEdit = () => {
                       reader.onload = (e) => {
                         const gpx = new GpxParser();
                         gpx.parse(e.target?.result as string);
-                        console.log(gpx);
                         const polyline = gpx.tracks[0]?.points
                           ?.map((e) => e.lat + "," + e.lon)
                           .join(";");

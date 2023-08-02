@@ -43,6 +43,7 @@ const ProblemEdit = () => {
   const accessToken = useAccessToken();
   const { sectorId, problemId } = useIds();
   const [data, setData] = useState<any>(null);
+  const [sectorLatLng, setSectorLatLng] = useState(null);
   const [sectorMarkers, setSectorMarkers] = useState([]);
   const [sectorRocks, setSectorRocks] = useState([]);
   const [showSectorMarkers, setShowSectorMarkers] = useState(true);
@@ -56,6 +57,9 @@ const ProblemEdit = () => {
         .then((data) => setData(data))
         .then(() =>
           getSector(accessToken, sectorId).then((data) => {
+            if (data.lat > 0) {
+              setSectorLatLng({ lat: data.lat, lng: data.lng });
+            }
             setSectorMarkers(
               data.problems
                 .filter((p) => p.lat > 0 && p.lng > 0 && p.id != problemId)
@@ -297,6 +301,9 @@ const ProblemEdit = () => {
   let defaultZoom: number;
   if (data.lat != 0 && data.lng != 0) {
     defaultCenter = { lat: data.lat, lng: data.lng };
+    defaultZoom = 15;
+  } else if (sectorLatLng) {
+    defaultCenter = sectorLatLng;
     defaultZoom = 15;
   } else {
     defaultCenter = meta.defaultCenter;
