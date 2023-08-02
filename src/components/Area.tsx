@@ -309,15 +309,18 @@ const Area = () => {
                       />
                     </Item.Header>
                     <Item.Extra>
-                      {hasTickedProblem && sector.typeNumTicked?.length > 0 && (
-                        <Progress
-                          percent={percent}
-                          progress={true}
-                          autoSuccess
-                          size="small"
-                          inverted={true}
-                        />
-                      )}
+                      {hasTickedProblem &&
+                        sector.typeNumTicked?.filter(
+                          (x) => x.type != "Projects",
+                        ).length > 0 && (
+                          <Progress
+                            percent={percent}
+                            progress={true}
+                            autoSuccess
+                            size="small"
+                            inverted={true}
+                          />
+                        )}
                       {sector.typeNumTicked.map((x) => (
                         <p key={`${x.type}/${x.num}/${x.ticked}`}>
                           {x.type + ": " + x.num}
