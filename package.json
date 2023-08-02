@@ -33,7 +33,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "html-webpack-plugin": "^5.5.3",
     "mini-css-extract-plugin": "^2.7.6",
-    "openapi-typescript": "5.4.1",
+    "openapi-typescript": "6.4.0",
     "prettier": "^3.0.0",
     "react-refresh": "^0.14.0",
     "typescript": "^5.1.6",
