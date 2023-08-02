@@ -188,10 +188,11 @@ const Sector = () => {
     if (data.polygonCoords && addPolygon) {
       const polygon = parsePolyline(data.polygonCoords);
       const label =
-        data.name + (polyline ? " (" + calculateDistance(polyline) + ")" : "");
+        data.name +
+        (polyline?.length > 0 ? " (" + calculateDistance(polyline) + ")" : "");
       outlines = [{ url: "/sector/" + data.id, label, polygon }];
     }
-    if (polyline) {
+    if (polyline?.length > 0) {
       const label = outlines == null ? calculateDistance(polyline) : null;
       polylines = [{ polyline, label: label }];
     }

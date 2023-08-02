@@ -119,10 +119,10 @@ export const Problem = () => {
       const polygon = parsePolyline(data.sectorPolygonCoords);
       const label =
         data.sectorName +
-        (polyline ? " (" + calculateDistance(polyline) + ")" : "");
+        (polyline?.length > 0 ? " (" + calculateDistance(polyline) + ")" : "");
       outlines = [{ url: "/sector/" + data.sectorId, label, polygon }];
     }
-    if (polyline) {
+    if (polyline?.length > 0) {
       const label = outlines == null ? calculateDistance(polyline) : null;
       polylines = [{ polyline, label: label }];
     }
