@@ -5,7 +5,7 @@ import { useLocalStorage } from "../../../utils/use-local-storage";
 import { getLocales } from "../../../api";
 
 interface Row {
-  element: any;
+  element: React.ReactNode;
   areaName: string;
   sectorName: string;
   name: string;
@@ -32,15 +32,13 @@ enum OrderBy {
   rating,
 }
 
-const ProblemList = ({
-  rows,
-  isSectorNotUser,
-  preferOrderByGrade,
-}: {
+type Props = {
   rows: Row[];
   isSectorNotUser: boolean;
   preferOrderByGrade: boolean;
-}) => {
+};
+
+const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: Props) => {
   const [data, setData] = useState(rows);
   const [hideTicked, setHideTicked] = useLocalStorage(
     "problemList-hideTicked",

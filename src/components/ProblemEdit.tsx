@@ -559,7 +559,6 @@ const ProblemEdit = () => {
               <label>Pitches</label>
               <ProblemSection
                 sections={data.sections}
-                grades={meta.grades}
                 onSectionsUpdated={onSectionsUpdated}
               />
             </Form.Field>

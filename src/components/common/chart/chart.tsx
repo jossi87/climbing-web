@@ -1,6 +1,11 @@
 import React, { memo } from "react";
+import { definitions } from "../../../@types/buldreinfo/swagger";
 
-function Chart({ data }) {
+type Props = {
+  ticks: NonNullable<definitions["ProfileStatistics"]["ticks"]>;
+};
+
+function Chart({ ticks: data }: Props) {
   const grades = [];
   data.map((t) => {
     const d = grades.filter((val) => {

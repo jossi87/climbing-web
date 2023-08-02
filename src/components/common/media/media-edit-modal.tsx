@@ -1,7 +1,29 @@
 import React, { useState } from "react";
 import { Button, Modal, Form, Input, Checkbox } from "semantic-ui-react";
+import { definitions } from "../../../@types/buldreinfo/swagger";
 
-const MediaEditModal = ({ save, onCloseWithoutReload, m, numPitches }) => {
+type Media = definitions["Media"];
+
+type Props = {
+  save: (
+    id: NonNullable<Media["id"]>,
+    metadataDescription: NonNullable<
+      NonNullable<Media["mediaMetadata"]>["description"]
+    >,
+    pitch: NonNullable<Media["pitch"]>,
+    trivia: NonNullable<Media["trivia"]>,
+  ) => void;
+  onCloseWithoutReload: () => void;
+  m: Media;
+  numPitches: number;
+};
+
+const MediaEditModal = ({
+  save,
+  onCloseWithoutReload,
+  m,
+  numPitches,
+}: Props) => {
   const [media, setMedia] = useState(m);
   const [saving, setSaving] = useState(false);
 

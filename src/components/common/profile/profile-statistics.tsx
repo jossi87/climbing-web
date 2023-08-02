@@ -110,7 +110,7 @@ const ProfileStatistics = ({ userId, canDownload }: ProfileStatisticsProps) => {
     (t) => !t.fa && t.idTickRepeat > 0,
   ).length;
   const numFas = data.ticks.filter((t) => t.fa).length;
-  const chart = data.ticks.length > 0 ? <Chart data={data.ticks} /> : null;
+  const chart = data.ticks.length > 0 ? <Chart ticks={data.ticks} /> : null;
   const panes: NonNullable<React.ComponentProps<typeof Tab>["panes"]> = [];
   panes.push({
     menuItem: { key: "stats", icon: "area graph" },

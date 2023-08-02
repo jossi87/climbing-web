@@ -40,9 +40,10 @@ import Linkify from "react-linkify";
 import { useRedirect } from "../utils/useRedirect";
 import { componentDecorator } from "../utils/componentDecorator";
 import { parsePolyline } from "../utils/polyline";
+import { definitions } from "../@types/buldreinfo/swagger";
 
 type Props = {
-  problem: any;
+  problem: definitions["Sector"]["problems"][number];
 };
 
 const SectorListItem = ({ problem }: Props) => {

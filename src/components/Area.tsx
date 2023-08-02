@@ -36,10 +36,11 @@ import { linkify } from "remarkable/linkify";
 import ProblemList from "./common/problem-list/problem-list";
 import { useRedirect } from "../utils/useRedirect";
 import { parsePolyline } from "../utils/polyline";
+import { definitions } from "../@types/buldreinfo/swagger";
 
 type Props = {
-  sector: any;
-  problem: any;
+  sector: definitions["Area"]["sectors"][number];
+  problem: definitions["Area"]["sectors"][number]["problems"][number];
 };
 
 const SectorListItem = ({ sector, problem }: Props) => {
