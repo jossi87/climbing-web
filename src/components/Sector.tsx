@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ComponentProps } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useParams } from "react-router-dom";
 import ProblemList from "./common/problem-list/problem-list";
@@ -136,7 +136,7 @@ const Sector = () => {
   }
 
   const isBouldering = meta.isBouldering;
-  const markers = data.problems
+  const markers: ComponentProps<typeof Leaflet>["markers"] = data.problems
     .filter((p) => p.lat != 0 && p.lng != 0)
     .map((p) => {
       return {
@@ -515,6 +515,8 @@ const Sector = () => {
             subType: p.t.subType,
             num: null,
             fa: null,
+            areaName: null,
+            sectorName: null,
           };
         })}
       />

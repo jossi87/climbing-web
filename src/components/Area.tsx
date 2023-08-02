@@ -173,7 +173,11 @@ const Area = () => {
     if (s.polygonCoords) {
       const polygon = parsePolyline(s.polygonCoords);
       const label = s.name + (distance ? " (" + distance + ")" : "");
-      outlines.push({ url: "/sector/" + s.id, label, polygon: polygon });
+      outlines.push({
+        url: "/sector/" + s.id,
+        label,
+        polygon,
+      });
     }
   }
   const panes: ComponentProps<typeof Tab>["panes"] = [];
@@ -349,23 +353,28 @@ const Area = () => {
             isSectorNotUser={true}
             preferOrderByGrade={true}
             rows={data.sectors
-              .map((s) =>
-                s.problems.map((p) => ({
-                  element: <SectorListItem key={p.id} sector={s} problem={p} />,
-                  name: p.name,
-                  nr: p.nr,
-                  gradeNumber: p.gradeNumber,
-                  stars: p.stars,
-                  numTicks: p.numTicks,
-                  ticked: p.ticked,
-                  todo: p.todo,
-                  rock: p.rock,
-                  subType: p.t.subType,
-                  num: null,
-                  fa: null,
-                })),
+              .reduce(
+                (acc, s) => [
+                  ...acc,
+                  ...s.problems.map((p) => ({
+                    element: (
+                      <SectorListItem key={p.id} sector={s} problem={p} />
+                    ),
+                    name: p.name,
+                    nr: p.nr,
+                    gradeNumber: p.gradeNumber,
+                    stars: p.stars,
+                    numTicks: p.numTicks,
+                    ticked: p.ticked,
+                    todo: p.todo,
+                    rock: p.rock,
+                    subType: p.t.subType,
+                    num: null,
+                    fa: null,
+                  })),
+                ],
+                [],
               )
-              .flat()
               .sort((a, b) => b.gradeNumber - a.gradeNumber)}
           />
         </Tab.Pane>

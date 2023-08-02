@@ -325,8 +325,8 @@ const Activity = ({ idArea, idSector }) => {
             // Media
             else if (a.media) {
               const [numImg, numMov] = a.media.reduce(
-                (acc, { isMovie }) => {
-                  if (isMovie) {
+                (acc, { movie }) => {
+                  if (movie) {
                     return [acc[0], acc[1] + 1];
                   } else {
                     return [acc[0] + 1, acc[1]];

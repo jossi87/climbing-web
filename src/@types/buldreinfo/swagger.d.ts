@@ -29,6 +29,9 @@ export type paths = {
   "/v2/images": {
     get: operations["getImages"];
   };
+  "/v2/meta": {
+    get: operations["getMeta"];
+  };
   "/v2/webcams": {
     get: operations["getCameras"];
   };
@@ -43,9 +46,6 @@ export type paths = {
   };
   "/v2/graph": {
     get: operations["getGraph"];
-  };
-  "/v2/meta": {
-    get: operations["getMeta"];
   };
   "/v2/problem": {
     get: operations["getProblem"];
@@ -171,6 +171,7 @@ export type definitions = {
     problemRandomMediaId?: number;
     /** Format: int32 */
     problemRandomMediaCrc32?: number;
+    media?: definitions["ActivityMedia"][];
     /** Format: int32 */
     stars?: number;
     repeat?: boolean;
@@ -180,6 +181,21 @@ export type definitions = {
     picture?: string;
     description?: string;
     message?: string;
+    users?: definitions["ActivityUser"][];
+  };
+  ActivityMedia: {
+    /** Format: int32 */
+    id?: number;
+    /** Format: int32 */
+    crc32?: number;
+    embedUrl?: string;
+    movie?: boolean;
+  };
+  ActivityUser: {
+    /** Format: int32 */
+    id?: number;
+    name?: string;
+    picture?: string;
   };
   Administrator: {
     /** Format: int32 */
@@ -380,6 +396,40 @@ export type definitions = {
     /** Format: int32 */
     ticked?: number;
   };
+  Grade: {
+    /** Format: int32 */
+    id?: number;
+    grade?: string;
+  };
+  LatLng: {
+    /** Format: double */
+    lat?: number;
+    /** Format: double */
+    lng?: number;
+  };
+  Meta: {
+    title?: string;
+    grades?: definitions["Grade"][];
+    /** Format: int32 */
+    defaultZoom?: number;
+    defaultCenter?: definitions["LatLng"];
+    url?: string;
+    types?: definitions["Type"][];
+    sites?: definitions["Site"][];
+    bouldering?: boolean;
+    authenticated?: boolean;
+    admin?: boolean;
+    superAdmin?: boolean;
+    climbing?: boolean;
+    ice?: boolean;
+  };
+  Site: {
+    group?: string;
+    name?: string;
+    url?: string;
+    polygonCoords?: string;
+    active?: boolean;
+  };
   Webcam: {
     id?: string;
     lastUpdated?: string;
@@ -494,40 +544,6 @@ export type definitions = {
     numAidTrad?: number;
     /** Format: int32 */
     numIce?: number;
-  };
-  Grade: {
-    /** Format: int32 */
-    id?: number;
-    grade?: string;
-  };
-  LatLng: {
-    /** Format: double */
-    lat?: number;
-    /** Format: double */
-    lng?: number;
-  };
-  Meta: {
-    title?: string;
-    grades?: definitions["Grade"][];
-    /** Format: int32 */
-    defaultZoom?: number;
-    defaultCenter?: definitions["LatLng"];
-    url?: string;
-    types?: definitions["Type"][];
-    sites?: definitions["Site"][];
-    bouldering?: boolean;
-    authenticated?: boolean;
-    admin?: boolean;
-    superAdmin?: boolean;
-    climbing?: boolean;
-    ice?: boolean;
-  };
-  Site: {
-    group?: string;
-    name?: string;
-    url?: string;
-    polygonCoords?: string;
-    active?: boolean;
   };
   FaAid: {
     /** Format: int32 */
@@ -876,6 +892,7 @@ export type definitions = {
     polyline?: string;
     media?: definitions["Media"][];
     triviaMedia?: definitions["Media"][];
+    sectors?: definitions["SectorJump"][];
     problems?: definitions["SectorProblem"][];
     problemOrder?: definitions["SectorProblemOrder"][];
     newMedia?: definitions["NewMedia"][];
@@ -1311,6 +1328,20 @@ export type operations = {
       };
     };
   };
+  getMeta: {
+    parameters: {
+      header: {
+        /** Authorization token */
+        Authorization?: string;
+      };
+    };
+    responses: {
+      /** successful operation */
+      200: {
+        schema: definitions["Meta"];
+      };
+    };
+  };
   getCameras: {
     parameters: {};
     responses: {
@@ -1379,20 +1410,6 @@ export type operations = {
       /** successful operation */
       200: {
         schema: definitions["GradeDistribution"][];
-      };
-    };
-  };
-  getMeta: {
-    parameters: {
-      header: {
-        /** Authorization token */
-        Authorization?: string;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: definitions["Meta"];
       };
     };
   };
