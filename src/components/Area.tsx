@@ -309,7 +309,7 @@ const Area = () => {
                       />
                     </Item.Header>
                     <Item.Extra>
-                      {hasTickedProblem && (
+                      {hasTickedProblem && sector.typeNumTicked?.length > 0 && (
                         <Progress
                           percent={percent}
                           progress={true}
