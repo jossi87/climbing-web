@@ -1,16 +1,44 @@
-import { useEffect, useReducer, useCallback, ComponentProps } from "react";
+import {
+  useEffect,
+  useReducer,
+  useCallback,
+  ComponentProps,
+  ChangeEvent,
+} from "react";
 import ImageUpload from "../common/image-upload/image-upload";
 import Leaflet from "../common/leaflet/leaflet";
 import { useArea, usePostData } from "../../api";
 import { VisibilitySelectorField } from "../common/VisibilitySelector";
 import { definitions } from "../../@types/buldreinfo/swagger";
 import { neverGuard } from "../../utils/neverGuard";
+import { Checkbox, Input } from "semantic-ui-react";
+import { UseMutateAsyncFunction } from "@tanstack/react-query";
 
 type NewMedia = definitions["NewMedia"] & { file?: File };
 
-type State = Omit<definitions["Area"], "newMedia"> & {
-  newMedia: NewMedia[];
-};
+type State =
+  | undefined
+  | (Required<
+      Pick<
+        definitions["Area"],
+        | "accessClosed"
+        | "accessInfo"
+        | "comment"
+        | "forDevelopers"
+        | "id"
+        | "lat"
+        | "lng"
+        | "lockedAdmin"
+        | "lockedSuperadmin"
+        | "name"
+        | "noDogsAllowed"
+        | "sectorOrder"
+        | "sectors"
+        | "trash"
+      >
+    > & {
+      newMedia: NewMedia[];
+    });
 
 type Update =
   | { action: "set-data"; data: definitions["Area"] }
@@ -47,7 +75,24 @@ const reducer = (state: State, update: Update): State => {
   switch (action) {
     case "set-data": {
       const { data } = update;
-      return { ...state, ...data, newMedia: [] };
+      return {
+        accessClosed: "",
+        accessInfo: "",
+        comment: "",
+        forDevelopers: false,
+        id: -1,
+        lat: 0,
+        lng: 0,
+        lockedAdmin: false,
+        lockedSuperadmin: false,
+        name: "",
+        noDogsAllowed: false,
+        sectorOrder: [],
+        sectors: [],
+        trash: false,
+        newMedia: [],
+        ...data,
+      };
     }
     case "set-string": {
       return { ...state, [update.key]: update.value };
@@ -92,27 +137,28 @@ const reducer = (state: State, update: Update): State => {
   }
 };
 
-const DEFAULT_AREA: definitions["Area"] = {
-  id: -1,
-  lockedAdmin: false,
-  lockedSuperadmin: false,
-  forDevelopers: false,
-  accessInfo: "",
-  accessClosed: "",
-  noDogsAllowed: false,
-  name: "",
-  comment: "",
-  lat: 0,
-  lng: 0,
-  newMedia: [],
+type SavedArea = NonNullable<State>;
+
+type UseAreaEdit = (_: { areaId: number }) => {
+  area: State;
+  isLoading: boolean;
+  isSaving: boolean;
+  save: UseMutateAsyncFunction<definitions["Redirect"], unknown, SavedArea>;
+  setString: (
+    key: "accessInfo" | "accessClosed" | "name" | "comment",
+  ) => (event: React.ChangeEvent, data: { value?: string | number }) => void;
+  setVisibility: ComponentProps<typeof VisibilitySelectorField>["onChange"];
+  setCoord: (key: "lat" | "lng") => ComponentProps<typeof Input>["onChange"];
+  setLatLng: ComponentProps<typeof Leaflet>["onMouseClick"];
+  setSectorSort: (sectorId: number) => ComponentProps<typeof Input>["onChange"];
+  setBoolean: (
+    key: "trash" | "forDevelopers" | "noDogsAllowed",
+  ) => ComponentProps<typeof Checkbox>["onChange"];
+  setNewMedia: ComponentProps<typeof ImageUpload>["onMediaChanged"];
 };
 
-export const useAreaEdit = ({ areaId }: { areaId: number }) => {
-  const [state, dispatch] = useReducer(reducer, {
-    ...DEFAULT_AREA,
-    trash: false,
-    newMedia: [],
-  });
+export const useAreaEdit: UseAreaEdit = ({ areaId }) => {
+  const [state, dispatch] = useReducer(reducer, undefined);
   const { data, status, isLoading } = useArea(areaId);
 
   useEffect(() => {
@@ -121,11 +167,7 @@ export const useAreaEdit = ({ areaId }: { areaId: number }) => {
     }
   }, [data, status]);
 
-  const save = usePostData<
-    Omit<definitions["Area"], "media" | "newMedia"> &
-      Pick<State, "trash" | "newMedia">,
-    definitions["Redirect"]
-  >(`/areas`, {
+  const save = usePostData<SavedArea, definitions["Redirect"]>(`/areas`, {
     mutationKey: [`/areas`, { id: areaId }],
     createBody({
       id,
@@ -161,16 +203,16 @@ export const useAreaEdit = ({ areaId }: { areaId: number }) => {
         JSON.stringify({
           id,
           trash,
-          lockedAdmin,
-          lockedSuperadmin,
+          lockedAdmin: !!lockedAdmin,
+          lockedSuperadmin: !!lockedSuperadmin,
           forDevelopers,
-          accessInfo,
-          accessClosed,
+          accessInfo: accessInfo || "",
+          accessClosed: accessClosed || "",
           noDogsAllowed,
           name,
           comment,
-          lat,
-          lng,
+          lat: lat || "",
+          lng: lng || "",
           newMedia,
           sectorOrder,
         }),
@@ -192,30 +234,32 @@ export const useAreaEdit = ({ areaId }: { areaId: number }) => {
 
   return {
     area: state,
-    isLoading: areaId > 0 ? isLoading : false,
+    isLoading,
     isSaving: save.isLoading,
     save: save.mutateAsync,
     setString: useCallback(
-      (key: "accessInfo" | "accessClosed" | "name" | "comment") =>
+      (key) =>
         (_, { value }) =>
-          dispatch({ action: "set-string", key, value }),
+          dispatch({
+            action: "set-string",
+            key,
+            value: value ? String(value) : "",
+          }),
       [],
     ),
-    setVisibility: useCallback<
-      ComponentProps<typeof VisibilitySelectorField>["onChange"]
-    >(
+    setVisibility: useCallback(
       ({ lockedAdmin, lockedSuperadmin }) =>
         dispatch({ action: "set-visibility", lockedAdmin, lockedSuperadmin }),
       [],
     ),
     setCoord: useCallback(
-      (key: "lat" | "lng") =>
+      (key) =>
         (_, { value }) => {
           dispatch({ action: "set-coord", key, value });
         },
       [],
     ),
-    setLatLng: useCallback<ComponentProps<typeof Leaflet>["onMouseClick"]>(
+    setLatLng: useCallback(
       ({ latlng }) =>
         dispatch({
           action: "set-lat-lng",
@@ -231,13 +275,14 @@ export const useAreaEdit = ({ areaId }: { areaId: number }) => {
       [],
     ),
     setBoolean: useCallback(
-      (key: "trash" | "forDevelopers" | "noDogsAllowed") =>
+      (key) =>
         (_, { checked }) =>
           dispatch({ action: "set-boolean", key, value: !!checked }),
       [],
     ),
-    setNewMedia: useCallback<
-      ComponentProps<typeof ImageUpload>["onMediaChanged"]
-    >((newMedia) => dispatch({ action: "set-media", newMedia }), []),
+    setNewMedia: useCallback(
+      (newMedia) => dispatch({ action: "set-media", newMedia }),
+      [],
+    ),
   };
 };
