@@ -42,6 +42,10 @@ export const AreaEdit = () => {
   const save = useCallback<ComponentProps<typeof Form>["onSubmit"]>(
     (event) => {
       event.preventDefault();
+      if (!data.name) {
+        return;
+      }
+
       if (
         !data.trash ||
         confirm("Are you sure you want to move area to trash?")
