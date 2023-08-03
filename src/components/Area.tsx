@@ -260,8 +260,11 @@ const Area = () => {
 
   const sectorPanes: ComponentProps<typeof Tab>["panes"] = [];
   if (data.sectors) {
-    const hasTickedProblem =
-      data.sectors.filter((s) => s.problems.filter((p) => p.ticked)).length > 0;
+    const numTickedProblemsInArea = data.sectors.reduce(
+      (count, current) =>
+        count + current.problems.filter((p) => p.ticked).length,
+      0,
+    );
     sectorPanes.push({
       menuItem: "Sectors (" + data.sectors.length + ")",
       render: () => (
@@ -269,7 +272,7 @@ const Area = () => {
           <Item.Group link unstackable>
             {data.sectors.map((sector) => {
               let percent;
-              if (hasTickedProblem) {
+              if (numTickedProblemsInArea > 0) {
                 const [total, ticked] = sector.typeNumTicked
                   .filter((s) => s.type != "Projects")
                   .reduce(
@@ -310,7 +313,7 @@ const Area = () => {
                       />
                     </Item.Header>
                     <Item.Extra>
-                      {hasTickedProblem &&
+                      {numTickedProblemsInArea > 0 &&
                         sector.typeNumTicked?.filter(
                           (x) => x.type != "Projects",
                         ).length > 0 && (
