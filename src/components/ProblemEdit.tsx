@@ -43,9 +43,7 @@ const ProblemEdit = () => {
   const accessToken = useAccessToken();
   const { sectorId, problemId } = useIds();
   const [data, setData] = useState<any>(null);
-  const [sectorLatLng, setSectorLatLng] = useState(null);
-  const [sectorMarkers, setSectorMarkers] = useState([]);
-  const [sectorRocks, setSectorRocks] = useState([]);
+  const [sector, setSector] = useState(null);
   const [showSectorMarkers, setShowSectorMarkers] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -57,21 +55,7 @@ const ProblemEdit = () => {
         .then((data) => setData(data))
         .then(() =>
           getSector(accessToken, sectorId).then((data) => {
-            if (data.lat > 0) {
-              setSectorLatLng({ lat: data.lat, lng: data.lng });
-            }
-            setSectorMarkers(
-              data.problems
-                .filter((p) => p.lat > 0 && p.lng > 0 && p.id != problemId)
-                .map((p) => ({ lat: p.lat, lng: p.lng, label: p.name })),
-            );
-            setSectorRocks(
-              data.problems
-                .filter((p) => p.rock)
-                .map((p) => p.rock)
-                .filter((value, index, self) => self.indexOf(value) === index)
-                .sort(),
-            );
+            setSector(data);
           }),
         )
         .catch((e) => setError(String(e)));
@@ -293,7 +277,7 @@ const ProblemEdit = () => {
     );
   }
 
-  if (!data) {
+  if (!data || !sector) {
     return <Loading />;
   }
 
@@ -302,8 +286,8 @@ const ProblemEdit = () => {
   if (data.lat != 0 && data.lng != 0) {
     defaultCenter = { lat: data.lat, lng: data.lng };
     defaultZoom = 15;
-  } else if (sectorLatLng) {
-    defaultCenter = sectorLatLng;
+  } else if (sector.lat > 0 && sector.lng > 0) {
+    defaultCenter = { lat: sector.lat, lng: sector.lng };
     defaultZoom = 15;
   } else {
     defaultCenter = meta.defaultCenter;
@@ -314,9 +298,18 @@ const ProblemEdit = () => {
   if (data.lat != 0 && data.lng != 0) {
     markers.push({ lat: data.lat, lng: data.lng });
   }
-  if (showSectorMarkers && sectorMarkers) {
-    markers.push(...sectorMarkers);
+  if (showSectorMarkers && sector.problems?.length > 0) {
+    markers.push(
+      ...sector.problems
+        .filter((p) => p.lat > 0 && p.lng > 0 && p.id != problemId)
+        .map((p) => ({ lat: p.lat, lng: p.lng, label: p.name })),
+    );
   }
+  const sectorRocks = sector.problems
+    .filter((p) => p.rock)
+    .map((p) => p.rock)
+    .filter((value, index, self) => self.indexOf(value) === index)
+    .sort();
 
   return (
     <>
