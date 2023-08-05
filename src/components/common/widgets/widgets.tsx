@@ -203,7 +203,7 @@ type YrData = {
   };
 };
 
-const WeatherIcon = ({
+export const WeatherIcon = ({
   symbol,
 }: {
   symbol: undefined | "loading" | TWeatherSymbolKey;

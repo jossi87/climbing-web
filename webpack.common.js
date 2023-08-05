@@ -31,8 +31,8 @@ const plugins = [
   }),
   new EnvironmentPlugin(
     Object.keys(process.env).filter((key) =>
-      String(key).startsWith("REACT_APP_")
-    )
+      String(key).startsWith("REACT_APP_"),
+    ),
   ),
 ];
 
@@ -51,7 +51,13 @@ module.exports = {
     rules: [
       {
         test: /\.(jsx?|tsx?)$/,
-        exclude: /node_modules\/(?!(@react-leaflet|react-leaflet)\/)/i,
+        exclude: [
+          /node_modules\/(?!(@react-leaflet|react-leaflet)\/)/i,
+          // Tree-shaking *should* make this unnecessary, but let's guard
+          // against accidental reverse-imports (a utility being import from a
+          // storybook file into production code).
+          /\.stories\.tsx?$/,
+        ],
         use: {
           loader: "babel-loader",
           options: {
