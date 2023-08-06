@@ -282,7 +282,7 @@ const Area = () => {
                     ],
                     [0, 0],
                   );
-                percent = Math.round((ticked / total) * 100 * 100) / 100;
+                percent = Math.round((ticked / total) * 100);
               }
               return (
                 <Item as={Link} to={`/sector/${sector.id}`} key={sector.id}>
