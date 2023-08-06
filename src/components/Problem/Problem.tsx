@@ -281,7 +281,7 @@ export const Problem = () => {
                 <Button
                   animated="fade"
                   as={Link}
-                  to={`/problem/edit/media/${data.id}`}
+                  to={`/problem/edit/${data.sectorId}/${data.id}`}
                 >
                   <Button.Content hidden>Edit</Button.Content>
                   <Button.Content visible>
