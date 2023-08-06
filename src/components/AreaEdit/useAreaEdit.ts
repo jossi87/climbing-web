@@ -278,7 +278,7 @@ export const useAreaEdit: UseAreaEdit = ({ areaId }) => {
     setSectorSort: useCallback(
       (sectorId: number) =>
         (_, { value }) =>
-          dispatch({ action: "set-sort", sectorId, sorting: +(value || 0) }),
+          dispatch({ action: "set-sort", sectorId, sorting: +value || 0 }),
       [],
     ),
     setBoolean: useCallback(
