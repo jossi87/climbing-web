@@ -58,7 +58,7 @@ const ProblemEditMedia = () => {
       <Button.Group>
         <Button onClick={() => navigate(`/problem/${id}`)}>Cancel</Button>
         <Button.Or />
-        <Button type="submit" positive loading={saving}>
+        <Button type="submit" positive loading={saving} onClick={save}>
           Save
         </Button>
       </Button.Group>
