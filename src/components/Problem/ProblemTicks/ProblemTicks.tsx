@@ -27,28 +27,30 @@ export const ProblemTicks = ({ ticks }: Props) => {
               t.repeats.map((x) => (x.date ? x.date : "no-date")).join(", ");
             com = (
               <Table compact unstackable size="small">
-                <Table.Row>
-                  <Table.Cell
-                    verticalAlign="top"
-                    singleLine
-                    className="metadata"
-                  >
-                    {t.date ? t.date : "no-date"}
-                  </Table.Cell>
-                  <Table.Cell verticalAlign="top">{t.comment}</Table.Cell>
-                </Table.Row>
-                {t.repeats.map((r) => (
-                  <Table.Row key={[r.date, r.comment].join("/")}>
+                <Table.Body>
+                  <Table.Row>
                     <Table.Cell
                       verticalAlign="top"
                       singleLine
                       className="metadata"
                     >
-                      {r.date ? r.date : "no-date"}
+                      {t.date ? t.date : "no-date"}
                     </Table.Cell>
-                    <Table.Cell>{r.comment}</Table.Cell>
+                    <Table.Cell verticalAlign="top">{t.comment}</Table.Cell>
                   </Table.Row>
-                ))}
+                  {t.repeats.map((r) => (
+                    <Table.Row key={[r.date, r.comment].join("/")}>
+                      <Table.Cell
+                        verticalAlign="top"
+                        singleLine
+                        className="metadata"
+                      >
+                        {r.date ? r.date : "no-date"}
+                      </Table.Cell>
+                      <Table.Cell>{r.comment}</Table.Cell>
+                    </Table.Row>
+                  ))}
+                </Table.Body>
               </Table>
             );
           } else {
