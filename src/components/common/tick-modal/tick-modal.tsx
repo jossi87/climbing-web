@@ -54,8 +54,8 @@ const TickModal = ({
   );
   const [repeats, setRepeats] = useState(initialRepeats);
   const today = new Date();
-  const invalidDate =
-    date && (convertFromStringToDate(date) ?? new Date()) > today;
+  const validDate =
+    !date || (convertFromStringToDate(date) ?? new Date()) <= today;
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -63,24 +63,35 @@ const TickModal = ({
       <Modal.Content>
         <Modal.Description>
           <Form>
-            <Form.Field error={invalidDate}>
-              {invalidDate ? (
-                <label style={{ color: "red" }}>
-                  Date (date has not been yet)
-                </label>
-              ) : (
-                <label>Date</label>
-              )}
-              <DatePicker
-                placeholderText="Click to select a date"
-                dateFormat="dd-MM-yyyy"
-                showMonthDropdown
-                showYearDropdown
-                dropdownMode="select"
-                selected={date && convertFromStringToDate(date)}
-                onChange={(date) => setDate(convertFromDateToString(date))}
-              />
-            </Form.Field>
+            {validDate ? (
+              <label>Date</label>
+            ) : (
+              <label style={{ color: "red" }}>
+                Date (cannot be in the future)
+              </label>
+            )}
+            <Form.Group>
+              <Form.Field error={!validDate}>
+                <DatePicker
+                  placeholderText="Click to select a date"
+                  dateFormat="dd-MM-yyyy"
+                  showMonthDropdown
+                  showYearDropdown
+                  dropdownMode="select"
+                  selected={date && convertFromStringToDate(date)}
+                  onChange={(date) => setDate(convertFromDateToString(date))}
+                />
+              </Form.Field>
+              <Form.Field>
+                <Button
+                  onClick={() => {
+                    setDate(null);
+                  }}
+                >
+                  No date
+                </Button>
+              </Form.Field>
+            </Form.Group>
             <Form.Field>
               <label>Grade</label>
               <Dropdown
@@ -252,9 +263,6 @@ const TickModal = ({
                 labelPosition="right"
                 content="Delete tick"
                 onClick={() => {
-                  if (!date) {
-                    return;
-                  }
                   postTicks(
                     accessToken,
                     true,
@@ -280,14 +288,11 @@ const TickModal = ({
           )}
           <Button
             positive
-            disabled={!!(stars === null || invalidDate)}
+            disabled={!!(stars === null || !validDate)}
             icon="checkmark"
             labelPosition="right"
             content="Save"
             onClick={() => {
-              if (!date) {
-                return;
-              }
               postTicks(
                 accessToken,
                 false,
