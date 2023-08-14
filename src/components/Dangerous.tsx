@@ -38,6 +38,7 @@ const Dangerous = () => {
       name: sector.name,
       problems: sector.problems.map((problem) => ({
         id: problem.id,
+        broken: problem.broken,
         lockedAdmin: problem.lockedAdmin,
         lockedSuperadmin: problem.lockedSuperadmin,
         name: problem.name,

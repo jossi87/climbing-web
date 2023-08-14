@@ -456,6 +456,7 @@ export type definitions = {
     /** Format: int32 */
     id?: number;
     url?: string;
+    broken?: string;
     lockedAdmin?: boolean;
     lockedSuperadmin?: boolean;
     /** Format: int32 */
