@@ -63,12 +63,13 @@ const UserSelect = (
               value: user.id ?? 0,
               label: user.name ?? "",
             }))}
-          isValidNewOption={(inputValue) =>
-            !!options.find(
+          isValidNewOption={(inputValue) => {
+            const userExist = !!options.find(
               (u) =>
                 u.name && inputValue.toLowerCase() === u.name.toLowerCase(),
-            )
-          }
+            );
+            return !userExist;
+          }}
           {...props}
         />
       </div>
