@@ -310,7 +310,7 @@ const MediaSvgEdit = () => {
         );
       }
       return (
-        <g key={[p.c[0].x, p.c[0]].join("x")}>
+        <g key={[p.c?.[0]?.x ?? "x", p.c?.[0].y ?? "y"]?.join("x")}>
           {anchors}
           <circle
             className={"buldreinfo-svg-pointer"}
