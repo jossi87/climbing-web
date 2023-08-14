@@ -98,6 +98,7 @@ export const Problems = ({ filterOpen }: Props) => {
         const text = [problem.fa, typeAscents].filter(Boolean).join(" ");
         return {
           id: problem.id,
+          broken: problem.broken,
           lockedAdmin: !!problem.lockedAdmin,
           lockedSuperadmin: !!problem.lockedSuperadmin,
           name: problem.name,

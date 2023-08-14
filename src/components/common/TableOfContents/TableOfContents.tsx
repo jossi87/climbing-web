@@ -22,6 +22,7 @@ type Props = {
       name: string;
       problems: {
         id: number;
+        broken: string;
         lockedAdmin: boolean;
         lockedSuperadmin: boolean;
         name: string;
@@ -97,7 +98,11 @@ export const TableOfContents = ({ areas }: Props) => {
                       <List.Header>
                         {`#${problem.nr} `}
                         <Link to={`/problem/${problem.id}`}>
-                          {problem.name}
+                          {problem.broken ? (
+                            <del>{problem.name}</del>
+                          ) : (
+                            problem.name
+                          )}
                         </Link>{" "}
                         {problem.grade}{" "}
                         {problem.stars > 0 && (
@@ -107,6 +112,7 @@ export const TableOfContents = ({ areas }: Props) => {
                           />
                         )}
                         {problem.text && <small>{problem.text} </small>}
+                        {problem.broken && <u>{problem.broken} </u>}
                         {problem.subText && (
                           <small>
                             <i style={{ color: "gray" }}>{problem.subText} </i>

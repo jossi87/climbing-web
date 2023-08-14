@@ -333,6 +333,15 @@ export const Problem = () => {
           </Breadcrumb.Section>
         </Breadcrumb>
       </div>
+      {data.broken && (
+        <Message
+          size="huge"
+          negative
+          icon="attention"
+          header={meta.isBouldering ? "Problem broken" : "Route broken"}
+          content={data.broken}
+        />
+      )}
       {(data.areaAccessClosed || data.sectorAccessClosed) && (
         <Message
           size="huge"

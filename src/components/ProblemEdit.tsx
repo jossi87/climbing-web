@@ -156,6 +156,10 @@ const ProblemEdit = () => {
     }));
   }, []);
 
+  function onBrokenChanged(e, { value }) {
+    setData((prevState) => ({ ...prevState, broken: value }));
+  }
+
   function onTriviaChanged(e, { value }) {
     setData((prevState) => ({ ...prevState, trivia: value }));
   }
@@ -199,6 +203,7 @@ const ProblemEdit = () => {
         accessToken,
         data.sectorId,
         data.id,
+        data.broken,
         data.trash,
         data.lockedAdmin,
         data.lockedSuperadmin,
@@ -430,6 +435,13 @@ const ProblemEdit = () => {
             style={{ minHeight: 100 }}
             value={data.trivia}
             onChange={onTriviaChanged}
+          />
+          <Form.Field
+            label="Broken"
+            control={Input}
+            placeholder="Enter reason if problem is broken"
+            value={data.broken}
+            onChange={onBrokenChanged}
           />
           {meta.isIce && (
             <>

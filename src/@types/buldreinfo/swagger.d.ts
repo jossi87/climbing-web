@@ -332,6 +332,7 @@ export type definitions = {
   SectorProblem: {
     /** Format: int32 */
     id?: number;
+    broken?: string;
     lockedAdmin?: boolean;
     lockedSuperadmin?: boolean;
     /** Format: int32 */
@@ -588,6 +589,7 @@ export type definitions = {
     canonical?: string;
     /** Format: int32 */
     id?: number;
+    broken?: string;
     trash?: boolean;
     lockedAdmin?: boolean;
     lockedSuperadmin?: boolean;
@@ -697,6 +699,7 @@ export type definitions = {
     /** Format: int32 */
     id?: number;
     url?: string;
+    broken?: string;
     lockedAdmin?: boolean;
     lockedSuperadmin?: boolean;
     /** Format: int32 */

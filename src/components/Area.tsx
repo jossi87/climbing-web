@@ -274,7 +274,7 @@ const Area = () => {
               let percent;
               if (numTickedProblemsInArea > 0) {
                 const [total, ticked] = sector.typeNumTicked
-                  .filter((s) => s.type != "Projects")
+                  .filter((s) => s.type != "Projects" && s.type != "Broken")
                   .reduce(
                     ([total, failure], d) => [
                       total + d.num,

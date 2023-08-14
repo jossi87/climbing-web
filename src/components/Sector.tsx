@@ -81,13 +81,16 @@ const SectorListItem = ({ problem }: Props) => {
       <List.Header>
         {problem.danger && <Icon color="red" name="warning" />}
         {`#${problem.nr} `}
-        <Link to={`/problem/${problem.id}`}>{problem.name}</Link>{" "}
+        <Link to={`/problem/${problem.id}`}>
+          {problem.broken ? <del>{problem.name}</del> : problem.name}
+        </Link>{" "}
         {problem.grade}
         <Stars numStars={problem.stars} includeNoRating={false} />
         {faTypeAscents && <small> {faTypeAscents}</small>}
         <small>
           <i style={{ color: "gray" }}>
             {" "}
+            {problem.broken && <u>{problem.broken} </u>}
             {problem.rock && <>Rock: {problem.rock}. </>}
             {problem.comment}{" "}
           </i>
@@ -273,6 +276,9 @@ const Sector = () => {
   const uniqueTypes = data.problems
     .map((p) => p.t.subType)
     .filter((value, index, self) => self.indexOf(value) === index);
+  if (data.problems.filter((p) => p.broken).length > 0) {
+    uniqueTypes.push("Broken");
+  }
   if (data.problems.filter((p) => p.gradeNumber === 0).length > 0) {
     uniqueTypes.push("Projects");
   }
@@ -282,6 +288,7 @@ const Sector = () => {
     const problemsOfType = data.problems.filter(
       (p) =>
         (subType === "Projects" && p.gradeNumber === 0) ||
+        (subType === "Broken" && p.broken) ||
         (p.t.subType === subType && p.gradeNumber !== 0),
     );
     const numTicked = problemsOfType.filter((p) => p.ticked).length;
