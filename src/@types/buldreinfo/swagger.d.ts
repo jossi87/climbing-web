@@ -273,6 +273,7 @@ export type definitions = {
   Media: {
     /** Format: int32 */
     id?: number;
+    uploadedByMe?: boolean;
     /** Format: int32 */
     crc32?: number;
     /** Format: int32 */
@@ -754,6 +755,7 @@ export type definitions = {
   ProfileMedia: {
     /** Format: int32 */
     id?: number;
+    uploadedByMe?: boolean;
     /** Format: int32 */
     crc32?: number;
     /** Format: int32 */
@@ -1173,6 +1175,10 @@ export type operations = {
       query: {
         /** Media id */
         idMedia: number;
+      };
+      header: {
+        /** Authorization token */
+        Authorization?: string;
       };
     };
     responses: {

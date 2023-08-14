@@ -213,7 +213,8 @@ const MediaModal = ({
   })();
   const canEdit = isAdmin && isImage;
   const canDelete = isAdmin && isImage;
-  const canRotate = isAdmin && isImage && !m.svgs && !m.mediaSvgs;
+  const canRotate =
+    (isAdmin || m.uploadedByMe) && isImage && !m.svgs && !m.mediaSvgs;
   const canDrawTopo = isAdmin && isImage && optProblemId;
   const canDrawMedia = isAdmin && isImage && !isBouldering;
   const canOrder = isAdmin && isImage && length > 1;
