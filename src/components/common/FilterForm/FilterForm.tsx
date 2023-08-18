@@ -1,4 +1,10 @@
-import React from "react";
+import React, {
+  CSSProperties,
+  useCallback,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   Form,
   Header,
@@ -7,6 +13,8 @@ import {
   Icon,
   Divider,
   Container,
+  SemanticICONS,
+  ButtonProps,
 } from "semantic-ui-react";
 import { GradeSelect } from "./GradeSelect";
 import { getLocales } from "../../../api";
@@ -14,6 +22,7 @@ import { useMeta } from "../meta";
 import { useFilter } from "./context";
 import { HeaderButtons } from "../HeaderButtons";
 import { ResetField } from "../../Problems/reducer";
+import { neverGuard } from "../../../utils/neverGuard";
 
 const CLIMBING_OPTIONS = [
   {
@@ -28,13 +37,16 @@ const CLIMBING_OPTIONS = [
   },
 ] as const;
 
-const GroupHeader = ({
-  title,
-  reset,
-}: {
+type GroupHeaderProps = {
   title: string;
   reset: ResetField;
-}) => {
+  buttons?: {
+    icon: SemanticICONS;
+    onClick: NonNullable<ButtonProps["onClick"]>;
+  }[];
+};
+
+const GroupHeader = ({ title, reset, buttons }: GroupHeaderProps) => {
   const { dispatch } = useFilter();
 
   return (
@@ -49,6 +61,18 @@ const GroupHeader = ({
       <Header as="h3" style={{ flex: 1, margin: 0 }}>
         {title}
       </Header>
+      {buttons
+        ?.filter(Boolean)
+        ?.map(({ icon, onClick }) => (
+          <Button
+            key={icon}
+            icon={icon}
+            onClick={onClick}
+            size="mini"
+            basic
+            compact
+          />
+        ))}
       <Button
         icon="trash alternate outline"
         onClick={() => dispatch({ action: "reset", section: reset })}
@@ -58,6 +82,65 @@ const GroupHeader = ({
       />
     </Container>
   );
+};
+
+type AreaSizeState = "show-all" | "show-some" | "too-few";
+
+const STYLES: Record<AreaSizeState, CSSProperties> = {
+  "show-all": {},
+  "show-some": { maxHeight: "20vh", overflow: "auto" },
+  "too-few": {},
+} as const;
+
+const ICONS: Record<AreaSizeState, SemanticICONS | undefined> = {
+  "show-all": "compress",
+  "show-some": "expand",
+  "too-few": undefined,
+};
+
+const useAreaSizing = () => {
+  const ref = useRef<HTMLDivElement>();
+  const [status, setStatus] = useState<AreaSizeState>("show-some");
+
+  useLayoutEffect(() => {
+    if (!ref.current) {
+      return;
+    }
+
+    const { clientHeight: containerHeight, scrollHeight: contentsHeight } =
+      ref.current;
+    if (
+      contentsHeight < containerHeight ||
+      contentsHeight - containerHeight < containerHeight * 0.25
+    ) {
+      setStatus("too-few");
+    } else {
+      setStatus("show-some");
+    }
+  }, []);
+
+  const onClick = useCallback(() => {
+    setStatus((v) => {
+      switch (v) {
+        case "too-few":
+          return v;
+        case "show-all":
+          return "show-some";
+        case "show-some":
+          return "show-all";
+        default: {
+          return neverGuard(v, "show-all");
+        }
+      }
+    });
+  }, []);
+
+  return {
+    ref,
+    style: STYLES[status],
+    icon: ICONS[status],
+    onClick,
+  };
 };
 
 export const FilterForm = () => {
@@ -77,6 +160,13 @@ export const FilterForm = () => {
   const disciplineOptions = meta.types
     .sort((a, b) => a.subType.localeCompare(b.subType, getLocales()))
     .map((t) => ({ key: t.id, value: t.id, text: t.subType }));
+
+  const {
+    ref: areaContainerRef,
+    style: areaContainerStyle,
+    icon: areaContainerButton,
+    onClick: areaContainerAction,
+  } = useAreaSizing();
 
   return (
     <Form>
@@ -184,23 +274,40 @@ export const FilterForm = () => {
           </Form.Field>
         )}
       </Form.Group>
-      <GroupHeader title="Areas" reset="areas" />
-      <Form.Group inline style={{ display: "flex", flexWrap: "wrap" }}>
-        {unfilteredData.map((area) => (
-          <Form.Field key={area.id}>
-            <Checkbox
-              label={area.name}
-              checked={!!filterAreaIds[area.id]}
-              onChange={(_, { checked }) =>
-                dispatch({
-                  action: "toggle-area",
-                  areaId: area.id,
-                  enabled: checked,
-                })
-              }
-            />
-          </Form.Field>
-        ))}
+      <GroupHeader
+        title="Areas"
+        reset="areas"
+        buttons={[
+          areaContainerButton
+            ? { icon: areaContainerButton, onClick: areaContainerAction }
+            : undefined,
+        ]}
+      />
+      <Form.Group inline>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            ...areaContainerStyle,
+          }}
+          ref={areaContainerRef}
+        >
+          {unfilteredData.map((area) => (
+            <Form.Field key={area.id}>
+              <Checkbox
+                label={area.name}
+                checked={!!filterAreaIds[area.id]}
+                onChange={(_, { checked }) =>
+                  dispatch({
+                    action: "toggle-area",
+                    areaId: area.id,
+                    enabled: checked,
+                  })
+                }
+              />
+            </Form.Field>
+          ))}
+        </div>
       </Form.Group>
     </Form>
   );
