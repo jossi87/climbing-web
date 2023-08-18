@@ -355,13 +355,17 @@ export function useArea(id: number) {
       queryKey: [`/areas`, { id }],
       enabled: id > 0,
       select(response) {
-        // @ts-expect-error - Evan should fix this
-        if (response.redirectUrl && response.redirectUrl != window.location.href) {
+        if (
+          // @ts-expect-error - Evan should fix this
+          response.redirectUrl &&
+          // @ts-expect-error - Evan should fix this
+          response.redirectUrl != window.location.href
+        ) {
           // @ts-expect-error - Evan should fix this
           window.location.href = response.redirectUrl;
         }
         return response?.[0];
-      }
+      },
     },
   );
 }
