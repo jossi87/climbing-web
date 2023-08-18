@@ -354,7 +354,14 @@ export function useArea(id: number) {
     {
       queryKey: [`/areas`, { id }],
       enabled: id > 0,
-      select: (res) => res?.[0],
+      select(response) {
+        // @ts-expect-error - Evan should fix this
+        if (response.redirectUrl && response.redirectUrl != window.location.href) {
+          // @ts-expect-error - Evan should fix this
+          window.location.href = response.redirectUrl;
+        }
+        return response?.[0];
+      }
     },
   );
 }
@@ -365,6 +372,7 @@ export function getArea(
 ): Promise<Success<"getAreas">> {
   return makeAuthenticatedRequest(accessToken, `/areas?id=${id}`)
     .then((response) => {
+      console.log(response)
       if (response.status === 500) {
         return Promise.reject(
           "Cannot find the specified area because it does not exist or you do not have sufficient permissions.",
