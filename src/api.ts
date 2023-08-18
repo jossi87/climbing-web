@@ -372,7 +372,6 @@ export function getArea(
 ): Promise<Success<"getAreas">> {
   return makeAuthenticatedRequest(accessToken, `/areas?id=${id}`)
     .then((response) => {
-      console.log(response)
       if (response.status === 500) {
         return Promise.reject(
           "Cannot find the specified area because it does not exist or you do not have sufficient permissions.",
