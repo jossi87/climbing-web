@@ -3,7 +3,7 @@ import { ButtonGroup, Header, Icon } from "semantic-ui-react";
 
 type Props = {
   icon?: ComponentProps<typeof Icon>["name"];
-  header: string;
+  header?: string;
   subheader?: React.ReactNode;
   children?: React.ReactNode | React.ReactNode[];
 };
@@ -18,17 +18,19 @@ export const HeaderButtons = ({ header, subheader, icon, children }: Props) => {
         alignItems: "flex-end",
       }}
     >
-      <Header as="h2" style={{ marginBottom: 0 }}>
-        {icon && <Icon name={icon} />}
-        <Header.Content>
-          {header}
-          {subheader && (
-            <Header.Subheader style={{ lineWrap: "no-wrap" }}>
-              {subheader}
-            </Header.Subheader>
-          )}
-        </Header.Content>
-      </Header>
+      {header && (
+        <Header as="h2" style={{ marginBottom: 0 }}>
+          {icon && <Icon name={icon} />}
+          <Header.Content>
+            {header}
+            {subheader && (
+              <Header.Subheader style={{ lineWrap: "no-wrap" }}>
+                {subheader}
+              </Header.Subheader>
+            )}
+          </Header.Content>
+        </Header>
+      )}
       <div
         style={{
           display: "flex",

@@ -1,7 +1,10 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { List, Icon } from "semantic-ui-react";
+import { List, Icon, Button } from "semantic-ui-react";
 import { LockSymbol, Stars } from "../../common/widgets/widgets";
+import { definitions } from "../../../@types/buldreinfo/swagger";
+import { ProblemsMap } from "./ProblemsMap";
+import { HeaderButtons } from "../HeaderButtons";
 
 const JumpToTop = () => (
   <a onClick={() => window.scrollTo(0, 0)}>
@@ -9,41 +12,67 @@ const JumpToTop = () => (
   </a>
 );
 
-type Props = {
-  areas: {
-    id: number;
-    lockedAdmin: boolean;
-    lockedSuperadmin: boolean;
-    name: string;
-    sectors: {
-      id: number;
-      lockedAdmin: boolean;
-      lockedSuperadmin: boolean;
-      name: string;
-      problems: {
-        id: number;
-        broken: string;
-        lockedAdmin: boolean;
-        lockedSuperadmin: boolean;
-        name: string;
-        nr: number;
-        grade: string;
-        stars?: number;
-        ticked?: boolean;
-        text?: string;
-        subText?: string;
-      }[];
-    }[];
-  }[];
+export type Props = {
+  enableMap: boolean;
+  areas: (Required<
+    Pick<
+      definitions["Area"],
+      "id" | "lockedAdmin" | "lockedSuperadmin" | "name"
+    >
+  > & {
+    sectors: (Required<
+      Pick<
+        definitions["Sector"],
+        "id" | "name" | "lockedAdmin" | "lockedSuperadmin"
+      >
+    > &
+      Pick<
+        definitions["ProblemAreaSector"],
+        "polygonCoords" | "lat" | "lng"
+      > & {
+        problems: (Required<
+          Pick<
+            definitions["Problem"],
+            "id" | "name" | "lockedAdmin" | "lockedSuperadmin" | "grade" | "nr"
+          >
+        > &
+          Pick<
+            definitions["Problem"],
+            "stars" | "ticked" | "lat" | "lng" | "broken"
+          > & {
+            text?: string;
+            subText?: string;
+          })[];
+      })[];
+  })[];
 };
 
-export const TableOfContents = ({ areas }: Props) => {
+export const TableOfContents = ({ enableMap, areas }: Props) => {
   const areaRefs = useRef({});
+  const [showMap, setShowMap] = useState(
+    enableMap && !!(matchMedia && matchMedia("(pointer:fine)")?.matches),
+  );
+
   if (areas?.length === 0) {
     return <i>No results match your search criteria.</i>;
   }
+
   return (
     <>
+      {enableMap && (
+        <HeaderButtons>
+          <Button
+            toggle={showMap}
+            active={showMap}
+            icon
+            labelPosition="left"
+            onClick={() => setShowMap((v) => !v)}
+          >
+            <Icon name="map outline" />
+            Map
+          </Button>
+        </HeaderButtons>
+      )}
       <List celled link horizontal size="small">
         {areas.map((area) => (
           <React.Fragment key={area.id}>
@@ -62,6 +91,7 @@ export const TableOfContents = ({ areas }: Props) => {
           </React.Fragment>
         ))}
       </List>
+      {showMap && <ProblemsMap areas={areas} />}
       <List celled>
         {areas.map((area) => (
           <List.Item key={area.id}>

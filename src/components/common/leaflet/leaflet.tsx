@@ -8,6 +8,7 @@ import {
   WMSTileLayer,
   ScaleControl,
   FeatureGroup,
+  useMap,
 } from "react-leaflet";
 import {
   LatLngExpression,
@@ -47,28 +48,66 @@ function MapEvent({
 }
 
 type Props = {
-  autoZoom: boolean;
-  clusterMarkers: boolean;
+  autoZoom?: boolean;
+  clusterMarkers?: boolean;
   defaultCenter: { lat: number; lng: number };
   defaultZoom: number;
-  flyToId: number | null;
-  height: number | string;
-  markers: MarkerDef[];
-  onMouseClick: LeafletMouseEventHandlerFn | null;
-  onMouseMove: LeafletMouseEventHandlerFn | null;
-  outlines: {
+  flyToId?: number | null;
+  height?: number | string;
+  markers?: MarkerDef[];
+  onMouseClick?: LeafletMouseEventHandlerFn;
+  onMouseMove?: LeafletMouseEventHandlerFn;
+  outlines?: {
     background?: boolean;
     polygon: LatLngExpression[];
     url?: string;
     label?: string;
   }[];
-  polylines: {
+  polylines?: {
     background?: boolean;
     label?: string;
     polyline: LatLngExpression[];
   }[];
-  rocks: string[] | null;
+  rocks?: string[];
   showSatelliteImage?: boolean;
+  children?: React.ReactNode | React.ReactNode[];
+};
+
+const UpdateBounds = ({
+  autoZoom,
+  markers,
+  outlines,
+  polylines,
+}: Pick<Props, "polylines" | "outlines" | "markers" | "autoZoom">) => {
+  const map = useMap();
+
+  if (!autoZoom) {
+    return null;
+  }
+
+  const bounds = latLngBounds([]);
+  if (
+    autoZoom &&
+    (!!markers?.length || !!outlines?.length || !!polylines?.length)
+  ) {
+    markers
+      ?.filter(({ lat, lng }) => lat && lng)
+      ?.forEach((m) => bounds.extend([m.lat, m.lng]));
+    outlines
+      ?.filter(({ polygon }) => !!polygon)
+      ?.forEach((o) => o.polygon.forEach((p) => bounds.extend([p[0], p[1]])));
+    polylines
+      ?.filter(({ polyline }) => polyline)
+      ?.forEach((p) => p.polyline.forEach((x) => bounds.extend([x[0], x[1]])));
+
+    const ne = bounds.getNorthEast();
+    const sw = bounds.getSouthWest();
+    if (ne && sw && ne.lat !== sw.lat && ne.lng !== sw.lng) {
+      map.flyToBounds(bounds, { duration: 0.5 });
+    }
+  }
+
+  return null;
 };
 
 const Leaflet = ({
@@ -83,38 +122,14 @@ const Leaflet = ({
   onMouseMove,
   outlines,
   polylines,
-  rocks,
+  rocks = [],
   showSatelliteImage,
+  children,
 }: Props) => {
   const [groupByRock, setGroupByRock] = useState(!!rocks?.length);
-  let bounds = null;
-  if (
-    autoZoom &&
-    (!!markers?.length || !!outlines?.length || !!polylines?.length)
-  ) {
-    bounds = latLngBounds([]);
-    if (markers && markers.length > 0) {
-      markers.forEach((m) => bounds.extend([m.lat, m.lng]));
-    }
-    if (outlines && outlines.length > 0) {
-      outlines.forEach((o) =>
-        o.polygon.forEach((p) => bounds.extend([p[0], p[1]])),
-      );
-    }
-    if (polylines && polylines.length > 0) {
-      polylines.forEach((p) =>
-        p.polyline.forEach((x) => bounds.extend([x[0], x[1]])),
-      );
-    }
-    if (
-      bounds._northEast.lat === bounds._southWest.lat ||
-      bounds._northEast.lng === bounds._southWest.lng
-    ) {
-      bounds = null;
-    }
-  }
+
   const opacity = 0.6;
-  const addEventHandlers = onMouseClick == null && onMouseMove == null;
+  const addEventHandlers = !onMouseClick && !onMouseMove;
   let markerGroup;
   if (groupByRock) {
     const rockMarkers: MarkerDef[] = rocks
@@ -175,14 +190,20 @@ const Leaflet = ({
       markerGroup = <MarkerClusterGroup>{markerGroup}</MarkerClusterGroup>;
     }
   }
+
   return (
     <MapContainer
       style={{ height: height ? height : "500px", width: "100%", zIndex: 0 }}
       zoomControl={true}
-      zoom={bounds ? null : defaultZoom}
-      center={bounds ? null : defaultCenter}
-      bounds={bounds}
+      zoom={defaultZoom}
+      center={defaultCenter}
     >
+      <UpdateBounds
+        polylines={polylines}
+        outlines={outlines}
+        autoZoom={autoZoom}
+        markers={markers}
+      />
       <MapEvent onMouseClick={onMouseClick} onMouseMove={onMouseMove} />
       <FullscreenControl />
       <LocateControl />
@@ -264,6 +285,7 @@ const Leaflet = ({
         />
         <Polylines opacity={opacity} polylines={polylines} />
       </FeatureGroup>
+      {children}
     </MapContainer>
   );
 };

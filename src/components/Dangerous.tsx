@@ -35,6 +35,7 @@ const Dangerous = () => {
       id: sector.id,
       lockedAdmin: sector.lockedAdmin,
       lockedSuperadmin: sector.lockedSuperadmin,
+      polygonCoords: "",
       name: sector.name,
       problems: sector.problems.map((problem) => ({
         id: problem.id,
@@ -64,7 +65,7 @@ const Dangerous = () => {
             <Header.Subheader>{description}</Header.Subheader>
           </Header.Content>
         </Header>
-        <TableOfContents areas={areas} />
+        <TableOfContents enableMap={false} areas={areas} />
       </Segment>
     </>
   );
