@@ -355,14 +355,8 @@ export function useArea(id: number) {
       queryKey: [`/areas`, { id }],
       enabled: id > 0,
       select(response) {
-        if (
-          // @ts-expect-error - Evan should fix this
-          response.redirectUrl &&
-          // @ts-expect-error - Evan should fix this
-          response.redirectUrl != window.location.href
-        ) {
-          // @ts-expect-error - Evan should fix this
-          window.location.href = response.redirectUrl;
+        if (response?.[0].redirectUrl) {
+          window.location.href = response?.[0].redirectUrl;
         }
         return response?.[0];
       },

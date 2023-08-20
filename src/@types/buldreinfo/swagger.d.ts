@@ -205,6 +205,7 @@ export type definitions = {
     lastLogin?: string;
   };
   Area: {
+    redirectUrl?: string;
     /** Format: int32 */
     regionId?: number;
     canonical?: string;
@@ -563,6 +564,7 @@ export type definitions = {
     picture?: string;
   };
   Problem: {
+    redirectUrl?: string;
     /** Format: int32 */
     areaId?: number;
     areaLockedAdmin?: boolean;
@@ -732,6 +734,7 @@ export type definitions = {
     lat?: number;
     /** Format: double */
     lng?: number;
+    polygonCoords?: string;
     lockedAdmin?: boolean;
     lockedSuperadmin?: boolean;
     problems?: definitions["ProblemAreaProblem"][];
@@ -871,6 +874,7 @@ export type definitions = {
     problems?: definitions["ProfileTodoProblem"][];
   };
   Sector: {
+    redirectUrl?: string;
     orderByGrade?: boolean;
     /** Format: int32 */
     areaId?: number;
