@@ -26,52 +26,52 @@ export const Navigation = () => {
           <Menu.Item header as={Link} to="/">
             <Image size="mini" src="/png/buldreinfo.png" alt="Logo" />
           </Menu.Item>
-          {activeSite && (
-            <Dropdown
-              item
-              simple
-              labeled
-              trigger={
-                <>
-                  <Icon name="world" />
-                  <span>{activeSite.name}</span>
-                </>
-              }
-              icon={null}
-            >
-              <Dropdown.Menu>
-                <Dropdown.Header>{activeSite.group} REGIONS</Dropdown.Header>
-                {sites
-                  .filter((s) => s.group === activeSite.group)
-                  .map((s) => (
-                    <Dropdown.Item
-                      active={s.active}
-                      key={s.name}
-                      as={Link}
-                      to={s.url}
-                    >
-                      {s.name}
-                    </Dropdown.Item>
-                  ))}
-                <Dropdown.Divider />
-                <Dropdown.Header>ALL SITES (MAP)</Dropdown.Header>
-                {sites
-                  .map((g) => g.group)
-                  .filter((x, i, a) => a.indexOf(x) == i)
-                  .map((g) => (
-                    <Dropdown.Item
-                      key={g}
-                      as={Link}
-                      to={"/sites/" + g.toLowerCase()}
-                    >
-                      {g}
-                    </Dropdown.Item>
-                  ))}
-              </Dropdown.Menu>
-            </Dropdown>
-          )}
           <Menu.Item as={SearchBox} style={{ flex: 1 }} />
         </div>
+        {activeSite && (
+          <Dropdown
+            item
+            simple
+            labeled
+            trigger={
+              <>
+                <Icon name="world" />
+                <span>{activeSite.name}</span>
+              </>
+            }
+            icon={null}
+          >
+            <Dropdown.Menu>
+              <Dropdown.Header>{activeSite.group} REGIONS</Dropdown.Header>
+              {sites
+                .filter((s) => s.group === activeSite.group)
+                .map((s) => (
+                  <Dropdown.Item
+                    active={s.active}
+                    key={s.name}
+                    as={Link}
+                    to={s.url}
+                  >
+                    {s.name}
+                  </Dropdown.Item>
+                ))}
+              <Dropdown.Divider />
+              <Dropdown.Header>ALL SITES (MAP)</Dropdown.Header>
+              {sites
+                .map((g) => g.group)
+                .filter((x, i, a) => a.indexOf(x) == i)
+                .map((g) => (
+                  <Dropdown.Item
+                    key={g}
+                    as={Link}
+                    to={"/sites/" + g.toLowerCase()}
+                  >
+                    {g}
+                  </Dropdown.Item>
+                ))}
+            </Dropdown.Menu>
+          </Dropdown>
+        )}
         <Menu.Item as={Link} to="/areas">
           <Icon name="list" />
           <span>Areas</span>
