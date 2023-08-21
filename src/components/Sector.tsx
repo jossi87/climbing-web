@@ -37,7 +37,6 @@ import {
   useSector,
 } from "../api";
 import Linkify from "react-linkify";
-import { useRedirect } from "../utils/useRedirect";
 import { componentDecorator } from "../utils/componentDecorator";
 import { parsePolyline } from "../utils/polyline";
 import { definitions } from "../@types/buldreinfo/swagger";
@@ -116,11 +115,10 @@ const Sector = () => {
   const accessToken = useAccessToken();
   const { sectorId } = useParams();
   const meta = useMeta();
-  const { data: data, error, isLoading } = useSector(+sectorId);
-  const redirect = useRedirect(data);
+  const { data: data, error, isLoading, redirectUi } = useSector(+sectorId);
 
-  if (redirect) {
-    return redirect;
+  if (redirectUi) {
+    return redirectUi;
   }
 
   if (error) {

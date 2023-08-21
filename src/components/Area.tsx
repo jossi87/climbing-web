@@ -34,7 +34,6 @@ import { getImageUrl, getAreaPdfUrl, useAccessToken, useArea } from "../api";
 import { Remarkable } from "remarkable";
 import { linkify } from "remarkable/linkify";
 import ProblemList from "./common/problem-list/problem-list";
-import { useRedirect } from "../utils/useRedirect";
 import { parsePolyline } from "../utils/polyline";
 import { definitions } from "../@types/buldreinfo/swagger";
 
@@ -114,8 +113,7 @@ const Area = () => {
   const accessToken = useAccessToken();
   const meta = useMeta();
   const { areaId } = useParams();
-  const { data, error } = useArea(+areaId);
-  const redirecting = useRedirect(data);
+  const { data, error, redirectUi } = useArea(+areaId);
   const md = new Remarkable({ breaks: true }).use(linkify);
   // open links in new windows
   md.renderer.rules.link_open = (function () {
@@ -129,8 +127,8 @@ const Area = () => {
     };
   })();
 
-  if (redirecting) {
-    return redirecting;
+  if (redirectUi) {
+    return redirectUi;
   }
 
   if (error) {
