@@ -29,7 +29,6 @@ import {
 import TickModal from "../common/tick-modal/tick-modal";
 import CommentModal from "../common/comment-modal/comment-modal";
 import Linkify from "react-linkify";
-import { useRedirect } from "../../utils/useRedirect";
 import { ProblemsOnRock } from "./ProblemsOnRock";
 import { ProblemTicks } from "./ProblemTicks";
 import { ProblemComments } from "./ProblemComments";
@@ -41,8 +40,10 @@ export const Problem = () => {
   const { problemId } = useParams();
   const [showHiddenMedia, setShowHiddenMedia] = useState(false);
   const meta = useMeta();
-  const { data, error, toggleTodo } = useProblem(+problemId, showHiddenMedia);
-  const redirecting = useRedirect(data);
+  const { data, error, toggleTodo, redirectUi } = useProblem(
+    +problemId,
+    showHiddenMedia,
+  );
 
   const [showTickModal, setShowTickModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState<any>(null);
@@ -59,8 +60,8 @@ export const Problem = () => {
     setShowCommentModal(null);
   };
 
-  if (redirecting) {
-    return redirecting;
+  if (redirectUi) {
+    return redirectUi;
   }
 
   if (error) {

@@ -16,6 +16,7 @@ import {
 import { useLocalStorage } from "./utils/use-local-storage";
 import { definitions, operations } from "./@types/buldreinfo/swagger";
 import { Success } from "./@types/buldreinfo";
+import { useRedirect } from "./utils/useRedirect";
 
 export function getLocales() {
   return "nb-NO";
@@ -160,7 +161,10 @@ export function useData<TQueryData = unknown, TData = TQueryData>(
     return res.json();
   };
 
-  return useQuery<TQueryData, unknown, TData>(queryKey, queryFn, options);
+  const data = useQuery<TQueryData, unknown, TData>(queryKey, queryFn, options);
+  const redirectUi = useRedirect(data.data);
+  data.isFetched;
+  return { ...data, redirectUi };
 }
 
 export function getImageUrl(
