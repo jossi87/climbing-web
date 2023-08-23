@@ -456,6 +456,10 @@ export type definitions = {
     name?: string;
     lockedAdmin?: boolean;
     lockedSuperadmin?: boolean;
+    /** Format: int32 */
+    sunFromHour?: number;
+    /** Format: int32 */
+    sunToHour?: number;
     sectors?: definitions["DangerousSector"][];
   };
   DangerousProblem: {

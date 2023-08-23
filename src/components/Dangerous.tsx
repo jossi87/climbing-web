@@ -30,6 +30,8 @@ const Dangerous = () => {
     id: area.id,
     lockedAdmin: area.lockedAdmin,
     lockedSuperadmin: area.lockedSuperadmin,
+    sunFromHour: area.sunFromHour,
+    sunToHour: area.sunToHour,
     name: area.name,
     sectors: area.sectors.map((sector) => ({
       id: sector.id,

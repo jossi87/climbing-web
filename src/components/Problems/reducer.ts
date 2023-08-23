@@ -14,6 +14,8 @@ export type State = {
   unfilteredData: definitions["ProblemArea"][];
 } & {
   filterAreaIds: Record<number, true>;
+  filterAreaOnlySunOnWallAt: number | undefined;
+  filterAreaOnlyShadeOnWallAt: number | undefined;
   filterGradeLow: string | undefined;
   filterGradeHigh: string | undefined;
   filterTypes: Record<number, boolean> | undefined;
@@ -34,6 +36,7 @@ export type ResetField =
   | "all"
   | "areas"
   | "options"
+  | "conditions"
   | "pitches"
   | "types"
   | "grades";
@@ -51,6 +54,8 @@ export type Update =
       checked: boolean;
     }
   | { action: "toggle-area"; areaId: number; enabled: boolean }
+  | { action: "set-area-only-sun-on-wall-at"; hour: number }
+  | { action: "set-area-only-shade-on-wall-at"; hour: number }
   | {
       action: "set-grade-mapping";
       gradeDifficultyLookup: State["gradeDifficultyLookup"];
@@ -82,6 +87,8 @@ const count = (
 const filter = (state: State): State => {
   const {
     filterAreaIds,
+    filterAreaOnlySunOnWallAt,
+    filterAreaOnlyShadeOnWallAt,
     filterGradeHigh,
     filterGradeLow,
     filterHideTicked,
@@ -119,6 +126,30 @@ const filter = (state: State): State => {
               problems: sector.problems.filter((problem) => {
                 if (filterAreaIdsCount > 0) {
                   if (!filterAreaIds[problemArea.id]) {
+                    filteredOut.problems += 1;
+                    return false;
+                  }
+                }
+
+                if (filterAreaOnlySunOnWallAt > 0) {
+                  if (
+                    problemArea.sunFromHour == 0 ||
+                    problemArea.sunToHour == 0 ||
+                    problemArea.sunFromHour > filterAreaOnlySunOnWallAt ||
+                    problemArea.sunToHour < filterAreaOnlySunOnWallAt
+                  ) {
+                    filteredOut.problems += 1;
+                    return false;
+                  }
+                }
+
+                if (filterAreaOnlyShadeOnWallAt > 0) {
+                  if (
+                    problemArea.sunFromHour == 0 ||
+                    problemArea.sunToHour == 0 ||
+                    (problemArea.sunFromHour <= filterAreaOnlyShadeOnWallAt &&
+                      problemArea.sunToHour > filterAreaOnlyShadeOnWallAt)
+                  ) {
                     filteredOut.problems += 1;
                     return false;
                   }
@@ -296,6 +327,22 @@ const reducer = (state: State, update: Update): State => {
       };
     }
 
+    case "set-area-only-sun-on-wall-at": {
+      const { hour } = update;
+      return {
+        ...state,
+        filterAreaOnlySunOnWallAt: hour,
+      };
+    }
+
+    case "set-area-only-shade-on-wall-at": {
+      const { hour } = update;
+      return {
+        ...state,
+        filterAreaOnlyShadeOnWallAt: hour,
+      };
+    }
+
     case "set-grade-mapping": {
       const { gradeDifficultyLookup } = update;
       return {
@@ -363,6 +410,8 @@ const reducer = (state: State, update: Update): State => {
             filterTypes: undefined,
             filterOnlyAdmin: undefined,
             filterOnlySuperAdmin: undefined,
+            filterAreaOnlySunOnWallAt: undefined,
+            filterAreaOnlyShadeOnWallAt: undefined,
           };
         }
         case "areas": {
@@ -384,6 +433,13 @@ const reducer = (state: State, update: Update): State => {
             filterHideTicked: undefined,
             filterOnlyAdmin: undefined,
             filterOnlySuperAdmin: undefined,
+          };
+        }
+        case "conditions": {
+          return {
+            ...state,
+            filterAreaOnlySunOnWallAt: undefined,
+            filterAreaOnlyShadeOnWallAt: undefined,
           };
         }
         case "pitches": {
@@ -433,6 +489,11 @@ const reducer = (state: State, update: Update): State => {
 
 const storageItems = {
   areaIds: itemLocalStorage("filter/area-ids", {}),
+  areaOnlySunOnWallAt: itemLocalStorage("filter/area-only-sun-on-wall-at", 0),
+  areaOnlyShadeOnWallAt: itemLocalStorage(
+    "filter/area-only-shade-on-wall-at",
+    0,
+  ),
   gradeHigh: itemLocalStorage("filter/grades/high", undefined),
   gradeLow: itemLocalStorage("filter/grades/low", undefined),
   hideTicked: itemLocalStorage("filter/hide-ticked", false),
@@ -446,6 +507,7 @@ const wrappedReducer: typeof reducer = (state, update) => {
   const reduced = reducer(state, update);
 
   storageItems.areaIds.set(reduced.filterAreaIds);
+  storageItems.areaOnlySunOnWallAt.set(reduced.filterAreaOnlySunOnWallAt);
   storageItems.gradeHigh.set(reduced.filterGradeHigh);
   storageItems.gradeLow.set(reduced.filterGradeLow);
   storageItems.hideTicked.set(reduced.filterHideTicked);
@@ -470,6 +532,8 @@ export const useFilterState = (init?: Partial<State>) => {
 
     // Information about the filters
     filterAreaIds: storageItems.areaIds.get(),
+    filterAreaOnlySunOnWallAt: storageItems.areaOnlySunOnWallAt.get(),
+    filterAreaOnlyShadeOnWallAt: storageItems.areaOnlyShadeOnWallAt.get(),
     filterGradeHigh: storageItems.gradeHigh.get(),
     filterGradeLow: storageItems.gradeLow.get(),
     filterHideTicked: storageItems.hideTicked.get(),

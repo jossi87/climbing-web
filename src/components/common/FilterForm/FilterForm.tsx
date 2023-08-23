@@ -9,6 +9,7 @@ import {
   Form,
   Header,
   Checkbox,
+  Dropdown,
   Button,
   Icon,
   Divider,
@@ -148,6 +149,8 @@ export const FilterForm = () => {
   const {
     unfilteredData,
     filterAreaIds,
+    filterAreaOnlySunOnWallAt,
+    filterAreaOnlyShadeOnWallAt,
     filterOnlyAdmin,
     filterOnlySuperAdmin,
     filterHideTicked,
@@ -160,6 +163,27 @@ export const FilterForm = () => {
   const disciplineOptions = meta.types
     .sort((a, b) => a.subType.localeCompare(b.subType, getLocales()))
     .map((t) => ({ key: t.id, value: t.id, text: t.subType }));
+
+  const hoursOptions = [
+    { key: 0, text: "<disabled>", value: 0 },
+    { key: 7, text: "07:00", value: 7 },
+    { key: 8, text: "08:00", value: 8 },
+    { key: 9, text: "09:00", value: 9 },
+    { key: 10, text: "10:00", value: 10 },
+    { key: 11, text: "11:00", value: 11 },
+    { key: 12, text: "12:00", value: 12 },
+    { key: 13, text: "13:00", value: 13 },
+    { key: 14, text: "14:00", value: 14 },
+    { key: 15, text: "15:00", value: 15 },
+    { key: 16, text: "16:00", value: 16 },
+    { key: 17, text: "17:00", value: 17 },
+    { key: 18, text: "18:00", value: 18 },
+    { key: 19, text: "19:00", value: 19 },
+    { key: 20, text: "20:00", value: 20 },
+    { key: 21, text: "21:00", value: 21 },
+    { key: 22, text: "22:00", value: 22 },
+    { key: 23, text: "23:00", value: 23 },
+  ];
 
   const {
     ref: areaContainerRef,
@@ -273,6 +297,43 @@ export const FilterForm = () => {
             />
           </Form.Field>
         )}
+      </Form.Group>
+      <GroupHeader title="Conditions" reset="conditions" />
+      <Form.Group inline>
+        <Form.Field>
+          Sun on wall at{" "}
+          <Dropdown
+            floating
+            scrolling
+            inline
+            options={hoursOptions}
+            value={filterAreaOnlySunOnWallAt || 0}
+            onChange={(_, { value }) => {
+              dispatch?.({
+                action: "set-area-only-sun-on-wall-at",
+                hour: value as number,
+              });
+            }}
+          />
+        </Form.Field>
+      </Form.Group>
+      <Form.Group inline>
+        <Form.Field>
+          Shade on wall at{" "}
+          <Dropdown
+            floating
+            scrolling
+            inline
+            options={hoursOptions}
+            value={filterAreaOnlyShadeOnWallAt || 0}
+            onChange={(_, { value }) => {
+              dispatch?.({
+                action: "set-area-only-shade-on-wall-at",
+                hour: value as number,
+              });
+            }}
+          />
+        </Form.Field>
       </Form.Group>
       <GroupHeader
         title="Areas"
