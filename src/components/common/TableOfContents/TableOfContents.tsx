@@ -17,7 +17,12 @@ export type Props = {
   areas: (Required<
     Pick<
       definitions["Area"],
-      "id" | "lockedAdmin" | "lockedSuperadmin" | "name" | "sunFromHour" | "sunToHour"
+      | "id"
+      | "lockedAdmin"
+      | "lockedSuperadmin"
+      | "name"
+      | "sunFromHour"
+      | "sunToHour"
     >
   > & {
     sectors: (Required<
@@ -105,8 +110,7 @@ export const TableOfContents = ({ enableMap, areas }: Props) => {
               <LockSymbol
                 lockedAdmin={area.lockedAdmin}
                 lockedSuperadmin={area.lockedSuperadmin}
-              />
-              {" "}
+              />{" "}
               <SunOnWall
                 sunFromHour={area.sunFromHour}
                 sunToHour={area.sunToHour}
