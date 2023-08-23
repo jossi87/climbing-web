@@ -291,7 +291,13 @@ const YrLink = ({ lat, lng }: Pick<WeatherLabelsProps, "lat" | "lng">) => {
   );
 };
 
-export function WeatherLabels({ lat, lng, label, sunFromHour, sunToHour }: WeatherLabelsProps) {
+export function WeatherLabels({
+  lat,
+  lng,
+  label,
+  sunFromHour,
+  sunToHour,
+}: WeatherLabelsProps) {
   if (!lat || !lng) {
     return;
   }
@@ -299,16 +305,12 @@ export function WeatherLabels({ lat, lng, label, sunFromHour, sunToHour }: Weath
   const times = SunCalc.getTimes(new Date(), lat, lng);
   return (
     <>
-      {sunFromHour>0 && sunToHour>0 && (
+      {sunFromHour > 0 && sunToHour > 0 && (
         <Popup
           content="Sun on wall"
           trigger={
             <Label image basic>
-              <Image
-                src="/svg/sun-on-wall.svg"
-                alt="Sun on wall"
-                size="mini"
-              />
+              <Image src="/svg/sun-on-wall.svg" alt="Sun on wall" size="mini" />
               {String(sunFromHour).padStart(2, "0") +
                 ":00" +
                 " - " +

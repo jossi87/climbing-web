@@ -59,7 +59,7 @@ type Update =
       lockedAdmin: boolean;
       lockedSuperadmin: boolean;
     }
-    | {
+  | {
       action: "set-number";
       key: "sunFromHour" | "sunToHour";
       value: number;
