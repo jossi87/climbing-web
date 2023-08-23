@@ -57,6 +57,8 @@ type FilterArea = {
   id: number;
   lockedAdmin: boolean;
   lockedSuperadmin: boolean;
+  sunFromHour: number;
+  sunToHour: number;
   name: string;
   lat?: number;
   lng?: number;
@@ -105,6 +107,8 @@ export const Problems = ({ filterOpen }: Props) => {
     id: area.id,
     lockedAdmin: !!area.lockedAdmin,
     lockedSuperadmin: !!area.lockedSuperadmin,
+    sunFromHour: area.sunFromHour,
+    sunToHour: area.sunToHour,
     name: area.name,
     lat: area.lat,
     lng: area.lng,

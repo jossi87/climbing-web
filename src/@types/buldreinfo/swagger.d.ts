@@ -705,6 +705,10 @@ export type definitions = {
     lng?: number;
     lockedAdmin?: boolean;
     lockedSuperadmin?: boolean;
+    /** Format: int32 */
+    sunFromHour?: number;
+    /** Format: int32 */
+    sunToHour?: number;
     sectors?: definitions["ProblemAreaSector"][];
   };
   ProblemAreaProblem: {

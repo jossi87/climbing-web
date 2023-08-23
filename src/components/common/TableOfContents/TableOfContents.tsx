@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { List, Icon, Button } from "semantic-ui-react";
-import { LockSymbol, Stars } from "../../common/widgets/widgets";
+import { LockSymbol, Stars, SunOnWall } from "../../common/widgets/widgets";
 import { definitions } from "../../../@types/buldreinfo/swagger";
 import { ProblemsMap } from "./ProblemsMap";
 import { HeaderButtons } from "../HeaderButtons";
@@ -17,7 +17,7 @@ export type Props = {
   areas: (Required<
     Pick<
       definitions["Area"],
-      "id" | "lockedAdmin" | "lockedSuperadmin" | "name"
+      "id" | "lockedAdmin" | "lockedSuperadmin" | "name" | "sunFromHour" | "sunToHour"
     >
   > & {
     sectors: (Required<
@@ -105,7 +105,12 @@ export const TableOfContents = ({ enableMap, areas }: Props) => {
               <LockSymbol
                 lockedAdmin={area.lockedAdmin}
                 lockedSuperadmin={area.lockedSuperadmin}
-              />{" "}
+              />
+              {" "}
+              <SunOnWall
+                sunFromHour={area.sunFromHour}
+                sunToHour={area.sunToHour}
+              />
               <JumpToTop />
             </List.Header>
             {area.sectors.map((sector) => (
