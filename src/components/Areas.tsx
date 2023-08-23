@@ -93,13 +93,8 @@ const Areas = () => {
         markers={markers}
         defaultCenter={meta.defaultCenter}
         defaultZoom={meta.defaultZoom}
-        polylines={null}
-        outlines={null}
-        onMouseClick={null}
-        onMouseMove={null}
         showSatelliteImage={false}
         clusterMarkers={!showForDevelopers}
-        rocks={null}
         flyToId={flyToId}
       />
     </div>

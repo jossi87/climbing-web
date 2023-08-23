@@ -57,16 +57,11 @@ const Webcams = () => {
         <Leaflet
           height="85vh"
           autoZoom={false}
-          outlines={null}
           defaultCenter={defaultCenter}
           defaultZoom={defaultZoom}
           markers={markers}
-          polylines={null}
-          onMouseClick={null}
-          onMouseMove={null}
           showSatelliteImage={false}
           clusterMarkers={false}
-          rocks={null}
           flyToId={null}
         />
       </Segment>

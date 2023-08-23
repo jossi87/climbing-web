@@ -212,13 +212,8 @@ const ProfileStatistics = ({ userId, canDownload }: ProfileStatisticsProps) => {
             markers={markers}
             defaultCenter={defaultCenter}
             defaultZoom={defaultZoom}
-            polylines={null}
-            outlines={null}
-            onMouseClick={null}
-            onMouseMove={null}
             showSatelliteImage={false}
             clusterMarkers={true}
-            rocks={null}
             flyToId={null}
           />
         </Tab.Pane>

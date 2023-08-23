@@ -16,6 +16,7 @@ import TableOfContents from "../common/TableOfContents";
 import { useFilterState } from "./reducer";
 import { FilterContext, FilterForm } from "../common/FilterForm";
 import { HeaderButtons } from "../common/HeaderButtons";
+import { definitions } from "../../@types/buldreinfo/swagger";
 
 type Props = { filterOpen?: boolean };
 
@@ -25,6 +26,42 @@ const description = (
   problems: number,
   kind: "routes" | "problems",
 ): string => `${areas} areas, ${sectors} sectors, ${problems} ${kind}`;
+
+type FilterProblem = {
+  id: number;
+  broken: string;
+  lockedAdmin: boolean;
+  lockedSuperadmin: boolean;
+  name: string;
+  nr: number;
+  grade: string;
+  stars?: number;
+  ticked?: boolean;
+  text: string;
+  subText?: string;
+  lat?: number;
+  lng?: number;
+};
+
+type FilterSector = Pick<definitions["ProblemAreaSector"], "polygonCoords"> & {
+  id: number;
+  lockedAdmin: boolean;
+  lockedSuperadmin: boolean;
+  name: string;
+  lat?: number;
+  lng?: number;
+  problems: FilterProblem[];
+};
+
+type FilterArea = {
+  id: number;
+  lockedAdmin: boolean;
+  lockedSuperadmin: boolean;
+  name: string;
+  lat?: number;
+  lng?: number;
+  sectors: FilterSector[];
+};
 
 export const Problems = ({ filterOpen }: Props) => {
   const { isBouldering, isClimbing } = useMeta();
@@ -64,16 +101,21 @@ export const Problems = ({ filterOpen }: Props) => {
     things,
   );
 
-  const areas = filteredData.map((area) => ({
+  const areas: FilterArea[] = filteredData.map((area) => ({
     id: area.id,
     lockedAdmin: !!area.lockedAdmin,
     lockedSuperadmin: !!area.lockedSuperadmin,
     name: area.name,
+    lat: area.lat,
+    lng: area.lng,
     sectors: area.sectors.map((sector) => ({
       id: sector.id,
       lockedAdmin: !!sector.lockedAdmin,
       lockedSuperadmin: !!sector.lockedSuperadmin,
       name: sector.name,
+      lat: sector.lat,
+      lng: sector.lng,
+      polygonCoords: sector.polygonCoords,
       problems: sector.problems.map((problem) => {
         const ascents =
           problem.numTicks > 0 &&
@@ -102,6 +144,8 @@ export const Problems = ({ filterOpen }: Props) => {
           lockedAdmin: !!problem.lockedAdmin,
           lockedSuperadmin: !!problem.lockedSuperadmin,
           name: problem.name,
+          lat: problem.lat,
+          lng: problem.lng,
           nr: problem.nr,
           grade: problem.grade,
           stars: problem.stars,
@@ -193,7 +237,7 @@ export const Problems = ({ filterOpen }: Props) => {
     </>
   );
 
-  const mainContents = <TableOfContents areas={areas} />;
+  const mainContents = <TableOfContents enableMap areas={areas} />;
 
   const content = visible ? (
     <>

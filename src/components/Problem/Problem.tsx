@@ -140,11 +140,8 @@ export const Problem = () => {
             polylines={polylines}
             defaultCenter={{ lat: markers[0].lat, lng: markers[0].lng }}
             defaultZoom={16}
-            onMouseClick={null}
-            onMouseMove={null}
             showSatelliteImage={true}
             clusterMarkers={false}
-            rocks={null}
             flyToId={null}
           />
         </Tab.Pane>
