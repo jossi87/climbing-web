@@ -137,12 +137,16 @@ const SectorOutlines = ({ areas }: Props) => {
 
   useEffect(() => {
     const bounds = new LatLngBounds([]);
+    let boundsExtended = false;
     for (const outline of outlines) {
       for (const latlng of outline.polygon) {
         bounds.extend(latlng);
+        boundsExtended = true;
       }
     }
-    map.flyToBounds(bounds, { duration: 0.5 });
+    if (boundsExtended) {
+      map.flyToBounds(bounds, { duration: 0.5 });
+    }
   }, [map, outlines]);
 
   return (
