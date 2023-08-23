@@ -103,7 +103,7 @@ const UpdateBounds = ({
     const ne = bounds.getNorthEast();
     const sw = bounds.getSouthWest();
     if (ne && sw && ne.lat !== sw.lat && ne.lng !== sw.lng) {
-      map.flyToBounds(bounds, { duration: 0.5 });
+      map.fitBounds(bounds);
     }
   }
 
