@@ -181,6 +181,30 @@ type WeatherLabelsProps = {
   sunToHour: number;
 };
 
+export const SunOnWall = ({
+  sunFromHour,
+  sunToHour,
+}: Pick<WeatherLabelsProps, "sunFromHour" | "sunToHour">) => {
+  if (sunFromHour > 0 && sunToHour > 0) {
+    return (
+      <Popup
+        content="Sun on wall"
+        trigger={
+          <Label image basic>
+            <Image src="/svg/sun-on-wall.svg" alt="Sun on wall" size="mini" />
+            {String(sunFromHour).padStart(2, "0") +
+              ":00" +
+              " - " +
+              String(sunToHour).padStart(2, "0") +
+              ":00"}
+          </Label>
+        }
+      />
+    );
+  }
+  return null;
+};
+
 type YrData = {
   properties: {
     timeseries: {
@@ -305,21 +329,7 @@ export function WeatherLabels({
   const times = SunCalc.getTimes(new Date(), lat, lng);
   return (
     <>
-      {sunFromHour > 0 && sunToHour > 0 && (
-        <Popup
-          content="Sun on wall"
-          trigger={
-            <Label image basic>
-              <Image src="/svg/sun-on-wall.svg" alt="Sun on wall" size="mini" />
-              {String(sunFromHour).padStart(2, "0") +
-                ":00" +
-                " - " +
-                String(sunToHour).padStart(2, "0") +
-                ":00"}
-            </Label>
-          }
-        />
-      )}
+      <SunOnWall sunFromHour={sunFromHour} sunToHour={sunToHour} />
       {times.sunrise != "Invalid Date" && (
         <Popup
           content="Sunrise and sunset"

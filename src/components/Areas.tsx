@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button, List, Icon, Segment } from "semantic-ui-react";
 import Leaflet from "./common/leaflet/leaflet";
 import ChartGradeDistribution from "./common/chart-grade-distribution/chart-grade-distribution";
-import { Loading, LockSymbol } from "./common/widgets/widgets";
+import { Loading, LockSymbol, SunOnWall } from "./common/widgets/widgets";
 import { useAreas } from "../api";
 import { Remarkable } from "remarkable";
 import { linkify } from "remarkable/linkify";
@@ -172,6 +172,10 @@ const Areas = () => {
                     <LockSymbol
                       lockedAdmin={area.lockedAdmin}
                       lockedSuperadmin={area.lockedSuperadmin}
+                    />
+                    <SunOnWall
+                      sunFromHour={area.sunFromHour}
+                      sunToHour={area.sunToHour}
                     />
                   </List.Header>
                   <List.Description>
