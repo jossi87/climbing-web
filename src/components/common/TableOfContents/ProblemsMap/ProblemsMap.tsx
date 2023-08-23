@@ -142,7 +142,9 @@ const SectorOutlines = ({ areas }: Props) => {
         bounds.extend(latlng);
       }
     }
-    map.flyToBounds(bounds, { duration: 0.5 });
+    if (bounds.isValid()) {
+      map.flyToBounds(bounds, { duration: 0.5 });
+    }
   }, [map, outlines]);
 
   return (
