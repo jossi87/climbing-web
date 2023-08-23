@@ -458,6 +458,8 @@ const Sector = () => {
                   lat={data.lat}
                   lng={data.lng}
                   label={data.name}
+                  sunFromHour={data.areaSunFromHour}
+                  sunToHour={data.areaSunToHour}
                 />
               </Table.Cell>
             </Table.Row>

@@ -32,6 +32,8 @@ type State =
         | "lockedSuperadmin"
         | "name"
         | "noDogsAllowed"
+        | "sunFromHour"
+        | "sunToHour"
         | "sectorOrder"
         | "sectors"
         | "trash"
@@ -56,6 +58,11 @@ type Update =
       action: "set-visibility";
       lockedAdmin: boolean;
       lockedSuperadmin: boolean;
+    }
+    | {
+      action: "set-number";
+      key: "sunFromHour" | "sunToHour";
+      value: number;
     }
   | { action: "set-coord"; key: "lat" | "lng"; value: string }
   | { action: "set-lat-lng"; lat: number; lng: number }
@@ -82,6 +89,8 @@ const DEFAULT_STATE: NonNullable<State> = {
   lockedSuperadmin: false,
   name: "",
   noDogsAllowed: false,
+  sunFromHour: 0,
+  sunToHour: 0,
   sectorOrder: [],
   sectors: [],
   trash: false,
@@ -104,6 +113,9 @@ const reducer = (state: State, update: Update): State => {
     case "set-visibility": {
       const { lockedAdmin, lockedSuperadmin } = update;
       return { ...state, lockedAdmin, lockedSuperadmin };
+    }
+    case "set-number": {
+      return { ...state, [update.key]: update.value };
     }
     case "set-coord": {
       const { key, value } = update;
@@ -152,6 +164,9 @@ type UseAreaEdit = (_: { areaId: number }) => {
     key: "accessInfo" | "accessClosed" | "name" | "comment",
   ) => (event: React.ChangeEvent, data: { value?: string | number }) => void;
   setVisibility: ComponentProps<typeof VisibilitySelectorField>["onChange"];
+  setNumber: (
+    key: "sunFromHour" | "sunToHour",
+  ) => (event: React.ChangeEvent, data: { value?: number }) => void;
   setCoord: (key: "lat" | "lng") => ComponentProps<typeof Input>["onChange"];
   setLatLng: ComponentProps<typeof Leaflet>["onMouseClick"];
   setSectorSort: (sectorId: number) => ComponentProps<typeof Input>["onChange"];
@@ -185,6 +200,8 @@ export const useAreaEdit: UseAreaEdit = ({ areaId }) => {
       accessInfo,
       accessClosed,
       noDogsAllowed,
+      sunFromHour,
+      sunToHour,
       name,
       comment,
       lat,
@@ -216,6 +233,8 @@ export const useAreaEdit: UseAreaEdit = ({ areaId }) => {
           accessInfo: accessInfo || "",
           accessClosed: accessClosed || "",
           noDogsAllowed,
+          sunFromHour,
+          sunToHour,
           name,
           comment,
           lat: lat || "",
@@ -257,6 +276,16 @@ export const useAreaEdit: UseAreaEdit = ({ areaId }) => {
     setVisibility: useCallback(
       ({ lockedAdmin, lockedSuperadmin }) =>
         dispatch({ action: "set-visibility", lockedAdmin, lockedSuperadmin }),
+      [],
+    ),
+    setNumber: useCallback(
+      (key) =>
+        (_, { value }) =>
+          dispatch({
+            action: "set-number",
+            key,
+            value: value ? Number(value) : null,
+          }),
       [],
     ),
     setCoord: useCallback(

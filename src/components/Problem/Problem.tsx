@@ -577,7 +577,7 @@ export const Problem = () => {
             <Table.Row>
               <Table.Cell>Weather:</Table.Cell>
               <Table.Cell>
-                <WeatherLabels lat={lat} lng={lng} label={data.name} />
+                <WeatherLabels lat={lat} lng={lng} label={data.name} sunFromHour={data.areaSunFromHour} sunToHour={data.areaSunToHour} />
               </Table.Cell>
             </Table.Row>
           )}

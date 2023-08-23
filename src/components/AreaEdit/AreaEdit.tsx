@@ -6,6 +6,7 @@ import {
   Form,
   Button,
   Checkbox,
+  Dropdown,
   Input,
   TextArea,
   Segment,
@@ -36,6 +37,7 @@ export const AreaEdit = () => {
     setSectorSort,
     setString,
     setVisibility,
+    setNumber,
   } = useAreaEdit({ areaId: +(areaId ?? 0) });
   const [showSectorOrder, setShowSectorOrder] = useState(false);
 
@@ -71,6 +73,27 @@ export const AreaEdit = () => {
       ? { lat: +data.lat, lng: +data.lng }
       : meta.defaultCenter;
   const defaultZoom: number = data.lat && +data.lat > 0 ? 8 : meta.defaultZoom;
+
+  const hours = [
+    {key: 0, text: "", value: 0},
+    {key: 7, text: "07:00", value: 7},
+    {key: 8, text: "08:00", value: 8},
+    {key: 9, text: "09:00", value: 9},
+    {key: 10, text: "10:00", value: 10},
+    {key: 11, text: "11:00", value: 11},
+    {key: 12, text: "12:00", value: 12},
+    {key: 13, text: "13:00", value: 13},
+    {key: 14, text: "14:00", value: 14},
+    {key: 15, text: "15:00", value: 15},
+    {key: 16, text: "16:00", value: 16},
+    {key: 17, text: "17:00", value: 17},
+    {key: 18, text: "18:00", value: 18},
+    {key: 19, text: "19:00", value: 19},
+    {key: 20, text: "20:00", value: 20},
+    {key: 21, text: "21:00", value: 21},
+    {key: 22, text: "22:00", value: 22},
+    {key: 23, text: "23:00", value: 23},
+  ];
 
   return (
     <>
@@ -133,6 +156,24 @@ export const AreaEdit = () => {
                 onChange={setBoolean("trash")}
               />
             </Form.Field>
+          </Form.Group>
+          <Form.Group widths="equal">
+            <Form.Field
+              label="Sun from hour"
+              control={Dropdown}
+              selection
+              value={data.sunFromHour}
+              onChange={setNumber("sunFromHour")}
+              options={hours}
+            />
+            <Form.Field
+              label="Sun to hour"
+              control={Dropdown}
+              selection
+              value={data.sunToHour}
+              onChange={setNumber("sunToHour")}
+              options={hours}
+            />
           </Form.Group>
           <Form.Field>
             <label>

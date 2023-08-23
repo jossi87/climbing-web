@@ -6,6 +6,7 @@ import {
   Header,
   Message,
   Icon,
+  Image,
   Popup,
   Label,
   Button,
@@ -176,6 +177,8 @@ type WeatherLabelsProps = {
   lat: number;
   lng: number;
   label: string;
+  sunFromHour: number;
+  sunToHour: number;
 };
 
 type YrData = {
@@ -288,7 +291,7 @@ const YrLink = ({ lat, lng }: Pick<WeatherLabelsProps, "lat" | "lng">) => {
   );
 };
 
-export function WeatherLabels({ lat, lng, label }: WeatherLabelsProps) {
+export function WeatherLabels({ lat, lng, label, sunFromHour, sunToHour }: WeatherLabelsProps) {
   if (!lat || !lng) {
     return;
   }
@@ -296,23 +299,35 @@ export function WeatherLabels({ lat, lng, label }: WeatherLabelsProps) {
   const times = SunCalc.getTimes(new Date(), lat, lng);
   return (
     <>
-      <YrLink lat={lat} lng={lng} />
-      <Label
-        href={`/webcams/` + JSON.stringify({ lat, lng, label })}
-        rel="noopener"
-        target="_blank"
-        image
-        basic
-      >
-        <Icon name="camera" />
-        Webcams
-      </Label>
+      {sunFromHour>0 && sunToHour>0 && (
+        <Popup
+          content="Sun on wall"
+          trigger={
+            <Label image basic>
+              <Image
+                src="/svg/sun-on-wall.svg"
+                alt="Sun on wall"
+                size="mini"
+              />
+              {String(sunFromHour).padStart(2, "0") +
+                ":00" +
+                " - " +
+                String(sunToHour).padStart(2, "0") +
+                ":00"}
+            </Label>
+          }
+        />
+      )}
       {times.sunrise != "Invalid Date" && (
         <Popup
           content="Sunrise and sunset"
           trigger={
-            <Label basic>
-              <Icon name="sun" />
+            <Label image basic>
+              <Image
+                src="/svg/sunrise-sunset.svg"
+                alt="Sunrise and Sunset"
+                size="mini"
+              />
               {String(times.sunrise.getHours()).padStart(2, "0") +
                 ":" +
                 String(times.sunrise.getMinutes()).padStart(2, "0") +
@@ -324,6 +339,17 @@ export function WeatherLabels({ lat, lng, label }: WeatherLabelsProps) {
           }
         />
       )}
+      <YrLink lat={lat} lng={lng} />
+      <Label
+        href={`/webcams/` + JSON.stringify({ lat, lng, label })}
+        rel="noopener"
+        target="_blank"
+        image
+        basic
+      >
+        <Icon name="camera" />
+        Webcams
+      </Label>
     </>
   );
 }

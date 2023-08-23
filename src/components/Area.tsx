@@ -505,6 +505,8 @@ const Area = () => {
                   lat={data.lat}
                   lng={data.lng}
                   label={data.name}
+                  sunFromHour={data.sunFromHour}
+                  sunToHour={data.sunToHour}
                 />
               </Table.Cell>
             </Table.Row>

@@ -218,6 +218,10 @@ export type definitions = {
     accessInfo?: string;
     accessClosed?: string;
     noDogsAllowed?: boolean;
+    /** Format: int32 */
+    sunFromHour?: number;
+    /** Format: int32 */
+    sunToHour?: number;
     name?: string;
     comment?: string;
     /** Format: double */
@@ -574,6 +578,10 @@ export type definitions = {
     areaAccessClosed?: string;
     areaNoDogsAllowed?: boolean;
     /** Format: int32 */
+    areaSunFromHour?: number;
+    /** Format: int32 */
+    areaSunToHour?: number;
+    /** Format: int32 */
     sectorId?: number;
     sectorLockedAdmin?: boolean;
     sectorLockedSuperadmin?: boolean;
@@ -883,6 +891,10 @@ export type definitions = {
     areaAccessInfo?: string;
     areaAccessClosed?: string;
     areaNoDogsAllowed?: boolean;
+    /** Format: int32 */
+    areaSunFromHour?: number;
+    /** Format: int32 */
+    areaSunToHour?: number;
     areaName?: string;
     canonical?: string;
     /** Format: int32 */
