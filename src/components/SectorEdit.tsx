@@ -1,4 +1,10 @@
-import React, { useState, useEffect, ComponentProps, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  ComponentProps,
+  useCallback,
+  useRef,
+} from "react";
 import GpxParser from "gpxparser";
 import Dropzone from "react-dropzone";
 import { Helmet } from "react-helmet";
@@ -27,10 +33,56 @@ import Leaflet from "./common/leaflet/leaflet";
 import { useNavigate, useParams } from "react-router-dom";
 import { VisibilitySelectorField } from "./common/VisibilitySelector";
 import { parsePolyline } from "../utils/polyline";
+import { useMap } from "react-leaflet";
+import { definitions } from "../@types/buldreinfo/swagger";
+import { latLngBounds } from "leaflet";
 
 const useIds = (): { areaId: number; sectorId: number } => {
   const { sectorId, areaId } = useParams();
   return { sectorId: +sectorId, areaId: +areaId };
+};
+
+const ZoomLogic = ({
+  area: laodedArea,
+  sector: loadedSector,
+}: {
+  area: definitions["Area"];
+  sector: definitions["Sector"];
+}) => {
+  const map = useMap();
+  const sectorRef = useRef(loadedSector);
+  const areaRef = useRef(laodedArea);
+
+  useEffect(() => {
+    const bounds = latLngBounds([]);
+    if (sectorRef.current) {
+      if (sectorRef.current.polygonCoords) {
+        for (const latlng of parsePolyline(sectorRef.current.polygonCoords)) {
+          bounds.extend(latlng);
+        }
+      }
+
+      if (sectorRef.current.polyline) {
+        for (const latlng of parsePolyline(sectorRef.current.polyline)) {
+          bounds.extend(latlng);
+        }
+      }
+
+      if (sectorRef.current.lat && sectorRef.current.lng) {
+        bounds.extend([sectorRef.current.lat, sectorRef.current.lng]);
+      }
+    } else if (areaRef.current) {
+      if (areaRef.current.lat && areaRef.current.lng) {
+        bounds.extend([areaRef.current.lat, areaRef.current.lng]);
+      }
+    }
+
+    if (bounds.isValid()) {
+      map.flyToBounds(bounds);
+    }
+  }, [map]);
+
+  return null;
 };
 
 const SectorEdit = () => {
@@ -431,7 +483,6 @@ const SectorEdit = () => {
           <Form.Group widths="equal">
             <Form.Field>
               <Leaflet
-                autoZoom={true}
                 markers={markers}
                 outlines={outlines}
                 polylines={polylines}
@@ -444,7 +495,9 @@ const SectorEdit = () => {
                 clusterMarkers={false}
                 rocks={null}
                 flyToId={null}
-              />
+              >
+                <ZoomLogic area={area} sector={data} />
+              </Leaflet>
             </Form.Field>
           </Form.Group>
           <Form.Group widths="equal">

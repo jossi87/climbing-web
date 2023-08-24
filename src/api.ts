@@ -717,7 +717,7 @@ export function getSectorEdit(
   accessToken: string | null,
   areaId: number,
   sectorId: number,
-): Promise<any> {
+): Promise<Success<"getAreas">[number] | null | Success<"getSectors">> {
   if (!sectorId) {
     return getArea(accessToken, areaId)
       .then((res) => {

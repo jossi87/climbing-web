@@ -579,14 +579,9 @@ const ProblemEdit = () => {
               defaultCenter={defaultCenter}
               defaultZoom={defaultZoom}
               onMouseClick={onMapClick}
-              onMouseMove={null}
-              polylines={null}
-              outlines={null}
               height={"300px"}
               showSatelliteImage={true}
               clusterMarkers={false}
-              rocks={null}
-              flyToId={null}
             />
           </Form.Field>
           <Form.Group widths="equal">

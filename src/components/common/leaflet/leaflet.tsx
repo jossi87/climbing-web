@@ -86,25 +86,25 @@ const UpdateBounds = ({
   }
 
   const bounds = latLngBounds([]);
-  if (
-    autoZoom &&
-    (!!markers?.length || !!outlines?.length || !!polylines?.length)
-  ) {
-    markers
-      ?.filter(({ lat, lng }) => lat && lng)
-      ?.forEach((m) => bounds.extend([m.lat, m.lng]));
-    outlines
-      ?.filter(({ polygon }) => !!polygon)
-      ?.forEach((o) => o.polygon.forEach((p) => bounds.extend([p[0], p[1]])));
-    polylines
-      ?.filter(({ polyline }) => polyline)
-      ?.forEach((p) => p.polyline.forEach((x) => bounds.extend([x[0], x[1]])));
+  markers
+    ?.filter(({ lat, lng }) => lat && lng)
+    ?.forEach((latlng) => bounds.extend(latlng));
+  outlines
+    ?.filter(({ polygon }) => !!polygon)
+    ?.forEach(({ polygon }) =>
+      polygon.forEach((latlng) => bounds.extend(latlng)),
+    );
+  polylines
+    ?.filter(({ polyline }) => polyline)
+    ?.forEach(({ polyline }) =>
+      polyline.forEach((latlng) => bounds.extend(latlng)),
+    );
 
-    const ne = bounds.getNorthEast();
-    const sw = bounds.getSouthWest();
-    if (ne && sw && ne.lat !== sw.lat && ne.lng !== sw.lng) {
-      map.fitBounds(bounds);
-    }
+  if (
+    bounds.getWest() !== bounds.getEast() &&
+    bounds.getNorth() !== bounds.getSouth()
+  ) {
+    map.fitBounds(bounds);
   }
 
   return null;
