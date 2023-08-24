@@ -13,6 +13,7 @@ import {
   LockSymbol,
   Loading,
   WeatherLabels,
+  WallDirection,
 } from "./common/widgets/widgets";
 import {
   Table,
@@ -330,7 +331,9 @@ const Area = () => {
                         </p>
                       ))}
                     </Item.Extra>
-                    <Item.Meta></Item.Meta>
+                    <Item.Meta>
+                      <WallDirection wallDirection={sector.wallDirection} />
+                    </Item.Meta>
                     <Item.Description>
                       {sector.accessInfo && (
                         <Header as="h5" color="red">
@@ -505,6 +508,7 @@ const Area = () => {
                   lat={data.lat}
                   lng={data.lng}
                   label={data.name}
+                  wallDirection={null}
                   sunFromHour={data.sunFromHour}
                   sunToHour={data.sunToHour}
                 />

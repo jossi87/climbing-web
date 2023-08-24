@@ -177,8 +177,28 @@ type WeatherLabelsProps = {
   lat: number;
   lng: number;
   label: string;
+  wallDirection: string;
   sunFromHour: number;
   sunToHour: number;
+};
+
+export const WallDirection = ({
+  wallDirection,
+}: Pick<WeatherLabelsProps, "wallDirection">) => {
+  if (wallDirection) {
+    return (
+      <Popup
+        content="Calculated wall direction"
+        trigger={
+          <Label basic>
+            <Icon name="compass outline" />
+            {wallDirection}
+          </Label>
+        }
+      />
+    );
+  }
+  return null;
 };
 
 export const SunOnWall = ({
@@ -319,6 +339,7 @@ export function WeatherLabels({
   lat,
   lng,
   label,
+  wallDirection,
   sunFromHour,
   sunToHour,
 }: WeatherLabelsProps) {
@@ -329,6 +350,7 @@ export function WeatherLabels({
   const times = SunCalc.getTimes(new Date(), lat, lng);
   return (
     <>
+      <WallDirection wallDirection={wallDirection} />
       <SunOnWall sunFromHour={sunFromHour} sunToHour={sunToHour} />
       {times.sunrise != "Invalid Date" && (
         <Popup

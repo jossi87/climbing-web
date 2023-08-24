@@ -38,6 +38,7 @@ const Dangerous = () => {
       lockedAdmin: sector.lockedAdmin,
       lockedSuperadmin: sector.lockedSuperadmin,
       polygonCoords: "",
+      wallDirection: sector.wallDirection,
       name: sector.name,
       problems: sector.problems.map((problem) => ({
         id: problem.id,

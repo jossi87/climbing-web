@@ -48,6 +48,7 @@ type FilterSector = Pick<definitions["ProblemAreaSector"], "polygonCoords"> & {
   lockedAdmin: boolean;
   lockedSuperadmin: boolean;
   name: string;
+  wallDirection: string;
   lat?: number;
   lng?: number;
   problems: FilterProblem[];
@@ -120,6 +121,7 @@ export const Problems = ({ filterOpen }: Props) => {
       lat: sector.lat,
       lng: sector.lng,
       polygonCoords: sector.polygonCoords,
+      wallDirection: sector.wallDirection,
       problems: sector.problems.map((problem) => {
         const ascents =
           problem.numTicks > 0 &&

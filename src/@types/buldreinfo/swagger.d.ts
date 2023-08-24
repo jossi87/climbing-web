@@ -258,6 +258,7 @@ export type definitions = {
     /** Format: double */
     lng?: number;
     polygonCoords?: string;
+    wallDirection?: string;
     polyline?: string;
     /** Format: int32 */
     randomMediaId?: number;
@@ -482,6 +483,7 @@ export type definitions = {
     id?: number;
     url?: string;
     name?: string;
+    wallDirection?: string;
     lockedAdmin?: boolean;
     lockedSuperadmin?: boolean;
     problems?: definitions["DangerousProblem"][];
@@ -597,6 +599,7 @@ export type definitions = {
     /** Format: double */
     sectorLng?: number;
     sectorPolygonCoords?: string;
+    sectorWallDirection?: string;
     sectorPolyline?: string;
     /** Format: int32 */
     sectorIdProblemPrev?: number;
@@ -751,6 +754,7 @@ export type definitions = {
     /** Format: double */
     lng?: number;
     polygonCoords?: string;
+    wallDirection?: string;
     lockedAdmin?: boolean;
     lockedSuperadmin?: boolean;
     problems?: definitions["ProblemAreaProblem"][];
@@ -919,6 +923,7 @@ export type definitions = {
     /** Format: double */
     lng?: number;
     polygonCoords?: string;
+    wallDirection?: string;
     polyline?: string;
     media?: definitions["Media"][];
     triviaMedia?: definitions["Media"][];

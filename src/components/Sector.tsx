@@ -458,6 +458,7 @@ const Sector = () => {
                   lat={data.lat}
                   lng={data.lng}
                   label={data.name}
+                  wallDirection={data.wallDirection}
                   sunFromHour={data.areaSunFromHour}
                   sunToHour={data.areaSunToHour}
                 />

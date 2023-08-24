@@ -1,7 +1,12 @@
 import React, { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { List, Icon, Button } from "semantic-ui-react";
-import { LockSymbol, Stars, SunOnWall } from "../../common/widgets/widgets";
+import {
+  LockSymbol,
+  Stars,
+  SunOnWall,
+  WallDirection,
+} from "../../common/widgets/widgets";
 import { definitions } from "../../../@types/buldreinfo/swagger";
 import { ProblemsMap } from "./ProblemsMap";
 import { HeaderButtons } from "../HeaderButtons";
@@ -28,7 +33,7 @@ export type Props = {
     sectors: (Required<
       Pick<
         definitions["Sector"],
-        "id" | "name" | "lockedAdmin" | "lockedSuperadmin"
+        "id" | "name" | "lockedAdmin" | "lockedSuperadmin" | "wallDirection"
       >
     > &
       Pick<
@@ -106,11 +111,11 @@ export const TableOfContents = ({ enableMap, areas }: Props) => {
                 ref={(ref) => (areaRefs.current[area.id] = ref)}
               >
                 {area.name}
-              </Link>
+              </Link>{" "}
               <LockSymbol
                 lockedAdmin={area.lockedAdmin}
                 lockedSuperadmin={area.lockedSuperadmin}
-              />{" "}
+              />
               <SunOnWall
                 sunFromHour={area.sunFromHour}
                 sunToHour={area.sunToHour}
@@ -120,11 +125,12 @@ export const TableOfContents = ({ enableMap, areas }: Props) => {
             {area.sectors.map((sector) => (
               <List.List key={sector.id}>
                 <List.Header>
-                  <Link to={`/sector/${sector.id}`}>{sector.name}</Link>
+                  <Link to={`/sector/${sector.id}`}>{sector.name}</Link>{" "}
                   <LockSymbol
                     lockedAdmin={sector.lockedAdmin}
                     lockedSuperadmin={sector.lockedSuperadmin}
                   />
+                  <WallDirection wallDirection={sector.wallDirection} />
                 </List.Header>
                 <List.List>
                   {sector.problems.map((problem) => (
