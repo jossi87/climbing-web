@@ -78,7 +78,7 @@ const ZoomLogic = ({
     }
 
     if (bounds.isValid()) {
-      map.flyToBounds(bounds);
+      map.fitBounds(bounds);
     }
   }, [map]);
 
