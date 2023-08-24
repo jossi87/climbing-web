@@ -38,6 +38,49 @@ const CLIMBING_OPTIONS = [
   },
 ] as const;
 
+const WALL_DIRECTIONS = [
+  {
+    key: "North",
+    value: "North",
+    text: "North",
+  },
+  {
+    key: "Northeast",
+    value: "Northeast",
+    text: "Northeast",
+  },
+  {
+    key: "East",
+    value: "East",
+    text: "East",
+  },
+  {
+    key: "Southeast",
+    value: "Southeast",
+    text: "Southeast",
+  },
+  {
+    key: "South",
+    value: "South",
+    text: "South",
+  },
+  {
+    key: "Southwest",
+    value: "Southwest",
+    text: "Southwest",
+  },
+  {
+    key: "West",
+    value: "West",
+    text: "West",
+  },
+  {
+    key: "Northwest",
+    value: "Northwest",
+    text: "Northwest",
+  },
+] as const;
+
 type GroupHeaderProps = {
   title: string;
   reset: ResetField;
@@ -151,6 +194,7 @@ export const FilterForm = () => {
     filterAreaIds,
     filterAreaOnlySunOnWallAt,
     filterAreaOnlyShadeOnWallAt,
+    filterSectorWallDirections,
     filterOnlyAdmin,
     filterOnlySuperAdmin,
     filterHideTicked,
@@ -298,44 +342,64 @@ export const FilterForm = () => {
           </Form.Field>
         )}
       </Form.Group>
-      <GroupHeader title="Conditions" reset="conditions" />
       {meta.isClimbing && (
-        <Form.Group inline>
-          <Form.Field>
-            Sun on wall at{" "}
-            <Dropdown
-              floating
-              scrolling
-              inline
-              options={hoursOptions}
-              value={filterAreaOnlySunOnWallAt || 0}
-              onChange={(_, { value }) => {
-                dispatch?.({
-                  action: "set-area-only-sun-on-wall-at",
-                  hour: value as number,
-                });
-              }}
-            />
-            .
-          </Form.Field>
-          <Form.Field>
-            Shade on wall at{" "}
-            <Dropdown
-              floating
-              scrolling
-              inline
-              options={hoursOptions}
-              value={filterAreaOnlyShadeOnWallAt || 0}
-              onChange={(_, { value }) => {
-                dispatch?.({
-                  action: "set-area-only-shade-on-wall-at",
-                  hour: value as number,
-                });
-              }}
-            />
-            .
-          </Form.Field>
-        </Form.Group>
+        <>
+          <GroupHeader title="Wall direction" reset="wall-directions" />
+          <Form.Group inline>
+            {WALL_DIRECTIONS.map((option) => (
+              <Form.Field key={option.key}>
+                <Checkbox
+                  label={option.text}
+                  checked={!!filterSectorWallDirections?.[option.value]}
+                  onChange={(_, { checked }) => {
+                    dispatch?.({
+                      action: "toggle-sector-wall-directions",
+                      option: option.value,
+                      checked,
+                    });
+                  }}
+                />
+              </Form.Field>
+            ))}
+          </Form.Group>
+          <GroupHeader title="Conditions" reset="conditions" />
+          <Form.Group inline>
+            <Form.Field>
+              Sun on wall at{" "}
+              <Dropdown
+                floating
+                scrolling
+                inline
+                options={hoursOptions}
+                value={filterAreaOnlySunOnWallAt || 0}
+                onChange={(_, { value }) => {
+                  dispatch?.({
+                    action: "set-area-only-sun-on-wall-at",
+                    hour: value as number,
+                  });
+                }}
+              />
+              .
+            </Form.Field>
+            <Form.Field>
+              Shade on wall at{" "}
+              <Dropdown
+                floating
+                scrolling
+                inline
+                options={hoursOptions}
+                value={filterAreaOnlyShadeOnWallAt || 0}
+                onChange={(_, { value }) => {
+                  dispatch?.({
+                    action: "set-area-only-shade-on-wall-at",
+                    hour: value as number,
+                  });
+                }}
+              />
+              .
+            </Form.Field>
+          </Form.Group>
+        </>
       )}
       <GroupHeader
         title="Areas"
