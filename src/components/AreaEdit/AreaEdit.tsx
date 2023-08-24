@@ -157,24 +157,26 @@ export const AreaEdit = () => {
               />
             </Form.Field>
           </Form.Group>
-          <Form.Group widths="equal">
-            <Form.Field
-              label="Sun from hour"
-              control={Dropdown}
-              selection
-              value={data.sunFromHour}
-              onChange={setNumber("sunFromHour")}
-              options={hours}
-            />
-            <Form.Field
-              label="Sun to hour"
-              control={Dropdown}
-              selection
-              value={data.sunToHour}
-              onChange={setNumber("sunToHour")}
-              options={hours}
-            />
-          </Form.Group>
+          {meta.isClimbing && (
+            <Form.Group widths="equal">
+              <Form.Field
+                label="Sun from hour"
+                control={Dropdown}
+                selection
+                value={data.sunFromHour}
+                onChange={setNumber("sunFromHour")}
+                options={hours}
+              />
+              <Form.Field
+                label="Sun to hour"
+                control={Dropdown}
+                selection
+                value={data.sunToHour}
+                onChange={setNumber("sunToHour")}
+                options={hours}
+              />
+            </Form.Group>
+          )}
           <Form.Field>
             <label>
               Description (supports remarkable formatting, more info{" "}

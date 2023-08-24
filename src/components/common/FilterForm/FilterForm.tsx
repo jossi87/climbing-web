@@ -299,42 +299,44 @@ export const FilterForm = () => {
         )}
       </Form.Group>
       <GroupHeader title="Conditions" reset="conditions" />
-      <Form.Group inline>
-        <Form.Field>
-          Sun on wall at{" "}
-          <Dropdown
-            floating
-            scrolling
-            inline
-            options={hoursOptions}
-            value={filterAreaOnlySunOnWallAt || 0}
-            onChange={(_, { value }) => {
-              dispatch?.({
-                action: "set-area-only-sun-on-wall-at",
-                hour: value as number,
-              });
-            }}
-          />
-        </Form.Field>
-      </Form.Group>
-      <Form.Group inline>
-        <Form.Field>
-          Shade on wall at{" "}
-          <Dropdown
-            floating
-            scrolling
-            inline
-            options={hoursOptions}
-            value={filterAreaOnlyShadeOnWallAt || 0}
-            onChange={(_, { value }) => {
-              dispatch?.({
-                action: "set-area-only-shade-on-wall-at",
-                hour: value as number,
-              });
-            }}
-          />
-        </Form.Field>
-      </Form.Group>
+      {meta.isClimbing && (
+        <Form.Group inline>
+          <Form.Field>
+            Sun on wall at{" "}
+            <Dropdown
+              floating
+              scrolling
+              inline
+              options={hoursOptions}
+              value={filterAreaOnlySunOnWallAt || 0}
+              onChange={(_, { value }) => {
+                dispatch?.({
+                  action: "set-area-only-sun-on-wall-at",
+                  hour: value as number,
+                });
+              }}
+            />
+            .
+          </Form.Field>
+          <Form.Field>
+            Shade on wall at{" "}
+            <Dropdown
+              floating
+              scrolling
+              inline
+              options={hoursOptions}
+              value={filterAreaOnlyShadeOnWallAt || 0}
+              onChange={(_, { value }) => {
+                dispatch?.({
+                  action: "set-area-only-shade-on-wall-at",
+                  hour: value as number,
+                });
+              }}
+            />
+            .
+          </Form.Field>
+        </Form.Group>
+      )}
       <GroupHeader
         title="Areas"
         reset="areas"
