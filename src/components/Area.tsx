@@ -12,7 +12,7 @@ import {
   Stars,
   LockSymbol,
   Loading,
-  WeatherLabels,
+  ConditionLabels,
   WallDirection,
 } from "./common/widgets/widgets";
 import {
@@ -500,9 +500,9 @@ const Area = () => {
           )}
           {data.lat > 0 && data.lng > 0 && (
             <Table.Row>
-              <Table.Cell>Weather:</Table.Cell>
+              <Table.Cell>Conditions:</Table.Cell>
               <Table.Cell>
-                <WeatherLabels
+                <ConditionLabels
                   lat={data.lat}
                   lng={data.lng}
                   label={data.name}

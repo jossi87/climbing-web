@@ -13,7 +13,7 @@ import {
   Stars,
   LockSymbol,
   Loading,
-  WeatherLabels,
+  ConditionLabels,
 } from "./common/widgets/widgets";
 import {
   Icon,
@@ -452,9 +452,9 @@ const Sector = () => {
           )}
           {data.lat > 0 && data.lng > 0 && (
             <Table.Row verticalAlign="top">
-              <Table.Cell>Weather:</Table.Cell>
+              <Table.Cell>Conditions:</Table.Cell>
               <Table.Cell>
-                <WeatherLabels
+                <ConditionLabels
                   lat={data.lat}
                   lng={data.lng}
                   label={data.name}

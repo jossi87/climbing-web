@@ -173,7 +173,7 @@ export function InsufficientPrivileges() {
   );
 }
 
-type WeatherLabelsProps = {
+type ConditionLabelsProps = {
   lat: number;
   lng: number;
   label: string;
@@ -184,7 +184,7 @@ type WeatherLabelsProps = {
 
 export const WallDirection = ({
   wallDirection,
-}: Pick<WeatherLabelsProps, "wallDirection">) => {
+}: Pick<ConditionLabelsProps, "wallDirection">) => {
   if (wallDirection) {
     return (
       <Popup
@@ -204,7 +204,7 @@ export const WallDirection = ({
 export const SunOnWall = ({
   sunFromHour,
   sunToHour,
-}: Pick<WeatherLabelsProps, "sunFromHour" | "sunToHour">) => {
+}: Pick<ConditionLabelsProps, "sunFromHour" | "sunToHour">) => {
   if (sunFromHour > 0 && sunToHour > 0) {
     return (
       <Popup
@@ -266,7 +266,7 @@ export const WeatherIcon = ({
   return <Icon name="rain" />;
 };
 
-const YrLink = ({ lat, lng }: Pick<WeatherLabelsProps, "lat" | "lng">) => {
+const YrLink = ({ lat, lng }: Pick<ConditionLabelsProps, "lat" | "lng">) => {
   const { data: weatherData, isLoading } = useQuery(
     [`yr/weather`, { lat, lng }],
     {
@@ -335,14 +335,14 @@ const YrLink = ({ lat, lng }: Pick<WeatherLabelsProps, "lat" | "lng">) => {
   );
 };
 
-export function WeatherLabels({
+export function ConditionLabels({
   lat,
   lng,
   label,
   wallDirection,
   sunFromHour,
   sunToHour,
-}: WeatherLabelsProps) {
+}: ConditionLabelsProps) {
   if (!lat || !lng) {
     return;
   }

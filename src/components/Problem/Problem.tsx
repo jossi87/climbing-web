@@ -17,7 +17,11 @@ import {
   Image,
   Message,
 } from "semantic-ui-react";
-import { Loading, LockSymbol, WeatherLabels } from "../common/widgets/widgets";
+import {
+  Loading,
+  LockSymbol,
+  ConditionLabels,
+} from "../common/widgets/widgets";
 import { useMeta } from "../common/meta";
 import {
   getAreaPdfUrl,
@@ -577,7 +581,7 @@ export const Problem = () => {
             <Table.Row>
               <Table.Cell>Weather:</Table.Cell>
               <Table.Cell>
-                <WeatherLabels
+                <ConditionLabels
                   lat={lat}
                   lng={lng}
                   label={data.name}
