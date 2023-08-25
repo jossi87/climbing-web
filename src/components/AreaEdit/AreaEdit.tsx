@@ -232,8 +232,9 @@ export const AreaEdit = () => {
             <Leaflet
               autoZoom={true}
               markers={
-                data.lat != 0 &&
-                data.lng != 0 && [{ lat: data.lat, lng: data.lng }]
+                data.lat != 0 && data.lng != 0
+                  ? [{ lat: data.lat, lng: data.lng }]
+                  : []
               }
               defaultCenter={defaultCenter}
               defaultZoom={defaultZoom}

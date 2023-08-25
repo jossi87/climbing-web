@@ -78,7 +78,7 @@ const UpdateBounds = ({
   markers,
   outlines,
   polylines,
-}: Pick<Props, "polylines" | "outlines" | "markers" | "autoZoom">) => {
+}: Pick<Props, "autoZoom" | "markers" | "outlines" | "polylines">) => {
   const map = useMap();
 
   if (!autoZoom) {
@@ -101,6 +101,7 @@ const UpdateBounds = ({
     );
 
   if (
+    bounds.isValid() &&
     bounds.getWest() !== bounds.getEast() &&
     bounds.getNorth() !== bounds.getSouth()
   ) {
