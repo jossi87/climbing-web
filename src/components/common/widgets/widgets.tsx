@@ -190,7 +190,7 @@ export const WallDirection = ({
       <Popup
         content="Calculated wall direction"
         trigger={
-          <Label basic>
+          <Label basic size="small">
             <Icon name="compass outline" />
             {wallDirection}
           </Label>
@@ -210,7 +210,7 @@ export const SunOnWall = ({
       <Popup
         content="Sun on wall"
         trigger={
-          <Label image basic>
+          <Label image basic size="small">
             <Image src="/svg/sun-on-wall.svg" alt="Sun on wall" size="mini" />
             {String(sunFromHour).padStart(2, "0") +
               ":00" +
@@ -290,6 +290,7 @@ const YrLink = ({ lat, lng }: Pick<ConditionLabelsProps, "lat" | "lng">) => {
       target="_blank"
       image
       basic
+      size="small"
     >
       <WeatherIcon symbol={isLoading ? "loading" : next1Hours} />
       Yr.no
@@ -356,7 +357,7 @@ export function ConditionLabels({
         <Popup
           content="Sunrise and sunset"
           trigger={
-            <Label image basic>
+            <Label image basic size="small">
               <Image
                 src="/svg/sunrise-sunset.svg"
                 alt="Sunrise and Sunset"
@@ -378,8 +379,8 @@ export function ConditionLabels({
         href={`/webcams/` + JSON.stringify({ lat, lng, label })}
         rel="noopener"
         target="_blank"
-        image
         basic
+        size="small"
       >
         <Icon name="camera" />
         Webcams
