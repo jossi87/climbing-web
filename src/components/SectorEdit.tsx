@@ -210,7 +210,15 @@ const SectorEdit = () => {
         setCurrPolygonPointFetched(seconds);
         getElevation(accessToken, event.latlng.lat, event.latlng.lng).then(
           (res) => {
-            setCurrPolygonPoint(" - " + event.latlng.lat.toFixed(2) + "," + event.latlng.lng.toFixed(2) + " (" + res + "m)")
+            setCurrPolygonPoint(
+              " - " +
+                event.latlng.lat.toFixed(2) +
+                "," +
+                event.latlng.lng.toFixed(2) +
+                " (" +
+                res +
+                "m)",
+            );
           },
         );
       }

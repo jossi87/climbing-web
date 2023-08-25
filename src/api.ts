@@ -398,10 +398,12 @@ export function getElevation(
     accessToken,
     `/elevation?latitude=${latitude}&longitude=${longitude}`,
     null,
-  ).then((res) => res.text()).catch((error) => {
-    console.warn(error);
-    return null;
-  });
+  )
+    .then((res) => res.text())
+    .catch((error) => {
+      console.warn(error);
+      return null;
+    });
 }
 
 export function getGradeDistribution(
