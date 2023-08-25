@@ -23,6 +23,7 @@ import {
 } from "semantic-ui-react";
 import { useMeta } from "./common/meta";
 import {
+  getElevation,
   getSectorEdit,
   postSector,
   getSector,
@@ -90,6 +91,8 @@ const SectorEdit = () => {
   const { areaId, sectorId } = useIds();
   const [leafletMode, setLeafletMode] = useState("PARKING");
   const [data, setData] = useState<any>(null);
+  const [currPolygonPointFetched, setCurrPolygonPointFetched] = useState(0);
+  const [currPolygonPoint, setCurrPolygonPoint] = useState(null);
   const [showProblemOrder, setShowProblemOrder] = useState(false);
   const [sectorMarkers, setSectorMarkers] = useState<any>(null);
   const [area, setArea] = useState<any>(null);
@@ -197,6 +200,20 @@ const SectorEdit = () => {
         polyline = coords;
       }
       setData((prevState) => ({ ...prevState, polyline }));
+    }
+  }
+
+  function onMouseMove(event) {
+    if (leafletMode == "POLYGON") {
+      const seconds = Math.floor(Date.now() / 1000);
+      if (seconds > currPolygonPointFetched) {
+        setCurrPolygonPointFetched(seconds);
+        getElevation(accessToken, event.latlng.lat, event.latlng.lng).then(
+          (res) => {
+            setCurrPolygonPoint(" - " + event.latlng.lat.toFixed(2) + "," + event.latlng.lng.toFixed(2) + " (" + res + "m)")
+          },
+        );
+      }
     }
   }
 
@@ -489,7 +506,7 @@ const SectorEdit = () => {
                 defaultCenter={defaultCenter}
                 defaultZoom={defaultZoom}
                 onMouseClick={onMapMouseClick}
-                onMouseMove={null}
+                onMouseMove={onMouseMove}
                 height={"300px"}
                 showSatelliteImage={meta.isBouldering}
                 clusterMarkers={false}
@@ -523,7 +540,7 @@ const SectorEdit = () => {
             )}
             {leafletMode === "POLYGON" && (
               <Form.Field
-                label="Outline"
+                label={"Outline" + currPolygonPoint}
                 control={Input}
                 placeholder="Outline"
                 value={data.polygonCoords || ""}

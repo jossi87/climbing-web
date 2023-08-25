@@ -8,35 +8,23 @@ export type paths = {
     get: operations["getPermissions"];
     post: operations["postPermissions"];
   };
-  "/v2/media": {
-    get: operations["getMedia"];
-    put: operations["putMedia"];
-    delete: operations["deleteMedia"];
+  "/v2/profile": {
+    get: operations["getProfile"];
   };
-  "/v2/activity": {
-    get: operations["getActivity"];
+  "/v2/profile/media": {
+    get: operations["getProfilemedia"];
   };
-  "/v2/administrators": {
-    get: operations["getAdministrators"];
+  "/v2/profile/statistics": {
+    get: operations["getProfileStatistics"];
   };
-  "/v2/areas": {
-    get: operations["getAreas"];
-    post: operations["postAreas"];
-  };
-  "/v2/areas/pdf": {
-    get: operations["getAreasPdf"];
-  };
-  "/v2/images": {
-    get: operations["getImages"];
-  };
-  "/v2/meta": {
-    get: operations["getMeta"];
-  };
-  "/v2/webcams": {
-    get: operations["getCameras"];
+  "/v2/profile/todo": {
+    get: operations["getProfileTodo"];
   };
   "/v2/dangerous": {
     get: operations["getDangerous"];
+  };
+  "/v2/elevation": {
+    get: operations["getElevation"];
   };
   "/v2/frontpage": {
     get: operations["getFrontpage"];
@@ -46,6 +34,11 @@ export type paths = {
   };
   "/v2/graph": {
     get: operations["getGraph"];
+  };
+  "/v2/media": {
+    get: operations["getMedia"];
+    put: operations["putMedia"];
+    delete: operations["deleteMedia"];
   };
   "/v2/problem": {
     get: operations["getProblem"];
@@ -60,17 +53,27 @@ export type paths = {
   "/v2/problems/xlsx": {
     get: operations["getProblemsXlsx"];
   };
-  "/v2/profile": {
-    get: operations["getProfile"];
+  "/v2/images": {
+    get: operations["getImages"];
   };
-  "/v2/profile/media": {
-    get: operations["getProfilemedia"];
+  "/v2/activity": {
+    get: operations["getActivity"];
   };
-  "/v2/profile/statistics": {
-    get: operations["getProfileStatistics"];
+  "/v2/administrators": {
+    get: operations["getAdministrators"];
   };
-  "/v2/profile/todo": {
-    get: operations["getProfileTodo"];
+  "/v2/areas": {
+    get: operations["getAreas"];
+    post: operations["postAreas"];
+  };
+  "/v2/areas/pdf": {
+    get: operations["getAreasPdf"];
+  };
+  "/v2/webcams": {
+    get: operations["getCameras"];
+  };
+  "/v2/meta": {
+    get: operations["getMeta"];
   };
   "/v2/robots.txt": {
     get: operations["getRobotsTxt"];
@@ -157,126 +160,42 @@ export type definitions = {
     superadminWrite?: boolean;
     readOnly?: boolean;
   };
-  Activity: {
-    activityIds?: number[];
-    timeAgo?: string;
+  Profile: {
     /** Format: int32 */
-    problemId?: number;
-    problemLockedAdmin?: boolean;
-    problemLockedSuperadmin?: boolean;
-    problemName?: string;
-    problemSubtype?: string;
-    grade?: string;
-    /** Format: int32 */
-    problemRandomMediaId?: number;
-    /** Format: int32 */
-    problemRandomMediaCrc32?: number;
-    media?: definitions["ActivityMedia"][];
-    /** Format: int32 */
-    stars?: number;
-    repeat?: boolean;
+    id?: number;
+    picture?: string;
+    firstname?: string;
+    lastname?: string;
+    userRegions?: definitions["UserRegion"][];
+  };
+  UserRegion: {
     /** Format: int32 */
     id?: number;
     name?: string;
-    picture?: string;
+    role?: string;
+    enabled?: boolean;
+    readOnly?: boolean;
+  };
+  MediaMetadata: {
+    dateCreated?: string;
+    dateTaken?: string;
+    capturer?: string;
+    tagged?: string;
     description?: string;
-    message?: string;
-    users?: definitions["ActivityUser"][];
+    alt?: string;
   };
-  ActivityMedia: {
+  MediaSvgElement: {
+    /** @enum {string} */
+    t?: "PATH" | "RAPPEL_BOLTED" | "RAPPEL_NOT_BOLTED";
     /** Format: int32 */
     id?: number;
+    path?: string;
     /** Format: int32 */
-    crc32?: number;
-    embedUrl?: string;
-    movie?: boolean;
+    rappelX?: number;
+    /** Format: int32 */
+    rappelY?: number;
   };
-  ActivityUser: {
-    /** Format: int32 */
-    id?: number;
-    name?: string;
-    picture?: string;
-  };
-  Administrator: {
-    /** Format: int32 */
-    userId?: number;
-    name?: string;
-    picture?: string;
-    lastLogin?: string;
-  };
-  Area: {
-    redirectUrl?: string;
-    /** Format: int32 */
-    regionId?: number;
-    canonical?: string;
-    /** Format: int32 */
-    id?: number;
-    trash?: boolean;
-    lockedAdmin?: boolean;
-    lockedSuperadmin?: boolean;
-    forDevelopers?: boolean;
-    accessInfo?: string;
-    accessClosed?: string;
-    noDogsAllowed?: boolean;
-    /** Format: int32 */
-    sunFromHour?: number;
-    /** Format: int32 */
-    sunToHour?: number;
-    name?: string;
-    comment?: string;
-    /** Format: double */
-    lat?: number;
-    /** Format: double */
-    lng?: number;
-    /** Format: int32 */
-    numSectors?: number;
-    /** Format: int32 */
-    numProblems?: number;
-    sectors?: definitions["AreaSector"][];
-    sectorOrder?: definitions["AreaSectorOrder"][];
-    media?: definitions["Media"][];
-    triviaMedia?: definitions["Media"][];
-    newMedia?: definitions["NewMedia"][];
-    /** Format: int64 */
-    hits?: number;
-    typeNumTicked?: definitions["TypeNumTicked"][];
-  };
-  AreaSector: {
-    areaName?: string;
-    /** Format: int32 */
-    id?: number;
-    /** Format: int32 */
-    sorting?: number;
-    lockedAdmin?: boolean;
-    lockedSuperadmin?: boolean;
-    name?: string;
-    comment?: string;
-    accessInfo?: string;
-    accessClosed?: string;
-    /** Format: double */
-    lat?: number;
-    /** Format: double */
-    lng?: number;
-    polygonCoords?: string;
-    wallDirection?: string;
-    polyline?: string;
-    /** Format: int32 */
-    randomMediaId?: number;
-    /** Format: int32 */
-    randomMediaCrc32?: number;
-    problems?: definitions["SectorProblem"][];
-    typeNumTicked?: definitions["TypeNumTicked"][];
-    /** Format: int32 */
-    numProblems?: number;
-  };
-  AreaSectorOrder: {
-    /** Format: int32 */
-    id?: number;
-    name?: string;
-    /** Format: int32 */
-    sorting?: number;
-  };
-  Media: {
+  ProfileMedia: {
     /** Format: int32 */
     id?: number;
     uploadedByMe?: boolean;
@@ -304,71 +223,6 @@ export type definitions = {
     /** Format: int32 */
     enableMoveToIdProblem?: number;
   };
-  MediaMetadata: {
-    dateCreated?: string;
-    dateTaken?: string;
-    capturer?: string;
-    tagged?: string;
-    description?: string;
-    alt?: string;
-  };
-  MediaSvgElement: {
-    /** @enum {string} */
-    t?: "PATH" | "RAPPEL_BOLTED" | "RAPPEL_NOT_BOLTED";
-    /** Format: int32 */
-    id?: number;
-    path?: string;
-    /** Format: int32 */
-    rappelX?: number;
-    /** Format: int32 */
-    rappelY?: number;
-  };
-  NewMedia: {
-    name?: string;
-    photographer?: string;
-    inPhoto?: string;
-    /** Format: int32 */
-    pitch?: number;
-    trivia?: boolean;
-    description?: string;
-    embedVideoUrl?: string;
-    embedThumbnailUrl?: string;
-    /** Format: int64 */
-    embedMilliseconds?: number;
-  };
-  SectorProblem: {
-    /** Format: int32 */
-    id?: number;
-    broken?: string;
-    lockedAdmin?: boolean;
-    lockedSuperadmin?: boolean;
-    /** Format: int32 */
-    nr?: number;
-    name?: string;
-    rock?: string;
-    comment?: string;
-    /** Format: int32 */
-    gradeNumber?: number;
-    grade?: string;
-    fa?: string;
-    /** Format: int32 */
-    numPitches?: number;
-    hasImages?: boolean;
-    hasMovies?: boolean;
-    hasTopo?: boolean;
-    /** Format: double */
-    lat?: number;
-    /** Format: double */
-    lng?: number;
-    /** Format: int32 */
-    numTicks?: number;
-    /** Format: double */
-    stars?: number;
-    ticked?: boolean;
-    todo?: boolean;
-    t?: definitions["Type"];
-    danger?: boolean;
-  };
   Svg: {
     delete?: boolean;
     /** Format: int32 */
@@ -391,64 +245,95 @@ export type definitions = {
     todo?: boolean;
     dangerous?: boolean;
   };
-  Type: {
+  ProfileStatistics: {
     /** Format: int32 */
-    id?: number;
-    type?: string;
-    subType?: string;
+    numImagesCreated?: number;
+    /** Format: int32 */
+    numVideosCreated?: number;
+    /** Format: int32 */
+    numImageTags?: number;
+    /** Format: int32 */
+    numVideoTags?: number;
+    ticks?: definitions["ProfileStatisticsTick"][];
   };
-  TypeNumTicked: {
-    type?: string;
+  ProfileStatisticsTick: {
+    areaName?: string;
+    areaLockedAdmin?: boolean;
+    areaLockedSuperadmin?: boolean;
+    sectorName?: string;
+    sectorLockedAdmin?: boolean;
+    sectorLockedSuperadmin?: boolean;
     /** Format: int32 */
     num?: number;
     /** Format: int32 */
-    ticked?: number;
+    id?: number;
+    /** Format: int32 */
+    idTickRepeat?: number;
+    subType?: string;
+    /** Format: int32 */
+    numPitches?: number;
+    /** Format: int32 */
+    idProblem?: number;
+    lockedAdmin?: boolean;
+    lockedSuperadmin?: boolean;
+    name?: string;
+    comment?: string;
+    date?: string;
+    dateHr?: string;
+    /** Format: double */
+    stars?: number;
+    fa?: boolean;
+    grade?: string;
+    /** Format: int32 */
+    gradeNumber?: number;
+    /** Format: double */
+    lat?: number;
+    /** Format: double */
+    lng?: number;
   };
-  Grade: {
+  ProfileTodo: {
+    areas?: definitions["ProfileTodoArea"][];
+  };
+  ProfileTodoArea: {
     /** Format: int32 */
     id?: number;
-    grade?: string;
+    url?: string;
+    name?: string;
+    lockedAdmin?: boolean;
+    lockedSuperadmin?: boolean;
+    sectors?: definitions["ProfileTodoSector"][];
   };
-  LatLng: {
-    /** Format: double */
-    lat?: number;
-    /** Format: double */
-    lng?: number;
-  };
-  Meta: {
-    title?: string;
-    grades?: definitions["Grade"][];
+  ProfileTodoPartner: {
     /** Format: int32 */
-    defaultZoom?: number;
-    defaultCenter?: definitions["LatLng"];
-    url?: string;
-    types?: definitions["Type"][];
-    sites?: definitions["Site"][];
-    bouldering?: boolean;
-    authenticated?: boolean;
-    admin?: boolean;
-    superAdmin?: boolean;
-    climbing?: boolean;
-    ice?: boolean;
-  };
-  Site: {
-    group?: string;
+    id?: number;
     name?: string;
-    url?: string;
-    polygonCoords?: string;
-    active?: boolean;
   };
-  Webcam: {
-    id?: string;
-    lastUpdated?: string;
+  ProfileTodoProblem: {
+    /** Format: int32 */
+    todoId?: number;
+    /** Format: int32 */
+    id?: number;
+    url?: string;
+    lockedAdmin?: boolean;
+    lockedSuperadmin?: boolean;
+    /** Format: int32 */
+    nr?: number;
     name?: string;
-    urlStillImage?: string;
-    urlYr?: string;
-    urlOther?: string;
+    grade?: string;
     /** Format: double */
     lat?: number;
     /** Format: double */
     lng?: number;
+    partners?: definitions["ProfileTodoPartner"][];
+  };
+  ProfileTodoSector: {
+    /** Format: int32 */
+    id?: number;
+    url?: string;
+    name?: string;
+    lockedAdmin?: boolean;
+    lockedSuperadmin?: boolean;
+    problems?: definitions["ProfileTodoProblem"][];
   };
   Dangerous: {
     /** Format: int32 */
@@ -559,6 +444,34 @@ export type definitions = {
     /** Format: int32 */
     numIce?: number;
   };
+  Media: {
+    /** Format: int32 */
+    id?: number;
+    uploadedByMe?: boolean;
+    /** Format: int32 */
+    crc32?: number;
+    /** Format: int32 */
+    pitch?: number;
+    trivia?: boolean;
+    /** Format: int32 */
+    width?: number;
+    /** Format: int32 */
+    height?: number;
+    /** Format: int32 */
+    idType?: number;
+    t?: string;
+    mediaSvgs?: definitions["MediaSvgElement"][];
+    /** Format: int32 */
+    svgProblemId?: number;
+    svgs?: definitions["Svg"][];
+    mediaMetadata?: definitions["MediaMetadata"];
+    embedUrl?: string;
+    inherited?: boolean;
+    /** Format: int32 */
+    enableMoveToIdSector?: number;
+    /** Format: int32 */
+    enableMoveToIdProblem?: number;
+  };
   FaAid: {
     /** Format: int32 */
     problemId?: number;
@@ -572,6 +485,19 @@ export type definitions = {
     id?: number;
     name?: string;
     picture?: string;
+  };
+  NewMedia: {
+    name?: string;
+    photographer?: string;
+    inPhoto?: string;
+    /** Format: int32 */
+    pitch?: number;
+    trivia?: boolean;
+    description?: string;
+    embedVideoUrl?: string;
+    embedThumbnailUrl?: string;
+    /** Format: int64 */
+    embedMilliseconds?: number;
   };
   Problem: {
     redirectUrl?: string;
@@ -701,6 +627,12 @@ export type definitions = {
     comment?: string;
     date?: string;
   };
+  Type: {
+    /** Format: int32 */
+    id?: number;
+    type?: string;
+    subType?: string;
+  };
   ProblemArea: {
     /** Format: int32 */
     id?: number;
@@ -759,139 +691,210 @@ export type definitions = {
     lockedSuperadmin?: boolean;
     problems?: definitions["ProblemAreaProblem"][];
   };
-  Profile: {
+  Activity: {
+    activityIds?: number[];
+    timeAgo?: string;
     /** Format: int32 */
-    id?: number;
-    picture?: string;
-    firstname?: string;
-    lastname?: string;
-    userRegions?: definitions["UserRegion"][];
-  };
-  UserRegion: {
-    /** Format: int32 */
-    id?: number;
-    name?: string;
-    role?: string;
-    enabled?: boolean;
-    readOnly?: boolean;
-  };
-  ProfileMedia: {
-    /** Format: int32 */
-    id?: number;
-    uploadedByMe?: boolean;
-    /** Format: int32 */
-    crc32?: number;
-    /** Format: int32 */
-    pitch?: number;
-    trivia?: boolean;
-    /** Format: int32 */
-    width?: number;
-    /** Format: int32 */
-    height?: number;
-    /** Format: int32 */
-    idType?: number;
-    t?: string;
-    mediaSvgs?: definitions["MediaSvgElement"][];
-    /** Format: int32 */
-    svgProblemId?: number;
-    svgs?: definitions["Svg"][];
-    mediaMetadata?: definitions["MediaMetadata"];
-    embedUrl?: string;
-    inherited?: boolean;
-    /** Format: int32 */
-    enableMoveToIdSector?: number;
-    /** Format: int32 */
-    enableMoveToIdProblem?: number;
-  };
-  ProfileStatistics: {
-    /** Format: int32 */
-    numImagesCreated?: number;
-    /** Format: int32 */
-    numVideosCreated?: number;
-    /** Format: int32 */
-    numImageTags?: number;
-    /** Format: int32 */
-    numVideoTags?: number;
-    ticks?: definitions["ProfileStatisticsTick"][];
-  };
-  ProfileStatisticsTick: {
-    areaName?: string;
-    areaLockedAdmin?: boolean;
-    areaLockedSuperadmin?: boolean;
-    sectorName?: string;
-    sectorLockedAdmin?: boolean;
-    sectorLockedSuperadmin?: boolean;
-    /** Format: int32 */
-    num?: number;
-    /** Format: int32 */
-    id?: number;
-    /** Format: int32 */
-    idTickRepeat?: number;
-    subType?: string;
-    /** Format: int32 */
-    numPitches?: number;
-    /** Format: int32 */
-    idProblem?: number;
-    lockedAdmin?: boolean;
-    lockedSuperadmin?: boolean;
-    name?: string;
-    comment?: string;
-    date?: string;
-    dateHr?: string;
-    /** Format: double */
-    stars?: number;
-    fa?: boolean;
+    problemId?: number;
+    problemLockedAdmin?: boolean;
+    problemLockedSuperadmin?: boolean;
+    problemName?: string;
+    problemSubtype?: string;
     grade?: string;
     /** Format: int32 */
-    gradeNumber?: number;
+    problemRandomMediaId?: number;
+    /** Format: int32 */
+    problemRandomMediaCrc32?: number;
+    media?: definitions["ActivityMedia"][];
+    /** Format: int32 */
+    stars?: number;
+    repeat?: boolean;
+    /** Format: int32 */
+    id?: number;
+    name?: string;
+    picture?: string;
+    description?: string;
+    message?: string;
+    users?: definitions["ActivityUser"][];
+  };
+  ActivityMedia: {
+    /** Format: int32 */
+    id?: number;
+    /** Format: int32 */
+    crc32?: number;
+    embedUrl?: string;
+    movie?: boolean;
+  };
+  ActivityUser: {
+    /** Format: int32 */
+    id?: number;
+    name?: string;
+    picture?: string;
+  };
+  Administrator: {
+    /** Format: int32 */
+    userId?: number;
+    name?: string;
+    picture?: string;
+    lastLogin?: string;
+  };
+  Area: {
+    redirectUrl?: string;
+    /** Format: int32 */
+    regionId?: number;
+    canonical?: string;
+    /** Format: int32 */
+    id?: number;
+    trash?: boolean;
+    lockedAdmin?: boolean;
+    lockedSuperadmin?: boolean;
+    forDevelopers?: boolean;
+    accessInfo?: string;
+    accessClosed?: string;
+    noDogsAllowed?: boolean;
+    /** Format: int32 */
+    sunFromHour?: number;
+    /** Format: int32 */
+    sunToHour?: number;
+    name?: string;
+    comment?: string;
     /** Format: double */
     lat?: number;
     /** Format: double */
     lng?: number;
+    /** Format: int32 */
+    numSectors?: number;
+    /** Format: int32 */
+    numProblems?: number;
+    sectors?: definitions["AreaSector"][];
+    sectorOrder?: definitions["AreaSectorOrder"][];
+    media?: definitions["Media"][];
+    triviaMedia?: definitions["Media"][];
+    newMedia?: definitions["NewMedia"][];
+    /** Format: int64 */
+    hits?: number;
+    typeNumTicked?: definitions["TypeNumTicked"][];
   };
-  ProfileTodo: {
-    areas?: definitions["ProfileTodoArea"][];
-  };
-  ProfileTodoArea: {
+  AreaSector: {
+    areaName?: string;
     /** Format: int32 */
     id?: number;
-    url?: string;
-    name?: string;
+    /** Format: int32 */
+    sorting?: number;
     lockedAdmin?: boolean;
     lockedSuperadmin?: boolean;
-    sectors?: definitions["ProfileTodoSector"][];
+    name?: string;
+    comment?: string;
+    accessInfo?: string;
+    accessClosed?: string;
+    /** Format: double */
+    lat?: number;
+    /** Format: double */
+    lng?: number;
+    polygonCoords?: string;
+    wallDirection?: string;
+    polyline?: string;
+    /** Format: int32 */
+    randomMediaId?: number;
+    /** Format: int32 */
+    randomMediaCrc32?: number;
+    problems?: definitions["SectorProblem"][];
+    typeNumTicked?: definitions["TypeNumTicked"][];
+    /** Format: int32 */
+    numProblems?: number;
   };
-  ProfileTodoPartner: {
+  AreaSectorOrder: {
     /** Format: int32 */
     id?: number;
     name?: string;
-  };
-  ProfileTodoProblem: {
     /** Format: int32 */
-    todoId?: number;
+    sorting?: number;
+  };
+  SectorProblem: {
     /** Format: int32 */
     id?: number;
-    url?: string;
+    broken?: string;
     lockedAdmin?: boolean;
     lockedSuperadmin?: boolean;
     /** Format: int32 */
     nr?: number;
     name?: string;
+    rock?: string;
+    comment?: string;
+    /** Format: int32 */
+    gradeNumber?: number;
     grade?: string;
+    fa?: string;
+    /** Format: int32 */
+    numPitches?: number;
+    hasImages?: boolean;
+    hasMovies?: boolean;
+    hasTopo?: boolean;
     /** Format: double */
     lat?: number;
     /** Format: double */
     lng?: number;
-    partners?: definitions["ProfileTodoPartner"][];
+    /** Format: int32 */
+    numTicks?: number;
+    /** Format: double */
+    stars?: number;
+    ticked?: boolean;
+    todo?: boolean;
+    t?: definitions["Type"];
+    danger?: boolean;
   };
-  ProfileTodoSector: {
+  TypeNumTicked: {
+    type?: string;
+    /** Format: int32 */
+    num?: number;
+    /** Format: int32 */
+    ticked?: number;
+  };
+  Webcam: {
+    id?: string;
+    lastUpdated?: string;
+    name?: string;
+    urlStillImage?: string;
+    urlYr?: string;
+    urlOther?: string;
+    /** Format: double */
+    lat?: number;
+    /** Format: double */
+    lng?: number;
+  };
+  Grade: {
     /** Format: int32 */
     id?: number;
+    grade?: string;
+  };
+  LatLng: {
+    /** Format: double */
+    lat?: number;
+    /** Format: double */
+    lng?: number;
+  };
+  Meta: {
+    title?: string;
+    grades?: definitions["Grade"][];
+    /** Format: int32 */
+    defaultZoom?: number;
+    defaultCenter?: definitions["LatLng"];
     url?: string;
+    types?: definitions["Type"][];
+    sites?: definitions["Site"][];
+    bouldering?: boolean;
+    climbing?: boolean;
+    authenticated?: boolean;
+    admin?: boolean;
+    superAdmin?: boolean;
+    ice?: boolean;
+  };
+  Site: {
+    group?: string;
     name?: string;
-    lockedAdmin?: boolean;
-    lockedSuperadmin?: boolean;
-    problems?: definitions["ProfileTodoProblem"][];
+    url?: string;
+    polygonCoords?: string;
+    active?: boolean;
   };
   Sector: {
     redirectUrl?: string;
@@ -1199,6 +1202,154 @@ export type operations = {
       default: unknown;
     };
   };
+  getProfile: {
+    parameters: {
+      query: {
+        /** User id (will return logged in user without this attribute) */
+        id: number;
+      };
+      header: {
+        /** Authorization token */
+        Authorization?: string;
+      };
+    };
+    responses: {
+      /** successful operation */
+      200: {
+        schema: definitions["Profile"];
+      };
+    };
+  };
+  getProfilemedia: {
+    parameters: {
+      query: {
+        /** User id */
+        id: number;
+        /** FALSE = tagged media, TRUE = captured media */
+        captured?: boolean;
+      };
+    };
+    responses: {
+      /** successful operation */
+      200: {
+        schema: definitions["ProfileMedia"][];
+      };
+    };
+  };
+  getProfileStatistics: {
+    parameters: {
+      query: {
+        /** User id */
+        id: number;
+      };
+    };
+    responses: {
+      /** successful operation */
+      200: {
+        schema: definitions["ProfileStatistics"];
+      };
+    };
+  };
+  getProfileTodo: {
+    parameters: {
+      query: {
+        /** User id */
+        id: number;
+      };
+      header: {
+        /** Authorization token */
+        Authorization?: string;
+      };
+    };
+    responses: {
+      /** successful operation */
+      200: {
+        schema: definitions["ProfileTodo"];
+      };
+    };
+  };
+  getDangerous: {
+    parameters: {
+      header: {
+        /** Authorization token */
+        Authorization?: string;
+      };
+    };
+    responses: {
+      /** successful operation */
+      200: {
+        schema: definitions["Dangerous"][];
+      };
+    };
+  };
+  getElevation: {
+    parameters: {
+      query: {
+        /** latitude */
+        latitude: number;
+        /** longitude */
+        longitude: number;
+      };
+      header: {
+        /** Authorization token */
+        Authorization?: string;
+      };
+    };
+    responses: {
+      /** successful operation */
+      200: {
+        schema: number;
+      };
+    };
+  };
+  getFrontpage: {
+    parameters: {
+      header: {
+        /** Authorization token */
+        Authorization?: string;
+      };
+    };
+    responses: {
+      /** successful operation */
+      200: {
+        schema: definitions["Frontpage"];
+      };
+    };
+  };
+  getGradeDistribution: {
+    parameters: {
+      query: {
+        /** Area id (can be 0 if idSector>0) */
+        idArea: number;
+        /** Sector id (can be 0 if idArea>0) */
+        idSector: number;
+      };
+      header: {
+        /** Authorization token */
+        Authorization?: string;
+      };
+    };
+    responses: {
+      /** successful operation */
+      200: {
+        schema: definitions["GradeDistribution"][];
+      };
+    };
+  };
+  getGraph: {
+    parameters: {
+      header: {
+        /** Authorization token */
+        Authorization?: string;
+      };
+    };
+    responses: {
+      /** successful operation */
+      200: {
+        schema: definitions["GradeDistribution"][];
+      };
+    };
+  };
   getMedia: {
     parameters: {
       query: {
@@ -1253,6 +1404,109 @@ export type operations = {
     responses: {
       /** successful operation */
       default: unknown;
+    };
+  };
+  getProblem: {
+    parameters: {
+      query: {
+        /** Problem id */
+        id: number;
+        /** Include hidden media (example: if a sector has multiple topo-images, the topo-images without this route will be hidden) */
+        showHiddenMedia?: boolean;
+      };
+      header: {
+        /** Authorization token */
+        Authorization?: string;
+      };
+    };
+    responses: {
+      /** successful operation */
+      200: {
+        schema: definitions["Problem"];
+      };
+    };
+  };
+  getProblemPdf: {
+    parameters: {
+      query: {
+        /** Access token */
+        accessToken?: string;
+        /** Problem id */
+        id: number;
+      };
+    };
+    responses: {
+      /** successful operation */
+      200: {
+        schema: string[];
+      };
+    };
+  };
+  getProblems: {
+    parameters: {
+      header: {
+        /** Authorization token */
+        Authorization?: string;
+      };
+    };
+    responses: {
+      /** successful operation */
+      200: {
+        schema: definitions["ProblemArea"][];
+      };
+    };
+  };
+  postProblems: {
+    parameters: {
+      body: {
+        body?: definitions["FormDataMultiPart"];
+      };
+      header: {
+        /** Authorization token */
+        Authorization: string;
+      };
+    };
+    responses: {
+      /** successful operation */
+      200: {
+        schema: definitions["Redirect"];
+      };
+    };
+  };
+  getProblemsXlsx: {
+    parameters: {
+      header: {
+        /** Authorization token */
+        Authorization?: string;
+      };
+    };
+    responses: {
+      /** successful operation */
+      200: {
+        schema: string[];
+      };
+    };
+  };
+  getImages: {
+    parameters: {
+      query: {
+        /** Media id */
+        id: number;
+        /** Checksum - not used in ws, but necessary to include on client when an image is changed (e.g. rotated) to avoid cached version */
+        crc32?: number;
+        /** Image size - E.g. minDimention=100 can return an image with the size 100x133px */
+        minDimention?: number;
+      };
+      header: {
+        /** Authorization token */
+        Authorization?: string;
+      };
+    };
+    responses: {
+      /** successful operation */
+      200: {
+        schema: string[];
+      };
     };
   };
   getActivity: {
@@ -1345,25 +1599,12 @@ export type operations = {
       };
     };
   };
-  getImages: {
-    parameters: {
-      query: {
-        /** Media id */
-        id: number;
-        /** Checksum - not used in ws, but necessary to include on client when an image is changed (e.g. rotated) to avoid cached version */
-        crc32?: number;
-        /** Image size - E.g. minDimention=100 can return an image with the size 100x133px */
-        minDimention?: number;
-      };
-      header: {
-        /** Authorization token */
-        Authorization?: string;
-      };
-    };
+  getCameras: {
+    parameters: {};
     responses: {
       /** successful operation */
       200: {
-        schema: string[];
+        schema: definitions["Webcam"][];
       };
     };
   };
@@ -1378,224 +1619,6 @@ export type operations = {
       /** successful operation */
       200: {
         schema: definitions["Meta"];
-      };
-    };
-  };
-  getCameras: {
-    parameters: {};
-    responses: {
-      /** successful operation */
-      200: {
-        schema: definitions["Webcam"][];
-      };
-    };
-  };
-  getDangerous: {
-    parameters: {
-      header: {
-        /** Authorization token */
-        Authorization?: string;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: definitions["Dangerous"][];
-      };
-    };
-  };
-  getFrontpage: {
-    parameters: {
-      header: {
-        /** Authorization token */
-        Authorization?: string;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: definitions["Frontpage"];
-      };
-    };
-  };
-  getGradeDistribution: {
-    parameters: {
-      query: {
-        /** Area id (can be 0 if idSector>0) */
-        idArea: number;
-        /** Sector id (can be 0 if idArea>0) */
-        idSector: number;
-      };
-      header: {
-        /** Authorization token */
-        Authorization?: string;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: definitions["GradeDistribution"][];
-      };
-    };
-  };
-  getGraph: {
-    parameters: {
-      header: {
-        /** Authorization token */
-        Authorization?: string;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: definitions["GradeDistribution"][];
-      };
-    };
-  };
-  getProblem: {
-    parameters: {
-      query: {
-        /** Problem id */
-        id: number;
-        /** Include hidden media (example: if a sector has multiple topo-images, the topo-images without this route will be hidden) */
-        showHiddenMedia?: boolean;
-      };
-      header: {
-        /** Authorization token */
-        Authorization?: string;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: definitions["Problem"];
-      };
-    };
-  };
-  getProblemPdf: {
-    parameters: {
-      query: {
-        /** Access token */
-        accessToken?: string;
-        /** Problem id */
-        id: number;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: string[];
-      };
-    };
-  };
-  getProblems: {
-    parameters: {
-      header: {
-        /** Authorization token */
-        Authorization?: string;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: definitions["ProblemArea"][];
-      };
-    };
-  };
-  postProblems: {
-    parameters: {
-      body: {
-        body?: definitions["FormDataMultiPart"];
-      };
-      header: {
-        /** Authorization token */
-        Authorization: string;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: definitions["Redirect"];
-      };
-    };
-  };
-  getProblemsXlsx: {
-    parameters: {
-      header: {
-        /** Authorization token */
-        Authorization?: string;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: string[];
-      };
-    };
-  };
-  getProfile: {
-    parameters: {
-      query: {
-        /** User id (will return logged in user without this attribute) */
-        id: number;
-      };
-      header: {
-        /** Authorization token */
-        Authorization?: string;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: definitions["Profile"];
-      };
-    };
-  };
-  getProfilemedia: {
-    parameters: {
-      query: {
-        /** User id */
-        id: number;
-        /** FALSE = tagged media, TRUE = captured media */
-        captured?: boolean;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: definitions["ProfileMedia"][];
-      };
-    };
-  };
-  getProfileStatistics: {
-    parameters: {
-      query: {
-        /** User id */
-        id: number;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: definitions["ProfileStatistics"];
-      };
-    };
-  };
-  getProfileTodo: {
-    parameters: {
-      query: {
-        /** User id */
-        id: number;
-      };
-      header: {
-        /** Authorization token */
-        Authorization?: string;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: definitions["ProfileTodo"];
       };
     };
   };
