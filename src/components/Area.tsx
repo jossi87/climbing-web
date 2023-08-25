@@ -310,6 +310,7 @@ const Area = () => {
                         lockedAdmin={sector.lockedAdmin}
                         lockedSuperadmin={sector.lockedSuperadmin}
                       />
+                      <WallDirection wallDirection={sector.wallDirection} />
                     </Item.Header>
                     <Item.Extra>
                       {numTickedProblemsInArea > 0 &&
@@ -331,9 +332,6 @@ const Area = () => {
                         </p>
                       ))}
                     </Item.Extra>
-                    <Item.Meta>
-                      <WallDirection wallDirection={sector.wallDirection} />
-                    </Item.Meta>
                     <Item.Description>
                       {sector.accessInfo && (
                         <Header as="h5" color="red">
