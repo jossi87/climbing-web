@@ -681,6 +681,8 @@ export type definitions = {
     id?: number;
     url?: string;
     name?: string;
+    /** Format: int32 */
+    sorting?: number;
     /** Format: double */
     lat?: number;
     /** Format: double */
@@ -944,6 +946,8 @@ export type definitions = {
     lockedAdmin?: boolean;
     lockedSuperadmin?: boolean;
     name?: string;
+    /** Format: int32 */
+    sorting?: number;
   };
   SectorProblemOrder: {
     /** Format: int32 */
