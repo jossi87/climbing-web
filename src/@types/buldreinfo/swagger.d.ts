@@ -724,8 +724,8 @@ export type definitions = {
     id?: number;
     /** Format: int32 */
     crc32?: number;
-    embedUrl?: string;
     movie?: boolean;
+    embedUrl?: string;
   };
   ActivityUser: {
     /** Format: int32 */
