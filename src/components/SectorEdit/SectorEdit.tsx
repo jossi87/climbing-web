@@ -8,8 +8,8 @@ import React, {
 import GpxParser from "gpxparser";
 import Dropzone from "react-dropzone";
 import { Helmet } from "react-helmet";
-import ImageUpload from "./common/image-upload/image-upload";
-import { Loading } from "./common/widgets/widgets";
+import ImageUpload from "../common/image-upload/image-upload";
+import { Loading } from "../common/widgets/widgets";
 import {
   Checkbox,
   Form,
@@ -21,7 +21,7 @@ import {
   Icon,
   Message,
 } from "semantic-ui-react";
-import { useMeta } from "./common/meta";
+import { useMeta } from "../common/meta";
 import {
   getElevation,
   getSectorEdit,
@@ -29,14 +29,15 @@ import {
   getSector,
   getArea,
   useAccessToken,
-} from "../api";
-import Leaflet from "./common/leaflet/leaflet";
+} from "../../api";
+import Leaflet from "../common/leaflet/leaflet";
 import { useNavigate, useParams } from "react-router-dom";
-import { VisibilitySelectorField } from "./common/VisibilitySelector";
-import { parsePolyline } from "../utils/polyline";
+import { VisibilitySelectorField } from "../common/VisibilitySelector";
+import { parsePolyline } from "../../utils/polyline";
 import { useMap } from "react-leaflet";
-import { definitions } from "../@types/buldreinfo/swagger";
+import { definitions } from "../../@types/buldreinfo/swagger";
 import { latLngBounds } from "leaflet";
+import { ProblemOrder } from "./ProblemOrder";
 
 const useIds = (): { areaId: number; sectorId: number } => {
   const { sectorId, areaId } = useParams();
@@ -86,11 +87,11 @@ const ZoomLogic = ({
   return null;
 };
 
-const SectorEdit = () => {
+export const SectorEdit = () => {
   const accessToken = useAccessToken();
   const { areaId, sectorId } = useIds();
   const [leafletMode, setLeafletMode] = useState("PARKING");
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<definitions["Sector"]>(null);
   const [currPolygonPointFetched, setCurrPolygonPointFetched] = useState(0);
   const [currPolygonPoint, setCurrPolygonPoint] = useState(null);
   const [showProblemOrder, setShowProblemOrder] = useState(false);
@@ -312,11 +313,11 @@ const SectorEdit = () => {
 
   let defaultCenter;
   let defaultZoom;
-  if (data.lat && parseFloat(data.lat) > 0) {
-    defaultCenter = { lat: parseFloat(data.lat), lng: parseFloat(data.lng) };
+  if (data.lat && data.lng) {
+    defaultCenter = { lat: data.lat, lng: data.lng };
     defaultZoom = 14;
-  } else if (area?.lat && parseFloat(area.lat) > 0) {
-    defaultCenter = { lat: parseFloat(area.lat), lng: parseFloat(area.lng) };
+  } else if (area.lat && area.lat) {
+    defaultCenter = { lat: area.lat, lng: area.lng };
     defaultZoom = 14;
   } else {
     defaultCenter = meta.defaultCenter;
@@ -330,38 +331,6 @@ const SectorEdit = () => {
   if (sectorMarkers) {
     markers.push(...sectorMarkers);
   }
-
-  const orderForm = data.problemOrder?.length > 1 && (
-    <>
-      {data.problemOrder.map((p, i) => {
-        const problemOrder = data.problemOrder;
-        const clr =
-          problemOrder[i].origNr && problemOrder[i].origNr != problemOrder[i].nr
-            ? "orange"
-            : "grey";
-        return (
-          <Input
-            key={p.id}
-            size="small"
-            fluid
-            icon="hashtag"
-            iconPosition="left"
-            placeholder="Number"
-            value={p.nr}
-            label={{ basic: true, content: p.name, color: clr }}
-            labelPosition="right"
-            onChange={(e, { value }) => {
-              if (problemOrder[i].origNr === undefined) {
-                problemOrder[i].origNr = problemOrder[i].nr;
-              }
-              problemOrder[i].nr = parseInt(value) || "";
-              setData((prevState) => ({ ...prevState, problemOrder }));
-            }}
-          />
-        );
-      })}
-    </>
-  );
 
   return (
     <>
@@ -393,7 +362,10 @@ const SectorEdit = () => {
             <VisibilitySelectorField
               label="Visibility"
               selection
-              value={data}
+              value={{
+                lockedAdmin: !!data.lockedAdmin,
+                lockedSuperadmin: !!data.lockedSuperadmin,
+              }}
               onChange={onLockedChanged}
             />
             <Form.Field>
@@ -532,7 +504,7 @@ const SectorEdit = () => {
                   <label>Latitude</label>
                   <Input
                     placeholder="Latitude"
-                    value={data.latStr || ""}
+                    value={data.lat ?? ""}
                     onChange={onLatChanged}
                   />
                 </Form.Field>
@@ -540,7 +512,7 @@ const SectorEdit = () => {
                   <label>Longitude</label>
                   <Input
                     placeholder="Longitude"
-                    value={data.lngStr || ""}
+                    value={data.lng ?? ""}
                     onChange={onLngChanged}
                   />
                 </Form.Field>
@@ -605,7 +577,7 @@ const SectorEdit = () => {
           </Form.Group>
         </Segment>
 
-        {orderForm && (
+        {data.problemOrder?.length > 1 && (
           <Segment>
             <Accordion>
               <Accordion.Title
@@ -617,7 +589,14 @@ const SectorEdit = () => {
               </Accordion.Title>
               <Accordion.Content
                 active={showProblemOrder}
-                content={orderForm}
+                content={
+                  <ProblemOrder
+                    problemOrder={data.problemOrder}
+                    onChange={(problemOrder) =>
+                      setData((prevValue) => ({ ...prevValue, problemOrder }))
+                    }
+                  />
+                }
               />
             </Accordion>
           </Segment>
