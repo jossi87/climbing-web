@@ -476,7 +476,7 @@ const Area = () => {
             <Table.Cell>{data.sectors.length}</Table.Cell>
           </Table.Row>
           {data.typeNumTicked.map((t) => (
-            <Table.Row key={[t.num, t.ticked].join("/")}>
+            <Table.Row key={t.type}>
               <Table.Cell>{t.type + ":"}</Table.Cell>
               <Table.Cell>
                 {t.num}
