@@ -1,12 +1,12 @@
 import { latLngBounds } from "leaflet";
 import { useRef, useEffect } from "react";
 import { useMap } from "react-leaflet";
-import { definitions } from "../../@types/buldreinfo/swagger";
+import { components } from "../../@types/buldreinfo/swagger";
 import { parsePolyline } from "../../utils/polyline";
 
 type Props = {
-  area: definitions["Area"];
-  sector: definitions["Sector"];
+  area: components["schemas"]["Area"];
+  sector: components["schemas"]["Sector"];
 };
 
 export const ZoomLogic = ({

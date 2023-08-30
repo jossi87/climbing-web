@@ -2,9 +2,9 @@ import React, { useState, useEffect, ComponentProps } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import CreatableSelect from "react-select/creatable";
 import { getUserSearch } from "./../../../api";
-import { definitions } from "../../../@types/buldreinfo/swagger";
+import { components } from "../../../@types/buldreinfo/swagger";
 
-type User = definitions["User"];
+type User = components["schemas"]["User"];
 
 type MultiUserProps = {
   onUsersUpdated: (user: User[]) => void;

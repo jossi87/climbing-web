@@ -22,10 +22,10 @@ import {
 import { saveAs } from "file-saver";
 import { useMeta } from "../meta";
 import * as Sentry from "@sentry/react";
-import { definitions } from "../../../@types/buldreinfo/swagger";
+import { components } from "../../../@types/buldreinfo/swagger";
 
 type TickListItemProps = {
-  tick: definitions["ProfileStatistics"]["ticks"][number];
+  tick: components["schemas"]["ProfileStatistics"]["ticks"][number];
 };
 
 const TickListItem = ({ tick }: TickListItemProps) => (

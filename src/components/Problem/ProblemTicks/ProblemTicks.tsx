@@ -4,10 +4,10 @@ import { Comment, Segment, Header, Table } from "semantic-ui-react";
 import { Stars } from "../../common/widgets/widgets";
 import Linkify from "react-linkify";
 import { componentDecorator } from "../../../utils/componentDecorator";
-import { definitions } from "../../../@types/buldreinfo/swagger";
+import { components } from "../../../@types/buldreinfo/swagger";
 
 type Props = {
-  ticks: definitions["ProblemTick"][];
+  ticks: components["schemas"]["ProblemTick"][];
 };
 
 export const ProblemTicks = ({ ticks }: Props) => {

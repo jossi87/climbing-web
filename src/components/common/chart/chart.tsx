@@ -1,8 +1,8 @@
 import React, { memo } from "react";
-import { definitions } from "../../../@types/buldreinfo/swagger";
+import { components } from "../../../@types/buldreinfo/swagger";
 
 type Props = {
-  ticks: NonNullable<definitions["ProfileStatistics"]["ticks"]>;
+  ticks: NonNullable<components["schemas"]["ProfileStatistics"]["ticks"]>;
 };
 
 function Chart({ ticks: data }: Props) {

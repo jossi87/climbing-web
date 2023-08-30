@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Button, Modal, Form, Input, Checkbox } from "semantic-ui-react";
-import { definitions } from "../../../@types/buldreinfo/swagger";
+import { components } from "../../../@types/buldreinfo/swagger";
 
-type Media = definitions["Media"];
+type Media = components["schemas"]["Media"];
 
 type Props = {
   save: (

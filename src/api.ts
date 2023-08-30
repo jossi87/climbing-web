@@ -14,7 +14,7 @@ import {
   DATA_MUTATION_EVENT,
 } from "./components/DataReloader";
 import { useLocalStorage } from "./utils/use-local-storage";
-import { definitions, operations } from "./@types/buldreinfo/swagger";
+import { components, operations } from "./@types/buldreinfo/swagger";
 import { Success } from "./@types/buldreinfo";
 import { useRedirect } from "./utils/useRedirect";
 
@@ -246,10 +246,10 @@ export function getProblemPdfUrl(
 
 export function useProblems() {
   const [cachedData, _, writeCachedData] = useLocalStorage<
-    definitions["ProblemArea"][]
+    components["schemas"]["ProblemArea"][]
   >("cache/problems", []);
 
-  return useData<definitions["ProblemArea"][]>("/problems", {
+  return useData<components["schemas"]["ProblemArea"][]>("/problems", {
     placeholderData: cachedData,
     select(data) {
       writeCachedData(data);
@@ -599,10 +599,13 @@ export function getProblemEdit(
 export function useProfile(userId: number = -1) {
   const client = useQueryClient();
   const { isAuthenticated } = useAuth0();
-  const profile = useData<definitions["Profile"]>(`/profile?id=${userId}`, {
-    queryKey: [`/profile`, { id: userId }],
-    enabled: userId > 0 || isAuthenticated,
-  });
+  const profile = useData<components["schemas"]["Profile"]>(
+    `/profile?id=${userId}`,
+    {
+      queryKey: [`/profile`, { id: userId }],
+      enabled: userId > 0 || isAuthenticated,
+    },
+  );
 
   const addRegion = usePostData<number>(`/user/regions`, {
     createUrl: (regionId) =>
@@ -615,7 +618,7 @@ export function useProfile(userId: number = -1) {
   });
 
   const setRegion = usePostData<{
-    region: definitions["UserRegion"];
+    region: components["schemas"]["UserRegion"];
     del: boolean;
   }>(`/user/regions`, {
     createUrl: ({ region: { id }, del }) =>
@@ -624,7 +627,7 @@ export function useProfile(userId: number = -1) {
       consistencyAction: "nop",
     },
     onMutate: ({ region, del }) => {
-      client.setQueryData<definitions["Profile"]>(
+      client.setQueryData<components["schemas"]["Profile"]>(
         [`/profile`, { id: userId, isAuthenticated }],
         (old) => {
           if (old && typeof old === "object") {
@@ -688,7 +691,7 @@ export function useProfileMedia({
 }
 
 export function useProfileStatistics(id: number) {
-  return useData<definitions["ProfileStatistics"]>(
+  return useData<components["schemas"]["ProfileStatistics"]>(
     `/profile/statistics?id=${id}`,
     {
       queryKey: [`/profile/statistics`, { id }],
@@ -918,7 +921,7 @@ export function useTop({
 export function getUserSearch(
   accessToken: string | null,
   value: string,
-): Promise<definitions["UserSearch"][]> {
+): Promise<components["schemas"]["UserSearch"][]> {
   return makeAuthenticatedRequest(
     accessToken,
     `/users/search?value=${value}`,
@@ -951,7 +954,9 @@ export function postComment(
   resolved: boolean,
   del: boolean,
   media: any,
-): Promise<operations["postComments"]["responses"]["default"]> {
+): Promise<
+  operations["postComments"]["responses"]["default"]["content"]["application/json; charset=utf-8"]
+> {
   const formData = new FormData();
   const newMedia = media.map((m) => {
     return {
@@ -1147,7 +1152,7 @@ export function postProblemMedia(
 export function useSearch() {
   const { mutateAsync, data, ...rest } = usePostData<
     { value: string },
-    definitions["Search"][]
+    components["schemas"]["Search"][]
   >(`/search`, {
     select(response) {
       return response.json();
@@ -1336,30 +1341,33 @@ export function putMediaJpegRotate(
 }
 
 export function useTrash() {
-  const { data } = useData<definitions["Trash"][]>(`/trash`);
+  const { data } = useData<components["schemas"]["Trash"][]>(`/trash`);
 
-  const restore = usePostData<definitions["Trash"], string>(`/trash`, {
-    fetchOptions: {
-      method: "PUT",
-      body: undefined,
+  const restore = usePostData<components["schemas"]["Trash"], string>(
+    `/trash`,
+    {
+      fetchOptions: {
+        method: "PUT",
+        body: undefined,
+      },
+      createUrl: ({ idArea, idProblem, idSector, idMedia }) =>
+        `/trash?idArea=${idArea}&idSector=${idSector}&idProblem=${idProblem}&idMedia=${idMedia}`,
+      select(_response, { idArea, idSector, idProblem, idMedia }) {
+        let url = `/`;
+        if (idArea) {
+          url = `/area/${idArea}`;
+        } else if (idSector) {
+          url = `/sector/${idSector}`;
+        } else if (idProblem) {
+          url = `/problem/${idProblem}`;
+        }
+        if (idMedia) {
+          url += `?idMedia=${idMedia}`;
+        }
+        return url;
+      },
     },
-    createUrl: ({ idArea, idProblem, idSector, idMedia }) =>
-      `/trash?idArea=${idArea}&idSector=${idSector}&idProblem=${idProblem}&idMedia=${idMedia}`,
-    select(_response, { idArea, idSector, idProblem, idMedia }) {
-      let url = `/`;
-      if (idArea) {
-        url = `/area/${idArea}`;
-      } else if (idSector) {
-        url = `/sector/${idSector}`;
-      } else if (idProblem) {
-        url = `/problem/${idProblem}`;
-      }
-      if (idMedia) {
-        url += `?idMedia=${idMedia}`;
-      }
-      return url;
-    },
-  });
+  );
 
   return {
     data,

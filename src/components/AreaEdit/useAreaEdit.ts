@@ -9,18 +9,18 @@ import ImageUpload from "../common/image-upload/image-upload";
 import Leaflet from "../common/leaflet/leaflet";
 import { useArea, usePostData } from "../../api";
 import { VisibilitySelectorField } from "../common/VisibilitySelector";
-import { definitions } from "../../@types/buldreinfo/swagger";
+import { components } from "../../@types/buldreinfo/swagger";
 import { neverGuard } from "../../utils/neverGuard";
 import { Checkbox, Input } from "semantic-ui-react";
 import { UseMutateAsyncFunction } from "@tanstack/react-query";
 
-type NewMedia = definitions["NewMedia"] & { file?: File };
+type NewMedia = components["schemas"]["NewMedia"] & { file?: File };
 
 type State =
   | undefined
   | (Required<
       Pick<
-        definitions["Area"],
+        components["schemas"]["Area"],
         | "accessClosed"
         | "accessInfo"
         | "comment"
@@ -43,7 +43,7 @@ type State =
     });
 
 type Update =
-  | { action: "set-data"; data: definitions["Area"] }
+  | { action: "set-data"; data: components["schemas"]["Area"] }
   | {
       action: "set-string";
       key: "accessInfo" | "accessClosed" | "name" | "comment";
@@ -159,7 +159,11 @@ type UseAreaEdit = (_: { areaId: number }) => {
   area: State;
   isLoading: boolean;
   isSaving: boolean;
-  save: UseMutateAsyncFunction<definitions["Redirect"], unknown, SavedArea>;
+  save: UseMutateAsyncFunction<
+    components["schemas"]["Redirect"],
+    unknown,
+    SavedArea
+  >;
   setString: (
     key: "accessInfo" | "accessClosed" | "name" | "comment",
   ) => (event: React.ChangeEvent, data: { value?: string | number }) => void;
@@ -189,74 +193,77 @@ export const useAreaEdit: UseAreaEdit = ({ areaId }) => {
     }
   }, [data, status]);
 
-  const save = usePostData<SavedArea, definitions["Redirect"]>(`/areas`, {
-    mutationKey: [`/areas`, { id: areaId }],
-    createBody({
-      id,
-      trash,
-      lockedAdmin,
-      lockedSuperadmin,
-      forDevelopers,
-      accessInfo,
-      accessClosed,
-      noDogsAllowed,
-      sunFromHour,
-      sunToHour,
-      name,
-      comment,
-      lat,
-      lng,
-      newMedia: media,
-      sectorOrder,
-    }) {
-      const formData = new FormData();
-      const newMedia = media.map((m) => {
-        return {
-          name: m.file && m.file.name.replace(/[^-a-z0-9.]/gi, "_"),
-          photographer: m.photographer,
-          inPhoto: m.inPhoto,
-          description: m.description,
-          trivia: m.trivia,
-          embedVideoUrl: m.embedVideoUrl,
-          embedThumbnailUrl: m.embedThumbnailUrl,
-          embedMilliseconds: m.embedMilliseconds,
-        };
-      });
-      formData.append(
-        "json",
-        JSON.stringify({
-          id,
-          trash,
-          lockedAdmin: !!lockedAdmin,
-          lockedSuperadmin: !!lockedSuperadmin,
-          forDevelopers,
-          accessInfo: accessInfo || "",
-          accessClosed: accessClosed || "",
-          noDogsAllowed,
-          sunFromHour,
-          sunToHour,
-          name,
-          comment,
-          lat: lat || "",
-          lng: lng || "",
-          newMedia,
-          sectorOrder,
-        }),
-      );
-      media.forEach(
-        (m) =>
-          m.file &&
-          formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, "_"), m.file),
-      );
-      return formData;
-    },
-    select: (res) => res.json(),
-    fetchOptions: {
-      headers: {
-        Accept: "application/json",
+  const save = usePostData<SavedArea, components["schemas"]["Redirect"]>(
+    `/areas`,
+    {
+      mutationKey: [`/areas`, { id: areaId }],
+      createBody({
+        id,
+        trash,
+        lockedAdmin,
+        lockedSuperadmin,
+        forDevelopers,
+        accessInfo,
+        accessClosed,
+        noDogsAllowed,
+        sunFromHour,
+        sunToHour,
+        name,
+        comment,
+        lat,
+        lng,
+        newMedia: media,
+        sectorOrder,
+      }) {
+        const formData = new FormData();
+        const newMedia = media.map((m) => {
+          return {
+            name: m.file && m.file.name.replace(/[^-a-z0-9.]/gi, "_"),
+            photographer: m.photographer,
+            inPhoto: m.inPhoto,
+            description: m.description,
+            trivia: m.trivia,
+            embedVideoUrl: m.embedVideoUrl,
+            embedThumbnailUrl: m.embedThumbnailUrl,
+            embedMilliseconds: m.embedMilliseconds,
+          };
+        });
+        formData.append(
+          "json",
+          JSON.stringify({
+            id,
+            trash,
+            lockedAdmin: !!lockedAdmin,
+            lockedSuperadmin: !!lockedSuperadmin,
+            forDevelopers,
+            accessInfo: accessInfo || "",
+            accessClosed: accessClosed || "",
+            noDogsAllowed,
+            sunFromHour,
+            sunToHour,
+            name,
+            comment,
+            lat: lat || "",
+            lng: lng || "",
+            newMedia,
+            sectorOrder,
+          }),
+        );
+        media.forEach(
+          (m) =>
+            m.file &&
+            formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, "_"), m.file),
+        );
+        return formData;
+      },
+      select: (res) => res.json(),
+      fetchOptions: {
+        headers: {
+          Accept: "application/json",
+        },
       },
     },
-  });
+  );
 
   return {
     area: state,
