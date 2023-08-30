@@ -1,12 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  ComponentProps,
-  useCallback,
-  useRef,
-} from "react";
-import GpxParser from "gpxparser";
-import Dropzone from "react-dropzone";
+import React, { useState, useEffect, ComponentProps, useCallback } from "react";
 import { Helmet } from "react-helmet";
 import ImageUpload from "../common/image-upload/image-upload";
 import { Loading } from "../common/widgets/widgets";
@@ -34,57 +26,15 @@ import Leaflet from "../common/leaflet/leaflet";
 import { useNavigate, useParams } from "react-router-dom";
 import { VisibilitySelectorField } from "../common/VisibilitySelector";
 import { parsePolyline } from "../../utils/polyline";
-import { useMap } from "react-leaflet";
 import { definitions } from "../../@types/buldreinfo/swagger";
-import { latLngBounds } from "leaflet";
 import { ProblemOrder } from "./ProblemOrder";
+import { PolylineEditor } from "./PolylineEditor";
+import { ZoomLogic } from "./ZoomLogic";
+import { PolylineMarkers } from "./PolylineMarkers";
 
 const useIds = (): { areaId: number; sectorId: number } => {
   const { sectorId, areaId } = useParams();
   return { sectorId: +sectorId, areaId: +areaId };
-};
-
-const ZoomLogic = ({
-  area: laodedArea,
-  sector: loadedSector,
-}: {
-  area: definitions["Area"];
-  sector: definitions["Sector"];
-}) => {
-  const map = useMap();
-  const sectorRef = useRef(loadedSector);
-  const areaRef = useRef(laodedArea);
-
-  useEffect(() => {
-    const bounds = latLngBounds([]);
-    if (sectorRef.current) {
-      if (sectorRef.current.polygonCoords) {
-        for (const latlng of parsePolyline(sectorRef.current.polygonCoords)) {
-          bounds.extend(latlng);
-        }
-      }
-
-      if (sectorRef.current.polyline) {
-        for (const latlng of parsePolyline(sectorRef.current.polyline)) {
-          bounds.extend(latlng);
-        }
-      }
-
-      if (sectorRef.current.lat && sectorRef.current.lng) {
-        bounds.extend([sectorRef.current.lat, sectorRef.current.lng]);
-      }
-    } else if (areaRef.current) {
-      if (areaRef.current.lat && areaRef.current.lng) {
-        bounds.extend([areaRef.current.lat, areaRef.current.lng]);
-      }
-    }
-
-    if (bounds.isValid()) {
-      map.fitBounds(bounds);
-    }
-  }, [map]);
-
-  return null;
 };
 
 export const SectorEdit = () => {
@@ -104,7 +54,9 @@ export const SectorEdit = () => {
   useEffect(() => {
     if (accessToken) {
       getSectorEdit(accessToken, areaId, sectorId)
-        .then((data) => setData(data))
+        .then((data) => {
+          setData(data);
+        })
         .then(() => {
           getArea(accessToken, areaId).then((data) => setArea(data[0]));
         })
@@ -114,7 +66,7 @@ export const SectorEdit = () => {
     }
   }, [accessToken, areaId, sectorId]);
 
-  function onNameChanged(e, { value }) {
+  function onNameChanged(_, { value }) {
     setData((prevState) => ({ ...prevState, name: value }));
   }
 
@@ -126,15 +78,15 @@ export const SectorEdit = () => {
     }));
   }
 
-  function onCommentChanged(e, { value }) {
+  function onCommentChanged(_, { value }) {
     setData((prevState) => ({ ...prevState, comment: value }));
   }
 
-  function onAccessInfoChanged(e, { value }) {
+  function onAccessInfoChanged(_, { value }) {
     setData((prevState) => ({ ...prevState, accessInfo: value }));
   }
 
-  function onAccessClosedChanged(e, { value }) {
+  function onAccessClosedChanged(_, { value }) {
     setData((prevState) => ({ ...prevState, accessClosed: value }));
   }
 
@@ -236,7 +188,7 @@ export const SectorEdit = () => {
     }
   }
 
-  function onLatChanged(e, { value }) {
+  function onLatChanged(_, { value }) {
     let latStr = value.replace(",", ".");
     let lat = parseFloat(latStr);
     if (isNaN(lat)) {
@@ -246,7 +198,7 @@ export const SectorEdit = () => {
     setData((prevState) => ({ ...prevState, lat, latStr }));
   }
 
-  function onLngChanged(e, { value }) {
+  function onLngChanged(_, { value }) {
     let lngStr = value.replace(",", ".");
     let lng = parseFloat(lngStr);
     if (isNaN(lng)) {
@@ -494,6 +446,12 @@ export const SectorEdit = () => {
                 flyToId={null}
               >
                 <ZoomLogic area={area} sector={data} />
+                {leafletMode === "POLYGON" && (
+                  <PolylineMarkers polyline={data.polygonCoords} />
+                )}
+                {leafletMode === "POLYLINE" && (
+                  <PolylineMarkers polyline={data.polyline} />
+                )}
               </Leaflet>
             </Form.Field>
           </Form.Group>
@@ -519,59 +477,26 @@ export const SectorEdit = () => {
               </>
             )}
             {leafletMode === "POLYGON" && (
-              <Form.Field
-                label={"Outline" + currPolygonPoint}
-                control={Input}
-                placeholder="Outline"
-                value={data.polygonCoords || ""}
-                onChange={(e, { value }) =>
-                  setData((prevState) => ({
-                    ...prevState,
-                    polygonCoords: value,
-                  }))
-                }
-                error={polygonError && "Invalid outline"}
-              />
+              <Form.Field>
+                <label>Outline {currPolygonPoint}</label>
+                <PolylineEditor
+                  polyline={data.polygonCoords}
+                  onChange={(polygonCoords) =>
+                    setData((prevState) => ({ ...prevState, polygonCoords }))
+                  }
+                />
+              </Form.Field>
             )}
             {leafletMode === "POLYLINE" && (
               <Form.Field>
                 <label>Approach</label>
-                <Input
-                  placeholder="Approach"
-                  value={data.polyline || ""}
-                  onChange={(e, { value }) =>
-                    setData((prevState) => ({
-                      ...prevState,
-                      polyline: value,
-                    }))
+                <PolylineEditor
+                  polyline={data.polyline}
+                  onChange={(polyline) =>
+                    setData((prevState) => ({ ...prevState, polyline }))
                   }
+                  upload
                 />
-                <Dropzone
-                  multiple={false}
-                  accept={{ "application/gpx+xml": [".gpx"] }}
-                  onDrop={(files: any) => {
-                    if (files?.length !== 0) {
-                      const reader = new FileReader();
-                      reader.onload = (e) => {
-                        const gpx = new GpxParser();
-                        gpx.parse(e.target?.result as string);
-                        const polyline = gpx.tracks[0]?.points
-                          ?.map((e) => e.lat + "," + e.lon)
-                          .join(";");
-                        setData((prevState) => ({ ...prevState, polyline }));
-                      };
-                      reader.readAsText(files[0]);
-                    }
-                  }}
-                >
-                  {({ getRootProps }) => (
-                    <div {...getRootProps()}>
-                      <Button size="mini" basic fluid>
-                        Upload GPX-file
-                      </Button>
-                    </div>
-                  )}
-                </Dropzone>
               </Form.Field>
             )}
           </Form.Group>

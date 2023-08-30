@@ -734,7 +734,7 @@ export function getSectorEdit(
   accessToken: string | null,
   areaId: number,
   sectorId: number,
-): Promise<Success<"getAreas">[number] | null | Success<"getSectors">> {
+): Promise<Success<"getSectors"> | null> {
   if (!sectorId) {
     return getArea(accessToken, areaId)
       .then((res) => {
@@ -749,9 +749,8 @@ export function getSectorEdit(
           accessClosed: "",
           lat: 0,
           lng: 0,
-          latStr: "",
-          lngStr: "",
           newMedia: [],
+          problemOrder: [],
         };
       })
       .catch((error) => {

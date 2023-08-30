@@ -188,7 +188,7 @@ export default function Markers({
         <Marker
           icon={markerBlueIcon}
           position={[m.lat, m.lng]}
-          key={["label", m.url].join("/")}
+          key={["label", m.url, m.lat, m.lng].join("/")}
           eventHandlers={{
             click: () => {
               if (addEventHandlers) {
