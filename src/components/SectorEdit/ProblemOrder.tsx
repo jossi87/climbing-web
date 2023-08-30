@@ -1,9 +1,11 @@
 import { useRef } from "react";
-import { definitions } from "../../@types/buldreinfo/swagger";
+import { components } from "../../@types/buldreinfo/swagger";
 import { Input } from "semantic-ui-react";
 
-type Props = Pick<definitions["Sector"], "problemOrder"> & {
-  onChange: (order: NonNullable<definitions["Sector"]["problemOrder"]>) => void;
+type Props = Pick<components["schemas"]["Sector"], "problemOrder"> & {
+  onChange: (
+    order: NonNullable<components["schemas"]["Sector"]["problemOrder"]>,
+  ) => void;
 };
 
 export const ProblemOrder = ({ problemOrder, onChange }: Props) => {

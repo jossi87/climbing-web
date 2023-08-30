@@ -7,7 +7,7 @@ import {
   SunOnWall,
   WallDirection,
 } from "../../common/widgets/widgets";
-import { definitions } from "../../../@types/buldreinfo/swagger";
+import { components } from "../../../@types/buldreinfo/swagger";
 import { ProblemsMap } from "./ProblemsMap";
 import { HeaderButtons } from "../HeaderButtons";
 
@@ -21,7 +21,7 @@ export type Props = {
   enableMap: boolean;
   areas: (Required<
     Pick<
-      definitions["Area"],
+      components["schemas"]["Area"],
       | "id"
       | "lockedAdmin"
       | "lockedSuperadmin"
@@ -32,22 +32,22 @@ export type Props = {
   > & {
     sectors: (Required<
       Pick<
-        definitions["Sector"],
+        components["schemas"]["Sector"],
         "id" | "name" | "lockedAdmin" | "lockedSuperadmin" | "wallDirection"
       >
     > &
       Pick<
-        definitions["ProblemAreaSector"],
+        components["schemas"]["ProblemAreaSector"],
         "polygonCoords" | "lat" | "lng"
       > & {
         problems: (Required<
           Pick<
-            definitions["Problem"],
+            components["schemas"]["Problem"],
             "id" | "name" | "lockedAdmin" | "lockedSuperadmin" | "grade" | "nr"
           >
         > &
           Pick<
-            definitions["Problem"],
+            components["schemas"]["Problem"],
             "stars" | "ticked" | "lat" | "lng" | "broken"
           > & {
             text?: string;

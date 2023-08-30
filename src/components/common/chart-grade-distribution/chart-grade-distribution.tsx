@@ -2,18 +2,18 @@ import React, { useState, useEffect } from "react";
 import { Loading } from "../widgets/widgets";
 import { Popup, Table } from "semantic-ui-react";
 import { getGradeDistribution, useAccessToken } from "./../../../api";
-import { definitions } from "../../../@types/buldreinfo/swagger";
+import { components } from "../../../@types/buldreinfo/swagger";
 
 type Props = {
   idArea: number;
   idSector: number;
-  data?: definitions["GradeDistribution"][];
+  data?: components["schemas"]["GradeDistribution"][];
 };
 
 const ChartGradeDistribution = ({ idArea, idSector, data }: Props) => {
   const accessToken = useAccessToken();
   const [gradeDistribution, setGradeDistribution] = useState<
-    definitions["GradeDistribution"][]
+    components["schemas"]["GradeDistribution"][]
   >(data ?? []);
 
   useEffect(() => {

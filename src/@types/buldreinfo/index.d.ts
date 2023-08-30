@@ -15,5 +15,7 @@ type Mutable<T> = {
   -readonly [P in keyof T]: T[P];
 };
 
-type Success<T extends keyof operations> =
-  operations[T]["responses"]["200"]["schema"];
+type Success<
+  T extends keyof operations,
+  content = "application/json",
+> = operations[T]["responses"]["200"]["content"][content];

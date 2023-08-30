@@ -26,7 +26,7 @@ import Leaflet from "../common/leaflet/leaflet";
 import { useNavigate, useParams } from "react-router-dom";
 import { VisibilitySelectorField } from "../common/VisibilitySelector";
 import { parsePolyline } from "../../utils/polyline";
-import { definitions } from "../../@types/buldreinfo/swagger";
+import { components } from "../../@types/buldreinfo/swagger";
 import { ProblemOrder } from "./ProblemOrder";
 import { PolylineEditor } from "./PolylineEditor";
 import { ZoomLogic } from "./ZoomLogic";
@@ -41,7 +41,7 @@ export const SectorEdit = () => {
   const accessToken = useAccessToken();
   const { areaId, sectorId } = useIds();
   const [leafletMode, setLeafletMode] = useState("PARKING");
-  const [data, setData] = useState<definitions["Sector"]>(null);
+  const [data, setData] = useState<components["schemas"]["Sector"]>(null);
   const [currPolygonPointFetched, setCurrPolygonPointFetched] = useState(0);
   const [currPolygonPoint, setCurrPolygonPoint] = useState(null);
   const [showProblemOrder, setShowProblemOrder] = useState(false);

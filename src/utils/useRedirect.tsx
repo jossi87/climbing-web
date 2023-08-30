@@ -1,14 +1,14 @@
 import React from "react";
 import { Segment } from "semantic-ui-react";
-import { definitions } from "../@types/buldreinfo/swagger";
+import { components } from "../@types/buldreinfo/swagger";
 
 const Redirecting = () => <Segment>Redirecting &hellip;</Segment>;
 
-const isRedirect = (v: unknown): v is definitions["Redirect"] => {
+const isRedirect = (v: unknown): v is components["schemas"]["Redirect"] => {
   return (
     !!v &&
     typeof v === "object" &&
-    typeof (v as definitions["Redirect"]).redirectUrl === "string"
+    typeof (v as components["schemas"]["Redirect"]).redirectUrl === "string"
   );
 };
 

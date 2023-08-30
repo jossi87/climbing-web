@@ -4,57 +4,10 @@
  */
 
 export type paths = {
-  "/v2/permissions": {
-    get: operations["getPermissions"];
-    post: operations["postPermissions"];
-  };
-  "/v2/profile": {
-    get: operations["getProfile"];
-  };
-  "/v2/profile/media": {
-    get: operations["getProfilemedia"];
-  };
-  "/v2/profile/statistics": {
-    get: operations["getProfileStatistics"];
-  };
-  "/v2/profile/todo": {
-    get: operations["getProfileTodo"];
-  };
-  "/v2/dangerous": {
-    get: operations["getDangerous"];
-  };
-  "/v2/elevation": {
-    get: operations["getElevation"];
-  };
-  "/v2/frontpage": {
-    get: operations["getFrontpage"];
-  };
-  "/v2/grade/distribution": {
-    get: operations["getGradeDistribution"];
-  };
-  "/v2/graph": {
-    get: operations["getGraph"];
-  };
   "/v2/media": {
     get: operations["getMedia"];
     put: operations["putMedia"];
     delete: operations["deleteMedia"];
-  };
-  "/v2/problem": {
-    get: operations["getProblem"];
-  };
-  "/v2/problem/pdf": {
-    get: operations["getProblemPdf"];
-  };
-  "/v2/problems": {
-    get: operations["getProblems"];
-    post: operations["postProblems"];
-  };
-  "/v2/problems/xlsx": {
-    get: operations["getProblemsXlsx"];
-  };
-  "/v2/images": {
-    get: operations["getImages"];
   };
   "/v2/activity": {
     get: operations["getActivity"];
@@ -72,8 +25,55 @@ export type paths = {
   "/v2/webcams": {
     get: operations["getCameras"];
   };
+  "/v2/dangerous": {
+    get: operations["getDangerous"];
+  };
+  "/v2/elevation": {
+    get: operations["getElevation"];
+  };
+  "/v2/frontpage": {
+    get: operations["getFrontpage"];
+  };
+  "/v2/grade/distribution": {
+    get: operations["getGradeDistribution"];
+  };
+  "/v2/graph": {
+    get: operations["getGraph"];
+  };
+  "/v2/images": {
+    get: operations["getImages"];
+  };
   "/v2/meta": {
     get: operations["getMeta"];
+  };
+  "/v2/permissions": {
+    get: operations["getPermissions"];
+    post: operations["postPermissions"];
+  };
+  "/v2/problem": {
+    get: operations["getProblem"];
+  };
+  "/v2/problem/pdf": {
+    get: operations["getProblemPdf"];
+  };
+  "/v2/problems": {
+    get: operations["getProblems"];
+    post: operations["postProblems"];
+  };
+  "/v2/problems/xlsx": {
+    get: operations["getProblemsXlsx"];
+  };
+  "/v2/profile": {
+    get: operations["getProfile"];
+  };
+  "/v2/profile/statistics": {
+    get: operations["getProfileStatistics"];
+  };
+  "/v2/profile/todo": {
+    get: operations["getProfileTodo"];
+  };
+  "/v2/profile/media": {
+    get: operations["getProfilemedia"];
   };
   "/v2/robots.txt": {
     get: operations["getRobotsTxt"];
@@ -147,1542 +147,1412 @@ export type paths = {
   };
 };
 
-export type definitions = {
-  PermissionUser: {
-    /** Format: int32 */
-    userId?: number;
-    name?: string;
-    picture?: string;
-    lastLogin?: string;
-    adminRead?: boolean;
-    adminWrite?: boolean;
-    superadminRead?: boolean;
-    superadminWrite?: boolean;
-    readOnly?: boolean;
-  };
-  Profile: {
-    /** Format: int32 */
-    id?: number;
-    picture?: string;
-    firstname?: string;
-    lastname?: string;
-    userRegions?: definitions["UserRegion"][];
-  };
-  UserRegion: {
-    /** Format: int32 */
-    id?: number;
-    name?: string;
-    role?: string;
-    enabled?: boolean;
-    readOnly?: boolean;
-  };
-  MediaMetadata: {
-    dateCreated?: string;
-    dateTaken?: string;
-    capturer?: string;
-    tagged?: string;
-    description?: string;
-    alt?: string;
-  };
-  MediaSvgElement: {
-    /** @enum {string} */
-    t?: "PATH" | "RAPPEL_BOLTED" | "RAPPEL_NOT_BOLTED";
-    /** Format: int32 */
-    id?: number;
-    path?: string;
-    /** Format: int32 */
-    rappelX?: number;
-    /** Format: int32 */
-    rappelY?: number;
-  };
-  ProfileMedia: {
-    /** Format: int32 */
-    id?: number;
-    uploadedByMe?: boolean;
-    /** Format: int32 */
-    crc32?: number;
-    /** Format: int32 */
-    pitch?: number;
-    trivia?: boolean;
-    /** Format: int32 */
-    width?: number;
-    /** Format: int32 */
-    height?: number;
-    /** Format: int32 */
-    idType?: number;
-    t?: string;
-    mediaSvgs?: definitions["MediaSvgElement"][];
-    /** Format: int32 */
-    svgProblemId?: number;
-    svgs?: definitions["Svg"][];
-    mediaMetadata?: definitions["MediaMetadata"];
-    embedUrl?: string;
-    inherited?: boolean;
-    /** Format: int32 */
-    enableMoveToIdSector?: number;
-    /** Format: int32 */
-    enableMoveToIdProblem?: number;
-  };
-  Svg: {
-    delete?: boolean;
-    /** Format: int32 */
-    id?: number;
-    /** Format: int32 */
-    problemId?: number;
-    problemName?: string;
-    problemGrade?: string;
-    /** Format: int32 */
-    problemGradeGroup?: number;
-    problemSubtype?: string;
-    /** Format: int32 */
-    nr?: number;
-    path?: string;
-    hasAnchor?: boolean;
-    texts?: string;
-    anchors?: string;
-    primary?: boolean;
-    ticked?: boolean;
-    todo?: boolean;
-    dangerous?: boolean;
-  };
-  ProfileStatistics: {
-    /** Format: int32 */
-    numImagesCreated?: number;
-    /** Format: int32 */
-    numVideosCreated?: number;
-    /** Format: int32 */
-    numImageTags?: number;
-    /** Format: int32 */
-    numVideoTags?: number;
-    ticks?: definitions["ProfileStatisticsTick"][];
-  };
-  ProfileStatisticsTick: {
-    areaName?: string;
-    areaLockedAdmin?: boolean;
-    areaLockedSuperadmin?: boolean;
-    sectorName?: string;
-    sectorLockedAdmin?: boolean;
-    sectorLockedSuperadmin?: boolean;
-    /** Format: int32 */
-    num?: number;
-    /** Format: int32 */
-    id?: number;
-    /** Format: int32 */
-    idTickRepeat?: number;
-    subType?: string;
-    /** Format: int32 */
-    numPitches?: number;
-    /** Format: int32 */
-    idProblem?: number;
-    lockedAdmin?: boolean;
-    lockedSuperadmin?: boolean;
-    name?: string;
-    comment?: string;
-    date?: string;
-    dateHr?: string;
-    /** Format: double */
-    stars?: number;
-    fa?: boolean;
-    grade?: string;
-    /** Format: int32 */
-    gradeNumber?: number;
-    /** Format: double */
-    lat?: number;
-    /** Format: double */
-    lng?: number;
-  };
-  ProfileTodo: {
-    areas?: definitions["ProfileTodoArea"][];
-  };
-  ProfileTodoArea: {
-    /** Format: int32 */
-    id?: number;
-    url?: string;
-    name?: string;
-    lockedAdmin?: boolean;
-    lockedSuperadmin?: boolean;
-    sectors?: definitions["ProfileTodoSector"][];
-  };
-  ProfileTodoPartner: {
-    /** Format: int32 */
-    id?: number;
-    name?: string;
-  };
-  ProfileTodoProblem: {
-    /** Format: int32 */
-    todoId?: number;
-    /** Format: int32 */
-    id?: number;
-    url?: string;
-    lockedAdmin?: boolean;
-    lockedSuperadmin?: boolean;
-    /** Format: int32 */
-    nr?: number;
-    name?: string;
-    grade?: string;
-    /** Format: double */
-    lat?: number;
-    /** Format: double */
-    lng?: number;
-    partners?: definitions["ProfileTodoPartner"][];
-  };
-  ProfileTodoSector: {
-    /** Format: int32 */
-    id?: number;
-    url?: string;
-    name?: string;
-    lockedAdmin?: boolean;
-    lockedSuperadmin?: boolean;
-    problems?: definitions["ProfileTodoProblem"][];
-  };
-  Dangerous: {
-    /** Format: int32 */
-    id?: number;
-    url?: string;
-    name?: string;
-    lockedAdmin?: boolean;
-    lockedSuperadmin?: boolean;
-    /** Format: int32 */
-    sunFromHour?: number;
-    /** Format: int32 */
-    sunToHour?: number;
-    sectors?: definitions["DangerousSector"][];
-  };
-  DangerousProblem: {
-    /** Format: int32 */
-    id?: number;
-    url?: string;
-    broken?: string;
-    lockedAdmin?: boolean;
-    lockedSuperadmin?: boolean;
-    /** Format: int32 */
-    nr?: number;
-    name?: string;
-    grade?: string;
-    postBy?: string;
-    postWhen?: string;
-    postTxt?: string;
-  };
-  DangerousSector: {
-    /** Format: int32 */
-    id?: number;
-    url?: string;
-    name?: string;
-    wallDirection?: string;
-    lockedAdmin?: boolean;
-    lockedSuperadmin?: boolean;
-    problems?: definitions["DangerousProblem"][];
-  };
-  Frontpage: {
-    /** Format: int32 */
-    numProblems?: number;
-    /** Format: int32 */
-    numProblemsWithCoordinates?: number;
-    /** Format: int32 */
-    numProblemsWithTopo?: number;
-    /** Format: int32 */
-    numTicks?: number;
-    /** Format: int32 */
-    numImages?: number;
-    /** Format: int32 */
-    numMovies?: number;
-    randomMedia?: definitions["FrontpageRandomMedia"];
-  };
-  FrontpageRandomMedia: {
-    /** Format: int32 */
-    idMedia?: number;
-    /** Format: int32 */
-    crc32?: number;
-    /** Format: int32 */
-    width?: number;
-    /** Format: int32 */
-    height?: number;
-    /** Format: int32 */
-    idArea?: number;
-    area?: string;
-    /** Format: int32 */
-    idSector?: number;
-    sector?: string;
-    /** Format: int32 */
-    idProblem?: number;
-    problem?: string;
-    grade?: string;
-    photographer?: definitions["User"];
-    tagged?: definitions["User"][];
-  };
-  User: {
-    /** Format: int32 */
-    id?: number;
-    name?: string;
-  };
-  GradeDistribution: {
-    grade?: string;
-    /** Format: int32 */
-    num?: number;
-    /** Format: int32 */
-    prim?: number;
-    /** Format: int32 */
-    sec?: number;
-    rows?: definitions["GradeDistributionRow"][];
-  };
-  GradeDistributionRow: {
-    name?: string;
-    /** Format: int32 */
-    numBoulder?: number;
-    /** Format: int32 */
-    numSport?: number;
-    /** Format: int32 */
-    numTrad?: number;
-    /** Format: int32 */
-    numMixed?: number;
-    /** Format: int32 */
-    numTopRope?: number;
-    /** Format: int32 */
-    numAid?: number;
-    /** Format: int32 */
-    numAidTrad?: number;
-    /** Format: int32 */
-    numIce?: number;
-  };
-  Media: {
-    /** Format: int32 */
-    id?: number;
-    uploadedByMe?: boolean;
-    /** Format: int32 */
-    crc32?: number;
-    /** Format: int32 */
-    pitch?: number;
-    trivia?: boolean;
-    /** Format: int32 */
-    width?: number;
-    /** Format: int32 */
-    height?: number;
-    /** Format: int32 */
-    idType?: number;
-    t?: string;
-    mediaSvgs?: definitions["MediaSvgElement"][];
-    /** Format: int32 */
-    svgProblemId?: number;
-    svgs?: definitions["Svg"][];
-    mediaMetadata?: definitions["MediaMetadata"];
-    embedUrl?: string;
-    inherited?: boolean;
-    /** Format: int32 */
-    enableMoveToIdSector?: number;
-    /** Format: int32 */
-    enableMoveToIdProblem?: number;
-  };
-  FaAid: {
-    /** Format: int32 */
-    problemId?: number;
-    date?: string;
-    dateHr?: string;
-    description?: string;
-    users?: definitions["FaUser"][];
-  };
-  FaUser: {
-    /** Format: int32 */
-    id?: number;
-    name?: string;
-    picture?: string;
-  };
-  NewMedia: {
-    name?: string;
-    photographer?: string;
-    inPhoto?: string;
-    /** Format: int32 */
-    pitch?: number;
-    trivia?: boolean;
-    description?: string;
-    embedVideoUrl?: string;
-    embedThumbnailUrl?: string;
-    /** Format: int64 */
-    embedMilliseconds?: number;
-  };
-  Problem: {
-    redirectUrl?: string;
-    /** Format: int32 */
-    areaId?: number;
-    areaLockedAdmin?: boolean;
-    areaLockedSuperadmin?: boolean;
-    areaName?: string;
-    areaAccessInfo?: string;
-    areaAccessClosed?: string;
-    areaNoDogsAllowed?: boolean;
-    /** Format: int32 */
-    areaSunFromHour?: number;
-    /** Format: int32 */
-    areaSunToHour?: number;
-    /** Format: int32 */
-    sectorId?: number;
-    sectorLockedAdmin?: boolean;
-    sectorLockedSuperadmin?: boolean;
-    sectorName?: string;
-    sectorAccessInfo?: string;
-    sectorAccessClosed?: string;
-    /** Format: double */
-    sectorLat?: number;
-    /** Format: double */
-    sectorLng?: number;
-    sectorPolygonCoords?: string;
-    sectorWallDirection?: string;
-    sectorPolyline?: string;
-    /** Format: int32 */
-    sectorIdProblemPrev?: number;
-    /** Format: int32 */
-    sectorIdProblemNext?: number;
-    canonical?: string;
-    /** Format: int32 */
-    id?: number;
-    broken?: string;
-    trash?: boolean;
-    lockedAdmin?: boolean;
-    lockedSuperadmin?: boolean;
-    /** Format: int32 */
-    nr?: number;
-    name?: string;
-    rock?: string;
-    comment?: string;
-    grade?: string;
-    originalGrade?: string;
-    faDate?: string;
-    faDateHr?: string;
-    fa?: definitions["FaUser"][];
-    /** Format: double */
-    lat?: number;
-    /** Format: double */
-    lng?: number;
-    media?: definitions["Media"][];
-    /** Format: int32 */
-    numTicks?: number;
-    /** Format: double */
-    stars?: number;
-    ticked?: boolean;
-    ticks?: definitions["ProblemTick"][];
-    todos?: definitions["ProblemTodo"][];
-    comments?: definitions["ProblemComment"][];
-    newMedia?: definitions["NewMedia"][];
-    t?: definitions["Type"];
-    sections?: definitions["ProblemSection"][];
-    todo?: boolean;
-    /** Format: int64 */
-    hits?: number;
-    faAid?: definitions["FaAid"];
-    trivia?: string;
-    triviaMedia?: definitions["Media"][];
-    startingAltitude?: string;
-    aspect?: string;
-    routeLength?: string;
-    descent?: string;
-  };
-  ProblemComment: {
-    /** Format: int32 */
-    id?: number;
-    date?: string;
-    /** Format: int32 */
-    idUser?: number;
-    picture?: string;
-    name?: string;
-    message?: string;
-    danger?: boolean;
-    resolved?: boolean;
-    media?: definitions["Media"][];
-    editable?: boolean;
-  };
-  ProblemSection: {
-    /** Format: int32 */
-    id?: number;
-    /** Format: int32 */
-    nr?: number;
-    description?: string;
-    grade?: string;
-    media?: definitions["Media"][];
-  };
-  ProblemTick: {
-    repeats?: definitions["TickRepeat"][];
-    /** Format: int32 */
-    id?: number;
-    /** Format: int32 */
-    idUser?: number;
-    picture?: string;
-    date?: string;
-    name?: string;
-    suggestedGrade?: string;
-    comment?: string;
-    /** Format: double */
-    stars?: number;
-    writable?: boolean;
-  };
-  ProblemTodo: {
-    /** Format: int32 */
-    idUser?: number;
-    picture?: string;
-    name?: string;
-  };
-  TickRepeat: {
-    /** Format: int32 */
-    id?: number;
-    /** Format: int32 */
-    tickId?: number;
-    comment?: string;
-    date?: string;
-  };
-  Type: {
-    /** Format: int32 */
-    id?: number;
-    type?: string;
-    subType?: string;
-  };
-  ProblemArea: {
-    /** Format: int32 */
-    id?: number;
-    url?: string;
-    name?: string;
-    /** Format: double */
-    lat?: number;
-    /** Format: double */
-    lng?: number;
-    lockedAdmin?: boolean;
-    lockedSuperadmin?: boolean;
-    /** Format: int32 */
-    sunFromHour?: number;
-    /** Format: int32 */
-    sunToHour?: number;
-    sectors?: definitions["ProblemAreaSector"][];
-  };
-  ProblemAreaProblem: {
-    /** Format: int32 */
-    id?: number;
-    url?: string;
-    broken?: string;
-    lockedAdmin?: boolean;
-    lockedSuperadmin?: boolean;
-    /** Format: int32 */
-    nr?: number;
-    name?: string;
-    description?: string;
-    /** Format: double */
-    lat?: number;
-    /** Format: double */
-    lng?: number;
-    grade?: string;
-    fa?: string;
-    /** Format: int32 */
-    numTicks?: number;
-    /** Format: double */
-    stars?: number;
-    ticked?: boolean;
-    t?: definitions["Type"];
-    /** Format: int32 */
-    numPitches?: number;
-  };
-  ProblemAreaSector: {
-    /** Format: int32 */
-    id?: number;
-    url?: string;
-    name?: string;
-    /** Format: int32 */
-    sorting?: number;
-    /** Format: double */
-    lat?: number;
-    /** Format: double */
-    lng?: number;
-    polygonCoords?: string;
-    wallDirection?: string;
-    lockedAdmin?: boolean;
-    lockedSuperadmin?: boolean;
-    problems?: definitions["ProblemAreaProblem"][];
-  };
-  Activity: {
-    activityIds?: number[];
-    timeAgo?: string;
-    /** Format: int32 */
-    problemId?: number;
-    problemLockedAdmin?: boolean;
-    problemLockedSuperadmin?: boolean;
-    problemName?: string;
-    problemSubtype?: string;
-    grade?: string;
-    /** Format: int32 */
-    problemRandomMediaId?: number;
-    /** Format: int32 */
-    problemRandomMediaCrc32?: number;
-    media?: definitions["ActivityMedia"][];
-    /** Format: int32 */
-    stars?: number;
-    repeat?: boolean;
-    /** Format: int32 */
-    id?: number;
-    name?: string;
-    picture?: string;
-    description?: string;
-    message?: string;
-    users?: definitions["ActivityUser"][];
-  };
-  ActivityMedia: {
-    /** Format: int32 */
-    id?: number;
-    /** Format: int32 */
-    crc32?: number;
-    movie?: boolean;
-    embedUrl?: string;
-  };
-  ActivityUser: {
-    /** Format: int32 */
-    id?: number;
-    name?: string;
-    picture?: string;
-  };
-  Administrator: {
-    /** Format: int32 */
-    userId?: number;
-    name?: string;
-    picture?: string;
-    lastLogin?: string;
-  };
-  Area: {
-    redirectUrl?: string;
-    /** Format: int32 */
-    regionId?: number;
-    canonical?: string;
-    /** Format: int32 */
-    id?: number;
-    trash?: boolean;
-    lockedAdmin?: boolean;
-    lockedSuperadmin?: boolean;
-    forDevelopers?: boolean;
-    accessInfo?: string;
-    accessClosed?: string;
-    noDogsAllowed?: boolean;
-    /** Format: int32 */
-    sunFromHour?: number;
-    /** Format: int32 */
-    sunToHour?: number;
-    name?: string;
-    comment?: string;
-    /** Format: double */
-    lat?: number;
-    /** Format: double */
-    lng?: number;
-    /** Format: int32 */
-    numSectors?: number;
-    /** Format: int32 */
-    numProblems?: number;
-    sectors?: definitions["AreaSector"][];
-    sectorOrder?: definitions["AreaSectorOrder"][];
-    media?: definitions["Media"][];
-    triviaMedia?: definitions["Media"][];
-    newMedia?: definitions["NewMedia"][];
-    /** Format: int64 */
-    hits?: number;
-    typeNumTicked?: definitions["TypeNumTicked"][];
-  };
-  AreaSector: {
-    areaName?: string;
-    /** Format: int32 */
-    id?: number;
-    /** Format: int32 */
-    sorting?: number;
-    lockedAdmin?: boolean;
-    lockedSuperadmin?: boolean;
-    name?: string;
-    comment?: string;
-    accessInfo?: string;
-    accessClosed?: string;
-    /** Format: double */
-    lat?: number;
-    /** Format: double */
-    lng?: number;
-    polygonCoords?: string;
-    wallDirection?: string;
-    polyline?: string;
-    /** Format: int32 */
-    randomMediaId?: number;
-    /** Format: int32 */
-    randomMediaCrc32?: number;
-    problems?: definitions["SectorProblem"][];
-    typeNumTicked?: definitions["TypeNumTicked"][];
-    /** Format: int32 */
-    numProblems?: number;
-  };
-  AreaSectorOrder: {
-    /** Format: int32 */
-    id?: number;
-    name?: string;
-    /** Format: int32 */
-    sorting?: number;
-  };
-  SectorProblem: {
-    /** Format: int32 */
-    id?: number;
-    broken?: string;
-    lockedAdmin?: boolean;
-    lockedSuperadmin?: boolean;
-    /** Format: int32 */
-    nr?: number;
-    name?: string;
-    rock?: string;
-    comment?: string;
-    /** Format: int32 */
-    gradeNumber?: number;
-    grade?: string;
-    fa?: string;
-    /** Format: int32 */
-    numPitches?: number;
-    hasImages?: boolean;
-    hasMovies?: boolean;
-    hasTopo?: boolean;
-    /** Format: double */
-    lat?: number;
-    /** Format: double */
-    lng?: number;
-    /** Format: int32 */
-    numTicks?: number;
-    /** Format: double */
-    stars?: number;
-    ticked?: boolean;
-    todo?: boolean;
-    t?: definitions["Type"];
-    danger?: boolean;
-  };
-  TypeNumTicked: {
-    type?: string;
-    /** Format: int32 */
-    num?: number;
-    /** Format: int32 */
-    ticked?: number;
-  };
-  Webcam: {
-    id?: string;
-    lastUpdated?: string;
-    name?: string;
-    urlStillImage?: string;
-    urlYr?: string;
-    urlOther?: string;
-    /** Format: double */
-    lat?: number;
-    /** Format: double */
-    lng?: number;
-  };
-  Grade: {
-    /** Format: int32 */
-    id?: number;
-    grade?: string;
-  };
-  LatLng: {
-    /** Format: double */
-    lat?: number;
-    /** Format: double */
-    lng?: number;
-  };
-  Meta: {
-    title?: string;
-    grades?: definitions["Grade"][];
-    /** Format: int32 */
-    defaultZoom?: number;
-    defaultCenter?: definitions["LatLng"];
-    url?: string;
-    types?: definitions["Type"][];
-    sites?: definitions["Site"][];
-    bouldering?: boolean;
-    climbing?: boolean;
-    authenticated?: boolean;
-    admin?: boolean;
-    superAdmin?: boolean;
-    ice?: boolean;
-  };
-  Site: {
-    group?: string;
-    name?: string;
-    url?: string;
-    polygonCoords?: string;
-    active?: boolean;
-  };
-  Sector: {
-    redirectUrl?: string;
-    orderByGrade?: boolean;
-    /** Format: int32 */
-    areaId?: number;
-    areaLockedAdmin?: boolean;
-    areaLockedSuperadmin?: boolean;
-    areaAccessInfo?: string;
-    areaAccessClosed?: string;
-    areaNoDogsAllowed?: boolean;
-    /** Format: int32 */
-    areaSunFromHour?: number;
-    /** Format: int32 */
-    areaSunToHour?: number;
-    areaName?: string;
-    canonical?: string;
-    /** Format: int32 */
-    id?: number;
-    trash?: boolean;
-    lockedAdmin?: boolean;
-    lockedSuperadmin?: boolean;
-    name?: string;
-    comment?: string;
-    accessInfo?: string;
-    accessClosed?: string;
-    /** Format: double */
-    lat?: number;
-    /** Format: double */
-    lng?: number;
-    polygonCoords?: string;
-    wallDirection?: string;
-    polyline?: string;
-    media?: definitions["Media"][];
-    triviaMedia?: definitions["Media"][];
-    sectors?: definitions["SectorJump"][];
-    problems?: definitions["SectorProblem"][];
-    problemOrder?: definitions["SectorProblemOrder"][];
-    newMedia?: definitions["NewMedia"][];
-    /** Format: int64 */
-    hits?: number;
-    siblings?: definitions["SectorJump"][];
-  };
-  SectorJump: {
-    /** Format: int32 */
-    id?: number;
-    lockedAdmin?: boolean;
-    lockedSuperadmin?: boolean;
-    name?: string;
-    /** Format: int32 */
-    sorting?: number;
-  };
-  SectorProblemOrder: {
-    /** Format: int32 */
-    id?: number;
-    name?: string;
-    /** Format: int32 */
-    nr?: number;
-  };
-  PublicAscent: {
-    areaName?: string;
-    areaLockedAdmin?: boolean;
-    areaLockedSuperadmin?: boolean;
-    sectorName?: string;
-    sectorLockedAdmin?: boolean;
-    sectorLockedSuperadmin?: boolean;
-    /** Format: int32 */
-    problemId?: number;
-    problemGrade?: string;
-    problemName?: string;
-    problemLockedAdmin?: boolean;
-    problemLockedSuperadmin?: boolean;
-    date?: string;
-    name?: string;
-  };
-  Ticks: {
-    ticks?: definitions["PublicAscent"][];
-    /** Format: int32 */
-    currPage?: number;
-    /** Format: int32 */
-    numPages?: number;
-  };
-  Todo: {
-    sectors?: definitions["TodoSector"][];
-  };
-  TodoPartner: {
-    /** Format: int32 */
-    id?: number;
-    name?: string;
-  };
-  TodoProblem: {
-    /** Format: int32 */
-    id?: number;
-    lockedAdmin?: boolean;
-    lockedSuperadmin?: boolean;
-    /** Format: int32 */
-    nr?: number;
-    name?: string;
-    grade?: string;
-    partners?: definitions["TodoPartner"][];
-  };
-  TodoSector: {
-    /** Format: int32 */
-    id?: number;
-    name?: string;
-    lockedAdmin?: boolean;
-    lockedSuperadmin?: boolean;
-    problems?: definitions["TodoProblem"][];
-  };
-  Top: {
-    /** Format: int32 */
-    rank?: number;
-    /** Format: int32 */
-    userId?: number;
-    name?: string;
-    picture?: string;
-    /** Format: double */
-    percentage?: number;
-  };
-  Trash: {
-    /** Format: int32 */
-    idArea?: number;
-    /** Format: int32 */
-    idSector?: number;
-    /** Format: int32 */
-    idProblem?: number;
-    /** Format: int32 */
-    idMedia?: number;
-    name?: string;
-    when?: string;
-    by?: string;
-  };
-  UserSearch: {
-    /** Format: int32 */
-    id?: number;
-    name?: string;
-  };
-  Redirect: {
-    /** Format: int32 */
-    idArea?: number;
-    /** Format: int32 */
-    idSector?: number;
-    redirectUrl?: string;
-    destination?: string;
-  };
-  BodyPart: {
-    contentDisposition?: definitions["ContentDisposition"];
-    entity?: { [key: string]: unknown };
-    headers?: { [key: string]: string[] };
-    mediaType?: definitions["MediaType"];
-    messageBodyWorkers?: definitions["MessageBodyWorkers"];
-    parent?: definitions["MultiPart"];
-    providers?: definitions["Providers"];
-    parameterizedHeaders?: {
-      [key: string]: definitions["ParameterizedHeader"][];
+export type components = {
+  schemas: {
+    Activity: {
+      activityIds?: number[];
+      timeAgo?: string;
+      /** Format: int32 */
+      problemId?: number;
+      problemLockedAdmin?: boolean;
+      problemLockedSuperadmin?: boolean;
+      problemName?: string;
+      problemSubtype?: string;
+      grade?: string;
+      /** Format: int32 */
+      problemRandomMediaId?: number;
+      /** Format: int32 */
+      problemRandomMediaCrc32?: number;
+      media?: components["schemas"]["ActivityMedia"][];
+      /** Format: int32 */
+      stars?: number;
+      repeat?: boolean;
+      /** Format: int32 */
+      id?: number;
+      name?: string;
+      picture?: string;
+      description?: string;
+      message?: string;
+      users?: components["schemas"]["ActivityUser"][];
     };
-  };
-  ContentDisposition: {
-    type?: string;
-    parameters?: { [key: string]: string };
-    fileName?: string;
-    /** Format: date-time */
-    creationDate?: string;
-    /** Format: date-time */
-    modificationDate?: string;
-    /** Format: date-time */
-    readDate?: string;
-    /** Format: int64 */
-    size?: number;
-  };
-  FormDataBodyPart: {
-    contentDisposition?: definitions["ContentDisposition"];
-    entity?: { [key: string]: unknown };
-    headers?: { [key: string]: string[] };
-    mediaType?: definitions["MediaType"];
-    messageBodyWorkers?: definitions["MessageBodyWorkers"];
-    parent?: definitions["MultiPart"];
-    providers?: definitions["Providers"];
-    name?: string;
-    value?: string;
-    formDataContentDisposition?: definitions["FormDataContentDisposition"];
-    simple?: boolean;
-    parameterizedHeaders?: {
-      [key: string]: definitions["ParameterizedHeader"][];
+    ActivityMedia: {
+      /** Format: int32 */
+      id?: number;
+      /** Format: int32 */
+      crc32?: number;
+      movie?: boolean;
+      embedUrl?: string;
     };
-  };
-  FormDataContentDisposition: {
-    type?: string;
-    parameters?: { [key: string]: string };
-    fileName?: string;
-    /** Format: date-time */
-    creationDate?: string;
-    /** Format: date-time */
-    modificationDate?: string;
-    /** Format: date-time */
-    readDate?: string;
-    /** Format: int64 */
-    size?: number;
-    name?: string;
-  };
-  FormDataMultiPart: {
-    contentDisposition?: definitions["ContentDisposition"];
-    entity?: { [key: string]: unknown };
-    headers?: { [key: string]: string[] };
-    mediaType?: definitions["MediaType"];
-    messageBodyWorkers?: definitions["MessageBodyWorkers"];
-    parent?: definitions["MultiPart"];
-    providers?: definitions["Providers"];
-    bodyParts?: definitions["BodyPart"][];
-    fields?: { [key: string]: definitions["FormDataBodyPart"][] };
-    parameterizedHeaders?: {
-      [key: string]: definitions["ParameterizedHeader"][];
+    ActivityUser: {
+      /** Format: int32 */
+      id?: number;
+      name?: string;
+      picture?: string;
     };
-  };
-  MediaType: {
-    type?: string;
-    subtype?: string;
-    parameters?: { [key: string]: string };
-    wildcardType?: boolean;
-    wildcardSubtype?: boolean;
-  };
-  MessageBodyWorkers: { [key: string]: unknown };
-  MultiPart: {
-    contentDisposition?: definitions["ContentDisposition"];
-    entity?: { [key: string]: unknown };
-    headers?: { [key: string]: string[] };
-    mediaType?: definitions["MediaType"];
-    messageBodyWorkers?: definitions["MessageBodyWorkers"];
-    parent?: definitions["MultiPart"];
-    providers?: definitions["Providers"];
-    bodyParts?: definitions["BodyPart"][];
-    parameterizedHeaders?: {
-      [key: string]: definitions["ParameterizedHeader"][];
+    Administrator: {
+      /** Format: int32 */
+      userId?: number;
+      name?: string;
+      picture?: string;
+      lastLogin?: string;
     };
-  };
-  ParameterizedHeader: {
-    value?: string;
-    parameters?: { [key: string]: string };
-  };
-  Providers: { [key: string]: unknown };
-  Search: {
-    title?: string;
-    description?: string;
-    url?: string;
-    externalurl?: string;
-    mediaurl?: string;
-    /** Format: int32 */
-    mediaid?: number;
-    /** Format: int32 */
-    crc32?: number;
-    lockedadmin?: boolean;
-    lockedsuperadmin?: boolean;
-  };
-  SearchRequest: {
-    value?: string;
-  };
-  Tick: {
-    delete?: boolean;
-    /** Format: int32 */
-    id?: number;
-    /** Format: int32 */
-    idProblem?: number;
-    comment?: string;
-    date?: string;
-    /** Format: double */
-    stars?: number;
-    grade?: string;
-    repeats?: definitions["TickRepeat"][];
-  };
-  MediaInfo: {
-    /** Format: int32 */
-    mediaId?: number;
-    description?: string;
-    /** Format: int32 */
-    pitch?: number;
-    trivia?: boolean;
+    Area: {
+      redirectUrl?: string;
+      /** Format: int32 */
+      regionId?: number;
+      canonical?: string;
+      /** Format: int32 */
+      id?: number;
+      trash?: boolean;
+      lockedAdmin?: boolean;
+      lockedSuperadmin?: boolean;
+      forDevelopers?: boolean;
+      accessInfo?: string;
+      accessClosed?: string;
+      noDogsAllowed?: boolean;
+      /** Format: int32 */
+      sunFromHour?: number;
+      /** Format: int32 */
+      sunToHour?: number;
+      name?: string;
+      comment?: string;
+      /** Format: double */
+      lat?: number;
+      /** Format: double */
+      lng?: number;
+      /** Format: int32 */
+      numSectors?: number;
+      /** Format: int32 */
+      numProblems?: number;
+      sectors?: components["schemas"]["AreaSector"][];
+      sectorOrder?: components["schemas"]["AreaSectorOrder"][];
+      media?: components["schemas"]["Media"][];
+      triviaMedia?: components["schemas"]["Media"][];
+      newMedia?: components["schemas"]["NewMedia"][];
+      /** Format: int64 */
+      hits?: number;
+      typeNumTicked?: components["schemas"]["TypeNumTicked"][];
+    };
+    AreaSector: {
+      areaName?: string;
+      /** Format: int32 */
+      id?: number;
+      /** Format: int32 */
+      sorting?: number;
+      lockedAdmin?: boolean;
+      lockedSuperadmin?: boolean;
+      name?: string;
+      comment?: string;
+      accessInfo?: string;
+      accessClosed?: string;
+      /** Format: double */
+      lat?: number;
+      /** Format: double */
+      lng?: number;
+      polygonCoords?: string;
+      wallDirection?: string;
+      polyline?: string;
+      /** Format: int32 */
+      randomMediaId?: number;
+      /** Format: int32 */
+      randomMediaCrc32?: number;
+      problems?: components["schemas"]["SectorProblem"][];
+      typeNumTicked?: components["schemas"]["TypeNumTicked"][];
+      /** Format: int32 */
+      numProblems?: number;
+    };
+    AreaSectorOrder: {
+      /** Format: int32 */
+      id?: number;
+      name?: string;
+      /** Format: int32 */
+      sorting?: number;
+    };
+    Media: {
+      /** Format: int32 */
+      id?: number;
+      uploadedByMe?: boolean;
+      /** Format: int32 */
+      crc32?: number;
+      /** Format: int32 */
+      pitch?: number;
+      trivia?: boolean;
+      /** Format: int32 */
+      width?: number;
+      /** Format: int32 */
+      height?: number;
+      /** Format: int32 */
+      idType?: number;
+      t?: string;
+      mediaSvgs?: components["schemas"]["MediaSvgElement"][];
+      /** Format: int32 */
+      svgProblemId?: number;
+      svgs?: components["schemas"]["Svg"][];
+      mediaMetadata?: components["schemas"]["MediaMetadata"];
+      embedUrl?: string;
+      inherited?: boolean;
+      /** Format: int32 */
+      enableMoveToIdSector?: number;
+      /** Format: int32 */
+      enableMoveToIdProblem?: number;
+    };
+    MediaMetadata: {
+      dateCreated?: string;
+      dateTaken?: string;
+      capturer?: string;
+      tagged?: string;
+      description?: string;
+      alt?: string;
+    };
+    MediaSvgElement: {
+      /** @enum {string} */
+      t?: "PATH" | "RAPPEL_BOLTED" | "RAPPEL_NOT_BOLTED";
+      /** Format: int32 */
+      id?: number;
+      path?: string;
+      /** Format: int32 */
+      rappelX?: number;
+      /** Format: int32 */
+      rappelY?: number;
+    };
+    NewMedia: {
+      name?: string;
+      photographer?: string;
+      inPhoto?: string;
+      /** Format: int32 */
+      pitch?: number;
+      trivia?: boolean;
+      description?: string;
+      embedVideoUrl?: string;
+      embedThumbnailUrl?: string;
+      /** Format: int64 */
+      embedMilliseconds?: number;
+    };
+    SectorProblem: {
+      /** Format: int32 */
+      id?: number;
+      broken?: string;
+      lockedAdmin?: boolean;
+      lockedSuperadmin?: boolean;
+      /** Format: int32 */
+      nr?: number;
+      name?: string;
+      rock?: string;
+      comment?: string;
+      /** Format: int32 */
+      gradeNumber?: number;
+      grade?: string;
+      fa?: string;
+      /** Format: int32 */
+      numPitches?: number;
+      hasImages?: boolean;
+      hasMovies?: boolean;
+      hasTopo?: boolean;
+      /** Format: double */
+      lat?: number;
+      /** Format: double */
+      lng?: number;
+      /** Format: int32 */
+      numTicks?: number;
+      /** Format: double */
+      stars?: number;
+      ticked?: boolean;
+      todo?: boolean;
+      t?: components["schemas"]["Type"];
+      danger?: boolean;
+    };
+    Svg: {
+      delete?: boolean;
+      /** Format: int32 */
+      id?: number;
+      /** Format: int32 */
+      problemId?: number;
+      problemName?: string;
+      problemGrade?: string;
+      /** Format: int32 */
+      problemGradeGroup?: number;
+      problemSubtype?: string;
+      /** Format: int32 */
+      nr?: number;
+      path?: string;
+      hasAnchor?: boolean;
+      texts?: string;
+      anchors?: string;
+      primary?: boolean;
+      ticked?: boolean;
+      todo?: boolean;
+      dangerous?: boolean;
+    };
+    Type: {
+      /** Format: int32 */
+      id?: number;
+      type?: string;
+      subType?: string;
+    };
+    TypeNumTicked: {
+      type?: string;
+      /** Format: int32 */
+      num?: number;
+      /** Format: int32 */
+      ticked?: number;
+    };
+    Webcam: {
+      id?: string;
+      lastUpdated?: string;
+      name?: string;
+      urlStillImage?: string;
+      urlYr?: string;
+      urlOther?: string;
+      /** Format: double */
+      lat?: number;
+      /** Format: double */
+      lng?: number;
+    };
+    Dangerous: {
+      /** Format: int32 */
+      id?: number;
+      url?: string;
+      name?: string;
+      lockedAdmin?: boolean;
+      lockedSuperadmin?: boolean;
+      /** Format: int32 */
+      sunFromHour?: number;
+      /** Format: int32 */
+      sunToHour?: number;
+      sectors?: components["schemas"]["DangerousSector"][];
+    };
+    DangerousProblem: {
+      /** Format: int32 */
+      id?: number;
+      url?: string;
+      broken?: string;
+      lockedAdmin?: boolean;
+      lockedSuperadmin?: boolean;
+      /** Format: int32 */
+      nr?: number;
+      name?: string;
+      grade?: string;
+      postBy?: string;
+      postWhen?: string;
+      postTxt?: string;
+    };
+    DangerousSector: {
+      /** Format: int32 */
+      id?: number;
+      url?: string;
+      name?: string;
+      wallDirection?: string;
+      lockedAdmin?: boolean;
+      lockedSuperadmin?: boolean;
+      problems?: components["schemas"]["DangerousProblem"][];
+    };
+    Frontpage: {
+      /** Format: int32 */
+      numProblems?: number;
+      /** Format: int32 */
+      numProblemsWithCoordinates?: number;
+      /** Format: int32 */
+      numProblemsWithTopo?: number;
+      /** Format: int32 */
+      numTicks?: number;
+      /** Format: int32 */
+      numImages?: number;
+      /** Format: int32 */
+      numMovies?: number;
+      randomMedia?: components["schemas"]["FrontpageRandomMedia"];
+    };
+    FrontpageRandomMedia: {
+      /** Format: int32 */
+      idMedia?: number;
+      /** Format: int32 */
+      crc32?: number;
+      /** Format: int32 */
+      width?: number;
+      /** Format: int32 */
+      height?: number;
+      /** Format: int32 */
+      idArea?: number;
+      area?: string;
+      /** Format: int32 */
+      idSector?: number;
+      sector?: string;
+      /** Format: int32 */
+      idProblem?: number;
+      problem?: string;
+      grade?: string;
+      photographer?: components["schemas"]["User"];
+      tagged?: components["schemas"]["User"][];
+    };
+    User: {
+      /** Format: int32 */
+      id?: number;
+      name?: string;
+    };
+    GradeDistribution: {
+      grade?: string;
+      /** Format: int32 */
+      num?: number;
+      /** Format: int32 */
+      prim?: number;
+      /** Format: int32 */
+      sec?: number;
+      rows?: components["schemas"]["GradeDistributionRow"][];
+    };
+    GradeDistributionRow: {
+      name?: string;
+      /** Format: int32 */
+      numBoulder?: number;
+      /** Format: int32 */
+      numSport?: number;
+      /** Format: int32 */
+      numTrad?: number;
+      /** Format: int32 */
+      numMixed?: number;
+      /** Format: int32 */
+      numTopRope?: number;
+      /** Format: int32 */
+      numAid?: number;
+      /** Format: int32 */
+      numAidTrad?: number;
+      /** Format: int32 */
+      numIce?: number;
+    };
+    Grade: {
+      /** Format: int32 */
+      id?: number;
+      grade?: string;
+    };
+    LatLng: {
+      /** Format: double */
+      lat?: number;
+      /** Format: double */
+      lng?: number;
+    };
+    Meta: {
+      title?: string;
+      grades?: components["schemas"]["Grade"][];
+      /** Format: int32 */
+      defaultZoom?: number;
+      defaultCenter?: components["schemas"]["LatLng"];
+      url?: string;
+      types?: components["schemas"]["Type"][];
+      sites?: components["schemas"]["Site"][];
+      bouldering?: boolean;
+      climbing?: boolean;
+      authenticated?: boolean;
+      admin?: boolean;
+      superAdmin?: boolean;
+      ice?: boolean;
+    };
+    Site: {
+      group?: string;
+      name?: string;
+      url?: string;
+      polygonCoords?: string;
+      active?: boolean;
+    };
+    PermissionUser: {
+      /** Format: int32 */
+      userId?: number;
+      name?: string;
+      picture?: string;
+      lastLogin?: string;
+      adminRead?: boolean;
+      adminWrite?: boolean;
+      superadminRead?: boolean;
+      superadminWrite?: boolean;
+      readOnly?: boolean;
+    };
+    FaAid: {
+      /** Format: int32 */
+      problemId?: number;
+      date?: string;
+      dateHr?: string;
+      description?: string;
+      users?: components["schemas"]["FaUser"][];
+    };
+    FaUser: {
+      /** Format: int32 */
+      id?: number;
+      name?: string;
+      picture?: string;
+    };
+    Problem: {
+      redirectUrl?: string;
+      /** Format: int32 */
+      areaId?: number;
+      areaLockedAdmin?: boolean;
+      areaLockedSuperadmin?: boolean;
+      areaName?: string;
+      areaAccessInfo?: string;
+      areaAccessClosed?: string;
+      areaNoDogsAllowed?: boolean;
+      /** Format: int32 */
+      areaSunFromHour?: number;
+      /** Format: int32 */
+      areaSunToHour?: number;
+      /** Format: int32 */
+      sectorId?: number;
+      sectorLockedAdmin?: boolean;
+      sectorLockedSuperadmin?: boolean;
+      sectorName?: string;
+      sectorAccessInfo?: string;
+      sectorAccessClosed?: string;
+      /** Format: double */
+      sectorLat?: number;
+      /** Format: double */
+      sectorLng?: number;
+      sectorPolygonCoords?: string;
+      sectorWallDirection?: string;
+      sectorPolyline?: string;
+      /** Format: int32 */
+      sectorIdProblemPrev?: number;
+      /** Format: int32 */
+      sectorIdProblemNext?: number;
+      canonical?: string;
+      /** Format: int32 */
+      id?: number;
+      broken?: string;
+      trash?: boolean;
+      lockedAdmin?: boolean;
+      lockedSuperadmin?: boolean;
+      /** Format: int32 */
+      nr?: number;
+      name?: string;
+      rock?: string;
+      comment?: string;
+      grade?: string;
+      originalGrade?: string;
+      faDate?: string;
+      faDateHr?: string;
+      fa?: components["schemas"]["FaUser"][];
+      /** Format: double */
+      lat?: number;
+      /** Format: double */
+      lng?: number;
+      media?: components["schemas"]["Media"][];
+      /** Format: int32 */
+      numTicks?: number;
+      /** Format: double */
+      stars?: number;
+      ticked?: boolean;
+      ticks?: components["schemas"]["ProblemTick"][];
+      todos?: components["schemas"]["ProblemTodo"][];
+      comments?: components["schemas"]["ProblemComment"][];
+      newMedia?: components["schemas"]["NewMedia"][];
+      t?: components["schemas"]["Type"];
+      sections?: components["schemas"]["ProblemSection"][];
+      todo?: boolean;
+      /** Format: int64 */
+      hits?: number;
+      faAid?: components["schemas"]["FaAid"];
+      trivia?: string;
+      triviaMedia?: components["schemas"]["Media"][];
+      startingAltitude?: string;
+      aspect?: string;
+      routeLength?: string;
+      descent?: string;
+    };
+    ProblemComment: {
+      /** Format: int32 */
+      id?: number;
+      date?: string;
+      /** Format: int32 */
+      idUser?: number;
+      picture?: string;
+      name?: string;
+      message?: string;
+      danger?: boolean;
+      resolved?: boolean;
+      media?: components["schemas"]["Media"][];
+      editable?: boolean;
+    };
+    ProblemSection: {
+      /** Format: int32 */
+      id?: number;
+      /** Format: int32 */
+      nr?: number;
+      description?: string;
+      grade?: string;
+      media?: components["schemas"]["Media"][];
+    };
+    ProblemTick: {
+      repeats?: components["schemas"]["TickRepeat"][];
+      /** Format: int32 */
+      id?: number;
+      /** Format: int32 */
+      idUser?: number;
+      picture?: string;
+      date?: string;
+      name?: string;
+      suggestedGrade?: string;
+      comment?: string;
+      /** Format: double */
+      stars?: number;
+      writable?: boolean;
+    };
+    ProblemTodo: {
+      /** Format: int32 */
+      idUser?: number;
+      picture?: string;
+      name?: string;
+    };
+    TickRepeat: {
+      /** Format: int32 */
+      id?: number;
+      /** Format: int32 */
+      tickId?: number;
+      comment?: string;
+      date?: string;
+    };
+    ProblemArea: {
+      /** Format: int32 */
+      id?: number;
+      url?: string;
+      name?: string;
+      /** Format: double */
+      lat?: number;
+      /** Format: double */
+      lng?: number;
+      lockedAdmin?: boolean;
+      lockedSuperadmin?: boolean;
+      /** Format: int32 */
+      sunFromHour?: number;
+      /** Format: int32 */
+      sunToHour?: number;
+      sectors?: components["schemas"]["ProblemAreaSector"][];
+    };
+    ProblemAreaProblem: {
+      /** Format: int32 */
+      id?: number;
+      url?: string;
+      broken?: string;
+      lockedAdmin?: boolean;
+      lockedSuperadmin?: boolean;
+      /** Format: int32 */
+      nr?: number;
+      name?: string;
+      description?: string;
+      /** Format: double */
+      lat?: number;
+      /** Format: double */
+      lng?: number;
+      grade?: string;
+      fa?: string;
+      /** Format: int32 */
+      numTicks?: number;
+      /** Format: double */
+      stars?: number;
+      ticked?: boolean;
+      t?: components["schemas"]["Type"];
+      /** Format: int32 */
+      numPitches?: number;
+    };
+    ProblemAreaSector: {
+      /** Format: int32 */
+      id?: number;
+      url?: string;
+      name?: string;
+      /** Format: int32 */
+      sorting?: number;
+      /** Format: double */
+      lat?: number;
+      /** Format: double */
+      lng?: number;
+      polygonCoords?: string;
+      wallDirection?: string;
+      lockedAdmin?: boolean;
+      lockedSuperadmin?: boolean;
+      problems?: components["schemas"]["ProblemAreaProblem"][];
+    };
+    Profile: {
+      /** Format: int32 */
+      id?: number;
+      picture?: string;
+      firstname?: string;
+      lastname?: string;
+      userRegions?: components["schemas"]["UserRegion"][];
+    };
+    UserRegion: {
+      /** Format: int32 */
+      id?: number;
+      name?: string;
+      role?: string;
+      enabled?: boolean;
+      readOnly?: boolean;
+    };
+    ProfileStatistics: {
+      /** Format: int32 */
+      numImagesCreated?: number;
+      /** Format: int32 */
+      numVideosCreated?: number;
+      /** Format: int32 */
+      numImageTags?: number;
+      /** Format: int32 */
+      numVideoTags?: number;
+      ticks?: components["schemas"]["ProfileStatisticsTick"][];
+    };
+    ProfileStatisticsTick: {
+      areaName?: string;
+      areaLockedAdmin?: boolean;
+      areaLockedSuperadmin?: boolean;
+      sectorName?: string;
+      sectorLockedAdmin?: boolean;
+      sectorLockedSuperadmin?: boolean;
+      /** Format: int32 */
+      num?: number;
+      /** Format: int32 */
+      id?: number;
+      /** Format: int32 */
+      idTickRepeat?: number;
+      subType?: string;
+      /** Format: int32 */
+      numPitches?: number;
+      /** Format: int32 */
+      idProblem?: number;
+      lockedAdmin?: boolean;
+      lockedSuperadmin?: boolean;
+      name?: string;
+      comment?: string;
+      date?: string;
+      dateHr?: string;
+      /** Format: double */
+      stars?: number;
+      fa?: boolean;
+      grade?: string;
+      /** Format: int32 */
+      gradeNumber?: number;
+      /** Format: double */
+      lat?: number;
+      /** Format: double */
+      lng?: number;
+    };
+    ProfileMedia: {
+      /** Format: int32 */
+      id?: number;
+      uploadedByMe?: boolean;
+      /** Format: int32 */
+      crc32?: number;
+      /** Format: int32 */
+      pitch?: number;
+      trivia?: boolean;
+      /** Format: int32 */
+      width?: number;
+      /** Format: int32 */
+      height?: number;
+      /** Format: int32 */
+      idType?: number;
+      t?: string;
+      mediaSvgs?: components["schemas"]["MediaSvgElement"][];
+      /** Format: int32 */
+      svgProblemId?: number;
+      svgs?: components["schemas"]["Svg"][];
+      mediaMetadata?: components["schemas"]["MediaMetadata"];
+      embedUrl?: string;
+      inherited?: boolean;
+      /** Format: int32 */
+      enableMoveToIdSector?: number;
+      /** Format: int32 */
+      enableMoveToIdProblem?: number;
+    };
+    Sector: {
+      redirectUrl?: string;
+      orderByGrade?: boolean;
+      /** Format: int32 */
+      areaId?: number;
+      areaLockedAdmin?: boolean;
+      areaLockedSuperadmin?: boolean;
+      areaAccessInfo?: string;
+      areaAccessClosed?: string;
+      areaNoDogsAllowed?: boolean;
+      /** Format: int32 */
+      areaSunFromHour?: number;
+      /** Format: int32 */
+      areaSunToHour?: number;
+      areaName?: string;
+      canonical?: string;
+      /** Format: int32 */
+      id?: number;
+      trash?: boolean;
+      lockedAdmin?: boolean;
+      lockedSuperadmin?: boolean;
+      name?: string;
+      comment?: string;
+      accessInfo?: string;
+      accessClosed?: string;
+      /** Format: double */
+      lat?: number;
+      /** Format: double */
+      lng?: number;
+      polygonCoords?: string;
+      wallDirection?: string;
+      polyline?: string;
+      media?: components["schemas"]["Media"][];
+      triviaMedia?: components["schemas"]["Media"][];
+      sectors?: components["schemas"]["SectorJump"][];
+      problems?: components["schemas"]["SectorProblem"][];
+      problemOrder?: components["schemas"]["SectorProblemOrder"][];
+      newMedia?: components["schemas"]["NewMedia"][];
+      /** Format: int64 */
+      hits?: number;
+      siblings?: components["schemas"]["SectorJump"][];
+    };
+    SectorJump: {
+      /** Format: int32 */
+      id?: number;
+      lockedAdmin?: boolean;
+      lockedSuperadmin?: boolean;
+      name?: string;
+      /** Format: int32 */
+      sorting?: number;
+    };
+    SectorProblemOrder: {
+      /** Format: int32 */
+      id?: number;
+      name?: string;
+      /** Format: int32 */
+      nr?: number;
+    };
+    PublicAscent: {
+      areaName?: string;
+      areaLockedAdmin?: boolean;
+      areaLockedSuperadmin?: boolean;
+      sectorName?: string;
+      sectorLockedAdmin?: boolean;
+      sectorLockedSuperadmin?: boolean;
+      /** Format: int32 */
+      problemId?: number;
+      problemGrade?: string;
+      problemName?: string;
+      problemLockedAdmin?: boolean;
+      problemLockedSuperadmin?: boolean;
+      date?: string;
+      name?: string;
+    };
+    Ticks: {
+      ticks?: components["schemas"]["PublicAscent"][];
+      /** Format: int32 */
+      currPage?: number;
+      /** Format: int32 */
+      numPages?: number;
+    };
+    Todo: {
+      sectors?: components["schemas"]["TodoSector"][];
+    };
+    TodoPartner: {
+      /** Format: int32 */
+      id?: number;
+      name?: string;
+    };
+    TodoProblem: {
+      /** Format: int32 */
+      id?: number;
+      lockedAdmin?: boolean;
+      lockedSuperadmin?: boolean;
+      /** Format: int32 */
+      nr?: number;
+      name?: string;
+      grade?: string;
+      partners?: components["schemas"]["TodoPartner"][];
+    };
+    TodoSector: {
+      /** Format: int32 */
+      id?: number;
+      name?: string;
+      lockedAdmin?: boolean;
+      lockedSuperadmin?: boolean;
+      problems?: components["schemas"]["TodoProblem"][];
+    };
+    Top: {
+      /** Format: int32 */
+      rank?: number;
+      /** Format: int32 */
+      userId?: number;
+      name?: string;
+      picture?: string;
+      /** Format: double */
+      percentage?: number;
+    };
+    Trash: {
+      /** Format: int32 */
+      idArea?: number;
+      /** Format: int32 */
+      idSector?: number;
+      /** Format: int32 */
+      idProblem?: number;
+      /** Format: int32 */
+      idMedia?: number;
+      name?: string;
+      when?: string;
+      by?: string;
+    };
+    UserSearch: {
+      /** Format: int32 */
+      id?: number;
+      name?: string;
+    };
+    Redirect: {
+      /** Format: int32 */
+      idArea?: number;
+      /** Format: int32 */
+      idSector?: number;
+      redirectUrl?: string;
+      destination?: string;
+    };
+    BodyPart: {
+      contentDisposition?: components["schemas"]["ContentDisposition"];
+      entity?: { [key: string]: unknown };
+      headers?: {
+        empty?: boolean;
+      } & { [key: string]: string[] };
+      mediaType?: components["schemas"]["MediaType"];
+      messageBodyWorkers?: components["schemas"]["MessageBodyWorkers"];
+      parent?: components["schemas"]["MultiPart"];
+      providers?: components["schemas"]["Providers"];
+      parameterizedHeaders?: {
+        empty?: boolean;
+      } & { [key: string]: components["schemas"]["ParameterizedHeader"][] };
+    };
+    ContentDisposition: {
+      type?: string;
+      parameters?: { [key: string]: string };
+      fileName?: string;
+      /** Format: date-time */
+      creationDate?: string;
+      /** Format: date-time */
+      modificationDate?: string;
+      /** Format: date-time */
+      readDate?: string;
+      /** Format: int64 */
+      size?: number;
+    };
+    FormDataBodyPart: {
+      contentDisposition?: components["schemas"]["ContentDisposition"];
+      entity?: { [key: string]: unknown };
+      headers?: {
+        empty?: boolean;
+      } & { [key: string]: string[] };
+      mediaType?: components["schemas"]["MediaType"];
+      messageBodyWorkers?: components["schemas"]["MessageBodyWorkers"];
+      parent?: components["schemas"]["MultiPart"];
+      providers?: components["schemas"]["Providers"];
+      name?: string;
+      value?: string;
+      content?: { [key: string]: unknown };
+      fileName?: string;
+      simple?: boolean;
+      formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
+      parameterizedHeaders?: {
+        empty?: boolean;
+      } & { [key: string]: components["schemas"]["ParameterizedHeader"][] };
+    };
+    FormDataContentDisposition: {
+      type?: string;
+      parameters?: { [key: string]: string };
+      fileName?: string;
+      /** Format: date-time */
+      creationDate?: string;
+      /** Format: date-time */
+      modificationDate?: string;
+      /** Format: date-time */
+      readDate?: string;
+      /** Format: int64 */
+      size?: number;
+      name?: string;
+    };
+    FormDataMultiPart: {
+      contentDisposition?: components["schemas"]["ContentDisposition"];
+      entity?: { [key: string]: unknown };
+      headers?: {
+        empty?: boolean;
+      } & { [key: string]: string[] };
+      mediaType?: components["schemas"]["MediaType"];
+      messageBodyWorkers?: components["schemas"]["MessageBodyWorkers"];
+      parent?: components["schemas"]["MultiPart"];
+      providers?: components["schemas"]["Providers"];
+      bodyParts?: components["schemas"]["BodyPart"][];
+      fields?: { [key: string]: components["schemas"]["FormDataBodyPart"][] };
+      parameterizedHeaders?: {
+        empty?: boolean;
+      } & { [key: string]: components["schemas"]["ParameterizedHeader"][] };
+    };
+    MediaType: {
+      type?: string;
+      subtype?: string;
+      parameters?: { [key: string]: string };
+      wildcardType?: boolean;
+      wildcardSubtype?: boolean;
+    };
+    MessageBodyWorkers: { [key: string]: unknown };
+    MultiPart: {
+      contentDisposition?: components["schemas"]["ContentDisposition"];
+      entity?: { [key: string]: unknown };
+      headers?: {
+        empty?: boolean;
+      } & { [key: string]: string[] };
+      mediaType?: components["schemas"]["MediaType"];
+      messageBodyWorkers?: components["schemas"]["MessageBodyWorkers"];
+      parent?: components["schemas"]["MultiPart"];
+      providers?: components["schemas"]["Providers"];
+      bodyParts?: components["schemas"]["BodyPart"][];
+      parameterizedHeaders?: {
+        empty?: boolean;
+      } & { [key: string]: components["schemas"]["ParameterizedHeader"][] };
+    };
+    MultivaluedMapStringParameterizedHeader: {
+      empty?: boolean;
+    } & { [key: string]: components["schemas"]["ParameterizedHeader"][] };
+    MultivaluedMapStringString: {
+      empty?: boolean;
+    } & { [key: string]: string[] };
+    ParameterizedHeader: {
+      value?: string;
+      parameters?: { [key: string]: string };
+    };
+    Providers: { [key: string]: unknown };
+    Search: {
+      title?: string;
+      description?: string;
+      url?: string;
+      externalurl?: string;
+      mediaurl?: string;
+      /** Format: int32 */
+      mediaid?: number;
+      /** Format: int32 */
+      crc32?: number;
+      lockedadmin?: boolean;
+      lockedsuperadmin?: boolean;
+    };
+    SearchRequest: {
+      value?: string;
+    };
+    Tick: {
+      delete?: boolean;
+      /** Format: int32 */
+      id?: number;
+      /** Format: int32 */
+      idProblem?: number;
+      comment?: string;
+      date?: string;
+      /** Format: double */
+      stars?: number;
+      grade?: string;
+      repeats?: components["schemas"]["TickRepeat"][];
+    };
+    MediaInfo: {
+      /** Format: int32 */
+      mediaId?: number;
+      description?: string;
+      /** Format: int32 */
+      pitch?: number;
+      trivia?: boolean;
+    };
   };
 };
 
 export type operations = {
-  getPermissions: {
-    parameters: {
-      header: {
-        /** Authorization token */
-        Authorization: string;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: definitions["PermissionUser"][];
-      };
-    };
-  };
-  postPermissions: {
-    parameters: {
-      body: {
-        body?: definitions["PermissionUser"];
-      };
-      header: {
-        /** Authorization token */
-        Authorization: string;
-      };
-    };
-    responses: {
-      /** successful operation */
-      default: unknown;
-    };
-  };
-  getProfile: {
-    parameters: {
-      query: {
-        /** User id (will return logged in user without this attribute) */
-        id: number;
-      };
-      header: {
-        /** Authorization token */
-        Authorization?: string;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: definitions["Profile"];
-      };
-    };
-  };
-  getProfilemedia: {
-    parameters: {
-      query: {
-        /** User id */
-        id: number;
-        /** FALSE = tagged media, TRUE = captured media */
-        captured?: boolean;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: definitions["ProfileMedia"][];
-      };
-    };
-  };
-  getProfileStatistics: {
-    parameters: {
-      query: {
-        /** User id */
-        id: number;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: definitions["ProfileStatistics"];
-      };
-    };
-  };
-  getProfileTodo: {
-    parameters: {
-      query: {
-        /** User id */
-        id: number;
-      };
-      header: {
-        /** Authorization token */
-        Authorization?: string;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: definitions["ProfileTodo"];
-      };
-    };
-  };
-  getDangerous: {
-    parameters: {
-      header: {
-        /** Authorization token */
-        Authorization?: string;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: definitions["Dangerous"][];
-      };
-    };
-  };
-  getElevation: {
-    parameters: {
-      query: {
-        /** latitude */
-        latitude: number;
-        /** longitude */
-        longitude: number;
-      };
-      header: {
-        /** Authorization token */
-        Authorization?: string;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: number;
-      };
-    };
-  };
-  getFrontpage: {
-    parameters: {
-      header: {
-        /** Authorization token */
-        Authorization?: string;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: definitions["Frontpage"];
-      };
-    };
-  };
-  getGradeDistribution: {
-    parameters: {
-      query: {
-        /** Area id (can be 0 if idSector>0) */
-        idArea: number;
-        /** Sector id (can be 0 if idArea>0) */
-        idSector: number;
-      };
-      header: {
-        /** Authorization token */
-        Authorization?: string;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: definitions["GradeDistribution"][];
-      };
-    };
-  };
-  getGraph: {
-    parameters: {
-      header: {
-        /** Authorization token */
-        Authorization?: string;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: definitions["GradeDistribution"][];
-      };
-    };
-  };
   getMedia: {
     parameters: {
       query: {
-        /** Media id */
-        idMedia: number;
-      };
-      header: {
-        /** Authorization token */
-        Authorization?: string;
+        "Media id": number;
       };
     };
     responses: {
-      /** successful operation */
       200: {
-        schema: definitions["Media"];
+        content: {
+          "application/json": components["schemas"]["Media"];
+        };
       };
     };
   };
   putMedia: {
     parameters: {
       query: {
-        /** Move right */
-        id: number;
-        /** Move left */
-        left: boolean;
-        /** To sector id (will move media to sector if toSectorId>0 and toProblemId=0) */
-        toIdSector: number;
-        /** To problem id (will move media to problem if toProblemId>0 and toSectorId=0) */
-        toIdProblem: number;
-      };
-      header: {
-        /** Authorization token */
-        Authorization: string;
+        "Move right": number;
+        "Move left": boolean;
+        "To sector id (will move media to sector if toSectorId>0 and toProblemId=0)": number;
+        "To problem id (will move media to problem if toProblemId>0 and toSectorId=0)": number;
       };
     };
     responses: {
-      /** successful operation */
-      default: unknown;
+      /** default response */
+      default: {
+        content: {
+          "*/*": unknown;
+        };
+      };
     };
   };
   deleteMedia: {
     parameters: {
       query: {
-        /** Media id */
-        id: number;
-      };
-      header: {
-        /** Authorization token */
-        Authorization: string;
+        "Media id": number;
       };
     };
     responses: {
-      /** successful operation */
-      default: unknown;
-    };
-  };
-  getProblem: {
-    parameters: {
-      query: {
-        /** Problem id */
-        id: number;
-        /** Include hidden media (example: if a sector has multiple topo-images, the topo-images without this route will be hidden) */
-        showHiddenMedia?: boolean;
-      };
-      header: {
-        /** Authorization token */
-        Authorization?: string;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: definitions["Problem"];
-      };
-    };
-  };
-  getProblemPdf: {
-    parameters: {
-      query: {
-        /** Access token */
-        accessToken?: string;
-        /** Problem id */
-        id: number;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: string[];
-      };
-    };
-  };
-  getProblems: {
-    parameters: {
-      header: {
-        /** Authorization token */
-        Authorization?: string;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: definitions["ProblemArea"][];
-      };
-    };
-  };
-  postProblems: {
-    parameters: {
-      body: {
-        body?: definitions["FormDataMultiPart"];
-      };
-      header: {
-        /** Authorization token */
-        Authorization: string;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: definitions["Redirect"];
-      };
-    };
-  };
-  getProblemsXlsx: {
-    parameters: {
-      header: {
-        /** Authorization token */
-        Authorization?: string;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: string[];
-      };
-    };
-  };
-  getImages: {
-    parameters: {
-      query: {
-        /** Media id */
-        id: number;
-        /** Checksum - not used in ws, but necessary to include on client when an image is changed (e.g. rotated) to avoid cached version */
-        crc32?: number;
-        /** Image size - E.g. minDimention=100 can return an image with the size 100x133px */
-        minDimention?: number;
-      };
-      header: {
-        /** Authorization token */
-        Authorization?: string;
-      };
-    };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: string[];
+      /** default response */
+      default: {
+        content: {
+          "*/*": unknown;
+        };
       };
     };
   };
   getActivity: {
     parameters: {
       query: {
-        /** Area id (can be 0 if idSector>0) */
-        idArea: number;
-        /** Sector id (can be 0 if idArea>0) */
-        idSector: number;
-        /** Filter on lower grade */
-        lowerGrade?: number;
-        /** Include first ascents */
-        fa?: boolean;
-        /** Include comments */
-        comments?: boolean;
-        /** Include ticks (public ascents) */
-        ticks?: boolean;
-        /** Include new media */
-        media?: boolean;
-      };
-      header: {
-        /** Authorization token */
-        Authorization?: string;
+        "Area id (can be 0 if idSector>0)": number;
+        "Sector id (can be 0 if idArea>0)": number;
+        "Filter on lower grade"?: number;
+        "Include first ascents"?: boolean;
+        "Include comments"?: boolean;
+        "Include ticks (public ascents)"?: boolean;
+        "Include new media"?: boolean;
       };
     };
     responses: {
-      /** successful operation */
       200: {
-        schema: definitions["Activity"][];
+        content: {
+          "application/json": components["schemas"]["Activity"][];
+        };
       };
     };
   };
   getAdministrators: {
-    parameters: {};
     responses: {
-      /** successful operation */
       200: {
-        schema: definitions["Administrator"][];
+        content: {
+          "application/json": components["schemas"]["Administrator"][];
+        };
       };
     };
   };
   getAreas: {
     parameters: {
       query: {
-        /** Area id */
-        id?: number;
-      };
-      header: {
-        /** Authorization token */
-        Authorization?: string;
+        "Area id"?: number;
       };
     };
     responses: {
-      /** successful operation */
       200: {
-        schema: definitions["Area"][];
+        content: {
+          "application/json": components["schemas"]["Area"][];
+        };
       };
     };
   };
   postAreas: {
-    parameters: {
-      body: {
-        body?: definitions["FormDataMultiPart"];
-      };
-      header: {
-        /** Authorization token */
-        Authorization: string;
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["Redirect"];
+        };
       };
     };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: definitions["Redirect"];
+    requestBody: {
+      content: {
+        "multipart/form-data; charset=utf-8": components["schemas"]["FormDataMultiPart"];
       };
     };
   };
   getAreasPdf: {
     parameters: {
       query: {
-        /** Access token */
-        accessToken?: string;
-        /** Area id */
-        id: number;
+        "Access token"?: string;
+        "Area id": number;
       };
     };
     responses: {
-      /** successful operation */
       200: {
-        schema: string[];
+        content: {
+          "application/pdf": string[];
+        };
       };
     };
   };
   getCameras: {
-    parameters: {};
     responses: {
-      /** successful operation */
       200: {
-        schema: definitions["Webcam"][];
+        content: {
+          "application/json": components["schemas"]["Webcam"][];
+        };
+      };
+    };
+  };
+  getDangerous: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["Dangerous"][];
+        };
+      };
+    };
+  };
+  getElevation: {
+    parameters: {
+      query: {
+        latitude: number;
+        longitude: number;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "text/html": number;
+        };
+      };
+    };
+  };
+  getFrontpage: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["Frontpage"];
+        };
+      };
+    };
+  };
+  getGradeDistribution: {
+    parameters: {
+      query: {
+        "Area id (can be 0 if idSector>0)": number;
+        "Sector id (can be 0 if idArea>0)": number;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["GradeDistribution"][];
+        };
+      };
+    };
+  };
+  getGraph: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["GradeDistribution"][];
+        };
+      };
+    };
+  };
+  getImages: {
+    parameters: {
+      query: {
+        "Media id": number;
+        "Checksum - not used in ws, but necessary to include on client when an image is changed (e.g. rotated) to avoid cached version"?: number;
+        "Image size - E.g. minDimention=100 can return an image with the size 100x133px"?: number;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "image/*": string[];
+        };
       };
     };
   };
   getMeta: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["Meta"];
+        };
+      };
+    };
+  };
+  getPermissions: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["PermissionUser"][];
+        };
+      };
+    };
+  };
+  postPermissions: {
+    responses: {
+      /** default response */
+      default: {
+        content: {
+          "*/*": unknown;
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "*/*": components["schemas"]["PermissionUser"];
+      };
+    };
+  };
+  getProblem: {
     parameters: {
-      header: {
-        /** Authorization token */
-        Authorization?: string;
+      query: {
+        "Problem id": number;
+        "Include hidden media (example: if a sector has multiple topo-images, the topo-images without this route will be hidden)"?: boolean;
       };
     };
     responses: {
-      /** successful operation */
       200: {
-        schema: definitions["Meta"];
+        content: {
+          "application/json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  getProblemPdf: {
+    parameters: {
+      query: {
+        "Access token"?: string;
+        "Problem id": number;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/pdf": string[];
+        };
+      };
+    };
+  };
+  getProblems: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProblemArea"][];
+        };
+      };
+    };
+  };
+  postProblems: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["Redirect"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "multipart/form-data; charset=utf-8": components["schemas"]["FormDataMultiPart"];
+      };
+    };
+  };
+  getProblemsXlsx: {
+    responses: {
+      200: {
+        content: {
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string[];
+        };
+      };
+    };
+  };
+  getProfile: {
+    parameters: {
+      query: {
+        "User id (will return logged in user without this attribute)": number;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["Profile"];
+        };
+      };
+    };
+  };
+  getProfileStatistics: {
+    parameters: {
+      query: {
+        "User id": number;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProfileStatistics"];
+        };
+      };
+    };
+  };
+  getProfileTodo: {
+    parameters: {
+      query: {
+        "User id": number;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": string[];
+        };
+      };
+    };
+  };
+  getProfilemedia: {
+    parameters: {
+      query: {
+        "User id": number;
+        "FALSE = tagged media, TRUE = captured media"?: boolean;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProfileMedia"][];
+        };
       };
     };
   };
   getRobotsTxt: {
-    parameters: {};
     responses: {
-      /** successful operation */
       200: {
-        schema: string;
+        content: {
+          "text/html": string;
+        };
       };
     };
   };
   getSectors: {
     parameters: {
       query: {
-        /** Sector id */
-        id: number;
-      };
-      header: {
-        /** Authorization token */
-        Authorization?: string;
+        "Sector id": number;
       };
     };
     responses: {
-      /** successful operation */
       200: {
-        schema: definitions["Sector"];
+        content: {
+          "application/json": components["schemas"]["Sector"];
+        };
       };
     };
   };
   postSectors: {
-    parameters: {
-      body: {
-        body?: definitions["FormDataMultiPart"];
-      };
-      header: {
-        /** Authorization token */
-        Authorization: string;
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["Redirect"];
+        };
       };
     };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: definitions["Redirect"];
+    requestBody: {
+      content: {
+        "multipart/form-data; charset=utf-8": components["schemas"]["FormDataMultiPart"];
       };
     };
   };
   getSectorsPdf: {
     parameters: {
       query: {
-        /** Access token */
-        accessToken?: string;
-        /** Sector id */
-        id: number;
+        "Access token"?: string;
+        "Sector id": number;
       };
     };
     responses: {
-      /** successful operation */
       200: {
-        schema: string[];
+        content: {
+          "application/pdf": string[];
+        };
       };
     };
   };
@@ -1693,358 +1563,317 @@ export type operations = {
       };
     };
     responses: {
-      /** successful operation */
       200: {
-        schema: string;
+        content: {
+          "text/html": string;
+        };
       };
     };
   };
   getTicks: {
     parameters: {
       query: {
-        /** Page (ticks ordered descending, 0 returns fist page) */
-        page?: number;
-      };
-      header: {
-        /** Authorization token */
-        Authorization?: string;
+        "Page (ticks ordered descending, 0 returns fist page)"?: number;
       };
     };
     responses: {
-      /** successful operation */
       200: {
-        schema: definitions["Ticks"];
+        content: {
+          "application/json": components["schemas"]["Ticks"];
+        };
       };
     };
   };
   postTicks: {
-    parameters: {
-      body: {
-        body?: definitions["Tick"];
-      };
-      header: {
-        /** Authorization token */
-        Authorization: string;
+    responses: {
+      /** default response */
+      default: {
+        content: {
+          "*/*": unknown;
+        };
       };
     };
-    responses: {
-      /** successful operation */
-      default: unknown;
+    requestBody: {
+      content: {
+        "*/*": components["schemas"]["Tick"];
+      };
     };
   };
   getTodo: {
     parameters: {
       query: {
-        /** Area id (can be 0 if idSector>0) */
-        idArea: number;
-        /** Sector id (can be 0 if idArea>0) */
-        idSector: number;
-      };
-      header: {
-        /** Authorization token */
-        Authorization?: string;
+        "Area id (can be 0 if idSector>0)": number;
+        "Sector id (can be 0 if idArea>0)": number;
       };
     };
     responses: {
-      /** successful operation */
       200: {
-        schema: definitions["Todo"];
+        content: {
+          "application/json": components["schemas"]["Todo"];
+        };
       };
     };
   };
   postTodo: {
     parameters: {
       query: {
-        /** Problem id */
-        idProblem: number;
-      };
-      header: {
-        /** Authorization token */
-        Authorization: string;
+        "Problem id": number;
       };
     };
     responses: {
-      /** successful operation */
-      default: unknown;
+      /** default response */
+      default: {
+        content: {
+          "*/*": unknown;
+        };
+      };
     };
   };
   getTop: {
     parameters: {
       query: {
-        /** Area id (can be 0 if idSector>0) */
-        idArea: number;
-        /** Sector id (can be 0 if idArea>0) */
-        idSector: number;
-      };
-      header: {
-        /** Authorization token */
-        Authorization?: string;
+        "Area id (can be 0 if idSector>0)": number;
+        "Sector id (can be 0 if idArea>0)": number;
       };
     };
     responses: {
-      /** successful operation */
       200: {
-        schema: definitions["Top"][];
+        content: {
+          "application/json": components["schemas"]["Top"][];
+        };
       };
     };
   };
   getTrash: {
-    parameters: {
-      header: {
-        /** Authorization token */
-        Authorization: string;
-      };
-    };
     responses: {
-      /** successful operation */
       200: {
-        schema: definitions["Trash"][];
+        content: {
+          "application/json": components["schemas"]["Trash"][];
+        };
       };
     };
   };
   putTrash: {
     parameters: {
       query: {
-        /** Area id */
-        idArea: number;
-        /** Sector id */
-        idSector: number;
-        /** Problem id */
-        idProblem: number;
-        /** Media id */
-        idMedia: number;
-      };
-      header: {
-        /** Authorization token */
-        Authorization: string;
+        "Area id": number;
+        "Sector id": number;
+        "Problem id": number;
+        "Media id": number;
       };
     };
     responses: {
-      /** successful operation */
-      default: unknown;
+      /** default response */
+      default: {
+        content: {
+          "*/*": unknown;
+        };
+      };
     };
   };
   getUsersSearch: {
     parameters: {
       query: {
-        /** Search keyword */
-        value: string;
-      };
-      header: {
-        /** Authorization token */
-        Authorization?: string;
+        "Search keyword": string;
       };
     };
     responses: {
-      /** successful operation */
       200: {
-        schema: definitions["UserSearch"][];
+        content: {
+          "application/json": components["schemas"]["UserSearch"][];
+        };
       };
     };
   };
   getUsersTicks: {
-    parameters: {
-      header: {
-        /** Authorization token */
-        Authorization: string;
-      };
-    };
     responses: {
-      /** successful operation */
       200: {
-        schema: string[];
+        content: {
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string[];
+        };
       };
     };
   };
   getWithoutJs: {
-    parameters: {};
     responses: {
-      /** successful operation */
       200: {
-        schema: string;
+        content: {
+          "text/html": string;
+        };
       };
     };
   };
   getWithoutJsArea: {
     parameters: {
       path: {
-        /** Area id */
         id: number;
       };
     };
     responses: {
-      /** successful operation */
       200: {
-        schema: string;
+        content: {
+          "text/html": string;
+        };
       };
     };
   };
   getWithoutJsProblem: {
     parameters: {
       path: {
-        /** Problem id */
         id: number;
       };
     };
     responses: {
-      /** successful operation */
       200: {
-        schema: string;
+        content: {
+          "text/html": string;
+        };
       };
     };
   };
   getWithoutJsSector: {
     parameters: {
       path: {
-        /** Sector id */
         id: number;
       };
     };
     responses: {
-      /** successful operation */
       200: {
-        schema: string;
+        content: {
+          "text/html": string;
+        };
       };
     };
   };
   postComments: {
-    parameters: {
-      body: {
-        body?: definitions["FormDataMultiPart"];
-      };
-      header: {
-        /** Authorization token */
-        Authorization: string;
+    responses: {
+      /** default response */
+      default: {
+        content: {
+          "application/json; charset=utf-8": unknown;
+        };
       };
     };
-    responses: {
-      /** successful operation */
-      default: unknown;
+    requestBody: {
+      content: {
+        "multipart/form-data; charset=utf-8": components["schemas"]["FormDataMultiPart"];
+      };
     };
   };
   postMediaSvg: {
-    parameters: {
-      body: {
-        body?: definitions["Media"];
-      };
-      header: {
-        /** Authorization token */
-        Authorization: string;
+    responses: {
+      /** default response */
+      default: {
+        content: {
+          "*/*": unknown;
+        };
       };
     };
-    responses: {
-      /** successful operation */
-      default: unknown;
+    requestBody: {
+      content: {
+        "*/*": components["schemas"]["Media"];
+      };
     };
   };
   postProblemsMedia: {
     parameters: {
       query: {
-        /** Problem id */
-        problemId: number;
-      };
-      body: {
-        body?: definitions["FormDataMultiPart"];
-      };
-      header: {
-        /** Authorization token */
-        Authorization: string;
+        "Problem id": number;
       };
     };
     responses: {
-      /** successful operation */
       200: {
-        schema: definitions["Problem"];
+        content: {
+          "application/json": components["schemas"]["Problem"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "multipart/form-data; charset=utf-8": components["schemas"]["FormDataMultiPart"];
       };
     };
   };
   postProblemsSvg: {
     parameters: {
       query: {
-        /** Problem id */
-        problemId: number;
-        /** Media id */
-        mediaId: number;
-      };
-      body: {
-        body?: definitions["Svg"];
-      };
-      header: {
-        /** Authorization token */
-        Authorization: string;
+        "Problem id": number;
+        "Media id": number;
       };
     };
     responses: {
-      /** successful operation */
-      default: unknown;
+      /** default response */
+      default: {
+        content: {
+          "*/*": unknown;
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "*/*": components["schemas"]["Svg"];
+      };
     };
   };
   postSearch: {
-    parameters: {
-      body: {
-        body?: definitions["SearchRequest"];
-      };
-      header: {
-        /** Authorization token */
-        Authorization?: string;
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["Search"][];
+        };
       };
     };
-    responses: {
-      /** successful operation */
-      200: {
-        schema: definitions["Search"][];
+    requestBody: {
+      content: {
+        "*/*": components["schemas"]["SearchRequest"];
       };
     };
   };
   postUserRegions: {
     parameters: {
       query: {
-        /** Region id */
-        regionId: number;
-        /** Delete (TRUE=hide, FALSE=show) */
-        delete: boolean;
-      };
-      header: {
-        /** Authorization token */
-        Authorization: string;
+        "Region id": number;
+        "Delete (TRUE=hide, FALSE=show)": boolean;
       };
     };
     responses: {
-      /** successful operation */
-      default: unknown;
+      /** default response */
+      default: {
+        content: {
+          "*/*": unknown;
+        };
+      };
     };
   };
   putMediaInfo: {
-    parameters: {
-      body: {
-        body?: definitions["MediaInfo"];
-      };
-      header: {
-        /** Authorization token */
-        Authorization: string;
+    responses: {
+      /** default response */
+      default: {
+        content: {
+          "*/*": unknown;
+        };
       };
     };
-    responses: {
-      /** successful operation */
-      default: unknown;
+    requestBody: {
+      content: {
+        "*/*": components["schemas"]["MediaInfo"];
+      };
     };
   };
   putMediaJpegRotate: {
     parameters: {
       query: {
-        /** Media id */
-        idMedia: number;
-        /** Degrees (90/180/270) */
-        degrees: number;
-      };
-      header: {
-        /** Authorization token */
-        Authorization: string;
+        "Media id": number;
+        "Degrees (90/180/270)": number;
       };
     };
     responses: {
-      /** successful operation */
-      default: unknown;
+      /** default response */
+      default: {
+        content: {
+          "*/*": unknown;
+        };
+      };
     };
   };
 };

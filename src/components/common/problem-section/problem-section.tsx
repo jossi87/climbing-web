@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { Form, Input, Dropdown } from "semantic-ui-react";
-import { definitions } from "../../../@types/buldreinfo/swagger";
+import { components } from "../../../@types/buldreinfo/swagger";
 import { useMeta } from "../meta";
 
 type Props = {
-  sections: definitions["ProblemSection"][];
-  onSectionsUpdated: (sections: definitions["ProblemSection"][]) => void;
+  sections: components["schemas"]["ProblemSection"][];
+  onSectionsUpdated: (
+    sections: components["schemas"]["ProblemSection"][],
+  ) => void;
 };
 
 const ProblemSection = ({

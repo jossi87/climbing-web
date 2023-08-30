@@ -39,10 +39,10 @@ import {
 import Linkify from "react-linkify";
 import { componentDecorator } from "../utils/componentDecorator";
 import { parsePolyline } from "../utils/polyline";
-import { definitions } from "../@types/buldreinfo/swagger";
+import { components } from "../@types/buldreinfo/swagger";
 
 type Props = {
-  problem: definitions["Sector"]["problems"][number];
+  problem: components["schemas"]["Sector"]["problems"][number];
 };
 
 const SectorListItem = ({ problem }: Props) => {

@@ -13,10 +13,10 @@ import {
 } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import { definitions } from "../@types/buldreinfo/swagger";
+import { components } from "../@types/buldreinfo/swagger";
 import { Mutable } from "../@types/buldreinfo";
 
-type PermissionsData = definitions["PermissionUser"];
+type PermissionsData = components["schemas"]["PermissionUser"];
 
 const COLORS = [
   "yellow", // default user

@@ -16,7 +16,7 @@ import TableOfContents from "../common/TableOfContents";
 import { useFilterState } from "./reducer";
 import { FilterContext, FilterForm } from "../common/FilterForm";
 import { HeaderButtons } from "../common/HeaderButtons";
-import { definitions } from "../../@types/buldreinfo/swagger";
+import { components } from "../../@types/buldreinfo/swagger";
 
 type Props = { filterOpen?: boolean };
 
@@ -43,7 +43,10 @@ type FilterProblem = {
   lng?: number;
 };
 
-type FilterSector = Pick<definitions["ProblemAreaSector"], "polygonCoords"> & {
+type FilterSector = Pick<
+  components["schemas"]["ProblemAreaSector"],
+  "polygonCoords"
+> & {
   id: number;
   lockedAdmin: boolean;
   lockedSuperadmin: boolean;

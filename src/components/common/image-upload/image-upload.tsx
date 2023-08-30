@@ -3,12 +3,12 @@ import { DropzoneOptions, useDropzone } from "react-dropzone";
 import { Button, Card, Image, Input, Checkbox } from "semantic-ui-react";
 import VideoEmbedder from "./video-embedder";
 import { UserSelector } from "../user-selector/user-selector";
-import { definitions } from "../../../@types/buldreinfo/swagger";
+import { components } from "../../../@types/buldreinfo/swagger";
 
 type UploadedMedia = {
   file?: File;
   preview?: string;
-} & definitions["NewMedia"];
+} & components["schemas"]["NewMedia"];
 
 type Props = {
   onMediaChanged: (newMedia: UploadedMedia[]) => void;
