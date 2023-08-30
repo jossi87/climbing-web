@@ -38,6 +38,11 @@ export const parsePolyline = (
         return acc;
       }
 
+      const last = acc[acc.length - 1];
+      if (lat === last?.[0] && lng === last?.[1]) {
+        return acc;
+      }
+
       return [...acc, [lat, lng]];
     }, []);
 };
