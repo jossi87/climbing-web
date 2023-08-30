@@ -3,149 +3,205 @@
  * Do not make direct changes to the file.
  */
 
+
 export type paths = {
   "/v2/media": {
+    /** Get Media by id */
     get: operations["getMedia"];
+    /** Update media location */
     put: operations["putMedia"];
+    /** Move media to trash */
     delete: operations["deleteMedia"];
   };
   "/v2/activity": {
+    /** Get activity feed */
     get: operations["getActivity"];
   };
   "/v2/administrators": {
+    /** Get administrators */
     get: operations["getAdministrators"];
   };
   "/v2/areas": {
+    /** Get areas */
     get: operations["getAreas"];
+    /** Update area (area must be provided as json on field "json" in multiPart) */
     post: operations["postAreas"];
   };
   "/v2/areas/pdf": {
+    /** Get area PDF by id */
     get: operations["getAreasPdf"];
   };
   "/v2/webcams": {
+    /** Get webcams */
     get: operations["getCameras"];
   };
   "/v2/dangerous": {
+    /** Get boulders/routes marked as dangerous */
     get: operations["getDangerous"];
   };
   "/v2/elevation": {
+    /** Get elevation by latitude and longitude */
     get: operations["getElevation"];
   };
   "/v2/frontpage": {
+    /** Get frontpage */
     get: operations["getFrontpage"];
   };
   "/v2/grade/distribution": {
+    /** Get grade distribution by Area Id or Sector Id */
     get: operations["getGradeDistribution"];
   };
   "/v2/graph": {
+    /** Get graph (number of boulders/routes grouped by grade) */
     get: operations["getGraph"];
   };
   "/v2/images": {
+    /** Get media by id */
     get: operations["getImages"];
   };
   "/v2/meta": {
+    /** Get metadata */
     get: operations["getMeta"];
   };
   "/v2/permissions": {
+    /** Get permissions */
     get: operations["getPermissions"];
+    /** Update user privilegies */
     post: operations["postPermissions"];
   };
   "/v2/problem": {
+    /** Get problem by id */
     get: operations["getProblem"];
   };
   "/v2/problem/pdf": {
+    /** Get problem PDF by id */
     get: operations["getProblemPdf"];
   };
   "/v2/problems": {
+    /** Get problems */
     get: operations["getProblems"];
+    /** Update problem (problem must be provided as json on field "json" in multiPart) */
     post: operations["postProblems"];
   };
   "/v2/problems/xlsx": {
+    /** Get problems as Excel (xlsx) */
     get: operations["getProblemsXlsx"];
   };
   "/v2/profile": {
+    /** Get profile by id */
     get: operations["getProfile"];
   };
   "/v2/profile/statistics": {
+    /** Get profile statistics by id */
     get: operations["getProfileStatistics"];
   };
   "/v2/profile/todo": {
+    /** Get profile todo */
     get: operations["getProfileTodo"];
   };
   "/v2/profile/media": {
+    /** Get profile media by id */
     get: operations["getProfilemedia"];
   };
   "/v2/robots.txt": {
+    /** Get robots.txt */
     get: operations["getRobotsTxt"];
   };
   "/v2/sectors": {
+    /** Get sector by id */
     get: operations["getSectors"];
+    /** Update sector (sector smust be provided as json on field "json" in multiPart) */
     post: operations["postSectors"];
   };
   "/v2/sectors/pdf": {
+    /** Get sector PDF by id */
     get: operations["getSectorsPdf"];
   };
   "/v2/sitemap.txt": {
+    /** Get sitemap.txt */
     get: operations["getSitemapTxt"];
   };
   "/v2/ticks": {
+    /** Get ticks (public ascents) */
     get: operations["getTicks"];
+    /** Update tick (public ascent) */
     post: operations["postTicks"];
   };
   "/v2/todo": {
+    /** Get todo on Area/Sector */
     get: operations["getTodo"];
+    /** Update todo */
     post: operations["postTodo"];
   };
   "/v2/top": {
+    /** Get top on Area/Sector */
     get: operations["getTop"];
   };
   "/v2/trash": {
+    /** Get trash */
     get: operations["getTrash"];
+    /** Move Area/Sector/Problem/Media to trash (only one of the arguments must be different from 0) */
     put: operations["putTrash"];
   };
   "/v2/users/search": {
+    /** Search for user */
     get: operations["getUsersSearch"];
   };
   "/v2/users/ticks": {
+    /** Get ticks (public ascents) on logged in user as Excel file (xlsx) */
     get: operations["getUsersTicks"];
   };
   "/v2/without-js": {
+    /** Get Frontpage without JavaScript (for embedding on e.g. Facebook) */
     get: operations["getWithoutJs"];
   };
   "/v2/without-js/area/{id}": {
+    /** Get area by id without JavaScript (for embedding on e.g. Facebook) */
     get: operations["getWithoutJsArea"];
   };
   "/v2/without-js/problem/{id}": {
+    /** Get problem by id without JavaScript (for embedding on e.g. Facebook) */
     get: operations["getWithoutJsProblem"];
   };
   "/v2/without-js/sector/{id}": {
+    /** Get sector by id without JavaScript (for embedding on e.g. Facebook) */
     get: operations["getWithoutJsSector"];
   };
   "/v2/comments": {
+    /** Update comment (comment must be provided as json on field "json" in multiPart) */
     post: operations["postComments"];
   };
   "/v2/media/svg": {
+    /** Update Media SVG */
     post: operations["postMediaSvg"];
   };
   "/v2/problems/media": {
+    /** Add media on problem (problem must be provided as json on field "json" in multiPart) */
     post: operations["postProblemsMedia"];
   };
   "/v2/problems/svg": {
+    /** Update topo line on route/boulder (SVG on sector/problem-image) */
     post: operations["postProblemsSvg"];
   };
   "/v2/search": {
+    /** Search for area/sector/problem/user */
     post: operations["postSearch"];
   };
   "/v2/user/regions": {
+    /** Update visible regions */
     post: operations["postUserRegions"];
   };
   "/v2/media/info": {
+    /** Update media info */
     put: operations["putMediaInfo"];
   };
   "/v2/media/jpeg/rotate": {
+    /** Update media rotation (allowed for administrators + user who uploaded specific image) */
     put: operations["putMediaJpegRotate"];
   };
 };
+
+export type webhooks = Record<string, never>;
 
 export type components = {
   schemas: {
@@ -827,6 +883,50 @@ export type components = {
       /** Format: double */
       lng?: number;
     };
+    ProfileTodo: {
+      areas?: components["schemas"]["ProfileTodoArea"][];
+    };
+    ProfileTodoArea: {
+      /** Format: int32 */
+      id?: number;
+      url?: string;
+      name?: string;
+      lockedAdmin?: boolean;
+      lockedSuperadmin?: boolean;
+      sectors?: components["schemas"]["ProfileTodoSector"][];
+    };
+    ProfileTodoPartner: {
+      /** Format: int32 */
+      id?: number;
+      name?: string;
+    };
+    ProfileTodoProblem: {
+      /** Format: int32 */
+      todoId?: number;
+      /** Format: int32 */
+      id?: number;
+      url?: string;
+      lockedAdmin?: boolean;
+      lockedSuperadmin?: boolean;
+      /** Format: int32 */
+      nr?: number;
+      name?: string;
+      grade?: string;
+      /** Format: double */
+      lat?: number;
+      /** Format: double */
+      lng?: number;
+      partners?: components["schemas"]["ProfileTodoPartner"][];
+    };
+    ProfileTodoSector: {
+      /** Format: int32 */
+      id?: number;
+      url?: string;
+      name?: string;
+      lockedAdmin?: boolean;
+      lockedSuperadmin?: boolean;
+      problems?: components["schemas"]["ProfileTodoProblem"][];
+    };
     ProfileMedia: {
       /** Format: int32 */
       id?: number;
@@ -1001,21 +1101,25 @@ export type components = {
     };
     BodyPart: {
       contentDisposition?: components["schemas"]["ContentDisposition"];
-      entity?: { [key: string]: unknown };
+      entity?: Record<string, never>;
       headers?: {
         empty?: boolean;
-      } & { [key: string]: string[] };
+        [key: string]: string[] | undefined;
+      };
       mediaType?: components["schemas"]["MediaType"];
       messageBodyWorkers?: components["schemas"]["MessageBodyWorkers"];
       parent?: components["schemas"]["MultiPart"];
       providers?: components["schemas"]["Providers"];
       parameterizedHeaders?: {
         empty?: boolean;
-      } & { [key: string]: components["schemas"]["ParameterizedHeader"][] };
+        [key: string]: components["schemas"]["ParameterizedHeader"][] | undefined;
+      };
     };
     ContentDisposition: {
       type?: string;
-      parameters?: { [key: string]: string };
+      parameters?: {
+        [key: string]: string;
+      };
       fileName?: string;
       /** Format: date-time */
       creationDate?: string;
@@ -1028,27 +1132,31 @@ export type components = {
     };
     FormDataBodyPart: {
       contentDisposition?: components["schemas"]["ContentDisposition"];
-      entity?: { [key: string]: unknown };
+      entity?: Record<string, never>;
       headers?: {
         empty?: boolean;
-      } & { [key: string]: string[] };
+        [key: string]: string[] | undefined;
+      };
       mediaType?: components["schemas"]["MediaType"];
       messageBodyWorkers?: components["schemas"]["MessageBodyWorkers"];
       parent?: components["schemas"]["MultiPart"];
       providers?: components["schemas"]["Providers"];
       name?: string;
       value?: string;
-      content?: { [key: string]: unknown };
+      content?: Record<string, never>;
       fileName?: string;
       simple?: boolean;
       formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
       parameterizedHeaders?: {
         empty?: boolean;
-      } & { [key: string]: components["schemas"]["ParameterizedHeader"][] };
+        [key: string]: components["schemas"]["ParameterizedHeader"][] | undefined;
+      };
     };
     FormDataContentDisposition: {
       type?: string;
-      parameters?: { [key: string]: string };
+      parameters?: {
+        [key: string]: string;
+      };
       fileName?: string;
       /** Format: date-time */
       creationDate?: string;
@@ -1062,34 +1170,41 @@ export type components = {
     };
     FormDataMultiPart: {
       contentDisposition?: components["schemas"]["ContentDisposition"];
-      entity?: { [key: string]: unknown };
+      entity?: Record<string, never>;
       headers?: {
         empty?: boolean;
-      } & { [key: string]: string[] };
+        [key: string]: string[] | undefined;
+      };
       mediaType?: components["schemas"]["MediaType"];
       messageBodyWorkers?: components["schemas"]["MessageBodyWorkers"];
       parent?: components["schemas"]["MultiPart"];
       providers?: components["schemas"]["Providers"];
       bodyParts?: components["schemas"]["BodyPart"][];
-      fields?: { [key: string]: components["schemas"]["FormDataBodyPart"][] };
+      fields?: {
+        [key: string]: components["schemas"]["FormDataBodyPart"][];
+      };
       parameterizedHeaders?: {
         empty?: boolean;
-      } & { [key: string]: components["schemas"]["ParameterizedHeader"][] };
+        [key: string]: components["schemas"]["ParameterizedHeader"][] | undefined;
+      };
     };
     MediaType: {
       type?: string;
       subtype?: string;
-      parameters?: { [key: string]: string };
+      parameters?: {
+        [key: string]: string;
+      };
       wildcardType?: boolean;
       wildcardSubtype?: boolean;
     };
-    MessageBodyWorkers: { [key: string]: unknown };
+    MessageBodyWorkers: Record<string, never>;
     MultiPart: {
       contentDisposition?: components["schemas"]["ContentDisposition"];
-      entity?: { [key: string]: unknown };
+      entity?: Record<string, never>;
       headers?: {
         empty?: boolean;
-      } & { [key: string]: string[] };
+        [key: string]: string[] | undefined;
+      };
       mediaType?: components["schemas"]["MediaType"];
       messageBodyWorkers?: components["schemas"]["MessageBodyWorkers"];
       parent?: components["schemas"]["MultiPart"];
@@ -1097,19 +1212,24 @@ export type components = {
       bodyParts?: components["schemas"]["BodyPart"][];
       parameterizedHeaders?: {
         empty?: boolean;
-      } & { [key: string]: components["schemas"]["ParameterizedHeader"][] };
+        [key: string]: components["schemas"]["ParameterizedHeader"][] | undefined;
+      };
     };
     MultivaluedMapStringParameterizedHeader: {
       empty?: boolean;
-    } & { [key: string]: components["schemas"]["ParameterizedHeader"][] };
+      [key: string]: components["schemas"]["ParameterizedHeader"][] | undefined;
+    };
     MultivaluedMapStringString: {
       empty?: boolean;
-    } & { [key: string]: string[] };
+      [key: string]: string[] | undefined;
+    };
     ParameterizedHeader: {
       value?: string;
-      parameters?: { [key: string]: string };
+      parameters?: {
+        [key: string]: string;
+      };
     };
-    Providers: { [key: string]: unknown };
+    Providers: Record<string, never>;
     Search: {
       title?: string;
       description?: string;
@@ -1148,9 +1268,20 @@ export type components = {
       trivia?: boolean;
     };
   };
+  responses: never;
+  parameters: never;
+  requestBodies: never;
+  headers: never;
+  pathItems: never;
 };
 
+export type $defs = Record<string, never>;
+
+export type external = Record<string, never>;
+
 export type operations = {
+
+  /** Get Media by id */
   getMedia: {
     parameters: {
       query: {
@@ -1165,6 +1296,7 @@ export type operations = {
       };
     };
   };
+  /** Update media location */
   putMedia: {
     parameters: {
       query: {
@@ -1175,7 +1307,7 @@ export type operations = {
       };
     };
     responses: {
-      /** default response */
+      /** @description default response */
       default: {
         content: {
           "*/*": unknown;
@@ -1183,6 +1315,7 @@ export type operations = {
       };
     };
   };
+  /** Move media to trash */
   deleteMedia: {
     parameters: {
       query: {
@@ -1190,7 +1323,7 @@ export type operations = {
       };
     };
     responses: {
-      /** default response */
+      /** @description default response */
       default: {
         content: {
           "*/*": unknown;
@@ -1198,6 +1331,7 @@ export type operations = {
       };
     };
   };
+  /** Get activity feed */
   getActivity: {
     parameters: {
       query: {
@@ -1218,6 +1352,7 @@ export type operations = {
       };
     };
   };
+  /** Get administrators */
   getAdministrators: {
     responses: {
       200: {
@@ -1227,9 +1362,10 @@ export type operations = {
       };
     };
   };
+  /** Get areas */
   getAreas: {
     parameters: {
-      query: {
+      query?: {
         "Area id"?: number;
       };
     };
@@ -1241,7 +1377,13 @@ export type operations = {
       };
     };
   };
+  /** Update area (area must be provided as json on field "json" in multiPart) */
   postAreas: {
+    requestBody?: {
+      content: {
+        "multipart/form-data; charset=utf-8": components["schemas"]["FormDataMultiPart"];
+      };
+    };
     responses: {
       200: {
         content: {
@@ -1249,12 +1391,8 @@ export type operations = {
         };
       };
     };
-    requestBody: {
-      content: {
-        "multipart/form-data; charset=utf-8": components["schemas"]["FormDataMultiPart"];
-      };
-    };
   };
+  /** Get area PDF by id */
   getAreasPdf: {
     parameters: {
       query: {
@@ -1270,6 +1408,7 @@ export type operations = {
       };
     };
   };
+  /** Get webcams */
   getCameras: {
     responses: {
       200: {
@@ -1279,6 +1418,7 @@ export type operations = {
       };
     };
   };
+  /** Get boulders/routes marked as dangerous */
   getDangerous: {
     responses: {
       200: {
@@ -1288,6 +1428,7 @@ export type operations = {
       };
     };
   };
+  /** Get elevation by latitude and longitude */
   getElevation: {
     parameters: {
       query: {
@@ -1303,6 +1444,7 @@ export type operations = {
       };
     };
   };
+  /** Get frontpage */
   getFrontpage: {
     responses: {
       200: {
@@ -1312,6 +1454,7 @@ export type operations = {
       };
     };
   };
+  /** Get grade distribution by Area Id or Sector Id */
   getGradeDistribution: {
     parameters: {
       query: {
@@ -1327,6 +1470,7 @@ export type operations = {
       };
     };
   };
+  /** Get graph (number of boulders/routes grouped by grade) */
   getGraph: {
     responses: {
       200: {
@@ -1336,6 +1480,7 @@ export type operations = {
       };
     };
   };
+  /** Get media by id */
   getImages: {
     parameters: {
       query: {
@@ -1352,6 +1497,7 @@ export type operations = {
       };
     };
   };
+  /** Get metadata */
   getMeta: {
     responses: {
       200: {
@@ -1361,6 +1507,7 @@ export type operations = {
       };
     };
   };
+  /** Get permissions */
   getPermissions: {
     responses: {
       200: {
@@ -1370,21 +1517,23 @@ export type operations = {
       };
     };
   };
+  /** Update user privilegies */
   postPermissions: {
+    requestBody?: {
+      content: {
+        "*/*": components["schemas"]["PermissionUser"];
+      };
+    };
     responses: {
-      /** default response */
+      /** @description default response */
       default: {
         content: {
           "*/*": unknown;
         };
       };
     };
-    requestBody: {
-      content: {
-        "*/*": components["schemas"]["PermissionUser"];
-      };
-    };
   };
+  /** Get problem by id */
   getProblem: {
     parameters: {
       query: {
@@ -1400,6 +1549,7 @@ export type operations = {
       };
     };
   };
+  /** Get problem PDF by id */
   getProblemPdf: {
     parameters: {
       query: {
@@ -1415,6 +1565,7 @@ export type operations = {
       };
     };
   };
+  /** Get problems */
   getProblems: {
     responses: {
       200: {
@@ -1424,7 +1575,13 @@ export type operations = {
       };
     };
   };
+  /** Update problem (problem must be provided as json on field "json" in multiPart) */
   postProblems: {
+    requestBody?: {
+      content: {
+        "multipart/form-data; charset=utf-8": components["schemas"]["FormDataMultiPart"];
+      };
+    };
     responses: {
       200: {
         content: {
@@ -1432,12 +1589,8 @@ export type operations = {
         };
       };
     };
-    requestBody: {
-      content: {
-        "multipart/form-data; charset=utf-8": components["schemas"]["FormDataMultiPart"];
-      };
-    };
   };
+  /** Get problems as Excel (xlsx) */
   getProblemsXlsx: {
     responses: {
       200: {
@@ -1447,6 +1600,7 @@ export type operations = {
       };
     };
   };
+  /** Get profile by id */
   getProfile: {
     parameters: {
       query: {
@@ -1461,6 +1615,7 @@ export type operations = {
       };
     };
   };
+  /** Get profile statistics by id */
   getProfileStatistics: {
     parameters: {
       query: {
@@ -1475,6 +1630,7 @@ export type operations = {
       };
     };
   };
+  /** Get profile todo */
   getProfileTodo: {
     parameters: {
       query: {
@@ -1484,11 +1640,12 @@ export type operations = {
     responses: {
       200: {
         content: {
-          "application/json": string[];
+          "application/json": components["schemas"]["ProfileTodo"];
         };
       };
     };
   };
+  /** Get profile media by id */
   getProfilemedia: {
     parameters: {
       query: {
@@ -1504,6 +1661,7 @@ export type operations = {
       };
     };
   };
+  /** Get robots.txt */
   getRobotsTxt: {
     responses: {
       200: {
@@ -1513,6 +1671,7 @@ export type operations = {
       };
     };
   };
+  /** Get sector by id */
   getSectors: {
     parameters: {
       query: {
@@ -1527,7 +1686,13 @@ export type operations = {
       };
     };
   };
+  /** Update sector (sector smust be provided as json on field "json" in multiPart) */
   postSectors: {
+    requestBody?: {
+      content: {
+        "multipart/form-data; charset=utf-8": components["schemas"]["FormDataMultiPart"];
+      };
+    };
     responses: {
       200: {
         content: {
@@ -1535,12 +1700,8 @@ export type operations = {
         };
       };
     };
-    requestBody: {
-      content: {
-        "multipart/form-data; charset=utf-8": components["schemas"]["FormDataMultiPart"];
-      };
-    };
   };
+  /** Get sector PDF by id */
   getSectorsPdf: {
     parameters: {
       query: {
@@ -1556,9 +1717,10 @@ export type operations = {
       };
     };
   };
+  /** Get sitemap.txt */
   getSitemapTxt: {
     parameters: {
-      query: {
+      query?: {
         base?: string;
       };
     };
@@ -1570,9 +1732,10 @@ export type operations = {
       };
     };
   };
+  /** Get ticks (public ascents) */
   getTicks: {
     parameters: {
-      query: {
+      query?: {
         "Page (ticks ordered descending, 0 returns fist page)"?: number;
       };
     };
@@ -1584,21 +1747,23 @@ export type operations = {
       };
     };
   };
+  /** Update tick (public ascent) */
   postTicks: {
+    requestBody?: {
+      content: {
+        "*/*": components["schemas"]["Tick"];
+      };
+    };
     responses: {
-      /** default response */
+      /** @description default response */
       default: {
         content: {
           "*/*": unknown;
         };
       };
     };
-    requestBody: {
-      content: {
-        "*/*": components["schemas"]["Tick"];
-      };
-    };
   };
+  /** Get todo on Area/Sector */
   getTodo: {
     parameters: {
       query: {
@@ -1614,6 +1779,7 @@ export type operations = {
       };
     };
   };
+  /** Update todo */
   postTodo: {
     parameters: {
       query: {
@@ -1621,7 +1787,7 @@ export type operations = {
       };
     };
     responses: {
-      /** default response */
+      /** @description default response */
       default: {
         content: {
           "*/*": unknown;
@@ -1629,6 +1795,7 @@ export type operations = {
       };
     };
   };
+  /** Get top on Area/Sector */
   getTop: {
     parameters: {
       query: {
@@ -1644,6 +1811,7 @@ export type operations = {
       };
     };
   };
+  /** Get trash */
   getTrash: {
     responses: {
       200: {
@@ -1653,6 +1821,7 @@ export type operations = {
       };
     };
   };
+  /** Move Area/Sector/Problem/Media to trash (only one of the arguments must be different from 0) */
   putTrash: {
     parameters: {
       query: {
@@ -1663,7 +1832,7 @@ export type operations = {
       };
     };
     responses: {
-      /** default response */
+      /** @description default response */
       default: {
         content: {
           "*/*": unknown;
@@ -1671,6 +1840,7 @@ export type operations = {
       };
     };
   };
+  /** Search for user */
   getUsersSearch: {
     parameters: {
       query: {
@@ -1685,6 +1855,7 @@ export type operations = {
       };
     };
   };
+  /** Get ticks (public ascents) on logged in user as Excel file (xlsx) */
   getUsersTicks: {
     responses: {
       200: {
@@ -1694,6 +1865,7 @@ export type operations = {
       };
     };
   };
+  /** Get Frontpage without JavaScript (for embedding on e.g. Facebook) */
   getWithoutJs: {
     responses: {
       200: {
@@ -1703,6 +1875,7 @@ export type operations = {
       };
     };
   };
+  /** Get area by id without JavaScript (for embedding on e.g. Facebook) */
   getWithoutJsArea: {
     parameters: {
       path: {
@@ -1717,6 +1890,7 @@ export type operations = {
       };
     };
   };
+  /** Get problem by id without JavaScript (for embedding on e.g. Facebook) */
   getWithoutJsProblem: {
     parameters: {
       path: {
@@ -1731,6 +1905,7 @@ export type operations = {
       };
     };
   };
+  /** Get sector by id without JavaScript (for embedding on e.g. Facebook) */
   getWithoutJsSector: {
     parameters: {
       path: {
@@ -1745,40 +1920,48 @@ export type operations = {
       };
     };
   };
+  /** Update comment (comment must be provided as json on field "json" in multiPart) */
   postComments: {
+    requestBody?: {
+      content: {
+        "multipart/form-data; charset=utf-8": components["schemas"]["FormDataMultiPart"];
+      };
+    };
     responses: {
-      /** default response */
+      /** @description default response */
       default: {
         content: {
           "application/json; charset=utf-8": unknown;
         };
       };
     };
-    requestBody: {
+  };
+  /** Update Media SVG */
+  postMediaSvg: {
+    requestBody?: {
       content: {
-        "multipart/form-data; charset=utf-8": components["schemas"]["FormDataMultiPart"];
+        "*/*": components["schemas"]["Media"];
       };
     };
-  };
-  postMediaSvg: {
     responses: {
-      /** default response */
+      /** @description default response */
       default: {
         content: {
           "*/*": unknown;
         };
       };
     };
-    requestBody: {
-      content: {
-        "*/*": components["schemas"]["Media"];
-      };
-    };
   };
+  /** Add media on problem (problem must be provided as json on field "json" in multiPart) */
   postProblemsMedia: {
     parameters: {
       query: {
         "Problem id": number;
+      };
+    };
+    requestBody?: {
+      content: {
+        "multipart/form-data; charset=utf-8": components["schemas"]["FormDataMultiPart"];
       };
     };
     responses: {
@@ -1788,12 +1971,8 @@ export type operations = {
         };
       };
     };
-    requestBody: {
-      content: {
-        "multipart/form-data; charset=utf-8": components["schemas"]["FormDataMultiPart"];
-      };
-    };
   };
+  /** Update topo line on route/boulder (SVG on sector/problem-image) */
   postProblemsSvg: {
     parameters: {
       query: {
@@ -1801,21 +1980,27 @@ export type operations = {
         "Media id": number;
       };
     };
+    requestBody?: {
+      content: {
+        "*/*": components["schemas"]["Svg"];
+      };
+    };
     responses: {
-      /** default response */
+      /** @description default response */
       default: {
         content: {
           "*/*": unknown;
         };
       };
     };
-    requestBody: {
+  };
+  /** Search for area/sector/problem/user */
+  postSearch: {
+    requestBody?: {
       content: {
-        "*/*": components["schemas"]["Svg"];
+        "*/*": components["schemas"]["SearchRequest"];
       };
     };
-  };
-  postSearch: {
     responses: {
       200: {
         content: {
@@ -1823,12 +2008,8 @@ export type operations = {
         };
       };
     };
-    requestBody: {
-      content: {
-        "*/*": components["schemas"]["SearchRequest"];
-      };
-    };
   };
+  /** Update visible regions */
   postUserRegions: {
     parameters: {
       query: {
@@ -1837,7 +2018,7 @@ export type operations = {
       };
     };
     responses: {
-      /** default response */
+      /** @description default response */
       default: {
         content: {
           "*/*": unknown;
@@ -1845,21 +2026,23 @@ export type operations = {
       };
     };
   };
+  /** Update media info */
   putMediaInfo: {
-    responses: {
-      /** default response */
-      default: {
-        content: {
-          "*/*": unknown;
-        };
-      };
-    };
-    requestBody: {
+    requestBody?: {
       content: {
         "*/*": components["schemas"]["MediaInfo"];
       };
     };
+    responses: {
+      /** @description default response */
+      default: {
+        content: {
+          "*/*": unknown;
+        };
+      };
+    };
   };
+  /** Update media rotation (allowed for administrators + user who uploaded specific image) */
   putMediaJpegRotate: {
     parameters: {
       query: {
@@ -1868,7 +2051,7 @@ export type operations = {
       };
     };
     responses: {
-      /** default response */
+      /** @description default response */
       default: {
         content: {
           "*/*": unknown;
@@ -1877,5 +2060,3 @@ export type operations = {
     };
   };
 };
-
-export type external = {};
