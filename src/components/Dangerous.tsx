@@ -68,7 +68,7 @@ const Dangerous = () => {
             <Header.Subheader>{description}</Header.Subheader>
           </Header.Content>
         </Header>
-        <TableOfContents enableMap={false} areas={areas} />
+        <TableOfContents areas={areas} />
       </Segment>
     </>
   );
