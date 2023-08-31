@@ -267,9 +267,10 @@ export const FilterForm = () => {
         <>
           <GroupHeader title="Types" reset="types" />
           <Form.Group inline>
-            {disciplineOptions.map((discipline) => (
-              <Form.Field key={discipline.key}>
+            <Form.Field>
+              {disciplineOptions.map((discipline) => (
                 <Checkbox
+                  key={discipline.key}
                   label={discipline.text}
                   checked={!!filterTypes?.[discipline.value]}
                   onChange={(_, { checked }) => {
@@ -279,9 +280,10 @@ export const FilterForm = () => {
                       checked,
                     });
                   }}
+                  style={{ marginRight: 10 }}
                 />
-              </Form.Field>
-            ))}
+              ))}
+            </Form.Field>
           </Form.Group>
         </>
       )}
@@ -346,9 +348,10 @@ export const FilterForm = () => {
         <>
           <GroupHeader title="Wall direction" reset="wall-directions" />
           <Form.Group inline>
-            {WALL_DIRECTIONS.map((option) => (
-              <Form.Field key={option.key}>
+            <Form.Field>
+              {WALL_DIRECTIONS.map((option) => (
                 <Checkbox
+                  key={option.key}
                   label={option.text}
                   checked={!!filterSectorWallDirections?.[option.value]}
                   onChange={(_, { checked }) => {
@@ -358,9 +361,10 @@ export const FilterForm = () => {
                       checked,
                     });
                   }}
+                  style={{ marginRight: 10 }}
                 />
-              </Form.Field>
-            ))}
+              ))}
+            </Form.Field>
           </Form.Group>
           <GroupHeader title="Conditions" reset="conditions" />
           <Form.Group inline>

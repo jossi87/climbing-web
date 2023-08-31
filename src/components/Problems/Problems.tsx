@@ -17,6 +17,8 @@ import { useFilterState } from "./reducer";
 import { FilterContext, FilterForm } from "../common/FilterForm";
 import { HeaderButtons } from "../common/HeaderButtons";
 import { components } from "../../@types/buldreinfo/swagger";
+import "./Problems.css";
+import { ProblemsMap } from "../common/TableOfContents/ProblemsMap";
 
 type Props = { filterOpen?: boolean };
 
@@ -71,11 +73,16 @@ type FilterArea = {
 
 export const Problems = ({ filterOpen }: Props) => {
   const { isBouldering, isClimbing } = useMeta();
-  const [state, dispatch] = useFilterState({ visible: !!filterOpen });
+  const [state, dispatch] = useFilterState({
+    visible: !!filterOpen || window.innerWidth > 991,
+  });
 
   const accessToken = useAccessToken();
   const { data: loadedData, status } = useProblems();
   const [isSaving, setIsSaving] = useState(false);
+  const [showMap, setShowMap] = useState(
+    !!(matchMedia && matchMedia("(pointer:fine)")?.matches),
+  );
 
   useEffect(() => {
     if (status === "success") {
@@ -166,107 +173,120 @@ export const Problems = ({ filterOpen }: Props) => {
     })),
   }));
 
-  const preamble = (
-    <>
-      <HeaderButtons
-        header={title}
-        subheader={totalDescription}
-        icon="database"
-      >
-        <Button
-          labelPosition="left"
-          icon
-          toggle
-          active={visible}
-          onClick={() => dispatch({ action: "toggle-filter" })}
-          primary={filteredProblems > 0}
-        >
-          <Icon name="filter" />
-          Filter {things}
-        </Button>
-        <Button
-          loading={isSaving}
-          icon
-          labelPosition="left"
-          onClick={() => {
-            setIsSaving(true);
-            let filename = "problems.xlsx";
-            getProblemsXlsx(accessToken)
-              .then((response) => {
-                filename = response.headers
-                  .get("content-disposition")
-                  .slice(22, -1);
-                return response.blob();
-              })
-              .then((blob) => {
-                setIsSaving(false);
-                saveAs(blob, filename);
-              });
-          }}
-        >
-          <Icon name="file excel" />
-          Download
-        </Button>
-      </HeaderButtons>
-      {visible && (
-        <>
-          <Divider />
-          <FilterForm />
-        </>
-      )}
-      {!visible && filteredProblems > 0 && (
-        <Message warning>
-          There is an active filter which is hiding{" "}
-          <strong>
-            {description(
-              filteredAreas,
-              filteredSectors,
-              filteredProblems,
-              things,
-            )}
-          </strong>
-          .
-          <br />
-          <ButtonGroup size="tiny">
-            <Button compact onClick={() => dispatch({ action: "open-filter" })}>
-              <Icon name="edit outline" />
-              Edit filter
-            </Button>
-            <Button.Or />
-            <Button
-              compact
-              onClick={() => dispatch({ action: "reset", section: "all" })}
-            >
-              <Icon name="trash alternate outline" />
-              Clear filter
-            </Button>
-          </ButtonGroup>
-        </Message>
-      )}
-    </>
-  );
-
-  const mainContents = <TableOfContents enableMap areas={areas} />;
-
-  const content = visible ? (
-    <>
-      <Segment>{preamble}</Segment>
-      <Segment>{mainContents}</Segment>
-    </>
-  ) : (
-    <Segment>
-      {preamble}
-      {mainContents}
-    </Segment>
-  );
-
   return (
     <FilterContext.Provider value={{ ...state, dispatch }}>
       <Helmet>
         <title>{title}</title>
         <meta name="description" content={totalDescription}></meta>
       </Helmet>
-      {content}
+      <Segment>
+        <div className="filter-container">
+          <div className="filter-header">
+            <HeaderButtons
+              header={title}
+              subheader={totalDescription}
+              icon="database"
+            >
+              <Button
+                labelPosition="left"
+                icon
+                toggle
+                active={visible}
+                onClick={() => dispatch({ action: "toggle-filter" })}
+                primary={filteredProblems > 0}
+              >
+                <Icon name="filter" />
+                Filter {things}
+              </Button>
+              <Button
+                loading={isSaving}
+                icon
+                labelPosition="left"
+                onClick={() => {
+                  setIsSaving(true);
+                  let filename = "problems.xlsx";
+                  getProblemsXlsx(accessToken)
+                    .then((response) => {
+                      filename = response.headers
+                        .get("content-disposition")
+                        .slice(22, -1);
+                      return response.blob();
+                    })
+                    .then((blob) => {
+                      setIsSaving(false);
+                      saveAs(blob, filename);
+                    });
+                }}
+              >
+                <Icon name="file excel" />
+                Download
+              </Button>
+            </HeaderButtons>
+            <Divider />
+          </div>
+          <div className="filter-form">
+            {visible && (
+              <div>
+                <FilterForm />
+              </div>
+            )}
+          </div>
+          <div className="filter-results">
+            {!visible && filteredProblems > 0 && (
+              <Message warning>
+                There is an active filter which is hiding{" "}
+                <strong>
+                  {description(
+                    filteredAreas,
+                    filteredSectors,
+                    filteredProblems,
+                    things,
+                  )}
+                </strong>
+                .
+                <br />
+                <ButtonGroup size="tiny">
+                  <Button
+                    compact
+                    onClick={() => dispatch({ action: "open-filter" })}
+                  >
+                    <Icon name="edit outline" />
+                    Edit filter
+                  </Button>
+                  <Button.Or />
+                  <Button
+                    compact
+                    onClick={() =>
+                      dispatch({ action: "reset", section: "all" })
+                    }
+                  >
+                    <Icon name="trash alternate outline" />
+                    Clear filter
+                  </Button>
+                </ButtonGroup>
+              </Message>
+            )}
+            <TableOfContents
+              header={
+                <HeaderButtons>
+                  <Button
+                    toggle={showMap}
+                    active={showMap}
+                    icon
+                    labelPosition="left"
+                    onClick={() => setShowMap((v) => !v)}
+                  >
+                    <Icon name="map outline" />
+                    Map
+                  </Button>
+                </HeaderButtons>
+              }
+              subHeader={showMap && <ProblemsMap areas={areas} />}
+              areas={areas}
+            />
+          </div>
+        </div>
+      </Segment>
     </FilterContext.Provider>
   );
 };

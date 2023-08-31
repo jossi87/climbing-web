@@ -1,6 +1,6 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { Link } from "react-router-dom";
-import { List, Icon, Button } from "semantic-ui-react";
+import { List, Icon } from "semantic-ui-react";
 import {
   LockSymbol,
   Stars,
@@ -8,8 +8,6 @@ import {
   WallDirection,
 } from "../../common/widgets/widgets";
 import { components } from "../../../@types/buldreinfo/swagger";
-import { ProblemsMap } from "./ProblemsMap";
-import { HeaderButtons } from "../HeaderButtons";
 
 const JumpToTop = () => (
   <a onClick={() => window.scrollTo(0, 0)}>
@@ -18,7 +16,6 @@ const JumpToTop = () => (
 );
 
 export type Props = {
-  enableMap: boolean;
   areas: (Required<
     Pick<
       components["schemas"]["Area"],
@@ -55,13 +52,12 @@ export type Props = {
           })[];
       })[];
   })[];
+  header?: React.ReactNode;
+  subHeader?: React.ReactNode;
 };
 
-export const TableOfContents = ({ enableMap, areas }: Props) => {
+export const TableOfContents = ({ areas, header, subHeader }: Props) => {
   const areaRefs = useRef({});
-  const [showMap, setShowMap] = useState(
-    enableMap && !!(matchMedia && matchMedia("(pointer:fine)")?.matches),
-  );
 
   if (areas?.length === 0) {
     return <i>No results match your search criteria.</i>;
@@ -69,20 +65,7 @@ export const TableOfContents = ({ enableMap, areas }: Props) => {
 
   return (
     <>
-      {enableMap && (
-        <HeaderButtons>
-          <Button
-            toggle={showMap}
-            active={showMap}
-            icon
-            labelPosition="left"
-            onClick={() => setShowMap((v) => !v)}
-          >
-            <Icon name="map outline" />
-            Map
-          </Button>
-        </HeaderButtons>
-      )}
+      {header}
       <List celled link horizontal size="small">
         {areas.map((area) => (
           <React.Fragment key={area.id}>
@@ -101,7 +84,7 @@ export const TableOfContents = ({ enableMap, areas }: Props) => {
           </React.Fragment>
         ))}
       </List>
-      {showMap && <ProblemsMap areas={areas} />}
+      {subHeader}
       <List celled>
         {areas.map((area) => (
           <List.Item key={area.id}>
