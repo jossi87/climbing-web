@@ -286,11 +286,18 @@ const YrLink = ({ lat, lng }: Pick<ConditionLabelsProps, "lat" | "lng">) => {
   const label = (
     <Label
       href={`https://www.yr.no/en/forecast/daily-table/${lat},${lng}`}
-      rel="noopener"
+      rel="noopener noreferrer"
       target="_blank"
       image
       basic
       size="small"
+      onClick={(e) => {
+        if (matchMedia && !matchMedia("(hover:hover)")?.matches) {
+          // If the device doesn't have the ability to hover, don't take them
+          // to yr.no immediately.
+          e.preventDefault();
+        }
+      }}
     >
       <WeatherIcon symbol={isLoading ? "loading" : next1Hours} />
       Yr.no
@@ -329,6 +336,18 @@ const YrLink = ({ lat, lng }: Pick<ConditionLabelsProps, "lat" | "lng">) => {
             <td style={{ textAlign: "center" }}>1 hr</td>
             <td style={{ textAlign: "center" }}>6 hrs</td>
             <td style={{ textAlign: "center" }}>12 hrs</td>
+          </tr>
+          <tr>
+            <td colSpan={3}>
+              Provided by{" "}
+              <a
+                href={`https://www.yr.no/en/forecast/daily-table/${lat},${lng}`}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                yr.no
+              </a>
+            </td>
           </tr>
         </tbody>
       </table>
