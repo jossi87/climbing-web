@@ -446,6 +446,7 @@ const reducer = (state: State, update: Update): State => {
         case "all": {
           return {
             ...state,
+            filterAreaIds: {},
             filterGradeLow: undefined,
             filterGradeHigh: undefined,
             filterHideTicked: undefined,
