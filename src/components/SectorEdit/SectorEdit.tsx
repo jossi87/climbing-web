@@ -161,7 +161,7 @@ export const SectorEdit = () => {
   function onMouseMove(event) {
     if (leafletMode == "POLYGON") {
       const ms = Math.floor(Date.now());
-      if (ms > currPolygonPointFetched+200) {
+      if (ms > currPolygonPointFetched + 200) {
         setCurrPolygonPointFetched(ms);
         getElevation(accessToken, event.latlng.lat, event.latlng.lng).then(
           (res) => {
