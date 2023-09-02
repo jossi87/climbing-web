@@ -1,7 +1,6 @@
 import React, { ComponentProps, useEffect, useMemo, useState } from "react";
 import Leaflet from "../../leaflet/leaflet";
 import { useMeta } from "../../meta";
-import { parsePolyline } from "../../../../utils/polyline";
 import Markers, { MarkerDef } from "../../leaflet/markers";
 import type { Props as TocProps } from "../TableOfContents";
 import MarkerClusterGroup from "../../leaflet/react-leaflet-markercluster";
@@ -41,12 +40,11 @@ const useMarkers = (areas: Props["areas"]): MarkerDef[] => {
           let lng = 0;
 
           if (!problem.lat || !problem.lng) {
-            if (sector.polygonCoords) {
+            if (sector.outline?.length > 0) {
               if (!sectorBounds) {
                 sectorBounds = latLngBounds([]);
-                const parsedBounds = parsePolyline(sector.polygonCoords);
-                for (const latlng of parsedBounds) {
-                  sectorBounds.extend(latlng);
+                for (const c of sector.outline) {
+                  sectorBounds.extend([c.latitude, c.longitude]);
                 }
               }
               const { lat: centerLat, lng: centerLng } =
@@ -121,12 +119,12 @@ const SectorOutlines = ({ areas }: Props) => {
     const out = [];
     for (const area of areas) {
       for (const sector of area.sectors) {
-        if (!sector.polygonCoords) {
+        if (!sector.outline || sector.outline.length == 0) {
           continue;
         }
 
         out.push({
-          polygon: parsePolyline(sector.polygonCoords),
+          outline: sector.outline,
           url: `/sector/${sector.id}`,
           label: sector.name,
         });
@@ -138,8 +136,8 @@ const SectorOutlines = ({ areas }: Props) => {
   useEffect(() => {
     const bounds = new LatLngBounds([]);
     for (const outline of outlines) {
-      for (const latlng of outline.polygon) {
-        bounds.extend(latlng);
+      for (const c of outline.outline) {
+        bounds.extend([c.latitude, c.longitude]);
       }
     }
     if (bounds.isValid()) {

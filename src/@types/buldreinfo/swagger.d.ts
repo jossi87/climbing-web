@@ -304,7 +304,7 @@ export type components = {
       lat?: number;
       /** Format: double */
       lng?: number;
-      polygonCoords?: string;
+      outline?: components["schemas"]["Coordinate"][];
       wallDirection?: string;
       polyline?: string;
       /** Format: int32 */
@@ -322,6 +322,16 @@ export type components = {
       name?: string;
       /** Format: int32 */
       sorting?: number;
+    };
+    Coordinate: {
+      /** Format: int32 */
+      id?: number;
+      /** Format: double */
+      latitude?: number;
+      /** Format: double */
+      longitude?: number;
+      /** Format: double */
+      elevation?: number;
     };
     Media: {
       /** Format: int32 */
@@ -603,7 +613,7 @@ export type components = {
       group?: string;
       name?: string;
       url?: string;
-      polygonCoords?: string;
+      outline?: components["schemas"]["Coordinate"][];
       active?: boolean;
     };
     PermissionUser: {
@@ -657,7 +667,7 @@ export type components = {
       sectorLat?: number;
       /** Format: double */
       sectorLng?: number;
-      sectorPolygonCoords?: string;
+      sectorOutline?: components["schemas"]["Coordinate"][];
       sectorWallDirection?: string;
       sectorPolyline?: string;
       /** Format: int32 */
@@ -814,7 +824,7 @@ export type components = {
       lat?: number;
       /** Format: double */
       lng?: number;
-      polygonCoords?: string;
+      outline?: components["schemas"]["Coordinate"][];
       wallDirection?: string;
       lockedAdmin?: boolean;
       lockedSuperadmin?: boolean;
@@ -983,7 +993,7 @@ export type components = {
       lat?: number;
       /** Format: double */
       lng?: number;
-      polygonCoords?: string;
+      outline?: components["schemas"]["Coordinate"][];
       wallDirection?: string;
       polyline?: string;
       media?: components["schemas"]["Media"][];

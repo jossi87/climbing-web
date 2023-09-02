@@ -1,12 +1,12 @@
-import { LatLngExpression } from "leaflet";
 import React from "react";
 import { Polygon, Tooltip } from "react-leaflet";
 import { useNavigate } from "react-router";
+import { components } from "../../../@types/buldreinfo/swagger";
 
 type Props = {
   opacity: number;
   outlines: {
-    polygon: LatLngExpression[];
+    outline: components["schemas"]["Coordinate"][];
     background?: boolean;
     url?: string;
     label?: string;
@@ -20,13 +20,13 @@ export default function Polygons({
   addEventHandlers,
 }: Props) {
   const navigate = useNavigate();
-  if (!outlines) {
+  if (!outlines || outlines.length === 0) {
     return null;
   }
   return outlines.map((o) => (
     <Polygon
-      key={o.polygon.map((latlng) => latlng.toString()).join(" -> ")}
-      positions={o.polygon}
+      key={o.outline.map((c) => c.latitude + "," + c.longitude).join(" -> ")}
+      positions={o.outline.map((c) => [c.latitude, c.longitude])}
       color={o.background ? "red" : "#3388ff"}
       weight={o.background ? 1 : 3}
       eventHandlers={{

@@ -35,7 +35,7 @@ export type Props = {
     > &
       Pick<
         components["schemas"]["ProblemAreaSector"],
-        "polygonCoords" | "lat" | "lng"
+        "outline" | "lat" | "lng"
       > & {
         problems: (Required<
           Pick<

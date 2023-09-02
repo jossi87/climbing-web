@@ -47,7 +47,7 @@ type FilterProblem = {
 
 type FilterSector = Pick<
   components["schemas"]["ProblemAreaSector"],
-  "polygonCoords"
+  "outline"
 > & {
   id: number;
   lockedAdmin: boolean;
@@ -130,7 +130,7 @@ export const Problems = ({ filterOpen }: Props) => {
       name: sector.name,
       lat: sector.lat,
       lng: sector.lng,
-      polygonCoords: sector.polygonCoords,
+      outline: sector.outline,
       wallDirection: sector.wallDirection,
       problems: sector.problems.map((problem) => {
         const ascents =

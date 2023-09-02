@@ -167,16 +167,15 @@ const Area = () => {
     if (s.polyline) {
       const polyline = parsePolyline(s.polyline);
       distance = calculateDistance(polyline);
-      const label = s.polygonCoords == null && distance;
+      const label = (s.outline == null || s.outline.length === 0) && distance;
       polylines.push({ polyline, label });
     }
-    if (s.polygonCoords) {
-      const polygon = parsePolyline(s.polygonCoords);
+    if (s.outline?.length > 0) {
       const label = s.name + (distance ? " (" + distance + ")" : "");
       outlines.push({
         url: "/sector/" + s.id,
         label,
-        polygon,
+        outline: s.outline,
       });
     }
   }

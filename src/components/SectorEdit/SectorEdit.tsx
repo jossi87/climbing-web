@@ -112,7 +112,7 @@ export const SectorEdit = () => {
         data.accessClosed,
         data.lat,
         data.lng,
-        data.polygonCoords,
+        data.outline,
         data.polyline,
         data.newMedia,
         data.problemOrder,
@@ -136,14 +136,16 @@ export const SectorEdit = () => {
         lngStr: event.latlng.lng,
       }));
     } else if (leafletMode == "POLYGON") {
-      const coords = event.latlng.lat + "," + event.latlng.lng;
-      let { polygonCoords } = data;
-      if (polygonCoords) {
-        polygonCoords = polygonCoords + ";" + coords;
+      let { outline } = data;
+      if (outline?.length > 0) {
+        outline.push({
+          latitude: event.latlng.lat,
+          longitude: event.latlng.lng,
+        });
       } else {
-        polygonCoords = coords;
+        outline = [{ latitude: event.latlng.lat, longitude: event.latlng.lng }];
       }
-      setData((prevState) => ({ ...prevState, polygonCoords }));
+      setData((prevState) => ({ ...prevState, outline }));
     } else if (leafletMode == "POLYLINE") {
       const coords = event.latlng.lat + "," + event.latlng.lng;
       let { polyline } = data;
@@ -182,7 +184,7 @@ export const SectorEdit = () => {
     if (leafletMode == "PARKING") {
       setData((prevState) => ({ ...prevState, lat: 0, lng: 0 }));
     } else if (leafletMode == "POLYGON") {
-      setData((prevState) => ({ ...prevState, polygonCoords: null }));
+      setData((prevState) => ({ ...prevState, outline: null }));
     } else if (leafletMode == "POLYLINE") {
       setData((prevState) => ({ ...prevState, polyline: null }));
     }
@@ -231,15 +233,12 @@ export const SectorEdit = () => {
   if (area) {
     area.sectors.forEach((sector) => {
       if (sector.id != data.id) {
-        if (sector.polygonCoords) {
-          const sectorPolygon = parsePolyline(sector.polygonCoords);
-          if (sectorPolygon?.length > 0) {
-            outlines.push({
-              polygon: sectorPolygon,
-              background: true,
-              label: sector.name,
-            });
-          }
+        if (sector.outline?.length > 0) {
+          outlines.push({
+            outline: sector.outline,
+            background: true,
+            label: sector.name,
+          });
         }
         if (sector.polyline) {
           const sectorPolyline = parsePolyline(sector.polyline);
@@ -250,13 +249,9 @@ export const SectorEdit = () => {
       }
     });
   }
-  let polygonError = false;
-  const polygon = parsePolyline(data.polygonCoords, () => {
-    polygonError = true;
-  });
 
-  if (polygon?.length > 0) {
-    outlines.push({ polygon, background: false });
+  if (data.outline?.length > 0) {
+    outlines.push({ outline: data.outline, background: false });
   }
   const polyline = parsePolyline(data.polyline);
   if (polyline?.length > 0) {
@@ -447,7 +442,11 @@ export const SectorEdit = () => {
               >
                 <ZoomLogic area={area} sector={data} />
                 {leafletMode === "POLYGON" && (
-                  <PolylineMarkers polyline={data.polygonCoords} />
+                  <PolylineMarkers
+                    polyline={(data.outline || [])
+                      .map((c) => c.latitude + "," + c.longitude)
+                      .join(";")}
+                  />
                 )}
                 {leafletMode === "POLYLINE" && (
                   <PolylineMarkers polyline={data.polyline} />
@@ -480,10 +479,16 @@ export const SectorEdit = () => {
               <Form.Field>
                 <label>Outline {currPolygonPoint}</label>
                 <PolylineEditor
-                  polyline={data.polygonCoords}
-                  onChange={(polygonCoords) =>
-                    setData((prevState) => ({ ...prevState, polygonCoords }))
-                  }
+                  polyline={(data.outline || [])
+                    .map((c) => c.latitude + "," + c.longitude)
+                    .join(";")}
+                  onChange={(polygonCoords) => {
+                    const outline = parsePolyline(polygonCoords).map((x) => ({
+                      latitude: x[0],
+                      longitude: x[1],
+                    }));
+                    setData((prevState) => ({ ...prevState, outline }));
+                  }}
                 />
               </Form.Field>
             )}
@@ -545,7 +550,7 @@ export const SectorEdit = () => {
             positive
             loading={saving}
             onClick={save}
-            disabled={!data.name || polygonError}
+            disabled={!data.name}
           >
             Save sector
           </Button>

@@ -24,6 +24,7 @@ import MarkerClusterGroup from "./react-leaflet-markercluster";
 import { Segment, Checkbox } from "semantic-ui-react";
 import UseControl from "../../../utils/use-leaflet-control";
 import GetCenterFromDegrees from "../../../utils/map-utils";
+import { components } from "../../../@types/buldreinfo/swagger";
 
 function MapEvent({
   onMouseClick,
@@ -59,7 +60,7 @@ type Props = {
   onMouseMove?: LeafletMouseEventHandlerFn;
   outlines?: {
     background?: boolean;
-    polygon: LatLngExpression[];
+    outline: components["schemas"]["Coordinate"][];
     url?: string;
     label?: string;
   }[];
@@ -90,9 +91,11 @@ const UpdateBounds = ({
     ?.filter(({ lat, lng }) => lat && lng)
     ?.forEach((latlng) => bounds.extend(latlng));
   outlines
-    ?.filter(({ polygon }) => !!polygon)
-    ?.forEach(({ polygon }) =>
-      polygon.forEach((latlng) => bounds.extend(latlng)),
+    ?.filter(({ outline }) => !!outline)
+    ?.forEach(({ outline }) =>
+      outline.forEach((c) =>
+        bounds.extend({ lat: c.latitude, lng: c.longitude }),
+      ),
     );
   polylines
     ?.filter(({ polyline }) => polyline)

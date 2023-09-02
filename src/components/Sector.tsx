@@ -178,7 +178,7 @@ const Sector = () => {
       });
     }
   }
-  if (markers.length > 0 || data.polygonCoords) {
+  if (markers.length > 0 || data.outline?.length > 0) {
     const defaultCenter =
       data.lat && data.lat > 0
         ? { lat: data.lat, lng: data.lng }
@@ -187,12 +187,11 @@ const Sector = () => {
     const polyline = parsePolyline(data.polyline);
     let outlines;
     let polylines;
-    if (data.polygonCoords && addPolygon) {
-      const polygon = parsePolyline(data.polygonCoords);
+    if (data.outline?.length > 0 && addPolygon) {
       const label =
         data.name +
         (polyline?.length > 0 ? " (" + calculateDistance(polyline) + ")" : "");
-      outlines = [{ url: "/sector/" + data.id, label, polygon }];
+      outlines = [{ url: "/sector/" + data.id, label, outline: data.outline }];
     }
     if (polyline?.length > 0) {
       const label = outlines == null ? calculateDistance(polyline) : null;

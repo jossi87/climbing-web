@@ -5,7 +5,6 @@ import { Segment, Button, Header, Icon } from "semantic-ui-react";
 import Leaflet from "./common/leaflet/leaflet";
 import { Loading } from "./common/widgets/widgets";
 import { useMeta } from "./common/meta";
-import { parsePolyline } from "../utils/polyline";
 
 const Sites = () => {
   const meta = useMeta();
@@ -19,7 +18,7 @@ const Sites = () => {
     .map((s) => ({
       url: s.url,
       label: s.name,
-      polygon: parsePolyline(s.polygonCoords),
+      outline: s.outline,
     }));
   const map = (
     <Leaflet

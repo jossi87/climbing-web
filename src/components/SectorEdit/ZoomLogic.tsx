@@ -20,9 +20,9 @@ export const ZoomLogic = ({
   useEffect(() => {
     const bounds = latLngBounds([]);
     if (sectorRef.current) {
-      if (sectorRef.current.polygonCoords) {
-        for (const latlng of parsePolyline(sectorRef.current.polygonCoords)) {
-          bounds.extend(latlng);
+      if (sectorRef.current.outline?.length > 0) {
+        for (const coordinate of sectorRef.current.outline) {
+          bounds.extend([coordinate.latitude, coordinate.longitude]);
         }
       }
 

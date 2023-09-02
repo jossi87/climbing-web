@@ -120,12 +120,12 @@ export const Problem = () => {
     const polyline = parsePolyline(data.sectorPolyline);
     let outlines;
     let polylines;
-    if (data.sectorPolygonCoords && data.lat === 0 && data.lng === 0) {
-      const polygon = parsePolyline(data.sectorPolygonCoords);
+    if (data.sectorOutline?.length > 0 && data.lat === 0 && data.lng === 0) {
+      const outline = data.sectorOutline;
       const label =
         data.sectorName +
         (polyline?.length > 0 ? " (" + calculateDistance(polyline) + ")" : "");
-      outlines = [{ url: "/sector/" + data.sectorId, label, polygon }];
+      outlines = [{ url: "/sector/" + data.sectorId, label, outline }];
     }
     if (polyline?.length > 0) {
       const label = outlines == null ? calculateDistance(polyline) : null;

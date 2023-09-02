@@ -1,6 +1,7 @@
 import { createContext, useContext, useMemo } from "react";
 import { useData } from "../../../api";
 import { Helmet } from "react-helmet";
+import { components } from "../../../@types/buldreinfo/swagger";
 
 type Grade = {
   id: number;
@@ -17,7 +18,7 @@ type Site = {
   group: string;
   name: string;
   url: string;
-  polygonCoords: string;
+  outline: components["schemas"]["Coordinate"][];
   active: boolean;
 };
 
