@@ -131,6 +131,7 @@ const Leaflet = ({
   children,
 }: Props) => {
   const [groupByRock, setGroupByRock] = useState(!!rocks?.length);
+  const [showElevation, setShowElevation] = useState(false);
 
   const opacity = 0.6;
   const addEventHandlers = !onMouseClick && !onMouseMove;
@@ -212,10 +213,11 @@ const Leaflet = ({
       <FullscreenControl />
       <LocateControl />
       <ScaleControl maxWidth={100} metric={true} imperial={false} />
-      {rocks != null && rocks.length > 0 && (
-        <UseControl position="bottomleft">
+      <UseControl position="bottomleft">
+        {rocks != null && rocks.length > 0 && (
           <Checkbox
             as={Segment}
+            size="mini"
             label={<label>Group by rock</label>}
             toggle
             checked={groupByRock}
@@ -223,8 +225,20 @@ const Leaflet = ({
               setGroupByRock(d.checked);
             }}
           />
-        </UseControl>
-      )}
+        )}
+      </UseControl>
+      <UseControl position="bottomright">
+        <Checkbox
+          as={Segment}
+          size="mini"
+          label={<label>Elevation</label>}
+          toggle
+          checked={showElevation}
+          onChange={(e, d) => {
+            setShowElevation(d.checked);
+          }}
+        />
+      </UseControl>
       <LayersControl>
         <LayersControl.BaseLayer
           checked={showSatelliteImage}
@@ -286,6 +300,7 @@ const Leaflet = ({
           opacity={opacity}
           outlines={outlines}
           addEventHandlers={addEventHandlers}
+          showElevation={showElevation}
         />
         <Polylines opacity={opacity} polylines={polylines} />
       </FeatureGroup>

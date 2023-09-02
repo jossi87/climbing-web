@@ -1,5 +1,5 @@
 import React from "react";
-import { Polygon, Tooltip } from "react-leaflet";
+import { CircleMarker, Polygon, Tooltip } from "react-leaflet";
 import { useNavigate } from "react-router";
 import { components } from "../../../@types/buldreinfo/swagger";
 
@@ -12,18 +12,20 @@ type Props = {
     label?: string;
   }[];
   addEventHandlers?: boolean;
+  showElevation?: boolean;
 };
 
 export default function Polygons({
   opacity,
   outlines,
   addEventHandlers,
+  showElevation,
 }: Props) {
   const navigate = useNavigate();
   if (!outlines || outlines.length === 0) {
     return null;
   }
-  return outlines.map((o) => (
+  const polygons = outlines.map((o) => (
     <Polygon
       key={o.outline.map((c) => c.latitude + "," + c.longitude).join(" -> ")}
       positions={o.outline.map((c) => [c.latitude, c.longitude])}
@@ -53,4 +55,31 @@ export default function Polygons({
       )}
     </Polygon>
   ));
+  const elevations =
+    showElevation &&
+    outlines
+      .filter((o) => !o.background)
+      .map((o) =>
+        o.outline.map((c) => (
+          <CircleMarker
+            key={c.id}
+            radius={3}
+            center={[c.latitude, c.longitude]}
+          >
+            <Tooltip
+              opacity={opacity}
+              permanent
+              className="buldreinfo-tooltip-compact"
+            >
+              {c.elevation}
+            </Tooltip>
+          </CircleMarker>
+        )),
+      );
+  return (
+    <>
+      {polygons}
+      {elevations}
+    </>
+  );
 }
