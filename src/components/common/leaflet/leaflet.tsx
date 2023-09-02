@@ -227,18 +227,20 @@ const Leaflet = ({
           />
         )}
       </UseControl>
-      <UseControl position="bottomright">
-        <Checkbox
-          as={Segment}
-          size="mini"
-          label={<label>Elevation</label>}
-          toggle
-          checked={showElevation}
-          onChange={(e, d) => {
-            setShowElevation(d.checked);
-          }}
-        />
-      </UseControl>
+      {outlines && outlines.length > 0 && (
+        <UseControl position="bottomright">
+          <Checkbox
+            as={Segment}
+            size="mini"
+            label={<label>Elevation</label>}
+            toggle
+            checked={showElevation}
+            onChange={(e, d) => {
+              setShowElevation(d.checked);
+            }}
+          />
+        </UseControl>
+      )}
       <LayersControl>
         <LayersControl.BaseLayer
           checked={showSatelliteImage}
