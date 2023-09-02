@@ -160,16 +160,16 @@ export const SectorEdit = () => {
 
   function onMouseMove(event) {
     if (leafletMode == "POLYGON") {
-      const seconds = Math.floor(Date.now() / 1000);
-      if (seconds > currPolygonPointFetched) {
-        setCurrPolygonPointFetched(seconds);
+      const ms = Math.floor(Date.now());
+      if (ms > currPolygonPointFetched+200) {
+        setCurrPolygonPointFetched(ms);
         getElevation(accessToken, event.latlng.lat, event.latlng.lng).then(
           (res) => {
             setCurrPolygonPoint(
               " - " +
-                event.latlng.lat.toFixed(2) +
+                event.latlng.lat.toFixed(10) +
                 "," +
-                event.latlng.lng.toFixed(2) +
+                event.latlng.lng.toFixed(10) +
                 " (" +
                 res +
                 "m)",
