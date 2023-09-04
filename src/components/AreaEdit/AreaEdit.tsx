@@ -260,7 +260,7 @@ export const AreaEdit = () => {
               <Input
                 placeholder="Latitude"
                 value={data.coordinate?.latitude || ""}
-                onChange={setCoord("lat")}
+                onChange={setCoord("latitude")}
               />
             </Form.Field>
             <Form.Field>
@@ -268,7 +268,7 @@ export const AreaEdit = () => {
               <Input
                 placeholder="Longitude"
                 value={data.coordinate?.longitude || ""}
-                onChange={setCoord("lng")}
+                onChange={setCoord("longitude")}
               />
             </Form.Field>
           </Form.Group>

@@ -181,7 +181,7 @@ export const SectorEdit = () => {
 
   function clearDrawing() {
     if (leafletMode == "PARKING") {
-      setData((prevState) => ({ ...prevState, lat: 0, lng: 0 }));
+      setData((prevState) => ({ ...prevState, parking: null }));
     } else if (leafletMode == "POLYGON") {
       setData((prevState) => ({ ...prevState, outline: null }));
     } else if (leafletMode == "POLYLINE") {
@@ -194,7 +194,10 @@ export const SectorEdit = () => {
     if (isNaN(lat)) {
       lat = 0;
     }
-    const parking = data.parking;
+    let { parking } = data;
+    if (!parking) {
+      parking = {latitude: 0, longitude: 0};
+    }
     parking.latitude = lat;
     setData((prevState) => ({ ...prevState, parking }));
   }
@@ -204,7 +207,10 @@ export const SectorEdit = () => {
     if (isNaN(lng)) {
       lng = 0;
     }
-    const parking = data.parking;
+    let { parking } = data;
+    if (!parking) {
+      parking = {latitude: 0, longitude: 0};
+    }
     parking.longitude = lng;
     setData((prevState) => ({ ...prevState, parking }));
   }
@@ -262,8 +268,8 @@ export const SectorEdit = () => {
   if (data.parking) {
     defaultCenter = { lat: data.parking.latitude, lng: data.parking.longitude };
     defaultZoom = 14;
-  } else if (area.lat && area.lat) {
-    defaultCenter = { lat: area.lat, lng: area.lng };
+  } else if (area.coordinate) {
+    defaultCenter = { lat: area.coordinate.latitude, lng: area.coordinate.longitude };
     defaultZoom = 14;
   } else {
     defaultCenter = meta.defaultCenter;

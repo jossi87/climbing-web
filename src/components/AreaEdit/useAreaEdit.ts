@@ -63,7 +63,7 @@ type Update =
       key: "sunFromHour" | "sunToHour";
       value: number;
     }
-  | { action: "set-coord"; key: "lat" | "lng"; value: string }
+  | { action: "set-coord"; key: "latitude" | "longitude"; value: string }
   | { action: "set-lat-lng"; lat: number; lng: number }
   | { action: "set-sort"; sectorId: number; sorting: number }
   | { action: "set-media"; newMedia: NewMedia[] };
@@ -117,7 +117,12 @@ const reducer = (state: State, update: Update): State => {
     }
     case "set-coord": {
       const { key, value } = update;
-      return { ...state, [key]: getCoord(value) };
+      let { coordinate } = state;
+      if (!coordinate) {
+        coordinate = {latitude: 0, longitude: 0};
+      }
+      coordinate[key] = getCoord(value);
+      return { ...state, coordinate };
     }
     case "set-lat-lng": {
       const { lat: latitude, lng: longitude } = update;
@@ -175,7 +180,7 @@ type UseAreaEdit = (_: { areaId: number }) => {
   setNumber: (
     key: "sunFromHour" | "sunToHour",
   ) => (event: React.ChangeEvent, data: { value?: number }) => void;
-  setCoord: (key: "lat" | "lng") => ComponentProps<typeof Input>["onChange"];
+  setCoord: (key: "latitude" | "longitude") => ComponentProps<typeof Input>["onChange"];
   setLatLng: ComponentProps<typeof Leaflet>["onMouseClick"];
   setSectorSort: (sectorId: number) => ComponentProps<typeof Input>["onChange"];
   setBoolean: (
