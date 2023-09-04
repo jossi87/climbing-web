@@ -45,7 +45,7 @@ export type Props = {
         > &
           Pick<
             components["schemas"]["Problem"],
-            "stars" | "ticked" | "coordinate" | "broken"
+            "stars" | "ticked" | "coordinates" | "broken"
           > & {
             text?: string;
             subText?: string;

@@ -75,9 +75,9 @@ const ProblemEdit = () => {
     if (isNaN(lat)) {
       lat = 0;
     }
-    const coordinate = data.coordinate || { latitude: 0, longitude: 0 };
-    coordinate.latitude = lat;
-    setData((prevState) => ({ ...prevState, coordinate }));
+    const coordinates = data.coordinates || { latitude: 0, longitude: 0 };
+    coordinates.latitude = lat;
+    setData((prevState) => ({ ...prevState, coordinates }));
   }
 
   function onLngChanged(_, { value }) {
@@ -85,9 +85,9 @@ const ProblemEdit = () => {
     if (isNaN(lng)) {
       lng = 0;
     }
-    const coordinate = data.coordinate || { latitude: 0, longitude: 0 };
-    coordinate.longitude = lng;
-    setData((prevState) => ({ ...prevState, coordinate }));
+    const coordinates = data.coordinates || { latitude: 0, longitude: 0 };
+    coordinates.longitude = lng;
+    setData((prevState) => ({ ...prevState, coordinates }));
   }
 
   function onLockedChanged({ lockedAdmin, lockedSuperadmin }) {
@@ -217,7 +217,7 @@ const ProblemEdit = () => {
         data.typeId
           ? meta.types.find((t) => t.id === data.typeId)
           : meta.types[0],
-        data.coordinate,
+        data.coordinates,
         data.sections,
         data.newMedia,
         data.faAid,
@@ -243,7 +243,7 @@ const ProblemEdit = () => {
   function onMapClick(event) {
     setData((prevState) => ({
       ...prevState,
-      coordinate: {
+      coordinates: {
         latitude: event.latlng.lat,
         longitude: event.latlng.lng,
       },
@@ -287,10 +287,10 @@ const ProblemEdit = () => {
 
   let defaultCenter;
   let defaultZoom: number;
-  if (data.coordinate) {
+  if (data.coordinates) {
     defaultCenter = {
-      lat: data.coordinate.latitude,
-      lng: data.coordinate.longitude,
+      lat: data.coordinates.latitude,
+      lng: data.coordinates.longitude,
     };
     defaultZoom = 15;
   } else if (sector.parking) {
@@ -305,19 +305,19 @@ const ProblemEdit = () => {
   }
 
   const markers = [];
-  if (data.coordinate) {
+  if (data.coordinates) {
     markers.push({
-      lat: data.coordinate.latitude,
-      lng: data.coordinate.longitude,
+      lat: data.coordinates.latitude,
+      lng: data.coordinates.longitude,
     });
   }
   if (showSectorMarkers && sector.problems?.length > 0) {
     markers.push(
       ...sector.problems
-        .filter((p) => p.coordinate && p.id != problemId)
+        .filter((p) => p.coordinates && p.id != problemId)
         .map((p) => ({
-          lat: p.coordinate.latitude,
-          lng: p.coordinate.longitude,
+          lat: p.coordinates.latitude,
+          lng: p.coordinates.longitude,
           label: p.name,
         })),
     );
@@ -601,7 +601,7 @@ const ProblemEdit = () => {
               <label>Latitude</label>
               <Input
                 placeholder="Latitude"
-                value={data.coordinate?.latitude || ""}
+                value={data.coordinates?.latitude || ""}
                 onChange={onLatChanged}
               />
             </Form.Field>
@@ -609,7 +609,7 @@ const ProblemEdit = () => {
               <label>Longitude</label>
               <Input
                 placeholder="Longitude"
-                value={data.coordinate?.longitude || ""}
+                value={data.coordinates?.longitude || ""}
                 onChange={onLngChanged}
               />
             </Form.Field>

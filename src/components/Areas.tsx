@@ -37,12 +37,12 @@ const Areas = () => {
   }
   const typeDescription = meta.isBouldering ? "problems" : "routes";
   const markers = data
-    .filter((a) => a.forDevelopers === showForDevelopers && a.coordinate)
+    .filter((a) => a.forDevelopers === showForDevelopers && a.coordinates)
     .map((a) => {
       return {
         id: a.id,
-        lat: a.coordinate.latitude,
-        lng: a.coordinate.longitude,
+        lat: a.coordinates.latitude,
+        lng: a.coordinates.longitude,
         label: a.name,
         url: "/area/" + a.id,
         html: (
@@ -141,7 +141,7 @@ const Areas = () => {
                 <List.Item
                   as="a"
                   onClick={() => {
-                    if (area.coordinate) {
+                    if (area.coordinates) {
                       setFlyToId(area.id);
                       leafletRef?.current?.scrollIntoView({ block: "center" });
                     } else {

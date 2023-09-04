@@ -21,8 +21,8 @@ export const ZoomLogic = ({
     const bounds = latLngBounds([]);
     if (sectorRef.current) {
       if (sectorRef.current.outline?.length > 0) {
-        for (const coordinate of sectorRef.current.outline) {
-          bounds.extend([coordinate.latitude, coordinate.longitude]);
+        for (const coordinates of sectorRef.current.outline) {
+          bounds.extend([coordinates.latitude, coordinates.longitude]);
         }
       }
 
@@ -39,10 +39,10 @@ export const ZoomLogic = ({
         ]);
       }
     } else if (areaRef.current) {
-      if (areaRef.current.coordinate) {
+      if (areaRef.current.coordinates) {
         bounds.extend([
-          areaRef.current.coordinate.latitude,
-          areaRef.current.coordinate.longitude,
+          areaRef.current.coordinates.latitude,
+          areaRef.current.coordinates.longitude,
         ]);
       }
     }

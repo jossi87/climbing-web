@@ -94,7 +94,7 @@ const SectorListItem = ({ sector, problem }: Props) => {
             {problem.comment}{" "}
           </i>
         </small>
-        {problem.coordinate && (
+        {problem.coordinates && (
           <Icon size="small" name="map marker alternate" />
         )}
         {problem.hasTopo && <Icon size="small" name="paint brush" />}
@@ -191,11 +191,11 @@ const Area = () => {
       ),
     });
   }
-  if (markers.length > 0 || outlines.length > 0 || data.coordinate) {
-    const defaultCenter = data.coordinate
-      ? { lat: data.coordinate.latitude, lng: data.coordinate.longitude }
+  if (markers.length > 0 || outlines.length > 0 || data.coordinates) {
+    const defaultCenter = data.coordinates
+      ? { lat: data.coordinates.latitude, lng: data.coordinates.longitude }
       : meta.defaultCenter;
-    const defaultZoom = data.coordinate ? 14 : meta.defaultZoom;
+    const defaultZoom = data.coordinates ? 14 : meta.defaultZoom;
     panes.push({
       menuItem: { key: "map", icon: "map" },
       render: () => (
@@ -496,13 +496,13 @@ const Area = () => {
               </Table.Cell>
             </Table.Row>
           )}
-          {data.coordinate && (
+          {data.coordinates && (
             <Table.Row>
               <Table.Cell>Conditions:</Table.Cell>
               <Table.Cell>
                 <ConditionLabels
-                  lat={data.coordinate.latitude}
-                  lng={data.coordinate.longitude}
+                  lat={data.coordinates.latitude}
+                  lng={data.coordinates.longitude}
                   label={data.name}
                   wallDirection={null}
                   sunFromHour={data.sunFromHour}

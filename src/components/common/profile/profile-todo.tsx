@@ -27,10 +27,10 @@ const ProfileTodo = ({
   data.areas.forEach((a) => {
     a.sectors.forEach((s) => {
       s.problems.forEach((p) => {
-        if (p.coordinate) {
+        if (p.coordinates) {
           markers.push({
-            lat: p.coordinate.latitude,
-            lng: p.coordinate.longitude,
+            lat: p.coordinates.latitude,
+            lng: p.coordinates.longitude,
             label: p.name,
             url: "/problem/" + p.id,
           });

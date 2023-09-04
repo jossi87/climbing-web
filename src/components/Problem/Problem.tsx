@@ -85,10 +85,10 @@ export const Problem = () => {
   }
 
   const markers: ComponentProps<typeof Leaflet>["markers"] = [];
-  if (data.coordinate) {
+  if (data.coordinates) {
     markers.push({
-      lat: data.coordinate.latitude,
-      lng: data.coordinate.longitude,
+      lat: data.coordinates.latitude,
+      lng: data.coordinates.longitude,
       label: data.name + " [" + data.grade + "]",
       url: "/problem/" + data.id,
     });
@@ -120,7 +120,7 @@ export const Problem = () => {
     const polyline = parsePolyline(data.sectorPolyline);
     let outlines;
     let polylines;
-    if (data.sectorOutline?.length > 0 && !data.coordinate) {
+    if (data.sectorOutline?.length > 0 && !data.coordinates) {
       const outline = data.sectorOutline;
       const label =
         data.sectorName +
@@ -194,8 +194,8 @@ export const Problem = () => {
   })();
 
   const [lat, lng] = (() => {
-    if (data.coordinate) {
-      return [+data.coordinate.latitude, +data.coordinate.longitude];
+    if (data.coordinates) {
+      return [+data.coordinates.latitude, +data.coordinates.longitude];
     }
     if (data.sectorParking) {
       return [+data.sectorParking.latitude, +data.sectorParking.longitude];
@@ -637,9 +637,9 @@ export const Problem = () => {
                   Parking (Google Maps)
                 </Label>
               )}
-              {data.coordinate && (
+              {data.coordinates && (
                 <Label
-                  href={`https://www.google.com/maps/search/?api=1&query=${data.coordinate.latitude},${data.coordinate.longitude}`}
+                  href={`https://www.google.com/maps/search/?api=1&query=${data.coordinates.latitude},${data.coordinates.longitude}`}
                   rel="noreferrer noopener"
                   target="_blank"
                   image

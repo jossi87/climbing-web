@@ -67,10 +67,10 @@ export const AreaEdit = () => {
     return <Loading />;
   }
 
-  const defaultCenter = data.coordinate
-    ? { lat: +data.coordinate.latitude, lng: +data.coordinate.longitude }
+  const defaultCenter = data.coordinates
+    ? { lat: +data.coordinates.latitude, lng: +data.coordinates.longitude }
     : meta.defaultCenter;
-  const defaultZoom: number = data.coordinate ? 8 : meta.defaultZoom;
+  const defaultZoom: number = data.coordinates ? 8 : meta.defaultZoom;
 
   const hours = [
     { key: 0, text: "", value: 0 },
@@ -230,11 +230,11 @@ export const AreaEdit = () => {
             <Leaflet
               autoZoom={true}
               markers={
-                data.coordinate
+                data.coordinates
                   ? [
                       {
-                        lat: data.coordinate.latitude,
-                        lng: data.coordinate.longitude,
+                        lat: data.coordinates.latitude,
+                        lng: data.coordinates.longitude,
                       },
                     ]
                   : []
@@ -259,7 +259,7 @@ export const AreaEdit = () => {
               <label>Latitude</label>
               <Input
                 placeholder="Latitude"
-                value={data.coordinate?.latitude || ""}
+                value={data.coordinates?.latitude || ""}
                 onChange={setCoord("latitude")}
               />
             </Form.Field>
@@ -267,7 +267,7 @@ export const AreaEdit = () => {
               <label>Longitude</label>
               <Input
                 placeholder="Longitude"
-                value={data.coordinate?.longitude || ""}
+                value={data.coordinates?.longitude || ""}
                 onChange={setCoord("longitude")}
               />
             </Form.Field>

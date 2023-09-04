@@ -262,10 +262,10 @@ export const SectorEdit = () => {
   if (data.parking) {
     defaultCenter = { lat: data.parking.latitude, lng: data.parking.longitude };
     defaultZoom = 14;
-  } else if (area.coordinate) {
+  } else if (area.coordinates) {
     defaultCenter = {
-      lat: area.coordinate.latitude,
-      lng: area.coordinate.longitude,
+      lat: area.coordinates.latitude,
+      lng: area.coordinates.longitude,
     };
     defaultZoom = 14;
   } else {
@@ -412,10 +412,10 @@ export const SectorEdit = () => {
                       getSector(accessToken, sectorId).then((data) =>
                         setSectorMarkers(
                           data.problems
-                            .filter((p) => p.coordinate)
+                            .filter((p) => p.coordinates)
                             .map((p) => ({
-                              lat: p.coordinate.latitude,
-                              lng: p.coordinate.longitude,
+                              lat: p.coordinates.latitude,
+                              lng: p.coordinates.longitude,
                               label: p.name,
                             })),
                         ),

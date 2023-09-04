@@ -46,7 +46,7 @@ export const ProblemsOnRock = ({
             #{p.nr} {p.name} {p.grade}
             <Label.Detail>
               <Stars numStars={p.stars} includeNoRating={false} />
-              {p.coordinate && (
+              {p.coordinates && (
                 <Icon size="small" name="map marker alternate" />
               )}
               {p.hasTopo && <Icon size="small" name="paint brush" />}

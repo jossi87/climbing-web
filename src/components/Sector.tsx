@@ -94,7 +94,7 @@ const SectorListItem = ({ problem }: Props) => {
             {problem.comment}{" "}
           </i>
         </small>
-        {problem.coordinate && (
+        {problem.coordinates && (
           <Icon size="small" name="map marker alternate" />
         )}
         {problem.hasTopo && <Icon size="small" name="paint brush" />}
@@ -139,11 +139,11 @@ const Sector = () => {
 
   const isBouldering = meta.isBouldering;
   const markers: ComponentProps<typeof Leaflet>["markers"] = data.problems
-    .filter((p) => p.coordinate)
+    .filter((p) => p.coordinates)
     .map((p) => {
       return {
-        lat: p.coordinate.latitude,
-        lng: p.coordinate.longitude,
+        lat: p.coordinates.latitude,
+        lng: p.coordinates.longitude,
         label: p.nr + " - " + p.name + " [" + p.grade + "]",
         url: "/problem/" + p.id,
         rock: p.rock,

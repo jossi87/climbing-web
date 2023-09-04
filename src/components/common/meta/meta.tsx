@@ -18,7 +18,7 @@ type Site = {
   group: string;
   name: string;
   url: string;
-  outline: components["schemas"]["Coordinate"][];
+  outline: components["schemas"]["Coordinates"][];
   active: boolean;
 };
 

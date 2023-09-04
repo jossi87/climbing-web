@@ -271,7 +271,7 @@ export type components = {
       sunToHour?: number;
       name?: string;
       comment?: string;
-      coordinate?: components["schemas"]["Coordinate"];
+      coordinates?: components["schemas"]["Coordinates"];
       /** Format: int32 */
       numSectors?: number;
       /** Format: int32 */
@@ -297,8 +297,8 @@ export type components = {
       comment?: string;
       accessInfo?: string;
       accessClosed?: string;
-      parking?: components["schemas"]["Coordinate"];
-      outline?: components["schemas"]["Coordinate"][];
+      parking?: components["schemas"]["Coordinates"];
+      outline?: components["schemas"]["Coordinates"][];
       wallDirection?: string;
       polyline?: string;
       /** Format: int32 */
@@ -317,7 +317,7 @@ export type components = {
       /** Format: int32 */
       sorting?: number;
     };
-    Coordinate: {
+    Coordinates: {
       /** Format: int32 */
       id?: number;
       /** Format: double */
@@ -407,7 +407,7 @@ export type components = {
       hasImages?: boolean;
       hasMovies?: boolean;
       hasTopo?: boolean;
-      coordinate?: components["schemas"]["Coordinate"];
+      coordinates?: components["schemas"]["Coordinates"];
       /** Format: int32 */
       numTicks?: number;
       /** Format: double */
@@ -435,9 +435,9 @@ export type components = {
       texts?: string;
       anchors?: string;
       primary?: boolean;
-      dangerous?: boolean;
       ticked?: boolean;
       todo?: boolean;
+      dangerous?: boolean;
     };
     Type: {
       /** Format: int32 */
@@ -593,18 +593,18 @@ export type components = {
       url?: string;
       types?: components["schemas"]["Type"][];
       sites?: components["schemas"]["Site"][];
+      bouldering?: boolean;
       climbing?: boolean;
       authenticated?: boolean;
       admin?: boolean;
       superAdmin?: boolean;
       ice?: boolean;
-      bouldering?: boolean;
     };
     Site: {
       group?: string;
       name?: string;
       url?: string;
-      outline?: components["schemas"]["Coordinate"][];
+      outline?: components["schemas"]["Coordinates"][];
       active?: boolean;
     };
     PermissionUser: {
@@ -654,8 +654,8 @@ export type components = {
       sectorName?: string;
       sectorAccessInfo?: string;
       sectorAccessClosed?: string;
-      sectorParking?: components["schemas"]["Coordinate"];
-      sectorOutline?: components["schemas"]["Coordinate"][];
+      sectorParking?: components["schemas"]["Coordinates"];
+      sectorOutline?: components["schemas"]["Coordinates"][];
       sectorWallDirection?: string;
       sectorPolyline?: string;
       /** Format: int32 */
@@ -679,7 +679,7 @@ export type components = {
       faDate?: string;
       faDateHr?: string;
       fa?: components["schemas"]["FaUser"][];
-      coordinate?: components["schemas"]["Coordinate"];
+      coordinates?: components["schemas"]["Coordinates"];
       media?: components["schemas"]["Media"][];
       /** Format: int32 */
       numTicks?: number;
@@ -760,7 +760,7 @@ export type components = {
       id?: number;
       url?: string;
       name?: string;
-      coordinate?: components["schemas"]["Coordinate"];
+      coordinates?: components["schemas"]["Coordinates"];
       lockedAdmin?: boolean;
       lockedSuperadmin?: boolean;
       /** Format: int32 */
@@ -780,7 +780,7 @@ export type components = {
       nr?: number;
       name?: string;
       description?: string;
-      coordinate?: components["schemas"]["Coordinate"];
+      coordinates?: components["schemas"]["Coordinates"];
       grade?: string;
       fa?: string;
       /** Format: int32 */
@@ -799,8 +799,8 @@ export type components = {
       name?: string;
       /** Format: int32 */
       sorting?: number;
-      parking?: components["schemas"]["Coordinate"];
-      outline?: components["schemas"]["Coordinate"][];
+      parking?: components["schemas"]["Coordinates"];
+      outline?: components["schemas"]["Coordinates"][];
       wallDirection?: string;
       lockedAdmin?: boolean;
       lockedSuperadmin?: boolean;
@@ -863,7 +863,7 @@ export type components = {
       grade?: string;
       /** Format: int32 */
       gradeNumber?: number;
-      coordinate?: components["schemas"]["Coordinate"];
+      coordinates?: components["schemas"]["Coordinates"];
     };
     ProfileTodo: {
       areas?: components["schemas"]["ProfileTodoArea"][];
@@ -894,7 +894,7 @@ export type components = {
       nr?: number;
       name?: string;
       grade?: string;
-      coordinate?: components["schemas"]["Coordinate"];
+      coordinates?: components["schemas"]["Coordinates"];
       partners?: components["schemas"]["ProfileTodoPartner"][];
     };
     ProfileTodoSector: {
@@ -959,8 +959,8 @@ export type components = {
       comment?: string;
       accessInfo?: string;
       accessClosed?: string;
-      parking?: components["schemas"]["Coordinate"];
-      outline?: components["schemas"]["Coordinate"][];
+      parking?: components["schemas"]["Coordinates"];
+      outline?: components["schemas"]["Coordinates"][];
       wallDirection?: string;
       polyline?: string;
       media?: components["schemas"]["Media"][];
@@ -1119,12 +1119,12 @@ export type components = {
       messageBodyWorkers?: components["schemas"]["MessageBodyWorkers"];
       parent?: components["schemas"]["MultiPart"];
       providers?: components["schemas"]["Providers"];
-      simple?: boolean;
-      formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
       name?: string;
       value?: string;
       content?: Record<string, never>;
       fileName?: string;
+      formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
+      simple?: boolean;
       parameterizedHeaders?: {
         empty?: boolean;
         [key: string]:

@@ -26,7 +26,7 @@ type State =
         | "comment"
         | "forDevelopers"
         | "id"
-        | "coordinate"
+        | "coordinates"
         | "lockedAdmin"
         | "lockedSuperadmin"
         | "name"
@@ -82,7 +82,7 @@ const DEFAULT_STATE: NonNullable<State> = {
   comment: "",
   forDevelopers: false,
   id: -1,
-  coordinate: null,
+  coordinates: null,
   lockedAdmin: false,
   lockedSuperadmin: false,
   name: "",
@@ -117,18 +117,18 @@ const reducer = (state: State, update: Update): State => {
     }
     case "set-coord": {
       const { key, value } = update;
-      let { coordinate } = state;
-      if (!coordinate) {
-        coordinate = { latitude: 0, longitude: 0 };
+      let { coordinates } = state;
+      if (!coordinates) {
+        coordinates = { latitude: 0, longitude: 0 };
       }
-      coordinate[key] = getCoord(value);
-      return { ...state, coordinate };
+      coordinates[key] = getCoord(value);
+      return { ...state, coordinates };
     }
     case "set-lat-lng": {
       const { lat: latitude, lng: longitude } = update;
       return {
         ...state,
-        coordinate: {
+        coordinates: {
           latitude: getCoord(latitude),
           longitude: getCoord(longitude),
         },
@@ -221,7 +221,7 @@ export const useAreaEdit: UseAreaEdit = ({ areaId }) => {
         sunToHour,
         name,
         comment,
-        coordinate,
+        coordinates,
         newMedia: media,
         sectorOrder,
       }) {
@@ -253,7 +253,7 @@ export const useAreaEdit: UseAreaEdit = ({ areaId }) => {
             sunToHour,
             name,
             comment,
-            coordinate,
+            coordinates,
             newMedia,
             sectorOrder,
           }),

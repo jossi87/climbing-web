@@ -60,7 +60,7 @@ type Props = {
   onMouseMove?: LeafletMouseEventHandlerFn;
   outlines?: {
     background?: boolean;
-    outline: components["schemas"]["Coordinate"][];
+    outline: components["schemas"]["Coordinates"][];
     url?: string;
     label?: string;
   }[];

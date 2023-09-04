@@ -6,7 +6,7 @@ import { components } from "../../../@types/buldreinfo/swagger";
 type Props = {
   opacity: number;
   outlines: {
-    outline: components["schemas"]["Coordinate"][];
+    outline: components["schemas"]["Coordinates"][];
     background?: boolean;
     url?: string;
     label?: string;
