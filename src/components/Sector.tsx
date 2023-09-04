@@ -182,10 +182,7 @@ const Sector = () => {
     const defaultCenter = data.parking
       ? { lat: data.parking.latitude, lng: data.parking.longitude }
       : meta.defaultCenter;
-    const defaultZoom =
-      data.parking.latitude && data.parking.longitude > 0
-        ? 15
-        : meta.defaultZoom;
+    const defaultZoom = data.parking ? 15 : meta.defaultZoom;
     const polyline = parsePolyline(data.polyline);
     let outlines;
     let polylines;
