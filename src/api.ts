@@ -542,8 +542,6 @@ export function getProblemEdit(
           faDate: convertFromDateToString(new Date()),
           nr: 0,
           coordinate: null,
-          latStr: "",
-          lngStr: "",
           trivia: "",
           startingAltitude: "",
           aspect: "",
