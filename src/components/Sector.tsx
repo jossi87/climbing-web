@@ -94,7 +94,7 @@ const SectorListItem = ({ problem }: Props) => {
             {problem.comment}{" "}
           </i>
         </small>
-        {problem.lat > 0 && problem.lng > 0 && (
+        {problem.coordinate && (
           <Icon size="small" name="map marker alternate" />
         )}
         {problem.hasTopo && <Icon size="small" name="paint brush" />}
@@ -139,11 +139,11 @@ const Sector = () => {
 
   const isBouldering = meta.isBouldering;
   const markers: ComponentProps<typeof Leaflet>["markers"] = data.problems
-    .filter((p) => p.lat != 0 && p.lng != 0)
+    .filter((p) => p.coordinate)
     .map((p) => {
       return {
-        lat: p.lat,
-        lng: p.lng,
+        lat: p.coordinate.latitude,
+        lng: p.coordinate.longitude,
         label: p.nr + " - " + p.name + " [" + p.grade + "]",
         url: "/problem/" + p.id,
         rock: p.rock,
@@ -151,10 +151,10 @@ const Sector = () => {
     });
   // Only add polygon if problemMarkers=0 or site is showing sport climbing
   const addPolygon = meta.isClimbing || markers.length == 0;
-  if (data.lat > 0 && data.lng > 0) {
+  if (data.parking) {
     markers.push({
-      lat: data.lat,
-      lng: data.lng,
+      lat: data.parking.latitude,
+      lng: data.parking.longitude,
       isParking: true,
     });
   }
@@ -179,11 +179,13 @@ const Sector = () => {
     }
   }
   if (markers.length > 0 || data.outline?.length > 0) {
-    const defaultCenter =
-      data.lat && data.lat > 0
-        ? { lat: data.lat, lng: data.lng }
-        : meta.defaultCenter;
-    const defaultZoom = data.lat && data.lat > 0 ? 15 : meta.defaultZoom;
+    const defaultCenter = data.parking
+      ? { lat: data.parking.latitude, lng: data.parking.longitude }
+      : meta.defaultCenter;
+    const defaultZoom =
+      data.parking.latitude && data.parking.longitude > 0
+        ? 15
+        : meta.defaultZoom;
     const polyline = parsePolyline(data.polyline);
     let outlines;
     let polylines;
@@ -449,13 +451,13 @@ const Sector = () => {
               </Table.Cell>
             </Table.Row>
           )}
-          {data.lat > 0 && data.lng > 0 && (
+          {data.parking && (
             <Table.Row verticalAlign="top">
               <Table.Cell>Conditions:</Table.Cell>
               <Table.Cell>
                 <ConditionLabels
-                  lat={data.lat}
-                  lng={data.lng}
+                  lat={data.parking.latitude}
+                  lng={data.parking.longitude}
                   label={data.name}
                   wallDirection={data.wallDirection}
                   sunFromHour={data.areaSunFromHour}
@@ -487,9 +489,9 @@ const Sector = () => {
                 <Icon name="file pdf outline" />
                 area.pdf
               </Label>
-              {data.lat > 0 && data.lng > 0 && (
+              {data.parking && (
                 <Label
-                  href={`https://www.google.com/maps/search/?api=1&query=${data.lat},${data.lng}`}
+                  href={`https://www.google.com/maps/search/?api=1&query=${data.parking.latitude},${data.parking.longitude}`}
                   rel="noreferrer noopener"
                   target="_blank"
                   image

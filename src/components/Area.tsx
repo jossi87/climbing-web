@@ -94,7 +94,7 @@ const SectorListItem = ({ sector, problem }: Props) => {
             {problem.comment}{" "}
           </i>
         </small>
-        {problem.lat > 0 && problem.lng > 0 && (
+        {problem.coordinate && (
           <Icon size="small" name="map marker alternate" />
         )}
         {problem.hasTopo && <Icon size="small" name="paint brush" />}
@@ -151,11 +151,11 @@ const Area = () => {
   }
 
   const markers = data.sectors
-    .filter((s) => s.lat != 0 && s.lng != 0)
+    .filter((s) => s.parking)
     .map((s) => {
       return {
-        lat: s.lat,
-        lng: s.lng,
+        lat: s.parking.latitude,
+        lng: s.parking.longitude,
         url: "/sector/" + s.id,
         isParking: true,
       };
@@ -191,12 +191,11 @@ const Area = () => {
       ),
     });
   }
-  if (markers.length > 0 || outlines.length > 0 || (data.lat && data.lat > 0)) {
-    const defaultCenter =
-      data.lat && data.lat > 0
-        ? { lat: data.lat, lng: data.lng }
-        : meta.defaultCenter;
-    const defaultZoom = data.lat && data.lat > 0 ? 14 : meta.defaultZoom;
+  if (markers.length > 0 || outlines.length > 0 || data.coordinate) {
+    const defaultCenter = data.coordinate
+      ? { lat: data.coordinate.latitude, lng: data.coordinate.longitude }
+      : meta.defaultCenter;
+    const defaultZoom = data.coordinate ? 14 : meta.defaultZoom;
     panes.push({
       menuItem: { key: "map", icon: "map" },
       render: () => (
@@ -497,13 +496,13 @@ const Area = () => {
               </Table.Cell>
             </Table.Row>
           )}
-          {data.lat > 0 && data.lng > 0 && (
+          {data.coordinate && (
             <Table.Row>
               <Table.Cell>Conditions:</Table.Cell>
               <Table.Cell>
                 <ConditionLabels
-                  lat={data.lat}
-                  lng={data.lng}
+                  lat={data.coordinate.latitude}
+                  lng={data.coordinate.longitude}
                   label={data.name}
                   wallDirection={null}
                   sunFromHour={data.sunFromHour}

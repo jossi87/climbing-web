@@ -85,18 +85,18 @@ export const Problem = () => {
   }
 
   const markers: ComponentProps<typeof Leaflet>["markers"] = [];
-  if (data.lat > 0 && data.lng > 0) {
+  if (data.coordinate) {
     markers.push({
-      lat: data.lat,
-      lng: data.lng,
+      lat: data.coordinate.latitude,
+      lng: data.coordinate.longitude,
       label: data.name + " [" + data.grade + "]",
       url: "/problem/" + data.id,
     });
   }
-  if (data.sectorLat > 0 && data.sectorLng > 0) {
+  if (data.sectorParking) {
     markers.push({
-      lat: data.sectorLat,
-      lng: data.sectorLng,
+      lat: data.sectorParking.latitude,
+      lng: data.sectorParking.longitude,
       url: "/sector/" + data.sectorId,
       isParking: true,
     });
@@ -120,7 +120,7 @@ export const Problem = () => {
     const polyline = parsePolyline(data.sectorPolyline);
     let outlines;
     let polylines;
-    if (data.sectorOutline?.length > 0 && data.lat === 0 && data.lng === 0) {
+    if (data.sectorOutline?.length > 0 && !data.coordinate) {
       const outline = data.sectorOutline;
       const label =
         data.sectorName +
@@ -194,11 +194,11 @@ export const Problem = () => {
   })();
 
   const [lat, lng] = (() => {
-    if (data.lat > 0 && data.lng > 0) {
-      return [+data.lat, +data.lng];
+    if (data.coordinate) {
+      return [+data.coordinate.latitude, +data.coordinate.longitude];
     }
-    if (data.sectorLat > 0 && data.sectorLng > 0) {
-      return [+data.sectorLat, +data.sectorLng];
+    if (data.sectorParking) {
+      return [+data.sectorParking.latitude, +data.sectorParking.longitude];
     }
     return [0, 0];
   })();
@@ -625,9 +625,9 @@ export const Problem = () => {
                 <Icon name="file pdf outline" />
                 area.pdf
               </Label>
-              {data.sectorLat > 0 && data.sectorLng > 0 && (
+              {data.sectorParking && (
                 <Label
-                  href={`https://www.google.com/maps/search/?api=1&query=${data.sectorLat},${data.sectorLng}`}
+                  href={`https://www.google.com/maps/search/?api=1&query=${data.sectorParking.latitude},${data.sectorParking.longitude}`}
                   rel="noreferrer noopener"
                   target="_blank"
                   image
@@ -637,9 +637,9 @@ export const Problem = () => {
                   Parking (Google Maps)
                 </Label>
               )}
-              {data.lat > 0 && data.lng > 0 && (
+              {data.coordinate && (
                 <Label
-                  href={`https://www.google.com/maps/search/?api=1&query=${data.lat},${data.lng}`}
+                  href={`https://www.google.com/maps/search/?api=1&query=${data.coordinate.latitude},${data.coordinate.longitude}`}
                   rel="noreferrer noopener"
                   target="_blank"
                   image

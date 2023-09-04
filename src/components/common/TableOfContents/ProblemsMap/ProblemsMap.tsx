@@ -39,7 +39,7 @@ const useMarkers = (areas: Props["areas"]): MarkerDef[] => {
           let lat = 0;
           let lng = 0;
 
-          if (!problem.lat || !problem.lng) {
+          if (!problem.coordinate) {
             if (sector.outline?.length > 0) {
               if (!sectorBounds) {
                 sectorBounds = latLngBounds([]);
@@ -51,9 +51,9 @@ const useMarkers = (areas: Props["areas"]): MarkerDef[] => {
                 sectorBounds.getCenter();
               lat = centerLat;
               lng = centerLng;
-            } else if (sector.lat && sector.lng) {
-              lat = sector.lat;
-              lng = sector.lng;
+            } else if (sector.parking) {
+              lat = sector.parking.latitude;
+              lng = sector.parking.longitude;
             }
           }
 

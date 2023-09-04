@@ -32,12 +32,18 @@ export const ZoomLogic = ({
         }
       }
 
-      if (sectorRef.current.lat && sectorRef.current.lng) {
-        bounds.extend([sectorRef.current.lat, sectorRef.current.lng]);
+      if (sectorRef.current.parking) {
+        bounds.extend([
+          sectorRef.current.parking.latitude,
+          sectorRef.current.parking.longitude,
+        ]);
       }
     } else if (areaRef.current) {
-      if (areaRef.current.lat && areaRef.current.lng) {
-        bounds.extend([areaRef.current.lat, areaRef.current.lng]);
+      if (areaRef.current.coordinate) {
+        bounds.extend([
+          areaRef.current.coordinate.latitude,
+          areaRef.current.coordinate.longitude,
+        ]);
       }
     }
 

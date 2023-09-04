@@ -110,8 +110,7 @@ export const SectorEdit = () => {
         data.comment,
         data.accessInfo,
         data.accessClosed,
-        data.lat,
-        data.lng,
+        data.parking,
         data.outline,
         data.polyline,
         data.newMedia,
@@ -130,10 +129,10 @@ export const SectorEdit = () => {
     if (leafletMode == "PARKING") {
       setData((prevState) => ({
         ...prevState,
-        lat: event.latlng.lat,
-        lng: event.latlng.lng,
-        latStr: event.latlng.lat,
-        lngStr: event.latlng.lng,
+        parking: {
+          latitude: event.latlng.lat,
+          longitude: event.latlng.lng,
+        },
       }));
     } else if (leafletMode == "POLYGON") {
       let { outline } = data;
@@ -191,23 +190,23 @@ export const SectorEdit = () => {
   }
 
   function onLatChanged(_, { value }) {
-    let latStr = value.replace(",", ".");
-    let lat = parseFloat(latStr);
+    let lat = parseFloat(value.replace(",", "."));
     if (isNaN(lat)) {
       lat = 0;
-      latStr = "";
     }
-    setData((prevState) => ({ ...prevState, lat, latStr }));
+    const parking = data.parking;
+    parking.latitude = lat;
+    setData((prevState) => ({ ...prevState, parking }));
   }
 
   function onLngChanged(_, { value }) {
-    let lngStr = value.replace(",", ".");
-    let lng = parseFloat(lngStr);
+    let lng = parseFloat(value.replace(",", "."));
     if (isNaN(lng)) {
       lng = 0;
-      lngStr = "";
     }
-    setData((prevState) => ({ ...prevState, lng, lngStr }));
+    const parking = data.parking;
+    parking.longitude = lng;
+    setData((prevState) => ({ ...prevState, parking }));
   }
 
   if (error) {
@@ -260,8 +259,8 @@ export const SectorEdit = () => {
 
   let defaultCenter;
   let defaultZoom;
-  if (data.lat && data.lng) {
-    defaultCenter = { lat: data.lat, lng: data.lng };
+  if (data.parking) {
+    defaultCenter = { lat: data.parking.latitude, lng: data.parking.longitude };
     defaultZoom = 14;
   } else if (area.lat && area.lat) {
     defaultCenter = { lat: area.lat, lng: area.lng };
@@ -272,8 +271,12 @@ export const SectorEdit = () => {
   }
 
   const markers: ComponentProps<typeof Leaflet>["markers"] = [];
-  if (data.lat != 0 && data.lng != 0) {
-    markers.push({ lat: data.lat, lng: data.lng, isParking: true });
+  if (data.parking) {
+    markers.push({
+      lat: data.parking.latitude,
+      lng: data.parking.longitude,
+      isParking: true,
+    });
   }
   if (sectorMarkers) {
     markers.push(...sectorMarkers);
@@ -406,10 +409,10 @@ export const SectorEdit = () => {
                       getSector(accessToken, sectorId).then((data) =>
                         setSectorMarkers(
                           data.problems
-                            .filter((p) => p.lat > 0 && p.lng > 0)
+                            .filter((p) => p.coordinate)
                             .map((p) => ({
-                              lat: p.lat,
-                              lng: p.lng,
+                              lat: p.coordinate.latitude,
+                              lng: p.coordinate.longitude,
                               label: p.name,
                             })),
                         ),
@@ -461,7 +464,7 @@ export const SectorEdit = () => {
                   <label>Latitude</label>
                   <Input
                     placeholder="Latitude"
-                    value={data.lat ?? ""}
+                    value={data.parking?.latitude ?? ""}
                     onChange={onLatChanged}
                   />
                 </Form.Field>
@@ -469,7 +472,7 @@ export const SectorEdit = () => {
                   <label>Longitude</label>
                   <Input
                     placeholder="Longitude"
-                    value={data.lng ?? ""}
+                    value={data.parking?.longitude ?? ""}
                     onChange={onLngChanged}
                   />
                 </Form.Field>

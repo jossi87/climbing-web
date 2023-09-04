@@ -191,10 +191,10 @@ const ProfileStatistics = ({ userId, canDownload }: ProfileStatisticsProps) => {
   const markers: NonNullable<React.ComponentProps<typeof Leaflet>["markers"]> =
     [];
   data.ticks.forEach((t) => {
-    if (t.lat && t.lng) {
+    if (t.coordinate) {
       markers.push({
-        lat: t.lat,
-        lng: t.lng,
+        lat: t.coordinate.latitude,
+        lng: t.coordinate.longitude,
         label: t.name,
         url: "/problem/" + t.idProblem,
       });

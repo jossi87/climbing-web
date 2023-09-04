@@ -35,7 +35,7 @@ export type Props = {
     > &
       Pick<
         components["schemas"]["ProblemAreaSector"],
-        "outline" | "lat" | "lng"
+        "outline" | "parking"
       > & {
         problems: (Required<
           Pick<
@@ -45,7 +45,7 @@ export type Props = {
         > &
           Pick<
             components["schemas"]["Problem"],
-            "stars" | "ticked" | "lat" | "lng" | "broken"
+            "stars" | "ticked" | "coordinate" | "broken"
           > & {
             text?: string;
             subText?: string;
