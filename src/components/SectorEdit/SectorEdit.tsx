@@ -194,10 +194,7 @@ export const SectorEdit = () => {
     if (isNaN(lat)) {
       lat = 0;
     }
-    let { parking } = data;
-    if (!parking) {
-      parking = {latitude: 0, longitude: 0};
-    }
+    let parking = data.parking || {latitude: 0, longitude: 0};
     parking.latitude = lat;
     setData((prevState) => ({ ...prevState, parking }));
   }
@@ -207,10 +204,7 @@ export const SectorEdit = () => {
     if (isNaN(lng)) {
       lng = 0;
     }
-    let { parking } = data;
-    if (!parking) {
-      parking = {latitude: 0, longitude: 0};
-    }
+    let parking = data.parking || {latitude: 0, longitude: 0};
     parking.longitude = lng;
     setData((prevState) => ({ ...prevState, parking }));
   }

@@ -70,24 +70,24 @@ const ProblemEdit = () => {
     setData((prevState) => ({ ...prevState, nr: value }));
   }
 
-  function onLatChanged(e, { value }) {
-    let latStr = value.replace(",", ".");
-    let lat = parseFloat(latStr);
+  function onLatChanged(_, { value }) {
+    let lat = parseFloat(value.replace(",", "."));
     if (isNaN(lat)) {
       lat = 0;
-      latStr = "";
     }
-    setData((prevState) => ({ ...prevState, lat, latStr }));
+    let coordinate = data.coordinate || {latitude: 0, longitude: 0};
+    coordinate.latitude = lat;
+    setData((prevState) => ({ ...prevState, coordinate }));
   }
 
-  function onLngChanged(e, { value }) {
-    let lngStr = value.replace(",", ".");
-    let lng = parseFloat(lngStr);
+  function onLngChanged(_, { value }) {
+    let lng = parseFloat(value.replace(",", "."));
     if (isNaN(lng)) {
       lng = 0;
-      lngStr = "";
     }
-    setData((prevState) => ({ ...prevState, lng, lngStr }));
+    let coordinate = data.coordinate || {latitude: 0, longitude: 0};
+    coordinate.longitude = lng;
+    setData((prevState) => ({ ...prevState, coordinate }));
   }
 
   function onLockedChanged({ lockedAdmin, lockedSuperadmin }) {
@@ -217,8 +217,7 @@ const ProblemEdit = () => {
         data.typeId
           ? meta.types.find((t) => t.id === data.typeId)
           : meta.types[0],
-        data.lat,
-        data.lng,
+        data.coordinate,
         data.sections,
         data.newMedia,
         data.faAid,
@@ -244,10 +243,10 @@ const ProblemEdit = () => {
   function onMapClick(event) {
     setData((prevState) => ({
       ...prevState,
-      lat: event.latlng.lat,
-      lng: event.latlng.lng,
-      latStr: event.latlng.lat,
-      lngStr: event.latlng.lng,
+      coordinate: {
+        latitude: event.latlng.lat,
+        longitude: event.latlng.lng,
+      },
     }));
   }
 
@@ -288,11 +287,11 @@ const ProblemEdit = () => {
 
   let defaultCenter;
   let defaultZoom: number;
-  if (data.lat != 0 && data.lng != 0) {
-    defaultCenter = { lat: data.lat, lng: data.lng };
+  if (data.coordinate) {
+    defaultCenter = { lat: data.coordinate.latitude, lng: data.coordinate.longitude };
     defaultZoom = 15;
-  } else if (sector.lat > 0 && sector.lng > 0) {
-    defaultCenter = { lat: sector.lat, lng: sector.lng };
+  } else if (sector.parking) {
+    defaultCenter = { lat: sector.parking.latitude, lng: sector.parking.longitude };
     defaultZoom = 15;
   } else {
     defaultCenter = meta.defaultCenter;
@@ -300,14 +299,14 @@ const ProblemEdit = () => {
   }
 
   const markers = [];
-  if (data.lat != 0 && data.lng != 0) {
-    markers.push({ lat: data.lat, lng: data.lng });
+  if (data.coordinate) {
+    markers.push({ lat: data.coordinate.latitude, lng: data.coordinate.longitude });
   }
   if (showSectorMarkers && sector.problems?.length > 0) {
     markers.push(
       ...sector.problems
-        .filter((p) => p.lat > 0 && p.lng > 0 && p.id != problemId)
-        .map((p) => ({ lat: p.lat, lng: p.lng, label: p.name })),
+        .filter((p) => p.coordinate && p.id != problemId)
+        .map((p) => ({ lat: p.coordinate.latitude, lng: p.coordinate.longitude, label: p.name })),
     );
   }
   const sectorRocks = sector.problems
@@ -589,7 +588,7 @@ const ProblemEdit = () => {
               <label>Latitude</label>
               <Input
                 placeholder="Latitude"
-                value={data.latStr}
+                value={data.coordinate?.latitude || ""}
                 onChange={onLatChanged}
               />
             </Form.Field>
@@ -597,7 +596,7 @@ const ProblemEdit = () => {
               <label>Longitude</label>
               <Input
                 placeholder="Longitude"
-                value={data.lngStr}
+                value={data.coordinate?.longitude || ""}
                 onChange={onLngChanged}
               />
             </Form.Field>
