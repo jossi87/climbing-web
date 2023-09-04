@@ -87,7 +87,7 @@
     "suncalc": "^1.9.0",
     "svg-path-parser": "^1.1.0",
     "svg-path-properties": "^1.2.0",
-    "swagger-ui-react": "^5.4.2"
+    "swagger-ui-react": "^5.5.0"
   },
   "scripts": {
     "dev": "webpack serve --config webpack.dev.js",
