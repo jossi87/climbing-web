@@ -194,7 +194,7 @@ export const SectorEdit = () => {
     if (isNaN(lat)) {
       lat = 0;
     }
-    let parking = data.parking || {latitude: 0, longitude: 0};
+    const parking = data.parking || { latitude: 0, longitude: 0 };
     parking.latitude = lat;
     setData((prevState) => ({ ...prevState, parking }));
   }
@@ -204,7 +204,7 @@ export const SectorEdit = () => {
     if (isNaN(lng)) {
       lng = 0;
     }
-    let parking = data.parking || {latitude: 0, longitude: 0};
+    const parking = data.parking || { latitude: 0, longitude: 0 };
     parking.longitude = lng;
     setData((prevState) => ({ ...prevState, parking }));
   }
@@ -263,7 +263,10 @@ export const SectorEdit = () => {
     defaultCenter = { lat: data.parking.latitude, lng: data.parking.longitude };
     defaultZoom = 14;
   } else if (area.coordinate) {
-    defaultCenter = { lat: area.coordinate.latitude, lng: area.coordinate.longitude };
+    defaultCenter = {
+      lat: area.coordinate.latitude,
+      lng: area.coordinate.longitude,
+    };
     defaultZoom = 14;
   } else {
     defaultCenter = meta.defaultCenter;

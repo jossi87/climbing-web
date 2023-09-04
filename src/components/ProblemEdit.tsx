@@ -75,7 +75,7 @@ const ProblemEdit = () => {
     if (isNaN(lat)) {
       lat = 0;
     }
-    let coordinate = data.coordinate || {latitude: 0, longitude: 0};
+    const coordinate = data.coordinate || { latitude: 0, longitude: 0 };
     coordinate.latitude = lat;
     setData((prevState) => ({ ...prevState, coordinate }));
   }
@@ -85,7 +85,7 @@ const ProblemEdit = () => {
     if (isNaN(lng)) {
       lng = 0;
     }
-    let coordinate = data.coordinate || {latitude: 0, longitude: 0};
+    const coordinate = data.coordinate || { latitude: 0, longitude: 0 };
     coordinate.longitude = lng;
     setData((prevState) => ({ ...prevState, coordinate }));
   }
@@ -288,10 +288,16 @@ const ProblemEdit = () => {
   let defaultCenter;
   let defaultZoom: number;
   if (data.coordinate) {
-    defaultCenter = { lat: data.coordinate.latitude, lng: data.coordinate.longitude };
+    defaultCenter = {
+      lat: data.coordinate.latitude,
+      lng: data.coordinate.longitude,
+    };
     defaultZoom = 15;
   } else if (sector.parking) {
-    defaultCenter = { lat: sector.parking.latitude, lng: sector.parking.longitude };
+    defaultCenter = {
+      lat: sector.parking.latitude,
+      lng: sector.parking.longitude,
+    };
     defaultZoom = 15;
   } else {
     defaultCenter = meta.defaultCenter;
@@ -300,13 +306,20 @@ const ProblemEdit = () => {
 
   const markers = [];
   if (data.coordinate) {
-    markers.push({ lat: data.coordinate.latitude, lng: data.coordinate.longitude });
+    markers.push({
+      lat: data.coordinate.latitude,
+      lng: data.coordinate.longitude,
+    });
   }
   if (showSectorMarkers && sector.problems?.length > 0) {
     markers.push(
       ...sector.problems
         .filter((p) => p.coordinate && p.id != problemId)
-        .map((p) => ({ lat: p.coordinate.latitude, lng: p.coordinate.longitude, label: p.name })),
+        .map((p) => ({
+          lat: p.coordinate.latitude,
+          lng: p.coordinate.longitude,
+          label: p.name,
+        })),
     );
   }
   const sectorRocks = sector.problems

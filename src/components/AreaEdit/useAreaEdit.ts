@@ -119,7 +119,7 @@ const reducer = (state: State, update: Update): State => {
       const { key, value } = update;
       let { coordinate } = state;
       if (!coordinate) {
-        coordinate = {latitude: 0, longitude: 0};
+        coordinate = { latitude: 0, longitude: 0 };
       }
       coordinate[key] = getCoord(value);
       return { ...state, coordinate };
@@ -180,7 +180,9 @@ type UseAreaEdit = (_: { areaId: number }) => {
   setNumber: (
     key: "sunFromHour" | "sunToHour",
   ) => (event: React.ChangeEvent, data: { value?: number }) => void;
-  setCoord: (key: "latitude" | "longitude") => ComponentProps<typeof Input>["onChange"];
+  setCoord: (
+    key: "latitude" | "longitude",
+  ) => ComponentProps<typeof Input>["onChange"];
   setLatLng: ComponentProps<typeof Leaflet>["onMouseClick"];
   setSectorSort: (sectorId: number) => ComponentProps<typeof Input>["onChange"];
   setBoolean: (
