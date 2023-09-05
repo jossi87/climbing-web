@@ -26,7 +26,7 @@ export const ProblemTicks = ({ ticks }: Props) => {
               ", " +
               t.repeats.map((x) => (x.date ? x.date : "no-date")).join(", ");
             com = (
-              <Table compact unstackable size="small">
+              <Table collapsing compact unstackable size="small">
                 <Table.Body>
                   <Table.Row>
                     <Table.Cell
