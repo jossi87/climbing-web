@@ -1,22 +1,22 @@
 import { CircleMarker } from "react-leaflet";
-import { parsePolyline, colorLatLng } from "../../utils/polyline";
+import { colorLatLng } from "../../utils/polyline";
+import { components } from "../../@types/buldreinfo/swagger";
 
 type Props = {
-  polyline: string | undefined;
+  coordinates: components["schemas"]["Coordinates"][];
 };
 
-export const PolylineMarkers = ({ polyline }: Props) => {
-  if (!polyline) {
+export const PolylineMarkers = ({ coordinates }: Props) => {
+  if (!coordinates) {
     return null;
   }
 
-  const parsed = parsePolyline(polyline);
-  return parsed.map((latlng) => (
+  return coordinates.map((c) => (
     <CircleMarker
-      key={latlng.join(",")}
+      key={c.latitude + "," + c.longitude}
       radius={5}
-      center={latlng}
-      color={colorLatLng(latlng)[0]}
+      center={[c.latitude, c.longitude]}
+      color={colorLatLng(c)[0]}
     />
   ));
 };

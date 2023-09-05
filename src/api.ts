@@ -1198,7 +1198,7 @@ export function postSector(
   accessClosed: string,
   parking: components["schemas"]["Coordinates"],
   outline: components["schemas"]["Coordinates"][],
-  polyline: any,
+  approach: components["schemas"]["Coordinates"][],
   media: any,
   problemOrder: any,
 ): Promise<any> {
@@ -1229,7 +1229,7 @@ export function postSector(
       accessClosed,
       parking,
       outline,
-      polyline,
+      approach,
       newMedia,
       problemOrder,
     }),

@@ -7,18 +7,19 @@ import {
   Button,
   Message,
 } from "semantic-ui-react";
-import { parsePolyline, colorLatLng } from "../../utils/polyline";
+import { colorLatLng, parsePolyline } from "../../utils/polyline";
 import GpxParser from "gpxparser";
 import { useCallback } from "react";
 import { DropzoneOptions, useDropzone } from "react-dropzone";
+import { components } from "../../@types/buldreinfo/swagger";
 
 type Props = {
-  polyline: string | undefined;
-  onChange: (polyline: string) => void;
+  coordinates: components["schemas"]["Coordinates"][];
+  onChange: (polyline: components["schemas"]["Coordinates"][]) => void;
   upload?: boolean;
 };
 
-export const PolylineEditor = ({ polyline, onChange, upload }: Props) => {
+export const PolylineEditor = ({ coordinates, onChange, upload }: Props) => {
   const onDrop: DropzoneOptions["onDrop"] = useCallback(
     (files) => {
       if (files?.length !== 0) {
@@ -26,10 +27,11 @@ export const PolylineEditor = ({ polyline, onChange, upload }: Props) => {
         reader.onload = (e) => {
           const gpx = new GpxParser();
           gpx.parse(e.target?.result as string);
-          const polyline = gpx.tracks[0]?.points
-            ?.map((e) => e.lat + "," + e.lon)
-            .join(";");
-          onChange(polyline);
+          const coordinates = gpx.tracks[0]?.points?.map((e) => ({
+            latitude: e.lat,
+            longitude: e.lon,
+          }));
+          onChange(coordinates);
         };
         reader.readAsText(files[0]);
       }
@@ -51,11 +53,11 @@ export const PolylineEditor = ({ polyline, onChange, upload }: Props) => {
             menuItem: "Points",
             render: () => (
               <Tab.Pane>
-                {parsePolyline(polyline)?.map((latlng, i) => {
-                  const [backgroundColor, color] = colorLatLng(latlng);
+                {coordinates?.map((c, i) => {
+                  const [backgroundColor, color] = colorLatLng(c);
                   return (
                     <Label
-                      key={latlng.join(",")}
+                      key={c.latitude + "," + c.longitude}
                       style={{
                         backgroundColor,
                         borderColor: backgroundColor,
@@ -66,11 +68,8 @@ export const PolylineEditor = ({ polyline, onChange, upload }: Props) => {
                       <Icon
                         name="delete"
                         onClick={() => {
-                          const trimmed = [...parsePolyline(polyline)];
-                          trimmed.splice(i, 1);
-                          onChange(
-                            trimmed.map((latlng) => latlng.join(",")).join(";"),
-                          );
+                          coordinates.splice(i, 1);
+                          onChange(coordinates);
                         }}
                       />
                     </Label>
@@ -85,8 +84,12 @@ export const PolylineEditor = ({ polyline, onChange, upload }: Props) => {
               <Tab.Pane>
                 <Input
                   placeholder="Outline"
-                  value={polyline || ""}
-                  onChange={(_, { value }) => onChange(value)}
+                  value={
+                    coordinates
+                      ?.map((c) => c.latitude + "," + c.longitude)
+                      .join(";") || ""
+                  }
+                  onChange={(_, { value }) => onChange(parsePolyline(value))}
                   error={false && "Invalid outline"}
                 />
               </Tab.Pane>

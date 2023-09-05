@@ -25,7 +25,6 @@ import {
 import Leaflet from "../common/leaflet/leaflet";
 import { useNavigate, useParams } from "react-router-dom";
 import { VisibilitySelectorField } from "../common/VisibilitySelector";
-import { parsePolyline } from "../../utils/polyline";
 import { components } from "../../@types/buldreinfo/swagger";
 import { ProblemOrder } from "./ProblemOrder";
 import { PolylineEditor } from "./PolylineEditor";
@@ -438,18 +437,10 @@ export const SectorEdit = () => {
               >
                 <ZoomLogic area={area} sector={data} />
                 {leafletMode === "POLYGON" && (
-                  <PolylineMarkers
-                    polyline={(data.outline || [])
-                      .map((c) => c.latitude + "," + c.longitude)
-                      .join(";")}
-                  />
+                  <PolylineMarkers coordinates={data.outline} />
                 )}
                 {leafletMode === "POLYLINE" && (
-                  <PolylineMarkers
-                    polyline={(data.approach || [])
-                      .map((c) => c.latitude + "," + c.longitude)
-                      .join(";")}
-                  />
+                  <PolylineMarkers coordinates={data.approach} />
                 )}
               </Leaflet>
             </Form.Field>
@@ -479,15 +470,12 @@ export const SectorEdit = () => {
               <Form.Field>
                 <label>Outline {currPolygonPoint}</label>
                 <PolylineEditor
-                  polyline={(data.outline || [])
-                    .map((c) => c.latitude + "," + c.longitude)
-                    .join(";")}
-                  onChange={(polygonCoords) => {
-                    const outline = parsePolyline(polygonCoords).map((x) => ({
-                      latitude: x[0],
-                      longitude: x[1],
+                  coordinates={data.outline}
+                  onChange={(coordinates) => {
+                    setData((prevState) => ({
+                      ...prevState,
+                      outline: coordinates,
                     }));
-                    setData((prevState) => ({ ...prevState, outline }));
                   }}
                 />
               </Form.Field>
@@ -496,15 +484,12 @@ export const SectorEdit = () => {
               <Form.Field>
                 <label>Approach</label>
                 <PolylineEditor
-                  polyline={(data.approach || [])
-                    .map((c) => c.latitude + "," + c.longitude)
-                    .join(";")}
-                  onChange={(polyline) => {
-                    const approach = parsePolyline(polyline).map((x) => ({
-                      latitude: x[0],
-                      longitude: x[1],
+                  coordinates={data.approach}
+                  onChange={(coordinates) => {
+                    setData((prevState) => ({
+                      ...prevState,
+                      approach: coordinates,
                     }));
-                    setData((prevState) => ({ ...prevState, approach }));
                   }}
                   upload
                 />

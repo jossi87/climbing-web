@@ -1,14 +1,14 @@
 import { components } from "../../../@types/buldreinfo/swagger";
 
 export function calculateDistance(
-  approach: components["schemas"]["Coordinates"][],
+  coordinates: components["schemas"]["Coordinates"][],
 ) {
   let km = 0;
-  for (let i = 1; i < approach.length; i++) {
-    const lat1 = approach[i - 1].latitude;
-    const lng1 = approach[i - 1].longitude;
-    const lat2 = approach[i][0].latitude;
-    const lng2 = approach[i][1].longitude;
+  for (let i = 1; i < coordinates.length; i++) {
+    const lat1 = coordinates[i - 1].latitude;
+    const lng1 = coordinates[i - 1].longitude;
+    const lat2 = coordinates[i].latitude;
+    const lng2 = coordinates[i].longitude;
     km += calculateDistanceBetweenCoordinates(lat1, lng1, lat2, lng2);
   }
   if (km > 1) {

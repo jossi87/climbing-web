@@ -1,11 +1,11 @@
 import { captureMessage } from "@sentry/core";
-import { LatLngTuple } from "leaflet";
 import { hashHexColor } from "./colors";
+import { components } from "../@types/buldreinfo/swagger";
 
 export const parsePolyline = (
   polyline: string,
   onError?: (msg: string, extra?: Record<string, string>) => void,
-): LatLngTuple[] => {
+): components["schemas"]["Coordinates"][] => {
   const reportError =
     onError ??
     ((message) => {
@@ -52,15 +52,18 @@ export const parsePolyline = (
  * will have a representative hash code. It's not intended to be perfect, but we
  * just need "good enough".
  */
-const hashLatLng = ([lat, lng]: LatLngTuple): number => {
+const hashLatLng = ({
+  latitude,
+  longitude,
+}: components["schemas"]["Coordinates"]): number => {
   const componentSize = Math.floor(String(Number.MAX_SAFE_INTEGER).length / 2);
-  const msbLat = String(lat)
+  const msbLat = String(latitude)
     .replace(/[^\d]/g, "")
     .split("")
     .reverse()
     .join("")
     .substring(0, componentSize - 1);
-  const msbLng = String(lng)
+  const msbLng = String(longitude)
     .replace(/[^\d]/g, "")
     .split("")
     .reverse()
@@ -70,7 +73,7 @@ const hashLatLng = ([lat, lng]: LatLngTuple): number => {
 };
 
 export const colorLatLng = (
-  latlng: LatLngTuple,
+  c: components["schemas"]["Coordinates"],
 ): ReturnType<typeof hashHexColor> => {
-  return hashHexColor(hashLatLng(latlng));
+  return hashHexColor(hashLatLng(c));
 };
