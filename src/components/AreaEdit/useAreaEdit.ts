@@ -117,7 +117,7 @@ const reducer = (state: State, update: Update): State => {
     }
     case "set-coord": {
       const { key, value } = update;
-      let coordinates = state.coordinates || { latitude: 0, longitude: 0 };
+      const coordinates = state.coordinates || { latitude: 0, longitude: 0 };
       coordinates[key] = getCoord(value);
       return { ...state, coordinates };
     }
