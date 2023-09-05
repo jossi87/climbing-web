@@ -37,7 +37,6 @@ import { ProblemsOnRock } from "./ProblemsOnRock";
 import { ProblemTicks } from "./ProblemTicks";
 import { ProblemComments } from "./ProblemComments";
 import { componentDecorator } from "../../utils/componentDecorator";
-import { parsePolyline } from "../../utils/polyline";
 
 export const Problem = () => {
   const accessToken = useAccessToken();
@@ -117,19 +116,21 @@ export const Problem = () => {
     });
   }
   if (markers.length > 0) {
-    const polyline = parsePolyline(data.sectorPolyline);
     let outlines;
-    let polylines;
+    let approaches;
     if (data.sectorOutline?.length > 0 && !data.coordinates) {
       const outline = data.sectorOutline;
       const label =
         data.sectorName +
-        (polyline?.length > 0 ? " (" + calculateDistance(polyline) + ")" : "");
+        (data.sectorApproach?.length > 0
+          ? " (" + calculateDistance(data.sectorApproach) + ")"
+          : "");
       outlines = [{ url: "/sector/" + data.sectorId, label, outline }];
     }
-    if (polyline?.length > 0) {
-      const label = outlines == null ? calculateDistance(polyline) : null;
-      polylines = [{ polyline, label: label }];
+    if (data.sectorApproach?.length > 0) {
+      const label =
+        outlines == null ? calculateDistance(data.sectorApproach) : null;
+      approaches = [{ approach: data.sectorApproach, label: label }];
     }
     panes.push({
       menuItem: { key: "map", icon: "map" },
@@ -141,7 +142,7 @@ export const Problem = () => {
             height="40vh"
             markers={markers}
             outlines={outlines}
-            polylines={polylines}
+            approaches={approaches}
             defaultCenter={{ lat: markers[0].lat, lng: markers[0].lng }}
             defaultZoom={16}
             showSatelliteImage={true}

@@ -1,12 +1,14 @@
-import { LatLngExpression } from "leaflet";
+import { components } from "../../../@types/buldreinfo/swagger";
 
-export function calculateDistance(polyline: LatLngExpression[]) {
+export function calculateDistance(
+  approach: components["schemas"]["Coordinates"][],
+) {
   let km = 0;
-  for (let i = 1; i < polyline.length; i++) {
-    const lat1 = polyline[i - 1][0];
-    const lng1 = polyline[i - 1][1];
-    const lat2 = polyline[i][0];
-    const lng2 = polyline[i][1];
+  for (let i = 1; i < approach.length; i++) {
+    const lat1 = approach[i - 1].latitude;
+    const lng1 = approach[i - 1].longitude;
+    const lat2 = approach[i][0].latitude;
+    const lng2 = approach[i][1].longitude;
     km += calculateDistanceBetweenCoordinates(lat1, lng1, lat2, lng2);
   }
   if (km > 1) {

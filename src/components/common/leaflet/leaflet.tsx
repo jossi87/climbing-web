@@ -10,11 +10,7 @@ import {
   FeatureGroup,
   useMap,
 } from "react-leaflet";
-import {
-  LatLngExpression,
-  LeafletMouseEventHandlerFn,
-  latLngBounds,
-} from "leaflet";
+import { LeafletMouseEventHandlerFn, latLngBounds } from "leaflet";
 import LocateControl from "./locatecontrol";
 import FullscreenControl from "./fullscreencontrol";
 import Markers, { MarkerDef } from "./markers";
@@ -64,10 +60,10 @@ type Props = {
     url?: string;
     label?: string;
   }[];
-  polylines?: {
+  approaches?: {
     background?: boolean;
     label?: string;
-    polyline: LatLngExpression[];
+    approach: components["schemas"]["Coordinates"][];
   }[];
   rocks?: string[];
   showSatelliteImage?: boolean;
@@ -78,8 +74,8 @@ const UpdateBounds = ({
   autoZoom,
   markers,
   outlines,
-  polylines,
-}: Pick<Props, "autoZoom" | "markers" | "outlines" | "polylines">) => {
+  approaches,
+}: Pick<Props, "autoZoom" | "markers" | "outlines" | "approaches">) => {
   const map = useMap();
 
   if (!autoZoom) {
@@ -97,10 +93,12 @@ const UpdateBounds = ({
         bounds.extend({ lat: c.latitude, lng: c.longitude }),
       ),
     );
-  polylines
-    ?.filter(({ polyline }) => polyline)
-    ?.forEach(({ polyline }) =>
-      polyline.forEach((latlng) => bounds.extend(latlng)),
+  approaches
+    ?.filter(({ approach }) => approach)
+    ?.forEach(({ approach }) =>
+      approach.forEach((c) =>
+        bounds.extend({ lat: c.latitude, lng: c.longitude }),
+      ),
     );
 
   if (
@@ -125,7 +123,7 @@ const Leaflet = ({
   onMouseClick,
   onMouseMove,
   outlines,
-  polylines,
+  approaches,
   rocks = [],
   showSatelliteImage,
   children,
@@ -204,7 +202,7 @@ const Leaflet = ({
       center={defaultCenter}
     >
       <UpdateBounds
-        polylines={polylines}
+        approaches={approaches}
         outlines={outlines}
         autoZoom={autoZoom}
         markers={markers}
@@ -304,7 +302,7 @@ const Leaflet = ({
           addEventHandlers={addEventHandlers}
           showElevation={showElevation}
         />
-        <Polylines opacity={opacity} polylines={polylines} />
+        <Polylines opacity={opacity} approaches={approaches} />
       </FeatureGroup>
       {children}
     </MapContainer>

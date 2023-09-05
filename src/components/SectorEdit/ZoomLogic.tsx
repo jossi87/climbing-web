@@ -2,7 +2,6 @@ import { latLngBounds } from "leaflet";
 import { useRef, useEffect } from "react";
 import { useMap } from "react-leaflet";
 import { components } from "../../@types/buldreinfo/swagger";
-import { parsePolyline } from "../../utils/polyline";
 
 type Props = {
   area: components["schemas"]["Area"];
@@ -26,9 +25,9 @@ export const ZoomLogic = ({
         }
       }
 
-      if (sectorRef.current.polyline) {
-        for (const latlng of parsePolyline(sectorRef.current.polyline)) {
-          bounds.extend(latlng);
+      if (sectorRef.current.approach?.length > 0) {
+        for (const coordinates of sectorRef.current.approach) {
+          bounds.extend([coordinates.latitude, coordinates.longitude]);
         }
       }
 

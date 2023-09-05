@@ -246,7 +246,7 @@ export const AreaEdit = () => {
               outlines={data.sectors
                 ?.filter((s) => s.outline?.length > 0)
                 .map((s) => ({ background: true, outline: s.outline }))}
-              polylines={[]}
+              approaches={null}
               height={"300px"}
               showSatelliteImage={false}
               clusterMarkers={false}

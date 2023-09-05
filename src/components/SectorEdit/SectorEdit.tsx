@@ -112,7 +112,7 @@ export const SectorEdit = () => {
         data.accessClosed,
         data.parking,
         data.outline,
-        data.polyline,
+        data.approach,
         data.newMedia,
         data.problemOrder,
       )
@@ -135,25 +135,19 @@ export const SectorEdit = () => {
         },
       }));
     } else if (leafletMode == "POLYGON") {
-      let { outline } = data;
-      if (outline?.length > 0) {
-        outline.push({
-          latitude: event.latlng.lat,
-          longitude: event.latlng.lng,
-        });
-      } else {
-        outline = [{ latitude: event.latlng.lat, longitude: event.latlng.lng }];
-      }
+      const outline = data.outline || [];
+      outline.push({
+        latitude: event.latlng.lat,
+        longitude: event.latlng.lng,
+      });
       setData((prevState) => ({ ...prevState, outline }));
     } else if (leafletMode == "POLYLINE") {
-      const coords = event.latlng.lat + "," + event.latlng.lng;
-      let { polyline } = data;
-      if (polyline) {
-        polyline = polyline + ";" + coords;
-      } else {
-        polyline = coords;
-      }
-      setData((prevState) => ({ ...prevState, polyline }));
+      const approach = data.approach || [];
+      approach.push({
+        latitude: event.latlng.lat,
+        longitude: event.latlng.lng,
+      });
+      setData((prevState) => ({ ...prevState, approach }));
     }
   }
 
@@ -185,7 +179,7 @@ export const SectorEdit = () => {
     } else if (leafletMode == "POLYGON") {
       setData((prevState) => ({ ...prevState, outline: null }));
     } else if (leafletMode == "POLYLINE") {
-      setData((prevState) => ({ ...prevState, polyline: null }));
+      setData((prevState) => ({ ...prevState, approach: null }));
     }
   }
 
@@ -228,7 +222,7 @@ export const SectorEdit = () => {
   }
 
   const outlines: ComponentProps<typeof Leaflet>["outlines"] = [];
-  const polylines: ComponentProps<typeof Leaflet>["polylines"] = [];
+  const approaches: ComponentProps<typeof Leaflet>["approaches"] = [];
   if (area) {
     area.sectors.forEach((sector) => {
       if (sector.id != data.id) {
@@ -239,11 +233,8 @@ export const SectorEdit = () => {
             label: sector.name,
           });
         }
-        if (sector.polyline) {
-          const sectorPolyline = parsePolyline(sector.polyline);
-          if (sectorPolyline?.length > 0) {
-            polylines.push({ polyline: sectorPolyline, background: true });
-          }
+        if (sector.approach?.length > 0) {
+          approaches.push({ approach: sector.approach, background: true });
         }
       }
     });
@@ -252,9 +243,8 @@ export const SectorEdit = () => {
   if (data.outline?.length > 0) {
     outlines.push({ outline: data.outline, background: false });
   }
-  const polyline = parsePolyline(data.polyline);
-  if (polyline?.length > 0) {
-    polylines.push({ polyline, background: false });
+  if (data.approach?.length > 0) {
+    approaches.push({ approach: data.approach, background: false });
   }
 
   let defaultCenter;
@@ -435,7 +425,7 @@ export const SectorEdit = () => {
               <Leaflet
                 markers={markers}
                 outlines={outlines}
-                polylines={polylines}
+                approaches={approaches}
                 defaultCenter={defaultCenter}
                 defaultZoom={defaultZoom}
                 onMouseClick={onMapMouseClick}
@@ -455,7 +445,11 @@ export const SectorEdit = () => {
                   />
                 )}
                 {leafletMode === "POLYLINE" && (
-                  <PolylineMarkers polyline={data.polyline} />
+                  <PolylineMarkers
+                    polyline={(data.approach || [])
+                      .map((c) => c.latitude + "," + c.longitude)
+                      .join(";")}
+                  />
                 )}
               </Leaflet>
             </Form.Field>
@@ -502,10 +496,16 @@ export const SectorEdit = () => {
               <Form.Field>
                 <label>Approach</label>
                 <PolylineEditor
-                  polyline={data.polyline}
-                  onChange={(polyline) =>
-                    setData((prevState) => ({ ...prevState, polyline }))
-                  }
+                  polyline={(data.approach || [])
+                    .map((c) => c.latitude + "," + c.longitude)
+                    .join(";")}
+                  onChange={(polyline) => {
+                    const approach = parsePolyline(polyline).map((x) => ({
+                      latitude: x[0],
+                      longitude: x[1],
+                    }));
+                    setData((prevState) => ({ ...prevState, approach }));
+                  }}
                   upload
                 />
               </Form.Field>

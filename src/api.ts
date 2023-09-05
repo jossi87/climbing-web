@@ -767,7 +767,7 @@ export function getSectorEdit(
           accessClosed: res.accessClosed,
           parking: res.parking,
           outline: res.outline,
-          polyline: res.polyline,
+          approach: res.approach,
           newMedia: [],
           problemOrder: res.problemOrder,
         };

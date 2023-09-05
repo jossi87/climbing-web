@@ -38,7 +38,6 @@ import {
 } from "../api";
 import Linkify from "react-linkify";
 import { componentDecorator } from "../utils/componentDecorator";
-import { parsePolyline } from "../utils/polyline";
 import { components } from "../@types/buldreinfo/swagger";
 
 type Props = {
@@ -183,18 +182,19 @@ const Sector = () => {
       ? { lat: data.parking.latitude, lng: data.parking.longitude }
       : meta.defaultCenter;
     const defaultZoom = data.parking ? 15 : meta.defaultZoom;
-    const polyline = parsePolyline(data.polyline);
     let outlines;
-    let polylines;
+    let approaches;
     if (data.outline?.length > 0 && addPolygon) {
       const label =
         data.name +
-        (polyline?.length > 0 ? " (" + calculateDistance(polyline) + ")" : "");
+        (data.approach?.length > 0
+          ? " (" + calculateDistance(data.approach) + ")"
+          : "");
       outlines = [{ url: "/sector/" + data.id, label, outline: data.outline }];
     }
-    if (polyline?.length > 0) {
-      const label = outlines == null ? calculateDistance(polyline) : null;
-      polylines = [{ polyline, label: label }];
+    if (data.approach?.length > 0) {
+      const label = outlines == null ? calculateDistance(data.approach) : null;
+      approaches = [{ approach: data.approach, label: label }];
     }
     const uniqueRocks = data.problems
       .filter((p) => p.rock)
@@ -211,7 +211,7 @@ const Sector = () => {
             height="40vh"
             markers={markers}
             outlines={outlines}
-            polylines={polylines}
+            approaches={approaches}
             defaultCenter={defaultCenter}
             defaultZoom={defaultZoom}
             onMouseClick={null}

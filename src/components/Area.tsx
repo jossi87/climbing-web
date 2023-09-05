@@ -35,7 +35,6 @@ import { getImageUrl, getAreaPdfUrl, useAccessToken, useArea } from "../api";
 import { Remarkable } from "remarkable";
 import { linkify } from "remarkable/linkify";
 import ProblemList from "./common/problem-list/problem-list";
-import { parsePolyline } from "../utils/polyline";
 import { components } from "../@types/buldreinfo/swagger";
 
 type Props = {
@@ -161,14 +160,13 @@ const Area = () => {
       };
     });
   const outlines: ComponentProps<typeof Leaflet>["outlines"] = [];
-  const polylines: ComponentProps<typeof Leaflet>["polylines"] = [];
+  const approaches: ComponentProps<typeof Leaflet>["approaches"] = [];
   for (const s of data.sectors) {
     let distance: string | null = null;
-    if (s.polyline) {
-      const polyline = parsePolyline(s.polyline);
-      distance = calculateDistance(polyline);
+    if (s.approach?.length > 0) {
+      distance = calculateDistance(s.approach);
       const label = (s.outline == null || s.outline.length === 0) && distance;
-      polylines.push({ polyline, label });
+      approaches.push({ approach: s.approach, label });
     }
     if (s.outline?.length > 0) {
       const label = s.name + (distance ? " (" + distance + ")" : "");
@@ -206,7 +204,7 @@ const Area = () => {
             height={height}
             markers={markers}
             outlines={outlines}
-            polylines={polylines}
+            approaches={approaches}
             defaultCenter={defaultCenter}
             defaultZoom={defaultZoom}
             onMouseClick={null}

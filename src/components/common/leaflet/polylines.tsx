@@ -1,54 +1,51 @@
-import { LatLngExpression } from "leaflet";
 import React from "react";
 import { Circle, Polyline, Tooltip } from "react-leaflet";
+import { components } from "../../../@types/buldreinfo/swagger";
 
 type Props = {
   opacity: number;
-  polylines: {
+  approaches: {
     background?: boolean;
-    polyline: LatLngExpression[];
+    approach: components["schemas"]["Coordinates"][];
     label?: string;
   }[];
 };
 
-export default function Polylines({ opacity, polylines }: Props) {
-  if (!polylines) {
+export default function Polylines({ opacity, approaches }: Props) {
+  if (!approaches) {
     return null;
   }
-  return polylines.map((p) => {
-    if (p.polyline.length === 1) {
+  return approaches.map((a) => {
+    if (a.approach.length === 1) {
       return (
         <Circle
           color="lime"
-          // It's not great to use JSON.stringify(..) for this, but I don't
-          // know what type we're actually working with here. This is easier
-          // for now and shouldn't cause any major performance issues.
-          key={JSON.stringify(p.polyline[0])}
-          center={p.polyline[0]}
+          key={a.approach[0].id}
+          center={[a.approach[0].latitude, a.approach[0].longitude]}
           radius={0.5}
         />
       );
     } else {
       let color = "lime";
       let weight = 3;
-      if (p.background === true) {
+      if (a.background === true) {
         color = "red";
         weight = 1;
       }
       return (
         <Polyline
-          key={p.polyline.map((latlng) => latlng.toString()).join(" -> ")}
+          key={a.approach.map((latlng) => latlng.toString()).join(" -> ")}
           color={color}
           weight={weight}
-          positions={p.polyline}
+          positions={a.approach.map((c) => [c.latitude, c.longitude])}
         >
-          {p.label && (
+          {a.label && (
             <Tooltip
               opacity={opacity}
               permanent
               className="buldreinfo-tooltip-compact"
             >
-              {p.label}
+              {a.label}
             </Tooltip>
           )}
         </Polyline>

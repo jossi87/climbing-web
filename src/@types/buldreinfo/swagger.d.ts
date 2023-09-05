@@ -300,7 +300,7 @@ export type components = {
       parking?: components["schemas"]["Coordinates"];
       outline?: components["schemas"]["Coordinates"][];
       wallDirection?: string;
-      polyline?: string;
+      approach?: components["schemas"]["Coordinates"][];
       /** Format: int32 */
       randomMediaId?: number;
       /** Format: int32 */
@@ -436,8 +436,8 @@ export type components = {
       anchors?: string;
       primary?: boolean;
       ticked?: boolean;
-      todo?: boolean;
       dangerous?: boolean;
+      todo?: boolean;
     };
     Type: {
       /** Format: int32 */
@@ -595,10 +595,10 @@ export type components = {
       sites?: components["schemas"]["Site"][];
       bouldering?: boolean;
       climbing?: boolean;
-      authenticated?: boolean;
       admin?: boolean;
       superAdmin?: boolean;
       ice?: boolean;
+      authenticated?: boolean;
     };
     Site: {
       group?: string;
@@ -657,7 +657,7 @@ export type components = {
       sectorParking?: components["schemas"]["Coordinates"];
       sectorOutline?: components["schemas"]["Coordinates"][];
       sectorWallDirection?: string;
-      sectorPolyline?: string;
+      sectorApproach?: components["schemas"]["Coordinates"][];
       /** Format: int32 */
       sectorIdProblemPrev?: number;
       /** Format: int32 */
@@ -962,7 +962,7 @@ export type components = {
       parking?: components["schemas"]["Coordinates"];
       outline?: components["schemas"]["Coordinates"][];
       wallDirection?: string;
-      polyline?: string;
+      approach?: components["schemas"]["Coordinates"][];
       media?: components["schemas"]["Media"][];
       triviaMedia?: components["schemas"]["Media"][];
       sectors?: components["schemas"]["SectorJump"][];
