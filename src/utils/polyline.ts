@@ -43,7 +43,7 @@ export const parsePolyline = (
         return acc;
       }
 
-      return [...acc, [lat, lng]];
+      return [...acc, { latitude: lat, longitude: lng }];
     }, []);
 };
 

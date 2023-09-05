@@ -436,8 +436,8 @@ export type components = {
       anchors?: string;
       primary?: boolean;
       ticked?: boolean;
-      dangerous?: boolean;
       todo?: boolean;
+      dangerous?: boolean;
     };
     Type: {
       /** Format: int32 */
@@ -594,11 +594,11 @@ export type components = {
       types?: components["schemas"]["Type"][];
       sites?: components["schemas"]["Site"][];
       bouldering?: boolean;
-      climbing?: boolean;
       admin?: boolean;
+      authenticated?: boolean;
+      climbing?: boolean;
       superAdmin?: boolean;
       ice?: boolean;
-      authenticated?: boolean;
     };
     Site: {
       group?: string;
