@@ -183,16 +183,14 @@ const Sector = () => {
     let outlines;
     let approaches;
     if (data.outline?.length > 0 && addPolygon) {
-      const label =
-        data.name +
-        (data.approach?.length > 0
-          ? " (" + calculateDistance(data.approach) + ")"
-          : "");
-      outlines = [{ url: "/sector/" + data.id, label, outline: data.outline }];
+      outlines = [
+        { url: "/sector/" + data.id, label: data.name, outline: data.outline },
+      ];
     }
     if (data.approach?.length > 0) {
-      const label = outlines == null ? calculateDistance(data.approach) : null;
-      approaches = [{ approach: data.approach, label: label }];
+      approaches = [
+        { approach: data.approach, label: calculateDistance(data.approach) },
+      ];
     }
     const uniqueRocks = data.problems
       .filter((p) => p.rock)
