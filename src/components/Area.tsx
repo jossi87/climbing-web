@@ -170,7 +170,8 @@ const Area = () => {
     }
     if (s.outline?.length > 0) {
       const label =
-        s.name + (showApproachLengthOnOutline ? " (" + distance + ")" : "");
+        s.name +
+        (showApproachLengthOnOutline && distance ? " (" + distance + ")" : "");
       outlines.push({
         url: "/sector/" + s.id,
         label,
