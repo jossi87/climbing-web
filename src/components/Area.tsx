@@ -5,7 +5,6 @@ import ChartGradeDistribution from "./common/chart-grade-distribution/chart-grad
 import Top from "./common/top/top";
 import Activity from "./common/activity/activity";
 import Leaflet from "./common/leaflet/leaflet";
-import { calculateDistance } from "./common/leaflet/distance-math";
 import Media from "./common/media/media";
 import Todo from "./common/todo/todo";
 import {
@@ -165,7 +164,7 @@ const Area = () => {
   for (const s of data.sectors) {
     let distance: string | null = null;
     if (s.approach?.length > 0) {
-      distance = calculateDistance(s.approach);
+      distance = Math.round(s.approach[s.approach.length - 1].distance) + "m";
       const label = (!s.outline || !showApproachLengthOnOutline) && distance;
       approaches.push({ approach: s.approach, label });
     }

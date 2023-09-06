@@ -2,7 +2,6 @@ import React, { useState, ComponentProps } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useParams } from "react-router-dom";
 import Leaflet from "../common/leaflet/leaflet";
-import { calculateDistance } from "../common/leaflet/distance-math";
 import Media from "../common/media/media";
 import {
   Button,
@@ -119,17 +118,20 @@ export const Problem = () => {
     let approaches;
     if (data.sectorOutline?.length > 0 && !data.coordinates) {
       const outline = data.sectorOutline;
-      const label =
-        data.sectorName +
-        (data.sectorApproach?.length > 0
-          ? " (" + calculateDistance(data.sectorApproach) + ")"
-          : "");
-      outlines = [{ url: "/sector/" + data.sectorId, label, outline }];
+      outlines = [
+        { url: "/sector/" + data.sectorId, label: data.sectorName, outline },
+      ];
     }
     if (data.sectorApproach?.length > 0) {
-      const label =
-        outlines == null ? calculateDistance(data.sectorApproach) : null;
-      approaches = [{ approach: data.sectorApproach, label: label }];
+      approaches = [
+        {
+          approach: data.sectorApproach,
+          label:
+            Math.round(
+              data.sectorApproach[data.sectorApproach.length - 1].distance,
+            ) + "m",
+        },
+      ];
     }
     panes.push({
       menuItem: { key: "map", icon: "map" },

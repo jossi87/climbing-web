@@ -7,7 +7,6 @@ import { ApproachProfile } from "./common/ApproachProfile";
 import Top from "./common/top/top";
 import Activity from "./common/activity/activity";
 import Leaflet from "./common/leaflet/leaflet";
-import { calculateDistance } from "./common/leaflet/distance-math";
 import Media from "./common/media/media";
 import Todo from "./common/todo/todo";
 import {
@@ -190,7 +189,11 @@ const Sector = () => {
     }
     if (data.approach?.length > 0) {
       approaches = [
-        { approach: data.approach, label: calculateDistance(data.approach) },
+        {
+          approach: data.approach,
+          label:
+            Math.round(data.approach[data.approach.length - 1].distance) + "m",
+        },
       ];
     }
     const uniqueRocks = data.problems

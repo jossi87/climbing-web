@@ -28,7 +28,7 @@ export const ApproachProfile = ({ coordinates }: Props) => {
   }
   return (
     <Label basic>
-      {`Dist.: ${Math.round(coordinates[coordinates.length - 1].distance)}`}
+      {`Dist.: ${Math.round(coordinates[coordinates.length - 1].distance)}m`}
       <Label.Detail>{`Elev. +${Math.round(elevationGain)}m, -${Math.round(
         elevationLoss,
       )}m`}</Label.Detail>
