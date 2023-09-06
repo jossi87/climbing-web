@@ -162,8 +162,8 @@ const Area = () => {
   const approaches: ComponentProps<typeof Leaflet>["approaches"] = [];
   for (const s of data.sectors) {
     if (s.approach?.length > 0) {
-      const distance = calculateDistance(s.approach);
-      approaches.push({ approach: s.approach, label: distance });
+      const label = calculateDistance(s.approach);
+      approaches.push({ approach: s.approach, label });
     }
     if (s.outline?.length > 0) {
       outlines.push({
