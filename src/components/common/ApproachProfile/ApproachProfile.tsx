@@ -13,17 +13,20 @@ export const ApproachProfile = ({ coordinates }: Props) => {
   let elevationGain = 0;
   let elevationLoss = 0;
   for (let i = 1; i < coordinates.length; i++) {
-    let elevation = coordinates[i].elevation-coordinates[i-1].elevation;
-    if (elevation > 0) {
-      elevationGain += elevation;
-    } else if (elevation < 0) {
-      elevationLoss -= elevation;
+    const elevationDiff =
+      coordinates[i].elevation - coordinates[i - 1].elevation;
+    if (elevationDiff > 0) {
+      elevationGain += elevationDiff;
+    } else if (elevationDiff < 0) {
+      elevationLoss -= elevationDiff;
     }
   }
   return (
     <Label basic>
       {`Dist.: ${distance}`}
-      <Label.Detail>{`Elev. +${Math.round(elevationGain)}m, -${Math.round(elevationLoss)}m`}</Label.Detail>
+      <Label.Detail>{`Elev. +${Math.round(elevationGain)}m, -${Math.round(
+        elevationLoss,
+      )}m`}</Label.Detail>
       <br />
       <ResponsiveContainer aspect={6}>
         <AreaChart
