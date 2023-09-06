@@ -307,8 +307,7 @@ const ProblemEdit = () => {
   const markers = [];
   if (data.coordinates) {
     markers.push({
-      lat: data.coordinates.latitude,
-      lng: data.coordinates.longitude,
+      coordinates: data.coordinates,
     });
   }
   if (showSectorMarkers && sector.problems?.length > 0) {
@@ -316,8 +315,7 @@ const ProblemEdit = () => {
       ...sector.problems
         .filter((p) => p.coordinates && p.id != problemId)
         .map((p) => ({
-          lat: p.coordinates.latitude,
-          lng: p.coordinates.longitude,
+          coordinates: p.coordinates,
           label: p.name,
         })),
     );

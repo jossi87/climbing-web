@@ -161,17 +161,14 @@ const Area = () => {
   const outlines: ComponentProps<typeof Leaflet>["outlines"] = [];
   const approaches: ComponentProps<typeof Leaflet>["approaches"] = [];
   for (const s of data.sectors) {
-    let distance: string | null = null;
     if (s.approach?.length > 0) {
-      distance = calculateDistance(s.approach);
-      const label = (s.outline == null || s.outline.length === 0) && distance;
-      approaches.push({ approach: s.approach, label });
+      const distance = calculateDistance(s.approach);
+      approaches.push({ approach: s.approach, label: distance });
     }
     if (s.outline?.length > 0) {
-      const label = s.name + (distance ? " (" + distance + ")" : "");
       outlines.push({
         url: "/sector/" + s.id,
-        label,
+        label: s.name,
         outline: s.outline,
       });
     }

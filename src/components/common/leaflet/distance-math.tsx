@@ -12,9 +12,9 @@ export function calculateDistance(
     km += calculateDistanceBetweenCoordinates(lat1, lng1, lat2, lng2);
   }
   if (km > 1) {
-    return Math.round(km * 100) / 100 + " km";
+    return Math.round(km * 100) / 100 + "km";
   }
-  return Math.round(km * 1000) + " meter";
+  return Math.round(km * 1000) + "m";
 }
 
 function calculateDistanceBetweenCoordinates(lat1, lng1, lat2, lng2) {

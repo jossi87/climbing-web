@@ -100,12 +100,12 @@ export default function Markers({
     return null;
   }
   return markers.map((m) => {
+    let label = m.label;
+    if (showElevation && m.coordinates.elevation > 0) {
+      const elevation = Math.round(m.coordinates.elevation);
+      label = label ? label + " (" + elevation + "m)" : elevation + "m";
+    }
     if (isParkingMarker(m)) {
-      let label = m.label;
-      if (showElevation && m.coordinates.elevation > 0) {
-        const elevation = Math.round(m.coordinates.elevation);
-        label = label ? label + " (" + elevation + "m)" : elevation + "m";
-      }
       return (
         <Marker
           icon={parkingIcon}
@@ -139,8 +139,8 @@ export default function Markers({
       return (
         <Marker
           icon={weatherIcon}
-          position={[m.coordinates.latitude, m.coordinates.latitude]}
-          key={["camera", m.coordinates.latitude, m.coordinates.latitude].join(
+          position={[m.coordinates.latitude, m.coordinates.longitude]}
+          key={["camera", m.coordinates.latitude, m.coordinates.longitude].join(
             "/",
           )}
         >
@@ -177,8 +177,8 @@ export default function Markers({
       return (
         <Marker
           icon={m.rock ? rockIcon : markerBlueIcon}
-          position={[m.coordinates.latitude, m.coordinates.latitude]}
-          key={["html", m.coordinates.latitude, m.coordinates.latitude].join(
+          position={[m.coordinates.latitude, m.coordinates.longitude]}
+          key={["html", m.coordinates.latitude, m.coordinates.longitude].join(
             "/",
           )}
           ref={(ref) => (markerRefs.current[m.id] = ref)}
@@ -188,22 +188,23 @@ export default function Markers({
             permanent
             className="buldreinfo-tooltip-compact"
           >
-            {m.label}
+            {label}
           </Tooltip>
           <Popup closeButton={false}>{m.html}</Popup>
         </Marker>
       );
     }
+
     if (isLabelMarker(m)) {
       return (
         <Marker
           icon={markerBlueIcon}
-          position={[m.coordinates.latitude, m.coordinates.latitude]}
+          position={[m.coordinates.latitude, m.coordinates.longitude]}
           key={[
             "label",
             m.url,
             m.coordinates.latitude,
-            m.coordinates.latitude,
+            m.coordinates.longitude,
           ].join("/")}
           eventHandlers={{
             click: () => {
@@ -219,7 +220,7 @@ export default function Markers({
             permanent
             className="buldreinfo-tooltip-compact"
           >
-            {m.label}
+            {label}
           </Tooltip>
         </Marker>
       );
@@ -228,8 +229,8 @@ export default function Markers({
     return (
       <Marker
         icon={markerRedIcon}
-        position={[m.coordinates.latitude, m.coordinates.latitude]}
-        key={["red", m.coordinates.latitude, m.coordinates.latitude].join("/")}
+        position={[m.coordinates.latitude, m.coordinates.longitude]}
+        key={["red", m.coordinates.latitude, m.coordinates.longitude].join("/")}
         eventHandlers={{
           click: () => {
             if (addEventHandlers && m.url) {

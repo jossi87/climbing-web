@@ -402,8 +402,7 @@ export const SectorEdit = () => {
                           data.problems
                             .filter((p) => p.coordinates)
                             .map((p) => ({
-                              lat: p.coordinates.latitude,
-                              lng: p.coordinates.longitude,
+                              coordinates: p.coordinates,
                               label: p.name,
                             })),
                         ),
