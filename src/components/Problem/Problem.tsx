@@ -2,6 +2,7 @@ import React, { useState, ComponentProps } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useParams } from "react-router-dom";
 import Leaflet from "../common/leaflet/leaflet";
+import { getDistanceWithUnit } from "../common/leaflet/distance-math";
 import Media from "../common/media/media";
 import {
   Button,
@@ -126,10 +127,7 @@ export const Problem = () => {
       approaches = [
         {
           approach: data.sectorApproach,
-          label:
-            Math.round(
-              data.sectorApproach[data.sectorApproach.length - 1].distance,
-            ) + "m",
+          label: getDistanceWithUnit(data.sectorApproach),
         },
       ];
     }
@@ -556,13 +554,11 @@ export const Problem = () => {
             problemId={+problemId}
             rock={data?.rock}
           />
-          {data.sectorApproach?.length > 3 && (
+          {data.sectorApproach?.length > 1 && (
             <Table.Row verticalAlign="top">
               <Table.Cell>Approach:</Table.Cell>
               <Table.Cell>
-                {data.sectorApproach?.length > 3 && (
-                  <ApproachProfile coordinates={data.sectorApproach} />
-                )}
+                <ApproachProfile coordinates={data.sectorApproach} />
               </Table.Cell>
             </Table.Row>
           )}

@@ -9,6 +9,7 @@ import {
   YAxis,
 } from "recharts";
 import { Label } from "semantic-ui-react";
+import { getDistanceWithUnit } from "../leaflet/distance-math";
 
 type Props = {
   coordinates?: components["schemas"]["Coordinates"][];
@@ -26,9 +27,10 @@ export const ApproachProfile = ({ coordinates }: Props) => {
       elevationLoss -= elevationDiff;
     }
   }
+
   return (
     <Label basic>
-      {`Dist.: ${Math.round(coordinates[coordinates.length - 1].distance)}m`}
+      {`Dist.: ${getDistanceWithUnit(coordinates)}`}
       <Label.Detail>{`Elev. +${Math.round(elevationGain)}m, -${Math.round(
         elevationLoss,
       )}m`}</Label.Detail>
@@ -57,7 +59,10 @@ export const ApproachProfile = ({ coordinates }: Props) => {
             scale="linear"
             unit="m"
             allowDecimals={false}
-            domain={["dataMin", "dataMax"]}
+            domain={([dataMin, dataMax]) => {
+              const max = Math.max(dataMax, dataMin + 100);
+              return [dataMin, max];
+            }}
           />
           <Area
             dataKey="elevation"
