@@ -326,6 +326,8 @@ export type components = {
       longitude?: number;
       /** Format: double */
       elevation?: number;
+      /** Format: double */
+      distance?: number;
     };
     Media: {
       /** Format: int32 */

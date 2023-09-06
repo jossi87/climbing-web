@@ -1,15 +1,20 @@
 import React from "react";
 import { components } from "../../../@types/buldreinfo/swagger";
-import { ResponsiveContainer, AreaChart, Area } from "recharts";
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { Label } from "semantic-ui-react";
-import { calculateDistance } from "../../common/leaflet/distance-math";
 
 type Props = {
   coordinates?: components["schemas"]["Coordinates"][];
 };
 
 export const ApproachProfile = ({ coordinates }: Props) => {
-  const distance = calculateDistance(coordinates);
   let elevationGain = 0;
   let elevationLoss = 0;
   for (let i = 1; i < coordinates.length; i++) {
@@ -23,18 +28,38 @@ export const ApproachProfile = ({ coordinates }: Props) => {
   }
   return (
     <Label basic>
-      {`Dist.: ${distance}`}
+      {`Dist.: ${Math.round(coordinates[coordinates.length - 1].distance)}`}
       <Label.Detail>{`Elev. +${Math.round(elevationGain)}m, -${Math.round(
         elevationLoss,
       )}m`}</Label.Detail>
       <br />
-      <ResponsiveContainer aspect={6}>
+      <ResponsiveContainer aspect={3}>
         <AreaChart
           data={coordinates}
           margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
         >
+          <Tooltip
+            labelFormatter={(m) => `Distance: ${Math.round(m)}m`}
+            formatter={(value) => Math.round(value as number) + "m"}
+          />
+          <XAxis
+            dataKey="distance"
+            hide={true}
+            type="number"
+            scale="linear"
+            unit="m"
+            allowDecimals={false}
+          />
+          <YAxis
+            dataKey="elevation"
+            hide={true}
+            type="number"
+            scale="linear"
+            unit="m"
+            allowDecimals={false}
+            domain={["dataMin", "dataMax"]}
+          />
           <Area
-            type="monotone"
             dataKey="elevation"
             stroke="#8884d8"
             fill="#8884d8"
