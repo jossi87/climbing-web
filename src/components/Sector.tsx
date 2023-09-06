@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet";
 import { Link, useParams } from "react-router-dom";
 import ProblemList from "./common/problem-list/problem-list";
 import ChartGradeDistribution from "./common/chart-grade-distribution/chart-grade-distribution";
+import { ApproachProfile } from "./common/ApproachProfile";
 import Top from "./common/top/top";
 import Activity from "./common/activity/activity";
 import Leaflet from "./common/leaflet/leaflet";
@@ -404,6 +405,16 @@ const Sector = () => {
                 <Linkify componentDecorator={componentDecorator}>
                   {data.comment}
                 </Linkify>
+              </Table.Cell>
+            </Table.Row>
+          )}
+          {data.approach?.length > 3 && (
+            <Table.Row verticalAlign="top">
+              <Table.Cell>Approach:</Table.Cell>
+              <Table.Cell>
+                {data.approach?.length > 3 && (
+                  <ApproachProfile coordinates={data.approach} />
+                )}
               </Table.Cell>
             </Table.Row>
           )}

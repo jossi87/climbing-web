@@ -32,6 +32,7 @@ import {
 } from "../../api";
 import TickModal from "../common/tick-modal/tick-modal";
 import CommentModal from "../common/comment-modal/comment-modal";
+import { ApproachProfile } from "../common/ApproachProfile";
 import Linkify from "react-linkify";
 import { ProblemsOnRock } from "./ProblemsOnRock";
 import { ProblemTicks } from "./ProblemTicks";
@@ -553,6 +554,16 @@ export const Problem = () => {
             problemId={+problemId}
             rock={data?.rock}
           />
+          {data.sectorApproach?.length > 3 && (
+            <Table.Row verticalAlign="top">
+              <Table.Cell>Approach:</Table.Cell>
+              <Table.Cell>
+                {data.sectorApproach?.length > 3 && (
+                  <ApproachProfile coordinates={data.sectorApproach} />
+                )}
+              </Table.Cell>
+            </Table.Row>
+          )}
           {data.ticks && (
             <Table.Row verticalAlign="top">
               <Table.Cell>Public ascents:</Table.Cell>
