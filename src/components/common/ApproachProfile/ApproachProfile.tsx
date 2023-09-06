@@ -10,14 +10,20 @@ type Props = {
 
 export const ApproachProfile = ({ coordinates }: Props) => {
   const distance = calculateDistance(coordinates);
-  const firstElevation = Math.round(coordinates[0].elevation);
-  const lastElevation = Math.round(
-    coordinates[coordinates.length - 1].elevation,
-  );
+  let elevationGain = 0;
+  let elevationLoss = 0;
+  for (let i = 1; i < coordinates.length; i++) {
+    let elevation = coordinates[i].elevation-coordinates[i-1].elevation;
+    if (elevation > 0) {
+      elevationGain += elevation;
+    } else if (elevation < 0) {
+      elevationLoss -= elevation;
+    }
+  }
   return (
     <Label basic>
-      {`Distance: ${distance}`}
-      <Label.Detail>{`Elevation: ${firstElevation}-${lastElevation} m`}</Label.Detail>
+      {`Dist.: ${distance}`}
+      <Label.Detail>{`Elev. +${Math.round(elevationGain)}m, -${Math.round(elevationLoss)}m`}</Label.Detail>
       <br />
       <ResponsiveContainer aspect={6}>
         <AreaChart
