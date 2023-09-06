@@ -141,8 +141,7 @@ const Sector = () => {
     .filter((p) => p.coordinates)
     .map((p) => {
       return {
-        lat: p.coordinates.latitude,
-        lng: p.coordinates.longitude,
+        coordinates: p.coordinates,
         label: p.nr + " - " + p.name + " [" + p.grade + "]",
         url: "/problem/" + p.id,
         rock: p.rock,
@@ -152,8 +151,7 @@ const Sector = () => {
   const addPolygon = meta.isClimbing || markers.length == 0;
   if (data.parking) {
     markers.push({
-      lat: data.parking.latitude,
-      lng: data.parking.longitude,
+      coordinates: data.parking,
       isParking: true,
     });
   }

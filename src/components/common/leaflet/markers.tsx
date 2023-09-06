@@ -9,18 +9,17 @@ import {
 } from "./icons";
 import { useNavigate } from "react-router";
 import { LatLngExpression } from "leaflet";
+import { components } from "../../../@types/buldreinfo/swagger";
 
 type ParkingMarker = {
-  lat: number;
-  lng: number;
+  coordinates: components["schemas"]["Coordinates"];
   label?: string;
   isParking: true;
   url?: string;
 };
 
 type CameraMarker = {
-  lat: number;
-  lng: number;
+  coordinates: components["schemas"]["Coordinates"];
   label: string;
   isCamera: true;
   name: string;
@@ -32,23 +31,20 @@ type CameraMarker = {
 
 type HtmlMarker = {
   id: number;
-  lat: number;
-  lng: number;
+  coordinates: components["schemas"]["Coordinates"];
   label: string;
   html: React.ReactNode;
   rock?: string;
 };
 
 type LabelMarker = {
-  lat: number;
-  lng: number;
+  coordinates: components["schemas"]["Coordinates"];
   label: string;
   url: string;
 };
 
 type GenericMarker = {
-  lat: number;
-  lng: number;
+  coordinates: components["schemas"]["Coordinates"];
   label?: string;
   url?: string;
 };
@@ -65,6 +61,7 @@ type Props = {
   opacity: number;
   addEventHandlers: boolean;
   flyToId: number | null;
+  showElevation?: boolean;
 };
 
 const isParkingMarker = (m: MarkerDef): m is ParkingMarker =>
@@ -84,6 +81,7 @@ export default function Markers({
   markers,
   addEventHandlers,
   flyToId,
+  showElevation,
 }: Props) {
   const navigate = useNavigate();
   const map = useMap();
@@ -103,11 +101,20 @@ export default function Markers({
   }
   return markers.map((m) => {
     if (isParkingMarker(m)) {
+      let label = m.label;
+      if (showElevation && m.coordinates.elevation > 0) {
+        const elevation = Math.round(m.coordinates.elevation);
+        label = label ? label + " (" + elevation + "m)" : elevation + "m";
+      }
       return (
         <Marker
           icon={parkingIcon}
-          position={[m.lat, m.lng]}
-          key={["parking", m.lat, m.lng].join("/")}
+          position={[m.coordinates.latitude, m.coordinates.longitude]}
+          key={[
+            "parking",
+            m.coordinates.latitude,
+            m.coordinates.longitude,
+          ].join("/")}
           eventHandlers={{
             click: () => {
               if (addEventHandlers) {
@@ -116,13 +123,13 @@ export default function Markers({
             },
           }}
         >
-          {m.label && (
+          {label && (
             <Tooltip
               opacity={opacity}
               permanent
               className="buldreinfo-tooltip-compact"
             >
-              {m.label}
+              {label}
             </Tooltip>
           )}
         </Marker>
@@ -132,8 +139,10 @@ export default function Markers({
       return (
         <Marker
           icon={weatherIcon}
-          position={[m.lat, m.lng]}
-          key={["camera", m.lat, m.lng].join("/")}
+          position={[m.coordinates.latitude, m.coordinates.latitude]}
+          key={["camera", m.coordinates.latitude, m.coordinates.latitude].join(
+            "/",
+          )}
         >
           <Popup closeButton={false}>
             <b>{m.name}</b>
@@ -168,8 +177,10 @@ export default function Markers({
       return (
         <Marker
           icon={m.rock ? rockIcon : markerBlueIcon}
-          position={[m.lat, m.lng]}
-          key={["html", m.lat, m.lng].join("/")}
+          position={[m.coordinates.latitude, m.coordinates.latitude]}
+          key={["html", m.coordinates.latitude, m.coordinates.latitude].join(
+            "/",
+          )}
           ref={(ref) => (markerRefs.current[m.id] = ref)}
         >
           <Tooltip
@@ -187,8 +198,13 @@ export default function Markers({
       return (
         <Marker
           icon={markerBlueIcon}
-          position={[m.lat, m.lng]}
-          key={["label", m.url, m.lat, m.lng].join("/")}
+          position={[m.coordinates.latitude, m.coordinates.latitude]}
+          key={[
+            "label",
+            m.url,
+            m.coordinates.latitude,
+            m.coordinates.latitude,
+          ].join("/")}
           eventHandlers={{
             click: () => {
               if (addEventHandlers) {
@@ -212,8 +228,8 @@ export default function Markers({
     return (
       <Marker
         icon={markerRedIcon}
-        position={[m.lat, m.lng]}
-        key={["red", m.lat, m.lng].join("/")}
+        position={[m.coordinates.latitude, m.coordinates.latitude]}
+        key={["red", m.coordinates.latitude, m.coordinates.latitude].join("/")}
         eventHandlers={{
           click: () => {
             if (addEventHandlers && m.url) {

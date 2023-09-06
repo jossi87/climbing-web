@@ -41,8 +41,7 @@ const Areas = () => {
     .map((a) => {
       return {
         id: a.id,
-        lat: a.coordinates.latitude,
-        lng: a.coordinates.longitude,
+        coordinates: a.coordinates,
         label: a.name,
         url: "/area/" + a.id,
         html: (

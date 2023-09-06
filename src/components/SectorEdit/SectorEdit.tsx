@@ -265,8 +265,7 @@ export const SectorEdit = () => {
   const markers: ComponentProps<typeof Leaflet>["markers"] = [];
   if (data.parking) {
     markers.push({
-      lat: data.parking.latitude,
-      lng: data.parking.longitude,
+      coordinates: data.parking,
       isParking: true,
     });
   }

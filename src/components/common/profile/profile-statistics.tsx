@@ -193,8 +193,7 @@ const ProfileStatistics = ({ userId, canDownload }: ProfileStatisticsProps) => {
   data.ticks.forEach((t) => {
     if (t.coordinates) {
       markers.push({
-        lat: t.coordinates.latitude,
-        lng: t.coordinates.longitude,
+        coordinates: t.coordinates,
         label: t.name,
         url: "/problem/" + t.idProblem,
       });

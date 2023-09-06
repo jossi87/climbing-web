@@ -60,21 +60,23 @@ export default function Polygons({
     outlines
       .filter((o) => !o.background)
       .map((o) =>
-        o.outline.map((c) => (
-          <CircleMarker
-            key={c.id}
-            radius={3}
-            center={[c.latitude, c.longitude]}
-          >
-            <Tooltip
-              opacity={opacity}
-              permanent
-              className="buldreinfo-tooltip-compact"
+        o.outline
+          .filter((c) => c.elevation > 0)
+          .map((c) => (
+            <CircleMarker
+              key={c.id}
+              radius={3}
+              center={[c.latitude, c.longitude]}
             >
-              {c.elevation}
-            </Tooltip>
-          </CircleMarker>
-        )),
+              <Tooltip
+                opacity={opacity}
+                permanent
+                className="buldreinfo-tooltip-compact"
+              >
+                {Math.round(c.elevation) + "m"}
+              </Tooltip>
+            </CircleMarker>
+          )),
       );
   return (
     <>

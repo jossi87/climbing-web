@@ -62,8 +62,7 @@ const useMarkers = (areas: Props["areas"]): MarkerDef[] => {
           }
 
           markers.push({
-            lat,
-            lng,
+            coordinates: { latitude: lat, longitude: lng },
             label: problem.name,
             url: `/problem/${problem.id}`,
           });

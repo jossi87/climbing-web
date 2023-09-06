@@ -153,8 +153,7 @@ const Area = () => {
     .filter((s) => s.parking)
     .map((s) => {
       return {
-        lat: s.parking.latitude,
-        lng: s.parking.longitude,
+        coordinates: s.parking,
         url: "/sector/" + s.id,
         isParking: true,
       };

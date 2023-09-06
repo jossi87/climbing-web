@@ -29,8 +29,7 @@ const ProfileTodo = ({
       s.problems.forEach((p) => {
         if (p.coordinates) {
           markers.push({
-            lat: p.coordinates.latitude,
-            lng: p.coordinates.longitude,
+            coordinates: p.coordinates,
             label: p.name,
             url: "/problem/" + p.id,
           });

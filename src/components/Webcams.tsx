@@ -21,8 +21,7 @@ const Webcams = () => {
     .filter((c) => c.lat != 0 && c.lng != 0)
     .map((c) => {
       return {
-        lat: c.lat,
-        lng: c.lng,
+        coordinates: { latitude: c.lat, longitude: c.lng },
         isCamera: true,
         name: c.name,
         lastUpdated: c.lastUpdated,
@@ -37,7 +36,7 @@ const Webcams = () => {
     const { lat, lng, label } = JSON.parse(json);
     defaultCenter = { lat, lng };
     defaultZoom = 10;
-    markers.push({ lat, lng, label });
+    markers.push({ coordinates: { latitude: lat, longitude: lng }, label });
   }
   const description = markers.length + " cameras";
   return (

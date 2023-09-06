@@ -86,16 +86,14 @@ export const Problem = () => {
   const markers: ComponentProps<typeof Leaflet>["markers"] = [];
   if (data.coordinates) {
     markers.push({
-      lat: data.coordinates.latitude,
-      lng: data.coordinates.longitude,
+      coordinates: data.coordinates,
       label: data.name + " [" + data.grade + "]",
       url: "/problem/" + data.id,
     });
   }
   if (data.sectorParking) {
     markers.push({
-      lat: data.sectorParking.latitude,
-      lng: data.sectorParking.longitude,
+      coordinates: data.sectorParking,
       url: "/sector/" + data.sectorId,
       isParking: true,
     });
@@ -143,7 +141,10 @@ export const Problem = () => {
             markers={markers}
             outlines={outlines}
             approaches={approaches}
-            defaultCenter={{ lat: markers[0].lat, lng: markers[0].lng }}
+            defaultCenter={{
+              lat: markers[0].coordinates.latitude,
+              lng: markers[0].coordinates.longitude,
+            }}
             defaultZoom={16}
             showSatelliteImage={true}
             clusterMarkers={false}

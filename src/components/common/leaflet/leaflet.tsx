@@ -84,8 +84,13 @@ const UpdateBounds = ({
 
   const bounds = latLngBounds([]);
   markers
-    ?.filter(({ lat, lng }) => lat && lng)
-    ?.forEach((latlng) => bounds.extend(latlng));
+    ?.filter(
+      ({ coordinates }) =>
+        coordinates.latitude > 0 && coordinates.longitude > 0,
+    )
+    ?.forEach(({ coordinates }) =>
+      bounds.extend([coordinates.latitude, coordinates.longitude]),
+    );
   outlines
     ?.filter(({ outline }) => !!outline)
     ?.forEach(({ outline }) =>
@@ -141,8 +146,14 @@ const Leaflet = ({
           (m) => "rock" in m && m.rock === r,
         );
         const coords = markersOnRock
-          .filter((m) => m.lat && m.lng)
-          .map((m) => [m.lat, m.lng]);
+          .filter(
+            ({ coordinates }) =>
+              coordinates.latitude > 0 && coordinates.longitude > 0,
+          )
+          .map(({ coordinates }) => [
+            coordinates.latitude,
+            coordinates.longitude,
+          ]);
         if (coords && coords.length > 0) {
           const centerCoordinates = GetCenterFromDegrees(coords);
           const html = (
@@ -162,8 +173,10 @@ const Leaflet = ({
             </>
           );
           return {
-            lat: centerCoordinates[0],
-            lng: centerCoordinates[1],
+            coordinates: {
+              latitude: centerCoordinates[0],
+              longitude: centerCoordinates[1],
+            },
             label: r,
             rock: true,
             html,
@@ -178,6 +191,7 @@ const Leaflet = ({
         markers={[...rockMarkers, ...markersWithoutRock]}
         addEventHandlers={addEventHandlers}
         flyToId={flyToId}
+        showElevation={showElevation}
       />
     );
   } else {
@@ -187,6 +201,7 @@ const Leaflet = ({
         markers={markers}
         addEventHandlers={addEventHandlers}
         flyToId={flyToId}
+        showElevation={showElevation}
       />
     );
     if (clusterMarkers) {
@@ -225,7 +240,7 @@ const Leaflet = ({
           />
         )}
       </UseControl>
-      {outlines && outlines.length > 0 && (
+      {(outlines?.length > 0 || markers?.length > 0) && (
         <UseControl position="bottomright">
           <Checkbox
             as={Segment}

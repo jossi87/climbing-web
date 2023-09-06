@@ -233,8 +233,7 @@ export const AreaEdit = () => {
                 data.coordinates
                   ? [
                       {
-                        lat: data.coordinates.latitude,
-                        lng: data.coordinates.longitude,
+                        coordinates: data.coordinates,
                       },
                     ]
                   : []
