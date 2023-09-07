@@ -6,7 +6,7 @@ type Props = {
   opacity: number;
   approaches: {
     background?: boolean;
-    approach: components["schemas"]["Coordinates"][];
+    approach: components["schemas"]["Approach"];
     label?: string;
   }[];
 };
@@ -16,12 +16,15 @@ export default function Polylines({ opacity, approaches }: Props) {
     return null;
   }
   return approaches.map((a) => {
-    if (a.approach.length === 1) {
+    if (a.approach.coordinates.length === 1) {
       return (
         <Circle
           color="lime"
-          key={a.approach[0].id}
-          center={[a.approach[0].latitude, a.approach[0].longitude]}
+          key={a.approach.coordinates[0].id}
+          center={[
+            a.approach.coordinates[0].latitude,
+            a.approach.coordinates[0].longitude,
+          ]}
           radius={0.5}
         />
       );
@@ -34,10 +37,15 @@ export default function Polylines({ opacity, approaches }: Props) {
       }
       return (
         <Polyline
-          key={a.approach.map((latlng) => latlng.toString()).join(" -> ")}
+          key={a.approach.coordinates
+            .map((latlng) => latlng.toString())
+            .join(" -> ")}
           color={color}
           weight={weight}
-          positions={a.approach.map((c) => [c.latitude, c.longitude])}
+          positions={a.approach.coordinates.map((c) => [
+            c.latitude,
+            c.longitude,
+          ])}
         >
           {a.label && (
             <Tooltip

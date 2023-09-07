@@ -188,7 +188,7 @@ const Sector = () => {
         { url: "/sector/" + data.id, label: data.name, outline: data.outline },
       ];
     }
-    if (data.approach?.length > 0) {
+    if (data.approach?.coordinates?.length > 0) {
       approaches = [
         {
           approach: data.approach,
@@ -411,11 +411,11 @@ const Sector = () => {
               </Table.Cell>
             </Table.Row>
           )}
-          {data.approach?.length > 1 && (
+          {data.approach?.coordinates?.length > 1 && (
             <Table.Row verticalAlign="top">
               <Table.Cell>Approach:</Table.Cell>
               <Table.Cell>
-                <ApproachProfile coordinates={data.approach} />
+                <ApproachProfile approach={data.approach} />
               </Table.Cell>
             </Table.Row>
           )}

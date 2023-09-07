@@ -63,7 +63,7 @@ type Props = {
   approaches?: {
     background?: boolean;
     label?: string;
-    approach: components["schemas"]["Coordinates"][];
+    approach: components["schemas"]["Approach"];
   }[];
   rocks?: string[];
   showSatelliteImage?: boolean;
@@ -99,9 +99,9 @@ const UpdateBounds = ({
       ),
     );
   approaches
-    ?.filter(({ approach }) => approach)
+    ?.filter(({ approach }) => !!approach)
     ?.forEach(({ approach }) =>
-      approach.forEach((c) =>
+      approach.coordinates.forEach((c) =>
         bounds.extend({ lat: c.latitude, lng: c.longitude }),
       ),
     );

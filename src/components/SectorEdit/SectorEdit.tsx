@@ -141,12 +141,12 @@ export const SectorEdit = () => {
       });
       setData((prevState) => ({ ...prevState, outline }));
     } else if (leafletMode == "POLYLINE") {
-      const approach = data.approach || [];
-      approach.push({
+      const coordinates = data.approach?.coordinates || [];
+      coordinates.push({
         latitude: event.latlng.lat,
         longitude: event.latlng.lng,
       });
-      setData((prevState) => ({ ...prevState, approach }));
+      setData((prevState) => ({ ...prevState, approach: { coordinates } }));
     }
   }
 
@@ -242,7 +242,7 @@ export const SectorEdit = () => {
   if (data.outline?.length > 0) {
     outlines.push({ outline: data.outline, background: false });
   }
-  if (data.approach?.length > 0) {
+  if (data.approach?.coordinates?.length > 0) {
     approaches.push({ approach: data.approach, background: false });
   }
 
@@ -438,7 +438,7 @@ export const SectorEdit = () => {
                   <PolylineMarkers coordinates={data.outline} />
                 )}
                 {leafletMode === "POLYLINE" && (
-                  <PolylineMarkers coordinates={data.approach} />
+                  <PolylineMarkers coordinates={data.approach?.coordinates} />
                 )}
               </Leaflet>
             </Form.Field>
@@ -482,11 +482,11 @@ export const SectorEdit = () => {
               <Form.Field>
                 <label>Approach</label>
                 <PolylineEditor
-                  coordinates={data.approach}
+                  coordinates={data.approach?.coordinates}
                   onChange={(coordinates) => {
                     setData((prevState) => ({
                       ...prevState,
-                      approach: coordinates,
+                      approach: { coordinates },
                     }));
                   }}
                   upload

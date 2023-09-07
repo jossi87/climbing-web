@@ -25,8 +25,8 @@ export const ZoomLogic = ({
         }
       }
 
-      if (sectorRef.current.approach?.length > 0) {
-        for (const coordinates of sectorRef.current.approach) {
+      if (sectorRef.current.approach?.coordinates?.length > 0) {
+        for (const coordinates of sectorRef.current.approach.coordinates) {
           bounds.extend([coordinates.latitude, coordinates.longitude]);
         }
       }

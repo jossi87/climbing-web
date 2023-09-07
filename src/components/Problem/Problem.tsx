@@ -123,7 +123,7 @@ export const Problem = () => {
         { url: "/sector/" + data.sectorId, label: data.sectorName, outline },
       ];
     }
-    if (data.sectorApproach?.length > 0) {
+    if (data.sectorApproach?.coordinates?.length > 0) {
       approaches = [
         {
           approach: data.sectorApproach,
@@ -554,11 +554,11 @@ export const Problem = () => {
             problemId={+problemId}
             rock={data?.rock}
           />
-          {data.sectorApproach?.length > 1 && (
+          {data.sectorApproach?.coordinates?.length > 1 && (
             <Table.Row verticalAlign="top">
               <Table.Cell>Approach:</Table.Cell>
               <Table.Cell>
-                <ApproachProfile coordinates={data.sectorApproach} />
+                <ApproachProfile approach={data.sectorApproach} />
               </Table.Cell>
             </Table.Row>
           )}

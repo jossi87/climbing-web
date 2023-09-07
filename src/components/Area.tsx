@@ -164,7 +164,7 @@ const Area = () => {
     data.sectors.filter((s) => s.approach && s.outline).length > 1;
   for (const s of data.sectors) {
     let distance: string | null = null;
-    if (s.approach?.length > 0) {
+    if (s.approach?.coordinates?.length > 0) {
       distance = getDistanceWithUnit(s.approach);
       const label = (!s.outline || !showApproachLengthOnOutline) && distance;
       approaches.push({ approach: s.approach, label });

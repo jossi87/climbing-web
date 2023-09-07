@@ -251,6 +251,17 @@ export type components = {
       picture?: string;
       lastLogin?: string;
     };
+    Approach: {
+      coordinates?: components["schemas"]["Coordinates"][];
+      /** Format: double */
+      calculatedDurationInMinutes?: number;
+      /** Format: int64 */
+      distance?: number;
+      /** Format: int64 */
+      elevationGain?: number;
+      /** Format: int64 */
+      elevationLoss?: number;
+    };
     Area: {
       redirectUrl?: string;
       /** Format: int32 */
@@ -300,7 +311,7 @@ export type components = {
       parking?: components["schemas"]["Coordinates"];
       outline?: components["schemas"]["Coordinates"][];
       wallDirection?: string;
-      approach?: components["schemas"]["Coordinates"][];
+      approach?: components["schemas"]["Approach"];
       /** Format: int32 */
       randomMediaId?: number;
       /** Format: int32 */
@@ -437,9 +448,9 @@ export type components = {
       texts?: string;
       anchors?: string;
       primary?: boolean;
+      dangerous?: boolean;
       ticked?: boolean;
       todo?: boolean;
-      dangerous?: boolean;
     };
     Type: {
       /** Format: int32 */
@@ -595,12 +606,12 @@ export type components = {
       url?: string;
       types?: components["schemas"]["Type"][];
       sites?: components["schemas"]["Site"][];
-      bouldering?: boolean;
       admin?: boolean;
-      authenticated?: boolean;
-      climbing?: boolean;
-      superAdmin?: boolean;
       ice?: boolean;
+      authenticated?: boolean;
+      superAdmin?: boolean;
+      bouldering?: boolean;
+      climbing?: boolean;
     };
     Site: {
       group?: string;
@@ -659,7 +670,7 @@ export type components = {
       sectorParking?: components["schemas"]["Coordinates"];
       sectorOutline?: components["schemas"]["Coordinates"][];
       sectorWallDirection?: string;
-      sectorApproach?: components["schemas"]["Coordinates"][];
+      sectorApproach?: components["schemas"]["Approach"];
       /** Format: int32 */
       sectorIdProblemPrev?: number;
       /** Format: int32 */
@@ -964,7 +975,7 @@ export type components = {
       parking?: components["schemas"]["Coordinates"];
       outline?: components["schemas"]["Coordinates"][];
       wallDirection?: string;
-      approach?: components["schemas"]["Coordinates"][];
+      approach?: components["schemas"]["Approach"];
       media?: components["schemas"]["Media"][];
       triviaMedia?: components["schemas"]["Media"][];
       sectors?: components["schemas"]["SectorJump"][];
@@ -1125,8 +1136,8 @@ export type components = {
       value?: string;
       content?: Record<string, never>;
       fileName?: string;
-      formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
       simple?: boolean;
+      formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
       parameterizedHeaders?: {
         empty?: boolean;
         [key: string]:
