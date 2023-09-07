@@ -119,12 +119,12 @@ export const ProblemComments = ({
     }
   }
 
-  if (!data) {
+  if (data.comments?.length == 0) {
     return null;
   }
   const latestSafetyComment = data.comments
     ?.filter((c) => c.danger || c.resolved)
-    .reduce((prev, current) => (prev.id > current.id ? prev : current));
+    .reduce((prev, current) => (prev.id > current.id ? prev : current), null);
   const rootComments = data.comments?.filter(
     (c) => (!c.danger && !c.resolved) || c.id == latestSafetyComment?.id,
   );
