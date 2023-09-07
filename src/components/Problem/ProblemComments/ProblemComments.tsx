@@ -124,7 +124,7 @@ export const ProblemComments = ({
   }
   const latestSafetyComment = data.comments
     ?.filter((c) => c.danger || c.resolved)
-    .reduce((prev, current) => (prev.id > current.id ? prev : current), null);
+    .reduce((prev, current) => (prev?.id > current.id ? prev : current), null);
   const rootComments = data.comments?.filter(
     (c) => (!c.danger && !c.resolved) || c.id == latestSafetyComment?.id,
   );
