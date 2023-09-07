@@ -448,9 +448,9 @@ export type components = {
       texts?: string;
       anchors?: string;
       primary?: boolean;
-      dangerous?: boolean;
       ticked?: boolean;
       todo?: boolean;
+      dangerous?: boolean;
     };
     Type: {
       /** Format: int32 */
@@ -606,12 +606,12 @@ export type components = {
       url?: string;
       types?: components["schemas"]["Type"][];
       sites?: components["schemas"]["Site"][];
-      admin?: boolean;
-      ice?: boolean;
-      authenticated?: boolean;
-      superAdmin?: boolean;
       bouldering?: boolean;
+      admin?: boolean;
+      authenticated?: boolean;
       climbing?: boolean;
+      superAdmin?: boolean;
+      ice?: boolean;
     };
     Site: {
       group?: string;
@@ -1136,8 +1136,8 @@ export type components = {
       value?: string;
       content?: Record<string, never>;
       fileName?: string;
-      simple?: boolean;
       formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
+      simple?: boolean;
       parameterizedHeaders?: {
         empty?: boolean;
         [key: string]:

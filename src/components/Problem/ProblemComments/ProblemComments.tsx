@@ -31,17 +31,9 @@ export const ProblemComments = ({
   }) => {
     let extra: JSX.Element | null = null;
     if (c.danger) {
-      extra = (
-        <Label color="red">
-          Flagged as dangerous
-        </Label>
-      );
+      extra = <Label color="red">Flagged as dangerous</Label>;
     } else if (c.resolved) {
-      extra = (
-        <Label color="green">
-          Flagged as safe
-        </Label>
-      );
+      extra = <Label color="green">Flagged as safe</Label>;
     } else if (meta.isAuthenticated && meta.isClimbing) {
       extra = (
         <Button basic size="tiny" compact onClick={() => flagAsDangerous(c)}>
@@ -157,13 +149,16 @@ export const ProblemComments = ({
                 safetyHistoryComments?.length > 0
               }
             />
-            {c.id === latestSafetyComment?.id && safetyHistoryComments?.length > 0 && (
-              <Comment.Group collapsed={collapseComments}>
-                {safetyHistoryComments.map((cHistory) => (
-                  <Comment key={cHistory.id}><CommentBody c={cHistory} /></Comment>
-                ))}
-              </Comment.Group>
-            )}
+            {c.id === latestSafetyComment?.id &&
+              safetyHistoryComments?.length > 0 && (
+                <Comment.Group collapsed={collapseComments}>
+                  {safetyHistoryComments.map((cHistory) => (
+                    <Comment key={cHistory.id}>
+                      <CommentBody c={cHistory} />
+                    </Comment>
+                  ))}
+                </Comment.Group>
+              )}
           </Comment>
         ))
       ) : (
