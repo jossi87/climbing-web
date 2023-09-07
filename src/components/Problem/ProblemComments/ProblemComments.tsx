@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Comment, Segment, Header, Label, Button } from "semantic-ui-react";
 import { useAccessToken, useProblem, postComment } from "../../../api";
@@ -6,6 +6,7 @@ import Media from "../../common/media/media";
 import { useMeta } from "../../common/meta";
 import Linkify from "react-linkify";
 import { componentDecorator } from "../../../utils/componentDecorator";
+import { components } from "../../../@types/buldreinfo/swagger";
 
 export const ProblemComments = ({
   problemId,
@@ -19,6 +20,76 @@ export const ProblemComments = ({
   const accessToken = useAccessToken();
   const meta = useMeta();
   const { data } = useProblem(+problemId, showHiddenMedia);
+  const [collapseComments, setCollapseComments] = useState(true);
+
+  const CommentBody = ({
+    c,
+    expandable,
+  }: {
+    c: components["schemas"]["ProblemComment"];
+    expandable?: boolean;
+  }) => {
+    let extra: JSX.Element | null = null;
+    if (c.danger) {
+      extra = (
+        <Label color="red">
+          Flagged as dangerous
+        </Label>
+      );
+    } else if (c.resolved) {
+      extra = (
+        <Label color="green">
+          Flagged as safe
+        </Label>
+      );
+    } else if (meta.isAuthenticated && meta.isClimbing) {
+      extra = (
+        <Button basic size="tiny" compact onClick={() => flagAsDangerous(c)}>
+          Flag as dangerous
+        </Button>
+      );
+    }
+    return (
+      <>
+        <Comment.Avatar src={c.picture ? c.picture : "/png/image.png"} />
+        <Comment.Content>
+          {(c.editable || expandable) && (
+            <Button.Group size="tiny" basic compact floated="right">
+              {c.editable && (
+                <>
+                  <Button onClick={() => onShowCommentModal(c)} icon="edit" />
+                  <Button onClick={() => deleteComment(c.id)} icon="trash" />
+                </>
+              )}
+              {expandable && (
+                <Button
+                  onClick={() => setCollapseComments(!collapseComments)}
+                  icon={collapseComments ? "plus" : "minus"}
+                />
+              )}
+            </Button.Group>
+          )}
+          <Comment.Author as={Link} to={`/user/${c.idUser}`}>
+            {c.name}
+          </Comment.Author>
+          <Comment.Metadata>{c.date}</Comment.Metadata>
+          <Comment.Text>
+            <Linkify componentDecorator={componentDecorator}>
+              {c.message}
+            </Linkify>
+            {c.media && c.media.length > 0 && (
+              <Media
+                numPitches={data.sections?.length || 0}
+                media={c.media}
+                optProblemId={null}
+              />
+            )}
+          </Comment.Text>
+          {extra && <Comment.Actions>{extra}</Comment.Actions>}
+        </Comment.Content>
+      </>
+    );
+  };
 
   function flagAsDangerous({ id, message }: { id?: number; message?: string }) {
     if (!id || !message) {
@@ -59,62 +130,42 @@ export const ProblemComments = ({
   if (!data) {
     return null;
   }
+  const latestSafetyComment = data.comments
+    ?.filter((c) => c.danger || c.resolved)
+    .reduce((prev, current) => (prev.id > current.id ? prev : current));
+  const rootComments = data.comments?.filter(
+    (c) => (!c.danger && !c.resolved) || c.id == latestSafetyComment?.id,
+  );
+  const safetyHistoryComments =
+    latestSafetyComment &&
+    data.comments?.filter(
+      (c) => (c.danger || c.resolved) && c.id !== latestSafetyComment.id,
+    );
 
   return (
-    <Comment.Group as={Segment}>
+    <Comment.Group threaded as={Segment}>
       <Header as="h3" dividing>
         Comments:
       </Header>
-      {data.comments?.length ? (
-        data.comments.map((c) => {
-          let extra: JSX.Element | null = null;
-          if (c.danger) {
-            extra = <Label color="red">Flagged as dangerous</Label>;
-          } else if (c.resolved) {
-            extra = <Label color="green">Flagged as safe</Label>;
-          } else if (meta.isAuthenticated && meta.isClimbing) {
-            extra = (
-              <Button
-                basic
-                size="tiny"
-                compact
-                onClick={() => flagAsDangerous(c)}
-              >
-                Flag as dangerous
-              </Button>
-            );
-          }
-          return (
-            <Comment key={[c.idUser, c.date].join("@")}>
-              <Comment.Avatar src={c.picture ? c.picture : "/png/image.png"} />
-              <Comment.Content>
-                {c.editable && (
-                  <Button.Group size="tiny" basic compact floated="right">
-                    <Button onClick={() => onShowCommentModal(c)} icon="edit" />
-                    <Button onClick={() => deleteComment(c.id)} icon="trash" />
-                  </Button.Group>
-                )}
-                <Comment.Author as={Link} to={`/user/${c.idUser}`}>
-                  {c.name}
-                </Comment.Author>
-                <Comment.Metadata>{c.date}</Comment.Metadata>
-                <Comment.Text>
-                  <Linkify componentDecorator={componentDecorator}>
-                    {c.message}
-                  </Linkify>
-                  {c.media && c.media.length > 0 && (
-                    <Media
-                      numPitches={data.sections?.length || 0}
-                      media={c.media}
-                      optProblemId={null}
-                    />
-                  )}
-                </Comment.Text>
-                {extra && <Comment.Actions>{extra}</Comment.Actions>}
-              </Comment.Content>
-            </Comment>
-          );
-        })
+      {rootComments?.length ? (
+        rootComments.map((c) => (
+          <Comment key={c.id}>
+            <CommentBody
+              c={c}
+              expandable={
+                c.id === latestSafetyComment?.id &&
+                safetyHistoryComments?.length > 0
+              }
+            />
+            {c.id === latestSafetyComment?.id && safetyHistoryComments?.length > 0 && (
+              <Comment.Group collapsed={collapseComments}>
+                {safetyHistoryComments.map((cHistory) => (
+                  <Comment key={cHistory.id}><CommentBody c={cHistory} /></Comment>
+                ))}
+              </Comment.Group>
+            )}
+          </Comment>
+        ))
       ) : (
         <i>No comments</i>
       )}
