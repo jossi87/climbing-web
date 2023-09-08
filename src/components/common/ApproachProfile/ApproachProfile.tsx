@@ -8,7 +8,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Label } from "semantic-ui-react";
+import { Label, Segment } from "semantic-ui-react";
 import { getDistanceWithUnit } from "../leaflet/geo-utils";
 
 type Props = {
@@ -26,9 +26,19 @@ export const ApproachProfile = ({ approach }: Props) => {
           data={approach.coordinates}
           margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
         >
-          <Tooltip
-            labelFormatter={(m) => `Distance: ${Math.round(m)}m`}
-            formatter={(value) => Math.round(value as number) + "m"}
+          <defs>
+            <linearGradient id="color" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#2451B7" stopOpacity={0.4} />
+              <stop offset="75%" stopColor="#2451B7" stopOpacity={0.05} />
+            </linearGradient>
+          </defs>
+          <Area
+            dataKey="elevation"
+            stroke="#2451B7"
+            strokeWidth={2}
+            fill="url(#color)"
+            isAnimationActive={false}
+            dot={false}
           />
           <XAxis
             dataKey="distance"
@@ -50,13 +60,19 @@ export const ApproachProfile = ({ approach }: Props) => {
               return [dataMin, max];
             }}
           />
-          <Area
-            dataKey="elevation"
-            stroke="#8884d8"
-            fill="#8884d8"
-            strokeWidth={2}
-            isAnimationActive={false}
-            dot={false}
+          <Tooltip
+            content={({ active, payload, label }) => {
+              if (!active) {
+                return null;
+              }
+              return (
+                <Segment size="mini" compact style={{ opacity: 0.7 }}>
+                  {`Dist.: ${parseInt(label)}m, elev.: ${parseInt(
+                    payload[0].payload.elevation,
+                  )}m`}
+                </Segment>
+              );
+            }}
           />
         </AreaChart>
       </ResponsiveContainer>
