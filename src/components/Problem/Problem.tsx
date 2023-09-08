@@ -2,7 +2,7 @@ import React, { useState, ComponentProps } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useParams } from "react-router-dom";
 import Leaflet from "../common/leaflet/leaflet";
-import { getDistanceWithUnit } from "../common/leaflet/distance-math";
+import { getDistanceWithUnit } from "../common/leaflet/geo-utils";
 import Media from "../common/media/media";
 import {
   Button,

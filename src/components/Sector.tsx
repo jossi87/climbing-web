@@ -7,7 +7,7 @@ import { ApproachProfile } from "./common/ApproachProfile";
 import Top from "./common/top/top";
 import Activity from "./common/activity/activity";
 import Leaflet from "./common/leaflet/leaflet";
-import { getDistanceWithUnit } from "./common/leaflet/distance-math";
+import { getDistanceWithUnit } from "./common/leaflet/geo-utils";
 import Media from "./common/media/media";
 import Todo from "./common/todo/todo";
 import {

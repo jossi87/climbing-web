@@ -9,7 +9,7 @@ import {
   YAxis,
 } from "recharts";
 import { Label } from "semantic-ui-react";
-import { getDistanceWithUnit } from "../leaflet/distance-math";
+import { getDistanceWithUnit } from "../leaflet/geo-utils";
 
 type Props = {
   approach?: components["schemas"]["Approach"];

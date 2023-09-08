@@ -8,10 +8,10 @@ import {
   Message,
 } from "semantic-ui-react";
 import { colorLatLng, parsePolyline } from "../../utils/polyline";
-import GpxParser from "gpxparser";
 import { useCallback } from "react";
 import { DropzoneOptions, useDropzone } from "react-dropzone";
 import { components } from "../../@types/buldreinfo/swagger";
+import { convertGpxToCoordinates } from "../common/leaflet/geo-utils";
 
 type Props = {
   coordinates: components["schemas"]["Coordinates"][];
@@ -25,13 +25,7 @@ export const PolylineEditor = ({ coordinates, onChange, upload }: Props) => {
       if (files?.length !== 0) {
         const reader = new FileReader();
         reader.onload = (e) => {
-          const gpx = new GpxParser();
-          gpx.parse(e.target?.result as string);
-          const coordinates = gpx.tracks[0]?.points?.map((e) => ({
-            latitude: e.lat,
-            longitude: e.lon,
-          }));
-          onChange(coordinates);
+          onChange(convertGpxToCoordinates(e.target?.result as string));
         };
         reader.readAsText(files[0]);
       }
