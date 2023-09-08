@@ -8,7 +8,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Label, Segment } from "semantic-ui-react";
+import { Segment, Label } from "semantic-ui-react";
 import { getDistanceWithUnit } from "../leaflet/geo-utils";
 
 type Props = {
@@ -17,14 +17,11 @@ type Props = {
 
 export const ApproachProfile = ({ approach }: Props) => {
   return (
-    <Label basic>
-      {`Dist.: ${getDistanceWithUnit(approach)}`}
-      <Label.Detail>{`Elev. +${approach.elevationGain}m, -${approach.elevationLoss}m`}</Label.Detail>
-      <br />
-      <ResponsiveContainer aspect={3}>
+    <>
+      <ResponsiveContainer aspect={3} width={200}>
         <AreaChart
           data={approach.coordinates}
-          margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
+          margin={{ top: 4, right: 0, left: 0, bottom: 4 }}
         >
           <defs>
             <linearGradient id="color" x1="0" y1="0" x2="0" y2="1">
@@ -76,7 +73,18 @@ export const ApproachProfile = ({ approach }: Props) => {
           />
         </AreaChart>
       </ResponsiveContainer>
-      <Label.Detail>{`Estimated time: ${approach.calculatedDurationInMinutes} min`}</Label.Detail>
-    </Label>
+      <Label basic size="small">
+        Distance:
+        <Label.Detail>{getDistanceWithUnit(approach)}</Label.Detail>
+      </Label>
+      <Label basic size="small">
+        Elevation:
+        <Label.Detail>{`+${approach.elevationGain}m, -${approach.elevationLoss}m`}</Label.Detail>
+      </Label>
+      <Label basic size="small">
+        Estimated time:
+        <Label.Detail>{`${approach.calculatedDurationInMinutes} min`}</Label.Detail>
+      </Label>
+    </>
   );
 };
