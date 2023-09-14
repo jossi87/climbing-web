@@ -99,7 +99,6 @@ export const SvgRoute = ({
 
   const isHoveredOrActive =
     optProblemId === svg.problemId || problemIdHovered == svg.problemId;
-  const strokeWidth = (thumbnail ? 3 : 5) * (isHoveredOrActive ? 1.3 : 1);
   const pathIdentifier = `svg-route-path-${mediaId}-${svg.problemId}-${thumbnail}`;
   const extraAnchors =
     svg.anchors &&
@@ -184,21 +183,26 @@ export const SvgRoute = ({
       <defs>
         <path
           id={pathIdentifier}
-          vectorEffect="non-scaling-stroke"
           d={svg.path}
-          strokeDasharray={svg.primary ? (thumbnail ? 3 : 11) : undefined}
+          strokeDasharray={
+            svg.primary ? scale * 10 * (thumbnail ? 2 : 1) : undefined
+          }
           strokeLinecap="round"
         />
       </defs>
       <use
         xlinkHref={`#${pathIdentifier}`}
         style={{ fill: "none", stroke: "#000" }}
-        strokeWidth={strokeWidth}
+        strokeWidth={
+          5 * scale * (thumbnail ? 3 : 1) * (isHoveredOrActive ? 1.3 : 1)
+        }
       />
       <use
         xlinkHref={`#${pathIdentifier}`}
         style={{ fill: "none", stroke: groupColor }}
-        strokeWidth={strokeWidth * 0.4}
+        strokeWidth={
+          2 * scale * (thumbnail ? 3 : 1) * (isHoveredOrActive ? 1.3 : 1)
+        }
       />
       <text
         fill={textColor}
