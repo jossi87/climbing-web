@@ -21,7 +21,7 @@ import {
   getImageUrl,
 } from "../../../api";
 import ReactPlayer from "react-player";
-import Svg from "./svg";
+import SvgViewer from "../../SvgViewer";
 import { Link, useNavigate } from "react-router-dom";
 import { saveAs } from "file-saver";
 import { Descent, Rappel } from "../../../utils/svg-utils";
@@ -125,7 +125,7 @@ const MediaModal = ({
       if (m.svgs || m.mediaSvgs) {
         return (
           <Image style={style.img}>
-            <Svg
+            <SvgViewer
               thumb={false}
               style={{}}
               m={m}
@@ -133,7 +133,7 @@ const MediaModal = ({
               optProblemId={optProblemId}
               showText={!canShowSidebar || !showSidebar}
               problemIdHovered={problemIdHovered}
-              setPoblemIdHovered={(id) => setProblemIdHovered(id)}
+              setProblemIdHovered={(id) => setProblemIdHovered(id)}
             />
           </Image>
         );
@@ -435,11 +435,11 @@ const MediaModal = ({
                           <List.Item>
                             <List.Content>
                               <List.Header>
-                                <svg width="100" height="24">
+                                <svg width="100" height="26">
                                   <Descent
+                                    scale={0.8}
                                     path={"M 0 10 C 100 10 0 0 200 20"}
                                     whiteNotBlack={false}
-                                    scale={1000}
                                     thumb={false}
                                     key={"descent"}
                                   />
@@ -451,12 +451,12 @@ const MediaModal = ({
                           <List.Item>
                             <List.Content>
                               <List.Header>
-                                <svg width="20" height="24">
+                                <svg width="20" height="26">
                                   <Rappel
+                                    scale={0.8}
                                     x={8}
                                     y={8}
                                     bolted={true}
-                                    scale={1000}
                                     thumb={false}
                                     backgroundColor={"black"}
                                     color={"white"}
@@ -472,12 +472,12 @@ const MediaModal = ({
                           <List.Item>
                             <List.Content>
                               <List.Header>
-                                <svg width="20" height="24">
+                                <svg width="20" height="26">
                                   <Rappel
                                     x={8}
                                     y={8}
                                     bolted={false}
-                                    scale={1000}
+                                    scale={0.8}
                                     thumb={false}
                                     backgroundColor={"black"}
                                     color={"white"}

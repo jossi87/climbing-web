@@ -16,7 +16,7 @@ import {
 import { Card, Image } from "semantic-ui-react";
 import MediaModal from "./media-modal";
 import MediaEditModal from "./media-edit-modal";
-import Svg from "./svg";
+import SvgViewer from "../../SvgViewer";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Loading } from "../widgets/widgets";
 
@@ -235,7 +235,7 @@ const Media = ({ numPitches, media, optProblemId }: Props) => {
           let content;
           if (x.svgs || x.mediaSvgs) {
             content = (
-              <Svg
+              <SvgViewer
                 close={null}
                 thumb={true}
                 m={x}
@@ -243,7 +243,6 @@ const Media = ({ numPitches, media, optProblemId }: Props) => {
                 optProblemId={optProblemId}
                 showText={false}
                 problemIdHovered={null}
-                setPoblemIdHovered={null}
               />
             );
           } else {

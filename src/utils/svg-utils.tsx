@@ -12,7 +12,8 @@ type DescentProps = {
 export function Descent({ path, whiteNotBlack, scale, thumb }: DescentProps) {
   const properties = new svgPathProperties(path);
   const descentKey = path.replace(/\s/g, ""); // Key cannot contains spaces
-  const deltaPercent = (scale / properties.getTotalLength()) * (thumb ? 3 : 2);
+  const deltaPercent =
+    ((scale * 1000) / properties.getTotalLength()) * (thumb ? 6 : 3);
   const texts: JSX.Element[] = [];
   for (let i = 0; i <= 100; i += deltaPercent) {
     texts.push(
@@ -25,7 +26,7 @@ export function Descent({ path, whiteNotBlack, scale, thumb }: DescentProps) {
       </textPath>,
     );
   }
-  const fontSize = 0.012 * scale * (thumb ? 2 : 1);
+  const fontSize = 20 * scale * (thumb ? 2 : 1);
   return (
     <g opacity={0.9} key={path}>
       <path
@@ -153,8 +154,8 @@ export function Rappel({
   backgroundColor,
   color,
 }: RappelProps) {
-  const strokeWidth = 0.0015 * scale * (thumb ? 2 : 1);
-  const r = 0.005 * scale * (thumb ? 2 : 1);
+  const strokeWidth = 3 * scale * (thumb ? 3 : 1);
+  const r = 6 * scale * (thumb ? 3 : 1);
   return (
     <g key={[x, y, bolted].join("/")}>
       {Anchor({
@@ -321,11 +322,10 @@ export function parseReadOnlySvgs(
   readOnlySvgs: SvgType[],
   w: number,
   h: number,
-  minWindowScale: number,
+  scale: number,
 ) {
   const backgroundColor = "black";
   const color = "white";
-  const scale = Math.max(w, h, minWindowScale);
   const shapes = readOnlySvgs.reduce<JSX.Element[]>((acc, svg) => {
     const { t } = svg;
     switch (t) {

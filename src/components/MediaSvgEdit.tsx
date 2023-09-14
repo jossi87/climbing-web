@@ -20,7 +20,6 @@ const MediaSvgEdit = () => {
   const navigate = useNavigate();
   const { mediaId } = useParams();
   const { outerWidth, outerHeight } = window;
-  const minWindowScale = Math.min(outerWidth, outerHeight);
   const {
     media: data,
     status,
@@ -261,6 +260,14 @@ const MediaSvgEdit = () => {
     return <Loading />;
   }
 
+  let scale = 1;
+  if (data.width > outerWidth || data.height > outerHeight) {
+    scale = Math.max(
+      Math.max(data.width, window.outerWidth) / 1920,
+      Math.max(data.height, window.outerHeight) / 1080,
+    );
+  }
+
   const circles =
     activeElementIndex >= 0 &&
     data.mediaSvgs[activeElementIndex] &&
@@ -333,7 +340,7 @@ const MediaSvgEdit = () => {
   ) {
     const x = data.mediaSvgs[activeElementIndex].rappelX;
     const y = data.mediaSvgs[activeElementIndex].rappelY;
-    const scale = Math.max(data.width, data.height, minWindowScale);
+
     activeRappel = (
       <Rappel
         key={"ACTIVE_RAPPEL"}
@@ -549,7 +556,7 @@ const MediaSvgEdit = () => {
             data.mediaSvgs.filter((svg, index) => index != activeElementIndex),
             data.width,
             data.height,
-            minWindowScale,
+            scale,
           )}
       </svg>
     </Container>
