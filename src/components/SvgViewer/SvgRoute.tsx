@@ -2,6 +2,7 @@ import { CSSProperties } from "react";
 import { components } from "../../@types/buldreinfo/swagger";
 import { useNavigate } from "react-router-dom";
 import { parseSVG, makeAbsolute } from "svg-path-parser";
+import { text } from "express";
 
 type Props = {
   style?: CSSProperties;
@@ -192,7 +193,7 @@ export const SvgRoute = ({
       </defs>
       <use
         xlinkHref={`#${pathIdentifier}`}
-        style={{ fill: "none", stroke: "#000" }}
+        style={{ fill: "none", stroke: "black" }}
         strokeWidth={
           5 * scale * (thumbnail ? 3 : 1) * (isHoveredOrActive ? 1.3 : 1)
         }
