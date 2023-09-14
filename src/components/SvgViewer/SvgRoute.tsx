@@ -2,7 +2,6 @@ import { CSSProperties } from "react";
 import { components } from "../../@types/buldreinfo/swagger";
 import { useNavigate } from "react-router-dom";
 import { parseSVG, makeAbsolute } from "svg-path-parser";
-import { text } from "express";
 
 type Props = {
   style?: CSSProperties;
