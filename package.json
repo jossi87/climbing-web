@@ -42,7 +42,7 @@
     "eslint-plugin-storybook": "^0.6.13",
     "html-webpack-plugin": "^5.5.3",
     "mini-css-extract-plugin": "^2.7.6",
-    "openapi-typescript": "6.6.0",
+    "openapi-typescript": "6.6.1",
     "prettier": "^3.0.3",
     "react-refresh": "^0.14.0",
     "storybook": "^7.4.1",
@@ -56,7 +56,7 @@
   "dependencies": {
     "@auth0/auth0-react": "^2.2.1",
     "@react-leaflet/core": "^2.1.0",
-    "@sentry/react": "^7.68.0",
+    "@sentry/react": "^7.69.0",
     "@tanstack/react-query": "^4.35.3",
     "@tanstack/react-query-devtools": "^4.35.3",
     "atob": "^2.1.2",
@@ -68,7 +68,7 @@
     "leaflet.fullscreen": "^2.4.0",
     "leaflet.locatecontrol": "^0.79.0",
     "leaflet.markercluster": "^1.5.3",
-    "puppeteer": "^21.2.0",
+    "puppeteer": "^21.2.1",
     "react": "^18.2.0",
     "react-datepicker": "^4.17.0",
     "react-dom": "^18.2.0",
@@ -79,7 +79,7 @@
     "react-linkify": "^1.0.0-alpha",
     "react-player": "^2.13.0",
     "react-range-slider-input": "^3.0.7",
-    "react-router-dom": "^6.15.0",
+    "react-router-dom": "^6.16.0",
     "react-select": "^5.7.4",
     "recharts": "^2.8.0",
     "remarkable": "^2.0.1",
@@ -87,7 +87,7 @@
     "suncalc": "^1.9.0",
     "svg-path-parser": "^1.1.0",
     "svg-path-properties": "^1.2.0",
-    "swagger-ui-react": "^5.6.2"
+    "swagger-ui-react": "^5.7.1"
   },
   "scripts": {
     "dev": "webpack serve --config webpack.dev.js",
