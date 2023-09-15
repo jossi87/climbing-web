@@ -10,7 +10,7 @@
     "url": "https://github.com/jossi87/climbing-web"
   },
   "devDependencies": {
-    "@babel/core": "^7.22.17",
+    "@babel/core": "^7.22.19",
     "@babel/plugin-transform-runtime": "^7.22.15",
     "@babel/preset-env": "^7.22.15",
     "@babel/preset-react": "^7.22.15",
