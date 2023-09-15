@@ -19,6 +19,7 @@ import MediaEditModal from "./media-edit-modal";
 import SvgViewer from "../../SvgViewer";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Loading } from "../widgets/widgets";
+import { components } from "../../../@types/buldreinfo/swagger";
 
 const style: CSSProperties = {
   objectFit: "cover",
@@ -33,10 +34,18 @@ const style: CSSProperties = {
 
 type Props = Pick<ComponentProps<typeof MediaEditModal>, "numPitches"> &
   Pick<ComponentProps<typeof MediaModal>, "optProblemId"> & {
-    media: any[];
+    media: components["schemas"]["Media"][];
+    orderableMedia: components["schemas"]["Media"][];
+    carouselMedia: components["schemas"]["Media"][];
   };
 
-const Media = ({ numPitches, media, optProblemId }: Props) => {
+const Media = ({
+  numPitches,
+  media,
+  orderableMedia,
+  carouselMedia,
+  optProblemId,
+}: Props) => {
   const location = useLocation();
   const [m, setM] = useState<any>(null);
   const [editM, setEditM] = useState<any>(null);
@@ -74,18 +83,22 @@ const Media = ({ numPitches, media, optProblemId }: Props) => {
   }
 
   function gotoPrev() {
-    if (m && media.length > 1) {
+    if (m && carouselMedia.length > 1) {
       const ix =
-        (media.findIndex((x) => x.id === m.id) - 1 + media.length) %
-        media.length;
-      openModal(media[ix]);
+        (carouselMedia.findIndex((x) => x.id === m.id) -
+          1 +
+          carouselMedia.length) %
+        carouselMedia.length;
+      openModal(carouselMedia[ix]);
     }
   }
 
   function gotoNext() {
-    if (m && media.length > 1) {
-      const ix = (media.findIndex((x) => x.id === m.id) + 1) % media.length;
-      openModal(media[ix]);
+    if (m && carouselMedia.length > 1) {
+      const ix =
+        (carouselMedia.findIndex((x) => x.id === m.id) + 1) %
+        carouselMedia.length;
+      openModal(carouselMedia[ix]);
     }
   }
 
@@ -184,7 +197,7 @@ const Media = ({ numPitches, media, optProblemId }: Props) => {
     if (id.indexOf("&") > 0) {
       id = id.substring(0, id.indexOf("&"));
     }
-    const x = media.filter((m) => m.id == id);
+    const x = media.filter((m) => m.id === parseInt(id));
     if (x && x.length === 1 && (!m || m.id != x[0].id)) {
       setM(x[0]);
     }
@@ -223,8 +236,9 @@ const Media = ({ numPitches, media, optProblemId }: Props) => {
           onMoveImageRight={onMoveImageRight}
           onMoveImageToProblem={onMoveImageToProblem}
           onMoveImageToSector={onMoveImageToSector}
-          index={media.findIndex((x) => x.id === m.id) + 1}
-          length={media.length}
+          orderableMedia={orderableMedia}
+          carouselIndex={carouselMedia.findIndex((x) => x.id === m.id) + 1}
+          carouselSize={carouselMedia.length}
           gotoPrev={gotoPrev}
           gotoNext={gotoNext}
           playVideo={playVideo}
@@ -249,7 +263,7 @@ const Media = ({ numPitches, media, optProblemId }: Props) => {
           } else {
             content = (
               <Image
-                alt={x.description}
+                alt={x.mediaMetadata.description}
                 style={style}
                 src={getImageUrl(x.id, x.crc32, 205)}
                 onError={(img) =>

@@ -149,6 +149,20 @@ const Area = () => {
     return <Loading />;
   }
 
+  const orderableMedia = [];
+  const carouselMedia = [];
+  if (data.media?.length > 0) {
+    carouselMedia.push(...data.media);
+    if (data.media.length > 1) {
+      orderableMedia.push(...data.media);
+    }
+  }
+  if (data.triviaMedia?.length > 0) {
+    carouselMedia.push(...data.triviaMedia);
+    if (data.triviaMedia.length > 1) {
+      orderableMedia.push(...data.triviaMedia);
+    }
+  }
   const markers = data.sectors
     .filter((s) => s.parking)
     .map((s) => {
@@ -187,7 +201,13 @@ const Area = () => {
       menuItem: { key: "image", icon: "image" },
       render: () => (
         <Tab.Pane>
-          <Media numPitches={0} media={data.media} optProblemId={null} />
+          <Media
+            numPitches={0}
+            media={data.media}
+            orderableMedia={orderableMedia}
+            carouselMedia={carouselMedia}
+            optProblemId={null}
+          />
         </Tab.Pane>
       ),
     });
@@ -491,6 +511,8 @@ const Area = () => {
                   <Media
                     numPitches={0}
                     media={data.triviaMedia}
+                    orderableMedia={orderableMedia}
+                    carouselMedia={carouselMedia}
                     optProblemId={null}
                   />
                 </Feed.Extra>

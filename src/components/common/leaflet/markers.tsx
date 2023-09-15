@@ -114,6 +114,7 @@ export default function Markers({
             "parking",
             m.coordinates.latitude,
             m.coordinates.longitude,
+            m.url,
           ].join("/")}
           eventHandlers={{
             click: () => {

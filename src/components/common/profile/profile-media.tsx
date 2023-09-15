@@ -36,7 +36,13 @@ const ProfileMedia = ({ userId, captured }: Props) => {
           isSuperAdmin: false,
         }}
       >
-        <Media numPitches={null} media={data} optProblemId={null} />
+        <Media
+          numPitches={null}
+          media={data}
+          orderableMedia={null}
+          carouselMedia={data}
+          optProblemId={null}
+        />
       </MetaContext.Provider>
     </Segment>
   );

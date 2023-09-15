@@ -85,8 +85,9 @@ type Props = {
   onMoveImageToSector: () => void;
   onMoveImageToProblem: () => void;
   m: any;
-  index: number;
-  length: number;
+  orderableMedia: any[];
+  carouselIndex: number;
+  carouselSize: number;
   gotoPrev: () => void;
   gotoNext: () => void;
   playVideo: () => void;
@@ -104,8 +105,9 @@ const MediaModal = ({
   onMoveImageToSector,
   onMoveImageToProblem,
   m,
-  index,
-  length,
+  orderableMedia,
+  carouselIndex,
+  carouselSize,
   gotoPrev,
   gotoNext,
   playVideo,
@@ -219,7 +221,7 @@ const MediaModal = ({
     (isAdmin || m.uploadedByMe) && isImage && !m.svgs && !m.mediaSvgs;
   const canDrawTopo = isAdmin && isImage && optProblemId;
   const canDrawMedia = isAdmin && isImage && !isBouldering;
-  const canOrder = isAdmin && isImage && length > 1;
+  const canOrder = isAdmin && isImage && orderableMedia?.includes(m);
   const canMove = isAdmin && isImage;
   return (
     <Dimmer active={true} onClickOutside={onClose} page>
@@ -618,7 +620,7 @@ const MediaModal = ({
             )}
             <Button icon="close" onClick={onClose} />
           </ButtonGroup>
-          {length > 1 && (
+          {carouselSize > 1 && (
             <>
               <Icon
                 onMouseEnter={() => setPrevHover(true)}
@@ -654,7 +656,7 @@ const MediaModal = ({
               {m.mediaMetadata.description}
             </div>
           )}
-          {(length > 1 || m.pitch > 0) && (
+          {(carouselSize > 1 || m.pitch > 0) && (
             <div
               style={{
                 position: "absolute",
@@ -665,7 +667,7 @@ const MediaModal = ({
             >
               {[
                 m.pitch > 0 && `Pitch ${m.pitch}`,
-                length > 1 && `${index}/${length}`,
+                carouselSize > 1 && `${carouselIndex}/${carouselSize}`,
               ]
                 .filter(Boolean)
                 .join(" | ")}

@@ -137,6 +137,20 @@ const Sector = () => {
     return <Loading />;
   }
 
+  const orderableMedia = [];
+  const carouselMedia = [];
+  if (data.media?.length > 0) {
+    carouselMedia.push(...data.media);
+    if (data.media.length > 1) {
+      orderableMedia.push(...data.media);
+    }
+  }
+  if (data.triviaMedia?.length > 0) {
+    carouselMedia.push(...data.triviaMedia);
+    if (data.triviaMedia.length > 1) {
+      orderableMedia.push(...data.triviaMedia);
+    }
+  }
   const isBouldering = meta.isBouldering;
   const markers: ComponentProps<typeof Leaflet>["markers"] = data.problems
     .filter((p) => p.coordinates)
@@ -170,7 +184,13 @@ const Sector = () => {
         menuItem: { key: "topo", icon: "image" },
         render: () => (
           <Tab.Pane>
-            <Media numPitches={0} media={media} optProblemId={null} />
+            <Media
+              numPitches={0}
+              media={media}
+              orderableMedia={orderableMedia}
+              carouselMedia={carouselMedia}
+              optProblemId={null}
+            />
           </Tab.Pane>
         ),
       });
@@ -230,7 +250,13 @@ const Sector = () => {
       menuItem: { key: "topo", icon: "images" },
       render: () => (
         <Tab.Pane>
-          <Media numPitches={0} media={topoImages} optProblemId={null} />
+          <Media
+            numPitches={0}
+            media={topoImages}
+            orderableMedia={orderableMedia}
+            carouselMedia={carouselMedia}
+            optProblemId={null}
+          />
         </Tab.Pane>
       ),
     });
@@ -450,6 +476,8 @@ const Sector = () => {
                   <Media
                     numPitches={0}
                     media={data.triviaMedia}
+                    orderableMedia={orderableMedia}
+                    carouselMedia={carouselMedia}
                     optProblemId={null}
                   />
                 </Feed.Extra>

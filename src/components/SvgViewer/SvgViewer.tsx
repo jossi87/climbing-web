@@ -8,24 +8,7 @@ import "./SvgViewer.css";
 type SvgProps = {
   style?: CSSProperties;
   close: () => void;
-  m: {
-    id: number;
-    width: number;
-    height: number;
-    svgs: {
-      problemId: number;
-      nr: number;
-      problemName: string;
-      problemGrade: string;
-      problemSubtype: string;
-      isTicked: boolean;
-      isTodo: boolean;
-      isDangerous: boolean;
-    }[];
-    crc32: number;
-    embedUrl: number;
-    mediaSvgs: components["schemas"]["MediaSvgElement"][];
-  };
+  m: components["schemas"]["Media"];
   thumb: boolean;
   optProblemId: number;
   sidebarOpen: boolean;
@@ -149,7 +132,7 @@ export const SvgViewer = ({
         onMouseLeave={() => setProblemIdHovered && setProblemIdHovered(null)}
       >
         <image
-          xlinkHref={getImageUrl(m.id, m.crc32, m.embedUrl)}
+          xlinkHref={getImageUrl(m.id, m.crc32)}
           width="100%"
           height="100%"
         />

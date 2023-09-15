@@ -84,6 +84,30 @@ export const Problem = () => {
     return <Loading />;
   }
 
+  const orderableMedia = [];
+  const carouselMedia = [];
+  if (data.media?.length > 0) {
+    carouselMedia.push(...data.media);
+    if (data.media.length > 1) {
+      orderableMedia.push(...data.media);
+    }
+  }
+  if (data.triviaMedia?.length > 0) {
+    carouselMedia.push(...data.triviaMedia);
+    if (data.triviaMedia.length > 1) {
+      orderableMedia.push(...data.triviaMedia);
+    }
+  }
+  if (data.sections?.length > 0) {
+    data.sections.forEach((s) => {
+      if (s.media?.length > 0) {
+        carouselMedia.push(...s.media);
+        if (s.media.length > 1) {
+          orderableMedia.push(...s.media);
+        }
+      }
+    });
+  }
   const markers: ComponentProps<typeof Leaflet>["markers"] = [];
   if (data.coordinates) {
     markers.push({
@@ -108,6 +132,8 @@ export const Problem = () => {
           <Media
             numPitches={data.sections?.length || 0}
             media={data.media}
+            orderableMedia={orderableMedia}
+            carouselMedia={carouselMedia}
             optProblemId={data.id}
           />
         </Tab.Pane>
@@ -542,6 +568,8 @@ export const Problem = () => {
                     <Media
                       numPitches={data.sections?.length || 0}
                       media={data.triviaMedia}
+                      orderableMedia={orderableMedia}
+                      carouselMedia={carouselMedia}
                       optProblemId={null}
                     />
                   </Feed.Extra>
@@ -685,6 +713,8 @@ export const Problem = () => {
                               <Media
                                 numPitches={data.sections?.length || 0}
                                 media={s.media}
+                                orderableMedia={orderableMedia}
+                                carouselMedia={carouselMedia}
                                 optProblemId={null}
                               />
                             </Feed.Extra>

@@ -73,6 +73,8 @@ export const ProblemComments = ({
               <Media
                 numPitches={data.sections?.length || 0}
                 media={c.media}
+                orderableMedia={c.media}
+                carouselMedia={c.media}
                 optProblemId={null}
               />
             )}
