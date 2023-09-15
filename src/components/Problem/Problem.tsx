@@ -108,6 +108,16 @@ export const Problem = () => {
       }
     });
   }
+  if (data.comments?.length > 0) {
+    data.comments.forEach((c) => {
+      if (c.media?.length > 0) {
+        carouselMedia.push(...c.media);
+        if (c.media.length > 1) {
+          orderableMedia.push(...c.media);
+        }
+      }
+    });
+  }
   const markers: ComponentProps<typeof Leaflet>["markers"] = [];
   if (data.coordinates) {
     markers.push({
