@@ -223,6 +223,7 @@ const Media = ({ numPitches, media, optProblemId }: Props) => {
           onMoveImageRight={onMoveImageRight}
           onMoveImageToProblem={onMoveImageToProblem}
           onMoveImageToSector={onMoveImageToSector}
+          index={media.findIndex((x) => x.id === m.id) + 1}
           length={media.length}
           gotoPrev={gotoPrev}
           gotoNext={gotoNext}
@@ -241,7 +242,7 @@ const Media = ({ numPitches, media, optProblemId }: Props) => {
                 m={x}
                 style={style}
                 optProblemId={optProblemId}
-                showText={false}
+                sidebarOpen={false}
                 problemIdHovered={null}
               />
             );

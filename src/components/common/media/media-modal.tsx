@@ -85,6 +85,7 @@ type Props = {
   onMoveImageToSector: () => void;
   onMoveImageToProblem: () => void;
   m: any;
+  index: number;
   length: number;
   gotoPrev: () => void;
   gotoNext: () => void;
@@ -103,6 +104,7 @@ const MediaModal = ({
   onMoveImageToSector,
   onMoveImageToProblem,
   m,
+  index,
   length,
   gotoPrev,
   gotoNext,
@@ -131,7 +133,7 @@ const MediaModal = ({
               m={m}
               close={onClose}
               optProblemId={optProblemId}
-              showText={!canShowSidebar || !showSidebar}
+              sidebarOpen={showSidebar}
               problemIdHovered={problemIdHovered}
               setProblemIdHovered={(id) => setProblemIdHovered(id)}
             />
@@ -645,10 +647,28 @@ const MediaModal = ({
               style={{
                 position: "absolute",
                 bottom: "0px",
+                left: "0px",
                 backgroundColor: "rgba(0,0,0,0.6)",
               }}
             >
               {m.mediaMetadata.description}
+            </div>
+          )}
+          {(length > 1 || m.pitch > 0) && (
+            <div
+              style={{
+                position: "absolute",
+                bottom: "0px",
+                right: "0px",
+                backgroundColor: "rgba(0,0,0,0.6)",
+              }}
+            >
+              {[
+                m.pitch > 0 && `Pitch ${m.pitch}`,
+                length > 1 && `${index}/${length}`,
+              ]
+                .filter(Boolean)
+                .join(" | ")}
             </div>
           )}
         </Sidebar.Pusher>
