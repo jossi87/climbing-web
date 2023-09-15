@@ -157,7 +157,7 @@ export const SvgRoute = ({
           paintOrder: "stroke fill",
           clipPath: "inset(-5px -5px -5px -5px round 10px)",
         }}
-        fontSize={20 * scale}
+        fontSize={25 * scale}
         dominantBaseline="text-before-edge"
         fontWeight="bolder"
         fill="white"
@@ -217,6 +217,7 @@ export const SvgRoute = ({
           25 * scale * hoveredOrActiveScale * (thumbnail ? 3 : 1)
         }
         fontWeight={isHoveredOrActive? "bolder" : "normal"}
+        textDecoration={isHoveredOrActive? "underline" : "normal"}
         textAnchor="middle"
         dominantBaseline="central"
         x={x}
