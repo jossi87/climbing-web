@@ -99,6 +99,7 @@ export const SvgRoute = ({
 
   const isHoveredOrActive =
     optProblemId === svg.problemId || problemIdHovered == svg.problemId;
+  const hoveredOrActiveScale = isHoveredOrActive? 1.2 : 1;
   const pathIdentifier = `svg-route-path-${mediaId}-${svg.problemId}-${thumbnail}`;
   const extraAnchors =
     svg.anchors &&
@@ -108,11 +109,11 @@ export const SvgRoute = ({
         fill={groupColor}
         stroke="black"
         strokeWidth={
-          scale * 2 * (isHoveredOrActive ? 1.3 : 1) * (thumbnail ? 3 : 1)
+          scale * 2 * hoveredOrActiveScale * (thumbnail ? 3 : 1)
         }
         cx={a.x}
         cy={a.y}
-        r={8 * scale * (isHoveredOrActive ? 1.3 : 1) * (thumbnail ? 3 : 1)}
+        r={8 * scale * hoveredOrActiveScale * (thumbnail ? 3 : 1)}
       />
     ));
   const extraTexts =
@@ -194,28 +195,28 @@ export const SvgRoute = ({
         xlinkHref={`#${pathIdentifier}`}
         style={{ fill: "none", stroke: "black" }}
         strokeWidth={
-          5 * scale * (thumbnail ? 3 : 1) * (isHoveredOrActive ? 1.3 : 1)
+          5 * scale * (thumbnail ? 3 : 1)
         }
       />
       <use
         xlinkHref={`#${pathIdentifier}`}
         style={{ fill: "none", stroke: groupColor }}
         strokeWidth={
-          2 * scale * (thumbnail ? 3 : 1) * (isHoveredOrActive ? 1.3 : 1)
+          2 * scale * hoveredOrActiveScale * (thumbnail ? 3 : 1)
         }
       />
       <text
         fill={textColor}
         stroke="black"
-        strokeWidth={5 * scale * (thumbnail ? 3 : 1)}
+        strokeWidth={5 * scale * hoveredOrActiveScale * (thumbnail ? 3 : 1)}
         style={{
           paintOrder: "stroke fill",
           clipPath: "inset(-5px -5px -5px -5px round 10px)",
         }}
         fontSize={
-          25 * scale * (isHoveredOrActive ? 1.3 : 1) * (thumbnail ? 3 : 1)
+          25 * scale * hoveredOrActiveScale * (thumbnail ? 3 : 1)
         }
-        fontWeight="bolder"
+        fontWeight={isHoveredOrActive? "bolder" : "normal"}
         textAnchor="middle"
         dominantBaseline="central"
         x={x}
@@ -228,11 +229,11 @@ export const SvgRoute = ({
           fill={groupColor}
           stroke="black"
           strokeWidth={
-            scale * 2 * (isHoveredOrActive ? 1.3 : 1) * (thumbnail ? 3 : 1)
+            scale * 2 * hoveredOrActiveScale * (thumbnail ? 3 : 1)
           }
           cx={path[ixAnchor].x}
           cy={path[ixAnchor].y}
-          r={8 * scale * (isHoveredOrActive ? 1.3 : 1) * (thumbnail ? 3 : 1)}
+          r={8 * scale * hoveredOrActiveScale * (thumbnail ? 3 : 1)}
         />
       )}
       {extraAnchors}
