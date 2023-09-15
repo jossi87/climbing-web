@@ -100,13 +100,13 @@ export const SvgViewer = ({
     m.svgs?.length > 0 &&
     m.svgs
       .sort((a, b) => {
-        if (optProblemId > 0 && a.problemId === optProblemId) {
-          return 1;
-        } else if (optProblemId > 0 && b.problemId === optProblemId) {
-          return -1;
-        } else if (problemIdHovered > 0 && a.problemId === problemIdHovered) {
+        if (problemIdHovered > 0 && a.problemId === problemIdHovered) {
           return 1;
         } else if (problemIdHovered > 0 && b.problemId === problemIdHovered) {
+          return -1;
+        } else if (optProblemId > 0 && a.problemId === optProblemId) {
+          return 1;
+        } else if (optProblemId > 0 && b.problemId === optProblemId) {
           return -1;
         }
         return b.nr - a.nr;
