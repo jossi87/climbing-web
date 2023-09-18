@@ -14,46 +14,42 @@ export function getDistanceWithUnit(
 }
 
 export function convertGpxToCoordinates(gpx: string) {
-  const allCoords = gpx
-    .replace(/(\r\n|\n|\r)/gm, "\n")
-    .split("\n")
-    .reduce(
-      (unique, item) => (unique.includes(item) ? unique : [...unique, item]),
-      [],
-    )
-    .map((l) => {
-      const parts = /^(.+lat="(.+?)".*lon="(.+?)".)$/.exec(l);
-      if (parts?.length != 4) {
-        return null;
+  const parser = new DOMParser();
+  const xmlDoc = parser.parseFromString(gpx, "text/xml");
+  const children = xmlDoc.querySelectorAll("trkpt");
+  const coords = [];
+  for (let i = 0; i < children.length; i++) {
+    const trkpt = children[i];
+    const latitude = trkpt.getAttribute("lat");
+    const longitude = trkpt.getAttribute("lon");
+    let elevation = 0;
+    trkpt.childNodes.forEach((c) => {
+      if (c.nodeName === "ele") {
+        elevation = parseFloat(c.firstChild.nodeValue);
       }
-      const lat = parseFloat(parts[2]);
-      const lon = parseFloat(parts[3]);
-      return { latitude: lat, longitude: lon };
-    })
-    .filter((c) => !!c);
-  if (allCoords?.length < 2) {
-    return null;
-  }
-  // Make a new array with fewer elements, we don't need all the coordinates
-  const res = [];
-  for (let i = 0; i < allCoords.length; i++) {
-    const c = allCoords[i];
-    if (i === 0 || (i === allCoords.length - 1 && res.length == 1)) {
-      res.push(c);
-    } else {
-      const prevC = res[res.length - 1];
-      const dm = calculateDistanceBetweenCoordinates(
-        prevC.latitude,
-        prevC.longitude,
-        c.latitude,
-        c.longitude,
-      );
-      if (dm > 10) {
-        res.push(c);
-      }
+    });
+    if (
+      coords.length === 0 ||
+      i === children.length - 1 ||
+      calculateDistanceBetweenCoordinates(
+        coords[coords.length - 1].latitude,
+        coords[coords.length - 1].longitude,
+        latitude,
+        longitude,
+      ) > 10
+    ) {
+      coords.push({
+        latitude,
+        longitude,
+        elevation,
+        elevationSource: elevation > 0 && "GPX",
+      });
     }
   }
-  return res;
+  if (coords.length < 2) {
+    return null;
+  }
+  return coords;
 }
 
 function calculateDistanceBetweenCoordinates(lat1, lng1, lat2, lng2) {
