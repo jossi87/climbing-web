@@ -101,8 +101,10 @@ export const Problems = ({ filterOpen }: Props) => {
     visible,
   } = state;
 
-  if (!loadedData || totalProblems === 0) {
+  if (!loadedData) {
     return <Loading />;
+  } else if (totalProblems === 0) {
+    return <Segment>No data</Segment>;
   }
 
   const title = isBouldering ? "Problems" : "Routes";
