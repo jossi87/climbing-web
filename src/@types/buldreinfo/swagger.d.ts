@@ -374,6 +374,7 @@ export type components = {
       capturer?: string;
       tagged?: string;
       description?: string;
+      location?: string;
       alt?: string;
     };
     MediaSvgElement: {

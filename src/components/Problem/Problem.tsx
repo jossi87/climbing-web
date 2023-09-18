@@ -145,6 +145,7 @@ export const Problem = () => {
             orderableMedia={orderableMedia}
             carouselMedia={carouselMedia}
             optProblemId={data.id}
+            showLocation={false}
           />
         </Tab.Pane>
       ),
@@ -581,6 +582,7 @@ export const Problem = () => {
                       orderableMedia={orderableMedia}
                       carouselMedia={carouselMedia}
                       optProblemId={null}
+                      showLocation={false}
                     />
                   </Feed.Extra>
                 )}
@@ -726,6 +728,7 @@ export const Problem = () => {
                                 orderableMedia={orderableMedia}
                                 carouselMedia={carouselMedia}
                                 optProblemId={null}
+                                showLocation={false}
                               />
                             </Feed.Extra>
                           )}

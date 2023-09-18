@@ -37,6 +37,7 @@ type Props = Pick<ComponentProps<typeof MediaEditModal>, "numPitches"> &
     media: components["schemas"]["Media"][];
     orderableMedia: components["schemas"]["Media"][];
     carouselMedia: components["schemas"]["Media"][];
+    showLocation: boolean;
   };
 
 const Media = ({
@@ -45,6 +46,7 @@ const Media = ({
   orderableMedia,
   carouselMedia,
   optProblemId,
+  showLocation,
 }: Props) => {
   const location = useLocation();
   const [m, setM] = useState<any>(null);
@@ -239,6 +241,7 @@ const Media = ({
           orderableMedia={orderableMedia}
           carouselIndex={carouselMedia.findIndex((x) => x.id === m.id) + 1}
           carouselSize={carouselMedia.length}
+          showLocation={showLocation}
           gotoPrev={gotoPrev}
           gotoNext={gotoNext}
           playVideo={playVideo}

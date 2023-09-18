@@ -42,6 +42,7 @@ const ProfileMedia = ({ userId, captured }: Props) => {
           orderableMedia={null}
           carouselMedia={data}
           optProblemId={null}
+          showLocation={true}
         />
       </MetaContext.Provider>
     </Segment>

@@ -207,6 +207,7 @@ const Area = () => {
             orderableMedia={orderableMedia}
             carouselMedia={carouselMedia}
             optProblemId={null}
+            showLocation={false}
           />
         </Tab.Pane>
       ),
@@ -514,6 +515,7 @@ const Area = () => {
                     orderableMedia={orderableMedia}
                     carouselMedia={carouselMedia}
                     optProblemId={null}
+                    showLocation={false}
                   />
                 </Feed.Extra>
               </Table.Cell>

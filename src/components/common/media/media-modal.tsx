@@ -88,6 +88,7 @@ type Props = {
   orderableMedia: any[];
   carouselIndex: number;
   carouselSize: number;
+  showLocation: boolean;
   gotoPrev: () => void;
   gotoNext: () => void;
   playVideo: () => void;
@@ -108,6 +109,7 @@ const MediaModal = ({
   orderableMedia,
   carouselIndex,
   carouselSize,
+  showLocation,
   gotoPrev,
   gotoNext,
   playVideo,
@@ -290,6 +292,8 @@ const MediaModal = ({
                 <Image wrapped size="medium" src={getImageUrl(m.id, 150)} />
                 <Modal.Description>
                   <Header>Info</Header>
+                  <b>Location: </b> {m.mediaMetadata.location}
+                  <br />
                   {m.mediaMetadata.dateCreated && (
                     <>
                       <b>Date uploaded:</b> {m.mediaMetadata.dateCreated}
@@ -644,6 +648,18 @@ const MediaModal = ({
             </>
           )}
           {content}
+          {showLocation && (
+            <div
+              style={{
+                position: "absolute",
+                top: "0px",
+                left: "0px",
+                backgroundColor: "rgba(0,0,0,0.6)",
+              }}
+            >
+              {m.mediaMetadata.location}
+            </div>
+          )}
           {m.mediaMetadata.description && (
             <div
               style={{

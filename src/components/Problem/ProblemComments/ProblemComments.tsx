@@ -76,6 +76,7 @@ export const ProblemComments = ({
                 orderableMedia={c.media}
                 carouselMedia={c.media}
                 optProblemId={null}
+                showLocation={false}
               />
             )}
           </Comment.Text>
