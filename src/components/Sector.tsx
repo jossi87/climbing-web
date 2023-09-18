@@ -23,7 +23,6 @@ import {
   Breadcrumb,
   Table,
   Label,
-  TableCell,
   List,
   Header,
   Image,
@@ -307,26 +306,6 @@ const Sector = () => {
     uniqueTypes.push("Projects");
   }
   uniqueTypes.sort();
-  const content = uniqueTypes.map((subType) => {
-    const header = subType ? subType : "Boulders";
-    const problemsOfType = data.problems.filter(
-      (p) =>
-        (subType === "Projects" && p.gradeNumber === 0) ||
-        (subType === "Broken" && p.broken) ||
-        (p.t.subType === subType && p.gradeNumber !== 0),
-    );
-    const numTicked = problemsOfType.filter((p) => p.ticked).length;
-    const txt =
-      numTicked === 0
-        ? problemsOfType.length
-        : problemsOfType.length + " (" + numTicked + " ticked)";
-    return (
-      <Table.Row key={[header, txt].join("/")}>
-        <TableCell>{header}:</TableCell>
-        <TableCell>{txt}</TableCell>
-      </Table.Row>
-    );
-  });
 
   return (
     <>
@@ -428,7 +407,34 @@ const Sector = () => {
               </Table.Cell>
             </Table.Row>
           )}
-          {content}
+          <Table.Row verticalAlign="top">
+            <Table.Cell width={3}>Info:</Table.Cell>
+            <Table.Cell>
+              {uniqueTypes.map((subType) => {
+                const header = subType ? subType : "Boulders";
+                const problemsOfType = data.problems.filter(
+                  (p) =>
+                    (subType === "Projects" && p.gradeNumber === 0) ||
+                    (subType === "Broken" && p.broken) ||
+                    (p.t.subType === subType && p.gradeNumber !== 0),
+                );
+                const numTicked = problemsOfType.filter((p) => p.ticked).length;
+                const txt =
+                  numTicked === 0
+                    ? problemsOfType.length
+                    : problemsOfType.length + " (" + numTicked + " ticked)";
+                return (
+                  <Label key={[header, txt].join("/")} basic size="small">
+                    {header}:<Label.Detail>{txt}</Label.Detail>
+                  </Label>
+                );
+              })}
+              <Label basic size="small">
+                Page views:
+                <Label.Detail>{data.hits}</Label.Detail>
+              </Label>
+            </Table.Cell>
+          </Table.Row>
           {data.comment && (
             <Table.Row verticalAlign="top">
               <Table.Cell>Description:</Table.Cell>
@@ -538,10 +544,6 @@ const Sector = () => {
                 </Label>
               )}
             </Table.Cell>
-          </Table.Row>
-          <Table.Row verticalAlign="top">
-            <Table.Cell width={3}>Page views:</Table.Cell>
-            <Table.Cell>{data.hits}</Table.Cell>
           </Table.Row>
         </Table.Body>
       </Table>

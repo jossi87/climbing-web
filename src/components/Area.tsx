@@ -491,19 +491,28 @@ const Area = () => {
               </Table.Cell>
             </Table.Row>
           )}
-          <Table.Row>
-            <Table.Cell width={3}>Sectors:</Table.Cell>
-            <Table.Cell>{data.sectors.length}</Table.Cell>
+          <Table.Row verticalAlign="top">
+            <Table.Cell width={3}>Info:</Table.Cell>
+            <Table.Cell>
+              <Label basic size="small">
+                Sectors:
+                <Label.Detail>{data.sectors.length}</Label.Detail>
+              </Label>
+              {data.typeNumTicked.map((t) => (
+                <Label key={t.type} basic size="small">
+                  {t.type}:
+                  <Label.Detail>
+                    {t.num}
+                    {t.ticked > 0 && " (" + t.ticked + " ticked)"}
+                  </Label.Detail>
+                </Label>
+              ))}
+              <Label basic size="small">
+                Page views:
+                <Label.Detail>{data.hits}</Label.Detail>
+              </Label>
+            </Table.Cell>
           </Table.Row>
-          {data.typeNumTicked.map((t) => (
-            <Table.Row key={t.type}>
-              <Table.Cell>{t.type + ":"}</Table.Cell>
-              <Table.Cell>
-                {t.num}
-                {t.ticked > 0 && " (" + t.ticked + " ticked)"}
-              </Table.Cell>
-            </Table.Row>
-          ))}
           {data.triviaMedia?.length > 0 && (
             <Table.Row verticalAlign="top">
               <Table.Cell>Trivia:</Table.Cell>
@@ -550,10 +559,6 @@ const Area = () => {
                 area.pdf
               </Label>
             </Table.Cell>
-          </Table.Row>
-          <Table.Row>
-            <Table.Cell>Page views:</Table.Cell>
-            <Table.Cell>{data.hits}</Table.Cell>
           </Table.Row>
           {data.forDevelopers && (
             <Table.Row>

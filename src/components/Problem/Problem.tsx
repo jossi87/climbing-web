@@ -429,10 +429,6 @@ export const Problem = () => {
               </Table.Cell>
             </Table.Row>
           )}
-          <Table.Row verticalAlign="top">
-            <Table.Cell width={3}>Number:</Table.Cell>
-            <Table.Cell>{data.nr}</Table.Cell>
-          </Table.Row>
           {data.sectorIdProblemPrev > 0 && (
             <Table.Row verticalAlign="top">
               <Table.Cell>Jump:</Table.Cell>
@@ -462,6 +458,39 @@ export const Problem = () => {
               </Table.Cell>
             </Table.Row>
           )}
+          <Table.Row verticalAlign="top">
+            <Table.Cell width={3}>Info:</Table.Cell>
+            <Table.Cell>
+              <Label basic size="small">
+                Number:
+                <Label.Detail>#{data.nr}</Label.Detail>
+              </Label>
+              <Label basic size="small">
+                Page views:
+                <Label.Detail>{data.hits}</Label.Detail>
+              </Label>
+              <Label basic size="small">
+                Public ascents:
+                <Label.Detail>{data.ticks?.length || 0}</Label.Detail>
+              </Label>
+              {data.coordinates && (
+                <Label basic size="small">
+                  Coordinates:
+                  <Label.Detail>{`${data.coordinates.latitude.toFixed(
+                    4,
+                  )},${data.coordinates.longitude.toFixed(4)}`}</Label.Detail>
+                </Label>
+              )}
+              {data.coordinates?.elevationSource && (
+                <Label basic size="small">
+                  Elevation ({data.coordinates.elevationSource}):
+                  <Label.Detail>{`${Math.round(
+                    data.coordinates.elevation,
+                  )}m`}</Label.Detail>
+                </Label>
+              )}
+            </Table.Cell>
+          </Table.Row>
           {data.faAid && (
             <Table.Row verticalAlign="top">
               <Table.Cell>First ascent (Aid):</Table.Cell>
@@ -602,12 +631,6 @@ export const Problem = () => {
               </Table.Cell>
             </Table.Row>
           )}
-          {data.ticks && (
-            <Table.Row verticalAlign="top">
-              <Table.Cell>Public ascents:</Table.Cell>
-              <Table.Cell>{data.ticks.length}</Table.Cell>
-            </Table.Row>
-          )}
           {data.todos && (
             <Table.Row verticalAlign="top">
               <Table.Cell>On TODO-list:</Table.Cell>
@@ -630,7 +653,7 @@ export const Problem = () => {
           )}
           {lat > 0 && lng > 0 && (
             <Table.Row>
-              <Table.Cell>Weather:</Table.Cell>
+              <Table.Cell>Conditions:</Table.Cell>
               <Table.Cell>
                 <ConditionLabels
                   lat={lat}
@@ -701,10 +724,6 @@ export const Problem = () => {
                 </Label>
               )}
             </Table.Cell>
-          </Table.Row>
-          <Table.Row verticalAlign="top">
-            <Table.Cell>Page views:</Table.Cell>
-            <Table.Cell>{data.hits}</Table.Cell>
           </Table.Row>
           {data.sections && (
             <Table.Row verticalAlign="top">

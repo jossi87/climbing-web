@@ -337,6 +337,7 @@ export type components = {
       longitude?: number;
       /** Format: double */
       elevation?: number;
+      elevationSource?: string;
       /** Format: double */
       distance?: number;
     };
@@ -608,11 +609,11 @@ export type components = {
       types?: components["schemas"]["Type"][];
       sites?: components["schemas"]["Site"][];
       bouldering?: boolean;
-      admin?: boolean;
-      authenticated?: boolean;
       climbing?: boolean;
-      superAdmin?: boolean;
+      authenticated?: boolean;
+      admin?: boolean;
       ice?: boolean;
+      superAdmin?: boolean;
     };
     Site: {
       group?: string;
