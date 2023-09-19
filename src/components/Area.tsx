@@ -16,7 +16,6 @@ import {
   WallDirection,
 } from "./common/widgets/widgets";
 import {
-  Table,
   Label,
   Button,
   Tab,
@@ -29,6 +28,7 @@ import {
   Message,
   Progress,
   Feed,
+  Segment,
 } from "semantic-ui-react";
 import { useMeta } from "./common/meta";
 import { getImageUrl, getAreaPdfUrl, useAccessToken, useArea } from "../api";
@@ -443,7 +443,10 @@ const Area = () => {
           </Breadcrumb.Section>
           <Breadcrumb.Divider icon="right angle" />
           <Breadcrumb.Section active>
-            {data.name}{" "}
+            {data.name}
+            {data.forDevelopers && (
+              <span style={{ fontWeight: "normal" }}> (under development)</span>
+            )}{" "}
             <LockSymbol
               lockedAdmin={data.lockedAdmin}
               lockedSuperadmin={data.lockedSuperadmin}
@@ -460,132 +463,101 @@ const Area = () => {
           content={data.accessClosed}
         />
       )}
+
       <Tab panes={panes} />
-      <Table definition unstackable>
-        <Table.Body>
-          {(data.accessInfo || data.noDogsAllowed) && (
-            <Table.Row warning verticalAlign="top">
-              <Table.Cell>
-                <Icon name="attention" /> Restrictions:
-              </Table.Cell>
-              <Table.Cell>
-                {data.noDogsAllowed && (
-                  <Header as="h5" color="red" image>
-                    <Image
-                      src="/svg/no-animals.svg"
-                      alt="No dogs allowed"
-                      rounded
-                      size="mini"
-                    />
-                    <Header.Content>
-                      The access to our crags are at the mercy of the farmers
-                      who own the land.
-                      <Header.Subheader>
-                        Because of conflicts between dog-owners and farmers we
-                        ask you to not bring your dog to this specific crag.
-                      </Header.Subheader>
-                    </Header.Content>
-                  </Header>
-                )}
-                {data.accessInfo && <p>{data.accessInfo}</p>}
-              </Table.Cell>
-            </Table.Row>
+
+      {data.noDogsAllowed && (
+        <Message warning>
+          {data.noDogsAllowed && (
+            <Header as="h5" color="red" image>
+              <Image
+                src="/svg/no-animals.svg"
+                alt="No dogs allowed"
+                rounded
+                size="mini"
+              />
+              <Header.Content>
+                The access to our crags are at the mercy of the farmers who own
+                the land.
+                <Header.Subheader>
+                  Because of conflicts between dog-owners and farmers we ask you
+                  to not bring your dog to this specific crag.
+                </Header.Subheader>
+              </Header.Content>
+            </Header>
           )}
-          <Table.Row verticalAlign="top">
-            <Table.Cell width={3}>Info:</Table.Cell>
-            <Table.Cell>
-              <Label basic>
-                Sectors:
-                <Label.Detail>{data.sectors.length}</Label.Detail>
-              </Label>
-              {data.typeNumTicked.map((t) => (
-                <Label key={t.type} basic>
-                  {t.type}:
-                  <Label.Detail>
-                    {t.num}
-                    {t.ticked > 0 && " (" + t.ticked + " ticked)"}
-                  </Label.Detail>
-                </Label>
-              ))}
-              <Label basic>
-                Page views:
-                <Label.Detail>{data.hits}</Label.Detail>
-              </Label>
-            </Table.Cell>
-          </Table.Row>
-          {data.triviaMedia?.length > 0 && (
-            <Table.Row verticalAlign="top">
-              <Table.Cell>Trivia:</Table.Cell>
-              <Table.Cell>
-                <Feed.Extra>
-                  <Media
-                    numPitches={0}
-                    media={data.triviaMedia}
-                    orderableMedia={orderableMedia}
-                    carouselMedia={carouselMedia}
-                    optProblemId={null}
-                    showLocation={false}
-                  />
-                </Feed.Extra>
-              </Table.Cell>
-            </Table.Row>
-          )}
+        </Message>
+      )}
+
+      {data.accessInfo && (
+        <Message warning>
+          <Message.Header>Restrictions:</Message.Header>
+          {data.accessInfo}
+        </Message>
+      )}
+
+      <Segment>
+        <Label.Group>
+          <Label basic>
+            Sectors:
+            <Label.Detail>{data.sectors.length}</Label.Detail>
+          </Label>
+          {data.typeNumTicked.map((t) => (
+            <Label key={t.type} basic>
+              {t.type}:
+              <Label.Detail>
+                {t.num}
+                {t.ticked > 0 && " (" + t.ticked + " ticked)"}
+              </Label.Detail>
+            </Label>
+          ))}
+          <Label basic>
+            Page views:
+            <Label.Detail>{data.hits}</Label.Detail>
+          </Label>
+          <Label
+            href={getAreaPdfUrl(accessToken, data.id)}
+            rel="noreferrer noopener"
+            target="_blank"
+            image
+            basic
+          >
+            <Icon name="file pdf outline" />
+            area.pdf
+          </Label>
           {data.coordinates && (
-            <Table.Row>
-              <Table.Cell>Conditions:</Table.Cell>
-              <Table.Cell>
-                <ConditionLabels
-                  lat={data.coordinates.latitude}
-                  lng={data.coordinates.longitude}
-                  label={data.name}
-                  wallDirection={null}
-                  sunFromHour={data.sunFromHour}
-                  sunToHour={data.sunToHour}
-                />
-              </Table.Cell>
-            </Table.Row>
+            <ConditionLabels
+              lat={data.coordinates.latitude}
+              lng={data.coordinates.longitude}
+              label={data.name}
+              wallDirection={null}
+              sunFromHour={data.sunFromHour}
+              sunToHour={data.sunToHour}
+            />
           )}
-          <Table.Row>
-            <Table.Cell>Misc:</Table.Cell>
-            <Table.Cell>
-              <Label
-                href={getAreaPdfUrl(accessToken, data.id)}
-                rel="noreferrer noopener"
-                target="_blank"
-                image
-                basic
-              >
-                <Icon name="file pdf outline" />
-                area.pdf
-              </Label>
-            </Table.Cell>
-          </Table.Row>
-          {data.forDevelopers && (
-            <Table.Row>
-              <Table.Cell>For developers:</Table.Cell>
-              <Table.Cell>
-                <strong>
-                  <i>Under development</i>
-                </strong>
-              </Table.Cell>
-            </Table.Row>
-          )}
-          {data.comment && (
-            <Table.Row>
-              <Table.Cell
-                colSpan={2}
-                style={{ fontWeight: "normal", backgroundColor: "white" }}
-              >
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: md.render(data.comment),
-                  }}
-                />
-              </Table.Cell>
-            </Table.Row>
-          )}
-        </Table.Body>
-      </Table>
+        </Label.Group>
+        {data.comment && (
+          <div
+            style={{ paddingTop: "10px" }}
+            dangerouslySetInnerHTML={{
+              __html: md.render(data.comment),
+            }}
+          />
+        )}
+        {data.triviaMedia?.length > 0 && (
+          <Feed.Extra style={{ paddingTop: "10px" }}>
+            <Media
+              numPitches={0}
+              media={data.triviaMedia}
+              orderableMedia={orderableMedia}
+              carouselMedia={carouselMedia}
+              optProblemId={null}
+              showLocation={false}
+            />
+          </Feed.Extra>
+        )}
+      </Segment>
+
       {sectorPanes.length > 0 && <Tab panes={sectorPanes} />}
     </>
   );

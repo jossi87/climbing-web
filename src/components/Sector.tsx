@@ -380,9 +380,7 @@ const Sector = () => {
             data.accessInfo ||
             data.areaNoDogsAllowed) && (
             <Table.Row warning verticalAlign="top">
-              <Table.Cell>
-                <Icon name="attention" /> Restrictions:
-              </Table.Cell>
+              <Table.Cell>Restrictions:</Table.Cell>
               <Table.Cell>
                 {data.areaNoDogsAllowed && (
                   <Header as="h5" color="red" image>
@@ -433,23 +431,17 @@ const Sector = () => {
                 Page views:
                 <Label.Detail>{data.hits}</Label.Detail>
               </Label>
-            </Table.Cell>
-          </Table.Row>
-          {data.comment && (
-            <Table.Row verticalAlign="top">
-              <Table.Cell>Description:</Table.Cell>
-              <Table.Cell>
+              <br />
+              {data.comment && (
                 <Linkify componentDecorator={componentDecorator}>
                   {data.comment}
                 </Linkify>
-              </Table.Cell>
-            </Table.Row>
-          )}
+              )}
+            </Table.Cell>
+          </Table.Row>
           {data.approach?.coordinates?.length > 1 && (
             <Table.Row verticalAlign="top">
-              <Table.Cell>
-                Approach ({data.approach.coordinates[0].elevationSource}):
-              </Table.Cell>
+              <Table.Cell>Approach:</Table.Cell>
               <Table.Cell>
                 <ApproachProfile approach={data.approach} />
               </Table.Cell>

@@ -85,6 +85,10 @@ export const ApproachProfile = ({ approach }: Props) => {
         Estimated time:
         <Label.Detail>{`${approach.calculatedDurationInMinutes} min`}</Label.Detail>
       </Label>
+      <Label basic size="small">
+        Elevation source:
+        <Label.Detail>{approach.coordinates[0].elevationSource}</Label.Detail>
+      </Label>
     </>
   );
 };

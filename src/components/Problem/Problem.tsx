@@ -403,9 +403,7 @@ export const Problem = () => {
             data.sectorAccessInfo ||
             data.areaNoDogsAllowed) && (
             <Table.Row warning verticalAlign="top">
-              <Table.Cell>
-                <Icon name="attention" /> Restrictions:
-              </Table.Cell>
+              <Table.Cell>Restrictions:</Table.Cell>
               <Table.Cell>
                 {data.areaNoDogsAllowed && (
                   <Header as="h5" color="red" image>
@@ -593,9 +591,7 @@ export const Problem = () => {
           />
           {data.sectorApproach?.coordinates?.length > 1 && (
             <Table.Row verticalAlign="top">
-              <Table.Cell>
-                Approach ({data.sectorApproach.coordinates[0].elevationSource}):
-              </Table.Cell>
+              <Table.Cell>Approach:</Table.Cell>
               <Table.Cell>
                 <ApproachProfile approach={data.sectorApproach} />
               </Table.Cell>
