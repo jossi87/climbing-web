@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Comment, Segment, Header, Table } from "semantic-ui-react";
+import { Comment, Segment, Header, Table, Label } from "semantic-ui-react";
 import { Stars } from "../../common/widgets/widgets";
 import Linkify from "react-linkify";
 import { componentDecorator } from "../../../utils/componentDecorator";
@@ -14,7 +14,8 @@ export const ProblemTicks = ({ ticks }: Props) => {
   return (
     <Comment.Group as={Segment}>
       <Header as="h3" dividing>
-        Ticks:
+        Ticks
+        {ticks?.length > 0 && <Label circular>{ticks.length}</Label>}
       </Header>
       {ticks?.length ? (
         ticks.map((t) => {

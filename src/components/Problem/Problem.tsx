@@ -367,7 +367,8 @@ export const Problem = () => {
           </Breadcrumb.Section>
           <Breadcrumb.Divider icon="right angle" />
           <Breadcrumb.Section active>
-            {data.name} {data.grade}{" "}
+            <span style={{ fontWeight: "normal" }}>#{data.nr}</span> {data.name}{" "}
+            <span style={{ fontWeight: "normal" }}>{data.grade}</span>{" "}
             <LockSymbol
               lockedAdmin={data.lockedAdmin}
               lockedSuperadmin={data.lockedSuperadmin}
@@ -458,39 +459,6 @@ export const Problem = () => {
               </Table.Cell>
             </Table.Row>
           )}
-          <Table.Row verticalAlign="top">
-            <Table.Cell width={3}>Info:</Table.Cell>
-            <Table.Cell>
-              <Label basic size="small">
-                Number:
-                <Label.Detail>#{data.nr}</Label.Detail>
-              </Label>
-              <Label basic size="small">
-                Page views:
-                <Label.Detail>{data.hits}</Label.Detail>
-              </Label>
-              <Label basic size="small">
-                Public ascents:
-                <Label.Detail>{data.ticks?.length || 0}</Label.Detail>
-              </Label>
-              {data.coordinates && (
-                <Label basic size="small">
-                  Coordinates:
-                  <Label.Detail>{`${data.coordinates.latitude.toFixed(
-                    4,
-                  )},${data.coordinates.longitude.toFixed(4)}`}</Label.Detail>
-                </Label>
-              )}
-              {data.coordinates?.elevationSource && (
-                <Label basic size="small">
-                  Elevation ({data.coordinates.elevationSource}):
-                  <Label.Detail>{`${Math.round(
-                    data.coordinates.elevation,
-                  )}m`}</Label.Detail>
-                </Label>
-              )}
-            </Table.Cell>
-          </Table.Row>
           {data.faAid && (
             <Table.Row verticalAlign="top">
               <Table.Cell>First ascent (Aid):</Table.Cell>
@@ -531,7 +499,7 @@ export const Problem = () => {
             </Table.Row>
           )}
           <Table.Row verticalAlign="top">
-            <Table.Cell>
+            <Table.Cell width={3}>
               {data.faAid ? "First free ascent (FFA):" : "First ascent:"}
             </Table.Cell>
             <Table.Cell>
@@ -625,7 +593,9 @@ export const Problem = () => {
           />
           {data.sectorApproach?.coordinates?.length > 1 && (
             <Table.Row verticalAlign="top">
-              <Table.Cell>Approach:</Table.Cell>
+              <Table.Cell>
+                Approach ({data.sectorApproach.coordinates[0].elevationSource}):
+              </Table.Cell>
               <Table.Cell>
                 <ApproachProfile approach={data.sectorApproach} />
               </Table.Cell>
@@ -633,7 +603,7 @@ export const Problem = () => {
           )}
           {data.todos && (
             <Table.Row verticalAlign="top">
-              <Table.Cell>On TODO-list:</Table.Cell>
+              <Table.Cell>Todo:</Table.Cell>
               <Table.Cell>
                 {data.todos.map((u) => (
                   <Label
@@ -723,6 +693,10 @@ export const Problem = () => {
                   {meta.isBouldering ? "Boulder" : "Route"} (Google Maps)
                 </Label>
               )}
+              <Label basic>
+                Page views:
+                <Label.Detail>{data.hits}</Label.Detail>
+              </Label>
             </Table.Cell>
           </Table.Row>
           {data.sections && (

@@ -140,7 +140,10 @@ export const ProblemComments = ({
   return (
     <Comment.Group threaded as={Segment}>
       <Header as="h3" dividing>
-        Comments:
+        Comments
+        {data.comments?.length > 0 && (
+          <Label circular>{data.comments?.length}</Label>
+        )}
       </Header>
       {rootComments?.length ? (
         rootComments.map((c) => (

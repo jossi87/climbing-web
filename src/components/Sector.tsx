@@ -424,12 +424,12 @@ const Sector = () => {
                     ? problemsOfType.length
                     : problemsOfType.length + " (" + numTicked + " ticked)";
                 return (
-                  <Label key={[header, txt].join("/")} basic size="small">
+                  <Label key={[header, txt].join("/")} basic>
                     {header}:<Label.Detail>{txt}</Label.Detail>
                   </Label>
                 );
               })}
-              <Label basic size="small">
+              <Label basic>
                 Page views:
                 <Label.Detail>{data.hits}</Label.Detail>
               </Label>
@@ -447,7 +447,9 @@ const Sector = () => {
           )}
           {data.approach?.coordinates?.length > 1 && (
             <Table.Row verticalAlign="top">
-              <Table.Cell>Approach:</Table.Cell>
+              <Table.Cell>
+                Approach ({data.approach.coordinates[0].elevationSource}):
+              </Table.Cell>
               <Table.Cell>
                 <ApproachProfile approach={data.approach} />
               </Table.Cell>

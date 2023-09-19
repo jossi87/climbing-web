@@ -494,12 +494,12 @@ const Area = () => {
           <Table.Row verticalAlign="top">
             <Table.Cell width={3}>Info:</Table.Cell>
             <Table.Cell>
-              <Label basic size="small">
+              <Label basic>
                 Sectors:
                 <Label.Detail>{data.sectors.length}</Label.Detail>
               </Label>
               {data.typeNumTicked.map((t) => (
-                <Label key={t.type} basic size="small">
+                <Label key={t.type} basic>
                   {t.type}:
                   <Label.Detail>
                     {t.num}
@@ -507,7 +507,7 @@ const Area = () => {
                   </Label.Detail>
                 </Label>
               ))}
-              <Label basic size="small">
+              <Label basic>
                 Page views:
                 <Label.Detail>{data.hits}</Label.Detail>
               </Label>
