@@ -30,9 +30,11 @@ export const SvgViewer = ({
   let scale = 1;
   if (m.width > outerWidth || m.height > outerHeight) {
     scale = Math.max(
-      Math.max(m.width, window.outerWidth) / 1920,
-      Math.max(m.height, window.outerHeight) / 1080,
+      Math.max(m.width, outerWidth) / 1920,
+      Math.max(m.height, outerHeight) / 1080,
     );
+  } else {
+    scale = Math.max(m.width / 1920, m.height / 1080);
   }
   const mediaSvgs =
     m.mediaSvgs?.length > 0 &&
