@@ -460,32 +460,28 @@ export const Problem = () => {
               </Table.Cell>
             </Table.Row>
           )}
-          {data.sectorIdProblemPrev > 0 && (
+          {data.neighbourPrev && data.neighbourNext && (
             <Table.Row verticalAlign="top">
-              <Table.Cell>Jump:</Table.Cell>
+              <Table.Cell>Neighbours:</Table.Cell>
               <Table.Cell>
-                <Button.Group size="mini">
-                  <Button
-                    size="tiny"
-                    as={Link}
-                    to={`/problem/${data.sectorIdProblemPrev}`}
-                    icon
-                    labelPosition="left"
-                  >
-                    <Icon name="angle left" />
-                    Prev
-                  </Button>
-                  <Button
-                    size="tiny"
-                    as={Link}
-                    to={`/problem/${data.sectorIdProblemNext}`}
-                    icon
-                    labelPosition="right"
-                  >
-                    <Icon name="angle right" />
-                    Next
-                  </Button>
-                </Button.Group>
+                <Label as={Link} to={`/problem/${data.neighbourPrev.id}`} basic>
+                  #{data.neighbourPrev.nr}
+                  <Label.Detail>
+                    {data.neighbourPrev.name}{" "}
+                    <span style={{ fontWeight: "normal" }}>
+                      {data.neighbourPrev.grade}
+                    </span>
+                  </Label.Detail>
+                </Label>
+                <Label as={Link} to={`/problem/${data.neighbourNext.id}`} basic>
+                  #{data.neighbourNext.nr}
+                  <Label.Detail>
+                    {data.neighbourNext.name}{" "}
+                    <span style={{ fontWeight: "normal" }}>
+                      {data.neighbourNext.grade}
+                    </span>
+                  </Label.Detail>
+                </Label>
               </Table.Cell>
             </Table.Row>
           )}

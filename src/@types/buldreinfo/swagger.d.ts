@@ -673,10 +673,8 @@ export type components = {
       sectorOutline?: components["schemas"]["Coordinates"][];
       sectorWallDirection?: string;
       sectorApproach?: components["schemas"]["Approach"];
-      /** Format: int32 */
-      sectorIdProblemPrev?: number;
-      /** Format: int32 */
-      sectorIdProblemNext?: number;
+      neighbourPrev?: components["schemas"]["SectorProblem"];
+      neighbourNext?: components["schemas"]["SectorProblem"];
       canonical?: string;
       /** Format: int32 */
       id?: number;
