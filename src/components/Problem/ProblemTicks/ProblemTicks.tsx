@@ -12,7 +12,7 @@ type Props = {
 
 export const ProblemTicks = ({ ticks }: Props) => {
   return (
-    <Comment.Group as={Segment}>
+    <Comment.Group as={Segment} style={{ maxWidth: "100%" }}>
       <Header as="h3" dividing>
         Ticks
         {ticks?.length > 0 && <Label circular>{ticks.length}</Label>}

@@ -138,7 +138,7 @@ export const ProblemComments = ({
     );
 
   return (
-    <Comment.Group threaded as={Segment}>
+    <Comment.Group threaded as={Segment} style={{ maxWidth: "100%" }}>
       <Header as="h3" dividing>
         Comments
         {data.comments?.length > 0 && (

@@ -243,6 +243,38 @@ export const Problem = () => {
     return [0, 0];
   })();
 
+  let ticksComments;
+  if (data.ticks?.length > 0 && data.comments?.length > 0) {
+    ticksComments = (
+      <Grid>
+        {data.ticks?.length > 0 && (
+          <Grid.Column mobile={16} tablet={8} computer={8}>
+            <ProblemTicks ticks={data.ticks} />
+          </Grid.Column>
+        )}
+        {data.comments?.length > 0 && (
+          <Grid.Column mobile={16} tablet={8} computer={8}>
+            <ProblemComments
+              onShowCommentModal={setShowCommentModal}
+              problemId={+problemId}
+              showHiddenMedia={showHiddenMedia}
+            />
+          </Grid.Column>
+        )}
+      </Grid>
+    );
+  } else if (data.ticks?.length > 0) {
+    ticksComments = <ProblemTicks ticks={data.ticks} />;
+  } else if (data.comments?.length > 0) {
+    ticksComments = (
+      <ProblemComments
+        onShowCommentModal={setShowCommentModal}
+        problemId={+problemId}
+        showHiddenMedia={showHiddenMedia}
+      />
+    );
+  }
+
   return (
     <>
       <Helmet>
@@ -731,18 +763,7 @@ export const Problem = () => {
           )}
         </Table.Body>
       </Table>
-      <Grid>
-        <Grid.Column mobile={16} tablet={8} computer={8}>
-          <ProblemTicks ticks={data.ticks ?? []} />
-        </Grid.Column>
-        <Grid.Column mobile={16} tablet={8} computer={8}>
-          <ProblemComments
-            onShowCommentModal={setShowCommentModal}
-            problemId={+problemId}
-            showHiddenMedia={showHiddenMedia}
-          />
-        </Grid.Column>
-      </Grid>
+      {ticksComments}
     </>
   );
 };
