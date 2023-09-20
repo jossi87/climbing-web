@@ -105,7 +105,9 @@ const Frontpage = () => {
                         to={`/problem/${frontpage.randomMedia.idProblem}`}
                       >
                         {frontpage.randomMedia.problem}{" "}
-                        {frontpage.randomMedia.grade}
+                        <span style={{ fontWeight: "normal" }}>
+                          {frontpage.randomMedia.grade}
+                        </span>
                       </Card.Header>
                       <Card.Description>
                         <Link to={`/area/${frontpage.randomMedia.idArea}`}>
