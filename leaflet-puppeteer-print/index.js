@@ -15,7 +15,7 @@ async function start() {
   const browser = await puppeteer.launch({
     headless: "new",
     executablePath:
-      "/var/lib/jenkins/.cache/puppeteer/chrome/linux-1108766/chrome-linux/chrome",
+      "/var/lib/jenkins/.cache/puppeteer/chrome/linux-117.0.5938.88/chrome-linux64/chrome",
   }); // TODO Fix this, now referencing directly to chrome path with version...
   const page = await browser.newPage();
   await page.setViewport({
