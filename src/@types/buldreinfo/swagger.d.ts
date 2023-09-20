@@ -612,8 +612,8 @@ export type components = {
       climbing?: boolean;
       authenticated?: boolean;
       admin?: boolean;
-      ice?: boolean;
       superAdmin?: boolean;
+      ice?: boolean;
     };
     Site: {
       group?: string;
@@ -1061,6 +1061,7 @@ export type components = {
       picture?: string;
       /** Format: double */
       percentage?: number;
+      mine?: boolean;
     };
     Trash: {
       /** Format: int32 */

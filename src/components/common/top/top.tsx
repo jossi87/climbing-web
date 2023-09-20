@@ -17,7 +17,10 @@ const Top = ({ idArea, idSector }: TopProps) => {
   }
 
   const rows = top.map((t) => (
-    <Table.Row key={t.userId}>
+    <Table.Row
+      key={t.userId}
+      style={{ backgroundColor: t.mine ? "#d2f8d2" : "#ffffff" }}
+    >
       <Table.Cell>#{t.rank}</Table.Cell>
       <Table.Cell>
         <Header as="h4" image>
