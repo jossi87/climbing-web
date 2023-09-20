@@ -85,7 +85,7 @@ const ChartGradeDistribution = ({ idArea, idSector, data }: Props) => {
               <Table.Header>
                 <Table.Row>
                   <Table.HeaderCell>
-                    {idArea > 0 && idSector > 0 ? "Sector" : "Region"}
+                    {idArea > 0 || idSector > 0 ? "Sector" : "Region"}
                   </Table.HeaderCell>
                   {hasBoulder && <Table.HeaderCell>Boulder</Table.HeaderCell>}
                   {hasSport && <Table.HeaderCell>Sport</Table.HeaderCell>}
