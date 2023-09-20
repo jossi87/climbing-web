@@ -38,7 +38,7 @@ export default function Polylines({ opacity, approaches }: Props) {
       return (
         <Polyline
           key={a.approach.coordinates
-            .map((latlng) => latlng.toString())
+            .map((c) => c.latitude + "," + c.longitude)
             .join(" -> ")}
           color={color}
           weight={weight}
