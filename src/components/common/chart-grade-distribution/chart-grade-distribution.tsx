@@ -84,7 +84,9 @@ const ChartGradeDistribution = ({ idArea, idSector, data }: Props) => {
             <Table compact inverted unstackable>
               <Table.Header>
                 <Table.Row>
-                  <Table.HeaderCell>{idArea > 0 && idSector > 0? "Sector" : "Region"}</Table.HeaderCell>
+                  <Table.HeaderCell>
+                    {idArea > 0 && idSector > 0 ? "Sector" : "Region"}
+                  </Table.HeaderCell>
                   {hasBoulder && <Table.HeaderCell>Boulder</Table.HeaderCell>}
                   {hasSport && <Table.HeaderCell>Sport</Table.HeaderCell>}
                   {hasTrad && <Table.HeaderCell>Trad</Table.HeaderCell>}
