@@ -310,7 +310,8 @@ export type components = {
       accessClosed?: string;
       parking?: components["schemas"]["Coordinates"];
       outline?: components["schemas"]["Coordinates"][];
-      wallDirection?: string;
+      wallDirectionCalculated?: components["schemas"]["CompassDirection"];
+      wallDirectionManual?: components["schemas"]["CompassDirection"];
       approach?: components["schemas"]["Approach"];
       /** Format: int32 */
       randomMediaId?: number;
@@ -327,6 +328,11 @@ export type components = {
       name?: string;
       /** Format: int32 */
       sorting?: number;
+    };
+    CompassDirection: {
+      /** Format: int32 */
+      id?: number;
+      direction?: string;
     };
     Coordinates: {
       /** Format: int32 */
@@ -512,7 +518,8 @@ export type components = {
       id?: number;
       url?: string;
       name?: string;
-      wallDirection?: string;
+      wallDirectionCalculated?: components["schemas"]["CompassDirection"];
+      wallDirectionManual?: components["schemas"]["CompassDirection"];
       lockedAdmin?: boolean;
       lockedSuperadmin?: boolean;
       problems?: components["schemas"]["DangerousProblem"][];
@@ -608,6 +615,7 @@ export type components = {
       url?: string;
       types?: components["schemas"]["Type"][];
       sites?: components["schemas"]["Site"][];
+      compassDirections?: components["schemas"]["CompassDirection"][];
       bouldering?: boolean;
       climbing?: boolean;
       authenticated?: boolean;
@@ -671,7 +679,8 @@ export type components = {
       sectorAccessClosed?: string;
       sectorParking?: components["schemas"]["Coordinates"];
       sectorOutline?: components["schemas"]["Coordinates"][];
-      sectorWallDirection?: string;
+      sectorWallDirectionCalculated?: components["schemas"]["CompassDirection"];
+      sectorWallDirectionManual?: components["schemas"]["CompassDirection"];
       sectorApproach?: components["schemas"]["Approach"];
       neighbourPrev?: components["schemas"]["SectorProblem"];
       neighbourNext?: components["schemas"]["SectorProblem"];
@@ -814,7 +823,8 @@ export type components = {
       sorting?: number;
       parking?: components["schemas"]["Coordinates"];
       outline?: components["schemas"]["Coordinates"][];
-      wallDirection?: string;
+      wallDirectionCalculated?: components["schemas"]["CompassDirection"];
+      wallDirectionManual?: components["schemas"]["CompassDirection"];
       lockedAdmin?: boolean;
       lockedSuperadmin?: boolean;
       problems?: components["schemas"]["ProblemAreaProblem"][];
@@ -974,7 +984,8 @@ export type components = {
       accessClosed?: string;
       parking?: components["schemas"]["Coordinates"];
       outline?: components["schemas"]["Coordinates"][];
-      wallDirection?: string;
+      wallDirectionCalculated?: components["schemas"]["CompassDirection"];
+      wallDirectionManual?: components["schemas"]["CompassDirection"];
       approach?: components["schemas"]["Approach"];
       media?: components["schemas"]["Media"][];
       triviaMedia?: components["schemas"]["Media"][];

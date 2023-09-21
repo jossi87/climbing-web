@@ -30,7 +30,12 @@ export type Props = {
     sectors: (Required<
       Pick<
         components["schemas"]["Sector"],
-        "id" | "name" | "lockedAdmin" | "lockedSuperadmin" | "wallDirection"
+        | "id"
+        | "name"
+        | "lockedAdmin"
+        | "lockedSuperadmin"
+        | "wallDirectionCalculated"
+        | "wallDirectionManual"
       >
     > &
       Pick<
@@ -113,7 +118,10 @@ export const TableOfContents = ({ areas, header, subHeader }: Props) => {
                     lockedAdmin={sector.lockedAdmin}
                     lockedSuperadmin={sector.lockedSuperadmin}
                   />
-                  <WallDirection wallDirection={sector.wallDirection} />
+                  <WallDirection
+                    wallDirectionCalculated={sector.wallDirectionCalculated}
+                    wallDirectionManual={sector.wallDirectionManual}
+                  />
                 </List.Header>
                 <List.List>
                   {sector.problems.map((problem) => (

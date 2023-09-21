@@ -5,6 +5,7 @@ import { Loading } from "../common/widgets/widgets";
 import {
   Checkbox,
   Form,
+  Dropdown,
   Button,
   Input,
   TextArea,
@@ -69,6 +70,17 @@ export const SectorEdit = () => {
     setData((prevState) => ({ ...prevState, name: value }));
   }
 
+  function onWallDirectionManualIdChanged(_, { value }) {
+    const compassDirectionId = parseInt(value);
+    const wallDirectionManual =
+      compassDirectionId == 0
+        ? null
+        : meta.compassDirections.filter(
+            (cd) => cd.id === compassDirectionId,
+          )[0];
+    setData((prevState) => ({ ...prevState, wallDirectionManual }));
+  }
+
   function onLockedChanged({ lockedAdmin, lockedSuperadmin }) {
     setData((prevState) => ({
       ...prevState,
@@ -111,6 +123,7 @@ export const SectorEdit = () => {
         data.accessClosed,
         data.parking,
         data.outline,
+        data.wallDirectionManual,
         data.approach,
         data.newMedia,
         data.problemOrder,
@@ -300,6 +313,27 @@ export const SectorEdit = () => {
               onChange={onNameChanged}
               error={data.name ? false : "Sector name required"}
             />
+            {meta.isClimbing && (
+              <Form.Field
+                label="Wall direction"
+                control={Dropdown}
+                selection
+                value={data.wallDirectionManual?.id || 0}
+                onChange={onWallDirectionManualIdChanged}
+                options={[
+                  {
+                    key: 0,
+                    value: 0,
+                    text: data.wallDirectionCalculated
+                      ? `${data.wallDirectionCalculated.direction} (calculated from outline)`
+                      : "<calculate from outline>",
+                  },
+                  ...meta.compassDirections.map((cd) => {
+                    return { key: cd.id, value: cd.id, text: cd.direction };
+                  }),
+                ]}
+              />
+            )}
             <VisibilitySelectorField
               label="Visibility"
               selection

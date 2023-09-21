@@ -1,5 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { useQuery } from "@tanstack/react-query";
+import { components } from "../../../@types/buldreinfo/swagger";
 import React from "react";
 import {
   Segment,
@@ -177,22 +178,33 @@ type ConditionLabelsProps = {
   lat: number;
   lng: number;
   label: string;
-  wallDirection: string;
+  wallDirectionCalculated: components["schemas"]["CompassDirection"];
+  wallDirectionManual: components["schemas"]["CompassDirection"];
   sunFromHour: number;
   sunToHour: number;
 };
 
 export const WallDirection = ({
-  wallDirection,
-}: Pick<ConditionLabelsProps, "wallDirection">) => {
-  if (wallDirection) {
+  wallDirectionCalculated,
+  wallDirectionManual,
+}: Pick<
+  ConditionLabelsProps,
+  "wallDirectionCalculated" | "wallDirectionManual"
+>) => {
+  if (wallDirectionCalculated || wallDirectionManual) {
     return (
       <Popup
-        content="Calculated wall direction"
+        content={
+          wallDirectionManual
+            ? "Wall direction (manually set)"
+            : "Wall direction (calculated from outline)"
+        }
         trigger={
           <Label basic size="small">
             <Icon name="compass outline" />
-            {wallDirection}
+            {wallDirectionManual
+              ? wallDirectionManual.direction
+              : wallDirectionCalculated.direction}
           </Label>
         }
       />
@@ -359,7 +371,8 @@ export function ConditionLabels({
   lat,
   lng,
   label,
-  wallDirection,
+  wallDirectionCalculated,
+  wallDirectionManual,
   sunFromHour,
   sunToHour,
 }: ConditionLabelsProps) {
@@ -370,7 +383,10 @@ export function ConditionLabels({
   const times = SunCalc.getTimes(new Date(), lat, lng);
   return (
     <>
-      <WallDirection wallDirection={wallDirection} />
+      <WallDirection
+        wallDirectionCalculated={wallDirectionCalculated}
+        wallDirectionManual={wallDirectionManual}
+      />
       <SunOnWall sunFromHour={sunFromHour} sunToHour={sunToHour} />
       {times.sunrise != "Invalid Date" && (
         <Popup

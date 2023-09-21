@@ -330,7 +330,10 @@ const Area = () => {
                         lockedAdmin={sector.lockedAdmin}
                         lockedSuperadmin={sector.lockedSuperadmin}
                       />
-                      <WallDirection wallDirection={sector.wallDirection} />
+                      <WallDirection
+                        wallDirectionCalculated={sector.wallDirectionCalculated}
+                        wallDirectionManual={sector.wallDirectionManual}
+                      />
                     </Item.Header>
                     <Item.Extra>
                       {numTickedProblemsInArea > 0 &&
@@ -530,7 +533,8 @@ const Area = () => {
               lat={data.coordinates.latitude}
               lng={data.coordinates.longitude}
               label={data.name}
-              wallDirection={null}
+              wallDirectionCalculated={null}
+              wallDirectionManual={null}
               sunFromHour={data.sunFromHour}
               sunToHour={data.sunToHour}
             />

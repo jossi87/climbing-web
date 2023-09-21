@@ -16,18 +16,7 @@ export type State = {
   filterAreaIds: Record<number, true>;
   filterAreaOnlySunOnWallAt: number | undefined;
   filterAreaOnlyShadeOnWallAt: number | undefined;
-  filterSectorWallDirections:
-    | {
-        North: boolean;
-        Northeast: boolean;
-        East: boolean;
-        Southeast: boolean;
-        South: boolean;
-        Southwest: boolean;
-        West: boolean;
-        Northwest: boolean;
-      }
-    | undefined;
+  filterSectorWallDirections: Record<number, boolean> | undefined;
   filterGradeLow: string | undefined;
   filterGradeHigh: string | undefined;
   filterTypes: Record<number, boolean> | undefined;
@@ -178,10 +167,10 @@ const filter = (state: State): State => {
                   filterSectorWallDirections &&
                   Object.values(filterSectorWallDirections).some((v) => !!v)
                 ) {
-                  if (
-                    !sector.wallDirection ||
-                    !filterSectorWallDirections[sector.wallDirection]
-                  ) {
+                  const wallDirectionId =
+                    sector.wallDirectionManual?.id ||
+                    sector.wallDirectionCalculated?.id;
+                  if (!filterSectorWallDirections[wallDirectionId]) {
                     filteredOut.problems += 1;
                     return false;
                   }
@@ -546,7 +535,7 @@ const storageItems = {
     0,
   ),
   sectorWallDirections: itemLocalStorage(
-    "filter/sector-wall-direction",
+    "filter/sector-wall-directions",
     undefined,
   ),
   gradeHigh: itemLocalStorage("filter/grades/high", undefined),

@@ -53,7 +53,8 @@ type FilterSector = Pick<
   lockedAdmin: boolean;
   lockedSuperadmin: boolean;
   name: string;
-  wallDirection: string;
+  wallDirectionCalculated: components["schemas"]["CompassDirection"];
+  wallDirectionManual: components["schemas"]["CompassDirection"];
   lat?: number;
   lng?: number;
   problems: FilterProblem[];
@@ -133,7 +134,8 @@ export const Problems = ({ filterOpen }: Props) => {
       lat: sector.parking?.latitude,
       lng: sector.parking?.longitude,
       outline: sector.outline,
-      wallDirection: sector.wallDirection,
+      wallDirectionCalculated: sector.wallDirectionCalculated,
+      wallDirectionManual: sector.wallDirectionManual,
       problems: sector.problems.map((problem) => {
         const ascents =
           problem.numTicks > 0 &&

@@ -653,7 +653,8 @@ export const Problem = () => {
                   lat={lat}
                   lng={lng}
                   label={data.name}
-                  wallDirection={data.sectorWallDirection}
+                  wallDirectionCalculated={data.sectorWallDirectionCalculated}
+                  wallDirectionManual={data.sectorWallDirectionManual}
                   sunFromHour={data.areaSunFromHour}
                   sunToHour={data.areaSunToHour}
                 />

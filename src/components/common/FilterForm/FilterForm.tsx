@@ -38,49 +38,6 @@ const CLIMBING_OPTIONS = [
   },
 ] as const;
 
-const WALL_DIRECTIONS = [
-  {
-    key: "North",
-    value: "North",
-    text: "North",
-  },
-  {
-    key: "Northeast",
-    value: "Northeast",
-    text: "Northeast",
-  },
-  {
-    key: "East",
-    value: "East",
-    text: "East",
-  },
-  {
-    key: "Southeast",
-    value: "Southeast",
-    text: "Southeast",
-  },
-  {
-    key: "South",
-    value: "South",
-    text: "South",
-  },
-  {
-    key: "Southwest",
-    value: "Southwest",
-    text: "Southwest",
-  },
-  {
-    key: "West",
-    value: "West",
-    text: "West",
-  },
-  {
-    key: "Northwest",
-    value: "Northwest",
-    text: "Northwest",
-  },
-] as const;
-
 type GroupHeaderProps = {
   title: string;
   reset: ResetField;
@@ -207,6 +164,12 @@ export const FilterForm = () => {
   const disciplineOptions = meta.types
     .sort((a, b) => a.subType.localeCompare(b.subType, getLocales()))
     .map((t) => ({ key: t.id, value: t.id, text: t.subType }));
+
+  const compassDirectionOptions = meta.compassDirections.map((cd) => ({
+    key: cd.id,
+    value: cd.id,
+    text: cd.direction,
+  }));
 
   const hoursOptions = [
     { key: 0, text: "<disabled>", value: 0 },
@@ -349,7 +312,7 @@ export const FilterForm = () => {
           <GroupHeader title="Wall direction" reset="wall-directions" />
           <Form.Group inline>
             <Form.Field>
-              {WALL_DIRECTIONS.map((option) => (
+              {compassDirectionOptions.map((option) => (
                 <Checkbox
                   key={option.key}
                   label={option.text}

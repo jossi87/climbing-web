@@ -495,7 +495,8 @@ const Sector = () => {
                   lat={data.parking.latitude}
                   lng={data.parking.longitude}
                   label={data.name}
-                  wallDirection={data.wallDirection}
+                  wallDirectionCalculated={data.wallDirectionCalculated}
+                  wallDirectionManual={data.wallDirectionManual}
                   sunFromHour={data.areaSunFromHour}
                   sunToHour={data.areaSunToHour}
                 />

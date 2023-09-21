@@ -3,6 +3,11 @@ import { useData } from "../../../api";
 import { Helmet } from "react-helmet";
 import { components } from "../../../@types/buldreinfo/swagger";
 
+type CompassDirection = {
+  id: number;
+  direction: string;
+};
+
 type Grade = {
   id: number;
   grade: string;
@@ -35,6 +40,7 @@ type Metadata = {
   isIce: boolean;
   types: Type[];
   sites: Site[];
+  compassDirections: CompassDirection[];
 };
 
 const DEFAULT_VALUE: Metadata = {
@@ -53,6 +59,7 @@ const DEFAULT_VALUE: Metadata = {
   isIce: false,
   types: [],
   sites: [],
+  compassDirections: [],
 };
 
 export const MetaContext = createContext<Metadata | undefined>(undefined);
