@@ -428,7 +428,7 @@ export const Problem = () => {
           }
         />
       )}
-      <Tab panes={panes} />
+      {panes?.length > 0 && <Tab panes={panes} />}
       <Table definition unstackable>
         <Table.Body>
           {(data.areaAccessInfo ||
