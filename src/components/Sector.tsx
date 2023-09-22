@@ -180,7 +180,7 @@ const Sector = () => {
     }
     if (media && media.length > 0) {
       panes.push({
-        menuItem: { key: "topo", icon: "image" },
+        menuItem: { key: "media", icon: "image" },
         render: () => (
           <Tab.Pane>
             <Media
