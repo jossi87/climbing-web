@@ -168,7 +168,7 @@ export const SvgRoute = ({
   return (
     <g
       className={gClassName}
-      style={style}
+      style={{...style, filter: isHoveredOrActive ? "contrast(2)" : undefined}}
       onClick={() => {
         if (close && !thumbnail) {
           navigate("/problem/" + svg.problemId + "?idMedia=" + mediaId);
@@ -209,7 +209,6 @@ export const SvgRoute = ({
         }}
         fontSize={25 * scale * hoveredOrActiveScale * (thumbnail ? 3 : 1)}
         fontWeight={isHoveredOrActive ? "bolder" : "normal"}
-        textDecoration={isHoveredOrActive ? "underline" : "normal"}
         textAnchor="middle"
         dominantBaseline="central"
         x={x}
