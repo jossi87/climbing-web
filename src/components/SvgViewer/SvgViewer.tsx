@@ -26,7 +26,7 @@ export const SvgViewer = ({
   problemIdHovered,
   setProblemIdHovered,
 }: SvgProps) => {
-  const scale = Math.max(m.width / 1920, m.height / 1080);
+  const scale = Math.max(m.width / 1920, m.height / 1440);
   const mediaSvgs =
     m.mediaSvgs?.length > 0 &&
     m.mediaSvgs.map((svg) => {
