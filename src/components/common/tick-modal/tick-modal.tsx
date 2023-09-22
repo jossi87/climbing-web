@@ -100,11 +100,18 @@ const TickModal = ({
                 onChange={(e, data) => {
                   setGrade(String(data.value));
                 }}
-                options={grades.map((g, i) => ({
-                  key: i,
-                  text: g.grade,
-                  value: g.grade,
-                }))}
+                options={[
+                  {
+                    key: -1,
+                    text: <i>I don&apos;t want to grade</i>,
+                    value: "No personal grade",
+                  },
+                  ...grades.map((g, i) => ({
+                    key: i,
+                    text: g.grade,
+                    value: g.grade,
+                  })),
+                ]}
               />
             </Form.Field>
             <Form.Field>

@@ -1,6 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Comment, Segment, Header, Table, Label } from "semantic-ui-react";
+import {
+  Comment,
+  Segment,
+  Header,
+  Table,
+  Label,
+  Icon,
+} from "semantic-ui-react";
 import { Stars } from "../../common/widgets/widgets";
 import Linkify from "react-linkify";
 import { componentDecorator } from "../../../utils/componentDecorator";
@@ -70,7 +77,14 @@ export const ProblemTicks = ({ ticks }: Props) => {
                 <Comment.Metadata>{dt}</Comment.Metadata>
                 <Comment.Text>
                   <Stars numStars={t.stars} includeNoRating={true} />{" "}
-                  {t.suggestedGrade}
+                  {t.noPersonalGrade ? (
+                    <Label basic size="mini">
+                      <Icon name="x" />
+                      No personal grade
+                    </Label>
+                  ) : (
+                    t.suggestedGrade
+                  )}
                   <br />
                   <Linkify componentDecorator={componentDecorator}>
                     {com}

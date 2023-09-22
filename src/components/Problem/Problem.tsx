@@ -200,13 +200,18 @@ export const Problem = () => {
     const enableTickRepeats = meta.isIce || data.sections?.length > 0;
     const userTicks = data.ticks?.filter((t) => t.writable);
     if (userTicks && userTicks.length > 0) {
+      console.log(userTicks);
       return (
         <TickModal
           idTick={userTicks[0].id}
           idProblem={data.id}
           date={userTicks[0].date}
           comment={userTicks[0].comment}
-          grade={userTicks[0].suggestedGrade}
+          grade={
+            userTicks[0].noPersonalGrade
+              ? "No personal grade"
+              : userTicks[0].suggestedGrade
+          }
           grades={meta.grades}
           stars={userTicks[0].stars}
           repeats={userTicks[0].repeats}

@@ -451,9 +451,17 @@ const Activity = ({ idArea, idSector }: Props) => {
                     {a.description && (
                       <Feed.Extra text>{a.description}</Feed.Extra>
                     )}
-                    {a.stars != 0 && (
+                    {(a.noPersonalGrade || a.stars != 0) && (
                       <Feed.Meta>
-                        <Stars numStars={a.stars} includeNoRating={true} />
+                        {a.noPersonalGrade && (
+                          <Label basic size="mini">
+                            <Icon name="x" />
+                            No personal grade
+                          </Label>
+                        )}
+                        {a.stars != 0 && (
+                          <Stars numStars={a.stars} includeNoRating={true} />
+                        )}
                       </Feed.Meta>
                     )}
                   </Feed.Content>

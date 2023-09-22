@@ -46,6 +46,12 @@ const TickListItem = ({ tick }: TickListItemProps) => (
         /
       </small>{" "}
       <Link to={`/problem/${tick.idProblem}`}>{tick.name}</Link> {tick.grade}
+      {tick.noPersonalGrade && (
+        <Label basic size="mini">
+          <Icon name="x" />
+          No personal grade
+        </Label>
+      )}
       <LockSymbol
         lockedAdmin={tick.lockedAdmin}
         lockedSuperadmin={tick.lockedSuperadmin}

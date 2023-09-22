@@ -214,6 +214,7 @@ export type components = {
       problemName?: string;
       problemSubtype?: string;
       grade?: string;
+      noPersonalGrade?: boolean;
       /** Format: int32 */
       problemRandomMediaId?: number;
       /** Format: int32 */
@@ -758,6 +759,7 @@ export type components = {
       date?: string;
       name?: string;
       suggestedGrade?: string;
+      noPersonalGrade?: boolean;
       comment?: string;
       /** Format: double */
       stars?: number;
@@ -886,6 +888,7 @@ export type components = {
       grade?: string;
       /** Format: int32 */
       gradeNumber?: number;
+      noPersonalGrade?: boolean;
       coordinates?: components["schemas"]["Coordinates"];
     };
     ProfileTodo: {
