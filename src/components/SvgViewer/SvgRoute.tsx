@@ -168,7 +168,10 @@ export const SvgRoute = ({
   return (
     <g
       className={gClassName}
-      style={{...style, filter: isHoveredOrActive ? "contrast(2)" : undefined}}
+      style={{
+        ...style,
+        filter: isHoveredOrActive ? "contrast(2)" : undefined,
+      }}
       onClick={() => {
         if (close && !thumbnail) {
           navigate("/problem/" + svg.problemId + "?idMedia=" + mediaId);
