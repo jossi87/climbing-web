@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { DATA_MUTATION_EVENT } from "../components/DataReloader";
 import { FetchOptions } from "./types";
 import fetch from "isomorphic-fetch";
+import { captureMessage } from "@sentry/react";
+import { saveAs } from "file-saver";
 
 export function getLocales() {
   return "nb-NO";
@@ -154,5 +156,50 @@ export function makeAuthenticatedRequest(
       );
     }
     return res;
+  });
+}
+
+export function downloadXlsx(accessToken: string, url: string) {
+  return makeAuthenticatedRequest(accessToken, url, {
+    // @ts-expect-error - I don't think that this is necessary, but I'm going
+    //                    to investigate this later.
+    expose: ["Content-Disposition"],
+  }).then((response) => {
+    const contentDisposition = response.headers.get("content-disposition");
+    if (!contentDisposition) {
+      captureMessage("No content-disposition header", {
+        extra: {
+          url,
+          contentDisposition,
+        },
+      });
+      return;
+    }
+
+    const match = /^attachment;[\s]*filename="([^"]+)"$/.exec(
+      contentDisposition,
+    );
+    if (!match) {
+      captureMessage("Unable to get filename", {
+        extra: {
+          url,
+          contentDisposition,
+        },
+      });
+      return;
+    }
+
+    const [_, filename] = match;
+    if (!filename) {
+      captureMessage("No filename", {
+        extra: {
+          url,
+          contentDisposition,
+        },
+      });
+      return;
+    }
+
+    return response.blob().then((blob) => saveAs(blob, filename));
   });
 }

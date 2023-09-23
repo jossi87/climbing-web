@@ -1,7 +1,7 @@
 export * from "./hooks";
 
 export {
-  getProblemsXlsx,
+  downloadProblemsXlsx,
   deleteMedia,
   moveMedia,
   getElevation,
@@ -9,7 +9,7 @@ export {
   getPermissions,
   getSvgEdit,
   getUserSearch,
-  getUsersTicks,
+  downloadUsersTicks,
   postComment,
   postPermissions,
   postProblem,

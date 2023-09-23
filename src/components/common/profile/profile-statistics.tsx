@@ -15,11 +15,10 @@ import {
 } from "semantic-ui-react";
 import {
   numberWithCommas,
-  getUsersTicks,
+  downloadUsersTicks,
   useAccessToken,
   useProfileStatistics,
 } from "../../../api";
-import { saveAs } from "file-saver";
 import { useMeta } from "../meta";
 import * as Sentry from "@sentry/react";
 import { components } from "../../../@types/buldreinfo/swagger";
@@ -131,18 +130,9 @@ const ProfileStatistics = ({ userId, canDownload }: ProfileStatisticsProps) => {
             loading={isSaving}
             onClick={() => {
               setIsSaving(true);
-              let filename = "ticks.xlsx";
-              getUsersTicks(accessToken)
-                .then((response) => {
-                  filename = response.headers
-                    .get("content-disposition")
-                    .slice(22, -1);
-                  return response.blob();
-                })
-                .then((blob) => {
-                  setIsSaving(false);
-                  saveAs(blob, filename);
-                });
+              downloadUsersTicks(accessToken).finally(() => {
+                setIsSaving(false);
+              });
             }}
           />
         )}
