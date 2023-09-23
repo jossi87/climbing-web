@@ -3,6 +3,7 @@
  * Do not make direct changes to the file.
  */
 
+
 export type paths = {
   "/v2/media": {
     /** Get Media by id */
@@ -1116,9 +1117,7 @@ export type components = {
       providers?: components["schemas"]["Providers"];
       parameterizedHeaders?: {
         empty?: boolean;
-        [key: string]:
-          | components["schemas"]["ParameterizedHeader"][]
-          | undefined;
+        [key: string]: components["schemas"]["ParameterizedHeader"][] | undefined;
       };
     };
     ContentDisposition: {
@@ -1155,9 +1154,7 @@ export type components = {
       simple?: boolean;
       parameterizedHeaders?: {
         empty?: boolean;
-        [key: string]:
-          | components["schemas"]["ParameterizedHeader"][]
-          | undefined;
+        [key: string]: components["schemas"]["ParameterizedHeader"][] | undefined;
       };
     };
     FormDataContentDisposition: {
@@ -1193,9 +1190,7 @@ export type components = {
       };
       parameterizedHeaders?: {
         empty?: boolean;
-        [key: string]:
-          | components["schemas"]["ParameterizedHeader"][]
-          | undefined;
+        [key: string]: components["schemas"]["ParameterizedHeader"][] | undefined;
       };
     };
     MediaType: {
@@ -1222,9 +1217,7 @@ export type components = {
       bodyParts?: components["schemas"]["BodyPart"][];
       parameterizedHeaders?: {
         empty?: boolean;
-        [key: string]:
-          | components["schemas"]["ParameterizedHeader"][]
-          | undefined;
+        [key: string]: components["schemas"]["ParameterizedHeader"][] | undefined;
       };
     };
     MultivaluedMapStringParameterizedHeader: {
@@ -1292,6 +1285,7 @@ export type $defs = Record<string, never>;
 export type external = Record<string, never>;
 
 export type operations = {
+
   /** Get Media by id */
   getMedia: {
     parameters: {

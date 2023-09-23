@@ -10,8 +10,7 @@ import {
 } from "semantic-ui-react";
 import { Loading } from "../common/widgets/widgets";
 import { useMeta } from "../common/meta";
-import { getProblemsXlsx, useAccessToken, useProblems } from "../../api";
-import { saveAs } from "file-saver";
+import { downloadProblemsXlsx, useAccessToken, useProblems } from "../../api";
 import TableOfContents from "../common/TableOfContents";
 import { useFilterState } from "./reducer";
 import { FilterContext, FilterForm } from "../common/FilterForm";
@@ -208,18 +207,9 @@ export const Problems = ({ filterOpen }: Props) => {
                 labelPosition="left"
                 onClick={() => {
                   setIsSaving(true);
-                  let filename = "problems.xlsx";
-                  getProblemsXlsx(accessToken)
-                    .then((response) => {
-                      filename = response.headers
-                        .get("content-disposition")
-                        .slice(22, -1);
-                      return response.blob();
-                    })
-                    .then((blob) => {
-                      setIsSaving(false);
-                      saveAs(blob, filename);
-                    });
+                  downloadProblemsXlsx(accessToken).finally(() => {
+                    setIsSaving(false);
+                  });
                 }}
               >
                 <Icon name="file excel" />

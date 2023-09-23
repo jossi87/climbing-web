@@ -1,22 +1,15 @@
 import { Success } from "../@types/buldreinfo";
 import { components, operations } from "../@types/buldreinfo/swagger";
-import { makeAuthenticatedRequest } from "./utils";
+import { downloadXlsx, makeAuthenticatedRequest } from "./utils";
 
-export function getProblemsXlsx(accessToken: string | null): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/problems/xlsx`, {
-    // @ts-expect-error - I don't think that this is necessary, but I'm going
-    //                    to investigate this later.
-    expose: ["Content-Disposition"],
-  }).catch((error) => {
-    console.warn(error);
-    return null;
-  });
+export function downloadProblemsXlsx(accessToken: string | null) {
+  return downloadXlsx(accessToken, "/problems/xlsx");
 }
 
 export function deleteMedia(
   accessToken: string | null,
   id: number,
-): Promise<any> {
+): Promise<Success<"deleteMedia">> {
   return makeAuthenticatedRequest(accessToken, `/media?id=${id}`, {
     method: "DELETE",
   });
@@ -28,7 +21,7 @@ export function moveMedia(
   left: boolean,
   toIdSector: number,
   toIdProblem: number,
-): Promise<any> {
+): Promise<Success<"putMedia">> {
   return makeAuthenticatedRequest(
     accessToken,
     `/media?id=${id}&left=${left}&toIdSector=${toIdSector}&toIdProblem=${toIdProblem}`,
@@ -179,15 +172,8 @@ export function getUserSearch(
     });
 }
 
-export function getUsersTicks(accessToken: string | null): Promise<any> {
-  return makeAuthenticatedRequest(accessToken, `/users/ticks`, {
-    // @ts-expect-error - I don't think that this is necessary, but I'm going
-    //                    to investigate this later.
-    expose: ["Content-Disposition"],
-  }).catch((error) => {
-    console.warn(error);
-    return null;
-  });
+export function downloadUsersTicks(accessToken: string | null) {
+  return downloadXlsx(accessToken, `/users/ticks`);
 }
 
 export function postComment(
@@ -250,7 +236,7 @@ export function postPermissions(
   adminWrite: boolean,
   superadminRead: boolean,
   superadminWrite: boolean,
-): Promise<any> {
+): Promise<Success<"postPermissions">> {
   return makeAuthenticatedRequest(accessToken, `/permissions`, {
     method: "POST",
     body: JSON.stringify({
@@ -291,7 +277,7 @@ export function postProblem(
   aspect: string,
   routeLength: string,
   descent: string,
-): Promise<any> {
+): Promise<Success<"postProblems">> {
   const formData = new FormData();
   const newMedia = media.map((m) => {
     return {
@@ -357,7 +343,7 @@ export function postProblemMedia(
   accessToken: string | null,
   id: number,
   media: any,
-): Promise<any> {
+): Promise<Success<"postProblemsMedia">> {
   const formData = new FormData();
   const newMedia = media.map((m) => {
     return {
@@ -402,7 +388,7 @@ export function postProblemSvg(
   hasAnchor: boolean,
   anchors: string,
   texts: string,
-): Promise<any> {
+): Promise<Success<"postProblemsSvg">> {
   return makeAuthenticatedRequest(
     accessToken,
     `/problems/svg?problemId=${problemId}&mediaId=${mediaId}`,
@@ -441,7 +427,7 @@ export function postSector(
   approach: components["schemas"]["Approach"],
   media: any,
   problemOrder: any,
-): Promise<any> {
+): Promise<Success<"postSectors">> {
   const formData = new FormData();
   const newMedia = media.map((m) => {
     return {
@@ -504,7 +490,7 @@ export function postTicks(
   stars: number,
   grade: string,
   repeats: any,
-): Promise<any> {
+): Promise<Success<"postTicks">> {
   return makeAuthenticatedRequest(accessToken, `/ticks`, {
     method: "POST",
     body: JSON.stringify({
@@ -527,7 +513,7 @@ export function postUserRegion(
   accessToken: string | null,
   regionId: number,
   del: boolean,
-): Promise<any> {
+): Promise<Success<"postUserRegions">> {
   return makeAuthenticatedRequest(
     accessToken,
     `/user/regions?regionId=${regionId}&delete=${del}`,
@@ -543,7 +529,7 @@ export function putMediaInfo(
   description: string,
   pitch: number,
   trivia: boolean,
-): Promise<any> {
+): Promise<Success<"putMediaInfo">> {
   return makeAuthenticatedRequest(accessToken, `/media/info`, {
     method: "PUT",
     body: JSON.stringify({ mediaId, description, pitch, trivia }),
