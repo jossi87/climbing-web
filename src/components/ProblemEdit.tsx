@@ -19,12 +19,12 @@ import {
 import Leaflet from "./common/leaflet/leaflet";
 import { useMeta } from "./common/meta";
 import {
-  getProblemEdit,
   convertFromDateToString,
   convertFromStringToDate,
   postProblem,
-  getSector,
   useAccessToken,
+  useSector,
+  useProblem,
 } from "../api";
 import { Loading } from "./common/widgets/widgets";
 import { useNavigate, useParams } from "react-router-dom";
@@ -32,6 +32,9 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { VisibilitySelectorField } from "./common/VisibilitySelector";
 import { useQueryClient } from "@tanstack/react-query";
+import { components } from "../@types/buldreinfo/swagger";
+
+type Problem = components["schemas"]["Problem"];
 
 const useIds = (): { sectorId: number; problemId: number } => {
   const { sectorId, problemId } = useParams();
@@ -42,31 +45,65 @@ const ProblemEdit = () => {
   const client = useQueryClient();
   const accessToken = useAccessToken();
   const { sectorId, problemId } = useIds();
-  const [data, setData] = useState<any>(null);
-  const [sector, setSector] = useState(null);
+
+  const [data, setData] = useState<Problem>(null);
+  const { data: sector, status: sectorStatus } = useSector(sectorId);
+  const {
+    data: problem,
+    status: problemStatus,
+    error,
+  } = useProblem(problemId, true);
+
   const [showSectorMarkers, setShowSectorMarkers] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
   const navigate = useNavigate();
   const meta = useMeta();
-  useEffect(() => {
-    if (accessToken) {
-      getProblemEdit(accessToken, sectorId, problemId)
-        .then((data) => setData(data))
-        .then(() =>
-          getSector(accessToken, sectorId).then((data) => {
-            setSector(data);
-          }),
-        )
-        .catch((e) => setError(String(e)));
-    }
-  }, [accessToken, problemId, sectorId]);
 
-  function onNameChanged(e, { value }) {
+  useEffect(() => {
+    if (sectorStatus === "success" && problemId <= 0) {
+      setData({
+        id: -1,
+        areaId: sector.areaId,
+        sectorId: sector.id,
+        broken: null,
+        lockedAdmin: sector.lockedAdmin,
+        lockedSuperadmin: sector.lockedSuperadmin,
+        name: "",
+        comment: "",
+        rock: null,
+        originalGrade: "n/a",
+        fa: [],
+        faDate: convertFromDateToString(new Date()),
+        nr: 0,
+        coordinates: null,
+        trivia: "",
+        startingAltitude: "",
+        aspect: "",
+        routeLength: "",
+        descent: "",
+        newMedia: [],
+      });
+    }
+  }, [
+    problemId,
+    sector?.areaId,
+    sector?.id,
+    sector?.lockedAdmin,
+    sector?.lockedSuperadmin,
+    sectorStatus,
+  ]);
+
+  useEffect(() => {
+    if (problemStatus === "success") {
+      setData(problem);
+    }
+  }, [problem, problemStatus]);
+
+  function onNameChanged(_, { value }) {
     setData((prevState) => ({ ...prevState, name: value }));
   }
 
-  function onNrChanged(e, { value }) {
+  function onNrChanged(_, { value }) {
     setData((prevState) => ({ ...prevState, nr: value }));
   }
 
@@ -102,7 +139,7 @@ const ProblemEdit = () => {
     setData((prevState) => ({ ...prevState, rock }));
   }
 
-  function onCommentChanged(e, { value }) {
+  function onCommentChanged(_, { value }) {
     setData((prevState) => ({ ...prevState, comment: value }));
   }
 
@@ -111,13 +148,18 @@ const ProblemEdit = () => {
     setData((prevState) => ({ ...prevState, faDate }));
   }
 
-  function onOriginalGradeChanged(e, { value }) {
+  function onOriginalGradeChanged(_, { value }) {
     setData((prevState) => ({ ...prevState, originalGrade: value }));
   }
 
-  function onTypeIdChanged(e, { value }) {
-    const typeId = parseInt(value);
-    setData((prevState) => ({ ...prevState, typeId }));
+  function onTypeIdChanged(_, { value }) {
+    setData((prevState) => ({
+      ...prevState,
+      t: {
+        ...prevState.t,
+        id: +value,
+      },
+    }));
   }
 
   const onNewMediaChanged = useCallback((newMedia) => {
@@ -131,7 +173,7 @@ const ProblemEdit = () => {
     setData((prevState) => ({ ...prevState, faAid }));
   }
 
-  function onFaAidDescriptionChanged(e, { value }) {
+  function onFaAidDescriptionChanged(_, { value }) {
     const faAid = data.faAid;
     faAid.description = value;
     setData((prevState) => ({ ...prevState, faAid }));
@@ -156,27 +198,27 @@ const ProblemEdit = () => {
     }));
   }, []);
 
-  function onBrokenChanged(e, { value }) {
+  function onBrokenChanged(_, { value }) {
     setData((prevState) => ({ ...prevState, broken: value }));
   }
 
-  function onTriviaChanged(e, { value }) {
+  function onTriviaChanged(_, { value }) {
     setData((prevState) => ({ ...prevState, trivia: value }));
   }
 
-  function onStartingAltitudeChanged(e, { value }) {
+  function onStartingAltitudeChanged(_, { value }) {
     setData((prevState) => ({ ...prevState, startingAltitude: value }));
   }
 
-  function onAspectChanged(e, { value }) {
+  function onAspectChanged(_, { value }) {
     setData((prevState) => ({ ...prevState, aspect: value }));
   }
 
-  function onRouteLengthChanged(e, { value }) {
+  function onRouteLengthChanged(_, { value }) {
     setData((prevState) => ({ ...prevState, routeLength: value }));
   }
 
-  function onDescentChanged(e, { value }) {
+  function onDescentChanged(_, { value }) {
     setData((prevState) => ({ ...prevState, descent: value }));
   }
 
@@ -214,8 +256,8 @@ const ProblemEdit = () => {
         data.fa,
         data.faDate,
         data.nr,
-        data.typeId
-          ? meta.types.find((t) => t.id === data.typeId)
+        data.t?.id
+          ? meta.types.find((t) => t.id === data.t?.id) || meta.types[0]
           : meta.types[0],
         data.coordinates,
         data.sections,
@@ -357,7 +399,10 @@ const ProblemEdit = () => {
             <VisibilitySelectorField
               label="Visibility"
               selection
-              value={data}
+              value={{
+                lockedAdmin: data.lockedAdmin,
+                lockedSuperadmin: data.lockedSuperadmin,
+              }}
               onChange={onLockedChanged}
             />
             <Form.Field
@@ -505,13 +550,13 @@ const ProblemEdit = () => {
               label="Type"
               control={Dropdown}
               selection
-              value={data.typeId}
+              value={data.t?.id}
               onChange={onTypeIdChanged}
               options={meta.types.map((t, i) => {
                 const text = t.type + (t.subType ? " - " + t.subType : "");
                 return { key: i, value: t.id, text: text };
               })}
-              error={data.typeId ? false : "Type required"}
+              error={data.t?.id ? false : "Type required"}
             />
             <Form.Field>
               <label>First AID ascent?</label>
@@ -616,7 +661,7 @@ const ProblemEdit = () => {
               <Checkbox
                 toggle
                 checked={showSectorMarkers}
-                onChange={(e, d) => {
+                onChange={(_, d) => {
                   if (d.checked) {
                     setShowSectorMarkers(true);
                   } else {
@@ -646,7 +691,7 @@ const ProblemEdit = () => {
             positive
             loading={saving}
             onClick={(event) => save(event, false)}
-            disabled={!data.name || (meta.types.length > 1 && !data.typeId)}
+            disabled={!data.name || (meta.types.length > 1 && !data.t?.id)}
           >
             Save
           </Button>
@@ -657,7 +702,7 @@ const ProblemEdit = () => {
                 positive
                 loading={saving}
                 onClick={(event) => save(event, true)}
-                disabled={!data.name || (meta.types.length > 1 && !data.typeId)}
+                disabled={!data.name || (meta.types.length > 1 && !data.t?.id)}
               >
                 Save, and add new
               </Button>

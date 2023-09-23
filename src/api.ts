@@ -368,27 +368,6 @@ export function useArea(id: number) {
   );
 }
 
-export function getArea(
-  accessToken: string | null,
-  id: number,
-): Promise<Success<"getAreas">> {
-  return makeAuthenticatedRequest(accessToken, `/areas?id=${id}`)
-    .then((response) => {
-      if (response.status === 500) {
-        return Promise.reject(
-          "Cannot find the specified area because it does not exist or you do not have sufficient permissions.",
-        );
-      }
-      return response.json();
-    })
-    .then((data) => {
-      if (data.redirectUrl && data.redirectUrl != window.location.href) {
-        window.location.href = data.redirectUrl;
-      }
-      return data;
-    });
-}
-
 export function getElevation(
   accessToken: string | null,
   latitude: number,
@@ -449,6 +428,7 @@ export function useProblem(id: number, showHiddenMedia: boolean) {
   const problem = useData<Success<"getProblem">>(
     `/problem?id=${id}&showHiddenMedia=${showHiddenMedia}`,
     {
+      enabled: id > 0,
       queryKey: [`/problem`, { id, showHiddenMedia }],
     },
   );
@@ -491,103 +471,6 @@ export function useProblem(id: number, showHiddenMedia: boolean) {
   });
 
   return { ...problem, toggleTodo: toggleTodo.mutateAsync };
-}
-
-export function getProblem(
-  accessToken: string | null,
-  id: number,
-  showHiddenMedia: boolean,
-): Promise<any> {
-  return makeAuthenticatedRequest(
-    accessToken,
-    `/problem?id=${id}&showHiddenMedia=${showHiddenMedia}`,
-    null,
-  )
-    .then((response) => {
-      if (response.status === 500) {
-        return Promise.reject(
-          "Cannot find the specified problem because it does not exist or you do not have sufficient permissions.",
-        );
-      }
-      return response.json();
-    })
-    .then((data) => {
-      if (data.redirectUrl && data.redirectUrl != window.location.href) {
-        window.location.href = data.redirectUrl;
-      }
-      return data;
-    });
-}
-
-export function getProblemEdit(
-  accessToken: string | null,
-  sectorId: number,
-  problemId: number,
-): Promise<any> {
-  if (!problemId) {
-    return getSector(accessToken, sectorId)
-      .then((res) => {
-        return {
-          id: -1,
-          areaId: res.areaId,
-          sectorId: res.id,
-          broken: null,
-          lockedAdmin: res.lockedAdmin,
-          lockedSuperadmin: res.lockedSuperadmin,
-          name: "",
-          comment: "",
-          rock: null,
-          originalGrade: "n/a",
-          fa: [],
-          faDate: convertFromDateToString(new Date()),
-          nr: 0,
-          coordinates: null,
-          trivia: "",
-          startingAltitude: "",
-          aspect: "",
-          routeLength: "",
-          descent: "",
-          newMedia: [],
-        };
-      })
-      .catch((error) => {
-        console.warn(error);
-        return null;
-      });
-  } else {
-    return getProblem(accessToken, problemId, false)
-      .then((res) => {
-        return {
-          id: res.id,
-          areaId: res.areaId,
-          sectorId: res.sectorId,
-          broken: res.broken,
-          lockedAdmin: res.lockedAdmin,
-          lockedSuperadmin: res.lockedSuperadmin,
-          name: res.name,
-          rock: res.rock,
-          comment: res.comment,
-          originalGrade: res.originalGrade,
-          fa: res.fa,
-          faDate: res.faDate,
-          nr: res.nr,
-          typeId: res.t.id,
-          coordinates: res.coordinates,
-          sections: res.sections,
-          faAid: res.faAid,
-          newMedia: [],
-          trivia: res.trivia,
-          startingAltitude: res.startingAltitude,
-          aspect: res.aspect,
-          routeLength: res.routeLength,
-          descent: res.descent,
-        };
-      })
-      .catch((error) => {
-        console.warn(error);
-        return null;
-      });
-  }
 }
 
 export function useProfile(userId: number = -1) {
@@ -704,81 +587,6 @@ export function useSector(id: number | undefined) {
     enabled: !!id && id > 0,
     queryKey: [`/sectors`, { id }],
   });
-}
-
-export function getSector(
-  accessToken: string | null,
-  id: number,
-): Promise<Success<"getSectors">> {
-  return makeAuthenticatedRequest(accessToken, `/sectors?id=${id}`)
-    .then((response) => {
-      if (response.status === 500) {
-        return Promise.reject(
-          "Cannot find the specified sector because it does not exist or you do not have sufficient permissions.",
-        );
-      }
-      return response.json();
-    })
-    .then((data) => {
-      if (data.redirectUrl && data.redirectUrl != window.location.href) {
-        window.location.href = data.redirectUrl;
-      }
-      return data;
-    });
-}
-
-export function getSectorEdit(
-  accessToken: string | null,
-  areaId: number,
-  sectorId: number,
-): Promise<Success<"getSectors"> | null> {
-  if (!sectorId) {
-    return getArea(accessToken, areaId)
-      .then((res) => {
-        return {
-          areaId: res[0].id,
-          id: -1,
-          lockedAdmin: res[0].lockedAdmin,
-          lockedSuperadmin: res[0].lockedSuperadmin,
-          name: "",
-          comment: "",
-          accessInfo: "",
-          accessClosed: "",
-          parking: null,
-          newMedia: [],
-          problemOrder: [],
-        };
-      })
-      .catch((error) => {
-        console.warn(error);
-        return null;
-      });
-  } else {
-    return getSector(accessToken, sectorId)
-      .then((res) => {
-        return {
-          id: res.id,
-          areaId: res.areaId,
-          lockedAdmin: res.lockedAdmin,
-          lockedSuperadmin: res.lockedSuperadmin,
-          name: res.name,
-          comment: res.comment,
-          accessInfo: res.accessInfo,
-          accessClosed: res.accessClosed,
-          parking: res.parking,
-          outline: res.outline,
-          wallDirectionCalculated: res.wallDirectionCalculated,
-          wallDirectionManual: res.wallDirectionManual,
-          approach: res.approach,
-          newMedia: [],
-          problemOrder: res.problemOrder,
-        };
-      })
-      .catch((error) => {
-        console.warn(error);
-        return null;
-      });
-  }
 }
 
 export function getSvgEdit(
@@ -1019,8 +827,8 @@ export function postProblem(
   id: number,
   broken: string,
   trash: boolean,
-  lockedAdmin: number,
-  lockedSuperadmin: number,
+  lockedAdmin: boolean,
+  lockedSuperadmin: boolean,
   name: string,
   rock: string,
   comment: string,
