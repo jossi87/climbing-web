@@ -1,35 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import ImageUpload from "./common/image-upload/image-upload";
 import { useAuth0 } from "@auth0/auth0-react";
-import { getProblem, postProblemMedia } from "../api";
+import { postProblemMedia, useProblem } from "../api";
 import { Loading } from "./common/widgets/widgets";
 import { Segment, Button } from "semantic-ui-react";
 import { useNavigate, useParams } from "react-router-dom";
 
 const ProblemEditMedia = () => {
-  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const [id, setId] = useState<any>(null);
-  const [isMultiPitch, setIsMultiPitch] = useState(false);
+  const { getAccessTokenSilently } = useAuth0();
   const [media, setMedia] = useState<any>(null);
   const [saving, setSaving] = useState(false);
   const { problemId } = useParams();
   const navigate = useNavigate();
-  useEffect(() => {
-    if (problemId && isAuthenticated) {
-      getAccessTokenSilently().then((accessToken) => {
-        getProblem(accessToken, parseInt(problemId), false).then((data) => {
-          setId(data.id);
-          setIsMultiPitch(data.sections && data.sections.length > 1);
-        });
-      });
-    }
-  }, [getAccessTokenSilently, isAuthenticated, problemId]);
+
+  const { data: problem, isLoading } = useProblem(+(problemId || "-1"), false);
 
   function save(event) {
     event.preventDefault();
     setSaving(true);
     getAccessTokenSilently().then((accessToken) => {
-      postProblemMedia(accessToken, id, media)
+      postProblemMedia(accessToken, +problemId, media)
         .then(async (res) => {
           navigate(`/problem/${res.id}`);
         })
@@ -39,7 +29,7 @@ const ProblemEditMedia = () => {
     });
   }
 
-  if (!id) {
+  if (isLoading) {
     return <Loading />;
   }
 
@@ -50,13 +40,15 @@ const ProblemEditMedia = () => {
         <form onSubmit={save}>
           <ImageUpload
             onMediaChanged={setMedia}
-            isMultiPitch={isMultiPitch}
+            isMultiPitch={problem?.sections?.length > 0}
             includeVideoEmbedder={true}
           />
         </form>
       </Segment>
       <Button.Group>
-        <Button onClick={() => navigate(`/problem/${id}`)}>Cancel</Button>
+        <Button onClick={() => navigate(`/problem/${problemId}`)}>
+          Cancel
+        </Button>
         <Button.Or />
         <Button type="submit" positive loading={saving} onClick={save}>
           Save

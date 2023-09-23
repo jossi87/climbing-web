@@ -17,11 +17,10 @@ import {
 import { useMeta } from "../common/meta";
 import {
   getElevation,
-  getSectorEdit,
   postSector,
-  getSector,
-  getArea,
   useAccessToken,
+  useArea,
+  useSector,
 } from "../../api";
 import Leaflet from "../common/leaflet/leaflet";
 import { useNavigate, useParams } from "react-router-dom";
@@ -32,39 +31,58 @@ import { PolylineEditor } from "./PolylineEditor";
 import { ZoomLogic } from "./ZoomLogic";
 import { PolylineMarkers } from "./PolylineMarkers";
 
+type Sector = components["schemas"]["Sector"];
+
 const useIds = (): { areaId: number; sectorId: number } => {
   const { sectorId, areaId } = useParams();
   return { sectorId: +sectorId, areaId: +areaId };
 };
 
 export const SectorEdit = () => {
+  const navigate = useNavigate();
+  const meta = useMeta();
   const accessToken = useAccessToken();
   const { areaId, sectorId } = useIds();
   const [leafletMode, setLeafletMode] = useState("PARKING");
-  const [data, setData] = useState<components["schemas"]["Sector"]>(null);
+
+  const [data, setData] = useState<Sector>(null);
+  const { data: area, status: areaStatus } = useArea(areaId);
+  const { data: sector, status: sectorStatus, error } = useSector(sectorId);
+
   const [currPolygonPointFetched, setCurrPolygonPointFetched] = useState(0);
   const [currPolygonPoint, setCurrPolygonPoint] = useState(null);
   const [showProblemOrder, setShowProblemOrder] = useState(false);
   const [sectorMarkers, setSectorMarkers] = useState<any>(null);
-  const [area, setArea] = useState<any>(null);
+
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
-  const meta = useMeta();
+
   useEffect(() => {
-    if (accessToken) {
-      getSectorEdit(accessToken, areaId, sectorId)
-        .then((data) => {
-          setData(data);
-        })
-        .then(() => {
-          getArea(accessToken, areaId).then((data) => setArea(data[0]));
-        })
-        .catch((e) => {
-          setError(String(e));
+    if (areaStatus === "success") {
+      if (sectorId <= 0) {
+        // We won't get a sector loaded (because we're in the creation flow).
+        // Populate a placeholder one based on the area defaults.
+        setData({
+          areaId,
+          id: -1,
+          lockedAdmin: area.lockedAdmin,
+          lockedSuperadmin: area.lockedSuperadmin,
+          name: "",
+          comment: "",
+          accessInfo: "",
+          accessClosed: "",
+          parking: null,
+          newMedia: [],
+          problemOrder: [],
         });
+      }
     }
-  }, [accessToken, areaId, sectorId]);
+  }, [area, areaId, areaStatus, sectorId]);
+
+  useEffect(() => {
+    if (sectorStatus === "success") {
+      setData(sector);
+    }
+  }, [sector, sectorStatus]);
 
   function onNameChanged(_, { value }) {
     setData((prevState) => ({ ...prevState, name: value }));
@@ -229,7 +247,7 @@ export const SectorEdit = () => {
     );
   }
 
-  if (!data || !area) {
+  if (!data) {
     return <Loading />;
   }
 
@@ -245,7 +263,7 @@ export const SectorEdit = () => {
             label: sector.name,
           });
         }
-        if (sector.approach?.length > 0) {
+        if (sector.approach?.coordinates?.length > 0) {
           approaches.push({ approach: sector.approach, background: true });
         }
       }
@@ -431,15 +449,13 @@ export const SectorEdit = () => {
                 onClick={() => {
                   if (sectorMarkers == null) {
                     if (sectorId) {
-                      getSector(accessToken, sectorId).then((data) =>
-                        setSectorMarkers(
-                          data.problems
-                            .filter((p) => p.coordinates)
-                            .map((p) => ({
-                              coordinates: p.coordinates,
-                              label: p.name,
-                            })),
-                        ),
+                      setSectorMarkers(
+                        data.problems
+                          .filter((p) => p.coordinates)
+                          .map((p) => ({
+                            coordinates: p.coordinates,
+                            label: p.name,
+                          })),
                       );
                     }
                   } else {
