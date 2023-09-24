@@ -6,7 +6,6 @@ export {
   moveMedia,
   getPermissions,
   getSvgEdit,
-  getUserSearch,
   downloadUsersTicks,
   postComment,
   postPermissions,
