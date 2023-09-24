@@ -13,6 +13,7 @@ import { useLocalStorage } from "../utils/use-local-storage";
 import { useRedirect } from "../utils/useRedirect";
 import { makeAuthenticatedRequest } from "./utils";
 import { FetchOptions } from "./types";
+import { useCallback, useRef, useState } from "react";
 
 function useKey(
   customKey: readonly unknown[] | undefined,
@@ -444,5 +445,53 @@ export function useTrash() {
   return {
     data,
     restore: restore.mutateAsync,
+  };
+}
+
+export function useElevation() {
+  const [{ lat, lng }, setLocation] = useState<{
+    lat?: number;
+    lng?: number;
+  }>({});
+
+  const result = useData(`/elevation?latitude=${lat}&longitude=${lng}`, {
+    queryKey: [`/elevation`, { lat, lng }],
+    enabled: !!lat && !!lng,
+    keepPreviousData: true,
+    // We're unlikely to have very many duplicate requests, so set a relatively
+    // short cache time to keep them from polluting the in-memory cache.
+    cacheTime: 30 * 1000,
+  });
+
+  const lastCalledTime = useRef(0);
+  const pendingTimer = useRef<ReturnType<typeof setTimeout>>();
+  const throttledSetLocation = useCallback<typeof setLocation>((v) => {
+    if (pendingTimer.current) {
+      clearTimeout(pendingTimer.current);
+    }
+
+    const elapsed = Date.now() - lastCalledTime.current;
+    if (elapsed >= 200) {
+      setLocation(v);
+      lastCalledTime.current = Date.now();
+    } else {
+      pendingTimer.current = setTimeout(() => setLocation(v), 200);
+    }
+  }, []);
+
+  const elevation = [
+    lat && lng && ` - ${lat.toFixed(10)},${lng.toFixed(10)}`,
+    result.fetchStatus === "fetching"
+      ? "..."
+      : result.data
+      ? `(${result.data}m)`
+      : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return {
+    elevation,
+    setLocation: throttledSetLocation,
   };
 }

@@ -16,10 +16,10 @@ import {
 } from "semantic-ui-react";
 import { useMeta } from "../common/meta";
 import {
-  getElevation,
   postSector,
   useAccessToken,
   useArea,
+  useElevation,
   useSector,
 } from "../../api";
 import Leaflet from "../common/leaflet/leaflet";
@@ -44,13 +44,12 @@ export const SectorEdit = () => {
   const accessToken = useAccessToken();
   const { areaId, sectorId } = useIds();
   const [leafletMode, setLeafletMode] = useState("PARKING");
+  const { elevation, setLocation } = useElevation();
 
   const [data, setData] = useState<Sector>(null);
   const { data: area, status: areaStatus } = useArea(areaId);
   const { data: sector, status: sectorStatus, error } = useSector(sectorId);
 
-  const [currPolygonPointFetched, setCurrPolygonPointFetched] = useState(0);
-  const [currPolygonPoint, setCurrPolygonPoint] = useState(null);
   const [showProblemOrder, setShowProblemOrder] = useState(false);
   const [sectorMarkers, setSectorMarkers] = useState<any>(null);
 
@@ -181,27 +180,16 @@ export const SectorEdit = () => {
     }
   }
 
-  function onMouseMove(event) {
-    if (leafletMode == "POLYGON") {
-      const ms = Math.floor(Date.now());
-      if (ms > currPolygonPointFetched + 200) {
-        setCurrPolygonPointFetched(ms);
-        getElevation(accessToken, event.latlng.lat, event.latlng.lng).then(
-          (res) => {
-            setCurrPolygonPoint(
-              " - " +
-                event.latlng.lat.toFixed(10) +
-                "," +
-                event.latlng.lng.toFixed(10) +
-                " (" +
-                res +
-                "m)",
-            );
-          },
-        );
+  const onMouseMove: NonNullable<
+    ComponentProps<typeof Leaflet>["onMouseMove"]
+  > = useCallback(
+    (event) => {
+      if (leafletMode == "POLYGON") {
+        setLocation(event.latlng);
       }
-    }
-  }
+    },
+    [leafletMode, setLocation],
+  );
 
   function clearDrawing() {
     if (leafletMode == "PARKING") {
@@ -516,7 +504,9 @@ export const SectorEdit = () => {
             )}
             {leafletMode === "POLYGON" && (
               <Form.Field>
-                <label>Outline {currPolygonPoint}</label>
+                <label>
+                  {["Outline", elevation].filter(Boolean).join(" ")}
+                </label>
                 <PolylineEditor
                   coordinates={data.outline}
                   onChange={(coordinates) => {
