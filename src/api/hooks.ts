@@ -7,13 +7,14 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { Success } from "../@types/buldreinfo";
+import { Success, WithoutFirstParameter } from "../@types/buldreinfo";
 import { components } from "../@types/buldreinfo/swagger";
 import { useLocalStorage } from "../utils/use-local-storage";
 import { useRedirect } from "../utils/useRedirect";
-import { makeAuthenticatedRequest } from "./utils";
+import { makeAuthenticatedRequest, useAccessToken } from "./utils";
 import { FetchOptions } from "./types";
 import { useCallback, useRef, useState } from "react";
+import { postPermissions } from "./operations";
 
 function useKey(
   customKey: readonly unknown[] | undefined,
@@ -515,4 +516,28 @@ export function useUserSearch(value: string = "") {
   return useData<Success<"getUsersSearch">>(`/users/search?value=${value}`, {
     queryKey: [`/users/search`, { value }],
   });
+}
+
+export function usePermissions() {
+  const { isAuthenticated } = useAuth0();
+  const accessToken = useAccessToken();
+
+  const result = useData<Success<"getPermissions">>(`/permissions`, {
+    queryKey: [`/permissions`],
+    enabled: isAuthenticated,
+    staleTime: 30 * 1000,
+  });
+
+  const updatePermissions = useCallback(
+    (
+      ...args: WithoutFirstParameter<typeof postPermissions>
+    ): ReturnType<typeof postPermissions> =>
+      postPermissions(accessToken, ...args),
+    [accessToken],
+  );
+
+  return {
+    ...result,
+    update: updatePermissions,
+  };
 }

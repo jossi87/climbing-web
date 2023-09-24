@@ -19,3 +19,6 @@ type Success<
   T extends keyof operations,
   content = "application/json",
 > = operations[T]["responses"]["200"]["content"][content];
+
+type WithoutFirstParameter<T extends (...args: unknown[]) => unknown> =
+  Parameters<T> extends [unknown, ...infer U] ? U : never;
