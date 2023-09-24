@@ -4,7 +4,6 @@ export {
   downloadProblemsXlsx,
   deleteMedia,
   moveMedia,
-  getElevation,
   getGradeDistribution,
   getPermissions,
   getSvgEdit,

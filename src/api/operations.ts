@@ -31,23 +31,6 @@ export function moveMedia(
   );
 }
 
-export function getElevation(
-  accessToken: string | null,
-  latitude: number,
-  longitude: number,
-): Promise<Success<"getElevation">> {
-  return makeAuthenticatedRequest(
-    accessToken,
-    `/elevation?latitude=${latitude}&longitude=${longitude}`,
-    null,
-  )
-    .then((res) => res.text())
-    .catch((error) => {
-      console.warn(error);
-      return null;
-    });
-}
-
 export function getGradeDistribution(
   accessToken: string | null,
   idArea: number,
