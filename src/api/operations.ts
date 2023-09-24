@@ -122,22 +122,6 @@ export function getSvgEdit(
     });
 }
 
-export function getUserSearch(
-  accessToken: string | null,
-  value: string,
-): Promise<components["schemas"]["UserSearch"][]> {
-  return makeAuthenticatedRequest(
-    accessToken,
-    `/users/search?value=${value}`,
-    null,
-  )
-    .then((data) => data.json())
-    .catch((error) => {
-      console.warn(error);
-      return null;
-    });
-}
-
 export function downloadUsersTicks(accessToken: string | null) {
   return downloadXlsx(accessToken, `/users/ticks`);
 }

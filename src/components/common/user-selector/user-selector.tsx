@@ -1,7 +1,6 @@
-import React, { useState, useEffect, ComponentProps } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
+import React, { ComponentProps } from "react";
 import CreatableSelect from "react-select/creatable";
-import { getUserSearch } from "./../../../api";
+import { useUserSearch } from "./../../../api";
 import { components } from "../../../@types/buldreinfo/swagger";
 
 type User = components["schemas"]["User"];
@@ -15,23 +14,6 @@ type MultiUserProps = {
 type SingleUserProps = {
   onUserUpdated: (user: User) => void;
   placeholder: string;
-};
-
-const useUsers = () => {
-  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const [options, setOptions] = useState<User[]>([]);
-  useEffect(() => {
-    if (!isLoading) {
-      const update = async () => {
-        const accessToken = isAuthenticated
-          ? await getAccessTokenSilently()
-          : null;
-        getUserSearch(accessToken ?? "", "").then((res) => setOptions(res));
-      };
-      update();
-    }
-  }, [getAccessTokenSilently, isAuthenticated, isLoading]);
-  return options;
 };
 
 const UserSelect = (
@@ -49,7 +31,7 @@ const UserSelect = (
         > & { isMulti: false }
       >,
 ) => {
-  const options = useUsers();
+  const { data: options = [] } = useUserSearch();
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
