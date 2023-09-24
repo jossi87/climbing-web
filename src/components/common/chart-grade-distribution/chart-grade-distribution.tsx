@@ -1,32 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Loading } from "../widgets/widgets";
 import { Popup, Table } from "semantic-ui-react";
-import { getGradeDistribution, useAccessToken } from "./../../../api";
+import { useGradeDistribution } from "./../../../api";
 import { components } from "../../../@types/buldreinfo/swagger";
 
-type Props = {
-  idArea: number;
-  idSector: number;
-  data?: components["schemas"]["GradeDistribution"][];
-};
+type Data = components["schemas"]["GradeDistribution"][];
 
-const ChartGradeDistribution = ({ idArea, idSector, data }: Props) => {
-  const accessToken = useAccessToken();
-  const [gradeDistribution, setGradeDistribution] = useState<
-    components["schemas"]["GradeDistribution"][]
-  >(data ?? []);
+type Props =
+  | { idArea: number; idSector?: never; data?: never }
+  | { idArea?: never; idSector: number; data?: never }
+  | { idArea?: never; idSector?: never; data: Data };
 
-  useEffect(() => {
-    if (idArea > 0 || idSector > 0) {
-      getGradeDistribution(accessToken, idArea, idSector).then((res) => {
-        setGradeDistribution(res);
-      });
-    }
-  }, [accessToken, idArea, idSector]);
+const ChartGradeDistribution = ({
+  idArea = 0,
+  idSector = 0,
+  data = undefined,
+}: Props) => {
+  const { data: gradeDistribution } = useGradeDistribution(
+    idArea,
+    idSector,
+    data || undefined,
+  );
 
   if (!gradeDistribution) {
     return <Loading />;
   }
+
   const maxValue = Math.max(
     ...gradeDistribution.map((d) => {
       return d.num;

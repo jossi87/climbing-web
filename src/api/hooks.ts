@@ -495,3 +495,18 @@ export function useElevation() {
     setLocation: throttledSetLocation,
   };
 }
+
+export function useGradeDistribution(
+  idArea: number,
+  idSector: number,
+  data: components["schemas"]["GradeDistribution"][] | undefined,
+) {
+  return useData<Success<"getGradeDistribution">>(
+    `/grade/distribution?idArea=${idArea}&idSector=${idSector}`,
+    {
+      queryKey: [`/grade/distribution`, { idArea, idSector }],
+      enabled: !!idArea || !!idSector,
+      initialData: data,
+    },
+  );
+}

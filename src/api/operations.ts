@@ -31,23 +31,6 @@ export function moveMedia(
   );
 }
 
-export function getGradeDistribution(
-  accessToken: string | null,
-  idArea: number,
-  idSector: number,
-): Promise<Success<"getGradeDistribution">> {
-  return makeAuthenticatedRequest(
-    accessToken,
-    `/grade/distribution?idArea=${idArea}&idSector=${idSector}`,
-    null,
-  )
-    .then((data) => data.json())
-    .catch((error) => {
-      console.warn(error);
-      return null;
-    });
-}
-
 export function getPermissions(
   accessToken: string | null,
 ): Promise<Success<"getPermissions">> {

@@ -67,9 +67,7 @@ const Areas = () => {
             </Link>
             <i>{`(${a.numSectors} sectors, ${a.numProblems} ${typeDescription})`}</i>
             <br />
-            {a.numProblems > 0 && (
-              <ChartGradeDistribution idArea={a.id} idSector={0} data={null} />
-            )}
+            {a.numProblems > 0 && <ChartGradeDistribution idArea={a.id} />}
             {a.comment && (
               <div
                 className="area-description"
