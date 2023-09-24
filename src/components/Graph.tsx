@@ -30,7 +30,7 @@ const Graph = () => {
             <Header.Subheader>{description}</Header.Subheader>
           </Header.Content>
         </Header>
-        <ChartGradeDistribution idArea={0} idSector={0} data={data} />
+        <ChartGradeDistribution data={data} />
       </Segment>
     </>
   );
