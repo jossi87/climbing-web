@@ -31,17 +31,6 @@ export function moveMedia(
   );
 }
 
-export function getPermissions(
-  accessToken: string | null,
-): Promise<Success<"getPermissions">> {
-  return makeAuthenticatedRequest(accessToken, `/permissions`)
-    .then((data) => data.json())
-    .catch((error) => {
-      console.warn(error);
-      return null;
-    });
-}
-
 export function getSvgEdit(
   accessToken: string | null,
   problemId: number,

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Helmet } from "react-helmet";
 import { Loading, LockSymbol } from "./common/widgets/widgets";
-import { getPermissions, postPermissions } from "../api";
+import { usePermissions } from "../api";
 import {
   Header,
   Icon,
@@ -12,11 +12,7 @@ import {
   Input,
 } from "semantic-ui-react";
 import { Link } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
-import { components } from "../@types/buldreinfo/swagger";
 import { Mutable } from "../@types/buldreinfo";
-
-type PermissionsData = components["schemas"]["PermissionUser"];
 
 const COLORS = [
   "yellow", // default user
@@ -53,34 +49,21 @@ const OPTIONS = [
 ] as const;
 
 const Permissions = () => {
-  const [loading, setLoading] = useState(false);
-  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const [accessToken, setAccessToken] = useState<any>(null);
-  const [data, setData] = useState<PermissionsData[]>([]);
   const [query, setQuery] = useState<string>("");
+  const {
+    data = [],
+    isLoading: loading,
+    update: postPermissions,
+  } = usePermissions();
 
-  const filteredData = query
-    ? data.filter((item) => {
-        return item.name.toLowerCase().includes(query.toLowerCase());
-      })
-    : data;
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      getAccessTokenSilently().then((accessToken) => {
-        setLoading(true);
-        getPermissions(accessToken).then((data) => {
-          setData(data);
-          setAccessToken(accessToken);
-          setLoading(false);
-        });
-      });
-    }
-  }, [getAccessTokenSilently, isAuthenticated]);
+  const filteredData = data.filter(
+    (item) => !query || item.name.toLowerCase().includes(query.toLowerCase()),
+  );
 
   if (loading) {
     return <Loading />;
   }
+
   const subHeader = query
     ? `${filteredData.length}/${data.length} users`
     : `${data.length} users`;
@@ -142,27 +125,22 @@ const Permissions = () => {
                       value={value}
                       disabled={u.readOnly}
                       options={OPTIONS as Mutable<typeof OPTIONS>}
-                      onChange={(e, d) => {
+                      onChange={(_, d) => {
                         const adminRead = d.value === 1 || d.value === 2;
                         const adminWrite = d.value === 2;
                         const superadminRead = d.value === 3;
                         const superadminWrite = d.value === 3;
                         postPermissions(
-                          accessToken,
                           u.userId,
                           adminRead,
                           adminWrite,
                           superadminRead,
                           superadminWrite,
-                        )
-                          .then(() => {
-                            window.scrollTo(0, 0);
-                            window.location.reload();
-                          })
-                          .catch((error) => {
-                            console.warn(error);
-                            alert(error.toString());
-                          });
+                        ).catch((error) => {
+                          reportError(error);
+                          console.warn(error);
+                          alert(error.toString());
+                        });
                       }}
                     />
                   </Card.Description>
