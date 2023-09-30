@@ -465,28 +465,40 @@ export const Problem = () => {
               </Table.Cell>
             </Table.Row>
           )}
-          {meta.isClimbing && data.neighbourPrev && data.neighbourNext && (
+          {meta.isClimbing && (data.neighbourPrev || data.neighbourNext) && (
             <Table.Row verticalAlign="top">
-              <Table.Cell>Neighbours:</Table.Cell>
+              <Table.Cell>Neighbour(s):</Table.Cell>
               <Table.Cell>
-                <Label as={Link} to={`/problem/${data.neighbourPrev.id}`} basic>
-                  #{data.neighbourPrev.nr}
-                  <Label.Detail>
-                    {data.neighbourPrev.name}{" "}
-                    <span style={{ fontWeight: "normal" }}>
-                      {data.neighbourPrev.grade}
-                    </span>
-                  </Label.Detail>
-                </Label>
-                <Label as={Link} to={`/problem/${data.neighbourNext.id}`} basic>
-                  #{data.neighbourNext.nr}
-                  <Label.Detail>
-                    {data.neighbourNext.name}{" "}
-                    <span style={{ fontWeight: "normal" }}>
-                      {data.neighbourNext.grade}
-                    </span>
-                  </Label.Detail>
-                </Label>
+                {data.neighbourPrev && (
+                  <Label
+                    as={Link}
+                    to={`/problem/${data.neighbourPrev.id}`}
+                    basic
+                  >
+                    #{data.neighbourPrev.nr}
+                    <Label.Detail>
+                      {data.neighbourPrev.name}{" "}
+                      <span style={{ fontWeight: "normal" }}>
+                        {data.neighbourPrev.grade}
+                      </span>
+                    </Label.Detail>
+                  </Label>
+                )}
+                {data.neighbourNext && (
+                  <Label
+                    as={Link}
+                    to={`/problem/${data.neighbourNext.id}`}
+                    basic
+                  >
+                    #{data.neighbourNext.nr}
+                    <Label.Detail>
+                      {data.neighbourNext.name}{" "}
+                      <span style={{ fontWeight: "normal" }}>
+                        {data.neighbourNext.grade}
+                      </span>
+                    </Label.Detail>
+                  </Label>
+                )}
               </Table.Cell>
             </Table.Row>
           )}
