@@ -13,7 +13,7 @@ import { useLocalStorage } from "../utils/use-local-storage";
 import { useRedirect } from "../utils/useRedirect";
 import { makeAuthenticatedRequest, useAccessToken } from "./utils";
 import { FetchOptions } from "./types";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { postPermissions } from "./operations";
 
 function useKey(
@@ -540,4 +540,79 @@ export function usePermissions() {
     ...result,
     update: updatePermissions,
   };
+}
+
+export function useSvgEdit(problemId: number, mediaId: number) {
+  const [info, setInfo] = useState<any>();
+  const { data } = useProblem(problemId, true);
+
+  useEffect(() => {
+    if (data) {
+      const res = data;
+      const m = res.media.filter((x) => x.id == mediaId)[0];
+      const readOnlySvgs: {
+        nr: number;
+        hasAnchor: boolean;
+        path: string;
+        anchors: unknown[];
+        texts: string[];
+      }[] = [];
+      let svgId = 0;
+      let hasAnchor = true;
+      let path = null;
+      let anchors = [];
+      let texts = [];
+      if (m.svgs) {
+        for (const svg of m.svgs) {
+          if (svg.problemId === res.id) {
+            svgId = svg.id;
+            path = svg.path;
+            hasAnchor = svg.hasAnchor;
+            anchors = svg.anchors ? JSON.parse(svg.anchors) : [];
+            texts = svg.texts ? JSON.parse(svg.texts) : [];
+          } else {
+            readOnlySvgs.push({
+              nr: svg.nr,
+              hasAnchor: svg.hasAnchor,
+              path: svg.path,
+              anchors: svg.anchors ? JSON.parse(svg.anchors) : [],
+              texts: svg.texts ? JSON.parse(svg.texts) : [],
+            });
+          }
+        }
+      }
+
+      setInfo({
+        mediaId: m.id,
+        nr: res.nr,
+        w: m.width,
+        h: m.height,
+        shift: false,
+        svgId: svgId,
+        path: path,
+        anchors: anchors,
+        texts: texts,
+        readOnlySvgs: readOnlySvgs,
+        activePoint: 0,
+        draggedPoint: false,
+        draggedCubic: false,
+        hasAnchor: hasAnchor,
+        areaId: res.areaId,
+        areaName: res.areaName,
+        areaLockedAdmin: res.areaLockedAdmin,
+        areaLockedSuperadmin: res.areaLockedSuperadmin,
+        sectorId: res.sectorId,
+        sectorName: res.sectorName,
+        sectorLockedAdmin: res.sectorLockedAdmin,
+        sectorLockedSuperadmin: res.sectorLockedSuperadmin,
+        id: res.id,
+        name: res.name,
+        grade: res.grade,
+        lockedAdmin: res.lockedAdmin,
+        lockedSuperadmin: res.lockedSuperadmin,
+      });
+    }
+  }, [data, mediaId]);
+
+  return info;
 }

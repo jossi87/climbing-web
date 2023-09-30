@@ -364,7 +364,7 @@ export function parseReadOnlySvgs(
           ...acc,
           generateSvgNrAndAnchor(
             svg.nr + "_path",
-            commands,
+            commands as Parameters<typeof generateSvgNrAndAnchor>[1],
             svg.nr,
             svg.hasAnchor,
             w,
