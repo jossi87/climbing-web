@@ -4880,6 +4880,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/svg-path-parser@^1.1.4":
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/@types/svg-path-parser/-/svg-path-parser-1.1.4.tgz#7c1afed2a6f484e89e50c176de10606db0aa6b79"
+  integrity sha512-i7qKm8qNFGl6rww2SNuU3Bmheia0xZFlu+M3HLU7ol5aVFRxq9rvpBhQEA2V/v0w2Sd12ZMRMrdMjCR8e81ejA==
+
 "@types/swagger-ui-react@^4.18.0":
   version "4.18.0"
   resolved "https://registry.yarnpkg.com/@types/swagger-ui-react/-/swagger-ui-react-4.18.0.tgz#6668a7f44c825f9dbd46e3ecb8a9a40f745ce861"

@@ -19,6 +19,7 @@ jobs:
           node-version: "18"
       - name: "Install dependencies"
         run: |
+          yarn global add node-gyp@9.4.0
           yarn install --frozen-lock-file
       - name: "Run lint"
         run: |

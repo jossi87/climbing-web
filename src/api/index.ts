@@ -4,7 +4,6 @@ export {
   downloadProblemsXlsx,
   deleteMedia,
   moveMedia,
-  getSvgEdit,
   downloadUsersTicks,
   postComment,
   postProblem,

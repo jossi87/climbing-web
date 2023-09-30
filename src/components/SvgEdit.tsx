@@ -3,10 +3,10 @@ import { Container, Button, Segment, Dropdown, Input } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { useMeta } from "./common/meta";
 import {
-  getSvgEdit,
   getImageUrl,
   postProblemSvg,
   useAccessToken,
+  useSvgEdit,
 } from "../api";
 import { parseReadOnlySvgs, parsePath } from "../utils/svg-utils";
 import { Loading } from "./common/widgets/widgets";
@@ -47,39 +47,39 @@ const SvgEdit = () => {
   const black = "#000000";
   const meta = useMeta();
 
+  const data = useSvgEdit(problemId, mediaId);
+
   useEffect(() => {
-    if (accessToken) {
-      getSvgEdit(accessToken, problemId, mediaId).then((data) => {
-        setCrc32(data.crc32);
-        setW(data.w);
-        setH(data.h);
-        setShift(data.shift);
-        setSvgId(data.svgId);
-        const correctPoints = parsePath(data.path);
-        const correctPathTxt = generatePath(correctPoints);
-        setPath(correctPathTxt);
-        setPathTxt(correctPathTxt);
-        setPoints(correctPoints);
-        setAnchors(data.anchors);
-        setTexts(data.texts);
-        setReadOnlySvgs(data.readOnlySvgs);
-        setReadOnlyPoints(
-          data.readOnlySvgs
-            ?.map((svg) => {
-              return parsePath(svg.path).map((p, ix) => {
-                return { ...p, ix };
-              });
-            })
-            .flat(),
-        );
-        setActivePoint(data.activePoint);
-        setDraggedPoint(data.draggedPoint);
-        setDraggedCubic(data.draggedCubic);
-        setHasAnchor(data.hasAnchor);
-        setId(data.id);
-      });
+    if (data) {
+      setCrc32(data.crc32);
+      setW(data.w);
+      setH(data.h);
+      setShift(data.shift);
+      setSvgId(data.svgId);
+      const correctPoints = parsePath(data.path);
+      const correctPathTxt = generatePath(correctPoints);
+      setPath(correctPathTxt);
+      setPathTxt(correctPathTxt);
+      setPoints(correctPoints);
+      setAnchors(data.anchors);
+      setTexts(data.texts);
+      setReadOnlySvgs(data.readOnlySvgs);
+      setReadOnlyPoints(
+        data.readOnlySvgs
+          ?.map((svg) => {
+            return parsePath(svg.path).map((p, ix) => {
+              return { ...p, ix };
+            });
+          })
+          .flat(),
+      );
+      setActivePoint(data.activePoint);
+      setDraggedPoint(data.draggedPoint);
+      setDraggedCubic(data.draggedCubic);
+      setHasAnchor(data.hasAnchor);
+      setId(data.id);
     }
-  }, [accessToken, mediaId, problemId]);
+  }, [data]);
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
