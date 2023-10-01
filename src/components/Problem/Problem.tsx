@@ -23,13 +23,7 @@ import {
   ConditionLabels,
 } from "../common/widgets/widgets";
 import { useMeta } from "../common/meta";
-import {
-  getAreaPdfUrl,
-  getSectorPdfUrl,
-  getProblemPdfUrl,
-  useProblem,
-  useAccessToken,
-} from "../../api";
+import { useProblem } from "../../api";
 import TickModal from "../common/tick-modal/tick-modal";
 import CommentModal from "../common/comment-modal/comment-modal";
 import { ApproachProfile } from "../common/ApproachProfile";
@@ -38,9 +32,9 @@ import { ProblemsOnRock } from "./ProblemsOnRock";
 import { ProblemTicks } from "./ProblemTicks";
 import { ProblemComments } from "./ProblemComments";
 import { componentDecorator } from "../../utils/componentDecorator";
+import { DownloadButton } from "../common/DownloadButton";
 
 export const Problem = () => {
-  const accessToken = useAccessToken();
   const { problemId } = useParams();
   const [showHiddenMedia, setShowHiddenMedia] = useState(false);
   const meta = useMeta();
@@ -681,36 +675,15 @@ export const Problem = () => {
           <Table.Row verticalAlign="top">
             <Table.Cell>Misc:</Table.Cell>
             <Table.Cell>
-              <Label
-                href={getProblemPdfUrl(accessToken, data.id)}
-                rel="noreferrer noopener"
-                target="_blank"
-                image
-                basic
-              >
-                <Icon name="file pdf outline" />
+              <DownloadButton href={`/problem/pdf?id=${data.id}`}>
                 {meta.isBouldering ? "boulder.pdf" : "route.pdf"}
-              </Label>
-              <Label
-                href={getSectorPdfUrl(accessToken, data.sectorId)}
-                rel="noreferrer noopener"
-                target="_blank"
-                image
-                basic
-              >
-                <Icon name="file pdf outline" />
+              </DownloadButton>
+              <DownloadButton href={`/sectors/pdf?id=${data.sectorId}`}>
                 sector.pdf
-              </Label>
-              <Label
-                href={getAreaPdfUrl(accessToken, data.areaId)}
-                rel="noreferrer noopener"
-                target="_blank"
-                image
-                basic
-              >
-                <Icon name="file pdf outline" />
+              </DownloadButton>
+              <DownloadButton href={`/areas/pdf?id=${data.areaId}`}>
                 area.pdf
-              </Label>
+              </DownloadButton>
               {data.sectorParking && (
                 <Label
                   href={`https://www.google.com/maps/search/?api=1&query=${data.sectorParking.latitude},${data.sectorParking.longitude}`}

@@ -1,9 +1,9 @@
 import { Success } from "../@types/buldreinfo";
 import { components, operations } from "../@types/buldreinfo/swagger";
-import { downloadXlsx, makeAuthenticatedRequest } from "./utils";
+import { downloadFile, makeAuthenticatedRequest } from "./utils";
 
 export function downloadProblemsXlsx(accessToken: string | null) {
-  return downloadXlsx(accessToken, "/problems/xlsx");
+  return downloadFile(accessToken, "/problems/xlsx");
 }
 
 export function deleteMedia(
@@ -32,7 +32,7 @@ export function moveMedia(
 }
 
 export function downloadUsersTicks(accessToken: string | null) {
-  return downloadXlsx(accessToken, `/users/ticks`);
+  return downloadFile(accessToken, `/users/ticks`);
 }
 
 export function postComment(

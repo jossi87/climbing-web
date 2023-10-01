@@ -91,24 +91,6 @@ export function getBuldreinfoMediaUrl(id: number, suffix: string): string {
   );
 }
 
-export function getAreaPdfUrl(accessToken: string | null, id: number): string {
-  return getUrl(`/areas/pdf?accessToken=${accessToken}&id=${id}`);
-}
-
-export function getSectorPdfUrl(
-  accessToken: string | null,
-  id: number,
-): string {
-  return getUrl(`/sectors/pdf?accessToken=${accessToken}&id=${id}`);
-}
-
-export function getProblemPdfUrl(
-  accessToken: string | null,
-  id: number,
-): string {
-  return getUrl(`/problem/pdf?accessToken=${accessToken}&id=${id}`);
-}
-
 export function numberWithCommas(number: number) {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
@@ -133,11 +115,20 @@ export function convertFromStringToDate(yyyy_MM_dd: string): Date | null {
   return new Date(year, month - 1, day);
 }
 
+const ABSOLUTE_PATTERN = /^https?:\/\//;
+
 export function makeAuthenticatedRequest(
   accessToken: string | null,
-  urlSuffix: string,
+  incomingUrl: string,
   extraOptions?: FetchOptions,
 ) {
+  const url = ABSOLUTE_PATTERN.test(incomingUrl)
+    ? // If we already have an absolute URL (eg: https://...), then we don't
+      // need to do anything.
+      incomingUrl
+    : // Otherwise, append the link to the correct backend instance.
+      getUrl(incomingUrl);
+
   const { consistencyAction, ...opts } = extraOptions || {};
   const options = {
     ...opts,
@@ -147,7 +138,8 @@ export function makeAuthenticatedRequest(
       Authorization: accessToken ? `Bearer ${accessToken}` : undefined,
     },
   };
-  return fetch(getUrl(urlSuffix), options).then((res) => {
+
+  return fetch(url, options).then((res) => {
     if ((options.method ?? "GET") !== "GET") {
       window.dispatchEvent(
         new CustomEvent(DATA_MUTATION_EVENT, {
@@ -159,7 +151,7 @@ export function makeAuthenticatedRequest(
   });
 }
 
-export function downloadXlsx(accessToken: string, url: string) {
+export function downloadFile(accessToken: string, url: string) {
   return makeAuthenticatedRequest(accessToken, url, {
     // @ts-expect-error - I don't think that this is necessary, but I'm going
     //                    to investigate this later.
@@ -176,9 +168,7 @@ export function downloadXlsx(accessToken: string, url: string) {
       return;
     }
 
-    const match = /^attachment;[\s]*filename="([^"]+)"$/.exec(
-      contentDisposition,
-    );
+    const match = /\bfilename="([^"]+)"/.exec(contentDisposition);
     if (!match) {
       captureMessage("Unable to get filename", {
         extra: {

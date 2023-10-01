@@ -31,11 +31,12 @@ import {
   Segment,
 } from "semantic-ui-react";
 import { useMeta } from "./common/meta";
-import { getImageUrl, getAreaPdfUrl, useAccessToken, useArea } from "../api";
+import { getImageUrl, useArea } from "../api";
 import { Remarkable } from "remarkable";
 import { linkify } from "remarkable/linkify";
 import ProblemList from "./common/problem-list/problem-list";
 import { components } from "../@types/buldreinfo/swagger";
+import { DownloadButton } from "./common/DownloadButton";
 
 type Props = {
   sector: components["schemas"]["Area"]["sectors"][number];
@@ -110,7 +111,6 @@ const SectorListItem = ({ sector, problem }: Props) => {
   );
 };
 const Area = () => {
-  const accessToken = useAccessToken();
   const meta = useMeta();
   const { areaId } = useParams();
   const { data, error, redirectUi } = useArea(+areaId);
@@ -518,16 +518,9 @@ const Area = () => {
             Page views:
             <Label.Detail>{data.hits}</Label.Detail>
           </Label>
-          <Label
-            href={getAreaPdfUrl(accessToken, data.id)}
-            rel="noreferrer noopener"
-            target="_blank"
-            image
-            basic
-          >
-            <Icon name="file pdf outline" />
+          <DownloadButton href={`/areas/pdf?id=${data.id}`}>
             area.pdf
-          </Label>
+          </DownloadButton>
           {data.coordinates && (
             <ConditionLabels
               lat={data.coordinates.latitude}
