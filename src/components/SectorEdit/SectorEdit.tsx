@@ -235,7 +235,7 @@ export const SectorEdit = () => {
     );
   }
 
-  if (!data) {
+  if (!data || !area) {
     return <Loading />;
   }
 
