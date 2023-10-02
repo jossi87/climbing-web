@@ -30,15 +30,11 @@ import {
   Feed,
 } from "semantic-ui-react";
 import { useMeta } from "./common/meta";
-import {
-  getAreaPdfUrl,
-  getSectorPdfUrl,
-  useAccessToken,
-  useSector,
-} from "../api";
+import { useSector } from "../api";
 import Linkify from "react-linkify";
 import { componentDecorator } from "../utils/componentDecorator";
 import { components } from "../@types/buldreinfo/swagger";
+import { DownloadButton } from "./common/DownloadButton";
 
 type Props = {
   problem: components["schemas"]["Sector"]["problems"][number];
@@ -111,7 +107,6 @@ const SectorListItem = ({ problem }: Props) => {
 };
 
 const Sector = () => {
-  const accessToken = useAccessToken();
   const { sectorId } = useParams();
   const meta = useMeta();
   const { data: data, error, isLoading, redirectUi } = useSector(+sectorId);
@@ -506,26 +501,12 @@ const Sector = () => {
           <Table.Row verticalAlign="top">
             <Table.Cell>Misc:</Table.Cell>
             <Table.Cell>
-              <Label
-                href={getSectorPdfUrl(accessToken, data.id)}
-                rel="noreferrer noopener"
-                target="_blank"
-                image
-                basic
-              >
-                <Icon name="file pdf outline" />
+              <DownloadButton href={`/sectors/pdf?id=${data.id}`}>
                 sector.pdf
-              </Label>
-              <Label
-                href={getAreaPdfUrl(accessToken, data.areaId)}
-                rel="noreferrer noopener"
-                target="_blank"
-                image
-                basic
-              >
-                <Icon name="file pdf outline" />
+              </DownloadButton>
+              <DownloadButton href={`/areas/pdf?id=${data.areaId}`}>
                 area.pdf
-              </Label>
+              </DownloadButton>
               {data.parking && (
                 <Label
                   href={`https://www.google.com/maps/search/?api=1&query=${data.parking.latitude},${data.parking.longitude}`}
