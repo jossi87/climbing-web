@@ -139,13 +139,9 @@ const ProfileStatistics = ({ userId, canDownload }: ProfileStatisticsProps) => {
         <Label.Group size="small">
           <Label color="orange" image>
             <Icon name="check" />
-            {numberWithCommas(numFas)}
-            <Label.Detail>FA</Label.Detail>
-          </Label>
-          <Label color="olive" image>
-            <Icon name="check" />
-            {numberWithCommas(numTicks)}
-            <Label.Detail>Tick</Label.Detail>
+            {numberWithCommas(numTicks + numFas)}
+            {numFas > 0 && ` (${numberWithCommas(numFas)} FA's)`}
+            <Label.Detail>Ascents</Label.Detail>
           </Label>
           {numTickRepeats > 0 && (
             <Label color="olive" image>
