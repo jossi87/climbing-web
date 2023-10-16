@@ -1290,7 +1290,8 @@ export type operations = {
   getMedia: {
     parameters: {
       query: {
-        "Media id": number;
+        /** @description Media id */
+        idMedia: number;
       };
     };
     responses: {
@@ -1305,10 +1306,14 @@ export type operations = {
   putMedia: {
     parameters: {
       query: {
-        "Move right": number;
-        "Move left": boolean;
-        "To sector id (will move media to sector if toSectorId>0 and toProblemId=0)": number;
-        "To problem id (will move media to problem if toProblemId>0 and toSectorId=0)": number;
+        /** @description Move right */
+        id: number;
+        /** @description Move left */
+        left: boolean;
+        /** @description To sector id (will move media to sector if toSectorId>0 and toProblemId=0) */
+        toIdSector: number;
+        /** @description To problem id (will move media to problem if toProblemId>0 and toSectorId=0) */
+        toIdProblem: number;
       };
     };
     responses: {
@@ -1324,7 +1329,8 @@ export type operations = {
   deleteMedia: {
     parameters: {
       query: {
-        "Media id": number;
+        /** @description Media id */
+        id: number;
       };
     };
     responses: {
@@ -1340,13 +1346,20 @@ export type operations = {
   getActivity: {
     parameters: {
       query: {
-        "Area id (can be 0 if idSector>0)": number;
-        "Sector id (can be 0 if idArea>0)": number;
-        "Filter on lower grade"?: number;
-        "Include first ascents"?: boolean;
-        "Include comments"?: boolean;
-        "Include ticks (public ascents)"?: boolean;
-        "Include new media"?: boolean;
+        /** @description Area id (can be 0 if idSector>0) */
+        idArea: number;
+        /** @description Sector id (can be 0 if idArea>0) */
+        idSector: number;
+        /** @description Filter on lower grade */
+        lowerGrade?: number;
+        /** @description Include first ascents */
+        fa?: boolean;
+        /** @description Include comments */
+        comments?: boolean;
+        /** @description Include ticks (public ascents) */
+        ticks?: boolean;
+        /** @description Include new media */
+        media?: boolean;
       };
     };
     responses: {
@@ -1371,7 +1384,8 @@ export type operations = {
   getAreas: {
     parameters: {
       query?: {
-        "Area id"?: number;
+        /** @description Area id */
+        id?: number;
       };
     };
     responses: {
@@ -1401,8 +1415,8 @@ export type operations = {
   getAreasPdf: {
     parameters: {
       query: {
-        "Access token"?: string;
-        "Area id": number;
+        /** @description Area id */
+        id: number;
       };
     };
     responses: {
@@ -1437,7 +1451,9 @@ export type operations = {
   getElevation: {
     parameters: {
       query: {
+        /** @description latitude */
         latitude: number;
+        /** @description longitude */
         longitude: number;
       };
     };
@@ -1463,8 +1479,10 @@ export type operations = {
   getGradeDistribution: {
     parameters: {
       query: {
-        "Area id (can be 0 if idSector>0)": number;
-        "Sector id (can be 0 if idArea>0)": number;
+        /** @description Area id (can be 0 if idSector>0) */
+        idArea: number;
+        /** @description Sector id (can be 0 if idArea>0) */
+        idSector: number;
       };
     };
     responses: {
@@ -1489,9 +1507,12 @@ export type operations = {
   getImages: {
     parameters: {
       query: {
-        "Media id": number;
-        "Checksum - not used in ws, but necessary to include on client when an image is changed (e.g. rotated) to avoid cached version"?: number;
-        "Image size - E.g. minDimention=100 can return an image with the size 100x133px"?: number;
+        /** @description Media id */
+        id: number;
+        /** @description Checksum - not used in ws, but necessary to include on client when an image is changed (e.g. rotated) to avoid cached version */
+        crc32?: number;
+        /** @description Image size - E.g. minDimention=100 can return an image with the size 100x133px */
+        minDimention?: number;
       };
     };
     responses: {
@@ -1542,8 +1563,10 @@ export type operations = {
   getProblem: {
     parameters: {
       query: {
-        "Problem id": number;
-        "Include hidden media (example: if a sector has multiple topo-images, the topo-images without this route will be hidden)"?: boolean;
+        /** @description Problem id */
+        id: number;
+        /** @description Include hidden media (example: if a sector has multiple topo-images, the topo-images without this route will be hidden) */
+        showHiddenMedia?: boolean;
       };
     };
     responses: {
@@ -1558,8 +1581,10 @@ export type operations = {
   getProblemPdf: {
     parameters: {
       query: {
-        "Access token"?: string;
-        "Problem id": number;
+        /** @description Access token */
+        accessToken?: string;
+        /** @description Problem id */
+        id: number;
       };
     };
     responses: {
@@ -1609,7 +1634,8 @@ export type operations = {
   getProfile: {
     parameters: {
       query: {
-        "User id (will return logged in user without this attribute)": number;
+        /** @description User id (will return logged in user without this attribute) */
+        id: number;
       };
     };
     responses: {
@@ -1624,7 +1650,8 @@ export type operations = {
   getProfileStatistics: {
     parameters: {
       query: {
-        "User id": number;
+        /** @description User id */
+        id: number;
       };
     };
     responses: {
@@ -1639,7 +1666,8 @@ export type operations = {
   getProfileTodo: {
     parameters: {
       query: {
-        "User id": number;
+        /** @description User id */
+        id: number;
       };
     };
     responses: {
@@ -1654,8 +1682,10 @@ export type operations = {
   getProfilemedia: {
     parameters: {
       query: {
-        "User id": number;
-        "FALSE = tagged media, TRUE = captured media"?: boolean;
+        /** @description User id */
+        id: number;
+        /** @description FALSE = tagged media, TRUE = captured media */
+        captured?: boolean;
       };
     };
     responses: {
@@ -1680,7 +1710,8 @@ export type operations = {
   getSectors: {
     parameters: {
       query: {
-        "Sector id": number;
+        /** @description Sector id */
+        id: number;
       };
     };
     responses: {
@@ -1710,8 +1741,10 @@ export type operations = {
   getSectorsPdf: {
     parameters: {
       query: {
-        "Access token"?: string;
-        "Sector id": number;
+        /** @description Access token */
+        accessToken?: string;
+        /** @description Sector id */
+        id: number;
       };
     };
     responses: {
@@ -1741,7 +1774,8 @@ export type operations = {
   getTicks: {
     parameters: {
       query?: {
-        "Page (ticks ordered descending, 0 returns fist page)"?: number;
+        /** @description Page (ticks ordered descending, 0 returns fist page) */
+        page?: number;
       };
     };
     responses: {
@@ -1772,8 +1806,10 @@ export type operations = {
   getTodo: {
     parameters: {
       query: {
-        "Area id (can be 0 if idSector>0)": number;
-        "Sector id (can be 0 if idArea>0)": number;
+        /** @description Area id (can be 0 if idSector>0) */
+        idArea: number;
+        /** @description Sector id (can be 0 if idArea>0) */
+        idSector: number;
       };
     };
     responses: {
@@ -1788,7 +1824,8 @@ export type operations = {
   postTodo: {
     parameters: {
       query: {
-        "Problem id": number;
+        /** @description Problem id */
+        idProblem: number;
       };
     };
     responses: {
@@ -1804,8 +1841,10 @@ export type operations = {
   getTop: {
     parameters: {
       query: {
-        "Area id (can be 0 if idSector>0)": number;
-        "Sector id (can be 0 if idArea>0)": number;
+        /** @description Area id (can be 0 if idSector>0) */
+        idArea: number;
+        /** @description Sector id (can be 0 if idArea>0) */
+        idSector: number;
       };
     };
     responses: {
@@ -1830,10 +1869,14 @@ export type operations = {
   putTrash: {
     parameters: {
       query: {
-        "Area id": number;
-        "Sector id": number;
-        "Problem id": number;
-        "Media id": number;
+        /** @description Area id */
+        idArea: number;
+        /** @description Sector id */
+        idSector: number;
+        /** @description Problem id */
+        idProblem: number;
+        /** @description Media id */
+        idMedia: number;
       };
     };
     responses: {
@@ -1849,7 +1892,8 @@ export type operations = {
   getUsersSearch: {
     parameters: {
       query: {
-        "Search keyword": string;
+        /** @description Search keyword */
+        value: string;
       };
     };
     responses: {
@@ -1884,6 +1928,7 @@ export type operations = {
   getWithoutJsArea: {
     parameters: {
       path: {
+        /** @description Area id */
         id: number;
       };
     };
@@ -1899,6 +1944,7 @@ export type operations = {
   getWithoutJsProblem: {
     parameters: {
       path: {
+        /** @description Problem id */
         id: number;
       };
     };
@@ -1914,6 +1960,7 @@ export type operations = {
   getWithoutJsSector: {
     parameters: {
       path: {
+        /** @description Sector id */
         id: number;
       };
     };
@@ -1961,7 +2008,8 @@ export type operations = {
   postProblemsMedia: {
     parameters: {
       query: {
-        "Problem id": number;
+        /** @description Problem id */
+        problemId: number;
       };
     };
     requestBody?: {
@@ -1981,8 +2029,10 @@ export type operations = {
   postProblemsSvg: {
     parameters: {
       query: {
-        "Problem id": number;
-        "Media id": number;
+        /** @description Problem id */
+        problemId: number;
+        /** @description Media id */
+        mediaId: number;
       };
     };
     requestBody?: {
@@ -2018,8 +2068,10 @@ export type operations = {
   postUserRegions: {
     parameters: {
       query: {
-        "Region id": number;
-        "Delete (TRUE=hide, FALSE=show)": boolean;
+        /** @description Region id */
+        regionId: number;
+        /** @description Delete (TRUE=hide, FALSE=show) */
+        delete: boolean;
       };
     };
     responses: {
@@ -2051,8 +2103,10 @@ export type operations = {
   putMediaJpegRotate: {
     parameters: {
       query: {
-        "Media id": number;
-        "Degrees (90/180/270)": number;
+        /** @description Media id */
+        idMedia: number;
+        /** @description Degrees (90/180/270) */
+        degrees: number;
       };
     };
     responses: {
