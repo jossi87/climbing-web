@@ -274,7 +274,7 @@ export const useAreaEdit: UseAreaEdit = ({ areaId }) => {
   return {
     area: state,
     isLoading: areaId > 0 ? isLoading : false,
-    isSaving: save.isLoading,
+    isSaving: save.isPending,
     save: save.mutateAsync,
     setString: useCallback(
       (key) =>

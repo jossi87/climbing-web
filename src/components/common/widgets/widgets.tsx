@@ -279,17 +279,15 @@ export const WeatherIcon = ({
 };
 
 const YrLink = ({ lat, lng }: Pick<ConditionLabelsProps, "lat" | "lng">) => {
-  const { data: weatherData, isLoading } = useQuery(
-    [`yr/weather`, { lat, lng }],
-    {
-      enabled: !!lat && !!lng,
-      queryFn: () =>
-        fetch(
-          `https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${lat}&lon=${lng}`,
-        ).then((res) => res.json() as Promise<YrData>),
-      select: (data) => data.properties?.timeseries?.[0]?.data,
-    },
-  );
+  const { data: weatherData, isLoading } = useQuery({
+    queryKey: [`yr/weather`, { lat, lng }],
+    enabled: !!lat && !!lng,
+    queryFn: () =>
+      fetch(
+        `https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${lat}&lon=${lng}`,
+      ).then((res) => res.json() as Promise<YrData>),
+    select: (data) => data.properties?.timeseries?.[0]?.data,
+  });
 
   const next1Hours = weatherData?.next_1_hours?.summary?.symbol_code;
   const next6Hours = weatherData?.next_6_hours?.summary?.symbol_code;

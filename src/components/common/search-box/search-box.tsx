@@ -19,7 +19,7 @@ type SearchBoxProps = Omit<
 
 const SearchBox = ({ children: _, ...searchProps }: SearchBoxProps) => {
   const navigate = useNavigate();
-  const { search, isLoading, data } = useSearch();
+  const { search, isPending, data } = useSearch();
   const [value, setValue] = useState("");
 
   useEffect(() => {
@@ -31,7 +31,7 @@ const SearchBox = ({ children: _, ...searchProps }: SearchBoxProps) => {
   return (
     <Search
       id="mySearch"
-      loading={isLoading}
+      loading={isPending}
       onResultSelect={(_, { result }) => {
         if (result.externalurl) {
           window.open(result.externalurl, "_blank");

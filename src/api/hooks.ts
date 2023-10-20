@@ -74,7 +74,9 @@ export function usePostData<TVariables, TData = Response>(
     return select(res, variables);
   };
 
-  return useMutation<TData, unknown, TVariables>(mutationKey, mutationFn, {
+  return useMutation<TData, unknown, TVariables>({
+    mutationKey,
+    mutationFn,
     ...options,
   });
 }
@@ -103,7 +105,11 @@ export function useData<TQueryData = unknown, TData = TQueryData>(
     return res.json();
   };
 
-  const data = useQuery<TQueryData, unknown, TData>(queryKey, queryFn, options);
+  const data = useQuery<TQueryData, unknown, TData>({
+    queryKey,
+    queryFn,
+    ...(options as any), // TODO options should not be cast as any... Can you look at this Evan?
+  });
   const redirectUi = useRedirect(data.data);
   data.isFetched;
   return { ...data, redirectUi };
@@ -458,10 +464,10 @@ export function useElevation() {
   const result = useData(`/elevation?latitude=${lat}&longitude=${lng}`, {
     queryKey: [`/elevation`, { lat, lng }],
     enabled: !!lat && !!lng,
-    keepPreviousData: true,
+    placeholderData: true,
     // We're unlikely to have very many duplicate requests, so set a relatively
     // short cache time to keep them from polluting the in-memory cache.
-    cacheTime: 30 * 1000,
+    gcTime: 30 * 1000,
   });
 
   const lastCalledTime = useRef(0);

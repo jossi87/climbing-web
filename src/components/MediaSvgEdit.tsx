@@ -35,7 +35,7 @@ const MediaSvgEdit = () => {
         setData(data);
         break;
       }
-      case "loading": {
+      case "pending": {
         setData(undefined);
         break;
       }
