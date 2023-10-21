@@ -89,11 +89,8 @@ export function useData<TQueryData = unknown, TData = TQueryData>(
   }: Partial<
     Omit<
       UseQueryOptions<TQueryData, unknown, TData>,
-      "queryFn" | "placeholderData" | "initialData" | "structuralSharing"
-    > & {
-      placeholderData: TQueryData | (() => TQueryData);
-      initialData: TQueryData | (() => TQueryData);
-    }
+      "queryFn" | "structuralSharing"
+    >
   > = {},
 ) {
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
@@ -108,7 +105,7 @@ export function useData<TQueryData = unknown, TData = TQueryData>(
   const data = useQuery<TQueryData, unknown, TData>({
     queryKey,
     queryFn,
-    ...(options as any), // TODO options should not be cast as any... Can you look at this Evan?
+    ...options,
   });
   const redirectUi = useRedirect(data.data);
   data.isFetched;
