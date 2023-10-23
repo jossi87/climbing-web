@@ -200,7 +200,11 @@ const Media = ({
       id = id.substring(0, id.indexOf("&"));
     }
     const x = media.filter((m) => m.id === parseInt(id));
-    if (x && x.length === 1 && (!m || m.id != x[0].id)) {
+    if (
+      x &&
+      x.length === 1 &&
+      (!m || m.id != x[0].id || m.mediaSvgs != x[0].mediaSvgs)
+    ) {
       setM(x[0]);
     }
   } else if (!window.location.search && media && m) {
