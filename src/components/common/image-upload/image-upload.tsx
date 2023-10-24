@@ -43,7 +43,10 @@ const ImageUpload = ({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { "image/jpeg": [".jpeg", ".png"] },
+    accept: {
+      'image/jpeg': [],
+      'image/png': []
+    },
   });
 
   const addMedia = useCallback<
