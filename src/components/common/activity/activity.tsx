@@ -77,6 +77,7 @@ const Activity = ({ idArea, idSector }: Props) => {
     height: "fit-content",
     maxHeight: "80px",
     objectFit: "none",
+    verticalAlign: "top",
   };
 
   return (
