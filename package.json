@@ -29,7 +29,7 @@
     "@types/helmet": "^4.0.0",
     "@types/isomorphic-fetch": "^0.0.38",
     "@types/leaflet": "^1.9.7",
-    "@types/react": "^18.2.31",
+    "@types/react": "^18.2.33",
     "@types/svg-path-parser": "^1.1.5",
     "@types/swagger-ui-react": "^4.18.2",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
@@ -57,9 +57,9 @@
   "dependencies": {
     "@auth0/auth0-react": "^2.2.1",
     "@react-leaflet/core": "^2.1.0",
-    "@sentry/react": "^7.75.0",
+    "@sentry/react": "^7.75.1",
     "@tanstack/react-query": "^5.0.5",
-    "@tanstack/react-query-devtools": "^5.1.0",
+    "@tanstack/react-query-devtools": "^5.4.2",
     "atob": "^2.1.2",
     "classnames": "^2.3.2",
     "express": "^4.18.2",
@@ -88,7 +88,7 @@
     "suncalc": "^1.9.0",
     "svg-path-parser": "^1.1.0",
     "svg-path-properties": "^1.2.0",
-    "swagger-ui-react": "^5.9.0"
+    "swagger-ui-react": "^5.9.1"
   },
   "scripts": {
     "dev": "webpack serve --config webpack.dev.js",
