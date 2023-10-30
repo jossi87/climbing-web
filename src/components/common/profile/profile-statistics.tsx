@@ -5,6 +5,7 @@ import ProblemList from "../problem-list/problem-list";
 import Leaflet from "../../common/leaflet/leaflet";
 import { Loading, LockSymbol, Stars } from "../widgets/widgets";
 import {
+  Header,
   Icon,
   List,
   Label,
@@ -108,6 +109,7 @@ const ProfileStatistics = ({ userId, canDownload }: ProfileStatisticsProps) => {
     );
   }
 
+  const regions = Array.from(new Set(data.ticks.map((t: any) => t.regionName))).sort();
   const numTicks = data.ticks.filter(
     (t) => !t.fa && t.idTickRepeat === 0,
   ).length;
@@ -121,6 +123,12 @@ const ProfileStatistics = ({ userId, canDownload }: ProfileStatisticsProps) => {
     menuItem: { key: "stats", icon: "area graph" },
     render: () => (
       <Tab.Pane>
+        {regions?.length > 0 && (
+          <Header as='h5'>
+            <Icon name="world"/>
+            {regions.join(", ")}
+          </Header>
+        )}
         {canDownload && (
           <Button
             floated="right"

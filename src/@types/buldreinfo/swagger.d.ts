@@ -860,6 +860,7 @@ export type components = {
       ticks?: components["schemas"]["ProfileStatisticsTick"][];
     };
     ProfileStatisticsTick: {
+      regionName?: string;
       areaName?: string;
       areaLockedAdmin?: boolean;
       areaLockedSuperadmin?: boolean;
