@@ -109,7 +109,9 @@ const ProfileStatistics = ({ userId, canDownload }: ProfileStatisticsProps) => {
     );
   }
 
-  const regions = Array.from(new Set(data.ticks.map((t: any) => t.regionName))).sort();
+  const regions = Array.from(
+    new Set(data.ticks.map((t: any) => t.regionName)),
+  ).sort();
   const numTicks = data.ticks.filter(
     (t) => !t.fa && t.idTickRepeat === 0,
   ).length;
@@ -124,8 +126,8 @@ const ProfileStatistics = ({ userId, canDownload }: ProfileStatisticsProps) => {
     render: () => (
       <Tab.Pane>
         {regions?.length > 0 && (
-          <Header as='h5'>
-            <Icon name="world"/>
+          <Header as="h5">
+            <Icon name="world" />
             {regions.join(", ")}
           </Header>
         )}
