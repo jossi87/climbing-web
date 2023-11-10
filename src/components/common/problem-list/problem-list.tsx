@@ -129,7 +129,7 @@ const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: Props) => {
             if (a.gradeNumber != b.gradeNumber)
               return b.gradeNumber - a.gradeNumber;
             else if (a.num && b.num && a.num != b.num) return a.num - b.num;
-            return a.name.localeCompare(b.name, getLocales());
+            return  a.name.localeCompare(b.name, getLocales());
           } else if (newOrderBy === OrderBy.number) {
             return a.nr - b.nr;
           } else if (newOrderBy === OrderBy.rating) {
