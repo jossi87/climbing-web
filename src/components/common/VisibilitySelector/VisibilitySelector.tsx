@@ -36,14 +36,14 @@ export const VisibilitySelector = ({
   const options = meta.isSuperAdmin
     ? superAdminOptions
     : meta.isAdmin
-    ? lockedOptions
-    : [];
+      ? lockedOptions
+      : [];
 
   const value = incomingValue.lockedSuperadmin
     ? 2
     : incomingValue.lockedAdmin
-    ? 1
-    : 0;
+      ? 1
+      : 0;
 
   return (
     <Dropdown

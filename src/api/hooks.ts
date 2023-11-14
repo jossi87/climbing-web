@@ -488,8 +488,8 @@ export function useElevation() {
     result.fetchStatus === "fetching"
       ? "..."
       : result.data
-      ? `(${result.data}m)`
-      : "",
+        ? `(${result.data}m)`
+        : "",
   ]
     .filter(Boolean)
     .join(" ");
