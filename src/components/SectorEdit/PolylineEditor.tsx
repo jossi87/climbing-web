@@ -19,7 +19,7 @@ import {
 
 type Props = {
   coordinates: components["schemas"]["Coordinates"][];
-  parking?: components["schemas"]["Coordinates"];
+  parking: components["schemas"]["Coordinates"];
   onChange: (polyline: components["schemas"]["Coordinates"][]) => void;
   upload?: boolean;
 };
@@ -69,7 +69,7 @@ export const PolylineEditor = ({
         reader.readAsText(file);
       }
     },
-    [onChange],
+    [onChange, parking],
   );
 
   const { getRootProps } = useDropzone({
