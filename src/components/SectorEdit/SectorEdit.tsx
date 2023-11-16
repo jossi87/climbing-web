@@ -523,6 +523,7 @@ export const SectorEdit = () => {
                 <label>Approach</label>
                 <PolylineEditor
                   coordinates={data.approach?.coordinates}
+                  parking={data.parking}
                   onChange={(coordinates) => {
                     setData((prevState) => ({
                       ...prevState,
