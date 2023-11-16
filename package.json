@@ -49,7 +49,7 @@
     "storybook": "^7.5.3",
     "typescript": "^5.2.2",
     "webpack": "^5.89.0",
-    "webpack-bundle-analyzer": "^4.10.0",
+    "webpack-bundle-analyzer": "^4.10.1",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^4.15.1",
     "webpack-merge": "^5.10.0"
@@ -57,9 +57,9 @@
   "dependencies": {
     "@auth0/auth0-react": "^2.2.3",
     "@react-leaflet/core": "^2.1.0",
-    "@sentry/react": "^7.80.0",
-    "@tanstack/react-query": "^5.8.3",
-    "@tanstack/react-query-devtools": "^5.8.3",
+    "@sentry/react": "^7.80.1",
+    "@tanstack/react-query": "^5.8.4",
+    "@tanstack/react-query-devtools": "^5.8.4",
     "atob": "^2.1.2",
     "classnames": "^2.3.2",
     "express": "^4.18.2",
@@ -69,7 +69,7 @@
     "leaflet.fullscreen": "^3.0.0",
     "leaflet.locatecontrol": "^0.79.0",
     "leaflet.markercluster": "^1.5.3",
-    "puppeteer": "^21.5.1",
+    "puppeteer": "^21.5.2",
     "react": "^18.2.0",
     "react-datepicker": "^4.21.0",
     "react-dom": "^18.2.0",
@@ -88,7 +88,7 @@
     "suncalc": "^1.9.0",
     "svg-path-parser": "^1.1.0",
     "svg-path-properties": "^1.2.0",
-    "swagger-ui-react": "^5.9.4"
+    "swagger-ui-react": "^5.10.0"
   },
   "scripts": {
     "dev": "webpack serve --config webpack.dev.js",
