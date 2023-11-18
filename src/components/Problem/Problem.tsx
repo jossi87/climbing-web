@@ -194,7 +194,6 @@ export const Problem = () => {
     const enableTickRepeats = meta.isIce || data.sections?.length > 0;
     const userTicks = data.ticks?.filter((t) => t.writable);
     if (userTicks && userTicks.length > 0) {
-      console.log(userTicks);
       return (
         <TickModal
           idTick={userTicks[0].id}
@@ -273,6 +272,7 @@ export const Problem = () => {
       />
     );
   }
+  const isTicked = data.ticks?.filter((t) => t.writable).length === 1;
 
   return (
     <>
@@ -298,20 +298,20 @@ export const Problem = () => {
         <div style={{ float: "right" }}>
           {meta.isAuthenticated && (
             <Button.Group size="mini" compact>
+              {!isTicked && (
+                <Button
+                  positive={data.todo}
+                  animated="fade"
+                  onClick={() => toggleTodo(data.id)}
+                >
+                  <Button.Content hidden>To-do</Button.Content>
+                  <Button.Content visible>
+                    <Icon name="bookmark" />
+                  </Button.Content>
+                </Button>
+              )}
               <Button
-                positive={data.todo}
-                animated="fade"
-                onClick={() => toggleTodo(data.id)}
-              >
-                <Button.Content hidden>To-do</Button.Content>
-                <Button.Content visible>
-                  <Icon name="bookmark" />
-                </Button.Content>
-              </Button>
-              <Button
-                positive={
-                  data.ticks && data.ticks.filter((t) => t.writable).length > 0
-                }
+                positive={isTicked}
                 animated="fade"
                 onClick={openTickModal}
               >
