@@ -87,7 +87,11 @@ export const ApproachProfile = ({ approach }: Props) => {
       </Label>
       <Label basic size="small">
         Elevation source:
-        <Label.Detail>{approach.coordinates[0].elevationSource}</Label.Detail>
+        <Label.Detail>
+          {Array.from(
+            new Set(approach.coordinates.map((a) => a.elevationSource)),
+          ).join(", ")}
+        </Label.Detail>
       </Label>
     </>
   );
