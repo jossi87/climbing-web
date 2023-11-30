@@ -459,7 +459,7 @@ export const Problem = () => {
               </Table.Cell>
             </Table.Row>
           )}
-          {meta.isClimbing && (data.neighbourPrev || data.neighbourNext) && (
+          {(data.neighbourPrev || data.neighbourNext) && (
             <Table.Row verticalAlign="top">
               <Table.Cell>Neighbour(s):</Table.Cell>
               <Table.Cell>
