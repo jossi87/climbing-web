@@ -1,4 +1,5 @@
 import type { MetaArgs } from "../../../utils/storybook";
+import { TWeatherSymbolKey } from "../../../yr";
 import { WeatherIcon } from "./widgets";
 import type { StoryObj } from "@storybook/react";
 
@@ -16,18 +17,18 @@ export default meta;
 
 export const Undefined: Story = {
   args: {
-    symbol: undefined,
+    symbol: undefined as TWeatherSymbolKey,
   },
 };
 
 export const Loading: Story = {
   args: {
-    symbol: "loading",
+    symbol: "loading" as TWeatherSymbolKey,
   },
 };
 
 export const ClearPolarTwilight: Story = {
   args: {
-    symbol: "clearsky_polartwilight",
+    symbol: "clearsky_polartwilight" as TWeatherSymbolKey,
   },
 };
