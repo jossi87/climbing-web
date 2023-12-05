@@ -98,9 +98,7 @@ const About = () => {
               </List.Item>
               <List.Item>
                 The owner of the content is linked to the origin, whether it is
-                a club or individuals. Contact{" "}
-                <a href="mailto:jostein.oygarden@gmail.com">Jostein</a> if you
-                want a site for your climbing area.
+                a club or individuals.
               </List.Item>
               <List.Item>
                 The editors themselves can choose how to cover the costs
@@ -108,6 +106,23 @@ const About = () => {
                 free use for the users.
               </List.Item>
             </List>
+          </Segment>
+          <Segment>
+            <Header as="h3">
+              <Icon name="like" />
+              <Header.Content>
+                Joining the fun
+                <Header.Subheader>
+                  Contact <a href="mailto:jostein.oygarden@gmail.com">Jostein</a> if you or your organization wants to establish your own online guidebook.
+                </Header.Subheader>
+              </Header.Content>
+            </Header>
+            Though designing the pages, upgrading its design and functionality, and maintaining them is done voluntarily and non-profit - there is a running cost on server and domains for these pages.<br/>
+            The more organizations/regions we are, the more we split the cost.<br/>
+            As of now we have good capacity on the server to include more regions info the family without increasing the cost.<br/>
+            The climbing club BRV pays for the annual costs for everyone, and do the math of how much everyone joining in should refund. You refund per page you are editor of.<br/>
+            Prices as of 2023 was 308 NOK for each guide page per year (616 for rock-climbing + bouldering).<br/>
+            BRV finance their 3 guidebook pages (bouldering, rock-climbing and ice) through their membership fees.
           </Segment>
           <Segment>
             <Header as="h3">
