@@ -122,7 +122,7 @@ const About = () => {
             </Header>
             Though designing the pages, upgrading its design and functionality,
             and maintaining them is done voluntarily and non-profit - there is a
-            running cost on server and domains for these pages.
+            running cost on hosting these pages.
             <br />
             The more organizations/regions we are, the more we split the cost.
             <br />
