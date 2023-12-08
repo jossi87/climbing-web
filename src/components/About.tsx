@@ -133,7 +133,7 @@ const About = () => {
             the math of how much everyone joining in should refund. You refund
             per page you are editor of.
             <br />
-            Prices as of 2023 was 308 NOK for each guide page per year (616 for
+            Prices as of 2024 is 465 NOK for each guide page per year (930 for
             rock-climbing + bouldering).
             <br />
             BRV finance their 3 guidebook pages (bouldering, rock-climbing and
