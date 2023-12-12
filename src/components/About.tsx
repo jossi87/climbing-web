@@ -109,9 +109,9 @@ const About = () => {
           </Segment>
           <Segment>
             <Header as="h3">
-              <Icon name="like" />
+              <Icon name="users" />
               <Header.Content>
-                Joining the fun
+                Collaboration
                 <Header.Subheader>
                   Contact{" "}
                   <a href="mailto:jostein.oygarden@gmail.com">Jostein</a> if you
@@ -120,24 +120,8 @@ const About = () => {
                 </Header.Subheader>
               </Header.Content>
             </Header>
-            Though designing the pages, upgrading its design and functionality,
-            and maintaining them is done voluntarily and non-profit - there is a
-            running cost on hosting these pages.
-            <br />
-            The more organizations/regions we are, the more we split the cost.
-            <br />
-            As of now we have good capacity on the server to include more
-            regions info the family without increasing the cost.
-            <br />
-            The climbing club BRV pays for the annual costs for everyone, and do
-            the math of how much everyone joining in should refund. You refund
-            per page you are editor of.
-            <br />
-            Prices as of 2024 is 465 NOK for each guide page per year (930 for
-            rock-climbing + bouldering).
-            <br />
-            BRV finance their 3 guidebook pages (bouldering, rock-climbing and
-            ice) through their membership fees.
+            Design, upgrade and maintenance of the online guide is done on a voluntary basis. The service is non-profit and a collective work of the community in the region.<br/>
+            The yearly cost for a page is 465,- NOK per page and covers the fee of hosting on the server. One page is defined as one topo/guide. E.g. Bouldering, Sport and Ice Climbing would be three different pages and thus cost 1395,-. The cost is billed annually.
           </Segment>
           <Segment>
             <Header as="h3">
