@@ -120,8 +120,14 @@ const About = () => {
                 </Header.Subheader>
               </Header.Content>
             </Header>
-            Design, upgrade and maintenance of the online guide is done on a voluntary basis. The service is non-profit and a collective work of the community in the region.<br/>
-            The yearly cost for a page is 465,- NOK per page and covers the fee of hosting on the server. One page is defined as one topo/guide. E.g. Bouldering, Sport and Ice Climbing would be three different pages and thus cost 1395,-. The cost is billed annually.
+            Design, upgrade and maintenance of the online guide is done on a
+            voluntary basis. The service is non-profit and a collective work of
+            the community in the region.
+            <br />
+            The yearly cost for a page is 465,- NOK per page and covers the fee
+            of hosting on the server. One page is defined as one topo/guide.
+            E.g. Bouldering, Sport and Ice Climbing would be three different
+            pages and thus cost 1395,-. The cost is billed annually.
           </Segment>
           <Segment>
             <Header as="h3">
