@@ -124,10 +124,10 @@ const About = () => {
             voluntary basis. The service is non-profit and a collective work of
             the community in the region.
             <br />
-            The yearly cost for a page is 465,- NOK per page and covers the fee
-            of hosting on the server. One page is defined as one topo/guide.
-            E.g. Bouldering, Sport and Ice Climbing would be three different
-            pages and thus cost 1395,-. The cost is billed annually.
+            The yearly cost for a page (as of 2023) is 409,- NOK per page and
+            covers the fee of hosting on the server. One page is defined as one
+            topo/guide. E.g. Bouldering, Sport and Ice Climbing would be three
+            different pages and thus cost 1227,-. The cost is billed annually.
           </Segment>
           <Segment>
             <Header as="h3">
