@@ -46,11 +46,7 @@ const CommentModal = ({
             </Form.Field>
             <Form.Field>
               <label>Attach image(s)</label>
-              <ImageUpload
-                onMediaChanged={setMedia}
-                isMultiPitch={false}
-                includeVideoEmbedder={false}
-              />
+              <ImageUpload onMediaChanged={setMedia} isMultiPitch={false} />
             </Form.Field>
             {showHse && (
               <Form.Field>

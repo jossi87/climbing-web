@@ -216,11 +216,7 @@ export const AreaEdit = () => {
         <Segment>
           <Form.Field>
             <label>Upload image(s)</label>
-            <ImageUpload
-              onMediaChanged={setNewMedia}
-              isMultiPitch={false}
-              includeVideoEmbedder={false}
-            />
+            <ImageUpload onMediaChanged={setNewMedia} isMultiPitch={false} />
           </Form.Field>
         </Segment>
 

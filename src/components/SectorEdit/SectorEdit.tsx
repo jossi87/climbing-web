@@ -397,7 +397,6 @@ export const SectorEdit = () => {
             <ImageUpload
               onMediaChanged={onNewMediaChanged}
               isMultiPitch={false}
-              includeVideoEmbedder={false}
             />
           </Form.Field>
         </Segment>

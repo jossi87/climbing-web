@@ -13,18 +13,13 @@ type UploadedMedia = {
 type Props = {
   onMediaChanged: (newMedia: UploadedMedia[]) => void;
   isMultiPitch: boolean;
-  includeVideoEmbedder: boolean;
 };
 
 const different = (a: UploadedMedia, b: UploadedMedia) => {
   return a.preview !== b.preview || a.embedThumbnailUrl !== b.embedThumbnailUrl;
 };
 
-const ImageUpload = ({
-  onMediaChanged,
-  isMultiPitch,
-  includeVideoEmbedder,
-}: Props) => {
+const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
   const [media, setMedia] = useState<UploadedMedia[]>([]);
 
   useEffect(() => {
@@ -78,12 +73,8 @@ const ImageUpload = ({
           <p>Drop images here, or click to select files to upload.</p>
         )}
       </div>
-      {includeVideoEmbedder && (
-        <>
-          <br />
-          <VideoEmbedder addMedia={addMedia} />
-        </>
-      )}
+      <br />
+      <VideoEmbedder addMedia={addMedia} />
       {media.length > 0 && (
         <>
           <br />

@@ -41,7 +41,6 @@ const ProblemEditMedia = () => {
           <ImageUpload
             onMediaChanged={setMedia}
             isMultiPitch={problem?.sections?.length > 0}
-            includeVideoEmbedder={true}
           />
         </form>
       </Segment>
