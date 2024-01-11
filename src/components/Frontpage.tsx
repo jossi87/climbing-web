@@ -103,7 +103,7 @@ const Frontpage = () => {
                       <Card.Header
                         as={Link}
                         to={`/problem/${frontpage.randomMedia.idProblem}`}
-                        style={{wordBreak: "break-all"}}
+                        style={{ wordBreak: "break-all" }}
                       >
                         {frontpage.randomMedia.problem}{" "}
                         <span style={{ fontWeight: "normal" }}>
