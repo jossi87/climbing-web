@@ -47,6 +47,22 @@ export type paths = {
     /** Get frontpage */
     get: operations["getFrontpage"];
   };
+  "/v2/frontpage/num_media": {
+    /** Get frontpage (num media) */
+    get: operations["getFrontpageNumMedia"];
+  };
+  "/v2/frontpage/num_problems": {
+    /** Get frontpage (num problems) */
+    get: operations["getFrontpageNumProblems"];
+  };
+  "/v2/frontpage/num_ticks": {
+    /** Get frontpage (num ticks) */
+    get: operations["getFrontpageNumTicks"];
+  };
+  "/v2/frontpage/random_media": {
+    /** Get frontpage (random media) */
+    get: operations["getFrontpageRandomMedia"];
+  };
   "/v2/grade/distribution": {
     /** Get grade distribution by Area Id or Sector Id */
     get: operations["getGradeDistribution"];
@@ -560,10 +576,33 @@ export type components = {
       idProblem?: number;
       problem?: string;
       grade?: string;
-      photographer?: components["schemas"]["User"];
-      tagged?: components["schemas"]["User"][];
+      photographer?: components["schemas"]["FrontpageRandomMediaUser"];
+      tagged?: components["schemas"]["FrontpageRandomMediaUser"][];
     };
     User: {
+      /** Format: int32 */
+      id?: number;
+      name?: string;
+    };
+    FrontpageNumMedia: {
+      /** Format: int32 */
+      numImages?: number;
+      /** Format: int32 */
+      numMovies?: number;
+    };
+    FrontpageNumProblems: {
+      /** Format: int32 */
+      numProblems?: number;
+      /** Format: int32 */
+      numProblemsWithCoordinates?: number;
+      /** Format: int32 */
+      numProblemsWithTopo?: number;
+    };
+    FrontpageNumTicks: {
+      /** Format: int32 */
+      numTicks?: number;
+    };
+    FrontpageRandomMediaUser: {
       /** Format: int32 */
       id?: number;
       name?: string;
@@ -1151,8 +1190,8 @@ export type components = {
       value?: string;
       content?: Record<string, never>;
       fileName?: string;
-      formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
       simple?: boolean;
+      formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
       parameterizedHeaders?: {
         empty?: boolean;
         [key: string]: components["schemas"]["ParameterizedHeader"][] | undefined;
@@ -1472,6 +1511,46 @@ export type operations = {
       200: {
         content: {
           "application/json": components["schemas"]["Frontpage"];
+        };
+      };
+    };
+  };
+  /** Get frontpage (num media) */
+  getFrontpageNumMedia: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["FrontpageNumMedia"];
+        };
+      };
+    };
+  };
+  /** Get frontpage (num problems) */
+  getFrontpageNumProblems: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["FrontpageNumProblems"];
+        };
+      };
+    };
+  };
+  /** Get frontpage (num ticks) */
+  getFrontpageNumTicks: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["FrontpageNumTicks"];
+        };
+      };
+    };
+  };
+  /** Get frontpage (random media) */
+  getFrontpageRandomMedia: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["FrontpageRandomMedia"];
         };
       };
     };
