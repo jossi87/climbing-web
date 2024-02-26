@@ -3,7 +3,7 @@ import CreatableSelect from "react-select/creatable";
 import { useUserSearch } from "./../../../api";
 import { components } from "../../../@types/buldreinfo/swagger";
 
-type User = components["schemas"]["User"];
+type User = components["schemas"]["UserSearch"];
 
 type MultiUserProps = {
   onUsersUpdated: (user: User[]) => void;
