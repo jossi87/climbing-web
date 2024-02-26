@@ -43,10 +43,6 @@ export type paths = {
     /** Get elevation by latitude and longitude */
     get: operations["getElevation"];
   };
-  "/v2/frontpage": {
-    /** Get frontpage */
-    get: operations["getFrontpage"];
-  };
   "/v2/frontpage/num_media": {
     /** Get frontpage (num media) */
     get: operations["getFrontpageNumMedia"];
@@ -542,20 +538,23 @@ export type components = {
       lockedSuperadmin?: boolean;
       problems?: components["schemas"]["DangerousProblem"][];
     };
-    Frontpage: {
+    FrontpageNumMedia: {
+      /** Format: int32 */
+      numImages?: number;
+      /** Format: int32 */
+      numMovies?: number;
+    };
+    FrontpageNumProblems: {
       /** Format: int32 */
       numProblems?: number;
       /** Format: int32 */
       numProblemsWithCoordinates?: number;
       /** Format: int32 */
       numProblemsWithTopo?: number;
+    };
+    FrontpageNumTicks: {
       /** Format: int32 */
       numTicks?: number;
-      /** Format: int32 */
-      numImages?: number;
-      /** Format: int32 */
-      numMovies?: number;
-      randomMedia?: components["schemas"]["FrontpageRandomMedia"];
     };
     FrontpageRandomMedia: {
       /** Format: int32 */
@@ -578,29 +577,6 @@ export type components = {
       grade?: string;
       photographer?: components["schemas"]["FrontpageRandomMediaUser"];
       tagged?: components["schemas"]["FrontpageRandomMediaUser"][];
-    };
-    User: {
-      /** Format: int32 */
-      id?: number;
-      name?: string;
-    };
-    FrontpageNumMedia: {
-      /** Format: int32 */
-      numImages?: number;
-      /** Format: int32 */
-      numMovies?: number;
-    };
-    FrontpageNumProblems: {
-      /** Format: int32 */
-      numProblems?: number;
-      /** Format: int32 */
-      numProblemsWithCoordinates?: number;
-      /** Format: int32 */
-      numProblemsWithTopo?: number;
-    };
-    FrontpageNumTicks: {
-      /** Format: int32 */
-      numTicks?: number;
     };
     FrontpageRandomMediaUser: {
       /** Format: int32 */
@@ -1501,16 +1477,6 @@ export type operations = {
       200: {
         content: {
           "text/html": number;
-        };
-      };
-    };
-  };
-  /** Get frontpage */
-  getFrontpage: {
-    responses: {
-      200: {
-        content: {
-          "application/json": components["schemas"]["Frontpage"];
         };
       };
     };
