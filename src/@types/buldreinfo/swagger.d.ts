@@ -242,7 +242,7 @@ export type components = {
       picture?: string;
       description?: string;
       message?: string;
-      users?: components["schemas"]["ActivityUser"][];
+      users?: components["schemas"]["User"][];
     };
     ActivityMedia: {
       /** Format: int32 */
@@ -252,7 +252,7 @@ export type components = {
       movie?: boolean;
       embedUrl?: string;
     };
-    ActivityUser: {
+    User: {
       /** Format: int32 */
       id?: number;
       name?: string;
@@ -388,6 +388,7 @@ export type components = {
       enableMoveToIdSector?: number;
       /** Format: int32 */
       enableMoveToIdProblem?: number;
+      url?: string;
     };
     MediaMetadata: {
       dateCreated?: string;
@@ -499,7 +500,7 @@ export type components = {
       /** Format: double */
       lng?: number;
     };
-    Dangerous: {
+    DangerousArea: {
       /** Format: int32 */
       id?: number;
       url?: string;
@@ -575,13 +576,8 @@ export type components = {
       idProblem?: number;
       problem?: string;
       grade?: string;
-      photographer?: components["schemas"]["FrontpageRandomMediaUser"];
-      tagged?: components["schemas"]["FrontpageRandomMediaUser"][];
-    };
-    FrontpageRandomMediaUser: {
-      /** Format: int32 */
-      id?: number;
-      name?: string;
+      photographer?: components["schemas"]["User"];
+      tagged?: components["schemas"]["User"][];
     };
     GradeDistribution: {
       grade?: string;
@@ -625,27 +621,27 @@ export type components = {
     };
     Meta: {
       title?: string;
+      isAuthenticated?: boolean;
+      isAdmin?: boolean;
+      isSuperAdmin?: boolean;
       grades?: components["schemas"]["Grade"][];
       /** Format: int32 */
       defaultZoom?: number;
       defaultCenter?: components["schemas"]["LatLng"];
+      isBouldering?: boolean;
+      isClimbing?: boolean;
+      isIce?: boolean;
       url?: string;
       types?: components["schemas"]["Type"][];
       sites?: components["schemas"]["Site"][];
       compassDirections?: components["schemas"]["CompassDirection"][];
-      bouldering?: boolean;
-      climbing?: boolean;
-      authenticated?: boolean;
-      admin?: boolean;
-      superAdmin?: boolean;
-      ice?: boolean;
     };
     Site: {
       group?: string;
       name?: string;
       url?: string;
-      outline?: components["schemas"]["Coordinates"][];
       active?: boolean;
+      outline?: components["schemas"]["Coordinates"][];
     };
     PermissionUser: {
       /** Format: int32 */
@@ -665,13 +661,7 @@ export type components = {
       date?: string;
       dateHr?: string;
       description?: string;
-      users?: components["schemas"]["FaUser"][];
-    };
-    FaUser: {
-      /** Format: int32 */
-      id?: number;
-      name?: string;
-      picture?: string;
+      users?: components["schemas"]["User"][];
     };
     Problem: {
       redirectUrl?: string;
@@ -717,7 +707,7 @@ export type components = {
       originalGrade?: string;
       faDate?: string;
       faDateHr?: string;
-      fa?: components["schemas"]["FaUser"][];
+      fa?: components["schemas"]["User"][];
       coordinates?: components["schemas"]["Coordinates"];
       media?: components["schemas"]["Media"][];
       /** Format: int32 */
@@ -920,11 +910,6 @@ export type components = {
       lockedSuperadmin?: boolean;
       sectors?: components["schemas"]["ProfileTodoSector"][];
     };
-    ProfileTodoPartner: {
-      /** Format: int32 */
-      id?: number;
-      name?: string;
-    };
     ProfileTodoProblem: {
       /** Format: int32 */
       todoId?: number;
@@ -938,7 +923,7 @@ export type components = {
       name?: string;
       grade?: string;
       coordinates?: components["schemas"]["Coordinates"];
-      partners?: components["schemas"]["ProfileTodoPartner"][];
+      partners?: components["schemas"]["User"][];
     };
     ProfileTodoSector: {
       /** Format: int32 */
@@ -948,34 +933,6 @@ export type components = {
       lockedAdmin?: boolean;
       lockedSuperadmin?: boolean;
       problems?: components["schemas"]["ProfileTodoProblem"][];
-    };
-    ProfileMedia: {
-      /** Format: int32 */
-      id?: number;
-      uploadedByMe?: boolean;
-      /** Format: int32 */
-      crc32?: number;
-      /** Format: int32 */
-      pitch?: number;
-      trivia?: boolean;
-      /** Format: int32 */
-      width?: number;
-      /** Format: int32 */
-      height?: number;
-      /** Format: int32 */
-      idType?: number;
-      t?: string;
-      mediaSvgs?: components["schemas"]["MediaSvgElement"][];
-      /** Format: int32 */
-      svgProblemId?: number;
-      svgs?: components["schemas"]["Svg"][];
-      mediaMetadata?: components["schemas"]["MediaMetadata"];
-      embedUrl?: string;
-      inherited?: boolean;
-      /** Format: int32 */
-      enableMoveToIdSector?: number;
-      /** Format: int32 */
-      enableMoveToIdProblem?: number;
     };
     Sector: {
       redirectUrl?: string;
@@ -1059,11 +1016,6 @@ export type components = {
     Todo: {
       sectors?: components["schemas"]["TodoSector"][];
     };
-    TodoPartner: {
-      /** Format: int32 */
-      id?: number;
-      name?: string;
-    };
     TodoProblem: {
       /** Format: int32 */
       id?: number;
@@ -1073,7 +1025,7 @@ export type components = {
       nr?: number;
       name?: string;
       grade?: string;
-      partners?: components["schemas"]["TodoPartner"][];
+      partners?: components["schemas"]["User"][];
     };
     TodoSector: {
       /** Format: int32 */
@@ -1106,11 +1058,6 @@ export type components = {
       name?: string;
       when?: string;
       by?: string;
-    };
-    UserSearch: {
-      /** Format: int32 */
-      id?: number;
-      name?: string;
     };
     Redirect: {
       /** Format: int32 */
@@ -1166,8 +1113,8 @@ export type components = {
       value?: string;
       content?: Record<string, never>;
       fileName?: string;
-      simple?: boolean;
       formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
+      simple?: boolean;
       parameterizedHeaders?: {
         empty?: boolean;
         [key: string]: components["schemas"]["ParameterizedHeader"][] | undefined;
@@ -1458,7 +1405,7 @@ export type operations = {
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["Dangerous"][];
+          "application/json": components["schemas"]["DangerousArea"][];
         };
       };
     };
@@ -1737,7 +1684,7 @@ export type operations = {
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["ProfileMedia"][];
+          "application/json": components["schemas"]["Media"][];
         };
       };
     };
@@ -1945,7 +1892,7 @@ export type operations = {
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["UserSearch"][];
+          "application/json": components["schemas"]["User"][];
         };
       };
     };
