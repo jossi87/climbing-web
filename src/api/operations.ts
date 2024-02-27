@@ -45,7 +45,7 @@ export function postComment(
   del: boolean,
   media: any,
 ): Promise<
-  operations["postComments"]["responses"]["default"]["content"]["application/json; charset=utf-8"]
+  operations["postComments"]["responses"]["default"]["content"]["application/json"]
 > {
   const formData = new FormData();
   const newMedia = media.map((m) => {

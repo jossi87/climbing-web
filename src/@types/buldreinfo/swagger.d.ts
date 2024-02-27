@@ -1113,8 +1113,8 @@ export type components = {
       value?: string;
       content?: Record<string, never>;
       fileName?: string;
-      formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
       simple?: boolean;
+      formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
       parameterizedHeaders?: {
         empty?: boolean;
         [key: string]: components["schemas"]["ParameterizedHeader"][] | undefined;
@@ -1363,7 +1363,7 @@ export type operations = {
   postAreas: {
     requestBody?: {
       content: {
-        "multipart/form-data; charset=utf-8": components["schemas"]["FormDataMultiPart"];
+        "multipart/form-data": components["schemas"]["FormDataMultiPart"];
       };
     };
     responses: {
@@ -1602,7 +1602,7 @@ export type operations = {
   postProblems: {
     requestBody?: {
       content: {
-        "multipart/form-data; charset=utf-8": components["schemas"]["FormDataMultiPart"];
+        "multipart/form-data": components["schemas"]["FormDataMultiPart"];
       };
     };
     responses: {
@@ -1719,7 +1719,7 @@ export type operations = {
   postSectors: {
     requestBody?: {
       content: {
-        "multipart/form-data; charset=utf-8": components["schemas"]["FormDataMultiPart"];
+        "multipart/form-data": components["schemas"]["FormDataMultiPart"];
       };
     };
     responses: {
@@ -1969,14 +1969,14 @@ export type operations = {
   postComments: {
     requestBody?: {
       content: {
-        "multipart/form-data; charset=utf-8": components["schemas"]["FormDataMultiPart"];
+        "multipart/form-data": components["schemas"]["FormDataMultiPart"];
       };
     };
     responses: {
       /** @description default response */
       default: {
         content: {
-          "application/json; charset=utf-8": unknown;
+          "application/json": unknown;
         };
       };
     };
@@ -2007,7 +2007,7 @@ export type operations = {
     };
     requestBody?: {
       content: {
-        "multipart/form-data; charset=utf-8": components["schemas"]["FormDataMultiPart"];
+        "multipart/form-data": components["schemas"]["FormDataMultiPart"];
       };
     };
     responses: {
