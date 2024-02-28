@@ -1574,8 +1574,6 @@ export type operations = {
   getProblemPdf: {
     parameters: {
       query: {
-        /** @description Access token */
-        accessToken?: string;
         /** @description Problem id */
         id: number;
       };
@@ -1734,8 +1732,6 @@ export type operations = {
   getSectorsPdf: {
     parameters: {
       query: {
-        /** @description Access token */
-        accessToken?: string;
         /** @description Sector id */
         id: number;
       };
@@ -1750,11 +1746,6 @@ export type operations = {
   };
   /** Get sitemap.txt */
   getSitemapTxt: {
-    parameters: {
-      query?: {
-        base?: string;
-      };
-    };
     responses: {
       200: {
         content: {
@@ -1999,12 +1990,6 @@ export type operations = {
   };
   /** Add media on problem (problem must be provided as json on field "json" in multiPart) */
   postProblemsMedia: {
-    parameters: {
-      query: {
-        /** @description Problem id */
-        problemId: number;
-      };
-    };
     requestBody?: {
       content: {
         "multipart/form-data": components["schemas"]["FormDataMultiPart"];
