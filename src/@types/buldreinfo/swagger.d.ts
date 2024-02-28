@@ -1113,8 +1113,8 @@ export type components = {
       value?: string;
       content?: Record<string, never>;
       fileName?: string;
-      simple?: boolean;
       formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
+      simple?: boolean;
       parameterizedHeaders?: {
         empty?: boolean;
         [key: string]: components["schemas"]["ParameterizedHeader"][] | undefined;
