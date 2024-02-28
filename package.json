@@ -42,7 +42,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-storybook": "^0.8.0",
     "html-webpack-plugin": "^5.6.0",
-    "mini-css-extract-plugin": "^2.8.0",
+    "mini-css-extract-plugin": "^2.8.1",
     "openapi-typescript": "6.7.4",
     "prettier": "^3.2.5",
     "react-refresh": "^0.14.0",
