@@ -13,6 +13,7 @@ async function start() {
   const path = args[0];
   const leaflet = JSON.parse(atob(args[1]));
   const browser = await puppeteer.launch({
+    // If this fails, try to update chrome:  sudo apt-get --only-upgrade install google-chrome-stable
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
     headless: "new",
     executablePath:
