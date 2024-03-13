@@ -221,6 +221,16 @@ export type components = {
       activityIds?: number[];
       timeAgo?: string;
       /** Format: int32 */
+      areaId?: number;
+      areaName?: string;
+      areaLockedAdmin?: boolean;
+      areaLockedSuperadmin?: boolean;
+      /** Format: int32 */
+      sectorId?: number;
+      sectorName?: string;
+      sectorLockedAdmin?: boolean;
+      sectorLockedSuperadmin?: boolean;
+      /** Format: int32 */
       problemId?: number;
       problemLockedAdmin?: boolean;
       problemLockedSuperadmin?: boolean;

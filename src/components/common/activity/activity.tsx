@@ -1,4 +1,5 @@
 import React from "react";
+import { components } from "../../../@types/buldreinfo/swagger";
 import { Link } from "react-router-dom";
 import {
   Label,
@@ -18,11 +19,59 @@ import { LockSymbol, Stars } from "./../../common/widgets/widgets";
 import Linkify from "react-linkify";
 import { componentDecorator } from "../../../utils/componentDecorator";
 
+type ProblemNameProps = {
+  a: components["schemas"]["Activity"];
+};
+function ProblemName({ a }: ProblemNameProps) {
+  return (
+    <>
+      <span style={{ opacity: 0.6, fontSize: "80%" }}>
+        <Feed.User
+          as={Link}
+          to={`/area/${a.areaId}`}
+          style={{ color: "black" }}
+        >
+          {a.areaName}
+        </Feed.User>
+        <LockSymbol
+          lockedAdmin={a.areaLockedAdmin}
+          lockedSuperadmin={a.areaLockedSuperadmin}
+        />
+        {" / "}
+        <Feed.User
+          as={Link}
+          to={`/sector/${a.sectorId}`}
+          style={{ color: "black" }}
+        >
+          {a.sectorName}
+        </Feed.User>
+        <LockSymbol
+          lockedAdmin={a.sectorLockedAdmin}
+          lockedSuperadmin={a.sectorLockedSuperadmin}
+        />
+        {" / "}
+      </span>
+      <Feed.User as={Link} to={`/problem/${a.problemId}`}>
+        {a.problemName}
+      </Feed.User>{" "}
+      {a.grade}
+      {a.problemSubtype && (
+        <Label basic size="mini">
+          {a.problemSubtype}
+        </Label>
+      )}
+      <LockSymbol
+        lockedAdmin={a.problemLockedAdmin}
+        lockedSuperadmin={a.problemLockedSuperadmin}
+      />
+    </>
+  );
+}
+
 type Props = {
   idArea: number;
   idSector: number;
 };
-
 const Activity = ({ idArea, idSector }: Props) => {
   const [lowerGradeId, setLowerGradeId] = useLocalStorage("lower_grade_id", 0);
   const [lowerGradeText, setLowerGradeText] = useLocalStorage(
@@ -205,20 +254,7 @@ const Activity = ({ idArea, idSector }: Props) => {
                   </Feed.Label>
                   <Feed.Content>
                     <Feed.Summary>
-                      New {typeDescription}{" "}
-                      <Feed.User as={Link} to={`/problem/${a.problemId}`}>
-                        {a.problemName}
-                      </Feed.User>{" "}
-                      {a.grade}
-                      {a.problemSubtype && (
-                        <Label basic size="mini">
-                          {a.problemSubtype}
-                        </Label>
-                      )}
-                      <LockSymbol
-                        lockedAdmin={a.problemLockedAdmin}
-                        lockedSuperadmin={a.problemLockedSuperadmin}
-                      />
+                      New {typeDescription} <ProblemName a={a} />
                       <Feed.Date>{a.timeAgo}</Feed.Date>
                     </Feed.Summary>
                     <Feed.Extra text>{a.description}</Feed.Extra>
@@ -282,20 +318,7 @@ const Activity = ({ idArea, idSector }: Props) => {
                       >
                         {a.name}
                       </Feed.User>{" "}
-                      posted a comment on{" "}
-                      <Feed.User as={Link} to={`/problem/${a.problemId}`}>
-                        {a.problemName}
-                      </Feed.User>{" "}
-                      {a.grade}
-                      {a.problemSubtype && (
-                        <Label basic size="mini">
-                          {a.problemSubtype}
-                        </Label>
-                      )}
-                      <LockSymbol
-                        lockedAdmin={a.problemLockedAdmin}
-                        lockedSuperadmin={a.problemLockedSuperadmin}
-                      />
+                      posted a comment on <ProblemName a={a} />
                       <Feed.Date>{a.timeAgo}</Feed.Date>
                     </Feed.Summary>
                     <Feed.Extra text>
@@ -378,20 +401,7 @@ const Activity = ({ idArea, idSector }: Props) => {
                   </Feed.Label>
                   <Feed.Content>
                     <Feed.Summary style={{ marginBottom: "3px" }}>
-                      {summary}on{" "}
-                      <Feed.User as={Link} to={`/problem/${a.problemId}`}>
-                        {a.problemName}
-                      </Feed.User>{" "}
-                      {a.grade}
-                      {a.problemSubtype && (
-                        <Label basic size="mini">
-                          {a.problemSubtype}
-                        </Label>
-                      )}
-                      <LockSymbol
-                        lockedAdmin={a.problemLockedAdmin}
-                        lockedSuperadmin={a.problemLockedSuperadmin}
-                      />
+                      {summary}on <ProblemName a={a} />
                       <Feed.Date>{a.timeAgo}</Feed.Date>
                     </Feed.Summary>
                     <LazyLoad>
@@ -433,20 +443,7 @@ const Activity = ({ idArea, idSector }: Props) => {
                       >
                         {a.name}
                       </Feed.User>{" "}
-                      {action}{" "}
-                      <Feed.User as={Link} to={`/problem/${a.problemId}`}>
-                        {a.problemName}
-                      </Feed.User>{" "}
-                      {a.grade}
-                      {a.problemSubtype && (
-                        <Label basic size="mini">
-                          {a.problemSubtype}
-                        </Label>
-                      )}
-                      <LockSymbol
-                        lockedAdmin={a.problemLockedAdmin}
-                        lockedSuperadmin={a.problemLockedSuperadmin}
-                      />
+                      {action} <ProblemName a={a} />
                       <Feed.Date>{a.timeAgo}</Feed.Date>
                     </Feed.Summary>
                     {a.description && (
