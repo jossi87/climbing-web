@@ -154,7 +154,8 @@ export const FilterForm = () => {
     filterSectorWallDirections,
     filterOnlyAdmin,
     filterOnlySuperAdmin,
-    filterFaYear,
+    filterFaYearLow,
+    filterFaYearHigh,
     filterHideTicked,
     filterPitches,
     filterTypes,
@@ -193,11 +194,14 @@ export const FilterForm = () => {
     { key: 23, text: "23:00", value: 23 },
   ];
 
-  const faYearOptions = meta.faYears.map((year) => ({
-    key: year,
-    text: year,
-    value: year,
-  }));
+  const faYearOptions = [
+    { key: -1, text: "<disabled>", value: -1 },
+    ...meta.faYears.map((year) => ({
+      key: year,
+      text: year,
+      value: year,
+    })),
+  ];
 
   const {
     ref: areaContainerRef,
@@ -279,23 +283,41 @@ export const FilterForm = () => {
           </Form.Group>
         </>
       )}
-      <GroupHeader title="Metadata" reset="metadata" />
+      <GroupHeader title="FA Year" reset="fa-year" />
       <Form.Group inline>
         <Form.Field>
-          FA year:{" "}
+          From:{" "}
           <Dropdown
             floating
             scrolling
             inline
             options={faYearOptions}
-            value={filterFaYear || 0}
+            value={filterFaYearLow || -1}
             onChange={(_, { value }) => {
               dispatch?.({
                 action: "set-fa-year",
-                faYear: value as number,
+                low: value as number,
               });
             }}
           />
+          .
+        </Form.Field>
+        <Form.Field>
+          To:{" "}
+          <Dropdown
+            floating
+            scrolling
+            inline
+            options={faYearOptions}
+            value={filterFaYearHigh || -1}
+            onChange={(_, { value }) => {
+              dispatch?.({
+                action: "set-fa-year",
+                high: value as number,
+              });
+            }}
+          />
+          .
         </Form.Field>
       </Form.Group>
       <GroupHeader title="Options" reset="options" />

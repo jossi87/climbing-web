@@ -19,7 +19,8 @@ export type State = {
   filterSectorWallDirections: Record<number, boolean> | undefined;
   filterGradeLow: string | undefined;
   filterGradeHigh: string | undefined;
-  filterFaYear: number | undefined;
+  filterFaYearLow: number | undefined;
+  filterFaYearHigh: number | undefined;
   filterTypes: Record<number, boolean> | undefined;
   filterPitches:
     | { "Single-pitch": boolean; "Multi-pitch": boolean }
@@ -37,7 +38,7 @@ export type State = {
 export type ResetField =
   | "all"
   | "areas"
-  | "metadata"
+  | "fa-year"
   | "options"
   | "wall-directions"
   | "conditions"
@@ -70,7 +71,7 @@ export type Update =
       gradeDifficultyLookup: State["gradeDifficultyLookup"];
     }
   | { action: "set-grades"; low: string; high: string }
-  | { action: "set-fa-year"; faYear: number }
+  | ({ action: "set-fa-year" } & ({ low: number } | { high: number }))
   | { action: "set-hide-ticked"; checked: boolean }
   | { action: "set-only-admin"; checked: boolean }
   | { action: "set-only-super-admin"; checked: boolean }
@@ -102,7 +103,8 @@ const filter = (state: State): State => {
     filterSectorWallDirections,
     filterGradeHigh,
     filterGradeLow,
-    filterFaYear,
+    filterFaYearHigh,
+    filterFaYearLow,
     filterHideTicked,
     filterOnlyAdmin,
     filterOnlySuperAdmin,
@@ -233,8 +235,10 @@ const filter = (state: State): State => {
                   }
                 }
 
-                if (filterFaYear) {
-                  if (problem.faYear != filterFaYear) {
+                if (filterFaYearLow || filterFaYearHigh) {
+                  const low = filterFaYearLow ?? Number.MIN_SAFE_INTEGER;
+                  const high = filterFaYearHigh ?? Number.MAX_SAFE_INTEGER;
+                  if (problem.faYear < low || problem.faYear > high) {
                     filteredOut.problems += 1;
                     return false;
                   }
@@ -414,10 +418,12 @@ const reducer = (state: State, update: Update): State => {
     }
 
     case "set-fa-year": {
-      const { faYear } = update;
+      const low = "low" in update ? update.low : undefined;
+      const high = "high" in update ? update.high : undefined;
       return {
         ...state,
-        filterFaYear: faYear,
+        filterFaYearLow: low ?? state.filterFaYearLow ?? undefined,
+        filterFaYearHigh: high ?? state.filterFaYearHigh ?? undefined,
       };
     }
 
@@ -457,7 +463,8 @@ const reducer = (state: State, update: Update): State => {
             filterAreaIds: {},
             filterGradeLow: undefined,
             filterGradeHigh: undefined,
-            filterFaYear: undefined,
+            filterFaYearLow: undefined,
+            filterFaYearHigh: undefined,
             filterHideTicked: undefined,
             filterPitches: undefined,
             filterTypes: undefined,
@@ -481,10 +488,11 @@ const reducer = (state: State, update: Update): State => {
             filterGradeHigh: undefined,
           };
         }
-        case "metadata": {
+        case "fa-year": {
           return {
             ...state,
-            filterFaYear: undefined,
+            filterFaYearLow: undefined,
+            filterFaYearHigh: undefined,
           };
         }
         case "options": {
@@ -566,7 +574,8 @@ const storageItems = {
   ),
   gradeHigh: itemLocalStorage("filter/grades/high", undefined),
   gradeLow: itemLocalStorage("filter/grades/low", undefined),
-  faYear: itemLocalStorage("filter/fa-year", undefined),
+  faYearHigh: itemLocalStorage("filter/fa-year/high", undefined),
+  faYearLow: itemLocalStorage("filter/fa-year/low", undefined),
   hideTicked: itemLocalStorage("filter/hide-ticked", false),
   onlyAdmin: itemLocalStorage("filter/only-admin", false),
   onlySuperAdmin: itemLocalStorage("filter/only-super-admin", false),
@@ -583,7 +592,8 @@ const wrappedReducer: typeof reducer = (state, update) => {
   storageItems.sectorWallDirections.set(reduced.filterSectorWallDirections);
   storageItems.gradeHigh.set(reduced.filterGradeHigh);
   storageItems.gradeLow.set(reduced.filterGradeLow);
-  storageItems.faYear.set(reduced.filterFaYear);
+  storageItems.faYearHigh.set(reduced.filterFaYearHigh);
+  storageItems.faYearLow.set(reduced.filterFaYearLow);
   storageItems.hideTicked.set(reduced.filterHideTicked);
   storageItems.onlyAdmin.set(reduced.filterOnlyAdmin);
   storageItems.onlySuperAdmin.set(reduced.filterOnlySuperAdmin);
@@ -611,7 +621,8 @@ export const useFilterState = (init?: Partial<State>) => {
     filterSectorWallDirections: storageItems.sectorWallDirections.get(),
     filterGradeHigh: storageItems.gradeHigh.get(),
     filterGradeLow: storageItems.gradeLow.get(),
-    filterFaYear: storageItems.faYear.get(),
+    filterFaYearHigh: storageItems.faYearHigh.get(),
+    filterFaYearLow: storageItems.faYearLow.get(),
     filterHideTicked: storageItems.hideTicked.get(),
     filterOnlyAdmin: storageItems.onlyAdmin.get(),
     filterOnlySuperAdmin: storageItems.onlySuperAdmin.get(),
