@@ -42,6 +42,7 @@ type FilterProblem = {
   subText?: string;
   lat?: number;
   lng?: number;
+  faYear: number;
 };
 
 type FilterSector = Pick<
@@ -171,6 +172,7 @@ export const Problems = ({ filterOpen }: Props) => {
           ticked: problem.ticked,
           text: text,
           subText: problem.description,
+          faYear: problem.faYear,
         };
       }),
     })),

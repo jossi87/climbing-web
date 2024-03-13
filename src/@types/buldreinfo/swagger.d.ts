@@ -625,6 +625,7 @@ export type components = {
       isAdmin?: boolean;
       isSuperAdmin?: boolean;
       grades?: components["schemas"]["Grade"][];
+      faYears?: number[];
       /** Format: int32 */
       defaultZoom?: number;
       defaultCenter?: components["schemas"]["LatLng"];
@@ -813,6 +814,8 @@ export type components = {
       coordinates?: components["schemas"]["Coordinates"];
       grade?: string;
       fa?: string;
+      /** Format: int32 */
+      faYear?: number;
       /** Format: int32 */
       numTicks?: number;
       /** Format: double */

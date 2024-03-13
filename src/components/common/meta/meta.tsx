@@ -33,6 +33,7 @@ type Metadata = {
   isSuperAdmin: boolean;
   title: string;
   grades: Grade[];
+  faYears: number[];
   defaultZoom: number;
   defaultCenter: { lat: number; lng: number };
   isBouldering: boolean;
@@ -49,6 +50,7 @@ const DEFAULT_VALUE: Metadata = {
   isSuperAdmin: false,
   title: "",
   grades: [],
+  faYears: [],
   defaultZoom: 9,
   defaultCenter: {
     lat: 60.893256420810616,

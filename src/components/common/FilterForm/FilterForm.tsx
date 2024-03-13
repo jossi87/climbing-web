@@ -154,6 +154,7 @@ export const FilterForm = () => {
     filterSectorWallDirections,
     filterOnlyAdmin,
     filterOnlySuperAdmin,
+    filterFaYear,
     filterHideTicked,
     filterPitches,
     filterTypes,
@@ -191,6 +192,12 @@ export const FilterForm = () => {
     { key: 22, text: "22:00", value: 22 },
     { key: 23, text: "23:00", value: 23 },
   ];
+
+  const faYearOptions = meta.faYears.map((year) => ({
+    key: year,
+    text: year,
+    value: year,
+  }));
 
   const {
     ref: areaContainerRef,
@@ -272,6 +279,25 @@ export const FilterForm = () => {
           </Form.Group>
         </>
       )}
+      <GroupHeader title="Metadata" reset="metadata" />
+      <Form.Group inline>
+        <Form.Field>
+          FA year:{" "}
+          <Dropdown
+            floating
+            scrolling
+            inline
+            options={faYearOptions}
+            value={filterFaYear || 0}
+            onChange={(_, { value }) => {
+              dispatch?.({
+                action: "set-fa-year",
+                faYear: value as number,
+              });
+            }}
+          />
+        </Form.Field>
+      </Form.Group>
       <GroupHeader title="Options" reset="options" />
       <Form.Group inline>
         <Form.Field>
