@@ -11,7 +11,7 @@
  *   3 = > array(45.784234, 74.542335)
  * );
  */
-function GetCenterFromDegrees(data) {
+function GetCenterFromDegrees(data: number[][]) {
   if (!(data.length > 0)) {
     return false;
   }

@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet";
 import { Link, useParams } from "react-router-dom";
 import Leaflet from "../common/leaflet/leaflet";
 import { getDistanceWithUnit } from "../common/leaflet/geo-utils";
+import GetCenterFromDegrees from "../../utils/map-utils";
 import Media from "../common/media/media";
 import {
   Button,
@@ -231,11 +232,15 @@ export const Problem = () => {
     );
   })();
 
-  const [lat, lng] = (() => {
+  const [conditionLat, conditionLng] = (() => {
     if (data.coordinates) {
       return [+data.coordinates.latitude, +data.coordinates.longitude];
-    }
-    if (data.sectorParking) {
+    } else if (data.sectorOutline?.length > 0) {
+      const center = GetCenterFromDegrees(
+        data.sectorOutline.map((c) => [c.latitude, c.longitude]),
+      );
+      return [+center[0], +center[1]];
+    } else if (data.sectorParking) {
       return [+data.sectorParking.latitude, +data.sectorParking.longitude];
     }
     return [0, 0];
@@ -656,13 +661,13 @@ export const Problem = () => {
               </Table.Cell>
             </Table.Row>
           )}
-          {lat > 0 && lng > 0 && (
+          {conditionLat > 0 && conditionLng > 0 && (
             <Table.Row>
               <Table.Cell>Conditions:</Table.Cell>
               <Table.Cell>
                 <ConditionLabels
-                  lat={lat}
-                  lng={lng}
+                  lat={conditionLat}
+                  lng={conditionLng}
                   label={data.name}
                   wallDirectionCalculated={data.sectorWallDirectionCalculated}
                   wallDirectionManual={data.sectorWallDirectionManual}

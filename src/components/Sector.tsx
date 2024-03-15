@@ -10,6 +10,7 @@ import Leaflet from "./common/leaflet/leaflet";
 import { getDistanceWithUnit } from "./common/leaflet/geo-utils";
 import Media from "./common/media/media";
 import Todo from "./common/todo/todo";
+import GetCenterFromDegrees from "../utils/map-utils";
 import {
   Stars,
   LockSymbol,
@@ -302,6 +303,19 @@ const Sector = () => {
   }
   uniqueTypes.sort();
 
+  const [conditionLat, conditionLng] = (() => {
+    if (data.outline?.length > 0) {
+      const center = GetCenterFromDegrees(
+        data.outline.map((c) => [c.latitude, c.longitude]),
+      );
+      return [+center[0], +center[1]];
+    }
+    if (data.parking) {
+      return [+data.parking.latitude, +data.parking.longitude];
+    }
+    return [0, 0];
+  })();
+
   return (
     <>
       <Helmet>
@@ -482,13 +496,13 @@ const Sector = () => {
               </Table.Cell>
             </Table.Row>
           )}
-          {data.parking && (
+          {conditionLat > 0 && conditionLng > 0 && (
             <Table.Row verticalAlign="top">
               <Table.Cell>Conditions:</Table.Cell>
               <Table.Cell>
                 <ConditionLabels
-                  lat={data.parking.latitude}
-                  lng={data.parking.longitude}
+                  lat={conditionLat}
+                  lng={conditionLng}
                   label={data.name}
                   wallDirectionCalculated={data.wallDirectionCalculated}
                   wallDirectionManual={data.wallDirectionManual}
