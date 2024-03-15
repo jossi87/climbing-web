@@ -11,6 +11,7 @@ import {
   Popup,
   Label,
   Button,
+  LabelDetail,
 } from "semantic-ui-react";
 import SunCalc from "suncalc";
 import { TWeatherSymbolKey, weatherSymbolKeys } from "../../../yr";
@@ -139,6 +140,7 @@ export function NotLoggedIn() {
           <Header.Subheader>
             You must be logged in to access this page
           </Header.Subheader>
+          zrt
         </Header.Content>
       </Header>
       <Button
@@ -378,6 +380,9 @@ export function ConditionLabels({
     return;
   }
 
+  const d = new Date();
+  const date = `${d.getFullYear()}.${(d.getMonth() + 1).toString().padStart(2, "0")}.${d.getDate()}`;
+  const time = `${d.getHours().toString().padStart(2, "0")}:${d.getMinutes().toString().padStart(2, "0")}`;
   const times = SunCalc.getTimes(new Date(), lat, lng);
   return (
     <>
@@ -417,6 +422,19 @@ export function ConditionLabels({
       >
         <Icon name="camera" />
         Webcams
+      </Label>
+      <Label
+        href={`https://www.suncalc.org/#/${lat},${lng},17/${date}/${time}/1/0`}
+        rel="noopener"
+        target="_blank"
+        basic
+        size="small"
+      >
+        <Icon name="external alternate" />
+        SunCalc
+        <LabelDetail>
+          {date}-{time}
+        </LabelDetail>
       </Label>
     </>
   );
