@@ -112,12 +112,12 @@ export function useData<TQueryData = unknown, TData = TQueryData>(
   return { ...data, redirectUi };
 }
 
-export function useProblems() {
+export function useToc() {
   const [cachedData, _, writeCachedData] = useLocalStorage<
-    components["schemas"]["ProblemArea"][]
-  >("cache/problems", []);
+    components["schemas"]["Toc"]
+  >("cache/toc", {});
 
-  return useData<components["schemas"]["ProblemArea"][]>("/problems", {
+  return useData<components["schemas"]["Toc"]>("/toc", {
     placeholderData: cachedData,
     select(data) {
       writeCachedData(data);

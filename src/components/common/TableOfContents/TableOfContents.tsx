@@ -38,10 +38,7 @@ export type Props = {
         | "wallDirectionManual"
       >
     > &
-      Pick<
-        components["schemas"]["ProblemAreaSector"],
-        "outline" | "parking"
-      > & {
+      Pick<components["schemas"]["TocSector"], "outline" | "parking"> & {
         problems: (Required<
           Pick<
             components["schemas"]["Problem"],
@@ -64,7 +61,7 @@ export type Props = {
 export const TableOfContents = ({ areas, header, subHeader }: Props) => {
   const areaRefs = useRef({});
 
-  if (areas?.length === 0) {
+  if (!areas) {
     return <i>No results match your search criteria.</i>;
   }
 

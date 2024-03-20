@@ -59,7 +59,7 @@ const GroupHeader = ({ title, reset, buttons }: GroupHeaderProps) => {
         margin: 4,
       }}
     >
-      <Header as="h3" style={{ flex: 1, margin: 0 }}>
+      <Header as="h5" style={{ flex: 1, margin: 0 }}>
         {title}
       </Header>
       {buttons
@@ -89,7 +89,7 @@ type AreaSizeState = "show-all" | "show-some" | "too-few";
 
 const STYLES: Record<AreaSizeState, CSSProperties> = {
   "show-all": {},
-  "show-some": { maxHeight: "20vh", overflow: "auto" },
+  "show-some": { maxHeight: "10vh", overflow: "auto" },
   "too-few": {},
 } as const;
 
@@ -99,7 +99,7 @@ const ICONS: Record<AreaSizeState, SemanticICONS | undefined> = {
   "too-few": undefined,
 };
 
-const useAreaSizing = () => {
+const useSizing = () => {
   const ref = useRef<HTMLDivElement>();
   const [status, setStatus] = useState<AreaSizeState>("show-some");
 
@@ -148,6 +148,7 @@ export const FilterForm = () => {
   const meta = useMeta();
   const {
     unfilteredData,
+    filterRegionIds,
     filterAreaIds,
     filterAreaOnlySunOnWallAt,
     filterAreaOnlyShadeOnWallAt,
@@ -204,11 +205,18 @@ export const FilterForm = () => {
   ];
 
   const {
+    ref: regionContainerRef,
+    style: regionContainerStyle,
+    icon: regionContainerButton,
+    onClick: regionContainerAction,
+  } = useSizing();
+
+  const {
     ref: areaContainerRef,
     style: areaContainerStyle,
     icon: areaContainerButton,
     onClick: areaContainerAction,
-  } = useAreaSizing();
+  } = useSizing();
 
   return (
     <Form>
@@ -417,6 +425,42 @@ export const FilterForm = () => {
         </>
       )}
       <GroupHeader
+        title="Regions"
+        reset="regions"
+        buttons={[
+          regionContainerButton
+            ? { icon: regionContainerButton, onClick: regionContainerAction }
+            : undefined,
+        ]}
+      />
+      <Form.Group inline>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            ...regionContainerStyle,
+          }}
+          ref={regionContainerRef}
+        >
+          {unfilteredData?.regions?.map((region) => (
+            <Form.Field key={region.id}>
+              <Checkbox
+                label={region.name}
+                checked={!!filterRegionIds[region.id]}
+                onChange={(_, { checked }) =>
+                  dispatch({
+                    action: "toggle-region",
+                    regionId: region.id,
+                    enabled: checked,
+                  })
+                }
+                style={{ marginRight: 10 }}
+              />
+            </Form.Field>
+          ))}
+        </div>
+      </Form.Group>
+      <GroupHeader
         title="Areas"
         reset="areas"
         buttons={[
@@ -434,21 +478,23 @@ export const FilterForm = () => {
           }}
           ref={areaContainerRef}
         >
-          {unfilteredData.map((area) => (
-            <Form.Field key={area.id}>
-              <Checkbox
-                label={area.name}
-                checked={!!filterAreaIds[area.id]}
-                onChange={(_, { checked }) =>
-                  dispatch({
-                    action: "toggle-area",
-                    areaId: area.id,
-                    enabled: checked,
-                  })
-                }
-              />
-            </Form.Field>
-          ))}
+          {unfilteredData?.regions?.map((region) =>
+            region.areas.map((area) => (
+              <Form.Field key={area.id}>
+                <Checkbox
+                  label={area.name}
+                  checked={!!filterAreaIds[area.id]}
+                  onChange={(_, { checked }) =>
+                    dispatch({
+                      action: "toggle-area",
+                      areaId: area.id,
+                      enabled: checked,
+                    })
+                  }
+                />
+              </Form.Field>
+            )),
+          )}
         </div>
       </Form.Group>
     </Form>

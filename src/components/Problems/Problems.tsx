@@ -10,7 +10,7 @@ import {
 } from "semantic-ui-react";
 import { Loading } from "../common/widgets/widgets";
 import { useMeta } from "../common/meta";
-import { downloadProblemsXlsx, useAccessToken, useProblems } from "../../api";
+import { downloadProblemsXlsx, useAccessToken, useToc } from "../../api";
 import TableOfContents from "../common/TableOfContents";
 import { useFilterState } from "./reducer";
 import { FilterContext, FilterForm } from "../common/FilterForm";
@@ -22,11 +22,13 @@ import { ProblemsMap } from "../common/TableOfContents/ProblemsMap";
 type Props = { filterOpen?: boolean };
 
 const description = (
+  regions: number,
   areas: number,
   sectors: number,
   problems: number,
   kind: "routes" | "problems",
-): string => `${areas} areas, ${sectors} sectors, ${problems} ${kind}`;
+): string =>
+  `${regions} regions, ${areas} areas, ${sectors} sectors, ${problems} ${kind}`;
 
 type FilterProblem = {
   id: number;
@@ -45,10 +47,7 @@ type FilterProblem = {
   faYear: number;
 };
 
-type FilterSector = Pick<
-  components["schemas"]["ProblemAreaSector"],
-  "outline"
-> & {
+type FilterSector = Pick<components["schemas"]["TocSector"], "outline"> & {
   id: number;
   lockedAdmin: boolean;
   lockedSuperadmin: boolean;
@@ -79,7 +78,7 @@ export const Problems = ({ filterOpen }: Props) => {
   });
 
   const accessToken = useAccessToken();
-  const { data: loadedData, status } = useProblems();
+  const { data: loadedData, status } = useToc();
   const [isSaving, setIsSaving] = useState(false);
   const [showMap, setShowMap] = useState(
     !!(matchMedia && matchMedia("(pointer:fine)")?.matches),
@@ -92,10 +91,12 @@ export const Problems = ({ filterOpen }: Props) => {
   }, [dispatch, loadedData, status]);
 
   const {
+    totalRegions,
     totalAreas,
     totalSectors,
     totalProblems,
     filteredData,
+    filteredRegions,
     filteredAreas,
     filteredSectors,
     filteredProblems,
@@ -111,72 +112,75 @@ export const Problems = ({ filterOpen }: Props) => {
   const title = isBouldering ? "Problems" : "Routes";
   const things = isBouldering ? "problems" : "routes";
   const totalDescription = description(
+    totalRegions,
     totalAreas,
     totalSectors,
     totalProblems,
     things,
   );
 
-  const areas: FilterArea[] = filteredData.map((area) => ({
-    id: area.id,
-    lockedAdmin: !!area.lockedAdmin,
-    lockedSuperadmin: !!area.lockedSuperadmin,
-    sunFromHour: area.sunFromHour,
-    sunToHour: area.sunToHour,
-    name: area.name,
-    lat: area.coordinates?.latitude,
-    lng: area.coordinates?.longitude,
-    sectors: area.sectors.map((sector) => ({
-      id: sector.id,
-      lockedAdmin: !!sector.lockedAdmin,
-      lockedSuperadmin: !!sector.lockedSuperadmin,
-      name: sector.name,
-      lat: sector.parking?.latitude,
-      lng: sector.parking?.longitude,
-      outline: sector.outline,
-      wallDirectionCalculated: sector.wallDirectionCalculated,
-      wallDirectionManual: sector.wallDirectionManual,
-      problems: sector.problems.map((problem) => {
-        const ascents =
-          problem.numTicks > 0 &&
-          problem.numTicks + (problem.numTicks == 1 ? " ascent" : " ascents");
-        let typeAscents;
-        if (isClimbing) {
-          let t = problem.t.subType;
-          if (problem.numPitches > 1)
-            t += ", " + problem.numPitches + " pitches";
-          if (ascents) {
-            typeAscents = " (" + t + ", " + ascents + ") ";
-          } else {
-            typeAscents = " (" + t + ") ";
+  const areas: FilterArea[] = filteredData?.regions?.flatMap((region) => {
+    return region.areas.map((area) => ({
+      id: area.id,
+      lockedAdmin: !!area.lockedAdmin,
+      lockedSuperadmin: !!area.lockedSuperadmin,
+      sunFromHour: area.sunFromHour,
+      sunToHour: area.sunToHour,
+      name: area.name,
+      lat: area.coordinates?.latitude,
+      lng: area.coordinates?.longitude,
+      sectors: area.sectors.map((sector) => ({
+        id: sector.id,
+        lockedAdmin: !!sector.lockedAdmin,
+        lockedSuperadmin: !!sector.lockedSuperadmin,
+        name: sector.name,
+        lat: sector.parking?.latitude,
+        lng: sector.parking?.longitude,
+        outline: sector.outline,
+        wallDirectionCalculated: sector.wallDirectionCalculated,
+        wallDirectionManual: sector.wallDirectionManual,
+        problems: sector.problems.map((problem) => {
+          const ascents =
+            problem.numTicks > 0 &&
+            problem.numTicks + (problem.numTicks == 1 ? " ascent" : " ascents");
+          let typeAscents;
+          if (isClimbing) {
+            let t = problem.t.subType;
+            if (problem.numPitches > 1)
+              t += ", " + problem.numPitches + " pitches";
+            if (ascents) {
+              typeAscents = " (" + t + ", " + ascents + ") ";
+            } else {
+              typeAscents = " (" + t + ") ";
+            }
+          } else if (!isClimbing) {
+            if (ascents) {
+              typeAscents = " (" + ascents + ") ";
+            } else {
+              typeAscents = " ";
+            }
           }
-        } else if (!isClimbing) {
-          if (ascents) {
-            typeAscents = " (" + ascents + ") ";
-          } else {
-            typeAscents = " ";
-          }
-        }
-        const text = [problem.fa, typeAscents].filter(Boolean).join(" ");
-        return {
-          id: problem.id,
-          broken: problem.broken,
-          lockedAdmin: !!problem.lockedAdmin,
-          lockedSuperadmin: !!problem.lockedSuperadmin,
-          name: problem.name,
-          lat: problem.coordinates?.latitude,
-          lng: problem.coordinates?.longitude,
-          nr: problem.nr,
-          grade: problem.grade,
-          stars: problem.stars,
-          ticked: problem.ticked,
-          text: text,
-          subText: problem.description,
-          faYear: problem.faYear,
-        };
-      }),
-    })),
-  }));
+          const text = [problem.fa, typeAscents].filter(Boolean).join(" ");
+          return {
+            id: problem.id,
+            broken: problem.broken,
+            lockedAdmin: !!problem.lockedAdmin,
+            lockedSuperadmin: !!problem.lockedSuperadmin,
+            name: problem.name,
+            lat: problem.coordinates?.latitude,
+            lng: problem.coordinates?.longitude,
+            nr: problem.nr,
+            grade: problem.grade,
+            stars: problem.stars,
+            ticked: problem.ticked,
+            text: text,
+            subText: problem.description,
+            faYear: problem.faYear,
+          };
+        }),
+      })),
+    }));
+  });
 
   return (
     <FilterContext.Provider value={{ ...state, dispatch }}>
@@ -233,6 +237,7 @@ export const Problems = ({ filterOpen }: Props) => {
                 There is an active filter which is hiding{" "}
                 <strong>
                   {description(
+                    filteredRegions,
                     filteredAreas,
                     filteredSectors,
                     filteredProblems,

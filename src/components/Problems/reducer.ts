@@ -8,11 +8,13 @@ import { components } from "../../@types/buldreinfo/swagger";
 export type State = {
   visible: boolean;
   gradeDifficultyLookup: Record<string, number>;
+  totalRegions: number;
   totalAreas: number;
   totalSectors: number;
   totalProblems: number;
-  unfilteredData: components["schemas"]["ProblemArea"][];
+  unfilteredData: components["schemas"]["Toc"];
 } & {
+  filterRegionIds: Record<number, true>;
   filterAreaIds: Record<number, true>;
   filterAreaOnlySunOnWallAt: number | undefined;
   filterAreaOnlyShadeOnWallAt: number | undefined;
@@ -28,8 +30,9 @@ export type State = {
   filterHideTicked: boolean | undefined;
   filterOnlyAdmin: boolean | undefined;
   filterOnlySuperAdmin: boolean | undefined;
-  filteredData: components["schemas"]["ProblemArea"][];
+  filteredData: components["schemas"]["Toc"];
 
+  filteredRegions: number;
   filteredAreas: number;
   filteredSectors: number;
   filteredProblems: number;
@@ -37,6 +40,7 @@ export type State = {
 
 export type ResetField =
   | "all"
+  | "regions"
   | "areas"
   | "fa-year"
   | "options"
@@ -47,7 +51,7 @@ export type ResetField =
   | "grades";
 
 export type Update =
-  | { action: "set-data"; data: components["schemas"]["ProblemArea"][] }
+  | { action: "set-data"; data: components["schemas"]["Toc"] }
   | {
       action: "toggle-pitches";
       option: keyof State["filterPitches"];
@@ -58,6 +62,7 @@ export type Update =
       option: keyof State["filterTypes"];
       checked: boolean;
     }
+  | { action: "toggle-region"; regionId: number; enabled: boolean }
   | { action: "toggle-area"; areaId: number; enabled: boolean }
   | { action: "set-area-only-sun-on-wall-at"; hour: number }
   | { action: "set-area-only-shade-on-wall-at"; hour: number }
@@ -81,22 +86,9 @@ export type Update =
   | { action: "toggle-filter" }
   | { action: "reset"; section: ResetField };
 
-const count = (
-  data: components["schemas"]["ProblemArea"][],
-): [number, number, number] => {
-  return data.reduce(
-    ([areas, sectors, problems], area) => [
-      areas,
-      sectors + area.sectors.length,
-      problems +
-        area.sectors.reduce((acc, sector) => sector.problems.length + acc, 0),
-    ],
-    [data.length, 0, 0],
-  );
-};
-
 const filter = (state: State): State => {
   const {
+    filterRegionIds,
     filterAreaIds,
     filterAreaOnlySunOnWallAt,
     filterAreaOnlyShadeOnWallAt,
@@ -111,190 +103,220 @@ const filter = (state: State): State => {
     filterPitches,
     filterTypes,
     gradeDifficultyLookup,
+    totalRegions,
     totalAreas,
     totalProblems,
     totalSectors,
     unfilteredData,
   } = state;
   const filteredOut = {
+    regions: 0,
     areas: 0,
     sectors: 0,
     problems: 0,
   };
 
+  const filterRegionIdsCount = Object.keys(filterRegionIds).length;
   const filterAreaIdsCount = Object.keys(filterAreaIds).length;
 
   const transaction = Sentry.startTransaction({
     name: "filter-problems",
-    data: { totalAreas, totalProblems, totalSectors },
+    data: { totalRegions, totalAreas, totalProblems, totalSectors },
   });
   const span = transaction.startChild();
-  const filteredData = (unfilteredData ?? [])
-    .map((problemArea) => {
-      return {
-        ...problemArea,
-        sectors: problemArea.sectors
-          .map((sector) => {
-            return {
-              ...sector,
-              problems: sector.problems.filter((problem) => {
-                if (filterAreaIdsCount > 0) {
-                  if (!filterAreaIds[problemArea.id]) {
-                    filteredOut.problems += 1;
-                    return false;
-                  }
-                }
+  const filteredData = {
+    ...unfilteredData,
+    regions: unfilteredData?.regions
+      ?.map((region) => {
+        return {
+          ...region,
+          areas: region.areas
+            .map((area) => {
+              return {
+                ...area,
+                sectors: area.sectors
+                  .map((sector) => {
+                    return {
+                      ...sector,
+                      problems: sector.problems.filter((problem) => {
+                        if (filterRegionIdsCount > 0) {
+                          if (!filterRegionIds[region.id]) {
+                            filteredOut.problems += 1;
+                            return false;
+                          }
+                        }
+                        if (filterAreaIdsCount > 0) {
+                          if (!filterAreaIds[area.id]) {
+                            filteredOut.problems += 1;
+                            return false;
+                          }
+                        }
 
-                if (filterAreaOnlySunOnWallAt > 0) {
-                  if (
-                    problemArea.sunFromHour == 0 ||
-                    problemArea.sunToHour == 0 ||
-                    problemArea.sunFromHour > filterAreaOnlySunOnWallAt ||
-                    problemArea.sunToHour < filterAreaOnlySunOnWallAt
-                  ) {
-                    filteredOut.problems += 1;
-                    return false;
-                  }
-                }
+                        if (filterAreaOnlySunOnWallAt > 0) {
+                          if (
+                            area.sunFromHour == 0 ||
+                            area.sunToHour == 0 ||
+                            area.sunFromHour > filterAreaOnlySunOnWallAt ||
+                            area.sunToHour < filterAreaOnlySunOnWallAt
+                          ) {
+                            filteredOut.problems += 1;
+                            return false;
+                          }
+                        }
 
-                if (filterAreaOnlyShadeOnWallAt > 0) {
-                  if (
-                    problemArea.sunFromHour == 0 ||
-                    problemArea.sunToHour == 0 ||
-                    (problemArea.sunFromHour <= filterAreaOnlyShadeOnWallAt &&
-                      problemArea.sunToHour > filterAreaOnlyShadeOnWallAt)
-                  ) {
-                    filteredOut.problems += 1;
-                    return false;
-                  }
-                }
+                        if (filterAreaOnlyShadeOnWallAt > 0) {
+                          if (
+                            area.sunFromHour == 0 ||
+                            area.sunToHour == 0 ||
+                            (area.sunFromHour <= filterAreaOnlyShadeOnWallAt &&
+                              area.sunToHour > filterAreaOnlyShadeOnWallAt)
+                          ) {
+                            filteredOut.problems += 1;
+                            return false;
+                          }
+                        }
 
-                if (
-                  filterSectorWallDirections &&
-                  Object.values(filterSectorWallDirections).some((v) => !!v)
-                ) {
-                  const wallDirectionId =
-                    sector.wallDirectionManual?.id ||
-                    sector.wallDirectionCalculated?.id;
-                  if (!filterSectorWallDirections[wallDirectionId]) {
-                    filteredOut.problems += 1;
-                    return false;
-                  }
-                }
+                        if (
+                          filterSectorWallDirections &&
+                          Object.values(filterSectorWallDirections).some(
+                            (v) => !!v,
+                          )
+                        ) {
+                          const wallDirectionId =
+                            sector.wallDirectionManual?.id ||
+                            sector.wallDirectionCalculated?.id;
+                          if (!filterSectorWallDirections[wallDirectionId]) {
+                            filteredOut.problems += 1;
+                            return false;
+                          }
+                        }
 
-                if (filterHideTicked) {
-                  if (problem.ticked) {
-                    filteredOut.problems += 1;
-                    return false;
-                  }
-                }
+                        if (filterHideTicked) {
+                          if (problem.ticked) {
+                            filteredOut.problems += 1;
+                            return false;
+                          }
+                        }
 
-                if (
-                  filterTypes &&
-                  Object.values(filterTypes).some((v) => !!v)
-                ) {
-                  if (!filterTypes[problem.t.id]) {
-                    filteredOut.problems += 1;
-                    return false;
-                  }
-                }
+                        if (
+                          filterTypes &&
+                          Object.values(filterTypes).some((v) => !!v)
+                        ) {
+                          if (!filterTypes[problem.t.id]) {
+                            filteredOut.problems += 1;
+                            return false;
+                          }
+                        }
 
-                if (
-                  filterPitches &&
-                  (filterPitches["Multi-pitch"] ||
-                    filterPitches["Single-pitch"])
-                ) {
-                  if (
-                    !filterPitches["Multi-pitch"] &&
-                    problem.numPitches >= 2
-                  ) {
-                    filteredOut.problems += 1;
-                    return false;
-                  }
-                  if (
-                    !filterPitches["Single-pitch"] &&
-                    problem.numPitches <= 1
-                  ) {
-                    filteredOut.problems += 1;
-                    return false;
-                  }
-                }
+                        if (
+                          filterPitches &&
+                          (filterPitches["Multi-pitch"] ||
+                            filterPitches["Single-pitch"])
+                        ) {
+                          if (
+                            !filterPitches["Multi-pitch"] &&
+                            problem.numPitches >= 2
+                          ) {
+                            filteredOut.problems += 1;
+                            return false;
+                          }
+                          if (
+                            !filterPitches["Single-pitch"] &&
+                            problem.numPitches <= 1
+                          ) {
+                            filteredOut.problems += 1;
+                            return false;
+                          }
+                        }
 
-                if (filterGradeLow || filterGradeHigh) {
-                  const low =
-                    gradeDifficultyLookup[filterGradeLow] ??
-                    Number.MIN_SAFE_INTEGER;
-                  const high =
-                    gradeDifficultyLookup[filterGradeHigh] ??
-                    Number.MAX_SAFE_INTEGER;
-                  const test = gradeDifficultyLookup[problem.grade];
+                        if (filterGradeLow || filterGradeHigh) {
+                          const low =
+                            gradeDifficultyLookup[filterGradeLow] ??
+                            Number.MIN_SAFE_INTEGER;
+                          const high =
+                            gradeDifficultyLookup[filterGradeHigh] ??
+                            Number.MAX_SAFE_INTEGER;
+                          const test = gradeDifficultyLookup[problem.grade];
 
-                  if (test === undefined || test < low || test > high) {
-                    filteredOut.problems += 1;
-                    return false;
-                  }
-                }
+                          if (test === undefined || test < low || test > high) {
+                            filteredOut.problems += 1;
+                            return false;
+                          }
+                        }
 
-                if (filterFaYearLow || filterFaYearHigh) {
-                  const low = filterFaYearLow ?? Number.MIN_SAFE_INTEGER;
-                  const high = filterFaYearHigh ?? Number.MAX_SAFE_INTEGER;
-                  if (problem.faYear < low || problem.faYear > high) {
-                    filteredOut.problems += 1;
-                    return false;
-                  }
-                }
+                        if (filterFaYearLow || filterFaYearHigh) {
+                          const low =
+                            filterFaYearLow ?? Number.MIN_SAFE_INTEGER;
+                          const high =
+                            filterFaYearHigh ?? Number.MAX_SAFE_INTEGER;
+                          if (problem.faYear < low || problem.faYear > high) {
+                            filteredOut.problems += 1;
+                            return false;
+                          }
+                        }
 
-                if (filterOnlySuperAdmin) {
-                  const locked = problem.lockedSuperadmin;
-                  if (!locked) {
-                    filteredOut.problems += 1;
-                    return false;
-                  }
-                }
+                        if (filterOnlySuperAdmin) {
+                          const locked = problem.lockedSuperadmin;
+                          if (!locked) {
+                            filteredOut.problems += 1;
+                            return false;
+                          }
+                        }
 
-                if (filterOnlyAdmin) {
-                  const locked = problem.lockedAdmin;
-                  if (!locked) {
-                    filteredOut.problems += 1;
-                    return false;
-                  }
-                }
+                        if (filterOnlyAdmin) {
+                          const locked = problem.lockedAdmin;
+                          if (!locked) {
+                            filteredOut.problems += 1;
+                            return false;
+                          }
+                        }
 
-                return true;
-              }),
-            };
-          })
-          .filter(({ lockedAdmin, lockedSuperadmin, problems }) => {
-            if (
-              problems.length === 0 ||
-              (filterOnlyAdmin && !lockedAdmin) ||
-              (filterOnlySuperAdmin && !lockedSuperadmin)
-            ) {
-              filteredOut.sectors += 1;
-              return false;
-            }
-            return true;
-          }),
-      };
-    })
-    .filter(({ lockedAdmin, lockedSuperadmin, sectors, id }) => {
-      if (
-        sectors.length === 0 ||
-        (filterOnlyAdmin && !lockedAdmin) ||
-        (filterOnlySuperAdmin && !lockedSuperadmin) ||
-        (filterAreaIdsCount && !filterAreaIds[id])
-      ) {
-        filteredOut.areas += 1;
-        return false;
-      }
-      return true;
-    });
+                        return true;
+                      }),
+                    };
+                  })
+                  .filter(({ lockedAdmin, lockedSuperadmin, problems }) => {
+                    if (
+                      problems.length === 0 ||
+                      (filterOnlyAdmin && !lockedAdmin) ||
+                      (filterOnlySuperAdmin && !lockedSuperadmin)
+                    ) {
+                      filteredOut.sectors += 1;
+                      return false;
+                    }
+                    return true;
+                  }),
+              };
+            })
+            .filter(({ lockedAdmin, lockedSuperadmin, sectors, id }) => {
+              if (
+                sectors.length === 0 ||
+                (filterOnlyAdmin && !lockedAdmin) ||
+                (filterOnlySuperAdmin && !lockedSuperadmin) ||
+                (filterAreaIdsCount && !filterAreaIds[id])
+              ) {
+                filteredOut.areas += 1;
+                return false;
+              }
+              return true;
+            }),
+        };
+      })
+      .filter(({ id }) => {
+        if (filterRegionIdsCount && !filterRegionIds[id]) {
+          filteredOut.regions += 1;
+          return false;
+        }
+        return true;
+      }),
+  };
   span.finish();
   transaction.finish();
 
   return {
     ...state,
     filteredData,
+    filteredRegions: filteredOut.regions,
     filteredAreas: filteredOut.areas,
     filteredSectors: filteredOut.sectors,
     filteredProblems: filteredOut.problems,
@@ -306,13 +328,14 @@ const reducer = (state: State, update: Update): State => {
   switch (action) {
     case "set-data": {
       const { data } = update;
-      const [totalAreas, totalSectors, totalProblems] = count(data);
+      const { numRegions, numAreas, numSectors, numProblems } = data;
 
       return {
         ...state,
-        totalAreas,
-        totalSectors,
-        totalProblems,
+        totalRegions: numRegions,
+        totalAreas: numAreas,
+        totalSectors: numSectors,
+        totalProblems: numProblems,
         unfilteredData: data,
       };
     }
@@ -337,6 +360,29 @@ const reducer = (state: State, update: Update): State => {
           ...state.filterTypes,
           [option]: checked,
         },
+      };
+    }
+
+    case "toggle-region": {
+      const { regionId, enabled } = update;
+      if (enabled) {
+        return {
+          ...state,
+          filterRegionIds: {
+            ...state.filterRegionIds,
+            [regionId]: true,
+          },
+        };
+      }
+
+      const filterRegionIds = {
+        ...state.filterRegionIds,
+      };
+      delete filterRegionIds[regionId];
+
+      return {
+        ...state,
+        filterRegionIds,
       };
     }
 
@@ -460,6 +506,7 @@ const reducer = (state: State, update: Update): State => {
         case "all": {
           return {
             ...state,
+            filterRegionIds: {},
             filterAreaIds: {},
             filterGradeLow: undefined,
             filterGradeHigh: undefined,
@@ -473,6 +520,12 @@ const reducer = (state: State, update: Update): State => {
             filterAreaOnlySunOnWallAt: undefined,
             filterAreaOnlyShadeOnWallAt: undefined,
             filterSectorWallDirections: undefined,
+          };
+        }
+        case "regions": {
+          return {
+            ...state,
+            filterRegionIds: {},
           };
         }
         case "areas": {
@@ -562,6 +615,7 @@ const reducer = (state: State, update: Update): State => {
 };
 
 const storageItems = {
+  regionIds: itemLocalStorage("filter/region-ids", {}),
   areaIds: itemLocalStorage("filter/area-ids", {}),
   areaOnlySunOnWallAt: itemLocalStorage("filter/area-only-sun-on-wall-at", 0),
   areaOnlyShadeOnWallAt: itemLocalStorage(
@@ -586,6 +640,7 @@ const storageItems = {
 const wrappedReducer: typeof reducer = (state, update) => {
   const reduced = reducer(state, update);
 
+  storageItems.regionIds.set(reduced.filterRegionIds);
   storageItems.areaIds.set(reduced.filterAreaIds);
   storageItems.areaOnlySunOnWallAt.set(reduced.filterAreaOnlySunOnWallAt);
   storageItems.areaOnlyShadeOnWallAt.set(reduced.filterAreaOnlyShadeOnWallAt);
@@ -609,12 +664,14 @@ export const useFilterState = (init?: Partial<State>) => {
   const [state, dispatch] = useReducer(wrappedReducer, {
     visible: false,
     gradeDifficultyLookup: {},
+    totalRegions: 0,
     totalAreas: 0,
     totalSectors: 0,
     totalProblems: 0,
-    unfilteredData: [],
+    unfilteredData: {},
 
     // Information about the filters
+    filterRegionIds: storageItems.regionIds.get(),
     filterAreaIds: storageItems.areaIds.get(),
     filterAreaOnlySunOnWallAt: storageItems.areaOnlySunOnWallAt.get(),
     filterAreaOnlyShadeOnWallAt: storageItems.areaOnlyShadeOnWallAt.get(),
@@ -630,7 +687,8 @@ export const useFilterState = (init?: Partial<State>) => {
     filterTypes: storageItems.types.get(),
 
     // Filtered data
-    filteredData: [],
+    filteredData: {},
+    filteredRegions: 0,
     filteredAreas: 0,
     filteredSectors: 0,
     filteredProblems: 0,

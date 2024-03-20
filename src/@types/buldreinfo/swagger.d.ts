@@ -89,12 +89,6 @@ export type paths = {
     /** Get problem PDF by id */
     get: operations["getProblemPdf"];
   };
-  "/v2/problems": {
-    /** Get problems */
-    get: operations["getProblems"];
-    /** Update problem (problem must be provided as json on field "json" in multiPart) */
-    post: operations["postProblems"];
-  };
   "/v2/problems/xlsx": {
     /** Get problems as Excel (xlsx) */
     get: operations["getProblemsXlsx"];
@@ -138,6 +132,10 @@ export type paths = {
     get: operations["getTicks"];
     /** Update tick (public ascent) */
     post: operations["postTicks"];
+  };
+  "/v2/toc": {
+    /** Get toc */
+    get: operations["getToc"];
   };
   "/v2/todo": {
     /** Get todo on Area/Sector */
@@ -186,6 +184,10 @@ export type paths = {
   "/v2/media/svg": {
     /** Update Media SVG */
     post: operations["postMediaSvg"];
+  };
+  "/v2/problems": {
+    /** Update problem (problem must be provided as json on field "json" in multiPart) */
+    post: operations["postProblems"];
   };
   "/v2/problems/media": {
     /** Add media on problem (problem must be provided as json on field "json" in multiPart) */
@@ -796,60 +798,6 @@ export type components = {
       comment?: string;
       date?: string;
     };
-    ProblemArea: {
-      /** Format: int32 */
-      id?: number;
-      url?: string;
-      name?: string;
-      coordinates?: components["schemas"]["Coordinates"];
-      lockedAdmin?: boolean;
-      lockedSuperadmin?: boolean;
-      /** Format: int32 */
-      sunFromHour?: number;
-      /** Format: int32 */
-      sunToHour?: number;
-      sectors?: components["schemas"]["ProblemAreaSector"][];
-    };
-    ProblemAreaProblem: {
-      /** Format: int32 */
-      id?: number;
-      url?: string;
-      broken?: string;
-      lockedAdmin?: boolean;
-      lockedSuperadmin?: boolean;
-      /** Format: int32 */
-      nr?: number;
-      name?: string;
-      description?: string;
-      coordinates?: components["schemas"]["Coordinates"];
-      grade?: string;
-      fa?: string;
-      /** Format: int32 */
-      faYear?: number;
-      /** Format: int32 */
-      numTicks?: number;
-      /** Format: double */
-      stars?: number;
-      ticked?: boolean;
-      t?: components["schemas"]["Type"];
-      /** Format: int32 */
-      numPitches?: number;
-    };
-    ProblemAreaSector: {
-      /** Format: int32 */
-      id?: number;
-      url?: string;
-      name?: string;
-      /** Format: int32 */
-      sorting?: number;
-      parking?: components["schemas"]["Coordinates"];
-      outline?: components["schemas"]["Coordinates"][];
-      wallDirectionCalculated?: components["schemas"]["CompassDirection"];
-      wallDirectionManual?: components["schemas"]["CompassDirection"];
-      lockedAdmin?: boolean;
-      lockedSuperadmin?: boolean;
-      problems?: components["schemas"]["ProblemAreaProblem"][];
-    };
     Profile: {
       /** Format: int32 */
       id?: number;
@@ -1026,6 +974,77 @@ export type components = {
       /** Format: int32 */
       numPages?: number;
     };
+    Toc: {
+      /** Format: int32 */
+      numRegions?: number;
+      /** Format: int32 */
+      numAreas?: number;
+      /** Format: int32 */
+      numSectors?: number;
+      /** Format: int32 */
+      numProblems?: number;
+      regions?: components["schemas"]["TocRegion"][];
+    };
+    TocArea: {
+      /** Format: int32 */
+      id?: number;
+      url?: string;
+      name?: string;
+      coordinates?: components["schemas"]["Coordinates"];
+      lockedAdmin?: boolean;
+      lockedSuperadmin?: boolean;
+      /** Format: int32 */
+      sunFromHour?: number;
+      /** Format: int32 */
+      sunToHour?: number;
+      sectors?: components["schemas"]["TocSector"][];
+    };
+    TocProblem: {
+      /** Format: int32 */
+      id?: number;
+      url?: string;
+      broken?: string;
+      lockedAdmin?: boolean;
+      lockedSuperadmin?: boolean;
+      /** Format: int32 */
+      nr?: number;
+      name?: string;
+      description?: string;
+      coordinates?: components["schemas"]["Coordinates"];
+      grade?: string;
+      fa?: string;
+      /** Format: int32 */
+      faYear?: number;
+      /** Format: int32 */
+      numTicks?: number;
+      /** Format: double */
+      stars?: number;
+      ticked?: boolean;
+      t?: components["schemas"]["Type"];
+      /** Format: int32 */
+      numPitches?: number;
+    };
+    TocRegion: {
+      /** Format: int32 */
+      id?: number;
+      name?: string;
+      areas?: components["schemas"]["TocArea"][];
+    };
+    TocSector: {
+      /** Format: int32 */
+      id?: number;
+      url?: string;
+      name?: string;
+      /** Format: int32 */
+      sorting?: number;
+      parking?: components["schemas"]["Coordinates"];
+      outline?: components["schemas"]["Coordinates"][];
+      wallDirectionCalculated?: components["schemas"]["CompassDirection"];
+      wallDirectionManual?: components["schemas"]["CompassDirection"];
+      lockedAdmin?: boolean;
+      lockedSuperadmin?: boolean;
+      problems?: components["schemas"]["TocProblem"][];
+    };
     Todo: {
       sectors?: components["schemas"]["TodoSector"][];
     };
@@ -1126,8 +1145,8 @@ export type components = {
       value?: string;
       content?: Record<string, never>;
       fileName?: string;
-      formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
       simple?: boolean;
+      formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
       parameterizedHeaders?: {
         empty?: boolean;
         [key: string]: components["schemas"]["ParameterizedHeader"][] | undefined;
@@ -1599,31 +1618,6 @@ export type operations = {
       };
     };
   };
-  /** Get problems */
-  getProblems: {
-    responses: {
-      200: {
-        content: {
-          "application/json": components["schemas"]["ProblemArea"][];
-        };
-      };
-    };
-  };
-  /** Update problem (problem must be provided as json on field "json" in multiPart) */
-  postProblems: {
-    requestBody?: {
-      content: {
-        "multipart/form-data": components["schemas"]["FormDataMultiPart"];
-      };
-    };
-    responses: {
-      200: {
-        content: {
-          "application/json": components["schemas"]["Redirect"];
-        };
-      };
-    };
-  };
   /** Get problems as Excel (xlsx) */
   getProblemsXlsx: {
     responses: {
@@ -1795,6 +1789,16 @@ export type operations = {
       default: {
         content: {
           "*/*": unknown;
+        };
+      };
+    };
+  };
+  /** Get toc */
+  getToc: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["Toc"][];
         };
       };
     };
@@ -1997,6 +2001,21 @@ export type operations = {
       default: {
         content: {
           "*/*": unknown;
+        };
+      };
+    };
+  };
+  /** Update problem (problem must be provided as json on field "json" in multiPart) */
+  postProblems: {
+    requestBody?: {
+      content: {
+        "multipart/form-data": components["schemas"]["FormDataMultiPart"];
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["Redirect"];
         };
       };
     };
