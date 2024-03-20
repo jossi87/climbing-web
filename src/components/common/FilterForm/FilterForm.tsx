@@ -424,42 +424,49 @@ export const FilterForm = () => {
           </Form.Group>
         </>
       )}
-      <GroupHeader
-        title="Regions"
-        reset="regions"
-        buttons={[
-          regionContainerButton
-            ? { icon: regionContainerButton, onClick: regionContainerAction }
-            : undefined,
-        ]}
-      />
-      <Form.Group inline>
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            ...regionContainerStyle,
-          }}
-          ref={regionContainerRef}
-        >
-          {unfilteredData?.regions?.map((region) => (
-            <Form.Field key={region.id}>
-              <Checkbox
-                label={region.name}
-                checked={!!filterRegionIds[region.id]}
-                onChange={(_, { checked }) =>
-                  dispatch({
-                    action: "toggle-region",
-                    regionId: region.id,
-                    enabled: checked,
-                  })
-                }
-                style={{ marginRight: 10 }}
-              />
-            </Form.Field>
-          ))}
-        </div>
-      </Form.Group>
+      {unfilteredData?.regions?.length > 1 && (
+        <>
+          <GroupHeader
+            title="Regions"
+            reset="regions"
+            buttons={[
+              regionContainerButton
+                ? {
+                    icon: regionContainerButton,
+                    onClick: regionContainerAction,
+                  }
+                : undefined,
+            ]}
+          />
+          <Form.Group inline>
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                ...regionContainerStyle,
+              }}
+              ref={regionContainerRef}
+            >
+              {unfilteredData?.regions?.map((region) => (
+                <Form.Field key={region.id}>
+                  <Checkbox
+                    label={region.name}
+                    checked={!!filterRegionIds[region.id]}
+                    onChange={(_, { checked }) =>
+                      dispatch({
+                        action: "toggle-region",
+                        regionId: region.id,
+                        enabled: checked,
+                      })
+                    }
+                    style={{ marginRight: 10 }}
+                  />
+                </Form.Field>
+              ))}
+            </div>
+          </Form.Group>
+        </>
+      )}
       <GroupHeader
         title="Areas"
         reset="areas"
