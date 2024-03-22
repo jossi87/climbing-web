@@ -10,7 +10,7 @@ import {
 } from "semantic-ui-react";
 import { Loading } from "../common/widgets/widgets";
 import { useMeta } from "../common/meta";
-import { downloadProblemsXlsx, useAccessToken, useToc } from "../../api";
+import { downloadTocXlsx, useAccessToken, useToc } from "../../api";
 import TableOfContents from "../common/TableOfContents";
 import { useFilterState } from "./reducer";
 import { FilterContext, FilterForm } from "../common/FilterForm";
@@ -213,7 +213,7 @@ export const Problems = ({ filterOpen }: Props) => {
                 labelPosition="left"
                 onClick={() => {
                   setIsSaving(true);
-                  downloadProblemsXlsx(accessToken).finally(() => {
+                  downloadTocXlsx(accessToken).finally(() => {
                     setIsSaving(false);
                   });
                 }}

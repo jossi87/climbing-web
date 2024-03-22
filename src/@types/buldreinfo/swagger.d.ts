@@ -89,10 +89,6 @@ export type paths = {
     /** Get problem PDF by id */
     get: operations["getProblemPdf"];
   };
-  "/v2/problems/xlsx": {
-    /** Get problems as Excel (xlsx) */
-    get: operations["getProblemsXlsx"];
-  };
   "/v2/profile": {
     /** Get profile by id */
     get: operations["getProfile"];
@@ -134,8 +130,12 @@ export type paths = {
     post: operations["postTicks"];
   };
   "/v2/toc": {
-    /** Get toc */
+    /** Get table of contents (all problems) */
     get: operations["getToc"];
+  };
+  "/v2/toc/xlsx": {
+    /** Get table of contents (all problems) as Excel (xlsx) */
+    get: operations["getTocXlsx"];
   };
   "/v2/todo": {
     /** Get todo on Area/Sector */
@@ -1145,8 +1145,8 @@ export type components = {
       value?: string;
       content?: Record<string, never>;
       fileName?: string;
-      simple?: boolean;
       formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
+      simple?: boolean;
       parameterizedHeaders?: {
         empty?: boolean;
         [key: string]: components["schemas"]["ParameterizedHeader"][] | undefined;
@@ -1618,16 +1618,6 @@ export type operations = {
       };
     };
   };
-  /** Get problems as Excel (xlsx) */
-  getProblemsXlsx: {
-    responses: {
-      200: {
-        content: {
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string[];
-        };
-      };
-    };
-  };
   /** Get profile by id */
   getProfile: {
     parameters: {
@@ -1793,12 +1783,22 @@ export type operations = {
       };
     };
   };
-  /** Get toc */
+  /** Get table of contents (all problems) */
   getToc: {
     responses: {
       200: {
         content: {
           "application/json": components["schemas"]["Toc"][];
+        };
+      };
+    };
+  };
+  /** Get table of contents (all problems) as Excel (xlsx) */
+  getTocXlsx: {
+    responses: {
+      200: {
+        content: {
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string[];
         };
       };
     };

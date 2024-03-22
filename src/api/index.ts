@@ -1,7 +1,7 @@
 export * from "./hooks";
 
 export {
-  downloadProblemsXlsx,
+  downloadTocXlsx,
   deleteMedia,
   moveMedia,
   downloadUsersTicks,
