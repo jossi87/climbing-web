@@ -19,7 +19,7 @@ export const hashSemanticColor = (hash: number): (typeof colors)[number] => {
 };
 
 export const hashHexColor = (hash: number): [`#${string}`, `#${string}`] => {
-  const rgb = `000000${(hash & 0xffffff).toString(16)}`.substr(-6);
+  const rgb = `000000${(hash & 0xffffff).toString(16)}`.slice(-6);
 
   const contrast = contrastingColor(rgb);
 
@@ -42,8 +42,8 @@ const hexToRGBArray = (color: string): [number, number, number] => {
   }
 
   return [
-    parseInt(color.substr(0, 2), 16),
-    parseInt(color.substr(2, 2), 16),
-    parseInt(color.substr(4, 2), 16),
+    parseInt(color.slice(0, 2), 16),
+    parseInt(color.slice(2, 4), 16),
+    parseInt(color.slice(4, 6), 16),
   ];
 };
