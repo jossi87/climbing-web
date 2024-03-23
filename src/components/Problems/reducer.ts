@@ -1,6 +1,5 @@
 import { useEffect, useReducer } from "react";
 import { neverGuard } from "../../utils/neverGuard";
-import * as Sentry from "@sentry/react";
 import { useGrades } from "../common/meta/meta";
 import { itemLocalStorage } from "../../utils/use-local-storage";
 import { components } from "../../@types/buldreinfo/swagger";
@@ -103,10 +102,6 @@ const filter = (state: State): State => {
     filterPitches,
     filterTypes,
     gradeDifficultyLookup,
-    totalRegions,
-    totalAreas,
-    totalProblems,
-    totalSectors,
     unfilteredData,
   } = state;
   const filteredOut = {
@@ -119,11 +114,6 @@ const filter = (state: State): State => {
   const filterRegionIdsCount = Object.keys(filterRegionIds).length;
   const filterAreaIdsCount = Object.keys(filterAreaIds).length;
 
-  const transaction = Sentry.startTransaction({
-    name: "filter-problems",
-    data: { totalRegions, totalAreas, totalProblems, totalSectors },
-  });
-  const span = transaction.startChild();
   const filteredData = {
     ...unfilteredData,
     regions: unfilteredData?.regions
@@ -310,8 +300,6 @@ const filter = (state: State): State => {
         return true;
       }),
   };
-  span.end();
-  transaction.end();
 
   return {
     ...state,

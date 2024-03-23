@@ -7,15 +7,29 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { DataReloader } from "./components/DataReloader";
 import * as Sentry from "@sentry/react";
-import { getBaseUrl } from "./api";
+import { useEffect } from "react";
+import {
+  createRoutesFromChildren,
+  matchRoutes,
+  useLocation,
+  useNavigationType,
+} from "react-router-dom";
 
 Sentry.init({
   dsn: "https://32152968271f46afa0efa8608b252e42@o4505452714786816.ingest.sentry.io/4505452716556288",
   integrations: [
-    new Sentry.BrowserTracing({
-      tracePropagationTargets: ["localhost", getBaseUrl()],
+    Sentry.reactRouterV6BrowserTracingIntegration({
+      useEffect,
+      useLocation,
+      useNavigationType,
+      createRoutesFromChildren,
+      matchRoutes,
     }),
-    process.env.REACT_APP_ENV !== "development" && new Sentry.Replay(),
+    process.env.REACT_APP_ENV !== "development" &&
+      Sentry.replayIntegration({
+        unblock: [".sentry-unblock, [data-sentry-unblock]"],
+        unmask: [".sentry-unmask, [data-sentry-unmask]"],
+      }),
   ].filter(Boolean),
   environment: process.env.REACT_APP_ENV ?? "unknown",
   // Performance Monitoring
