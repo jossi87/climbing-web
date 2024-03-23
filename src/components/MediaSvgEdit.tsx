@@ -273,7 +273,7 @@ const MediaSvgEdit = () => {
     data.mediaSvgs[activeElementIndex] &&
     data.mediaSvgs[activeElementIndex].t === "PATH" &&
     data.mediaSvgs[activeElementIndex].points.map((p, i, a) => {
-      const anchors: JSX.Element[] = [];
+      const anchors: React.JSX.Element[] = [];
       if (p.c) {
         anchors.push(
           <g key={anchors.length} className="buldreinfo-svg-edit-opacity">
@@ -331,7 +331,7 @@ const MediaSvgEdit = () => {
       );
     });
 
-  let activeRappel: JSX.Element | null = null;
+  let activeRappel: React.JSX.Element | null = null;
   if (
     activeElementIndex >= 0 &&
     data.mediaSvgs[activeElementIndex] &&

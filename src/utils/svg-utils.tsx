@@ -14,7 +14,7 @@ export function Descent({ path, whiteNotBlack, scale, thumb }: DescentProps) {
   const descentKey = path.replace(/\s/g, ""); // Key cannot contains spaces
   const deltaPercent =
     ((scale * 1000) / properties.getTotalLength()) * (thumb ? 6 : 3);
-  const texts: JSX.Element[] = [];
+  const texts: React.JSX.Element[] = [];
   for (let i = 0; i <= 100; i += deltaPercent) {
     texts.push(
       <textPath
@@ -200,7 +200,7 @@ function generateSvgNrAndAnchor(
   if (x > w - r) x = w - r;
   if (y < r) y = r;
   if (y > h - r) y = h - r;
-  let anchor: JSX.Element | null = null;
+  let anchor: React.JSX.Element | null = null;
   if (hasAnchor === true) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     anchor = (
@@ -326,7 +326,7 @@ export function parseReadOnlySvgs(
 ) {
   const backgroundColor = "black";
   const color = "white";
-  const shapes = readOnlySvgs.reduce<JSX.Element[]>((acc, svg) => {
+  const shapes = readOnlySvgs.reduce<React.JSX.Element[]>((acc, svg) => {
     const { t } = svg;
     switch (t) {
       case "PATH": {

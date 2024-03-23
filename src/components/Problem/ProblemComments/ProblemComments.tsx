@@ -29,7 +29,7 @@ export const ProblemComments = ({
     c: components["schemas"]["ProblemComment"];
     expandable?: boolean;
   }) => {
-    let extra: JSX.Element | null = null;
+    let extra: React.JSX.Element | null = null;
     if (c.danger) {
       extra = <Label color="red">Flagged as dangerous</Label>;
     } else if (c.resolved) {

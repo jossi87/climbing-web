@@ -370,7 +370,7 @@ const SvgEdit = () => {
   }
 
   const circles = points.map((p, i, a) => {
-    const anchors: JSX.Element[] = [];
+    const anchors: React.JSX.Element[] = [];
     if (p.c) {
       const stroke = "#FFFFFF";
       anchors.push(

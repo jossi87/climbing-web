@@ -310,8 +310,8 @@ const filter = (state: State): State => {
         return true;
       }),
   };
-  span.finish();
-  transaction.finish();
+  span.end();
+  transaction.end();
 
   return {
     ...state,

@@ -9,6 +9,7 @@ module.exports = {
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
     "plugin:storybook/recommended",
+    "plugin:deprecation/recommended",
   ],
   overrides: [
     {
@@ -25,8 +26,9 @@ module.exports = {
   parserOptions: {
     ecmaVersion: "latest",
     sourceType: "module",
+    project: "./tsconfig.json",
   },
-  plugins: ["@typescript-eslint", "react"],
+  plugins: ["@typescript-eslint", "react", "deprecation"],
   rules: {
     "react/no-array-index-key": "error",
     "react/react-in-jsx-scope": ["off"],
@@ -43,5 +45,6 @@ module.exports = {
     ],
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "error",
+    "deprecation/deprecation": "warn",
   },
 };
