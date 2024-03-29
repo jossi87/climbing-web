@@ -63,7 +63,7 @@
     "@tanstack/react-query-devtools": "^5.28.6",
     "atob": "^2.1.2",
     "classnames": "^2.5.1",
-    "express": "^4.19.1",
+    "express": "^4.19.2",
     "file-saver": "^2.0.5",
     "isomorphic-fetch": "^3.0.0",
     "leaflet": "^1.9.4",
