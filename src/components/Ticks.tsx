@@ -10,7 +10,6 @@ const PlaceholderFeed = () => {
   return (
     <Placeholder>
       {new Array(20).fill(0).map((_, i) => (
-        // eslint-disable-next-line react/no-array-index-key
         <Placeholder.Header key={i}>
           <Placeholder.Line length="full" />
         </Placeholder.Header>

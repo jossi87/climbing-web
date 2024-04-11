@@ -169,7 +169,6 @@ const Frontpage = () => {
               <Segment>
                 <Placeholder>
                   {[...Array(6)].map((_, i) => (
-                    // eslint-disable-next-line react/no-array-index-key
                     <Placeholder.Header image key={i}>
                       <Placeholder.Line />
                     </Placeholder.Header>

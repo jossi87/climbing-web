@@ -222,7 +222,6 @@ const Activity = ({ idArea, idSector }: Props) => {
         <Segment vertical>
           <Placeholder fluid>
             {[...Array(15)].map((_, i) => (
-              // eslint-disable-next-line react/no-array-index-key
               <Placeholder.Header image key={i}>
                 <Placeholder.Line length="medium" />
                 <Placeholder.Line length="short" />

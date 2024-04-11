@@ -126,7 +126,6 @@ export const PolylineEditor = ({
                       .join(";") || ""
                   }
                   onChange={(_, { value }) => onChange(parsePolyline(value))}
-                  error={false && "Invalid outline"}
                 />
               </Tab.Pane>
             ),
