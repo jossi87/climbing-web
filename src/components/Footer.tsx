@@ -20,11 +20,6 @@ const styleGitHubBrv = {
   maxWidth: "170px",
   backgroundColor: "#FFFFFF",
 };
-const styleGoogle = {
-  width: "200px",
-  marginTop: "-13px",
-  marginBottom: "-13px",
-};
 const styleFacebook = {
   width: "175px",
   marginLeft: "5px",
