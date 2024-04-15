@@ -41,7 +41,7 @@ function Footer() {
       <Container textAlign="center">
         <Grid stackable>
           <Grid.Row>
-            <Grid.Column width={4}>
+            <Grid.Column width={3}>
               <a
                 href={"https://github.com/jossi87/climbing-web"}
                 rel="noreferrer noopener"
@@ -54,7 +54,7 @@ function Footer() {
                 />
               </a>
             </Grid.Column>
-            <Grid.Column width={4}>
+            <Grid.Column width={3}>
               <a
                 href={"https://brv.no"}
                 rel="noreferrer noopener"
@@ -67,20 +67,7 @@ function Footer() {
                 />
               </a>
             </Grid.Column>
-            <Grid.Column width={4}>
-              <a
-                href="https://play.google.com/store/apps/details?id=org.jossi.android.bouldering&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1"
-                rel="noreferrer noopener"
-                target="_blank"
-              >
-                <img
-                  style={styleGoogle}
-                  alt="Get it on Google Play"
-                  src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png"
-                />
-              </a>
-            </Grid.Column>
-            <Grid.Column width={4}>
+            <Grid.Column width={3}>
               <a
                 href={"https://www.facebook.com/groups/brattelinjer"}
                 rel="noreferrer noopener"
