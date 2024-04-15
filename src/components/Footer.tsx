@@ -34,9 +34,9 @@ function Footer() {
       style={{ margin: "5em 0em 0em", padding: "5em 0em" }}
     >
       <Container textAlign="center">
-        <Grid stackable>
+        <Grid columns={3} stackable>
           <Grid.Row>
-            <Grid.Column width={3}>
+            <Grid.Column>
               <a
                 href={"https://github.com/jossi87/climbing-web"}
                 rel="noreferrer noopener"
@@ -49,7 +49,7 @@ function Footer() {
                 />
               </a>
             </Grid.Column>
-            <Grid.Column width={3}>
+            <Grid.Column>
               <a
                 href={"https://brv.no"}
                 rel="noreferrer noopener"
@@ -62,7 +62,7 @@ function Footer() {
                 />
               </a>
             </Grid.Column>
-            <Grid.Column width={3}>
+            <Grid.Column>
               <a
                 href={"https://www.facebook.com/groups/brattelinjer"}
                 rel="noreferrer noopener"
