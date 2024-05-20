@@ -31,8 +31,7 @@ export const SvgRoute = ({
   setProblemIdHovered,
 }: Props) => {
   const navigate = useNavigate();
-  const path: any = parseSVG(svg.path);
-  makeAbsolute(path); // Note: mutates the commands in place!
+  const path = makeAbsolute(parseSVG(svg.path)); // Note: mutates the commands in place!
 
   let gClassName = "buldreinfo-svg-pointer";
   if (optProblemId || problemIdHovered) {
