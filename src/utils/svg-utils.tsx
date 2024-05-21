@@ -249,59 +249,67 @@ function generateSvgNrAndAnchor(
   );
 }
 
-export function parsePath(d: string) {
-  let res: any[] = [];
-  if (d) {
-    const commands: any = parseSVG(d);
-    makeAbsolute(commands); // Note: mutates the commands in place!
-    res = commands.map((c) => {
-      switch (c.code) {
-        case "L":
-        case "M":
-          return { x: Math.round(c.x), y: Math.round(c.y) };
-        case "C":
-          return {
-            x: Math.round(c.x),
-            y: Math.round(c.y),
-            c: [
-              { x: Math.round(c.x1), y: Math.round(c.y1) },
-              { x: Math.round(c.x2), y: Math.round(c.y2) },
-            ],
-          };
-        case "S":
-          return {
-            x: Math.round(c.x),
-            y: Math.round(c.y),
-            c: [
-              { x: Math.round(c.x0), y: Math.round(c.y0) },
-              { x: Math.round(c.x2), y: Math.round(c.y2) },
-            ],
-          };
-      }
-    });
-    // Reverse path if drawn incorrect direction
-    if (res.length >= 2 && res[0].y < res[res.length - 1].y) {
-      const tmp: any[] = [];
-      for (let i = res.length - 1; i >= 0; i--) {
-        const p = res[i];
-        const prevP = i != res.length - 1 && res[i + 1];
-        if (prevP?.c) {
-          tmp.push({
-            x: p.x,
-            y: p.y,
-            c: [
-              { x: prevP.c[1].x, y: prevP.c[1].y },
-              { x: prevP.c[0].x, y: prevP.c[0].y },
-            ],
-          });
-        } else {
-          tmp.push({ x: p.x, y: p.y });
-        }
-      }
-      res = tmp;
+type ParsedEntry = {
+  x: number;
+  y: number;
+  c?: [{ x: number; y: number }, { x: number; y: number }];
+};
+
+export function parsePath(d: string): ParsedEntry[] {
+  if (!d) {
+    return [];
+  }
+
+  const commands = makeAbsolute(parseSVG(d)); // Note: mutates the commands in place!
+  const res = commands.map<ParsedEntry>((c) => {
+    switch (c.code) {
+      case "L":
+      case "M":
+        return { x: Math.round(c.x), y: Math.round(c.y) };
+      case "C":
+        return {
+          x: Math.round(c.x),
+          y: Math.round(c.y),
+          c: [
+            { x: Math.round(c.x1), y: Math.round(c.y1) },
+            { x: Math.round(c.x2), y: Math.round(c.y2) },
+          ],
+        };
+      case "S":
+        return {
+          x: Math.round(c.x),
+          y: Math.round(c.y),
+          c: [
+            { x: Math.round(c.x0), y: Math.round(c.y0) },
+            { x: Math.round(c.x2), y: Math.round(c.y2) },
+          ],
+        };
+    }
+  });
+
+  // Reverse path if drawn incorrect direction
+  if (res.length < 2 || res[0].y >= res[res.length - 1].y) {
+    return res;
+  }
+
+  const reversed: typeof res = [];
+  for (let i = res.length - 1; i >= 0; i--) {
+    const p = res[i];
+    const prevP = i != res.length - 1 && res[i + 1];
+    if (prevP?.c) {
+      reversed.push({
+        x: p.x,
+        y: p.y,
+        c: [
+          { x: prevP.c[1].x, y: prevP.c[1].y },
+          { x: prevP.c[0].x, y: prevP.c[0].y },
+        ],
+      });
+    } else {
+      reversed.push({ x: p.x, y: p.y });
     }
   }
-  return res;
+  return reversed;
 }
 
 type SvgType = {
@@ -358,8 +366,7 @@ export function parseReadOnlySvgs(
         ];
       }
       default: {
-        const commands = parseSVG(svg.path);
-        makeAbsolute(commands); // Note: mutates the commands in place!
+        const commands = makeAbsolute(parseSVG(svg.path)); // Note: mutates the commands in place!
         return [
           ...acc,
           generateSvgNrAndAnchor(
