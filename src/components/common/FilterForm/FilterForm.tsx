@@ -24,6 +24,7 @@ import { useFilter } from "./context";
 import { HeaderButtons } from "../HeaderButtons";
 import { ResetField } from "../../Problems/reducer";
 import { neverGuard } from "../../../utils/neverGuard";
+import { YearSelect } from "./YearSelect";
 
 const CLIMBING_OPTIONS = [
   {
@@ -155,8 +156,6 @@ export const FilterForm = () => {
     filterSectorWallDirections,
     filterOnlyAdmin,
     filterOnlySuperAdmin,
-    filterFaYearLow,
-    filterFaYearHigh,
     filterHideTicked,
     filterPitches,
     filterTypes,
@@ -193,15 +192,6 @@ export const FilterForm = () => {
     { key: 21, text: "21:00", value: 21 },
     { key: 22, text: "22:00", value: 22 },
     { key: 23, text: "23:00", value: 23 },
-  ];
-
-  const faYearOptions = [
-    { key: -1, text: "<disabled>", value: -1 },
-    ...meta.faYears.map((year) => ({
-      key: year,
-      text: year,
-      value: year,
-    })),
   ];
 
   const {
@@ -291,43 +281,10 @@ export const FilterForm = () => {
           </Form.Group>
         </>
       )}
-      <GroupHeader title="FA Year" reset="fa-year" />
-      <Form.Group inline>
-        <Form.Field>
-          From:{" "}
-          <Dropdown
-            floating
-            scrolling
-            inline
-            options={faYearOptions}
-            value={filterFaYearLow || -1}
-            onChange={(_, { value }) => {
-              dispatch?.({
-                action: "set-fa-year",
-                low: value as number,
-              });
-            }}
-          />
-          .
-        </Form.Field>
-        <Form.Field>
-          To:{" "}
-          <Dropdown
-            floating
-            scrolling
-            inline
-            options={faYearOptions}
-            value={filterFaYearHigh || -1}
-            onChange={(_, { value }) => {
-              dispatch?.({
-                action: "set-fa-year",
-                high: value as number,
-              });
-            }}
-          />
-          .
-        </Form.Field>
-      </Form.Group>
+      <Form.Field>
+        <GroupHeader title="First Ascent Year" reset="fa-year" />
+        <YearSelect />
+      </Form.Field>
       <GroupHeader title="Options" reset="options" />
       <Form.Group inline>
         <Form.Field>

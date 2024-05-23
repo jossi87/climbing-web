@@ -96,8 +96,17 @@ export const useGrades = () => {
   };
 };
 
+export const useFaYears = () => {
+  return useMeta().faYears;
+};
+
 export const MetaProvider = ({ children }: Props) => {
-  const { data: meta } = useData<Metadata>(`/meta`);
+  const { data: meta } = useData<Metadata>(`/meta`, {
+    select: (data) => {
+      data.faYears.sort((a, b) => a - b);
+      return data;
+    },
+  });
 
   return (
     <MetaContext.Provider value={meta || DEFAULT_VALUE}>

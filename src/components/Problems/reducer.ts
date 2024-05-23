@@ -4,15 +4,15 @@ import { useGrades } from "../common/meta/meta";
 import { itemLocalStorage } from "../../utils/use-local-storage";
 import { components } from "../../@types/buldreinfo/swagger";
 
-export type State = {
-  visible: boolean;
-  gradeDifficultyLookup: Record<string, number>;
-  totalRegions: number;
-  totalAreas: number;
-  totalSectors: number;
-  totalProblems: number;
-  unfilteredData: components["schemas"]["Toc"];
-} & {
+type FilterResults = {
+  filteredData: components["schemas"]["Toc"];
+  filteredRegions: number;
+  filteredAreas: number;
+  filteredSectors: number;
+  filteredProblems: number;
+};
+
+type FilterInputs = {
   filterRegionIds: Record<number, true>;
   filterAreaIds: Record<number, true>;
   filterAreaOnlySunOnWallAt: number | undefined;
@@ -24,18 +24,27 @@ export type State = {
   filterFaYearHigh: number | undefined;
   filterTypes: Record<number, boolean> | undefined;
   filterPitches:
-    | { "Single-pitch": boolean; "Multi-pitch": boolean }
+    | {
+        "Single-pitch": boolean;
+        "Multi-pitch": boolean;
+      }
     | undefined;
   filterHideTicked: boolean | undefined;
   filterOnlyAdmin: boolean | undefined;
   filterOnlySuperAdmin: boolean | undefined;
-  filteredData: components["schemas"]["Toc"];
-
-  filteredRegions: number;
-  filteredAreas: number;
-  filteredSectors: number;
-  filteredProblems: number;
 };
+
+type FilterState = FilterInputs & FilterResults;
+
+export type State = {
+  visible: boolean;
+  gradeDifficultyLookup: Record<string, number>;
+  totalRegions: number;
+  totalAreas: number;
+  totalSectors: number;
+  totalProblems: number;
+  unfilteredData: components["schemas"]["Toc"];
+} & FilterState;
 
 export type ResetField =
   | "all"
@@ -75,11 +84,12 @@ export type Update =
       gradeDifficultyLookup: State["gradeDifficultyLookup"];
     }
   | { action: "set-grades"; low: string; high: string }
-  | ({ action: "set-fa-year" } & ({ low: number } | { high: number }))
+  | { action: "set-fa-years"; low: number; high: number }
   | { action: "set-hide-ticked"; checked: boolean }
   | { action: "set-only-admin"; checked: boolean }
   | { action: "set-only-super-admin"; checked: boolean }
   | ({ action: "set-grade" } & ({ low: string } | { high: string }))
+  | ({ action: "set-fa-year" } & ({ low: number } | { high: number }))
   | { action: "close-filter" }
   | { action: "open-filter" }
   | { action: "toggle-filter" }
@@ -448,6 +458,15 @@ const reducer = (state: State, update: Update): State => {
         ...state,
         filterGradeLow: low ?? state.filterGradeLow ?? undefined,
         filterGradeHigh: high ?? state.filterGradeHigh ?? undefined,
+      };
+    }
+
+    case "set-fa-years": {
+      const { low, high } = update;
+      return {
+        ...state,
+        filterFaYearLow: low,
+        filterFaYearHigh: high,
       };
     }
 
