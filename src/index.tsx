@@ -42,7 +42,7 @@ function ErrorFallback({
   componentStack,
   resetError,
 }: {
-  error: Error;
+  error: unknown;
   componentStack: string;
   resetError: () => void;
 }) {
