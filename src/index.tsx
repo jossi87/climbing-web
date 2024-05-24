@@ -53,7 +53,7 @@ function ErrorFallback({
       <b>User Agent:</b>
       <pre>{userAgent}</pre>
       <b>Error message:</b>
-      <pre>{error.message}</pre>
+      <pre>{`${error}`}</pre>
       <b>Stack trace:</b>
       <pre>{componentStack}</pre>
       <button onClick={resetError}>Try again</button>
@@ -66,8 +66,8 @@ function ErrorFallback({
             "User Agent: " +
             userAgent +
             "%0D%0A%0D%0A" +
-            "Error message: " +
-            error.message +
+            "Error: " +
+            error +
             "%0D%0A%0D%0A" +
             "Stack trace:%0D%0A" +
             componentStack;
