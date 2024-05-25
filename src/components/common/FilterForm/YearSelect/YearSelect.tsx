@@ -48,7 +48,7 @@ export const YearSelect = () => {
             options={faYears
               .filter((value) => value < high)
               .map((year) => ({ key: year, text: String(year), value: year }))}
-            onChange={(_, { value }) => {
+            onChange={(_, { value = 0 }) => {
               dispatch({
                 action: "set-fa-year",
                 low: +value,
@@ -65,7 +65,7 @@ export const YearSelect = () => {
             options={faYears
               .filter((value) => value > low)
               .map((year) => ({ key: year, text: String(year), value: year }))}
-            onChange={(_, { value }) => {
+            onChange={(_, { value = 0 }) => {
               dispatch({
                 action: "set-fa-year",
                 high: +value,

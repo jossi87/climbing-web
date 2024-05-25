@@ -101,7 +101,7 @@ const ICONS: Record<AreaSizeState, SemanticICONS | undefined> = {
 };
 
 const useSizing = () => {
-  const ref = useRef<HTMLDivElement>();
+  const ref = useRef<HTMLDivElement | null>(null);
   const [status, setStatus] = useState<AreaSizeState>("show-some");
 
   useLayoutEffect(() => {
@@ -249,7 +249,7 @@ export const FilterForm = () => {
                     dispatch?.({
                       action: "toggle-types",
                       option: discipline.value,
-                      checked,
+                      checked: !!checked,
                     });
                   }}
                   style={{ marginRight: 10 }}
@@ -272,7 +272,7 @@ export const FilterForm = () => {
                     dispatch?.({
                       action: "toggle-pitches",
                       option: option.value,
-                      checked,
+                      checked: !!checked,
                     });
                   }}
                 />
@@ -293,7 +293,7 @@ export const FilterForm = () => {
             checked={!!filterHideTicked}
             disabled={!meta.isAuthenticated}
             onChange={(_, { checked }) =>
-              dispatch?.({ action: "set-hide-ticked", checked })
+              dispatch?.({ action: "set-hide-ticked", checked: !!checked })
             }
           />
         </Form.Field>
@@ -303,7 +303,7 @@ export const FilterForm = () => {
               label="Only admin"
               checked={!!filterOnlyAdmin}
               onChange={(_, { checked }) => {
-                dispatch?.({ action: "set-only-admin", checked });
+                dispatch?.({ action: "set-only-admin", checked: !!checked });
               }}
             />
           </Form.Field>
@@ -314,7 +314,10 @@ export const FilterForm = () => {
               label="Only superadmin"
               checked={!!filterOnlySuperAdmin}
               onChange={(_, { checked }) => {
-                dispatch?.({ action: "set-only-super-admin", checked });
+                dispatch?.({
+                  action: "set-only-super-admin",
+                  checked: !!checked,
+                });
               }}
             />
           </Form.Field>
@@ -334,7 +337,7 @@ export const FilterForm = () => {
                     dispatch?.({
                       action: "toggle-sector-wall-directions",
                       option: option.value,
-                      checked,
+                      checked: !!checked,
                     });
                   }}
                   style={{ marginRight: 10 }}
@@ -381,19 +384,21 @@ export const FilterForm = () => {
           </Form.Group>
         </>
       )}
-      {unfilteredData?.regions?.length > 1 && (
+      {(unfilteredData?.regions?.length ?? 0) > 1 && (
         <>
           <GroupHeader
             title="Regions"
             reset="regions"
-            buttons={[
+            buttons={
               regionContainerButton
-                ? {
-                    icon: regionContainerButton,
-                    onClick: regionContainerAction,
-                  }
-                : undefined,
-            ]}
+                ? [
+                    {
+                      icon: regionContainerButton,
+                      onClick: regionContainerAction,
+                    },
+                  ]
+                : undefined
+            }
           />
           <Form.Group inline>
             <div
@@ -404,16 +409,16 @@ export const FilterForm = () => {
               }}
               ref={regionContainerRef}
             >
-              {unfilteredData?.regions?.map((region) => (
-                <Form.Field key={region.id}>
+              {unfilteredData?.regions?.map(({ id = 0, name = "" }) => (
+                <Form.Field key={id}>
                   <Checkbox
-                    label={region.name}
-                    checked={!!filterRegionIds[region.id]}
+                    label={name}
+                    checked={!!filterRegionIds[id]}
                     onChange={(_, { checked }) =>
                       dispatch({
                         action: "toggle-region",
-                        regionId: region.id,
-                        enabled: checked,
+                        regionId: id,
+                        enabled: !!checked,
                       })
                     }
                     style={{ marginRight: 10 }}
@@ -427,11 +432,11 @@ export const FilterForm = () => {
       <GroupHeader
         title="Areas"
         reset="areas"
-        buttons={[
+        buttons={
           areaContainerButton
-            ? { icon: areaContainerButton, onClick: areaContainerAction }
-            : undefined,
-        ]}
+            ? [{ icon: areaContainerButton, onClick: areaContainerAction }]
+            : undefined
+        }
       />
       <Form.Group inline>
         <div
@@ -443,16 +448,16 @@ export const FilterForm = () => {
           ref={areaContainerRef}
         >
           {unfilteredData?.regions?.map((region) =>
-            region.areas.map((area) => (
-              <Form.Field key={area.id}>
+            region.areas?.map(({ id = 0, name = "" }) => (
+              <Form.Field key={id}>
                 <Checkbox
-                  label={area.name}
-                  checked={!!filterAreaIds[area.id]}
+                  label={name}
+                  checked={!!filterAreaIds[id]}
                   onChange={(_, { checked }) =>
                     dispatch({
                       action: "toggle-area",
-                      areaId: area.id,
-                      enabled: checked,
+                      areaId: id,
+                      enabled: !!checked,
                     })
                   }
                 />

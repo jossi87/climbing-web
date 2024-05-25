@@ -59,7 +59,7 @@ export type Props = {
 };
 
 export const TableOfContents = ({ areas, header, subHeader }: Props) => {
-  const areaRefs = useRef({});
+  const areaRefs = useRef<Record<number, HTMLElement | null>>({});
 
   if (!areas) {
     return <i>No results match your search criteria.</i>;
@@ -74,7 +74,7 @@ export const TableOfContents = ({ areas, header, subHeader }: Props) => {
             <List.Item
               as="a"
               onClick={() =>
-                areaRefs.current[area.id].scrollIntoView({ block: "start" })
+                areaRefs.current[area.id]?.scrollIntoView({ block: "start" })
               }
             >
               {area.name}
@@ -138,12 +138,12 @@ export const TableOfContents = ({ areas, header, subHeader }: Props) => {
                           )}
                         </Link>{" "}
                         {problem.grade}{" "}
-                        {problem.stars > 0 && (
+                        {problem.stars ? (
                           <Stars
                             numStars={problem.stars}
                             includeNoRating={false}
                           />
-                        )}
+                        ) : null}
                         {problem.text && <small>{problem.text} </small>}
                         {problem.broken && <u>{problem.broken} </u>}
                         {problem.subText && (

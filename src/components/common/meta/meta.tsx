@@ -82,7 +82,7 @@ export const useGrades = () => {
   const { grades } = useMeta();
   const [gradesLowHigh, indexMapping] = useMemo(() => {
     const easyToHard = grades.map(({ grade }) => grade).reverse();
-    const indexMapping = easyToHard.reduce(
+    const indexMapping = easyToHard.reduce<Record<string, number>>(
       (acc, grade, i) => ({ ...acc, [grade]: i }),
       {},
     );

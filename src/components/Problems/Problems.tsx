@@ -119,68 +119,83 @@ export const Problems = ({ filterOpen }: Props) => {
     things,
   );
 
-  const areas: FilterArea[] = filteredData?.regions?.flatMap((region) => {
-    return region.areas.map((area) => ({
-      id: area.id,
-      lockedAdmin: !!area.lockedAdmin,
-      lockedSuperadmin: !!area.lockedSuperadmin,
-      sunFromHour: area.sunFromHour,
-      sunToHour: area.sunToHour,
-      name: area.name,
-      lat: area.coordinates?.latitude,
-      lng: area.coordinates?.longitude,
-      sectors: area.sectors.map((sector) => ({
-        id: sector.id,
-        lockedAdmin: !!sector.lockedAdmin,
-        lockedSuperadmin: !!sector.lockedSuperadmin,
-        name: sector.name,
-        lat: sector.parking?.latitude,
-        lng: sector.parking?.longitude,
-        outline: sector.outline,
-        wallDirectionCalculated: sector.wallDirectionCalculated,
-        wallDirectionManual: sector.wallDirectionManual,
-        problems: sector.problems.map((problem) => {
-          const ascents =
-            problem.numTicks > 0 &&
-            problem.numTicks + (problem.numTicks == 1 ? " ascent" : " ascents");
-          let typeAscents;
-          if (isClimbing) {
-            let t = problem.t.subType;
-            if (problem.numPitches > 1)
-              t += ", " + problem.numPitches + " pitches";
-            if (ascents) {
-              typeAscents = " (" + t + ", " + ascents + ") ";
-            } else {
-              typeAscents = " (" + t + ") ";
-            }
-          } else if (!isClimbing) {
-            if (ascents) {
-              typeAscents = " (" + ascents + ") ";
-            } else {
-              typeAscents = " ";
-            }
-          }
-          const text = [problem.fa, typeAscents].filter(Boolean).join(" ");
-          return {
-            id: problem.id,
-            broken: problem.broken,
-            lockedAdmin: !!problem.lockedAdmin,
-            lockedSuperadmin: !!problem.lockedSuperadmin,
-            name: problem.name,
-            lat: problem.coordinates?.latitude,
-            lng: problem.coordinates?.longitude,
-            nr: problem.nr,
-            grade: problem.grade,
-            stars: problem.stars,
-            ticked: problem.ticked,
-            text: text,
-            subText: problem.description,
-            faYear: problem.faYear,
-          };
-        }),
-      })),
-    }));
-  });
+  const areas: FilterArea[] =
+    filteredData?.regions?.flatMap((region) => {
+      return (
+        region.areas?.map(
+          (area) =>
+            ({
+              id: area.id ?? 0,
+              lockedAdmin: !!area.lockedAdmin,
+              lockedSuperadmin: !!area.lockedSuperadmin,
+              sunFromHour: area.sunFromHour ?? 0,
+              sunToHour: area.sunToHour ?? 0,
+              name: area.name ?? "",
+              lat: area.coordinates?.latitude,
+              lng: area.coordinates?.longitude,
+              sectors:
+                area.sectors?.map(
+                  (sector) =>
+                    ({
+                      id: sector.id ?? 0,
+                      lockedAdmin: !!sector.lockedAdmin,
+                      lockedSuperadmin: !!sector.lockedSuperadmin,
+                      name: sector.name ?? "",
+                      lat: sector.parking?.latitude,
+                      lng: sector.parking?.longitude,
+                      outline: sector.outline,
+                      wallDirectionCalculated:
+                        sector.wallDirectionCalculated ?? {},
+                      wallDirectionManual: sector.wallDirectionManual ?? {},
+                      problems:
+                        sector.problems?.map((problem) => {
+                          const ascents =
+                            problem.numTicks &&
+                            problem.numTicks +
+                              (problem.numTicks == 1 ? " ascent" : " ascents");
+                          let typeAscents;
+                          if (isClimbing) {
+                            let t = problem.t?.subType;
+                            if (problem.numPitches && problem.numPitches > 1)
+                              t += ", " + problem.numPitches + " pitches";
+                            if (ascents) {
+                              typeAscents = " (" + t + ", " + ascents + ") ";
+                            } else {
+                              typeAscents = " (" + t + ") ";
+                            }
+                          } else if (!isClimbing) {
+                            if (ascents) {
+                              typeAscents = " (" + ascents + ") ";
+                            } else {
+                              typeAscents = " ";
+                            }
+                          }
+                          const text = [problem.fa, typeAscents]
+                            .filter(Boolean)
+                            .join(" ");
+                          return {
+                            id: problem.id ?? 0,
+                            broken: problem.broken ?? "",
+                            lockedAdmin: !!problem.lockedAdmin,
+                            lockedSuperadmin: !!problem.lockedSuperadmin,
+                            name: problem.name ?? "",
+                            lat: problem.coordinates?.latitude,
+                            lng: problem.coordinates?.longitude,
+                            nr: problem.nr ?? 0,
+                            grade: problem.grade ?? "",
+                            stars: problem.stars,
+                            ticked: problem.ticked,
+                            text: text,
+                            subText: problem.description,
+                            faYear: problem.faYear ?? 0,
+                          } satisfies FilterProblem;
+                        }) ?? [],
+                    }) satisfies FilterSector,
+                ) ?? [],
+            }) satisfies FilterArea,
+        ) ?? []
+      );
+    }) ?? [];
 
   return (
     <FilterContext.Provider value={{ ...state, dispatch }}>
