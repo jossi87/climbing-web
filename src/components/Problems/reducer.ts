@@ -15,24 +15,42 @@ type FilterResults = {
 type FilterInputs = {
   filterRegionIds: Record<number, true>;
   filterAreaIds: Record<number, true>;
-  filterAreaOnlySunOnWallAt: number | undefined;
-  filterAreaOnlyShadeOnWallAt: number | undefined;
-  filterSectorWallDirections: Record<number, boolean> | undefined;
+  filterAreaOnlySunOnWallAt: number;
+  filterAreaOnlyShadeOnWallAt: number;
+  filterSectorWallDirections: Record<number, boolean>;
   filterGradeLow: string | undefined;
   filterGradeHigh: string | undefined;
-  filterFaYearLow: number | undefined;
-  filterFaYearHigh: number | undefined;
-  filterTypes: Record<number, boolean> | undefined;
-  filterPitches:
-    | {
-        "Single-pitch": boolean;
-        "Multi-pitch": boolean;
-      }
-    | undefined;
-  filterHideTicked: boolean | undefined;
-  filterOnlyAdmin: boolean | undefined;
-  filterOnlySuperAdmin: boolean | undefined;
+  filterFaYearLow: number;
+  filterFaYearHigh: number;
+  filterTypes: Record<number, boolean>;
+  filterPitches: {
+    "Single-pitch": boolean;
+    "Multi-pitch": boolean;
+  };
+  filterHideTicked: boolean;
+  filterOnlyAdmin: boolean;
+  filterOnlySuperAdmin: boolean;
 };
+
+const DEFAULT_INITIAL_FILTER: FilterInputs = {
+  filterRegionIds: {},
+  filterAreaIds: {},
+  filterGradeLow: undefined,
+  filterGradeHigh: undefined,
+  filterFaYearLow: 0,
+  filterFaYearHigh: 0,
+  filterHideTicked: false,
+  filterPitches: {
+    "Single-pitch": false,
+    "Multi-pitch": false,
+  },
+  filterTypes: {},
+  filterOnlyAdmin: false,
+  filterOnlySuperAdmin: false,
+  filterAreaOnlySunOnWallAt: 0,
+  filterAreaOnlyShadeOnWallAt: 0,
+  filterSectorWallDirections: {},
+} as const;
 
 type FilterState = FilterInputs & FilterResults;
 
@@ -131,22 +149,22 @@ const filter = (state: State): State => {
         return {
           ...region,
           areas: region.areas
-            .map((area) => {
+            ?.map((area) => {
               return {
                 ...area,
                 sectors: area.sectors
-                  .map((sector) => {
+                  ?.map((sector) => {
                     return {
                       ...sector,
-                      problems: sector.problems.filter((problem) => {
+                      problems: sector.problems?.filter((problem) => {
                         if (filterRegionIdsCount > 0) {
-                          if (!filterRegionIds[region.id]) {
+                          if (!filterRegionIds[region.id ?? -1]) {
                             filteredOut.problems += 1;
                             return false;
                           }
                         }
                         if (filterAreaIdsCount > 0) {
-                          if (!filterAreaIds[area.id]) {
+                          if (!filterAreaIds[area.id ?? -1]) {
                             filteredOut.problems += 1;
                             return false;
                           }
@@ -154,8 +172,8 @@ const filter = (state: State): State => {
 
                         if (filterAreaOnlySunOnWallAt > 0) {
                           if (
-                            area.sunFromHour == 0 ||
-                            area.sunToHour == 0 ||
+                            !area.sunFromHour ||
+                            !area.sunToHour ||
                             area.sunFromHour > filterAreaOnlySunOnWallAt ||
                             area.sunToHour < filterAreaOnlySunOnWallAt
                           ) {
@@ -166,8 +184,8 @@ const filter = (state: State): State => {
 
                         if (filterAreaOnlyShadeOnWallAt > 0) {
                           if (
-                            area.sunFromHour == 0 ||
-                            area.sunToHour == 0 ||
+                            !area.sunFromHour ||
+                            !area.sunToHour ||
                             (area.sunFromHour <= filterAreaOnlyShadeOnWallAt &&
                               area.sunToHour > filterAreaOnlyShadeOnWallAt)
                           ) {
@@ -185,7 +203,10 @@ const filter = (state: State): State => {
                           const wallDirectionId =
                             sector.wallDirectionManual?.id ||
                             sector.wallDirectionCalculated?.id;
-                          if (!filterSectorWallDirections[wallDirectionId]) {
+                          if (
+                            !wallDirectionId ||
+                            !filterSectorWallDirections[wallDirectionId]
+                          ) {
                             filteredOut.problems += 1;
                             return false;
                           }
@@ -202,7 +223,7 @@ const filter = (state: State): State => {
                           filterTypes &&
                           Object.values(filterTypes).some((v) => !!v)
                         ) {
-                          if (!filterTypes[problem.t.id]) {
+                          if (!problem.t?.id || !filterTypes[problem.t?.id]) {
                             filteredOut.problems += 1;
                             return false;
                           }
@@ -215,6 +236,7 @@ const filter = (state: State): State => {
                         ) {
                           if (
                             !filterPitches["Multi-pitch"] &&
+                            problem.numPitches &&
                             problem.numPitches >= 2
                           ) {
                             filteredOut.problems += 1;
@@ -222,7 +244,8 @@ const filter = (state: State): State => {
                           }
                           if (
                             !filterPitches["Single-pitch"] &&
-                            problem.numPitches <= 1
+                            (problem.numPitches === undefined ||
+                              problem.numPitches <= 1)
                           ) {
                             filteredOut.problems += 1;
                             return false;
@@ -231,12 +254,15 @@ const filter = (state: State): State => {
 
                         if (filterGradeLow || filterGradeHigh) {
                           const low =
-                            gradeDifficultyLookup[filterGradeLow] ??
-                            Number.MIN_SAFE_INTEGER;
+                            gradeDifficultyLookup[
+                              filterGradeLow ?? "undefined"
+                            ] ?? Number.MIN_SAFE_INTEGER;
                           const high =
-                            gradeDifficultyLookup[filterGradeHigh] ??
-                            Number.MAX_SAFE_INTEGER;
-                          const test = gradeDifficultyLookup[problem.grade];
+                            gradeDifficultyLookup[
+                              filterGradeHigh ?? "undefined"
+                            ] ?? Number.MAX_SAFE_INTEGER;
+                          const test =
+                            gradeDifficultyLookup[problem.grade ?? "ungraded"];
 
                           if (test === undefined || test < low || test > high) {
                             filteredOut.problems += 1;
@@ -249,7 +275,10 @@ const filter = (state: State): State => {
                             filterFaYearLow ?? Number.MIN_SAFE_INTEGER;
                           const high =
                             filterFaYearHigh ?? Number.MAX_SAFE_INTEGER;
-                          if (problem.faYear < low || problem.faYear > high) {
+                          if (
+                            problem.faYear &&
+                            (problem.faYear < low || problem.faYear > high)
+                          ) {
                             filteredOut.problems += 1;
                             return false;
                           }
@@ -277,7 +306,7 @@ const filter = (state: State): State => {
                   })
                   .filter(({ lockedAdmin, lockedSuperadmin, problems }) => {
                     if (
-                      problems.length === 0 ||
+                      !problems?.length ||
                       (filterOnlyAdmin && !lockedAdmin) ||
                       (filterOnlySuperAdmin && !lockedSuperadmin)
                     ) {
@@ -290,10 +319,10 @@ const filter = (state: State): State => {
             })
             .filter(({ lockedAdmin, lockedSuperadmin, sectors, id }) => {
               if (
-                sectors.length === 0 ||
+                !sectors?.length ||
                 (filterOnlyAdmin && !lockedAdmin) ||
                 (filterOnlySuperAdmin && !lockedSuperadmin) ||
-                (filterAreaIdsCount && !filterAreaIds[id])
+                (filterAreaIdsCount && !filterAreaIds[id ?? -1])
               ) {
                 filteredOut.areas += 1;
                 return false;
@@ -303,7 +332,7 @@ const filter = (state: State): State => {
         };
       })
       .filter(({ id }) => {
-        if (filterRegionIdsCount && !filterRegionIds[id]) {
+        if (filterRegionIdsCount && !filterRegionIds[id ?? -1]) {
           filteredOut.regions += 1;
           return false;
         }
@@ -330,10 +359,10 @@ const reducer = (state: State, update: Update): State => {
 
       return {
         ...state,
-        totalRegions: numRegions,
-        totalAreas: numAreas,
-        totalSectors: numSectors,
-        totalProblems: numProblems,
+        totalRegions: numRegions ?? 0,
+        totalAreas: numAreas ?? 0,
+        totalSectors: numSectors ?? 0,
+        totalProblems: numProblems ?? 0,
         unfilteredData: data,
       };
     }
@@ -493,7 +522,7 @@ const reducer = (state: State, update: Update): State => {
       return {
         ...state,
         filterOnlyAdmin: checked,
-        filterOnlySuperAdmin: undefined,
+        filterOnlySuperAdmin: false,
       };
     }
 
@@ -501,7 +530,7 @@ const reducer = (state: State, update: Update): State => {
       const { checked } = update;
       return {
         ...state,
-        filterOnlyAdmin: undefined,
+        filterOnlyAdmin: false,
         filterOnlySuperAdmin: checked,
       };
     }
@@ -513,79 +542,69 @@ const reducer = (state: State, update: Update): State => {
         case "all": {
           return {
             ...state,
-            filterRegionIds: {},
-            filterAreaIds: {},
-            filterGradeLow: undefined,
-            filterGradeHigh: undefined,
-            filterFaYearLow: undefined,
-            filterFaYearHigh: undefined,
-            filterHideTicked: undefined,
-            filterPitches: undefined,
-            filterTypes: undefined,
-            filterOnlyAdmin: undefined,
-            filterOnlySuperAdmin: undefined,
-            filterAreaOnlySunOnWallAt: undefined,
-            filterAreaOnlyShadeOnWallAt: undefined,
-            filterSectorWallDirections: undefined,
+            ...DEFAULT_INITIAL_FILTER,
           };
         }
         case "regions": {
           return {
             ...state,
-            filterRegionIds: {},
+            filterRegionIds: DEFAULT_INITIAL_FILTER.filterRegionIds,
           };
         }
         case "areas": {
           return {
             ...state,
-            filterAreaIds: {},
+            filterAreaIds: DEFAULT_INITIAL_FILTER.filterAreaIds,
           };
         }
         case "grades": {
           return {
             ...state,
-            filterGradeLow: undefined,
-            filterGradeHigh: undefined,
+            filterGradeLow: DEFAULT_INITIAL_FILTER.filterGradeLow,
+            filterGradeHigh: DEFAULT_INITIAL_FILTER.filterGradeHigh,
           };
         }
         case "fa-year": {
           return {
             ...state,
-            filterFaYearLow: undefined,
-            filterFaYearHigh: undefined,
+            filterFaYearLow: DEFAULT_INITIAL_FILTER.filterFaYearLow,
+            filterFaYearHigh: DEFAULT_INITIAL_FILTER.filterFaYearHigh,
           };
         }
         case "options": {
           return {
             ...state,
-            filterHideTicked: undefined,
-            filterOnlyAdmin: undefined,
-            filterOnlySuperAdmin: undefined,
+            filterHideTicked: DEFAULT_INITIAL_FILTER.filterHideTicked,
+            filterOnlyAdmin: DEFAULT_INITIAL_FILTER.filterOnlyAdmin,
+            filterOnlySuperAdmin: DEFAULT_INITIAL_FILTER.filterOnlySuperAdmin,
           };
         }
         case "conditions": {
           return {
             ...state,
-            filterAreaOnlySunOnWallAt: undefined,
-            filterAreaOnlyShadeOnWallAt: undefined,
+            filterAreaOnlySunOnWallAt:
+              DEFAULT_INITIAL_FILTER.filterAreaOnlySunOnWallAt,
+            filterAreaOnlyShadeOnWallAt:
+              DEFAULT_INITIAL_FILTER.filterAreaOnlyShadeOnWallAt,
           };
         }
         case "wall-directions": {
           return {
             ...state,
-            filterSectorWallDirections: undefined,
+            filterSectorWallDirections:
+              DEFAULT_INITIAL_FILTER.filterSectorWallDirections,
           };
         }
         case "pitches": {
           return {
             ...state,
-            filterPitches: undefined,
+            filterPitches: DEFAULT_INITIAL_FILTER.filterPitches,
           };
         }
         case "types": {
           return {
             ...state,
-            filterTypes: undefined,
+            filterTypes: DEFAULT_INITIAL_FILTER.filterTypes,
           };
         }
         default: {
@@ -622,26 +641,59 @@ const reducer = (state: State, update: Update): State => {
 };
 
 const storageItems = {
-  regionIds: itemLocalStorage("filter/region-ids", {}),
-  areaIds: itemLocalStorage("filter/area-ids", {}),
-  areaOnlySunOnWallAt: itemLocalStorage("filter/area-only-sun-on-wall-at", 0),
+  regionIds: itemLocalStorage(
+    "filter/region-ids",
+    DEFAULT_INITIAL_FILTER.filterRegionIds,
+  ),
+  areaIds: itemLocalStorage(
+    "filter/area-ids",
+    DEFAULT_INITIAL_FILTER.filterAreaIds,
+  ),
+  areaOnlySunOnWallAt: itemLocalStorage(
+    "filter/area-only-sun-on-wall-at",
+    DEFAULT_INITIAL_FILTER.filterAreaOnlySunOnWallAt,
+  ),
   areaOnlyShadeOnWallAt: itemLocalStorage(
     "filter/area-only-shade-on-wall-at",
-    0,
+    DEFAULT_INITIAL_FILTER.filterAreaOnlyShadeOnWallAt,
   ),
   sectorWallDirections: itemLocalStorage(
     "filter/sector-wall-directions",
-    undefined,
+    DEFAULT_INITIAL_FILTER.filterSectorWallDirections,
   ),
-  gradeHigh: itemLocalStorage("filter/grades/high", undefined),
-  gradeLow: itemLocalStorage("filter/grades/low", undefined),
-  faYearHigh: itemLocalStorage("filter/fa-year/high", undefined),
-  faYearLow: itemLocalStorage("filter/fa-year/low", undefined),
-  hideTicked: itemLocalStorage("filter/hide-ticked", false),
-  onlyAdmin: itemLocalStorage("filter/only-admin", false),
-  onlySuperAdmin: itemLocalStorage("filter/only-super-admin", false),
-  pitches: itemLocalStorage("filter/pitches", undefined),
-  types: itemLocalStorage("filter/types", undefined),
+  gradeHigh: itemLocalStorage(
+    "filter/grades/high",
+    DEFAULT_INITIAL_FILTER.filterGradeHigh,
+  ),
+  gradeLow: itemLocalStorage(
+    "filter/grades/low",
+    DEFAULT_INITIAL_FILTER.filterGradeLow,
+  ),
+  faYearHigh: itemLocalStorage(
+    "filter/fa-year/high",
+    DEFAULT_INITIAL_FILTER.filterFaYearHigh,
+  ),
+  faYearLow: itemLocalStorage(
+    "filter/fa-year/low",
+    DEFAULT_INITIAL_FILTER.filterFaYearLow,
+  ),
+  hideTicked: itemLocalStorage(
+    "filter/hide-ticked",
+    DEFAULT_INITIAL_FILTER.filterHideTicked,
+  ),
+  onlyAdmin: itemLocalStorage(
+    "filter/only-admin",
+    DEFAULT_INITIAL_FILTER.filterOnlyAdmin,
+  ),
+  onlySuperAdmin: itemLocalStorage(
+    "filter/only-super-admin",
+    DEFAULT_INITIAL_FILTER.filterOnlySuperAdmin,
+  ),
+  pitches: itemLocalStorage(
+    "filter/pitches",
+    DEFAULT_INITIAL_FILTER.filterPitches,
+  ),
+  types: itemLocalStorage("filter/types", DEFAULT_INITIAL_FILTER.filterTypes),
 };
 
 const wrappedReducer: typeof reducer = (state, update) => {

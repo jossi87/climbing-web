@@ -31,6 +31,7 @@
     "@types/isomorphic-fetch": "^0.0.39",
     "@types/leaflet": "^1.9.12",
     "@types/react": "^18.3.3",
+    "@types/react-helmet": "^6.1.11",
     "@types/svg-path-parser": "^1.1.6",
     "@types/swagger-ui-react": "^4.18.3",
     "babel-loader": "^9.1.3",
