@@ -234,9 +234,13 @@ const ProfileStatistics = ({ userId, canDownload }: ProfileStatisticsProps) => {
             return {
               element: (
                 <TickListItem
-                  key={[t.areaName, t.sectorName, t.name, t.idProblem, t.idTickRepeat].join(
-                    "/",
-                  )}
+                  key={[
+                    t.areaName,
+                    t.sectorName,
+                    t.name,
+                    t.idProblem,
+                    t.idTickRepeat,
+                  ].join("/")}
                   tick={t}
                 />
               ),
