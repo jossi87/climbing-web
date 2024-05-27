@@ -97,7 +97,7 @@ const MediaSvgEdit = () => {
 
   function handleOnClick(e) {
     if (
-      shift &&
+      shift.current &&
       activeElementIndex != -1 &&
       data.mediaSvgs[activeElementIndex] &&
       data.mediaSvgs[activeElementIndex].points
@@ -150,7 +150,7 @@ const MediaSvgEdit = () => {
 
   function handleMouseMove(e) {
     e.preventDefault();
-    if (!shift) {
+    if (!shift.current) {
       if (draggedPoint) {
         setPointCoords(getMouseCoords(e));
       } else if (draggedCubic !== false) {
@@ -185,14 +185,14 @@ const MediaSvgEdit = () => {
   }
 
   function setCurrDraggedPoint(index) {
-    if (!shift) {
+    if (!shift.current) {
       setActivePoint(index);
       setDraggedPoint(true);
     }
   }
 
   function setCurrDraggedCubic(index, anchor) {
-    if (!shift) {
+    if (!shift.current) {
       setActivePoint(index);
       setDraggedCubic(anchor);
     }
@@ -316,12 +316,13 @@ const MediaSvgEdit = () => {
           </g>,
         );
       }
+      const fill = activePoint === i ? "#00FF00" : "#FF0000";
       return (
         <g key={[p.x ?? "x", p.y ?? "y"]?.join("x")}>
           {anchors}
           <circle
             className={"buldreinfo-svg-pointer"}
-            fill="#FF0000"
+            fill={fill}
             cx={p.x}
             cy={p.y}
             r={0.003 * data.width}
