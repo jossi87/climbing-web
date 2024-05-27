@@ -447,7 +447,7 @@ const MediaSvgEdit = () => {
               <Label
                 as="a"
                 image
-                key={svg.t}
+                key={[svg.t, svg.id]?.join("x")}
                 color={activeElementIndex === index ? "green" : "grey"}
                 onClick={() => {
                   if (

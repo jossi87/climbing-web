@@ -140,7 +140,6 @@ export function NotLoggedIn() {
           <Header.Subheader>
             You must be logged in to access this page
           </Header.Subheader>
-          zrt
         </Header.Content>
       </Header>
       <Button
