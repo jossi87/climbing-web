@@ -12,7 +12,7 @@ export function getLocales() {
 
 export function getBaseUrl(): string {
   if (process.env.REACT_APP_ENV === "development") {
-    return process.env.REACT_APP_API_URL ?? "https://brattelinjer.no";
+    return process.env.REACT_APP_API_URL ?? "https://buldreinfo.com";
   }
   return window.origin;
 }
