@@ -76,7 +76,6 @@ export const ProblemTicks = ({ ticks }: Props) => {
                 </Comment.Author>
                 <Comment.Metadata>{dt}</Comment.Metadata>
                 <Comment.Text>
-                  <Stars numStars={t.stars} includeStarOutlines={true} />{" "}
                   {t.noPersonalGrade ? (
                     <Label basic size="mini">
                       <Icon name="x" />
@@ -84,7 +83,8 @@ export const ProblemTicks = ({ ticks }: Props) => {
                     </Label>
                   ) : (
                     t.suggestedGrade
-                  )}
+                  )}{" "}
+                  <Stars numStars={t.stars} includeStarOutlines={true} />
                   <br />
                   <Linkify componentDecorator={componentDecorator}>
                     {com}
