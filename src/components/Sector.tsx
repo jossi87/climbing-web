@@ -80,7 +80,7 @@ const SectorListItem = ({ problem }: Props) => {
           {problem.broken ? <del>{problem.name}</del> : problem.name}
         </Link>{" "}
         {problem.grade}
-        <Stars numStars={problem.stars} includeNoRating={false} />
+        <Stars numStars={problem.stars} includeStarOutlines={false} />
         {faTypeAscents && <small> {faTypeAscents}</small>}
         <small>
           <i style={{ color: "gray" }}>

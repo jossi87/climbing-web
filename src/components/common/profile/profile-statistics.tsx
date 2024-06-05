@@ -55,13 +55,8 @@ const TickListItem = ({ tick }: TickListItemProps) => (
       <LockSymbol
         lockedAdmin={tick.lockedAdmin}
         lockedSuperadmin={tick.lockedSuperadmin}
-      />
-      {tick.stars != 0 && (
-        <>
-          {" "}
-          <Stars numStars={tick.stars} includeNoRating={true} />{" "}
-        </>
-      )}
+      />{" "}
+      <Stars numStars={tick.stars} includeStarOutlines={true} />{" "}
       {tick.fa && <Label color="red" size="mini" content="FA" />}
       {tick.idTickRepeat > 0 && <Label size="mini" basic content="Repeat" />}
       {tick.subType && (

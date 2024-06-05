@@ -141,7 +141,7 @@ export const TableOfContents = ({ areas, header, subHeader }: Props) => {
                         {problem.stars ? (
                           <Stars
                             numStars={problem.stars}
-                            includeNoRating={false}
+                            includeStarOutlines={false}
                           />
                         ) : null}
                         {problem.text && <small>{problem.text} </small>}

@@ -76,7 +76,7 @@ export const ProblemTicks = ({ ticks }: Props) => {
                 </Comment.Author>
                 <Comment.Metadata>{dt}</Comment.Metadata>
                 <Comment.Text>
-                  <Stars numStars={t.stars} includeNoRating={true} />{" "}
+                  <Stars numStars={t.stars} includeStarOutlines={true} />{" "}
                   {t.noPersonalGrade ? (
                     <Label basic size="mini">
                       <Icon name="x" />

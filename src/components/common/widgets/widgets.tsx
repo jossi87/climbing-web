@@ -32,42 +32,63 @@ export function LockSymbol({ lockedAdmin, lockedSuperadmin }: LockSymbolProps) {
 
 type StarsProps = {
   numStars: number;
-  includeNoRating: boolean;
+  includeStarOutlines: boolean;
 };
 
-export function Stars({ numStars, includeNoRating }: StarsProps) {
-  let stars: React.ReactNode;
-  if (includeNoRating && numStars === -1) {
-    stars = (
-      <Label basic size="mini">
-        <Icon name="x" />
-        No rating
-      </Label>
-    );
+export function Stars({ numStars, includeStarOutlines }: StarsProps) {
+  if (numStars === -1) {
+    return null;
+  } else if (numStars === 0.0) {
+    if (includeStarOutlines) {
+      return (
+        <div style={{ whiteSpace: "nowrap", display: "inline-flex" }}>
+          <Icon color="black" name="star outline" />
+          <Icon color="black" name="star outline" />
+          <Icon color="black" name="star outline" />
+        </div>
+      );
+    }
+    return null;
   } else if (numStars === 0.5) {
-    stars = <Icon color="black" name="star half" />;
+    if (includeStarOutlines) {
+      return (
+        <div style={{ whiteSpace: "nowrap", display: "inline-flex" }}>
+          <Icon color="black" name="star half" />
+          <Icon color="black" name="star outline" />
+          <Icon color="black" name="star outline" />
+        </div>
+      );
+    }
+    return <Icon color="black" name="star half" />;
   } else if (numStars === 1.0) {
-    stars = (
-      <div style={{ whiteSpace: "nowrap", display: "inline-flex" }}>
-        <Icon color="black" name="star" />
-      </div>
-    );
+    if (includeStarOutlines) {
+      return (
+        <div style={{ whiteSpace: "nowrap", display: "inline-flex" }}>
+          <Icon color="black" name="star" />
+          <Icon color="black" name="star outline" />
+          <Icon color="black" name="star outline" />
+        </div>
+      );
+    }
+    return <Icon color="black" name="star" />;
   } else if (numStars === 1.5) {
-    stars = (
+    return (
       <div style={{ whiteSpace: "nowrap", display: "inline-flex" }}>
         <Icon color="black" name="star" />
         <Icon color="black" name="star half" />
+        {includeStarOutlines && <Icon color="black" name="star outline" />}
       </div>
     );
   } else if (numStars === 2.0) {
-    stars = (
+    return (
       <div style={{ whiteSpace: "nowrap", display: "inline-flex" }}>
         <Icon color="black" name="star" />
         <Icon color="black" name="star" />
+        {includeStarOutlines && <Icon color="black" name="star outline" />}
       </div>
     );
   } else if (numStars === 2.5) {
-    stars = (
+    return (
       <div style={{ whiteSpace: "nowrap", display: "inline-flex" }}>
         <Icon color="black" name="star" />
         <Icon color="black" name="star" />
@@ -75,42 +96,12 @@ export function Stars({ numStars, includeNoRating }: StarsProps) {
       </div>
     );
   } else if (numStars === 3.0) {
-    stars = (
+    return (
       <div style={{ whiteSpace: "nowrap", display: "inline-flex" }}>
         <Icon color="black" name="star" />
         <Icon color="black" name="star" />
         <Icon color="black" name="star" />
       </div>
-    );
-  }
-  if (stars) {
-    return (
-      <Popup
-        trigger={stars}
-        header="Rating:"
-        content={
-          <div>
-            <Icon name="star" /> Nice
-            <br />
-            <Icon name="star" />
-            <Icon name="star" /> Very nice
-            <br />
-            <Icon name="star" />
-            <Icon name="star" />
-            <Icon name="star" /> Fantastic!
-            <br />
-            {includeNoRating && (
-              <>
-                <Label basic size="mini">
-                  <Icon name="x" />
-                  No rating
-                </Label>{" "}
-                User has not rated
-              </>
-            )}
-          </div>
-        }
-      />
     );
   }
   return null;

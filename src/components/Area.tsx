@@ -79,7 +79,7 @@ const SectorListItem = ({ sector, problem }: Props) => {
         {problem.danger && <Icon color="red" name="warning" />}
         <Link to={`/problem/${problem.id}`}>{problem.name}</Link>{" "}
         {problem.grade}
-        <Stars numStars={problem.stars} includeNoRating={false} />
+        <Stars numStars={problem.stars} includeStarOutlines={false} />
         <small>
           <i style={{ color: "gray" }}>
             {" "}

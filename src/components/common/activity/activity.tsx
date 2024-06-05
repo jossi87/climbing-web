@@ -457,7 +457,10 @@ const Activity = ({ idArea, idSector }: Props) => {
                           </Label>
                         )}
                         {a.stars != 0 && (
-                          <Stars numStars={a.stars} includeNoRating={true} />
+                          <Stars
+                            numStars={a.stars}
+                            includeStarOutlines={true}
+                          />
                         )}
                       </Feed.Meta>
                     )}
