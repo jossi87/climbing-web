@@ -41,7 +41,9 @@ export function Stars({ numStars, includeStarOutlines }: StarsProps) {
   } else if (numStars === 0.0) {
     if (includeStarOutlines) {
       return (
-        <div style={{ whiteSpace: "nowrap", display: "inline-flex" }}>
+        <div
+          style={{ whiteSpace: "nowrap", display: "inline-flex", opacity: 0.5 }}
+        >
           <Icon color="black" name="star outline" />
           <Icon color="black" name="star outline" />
           <Icon color="black" name="star outline" />
@@ -54,8 +56,8 @@ export function Stars({ numStars, includeStarOutlines }: StarsProps) {
       return (
         <div style={{ whiteSpace: "nowrap", display: "inline-flex" }}>
           <Icon color="black" name="star half" />
-          <Icon color="black" name="star outline" />
-          <Icon color="black" name="star outline" />
+          <Icon color="black" name="star outline" style={{ opacity: 0.5 }} />
+          <Icon color="black" name="star outline" style={{ opacity: 0.5 }} />
         </div>
       );
     }
@@ -65,8 +67,8 @@ export function Stars({ numStars, includeStarOutlines }: StarsProps) {
       return (
         <div style={{ whiteSpace: "nowrap", display: "inline-flex" }}>
           <Icon color="black" name="star" />
-          <Icon color="black" name="star outline" />
-          <Icon color="black" name="star outline" />
+          <Icon color="black" name="star outline" style={{ opacity: 0.5 }} />
+          <Icon color="black" name="star outline" style={{ opacity: 0.5 }} />
         </div>
       );
     }
@@ -76,7 +78,9 @@ export function Stars({ numStars, includeStarOutlines }: StarsProps) {
       <div style={{ whiteSpace: "nowrap", display: "inline-flex" }}>
         <Icon color="black" name="star" />
         <Icon color="black" name="star half" />
-        {includeStarOutlines && <Icon color="black" name="star outline" />}
+        {includeStarOutlines && (
+          <Icon color="black" name="star outline" style={{ opacity: 0.5 }} />
+        )}
       </div>
     );
   } else if (numStars === 2.0) {
@@ -84,7 +88,9 @@ export function Stars({ numStars, includeStarOutlines }: StarsProps) {
       <div style={{ whiteSpace: "nowrap", display: "inline-flex" }}>
         <Icon color="black" name="star" />
         <Icon color="black" name="star" />
-        {includeStarOutlines && <Icon color="black" name="star outline" />}
+        {includeStarOutlines && (
+          <Icon color="black" name="star outline" style={{ opacity: 0.5 }} />
+        )}
       </div>
     );
   } else if (numStars === 2.5) {
