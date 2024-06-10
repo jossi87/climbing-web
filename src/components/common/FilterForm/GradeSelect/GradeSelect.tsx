@@ -36,30 +36,10 @@ export const GradeSelect = () => {
       >
         <div style={{ display: "flex", flex: 1, justifyContent: "flex-start" }}>
           <Dropdown
-            text={low}
-            value={low}
-            scrolling
-            pointing="top left"
-            options={(sorted as unknown as string[])
-              .filter((label) => {
-                const rank = gradeIndexMapping[label];
-                return rank < (gradeIndexMapping[high] ?? max);
-              })
-              .map((label) => ({ key: label, text: label, value: label }))}
-            onChange={(_, { value }) => {
-              dispatch({
-                action: "set-grade",
-                low: String(value),
-              });
-            }}
-          />
-        </div>
-        <div style={{ display: "flex", flex: 1, justifyContent: "flex-end" }}>
-          <Dropdown
             text={high}
             value={high}
             scrolling
-            pointing="top right"
+            pointing="top left"
             options={(sorted as unknown as string[])
               .filter((label) => {
                 const rank = gradeIndexMapping[label];
@@ -70,6 +50,26 @@ export const GradeSelect = () => {
               dispatch({
                 action: "set-grade",
                 high: String(value),
+              });
+            }}
+          />
+        </div>
+        <div style={{ display: "flex", flex: 1, justifyContent: "flex-end" }}>
+          <Dropdown
+            text={low}
+            value={low}
+            scrolling
+            pointing="top right"
+            options={(sorted as unknown as string[])
+              .filter((label) => {
+                const rank = gradeIndexMapping[label];
+                return rank < (gradeIndexMapping[high] ?? max);
+              })
+              .map((label) => ({ key: label, text: label, value: label }))}
+            onChange={(_, { value }) => {
+              dispatch({
+                action: "set-grade",
+                low: String(value),
               });
             }}
           />
