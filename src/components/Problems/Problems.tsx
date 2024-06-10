@@ -103,7 +103,7 @@ export const Problems = ({ filterOpen }: Props) => {
     visible,
   } = state;
 
-  if (!loadedData) {
+  if (status === "pending") {
     return <Loading />;
   } else if (totalProblems === 0) {
     return <Segment>No data</Segment>;
