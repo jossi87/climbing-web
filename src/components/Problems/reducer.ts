@@ -5,7 +5,7 @@ import { itemLocalStorage } from "../../utils/use-local-storage";
 import { components } from "../../@types/buldreinfo/swagger";
 import { flatten, unflatten } from "flat";
 import jsonUrl from "json-url";
-import { captureEvent, captureException } from "@sentry/react";
+import { captureMessage, captureException } from "@sentry/react";
 
 const codec = jsonUrl("lzw");
 
@@ -846,10 +846,7 @@ export const useFilterState = (init?: Partial<UiState>) => {
   useEffect(() => {
     const onHashChange = (e: HashChangeEvent) => {
       const url = new URL(e.newURL);
-      captureEvent(
-        { event_id: "filter-hashchange" },
-        { data: { hash: url.hash } },
-      );
+      captureMessage("filter-hashchange", { extra: { hash: url.hash } });
       loadFromHash(url.hash).catch((e) => {
         window.history.replaceState(undefined, "", "");
         console.warn(e);
@@ -887,10 +884,7 @@ export const useFilterState = (init?: Partial<UiState>) => {
 
   useEffect(() => {
     if (window.location.hash) {
-      captureEvent(
-        { event_id: "filter-hash" },
-        { data: { hash: window.location.hash } },
-      );
+      captureMessage("filter-hash", { extra: { hash: window.location.hash } });
       loadFromHash(window.location.hash).catch((e) => {
         window.history.replaceState(undefined, "", "");
         console.warn(e);
