@@ -4371,6 +4371,13 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-linkify@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@types/react-linkify/-/react-linkify-1.0.4.tgz#ed9d7696f1eb049a21973074ef2fa02de1e06bcb"
+  integrity sha512-NOMw4X3kjvjY0lT5kXQdxZCXpPNi2hOuuqG+Kz+5EOQpi9rDUJJDitdE1j2JRNmrTnNIjrLnYG0HKyuOWN/uKA==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-transition-group@^4.4.0":
   version "4.4.10"
   resolved "https://registry.yarnpkg.com/@types/react-transition-group/-/react-transition-group-4.4.10.tgz#6ee71127bdab1f18f11ad8fb3322c6da27c327ac"
@@ -4439,6 +4446,11 @@
   integrity sha512-MK9V6NzAS1+Ud7JV9lJLFqW85VbC9dq3LmwZCuBe4wBDgKC0Kj/jd8Xl+nSviU+Qc3+m7umHHyHg//2KSa0a0Q==
   dependencies:
     "@types/node" "*"
+
+"@types/suncalc@^1.9.2":
+  version "1.9.2"
+  resolved "https://registry.yarnpkg.com/@types/suncalc/-/suncalc-1.9.2.tgz#207810e705572c29c3f5519c29004d88a0c3b2b3"
+  integrity sha512-ATAGBHHfA1TlE2tjfidLyTcysjoT2JHHEAmWRULh73SU9UTn++j5fqHEW16X6Y/2Li87jEQXzgu4R/OOdlDqzw==
 
 "@types/svg-path-parser@^1.1.6":
   version "1.1.6"

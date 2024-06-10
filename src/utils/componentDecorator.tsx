@@ -1,6 +1,11 @@
 import React from "react";
+import { type Props as LinkifyProps } from "react-linkify";
 
-export const componentDecorator = (href: string, text: string, key: string) => (
+export const componentDecorator: LinkifyProps["componentDecorator"] = (
+  href,
+  text,
+  key,
+) => (
   <a href={href} key={key} target="_blank" rel="noreferrer">
     {text}
   </a>
