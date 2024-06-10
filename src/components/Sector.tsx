@@ -36,16 +36,19 @@ import Linkify from "react-linkify";
 import { componentDecorator } from "../utils/componentDecorator";
 import { components } from "../@types/buldreinfo/swagger";
 import { DownloadButton } from "./common/DownloadButton";
+import { MarkerDef } from "./common/leaflet/markers";
 
 type Props = {
-  problem: components["schemas"]["Sector"]["problems"][number];
+  problem: NonNullable<components["schemas"]["Sector"]["problems"]>[number];
 };
 
 const SectorListItem = ({ problem }: Props) => {
   const { isClimbing } = useMeta();
   const type = isClimbing
-    ? problem.t.subType +
-      (problem.numPitches > 1 ? ", " + problem.numPitches + " pitches" : "")
+    ? problem.t?.subType +
+      ((problem.numPitches ?? 0) > 1
+        ? ", " + problem.numPitches + " pitches"
+        : "")
     : null;
   const ascents =
     problem.numTicks &&
@@ -80,7 +83,7 @@ const SectorListItem = ({ problem }: Props) => {
           {problem.broken ? <del>{problem.name}</del> : problem.name}
         </Link>{" "}
         {problem.grade}
-        <Stars numStars={problem.stars} includeStarOutlines={false} />
+        <Stars numStars={problem.stars ?? 0} includeStarOutlines={false} />
         {faTypeAscents && <small> {faTypeAscents}</small>}
         <small>
           <i style={{ color: "gray" }}>
@@ -97,8 +100,8 @@ const SectorListItem = ({ problem }: Props) => {
         {problem.hasImages && <Icon size="small" color="black" name="photo" />}
         {problem.hasMovies && <Icon size="small" color="black" name="film" />}
         <LockSymbol
-          lockedAdmin={problem.lockedAdmin}
-          lockedSuperadmin={problem.lockedSuperadmin}
+          lockedAdmin={!!problem.lockedAdmin}
+          lockedSuperadmin={!!problem.lockedSuperadmin}
         />
         {problem.ticked && <Icon size="small" color="green" name="check" />}
         {problem.todo && <Icon size="small" color="blue" name="bookmark" />}
@@ -107,8 +110,15 @@ const SectorListItem = ({ problem }: Props) => {
   );
 };
 
+type ProblemType = NonNullable<
+  NonNullable<ReturnType<typeof useSector>["data"]>["problems"]
+>[number];
+
 const Sector = () => {
   const { sectorId } = useParams();
+  if (!sectorId) {
+    throw new Error("Missing sectorId URL param");
+  }
   const meta = useMeta();
   const { data: data, error, isLoading, redirectUi } = useSector(+sectorId);
 
@@ -132,31 +142,42 @@ const Sector = () => {
     return <Loading />;
   }
 
-  const orderableMedia = [];
-  const carouselMedia = [];
-  if (data.media?.length > 0) {
+  const orderableMedia: ComponentProps<typeof Media>["orderableMedia"] = [];
+  const carouselMedia: ComponentProps<typeof Media>["carouselMedia"] = [];
+  if (data.media?.length) {
     carouselMedia.push(...data.media);
     if (data.media.length > 1) {
       orderableMedia.push(...data.media);
     }
   }
-  if (data.triviaMedia?.length > 0) {
+  if (data.triviaMedia?.length) {
     carouselMedia.push(...data.triviaMedia);
     if (data.triviaMedia.length > 1) {
       orderableMedia.push(...data.triviaMedia);
     }
   }
   const isBouldering = meta.isBouldering;
-  const markers: ComponentProps<typeof Leaflet>["markers"] = data.problems
-    .filter((p) => p.coordinates)
-    .map((p) => {
-      return {
-        coordinates: p.coordinates,
-        label: p.nr + " - " + p.name + " [" + p.grade + "]",
-        url: "/problem/" + p.id,
-        rock: p.rock,
-      };
-    });
+  const markers: NonNullable<ComponentProps<typeof Leaflet>["markers"]> =
+    data.problems
+      ?.filter(
+        (
+          p,
+        ): p is NonNullable<ProblemType> &
+          Required<NonNullable<Pick<ProblemType, "coordinates">>> =>
+          !!(
+            p.coordinates &&
+            p.coordinates.latitude &&
+            p.coordinates.longitude
+          ),
+      )
+      ?.map((p) => {
+        return {
+          coordinates: p.coordinates,
+          label: p.nr + " - " + p.name + " [" + p.grade + "]",
+          url: "/problem/" + p.id,
+          rock: p.rock,
+        } satisfies MarkerDef;
+      }) ?? [];
   // Only add polygon if problemMarkers=0 or site is showing sport climbing
   const addPolygon = meta.isClimbing || markers.length == 0;
   if (data.parking) {
@@ -192,31 +213,35 @@ const Sector = () => {
       });
     }
   }
-  if (markers.length > 0 || data.outline?.length > 0) {
-    const defaultCenter = data.parking
-      ? { lat: data.parking.latitude, lng: data.parking.longitude }
-      : meta.defaultCenter;
+  if (markers.length > 0 || data.outline?.length) {
+    const defaultCenter =
+      data.parking && data.parking.latitude && data.parking.longitude
+        ? { lat: data.parking.latitude, lng: data.parking.longitude }
+        : meta.defaultCenter;
     const defaultZoom = data.parking ? 15 : meta.defaultZoom;
-    let outlines;
-    let approaches;
-    if (data.outline?.length > 0 && addPolygon) {
+    let outlines: ComponentProps<typeof Leaflet>["outlines"] = undefined;
+    let approaches: ComponentProps<typeof Leaflet>["approaches"] = undefined;
+    if (data.outline?.length && addPolygon) {
       outlines = [
         { url: "/sector/" + data.id, label: data.name, outline: data.outline },
       ];
     }
-    if (data.approach?.coordinates?.length > 0) {
+    if (data.approach?.coordinates?.length) {
       approaches = [
         {
           approach: data.approach,
-          label: getDistanceWithUnit(data.approach),
+          label: getDistanceWithUnit(data.approach) ?? "",
         },
       ];
     }
-    const uniqueRocks = data.problems
-      .filter((p) => p.rock)
-      .map((p) => p.rock)
-      .filter((value, index, self) => self.indexOf(value) === index)
-      .sort();
+    const uniqueRocks =
+      data.problems
+        ?.filter((p) => p.rock)
+        ?.map((p) => p.rock)
+        ?.filter((p): p is string => !!p)
+        // TODO: Consider using a Set or something for this
+        ?.filter((value, index, self) => self.indexOf(value) === index)
+        ?.sort() ?? [];
     panes.push({
       menuItem: { key: "map", icon: "map" },
       render: () => (
@@ -230,8 +255,8 @@ const Sector = () => {
             approaches={approaches}
             defaultCenter={defaultCenter}
             defaultZoom={defaultZoom}
-            onMouseClick={null}
-            onMouseMove={null}
+            onMouseClick={undefined}
+            onMouseMove={undefined}
             showSatelliteImage={isBouldering}
             clusterMarkers={true}
             rocks={uniqueRocks}
@@ -258,12 +283,12 @@ const Sector = () => {
       ),
     });
   }
-  if (data.problems.length != 0) {
+  if (data.problems?.length) {
     panes.push({
       menuItem: { key: "distribution", icon: "area graph" },
       render: () => (
         <Tab.Pane>
-          <ChartGradeDistribution idSector={data.id} />
+          <ChartGradeDistribution idSector={data.id ?? 0} />
         </Tab.Pane>
       ),
     });
@@ -271,7 +296,7 @@ const Sector = () => {
       menuItem: { key: "top", icon: "trophy" },
       render: () => (
         <Tab.Pane>
-          <Top idArea={0} idSector={data.id} />
+          <Top idArea={0} idSector={data.id ?? 0} />
         </Tab.Pane>
       ),
     });
@@ -279,7 +304,7 @@ const Sector = () => {
       menuItem: { key: "activity", icon: "time" },
       render: () => (
         <Tab.Pane>
-          <Activity idArea={0} idSector={data.id} />
+          <Activity idArea={0} idSector={data.id ?? 0} />
         </Tab.Pane>
       ),
     });
@@ -287,30 +312,45 @@ const Sector = () => {
       menuItem: { key: "todo", icon: "bookmark" },
       render: () => (
         <Tab.Pane>
-          <Todo idArea={0} idSector={data.id} />
+          <Todo idArea={0} idSector={data.id ?? 0} />
         </Tab.Pane>
       ),
     });
   }
-  const uniqueTypes = data.problems
-    .map((p) => p.t.subType)
-    .filter((value, index, self) => self.indexOf(value) === index);
-  if (data.problems.filter((p) => p.broken).length > 0) {
+  const uniqueTypes =
+    data.problems
+      ?.map((p) => p.t?.subType)
+      ?.filter((p): p is string => !!p)
+      // TODO: Consider using a Set or something for this
+      ?.filter((value, index, self) => self.indexOf(value) === index) ?? [];
+  if (data.problems?.filter((p) => p.broken)?.length) {
     uniqueTypes.push("Broken");
   }
-  if (data.problems.filter((p) => p.gradeNumber === 0).length > 0) {
+  if (data.problems?.filter((p) => p.gradeNumber === 0)?.length) {
     uniqueTypes.push("Projects");
   }
   uniqueTypes.sort();
 
   const [conditionLat, conditionLng] = (() => {
-    if (data.outline?.length > 0) {
+    const validatedOutline = data?.outline?.filter(
+      (
+        c,
+      ): c is Required<
+        Pick<
+          NonNullable<(typeof data)["outline"]>[number],
+          "latitude" | "longitude"
+        >
+      > => !!c.latitude && !!c.longitude,
+    );
+    if (validatedOutline?.length) {
       const center = GetCenterFromDegrees(
-        data.outline.map((c) => [c.latitude, c.longitude]),
+        validatedOutline.map((c) => [c.latitude, c.longitude]),
       );
-      return [+center[0], +center[1]];
+      if (center) {
+        return [+center[0], +center[1]];
+      }
     }
-    if (data.parking) {
+    if (data.parking && data.parking.latitude && data.parking.longitude) {
       return [+data.parking.latitude, +data.parking.longitude];
     }
     return [0, 0];
@@ -359,16 +399,16 @@ const Sector = () => {
           <Breadcrumb.Section>
             <Link to={`/area/${data.areaId}`}>{data.areaName}</Link>{" "}
             <LockSymbol
-              lockedAdmin={data.areaLockedAdmin}
-              lockedSuperadmin={data.areaLockedSuperadmin}
+              lockedAdmin={!!data.areaLockedAdmin}
+              lockedSuperadmin={!!data.areaLockedSuperadmin}
             />
           </Breadcrumb.Section>
           <Breadcrumb.Divider icon="right angle" />
           <Breadcrumb.Section active>
             {data.name}{" "}
             <LockSymbol
-              lockedAdmin={data.lockedAdmin}
-              lockedSuperadmin={data.lockedSuperadmin}
+              lockedAdmin={!!data.lockedAdmin}
+              lockedSuperadmin={!!data.lockedSuperadmin}
             />
           </Breadcrumb.Section>
         </Breadcrumb>
@@ -419,12 +459,13 @@ const Sector = () => {
             <Table.Cell>
               {uniqueTypes.map((subType) => {
                 const header = subType ? subType : "Boulders";
-                const problemsOfType = data.problems.filter(
-                  (p) =>
-                    (subType === "Projects" && p.gradeNumber === 0) ||
-                    (subType === "Broken" && p.broken) ||
-                    (p.t.subType === subType && p.gradeNumber !== 0),
-                );
+                const problemsOfType =
+                  data.problems?.filter(
+                    (p) =>
+                      (subType === "Projects" && p.gradeNumber === 0) ||
+                      (subType === "Broken" && p.broken) ||
+                      (p.t?.subType === subType && p.gradeNumber !== 0),
+                  ) ?? [];
                 const numTicked = problemsOfType.filter((p) => p.ticked).length;
                 const txt =
                   numTicked === 0
@@ -448,7 +489,7 @@ const Sector = () => {
               )}
             </Table.Cell>
           </Table.Row>
-          {data.approach?.coordinates?.length > 1 && (
+          {data.approach?.coordinates?.length && (
             <Table.Row verticalAlign="top">
               <Table.Cell>Approach:</Table.Cell>
               <Table.Cell>
@@ -456,7 +497,7 @@ const Sector = () => {
               </Table.Cell>
             </Table.Row>
           )}
-          {data.sectors.length > 1 && (
+          {data.sectors?.length && (
             <Table.Row verticalAlign="top">
               <Table.Cell>Sectors:</Table.Cell>
               <Table.Cell>
@@ -469,8 +510,8 @@ const Sector = () => {
                       active={data.id === s.id}
                     >
                       <LockSymbol
-                        lockedAdmin={s.lockedAdmin}
-                        lockedSuperadmin={s.lockedSuperadmin}
+                        lockedAdmin={!!s.lockedAdmin}
+                        lockedSuperadmin={!!s.lockedSuperadmin}
                       />
                       {s.name}
                     </Label>
@@ -479,7 +520,7 @@ const Sector = () => {
               </Table.Cell>
             </Table.Row>
           )}
-          {data.triviaMedia?.length > 0 && (
+          {data.triviaMedia?.length && (
             <Table.Row verticalAlign="top">
               <Table.Cell>Trivia:</Table.Cell>
               <Table.Cell>
@@ -496,22 +537,25 @@ const Sector = () => {
               </Table.Cell>
             </Table.Row>
           )}
-          {conditionLat > 0 && conditionLng > 0 && (
-            <Table.Row verticalAlign="top">
-              <Table.Cell>Conditions:</Table.Cell>
-              <Table.Cell>
-                <ConditionLabels
-                  lat={conditionLat}
-                  lng={conditionLng}
-                  label={data.name}
-                  wallDirectionCalculated={data.wallDirectionCalculated}
-                  wallDirectionManual={data.wallDirectionManual}
-                  sunFromHour={data.areaSunFromHour}
-                  sunToHour={data.areaSunToHour}
-                />
-              </Table.Cell>
-            </Table.Row>
-          )}
+          {conditionLat > 0 &&
+            conditionLng > 0 &&
+            data.wallDirectionCalculated &&
+            data.wallDirectionManual && (
+              <Table.Row verticalAlign="top">
+                <Table.Cell>Conditions:</Table.Cell>
+                <Table.Cell>
+                  <ConditionLabels
+                    lat={conditionLat}
+                    lng={conditionLng}
+                    label={data.name ?? ""}
+                    wallDirectionCalculated={data.wallDirectionCalculated}
+                    wallDirectionManual={data.wallDirectionManual}
+                    sunFromHour={data.areaSunFromHour ?? 0}
+                    sunToHour={data.areaSunToHour ?? 0}
+                  />
+                </Table.Cell>
+              </Table.Row>
+            )}
           <Table.Row verticalAlign="top">
             <Table.Cell>Misc:</Table.Cell>
             <Table.Cell>
@@ -539,25 +583,26 @@ const Sector = () => {
       </Table>
       <ProblemList
         isSectorNotUser={true}
-        preferOrderByGrade={data.orderByGrade}
-        rows={data.problems.map((p) => {
-          return {
-            element: <SectorListItem key={p.id} problem={p} />,
-            name: p.name,
-            nr: p.nr,
-            gradeNumber: p.gradeNumber,
-            stars: p.stars,
-            numTicks: p.numTicks,
-            ticked: p.ticked,
-            todo: p.todo,
-            rock: p.rock,
-            subType: p.t.subType,
-            num: null,
-            fa: null,
-            areaName: null,
-            sectorName: null,
-          };
-        })}
+        preferOrderByGrade={!!data.orderByGrade}
+        rows={
+          data.problems?.map((p) => {
+            return {
+              element: <SectorListItem key={p.id} problem={p} />,
+              name: p.name ?? "",
+              nr: p.nr ?? 0,
+              gradeNumber: p.gradeNumber ?? 0,
+              stars: p.stars ?? 0,
+              numTicks: p.numTicks ?? 0,
+              ticked: p.ticked ?? false,
+              rock: p.rock ?? "",
+              subType: p.t?.subType ?? "",
+              num: 0,
+              fa: false,
+              areaName: "",
+              sectorName: "",
+            } satisfies ComponentProps<typeof ProblemList>["rows"][number];
+          }) ?? []
+        }
       />
     </>
   );

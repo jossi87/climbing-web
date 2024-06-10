@@ -10,6 +10,7 @@ import {
 import { useNavigate } from "react-router";
 import { LatLngExpression } from "leaflet";
 import { components } from "../../../@types/buldreinfo/swagger";
+import { captureException } from "@sentry/react";
 
 type ParkingMarker = {
   coordinates: components["schemas"]["Coordinates"];
@@ -47,6 +48,11 @@ type GenericMarker = {
   coordinates: components["schemas"]["Coordinates"];
   label?: string;
   url?: string;
+  // TODO: Sometimes we just set this to "true" just to be truthy. This isn't
+  //       great and will cause a bug at some point.
+  //       I wonder if a better design would be to have an explicit "type" field
+  //       instead of inspecting properties.
+  rock?: boolean | string | number | null;
 };
 
 export type MarkerDef =
@@ -60,12 +66,18 @@ type Props = {
   markers: MarkerDef[];
   opacity: number;
   addEventHandlers: boolean;
-  flyToId: number | null;
+  flyToId: number | undefined | null;
   showElevation?: boolean;
 };
 
+const isCoordinateMarker = (
+  m: MarkerDef,
+): m is MarkerDef & Required<Pick<MarkerDef, "coordinates">> => {
+  return !!(m.coordinates.latitude && m.coordinates.longitude);
+};
+
 const isParkingMarker = (m: MarkerDef): m is ParkingMarker =>
-  (m as ParkingMarker).isParking;
+  isCoordinateMarker(m) && (m as ParkingMarker).isParking;
 
 const isCameraMarker = (m: MarkerDef): m is CameraMarker =>
   (m as CameraMarker).isCamera;
@@ -86,13 +98,22 @@ export default function Markers({
   const navigate = useNavigate();
   const map = useMap();
   const markerRefs = useRef<
-    Record<number, { getLatLng: () => LatLngExpression; openPopup: () => void }>
+    Record<
+      number,
+      { getLatLng: () => LatLngExpression; openPopup: () => void } | null
+    >
   >({});
   useEffect(() => {
     if (map && flyToId && markerRefs.current[flyToId]) {
       const marker = markerRefs.current[flyToId];
-      map.flyTo(marker.getLatLng(), 13, { animate: false });
-      marker.openPopup();
+      if (marker) {
+        map.flyTo(marker.getLatLng(), 13, { animate: false });
+        marker.openPopup();
+      } else {
+        captureException("Missing marker ref", {
+          extra: { flyToId, refs: Object.keys(markerRefs.current ?? {}) },
+        });
+      }
     }
   }, [flyToId, map]);
 
@@ -101,7 +122,7 @@ export default function Markers({
   }
   return markers.map((m) => {
     let label = m.label;
-    if (showElevation && m.coordinates.elevation > 0) {
+    if (showElevation && m.coordinates.elevation) {
       const elevation = Math.round(m.coordinates.elevation);
       label = label ? label + " (" + elevation + "m)" : elevation + "m";
     }
@@ -109,7 +130,7 @@ export default function Markers({
       return (
         <Marker
           icon={parkingIcon}
-          position={[m.coordinates.latitude, m.coordinates.longitude]}
+          position={[m.coordinates.latitude ?? 0, m.coordinates.longitude ?? 0]}
           key={[
             "parking",
             m.coordinates.latitude,
@@ -119,7 +140,13 @@ export default function Markers({
           eventHandlers={{
             click: () => {
               if (addEventHandlers) {
-                navigate(m.url);
+                if (m.url) {
+                  navigate(m.url);
+                } else {
+                  captureException("Missing marker URL", {
+                    extra: { marker: m },
+                  });
+                }
               }
             },
           }}
@@ -140,7 +167,7 @@ export default function Markers({
       return (
         <Marker
           icon={weatherIcon}
-          position={[m.coordinates.latitude, m.coordinates.longitude]}
+          position={[m.coordinates.latitude ?? 0, m.coordinates.longitude ?? 0]}
           key={["camera", m.coordinates.latitude, m.coordinates.longitude].join(
             "/",
           )}
@@ -178,7 +205,7 @@ export default function Markers({
       return (
         <Marker
           icon={m.rock ? rockIcon : markerBlueIcon}
-          position={[m.coordinates.latitude, m.coordinates.longitude]}
+          position={[m.coordinates.latitude ?? 0, m.coordinates.longitude ?? 0]}
           key={["html", m.coordinates.latitude, m.coordinates.longitude].join(
             "/",
           )}
@@ -200,7 +227,7 @@ export default function Markers({
       return (
         <Marker
           icon={markerBlueIcon}
-          position={[m.coordinates.latitude, m.coordinates.longitude]}
+          position={[m.coordinates.latitude ?? 0, m.coordinates.longitude ?? 0]}
           key={[
             "label",
             m.url,
@@ -230,7 +257,7 @@ export default function Markers({
     return (
       <Marker
         icon={markerRedIcon}
-        position={[m.coordinates.latitude, m.coordinates.longitude]}
+        position={[m.coordinates.latitude ?? 0, m.coordinates.longitude ?? 0]}
         key={["red", m.coordinates.latitude, m.coordinates.longitude].join("/")}
         eventHandlers={{
           click: () => {

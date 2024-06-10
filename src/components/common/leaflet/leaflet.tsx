@@ -54,12 +54,14 @@ type Props = {
   markers?: MarkerDef[];
   onMouseClick?: LeafletMouseEventHandlerFn;
   onMouseMove?: LeafletMouseEventHandlerFn;
-  outlines?: {
-    background?: boolean;
-    outline: components["schemas"]["Coordinates"][];
-    url?: string;
-    label?: string;
-  }[];
+  outlines?:
+    | {
+        background?: boolean;
+        outline: components["schemas"]["Coordinates"][];
+        url?: string;
+        label?: string;
+      }[]
+    | undefined;
   approaches?: {
     background?: boolean;
     label?: string;
@@ -180,7 +182,7 @@ const Leaflet = ({
             label: r,
             rock: true,
             html,
-          };
+          } satisfies MarkerDef;
         }
       })
       .filter((item) => item); // Remove undefined
@@ -198,7 +200,7 @@ const Leaflet = ({
     markerGroup = (
       <Markers
         opacity={opacity}
-        markers={markers}
+        markers={markers ?? []}
         addEventHandlers={addEventHandlers}
         flyToId={flyToId}
         showElevation={showElevation}

@@ -312,7 +312,7 @@ const YrLink = ({ lat, lng }: Pick<ConditionLabelsProps, "lat" | "lng">) => {
     </Label>
   );
 
-  if (isLoading || !weatherData) {
+  if (isLoading || !weatherData || !next1Hours || !next6Hours || !next12Hours) {
     return label;
   }
 
@@ -380,6 +380,12 @@ export function ConditionLabels({
   const date = `${d.getFullYear()}.${(d.getMonth() + 1).toString().padStart(2, "0")}.${d.getDate()}`;
   const time = `${d.getHours().toString().padStart(2, "0")}:${d.getMinutes().toString().padStart(2, "0")}`;
   const times = SunCalc.getTimes(new Date(), lat, lng);
+
+  // The library behaves incorrectly in the Arctic Circle, and the type
+  // definitions don't know about that.
+  // https://github.com/mourner/suncalc/issues/146
+  const sunrise: Date | string = times.sunrise;
+
   return (
     <>
       <WallDirection
@@ -387,7 +393,7 @@ export function ConditionLabels({
         wallDirectionManual={wallDirectionManual}
       />
       <SunOnWall sunFromHour={sunFromHour} sunToHour={sunToHour} />
-      {times.sunrise != "Invalid Date" && (
+      {typeof sunrise !== "string" && (
         <Popup
           content="Sunrise and sunset"
           trigger={
@@ -397,9 +403,9 @@ export function ConditionLabels({
                 alt="Sunrise and Sunset"
                 size="mini"
               />
-              {String(times.sunrise.getHours()).padStart(2, "0") +
+              {String(sunrise.getHours()).padStart(2, "0") +
                 ":" +
-                String(times.sunrise.getMinutes()).padStart(2, "0") +
+                String(sunrise.getMinutes()).padStart(2, "0") +
                 " - " +
                 String(times.sunset.getHours()).padStart(2, "0") +
                 ":" +

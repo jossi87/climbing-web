@@ -13,7 +13,11 @@ const isRedirect = (v: unknown): v is components["schemas"]["Redirect"] => {
 };
 
 export const useRedirect = (data: unknown): React.ReactNode | null => {
-  if (isRedirect(data) && data.redirectUrl !== window.location.href) {
+  if (
+    isRedirect(data) &&
+    data.redirectUrl &&
+    data.redirectUrl !== window.location.href
+  ) {
     window.location.href = data.redirectUrl;
     return <Redirecting />;
   }

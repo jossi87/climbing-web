@@ -6,7 +6,7 @@ export function getDistanceWithUnit(
   if (!approach) {
     return null;
   }
-  const m = approach.distance;
+  const m = approach.distance ?? 0;
   if (m > 1000) {
     return Math.round(m / 100) / 10 + "km";
   }
