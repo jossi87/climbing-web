@@ -211,7 +211,7 @@ export const FilterForm = () => {
   return (
     <Form>
       <HeaderButtons header="Filter">
-        {filteredProblems > 0 && (
+        {filteredProblems > 0 ? (
           <Button
             icon
             labelPosition="left"
@@ -220,7 +220,7 @@ export const FilterForm = () => {
             <Icon name="trash alternate outline" />
             Clear filter
           </Button>
-        )}
+        ) : null}
         <Button
           icon
           labelPosition="left"

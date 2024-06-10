@@ -30,9 +30,7 @@
     "pretty": true,
 
     //Other
-    "skipLibCheck": true,
+    "skipLibCheck": true
   },
-  "include": [
-    "src", "server.js"
-  ]
+  "include": ["src", "server.js"]
 }

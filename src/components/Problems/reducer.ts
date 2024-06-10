@@ -1,8 +1,13 @@
-import { useEffect, useReducer } from "react";
+import { useCallback, useEffect, useReducer } from "react";
 import { neverGuard } from "../../utils/neverGuard";
-import { useGrades } from "../common/meta/meta";
+import { useGrades, useMeta } from "../common/meta/meta";
 import { itemLocalStorage } from "../../utils/use-local-storage";
 import { components } from "../../@types/buldreinfo/swagger";
+import { flatten, unflatten } from "flat";
+import jsonUrl from "json-url";
+import { captureEvent, captureException } from "@sentry/react";
+
+const codec = jsonUrl("lzw");
 
 type FilterResults = {
   filteredData: components["schemas"]["Toc"];
@@ -52,17 +57,29 @@ const DEFAULT_INITIAL_FILTER: FilterInputs = {
   filterSectorWallDirections: {},
 } as const;
 
+const FLAT_FILTER: Readonly<Record<string, unknown>> = flatten(
+  DEFAULT_INITIAL_FILTER,
+);
+
+const FILTER_INPUT_KEYS: Readonly<string[]> = Object.keys(FLAT_FILTER);
+const FILTER_INPUT_KEYS_SET: Readonly<Set<string>> = new Set(FILTER_INPUT_KEYS);
+
 type FilterState = FilterInputs & FilterResults;
 
-export type State = {
+type UiState = {
   visible: boolean;
+};
+
+type DataState = {
   gradeDifficultyLookup: Record<string, number>;
   totalRegions: number;
   totalAreas: number;
   totalSectors: number;
   totalProblems: number;
   unfilteredData: components["schemas"]["Toc"];
-} & FilterState;
+};
+
+export type State = UiState & DataState & FilterState;
 
 export type ResetField =
   | "all"
@@ -111,7 +128,9 @@ export type Update =
   | { action: "close-filter" }
   | { action: "open-filter" }
   | { action: "toggle-filter" }
-  | { action: "reset"; section: ResetField };
+  | { action: "reset"; section: ResetField }
+  // Not intended to be used "externally" (ie, at the component level)
+  | ({ action: "init-filter-state" } & Partial<FilterInputs>);
 
 const filter = (state: State): State => {
   const {
@@ -634,6 +653,14 @@ const reducer = (state: State, update: Update): State => {
       };
     }
 
+    case "init-filter-state": {
+      return {
+        ...state,
+        ...DEFAULT_INITIAL_FILTER,
+        ...update,
+      };
+    }
+
     default: {
       return neverGuard(action, state);
     }
@@ -717,8 +744,17 @@ const wrappedReducer: typeof reducer = (state, update) => {
   return filter(reduced);
 };
 
-export const useFilterState = (init?: Partial<State>) => {
+const parseHash = (hash: string): Promise<Partial<FilterInputs>> => {
+  return codec.decompress(hash.replace(/^#/, "")).then((obj) => {
+    // TODO: Validate the object
+    const unflattened: Partial<FilterInputs> = unflatten(obj, { object: true });
+    return unflattened;
+  });
+};
+
+export const useFilterState = (init?: Partial<UiState>) => {
   const { mapping } = useGrades();
+  const { isAdmin, isSuperAdmin } = useMeta();
 
   const [state, dispatch] = useReducer(wrappedReducer, {
     visible: false,
@@ -729,21 +765,7 @@ export const useFilterState = (init?: Partial<State>) => {
     totalProblems: 0,
     unfilteredData: {},
 
-    // Information about the filters
-    filterRegionIds: storageItems.regionIds.get(),
-    filterAreaIds: storageItems.areaIds.get(),
-    filterAreaOnlySunOnWallAt: storageItems.areaOnlySunOnWallAt.get(),
-    filterAreaOnlyShadeOnWallAt: storageItems.areaOnlyShadeOnWallAt.get(),
-    filterSectorWallDirections: storageItems.sectorWallDirections.get(),
-    filterGradeHigh: storageItems.gradeHigh.get(),
-    filterGradeLow: storageItems.gradeLow.get(),
-    filterFaYearHigh: storageItems.faYearHigh.get(),
-    filterFaYearLow: storageItems.faYearLow.get(),
-    filterHideTicked: storageItems.hideTicked.get(),
-    filterOnlyAdmin: storageItems.onlyAdmin.get(),
-    filterOnlySuperAdmin: storageItems.onlySuperAdmin.get(),
-    filterPitches: storageItems.pitches.get(),
-    filterTypes: storageItems.types.get(),
+    ...DEFAULT_INITIAL_FILTER,
 
     // Filtered data
     filteredData: {},
@@ -759,6 +781,125 @@ export const useFilterState = (init?: Partial<State>) => {
   useEffect(() => {
     dispatch({ action: "set-grade-mapping", gradeDifficultyLookup: mapping });
   }, [mapping]);
+
+  useEffect(() => {
+    // Pull the input data out from the huge state object. This is pretty
+    // inefficient, but we could address this in the future by splitting the
+    // state into separate reducers instead of one giant object.
+    const inputState = Object.entries(state)
+      .filter(([key]) => FILTER_INPUT_KEYS_SET.has(key))
+      .reduce<Partial<FilterInputs>>((acc, [k, v]) => {
+        acc[k] = v;
+        return acc;
+      }, {} satisfies Partial<FilterInputs>);
+
+    // We're trying to construct a minimal diff between the current filter and
+    // the default filter. The simplest way to do this is by flattening the two
+    // objects and comparing the keys (so we don't have to do any recursion).
+    const flattenedInput: Record<string, unknown> = flatten(inputState);
+    const minimalDiffEntries = Object.entries(flattenedInput).filter(
+      ([k, filterValue]) => {
+        if (!!filterValue && typeof filterValue === "object") {
+          return Object.keys(filterValue).length > 0;
+        }
+
+        const defaultValue = FLAT_FILTER[k] ?? false;
+        return filterValue !== undefined && filterValue !== defaultValue;
+      },
+    );
+
+    (minimalDiffEntries.length === 0
+      ? Promise.resolve("")
+      : codec.compress(
+          minimalDiffEntries.reduce<Record<string, unknown>>((acc, [k, v]) => {
+            if (!acc) {
+              return { [k]: v };
+            }
+            acc[k] = v;
+            return acc;
+          }, {}),
+        )
+    ).then((out) => {
+      history.replaceState(undefined, "", `#${out}`);
+    });
+  }, [state]);
+
+  const loadFromHash = useCallback(
+    async (hash: string) => {
+      try {
+        const out = await parseHash(hash);
+        dispatch({
+          action: "init-filter-state",
+          ...out,
+          filterOnlyAdmin: isAdmin && !!out.filterOnlyAdmin,
+          filterOnlySuperAdmin: isSuperAdmin && !!out.filterOnlySuperAdmin,
+        });
+      } catch (e) {
+        console.warn("Failed to parse hash", e);
+        captureException(e, { extra: { hash } });
+        throw e;
+      }
+    },
+    [isAdmin, isSuperAdmin],
+  );
+
+  useEffect(() => {
+    const onHashChange = (e: HashChangeEvent) => {
+      const url = new URL(e.newURL);
+      captureEvent(
+        { event_id: "filter-hashchange" },
+        { data: { hash: url.hash } },
+      );
+      loadFromHash(url.hash).catch((e) => {
+        window.history.replaceState(undefined, "", "");
+        console.warn(e);
+        // TODO: Anything else? Should we show an alert or something?
+      });
+    };
+
+    window.addEventListener("hashchange", onHashChange);
+    return () => {
+      window.removeEventListener("hashchange", onHashChange);
+    };
+  }, [loadFromHash]);
+
+  const loadFromLocalStorage = useCallback(() => {
+    const partial: Partial<FilterInputs> = {
+      // Information about the filters
+      filterRegionIds: storageItems.regionIds.get(),
+      filterAreaIds: storageItems.areaIds.get(),
+      filterAreaOnlySunOnWallAt: storageItems.areaOnlySunOnWallAt.get(),
+      filterAreaOnlyShadeOnWallAt: storageItems.areaOnlyShadeOnWallAt.get(),
+      filterSectorWallDirections: storageItems.sectorWallDirections.get(),
+      filterGradeHigh: storageItems.gradeHigh.get(),
+      filterGradeLow: storageItems.gradeLow.get(),
+      filterFaYearHigh: storageItems.faYearHigh.get(),
+      filterFaYearLow: storageItems.faYearLow.get(),
+      filterHideTicked: storageItems.hideTicked.get(),
+      filterOnlyAdmin: isAdmin && storageItems.onlyAdmin.get(),
+      filterOnlySuperAdmin: isSuperAdmin && storageItems.onlySuperAdmin.get(),
+      filterPitches: storageItems.pitches.get(),
+      filterTypes: storageItems.types.get(),
+    };
+
+    dispatch({ action: "init-filter-state", ...partial });
+  }, [isAdmin, isSuperAdmin]);
+
+  useEffect(() => {
+    if (window.location.hash) {
+      captureEvent(
+        { event_id: "filter-hash" },
+        { data: { hash: window.location.hash } },
+      );
+      loadFromHash(window.location.hash).catch((e) => {
+        window.history.replaceState(undefined, "", "");
+        console.warn(e);
+        loadFromLocalStorage();
+      });
+    } else {
+      loadFromLocalStorage();
+    }
+  }, [loadFromHash, loadFromLocalStorage]);
 
   return [state, dispatch] as const;
 };
