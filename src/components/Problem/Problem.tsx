@@ -37,6 +37,10 @@ import { DownloadButton } from "../common/DownloadButton";
 
 export const Problem = () => {
   const { problemId } = useParams();
+  if (!problemId) {
+    throw new Error("Missing problemId from params");
+  }
+
   const [showHiddenMedia, setShowHiddenMedia] = useState(false);
   const meta = useMeta();
   const { data, error, toggleTodo, redirectUi } = useProblem(
@@ -79,23 +83,23 @@ export const Problem = () => {
     return <Loading />;
   }
 
-  const orderableMedia = [];
-  const carouselMedia = [];
-  if (data.media?.length > 0) {
+  const orderableMedia: ComponentProps<typeof Media>["orderableMedia"] = [];
+  const carouselMedia: ComponentProps<typeof Media>["carouselMedia"] = [];
+  if (data.media?.length) {
     carouselMedia.push(...data.media);
     if (data.media.length > 1) {
       orderableMedia.push(...data.media);
     }
   }
-  if (data.triviaMedia?.length > 0) {
+  if (data.triviaMedia?.length) {
     carouselMedia.push(...data.triviaMedia);
     if (data.triviaMedia.length > 1) {
       orderableMedia.push(...data.triviaMedia);
     }
   }
-  if (data.sections?.length > 0) {
+  if (data.sections?.length) {
     data.sections.forEach((s) => {
-      if (s.media?.length > 0) {
+      if (s.media?.length) {
         carouselMedia.push(...s.media);
         if (s.media.length > 1) {
           orderableMedia.push(...s.media);
@@ -103,9 +107,9 @@ export const Problem = () => {
       }
     });
   }
-  if (data.comments?.length > 0) {
+  if (data.comments?.length) {
     data.comments.forEach((c) => {
-      if (c.media?.length > 0) {
+      if (c.media?.length) {
         carouselMedia.push(...c.media);
         if (c.media.length > 1) {
           orderableMedia.push(...c.media);
@@ -130,16 +134,17 @@ export const Problem = () => {
   }
   const panes: ComponentProps<typeof Tab>["panes"] = [];
   if (data.media && data.media.length > 0) {
+    const media = data.media;
     panes.push({
       menuItem: { key: "media", icon: "image" },
       render: () => (
         <Tab.Pane>
           <Media
             numPitches={data.sections?.length || 0}
-            media={data.media}
+            media={media}
             orderableMedia={orderableMedia}
             carouselMedia={carouselMedia}
-            optProblemId={data.id}
+            optProblemId={data.id ?? 0}
             showLocation={false}
           />
         </Tab.Pane>
@@ -147,19 +152,19 @@ export const Problem = () => {
     });
   }
   if (markers.length > 0) {
-    let outlines;
-    let approaches;
-    if (data.sectorOutline?.length > 0 && !data.coordinates) {
+    let outlines: ComponentProps<typeof Leaflet>["outlines"];
+    let approaches: ComponentProps<typeof Leaflet>["approaches"];
+    if (data.sectorOutline?.length && !data.coordinates) {
       const outline = data.sectorOutline;
       outlines = [
         { url: "/sector/" + data.sectorId, label: data.sectorName, outline },
       ];
     }
-    if (data.sectorApproach?.coordinates?.length > 0) {
+    if (data.sectorApproach?.coordinates?.length) {
       approaches = [
         {
           approach: data.sectorApproach,
-          label: getDistanceWithUnit(data.sectorApproach),
+          label: getDistanceWithUnit(data.sectorApproach) ?? undefined,
         },
       ];
     }
@@ -174,10 +179,15 @@ export const Problem = () => {
             markers={markers}
             outlines={outlines}
             approaches={approaches}
-            defaultCenter={{
-              lat: markers[0].coordinates.latitude,
-              lng: markers[0].coordinates.longitude,
-            }}
+            defaultCenter={
+              markers[0].coordinates.latitude &&
+              markers[0].coordinates.longitude
+                ? {
+                    lat: markers[0].coordinates.latitude,
+                    lng: markers[0].coordinates.longitude,
+                  }
+                : meta.defaultCenter
+            }
             defaultZoom={16}
             showSatelliteImage={true}
             clusterMarkers={false}
@@ -192,26 +202,26 @@ export const Problem = () => {
     if (!showTickModal) {
       return null;
     }
-    const enableTickRepeats = meta.isIce || data.sections?.length > 0;
+    const enableTickRepeats = meta.isIce || data.sections?.length;
     const userTicks = data.ticks?.filter((t) => t.writable);
-    if (userTicks && userTicks.length > 0) {
+    if (userTicks && userTicks.length && userTicks[0].date) {
       return (
         <TickModal
-          idTick={userTicks[0].id}
+          idTick={userTicks[0].id ?? 0}
           idProblem={data.id}
           date={userTicks[0].date}
-          comment={userTicks[0].comment}
+          comment={userTicks[0].comment ?? ""}
           grade={
             userTicks[0].noPersonalGrade
               ? "No personal grade"
-              : userTicks[0].suggestedGrade
+              : userTicks[0].suggestedGrade ?? "No personal grade"
           }
           grades={meta.grades}
-          stars={userTicks[0].stars}
+          stars={userTicks[0].stars ?? 0}
           repeats={userTicks[0].repeats}
           open={showTickModal}
           onClose={onTickModalClose}
-          enableTickRepeats={enableTickRepeats}
+          enableTickRepeats={!!enableTickRepeats}
         />
       );
     }
@@ -219,43 +229,59 @@ export const Problem = () => {
       <TickModal
         idTick={-1}
         idProblem={data.id}
-        grade={data.originalGrade}
+        grade={data.originalGrade ?? meta.grades[0].grade}
         grades={meta.grades}
         open={showTickModal}
         onClose={onTickModalClose}
-        comment={null}
-        stars={null}
+        comment={""}
+        stars={0}
         repeats={undefined}
-        date={null}
-        enableTickRepeats={enableTickRepeats}
+        date={undefined}
+        enableTickRepeats={!!enableTickRepeats}
       />
     );
   })();
 
   const [conditionLat, conditionLng] = (() => {
-    if (data.coordinates) {
+    if (data.coordinates?.latitude && data.coordinates?.longitude) {
       return [+data.coordinates.latitude, +data.coordinates.longitude];
-    } else if (data.sectorOutline?.length > 0) {
+    }
+
+    if (data.sectorOutline?.length) {
       const center = GetCenterFromDegrees(
-        data.sectorOutline.map((c) => [c.latitude, c.longitude]),
+        data.sectorOutline
+          .filter(
+            (c): c is Required<Pick<typeof c, "latitude" | "longitude">> =>
+              !!(c.latitude && c.longitude),
+          )
+          .map((c) => [c.latitude, c.longitude]),
       );
-      return [+center[0], +center[1]];
-    } else if (data.sectorParking) {
+      if (center) {
+        return [+center[0], +center[1]];
+      }
+    }
+
+    if (data.sectorParking?.latitude && data.sectorParking?.longitude) {
       return [+data.sectorParking.latitude, +data.sectorParking.longitude];
     }
+
+    if (meta.defaultCenter.lat && meta.defaultCenter.lng) {
+      return [meta.defaultCenter.lat, meta.defaultCenter.lng];
+    }
+
     return [0, 0];
   })();
 
   let ticksComments;
-  if (data.ticks?.length > 0 && data.comments?.length > 0) {
+  if (data.ticks?.length && data.comments?.length) {
     ticksComments = (
       <Grid>
-        {data.ticks?.length > 0 && (
+        {data.ticks?.length && (
           <Grid.Column mobile={16} tablet={8} computer={8}>
             <ProblemTicks ticks={data.ticks} />
           </Grid.Column>
         )}
-        {data.comments?.length > 0 && (
+        {data.comments?.length && (
           <Grid.Column mobile={16} tablet={8} computer={8}>
             <ProblemComments
               onShowCommentModal={setShowCommentModal}
@@ -266,9 +292,9 @@ export const Problem = () => {
         )}
       </Grid>
     );
-  } else if (data.ticks?.length > 0) {
+  } else if (data.ticks?.length) {
     ticksComments = <ProblemTicks ticks={data.ticks} />;
-  } else if (data.comments?.length > 0) {
+  } else if (data.comments?.length) {
     ticksComments = (
       <ProblemComments
         onShowCommentModal={setShowCommentModal}
@@ -389,16 +415,16 @@ export const Problem = () => {
           <Breadcrumb.Section>
             <Link to={`/area/${data.areaId}`}>{data.areaName}</Link>{" "}
             <LockSymbol
-              lockedAdmin={data.areaLockedAdmin}
-              lockedSuperadmin={data.areaLockedSuperadmin}
+              lockedAdmin={!!data.areaLockedAdmin}
+              lockedSuperadmin={!!data.areaLockedSuperadmin}
             />
           </Breadcrumb.Section>
           <Breadcrumb.Divider icon="right angle" />
           <Breadcrumb.Section>
             <Link to={`/sector/${data.sectorId}`}>{data.sectorName}</Link>{" "}
             <LockSymbol
-              lockedAdmin={data.sectorLockedAdmin}
-              lockedSuperadmin={data.sectorLockedSuperadmin}
+              lockedAdmin={!!data.sectorLockedAdmin}
+              lockedSuperadmin={!!data.sectorLockedSuperadmin}
             />
           </Breadcrumb.Section>
           <Breadcrumb.Divider icon="right angle" />
@@ -406,8 +432,8 @@ export const Problem = () => {
             <span style={{ fontWeight: "normal" }}>#{data.nr}</span> {data.name}{" "}
             <span style={{ fontWeight: "normal" }}>{data.grade}</span>{" "}
             <LockSymbol
-              lockedAdmin={data.lockedAdmin}
-              lockedSuperadmin={data.lockedSuperadmin}
+              lockedAdmin={!!data.lockedAdmin}
+              lockedSuperadmin={!!data.lockedSuperadmin}
             />
           </Breadcrumb.Section>
         </Breadcrumb>
@@ -432,7 +458,7 @@ export const Problem = () => {
           }
         />
       )}
-      {panes?.length > 0 && <Tab panes={panes} />}
+      {panes?.length && <Tab panes={panes} />}
       <Table definition unstackable>
         <Table.Body>
           {(data.areaAccessInfo ||
@@ -548,7 +574,7 @@ export const Problem = () => {
               <Label basic>
                 Grade:<Label.Detail>{data.originalGrade}</Label.Detail>
               </Label>
-              {meta.isClimbing && (
+              {meta.isClimbing && data.t?.subType && (
                 <Label basic>
                   <Icon name="tag" />
                   {data.t.subType}
@@ -604,7 +630,7 @@ export const Problem = () => {
               )}
             </Table.Cell>
           </Table.Row>
-          {(data.trivia || data.triviaMedia?.length > 0) && (
+          {(data.trivia || data.triviaMedia?.length) && (
             <Table.Row verticalAlign="top">
               <Table.Cell>Trivia:</Table.Cell>
               <Table.Cell>
@@ -633,7 +659,7 @@ export const Problem = () => {
             problemId={+problemId}
             rock={data?.rock}
           />
-          {data.sectorApproach?.coordinates?.length > 1 && (
+          {(data.sectorApproach?.coordinates?.length ?? 0) > 1 && (
             <Table.Row verticalAlign="top">
               <Table.Cell>Approach:</Table.Cell>
               <Table.Cell>
@@ -668,11 +694,11 @@ export const Problem = () => {
                 <ConditionLabels
                   lat={conditionLat}
                   lng={conditionLng}
-                  label={data.name}
+                  label={data.name ?? ""}
                   wallDirectionCalculated={data.sectorWallDirectionCalculated}
                   wallDirectionManual={data.sectorWallDirectionManual}
-                  sunFromHour={data.areaSunFromHour}
-                  sunToHour={data.areaSunToHour}
+                  sunFromHour={data.areaSunFromHour ?? 0}
+                  sunToHour={data.areaSunToHour ?? 0}
                 />
               </Table.Cell>
             </Table.Row>

@@ -2,10 +2,15 @@ import { captureMessage } from "@sentry/core";
 import { hashHexColor } from "./colors";
 import { components } from "../@types/buldreinfo/swagger";
 
+type LatLngPair = Pick<
+  components["schemas"]["Coordinates"],
+  "latitude" | "longitude"
+>;
+
 export const parsePolyline = (
   polyline: string,
   onError?: (msg: string, extra?: Record<string, string>) => void,
-): components["schemas"]["Coordinates"][] => {
+): LatLngPair[] => {
   const reportError =
     onError ??
     ((message) => {
@@ -21,7 +26,7 @@ export const parsePolyline = (
   return polyline
     .split(";")
     .filter(Boolean)
-    .reduce((acc, value) => {
+    .reduce<LatLngPair[]>((acc, value) => {
       const latlng = value.split(",");
       if (latlng.length !== 2) {
         reportError("Wrong number of entries", { value });
@@ -39,7 +44,7 @@ export const parsePolyline = (
       }
 
       const last = acc[acc.length - 1];
-      if (lat === last?.[0] && lng === last?.[1]) {
+      if (lat === last?.latitude && lng === last?.longitude) {
         return acc;
       }
 
