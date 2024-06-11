@@ -80,20 +80,14 @@ export const useMeta = (): Metadata => {
 
 export const useGrades = () => {
   const { grades } = useMeta();
-  const [gradesLowHigh, indexMapping] = useMemo(() => {
-    const easyToHard = grades.map(({ grade }) => grade).reverse();
-    const indexMapping = easyToHard.reduce<Record<string, number>>(
-      (acc, grade, i) => ({ ...acc, [grade]: i }),
+  return useMemo(() => {
+    const easyToHard = grades.map(({ grade }) => grade);
+    const indexMapping = grades.reduce<Record<string, number>>(
+      (acc, { grade }, i) => ({ ...acc, [grade]: i }),
       {},
     );
-    return [easyToHard, indexMapping];
+    return { easyToHard, mapping: indexMapping };
   }, [grades]);
-
-  return {
-    hardToEasy: grades.map(({ grade }) => grade),
-    easyToHard: gradesLowHigh,
-    mapping: indexMapping,
-  };
 };
 
 export const useFaYears = () => {

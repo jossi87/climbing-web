@@ -3,15 +3,15 @@ import RangeSlider from "react-range-slider-input";
 import "react-range-slider-input/dist/style.css";
 import { useFilter } from "../context";
 import { Dropdown } from "semantic-ui-react";
-import { useGrades } from "../../meta/meta";
+import { useGrades } from "../../meta";
 
 export const GradeSelect = () => {
   const { filterGradeLow, filterGradeHigh, dispatch } = useFilter();
-  const { easyToHard: sorted, mapping: gradeIndexMapping } = useGrades();
+  const { easyToHard, mapping: gradeIndexMapping } = useGrades();
 
-  const max = Math.max(sorted.length - 1, 0);
-  const low = filterGradeLow || sorted[0];
-  const high = filterGradeHigh || sorted[max];
+  const max = Math.max(easyToHard.length - 1, 0);
+  const low = filterGradeLow || easyToHard[0];
+  const high = filterGradeHigh || easyToHard[max];
 
   return (
     <div>
@@ -24,8 +24,8 @@ export const GradeSelect = () => {
           onInput={([l, h]) => {
             dispatch({
               action: "set-grades",
-              low: sorted[l] ?? sorted[0],
-              high: sorted[h] ?? sorted[max],
+              low: easyToHard[l] ?? easyToHard[0],
+              high: easyToHard[h] ?? easyToHard[max],
             });
           }}
           disabled={max === 0}
@@ -40,7 +40,7 @@ export const GradeSelect = () => {
             value={low}
             scrolling
             pointing="top left"
-            options={(sorted as unknown as string[])
+            options={easyToHard
               .filter((label) => {
                 const rank = gradeIndexMapping[label];
                 return rank < (gradeIndexMapping[high] ?? max);
@@ -60,7 +60,7 @@ export const GradeSelect = () => {
             value={high}
             scrolling
             pointing="top right"
-            options={(sorted as unknown as string[])
+            options={easyToHard
               .filter((label) => {
                 const rank = gradeIndexMapping[label];
                 return rank > (gradeIndexMapping[low] ?? 0);
