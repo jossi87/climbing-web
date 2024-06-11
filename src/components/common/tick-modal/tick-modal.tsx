@@ -24,11 +24,11 @@ type TickModalProps = {
   idTick: number;
   idProblem: number;
   grades: components["schemas"]["Grade"][];
-  comment: string | null;
+  comment: string;
   grade: string;
-  stars: number | null;
+  stars: number;
   repeats: { date?: string; comment?: string }[] | undefined;
-  date: string | null;
+  date: string | undefined;
   enableTickRepeats: boolean;
 };
 
@@ -46,11 +46,13 @@ const TickModal = ({
   enableTickRepeats,
 }: TickModalProps) => {
   const accessToken = useAccessToken();
-  const [comment, setComment] = useState(initialComment);
+  const [comment, setComment] = useState(initialComment ?? "");
   const [grade, setGrade] = useState(initialGrade);
   const [stars, setStars] = useState(initialStars);
-  const [date, setDate] = useState(
-    idTick == -1 ? convertFromDateToString(new Date()) : initialDate,
+  const [date, setDate] = useState<string | undefined>(
+    idTick == -1
+      ? convertFromDateToString(new Date()) ?? initialDate
+      : initialDate,
   );
   const [repeats, setRepeats] = useState(initialRepeats);
   const today = new Date();
@@ -78,14 +80,20 @@ const TickModal = ({
                   showMonthDropdown
                   showYearDropdown
                   dropdownMode="select"
-                  selected={date && convertFromStringToDate(date)}
-                  onChange={(date) => setDate(convertFromDateToString(date))}
+                  selected={date ? convertFromStringToDate(date) : undefined}
+                  onChange={(date) => {
+                    const stringified = convertFromDateToString(date);
+                    if (!stringified) {
+                      return;
+                    }
+                    return setDate(stringified);
+                  }}
                 />
               </Form.Field>
               <Form.Field>
                 <Button
                   onClick={() => {
-                    setDate(null);
+                    setDate(undefined);
                   }}
                 >
                   No date
@@ -207,9 +215,12 @@ const TickModal = ({
                         showMonthDropdown
                         showYearDropdown
                         dropdownMode="select"
-                        selected={r.date && convertFromStringToDate(r.date)}
+                        selected={
+                          r.date ? convertFromStringToDate(r.date) : undefined
+                        }
                         onChange={(date) => {
-                          r.date = convertFromDateToString(date);
+                          // TODO: Stop mutating state directly here.
+                          r.date = convertFromDateToString(date) ?? r.date;
                           setRepeats([...repeats]);
                         }}
                       />
@@ -243,7 +254,7 @@ const TickModal = ({
                   icon="plus"
                   onClick={() => {
                     const repeat = {
-                      date: convertFromDateToString(new Date()),
+                      date: convertFromDateToString(new Date()) ?? initialDate,
                       comment: "",
                     };
                     if (repeats) {

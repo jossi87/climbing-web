@@ -788,10 +788,10 @@ export const useFilterState = (init?: Partial<UiState>) => {
     // state into separate reducers instead of one giant object.
     const inputState = Object.entries(state)
       .filter(([key]) => FILTER_INPUT_KEYS_SET.has(key))
-      .reduce<Partial<FilterInputs>>((acc, [k, v]) => {
-        acc[k] = v;
-        return acc;
-      }, {} satisfies Partial<FilterInputs>);
+      .reduce<Partial<FilterInputs>>(
+        (acc, [k, v]) => ({ ...acc, [k]: v }),
+        {} satisfies Partial<FilterInputs>,
+      );
 
     // We're trying to construct a minimal diff between the current filter and
     // the default filter. The simplest way to do this is by flattening the two

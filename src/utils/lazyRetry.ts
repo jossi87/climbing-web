@@ -40,7 +40,7 @@ const lazyRetry = function (
 
             for (let i = 0; i < sessionStorage.length; i += 1) {
               const itemKey = sessionStorage.key(i);
-              if (!itemKey.startsWith("retry-lazy-refreshed/")) {
+              if (!itemKey || !itemKey.startsWith("retry-lazy-refreshed/")) {
                 continue;
               }
 

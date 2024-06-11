@@ -176,8 +176,10 @@ type ConditionLabelsProps = {
   lat: number;
   lng: number;
   label: string;
-  wallDirectionCalculated: components["schemas"]["CompassDirection"];
-  wallDirectionManual: components["schemas"]["CompassDirection"];
+  wallDirectionCalculated:
+    | components["schemas"]["CompassDirection"]
+    | undefined;
+  wallDirectionManual: components["schemas"]["CompassDirection"] | undefined;
   sunFromHour: number;
   sunToHour: number;
 };
@@ -200,9 +202,8 @@ export const WallDirection = ({
         trigger={
           <Label basic size="small">
             <Icon name="compass outline" />
-            {wallDirectionManual
-              ? wallDirectionManual.direction
-              : wallDirectionCalculated.direction}
+            {wallDirectionManual?.direction ??
+              wallDirectionCalculated?.direction}
           </Label>
         }
       />

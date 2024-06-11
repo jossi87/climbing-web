@@ -345,7 +345,7 @@ export function postTicks(
   id: number,
   idProblem: number,
   comment: string,
-  date: string,
+  date: string | undefined,
   stars: number,
   grade: string,
   repeats: any,
