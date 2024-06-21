@@ -234,7 +234,7 @@ export const Problem = () => {
         open={showTickModal}
         onClose={onTickModalClose}
         comment={""}
-        stars={0}
+        stars={null}
         repeats={undefined}
         date={undefined}
         enableTickRepeats={!!enableTickRepeats}
