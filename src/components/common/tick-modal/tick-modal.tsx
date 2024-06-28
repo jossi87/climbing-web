@@ -26,6 +26,8 @@ type TickModalProps = {
   grades: components["schemas"]["Grade"][];
   comment: string;
   grade: string;
+  gradeFa: string;
+  gradeConsensus: string;
   stars: number;
   repeats: { date?: string; comment?: string }[] | undefined;
   date: string | undefined;
@@ -40,6 +42,8 @@ const TickModal = ({
   grades,
   comment: initialComment,
   grade: initialGrade,
+  gradeFa,
+  gradeConsensus,
   stars: initialStars,
   repeats: initialRepeats,
   date: initialDate,
@@ -121,6 +125,13 @@ const TickModal = ({
                   })),
                 ]}
               />
+              {gradeFa != gradeConsensus && (
+                <small>
+                  <i>
+                    FA grade: {gradeFa}, consensus grade: {gradeConsensus}
+                  </i>
+                </small>
+              )}
             </Form.Field>
             <Form.Field>
               {stars === null ? (

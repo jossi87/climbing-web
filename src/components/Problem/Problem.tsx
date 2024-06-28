@@ -216,6 +216,8 @@ export const Problem = () => {
               ? "No personal grade"
               : userTicks[0].suggestedGrade ?? "No personal grade"
           }
+          gradeFa={data.originalGrade}
+          gradeConsensus={data.grade}
           grades={meta.grades}
           stars={userTicks[0].stars ?? 0}
           repeats={userTicks[0].repeats}
@@ -230,6 +232,8 @@ export const Problem = () => {
         idTick={-1}
         idProblem={data.id}
         grade={data.grade ?? meta.grades[0].grade}
+        gradeFa={data.originalGrade}
+        gradeConsensus={data.grade}
         grades={meta.grades}
         open={showTickModal}
         onClose={onTickModalClose}
