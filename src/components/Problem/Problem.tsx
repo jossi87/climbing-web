@@ -229,7 +229,7 @@ export const Problem = () => {
       <TickModal
         idTick={-1}
         idProblem={data.id}
-        grade={data.originalGrade ?? meta.grades[0].grade}
+        grade={data.grade ?? meta.grades[0].grade}
         grades={meta.grades}
         open={showTickModal}
         onClose={onTickModalClose}
