@@ -125,13 +125,11 @@ const TickModal = ({
                   })),
                 ]}
               />
-              {gradeFa != gradeConsensus && (
-                <small>
-                  <i>
-                    FA grade: {gradeFa}, consensus grade: {gradeConsensus}
-                  </i>
-                </small>
-              )}
+              <small>
+                <i>
+                  FA grade: {gradeFa}, consensus grade: {gradeConsensus}
+                </i>
+              </small>
             </Form.Field>
             <Form.Field>
               {stars === null ? (
