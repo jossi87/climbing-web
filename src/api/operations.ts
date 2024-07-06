@@ -19,12 +19,13 @@ export function moveMedia(
   accessToken: string | null,
   id: number,
   left: boolean,
+  toIdArea: number,
   toIdSector: number,
   toIdProblem: number,
 ): Promise<Success<"putMedia">> {
   return makeAuthenticatedRequest(
     accessToken,
-    `/media?id=${id}&left=${left}&toIdSector=${toIdSector}&toIdProblem=${toIdProblem}`,
+    `/media?id=${id}&left=${left}&toIdArea=${toIdArea}&toIdSector=${toIdSector}&toIdProblem=${toIdProblem}`,
     {
       method: "PUT",
     },

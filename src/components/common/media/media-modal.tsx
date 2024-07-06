@@ -82,6 +82,7 @@ type Props = {
   onRotate: (deg: number) => void;
   onMoveImageLeft: () => void;
   onMoveImageRight: () => void;
+  onMoveImageToArea: () => void;
   onMoveImageToSector: () => void;
   onMoveImageToProblem: () => void;
   m: any;
@@ -103,6 +104,7 @@ const MediaModal = ({
   onRotate,
   onMoveImageLeft,
   onMoveImageRight,
+  onMoveImageToArea,
   onMoveImageToSector,
   onMoveImageToProblem,
   m,
@@ -545,23 +547,25 @@ const MediaModal = ({
                       onClick={onMoveImageRight}
                     />
                   )}
-                  {canMove && m.enableMoveToIdSector && (
+                  {canMove && m.enableMoveToIdArea > 0 && (
                     <Dropdown.Item
                       icon="move"
-                      text={
-                        "Move image from " +
-                        (isBouldering ? "problem" : "route") +
-                        " to sector"
-                      }
+                      text={"Move image to area"}
+                      onClick={onMoveImageToArea}
+                    />
+                  )}
+                  {canMove && m.enableMoveToIdSector > 0 && (
+                    <Dropdown.Item
+                      icon="move"
+                      text={"Move image to sector"}
                       onClick={onMoveImageToSector}
                     />
                   )}
-                  {canMove && m.enableMoveToIdProblem && (
+                  {canMove && m.enableMoveToIdProblem > 0 && (
                     <Dropdown.Item
                       icon="move"
                       text={
-                        "Move image from sector to this " +
-                        (isBouldering ? "problem" : "route")
+                        "Move image to " + (isBouldering ? "problem" : "route")
                       }
                       onClick={onMoveImageToProblem}
                     />

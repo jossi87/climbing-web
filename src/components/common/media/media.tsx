@@ -49,8 +49,8 @@ const Media = ({
   showLocation,
 }: Props) => {
   const location = useLocation();
-  const [m, setM] = useState<any>(null);
-  const [editM, setEditM] = useState<any>(null);
+  const [m, setM] = useState<components["schemas"]["Media"]>(null);
+  const [editM, setEditM] = useState<components["schemas"]["Media"]>(null);
   const [autoPlayVideo, setAutoPlayVideo] = useState(false);
   const { isLoading, getAccessTokenSilently } = useAuth0();
   useEffect(() => {
@@ -145,7 +145,7 @@ const Media = ({
 
   function onMoveImageLeft() {
     getAccessTokenSilently().then((accessToken) => {
-      moveMedia(accessToken, m.id, true, 0, 0)
+      moveMedia(accessToken, m.id, true, 0, 0, 0)
         .then(() => {
           closeModal();
         })
@@ -157,7 +157,19 @@ const Media = ({
 
   function onMoveImageRight() {
     getAccessTokenSilently().then((accessToken) => {
-      moveMedia(accessToken, m.id, false, 0, 0)
+      moveMedia(accessToken, m.id, false, 0, 0, 0)
+        .then(() => {
+          closeModal();
+        })
+        .catch((error) => {
+          console.warn(error);
+        });
+    });
+  }
+
+  function onMoveImageToArea() {
+    getAccessTokenSilently().then((accessToken) => {
+      moveMedia(accessToken, m.id, false, m.enableMoveToIdArea, 0, 0)
         .then(() => {
           closeModal();
         })
@@ -169,7 +181,7 @@ const Media = ({
 
   function onMoveImageToSector() {
     getAccessTokenSilently().then((accessToken) => {
-      moveMedia(accessToken, m.id, false, m.enableMoveToIdSector, 0)
+      moveMedia(accessToken, m.id, false, 0, m.enableMoveToIdSector, 0)
         .then(() => {
           closeModal();
         })
@@ -181,7 +193,7 @@ const Media = ({
 
   function onMoveImageToProblem() {
     getAccessTokenSilently().then((accessToken) => {
-      moveMedia(accessToken, m.id, false, 0, m.enableMoveToIdProblem)
+      moveMedia(accessToken, m.id, false, 0, 0, m.enableMoveToIdProblem)
         .then(() => {
           closeModal();
         })
@@ -240,8 +252,9 @@ const Media = ({
           onRotate={onRotate}
           onMoveImageLeft={onMoveImageLeft}
           onMoveImageRight={onMoveImageRight}
-          onMoveImageToProblem={onMoveImageToProblem}
+          onMoveImageToArea={onMoveImageToArea}
           onMoveImageToSector={onMoveImageToSector}
+          onMoveImageToProblem={onMoveImageToProblem}
           orderableMedia={orderableMedia}
           carouselIndex={carouselMedia.findIndex((x) => x.id === m.id) + 1}
           carouselSize={carouselMedia.length}
