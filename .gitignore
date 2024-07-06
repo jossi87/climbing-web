@@ -4,3 +4,5 @@
 
 .yarnrc
 yarn-error.log
+
+*storybook.log
