@@ -28,16 +28,19 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
     onMediaChanged(media as UploadedMedia[]);
   }, [media, onMediaChanged]);
 
-  const onDrop = useCallback<DropzoneOptions["onDrop"]>((acceptedFiles) => {
-    setMedia((existing) => [
-      ...existing,
-      ...acceptedFiles.map((file) => ({
-        file,
-        preview: URL.createObjectURL(file),
-        photographer: meta?.authenticatedName
-      })),
-    ]);
-  }, [meta]);
+  const onDrop = useCallback<DropzoneOptions["onDrop"]>(
+    (acceptedFiles) => {
+      setMedia((existing) => [
+        ...existing,
+        ...acceptedFiles.map((file) => ({
+          file,
+          preview: URL.createObjectURL(file),
+          photographer: meta?.authenticatedName,
+        })),
+      ]);
+    },
+    [meta],
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
