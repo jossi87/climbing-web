@@ -247,6 +247,7 @@ export function postProblemSvg(
   path: string,
   hasAnchor: boolean,
   anchors: string,
+  tradBelayStations: string,
   texts: string,
 ): Promise<Success<"postProblemsSvg">> {
   return makeAuthenticatedRequest(
@@ -260,6 +261,7 @@ export function postProblemSvg(
         path,
         hasAnchor,
         anchors,
+        tradBelayStations,
         texts,
       }),
       headers: {

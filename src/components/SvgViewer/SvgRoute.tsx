@@ -113,6 +113,20 @@ export const SvgRoute = ({
         r={8 * scale * hoveredOrActiveScale * (thumbnail ? 3 : 1)}
       />
     ));
+  const tradBelayStations =
+    svg.tradBelayStations &&
+    JSON.parse(svg.tradBelayStations).map((a) => {
+      const r = 8 * scale * hoveredOrActiveScale * (thumbnail ? 3 : 1);
+      return (
+        <polygon
+          key={[a.x, a.y].join("x")}
+          fill={groupColor}
+          stroke="black"
+          strokeWidth={scale * 2 * hoveredOrActiveScale * (thumbnail ? 3 : 1)}
+          points={`${a.x},${a.y - r}, ${a.x - r},${a.y + r}, ${a.x + r},${a.y + r}`}
+        />
+      );
+    });
   const extraTexts =
     svg.texts &&
     JSON.parse(svg.texts).map((t) => (
@@ -228,6 +242,7 @@ export const SvgRoute = ({
           r={8 * scale * hoveredOrActiveScale * (thumbnail ? 3 : 1)}
         />
       )}
+      {tradBelayStations}
       {extraAnchors}
       {extraTexts}
       {info}

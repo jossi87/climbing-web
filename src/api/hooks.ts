@@ -558,12 +558,14 @@ export function useSvgEdit(problemId: number, mediaId: number) {
         hasAnchor: boolean;
         path: string;
         anchors: unknown[];
+        tradBelayStations: unknown[];
         texts: string[];
       }[] = [];
       let svgId = 0;
       let hasAnchor = true;
       let path = null;
       let anchors = [];
+      let tradBelayStations = [];
       let texts = [];
       if (m?.svgs) {
         for (const svg of m.svgs) {
@@ -572,6 +574,9 @@ export function useSvgEdit(problemId: number, mediaId: number) {
             path = svg.path ?? "";
             hasAnchor = !!svg.hasAnchor;
             anchors = svg.anchors ? JSON.parse(svg.anchors) : [];
+            tradBelayStations = svg.tradBelayStations
+              ? JSON.parse(svg.tradBelayStations)
+              : [];
             texts = svg.texts ? JSON.parse(svg.texts) : [];
           } else {
             readOnlySvgs.push({
@@ -579,6 +584,9 @@ export function useSvgEdit(problemId: number, mediaId: number) {
               hasAnchor: !!svg.hasAnchor,
               path: svg.path ?? "",
               anchors: svg.anchors ? JSON.parse(svg.anchors) : [],
+              tradBelayStations: svg.tradBelayStations
+                ? JSON.parse(svg.tradBelayStations)
+                : [],
               texts: svg.texts ? JSON.parse(svg.texts) : [],
             });
           }
@@ -594,6 +602,7 @@ export function useSvgEdit(problemId: number, mediaId: number) {
         svgId: svgId,
         path: path,
         anchors: anchors,
+        tradBelayStations: tradBelayStations,
         texts: texts,
         readOnlySvgs: readOnlySvgs,
         activePoint: 0,

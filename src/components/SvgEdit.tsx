@@ -37,6 +37,7 @@ const SvgEdit = () => {
   const [pathTxt, setPathTxt] = useState<any>(null);
   const [points, setPoints] = useState<any>(null);
   const [anchors, setAnchors] = useState<any>(null);
+  const [tradBelayStations, setTradBelayStations] = useState<any>(null);
   const [texts, setTexts] = useState<any>(null);
   const [readOnlySvgs, setReadOnlySvgs] = useState<any>(null);
   const [readOnlyPoints, setReadOnlyPoints] = useState<any[]>([]);
@@ -46,6 +47,7 @@ const SvgEdit = () => {
   const [hasAnchor, setHasAnchor] = useState(true);
   const [id, setId] = useState<any>(null);
   const [addAnchor, setAddAnchor] = useState(false);
+  const [addTradBelayStation, setAddTradBelayStation] = useState(false);
   const [addText, setAddText] = useState(false);
   const imageRef = useRef<SVGImageElement>(null);
   const navigate = useNavigate();
@@ -69,6 +71,7 @@ const SvgEdit = () => {
       setPathTxt(correctPathTxt);
       setPoints(correctPoints);
       setAnchors(data.anchors);
+      setTradBelayStations(data.tradBelayStations);
       setTexts(data.texts);
       setReadOnlySvgs(data.readOnlySvgs);
       setReadOnlyPoints(
@@ -107,11 +110,19 @@ const SvgEdit = () => {
 
   function onAddAnchor() {
     setAddAnchor(!addAnchor);
+    setAddTradBelayStation(false);
+    setAddText(false);
+  }
+
+  function onAddTradBelayStation() {
+    setAddAnchor(false);
+    setAddTradBelayStation(!addTradBelayStation);
     setAddText(false);
   }
 
   function onAddText() {
     setAddAnchor(false);
+    setAddTradBelayStation(false);
     setAddText(!addText);
   }
 
@@ -127,6 +138,7 @@ const SvgEdit = () => {
       path,
       hasAnchor,
       JSON.stringify(anchors),
+      JSON.stringify(tradBelayStations),
       JSON.stringify(texts),
     )
       .then(() => {
@@ -208,6 +220,11 @@ const SvgEdit = () => {
       anchors.push(coords);
       setAddAnchor(false);
       setAnchors(anchors);
+    } else if (addTradBelayStation) {
+      const coords = getMouseCoords(e, true);
+      tradBelayStations.push(coords);
+      setAddTradBelayStation(false);
+      setTradBelayStations(tradBelayStations);
     }
   }
 
@@ -365,6 +382,7 @@ const SvgEdit = () => {
     setPathTxt(null);
     setPoints([]);
     setAnchors([]);
+    setTradBelayStations([]);
     setTexts([]);
     setActivePoint(0);
     setDraggedPoint(false);
@@ -492,6 +510,16 @@ const SvgEdit = () => {
       />,
     );
   });
+  const myTradBelayStations = tradBelayStations.map((a) => {
+    const r = 0.006 * w;
+    circles.push(
+      <polygon
+        points={`${a.x},${a.y - r}, ${a.x - r},${a.y + r}, ${a.x + r},${a.y + r}`}
+        key={[a.x, a.y].join("x")}
+        fill="#E2011A"
+      />,
+    );
+  });
   const myTexts = texts.map((t) => (
     <text
       key={[t.x, t.y].join("x")}
@@ -522,6 +550,7 @@ const SvgEdit = () => {
             disabled={
               points.length === 0 &&
               anchors.length === 0 &&
+              myTradBelayStations.length === 0 &&
               myTexts.length === 0
             }
             onClick={reset}
@@ -554,7 +583,7 @@ const SvgEdit = () => {
             {" "}
             <Button.Group size="mini">
               <Button onClick={onAddAnchor} toggle active={addAnchor}>
-                Extra anchor
+                Extra anchors
               </Button>
               <Button.Or />
               <Button
@@ -562,6 +591,22 @@ const SvgEdit = () => {
                 negative={anchors.length !== 0}
                 disabled={anchors.length === 0}
                 onClick={() => setAnchors([])}
+              />
+            </Button.Group>{" "}
+            <Button.Group size="mini">
+              <Button
+                onClick={onAddTradBelayStation}
+                toggle
+                active={addTradBelayStation}
+              >
+                Trad belay stations
+              </Button>
+              <Button.Or />
+              <Button
+                icon="trash"
+                negative={tradBelayStations.length !== 0}
+                disabled={tradBelayStations.length === 0}
+                onClick={() => setTradBelayStations([])}
               />
             </Button.Group>{" "}
             <Button
@@ -630,6 +675,7 @@ const SvgEdit = () => {
         />
         {circles}
         {myTexts}
+        {myTradBelayStations}
       </svg>
       <br />
       <Input

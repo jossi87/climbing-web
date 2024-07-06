@@ -1097,6 +1097,7 @@ export type components = {
             hasAnchor?: boolean;
             texts?: string;
             anchors?: string;
+            tradBelayStations?: string;
             primary?: boolean;
             ticked?: boolean;
             todo?: boolean;
