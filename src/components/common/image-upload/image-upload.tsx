@@ -34,10 +34,10 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
       ...acceptedFiles.map((file) => ({
         file,
         preview: URL.createObjectURL(file),
-        photographer: meta.authenticatedName,
+        photographer: meta?.authenticatedName
       })),
     ]);
-  }, []);
+  }, [meta]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
