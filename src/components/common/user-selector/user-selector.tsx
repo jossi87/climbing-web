@@ -3,31 +3,34 @@ import CreatableSelect from "react-select/creatable";
 import { useUserSearch } from "./../../../api";
 import { components } from "../../../@types/buldreinfo/swagger";
 
-type User = components["schemas"]["User"];
+type UserOption = {
+  label?: string;
+} & components["schemas"]["User"];
 
 type MultiUserProps = {
-  onUsersUpdated: (user: User[]) => void;
+  onUsersUpdated: (user: UserOption[]) => void;
   placeholder: string;
-  users: User[];
+  users: UserOption[];
 };
 
 type SingleUserProps = {
-  onUserUpdated: (user: User) => void;
+  onUserUpdated: (user: UserOption) => void;
   placeholder: string;
+  defaultValue: string;
 };
 
 const UserSelect = (
   props:
     | Required<
         Pick<
-          ComponentProps<typeof CreatableSelect<User, true>>,
+          ComponentProps<typeof CreatableSelect<UserOption, true>>,
           "onChange" | "placeholder" | "value"
         > & { isMulti: true }
       >
     | Required<
         Pick<
-          ComponentProps<typeof CreatableSelect<User, false>>,
-          "onChange" | "placeholder"
+          ComponentProps<typeof CreatableSelect<UserOption, false>>,
+          "onChange" | "placeholder" | "defaultValue"
         > & { isMulti: false }
       >,
 ) => {
@@ -36,7 +39,7 @@ const UserSelect = (
   return (
     <div style={{ position: "relative", width: "100%" }}>
       <div style={{ width: "100%" }}>
-        <CreatableSelect<User, boolean>
+        <CreatableSelect<UserOption, boolean>
           isClearable
           options={options
             .filter((user) => user.id && user.name)
@@ -61,6 +64,7 @@ const UserSelect = (
 
 export const UserSelector = ({
   placeholder,
+  defaultValue,
   onUserUpdated,
 }: SingleUserProps) => {
   return (
@@ -68,6 +72,7 @@ export const UserSelector = ({
       isMulti={false}
       placeholder={placeholder}
       onChange={onUserUpdated}
+      defaultValue={defaultValue && { label: defaultValue }}
     />
   );
 };

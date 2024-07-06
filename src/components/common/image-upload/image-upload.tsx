@@ -23,7 +23,7 @@ const different = (a: UploadedMedia, b: UploadedMedia) => {
 const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
   const meta = useMeta();
   const [media, setMedia] = useState<UploadedMedia[]>([]);
-console.log(meta)
+
   useEffect(() => {
     onMediaChanged(media as UploadedMedia[]);
   }, [media, onMediaChanged]);
@@ -34,6 +34,7 @@ console.log(meta)
       ...acceptedFiles.map((file) => ({
         file,
         preview: URL.createObjectURL(file),
+        photographer: meta.authenticatedName,
       })),
     ]);
   }, []);
@@ -141,14 +142,16 @@ console.log(meta)
                     />
                     <UserSelector
                       placeholder="In photo/video"
+                      defaultValue={m.inPhoto}
                       onUserUpdated={(u) => {
-                        updateItem({ inPhoto: u.name });
+                        updateItem({ inPhoto: u?.name });
                       }}
                     />
                     <UserSelector
                       placeholder="Photographer"
+                      defaultValue={m.photographer}
                       onUserUpdated={(u) => {
-                        updateItem({ photographer: u.name });
+                        updateItem({ photographer: u?.name });
                       }}
                     />
                     {m.embedThumbnailUrl && (

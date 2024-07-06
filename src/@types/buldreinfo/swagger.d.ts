@@ -1251,6 +1251,7 @@ export type components = {
             isAuthenticated?: boolean;
             isAdmin?: boolean;
             isSuperAdmin?: boolean;
+            authenticatedName?: string;
             grades?: components["schemas"]["Grade"][];
             faYears?: number[];
             /** Format: int32 */

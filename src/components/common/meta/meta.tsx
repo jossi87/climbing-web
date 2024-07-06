@@ -31,6 +31,7 @@ type Metadata = {
   isAuthenticated: boolean;
   isAdmin: boolean;
   isSuperAdmin: boolean;
+  authenticatedName: string;
   title: string;
   grades: Grade[];
   faYears: number[];
@@ -48,6 +49,7 @@ const DEFAULT_VALUE: Metadata = {
   isAuthenticated: false,
   isAdmin: false,
   isSuperAdmin: false,
+  authenticatedName: null,
   title: "",
   grades: [],
   faYears: [],
