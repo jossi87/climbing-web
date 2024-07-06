@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Container, Button, Segment, Dropdown, Input } from "semantic-ui-react";
+import {
+  Container,
+  Button,
+  Segment,
+  Dropdown,
+  Input,
+  Icon,
+} from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { useMeta } from "./common/meta";
 import {
@@ -499,7 +506,7 @@ const SvgEdit = () => {
   return (
     <Container onMouseUp={cancelDragging} onMouseLeave={cancelDragging}>
       <Segment style={{ minHeight: "130px" }}>
-        <Button.Group floated="right">
+        <Button.Group size="mini" floated="right">
           <Button
             primary
             as={Link}
@@ -530,42 +537,45 @@ const SvgEdit = () => {
             Save
           </Button>
         </Button.Group>
-        <Button.Group size="tiny">
-          <Button onClick={onAddText}>
-            {addText ? "Click on image to add text" : "Add text"}
+        <Button.Group size="mini">
+          <Button onClick={onAddText} toggle active={addText}>
+            Text
           </Button>
           <Button.Or />
-          <Button disabled={myTexts.length === 0} onClick={() => setTexts([])}>
-            Remove all texts
-          </Button>
+          <Button
+            icon="trash"
+            negative={myTexts.length !== 0}
+            disabled={myTexts.length === 0}
+            onClick={() => setTexts([])}
+          />
         </Button.Group>
         {meta.isClimbing && (
           <>
             {" "}
-            <Button.Group size="tiny">
-              <Button onClick={onAddAnchor}>
-                {addAnchor
-                  ? "Click on image to add extra anchor"
-                  : "Add extra anchor"}
+            <Button.Group size="mini">
+              <Button onClick={onAddAnchor} toggle active={addAnchor}>
+                Extra anchor
               </Button>
               <Button.Or />
               <Button
+                icon="trash"
+                negative={anchors.length !== 0}
                 disabled={anchors.length === 0}
                 onClick={() => setAnchors([])}
-              >
-                Remove all extra anchors
-              </Button>
+              />
             </Button.Group>{" "}
-            <Dropdown
-              selection
-              value={hasAnchor}
+            <Button
+              icon
+              labelPosition="left"
+              size="mini"
+              onClick={() => setHasAnchor(!hasAnchor)}
               disabled={points.length === 0}
-              onChange={() => setHasAnchor(!hasAnchor)}
-              options={[
-                { key: 1, value: false, text: "No anchor on route" },
-                { key: 2, value: true, text: "Route has anchor" },
-              ]}
-            />
+            >
+              <Icon
+                name={hasAnchor ? "check square outline" : "square outline"}
+              />
+              Anchor
+            </Button>
           </>
         )}
         <br />
