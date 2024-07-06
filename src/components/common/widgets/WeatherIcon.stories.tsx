@@ -1,7 +1,6 @@
-import type { MetaArgs } from "../../../utils/storybook";
 import { TWeatherSymbolKey } from "../../../yr";
 import { WeatherIcon } from "./widgets";
-import type { StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react";
 
 const meta = {
   title: "components/common/widgets/WeatherIcon",
@@ -9,7 +8,7 @@ const meta = {
   args: {
     symbol: undefined,
   },
-} satisfies MetaArgs<typeof WeatherIcon>;
+} satisfies Meta<typeof WeatherIcon>;
 
 type Story = StoryObj<typeof meta>;
 

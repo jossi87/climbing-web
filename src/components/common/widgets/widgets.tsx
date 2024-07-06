@@ -7,14 +7,14 @@ import {
   Header,
   Message,
   Icon,
-  Image,
   Popup,
   Label,
   Button,
   LabelDetail,
 } from "semantic-ui-react";
-import SunCalc from "suncalc";
 import { TWeatherSymbolKey, weatherSymbolKeys } from "../../../yr";
+import { SunOnWall } from "./SunOnWall";
+import { SunriseSunset } from "./SunriseSunset";
 
 type LockSymbolProps = {
   lockedAdmin: boolean;
@@ -171,7 +171,6 @@ export function InsufficientPrivileges() {
     </Segment>
   );
 }
-
 type ConditionLabelsProps = {
   lat: number;
   lng: number;
@@ -183,6 +182,8 @@ type ConditionLabelsProps = {
   sunFromHour: number;
   sunToHour: number;
 };
+
+export { SunOnWall };
 
 export const WallDirection = ({
   wallDirectionCalculated,
@@ -204,30 +205,6 @@ export const WallDirection = ({
             <Icon name="compass outline" />
             {wallDirectionManual?.direction ??
               wallDirectionCalculated?.direction}
-          </Label>
-        }
-      />
-    );
-  }
-  return null;
-};
-
-export const SunOnWall = ({
-  sunFromHour,
-  sunToHour,
-}: Pick<ConditionLabelsProps, "sunFromHour" | "sunToHour">) => {
-  if (sunFromHour > 0 && sunToHour > 0) {
-    return (
-      <Popup
-        content="Sun on wall"
-        trigger={
-          <Label image basic size="small">
-            <Image src="/svg/sun-on-wall.svg" alt="Sun on wall" size="mini" />
-            {String(sunFromHour).padStart(2, "0") +
-              ":00" +
-              " - " +
-              String(sunToHour).padStart(2, "0") +
-              ":00"}
           </Label>
         }
       />
@@ -380,12 +357,6 @@ export function ConditionLabels({
   const d = new Date();
   const date = `${d.getFullYear()}.${(d.getMonth() + 1).toString().padStart(2, "0")}.${d.getDate()}`;
   const time = `${d.getHours().toString().padStart(2, "0")}:${d.getMinutes().toString().padStart(2, "0")}`;
-  const times = SunCalc.getTimes(new Date(), lat, lng);
-
-  // The library behaves incorrectly in the Arctic Circle, and the type
-  // definitions don't know about that.
-  // https://github.com/mourner/suncalc/issues/146
-  const sunrise: Date | string = times.sunrise;
 
   return (
     <>
@@ -394,27 +365,7 @@ export function ConditionLabels({
         wallDirectionManual={wallDirectionManual}
       />
       <SunOnWall sunFromHour={sunFromHour} sunToHour={sunToHour} />
-      {typeof sunrise !== "string" && (
-        <Popup
-          content="Sunrise and sunset"
-          trigger={
-            <Label image basic size="small">
-              <Image
-                src="/svg/sunrise-sunset.svg"
-                alt="Sunrise and Sunset"
-                size="mini"
-              />
-              {String(sunrise.getHours()).padStart(2, "0") +
-                ":" +
-                String(sunrise.getMinutes()).padStart(2, "0") +
-                " - " +
-                String(times.sunset.getHours()).padStart(2, "0") +
-                ":" +
-                String(times.sunset.getMinutes()).padStart(2, "0")}
-            </Label>
-          }
-        />
-      )}
+      <SunriseSunset lat={lat} lng={lng} />
       <YrLink lat={lat} lng={lng} />
       <Label
         href={`/webcams/` + JSON.stringify({ lat, lng, label })}
