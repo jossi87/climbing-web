@@ -4558,6 +4558,11 @@
     "@types/prop-types" "*"
     csstype "^3.0.2"
 
+"@types/remarkable@^2.0.8":
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/@types/remarkable/-/remarkable-2.0.8.tgz#e18816db814cdc087e86b0446f6883754d666088"
+  integrity sha512-eKXqPZfpQl1kOADjdKchHrp2gwn9qMnGXhH/AtZe0UrklzhGJkawJo/Y/D0AlWcdWoWamFNIum8+/nkAISQVGg==
+
 "@types/resolve@^1.20.2":
   version "1.20.6"
   resolved "https://registry.yarnpkg.com/@types/resolve/-/resolve-1.20.6.tgz#e6e60dad29c2c8c206c026e6dd8d6d1bdda850b8"

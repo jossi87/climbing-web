@@ -39,15 +39,19 @@ import { components } from "../@types/buldreinfo/swagger";
 import { DownloadButton } from "./common/DownloadButton";
 
 type Props = {
-  sector: components["schemas"]["Area"]["sectors"][number];
-  problem: components["schemas"]["Area"]["sectors"][number]["problems"][number];
+  sectorName: string;
+  problem: NonNullable<
+    NonNullable<components["schemas"]["Area"]["sectors"]>[number]["problems"]
+  >[number];
 };
 
-const SectorListItem = ({ sector, problem }: Props) => {
+const SectorListItem = ({ sectorName, problem }: Props) => {
   const { isClimbing } = useMeta();
   const type = isClimbing
-    ? problem.t.subType +
-      (problem.numPitches > 1 ? ", " + problem.numPitches + " pitches" : "")
+    ? problem.t?.subType +
+      ((problem.numPitches ?? 1) > 1
+        ? ", " + problem.numPitches + " pitches"
+        : "")
     : null;
   const ascents =
     problem.numTicks &&
@@ -79,11 +83,11 @@ const SectorListItem = ({ sector, problem }: Props) => {
         {problem.danger && <Icon color="red" name="warning" />}
         <Link to={`/problem/${problem.id}`}>{problem.name}</Link>{" "}
         {problem.grade}
-        <Stars numStars={problem.stars} includeStarOutlines={false} />
+        <Stars numStars={problem.stars ?? 0} includeStarOutlines={false} />
         <small>
           <i style={{ color: "gray" }}>
             {" "}
-            {sector.name} {`#${problem.nr}`}{" "}
+            {sectorName} {`#${problem.nr}`}{" "}
           </i>
         </small>
         {faTypeAscents && <small> {faTypeAscents}</small>}
@@ -101,8 +105,8 @@ const SectorListItem = ({ sector, problem }: Props) => {
         {problem.hasImages && <Icon size="small" color="black" name="photo" />}
         {problem.hasMovies && <Icon size="small" color="black" name="film" />}
         <LockSymbol
-          lockedAdmin={problem.lockedAdmin}
-          lockedSuperadmin={problem.lockedSuperadmin}
+          lockedAdmin={!!problem.lockedAdmin}
+          lockedSuperadmin={!!problem.lockedSuperadmin}
         />
         {problem.ticked && <Icon size="small" color="green" name="check" />}
         {problem.todo && <Icon size="small" color="blue" name="bookmark" />}
@@ -110,10 +114,8 @@ const SectorListItem = ({ sector, problem }: Props) => {
     </List.Item>
   );
 };
-const Area = () => {
-  const meta = useMeta();
-  const { areaId } = useParams();
-  const { data, error, redirectUi } = useArea(+areaId);
+
+const md = (() => {
   const md = new Remarkable({ breaks: true }).use(linkify);
   // open links in new windows
   md.renderer.rules.link_open = (function () {
@@ -126,6 +128,31 @@ const Area = () => {
       );
     };
   })();
+  return md;
+})();
+
+type AreaSectorType = NonNullable<
+  components["schemas"]["Area"]["sectors"]
+>[number];
+type SectorWithParking = AreaSectorType &
+  (Pick<AreaSectorType, "parking"> & {
+    parking: Required<
+      Pick<NonNullable<AreaSectorType["parking"]>, "latitude" | "longitude">
+    >;
+  });
+
+const isSectorWithParking = (s: AreaSectorType): s is SectorWithParking => {
+  return !!(s.parking && s.parking.latitude && s.parking.longitude);
+};
+
+const Area = () => {
+  const meta = useMeta();
+  const { areaId } = useParams();
+  if (areaId === undefined) {
+    throw new Error("Missing areaId parameter");
+  }
+
+  const { data, error, redirectUi } = useArea(+areaId);
 
   if (redirectUi) {
     return redirectUi;
@@ -149,41 +176,46 @@ const Area = () => {
     return <Loading />;
   }
 
-  const orderableMedia = [];
-  const carouselMedia = [];
-  if (data.media?.length > 0) {
+  const orderableMedia: ComponentProps<typeof Media>["orderableMedia"] = [];
+  const carouselMedia: ComponentProps<typeof Media>["carouselMedia"] = [];
+  if (data.media?.length) {
     carouselMedia.push(...data.media);
     if (data.media.length > 1) {
       orderableMedia.push(...data.media);
     }
   }
-  if (data.triviaMedia?.length > 0) {
+  if (data.triviaMedia?.length) {
     carouselMedia.push(...data.triviaMedia);
     if (data.triviaMedia.length > 1) {
       orderableMedia.push(...data.triviaMedia);
     }
   }
-  const markers = data.sectors
-    .filter((s) => s.parking)
-    .map((s) => {
+
+  const markers: ComponentProps<typeof Leaflet>["markers"] =
+    data.sectors?.filter(isSectorWithParking)?.map((s) => {
       return {
         coordinates: s.parking,
         url: "/sector/" + s.id,
         isParking: true,
       };
-    });
+    }) ?? [];
+
   const outlines: ComponentProps<typeof Leaflet>["outlines"] = [];
   const approaches: ComponentProps<typeof Leaflet>["approaches"] = [];
   const showApproachLengthOnOutline =
-    data.sectors.filter((s) => s.approach && s.outline).length > 1;
-  for (const s of data.sectors) {
+    (data.sectors?.filter((s) => s.approach && s.outline).length ?? 0) > 1;
+
+  for (const s of data.sectors ?? []) {
     let distance: string | null = null;
-    if (s.approach?.coordinates?.length > 0) {
+    if (s.approach?.coordinates?.length) {
       distance = getDistanceWithUnit(s.approach);
-      const label = (!s.outline || !showApproachLengthOnOutline) && distance;
-      approaches.push({ approach: s.approach, label });
+      const label =
+        (!s.outline || !showApproachLengthOnOutline) && distance
+          ? distance
+          : "";
+      approaches.push({ approach: s.approach, label: label ?? "" });
     }
-    if (s.outline?.length > 0) {
+    if (s.outline?.length) {
       const label =
         s.name +
         (showApproachLengthOnOutline && distance ? " (" + distance + ")" : "");
@@ -196,14 +228,14 @@ const Area = () => {
   }
   const panes: ComponentProps<typeof Tab>["panes"] = [];
   const height = "40vh";
-  if (data.media && data.media.length > 0) {
+  if (data.media && data.media.length) {
     panes.push({
       menuItem: { key: "image", icon: "image" },
       render: () => (
         <Tab.Pane>
           <Media
             numPitches={0}
-            media={data.media}
+            media={data.media ?? []}
             orderableMedia={orderableMedia}
             carouselMedia={carouselMedia}
             optProblemId={null}
@@ -213,10 +245,13 @@ const Area = () => {
       ),
     });
   }
-  if (markers.length > 0 || outlines.length > 0 || data.coordinates) {
-    const defaultCenter = data.coordinates
-      ? { lat: data.coordinates.latitude, lng: data.coordinates.longitude }
-      : meta.defaultCenter;
+  if (markers.length || outlines.length || data.coordinates) {
+    const defaultCenter =
+      data.coordinates &&
+      data.coordinates.latitude &&
+      data.coordinates.longitude
+        ? { lat: data.coordinates.latitude, lng: data.coordinates.longitude }
+        : meta.defaultCenter;
     const defaultZoom = data.coordinates ? 14 : meta.defaultZoom;
     panes.push({
       menuItem: { key: "map", icon: "map" },
@@ -231,23 +266,20 @@ const Area = () => {
             approaches={approaches}
             defaultCenter={defaultCenter}
             defaultZoom={defaultZoom}
-            onMouseClick={null}
-            onMouseMove={null}
             showSatelliteImage={false}
             clusterMarkers={false}
-            rocks={null}
             flyToId={null}
           />
         </Tab.Pane>
       ),
     });
   }
-  if (data.sectors.length != 0) {
+  if (data.sectors?.length) {
     panes.push({
       menuItem: { key: "distribution", icon: "area graph" },
       render: () => (
         <Tab.Pane>
-          <ChartGradeDistribution idArea={data.id} />
+          <ChartGradeDistribution idArea={data.id ?? 0} />
         </Tab.Pane>
       ),
     });
@@ -255,7 +287,7 @@ const Area = () => {
       menuItem: { key: "top", icon: "trophy" },
       render: () => (
         <Tab.Pane>
-          <Top idArea={data.id} idSector={0} />
+          <Top idArea={data.id ?? 0} idSector={0} />
         </Tab.Pane>
       ),
     });
@@ -263,7 +295,7 @@ const Area = () => {
       menuItem: { key: "activity", icon: "time" },
       render: () => (
         <Tab.Pane>
-          <Activity idArea={data.id} idSector={0} />
+          <Activity idArea={data.id ?? 0} idSector={0} />
         </Tab.Pane>
       ),
     });
@@ -271,7 +303,7 @@ const Area = () => {
       menuItem: { key: "todo", icon: "bookmark" },
       render: () => (
         <Tab.Pane>
-          <Todo idArea={data.id} idSector={0} />
+          <Todo idArea={data.id ?? 0} idSector={0} />
         </Tab.Pane>
       ),
     });
@@ -281,7 +313,7 @@ const Area = () => {
   if (data.sectors) {
     const numTickedProblemsInArea = data.sectors.reduce(
       (count, current) =>
-        count + current.problems.filter((p) => p.ticked).length,
+        count + (current.problems?.filter((p) => p.ticked)?.length ?? 0),
       0,
     );
     sectorPanes.push({
@@ -289,18 +321,18 @@ const Area = () => {
       render: () => (
         <Tab.Pane>
           <Item.Group link unstackable>
-            {data.sectors.map((sector) => {
+            {data.sectors?.map((sector) => {
               let percent;
               if (numTickedProblemsInArea > 0) {
                 const [total, ticked] = sector.typeNumTicked
-                  .filter((s) => s.type != "Projects" && s.type != "Broken")
-                  .reduce(
+                  ?.filter((s) => s.type != "Projects" && s.type != "Broken")
+                  ?.reduce(
                     ([total, failure], d) => [
-                      total + d.num,
-                      failure + d.ticked,
+                      total + (d.num ?? 0),
+                      failure + (d.ticked ?? 0),
                     ],
                     [0, 0],
-                  );
+                  ) ?? [0, 0];
                 percent = Math.round((ticked / total) * 100);
               }
               return (
@@ -312,7 +344,7 @@ const Area = () => {
                       sector.randomMediaId
                         ? getImageUrl(
                             sector.randomMediaId,
-                            sector.randomMediaCrc32,
+                            sector.randomMediaCrc32 ?? 0,
                             150,
                           )
                         : "/png/image.png"
@@ -327,8 +359,8 @@ const Area = () => {
                       )}
                       {sector.name}{" "}
                       <LockSymbol
-                        lockedAdmin={sector.lockedAdmin}
-                        lockedSuperadmin={sector.lockedSuperadmin}
+                        lockedAdmin={!!sector.lockedAdmin}
+                        lockedSuperadmin={!!sector.lockedSuperadmin}
                       />
                       <WallDirection
                         wallDirectionCalculated={sector.wallDirectionCalculated}
@@ -339,7 +371,7 @@ const Area = () => {
                       {numTickedProblemsInArea > 0 &&
                         sector.typeNumTicked?.filter(
                           (x) => x.type != "Projects",
-                        ).length > 0 && (
+                        ).length && (
                           <Progress
                             percent={percent}
                             progress={true}
@@ -348,10 +380,10 @@ const Area = () => {
                             inverted={true}
                           />
                         )}
-                      {sector.typeNumTicked.map((x) => (
+                      {sector.typeNumTicked?.map((x) => (
                         <p key={`${x.type}/${x.num}/${x.ticked}`}>
                           {x.type + ": " + x.num}
-                          {x.ticked > 0 && " (" + x.ticked + " ticked)"}
+                          {x.ticked && " (" + x.ticked + " ticked)"}
                         </p>
                       ))}
                     </Item.Extra>
@@ -374,40 +406,52 @@ const Area = () => {
     sectorPanes.push({
       menuItem:
         (meta.isBouldering ? "Problems (" : "Routes (") +
-        data.typeNumTicked.reduce((count, current) => count + current.num, 0) +
+        (data.typeNumTicked?.reduce(
+          (count, current) => count + (current?.num ?? 0),
+          0,
+        ) ?? []) +
         ")",
-      render: () => (
-        <Tab.Pane>
-          <ProblemList
-            isSectorNotUser={true}
-            preferOrderByGrade={true}
-            rows={data.sectors
-              .reduce(
-                (acc, s) => [
-                  ...acc,
-                  ...s.problems.map((p) => ({
+      render: () => {
+        type Rows = ComponentProps<typeof ProblemList>["rows"];
+        const rows: Rows =
+          data.sectors
+            ?.flatMap(({ name = "", problems = [] }) => {
+              return problems.map(
+                (p) =>
+                  ({
                     element: (
-                      <SectorListItem key={p.id} sector={s} problem={p} />
+                      <SectorListItem
+                        key={p.id}
+                        sectorName={name}
+                        problem={p}
+                      />
                     ),
-                    name: p.name,
-                    nr: p.nr,
-                    gradeNumber: p.gradeNumber,
-                    stars: p.stars,
-                    numTicks: p.numTicks,
-                    ticked: p.ticked,
-                    todo: p.todo,
-                    rock: p.rock,
-                    subType: p.t.subType,
-                    num: null,
-                    fa: null,
-                  })),
-                ],
-                [],
-              )
-              .sort((a, b) => b.gradeNumber - a.gradeNumber)}
-          />
-        </Tab.Pane>
-      ),
+                    name: p.name ?? "",
+                    areaName: data.name ?? "",
+                    sectorName: name,
+                    nr: p.nr ?? 0,
+                    gradeNumber: p.gradeNumber ?? 0,
+                    stars: p.stars ?? 0,
+                    numTicks: p.numTicks ?? 0,
+                    ticked: p.ticked ?? false,
+                    rock: p.rock ?? "",
+                    subType: p.t?.subType ?? "",
+                    num: p.nr ?? 0,
+                    fa: !!p.fa,
+                  }) satisfies Rows[number],
+              );
+            })
+            ?.sort((a, b) => b.gradeNumber - a.gradeNumber) ?? [];
+        return (
+          <Tab.Pane>
+            <ProblemList
+              isSectorNotUser={true}
+              preferOrderByGrade={true}
+              rows={rows}
+            />
+          </Tab.Pane>
+        );
+      },
     });
   }
 
@@ -451,8 +495,8 @@ const Area = () => {
               <span style={{ fontWeight: "normal" }}> (under development)</span>
             )}{" "}
             <LockSymbol
-              lockedAdmin={data.lockedAdmin}
-              lockedSuperadmin={data.lockedSuperadmin}
+              lockedAdmin={!!data.lockedAdmin}
+              lockedSuperadmin={!!data.lockedSuperadmin}
             />
           </Breadcrumb.Section>
         </Breadcrumb>
@@ -503,14 +547,14 @@ const Area = () => {
         <Label.Group>
           <Label basic>
             Sectors:
-            <Label.Detail>{data.sectors.length}</Label.Detail>
+            <Label.Detail>{data.sectors?.length}</Label.Detail>
           </Label>
-          {data.typeNumTicked.map((t) => (
+          {data.typeNumTicked?.map((t) => (
             <Label key={t.type} basic>
               {t.type}:
               <Label.Detail>
                 {t.num}
-                {t.ticked > 0 && " (" + t.ticked + " ticked)"}
+                {t.ticked && " (" + t.ticked + " ticked)"}
               </Label.Detail>
             </Label>
           ))}
@@ -521,17 +565,19 @@ const Area = () => {
           <DownloadButton href={`/areas/pdf?id=${data.id}`}>
             area.pdf
           </DownloadButton>
-          {data.coordinates && (
-            <ConditionLabels
-              lat={data.coordinates.latitude}
-              lng={data.coordinates.longitude}
-              label={data.name}
-              wallDirectionCalculated={null}
-              wallDirectionManual={null}
-              sunFromHour={data.sunFromHour}
-              sunToHour={data.sunToHour}
-            />
-          )}
+          {data.coordinates &&
+            data.coordinates.latitude &&
+            data.coordinates.longitude && (
+              <ConditionLabels
+                lat={data.coordinates.latitude}
+                lng={data.coordinates.longitude}
+                label={data.name ?? ""}
+                wallDirectionCalculated={undefined}
+                wallDirectionManual={undefined}
+                sunFromHour={data.sunFromHour ?? 0}
+                sunToHour={data.sunToHour ?? 0}
+              />
+            )}
         </Label.Group>
         {data.comment && (
           <div
@@ -541,7 +587,7 @@ const Area = () => {
             }}
           />
         )}
-        {data.triviaMedia?.length > 0 && (
+        {data.triviaMedia?.length && (
           <Feed.Extra style={{ paddingTop: "10px" }}>
             <Media
               numPitches={0}
@@ -555,7 +601,7 @@ const Area = () => {
         )}
       </Segment>
 
-      {sectorPanes.length > 0 && <Tab panes={sectorPanes} />}
+      {sectorPanes.length && <Tab panes={sectorPanes} />}
     </>
   );
 };
