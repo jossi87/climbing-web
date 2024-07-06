@@ -230,7 +230,7 @@ export default function Markers({
           position={[m.coordinates.latitude ?? 0, m.coordinates.longitude ?? 0]}
           key={[
             "label",
-            m.url,
+            m.label,
             m.coordinates.latitude,
             m.coordinates.longitude,
           ].join("/")}

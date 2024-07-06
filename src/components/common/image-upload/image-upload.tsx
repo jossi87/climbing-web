@@ -4,6 +4,7 @@ import { Button, Card, Image, Input, Checkbox } from "semantic-ui-react";
 import VideoEmbedder from "./video-embedder";
 import { UserSelector } from "../user-selector/user-selector";
 import { components } from "../../../@types/buldreinfo/swagger";
+import { useMeta } from "../../common/meta";
 
 type UploadedMedia = {
   file?: File;
@@ -20,8 +21,9 @@ const different = (a: UploadedMedia, b: UploadedMedia) => {
 };
 
 const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
+  const meta = useMeta();
   const [media, setMedia] = useState<UploadedMedia[]>([]);
-
+console.log(meta)
   useEffect(() => {
     onMediaChanged(media as UploadedMedia[]);
   }, [media, onMediaChanged]);
