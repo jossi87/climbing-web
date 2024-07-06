@@ -80,7 +80,7 @@ const SectorListItem = ({ sectorName, problem }: Props) => {
   return (
     <List.Item style={{ backgroundColor }} key={problem.id}>
       <List.Header>
-        {problem.danger && <Icon color="red" name="warning" />}
+        {problem.danger ? <Icon color="red" name="warning" /> : null}
         <Link to={`/problem/${problem.id}`}>{problem.name}</Link>{" "}
         {problem.grade}
         <Stars numStars={problem.stars ?? 0} includeStarOutlines={false} />
@@ -90,26 +90,34 @@ const SectorListItem = ({ sectorName, problem }: Props) => {
             {sectorName} {`#${problem.nr}`}{" "}
           </i>
         </small>
-        {faTypeAscents && <small> {faTypeAscents}</small>}
+        {faTypeAscents ? <small> {faTypeAscents}</small> : null}
         <small>
           <i style={{ color: "gray" }}>
             {" "}
-            {problem.rock && <>Rock: {problem.rock}. </>}
+            {problem.rock ? <>Rock: {problem.rock}. </> : null}
             {problem.comment}{" "}
           </i>
         </small>
-        {problem.coordinates && (
+        {problem.coordinates ? (
           <Icon size="small" name="map marker alternate" />
-        )}
-        {problem.hasTopo && <Icon size="small" name="paint brush" />}
-        {problem.hasImages && <Icon size="small" color="black" name="photo" />}
-        {problem.hasMovies && <Icon size="small" color="black" name="film" />}
+        ) : null}
+        {problem.hasTopo ? <Icon size="small" name="paint brush" /> : null}
+        {problem.hasImages ? (
+          <Icon size="small" color="black" name="photo" />
+        ) : null}
+        {problem.hasMovies ? (
+          <Icon size="small" color="black" name="film" />
+        ) : null}
         <LockSymbol
           lockedAdmin={!!problem.lockedAdmin}
           lockedSuperadmin={!!problem.lockedSuperadmin}
         />
-        {problem.ticked && <Icon size="small" color="green" name="check" />}
-        {problem.todo && <Icon size="small" color="blue" name="bookmark" />}
+        {problem.ticked ? (
+          <Icon size="small" color="green" name="check" />
+        ) : null}
+        {problem.todo ? (
+          <Icon size="small" color="blue" name="bookmark" />
+        ) : null}
       </List.Header>
     </List.Item>
   );
@@ -327,9 +335,9 @@ const Area = () => {
                 const [total, ticked] = sector.typeNumTicked
                   ?.filter((s) => s.type != "Projects" && s.type != "Broken")
                   ?.reduce(
-                    ([total, failure], d) => [
+                    ([total, ticked], d) => [
                       total + (d.num ?? 0),
-                      failure + (d.ticked ?? 0),
+                      ticked + (d.ticked ?? 0),
                     ],
                     [0, 0],
                   ) ?? [0, 0];
@@ -352,11 +360,11 @@ const Area = () => {
                   />
                   <Item.Content>
                     <Item.Header>
-                      {sector.accessClosed && (
+                      {sector.accessClosed ? (
                         <Header as="h3" color="red">
                           {sector.accessClosed}
                         </Header>
-                      )}
+                      ) : null}
                       {sector.name}{" "}
                       <LockSymbol
                         lockedAdmin={!!sector.lockedAdmin}
@@ -368,31 +376,31 @@ const Area = () => {
                       />
                     </Item.Header>
                     <Item.Extra>
-                      {numTickedProblemsInArea > 0 &&
-                        sector.typeNumTicked?.filter(
-                          (x) => x.type != "Projects",
-                        ).length && (
-                          <Progress
-                            percent={percent}
-                            progress={true}
-                            autoSuccess
-                            size="small"
-                            inverted={true}
-                          />
-                        )}
+                      {numTickedProblemsInArea &&
+                      sector.typeNumTicked?.find(
+                        (x) => x.type != "Projects",
+                      ) ? (
+                        <Progress
+                          percent={percent}
+                          progress={true}
+                          autoSuccess
+                          size="small"
+                          inverted={true}
+                        />
+                      ) : null}
                       {sector.typeNumTicked?.map((x) => (
                         <p key={`${x.type}/${x.num}/${x.ticked}`}>
                           {x.type + ": " + x.num}
-                          {x.ticked && " (" + x.ticked + " ticked)"}
+                          {x.ticked ? " (" + x.ticked + " ticked)" : ""}
                         </p>
                       ))}
                     </Item.Extra>
                     <Item.Description>
-                      {sector.accessInfo && (
+                      {sector.accessInfo ? (
                         <Header as="h5" color="red">
                           {sector.accessInfo}
                         </Header>
-                      )}
+                      ) : null}
                       {sector.comment}
                     </Item.Description>
                   </Item.Content>
@@ -463,7 +471,7 @@ const Area = () => {
       </Helmet>
       <div style={{ marginBottom: "5px" }}>
         <div style={{ float: "right" }}>
-          {meta.isAdmin && (
+          {meta.isAdmin ? (
             <Button.Group size="mini" compact>
               <Button
                 animated="fade"
@@ -482,7 +490,7 @@ const Area = () => {
                 </Button.Content>
               </Button>
             </Button.Group>
-          )}
+          ) : null}
         </div>
         <Breadcrumb>
           <Breadcrumb.Section>
@@ -491,9 +499,9 @@ const Area = () => {
           <Breadcrumb.Divider icon="right angle" />
           <Breadcrumb.Section active>
             {data.name}
-            {data.forDevelopers && (
+            {data.forDevelopers ? (
               <span style={{ fontWeight: "normal" }}> (under development)</span>
-            )}{" "}
+            ) : null}{" "}
             <LockSymbol
               lockedAdmin={!!data.lockedAdmin}
               lockedSuperadmin={!!data.lockedSuperadmin}
@@ -501,7 +509,7 @@ const Area = () => {
           </Breadcrumb.Section>
         </Breadcrumb>
       </div>
-      {data.accessClosed && (
+      {data.accessClosed ? (
         <Message
           size="huge"
           negative
@@ -509,13 +517,13 @@ const Area = () => {
           header="Area closed!"
           content={data.accessClosed}
         />
-      )}
+      ) : null}
 
       <Tab panes={panes} />
 
-      {data.noDogsAllowed && (
+      {data.noDogsAllowed ? (
         <Message warning>
-          {data.noDogsAllowed && (
+          {data.noDogsAllowed ? (
             <Header as="h5" color="red" image>
               <Image
                 src="/svg/no-animals.svg"
@@ -532,16 +540,16 @@ const Area = () => {
                 </Header.Subheader>
               </Header.Content>
             </Header>
-          )}
+          ) : null}
         </Message>
-      )}
+      ) : null}
 
-      {data.accessInfo && (
+      {data.accessInfo ? (
         <Message warning>
           <Message.Header>Restrictions:</Message.Header>
           {data.accessInfo}
         </Message>
-      )}
+      ) : null}
 
       <Segment>
         <Label.Group>
@@ -554,7 +562,7 @@ const Area = () => {
               {t.type}:
               <Label.Detail>
                 {t.num}
-                {t.ticked && " (" + t.ticked + " ticked)"}
+                {t.ticked ? " (" + t.ticked + " ticked)" : ""}
               </Label.Detail>
             </Label>
           ))}
@@ -566,28 +574,28 @@ const Area = () => {
             area.pdf
           </DownloadButton>
           {data.coordinates &&
-            data.coordinates.latitude &&
-            data.coordinates.longitude && (
-              <ConditionLabels
-                lat={data.coordinates.latitude}
-                lng={data.coordinates.longitude}
-                label={data.name ?? ""}
-                wallDirectionCalculated={undefined}
-                wallDirectionManual={undefined}
-                sunFromHour={data.sunFromHour ?? 0}
-                sunToHour={data.sunToHour ?? 0}
-              />
-            )}
+          data.coordinates.latitude &&
+          data.coordinates.longitude ? (
+            <ConditionLabels
+              lat={data.coordinates.latitude}
+              lng={data.coordinates.longitude}
+              label={data.name ?? ""}
+              wallDirectionCalculated={undefined}
+              wallDirectionManual={undefined}
+              sunFromHour={data.sunFromHour ?? 0}
+              sunToHour={data.sunToHour ?? 0}
+            />
+          ) : null}
         </Label.Group>
-        {data.comment && (
+        {data.comment ? (
           <div
             style={{ paddingTop: "10px" }}
             dangerouslySetInnerHTML={{
               __html: md.render(data.comment),
             }}
           />
-        )}
-        {data.triviaMedia?.length && (
+        ) : null}
+        {data.triviaMedia?.length ? (
           <Feed.Extra style={{ paddingTop: "10px" }}>
             <Media
               numPitches={0}
@@ -598,10 +606,10 @@ const Area = () => {
               showLocation={false}
             />
           </Feed.Extra>
-        )}
+        ) : null}
       </Segment>
 
-      {sectorPanes.length && <Tab panes={sectorPanes} />}
+      {sectorPanes.length ? <Tab panes={sectorPanes} /> : null}
     </>
   );
 };
