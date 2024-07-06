@@ -273,7 +273,7 @@ export function useProfile(userId: number = -1) {
           if (old && typeof old === "object") {
             const next = {
               ...old,
-              userRegions: old.userRegions.map((oldRegion) => {
+              userRegions: old.userRegions?.map((oldRegion) => {
                 if (oldRegion.id !== region.id) {
                   return oldRegion;
                 }
@@ -552,7 +552,7 @@ export function useSvgEdit(problemId: number, mediaId: number) {
   useEffect(() => {
     if (data) {
       const res = data;
-      const m = res.media.filter((x) => x.id == mediaId)[0];
+      const m = res.media?.find((x) => x.id == mediaId);
       const readOnlySvgs: {
         nr: number;
         hasAnchor: boolean;
@@ -565,19 +565,19 @@ export function useSvgEdit(problemId: number, mediaId: number) {
       let path = null;
       let anchors = [];
       let texts = [];
-      if (m.svgs) {
+      if (m?.svgs) {
         for (const svg of m.svgs) {
           if (svg.problemId === res.id) {
-            svgId = svg.id;
-            path = svg.path;
-            hasAnchor = svg.hasAnchor;
+            svgId = svg.id ?? 0;
+            path = svg.path ?? "";
+            hasAnchor = !!svg.hasAnchor;
             anchors = svg.anchors ? JSON.parse(svg.anchors) : [];
             texts = svg.texts ? JSON.parse(svg.texts) : [];
           } else {
             readOnlySvgs.push({
-              nr: svg.nr,
-              hasAnchor: svg.hasAnchor,
-              path: svg.path,
+              nr: svg.nr ?? 0,
+              hasAnchor: !!svg.hasAnchor,
+              path: svg.path ?? "",
               anchors: svg.anchors ? JSON.parse(svg.anchors) : [],
               texts: svg.texts ? JSON.parse(svg.texts) : [],
             });
@@ -586,10 +586,10 @@ export function useSvgEdit(problemId: number, mediaId: number) {
       }
 
       setInfo({
-        mediaId: m.id,
+        mediaId: m?.id,
         nr: res.nr,
-        w: m.width,
-        h: m.height,
+        w: m?.width,
+        h: m?.height,
         shift: false,
         svgId: svgId,
         path: path,
