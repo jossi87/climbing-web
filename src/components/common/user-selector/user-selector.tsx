@@ -4,6 +4,7 @@ import { useUserSearch } from "./../../../api";
 import { components } from "../../../@types/buldreinfo/swagger";
 
 type UserOption = {
+  value?: string | number;
   label?: string;
 } & components["schemas"]["User"];
 
@@ -72,7 +73,7 @@ export const UserSelector = ({
       isMulti={false}
       placeholder={placeholder}
       onChange={onUserUpdated}
-      defaultValue={defaultValue && { label: defaultValue }}
+      defaultValue={{ label: defaultValue }}
     />
   );
 };
