@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback, ComponentProps, UIEvent } from "react";
 import { Helmet } from "react-helmet";
 import { UsersSelector } from "./common/user-selector/user-selector";
 import RockSelector from "./common/rock-selector/rock-selector";
@@ -33,281 +33,31 @@ import "react-datepicker/dist/react-datepicker.css";
 import { VisibilitySelectorField } from "./common/VisibilitySelector";
 import { useQueryClient } from "@tanstack/react-query";
 import { components } from "../@types/buldreinfo/swagger";
+import { captureException, captureMessage } from "@sentry/react";
 
 type Problem = components["schemas"]["Problem"];
 
 const useIds = (): { sectorId: number; problemId: number } => {
   const { sectorId, problemId } = useParams();
+  if (!sectorId) {
+    throw new Error("Missing sectorId param");
+  }
+
+  if (!problemId) {
+    throw new Error("Missing problemId param");
+  }
+
   return { sectorId: +sectorId, problemId: +problemId };
 };
 
-const ProblemEdit = () => {
-  const client = useQueryClient();
-  const accessToken = useAccessToken();
+const ProblemEditLoader = () => {
   const { sectorId, problemId } = useIds();
-
-  const [data, setData] = useState<Problem>(null);
-  const { data: sector, status: sectorStatus } = useSector(sectorId);
+  const { data: sector } = useSector(sectorId);
   const {
     data: problem,
     status: problemStatus,
     error,
   } = useProblem(problemId, true);
-
-  const [showSectorMarkers, setShowSectorMarkers] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const navigate = useNavigate();
-  const meta = useMeta();
-
-  useEffect(() => {
-    if (sectorStatus === "success" && problemId <= 0) {
-      setData({
-        id: -1,
-        areaId: sector.areaId,
-        sectorId: sector.id,
-        broken: null,
-        lockedAdmin: sector.lockedAdmin,
-        lockedSuperadmin: sector.lockedSuperadmin,
-        name: "",
-        comment: "",
-        rock: null,
-        originalGrade: "n/a",
-        fa: [],
-        faDate: convertFromDateToString(new Date()),
-        nr: 0,
-        coordinates: null,
-        trivia: "",
-        startingAltitude: "",
-        aspect: "",
-        routeLength: "",
-        descent: "",
-        newMedia: [],
-      });
-    }
-  }, [
-    problemId,
-    sector?.areaId,
-    sector?.id,
-    sector?.lockedAdmin,
-    sector?.lockedSuperadmin,
-    sectorStatus,
-  ]);
-
-  useEffect(() => {
-    if (problemStatus === "success") {
-      setData(problem);
-    }
-  }, [problem, problemStatus]);
-
-  function onNameChanged(_, { value }) {
-    setData((prevState) => ({ ...prevState, name: value }));
-  }
-
-  function onNrChanged(_, { value }) {
-    setData((prevState) => ({ ...prevState, nr: value }));
-  }
-
-  function onLatChanged(_, { value }) {
-    let lat = parseFloat(value.replace(",", "."));
-    if (isNaN(lat)) {
-      lat = 0;
-    }
-    const coordinates = data.coordinates || { latitude: 0, longitude: 0 };
-    coordinates.latitude = lat;
-    setData((prevState) => ({ ...prevState, coordinates }));
-  }
-
-  function onLngChanged(_, { value }) {
-    let lng = parseFloat(value.replace(",", "."));
-    if (isNaN(lng)) {
-      lng = 0;
-    }
-    const coordinates = data.coordinates || { latitude: 0, longitude: 0 };
-    coordinates.longitude = lng;
-    setData((prevState) => ({ ...prevState, coordinates }));
-  }
-
-  function onLockedChanged({ lockedAdmin, lockedSuperadmin }) {
-    setData((prevState) => ({
-      ...prevState,
-      lockedAdmin,
-      lockedSuperadmin,
-    }));
-  }
-
-  function onRockChanged(rock) {
-    setData((prevState) => ({ ...prevState, rock }));
-  }
-
-  function onCommentChanged(_, { value }) {
-    setData((prevState) => ({ ...prevState, comment: value }));
-  }
-
-  function onFaDateChanged(newFaDate) {
-    const faDate = newFaDate ? convertFromDateToString(newFaDate) : null;
-    setData((prevState) => ({ ...prevState, faDate }));
-  }
-
-  function onOriginalGradeChanged(_, { value }) {
-    setData((prevState) => ({ ...prevState, originalGrade: value }));
-  }
-
-  function onTypeIdChanged(_, { value }) {
-    setData((prevState) => ({
-      ...prevState,
-      t: {
-        ...prevState.t,
-        id: +value,
-      },
-    }));
-  }
-
-  const onNewMediaChanged = useCallback((newMedia) => {
-    setData((prevState) => ({ ...prevState, newMedia }));
-  }, []);
-
-  function onFaAidDateChanged(newFaDate) {
-    const faDate = newFaDate ? convertFromDateToString(newFaDate) : null;
-    const faAid = data.faAid;
-    data.faAid.date = faDate;
-    setData((prevState) => ({ ...prevState, faAid }));
-  }
-
-  function onFaAidDescriptionChanged(_, { value }) {
-    const faAid = data.faAid;
-    faAid.description = value;
-    setData((prevState) => ({ ...prevState, faAid }));
-  }
-
-  const onFaAidUsersUpdated = useCallback((newUsers) => {
-    const fa = newUsers.map((u) => {
-      return {
-        id:
-          typeof u.value === "string" || u.value instanceof String
-            ? -1
-            : u.value,
-        name: u.label,
-      };
-    });
-    setData((prevState) => ({
-      ...prevState,
-      faAid: {
-        ...prevState.faAid,
-        users: fa,
-      },
-    }));
-  }, []);
-
-  function onBrokenChanged(_, { value }) {
-    setData((prevState) => ({ ...prevState, broken: value }));
-  }
-
-  function onTriviaChanged(_, { value }) {
-    setData((prevState) => ({ ...prevState, trivia: value }));
-  }
-
-  function onStartingAltitudeChanged(_, { value }) {
-    setData((prevState) => ({ ...prevState, startingAltitude: value }));
-  }
-
-  function onAspectChanged(_, { value }) {
-    setData((prevState) => ({ ...prevState, aspect: value }));
-  }
-
-  function onRouteLengthChanged(_, { value }) {
-    setData((prevState) => ({ ...prevState, routeLength: value }));
-  }
-
-  function onDescentChanged(_, { value }) {
-    setData((prevState) => ({ ...prevState, descent: value }));
-  }
-
-  function save(event, addNew) {
-    event.preventDefault();
-    const trash = data.trash ? true : false;
-    if (
-      !trash ||
-      confirm("Are you sure you want to move problem/route to trash?")
-    ) {
-      setSaving(true);
-
-      // If the item is being moved to the trash, remove the query so that the
-      // mutation doesn't trigger an immediate fetch of the now-deleted item.
-      // This is handled fine by the client, but it's extra chatter for the
-      // service that we can easily avoid.
-      if (data.trash) {
-        client.removeQueries({
-          queryKey: [`/problem`, { id: data.id }],
-        });
-      }
-
-      postProblem(
-        accessToken,
-        data.sectorId,
-        data.id,
-        data.broken,
-        data.trash,
-        data.lockedAdmin,
-        data.lockedSuperadmin,
-        data.name,
-        data.rock,
-        data.comment,
-        data.originalGrade,
-        data.fa,
-        data.faDate,
-        data.nr,
-        data.t?.id
-          ? meta.types.find((t) => t.id === data.t?.id) || meta.types[0]
-          : meta.types[0],
-        data.coordinates,
-        data.sections,
-        data.newMedia,
-        data.faAid,
-        data.trivia,
-        data.startingAltitude,
-        data.aspect,
-        data.routeLength,
-        data.descent,
-      )
-        .then(async (res) => {
-          if (addNew) {
-            navigate(0);
-          } else {
-            navigate(res.destination);
-          }
-        })
-        .catch((error) => {
-          console.warn(error);
-        });
-    }
-  }
-
-  function onMapClick(event) {
-    setData((prevState) => ({
-      ...prevState,
-      coordinates: {
-        latitude: event.latlng.lat,
-        longitude: event.latlng.lng,
-      },
-    }));
-  }
-
-  function onUsersUpdated(newUsers) {
-    const fa = newUsers.map((u) => {
-      return {
-        id:
-          typeof u.value === "string" || u.value instanceof String
-            ? -1
-            : u.value,
-        name: u.label,
-      };
-    });
-    setData((prevState) => ({ ...prevState, fa }));
-  }
-
-  function onSectionsUpdated(sections) {
-    setData((prevState) => ({ ...prevState, sections }));
-  }
 
   if (error) {
     return (
@@ -323,19 +73,338 @@ const ProblemEdit = () => {
     );
   }
 
-  if (!data || !sector) {
+  if (!sector) {
     return <Loading />;
   }
 
-  let defaultCenter;
+  if (problemStatus === "pending" && problemId < 0) {
+    return <Loading />;
+  }
+
+  const prob =
+    problem ??
+    ({
+      id: -1,
+      areaId: sector.areaId ?? 0,
+      sectorId,
+      broken: undefined,
+      lockedAdmin: !!sector.lockedAdmin,
+      lockedSuperadmin: !!sector.lockedSuperadmin,
+      name: "",
+      comment: "",
+      rock: undefined,
+      originalGrade: "n/a",
+      fa: [],
+      faDate: convertFromDateToString(new Date()),
+      nr: 0,
+      coordinates: undefined,
+      trivia: "",
+      startingAltitude: "",
+      aspect: "",
+      routeLength: "",
+      descent: "",
+      newMedia: [],
+    } satisfies Problem);
+
+  return <ProblemEdit key={prob.id} problem={prob} sector={sector} />;
+};
+
+type Props = {
+  problem: Problem;
+  sector: components["schemas"]["Sector"];
+};
+
+type OnChange<V> = (_: unknown, { value }: { value: V }) => void;
+
+type SectorProblem = NonNullable<
+  components["schemas"]["Sector"]["problems"]
+>[number];
+const isPlottableProblem = (
+  problem: SectorProblem,
+): problem is Required<Pick<SectorProblem, "coordinates" | "name">> => {
+  return problem.coordinates !== undefined && problem.name !== undefined;
+};
+
+const ProblemEdit = ({ problem, sector }: Props) => {
+  const client = useQueryClient();
+  const accessToken = useAccessToken();
+  const { sectorId, problemId } = useIds();
+
+  const [data, setData] = useState<Problem>(problem);
+
+  const [showSectorMarkers, setShowSectorMarkers] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const navigate = useNavigate();
+  const meta = useMeta();
+
+  const onNameChanged: OnChange<string> = useCallback((_, { value }) => {
+    setData((prevState) => ({ ...prevState, name: value }));
+  }, []);
+
+  const onNrChanged: OnChange<string> = useCallback((_, { value }) => {
+    setData((prevState) => ({ ...prevState, nr: +value }));
+  }, []);
+
+  const onLatChanged: OnChange<string> = useCallback((_, { value }) => {
+    let lat = parseFloat(value.replace(",", "."));
+    if (isNaN(lat)) {
+      lat = 0;
+    }
+    setData((prevState) => ({
+      ...prevState,
+      coordinates: { longitude: 0, ...prevState.coordinates, latitude: lat },
+    }));
+  }, []);
+
+  const onLngChanged: OnChange<string> = useCallback((_, { value }) => {
+    let lng = parseFloat(value.replace(",", "."));
+    if (isNaN(lng)) {
+      lng = 0;
+    }
+    setData((prevState) => ({
+      ...prevState,
+      coordinates: { latitude: 0, ...prevState.coordinates, longitude: lng },
+    }));
+  }, []);
+
+  const onLockedChanged = useCallback(
+    ({
+      lockedAdmin,
+      lockedSuperadmin,
+    }: Required<Pick<Problem, "lockedAdmin" | "lockedSuperadmin">>) => {
+      setData((prevState) => ({
+        ...prevState,
+        lockedAdmin,
+        lockedSuperadmin,
+      }));
+    },
+    [],
+  );
+
+  const onRockChanged = useCallback((rock: NonNullable<Problem["rock"]>) => {
+    setData((prevState) => ({ ...prevState, rock }));
+  }, []);
+
+  const onCommentChanged: OnChange<string> = useCallback((_, { value }) => {
+    setData((prevState) => ({ ...prevState, comment: value }));
+  }, []);
+
+  const onFaDateChanged = useCallback((newFaDate: Date | undefined) => {
+    setData((prevState) => ({
+      ...prevState,
+      faDate: newFaDate ? convertFromDateToString(newFaDate) : undefined,
+    }));
+  }, []);
+
+  const onOriginalGradeChanged: OnChange<string> = useCallback(
+    (_, { value }) => {
+      setData((prevState) => ({ ...prevState, originalGrade: value }));
+    },
+    [],
+  );
+
+  const onTypeIdChanged: OnChange<string> = useCallback((_, { value }) => {
+    setData((prevState) => ({
+      ...prevState,
+      t: {
+        ...prevState.t,
+        id: +value,
+      },
+    }));
+  }, []);
+
+  const onNewMediaChanged: ComponentProps<
+    typeof ImageUpload
+  >["onMediaChanged"] = useCallback((newMedia) => {
+    setData((prevState) => ({ ...prevState, newMedia }));
+  }, []);
+
+  const onFaAidDateChanged = useCallback((newFaDate: Date | null) => {
+    setData((prevState) => ({
+      ...prevState,
+      faAid: {
+        ...prevState.faAid,
+        date: newFaDate ? convertFromDateToString(newFaDate) : undefined,
+      },
+    }));
+  }, []);
+
+  const onFaAidDescriptionChanged: NonNullable<
+    ComponentProps<typeof TextArea>["onChange"]
+  > = useCallback((_, { value }) => {
+    setData((prevState) => ({
+      ...prevState,
+      faAid: {
+        ...prevState.faAid,
+        description: String(value ?? ""),
+      },
+    }));
+  }, []);
+
+  const onFaAidUsersUpdated: ComponentProps<
+    typeof UsersSelector
+  >["onUsersUpdated"] = useCallback((newUsers) => {
+    const fa = newUsers.map((u) => {
+      return {
+        id: typeof u.value === "string" ? -1 : u.value,
+        name: u.label,
+      };
+    });
+    setData((prevState) => ({
+      ...prevState,
+      faAid: {
+        ...prevState.faAid,
+        users: fa,
+      },
+    }));
+  }, []);
+
+  const onBrokenChanged: OnChange<string> = useCallback((_, { value }) => {
+    setData((prevState) => ({ ...prevState, broken: value }));
+  }, []);
+
+  const onTriviaChanged: OnChange<string> = useCallback((_, { value }) => {
+    setData((prevState) => ({ ...prevState, trivia: value }));
+  }, []);
+
+  const onStartingAltitudeChanged: OnChange<string> = useCallback(
+    (_, { value }) => {
+      setData((prevState) => ({ ...prevState, startingAltitude: value }));
+    },
+    [],
+  );
+
+  const onAspectChanged: OnChange<string> = useCallback((_, { value }) => {
+    setData((prevState) => ({ ...prevState, aspect: value }));
+  }, []);
+
+  const onRouteLengthChanged: OnChange<string> = useCallback((_, { value }) => {
+    setData((prevState) => ({ ...prevState, routeLength: value }));
+  }, []);
+
+  const onDescentChanged: OnChange<string> = useCallback((_, { value }) => {
+    setData((prevState) => ({ ...prevState, descent: value }));
+  }, []);
+
+  const save = useCallback(
+    async (event: UIEvent, data: Problem): Promise<string | false> => {
+      event.preventDefault();
+      const trash = !!data.trash;
+      if (trash) {
+        if (
+          !confirm("Are you sure you want to move this problem/route to trash?")
+        ) {
+          captureMessage("Decided to not delete problem", {
+            extra: {
+              problemId,
+              sectorId,
+            },
+          });
+          return false;
+        }
+
+        // Fall through here so that we continue saving.
+      }
+      setSaving(true);
+
+      // If the item is being moved to the trash, remove the query so that the
+      // mutation doesn't trigger an immediate fetch of the now-deleted item.
+      // This is handled fine by the client, but it's extra chatter for the
+      // service that we can easily avoid.
+      if (data.trash) {
+        client.removeQueries({
+          queryKey: [`/problem`, { id: data.id }],
+        });
+      }
+
+      try {
+        const res = await postProblem(
+          accessToken,
+          sectorId,
+          problemId,
+          data.broken ?? "",
+          !!data.trash,
+          !!data.lockedAdmin,
+          !!data.lockedSuperadmin,
+          data.name ?? "",
+          data.rock ?? "",
+          data.comment ?? "",
+          data.originalGrade ?? "",
+          data.fa,
+          data.faDate ?? "",
+          data.nr ?? 0,
+          data.t?.id
+            ? meta.types.find((t) => t.id === data.t?.id) || meta.types[0]
+            : meta.types[0],
+          data.coordinates ?? {
+            latitude: meta.defaultCenter.lat,
+            longitude: meta.defaultCenter.lng,
+          },
+          data.sections,
+          data.newMedia,
+          data.faAid,
+          data.trivia ?? "",
+          data.startingAltitude ?? "",
+          data.aspect ?? "",
+          data.routeLength ?? "",
+          data.descent ?? "",
+        );
+        return res.destination ?? "";
+      } catch (error) {
+        console.warn(error);
+        captureException(error);
+        return false;
+      }
+    },
+    [
+      accessToken,
+      client,
+      meta.defaultCenter.lat,
+      meta.defaultCenter.lng,
+      meta.types,
+      problemId,
+      sectorId,
+    ],
+  );
+
+  const onMapClick: NonNullable<
+    ComponentProps<typeof Leaflet>["onMouseClick"]
+  > = useCallback((event) => {
+    setData((prevState) => ({
+      ...prevState,
+      coordinates: {
+        latitude: event.latlng.lat,
+        longitude: event.latlng.lng,
+      },
+    }));
+  }, []);
+
+  const onUsersUpdated: ComponentProps<typeof UsersSelector>["onUsersUpdated"] =
+    useCallback((newUsers) => {
+      const fa = newUsers.map((u) => {
+        return {
+          id: typeof u.value === "string" ? -1 : u.value,
+          name: u.label,
+        };
+      });
+      setData((prevState) => ({ ...prevState, fa }));
+    }, []);
+
+  const onSectionsUpdated: ComponentProps<
+    typeof ProblemSection
+  >["onSectionsUpdated"] = useCallback((sections) => {
+    setData((prevState) => ({ ...prevState, sections }));
+  }, []);
+
+  let defaultCenter: { lat: number; lng: number };
   let defaultZoom: number;
-  if (data.coordinates) {
+  if (data.coordinates?.latitude && data.coordinates?.longitude) {
     defaultCenter = {
       lat: data.coordinates.latitude,
       lng: data.coordinates.longitude,
     };
     defaultZoom = 15;
-  } else if (sector.parking) {
+  } else if (sector.parking?.latitude && sector.parking?.longitude) {
     defaultCenter = {
       lat: sector.parking.latitude,
       lng: sector.parking.longitude,
@@ -346,27 +415,29 @@ const ProblemEdit = () => {
     defaultZoom = meta.defaultZoom;
   }
 
-  const markers = [];
+  const markers: NonNullable<ComponentProps<typeof Leaflet>["markers"]> = [];
   if (data.coordinates) {
     markers.push({
       coordinates: data.coordinates,
     });
   }
-  if (showSectorMarkers && sector.problems?.length > 0) {
+  if (showSectorMarkers && sector.problems?.length) {
     markers.push(
       ...sector.problems
-        .filter((p) => p.coordinates && p.id != problemId)
+        .filter((p) => p.id !== problemId)
+        .filter(isPlottableProblem)
         .map((p) => ({
           coordinates: p.coordinates,
-          label: p.name,
+          label: p.name ?? "",
         })),
     );
   }
-  const sectorRocks = sector.problems
-    .filter((p) => p.rock)
-    .map((p) => p.rock)
-    .filter((value, index, self) => self.indexOf(value) === index)
-    .sort();
+  const sectorRocks =
+    sector.problems
+      ?.filter((p) => p.rock)
+      ?.map((p) => p.rock)
+      ?.filter((value, index, self) => self.indexOf(value) === index)
+      ?.sort() ?? [];
 
   return (
     <>
@@ -400,8 +471,8 @@ const ProblemEdit = () => {
               label="Visibility"
               selection
               value={{
-                lockedAdmin: data.lockedAdmin,
-                lockedSuperadmin: data.lockedSuperadmin,
+                lockedAdmin: !!data.lockedAdmin,
+                lockedSuperadmin: !!data.lockedSuperadmin,
               }}
               onChange={onLockedChanged}
             />
@@ -457,8 +528,10 @@ const ProblemEdit = () => {
                 showMonthDropdown
                 showYearDropdown
                 dropdownMode="select"
-                selected={convertFromStringToDate(data.faDate)}
-                onChange={(date) => onFaDateChanged(date)}
+                selected={
+                  data.faDate ? convertFromStringToDate(data.faDate) : undefined
+                }
+                onChange={(date) => onFaDateChanged(date ?? undefined)}
               />
             </Form.Field>
             {meta.isBouldering ? (
@@ -538,7 +611,7 @@ const ProblemEdit = () => {
             <br />
             <ImageUpload
               onMediaChanged={onNewMediaChanged}
-              isMultiPitch={data.sections && data.sections.length > 1}
+              isMultiPitch={!!(data.sections && data.sections.length > 1)}
             />
           </Form.Field>
         </Segment>
@@ -578,7 +651,7 @@ const ProblemEdit = () => {
                 <Button.Or />
                 <Button
                   onClick={() =>
-                    setData((prevState) => ({ ...prevState, faAid: null }))
+                    setData((prevState) => ({ ...prevState, faAid: undefined }))
                   }
                   positive={data.faAid ? false : true}
                 >
@@ -595,9 +668,11 @@ const ProblemEdit = () => {
                     showMonthDropdown
                     showYearDropdown
                     dropdownMode="select"
-                    selected={convertFromStringToDate(
-                      data.faAid ? data.faAid.date : "",
-                    )}
+                    selected={
+                      data.faAid.date
+                        ? convertFromStringToDate(data.faAid.date)
+                        : undefined
+                    }
                     onChange={(date) => onFaAidDateChanged(date)}
                   />
                   <TextArea
@@ -617,7 +692,7 @@ const ProblemEdit = () => {
             <Form.Field>
               <label>Pitches</label>
               <ProblemSection
-                sections={data.sections}
+                sections={data.sections ?? []}
                 onSectionsUpdated={onSectionsUpdated}
               />
             </Form.Field>
@@ -660,13 +735,7 @@ const ProblemEdit = () => {
               <Checkbox
                 toggle
                 checked={showSectorMarkers}
-                onChange={(_, d) => {
-                  if (d.checked) {
-                    setShowSectorMarkers(true);
-                  } else {
-                    setShowSectorMarkers(false);
-                  }
-                }}
+                onChange={(_, { checked }) => setShowSectorMarkers(!!checked)}
               />
             </Form.Field>
           </Form.Group>
@@ -676,7 +745,7 @@ const ProblemEdit = () => {
           <Button
             negative
             onClick={() => {
-              if (problemId && !!problemId) {
+              if (problemId) {
                 navigate(`/problem/${problemId}`);
               } else {
                 navigate(`/sector/${sectorId}`);
@@ -689,7 +758,14 @@ const ProblemEdit = () => {
           <Button
             positive
             loading={saving}
-            onClick={(event) => save(event, false)}
+            onClick={(event) =>
+              save(event, data).then((dest) => {
+                if (dest === false) {
+                  return;
+                }
+                navigate(dest);
+              })
+            }
             disabled={!data.name || (meta.types.length > 1 && !data.t?.id)}
           >
             Save
@@ -700,7 +776,14 @@ const ProblemEdit = () => {
               <Button
                 positive
                 loading={saving}
-                onClick={(event) => save(event, true)}
+                onClick={(event) =>
+                  save(event, data).then((dest) => {
+                    if (dest === false) {
+                      return;
+                    }
+                    navigate(0);
+                  })
+                }
                 disabled={!data.name || (meta.types.length > 1 && !data.t?.id)}
               >
                 Save, and add new
@@ -713,4 +796,4 @@ const ProblemEdit = () => {
   );
 };
 
-export default ProblemEdit;
+export default ProblemEditLoader;

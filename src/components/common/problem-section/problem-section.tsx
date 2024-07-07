@@ -1,13 +1,13 @@
-import React, { useState } from "react";
+import React, { ComponentProps, useCallback, useState } from "react";
 import { Form, Input, Dropdown } from "semantic-ui-react";
 import { components } from "../../../@types/buldreinfo/swagger";
 import { useMeta } from "../meta";
 
+type ProblemSections = components["schemas"]["ProblemSection"][];
+
 type Props = {
-  sections: components["schemas"]["ProblemSection"][];
-  onSectionsUpdated: (
-    sections: components["schemas"]["ProblemSection"][],
-  ) => void;
+  sections: ProblemSections;
+  onSectionsUpdated: (sections: ProblemSections) => void;
 };
 
 const ProblemSection = ({
@@ -17,32 +17,41 @@ const ProblemSection = ({
   const { grades } = useMeta();
   const [sections, setSections] = useState(initSections);
 
-  function onNumberOfSectionsChange(e, { value }) {
-    const num = parseInt(value);
-    let newSections = null;
-    if (num > 1) {
-      newSections = sections ? [...sections] : [];
-      while (num > newSections.length) {
-        newSections.push({
-          id: newSections.length * -1,
-          nr: newSections.length + 1,
-          grade: "n/a",
-          description: null,
-        });
+  const onNumberOfSectionsChange: NonNullable<
+    ComponentProps<typeof Dropdown>["onChange"]
+  > = useCallback(
+    (e, { value }) => {
+      if (value === undefined) {
+        return;
       }
-      while (num < newSections.length) {
-        newSections.pop();
+
+      const num = +value;
+      let newSections: ProblemSections = [];
+      if (num > 1) {
+        newSections = sections ? [...sections] : [];
+        while (num > newSections.length) {
+          newSections.push({
+            id: newSections.length * -1,
+            nr: newSections.length + 1,
+            grade: "n/a",
+            description: undefined,
+          });
+        }
+        while (num < newSections.length) {
+          newSections.pop();
+        }
       }
-    }
-    onSectionsUpdated(newSections);
-    setSections(newSections);
-  }
+      onSectionsUpdated(newSections);
+      setSections(newSections);
+    },
+    [onSectionsUpdated, sections],
+  );
 
   return (
     <>
       <Dropdown
         selection
-        value={sections ? sections.length : 1}
+        value={Math.max(sections?.length ?? 0, 1)}
         onChange={onNumberOfSectionsChange}
         options={[
           { key: 1, value: 1, text: 1 },
