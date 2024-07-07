@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ComponentProps, useCallback } from "react";
+import React, { useState, ComponentProps, useCallback } from "react";
 import { Helmet } from "react-helmet";
 import ImageUpload from "../common/image-upload/image-upload";
 import { Loading } from "../common/widgets/widgets";
@@ -30,15 +30,74 @@ import { ProblemOrder } from "./ProblemOrder";
 import { PolylineEditor } from "./PolylineEditor";
 import { ZoomLogic } from "./ZoomLogic";
 import { PolylineMarkers } from "./PolylineMarkers";
+import { captureMessage } from "@sentry/react";
 
+type Area = components["schemas"]["Area"];
 type Sector = components["schemas"]["Sector"];
 
 const useIds = (): { areaId: number; sectorId: number } => {
   const { sectorId, areaId } = useParams();
+  if (!sectorId) {
+    throw new Error("Missing sectorId parameter");
+  }
+
+  if (!areaId) {
+    throw new Error("Missing areaId parameter");
+  }
+
   return { sectorId: +sectorId, areaId: +areaId };
 };
 
-export const SectorEdit = () => {
+export const SectorEditLoader = () => {
+  const { areaId, sectorId } = useIds();
+  const { data: area } = useArea(areaId);
+  const { data: sector, error } = useSector(sectorId);
+
+  if (error) {
+    return (
+      <Message
+        size="huge"
+        style={{ backgroundColor: "#FFF" }}
+        icon="meh"
+        header="404"
+        content={
+          "Cannot find the specified sector because it does not exist or you do not have sufficient permissions."
+        }
+      />
+    );
+  }
+
+  if (!area) {
+    return <Loading />;
+  }
+
+  const value =
+    sector ??
+    ({
+      areaId,
+      id: -1,
+      lockedAdmin: area.lockedAdmin,
+      lockedSuperadmin: area.lockedSuperadmin,
+      name: "",
+      comment: "",
+      accessInfo: "",
+      accessClosed: "",
+      parking: undefined,
+      newMedia: [],
+      problemOrder: [],
+    } satisfies Sector);
+
+  return <SectorEdit key={value.id} sector={value} area={area} />;
+};
+
+type Props = {
+  sector: Sector;
+  area: Area;
+};
+
+type OnChange = (_: unknown, { value }: { value: string }) => void;
+
+export const SectorEdit = ({ sector, area }: Props) => {
   const navigate = useNavigate();
   const meta = useMeta();
   const accessToken = useAccessToken();
@@ -46,115 +105,122 @@ export const SectorEdit = () => {
   const [leafletMode, setLeafletMode] = useState("PARKING");
   const { elevation, setLocation } = useElevation();
 
-  const [data, setData] = useState<Sector>(null);
-  const { data: area, status: areaStatus } = useArea(areaId);
-  const { data: sector, status: sectorStatus, error } = useSector(sectorId);
+  const [data, setData] = useState<Sector>(sector);
 
   const [showProblemOrder, setShowProblemOrder] = useState(false);
-  const [sectorMarkers, setSectorMarkers] = useState<any>(null);
+  const [sectorMarkers, setSectorMarkers] = useState<
+    ComponentProps<typeof Leaflet>["markers"]
+  >([]);
 
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    if (areaStatus === "success") {
-      if (sectorId <= 0) {
-        // We won't get a sector loaded (because we're in the creation flow).
-        // Populate a placeholder one based on the area defaults.
-        setData({
-          areaId,
-          id: -1,
-          lockedAdmin: area.lockedAdmin,
-          lockedSuperadmin: area.lockedSuperadmin,
-          name: "",
-          comment: "",
-          accessInfo: "",
-          accessClosed: "",
-          parking: null,
-          newMedia: [],
-          problemOrder: [],
-        });
-      }
-    }
-  }, [area, areaId, areaStatus, sectorId]);
+  let defaultCenter;
+  let defaultZoom;
+  if (data.parking?.latitude && data.parking?.longitude) {
+    defaultCenter = { lat: data.parking.latitude, lng: data.parking.longitude };
+    defaultZoom = 14;
+  } else if (area.coordinates?.latitude && area.coordinates?.longitude) {
+    defaultCenter = {
+      lat: area.coordinates.latitude,
+      lng: area.coordinates.longitude,
+    };
+    defaultZoom = 14;
+  } else {
+    defaultCenter = meta.defaultCenter;
+    defaultZoom = meta.defaultZoom;
+  }
 
-  useEffect(() => {
-    if (sectorStatus === "success") {
-      setData(sector);
-    }
-  }, [sector, sectorStatus]);
-
-  function onNameChanged(_, { value }) {
+  const onNameChanged: OnChange = useCallback((_, { value }) => {
     setData((prevState) => ({ ...prevState, name: value }));
-  }
+  }, []);
 
-  function onWallDirectionManualIdChanged(_, { value }) {
-    const compassDirectionId = parseInt(value);
-    const wallDirectionManual =
-      compassDirectionId == 0
-        ? null
-        : meta.compassDirections.filter(
-            (cd) => cd.id === compassDirectionId,
-          )[0];
-    setData((prevState) => ({ ...prevState, wallDirectionManual }));
-  }
+  const onWallDirectionManualIdChanged: OnChange = useCallback(
+    (_, { value }) => {
+      const compassDirectionId = +value;
+      const wallDirectionManual =
+        compassDirectionId == 0
+          ? undefined
+          : meta.compassDirections.filter(
+              (cd) => cd.id === compassDirectionId,
+            )[0];
+      setData((prevState) => ({ ...prevState, wallDirectionManual }));
+    },
+    [meta.compassDirections],
+  );
 
-  function onLockedChanged({ lockedAdmin, lockedSuperadmin }) {
-    setData((prevState) => ({
-      ...prevState,
+  const onLockedChanged = useCallback(
+    ({
       lockedAdmin,
       lockedSuperadmin,
-    }));
-  }
+    }: Required<Pick<Sector, "lockedAdmin" | "lockedSuperadmin">>) => {
+      setData((prevState) => ({
+        ...prevState,
+        lockedAdmin,
+        lockedSuperadmin,
+      }));
+    },
+    [],
+  );
 
-  function onCommentChanged(_, { value }) {
+  const onCommentChanged: OnChange = useCallback((_, { value }) => {
     setData((prevState) => ({ ...prevState, comment: value }));
-  }
+  }, []);
 
-  function onAccessInfoChanged(_, { value }) {
+  const onAccessInfoChanged: OnChange = useCallback((_, { value }) => {
     setData((prevState) => ({ ...prevState, accessInfo: value }));
-  }
+  }, []);
 
-  function onAccessClosedChanged(_, { value }) {
+  const onAccessClosedChanged: OnChange = useCallback((_, { value }) => {
     setData((prevState) => ({ ...prevState, accessClosed: value }));
-  }
+  }, []);
 
-  const onNewMediaChanged = useCallback((newMedia) => {
+  const onNewMediaChanged = useCallback((newMedia: Sector["newMedia"]) => {
     setData((prevState) => ({ ...prevState, newMedia }));
   }, []);
 
-  function save(event) {
+  const save = (event: React.UIEvent) => {
     event.preventDefault();
     const trash = data.trash ? true : false;
     if (!trash || confirm("Are you sure you want to move sector to trash?")) {
       setSaving(true);
       postSector(
         accessToken,
-        data.areaId,
-        data.id,
-        data.trash,
-        data.lockedAdmin,
-        data.lockedSuperadmin,
-        data.name,
-        data.comment,
-        data.accessInfo,
-        data.accessClosed,
-        data.parking,
-        data.outline,
-        data.wallDirectionManual,
-        data.approach,
+        areaId,
+        sectorId,
+        !!data.trash,
+        !!data.lockedAdmin,
+        !!data.lockedSuperadmin,
+        data.name ?? "",
+        data.comment ?? "",
+        data.accessInfo ?? "",
+        data.accessClosed ?? "",
+        data.parking ?? {
+          latitude: defaultCenter.lat,
+          longitude: defaultCenter.lng,
+        },
+        data.outline ?? [],
+        data.wallDirectionManual ?? meta.compassDirections[0],
+        data.approach ?? {},
         data.newMedia,
         data.problemOrder,
       )
         .then(async (res) => {
-          navigate(res.destination);
+          if (!res.destination) {
+            captureMessage("Missing res.destination");
+            navigate(-1);
+          } else {
+            navigate(res.destination);
+          }
         })
         .catch((error) => {
           console.warn(error);
         });
     }
-  }
+  };
 
-  function onMapMouseClick(event) {
+  const onMapMouseClick: ComponentProps<typeof Leaflet>["onMouseClick"] = (
+    event,
+  ) => {
     if (leafletMode == "PARKING") {
       setData((prevState) => ({
         ...prevState,
@@ -178,7 +244,7 @@ export const SectorEdit = () => {
       });
       setData((prevState) => ({ ...prevState, approach: { coordinates } }));
     }
-  }
+  };
 
   const onMouseMove: NonNullable<
     ComponentProps<typeof Leaflet>["onMouseMove"]
@@ -193,92 +259,66 @@ export const SectorEdit = () => {
 
   function clearDrawing() {
     if (leafletMode == "PARKING") {
-      setData((prevState) => ({ ...prevState, parking: null }));
+      setData((prevState) => ({ ...prevState, parking: undefined }));
     } else if (leafletMode == "POLYGON") {
-      setData((prevState) => ({ ...prevState, outline: null }));
+      setData((prevState) => ({ ...prevState, outline: undefined }));
     } else if (leafletMode == "POLYLINE") {
-      setData((prevState) => ({ ...prevState, approach: null }));
+      setData((prevState) => ({ ...prevState, approach: undefined }));
     }
   }
 
-  function onLatChanged(_, { value }) {
+  const onLatChanged: OnChange = useCallback((_, { value }) => {
     let lat = parseFloat(value.replace(",", "."));
     if (isNaN(lat)) {
       lat = 0;
     }
-    const parking = data.parking || { latitude: 0, longitude: 0 };
-    parking.latitude = lat;
-    setData((prevState) => ({ ...prevState, parking }));
-  }
+    setData((prevState) => ({
+      ...prevState,
+      parking: {
+        longitude: 0,
+        ...prevState.parking,
+        latitude: lat,
+      },
+    }));
+  }, []);
 
-  function onLngChanged(_, { value }) {
+  const onLngChanged: OnChange = useCallback((_, { value }) => {
     let lng = parseFloat(value.replace(",", "."));
     if (isNaN(lng)) {
       lng = 0;
     }
-    const parking = data.parking || { latitude: 0, longitude: 0 };
-    parking.longitude = lng;
-    setData((prevState) => ({ ...prevState, parking }));
-  }
-
-  if (error) {
-    return (
-      <Message
-        size="huge"
-        style={{ backgroundColor: "#FFF" }}
-        icon="meh"
-        header="404"
-        content={
-          "Cannot find the specified sector because it does not exist or you do not have sufficient permissions."
-        }
-      />
-    );
-  }
-
-  if (!data || !area) {
-    return <Loading />;
-  }
+    setData((prevState) => ({
+      ...prevState,
+      parking: {
+        latitude: 0,
+        ...prevState.parking,
+        longitude: lng,
+      },
+    }));
+  }, []);
 
   const outlines: ComponentProps<typeof Leaflet>["outlines"] = [];
   const approaches: ComponentProps<typeof Leaflet>["approaches"] = [];
-  if (area) {
-    area.sectors.forEach((sector) => {
-      if (sector.id != data.id) {
-        if (sector.outline?.length > 0) {
-          outlines.push({
-            outline: sector.outline,
-            background: true,
-            label: sector.name,
-          });
-        }
-        if (sector.approach?.coordinates?.length > 0) {
-          approaches.push({ approach: sector.approach, background: true });
-        }
+  area.sectors?.forEach((sector) => {
+    if (sector.id != data.id) {
+      if (sector.outline?.length) {
+        outlines.push({
+          outline: sector.outline,
+          background: true,
+          label: sector.name,
+        });
       }
-    });
-  }
+      if (sector.approach?.coordinates?.length) {
+        approaches.push({ approach: sector.approach, background: true });
+      }
+    }
+  });
 
-  if (data.outline?.length > 0) {
+  if (data.outline?.length) {
     outlines.push({ outline: data.outline, background: false });
   }
-  if (data.approach?.coordinates?.length > 0) {
+  if (data.approach?.coordinates?.length) {
     approaches.push({ approach: data.approach, background: false });
-  }
-
-  let defaultCenter;
-  let defaultZoom;
-  if (data.parking) {
-    defaultCenter = { lat: data.parking.latitude, lng: data.parking.longitude };
-    defaultZoom = 14;
-  } else if (area.coordinates) {
-    defaultCenter = {
-      lat: area.coordinates.latitude,
-      lng: area.coordinates.longitude,
-    };
-    defaultZoom = 14;
-  } else {
-    defaultCenter = meta.defaultCenter;
-    defaultZoom = meta.defaultZoom;
   }
 
   const markers: ComponentProps<typeof Leaflet>["markers"] = [];
@@ -438,7 +478,13 @@ export const SectorEdit = () => {
                     if (sectorId) {
                       setSectorMarkers(
                         data.problems
-                          .filter((p) => p.coordinates)
+                          ?.filter(
+                            (
+                              p,
+                            ): p is Required<
+                              Pick<typeof p, "coordinates" | "name">
+                            > => !!p.coordinates,
+                          )
                           .map((p) => ({
                             coordinates: p.coordinates,
                             label: p.name,
@@ -446,7 +492,7 @@ export const SectorEdit = () => {
                       );
                     }
                   } else {
-                    setSectorMarkers(null);
+                    setSectorMarkers([]);
                   }
                 }}
               >
@@ -467,15 +513,17 @@ export const SectorEdit = () => {
                 height={"300px"}
                 showSatelliteImage={meta.isBouldering}
                 clusterMarkers={false}
-                rocks={null}
+                rocks={undefined}
                 flyToId={null}
               >
                 <ZoomLogic area={area} sector={data} />
                 {leafletMode === "POLYGON" && (
-                  <PolylineMarkers coordinates={data.outline} />
+                  <PolylineMarkers coordinates={data.outline ?? []} />
                 )}
                 {leafletMode === "POLYLINE" && (
-                  <PolylineMarkers coordinates={data.approach?.coordinates} />
+                  <PolylineMarkers
+                    coordinates={data.approach?.coordinates ?? []}
+                  />
                 )}
               </Leaflet>
             </Form.Field>
@@ -507,8 +555,8 @@ export const SectorEdit = () => {
                   {["Outline", elevation].filter(Boolean).join(" ")}
                 </label>
                 <PolylineEditor
-                  coordinates={data.outline}
-                  parking={data.parking}
+                  coordinates={data.outline ?? []}
+                  parking={data.parking ?? {}}
                   onChange={(coordinates) => {
                     setData((prevState) => ({
                       ...prevState,
@@ -522,8 +570,8 @@ export const SectorEdit = () => {
               <Form.Field>
                 <label>Approach</label>
                 <PolylineEditor
-                  coordinates={data.approach?.coordinates}
-                  parking={data.parking}
+                  coordinates={data.approach?.coordinates ?? []}
+                  parking={data.parking ?? {}}
                   onChange={(coordinates) => {
                     setData((prevState) => ({
                       ...prevState,
@@ -537,7 +585,7 @@ export const SectorEdit = () => {
           </Form.Group>
         </Segment>
 
-        {data.problemOrder?.length > 1 && (
+        {(data.problemOrder?.length ?? 0) > 1 && (
           <Segment>
             <Accordion>
               <Accordion.Title
@@ -589,5 +637,3 @@ export const SectorEdit = () => {
     </>
   );
 };
-
-export default SectorEdit;
