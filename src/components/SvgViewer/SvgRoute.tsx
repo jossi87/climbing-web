@@ -120,7 +120,7 @@ export const SvgRoute = ({
       return (
         <polygon
           key={[a.x, a.y].join("x")}
-          fill={groupColor}
+          fill="white"
           stroke="black"
           strokeWidth={scale * 2 * hoveredOrActiveScale * (thumbnail ? 3 : 1)}
           points={`${a.x},${a.y - r}, ${a.x - r},${a.y + r}, ${a.x + r},${a.y + r}`}
