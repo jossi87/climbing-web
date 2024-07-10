@@ -13,36 +13,45 @@ export function getDistanceWithUnit(
   return Math.round(m) + "m";
 }
 
-export function convertGpxToCoordinates(gpx: string) {
+type ParsedCoordinates = {
+  latitude: number;
+  longitude: number;
+  elevation: number;
+  elevationSource: "GPX" | "TCX" | undefined;
+}[];
+
+type CoordinateParser = (input: string) => ParsedCoordinates | null;
+
+const convertGpxToCoordinates: CoordinateParser = (gpx) => {
   const parser = new DOMParser();
   const xmlDoc = parser.parseFromString(gpx, "text/xml");
   const children = xmlDoc.querySelectorAll("trkpt");
   const coords = [];
   for (let i = 0; i < children.length; i++) {
     const trkpt = children[i];
-    const latitude = trkpt.getAttribute("lat");
-    const longitude = trkpt.getAttribute("lon");
+    const latitude = +(trkpt.getAttribute("lat") ?? 0);
+    const longitude = +(trkpt.getAttribute("lon") ?? 0);
     let elevation = 0;
     trkpt.childNodes.forEach((c) => {
       if (c.nodeName === "ele") {
-        elevation = parseFloat(c.firstChild.nodeValue);
+        elevation = parseFloat(c.firstChild?.nodeValue ?? "0");
       }
     });
     if (
       coords.length === 0 ||
       i === children.length - 1 ||
       calculateDistanceBetweenCoordinates(
-        coords[coords.length - 1].latitude,
-        coords[coords.length - 1].longitude,
-        latitude,
-        longitude,
+        coords[coords.length - 1].latitude || 0,
+        coords[coords.length - 1].longitude ?? 0,
+        latitude ?? 0,
+        longitude ?? 0,
       ) > 10
     ) {
       coords.push({
         latitude,
         longitude,
         elevation,
-        elevationSource: elevation > 0 && "GPX",
+        elevationSource: elevation > 0 ? ("GPX" as const) : undefined,
       });
     }
   }
@@ -50,13 +59,13 @@ export function convertGpxToCoordinates(gpx: string) {
     return null;
   }
   return coords;
-}
+};
 
-export function convertTcxToCoordinates(gpx: string) {
+const convertTcxToCoordinates: CoordinateParser = (gpx: string) => {
   const parser = new DOMParser();
   const xmlDoc = parser.parseFromString(gpx, "text/xml");
   const children = xmlDoc.querySelectorAll("Trackpoint");
-  const coords = [];
+  const coords: ParsedCoordinates = [];
   for (let i = 0; i < children.length; i++) {
     const trackpoint = children[i];
     let latitude = 0;
@@ -67,13 +76,13 @@ export function convertTcxToCoordinates(gpx: string) {
         const position = c;
         position.childNodes.forEach((cPos) => {
           if (cPos.nodeName === "LatitudeDegrees") {
-            latitude = parseFloat(cPos.firstChild.nodeValue);
+            latitude = parseFloat(cPos.firstChild?.nodeValue ?? "0");
           } else if (cPos.nodeName === "LongitudeDegrees") {
-            longitude = parseFloat(cPos.firstChild.nodeValue);
+            longitude = parseFloat(cPos.firstChild?.nodeValue ?? "0");
           }
         });
       } else if (c.nodeName === "AltitudeMeters") {
-        elevation = parseFloat(c.firstChild.nodeValue);
+        elevation = parseFloat(c.firstChild?.nodeValue ?? "0");
       }
     });
     if (latitude > 0 && longitude > 0) {
@@ -91,7 +100,7 @@ export function convertTcxToCoordinates(gpx: string) {
           latitude,
           longitude,
           elevation,
-          elevationSource: elevation > 0 && "TCX",
+          elevationSource: elevation > 0 ? "TCX" : undefined,
         });
       }
     }
@@ -100,12 +109,22 @@ export function convertTcxToCoordinates(gpx: string) {
     return null;
   }
   return coords;
-}
+};
 
-export function calculateDistanceBetweenCoordinates(lat1, lng1, lat2, lng2) {
+export const parsers: Record<string, CoordinateParser> = {
+  gpx: convertGpxToCoordinates,
+  tcx: convertTcxToCoordinates,
+} as const;
+
+export function calculateDistanceBetweenCoordinates(
+  lat1: number | string,
+  lng1: number | string,
+  lat2: number | string,
+  lng2: number | string,
+): number {
   const R = 6371; // Radius of the earth in km
-  const dLat = deg2rad(lat2 - lat1); // deg2rad below
-  const dLon = deg2rad(lng2 - lng1);
+  const dLat = deg2rad(+lat2 - +lat1); // deg2rad below
+  const dLon = deg2rad(+lng2 - +lng1);
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(deg2rad(lat1)) *
@@ -117,6 +136,6 @@ export function calculateDistanceBetweenCoordinates(lat1, lng1, lat2, lng2) {
   return d;
 }
 
-function deg2rad(deg) {
-  return deg * (Math.PI / 180);
+function deg2rad(deg: number | string) {
+  return +deg * (Math.PI / 180);
 }
