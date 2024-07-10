@@ -13,8 +13,9 @@ import { useLocalStorage } from "../utils/use-local-storage";
 import { useRedirect } from "../utils/useRedirect";
 import { makeAuthenticatedRequest, useAccessToken } from "./utils";
 import { FetchOptions } from "./types";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { postPermissions } from "./operations";
+import { captureException } from "@sentry/react";
 
 function useKey(
   customKey: readonly unknown[] | undefined,
@@ -545,86 +546,131 @@ export function usePermissions() {
   };
 }
 
+export type EditableSvg = {
+  anchors: { x: number; y: number }[];
+  crc32: number;
+  h: number;
+  hasAnchor: boolean;
+  mediaId: number;
+  nr: number;
+  path: string;
+  svgId: number;
+  texts: { x: number; y: number; txt: string }[];
+  tradBelayStations: { x: number; y: number }[];
+  w: number;
+  readOnlySvgs: (Pick<
+    EditableSvg,
+    "nr" | "hasAnchor" | "path" | "anchors" | "tradBelayStations" | "texts"
+  > & { t: "other" })[];
+};
+
 export function useSvgEdit(problemId: number, mediaId: number) {
-  const [info, setInfo] = useState<any>();
   const { data } = useProblem(problemId, true);
 
-  useEffect(() => {
-    if (data) {
-      const res = data;
-      const m = res.media?.find((x) => x.id == mediaId);
-      const readOnlySvgs: {
-        nr: number;
-        hasAnchor: boolean;
-        path: string;
-        anchors: unknown[];
-        tradBelayStations: unknown[];
-        texts: string[];
-      }[] = [];
-      let svgId = 0;
-      let hasAnchor = true;
-      let path = null;
-      let anchors = [];
-      let tradBelayStations = [];
-      let texts = [];
-      if (m?.svgs) {
-        for (const svg of m.svgs) {
-          if (svg.problemId === res.id) {
-            svgId = svg.id ?? 0;
-            path = svg.path ?? "";
-            hasAnchor = !!svg.hasAnchor;
-            anchors = svg.anchors ? JSON.parse(svg.anchors) : [];
-            tradBelayStations = svg.tradBelayStations
-              ? JSON.parse(svg.tradBelayStations)
-              : [];
-            texts = svg.texts ? JSON.parse(svg.texts) : [];
-          } else {
-            readOnlySvgs.push({
-              nr: svg.nr ?? 0,
-              hasAnchor: !!svg.hasAnchor,
-              path: svg.path ?? "",
-              anchors: svg.anchors ? JSON.parse(svg.anchors) : [],
-              tradBelayStations: svg.tradBelayStations
-                ? JSON.parse(svg.tradBelayStations)
-                : [],
-              texts: svg.texts ? JSON.parse(svg.texts) : [],
+  return useMemo(() => {
+    if (!data) {
+      return undefined;
+    }
+
+    const m = data.media?.find((x) => x.id == mediaId);
+    if (!m) {
+      return undefined;
+    }
+
+    if (!m.svgs) {
+      return undefined;
+    }
+
+    const readOnlySvgs: EditableSvg["readOnlySvgs"] = [];
+    let svgId = 0;
+    let svgNr = 0;
+    let hasAnchor = true;
+    let path = "";
+    const anchors = [];
+    const tradBelayStations = [];
+    const texts = [];
+    for (const svg of m.svgs) {
+      if (svg.problemId === data.id) {
+        svgId = svg.id ?? 0;
+        svgNr = svg.nr ?? 0;
+        path = svg.path ?? "";
+        hasAnchor = !!svg.hasAnchor;
+
+        if (svg.anchors) {
+          try {
+            const parsed = JSON.parse(svg.anchors);
+            anchors.push(...parsed);
+          } catch (ex) {
+            captureException(ex, {
+              extra: {
+                anchors: svg.anchors,
+                problemId,
+                mediaId,
+                svgId: svg.id,
+              },
             });
           }
         }
+
+        if (svg.tradBelayStations) {
+          try {
+            const parsed = JSON.parse(svg.tradBelayStations);
+            tradBelayStations.push(...parsed);
+          } catch (ex) {
+            captureException(ex, {
+              extra: {
+                tradBelayStations: svg.tradBelayStations,
+                problemId,
+                mediaId,
+                svgId: svg.id,
+              },
+            });
+          }
+        }
+
+        if (svg.texts) {
+          try {
+            const parsed = JSON.parse(svg.texts);
+            texts.push(...parsed);
+          } catch (ex) {
+            captureException(ex, {
+              extra: {
+                texts: svg.texts,
+                problemId,
+                mediaId,
+                svgId: svg.id,
+              },
+            });
+          }
+        }
+      } else {
+        readOnlySvgs.push({
+          nr: svg.nr ?? 0,
+          hasAnchor: !!svg.hasAnchor,
+          path: svg.path ?? "",
+          anchors: svg.anchors ? JSON.parse(svg.anchors) : [],
+          tradBelayStations: svg.tradBelayStations
+            ? JSON.parse(svg.tradBelayStations)
+            : [],
+          texts: svg.texts ? JSON.parse(svg.texts) : [],
+          t: "other",
+        });
       }
-
-      setInfo({
-        mediaId: m?.id,
-        nr: res.nr,
-        w: m?.width,
-        h: m?.height,
-        shift: false,
-        svgId: svgId,
-        path: path,
-        anchors: anchors,
-        tradBelayStations: tradBelayStations,
-        texts: texts,
-        readOnlySvgs: readOnlySvgs,
-        activePoint: 0,
-        draggedPoint: false,
-        draggedCubic: false,
-        hasAnchor: hasAnchor,
-        areaId: res.areaId,
-        areaName: res.areaName,
-        areaLockedAdmin: res.areaLockedAdmin,
-        areaLockedSuperadmin: res.areaLockedSuperadmin,
-        sectorId: res.sectorId,
-        sectorName: res.sectorName,
-        sectorLockedAdmin: res.sectorLockedAdmin,
-        sectorLockedSuperadmin: res.sectorLockedSuperadmin,
-        id: res.id,
-        name: res.name,
-        grade: res.grade,
-        lockedAdmin: res.lockedAdmin,
-        lockedSuperadmin: res.lockedSuperadmin,
-      });
     }
-  }, [data, mediaId]);
 
-  return info;
+    return {
+      nr: svgNr,
+      crc32: m.crc32 ?? 0,
+      mediaId: m.id ?? 0,
+      w: m.width ?? 0,
+      h: m.height ?? 0,
+      svgId,
+      path: path ?? "",
+      anchors,
+      tradBelayStations,
+      texts,
+      readOnlySvgs,
+      hasAnchor,
+    } satisfies EditableSvg;
+  }, [data, mediaId, problemId]);
 }

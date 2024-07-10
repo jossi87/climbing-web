@@ -1,6 +1,7 @@
 import React from "react";
 import { parseSVG, makeAbsolute } from "svg-path-parser";
 import { svgPathProperties } from "svg-path-properties";
+import { neverGuard } from "./neverGuard";
 
 type DescentProps = {
   path: React.SVGProps<SVGPathElement>["d"];
@@ -9,7 +10,12 @@ type DescentProps = {
   thumb: boolean;
 };
 
-export function Descent({ path, whiteNotBlack, scale, thumb }: DescentProps) {
+export function Descent({
+  path = "",
+  whiteNotBlack,
+  scale,
+  thumb,
+}: DescentProps) {
   const properties = new svgPathProperties(path);
   const descentKey = path.replace(/\s/g, ""); // Key cannot contains spaces
   const deltaPercent =
@@ -179,9 +185,9 @@ function generateSvgNrAndAnchor(
   w: number,
   h: number,
 ) {
-  let ixNr;
+  let ixNr: number | undefined = undefined;
   let maxY = 0;
-  let ixAnchor;
+  let ixAnchor: number | undefined = undefined;
   let minY = 99999999;
   for (let i = 0, len = path.length; i < len; i++) {
     if (path[i].y > maxY) {
@@ -193,6 +199,14 @@ function generateSvgNrAndAnchor(
       minY = path[i].y;
     }
   }
+  if (ixNr === undefined) {
+    return null;
+  }
+
+  if (ixAnchor === undefined) {
+    return null;
+  }
+
   let x = path[ixNr].x;
   let y = path[ixNr].y;
   const r = 0.012 * w;
@@ -249,10 +263,45 @@ function generateSvgNrAndAnchor(
   );
 }
 
-type ParsedEntry = {
+export type Point = {
   x: number;
   y: number;
-  c?: [{ x: number; y: number }, { x: number; y: number }];
+};
+
+export type CubicPoint = Point & {
+  c: [Point, Point];
+};
+
+export type QuadraticPoint = Point & {
+  q: Point;
+};
+
+export type Arc = Point & {
+  a: {
+    rx: number;
+    ry: number;
+    rot: number;
+    laf: number;
+    sf: number;
+  };
+};
+
+export type ParsedEntry = Point | CubicPoint | QuadraticPoint | Arc;
+
+export const isCubicPoint = (p: ParsedEntry): p is CubicPoint => {
+  return !!(p as CubicPoint).c;
+};
+
+export const isQuadraticPoint = (p: ParsedEntry): p is QuadraticPoint => {
+  return !!(p as QuadraticPoint).q;
+};
+
+export const isArc = (p: ParsedEntry): p is Arc => {
+  return !!(p as Arc).a;
+};
+
+export const isPoint = (p: ParsedEntry): p is Point => {
+  return !isCubicPoint(p) && !isQuadraticPoint(p) && !isArc(p);
 };
 
 export function parsePath(d: string): ParsedEntry[] {
@@ -261,31 +310,47 @@ export function parsePath(d: string): ParsedEntry[] {
   }
 
   const commands = makeAbsolute(parseSVG(d)); // Note: mutates the commands in place!
-  const res = commands.map<ParsedEntry>((c) => {
-    switch (c.code) {
-      case "L":
-      case "M":
-        return { x: Math.round(c.x), y: Math.round(c.y) };
-      case "C":
-        return {
-          x: Math.round(c.x),
-          y: Math.round(c.y),
-          c: [
-            { x: Math.round(c.x1), y: Math.round(c.y1) },
-            { x: Math.round(c.x2), y: Math.round(c.y2) },
-          ],
-        };
-      case "S":
-        return {
-          x: Math.round(c.x),
-          y: Math.round(c.y),
-          c: [
-            { x: Math.round(c.x0), y: Math.round(c.y0) },
-            { x: Math.round(c.x2), y: Math.round(c.y2) },
-          ],
-        };
-    }
-  });
+  const res = commands
+    .map<ParsedEntry | undefined>((c) => {
+      const { code } = c;
+      switch (code) {
+        case "L":
+        case "M":
+          return { x: Math.round(c.x), y: Math.round(c.y) };
+        case "C":
+          return {
+            x: Math.round(c.x),
+            y: Math.round(c.y),
+            c: [
+              { x: Math.round(c.x1), y: Math.round(c.y1) },
+              { x: Math.round(c.x2), y: Math.round(c.y2) },
+            ],
+          };
+        case "S":
+          return {
+            x: Math.round(c.x),
+            y: Math.round(c.y),
+            c: [
+              { x: Math.round(c.x0), y: Math.round(c.y0) },
+              { x: Math.round(c.x2), y: Math.round(c.y2) },
+            ],
+          };
+
+        case "Z":
+        case "A":
+        case "H":
+        case "Q":
+        case "T":
+        case "V": {
+          return undefined;
+        }
+
+        default: {
+          return neverGuard(code, undefined);
+        }
+      }
+    })
+    .filter((v): v is ParsedEntry => !!v);
 
   // Reverse path if drawn incorrect direction
   if (res.length < 2 || res[0].y >= res[res.length - 1].y) {
@@ -295,8 +360,8 @@ export function parsePath(d: string): ParsedEntry[] {
   const reversed: typeof res = [];
   for (let i = res.length - 1; i >= 0; i--) {
     const p = res[i];
-    const prevP = i != res.length - 1 && res[i + 1];
-    if (prevP?.c) {
+    const prevP = i != res.length - 1 ? res[i + 1] : undefined;
+    if (prevP && isCubicPoint(prevP)) {
       reversed.push({
         x: p.x,
         y: p.y,
@@ -334,7 +399,7 @@ export function parseReadOnlySvgs(
 ) {
   const backgroundColor = "black";
   const color = "white";
-  const shapes = readOnlySvgs.reduce<React.JSX.Element[]>((acc, svg) => {
+  const shapes = readOnlySvgs.reduce<React.ReactNode[]>((acc, svg) => {
     const { t } = svg;
     switch (t) {
       case "PATH": {

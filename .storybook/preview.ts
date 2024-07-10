@@ -1,4 +1,5 @@
 import { Preview } from "@storybook/react";
+import { withRouter } from "storybook-addon-remix-react-router";
 
 const preview: Preview = {
   parameters: {
@@ -9,6 +10,7 @@ const preview: Preview = {
       },
     },
   },
+  decorators: [withRouter],
 };
 
 export default preview;
