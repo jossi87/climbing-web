@@ -45,11 +45,11 @@ type Metadata = {
   compassDirections: CompassDirection[];
 };
 
-const DEFAULT_VALUE: Metadata = {
+export const DEFAULT_META: Metadata = {
   isAuthenticated: false,
   isAdmin: false,
   isSuperAdmin: false,
-  authenticatedName: null,
+  authenticatedName: "",
   title: "",
   grades: [],
   faYears: [],
@@ -105,7 +105,7 @@ export const MetaProvider = ({ children }: Props) => {
   });
 
   return (
-    <MetaContext.Provider value={meta || DEFAULT_VALUE}>
+    <MetaContext.Provider value={meta || DEFAULT_META}>
       <Helmet
         titleTemplate={`%s | ${meta?.title}`}
         defaultTitle={meta?.title ?? "Loading ..."}

@@ -109,7 +109,7 @@ const Webcams = lazy(
 );
 
 function AppRoutes() {
-  const Wrapper = ({ children }) => {
+  const Wrapper = ({ children }: { children: React.ReactNode }) => {
     const location = useLocation();
     useLayoutEffect(() => {
       setTimeout(() => window.scrollTo(0, 0), 1);
