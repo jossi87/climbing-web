@@ -30,7 +30,11 @@ export function itemLocalStorage<T = unknown>(
   };
 }
 
-export function useLocalStorage<T = unknown>(key: string, initialValue: T) {
+function useStorage<T = unknown>(
+  system: typeof window.localStorage,
+  key: string,
+  initialValue: T,
+) {
   const [storedValue, setStoredValue] = useState(() => {
     return readLocalStorage(key, initialValue);
   });
@@ -41,12 +45,12 @@ export function useLocalStorage<T = unknown>(key: string, initialValue: T) {
         const valueToStore =
           value instanceof Function ? value(storedValue) : value;
         setStoredValue(value);
-        window.localStorage.setItem(key, JSON.stringify(valueToStore));
+        system.setItem(key, JSON.stringify(valueToStore));
       } catch (error) {
         console.log(error);
       }
     },
-    [key, storedValue],
+    [key, storedValue, system],
   );
 
   const writeValue = useCallback(
@@ -54,13 +58,21 @@ export function useLocalStorage<T = unknown>(key: string, initialValue: T) {
       try {
         const valueToStore =
           value instanceof Function ? value(storedValue) : value;
-        window.localStorage.setItem(key, JSON.stringify(valueToStore));
+        system.setItem(key, JSON.stringify(valueToStore));
       } catch (error) {
         console.log(error);
       }
     },
-    [key, storedValue],
+    [key, storedValue, system],
   );
 
   return [storedValue, setValue, writeValue] as const;
+}
+
+export function useLocalStorage<T = unknown>(key: string, initialValue: T) {
+  return useStorage(window.localStorage, key, initialValue);
+}
+
+export function useSessionStorage<T = unknown>(key: string, initialValue: T) {
+  return useStorage(window.sessionStorage, key, initialValue);
 }

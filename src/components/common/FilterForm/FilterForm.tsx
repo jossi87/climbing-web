@@ -153,6 +153,8 @@ export const FilterForm = () => {
     filterAreaIds,
     filterAreaOnlySunOnWallAt,
     filterAreaOnlyShadeOnWallAt,
+    filterGradeHigh,
+    filterGradeLow,
     filterSectorWallDirections,
     filterOnlyAdmin,
     filterOnlySuperAdmin,
@@ -233,7 +235,11 @@ export const FilterForm = () => {
       <Divider />
       <Form.Field>
         <GroupHeader title="Grades" reset="grades" />
-        <GradeSelect />
+        <GradeSelect
+          low={filterGradeLow}
+          high={filterGradeHigh}
+          dispatch={dispatch}
+        />
       </Form.Field>
       {disciplineOptions.length > 1 && (
         <>

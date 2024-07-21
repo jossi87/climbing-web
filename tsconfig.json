@@ -3,6 +3,7 @@
     // Basic options
     "rootDir": "./",
     "module": "ESNext",
+    "target": "es2018",
 
     "sourceMap": true,
     "allowJs": true,

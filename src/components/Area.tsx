@@ -34,7 +34,7 @@ import { useMeta } from "./common/meta";
 import { getImageUrl, useArea } from "../api";
 import { Remarkable } from "remarkable";
 import { linkify } from "remarkable/linkify";
-import ProblemList from "./common/problem-list/problem-list";
+import ProblemList from "./common/problem-list";
 import { components } from "../@types/buldreinfo/swagger";
 import { DownloadButton } from "./common/DownloadButton";
 
@@ -453,8 +453,9 @@ const Area = () => {
         return (
           <Tab.Pane>
             <ProblemList
-              isSectorNotUser={true}
-              preferOrderByGrade={true}
+              storageKey={`area/${areaId}`}
+              mode="sector"
+              defaultOrder="grade-desc"
               rows={rows}
             />
           </Tab.Pane>

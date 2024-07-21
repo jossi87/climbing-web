@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Chart from "../chart/chart";
-import ProblemList from "../problem-list/problem-list";
+import ProblemList from "../problem-list";
 import Leaflet from "../../common/leaflet/leaflet";
 import { Loading, LockSymbol, Stars } from "../widgets/widgets";
 import {
@@ -25,7 +25,9 @@ import * as Sentry from "@sentry/react";
 import { components } from "../../../@types/buldreinfo/swagger";
 
 type TickListItemProps = {
-  tick: components["schemas"]["ProfileStatistics"]["ticks"][number];
+  tick: NonNullable<
+    components["schemas"]["ProfileStatistics"]["ticks"]
+  >[number];
 };
 
 const TickListItem = ({ tick }: TickListItemProps) => (
@@ -35,13 +37,13 @@ const TickListItem = ({ tick }: TickListItemProps) => (
       <small style={{ color: "gray" }}>
         {tick.areaName}{" "}
         <LockSymbol
-          lockedAdmin={tick.areaLockedAdmin}
-          lockedSuperadmin={tick.areaLockedSuperadmin}
+          lockedAdmin={!!tick.areaLockedAdmin}
+          lockedSuperadmin={!!tick.areaLockedSuperadmin}
         />{" "}
         / {tick.sectorName}
         <LockSymbol
-          lockedAdmin={tick.sectorLockedAdmin}
-          lockedSuperadmin={tick.sectorLockedSuperadmin}
+          lockedAdmin={!!tick.sectorLockedAdmin}
+          lockedSuperadmin={!!tick.sectorLockedSuperadmin}
         />{" "}
         /
       </small>{" "}
@@ -53,20 +55,22 @@ const TickListItem = ({ tick }: TickListItemProps) => (
         </Label>
       )}
       <LockSymbol
-        lockedAdmin={tick.lockedAdmin}
-        lockedSuperadmin={tick.lockedSuperadmin}
+        lockedAdmin={!!tick.lockedAdmin}
+        lockedSuperadmin={!!tick.lockedSuperadmin}
       />{" "}
-      <Stars numStars={tick.stars} includeStarOutlines={true} />{" "}
+      <Stars numStars={tick.stars ?? 0} includeStarOutlines={true} />{" "}
       {tick.fa && <Label color="red" size="mini" content="FA" />}
-      {tick.idTickRepeat > 0 && <Label size="mini" basic content="Repeat" />}
-      {tick.subType && (
+      {tick.idTickRepeat ? <Label size="mini" basic content="Repeat" /> : null}
+      {tick.subType ? (
         <Label
           basic
           size="mini"
           content={tick.subType}
-          detail={tick.numPitches > 1 ? tick.numPitches + " pitches" : null}
+          detail={
+            (tick.numPitches ?? 0) > 1 ? tick.numPitches + " pitches" : null
+          }
         />
-      )}{" "}
+      ) : null}{" "}
       {tick.comment && (
         <small style={{ color: "gray" }}>
           <i>{tick.comment}</i>
@@ -105,16 +109,14 @@ const ProfileStatistics = ({ userId, canDownload }: ProfileStatisticsProps) => {
   }
 
   const regions = Array.from(
-    new Set(data.ticks.map((t: any) => t.regionName)),
+    new Set(data.ticks?.map((t: any) => t.regionName)),
   ).sort();
-  const numTicks = data.ticks.filter(
-    (t) => !t.fa && t.idTickRepeat === 0,
-  ).length;
-  const numTickRepeats = data.ticks.filter(
-    (t) => !t.fa && t.idTickRepeat > 0,
-  ).length;
-  const numFas = data.ticks.filter((t) => t.fa).length;
-  const chart = data.ticks.length > 0 ? <Chart ticks={data.ticks} /> : null;
+  const numTicks =
+    data.ticks?.filter((t) => !t.fa && t.idTickRepeat === 0).length ?? 0;
+  const numTickRepeats =
+    data.ticks?.filter((t) => !t.fa && t.idTickRepeat).length ?? 0;
+  const numFas = data.ticks?.filter((t) => t.fa).length ?? 0;
+  const chart = data.ticks?.length ? <Chart ticks={data.ticks} /> : null;
   const panes: NonNullable<React.ComponentProps<typeof Tab>["panes"]> = [];
   panes.push({
     menuItem: { key: "stats", icon: "area graph" },
@@ -157,22 +159,22 @@ const ProfileStatistics = ({ userId, canDownload }: ProfileStatisticsProps) => {
           )}
           <Label color="green" image>
             <Icon name="photo" />
-            {numberWithCommas(data.numImageTags)}
+            {numberWithCommas(data.numImageTags ?? 0)}
             <Label.Detail>Tag</Label.Detail>
           </Label>
           <Label color="teal" image>
             <Icon name="photo" />
-            {numberWithCommas(data.numImagesCreated)}
+            {numberWithCommas(data.numImagesCreated ?? 0)}
             <Label.Detail>Captured</Label.Detail>
           </Label>
           <Label color="blue" image>
             <Icon name="video" />
-            {numberWithCommas(data.numVideoTags)}
+            {numberWithCommas(data.numVideoTags ?? 0)}
             <Label.Detail>Tag</Label.Detail>
           </Label>
           <Label color="violet" image>
             <Icon name="video" />
-            {numberWithCommas(data.numVideosCreated)}
+            {numberWithCommas(data.numVideosCreated ?? 0)}
             <Label.Detail>Captured</Label.Detail>
           </Label>
         </Label.Group>
@@ -187,7 +189,7 @@ const ProfileStatistics = ({ userId, canDownload }: ProfileStatisticsProps) => {
   });
   const markers: NonNullable<React.ComponentProps<typeof Leaflet>["markers"]> =
     [];
-  data.ticks.forEach((t) => {
+  data.ticks?.forEach((t) => {
     if (t.coordinates) {
       markers.push({
         coordinates: t.coordinates,
@@ -221,40 +223,45 @@ const ProfileStatistics = ({ userId, canDownload }: ProfileStatisticsProps) => {
     <>
       <Tab panes={panes} />
       <br />
-      {data.ticks.length > 0 && (
+      {data.ticks?.length ? (
         <ProblemList
-          isSectorNotUser={false}
-          preferOrderByGrade={false}
-          rows={data.ticks.map((t) => {
-            return {
-              element: (
-                <TickListItem
-                  key={[
-                    t.areaName,
-                    t.sectorName,
-                    t.name,
-                    t.idProblem,
-                    t.idTickRepeat,
-                  ].join("/")}
-                  tick={t}
-                />
-              ),
-              areaName: t.areaName,
-              sectorName: t.sectorName,
-              name: t.name,
-              nr: null,
-              gradeNumber: t.gradeNumber,
-              stars: t.stars,
-              numTicks: null,
-              ticked: null,
-              rock: null,
-              subType: t.subType,
-              num: t.num,
-              fa: t.fa,
-            };
-          })}
+          storageKey={`user/${userId}`}
+          mode="user"
+          defaultOrder="date"
+          rows={
+            data.ticks.map((t) => {
+              return {
+                element: (
+                  <TickListItem
+                    key={[
+                      t.areaName,
+                      t.sectorName,
+                      t.name,
+                      t.idProblem,
+                      t.idTickRepeat,
+                    ].join("/")}
+                    tick={t}
+                  />
+                ),
+                areaName: t.areaName ?? "",
+                sectorName: t.sectorName ?? "",
+                name: t.name ?? "",
+                nr: null,
+                gradeNumber: t.gradeNumber ?? 0,
+                stars: t.stars ?? 0,
+                numTicks: 0,
+                // This is true, but we want to ignore it in this view because
+                // we know that they're all ticked.
+                ticked: false,
+                rock: "",
+                subType: t.subType ?? "",
+                num: t.num ?? 0,
+                fa: t.fa ?? false,
+              };
+            }) ?? []
+          }
         />
-      )}
+      ) : null}
     </>
   );
 };
