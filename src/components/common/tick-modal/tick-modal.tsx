@@ -55,7 +55,7 @@ const TickModal = ({
   const [stars, setStars] = useState(initialStars);
   const [date, setDate] = useState<string | undefined>(
     idTick == -1
-      ? convertFromDateToString(new Date()) ?? initialDate
+      ? (convertFromDateToString(new Date()) ?? initialDate)
       : initialDate,
   );
   const [repeats, setRepeats] = useState(initialRepeats);

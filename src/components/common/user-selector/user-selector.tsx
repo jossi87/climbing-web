@@ -73,7 +73,7 @@ export const UserSelector = ({
       isMulti={false}
       placeholder={placeholder}
       onChange={onUserUpdated}
-      defaultValue={{ label: defaultValue }}
+      defaultValue={defaultValue != null ? { label: defaultValue } : null}
     />
   );
 };

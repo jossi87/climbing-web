@@ -214,7 +214,7 @@ export const Problem = () => {
           grade={
             userTicks[0].noPersonalGrade
               ? "No personal grade"
-              : userTicks[0].suggestedGrade ?? "No personal grade"
+              : (userTicks[0].suggestedGrade ?? "No personal grade")
           }
           gradeFa={data.originalGrade}
           gradeConsensus={data.grade}
