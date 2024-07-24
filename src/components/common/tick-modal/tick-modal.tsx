@@ -81,27 +81,15 @@ const TickModal = ({
                 <DatePicker
                   placeholderText="Click to select a date"
                   dateFormat="dd-MM-yyyy"
+                  isClearable
                   showMonthDropdown
                   showYearDropdown
                   dropdownMode="select"
                   selected={date ? convertFromStringToDate(date) : undefined}
-                  onChange={(date) => {
-                    const stringified = convertFromDateToString(date);
-                    if (!stringified) {
-                      return;
-                    }
-                    return setDate(stringified);
-                  }}
+                  onChange={(date) =>
+                    setDate(date ? convertFromDateToString(date) : undefined)
+                  }
                 />
-              </Form.Field>
-              <Form.Field>
-                <Button
-                  onClick={() => {
-                    setDate(undefined);
-                  }}
-                >
-                  No date
-                </Button>
               </Form.Field>
             </Form.Group>
             <Form.Field>

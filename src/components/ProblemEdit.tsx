@@ -525,6 +525,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
               <DatePicker
                 placeholderText="Click to select a date"
                 dateFormat="dd-MM-yyyy"
+                isClearable
                 showMonthDropdown
                 showYearDropdown
                 dropdownMode="select"
@@ -663,6 +664,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                   <DatePicker
                     placeholderText="Click to select a date"
                     dateFormat="dd-MM-yyyy"
+                    isClearable
                     withPortal
                     portalId="root-portal"
                     showMonthDropdown
