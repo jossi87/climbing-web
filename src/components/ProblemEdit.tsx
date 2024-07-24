@@ -356,8 +356,6 @@ const ProblemEdit = ({ problem, sector }: Props) => {
     [
       accessToken,
       client,
-      meta.defaultCenter.lat,
-      meta.defaultCenter.lng,
       meta.types,
       problemId,
       sectorId,
