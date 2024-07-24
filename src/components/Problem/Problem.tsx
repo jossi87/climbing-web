@@ -204,7 +204,7 @@ export const Problem = () => {
     }
     const enableTickRepeats = meta.isIce || data.sections?.length;
     const userTicks = data.ticks?.filter((t) => t.writable);
-    if (userTicks && userTicks.length && userTicks[0].date) {
+    if (userTicks && userTicks.length && userTicks[0].id) {
       return (
         <TickModal
           idTick={userTicks[0].id ?? 0}
