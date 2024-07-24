@@ -353,13 +353,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
         return false;
       }
     },
-    [
-      accessToken,
-      client,
-      meta.types,
-      problemId,
-      sectorId,
-    ],
+    [accessToken, client, meta.types, problemId, sectorId],
   );
 
   const onMapClick: NonNullable<
