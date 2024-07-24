@@ -336,10 +336,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
           data.t?.id
             ? meta.types.find((t) => t.id === data.t?.id) || meta.types[0]
             : meta.types[0],
-          data.coordinates ?? {
-            latitude: meta.defaultCenter.lat,
-            longitude: meta.defaultCenter.lng,
-          },
+          data.coordinates ?? undefined,
           data.sections,
           data.newMedia,
           data.faAid,
