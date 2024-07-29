@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { type ComponentProps, useCallback, useState } from "react";
 import { Accordion, Icon } from "semantic-ui-react";
 
 type Props = {
@@ -9,9 +9,14 @@ type Props = {
   }[];
 };
 
+type OnClickHandler = NonNullable<
+  ComponentProps<typeof Accordion.Title>["onClick"]
+>;
+
 const AccordionContainer = ({ accordionRows }: Props) => {
-  const [activeIndex, setActiveIndex] = useState(-1);
-  const handleOnClick = useCallback((_, { index }) => {
+  const [activeIndex, setActiveIndex] = useState<string | number>(-1);
+
+  const handleOnClick: OnClickHandler = useCallback((_, { index }) => {
     setActiveIndex((oldValue) => (oldValue === index ? -1 : index));
   }, []);
 

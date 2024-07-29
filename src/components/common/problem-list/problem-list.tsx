@@ -1,331 +1,423 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Step, Dropdown, List, Segment, Checkbox } from "semantic-ui-react";
+import React, { ComponentProps, useMemo, useState } from "react";
+import {
+  Step,
+  Dropdown,
+  List,
+  Segment,
+  Checkbox,
+  DropdownItemProps,
+  Message,
+  MessageHeader,
+  Icon,
+} from "semantic-ui-react";
 import AccordionContainer from "./accordion-container";
-import { useLocalStorage } from "../../../utils/use-local-storage";
-import { getLocales } from "../../../api";
-
-interface Row {
-  element: React.ReactNode;
-  areaName: string;
-  sectorName: string;
-  name: string;
-  nr: number | null;
-  gradeNumber: number;
-  stars: number;
-  numTicks: number;
-  ticked: boolean;
-  rock: string;
-  subType: string;
-  num: number;
-  fa: boolean;
-}
-enum GroupBy {
-  rock,
-  type,
-}
-enum OrderBy {
-  alphabetical,
-  ascents,
-  date,
-  grade,
-  number,
-  rating,
-}
+import { GradeSelect } from "../FilterForm/GradeSelect";
+import { type Row } from "./types";
+import { GroupOption, OrderOption, State, useProblemListState } from "./state";
+import "./ProblemList.css";
 
 type Props = {
   rows: Row[];
-  isSectorNotUser: boolean;
-  preferOrderByGrade: boolean;
+  mode: "sector" | "user";
+  defaultOrder: OrderOption;
+  storageKey: string;
 };
 
-const ProblemList = ({ rows, isSectorNotUser, preferOrderByGrade }: Props) => {
-  const [data, setData] = useState(rows);
-  const [hideTicked, setHideTicked] = useLocalStorage(
-    "problemList-hideTicked",
-    false,
-  );
-  const [onlyFa, setOnlyFa] = useLocalStorage("problemList-onlyFa", false);
-  const [uniqueRocks, setUniqueRocks] = useState([]);
-  const [uniqueTypes, setUniqueTypes] = useState([]);
-  const [groupByTitle, setGroupByTitle] = useState<any>(null);
-  const [groupBy, setGroupBy] = useLocalStorage("problemList-groupBy", null);
-  const [orderBy, setOrderBy] = useState<any>(null);
-  const [sectorCustomOrderBy, setSectorCustomOrderBy] = useLocalStorage(
-    "sectorOrderBy",
-    null,
-  );
-
-  const orderByOptions = isSectorNotUser
-    ? [
-        {
-          key: OrderBy.alphabetical,
-          text: OrderBy[OrderBy.alphabetical],
-          value: OrderBy[OrderBy.alphabetical],
-        },
-        {
-          key: OrderBy.ascents,
-          text: OrderBy[OrderBy.ascents],
-          value: OrderBy[OrderBy.ascents],
-        },
-        {
-          key: OrderBy.grade,
-          text: OrderBy[OrderBy.grade],
-          value: OrderBy[OrderBy.grade],
-        },
-        {
-          key: OrderBy.number,
-          text: OrderBy[OrderBy.number],
-          value: OrderBy[OrderBy.number],
-        },
-        {
-          key: OrderBy.rating,
-          text: OrderBy[OrderBy.rating],
-          value: OrderBy[OrderBy.rating],
-        },
-      ]
-    : [
-        {
-          key: OrderBy.alphabetical,
-          text: OrderBy[OrderBy.alphabetical],
-          value: OrderBy[OrderBy.alphabetical],
-        },
-        {
-          key: OrderBy.date,
-          text: OrderBy[OrderBy.date],
-          value: OrderBy[OrderBy.date],
-        },
-        {
-          key: OrderBy.grade,
-          text: OrderBy[OrderBy.grade],
-          value: OrderBy[OrderBy.grade],
-        },
-        {
-          key: OrderBy.rating,
-          text: OrderBy[OrderBy.rating],
-          value: OrderBy[OrderBy.rating],
-        },
-      ];
-
-  const order = useCallback(
-    (newOrderBy: OrderBy) => {
-      setOrderBy(newOrderBy);
-      if (isSectorNotUser) {
-        setSectorCustomOrderBy(newOrderBy);
-      }
-      setData(
-        rows.sort((a, b) => {
-          if (newOrderBy === OrderBy.alphabetical) {
-            if (a.areaName != b.areaName)
-              return a.areaName.localeCompare(b.areaName, getLocales());
-            else if (a.sectorName != b.sectorName)
-              return a.sectorName.localeCompare(b.sectorName, getLocales());
-            return a.name.localeCompare(b.name, getLocales());
-          } else if (newOrderBy === OrderBy.ascents) {
-            if (a.numTicks != b.numTicks) return b.numTicks - a.numTicks;
-            return a.name.localeCompare(b.name, getLocales());
-          } else if (newOrderBy === OrderBy.date) {
-            return a.num - b.num;
-          } else if (newOrderBy === OrderBy.grade) {
-            if (a.gradeNumber != b.gradeNumber)
-              return b.gradeNumber - a.gradeNumber;
-            else if (a.num && b.num && a.num != b.num) return a.num - b.num;
-            return a.name.localeCompare(b.name, getLocales());
-          } else if (newOrderBy === OrderBy.number) {
-            return a.nr - b.nr;
-          } else if (newOrderBy === OrderBy.rating) {
-            if (a.stars != b.stars) return b.stars - a.stars;
-            else if (a.gradeNumber != b.gradeNumber)
-              return b.gradeNumber - a.gradeNumber;
-            else if (a.numTicks != b.numTicks) return b.numTicks - a.numTicks;
-            return a.name.localeCompare(b.name, getLocales());
-          }
-        }),
-      );
+const ORDER_BY_OPTIONS: Record<
+  "sector" | "user",
+  (DropdownItemProps & { value: OrderOption })[]
+> = {
+  sector: [
+    {
+      key: "name",
+      text: "name",
+      value: "name",
     },
-    [isSectorNotUser, rows, setSectorCustomOrderBy],
-  );
+    {
+      key: "ascents",
+      text: "ascents",
+      value: "ascents",
+    },
+    {
+      key: "grade-asc",
+      text: "grade (easy -> hard)",
+      value: "grade-asc",
+    },
+    {
+      key: "grade-desc",
+      text: "grade (hard -> easy)",
+      value: "grade-desc",
+    },
+    {
+      key: "number",
+      text: "number",
+      value: "number",
+    },
+    {
+      key: "rating",
+      text: "rating",
+      value: "rating",
+    },
+  ],
+  user: [
+    {
+      key: "name",
+      text: "name",
+      value: "name",
+    },
+    {
+      key: "date",
+      text: "date",
+      value: "date",
+    },
+    {
+      key: "grade-asc",
+      text: "grade (easy -> hard)",
+      value: "grade-asc",
+    },
+    {
+      key: "grade-desc",
+      text: "grade (hard -> easy)",
+      value: "grade-desc",
+    },
+    {
+      key: "rating",
+      text: "rating",
+      value: "rating",
+    },
+  ],
+} as const;
 
-  useEffect(() => {
-    let newOrderBy = OrderBy.date;
-    if (isSectorNotUser) {
-      if (preferOrderByGrade) {
-        newOrderBy = OrderBy.grade;
-      } else {
-        newOrderBy = OrderBy.number;
-      }
+const GROUP_BY: Record<
+  GroupOption,
+  (
+    partialState: Pick<
+      State,
+      | "uniqueAreas"
+      | "uniqueRocks"
+      | "uniqueSectors"
+      | "uniqueTypes"
+      | "filtered"
+    >,
+  ) => ComponentProps<typeof AccordionContainer>["accordionRows"]
+> = {
+  area: ({ uniqueAreas, filtered }) =>
+    uniqueAreas.map((areaName) => {
+      const list = filtered
+        .filter((p) => p.areaName == areaName)
+        .map((p) => p.element);
+      return {
+        label: `${areaName || "<Without area>"} (${list.length})`,
+        length: list.length,
+        content: <List selection>{list}</List>,
+      };
+    }),
+
+  none: () => {
+    throw new Error("This should not have been called");
+  },
+
+  rock: ({ uniqueRocks, filtered }) =>
+    uniqueRocks.map((rock) => {
+      const list = filtered.filter((p) => p.rock == rock).map((p) => p.element);
+      return {
+        label: `${rock || "<Without rock>"} (${list.length})`,
+        length: list.length,
+        content: <List selection>{list}</List>,
+      };
+    }),
+
+  sector: ({ uniqueSectors, filtered }) =>
+    uniqueSectors.map((sectorName) => {
+      const list = filtered
+        .filter((p) => p.sectorName === sectorName)
+        .map((p) => p.element);
+      return {
+        length: list.length,
+        label: `${sectorName || "<No sector>"} (${list.length})`,
+        content: <List selection>{list}</List>,
+      };
+    }),
+
+  type: ({ uniqueTypes, filtered }) =>
+    uniqueTypes.map((subType) => {
+      const list = filtered
+        .filter((p) => p.subType == subType)
+        .map((p) => p.element);
+      return {
+        label: `${subType || "<No type>"} (${list.length})`,
+        length: list.length,
+        content: <List selection>{list}</List>,
+      };
+    }),
+};
+
+const GROUP_BY_OPTIONS: Record<
+  GroupOption,
+  DropdownItemProps & {
+    value: GroupOption;
+    isApplicable: (
+      state: Pick<
+        State,
+        "uniqueAreas" | "uniqueRocks" | "uniqueSectors" | "uniqueTypes"
+      >,
+    ) => boolean;
+  }
+> = {
+  area: {
+    key: "area",
+    text: "area",
+    value: "area",
+    isApplicable: ({ uniqueAreas }) => uniqueAreas.length > 1,
+  },
+
+  none: {
+    key: "none",
+    text: "none",
+    value: "none",
+    isApplicable: () => true,
+  },
+
+  rock: {
+    key: "rock",
+    text: "rock",
+    value: "rock",
+    isApplicable: ({ uniqueRocks }) => uniqueRocks.length > 1,
+  },
+
+  sector: {
+    key: "sector",
+    text: "sector",
+    value: "sector",
+    isApplicable: ({ uniqueSectors }) => uniqueSectors.length > 1,
+  },
+
+  type: {
+    key: "type",
+    text: "type",
+    value: "type",
+    isApplicable: ({ uniqueTypes }) => uniqueTypes.length > 1,
+  },
+};
+
+export const ProblemList = ({
+  rows: allRows,
+  mode,
+  defaultOrder,
+  storageKey,
+}: Props) => {
+  const [showFilter, setFilterShowing] = useState(false);
+
+  const [allTypes, lookup] = useMemo(() => {
+    const types = new Set<string>();
+    const lookup: Record<string, number> = {};
+    for (const row of allRows) {
+      types.add(row.subType);
+      lookup[row.subType] = (lookup[row.subType] ?? 0) + 1;
     }
-    if (
-      isSectorNotUser &&
-      sectorCustomOrderBy != null &&
-      sectorCustomOrderBy != newOrderBy
-    ) {
-      order(sectorCustomOrderBy); // Sort results and save state
-    } else {
-      setData(rows);
-      setOrderBy(newOrderBy); // Results already sorted by newOrderBy, only update state
-    }
-    const rocks = rows
-      .filter((p) => p.rock)
-      .map((p) => p.rock)
-      .filter((value, index, self) => self.indexOf(value) === index)
-      .sort();
-    if (rocks.length > 0 && rows.filter((p) => !p.rock).length > 0) {
-      rocks.push("<Without rock>");
-    }
-    setUniqueRocks(rocks);
-    const types = rows
-      .map((p) => p.subType)
-      .filter((value, index, self) => self.indexOf(value) === index)
-      .sort();
-    setUniqueTypes(types);
-    if (isSectorNotUser && rocks.length > 0) {
-      setGroupByTitle(GroupBy.rock);
-      if (groupBy == null) {
-        setGroupBy(true);
-      }
-    } else if (types && types.length > 1) {
-      setGroupByTitle(GroupBy.type);
-      if (groupBy == null) {
-        setGroupBy(false);
-      }
-    } else {
-      setGroupByTitle(null);
-      if (groupBy == null) {
-        setGroupBy(false);
-      }
-    }
-  }, [
-    rows,
-    isSectorNotUser,
-    preferOrderByGrade,
-    sectorCustomOrderBy,
+    return [[...types].sort(), lookup];
+  }, [allRows]);
+
+  const {
+    // UI State
+    gradeLow,
+    gradeHigh,
     order,
     groupBy,
-    setGroupBy,
-  ]);
+    hideTicked,
+    onlyFa,
+    types,
 
-  if (data == null || data.length === 0) {
+    // Derived state
+    filtered,
+    uniqueAreas,
+    uniqueRocks,
+    uniqueSectors,
+    uniqueTypes,
+    containsFa,
+    containsTicked,
+
+    dispatch,
+  } = useProblemListState({
+    rows: allRows,
+    order: defaultOrder,
+    key: storageKey,
+  });
+
+  const orderByOptions = ORDER_BY_OPTIONS[mode];
+
+  if (!allRows?.length) {
     return null;
   }
 
-  const containsFa = data.filter((p) => p.fa).length > 0;
-  const containsTicked = data.filter((p) => p.ticked).length > 0;
+  const list = (() => {
+    if (filtered.length === 0) {
+      const hidden = allRows.length - filtered.length;
+      return (
+        <Message>
+          <MessageHeader>No visible data</MessageHeader>
+          There are active filters which are hiding {hidden}{" "}
+          {hidden > 1 ? "results" : "result"}.
+        </Message>
+      );
+    }
 
-  let list;
-  if (groupBy && groupByTitle != null && groupByTitle === GroupBy.rock) {
-    const accordionRows = uniqueRocks.map((rock) => {
-      const rows = data
-        .filter(
-          (p) =>
-            ((rock === "<Without rock>" && !p.rock) || p.rock == rock) &&
-            (!containsTicked || !hideTicked || !p.ticked) &&
-            (!containsFa || !onlyFa || p.fa),
-        )
-        .map((p) => p.element);
-      const label = rock + " (" + rows.length + ")";
-      const content = <List selection>{rows}</List>;
-      return { label, length: rows.length, content };
-    });
-    list = <AccordionContainer accordionRows={accordionRows} />;
-  } else if (groupBy && groupByTitle != null && groupByTitle === GroupBy.type) {
-    const accordionRows = uniqueTypes.map((subType) => {
-      const rows = data
-        .filter(
-          (p) =>
-            p.subType == subType &&
-            (!containsTicked || !hideTicked || !p.ticked) &&
-            (!containsFa || !onlyFa || p.fa),
-        )
-        .map((p) => p.element);
-      const label = subType + " (" + rows.length + ")";
-      const content = <List selection>{rows}</List>;
-      return { label, length: rows.length, content };
-    });
-    list = <AccordionContainer accordionRows={accordionRows} />;
-  } else {
-    const elements = data
-      .filter(
-        (p) =>
-          (!containsTicked || !hideTicked || !p.ticked) &&
-          (!containsFa || !onlyFa || p.fa),
-      )
-      .map((p) => p.element);
-    list = (
+    if (groupBy && groupBy !== "none") {
+      const mapper = GROUP_BY[groupBy];
+      return (
+        <AccordionContainer
+          accordionRows={mapper({
+            uniqueAreas,
+            uniqueRocks,
+            uniqueSectors,
+            uniqueTypes,
+            filtered,
+          }).filter(({ length }) => length)}
+        />
+      );
+    }
+
+    return (
       <Segment attached="bottom">
-        <List selection>
-          {elements.length === 0 ? <i>No data</i> : elements}
-        </List>
+        <List selection>{filtered.map(({ element }) => element)}</List>
       </Segment>
     );
-  }
+  })();
+
+  const groupByOptions = Object.values(GROUP_BY_OPTIONS)
+    .filter(({ isApplicable }) =>
+      isApplicable({
+        uniqueAreas,
+        uniqueRocks,
+        uniqueSectors,
+        uniqueTypes,
+      }),
+    )
+    .map(({ isApplicable: _, ...props }) => props);
 
   return (
     <>
       <Step.Group attached="top" size="mini" unstackable fluid>
+        {groupByOptions.length > 1 ? (
+          <Step
+            link
+            onClick={(e) =>
+              e.currentTarget.querySelector<HTMLElement>(".dropdown")?.focus()
+            }
+          >
+            <Step.Content>
+              <Step.Title>Group by</Step.Title>
+              <Step.Description>
+                <Dropdown
+                  key={mode}
+                  options={groupByOptions}
+                  value={groupBy}
+                  onChange={(e, { value }) =>
+                    dispatch({
+                      action: "group-by",
+                      groupBy: (value as GroupOption) ?? "none",
+                    })
+                  }
+                />
+              </Step.Description>
+            </Step.Content>
+          </Step>
+        ) : null}
         <Step
           link
-          onClick={() => document.getElementById("dropdownOrderBy").focus()}
+          onClick={(e) =>
+            e.currentTarget.querySelector<HTMLElement>(".dropdown")?.focus()
+          }
         >
           <Step.Content>
             <Step.Title>Order by</Step.Title>
             <Step.Description>
               <Dropdown
-                id="dropdownOrderBy"
+                key={mode}
                 options={orderByOptions}
-                value={OrderBy[orderBy]}
+                value={order}
                 onChange={(e, { value }) =>
-                  order(OrderBy[value as keyof typeof OrderBy])
+                  dispatch({
+                    action: "order-by",
+                    order: (value as OrderOption) ?? "grade-desc",
+                  })
                 }
               />
             </Step.Description>
           </Step.Content>
         </Step>
-        {groupByTitle != null && (
-          <Step link onClick={() => setGroupBy(!groupBy)}>
-            <Step.Content>
-              <Step.Title>Group by {GroupBy[groupByTitle]}</Step.Title>
-              <Step.Description>
-                <Checkbox
-                  toggle
-                  checked={groupBy}
-                  onClick={() => setGroupBy(!groupBy)}
-                />
-              </Step.Description>
-            </Step.Content>
-          </Step>
-        )}
-        {isSectorNotUser && containsTicked && (
-          <Step link onClick={() => setHideTicked(!hideTicked)}>
-            <Step.Content>
-              <Step.Title>Hide ticked</Step.Title>
-              <Step.Description>
+        <Step link onClick={() => setFilterShowing((v) => !v)}>
+          <Step.Content>
+            <Step.Title>Filter</Step.Title>
+            <Step.Description>
+              <Icon name="filter" />
+            </Step.Description>
+          </Step.Content>
+        </Step>
+      </Step.Group>
+      {showFilter ? (
+        <Segment attached>
+          <div className="problem-list-filter-container">
+            <strong>Grades</strong>
+            <GradeSelect
+              low={gradeLow}
+              high={gradeHigh}
+              dispatch={dispatch}
+              style={{ flex: 1 }}
+            />
+            {allTypes.length > 1 ? (
+              <>
+                <strong>Types</strong>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    gap: 8,
+                    flexWrap: "wrap",
+                  }}
+                >
+                  {allTypes.map((type) => (
+                    <Checkbox
+                      key={type}
+                      label={`${type} (${lookup[type]})`}
+                      checked={types[type]}
+                      onChange={(_, { checked }) => {
+                        dispatch({
+                          action: "type",
+                          type,
+                          enabled: !!checked,
+                        });
+                      }}
+                    />
+                  ))}
+                </div>
+              </>
+            ) : null}
+
+            {mode === "sector" && containsTicked && (
+              <>
+                <strong>Hide ticked</strong>
                 <Checkbox
                   toggle
                   checked={hideTicked}
-                  onClick={() => setHideTicked(!hideTicked)}
+                  onChange={() => dispatch({ action: "hide-ticked" })}
                 />
-              </Step.Description>
-            </Step.Content>
-          </Step>
-        )}
-        {!isSectorNotUser && containsFa && (
-          <Step link onClick={() => setOnlyFa(!onlyFa)}>
-            <Step.Content>
-              <Step.Title>Only FA</Step.Title>
-              <Step.Description>
+              </>
+            )}
+            {mode === "user" && containsFa && (
+              <>
+                <strong>Only show FA</strong>
                 <Checkbox
                   toggle
                   checked={onlyFa}
-                  onClick={() => setOnlyFa(!onlyFa)}
+                  onChange={() => dispatch({ action: "only-fa" })}
                 />
-              </Step.Description>
-            </Step.Content>
-          </Step>
-        )}
-      </Step.Group>
+              </>
+            )}
+          </div>
+        </Segment>
+      ) : null}
       {list}
     </>
   );
 };
-
-export default ProblemList;

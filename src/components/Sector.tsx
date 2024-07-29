@@ -1,7 +1,7 @@
 import React, { ComponentProps } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useParams } from "react-router-dom";
-import ProblemList from "./common/problem-list/problem-list";
+import ProblemList from "./common/problem-list";
 import ChartGradeDistribution from "./common/chart-grade-distribution/chart-grade-distribution";
 import { ApproachProfile } from "./common/ApproachProfile";
 import Top from "./common/top/top";
@@ -42,7 +42,7 @@ type Props = {
   problem: NonNullable<components["schemas"]["Sector"]["problems"]>[number];
 };
 
-const SectorListItem = ({ problem }: Props) => {
+export const SectorListItem = ({ problem }: Props) => {
   const { isClimbing } = useMeta();
   const type = isClimbing
     ? problem.t?.subType +
@@ -582,8 +582,9 @@ const Sector = () => {
         </Table.Body>
       </Table>
       <ProblemList
-        isSectorNotUser={true}
-        preferOrderByGrade={!!data.orderByGrade}
+        storageKey={`sector/${sectorId}`}
+        mode="sector"
+        defaultOrder={data.orderByGrade ? "grade-desc" : "number"}
         rows={
           data.problems?.map((p) => {
             return {

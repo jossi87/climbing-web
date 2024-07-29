@@ -6,11 +6,10 @@ import Leaflet from "./common/leaflet/leaflet";
 import ChartGradeDistribution from "./common/chart-grade-distribution/chart-grade-distribution";
 import { Loading, LockSymbol, SunOnWall } from "./common/widgets/widgets";
 import { useAreas } from "../api";
-import { Remarkable } from "remarkable";
-import { linkify } from "remarkable/linkify";
 import { useMeta } from "./common/meta";
 import { HeaderButtons } from "./common/HeaderButtons";
 import "./Areas.css";
+import { md } from "../utils/md";
 
 const Areas = () => {
   const { data } = useAreas();
@@ -19,18 +18,6 @@ const Areas = () => {
   const [showForDevelopers, setShowForDevelopers] = useState(false);
   const leafletRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
-  const md = new Remarkable({ breaks: true }).use(linkify);
-  // open links in new windows
-  md.renderer.rules.link_open = (function () {
-    const original = md.renderer.rules.link_open;
-    return function (...args: Parameters<typeof original>) {
-      const link = original(...args);
-      return (
-        link.substring(0, link.length - 1) +
-        ' rel="noreferrer noopener" target="_blank">'
-      );
-    };
-  })();
 
   if (!data) {
     return <Loading />;

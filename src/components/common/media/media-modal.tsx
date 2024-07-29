@@ -138,7 +138,7 @@ const MediaModal = ({
               style={{}}
               m={m}
               close={onClose}
-              optProblemId={optProblemId}
+              optProblemId={optProblemId ?? 0}
               sidebarOpen={showSidebar}
               problemIdHovered={problemIdHovered}
               setProblemIdHovered={(id) => setProblemIdHovered(id)}

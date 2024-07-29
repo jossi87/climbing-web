@@ -1,12 +1,27 @@
-import React from "react";
+import React, { CSSProperties } from "react";
 import RangeSlider from "react-range-slider-input";
 import "react-range-slider-input/dist/style.css";
-import { useFilter } from "../context";
 import { Dropdown } from "semantic-ui-react";
 import { useGrades } from "../../meta";
 
-export const GradeSelect = () => {
-  const { filterGradeLow, filterGradeHigh, dispatch } = useFilter();
+export type DispatchUpdate =
+  | { action: "set-grades"; low: string; high: string }
+  | { action: "set-grade"; low: string }
+  | { action: "set-grade"; high: string };
+
+type Props = {
+  low: string | undefined;
+  high: string | undefined;
+  dispatch: (update: DispatchUpdate) => void;
+  style?: CSSProperties;
+};
+
+export const GradeSelect = ({
+  low: filterGradeLow,
+  high: filterGradeHigh,
+  dispatch,
+  style,
+}: Props) => {
   const { easyToHard, mapping: gradeIndexMapping } = useGrades();
 
   const max = Math.max(easyToHard.length - 1, 0);
@@ -14,7 +29,7 @@ export const GradeSelect = () => {
   const high = filterGradeHigh || easyToHard[max];
 
   return (
-    <div>
+    <div style={style}>
       <div style={{ marginBottom: 20 }}>
         <RangeSlider
           key={`${0}-${max}`}
