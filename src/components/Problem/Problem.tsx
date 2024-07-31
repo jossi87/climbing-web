@@ -128,7 +128,6 @@ export const Problem = () => {
   if (data.sectorParking) {
     markers.push({
       coordinates: data.sectorParking,
-      url: "/sector/" + data.sectorId,
       isParking: true,
     });
   }

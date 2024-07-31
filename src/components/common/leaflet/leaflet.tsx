@@ -167,7 +167,7 @@ const Leaflet = ({
                 .map((m: MarkerDef & { url: string }) => (
                   <React.Fragment key={m.url}>
                     <a rel="noreferrer noopener" target="_blank" href={m.url}>
-                      {m.label}
+                      {"label" in m ? m.label : ""}
                     </a>
                     <br />
                   </React.Fragment>
