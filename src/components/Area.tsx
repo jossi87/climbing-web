@@ -1,4 +1,4 @@
-import React, { ComponentProps } from "react";
+import React, { ComponentProps, useMemo } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useParams } from "react-router-dom";
 import ChartGradeDistribution from "./common/chart-grade-distribution/chart-grade-distribution";
@@ -162,6 +162,46 @@ const Area = () => {
 
   const { data, error, redirectUi } = useArea(+areaId);
 
+  const markers: ComponentProps<typeof Leaflet>["markers"] = useMemo(() => {
+    if (!data?.sectors) {
+      return [];
+    }
+
+    type SectorParkingMarker = Pick<
+      SectorWithParking["parking"],
+      "latitude" | "longitude"
+    > & {
+      sectors: Pick<NonNullable<SectorWithParking>, "id" | "name">[];
+    };
+
+    const uniqueSectors: Record<string /* lat,lng */, SectorParkingMarker> =
+      data.sectors
+        ?.filter(isSectorWithParking)
+        ?.reduce((acc, { parking, name, id }) => {
+          const key = `${parking.latitude},${parking.longitude}`;
+          return {
+            ...acc,
+            [key]: {
+              ...acc[key],
+              latitude: parking.latitude,
+              longitude: parking.longitude,
+              sectors: [...(acc[key]?.sectors ?? []), { name, id }],
+            } satisfies SectorParkingMarker,
+          };
+        }, {});
+
+    return (
+      Object.values(uniqueSectors)?.map((info) => ({
+        coordinates: {
+          latitude: info.latitude,
+          longitude: info.longitude,
+        },
+
+        isParking: true,
+      })) ?? []
+    );
+  }, [data?.sectors]);
+
   if (redirectUi) {
     return redirectUi;
   }
@@ -198,15 +238,6 @@ const Area = () => {
       orderableMedia.push(...data.triviaMedia);
     }
   }
-
-  const markers: ComponentProps<typeof Leaflet>["markers"] =
-    data.sectors?.filter(isSectorWithParking)?.map((s) => {
-      return {
-        coordinates: s.parking,
-        url: "/sector/" + s.id,
-        isParking: true,
-      };
-    }) ?? [];
 
   const outlines: ComponentProps<typeof Leaflet>["outlines"] = [];
   const approaches: ComponentProps<typeof Leaflet>["approaches"] = [];

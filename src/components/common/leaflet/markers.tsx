@@ -11,12 +11,11 @@ import { useNavigate } from "react-router";
 import { LatLngExpression } from "leaflet";
 import { components } from "../../../@types/buldreinfo/swagger";
 import { captureException } from "@sentry/react";
+import { Button, Icon } from "semantic-ui-react";
 
 type ParkingMarker = {
   coordinates: components["schemas"]["Coordinates"];
-  label?: string;
   isParking: true;
-  url?: string;
 };
 
 type CameraMarker = {
@@ -72,9 +71,8 @@ type Props = {
 
 const isCoordinateMarker = (
   m: MarkerDef,
-): m is MarkerDef & Required<Pick<MarkerDef, "coordinates">> => {
-  return !!(m.coordinates.latitude && m.coordinates.longitude);
-};
+): m is MarkerDef & Required<Pick<MarkerDef, "coordinates">> =>
+  !!(m.coordinates.latitude && m.coordinates.longitude);
 
 const isParkingMarker = (m: MarkerDef): m is ParkingMarker =>
   isCoordinateMarker(m) && (m as ParkingMarker).isParking;
@@ -120,49 +118,42 @@ export default function Markers({
   if (!markers) {
     return null;
   }
+
   return markers.map((m) => {
-    let label = m.label;
-    if (showElevation && m.coordinates.elevation) {
-      const elevation = Math.round(m.coordinates.elevation);
-      label = label ? label + " (" + elevation + "m)" : elevation + "m";
-    }
     if (isParkingMarker(m)) {
       return (
         <Marker
           icon={parkingIcon}
           position={[m.coordinates.latitude ?? 0, m.coordinates.longitude ?? 0]}
           key={[
-            "parking",
+            "parking-multi",
             m.coordinates.latitude,
             m.coordinates.longitude,
-            m.url,
           ].join("/")}
-          eventHandlers={{
-            click: () => {
-              if (addEventHandlers) {
-                if (m.url) {
-                  navigate(m.url);
-                } else {
-                  captureException("Missing marker URL", {
-                    extra: { marker: m },
-                  });
-                }
-              }
-            },
-          }}
         >
-          {label && (
-            <Tooltip
-              opacity={opacity}
-              permanent
-              className="buldreinfo-tooltip-compact"
-            >
-              {label}
-            </Tooltip>
-          )}
+          <Popup closeButton={false}>
+            <Button icon labelPosition="left" primary size="small">
+              <Icon name="location arrow" />
+              <a
+                href={`https://www.google.com/maps/dir/?api=1&destination=${m.coordinates.latitude},${m.coordinates.longitude}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "#fff" }}
+              >
+                Navigate
+              </a>
+            </Button>
+          </Popup>
         </Marker>
       );
     }
+
+    let label = m.label;
+    if (showElevation && m.coordinates.elevation) {
+      const elevation = Math.round(m.coordinates.elevation);
+      label = label ? label + " (" + elevation + "m)" : elevation + "m";
+    }
+
     if (isCameraMarker(m)) {
       return (
         <Marker
@@ -201,6 +192,7 @@ export default function Markers({
         </Marker>
       );
     }
+
     if (isHtmlMarker(m)) {
       return (
         <Marker
