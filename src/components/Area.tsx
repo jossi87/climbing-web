@@ -1,6 +1,6 @@
 import React, { ComponentProps, useMemo } from "react";
 import { Helmet } from "react-helmet";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import ChartGradeDistribution from "./common/chart-grade-distribution/chart-grade-distribution";
 import Top from "./common/top/top";
 import Activity from "./common/activity/activity";
@@ -154,8 +154,9 @@ const isSectorWithParking = (s: AreaSectorType): s is SectorWithParking => {
 };
 
 const Area = () => {
+  const navigate = useNavigate();
   const meta = useMeta();
-  const { areaId } = useParams();
+  const { areaId, pane } = useParams();
   if (areaId === undefined) {
     throw new Error("Missing areaId parameter");
   }
@@ -266,8 +267,10 @@ const Area = () => {
     }
   }
   const panes: ComponentProps<typeof Tab>["panes"] = [];
+  const paneIndex = {};
   const height = "40vh";
   if (data.media && data.media.length) {
+    paneIndex["image"] = panes.length;
     panes.push({
       menuItem: { key: "image", icon: "image" },
       render: () => (
@@ -292,6 +295,7 @@ const Area = () => {
         ? { lat: data.coordinates.latitude, lng: data.coordinates.longitude }
         : meta.defaultCenter;
     const defaultZoom = data.coordinates ? 14 : meta.defaultZoom;
+    paneIndex["map"] = panes.length;
     panes.push({
       menuItem: { key: "map", icon: "map" },
       render: () => (
@@ -314,6 +318,7 @@ const Area = () => {
     });
   }
   if (data.sectors?.length) {
+    paneIndex["distribution"] = panes.length;
     panes.push({
       menuItem: { key: "distribution", icon: "area graph" },
       render: () => (
@@ -322,6 +327,7 @@ const Area = () => {
         </Tab.Pane>
       ),
     });
+    paneIndex["top"] = panes.length;
     panes.push({
       menuItem: { key: "top", icon: "trophy" },
       render: () => (
@@ -330,6 +336,7 @@ const Area = () => {
         </Tab.Pane>
       ),
     });
+    paneIndex["activity"] = panes.length;
     panes.push({
       menuItem: { key: "activity", icon: "time" },
       render: () => (
@@ -338,6 +345,7 @@ const Area = () => {
         </Tab.Pane>
       ),
     });
+    paneIndex["todo"] = panes.length;
     panes.push({
       menuItem: { key: "todo", icon: "bookmark" },
       render: () => (
@@ -348,15 +356,18 @@ const Area = () => {
     });
   }
 
-  const sectorPanes: ComponentProps<typeof Tab>["panes"] = [];
   if (data.sectors) {
     const numTickedProblemsInArea = data.sectors.reduce(
       (count, current) =>
         count + (current.problems?.filter((p) => p.ticked)?.length ?? 0),
       0,
     );
-    sectorPanes.push({
-      menuItem: "Sectors (" + data.sectors.length + ")",
+    paneIndex["sectors"] = panes.length;
+    panes.push({
+      menuItem: {
+        key: "sectors",
+        children: "Sectors (" + data.sectors.length + ")",
+      },
       render: () => (
         <Tab.Pane>
           <Item.Group link unstackable>
@@ -442,14 +453,18 @@ const Area = () => {
         </Tab.Pane>
       ),
     });
-    sectorPanes.push({
-      menuItem:
-        (meta.isBouldering ? "Problems (" : "Routes (") +
-        (data.typeNumTicked?.reduce(
-          (count, current) => count + (current?.num ?? 0),
-          0,
-        ) ?? []) +
-        ")",
+
+    panes["problems"] = panes.length;
+    panes.push({
+      menuItem: {
+        key: "problems",
+        children: `${meta.isBouldering ? "Problems" : "Routes"} (${
+          data.typeNumTicked?.reduce(
+            (count, current) => count + (current?.num ?? 0),
+            0,
+          ) ?? []
+        })`,
+      },
       render: () => {
         type Rows = ComponentProps<typeof ProblemList>["rows"];
         const rows: Rows =
@@ -551,8 +566,6 @@ const Area = () => {
         />
       ) : null}
 
-      <Tab panes={panes} />
-
       {data.noDogsAllowed ? (
         <Message warning>
           {data.noDogsAllowed ? (
@@ -641,7 +654,15 @@ const Area = () => {
         ) : null}
       </Segment>
 
-      {sectorPanes.length ? <Tab panes={sectorPanes} /> : null}
+      <Tab
+        panes={panes}
+        defaultActiveIndex={paneIndex[pane ?? ""] ?? 0}
+        onTabChange={(_, data) => {
+          const activeIndex = data.activeIndex ?? 0;
+          const key = data.panes[activeIndex]?.menuItem?.key ?? "";
+          navigate([`/area`, areaId, key].filter(Boolean).join("/"));
+        }}
+      />
     </>
   );
 };
