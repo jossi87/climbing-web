@@ -124,6 +124,7 @@ function AppRoutes() {
           <Route path="/" element={<Frontpage />} />
           <Route path="/about" element={<About />} />
           <Route path="/area/:areaId" element={<Area />} />
+          <Route path="/area/:areaId/:pane" element={<Area />} />
           <Route
             path="/area/edit/:areaId"
             element={
