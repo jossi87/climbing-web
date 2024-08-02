@@ -109,7 +109,6 @@ export function useData<TQueryData = unknown, TData = TQueryData>(
     ...options,
   });
   const redirectUi = useRedirect(data.data);
-  data.isFetched;
   return { ...data, redirectUi };
 }
 
