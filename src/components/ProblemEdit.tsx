@@ -521,7 +521,9 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                 selected={
                   data.faDate ? convertFromStringToDate(data.faDate) : undefined
                 }
-                onChange={(date) => onFaDateChanged(date ?? undefined)}
+                onChange={(date: Date | null) =>
+                  onFaDateChanged(date ?? undefined)
+                }
               />
             </Form.Field>
             {meta.isBouldering ? (
@@ -664,7 +666,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                         ? convertFromStringToDate(data.faAid.date)
                         : undefined
                     }
-                    onChange={(date) => onFaAidDateChanged(date)}
+                    onChange={(date: Date | null) => onFaAidDateChanged(date)}
                   />
                   <TextArea
                     placeholder="Enter description"

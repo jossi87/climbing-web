@@ -86,7 +86,7 @@ const TickModal = ({
                   showYearDropdown
                   dropdownMode="select"
                   selected={date ? convertFromStringToDate(date) : undefined}
-                  onChange={(date) =>
+                  onChange={(date: Date | null) =>
                     setDate(date ? convertFromDateToString(date) : undefined)
                   }
                 />
@@ -215,7 +215,7 @@ const TickModal = ({
                         selected={
                           r.date ? convertFromStringToDate(r.date) : undefined
                         }
-                        onChange={(date) => {
+                        onChange={(date: Date | null) => {
                           // TODO: Stop mutating state directly here.
                           r.date = convertFromDateToString(date) ?? r.date;
                           setRepeats([...repeats]);
