@@ -94,12 +94,12 @@ export const reducer = (state: State, update: Update): State => {
           // Update points
           (latest as CubicPoint).c = [
             {
-              x: latest.x + deltaX,
-              y: latest.y + deltaY,
-            },
-            {
               x: previous.x - deltaX,
               y: previous.y - deltaY,
+            },
+            {
+              x: latest.x + deltaX,
+              y: latest.y + deltaY,
             },
           ];
         }
