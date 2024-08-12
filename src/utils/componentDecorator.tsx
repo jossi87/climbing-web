@@ -6,7 +6,13 @@ export const componentDecorator: LinkifyProps["componentDecorator"] = (
   text,
   key,
 ) => (
-  <a href={href} key={key} target="_blank" rel="noreferrer">
+  <a
+    href={href}
+    key={key}
+    target="_blank"
+    rel="noreferrer"
+    style={{ wordBreak: "break-all" }}
+  >
     {text}
   </a>
 );
