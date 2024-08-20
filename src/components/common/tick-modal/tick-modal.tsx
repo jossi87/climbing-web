@@ -129,6 +129,7 @@ const TickModal = ({
                 compact
                 selection
                 value={stars}
+                selectOnBlur={false}
                 onChange={(e, data) => {
                   setStars(Number(data.value));
                 }}
