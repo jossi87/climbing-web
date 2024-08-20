@@ -8,11 +8,42 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Segment, Label } from "semantic-ui-react";
+import { Segment, Label, Icon } from "semantic-ui-react";
 import { getDistanceWithUnit } from "../leaflet/geo-utils";
 
 type Props = {
   approach?: components["schemas"]["Approach"];
+};
+
+const createXmlString = (
+  coordinates: components["schemas"]["Coordinates"][],
+): string => {
+  let result = '<?xml version="1.0" encoding="UTF-8"?>\r\n';
+  result +=
+    '<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="BratteLinjer/Buldreinfo">\r\n';
+  result += "<trk>\r\n";
+  result += "\t<type>Running</type>\r\n";
+  result += "\t<trkseg>\r\n";
+  result += coordinates.reduce((accum, curr) => {
+    const segmentTag = `\t\t<trkpt lat="${curr.latitude}" lon="${curr.longitude}"><ele>${curr.elevation}</ele></trkpt>\r\n`;
+    return (accum += segmentTag);
+  }, "");
+  result += "\t</trkseg>\r\n";
+  result += "</trk>\r\n";
+  result += "</gpx>";
+  return result;
+};
+
+const downloadGpxFile = (
+  coordinates: components["schemas"]["Coordinates"][],
+) => {
+  const xml = createXmlString(coordinates);
+  const url = "data:text/json;charset=utf-8," + xml;
+  const link = document.createElement("a");
+  link.download = `approach.gpx`;
+  link.href = url;
+  document.body.appendChild(link);
+  link.click();
 };
 
 export const ApproachProfile = ({ approach }: Props) => {
@@ -92,6 +123,16 @@ export const ApproachProfile = ({ approach }: Props) => {
             new Set(approach.coordinates.map((a) => a.elevationSource)),
           ).join(", ")}
         </Label.Detail>
+      </Label>
+      <Label
+        basic
+        size="small"
+        image
+        as="a"
+        onClick={() => downloadGpxFile(approach.coordinates)}
+      >
+        <Icon name="download" />
+        GPX
       </Label>
     </>
   );
