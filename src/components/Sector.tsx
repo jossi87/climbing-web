@@ -493,7 +493,11 @@ const Sector = () => {
             <Table.Row verticalAlign="top">
               <Table.Cell>Approach:</Table.Cell>
               <Table.Cell>
-                <ApproachProfile approach={data.approach} />
+                <ApproachProfile
+                  areaName={data.areaName}
+                  sectorName={data.name}
+                  approach={data.approach}
+                />
               </Table.Cell>
             </Table.Row>
           )}

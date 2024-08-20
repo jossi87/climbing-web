@@ -12,16 +12,21 @@ import { Segment, Label, Icon } from "semantic-ui-react";
 import { getDistanceWithUnit } from "../leaflet/geo-utils";
 
 type Props = {
-  approach?: components["schemas"]["Approach"];
+  areaName: string;
+  sectorName: string;
+  approach: components["schemas"]["Approach"];
 };
 
 const createXmlString = (
+  areaName: string,
+  sectorName: string,
   coordinates: components["schemas"]["Coordinates"][],
 ): string => {
   let result = '<?xml version="1.0" encoding="UTF-8"?>\r\n';
   result +=
     '<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="BratteLinjer/Buldreinfo">\r\n';
   result += "<trk>\r\n";
+  result += `\t<name>${areaName} - ${sectorName}</name>\r\n`;
   result += "\t<type>Running</type>\r\n";
   result += "\t<trkseg>\r\n";
   result += coordinates.reduce((accum, curr) => {
@@ -35,18 +40,21 @@ const createXmlString = (
 };
 
 const downloadGpxFile = (
+  areaName: string,
+  sectorName: string,
   coordinates: components["schemas"]["Coordinates"][],
 ) => {
-  const xml = createXmlString(coordinates);
+  const xml = createXmlString(areaName, sectorName, coordinates);
   const url = "data:text/json;charset=utf-8," + xml;
   const link = document.createElement("a");
-  link.download = `approach.gpx`;
+  link.download =
+    `${areaName}_${sectorName}`.replace(/[^a-z0-9]/gi, "_") + "_Approach.gpx";
   link.href = url;
   document.body.appendChild(link);
   link.click();
 };
 
-export const ApproachProfile = ({ approach }: Props) => {
+export const ApproachProfile = ({ areaName, sectorName, approach }: Props) => {
   return (
     <>
       <ResponsiveContainer aspect={3} width={200}>
@@ -129,7 +137,9 @@ export const ApproachProfile = ({ approach }: Props) => {
         size="small"
         image
         as="a"
-        onClick={() => downloadGpxFile(approach.coordinates)}
+        onClick={() =>
+          downloadGpxFile(areaName, sectorName, approach.coordinates)
+        }
       >
         <Icon name="download" />
         GPX

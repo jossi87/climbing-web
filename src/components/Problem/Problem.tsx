@@ -666,7 +666,11 @@ export const Problem = () => {
             <Table.Row verticalAlign="top">
               <Table.Cell>Approach:</Table.Cell>
               <Table.Cell>
-                <ApproachProfile approach={data.sectorApproach} />
+                <ApproachProfile
+                  areaName={data.areaName}
+                  sectorName={data.sectorName}
+                  approach={data.sectorApproach}
+                />
               </Table.Cell>
             </Table.Row>
           )}
