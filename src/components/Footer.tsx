@@ -25,6 +25,7 @@ const styleFacebook = {
   marginLeft: "5px",
   marginBottom: "5px",
 };
+const currYear = new Date().getFullYear();
 
 function Footer() {
   return (
@@ -99,7 +100,7 @@ function Footer() {
             Privacy Policy
           </List.Item>
         </List>
-        <p>Buldreinfo &amp; Bratte Linjer - 2003-2023</p>
+        <p>Buldreinfo &amp; Bratte Linjer - 2003-{currYear}</p>
       </Container>
     </Segment>
   );
