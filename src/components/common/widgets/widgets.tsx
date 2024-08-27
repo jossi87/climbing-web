@@ -192,7 +192,7 @@ export const WallDirection = ({
   ConditionLabelsProps,
   "wallDirectionCalculated" | "wallDirectionManual"
 >) => {
-  if (wallDirectionCalculated || wallDirectionManual) {
+  if (wallDirectionCalculated?.direction || wallDirectionManual?.direction) {
     return (
       <Popup
         content={
