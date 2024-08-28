@@ -1,4 +1,5 @@
 import React, { ComponentProps, useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import Leaflet from "../../leaflet/leaflet";
 import { useMeta } from "../../meta";
 import Markers, { MarkerDef } from "../../leaflet/markers";
@@ -7,6 +8,12 @@ import MarkerClusterGroup from "../../leaflet/react-leaflet-markercluster";
 import { useMap } from "react-leaflet";
 import Polygons from "../../leaflet/polygons";
 import { LatLngBounds, LeafletEventHandlerFn, latLngBounds } from "leaflet";
+import { LockSymbol } from "../../../common/widgets/widgets";
+import {
+  BreadcrumbSection,
+  BreadcrumbDivider,
+  Breadcrumb,
+} from "semantic-ui-react";
 
 type Props = Pick<TocProps, "areas">;
 
@@ -65,6 +72,35 @@ const useMarkers = (areas: Props["areas"]): MarkerDef[] => {
             coordinates: { latitude: lat, longitude: lng },
             label: problem.name,
             url: `/problem/${problem.id}`,
+            html: (
+              <>
+                <Breadcrumb>
+                  <BreadcrumbSection link>
+                    <Link to={`/area/${area.id}`}>{area.name}</Link>
+                    <LockSymbol
+                      lockedAdmin={area.lockedAdmin}
+                      lockedSuperadmin={area.lockedSuperadmin}
+                    />
+                  </BreadcrumbSection>
+                  <BreadcrumbDivider />
+                  <BreadcrumbSection link>
+                    <Link to={`/sector/${sector.id}`}>{sector.name}</Link>
+                    <LockSymbol
+                      lockedAdmin={sector.lockedAdmin}
+                      lockedSuperadmin={sector.lockedSuperadmin}
+                    />
+                  </BreadcrumbSection>
+                  <br />
+                  <BreadcrumbSection link>
+                    {`#${problem.nr} `}
+                    <Link to={`/problem/${problem.id}`}>
+                      <b>{problem.name}</b>
+                    </Link>{" "}
+                    {problem.grade}
+                  </BreadcrumbSection>
+                </Breadcrumb>
+              </>
+            ),
           });
         }
       }
