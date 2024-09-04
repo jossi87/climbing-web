@@ -1721,7 +1721,8 @@ export type components = {
             entity?: Record<string, never>;
             headers?: {
                 empty?: boolean;
-                [key: string]: string[] | undefined;
+            } & {
+                [key: string]: string[];
             };
             mediaType?: components["schemas"]["MediaType"];
             messageBodyWorkers?: components["schemas"]["MessageBodyWorkers"];
@@ -1729,13 +1730,14 @@ export type components = {
             providers?: components["schemas"]["Providers"];
             parameterizedHeaders?: {
                 empty?: boolean;
-                [key: string]: components["schemas"]["ParameterizedHeader"][] | undefined;
+            } & {
+                [key: string]: components["schemas"]["ParameterizedHeader"][];
             };
         };
         ContentDisposition: {
             type?: string;
             parameters?: {
-                [key: string]: string | undefined;
+                [key: string]: string;
             };
             fileName?: string;
             /** Format: date-time */
@@ -1752,7 +1754,8 @@ export type components = {
             entity?: Record<string, never>;
             headers?: {
                 empty?: boolean;
-                [key: string]: string[] | undefined;
+            } & {
+                [key: string]: string[];
             };
             mediaType?: components["schemas"]["MediaType"];
             messageBodyWorkers?: components["schemas"]["MessageBodyWorkers"];
@@ -1762,17 +1765,18 @@ export type components = {
             value?: string;
             content?: Record<string, never>;
             fileName?: string;
-            simple?: boolean;
             formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
+            simple?: boolean;
             parameterizedHeaders?: {
                 empty?: boolean;
-                [key: string]: components["schemas"]["ParameterizedHeader"][] | undefined;
+            } & {
+                [key: string]: components["schemas"]["ParameterizedHeader"][];
             };
         };
         FormDataContentDisposition: {
             type?: string;
             parameters?: {
-                [key: string]: string | undefined;
+                [key: string]: string;
             };
             fileName?: string;
             /** Format: date-time */
@@ -1790,7 +1794,8 @@ export type components = {
             entity?: Record<string, never>;
             headers?: {
                 empty?: boolean;
-                [key: string]: string[] | undefined;
+            } & {
+                [key: string]: string[];
             };
             mediaType?: components["schemas"]["MediaType"];
             messageBodyWorkers?: components["schemas"]["MessageBodyWorkers"];
@@ -1798,18 +1803,19 @@ export type components = {
             providers?: components["schemas"]["Providers"];
             bodyParts?: components["schemas"]["BodyPart"][];
             fields?: {
-                [key: string]: components["schemas"]["FormDataBodyPart"][] | undefined;
+                [key: string]: components["schemas"]["FormDataBodyPart"][];
             };
             parameterizedHeaders?: {
                 empty?: boolean;
-                [key: string]: components["schemas"]["ParameterizedHeader"][] | undefined;
+            } & {
+                [key: string]: components["schemas"]["ParameterizedHeader"][];
             };
         };
         MediaType: {
             type?: string;
             subtype?: string;
             parameters?: {
-                [key: string]: string | undefined;
+                [key: string]: string;
             };
             wildcardType?: boolean;
             wildcardSubtype?: boolean;
@@ -1820,7 +1826,8 @@ export type components = {
             entity?: Record<string, never>;
             headers?: {
                 empty?: boolean;
-                [key: string]: string[] | undefined;
+            } & {
+                [key: string]: string[];
             };
             mediaType?: components["schemas"]["MediaType"];
             messageBodyWorkers?: components["schemas"]["MessageBodyWorkers"];
@@ -1829,21 +1836,24 @@ export type components = {
             bodyParts?: components["schemas"]["BodyPart"][];
             parameterizedHeaders?: {
                 empty?: boolean;
-                [key: string]: components["schemas"]["ParameterizedHeader"][] | undefined;
+            } & {
+                [key: string]: components["schemas"]["ParameterizedHeader"][];
             };
         };
         MultivaluedMapStringParameterizedHeader: {
             empty?: boolean;
-            [key: string]: components["schemas"]["ParameterizedHeader"][] | undefined;
+        } & {
+            [key: string]: components["schemas"]["ParameterizedHeader"][];
         };
         MultivaluedMapStringString: {
             empty?: boolean;
-            [key: string]: string[] | undefined;
+        } & {
+            [key: string]: string[];
         };
         ParameterizedHeader: {
             value?: string;
             parameters?: {
-                [key: string]: string | undefined;
+                [key: string]: string;
             };
         };
         Providers: Record<string, never>;
