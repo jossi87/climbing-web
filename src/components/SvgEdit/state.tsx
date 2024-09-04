@@ -117,6 +117,9 @@ export const reducer = (state: State, update: Update): State => {
 
     case "remove-point": {
       const points = state.points.filter((_, i) => i !== state.activePoint);
+      if (points.length > 0 && isCubicPoint(points[0])) {
+        delete points[0].c;
+      }
       const path = generatePath(points);
       return {
         ...state,
