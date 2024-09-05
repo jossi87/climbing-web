@@ -57,6 +57,9 @@ const SectorListItem = ({ sectorName, problem }: Props) => {
     problem.numTicks &&
     problem.numTicks + (problem.numTicks == 1 ? " ascent" : " ascents");
   let faTypeAscents = problem.fa;
+  if (problem.faDate) {
+    faTypeAscents += " " + problem.faDate.substring(0, 4);
+  }
   if (type && ascents) {
     faTypeAscents =
       (faTypeAscents != null ? faTypeAscents + " (" : "(") +
@@ -90,7 +93,7 @@ const SectorListItem = ({ sectorName, problem }: Props) => {
             {sectorName} {`#${problem.nr}`}{" "}
           </i>
         </small>
-        {faTypeAscents ? <small> {faTypeAscents}</small> : null}
+        {faTypeAscents && <small> {faTypeAscents}</small>}
         <small>
           <i style={{ color: "gray" }}>
             {" "}
@@ -483,14 +486,12 @@ const Area = () => {
             })
             ?.sort((a, b) => b.gradeNumber - a.gradeNumber) ?? [];
         return (
-          <Tab.Pane>
-            <ProblemList
-              storageKey={`area/${areaId}`}
-              mode="sector"
-              defaultOrder="grade-desc"
-              rows={rows}
-            />
-          </Tab.Pane>
+          <ProblemList
+            storageKey={`area/${areaId}`}
+            mode="sector"
+            defaultOrder="grade-desc"
+            rows={rows}
+          />
         );
       },
     });

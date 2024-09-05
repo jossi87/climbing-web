@@ -153,6 +153,10 @@ export const Problems = ({ filterOpen }: Props) => {
                             problem.numTicks &&
                             problem.numTicks +
                               (problem.numTicks == 1 ? " ascent" : " ascents");
+                          let fa = problem.fa;
+                          if (problem.faYear) {
+                            fa += " " + problem.faYear;
+                          }
                           let typeAscents;
                           if (isClimbing) {
                             let t = problem.t?.subType;
@@ -170,7 +174,7 @@ export const Problems = ({ filterOpen }: Props) => {
                               typeAscents = " ";
                             }
                           }
-                          const text = [problem.fa, typeAscents]
+                          const text = [fa, typeAscents]
                             .filter(Boolean)
                             .join(" ");
                           return {
