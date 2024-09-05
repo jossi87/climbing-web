@@ -55,7 +55,7 @@ export const SectorListItem = ({ problem }: Props) => {
     problem.numTicks + (problem.numTicks == 1 ? " ascent" : " ascents");
   let faTypeAscents = problem.fa;
   if (problem.faDate) {
-    faTypeAscents += ", " + problem.faDate.substring(0, 4);
+    faTypeAscents += " " + problem.faDate.substring(0, 4);
   }
   if (type && ascents) {
     faTypeAscents =

@@ -131,9 +131,17 @@ const SORTS: Record<State["order"], (a: Row, b: Row) => number> = {
 
   date: (a, b) => a.num - b.num || a.name.localeCompare(b.name, getLocales()),
 
-  "first-ascent": (a, b) =>
-    a.faDate?.localeCompare(b.faDate, getLocales()) ||
-    a.name.localeCompare(b.name, getLocales()),
+  "first-ascent": (a, b) => {
+    if (a.faDate && !b.faDate) {
+      return -1;
+    } else if (!a.faDate && b.faDate) {
+      return 1;
+    }
+    return (
+      a.faDate?.localeCompare(b.faDate, getLocales()) ||
+      a.name.localeCompare(b.name, getLocales())
+    );
+  },
 
   "grade-desc": (a, b) =>
     b.gradeNumber - a.gradeNumber || a.name.localeCompare(b.name, getLocales()),
