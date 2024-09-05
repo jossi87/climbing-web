@@ -12,4 +12,5 @@ export interface Row {
   subType: string;
   num: number;
   fa: boolean;
+  faDate: string | null;
 }

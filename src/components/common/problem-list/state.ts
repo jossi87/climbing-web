@@ -9,6 +9,7 @@ import { useSessionStorage } from "../../../utils/use-local-storage";
 export type OrderOption =
   | "ascents"
   | "date"
+  | "first-ascent"
   | "grade-asc"
   | "grade-desc"
   | "name"
@@ -130,6 +131,10 @@ const SORTS: Record<State["order"], (a: Row, b: Row) => number> = {
 
   date: (a, b) => a.num - b.num || a.name.localeCompare(b.name, getLocales()),
 
+  "first-ascent": (a, b) =>
+    a.faDate?.localeCompare(b.faDate, getLocales()) ||
+    a.name.localeCompare(b.name, getLocales()),
+
   "grade-desc": (a, b) =>
     b.gradeNumber - a.gradeNumber || a.name.localeCompare(b.name, getLocales()),
 
@@ -158,6 +163,7 @@ const CLEANED_ORDER: Record<OrderOption, OrderOption> = {
   name: "name",
   ascents: "ascents",
   date: "date",
+  "first-ascent": "first-ascent",
   "grade-asc": "grade-asc",
   "grade-desc": "grade-desc",
   rating: "rating",

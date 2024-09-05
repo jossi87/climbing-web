@@ -477,6 +477,7 @@ const Area = () => {
                     subType: p.t?.subType ?? "",
                     num: p.nr ?? 0,
                     fa: !!p.fa,
+                    faDate: p.faDate,
                   }) satisfies Rows[number],
               );
             })

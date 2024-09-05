@@ -257,6 +257,7 @@ const ProfileStatistics = ({ userId, canDownload }: ProfileStatisticsProps) => {
                 subType: t.subType ?? "",
                 num: t.num ?? 0,
                 fa: t.fa ?? false,
+                faDate: null,
               };
             }) ?? []
           }

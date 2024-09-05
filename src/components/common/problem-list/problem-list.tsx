@@ -39,6 +39,11 @@ const ORDER_BY_OPTIONS: Record<
       value: "ascents",
     },
     {
+      key: "first-ascent",
+      text: "first ascent",
+      value: "first-ascent",
+    },
+    {
       key: "grade-asc",
       text: "grade (easy -> hard)",
       value: "grade-asc",

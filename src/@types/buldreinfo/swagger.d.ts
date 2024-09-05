@@ -1065,6 +1065,7 @@ export type components = {
             gradeNumber?: number;
             grade?: string;
             fa?: string;
+            faDate?: string;
             /** Format: int32 */
             numPitches?: number;
             hasImages?: boolean;
@@ -1765,8 +1766,8 @@ export type components = {
             value?: string;
             content?: Record<string, never>;
             fileName?: string;
-            formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
             simple?: boolean;
+            formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
             parameterizedHeaders?: {
                 empty?: boolean;
             } & {

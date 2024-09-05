@@ -54,6 +54,9 @@ export const SectorListItem = ({ problem }: Props) => {
     problem.numTicks &&
     problem.numTicks + (problem.numTicks == 1 ? " ascent" : " ascents");
   let faTypeAscents = problem.fa;
+  if (problem.faDate) {
+    faTypeAscents += ", " + problem.faDate.substring(0, 4);
+  }
   if (type && ascents) {
     faTypeAscents =
       (faTypeAscents != null ? faTypeAscents + " (" : "(") +
@@ -603,6 +606,7 @@ const Sector = () => {
               subType: p.t?.subType ?? "",
               num: 0,
               fa: false,
+              faDate: p.faDate,
               areaName: "",
               sectorName: "",
             } satisfies ComponentProps<typeof ProblemList>["rows"][number];

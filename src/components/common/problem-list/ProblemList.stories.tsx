@@ -102,6 +102,7 @@ const toRow = (p: Partial<(typeof CLIMBING_DATA)[number]>): Row => ({
   subType: (p.t?.subType || p.t?.type) ?? "",
   num: 0,
   fa: !!p.fa,
+  faDate: null,
   areaName: p.areaName ?? "",
   sectorName: p.sectorName ?? "",
 });
