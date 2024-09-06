@@ -34,6 +34,7 @@ const style: CSSProperties = {
 
 type Props = Pick<ComponentProps<typeof MediaEditModal>, "numPitches"> &
   Pick<ComponentProps<typeof MediaModal>, "optProblemId"> & {
+    optProblemSectionId: components["schemas"]["Svg"]["problemSectionId"];
     media: components["schemas"]["Media"][];
     orderableMedia: components["schemas"]["Media"][];
     carouselMedia: components["schemas"]["Media"][];
@@ -46,6 +47,7 @@ const Media = ({
   orderableMedia,
   carouselMedia,
   optProblemId,
+  optProblemSectionId,
   showLocation,
 }: Props) => {
   const location = useLocation();
@@ -72,7 +74,10 @@ const Media = ({
   });
 
   function openModal(m) {
-    const url = location.pathname + "?idMedia=" + m.id;
+    let url = location.pathname + "?idMedia=" + m.id;
+    if (optProblemSectionId) {
+      url += "&idPitch=" + optProblemSectionId;
+    }
     setM(m);
     setEditM(null);
     window.history.replaceState("", "", url);
@@ -203,15 +208,27 @@ const Media = ({
     });
   }
 
+  function getUrlValue(param: string) {
+    if (window.location.search) {
+      const ix = window.location.search.indexOf(param + "=");
+      if (ix > 0) {
+        let id = window.location.search.substring(ix + 8);
+        if (id.indexOf("&") > 0) {
+          id = id.substring(0, id.indexOf("&"));
+        }
+        return id;
+      }
+    }
+    return null;
+  }
+
   if (isLoading) {
     return <Loading />;
   }
-  if (window.location.search && media) {
-    let id = window.location.search.replace("?idMedia=", "");
-    if (id.indexOf("&") > 0) {
-      id = id.substring(0, id.indexOf("&"));
-    }
-    const x = media.filter((m) => m.id === parseInt(id));
+  const idPitch = getUrlValue("idPitch") || 0;
+  const idMedia = getUrlValue("idMedia");
+  if (idPitch == (optProblemSectionId || 0) && idMedia && media) {
+    const x = media.filter((m) => m.id === parseInt(idMedia));
     if (
       x &&
       x.length === 1 &&

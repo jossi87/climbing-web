@@ -36,14 +36,20 @@ export function getImageUrl(
   id: number,
   checksum: number,
   minDimension?: number,
+  x?: number,
+  y?: number,
+  width?: number,
+  height?: number,
 ): string {
   const crc32 = checksum || 0;
+  let url = `/images?id=${id}&crc32=${crc32}`;
   if (minDimension) {
-    return getUrl(
-      `/images?id=${id}&crc32=${crc32}&minDimention=${minDimension}`,
-    );
+    url += `&minDimention=${minDimension}`;
   }
-  return getUrl(`/images?id=${id}&crc32=${crc32}`);
+  if (width && height) {
+    url += `&x=${x}&y=${y}&width=${width}&height=${height}`;
+  }
+  return getUrl(url);
 }
 
 export function getBuldreinfoMediaUrlSupported(id: number): string {

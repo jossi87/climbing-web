@@ -999,6 +999,7 @@ export type components = {
             width?: number;
             /** Format: int32 */
             height?: number;
+            region?: components["schemas"]["MediaRegion"];
             /** Format: int32 */
             idType?: number;
             t?: string;
@@ -1025,6 +1026,16 @@ export type components = {
             description?: string;
             location?: string;
             alt?: string;
+        };
+        MediaRegion: {
+            /** Format: int32 */
+            x?: number;
+            /** Format: int32 */
+            y?: number;
+            /** Format: int32 */
+            width?: number;
+            /** Format: int32 */
+            height?: number;
         };
         MediaSvgElement: {
             /** @enum {string} */
@@ -1099,6 +1110,8 @@ export type components = {
             texts?: string;
             anchors?: string;
             tradBelayStations?: string;
+            /** Format: int32 */
+            problemSectionId?: number;
             primary?: boolean;
             ticked?: boolean;
             todo?: boolean;
@@ -1766,8 +1779,8 @@ export type components = {
             value?: string;
             content?: Record<string, never>;
             fileName?: string;
-            simple?: boolean;
             formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
+            simple?: boolean;
             parameterizedHeaders?: {
                 empty?: boolean;
             } & {
@@ -2288,6 +2301,14 @@ export interface operations {
                 id: number;
                 /** @description Checksum - not used in ws, but necessary to include on client when an image is changed (e.g. rotated) to avoid cached version */
                 crc32?: number;
+                /** @description Image region - x */
+                x?: number;
+                /** @description Image region - y */
+                y?: number;
+                /** @description Image region - width */
+                width?: number;
+                /** @description Image region - height */
+                height?: number;
                 /** @description Image size - E.g. minDimention=100 can return an image with the size 100x133px */
                 minDimention?: number;
             };

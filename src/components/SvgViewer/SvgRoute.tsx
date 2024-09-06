@@ -97,7 +97,9 @@ export const SvgRoute = ({
   if (y > mediaHeight - border) y = mediaHeight - border;
 
   const isHoveredOrActive =
-    optProblemId === svg.problemId || problemIdHovered == svg.problemId;
+    optProblemId === svg.problemId ||
+    problemIdHovered == svg.problemId ||
+    svg.nr == -1;
   const hoveredOrActiveScale = isHoveredOrActive ? 1.2 : 1;
   const pathIdentifier = `svg-route-path-${mediaId}-${svg.problemId}-${thumbnail}`;
   const extraAnchors =
@@ -186,7 +188,7 @@ export const SvgRoute = ({
         filter: isHoveredOrActive ? "contrast(2)" : undefined,
       }}
       onClick={() => {
-        if (close && !thumbnail) {
+        if (close && !thumbnail && svg.nr != -1) {
           navigate("/problem/" + svg.problemId + "?idMedia=" + mediaId);
         }
       }}
@@ -215,23 +217,25 @@ export const SvgRoute = ({
         style={{ fill: "none", stroke: groupColor }}
         strokeWidth={2 * scale * hoveredOrActiveScale * (thumbnail ? 3 : 1)}
       />
-      <text
-        fill={textColor}
-        stroke="black"
-        strokeWidth={5 * scale * hoveredOrActiveScale * (thumbnail ? 3 : 1)}
-        style={{
-          paintOrder: "stroke fill",
-          clipPath: "inset(-5px -5px -5px -5px round 10px)",
-        }}
-        fontSize={25 * scale * hoveredOrActiveScale * (thumbnail ? 3 : 1)}
-        fontWeight={isHoveredOrActive ? "bolder" : "normal"}
-        textAnchor="middle"
-        dominantBaseline="central"
-        x={x}
-        y={y}
-      >
-        {svg.nr}
-      </text>
+      {svg.nr != -1 && (
+        <text
+          fill={textColor}
+          stroke="black"
+          strokeWidth={5 * scale * hoveredOrActiveScale * (thumbnail ? 3 : 1)}
+          style={{
+            paintOrder: "stroke fill",
+            clipPath: "inset(-5px -5px -5px -5px round 10px)",
+          }}
+          fontSize={25 * scale * hoveredOrActiveScale * (thumbnail ? 3 : 1)}
+          fontWeight={isHoveredOrActive ? "bolder" : "normal"}
+          textAnchor="middle"
+          dominantBaseline="central"
+          x={x}
+          y={y}
+        >
+          {svg.nr}
+        </text>
+      )}
       {svg.hasAnchor && (
         <circle
           fill={groupColor}

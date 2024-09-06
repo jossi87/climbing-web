@@ -26,7 +26,9 @@ export const SvgViewer = ({
   problemIdHovered,
   setProblemIdHovered,
 }: SvgProps) => {
-  const scale = Math.max(m.width / 1920, m.height / 1440);
+  const imgW = m.region?.width || m.width;
+  const imgH = m.region?.height || m.height;
+  const scale = Math.max(imgW / 1920, imgH / 1440);
   const mediaSvgs =
     m.mediaSvgs?.length > 0 &&
     m.mediaSvgs.map((svg) => {
@@ -94,8 +96,8 @@ export const SvgViewer = ({
           sidebarOpen={sidebarOpen}
           scale={scale}
           mediaId={m.id}
-          mediaHeight={m.height}
-          mediaWidth={m.width}
+          mediaHeight={imgH}
+          mediaWidth={imgW}
           svg={svg}
           optProblemId={optProblemId}
           problemIdHovered={problemIdHovered}
@@ -107,15 +109,15 @@ export const SvgViewer = ({
     <>
       <canvas
         className="buldreinfo-svg-canvas"
-        width={m.width}
-        height={m.height}
+        width={imgW}
+        height={imgH}
         style={style}
       />
       <svg
         xmlns="http://www.w3.org/2000/svg"
         overflow="visible"
         className="buldreinfo-svg"
-        viewBox={"0 0 " + m.width + " " + m.height}
+        viewBox={"0 0 " + imgW + " " + imgH}
         preserveAspectRatio="xMidYMid meet"
         onClick={(e: React.MouseEvent<SVGSVGElement>) => {
           if (e.target instanceof SVGSVGElement && close) {
@@ -125,7 +127,15 @@ export const SvgViewer = ({
         onMouseLeave={() => setProblemIdHovered && setProblemIdHovered(null)}
       >
         <image
-          xlinkHref={getImageUrl(m.id, m.crc32)}
+          xlinkHref={getImageUrl(
+            m.id,
+            m.crc32,
+            null,
+            m.region?.x,
+            m.region?.y,
+            m.region?.width,
+            m.region?.height,
+          )}
           width="100%"
           height="100%"
         />

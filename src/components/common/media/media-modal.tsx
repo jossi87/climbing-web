@@ -219,14 +219,19 @@ const MediaModal = ({
       </>
     );
   })();
-  const canEdit = isAdmin && isImage;
-  const canDelete = isAdmin && isImage;
+  const canEdit = isAdmin && isImage && !m.region;
+  const canDelete = isAdmin && isImage && !m.region;
   const canRotate =
-    (isAdmin || m.uploadedByMe) && isImage && !m.svgs && !m.mediaSvgs;
-  const canDrawTopo = isAdmin && isImage && optProblemId;
-  const canDrawMedia = isAdmin && isImage && !isBouldering;
-  const canOrder = isAdmin && isImage && orderableMedia?.includes(m);
-  const canMove = isAdmin && isImage;
+    (isAdmin || m.uploadedByMe) &&
+    isImage &&
+    !m.svgs &&
+    !m.mediaSvgs &&
+    !m.region;
+  const canDrawTopo = isAdmin && isImage && optProblemId && !m.region;
+  const canDrawMedia = isAdmin && isImage && !isBouldering && !m.region;
+  const canOrder =
+    isAdmin && isImage && orderableMedia?.includes(m) && !m.region;
+  const canMove = isAdmin && isImage && !m.region;
   return (
     <Dimmer active={true} onClickOutside={onClose} page>
       <Sidebar.Pushable>
