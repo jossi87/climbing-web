@@ -101,7 +101,7 @@ export const SvgRoute = ({
     problemIdHovered == svg.problemId ||
     svg.nr == -1;
   const hoveredOrActiveScale = isHoveredOrActive ? 1.2 : 1;
-  const pathIdentifier = `svg-route-path-${mediaId}-${svg.problemId}-${thumbnail}`;
+  const pathIdentifier = `svg-route-path-${mediaId}-${svg.problemId}-${svg.problemSectionId}-${thumbnail}`;
   const extraAnchors =
     svg.anchors &&
     JSON.parse(svg.anchors).map((a) => (
