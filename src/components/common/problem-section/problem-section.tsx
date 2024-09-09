@@ -23,6 +23,12 @@ const ProblemSection = ({
     (e, { value }) => {
       if (value === undefined) {
         return;
+      } else if (
+        !confirm(
+          `Are you sure you want to change number of pitches from ${sections?.length || 1} to ${value}?`,
+        )
+      ) {
+        return;
       }
 
       const num = +value;

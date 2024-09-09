@@ -96,7 +96,8 @@ export const SvgRoute = ({
   if (y < border) y = border;
   if (y > mediaHeight - border) y = mediaHeight - border;
 
-  const isHoveredOrActive = optProblemId === svg.problemId || problemIdHovered == svg.problemId;
+  const isHoveredOrActive =
+    optProblemId === svg.problemId || problemIdHovered == svg.problemId;
   const hoveredOrActiveScale = isHoveredOrActive ? 1.2 : 1;
   const pathIdentifier = `svg-route-path-${mediaId}-${svg.problemId}-${svg.problemSectionId}-${thumbnail}`;
   const extraAnchors =
