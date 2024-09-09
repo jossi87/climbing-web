@@ -240,7 +240,7 @@ const Media = ({
       if (svgPitch && !pitch) {
         setSvgPitch(null);
       } else {
-        const newSvgPitchArr = newM.svgs.filter(
+        const newSvgPitchArr = newM.svgs?.filter(
           (m) => m.problemSectionId && m.nr == parseInt(pitch),
         );
         if (newSvgPitchArr && newSvgPitchArr.length === 1) {
