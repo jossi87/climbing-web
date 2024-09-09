@@ -50,6 +50,8 @@ const Media = ({
 }: Props) => {
   const location = useLocation();
   const [m, setM] = useState<components["schemas"]["Media"]>(null);
+  const [svgPitch, setSvgPitch] =
+    useState<components["schemas"]["SvgPitch"]>(null);
   const [editM, setEditM] = useState<components["schemas"]["Media"]>(null);
   const [autoPlayVideo, setAutoPlayVideo] = useState(false);
   const { isLoading, getAccessTokenSilently } = useAuth0();
@@ -74,13 +76,19 @@ const Media = ({
   function openModal(m) {
     const url = location.pathname + "?idMedia=" + m.id;
     setM(m);
+    setSvgPitch(null);
     setEditM(null);
     window.history.replaceState("", "", url);
   }
 
   function closeModal() {
-    const url = location.pathname;
-    setM(null);
+    let url = location.pathname;
+    if (svgPitch) {
+      setSvgPitch(null);
+      url += "?idMedia=" + m.id;
+    } else {
+      setM(null);
+    }
     window.history.replaceState("", "", url);
   }
 
@@ -207,7 +215,7 @@ const Media = ({
     if (window.location.search) {
       const ix = window.location.search.indexOf(param + "=");
       if (ix > 0) {
-        let id = window.location.search.substring(ix + 8);
+        let id = window.location.search.substring(ix + param.length + 1);
         if (id.indexOf("&") > 0) {
           id = id.substring(0, id.indexOf("&"));
         }
@@ -222,16 +230,30 @@ const Media = ({
   }
   const idMedia = getUrlValue("idMedia");
   if (idMedia && media) {
-    const x = media.filter((m) => m.id === parseInt(idMedia));
-    if (
-      x &&
-      x.length === 1 &&
-      (!m || m.id != x[0].id || m.mediaSvgs != x[0].mediaSvgs)
-    ) {
-      setM(x[0]);
+    const newMediaArr = media.filter((m) => m.id === parseInt(idMedia));
+    if (newMediaArr && newMediaArr.length === 1) {
+      const newM = newMediaArr[0];
+      if (!m || m.id != newM.id || m.mediaSvgs != newM.mediaSvgs) {
+        setM(newM);
+      }
+      const pitch = getUrlValue("pitch");
+      if (svgPitch && !pitch) {
+        setSvgPitch(null);
+      } else {
+        const newSvgPitchArr = newM.svgs.filter(
+          (m) => m.problemSectionId && m.nr == parseInt(pitch),
+        );
+        if (newSvgPitchArr && newSvgPitchArr.length === 1) {
+          const newSvgPitch = newSvgPitchArr[0].svgPitch;
+          if (!svgPitch || svgPitch.path != newSvgPitch.path) {
+            setSvgPitch(newSvgPitch);
+          }
+        }
+      }
     }
   } else if (!window.location.search && media && m) {
     setM(null);
+    setSvgPitch(null);
   }
   return (
     <>
@@ -257,6 +279,7 @@ const Media = ({
         <MediaModal
           onClose={closeModal}
           m={m}
+          svgPitch={svgPitch}
           autoPlayVideo={autoPlayVideo}
           onEdit={() => setEditM(m)}
           onDelete={onDeleteImage}

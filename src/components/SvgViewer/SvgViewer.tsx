@@ -76,22 +76,14 @@ export const SvgViewer = ({
         }
       }
     });
-  const routes =
-    m.svgs?.length > 0 &&
-    m.svgs
-      .sort((a, b) => {
-        if (problemIdHovered > 0 && a.problemId === problemIdHovered) {
-          return 1;
-        } else if (problemIdHovered > 0 && b.problemId === problemIdHovered) {
-          return -1;
-        } else if (optProblemId > 0 && a.problemId === optProblemId) {
-          return 1;
-        } else if (optProblemId > 0 && b.problemId === optProblemId) {
-          return -1;
-        }
-        return b.nr - a.nr;
-      })
-      .map((svg) => (
+  let routes;
+  if (m.svgs?.length > 0) {
+    if (svgPitch) {
+      const svg = {
+        ...m.svgs.filter((x) => x.svgPitch === svgPitch)[0],
+        path: svgPitch.path,
+      };
+      routes = [
         <SvgRoute
           key={[m.id, svg.problemId, svg.problemSectionId, thumb].join("-")}
           thumbnail={thumb}
@@ -104,8 +96,39 @@ export const SvgViewer = ({
           optProblemId={optProblemId}
           problemIdHovered={problemIdHovered}
           setProblemIdHovered={setProblemIdHovered}
-        />
-      ));
+        />,
+      ];
+    } else {
+      routes = m.svgs
+        .sort((a, b) => {
+          if (problemIdHovered > 0 && a.problemId === problemIdHovered) {
+            return 1;
+          } else if (problemIdHovered > 0 && b.problemId === problemIdHovered) {
+            return -1;
+          } else if (optProblemId > 0 && a.problemId === optProblemId) {
+            return 1;
+          } else if (optProblemId > 0 && b.problemId === optProblemId) {
+            return -1;
+          }
+          return b.nr - a.nr;
+        })
+        .map((svg) => (
+          <SvgRoute
+            key={[m.id, svg.problemId, svg.problemSectionId, thumb].join("-")}
+            thumbnail={thumb}
+            sidebarOpen={sidebarOpen}
+            scale={scale}
+            mediaId={m.id}
+            mediaHeight={imgH}
+            mediaWidth={imgW}
+            svg={svg}
+            optProblemId={optProblemId}
+            problemIdHovered={problemIdHovered}
+            setProblemIdHovered={setProblemIdHovered}
+          />
+        ));
+    }
+  }
 
   return (
     <>

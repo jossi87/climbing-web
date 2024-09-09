@@ -187,7 +187,15 @@ export const SvgRoute = ({
       }}
       onClick={() => {
         if (close && !thumbnail) {
-          navigate("/problem/" + svg.problemId + "?idMedia=" + mediaId);
+          let url = "/problem/" + svg.problemId + "?idMedia=" + mediaId;
+          if (
+            svg.problemSectionId &&
+            svg.nr &&
+            window.location.search.indexOf("pitch=") === -1
+          ) {
+            url += "&pitch=" + svg.nr;
+          }
+          navigate(url);
         }
       }}
       onMouseEnter={() =>
