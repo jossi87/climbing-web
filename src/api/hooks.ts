@@ -582,7 +582,7 @@ export function useSvgEdit(problemId: number, mediaId: number) {
         crc32: m.crc32 ?? 0,
         h: m.height ?? 0,
         w: m.width ?? 0,
-        hasAnchor: false,
+        hasAnchor: true,
         mediaId,
         nr: 0,
         path: "",
