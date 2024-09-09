@@ -9,6 +9,7 @@ type SvgProps = {
   style?: CSSProperties;
   close: () => void;
   m: components["schemas"]["Media"];
+  svgPitch: components["schemas"]["SvgPitch"];
   thumb: boolean;
   optProblemId: number;
   sidebarOpen: boolean;
@@ -20,14 +21,15 @@ export const SvgViewer = ({
   style,
   close,
   m,
+  svgPitch,
   thumb,
   optProblemId,
   sidebarOpen,
   problemIdHovered,
   setProblemIdHovered,
 }: SvgProps) => {
-  const imgW = m.region?.width || m.width;
-  const imgH = m.region?.height || m.height;
+  const imgW = svgPitch?.regionWidth || m.width;
+  const imgH = svgPitch?.regionHeight || m.height;
   const scale = Math.max(imgW / 1920, imgH / 1440);
   const mediaSvgs =
     m.mediaSvgs?.length > 0 &&
@@ -131,10 +133,10 @@ export const SvgViewer = ({
             m.id,
             m.crc32,
             null,
-            m.region?.x,
-            m.region?.y,
-            m.region?.width,
-            m.region?.height,
+            svgPitch?.regionX,
+            svgPitch?.regionY,
+            svgPitch?.regionWidth,
+            svgPitch?.regionHeight,
           )}
           width="100%"
           height="100%"

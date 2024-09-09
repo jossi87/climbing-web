@@ -285,6 +285,7 @@ const Media = ({
                 close={null}
                 thumb={true}
                 m={x}
+                svgPitch={null}
                 style={style}
                 optProblemId={optProblemId}
                 sidebarOpen={false}

@@ -999,7 +999,6 @@ export type components = {
             width?: number;
             /** Format: int32 */
             height?: number;
-            region?: components["schemas"]["MediaRegion"];
             /** Format: int32 */
             idType?: number;
             t?: string;
@@ -1026,16 +1025,6 @@ export type components = {
             description?: string;
             location?: string;
             alt?: string;
-        };
-        MediaRegion: {
-            /** Format: int32 */
-            x?: number;
-            /** Format: int32 */
-            y?: number;
-            /** Format: int32 */
-            width?: number;
-            /** Format: int32 */
-            height?: number;
         };
         MediaSvgElement: {
             /** @enum {string} */
@@ -1105,17 +1094,29 @@ export type components = {
             problemSubtype?: string;
             /** Format: int32 */
             nr?: number;
+            /** Format: int32 */
+            problemSectionId?: number;
+            svgPitch?: components["schemas"]["SvgPitch"];
             path?: string;
             hasAnchor?: boolean;
             texts?: string;
             anchors?: string;
             tradBelayStations?: string;
-            /** Format: int32 */
-            problemSectionId?: number;
             primary?: boolean;
             ticked?: boolean;
             todo?: boolean;
             dangerous?: boolean;
+        };
+        SvgPitch: {
+            path?: string;
+            /** Format: int32 */
+            regionX?: number;
+            /** Format: int32 */
+            regionY?: number;
+            /** Format: int32 */
+            regionWidth?: number;
+            /** Format: int32 */
+            regionHeight?: number;
         };
         Type: {
             /** Format: int32 */
@@ -1779,8 +1780,8 @@ export type components = {
             value?: string;
             content?: Record<string, never>;
             fileName?: string;
-            formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
             simple?: boolean;
+            formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
             parameterizedHeaders?: {
                 empty?: boolean;
             } & {

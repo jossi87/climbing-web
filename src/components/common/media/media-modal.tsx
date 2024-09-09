@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import { components } from "../../../@types/buldreinfo/swagger";
 import { useLocalStorage } from "../../../utils/use-local-storage";
 import {
   Dimmer,
@@ -85,8 +86,8 @@ type Props = {
   onMoveImageToArea: () => void;
   onMoveImageToSector: () => void;
   onMoveImageToProblem: () => void;
-  m: any;
-  orderableMedia: any[];
+  m: components["schemas"]["Media"];
+  orderableMedia: components["schemas"]["Media"][];
   carouselIndex: number;
   carouselSize: number;
   showLocation: boolean;
@@ -121,8 +122,11 @@ const MediaModal = ({
   const { isAdmin, isBouldering } = useMeta();
   const navigate = useNavigate();
   const [showSidebar, setShowSidebar] = useLocalStorage("showSidebar", true);
-  const [problemIdHovered, setProblemIdHovered] = useState<any>(null);
-  const canShowSidebar = m.svgs?.length > 1;
+  const [problemIdHovered, setProblemIdHovered] = useState<number>(null);
+  const canShowSidebar =
+    m.svgs
+      ?.map((v) => v.problemId)
+      .filter((value, index, self) => self.indexOf(value) === index).length > 1;
   const [prevHover, setPrevHover] = useState(false);
   const [nextHover, setNextHover] = useState(false);
   const playerRef = useRef<ReactPlayer | null>();
@@ -137,6 +141,7 @@ const MediaModal = ({
               thumb={false}
               style={{}}
               m={m}
+              svgPitch={null}
               close={onClose}
               optProblemId={optProblemId ?? 0}
               sidebarOpen={showSidebar}
@@ -188,7 +193,7 @@ const MediaModal = ({
           controls={true}
           playing={true}
           onDuration={(duration) => {
-            const amount = m.t / duration;
+            const amount = parseInt(m.t) / duration;
             if (
               Number.isNaN(amount) ||
               !Number.isFinite(amount) ||
@@ -205,7 +210,7 @@ const MediaModal = ({
       <>
         <Image
           style={style.img}
-          alt={m.description}
+          alt={m.mediaMetadata?.description}
           src={getImageUrl(m.id, 360)}
         />
         <Button
@@ -219,22 +224,17 @@ const MediaModal = ({
       </>
     );
   })();
-  const canEdit = isAdmin && isImage && !m.region;
-  const canDelete = isAdmin && isImage && !m.region;
+  const canEdit = isAdmin && isImage;
+  const canDelete = isAdmin && isImage;
   const canRotate =
-    (isAdmin || m.uploadedByMe) &&
-    isImage &&
-    !m.svgs &&
-    !m.mediaSvgs &&
-    !m.region;
-  const canDrawTopo = isAdmin && isImage && optProblemId && !m.region;
-  const canDrawMedia = isAdmin && isImage && !isBouldering && !m.region;
-  const canOrder =
-    isAdmin && isImage && orderableMedia?.includes(m) && !m.region;
-  const canMove = isAdmin && isImage && !m.region;
+    (isAdmin || m.uploadedByMe) && isImage && !m.svgs && !m.mediaSvgs;
+  const canDrawTopo = isAdmin && isImage && optProblemId;
+  const canDrawMedia = isAdmin && isImage && !isBouldering;
+  const canOrder = isAdmin && isImage && orderableMedia?.includes(m);
+  const canMove = isAdmin && isImage;
   return (
     <Dimmer active={true} onClickOutside={onClose} page>
-      <Sidebar.Pushable>
+      <Sidebar.Pushable style={{ minWidth: "360px" }}>
         <Sidebar
           style={{ opacity: 0.7 }}
           as={Menu}
@@ -268,10 +268,10 @@ const MediaModal = ({
                     onMouseLeave={() => setProblemIdHovered(null)}
                   >
                     {`#${svg.nr} ${svg.problemName}`} <i>{svg.problemGrade}</i>
-                    {svg.isTicked && (
+                    {svg.ticked && (
                       <Icon color="green" inverted={true} name="check" />
                     )}
-                    {svg.isTodo && (
+                    {svg.todo && (
                       <Icon color="blue" inverted={true} name="bookmark" />
                     )}
                   </Menu.Item>
