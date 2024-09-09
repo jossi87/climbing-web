@@ -34,7 +34,6 @@ const style: CSSProperties = {
 
 type Props = Pick<ComponentProps<typeof MediaEditModal>, "numPitches"> &
   Pick<ComponentProps<typeof MediaModal>, "optProblemId"> & {
-    optProblemSectionId: components["schemas"]["Svg"]["problemSectionId"];
     media: components["schemas"]["Media"][];
     orderableMedia: components["schemas"]["Media"][];
     carouselMedia: components["schemas"]["Media"][];
@@ -47,7 +46,6 @@ const Media = ({
   orderableMedia,
   carouselMedia,
   optProblemId,
-  optProblemSectionId,
   showLocation,
 }: Props) => {
   const location = useLocation();
@@ -74,10 +72,7 @@ const Media = ({
   });
 
   function openModal(m) {
-    let url = location.pathname + "?idMedia=" + m.id;
-    if (optProblemSectionId) {
-      url += "&idPitch=" + optProblemSectionId;
-    }
+    const url = location.pathname + "?idMedia=" + m.id;
     setM(m);
     setEditM(null);
     window.history.replaceState("", "", url);
@@ -225,9 +220,8 @@ const Media = ({
   if (isLoading) {
     return <Loading />;
   }
-  const idPitch = getUrlValue("idPitch") || 0;
   const idMedia = getUrlValue("idMedia");
-  if (idPitch == (optProblemSectionId || 0) && idMedia && media) {
+  if (idMedia && media) {
     const x = media.filter((m) => m.id === parseInt(idMedia));
     if (
       x &&
