@@ -1,4 +1,6 @@
-export function scaleSvg(m, pitch) {
+import { components } from "../../@types/buldreinfo/swagger";
+
+export function scaleSvg(m: components["schemas"]["Media"], pitch: number) {
   if (pitch && m.svgs?.length > 0 && m.svgs.some((x) => x.nr === pitch)) {
     const pitchSvg = m.svgs.filter((x) => x.nr === pitch)[0];
     const { regionX, regionY, regionWidth, regionHeight } =
@@ -10,7 +12,6 @@ export function scaleSvg(m, pitch) {
         regionX,
         regionY,
       );
-      svg.nr = null;
       svgs.push(svg);
     }
     svgs.push(scalePitchSvg(pitchSvg, regionX, regionY));
@@ -44,8 +45,12 @@ export function scaleSvg(m, pitch) {
   };
 }
 
-function calculateImageRegion(pitchSvg, mediaWidth, mediaHeight) {
-  const pathLst = pitchSvg.path.replaceAll("  ", " ").trim().split(" ");
+function calculateImageRegion(
+  pitchSvg: components["schemas"]["Svg"],
+  mediaWidth: number,
+  mediaHeight: number,
+) {
+  const pathLst = pitchSvg.path.replace("  ", " ").trim().split(" ");
 
   // Calculate image region
   let minX = Number.MAX_VALUE;
@@ -125,8 +130,12 @@ function calculateImageRegion(pitchSvg, mediaWidth, mediaHeight) {
   };
 }
 
-export function scalePitchSvg(pitchSvg, minX, minY) {
-  const pathLst = pitchSvg.path.replaceAll("  ", " ").trim().split(" ");
+export function scalePitchSvg(
+  pitchSvg: components["schemas"]["Svg"],
+  minX: number,
+  minY: number,
+) {
+  const pathLst = pitchSvg.path.replace("  ", " ").trim().split(" ");
   // Update path
   const newPathLst = [];
 
@@ -136,10 +145,8 @@ export function scalePitchSvg(pitchSvg, minX, minY) {
     if (isCharacter) {
       newPathLst.push(part);
     } else {
-      const x = parseInt(pathLst[i++]);
-      const y = parseInt(pathLst[i]);
-      newPathLst.push(x - minX);
-      newPathLst.push(y - minY);
+      newPathLst.push(parseInt(pathLst[i++]) - minX);
+      newPathLst.push(parseInt(pathLst[i]) - minY);
     }
   }
   const newPath = newPathLst.join(" ");

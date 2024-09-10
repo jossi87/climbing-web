@@ -2,6 +2,7 @@ import { CSSProperties } from "react";
 import { components } from "../../@types/buldreinfo/swagger";
 import { useNavigate } from "react-router-dom";
 import { parseSVG, makeAbsolute } from "svg-path-parser";
+import { getUrlValue } from "../../api/utils";
 
 type Props = {
   style?: CSSProperties;
@@ -32,7 +33,7 @@ export const SvgRoute = ({
 }: Props) => {
   const navigate = useNavigate();
   const path = makeAbsolute(parseSVG(svg.path)); // Note: mutates the commands in place!
-
+  console.log(optProblemId);
   let gClassName = "buldreinfo-svg-pointer";
   if (optProblemId || problemIdHovered) {
     if (svg.problemId != optProblemId && svg.problemId != problemIdHovered) {
@@ -188,11 +189,8 @@ export const SvgRoute = ({
       onClick={() => {
         if (close && !thumbnail) {
           let url = "/problem/" + svg.problemId + "?idMedia=" + mediaId;
-          if (
-            svg.problemSectionId &&
-            svg.nr &&
-            window.location.search.indexOf("pitch=") === -1
-          ) {
+          const pitch = parseInt(getUrlValue("pitch"));
+          if ((!pitch && svg.problemSectionId) || pitch != svg.nr) {
             url += "&pitch=" + svg.nr;
           }
           navigate(url);

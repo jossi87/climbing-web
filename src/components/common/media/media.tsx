@@ -20,6 +20,7 @@ import SvgViewer from "../../SvgViewer";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Loading } from "../widgets/widgets";
 import { components } from "../../../@types/buldreinfo/swagger";
+import { getUrlValue } from "../../../api/utils";
 
 const style: CSSProperties = {
   objectFit: "cover",
@@ -208,20 +209,6 @@ const Media = ({
           console.warn(error);
         });
     });
-  }
-
-  function getUrlValue(param: string) {
-    if (window.location.search) {
-      const ix = window.location.search.indexOf(param + "=");
-      if (ix > 0) {
-        let id = window.location.search.substring(ix + param.length + 1);
-        if (id.indexOf("&") > 0) {
-          id = id.substring(0, id.indexOf("&"));
-        }
-        return id;
-      }
-    }
-    return null;
   }
 
   if (isLoading) {
