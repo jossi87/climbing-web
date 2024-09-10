@@ -31,12 +31,16 @@ export const SvgRoute = ({
   problemIdHovered,
   setProblemIdHovered,
 }: Props) => {
+  const pitch = parseInt(getUrlValue("pitch"));
   const navigate = useNavigate();
   const path = makeAbsolute(parseSVG(svg.path)); // Note: mutates the commands in place!
-  console.log(optProblemId);
+
   let gClassName = "buldreinfo-svg-pointer";
   if (optProblemId || problemIdHovered) {
-    if (svg.problemId != optProblemId && svg.problemId != problemIdHovered) {
+    if (
+      (svg.problemId != optProblemId && svg.problemId != problemIdHovered) ||
+      (pitch && svg.nr != pitch)
+    ) {
       gClassName += " buldreinfo-svg-opacity-low";
     } else {
       gClassName += " buldreinfo-svg-opacity-high";
@@ -189,7 +193,6 @@ export const SvgRoute = ({
       onClick={() => {
         if (close && !thumbnail) {
           let url = "/problem/" + svg.problemId + "?idMedia=" + mediaId;
-          const pitch = parseInt(getUrlValue("pitch"));
           if ((!pitch && svg.problemSectionId) || pitch != svg.nr) {
             url += "&pitch=" + svg.nr;
           }
