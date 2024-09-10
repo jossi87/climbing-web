@@ -193,7 +193,10 @@ export const SvgRoute = ({
       onClick={() => {
         if (close && !thumbnail) {
           let url = "/problem/" + svg.problemId + "?idMedia=" + mediaId;
-          if ((!pitch && svg.problemSectionId) || pitch != svg.nr) {
+          if (
+            optProblemId === svg.problemId &&
+            ((!pitch && svg.problemSectionId > 0) || pitch != svg.nr)
+          ) {
             url += "&pitch=" + svg.nr;
           }
           navigate(url);
