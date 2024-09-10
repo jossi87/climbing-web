@@ -239,6 +239,7 @@ const MediaModal = ({
   const canMove = isAdmin && isImage;
   const activePitch =
     pitch &&
+    pitches &&
     pitches.some((p) => p.nr === pitch) &&
     pitches.filter((p) => p.nr === pitch)[0];
   return (
