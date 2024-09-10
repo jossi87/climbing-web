@@ -1096,7 +1096,6 @@ export type components = {
             nr?: number;
             /** Format: int32 */
             problemSectionId?: number;
-            svgPitch?: components["schemas"]["SvgPitch"];
             path?: string;
             hasAnchor?: boolean;
             texts?: string;
@@ -1106,17 +1105,6 @@ export type components = {
             ticked?: boolean;
             todo?: boolean;
             dangerous?: boolean;
-        };
-        SvgPitch: {
-            path?: string;
-            /** Format: int32 */
-            regionX?: number;
-            /** Format: int32 */
-            regionY?: number;
-            /** Format: int32 */
-            regionWidth?: number;
-            /** Format: int32 */
-            regionHeight?: number;
         };
         Type: {
             /** Format: int32 */

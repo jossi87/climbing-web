@@ -50,8 +50,7 @@ const Media = ({
 }: Props) => {
   const location = useLocation();
   const [m, setM] = useState<components["schemas"]["Media"]>(null);
-  const [svgPitch, setSvgPitch] =
-    useState<components["schemas"]["SvgPitch"]>(null);
+  const [pitch, setPitch] = useState<number>(null);
   const [editM, setEditM] = useState<components["schemas"]["Media"]>(null);
   const [autoPlayVideo, setAutoPlayVideo] = useState(false);
   const { isLoading, getAccessTokenSilently } = useAuth0();
@@ -76,15 +75,15 @@ const Media = ({
   function openModal(m) {
     const url = location.pathname + "?idMedia=" + m.id;
     setM(m);
-    setSvgPitch(null);
+    setPitch(null);
     setEditM(null);
     window.history.replaceState("", "", url);
   }
 
   function closeModal() {
     let url = location.pathname;
-    if (svgPitch) {
-      setSvgPitch(null);
+    if (pitch) {
+      setPitch(null);
       url += "?idMedia=" + m.id;
     } else {
       setM(null);
@@ -236,25 +235,16 @@ const Media = ({
       if (!m || m.id != newM.id || m.mediaSvgs != newM.mediaSvgs) {
         setM(newM);
       }
-      const pitch = getUrlValue("pitch");
-      if (svgPitch && !pitch) {
-        setSvgPitch(null);
-      } else {
-        const newSvgPitchArr = newM.svgs?.filter(
-          (m) => m.problemSectionId && m.nr == parseInt(pitch),
-        );
-        if (newSvgPitchArr && newSvgPitchArr.length === 1) {
-          const newSvgPitch = newSvgPitchArr[0].svgPitch;
-          if (!svgPitch || svgPitch.path != newSvgPitch.path) {
-            setSvgPitch(newSvgPitch);
-          }
-        }
+      const pitchArg = parseInt(getUrlValue("pitch")) || null;
+      if (pitch != pitchArg) {
+        setPitch(pitchArg);
       }
     }
   } else if (!window.location.search && media && m) {
     setM(null);
-    setSvgPitch(null);
+    setPitch(null);
   }
+
   return (
     <>
       {editM && (
@@ -279,7 +269,7 @@ const Media = ({
         <MediaModal
           onClose={closeModal}
           m={m}
-          svgPitch={svgPitch}
+          pitch={pitch}
           autoPlayVideo={autoPlayVideo}
           onEdit={() => setEditM(m)}
           onDelete={onDeleteImage}
@@ -308,7 +298,7 @@ const Media = ({
                 close={null}
                 thumb={true}
                 m={x}
-                svgPitch={null}
+                pitch={null}
                 style={style}
                 optProblemId={optProblemId}
                 sidebarOpen={false}

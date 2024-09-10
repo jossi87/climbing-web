@@ -87,7 +87,7 @@ type Props = {
   onMoveImageToSector: () => void;
   onMoveImageToProblem: () => void;
   m: components["schemas"]["Media"];
-  svgPitch: components["schemas"]["SvgPitch"];
+  pitch: number;
   orderableMedia: components["schemas"]["Media"][];
   carouselIndex: number;
   carouselSize: number;
@@ -110,7 +110,7 @@ const MediaModal = ({
   onMoveImageToSector,
   onMoveImageToProblem,
   m,
-  svgPitch,
+  pitch,
   orderableMedia,
   carouselIndex,
   carouselSize,
@@ -143,7 +143,7 @@ const MediaModal = ({
               thumb={false}
               style={{}}
               m={m}
-              svgPitch={svgPitch}
+              pitch={pitch}
               close={onClose}
               optProblemId={optProblemId ?? 0}
               sidebarOpen={showSidebar}
