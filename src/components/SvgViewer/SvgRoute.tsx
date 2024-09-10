@@ -195,7 +195,7 @@ export const SvgRoute = ({
           let url = "/problem/" + svg.problemId + "?idMedia=" + mediaId;
           if (
             optProblemId === svg.problemId &&
-            ((!pitch && svg.problemSectionId > 0) || pitch != svg.nr)
+            ((!pitch && svg.problemSectionId > 0) || (pitch && pitch != svg.nr))
           ) {
             url += "&pitch=" + svg.nr;
           }
