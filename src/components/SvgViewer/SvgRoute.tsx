@@ -6,7 +6,7 @@ import { parseSVG, makeAbsolute } from "svg-path-parser";
 type Props = {
   style?: CSSProperties;
   thumbnail: boolean;
-  sidebarOpen: boolean;
+  showText: boolean;
   scale: number;
   mediaId: number;
   mediaHeight: number;
@@ -20,7 +20,7 @@ type Props = {
 export const SvgRoute = ({
   style,
   thumbnail,
-  sidebarOpen,
+  showText,
   scale,
   mediaId,
   mediaHeight,
@@ -147,7 +147,7 @@ export const SvgRoute = ({
       </text>
     ));
   let info;
-  if (!sidebarOpen && !thumbnail && optProblemId === svg.problemId) {
+  if (showText && !thumbnail && optProblemId === svg.problemId) {
     let text = `#${svg.nr} - ${svg.problemName} [${svg.problemGrade}]`;
     if (svg.problemSubtype) {
       text += " - " + svg.problemSubtype;

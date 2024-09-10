@@ -301,7 +301,7 @@ const Media = ({
                 pitch={null}
                 style={style}
                 optProblemId={optProblemId}
-                sidebarOpen={false}
+                showText={false}
                 problemIdHovered={null}
               />
             );

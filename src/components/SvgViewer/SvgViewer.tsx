@@ -13,7 +13,7 @@ type SvgProps = {
   pitch: number;
   thumb: boolean;
   optProblemId: number;
-  sidebarOpen: boolean;
+  showText: boolean;
   problemIdHovered: number;
   setProblemIdHovered?: (problemId: number) => void;
 };
@@ -25,7 +25,7 @@ export const SvgViewer = ({
   pitch,
   thumb,
   optProblemId,
-  sidebarOpen,
+  showText,
   problemIdHovered,
   setProblemIdHovered,
 }: SvgProps) => {
@@ -96,7 +96,7 @@ export const SvgViewer = ({
         <SvgRoute
           key={[m.id, svg.problemId, svg.problemSectionId, thumb].join("-")}
           thumbnail={thumb}
-          sidebarOpen={sidebarOpen}
+          showText={showText}
           scale={scale}
           mediaId={m.id}
           mediaHeight={imgH}

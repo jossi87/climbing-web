@@ -146,7 +146,7 @@ const MediaModal = ({
               pitch={pitch}
               close={onClose}
               optProblemId={optProblemId ?? 0}
-              sidebarOpen={showSidebar}
+              showText={canShowSidebar && !showSidebar}
               problemIdHovered={problemIdHovered}
               setProblemIdHovered={(id) => setProblemIdHovered(id)}
             />
