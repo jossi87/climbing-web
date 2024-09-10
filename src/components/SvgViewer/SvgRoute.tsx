@@ -2,7 +2,6 @@ import { CSSProperties } from "react";
 import { components } from "../../@types/buldreinfo/swagger";
 import { useNavigate } from "react-router-dom";
 import { parseSVG, makeAbsolute } from "svg-path-parser";
-import { getUrlValue } from "../../api/utils";
 
 type Props = {
   style?: CSSProperties;
@@ -16,6 +15,7 @@ type Props = {
   optProblemId: number;
   problemIdHovered: number;
   setProblemIdHovered?: (problemId: number) => void;
+  pitch: number;
 };
 
 export const SvgRoute = ({
@@ -30,8 +30,8 @@ export const SvgRoute = ({
   optProblemId,
   problemIdHovered,
   setProblemIdHovered,
+  pitch,
 }: Props) => {
-  const pitch = parseInt(getUrlValue("pitch"));
   const navigate = useNavigate();
   const path = makeAbsolute(parseSVG(svg.path)); // Note: mutates the commands in place!
 
@@ -192,12 +192,12 @@ export const SvgRoute = ({
       }}
       onClick={() => {
         if (close && !thumbnail) {
-          let url = "/problem/" + svg.problemId + "?idMedia=" + mediaId;
+          let url = "/problem/" + svg.problemId + "/" + mediaId;
           if (
             optProblemId === svg.problemId &&
             ((!pitch && svg.problemSectionId > 0) || (pitch && pitch != svg.nr))
           ) {
-            url += "&pitch=" + svg.nr;
+            url += "/" + svg.nr;
           }
           navigate(url);
         }

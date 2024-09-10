@@ -263,7 +263,7 @@ const Activity = ({ idArea, idSector }: Props) => {
                           {a.media.map((m) => (
                             <Link
                               key={m.id}
-                              to={`/problem/${a.problemId}?idMedia=${m.id}`}
+                              to={`/problem/${a.problemId}/${m.id}`}
                             >
                               <Image
                                 style={imgStyle}
@@ -331,7 +331,7 @@ const Activity = ({ idArea, idSector }: Props) => {
                           {a.media.map((m) => (
                             <Link
                               key={m.id}
-                              to={`/problem/${a.problemId}?idMedia=${m.id}`}
+                              to={`/problem/${a.problemId}/${m.id}`}
                             >
                               <Image
                                 style={imgStyle}
@@ -408,7 +408,7 @@ const Activity = ({ idArea, idSector }: Props) => {
                         {a.media.map((m) => (
                           <Link
                             key={m.id}
-                            to={`/problem/${a.problemId}?idMedia=${m.id}`}
+                            to={`/problem/${a.problemId}/${m.id}`}
                           >
                             <Image
                               style={imgStyle}

@@ -123,7 +123,7 @@ function AppRoutes() {
         <Routes>
           <Route path="/" element={<Frontpage />} />
           <Route path="/about" element={<About />} />
-          <Route path="/area/:areaId" element={<Area />} />
+          <Route path="/area/:areaId/:mediaId?" element={<Area />} />
           <Route
             path="/area/edit/:areaId"
             element={
@@ -154,7 +154,10 @@ function AppRoutes() {
             }
           />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/problem/:problemId" element={<Problem />} />
+          <Route
+            path="/problem/:problemId/:mediaId?/:pitch?"
+            element={<Problem />}
+          />
           <Route
             path="/problem/edit/media/:problemId"
             element={
@@ -181,7 +184,7 @@ function AppRoutes() {
           />
           <Route path="/problems" element={<Problems />} />
           <Route path="/sites/:type" element={<Sites />} />
-          <Route path="/sector/:sectorId" element={<Sector />} />
+          <Route path="/sector/:sectorId/:mediaId?" element={<Sector />} />
           <Route
             path="/sector/edit/:areaId/:sectorId"
             element={
@@ -208,10 +211,8 @@ function AppRoutes() {
               </AuthContainer>
             }
           />
-          <Route path="/user/:userId" element={<Profile />} />
-          <Route path="/user/:userId/:page" element={<Profile />} />
-          <Route path="/webcams" element={<Webcams />} />
-          <Route path="/webcams/:json" element={<Webcams />} />
+          <Route path="/user/:userId/:page?/:mediaId?" element={<Profile />} />
+          <Route path="/webcams/:json?" element={<Webcams />} />
         </Routes>
       </Wrapper>
     </Suspense>

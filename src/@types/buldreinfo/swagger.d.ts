@@ -1768,8 +1768,8 @@ export type components = {
             value?: string;
             content?: Record<string, never>;
             fileName?: string;
-            simple?: boolean;
             formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
+            simple?: boolean;
             parameterizedHeaders?: {
                 empty?: boolean;
             } & {
@@ -3048,6 +3048,8 @@ export interface operations {
             query: {
                 /** @description Problem id */
                 problemId: number;
+                /** @description Problem section id */
+                problemSectionId: number;
                 /** @description Media id */
                 mediaId: number;
             };

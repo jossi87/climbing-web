@@ -35,12 +35,20 @@ import { ProblemComments } from "./ProblemComments";
 import { componentDecorator } from "../../utils/componentDecorator";
 import { DownloadButton } from "../common/DownloadButton";
 
-export const Problem = () => {
+const useIds = (): {
+  problemId: number;
+} => {
   const { problemId } = useParams();
   if (!problemId) {
-    throw new Error("Missing problemId from params");
+    throw new Error("Missing problemId param");
   }
+  return {
+    problemId: +problemId,
+  };
+};
 
+export const Problem = () => {
+  const { problemId } = useIds();
   const [showHiddenMedia, setShowHiddenMedia] = useState(false);
   const meta = useMeta();
   const { data, error, toggleTodo, redirectUi } = useProblem(

@@ -10,20 +10,6 @@ export function getLocales() {
   return "nb-NO";
 }
 
-export function getUrlValue(param: string) {
-  if (window.location.search) {
-    const ix = window.location.search.indexOf(param + "=");
-    if (ix > 0) {
-      let id = window.location.search.substring(ix + param.length + 1);
-      if (id.indexOf("&") > 0) {
-        id = id.substring(0, id.indexOf("&"));
-      }
-      return id;
-    }
-  }
-  return null;
-}
-
 export function getBaseUrl(): string {
   if (process.env.REACT_APP_ENV === "development") {
     return process.env.REACT_APP_API_URL ?? "https://brattelinjer.no";

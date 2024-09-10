@@ -146,7 +146,6 @@ const MediaModal = ({
               style={{}}
               m={m}
               pitch={pitch}
-              pitches={pitches}
               close={onClose}
               optProblemId={optProblemId ?? 0}
               showText={canShowSidebar && !showSidebar}
@@ -261,7 +260,7 @@ const MediaModal = ({
               .slice(0) // Create copy, dont change svgs-order (used to draw topo in correct order)
               .sort((a, b) => a.nr - b.nr)
               .map((svg) => {
-                const url = `/problem/${svg.problemId}?idMedia=${m.id}`;
+                const url = `/problem/${svg.problemId}/${m.id}`;
                 return (
                   <Menu.Item
                     key={url}

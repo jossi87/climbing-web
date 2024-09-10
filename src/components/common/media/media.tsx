@@ -5,7 +5,12 @@ import React, {
   CSSProperties,
 } from "react";
 import LazyLoad from "react-lazyload";
-import { useLocation } from "react-router-dom";
+import {
+  matchRoutes,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import {
   getImageUrl,
   deleteMedia,
@@ -20,7 +25,6 @@ import SvgViewer from "../../SvgViewer";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Loading } from "../widgets/widgets";
 import { components } from "../../../@types/buldreinfo/swagger";
-import { getUrlValue } from "../../../api/utils";
 
 const style: CSSProperties = {
   objectFit: "cover",
@@ -41,6 +45,17 @@ type Props = Pick<ComponentProps<typeof MediaModal>, "optProblemId"> & {
   showLocation: boolean;
 };
 
+const useIds = (): {
+  mediaId: number;
+  pitch: number;
+} => {
+  const { mediaId, pitch } = useParams();
+  return {
+    mediaId: +mediaId,
+    pitch: +pitch,
+  };
+};
+
 const Media = ({
   pitches,
   media,
@@ -49,9 +64,10 @@ const Media = ({
   optProblemId,
   showLocation,
 }: Props) => {
+  const { mediaId, pitch } = useIds();
   const location = useLocation();
+  const navigate = useNavigate();
   const [m, setM] = useState<components["schemas"]["Media"]>(null);
-  const [pitch, setPitch] = useState<number>(null);
   const [editM, setEditM] = useState<components["schemas"]["Media"]>(null);
   const [autoPlayVideo, setAutoPlayVideo] = useState(false);
   const { isLoading, getAccessTokenSilently } = useAuth0();
@@ -73,23 +89,25 @@ const Media = ({
     };
   });
 
-  function openModal(m) {
-    const url = location.pathname + "?idMedia=" + m.id;
-    setM(m);
-    setPitch(null);
+  function openModal(newM) {
+    const prevMediaId = m?.id;
+    const url = prevMediaId
+      ? location.pathname.replace(prevMediaId.toString(), newM.id)
+      : location.pathname + "/" + newM.id;
+    setM(newM);
     setEditM(null);
-    window.history.replaceState("", "", url);
+    navigate(url);
   }
 
   function closeModal() {
-    let url = location.pathname;
-    if (pitch) {
-      setPitch(null);
-      url += "?idMedia=" + m.id;
-    } else {
+    const url = location.pathname.substring(
+      0,
+      location.pathname.lastIndexOf("/"),
+    );
+    if (!pitch) {
       setM(null);
     }
-    window.history.replaceState("", "", url);
+    navigate(url);
   }
 
   function gotoPrev() {
@@ -214,22 +232,17 @@ const Media = ({
   if (isLoading) {
     return <Loading />;
   }
-  const idMedia = getUrlValue("idMedia");
-  if (idMedia && media) {
-    const newMediaArr = media.filter((m) => m.id === parseInt(idMedia));
+
+  if (mediaId && media) {
+    const newMediaArr = media.filter((m) => m.id === mediaId);
     if (newMediaArr && newMediaArr.length === 1) {
       const newM = newMediaArr[0];
       if (!m || m.id != newM.id || m.mediaSvgs != newM.mediaSvgs) {
         setM(newM);
       }
-      const pitchArg = parseInt(getUrlValue("pitch")) || null;
-      if (pitch != pitchArg) {
-        setPitch(pitchArg);
-      }
     }
-  } else if (!window.location.search && media && m) {
+  } else if (!mediaId && !pitch && media && m) {
     setM(null);
-    setPitch(null);
   }
 
   return (
@@ -287,7 +300,6 @@ const Media = ({
                 thumb={true}
                 m={x}
                 pitch={null}
-                pitches={null}
                 style={style}
                 optProblemId={optProblemId}
                 showText={false}
