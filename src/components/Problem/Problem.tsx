@@ -139,7 +139,7 @@ export const Problem = () => {
       render: () => (
         <Tab.Pane>
           <Media
-            numPitches={data.sections?.length || 0}
+            pitches={data.sections}
             media={media}
             orderableMedia={orderableMedia}
             carouselMedia={carouselMedia}
@@ -645,7 +645,7 @@ export const Problem = () => {
                 {data.triviaMedia && (
                   <Feed.Extra>
                     <Media
-                      numPitches={data.sections?.length || 0}
+                      pitches={data.sections}
                       media={data.triviaMedia}
                       orderableMedia={orderableMedia}
                       carouselMedia={carouselMedia}
@@ -769,7 +769,7 @@ export const Problem = () => {
                           {s.media && (
                             <Feed.Extra>
                               <Media
-                                numPitches={data.sections?.length || 0}
+                                pitches={data.sections}
                                 media={s.media}
                                 orderableMedia={orderableMedia}
                                 carouselMedia={carouselMedia}

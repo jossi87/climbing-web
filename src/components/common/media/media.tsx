@@ -33,16 +33,16 @@ const style: CSSProperties = {
   height: "100%",
 };
 
-type Props = Pick<ComponentProps<typeof MediaEditModal>, "numPitches"> &
-  Pick<ComponentProps<typeof MediaModal>, "optProblemId"> & {
-    media: components["schemas"]["Media"][];
-    orderableMedia: components["schemas"]["Media"][];
-    carouselMedia: components["schemas"]["Media"][];
-    showLocation: boolean;
-  };
+type Props = Pick<ComponentProps<typeof MediaModal>, "optProblemId"> & {
+  pitches: components["schemas"]["ProblemSection"][];
+  media: components["schemas"]["Media"][];
+  orderableMedia: components["schemas"]["Media"][];
+  carouselMedia: components["schemas"]["Media"][];
+  showLocation: boolean;
+};
 
 const Media = ({
-  numPitches,
+  pitches,
   media,
   orderableMedia,
   carouselMedia,
@@ -236,7 +236,7 @@ const Media = ({
     <>
       {editM && (
         <MediaEditModal
-          numPitches={numPitches}
+          numPitches={pitches?.length || 0}
           m={editM}
           save={(mediaId, description, pitch, trivia) => {
             getAccessTokenSilently().then((accessToken) => {
@@ -257,6 +257,7 @@ const Media = ({
           onClose={closeModal}
           m={m}
           pitch={pitch}
+          pitches={pitches}
           autoPlayVideo={autoPlayVideo}
           onEdit={() => setEditM(m)}
           onDelete={onDeleteImage}
@@ -286,6 +287,7 @@ const Media = ({
                 thumb={true}
                 m={x}
                 pitch={null}
+                pitches={null}
                 style={style}
                 optProblemId={optProblemId}
                 showText={false}

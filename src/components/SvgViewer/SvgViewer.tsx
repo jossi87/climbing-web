@@ -11,6 +11,7 @@ type SvgProps = {
   close: () => void;
   m: components["schemas"]["Media"];
   pitch: number;
+  pitches: components["schemas"]["ProblemSection"][];
   thumb: boolean;
   optProblemId: number;
   showText: boolean;
@@ -23,6 +24,7 @@ export const SvgViewer = ({
   close,
   m,
   pitch,
+  pitches,
   thumb,
   optProblemId,
   showText,

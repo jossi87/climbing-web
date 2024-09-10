@@ -37,7 +37,7 @@ const ProfileMedia = ({ userId, captured }: Props) => {
         }}
       >
         <Media
-          numPitches={null}
+          pitches={null}
           media={data}
           orderableMedia={null}
           carouselMedia={data}

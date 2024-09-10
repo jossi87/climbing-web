@@ -204,7 +204,7 @@ const Sector = () => {
         render: () => (
           <Tab.Pane>
             <Media
-              numPitches={0}
+              pitches={null}
               media={media}
               orderableMedia={orderableMedia}
               carouselMedia={carouselMedia}
@@ -275,7 +275,7 @@ const Sector = () => {
       render: () => (
         <Tab.Pane>
           <Media
-            numPitches={0}
+            pitches={null}
             media={topoImages}
             orderableMedia={orderableMedia}
             carouselMedia={carouselMedia}
@@ -533,7 +533,7 @@ const Sector = () => {
               <Table.Cell>
                 <Feed.Extra>
                   <Media
-                    numPitches={0}
+                    pitches={null}
                     media={data.triviaMedia}
                     orderableMedia={orderableMedia}
                     carouselMedia={carouselMedia}

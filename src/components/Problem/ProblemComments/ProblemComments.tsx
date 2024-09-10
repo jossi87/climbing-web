@@ -71,7 +71,7 @@ export const ProblemComments = ({
             </Linkify>
             {c.media && c.media.length > 0 && (
               <Media
-                numPitches={data.sections?.length || 0}
+                pitches={data.sections}
                 media={c.media}
                 orderableMedia={c.media}
                 carouselMedia={c.media}

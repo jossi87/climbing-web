@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { act, useRef, useState } from "react";
 import { components } from "../../../@types/buldreinfo/swagger";
 import { useLocalStorage } from "../../../utils/use-local-storage";
 import {
@@ -88,6 +88,7 @@ type Props = {
   onMoveImageToProblem: () => void;
   m: components["schemas"]["Media"];
   pitch: number;
+  pitches: components["schemas"]["ProblemSection"][];
   orderableMedia: components["schemas"]["Media"][];
   carouselIndex: number;
   carouselSize: number;
@@ -111,6 +112,7 @@ const MediaModal = ({
   onMoveImageToProblem,
   m,
   pitch,
+  pitches,
   orderableMedia,
   carouselIndex,
   carouselSize,
@@ -144,6 +146,7 @@ const MediaModal = ({
               style={{}}
               m={m}
               pitch={pitch}
+              pitches={pitches}
               close={onClose}
               optProblemId={optProblemId ?? 0}
               showText={canShowSidebar && !showSidebar}
@@ -234,6 +237,10 @@ const MediaModal = ({
   const canDrawMedia = isAdmin && isImage && !isBouldering;
   const canOrder = isAdmin && isImage && orderableMedia?.includes(m);
   const canMove = isAdmin && isImage;
+  const activePitch =
+    pitch &&
+    pitches.some((p) => p.nr === pitch) &&
+    pitches.filter((p) => p.nr === pitch)[0];
   return (
     <Dimmer active={true} onClickOutside={onClose} page>
       <Sidebar.Pushable style={{ minWidth: "360px" }}>
@@ -683,7 +690,7 @@ const MediaModal = ({
               {m.mediaMetadata.description}
             </div>
           )}
-          {(carouselSize > 1 || m.pitch > 0) && (
+          {(carouselSize > 1 || m.pitch > 0 || activePitch) && (
             <div
               style={{
                 position: "absolute",
@@ -693,6 +700,8 @@ const MediaModal = ({
               }}
             >
               {[
+                activePitch &&
+                  `${activePitch.grade} | ${activePitch.description}`,
                 m.pitch > 0 && `Pitch ${m.pitch}`,
                 carouselSize > 1 && `${carouselIndex}/${carouselSize}`,
               ]

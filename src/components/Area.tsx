@@ -276,7 +276,7 @@ const Area = () => {
       render: () => (
         <Tab.Pane>
           <Media
-            numPitches={0}
+            pitches={null}
             media={data.media ?? []}
             orderableMedia={orderableMedia}
             carouselMedia={carouselMedia}
@@ -632,7 +632,7 @@ const Area = () => {
         {data.triviaMedia?.length ? (
           <Feed.Extra style={{ paddingTop: "10px" }}>
             <Media
-              numPitches={0}
+              pitches={null}
               media={data.triviaMedia}
               orderableMedia={orderableMedia}
               carouselMedia={carouselMedia}
