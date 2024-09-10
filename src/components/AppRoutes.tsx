@@ -172,7 +172,7 @@ function AppRoutes() {
             }
           />
           <Route
-            path="/problem/svg-edit/:problemId/:mediaId"
+            path="/problem/svg-edit/:problemId/:problemSectionId/:mediaId"
             element={
               <AuthContainer level="admin">
                 <SvgEdit />

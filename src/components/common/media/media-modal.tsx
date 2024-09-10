@@ -537,7 +537,7 @@ const MediaModal = ({
                       icon="paint brush"
                       text="Draw topo line"
                       onClick={() =>
-                        navigate(`/problem/svg-edit/${optProblemId}/${m.id}`)
+                        navigate(`/problem/svg-edit/${optProblemId}/0/${m.id}`)
                       }
                     />
                   )}

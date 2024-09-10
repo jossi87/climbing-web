@@ -563,7 +563,11 @@ export type EditableSvg = {
   > & { t: "other" })[];
 };
 
-export function useSvgEdit(problemId: number, mediaId: number) {
+export function useSvgEdit(
+  problemId: number,
+  problemSectionId: number,
+  mediaId: number,
+) {
   const { data } = useProblem(problemId, true);
 
   return useMemo<EditableSvg | undefined>(() => {
@@ -602,7 +606,10 @@ export function useSvgEdit(problemId: number, mediaId: number) {
     const tradBelayStations = [];
     const texts = [];
     for (const svg of m.svgs) {
-      if (svg.problemId === data.id) {
+      if (
+        svg.problemId === data.id &&
+        problemSectionId === svg.problemSectionId
+      ) {
         svgId = svg.id ?? 0;
         svgNr = svg.nr ?? 0;
         path = svg.path ?? "";
@@ -684,5 +691,5 @@ export function useSvgEdit(problemId: number, mediaId: number) {
       readOnlySvgs,
       hasAnchor,
     };
-  }, [data, mediaId, problemId]);
+  }, [data, mediaId, problemId, problemSectionId]);
 }

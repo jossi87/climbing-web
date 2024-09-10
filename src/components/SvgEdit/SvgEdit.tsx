@@ -34,22 +34,31 @@ import { captureException } from "@sentry/react";
 import { generatePath, reducer } from "./state";
 import { neverGuard } from "../../utils/neverGuard";
 
-const useIds = (): { problemId: number; mediaId: number } => {
-  const { mediaId, problemId } = useParams();
-  if (!mediaId) {
-    throw new Error("Missing mediaId param");
-  }
-
+const useIds = (): {
+  problemId: number;
+  problemSectionId: number;
+  mediaId: number;
+} => {
+  const { problemId, problemSectionId, mediaId } = useParams();
   if (!problemId) {
     throw new Error("Missing problemId param");
   }
-
-  return { mediaId: +mediaId, problemId: +problemId };
+  if (!problemSectionId) {
+    throw new Error("Missing problemSectionId param");
+  }
+  if (!mediaId) {
+    throw new Error("Missing mediaId param");
+  }
+  return {
+    problemId: +problemId,
+    problemSectionId: +problemSectionId,
+    mediaId: +mediaId,
+  };
 };
 
 const SvgEditLoader = () => {
-  const { problemId, mediaId } = useIds();
-  const data = useSvgEdit(problemId, mediaId);
+  const { problemId, problemSectionId, mediaId } = useIds();
+  const data = useSvgEdit(problemId, problemSectionId, mediaId);
   const accessToken = useAccessToken();
   const [saving, setSaving] = useState(false);
   const navigate = useNavigate();
@@ -64,6 +73,7 @@ const SvgEditLoader = () => {
       return postProblemSvg(
         accessToken,
         problemId,
+        problemSectionId,
         mediaId,
         correctPoints.length < 2,
         data?.svgId ?? 0,
@@ -88,7 +98,7 @@ const SvgEditLoader = () => {
           setSaving(false);
         });
     },
-    [accessToken, problemId, mediaId, data?.svgId, navigate],
+    [accessToken, problemId, problemSectionId, mediaId, data?.svgId, navigate],
   );
 
   const onCancel = useCallback(() => {

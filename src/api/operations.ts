@@ -241,6 +241,7 @@ export function postProblemMedia(
 export function postProblemSvg(
   accessToken: string | null,
   problemId: number,
+  problemSectionId: number,
   mediaId: number,
   del: boolean,
   id: number,
@@ -252,7 +253,7 @@ export function postProblemSvg(
 ): Promise<Success<"postProblemsSvg">> {
   return makeAuthenticatedRequest(
     accessToken,
-    `/problems/svg?problemId=${problemId}&mediaId=${mediaId}`,
+    `/problems/svg?problemId=${problemId}&problemSectionId=${problemSectionId}&mediaId=${mediaId}`,
     {
       method: "POST",
       body: JSON.stringify({
