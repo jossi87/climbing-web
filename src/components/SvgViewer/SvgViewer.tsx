@@ -3,7 +3,7 @@ import { SvgRoute } from "./SvgRoute";
 import { Descent, Rappel } from "../../utils/svg-utils";
 import { components } from "../../@types/buldreinfo/swagger";
 import { CSSProperties } from "react";
-import { scaleSvg } from "./SvgScaler";
+import { scaleSvg } from "../../utils/svg-scaler";
 import "./SvgViewer.css";
 
 type SvgProps = {
@@ -29,8 +29,7 @@ export const SvgViewer = ({
   problemIdHovered,
   setProblemIdHovered,
 }: SvgProps) => {
-  const { imgW, imgH, regionX, regionY, regionWidth, regionHeight, svgs } =
-    scaleSvg(m, pitch);
+  const { imgW, imgH, mediaRegion, svgs } = scaleSvg(m, pitch);
   const scale = Math.max(imgW / 1920, imgH / 1440);
   const mediaSvgs =
     m.mediaSvgs?.length > 0 &&
@@ -131,15 +130,7 @@ export const SvgViewer = ({
         onMouseLeave={() => setProblemIdHovered && setProblemIdHovered(null)}
       >
         <image
-          xlinkHref={getImageUrl(
-            m.id,
-            m.crc32,
-            null,
-            regionX,
-            regionY,
-            regionWidth,
-            regionHeight,
-          )}
+          xlinkHref={getImageUrl(m.id, m.crc32, null, mediaRegion)}
           width="100%"
           height="100%"
         />

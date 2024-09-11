@@ -13,9 +13,14 @@ import { useLocalStorage } from "../utils/use-local-storage";
 import { useRedirect } from "../utils/useRedirect";
 import { makeAuthenticatedRequest, useAccessToken } from "./utils";
 import { FetchOptions } from "./types";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { postPermissions } from "./operations";
 import { captureException } from "@sentry/react";
+import {
+  MediaRegion,
+  calculateMediaRegion,
+  scalePath,
+} from "../utils/svg-scaler";
 
 function useKey(
   customKey: readonly unknown[] | undefined,
@@ -546,17 +551,21 @@ export function usePermissions() {
 }
 
 export type EditableSvg = {
-  anchors: { x: number; y: number }[];
-  crc32: number;
-  h: number;
-  hasAnchor: boolean;
+  svgId: number;
+  problemId: number;
+  problemSectionId: number;
   mediaId: number;
+  mediaWidth: number;
+  mediaHeight: number;
+  mediaRegion?: MediaRegion;
+  sections: components["schemas"]["ProblemSection"][];
+  crc32: number;
+  anchors: { x: number; y: number }[];
+  hasAnchor: boolean;
   nr: number;
   path: string;
-  svgId: number;
   texts: { x: number; y: number; txt: string }[];
   tradBelayStations: { x: number; y: number }[];
-  w: number;
   readOnlySvgs: (Pick<
     EditableSvg,
     "nr" | "hasAnchor" | "path" | "anchors" | "tradBelayStations" | "texts"
@@ -567,129 +576,168 @@ export function useSvgEdit(
   problemId: number,
   problemSectionId: number,
   mediaId: number,
+  mediaRegion: MediaRegion,
 ) {
   const { data } = useProblem(problemId, true);
 
-  return useMemo<EditableSvg | undefined>(() => {
-    if (!data) {
-      return undefined;
-    }
+  if (!data) {
+    return undefined;
+  }
 
-    const m = data.media?.find((x) => x.id == mediaId);
-    if (!m) {
-      return undefined;
-    }
+  const m = data.media?.find((x) => x.id == mediaId);
+  if (!m) {
+    return undefined;
+  }
 
-    if (!m.svgs) {
-      return {
-        anchors: [],
-        crc32: m.crc32 ?? 0,
-        h: m.height ?? 0,
-        w: m.width ?? 0,
-        hasAnchor: true,
-        mediaId,
-        nr: 0,
-        path: "",
-        svgId: 0,
-        texts: [],
-        tradBelayStations: [],
-        readOnlySvgs: [],
-      };
-    }
+  if (!m.svgs) {
+    return {
+      svgId: 0,
+      problemId,
+      problemSectionId,
+      mediaId,
+      mediaWidth: m.width ?? 0,
+      mediaHeight: m.height ?? 0,
+      mediaRegion,
+      crc32: m.crc32 ?? 0,
+      sections: [],
+      anchors: [],
+      hasAnchor: problemSectionId ? true : false,
+      nr: 0,
+      path: "",
+      texts: [],
+      tradBelayStations: [],
+      readOnlySvgs: [],
+    };
+  }
 
-    const readOnlySvgs: EditableSvg["readOnlySvgs"] = [];
-    let svgId = 0;
-    let svgNr = 0;
-    let hasAnchor = true;
-    let path = "";
-    const anchors = [];
-    const tradBelayStations = [];
-    const texts = [];
-    for (const svg of m.svgs) {
-      if (
-        svg.problemId === data.id &&
-        problemSectionId === svg.problemSectionId
-      ) {
-        svgId = svg.id ?? 0;
-        svgNr = svg.nr ?? 0;
-        path = svg.path ?? "";
-        hasAnchor = !!svg.hasAnchor;
-
-        if (svg.anchors) {
-          try {
-            const parsed = JSON.parse(svg.anchors);
-            anchors.push(...parsed);
-          } catch (ex) {
-            captureException(ex, {
-              extra: {
-                anchors: svg.anchors,
-                problemId,
-                mediaId,
-                svgId: svg.id,
-              },
-            });
-          }
-        }
-
-        if (svg.tradBelayStations) {
-          try {
-            const parsed = JSON.parse(svg.tradBelayStations);
-            tradBelayStations.push(...parsed);
-          } catch (ex) {
-            captureException(ex, {
-              extra: {
-                tradBelayStations: svg.tradBelayStations,
-                problemId,
-                mediaId,
-                svgId: svg.id,
-              },
-            });
-          }
-        }
-
-        if (svg.texts) {
-          try {
-            const parsed = JSON.parse(svg.texts);
-            texts.push(...parsed);
-          } catch (ex) {
-            captureException(ex, {
-              extra: {
-                texts: svg.texts,
-                problemId,
-                mediaId,
-                svgId: svg.id,
-              },
-            });
-          }
-        }
-      } else {
-        readOnlySvgs.push({
-          nr: svg.nr ?? 0,
-          hasAnchor: !!svg.hasAnchor,
-          path: svg.path ?? "",
-          anchors: svg.anchors ? JSON.parse(svg.anchors) : [],
-          tradBelayStations: svg.tradBelayStations
-            ? JSON.parse(svg.tradBelayStations)
-            : [],
-          texts: svg.texts ? JSON.parse(svg.texts) : [],
-          t: "other",
-        });
+  const problemSvgs = m.svgs.filter((x) => x.problemId == data.id);
+  let neighbourSvgs;
+  const svg = problemSvgs.filter(
+    (x) => x.problemSectionId === problemSectionId,
+  )[0];
+  if (problemSectionId && !mediaRegion) {
+    if (svg) {
+      mediaRegion = calculateMediaRegion(svg.path, m.width, m.height);
+    } else {
+      const nr = data.sections.filter((x) => x.id === problemSectionId)[0]?.nr;
+      const prevSvg = problemSvgs.filter((x) => x.nr === nr - 1)[0];
+      if (prevSvg) {
+        const prevMediaRegion = calculateMediaRegion(
+          prevSvg.path,
+          m.width,
+          m.height,
+        );
+        mediaRegion = {
+          x: prevMediaRegion.x,
+          y: Math.round(
+            Math.max(0, prevMediaRegion.y - prevMediaRegion.height * 0.7),
+          ),
+          width: prevMediaRegion.width,
+          height: prevMediaRegion.height,
+        };
+      }
+      const nextSvg = problemSvgs.filter((x) => x.nr === nr + 1)[0];
+      if (prevSvg && nextSvg) {
+        neighbourSvgs = [prevSvg, nextSvg];
+      } else if (prevSvg) {
+        neighbourSvgs = [prevSvg];
+      } else if (nextSvg) {
+        neighbourSvgs = [nextSvg];
       }
     }
+  }
 
-    return {
-      nr: svgNr,
-      crc32: m.crc32 ?? 0,
-      mediaId: m.id ?? 0,
-      w: m.width ?? 0,
-      h: m.height ?? 0,
-      svgId,
-      path: path ?? "",
-      anchors,
-      tradBelayStations,
-      texts,
-      readOnlySvgs,
-      hasAnchor,
-    };
-  }, [data, mediaId, problemId, problemSectionId]);
+  const svgId = svg?.id ?? 0;
+  const svgNr = svg?.nr ?? 0;
+  const hasAnchor = svg?.hasAnchor ?? true;
+  const path =
+    (svg?.path && mediaRegion ? scalePath(svg.path, mediaRegion) : svg?.path) ??
+    "";
+  const anchors = [];
+  if (svg?.anchors) {
+    try {
+      const parsed = JSON.parse(svg.anchors);
+      anchors.push(...parsed);
+    } catch (ex) {
+      captureException(ex, {
+        extra: {
+          anchors: svg.anchors,
+          problemId,
+          mediaId,
+          svgId: svg.id,
+        },
+      });
+    }
+  }
+  const tradBelayStations = [];
+  if (svg?.tradBelayStations) {
+    try {
+      const parsed = JSON.parse(svg.tradBelayStations);
+      tradBelayStations.push(...parsed);
+    } catch (ex) {
+      captureException(ex, {
+        extra: {
+          tradBelayStations: svg.tradBelayStations,
+          problemId,
+          mediaId,
+          svgId: svg.id,
+        },
+      });
+    }
+  }
+  const texts = [];
+  if (svg?.texts) {
+    try {
+      const parsed = JSON.parse(svg.texts);
+      texts.push(...parsed);
+    } catch (ex) {
+      captureException(ex, {
+        extra: {
+          texts: svg.texts,
+          problemId,
+          mediaId,
+          svgId: svg.id,
+        },
+      });
+    }
+  }
+
+  const readOnlySvgs: EditableSvg["readOnlySvgs"] = [];
+  for (const s of neighbourSvgs || m.svgs) {
+    if (!svg || s !== svg) {
+      console.log(s);
+      readOnlySvgs.push({
+        nr: s.nr ?? 0,
+        hasAnchor: !!s.hasAnchor,
+        path:
+          (s.path && mediaRegion ? scalePath(s.path, mediaRegion) : s.path) ??
+          "",
+        anchors: s.anchors ? JSON.parse(s.anchors) : [],
+        tradBelayStations: s.tradBelayStations
+          ? JSON.parse(s.tradBelayStations)
+          : [],
+        texts: s.texts ? JSON.parse(s.texts) : [],
+        t: "other",
+      });
+    }
+  }
+
+  return {
+    svgId,
+    problemId,
+    problemSectionId,
+    mediaId: m.id ?? 0,
+    mediaWidth: m.width ?? 0,
+    mediaHeight: m.height ?? 0,
+    mediaRegion,
+    sections: data.sections,
+    nr: svgNr,
+    crc32: m.crc32 ?? 0,
+    path: path ?? "",
+    anchors,
+    tradBelayStations,
+    texts,
+    readOnlySvgs,
+    hasAnchor,
+  };
 }

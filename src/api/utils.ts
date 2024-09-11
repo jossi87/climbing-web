@@ -5,6 +5,7 @@ import { FetchOptions } from "./types";
 import fetch from "isomorphic-fetch";
 import { captureMessage } from "@sentry/react";
 import { saveAs } from "file-saver";
+import { MediaRegion } from "../utils/svg-scaler";
 
 export function getLocales() {
   return "nb-NO";
@@ -36,18 +37,15 @@ export function getImageUrl(
   id: number,
   checksum: number,
   minDimension?: number,
-  x?: number,
-  y?: number,
-  width?: number,
-  height?: number,
+  mediaRegion?: MediaRegion,
 ): string {
   const crc32 = checksum || 0;
   let url = `/images?id=${id}&crc32=${crc32}`;
   if (minDimension) {
     url += `&minDimention=${minDimension}`;
   }
-  if (width && height) {
-    url += `&x=${x}&y=${y}&width=${width}&height=${height}`;
+  if (mediaRegion) {
+    url += `&x=${mediaRegion.x}&y=${mediaRegion.y}&width=${mediaRegion.width}&height=${mediaRegion.height}`;
   }
   return getUrl(url);
 }

@@ -2,6 +2,7 @@ import React from "react";
 import { parseSVG, makeAbsolute } from "svg-path-parser";
 import { svgPathProperties } from "svg-path-properties";
 import { neverGuard } from "./neverGuard";
+import { MediaRegion } from "./svg-scaler";
 
 type DescentProps = {
   path: React.SVGProps<SVGPathElement>["d"];
@@ -304,10 +305,12 @@ export const isPoint = (p: ParsedEntry): p is Point => {
   return !isCubicPoint(p) && !isQuadraticPoint(p) && !isArc(p);
 };
 
-export function parsePath(d: string): ParsedEntry[] {
+export function parsePath(d: string, mediaRegion?: MediaRegion): ParsedEntry[] {
   if (!d) {
     return [];
   }
+  const deltaX = mediaRegion?.x ?? 0;
+  const deltaY = mediaRegion?.y ?? 0;
 
   const commands = makeAbsolute(parseSVG(d)); // Note: mutates the commands in place!
   const res = commands
@@ -316,23 +319,23 @@ export function parsePath(d: string): ParsedEntry[] {
       switch (code) {
         case "L":
         case "M":
-          return { x: Math.round(c.x), y: Math.round(c.y) };
+          return { x: Math.round(c.x + deltaX), y: Math.round(c.y + deltaY) };
         case "C":
           return {
-            x: Math.round(c.x),
-            y: Math.round(c.y),
+            x: Math.round(c.x + deltaX),
+            y: Math.round(c.y + deltaY),
             c: [
-              { x: Math.round(c.x1), y: Math.round(c.y1) },
-              { x: Math.round(c.x2), y: Math.round(c.y2) },
+              { x: Math.round(c.x1 + deltaX), y: Math.round(c.y1 + deltaY) },
+              { x: Math.round(c.x2 + deltaX), y: Math.round(c.y2 + deltaY) },
             ],
           };
         case "S":
           return {
-            x: Math.round(c.x),
-            y: Math.round(c.y),
+            x: Math.round(c.x + deltaX),
+            y: Math.round(c.y + deltaY),
             c: [
-              { x: Math.round(c.x0), y: Math.round(c.y0) },
-              { x: Math.round(c.x2), y: Math.round(c.y2) },
+              { x: Math.round(c.x0 + deltaX), y: Math.round(c.y0 + deltaY) },
+              { x: Math.round(c.x2 + deltaX), y: Math.round(c.y2 + deltaY) },
             ],
           };
 

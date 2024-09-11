@@ -347,7 +347,7 @@ export const reducer = (state: State, update: Update): State => {
           }
 
           const previousPair = otherPoints[keyLookup[i - 1]];
-          if (previousPair) {
+          if (previousPair && !isCubicPoint(p)) {
             // The previous point in the line (which has already been processed)
             // *also* lines up with another point in the SVG. We should make
             // sure that the lines exactly match so that it looks as clean as
@@ -358,6 +358,10 @@ export const reducer = (state: State, update: Update): State => {
             // happens, things will get pretty goofy. However, this is a corner
             // case, and one that is easily fixed by the user just adding a
             // third point between them if it ever does.
+            //
+            // While drawing topo per pitch (e.g. Hoka Hey) this resulted in
+            // cubic line being converted to line. Added isCubicPoint check
+            // to fix this issue.
             return { ...paired };
           }
 

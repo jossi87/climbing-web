@@ -13,6 +13,7 @@ import {
   Dropdown,
   Input,
   Icon,
+  Divider,
 } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { useMeta } from "../common/meta";
@@ -33,6 +34,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { captureException } from "@sentry/react";
 import { generatePath, reducer } from "./state";
 import { neverGuard } from "../../utils/neverGuard";
+import { MediaRegion } from "../../utils/svg-scaler";
 
 const useIds = (): {
   problemId: number;
@@ -58,7 +60,13 @@ const useIds = (): {
 
 const SvgEditLoader = () => {
   const { problemId, problemSectionId, mediaId } = useIds();
-  const data = useSvgEdit(problemId, problemSectionId, mediaId);
+  const [customMediaRegion, setCustomMediaRegion] = useState<MediaRegion>(null);
+  const data = useSvgEdit(
+    problemId,
+    problemSectionId,
+    mediaId,
+    customMediaRegion,
+  );
   const accessToken = useAccessToken();
   const [saving, setSaving] = useState(false);
   const navigate = useNavigate();
@@ -67,7 +75,7 @@ const SvgEditLoader = () => {
     ({ path, hasAnchor, anchors, tradBelayStations, texts }) => {
       setSaving(true);
 
-      const correctPoints = parsePath(path ?? "");
+      const correctPoints = parsePath(path ?? "", data.mediaRegion);
       const correctPathTxt = generatePath(correctPoints);
 
       return postProblemSvg(
@@ -98,12 +106,24 @@ const SvgEditLoader = () => {
           setSaving(false);
         });
     },
-    [accessToken, problemId, problemSectionId, mediaId, data?.svgId, navigate],
+    [
+      accessToken,
+      problemId,
+      problemSectionId,
+      mediaId,
+      data?.svgId,
+      data?.mediaRegion,
+      navigate,
+    ],
   );
 
   const onCancel = useCallback(() => {
     navigate(`/problem/${problemId}`);
   }, [navigate, problemId]);
+
+  const onUpdateMediaRegion = (mediaRegion) => {
+    setCustomMediaRegion(mediaRegion);
+  };
 
   if (!data) {
     return <Loading />;
@@ -113,16 +133,34 @@ const SvgEditLoader = () => {
     <SvgEdit
       key={JSON.stringify(data)}
       {...data}
-      imageUrl={getImageUrl(mediaId, data.crc32, undefined)}
+      sections={data.sections}
       onSave={save}
       saving={saving}
       onCancel={onCancel}
+      onUpdateMediaRegion={onUpdateMediaRegion}
     />
   );
 };
 
-type Props = Omit<EditableSvg, "mediaId" | "crc32"> & {
-  imageUrl: string;
+type Props = Pick<
+  EditableSvg,
+  | "svgId"
+  | "problemId"
+  | "problemSectionId"
+  | "mediaId"
+  | "mediaWidth"
+  | "mediaHeight"
+  | "mediaRegion"
+  | "sections"
+  | "crc32"
+  | "anchors"
+  | "hasAnchor"
+  | "nr"
+  | "path"
+  | "texts"
+  | "tradBelayStations"
+  | "readOnlySvgs"
+> & {
   onSave: (
     updated: Required<
       Pick<
@@ -133,6 +171,7 @@ type Props = Omit<EditableSvg, "mediaId" | "crc32"> & {
   ) => void;
   saving: boolean;
   onCancel: () => void;
+  onUpdateMediaRegion: (customMediaRegion: MediaRegion) => void;
 };
 
 const black = "#000000";
@@ -161,12 +200,18 @@ const useMinWindowScale = () => {
 };
 
 export const SvgEdit = ({
-  imageUrl,
   saving,
   onSave,
   onCancel,
-  w,
-  h,
+  onUpdateMediaRegion,
+  problemId,
+  problemSectionId,
+  mediaId,
+  crc32,
+  mediaWidth,
+  mediaHeight,
+  mediaRegion,
+  sections,
   path: initialPath,
   readOnlySvgs,
   tradBelayStations: initialTradBelayStations,
@@ -174,7 +219,21 @@ export const SvgEdit = ({
   texts: initialTexts,
   hasAnchor: initialHasAnchor,
 }: Props) => {
+  const [customMediaRegion, setCustomMediaRegion] =
+    useState<MediaRegion>(mediaRegion);
+  const w = mediaRegion?.width || mediaWidth;
+  const h = mediaRegion?.height || mediaHeight;
+  const navigate = useNavigate();
   const shift = useRef(false);
+
+  const refresh = (
+    problemId: number,
+    problemSectionId: number,
+    mediaId: number,
+  ) => {
+    onUpdateMediaRegion(null);
+    navigate(`/problem/svg-edit/${problemId}/${problemSectionId}/${mediaId}`);
+  };
 
   const readOnlyPointsRef = useRef(
     readOnlySvgs
@@ -281,7 +340,7 @@ export const SvgEdit = ({
 
       return p;
     },
-    [h, w],
+    [w, h],
   );
 
   const handleOnClick: MouseEventHandler = useCallback(
@@ -469,7 +528,7 @@ export const SvgEdit = ({
 
   return (
     <Container onMouseUp={cancelDragging} onMouseLeave={cancelDragging}>
-      <Segment style={{ minHeight: "130px" }}>
+      <Segment size="mini">
         <Button.Group size="mini" floated="right">
           <Button
             primary
@@ -616,6 +675,24 @@ export const SvgEdit = ({
               />
               Anchor
             </Button>
+            {meta.isClimbing && sections?.length > 1 && (
+              <Dropdown
+                selection
+                value={problemSectionId}
+                onChange={(_, { value }) => {
+                  const problemSectionId = +value;
+                  refresh(problemId, problemSectionId, mediaId);
+                }}
+                options={[
+                  { key: -1, value: 0, text: "Entire route" },
+                  ...sections.map((s, i) => ({
+                    key: i,
+                    value: s.id,
+                    text: "Pitch " + s.nr,
+                  })),
+                ]}
+              />
+            )}
           </>
         )}
         <br />
@@ -636,12 +713,85 @@ export const SvgEdit = ({
           />
         )}
         <Button
+          size="mini"
           disabled={!points || points.length === 0}
           onClick={removeActivePoint}
         >
           Remove this point
         </Button>
+        {problemSectionId != 0 && (
+          <>
+            <Divider horizontal>Image region</Divider>
+            <Input
+              size="mini"
+              label="x"
+              value={customMediaRegion?.x}
+              onChange={(_, { value }) =>
+                setCustomMediaRegion((prevState) => ({
+                  ...prevState,
+                  x: Math.min(+value || 0, mediaWidth - 1920),
+                }))
+              }
+            />
+            <Input
+              size="mini"
+              label="y"
+              value={customMediaRegion?.y}
+              onChange={(_, { value }) =>
+                setCustomMediaRegion((prevState) => ({
+                  ...prevState,
+                  y: Math.min(+value || 0, mediaHeight - 1080),
+                }))
+              }
+            />
+            <Input
+              size="mini"
+              label="width"
+              value={customMediaRegion?.width}
+              onChange={(_, { value }) =>
+                setCustomMediaRegion((prevState) => ({
+                  ...prevState,
+                  width: Math.min(
+                    +value || 1920,
+                    mediaWidth - (prevState.x || 0),
+                    3000,
+                  ),
+                }))
+              }
+            />
+            <Input
+              size="mini"
+              label="height"
+              value={customMediaRegion?.height}
+              onChange={(_, { value }) =>
+                setCustomMediaRegion((prevState) => ({
+                  ...prevState,
+                  height: Math.min(
+                    +value || 1080,
+                    mediaHeight - (prevState.y || 0),
+                    4000,
+                  ),
+                }))
+              }
+            />
+            {customMediaRegion && customMediaRegion !== mediaRegion && (
+              <>
+                {" "}
+                <Button
+                  size="mini"
+                  positive
+                  circular
+                  icon
+                  onClick={() => onUpdateMediaRegion(customMediaRegion)}
+                >
+                  <Icon name="refresh" />
+                </Button>
+              </>
+            )}
+          </>
+        )}
       </Segment>
+
       <svg
         viewBox={"0 0 " + w + " " + h}
         onClick={handleOnClick}
@@ -650,7 +800,12 @@ export const SvgEdit = ({
         width="100%"
         height="100%"
       >
-        <image ref={imageRef} xlinkHref={imageUrl} width="100%" height="100%" />
+        <image
+          ref={imageRef}
+          xlinkHref={getImageUrl(mediaId, crc32, undefined, mediaRegion)}
+          width="100%"
+          height="100%"
+        />
         {parseReadOnlySvgs(readOnlySvgs, w, h, minWindowScale)}
         <path
           style={{ fill: "none", stroke: black }}
@@ -700,7 +855,7 @@ export const SvgEdit = ({
         fluid
         placeholder="SVG Path"
         value={path || ""}
-        onChange={(e, { value }) => {
+        onChange={(_, { value }) => {
           dispatch({ action: "update-path", path: value ?? "" });
         }}
       />
