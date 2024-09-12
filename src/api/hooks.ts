@@ -612,7 +612,7 @@ export function useSvgEdit(
 
   const problemSvgs = m.svgs.filter((x) => x.problemId == data.id);
   let neighbourSvgs;
-  const svg = problemSvgs.filter((x) => x.nr === pitch)[0];
+  const svg = problemSvgs.filter((x) => pitch === 0 || x.nr === pitch)[0];
   if (pitch && !mediaRegion) {
     if (svg) {
       mediaRegion = calculateMediaRegion(svg.path, m.width, m.height);
