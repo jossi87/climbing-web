@@ -599,9 +599,9 @@ export function useSvgEdit(
       mediaHeight: m.height ?? 0,
       mediaRegion,
       crc32: m.crc32 ?? 0,
-      sections: [],
+      sections: data.sections,
       anchors: [],
-      hasAnchor: problemSectionId ? true : false,
+      hasAnchor: problemSectionId ? false : true,
       nr: 0,
       path: "",
       texts: [],
@@ -630,7 +630,7 @@ export function useSvgEdit(
         mediaRegion = {
           x: prevMediaRegion.x,
           y: Math.round(
-            Math.max(0, prevMediaRegion.y - prevMediaRegion.height * 0.7),
+            Math.max(0, prevMediaRegion.y - (prevMediaRegion.height * 0.5)),
           ),
           width: prevMediaRegion.width,
           height: prevMediaRegion.height,

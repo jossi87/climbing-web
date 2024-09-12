@@ -92,7 +92,13 @@ const SvgEditLoader = () => {
         JSON.stringify(texts),
       )
         .then(() => {
-          navigate(`/problem/${problemId}`);
+          if (problemSectionId>0) {
+            // Drawing pitches on image
+            navigate(0);
+          }
+          else {
+            navigate(`/problem/${problemId}`);
+          }
         })
         .catch((error) => {
           console.warn(error);
