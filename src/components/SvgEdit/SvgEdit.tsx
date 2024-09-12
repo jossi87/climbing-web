@@ -92,11 +92,10 @@ const SvgEditLoader = () => {
         JSON.stringify(texts),
       )
         .then(() => {
-          if (problemSectionId>0) {
+          if (problemSectionId > 0) {
             // Drawing pitches on image
             navigate(0);
-          }
-          else {
+          } else {
             navigate(`/problem/${problemId}`);
           }
         })

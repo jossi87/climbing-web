@@ -630,7 +630,7 @@ export function useSvgEdit(
         mediaRegion = {
           x: prevMediaRegion.x,
           y: Math.round(
-            Math.max(0, prevMediaRegion.y - (prevMediaRegion.height * 0.5)),
+            Math.max(0, prevMediaRegion.y - prevMediaRegion.height * 0.5),
           ),
           width: prevMediaRegion.width,
           height: prevMediaRegion.height,
