@@ -553,7 +553,7 @@ export function usePermissions() {
 export type EditableSvg = {
   svgId: number;
   problemId: number;
-  problemSectionId: number;
+  pitch: number;
   mediaId: number;
   mediaWidth: number;
   mediaHeight: number;
@@ -574,7 +574,7 @@ export type EditableSvg = {
 
 export function useSvgEdit(
   problemId: number,
-  problemSectionId: number,
+  pitch: number,
   mediaId: number,
   mediaRegion: MediaRegion,
 ) {
@@ -593,7 +593,7 @@ export function useSvgEdit(
     return {
       svgId: 0,
       problemId,
-      problemSectionId,
+      pitch,
       mediaId,
       mediaWidth: m.width ?? 0,
       mediaHeight: m.height ?? 0,
@@ -601,7 +601,7 @@ export function useSvgEdit(
       crc32: m.crc32 ?? 0,
       sections: data.sections,
       anchors: [],
-      hasAnchor: problemSectionId ? false : true,
+      hasAnchor: true,
       nr: 0,
       path: "",
       texts: [],
@@ -612,15 +612,12 @@ export function useSvgEdit(
 
   const problemSvgs = m.svgs.filter((x) => x.problemId == data.id);
   let neighbourSvgs;
-  const svg = problemSvgs.filter(
-    (x) => x.problemSectionId === problemSectionId,
-  )[0];
-  if (problemSectionId && !mediaRegion) {
+  const svg = problemSvgs.filter((x) => x.nr === pitch)[0];
+  if (pitch && !mediaRegion) {
     if (svg) {
       mediaRegion = calculateMediaRegion(svg.path, m.width, m.height);
     } else {
-      const nr = data.sections.filter((x) => x.id === problemSectionId)[0]?.nr;
-      const prevSvg = problemSvgs.filter((x) => x.nr === nr - 1)[0];
+      const prevSvg = problemSvgs.filter((x) => x.nr === pitch - 1)[0];
       if (prevSvg) {
         const prevMediaRegion = calculateMediaRegion(
           prevSvg.path,
@@ -636,7 +633,7 @@ export function useSvgEdit(
           height: prevMediaRegion.height,
         };
       }
-      const nextSvg = problemSvgs.filter((x) => x.nr === nr + 1)[0];
+      const nextSvg = problemSvgs.filter((x) => x.nr === pitch + 1)[0];
       if (prevSvg && nextSvg) {
         neighbourSvgs = [prevSvg, nextSvg];
       } else if (prevSvg) {
@@ -649,7 +646,7 @@ export function useSvgEdit(
 
   const svgId = svg?.id ?? 0;
   const svgNr = svg?.nr ?? 0;
-  const hasAnchor = svg?.hasAnchor ?? true;
+  const hasAnchor = svg?.hasAnchor ?? pitch === 0;
   const path =
     (svg?.path && mediaRegion ? scalePath(svg.path, mediaRegion) : svg?.path) ??
     "";
@@ -705,7 +702,6 @@ export function useSvgEdit(
   const readOnlySvgs: EditableSvg["readOnlySvgs"] = [];
   for (const s of neighbourSvgs || m.svgs) {
     if (!svg || s !== svg) {
-      console.log(s);
       readOnlySvgs.push({
         nr: s.nr ?? 0,
         hasAnchor: !!s.hasAnchor,
@@ -725,7 +721,7 @@ export function useSvgEdit(
   return {
     svgId,
     problemId,
-    problemSectionId,
+    pitch,
     mediaId: m.id ?? 0,
     mediaWidth: m.width ?? 0,
     mediaHeight: m.height ?? 0,

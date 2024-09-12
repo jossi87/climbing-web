@@ -104,7 +104,7 @@ export const SvgRoute = ({
   const isHoveredOrActive =
     optProblemId === svg.problemId || problemIdHovered == svg.problemId;
   const hoveredOrActiveScale = isHoveredOrActive ? 1.2 : 1;
-  const pathIdentifier = `svg-route-path-${mediaId}-${svg.problemId}-${svg.problemSectionId}-${thumbnail}`;
+  const pathIdentifier = `svg-route-path-${mediaId}-${svg.problemId}-${svg.pitch}-${thumbnail}`;
   const extraAnchors =
     svg.anchors &&
     JSON.parse(svg.anchors).map((a) => (
@@ -195,7 +195,7 @@ export const SvgRoute = ({
           let url = "/problem/" + svg.problemId + "/" + mediaId;
           if (
             optProblemId === svg.problemId &&
-            ((!pitch && svg.problemSectionId > 0) || (pitch && pitch != svg.nr))
+            ((!pitch && svg.pitch > 0) || (pitch && pitch != svg.nr))
           ) {
             url += "/" + svg.nr;
           }

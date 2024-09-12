@@ -38,35 +38,30 @@ import { MediaRegion } from "../../utils/svg-scaler";
 
 const useIds = (): {
   problemId: number;
-  problemSectionId: number;
+  pitch: number;
   mediaId: number;
 } => {
-  const { problemId, problemSectionId, mediaId } = useParams();
+  const { problemId, pitch, mediaId } = useParams();
   if (!problemId) {
     throw new Error("Missing problemId param");
   }
-  if (!problemSectionId) {
-    throw new Error("Missing problemSectionId param");
+  if (!pitch) {
+    throw new Error("Missing pitch param");
   }
   if (!mediaId) {
     throw new Error("Missing mediaId param");
   }
   return {
     problemId: +problemId,
-    problemSectionId: +problemSectionId,
+    pitch: +pitch,
     mediaId: +mediaId,
   };
 };
 
 const SvgEditLoader = () => {
-  const { problemId, problemSectionId, mediaId } = useIds();
+  const { problemId, pitch, mediaId } = useIds();
   const [customMediaRegion, setCustomMediaRegion] = useState<MediaRegion>(null);
-  const data = useSvgEdit(
-    problemId,
-    problemSectionId,
-    mediaId,
-    customMediaRegion,
-  );
+  const data = useSvgEdit(problemId, pitch, mediaId, customMediaRegion);
   const accessToken = useAccessToken();
   const [saving, setSaving] = useState(false);
   const navigate = useNavigate();
@@ -81,7 +76,7 @@ const SvgEditLoader = () => {
       return postProblemSvg(
         accessToken,
         problemId,
-        problemSectionId,
+        pitch,
         mediaId,
         correctPoints.length < 2,
         data?.svgId ?? 0,
@@ -92,7 +87,7 @@ const SvgEditLoader = () => {
         JSON.stringify(texts),
       )
         .then(() => {
-          if (problemSectionId > 0) {
+          if (pitch > 0) {
             // Drawing pitches on image
             navigate(0);
           } else {
@@ -114,7 +109,7 @@ const SvgEditLoader = () => {
     [
       accessToken,
       problemId,
-      problemSectionId,
+      pitch,
       mediaId,
       data?.svgId,
       data?.mediaRegion,
@@ -151,7 +146,7 @@ type Props = Pick<
   EditableSvg,
   | "svgId"
   | "problemId"
-  | "problemSectionId"
+  | "pitch"
   | "mediaId"
   | "mediaWidth"
   | "mediaHeight"
@@ -210,7 +205,7 @@ export const SvgEdit = ({
   onCancel,
   onUpdateMediaRegion,
   problemId,
-  problemSectionId,
+  pitch,
   mediaId,
   crc32,
   mediaWidth,
@@ -231,13 +226,9 @@ export const SvgEdit = ({
   const navigate = useNavigate();
   const shift = useRef(false);
 
-  const refresh = (
-    problemId: number,
-    problemSectionId: number,
-    mediaId: number,
-  ) => {
+  const refresh = (problemId: number, pitch: number, mediaId: number) => {
     onUpdateMediaRegion(null);
-    navigate(`/problem/svg-edit/${problemId}/${problemSectionId}/${mediaId}`);
+    navigate(`/problem/svg-edit/${problemId}/${pitch}/${mediaId}`);
   };
 
   const readOnlyPointsRef = useRef(
@@ -683,16 +674,15 @@ export const SvgEdit = ({
             {meta.isClimbing && sections?.length > 1 && (
               <Dropdown
                 selection
-                value={problemSectionId}
+                value={pitch}
                 onChange={(_, { value }) => {
-                  const problemSectionId = +value;
-                  refresh(problemId, problemSectionId, mediaId);
+                  refresh(problemId, +value, mediaId);
                 }}
                 options={[
                   { key: -1, value: 0, text: "Entire route" },
                   ...sections.map((s, i) => ({
                     key: i,
-                    value: s.id,
+                    value: s.nr,
                     text: "Pitch " + s.nr,
                   })),
                 ]}
@@ -724,7 +714,7 @@ export const SvgEdit = ({
         >
           Remove this point
         </Button>
-        {problemSectionId != 0 && (
+        {pitch != 0 && (
           <>
             <Divider horizontal>Image region</Divider>
             <Input

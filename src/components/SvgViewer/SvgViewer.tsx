@@ -93,7 +93,7 @@ export const SvgViewer = ({
       })
       .map((svg) => (
         <SvgRoute
-          key={[m.id, svg.problemId, svg.problemSectionId, thumb].join("-")}
+          key={[m.id, svg.problemId, svg.pitch, thumb].join("-")}
           thumbnail={thumb}
           showText={showText}
           scale={scale}

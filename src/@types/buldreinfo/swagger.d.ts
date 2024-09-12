@@ -1095,7 +1095,7 @@ export type components = {
             /** Format: int32 */
             nr?: number;
             /** Format: int32 */
-            problemSectionId?: number;
+            pitch?: number;
             path?: string;
             hasAnchor?: boolean;
             texts?: string;
@@ -3049,7 +3049,7 @@ export interface operations {
                 /** @description Problem id */
                 problemId: number;
                 /** @description Problem section id */
-                problemSectionId: number;
+                pitch: number;
                 /** @description Media id */
                 mediaId: number;
             };

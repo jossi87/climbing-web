@@ -11,7 +11,7 @@ export default {
   args: {
     svgId: 0,
     problemId: 0,
-    problemSectionId: 0,
+    pitch: 0,
     nr: 0,
     mediaId: 30444,
     crc32: null,
