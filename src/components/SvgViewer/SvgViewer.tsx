@@ -3,7 +3,11 @@ import { SvgRoute } from "./SvgRoute";
 import { Descent, Rappel } from "../../utils/svg-utils";
 import { components } from "../../@types/buldreinfo/swagger";
 import { CSSProperties } from "react";
-import { scaleSvg } from "../../utils/svg-scaler";
+import {
+  calculateMediaRegion,
+  isPathVisible,
+  scalePath,
+} from "../../utils/svg-scaler";
 import "./SvgViewer.css";
 
 type SvgProps = {
@@ -29,7 +33,20 @@ export const SvgViewer = ({
   problemIdHovered,
   setProblemIdHovered,
 }: SvgProps) => {
-  const { imgW, imgH, mediaRegion, svgs } = scaleSvg(m, pitch);
+  let imgW = m.width;
+  let imgH = m.height;
+  let mediaRegion;
+  let svgs = m.svgs;
+  if (pitch && m.svgs?.length > 0 && m.svgs.some((x) => x.nr === pitch)) {
+    const pitchSvg = m.svgs.filter((x) => x.nr === pitch)[0];
+    mediaRegion = calculateMediaRegion(pitchSvg.path, m.width, m.height);
+    svgs = m.svgs
+      .filter((x) => x === pitchSvg || isPathVisible(x.path, mediaRegion))
+      .map((x) => ({ ...x, path: scalePath(x.path, mediaRegion) }));
+    imgW = mediaRegion.width;
+    imgH = mediaRegion.height;
+  }
+
   const scale = Math.max(imgW / 1920, imgH / 1440);
   const mediaSvgs =
     m.mediaSvgs?.length > 0 &&

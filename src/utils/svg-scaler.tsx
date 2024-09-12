@@ -7,43 +7,6 @@ export type MediaRegion = {
   height: number;
 };
 
-export function scaleSvg(
-  m: components["schemas"]["Media"],
-  pitch: number,
-): {
-  imgW: number;
-  imgH: number;
-  mediaRegion: MediaRegion;
-  svgs: components["schemas"]["Svg"][];
-} {
-  if (pitch && m.svgs?.length > 0 && m.svgs.some((x) => x.nr === pitch)) {
-    const pitchSvg = m.svgs.filter((x) => x.nr === pitch)[0];
-    const mediaRegion = calculateMediaRegion(pitchSvg.path, m.width, m.height);
-    const svgs = [];
-    if (pitch > 1 && m.svgs.some((x) => x.nr === pitch - 1)) {
-      const svg = m.svgs.filter((x) => x.nr === pitch - 1)[0];
-      svgs.push({ ...svg, path: scalePath(svg.path, mediaRegion) });
-    }
-    svgs.push({ ...pitchSvg, path: scalePath(pitchSvg.path, mediaRegion) });
-    if (m.svgs.some((x) => x.nr === pitch + 1)) {
-      const svg = m.svgs.filter((x) => x.nr === pitch + 1)[0];
-      svgs.push({ ...svg, path: scalePath(svg.path, mediaRegion) });
-    }
-    return {
-      imgW: mediaRegion.width,
-      imgH: mediaRegion.height,
-      mediaRegion,
-      svgs,
-    };
-  }
-  return {
-    imgW: m.width,
-    imgH: m.height,
-    mediaRegion: null,
-    svgs: m.svgs,
-  };
-}
-
 export function calculateMediaRegion(
   path: string,
   mediaWidth: number,
@@ -131,6 +94,25 @@ export function calculateMediaRegion(
     width: Math.round(width),
     height: Math.round(height),
   };
+}
+
+export function isPathVisible(path: string, mediaRegion: MediaRegion): boolean {
+  const regionX1 = mediaRegion.x;
+  const regionY1 = mediaRegion.y;
+  const regionX2 = mediaRegion.x + mediaRegion.width;
+  const regionY2 = mediaRegion.y + mediaRegion.height;
+  const pathLst = path.replace("  ", " ").trim().split(" ");
+  const x1 = parseInt(pathLst[1]);
+  const y1 = parseInt(pathLst[2]);
+  const x2 = parseInt(pathLst[pathLst.length - 2]);
+  const y2 = parseInt(pathLst[pathLst.length - 1]);
+  if (x1 >= regionX1 && x1 <= regionX2 && y1 >= regionY1 && y1 <= regionY2) {
+    return true;
+  }
+  if (x2 >= regionX1 && x2 <= regionX2 && y2 >= regionY1 && y2 <= regionY2) {
+    return true;
+  }
+  return false;
 }
 
 export function scalePath(path: string, mediaRegion: MediaRegion): string {
