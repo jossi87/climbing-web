@@ -53,7 +53,7 @@ export const SectorListItem = ({ problem }: Props) => {
   const ascents =
     problem.numTicks &&
     problem.numTicks + (problem.numTicks == 1 ? " ascent" : " ascents");
-  let faTypeAscents = problem.fa;
+  let faTypeAscents = problem.fa || "";
   if (problem.faDate) {
     faTypeAscents += " " + problem.faDate.substring(0, 4);
   }
@@ -71,6 +71,7 @@ export const SectorListItem = ({ problem }: Props) => {
     faTypeAscents =
       (faTypeAscents != null ? faTypeAscents + " (" : "(") + ascents + ")";
   }
+  faTypeAscents = faTypeAscents.trim();
   let backgroundColor = "#ffffff";
   if (problem.ticked) {
     backgroundColor = "#d2f8d2";
