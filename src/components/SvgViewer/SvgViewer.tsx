@@ -7,6 +7,7 @@ import {
   calculateMediaRegion,
   isPathVisible,
   scalePath,
+  scalePoint,
 } from "../../utils/svg-scaler";
 import "./SvgViewer.css";
 
@@ -50,49 +51,53 @@ export const SvgViewer = ({
   const scale = Math.max(imgW / 1920, imgH / 1440);
   const mediaSvgs =
     m.mediaSvgs?.length > 0 &&
-    m.mediaSvgs.map((svg) => {
-      switch (svg.t) {
-        case "PATH": {
-          return (
-            <Descent
-              key={[m.id, thumb, svg.path].join("x")}
-              path={svg.path}
-              whiteNotBlack={true}
-              scale={scale}
-              thumb={thumb}
-            />
-          );
+    m.mediaSvgs
+      .filter((svg) => !svg.path || isPathVisible(svg.path, mediaRegion))
+      .map((svg) => {
+        switch (svg.t) {
+          case "PATH": {
+            return (
+              <Descent
+                key={[m.id, thumb, svg.path].join("x")}
+                path={scalePath(svg.path, mediaRegion)}
+                whiteNotBlack={true}
+                scale={scale}
+                thumb={thumb}
+              />
+            );
+          }
+          case "RAPPEL_BOLTED": {
+            const { x, y } = scalePoint(svg.rappelX, svg.rappelY, mediaRegion);
+            return (
+              <Rappel
+                key={[m.id, thumb, svg.rappelX, svg.rappelY].join("x")}
+                x={x}
+                y={y}
+                bolted={true}
+                scale={scale}
+                thumb={thumb}
+                backgroundColor="black"
+                color="white"
+              />
+            );
+          }
+          case "RAPPEL_NOT_BOLTED": {
+            const { x, y } = scalePoint(svg.rappelX, svg.rappelY, mediaRegion);
+            return (
+              <Rappel
+                key={[m.id, thumb, svg.rappelX, svg.rappelY].join("x")}
+                x={x}
+                y={y}
+                bolted={false}
+                scale={scale}
+                thumb={thumb}
+                backgroundColor="black"
+                color="white"
+              />
+            );
+          }
         }
-        case "RAPPEL_BOLTED": {
-          return (
-            <Rappel
-              key={[m.id, thumb, svg.rappelX, svg.rappelY].join("x")}
-              x={svg.rappelX}
-              y={svg.rappelY}
-              bolted={true}
-              scale={scale}
-              thumb={thumb}
-              backgroundColor="black"
-              color="white"
-            />
-          );
-        }
-        case "RAPPEL_NOT_BOLTED": {
-          return (
-            <Rappel
-              key={[m.id, thumb, svg.rappelX, svg.rappelY].join("x")}
-              x={svg.rappelX}
-              y={svg.rappelY}
-              bolted={false}
-              scale={scale}
-              thumb={thumb}
-              backgroundColor="black"
-              color="white"
-            />
-          );
-        }
-      }
-    });
+      });
   const routes =
     svgs?.length > 0 &&
     svgs

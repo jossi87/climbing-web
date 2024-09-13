@@ -95,6 +95,9 @@ export function calculateMediaRegion(
 }
 
 export function isPathVisible(path: string, mediaRegion: MediaRegion): boolean {
+  if (!mediaRegion) {
+    return true;
+  }
   const regionX1 = mediaRegion.x;
   const regionY1 = mediaRegion.y;
   const regionX2 = mediaRegion.x + mediaRegion.width;
@@ -113,7 +116,21 @@ export function isPathVisible(path: string, mediaRegion: MediaRegion): boolean {
   return false;
 }
 
+export function scalePoint(
+  x: number,
+  y: number,
+  mediaRegion: MediaRegion,
+): { x: number; y: number } {
+  if (!mediaRegion) {
+    return { x, y };
+  }
+  return { x: x - mediaRegion.x, y: y - mediaRegion.y };
+}
+
 export function scalePath(path: string, mediaRegion: MediaRegion): string {
+  if (!mediaRegion) {
+    return path;
+  }
   const pathLst = path.replace("  ", " ").trim().split(" ");
   // Update path
   const newPathLst = [];
