@@ -97,7 +97,11 @@ export const SvgViewer = ({
     svgs?.length > 0 &&
     svgs
       .sort((a, b) => {
-        if (problemIdHovered > 0 && a.problemId === problemIdHovered) {
+        if (a.pitch < b.pitch) {
+          return -1;
+        } else if (a.pitch > b.pitch) {
+          return 1;
+        } else if (problemIdHovered > 0 && a.problemId === problemIdHovered) {
           return 1;
         } else if (problemIdHovered > 0 && b.problemId === problemIdHovered) {
           return -1;
