@@ -19,6 +19,7 @@ import { captureException } from "@sentry/react";
 import {
   MediaRegion,
   calculateMediaRegion,
+  isPathVisible,
   scalePath,
 } from "../utils/svg-scaler";
 
@@ -610,38 +611,11 @@ export function useSvgEdit(
     };
   }
 
-  const problemSvgs = m.svgs.filter((x) => x.problemId == data.id);
-  let neighbourSvgs;
-  const svg = problemSvgs.filter((x) => pitch === 0 || x.nr === pitch)[0];
-  if (pitch && !mediaRegion) {
-    if (svg) {
-      mediaRegion = calculateMediaRegion(svg.path, m.width, m.height);
-    } else {
-      const prevSvg = problemSvgs.filter((x) => x.nr === pitch - 1)[0];
-      if (prevSvg) {
-        const prevMediaRegion = calculateMediaRegion(
-          prevSvg.path,
-          m.width,
-          m.height,
-        );
-        mediaRegion = {
-          x: prevMediaRegion.x,
-          y: Math.round(
-            Math.max(0, prevMediaRegion.y - prevMediaRegion.height * 0.5),
-          ),
-          width: prevMediaRegion.width,
-          height: prevMediaRegion.height,
-        };
-      }
-      const nextSvg = problemSvgs.filter((x) => x.nr === pitch + 1)[0];
-      if (prevSvg && nextSvg) {
-        neighbourSvgs = [prevSvg, nextSvg];
-      } else if (prevSvg) {
-        neighbourSvgs = [prevSvg];
-      } else if (nextSvg) {
-        neighbourSvgs = [nextSvg];
-      }
-    }
+  const svg = m.svgs.filter(
+    (x) => x.problemId == data.id && pitch == x.pitch,
+  )[0];
+  if (pitch && !mediaRegion && svg && svg.path) {
+    mediaRegion = calculateMediaRegion(svg.path, m.width, m.height);
   }
 
   const svgId = svg?.id ?? 0;
@@ -700,7 +674,9 @@ export function useSvgEdit(
   }
 
   const readOnlySvgs: EditableSvg["readOnlySvgs"] = [];
-  for (const s of neighbourSvgs || m.svgs) {
+  for (const s of m.svgs.filter(
+    (x) => !mediaRegion || isPathVisible(x.path, mediaRegion),
+  )) {
     if (!svg || s !== svg) {
       readOnlySvgs.push({
         nr: s.nr ?? 0,

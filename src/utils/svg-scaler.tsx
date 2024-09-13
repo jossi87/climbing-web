@@ -1,5 +1,3 @@
-import { components } from "../@types/buldreinfo/swagger";
-
 export type MediaRegion = {
   x: number;
   y: number;

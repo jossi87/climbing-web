@@ -748,7 +748,7 @@ export const SvgEdit = ({
                   ...prevState,
                   width: Math.min(
                     +value || 1920,
-                    mediaWidth - (prevState.x || 0),
+                    mediaWidth - (prevState?.x || 0),
                     3000,
                   ),
                 }))
@@ -763,7 +763,7 @@ export const SvgEdit = ({
                   ...prevState,
                   height: Math.min(
                     +value || 1080,
-                    mediaHeight - (prevState.y || 0),
+                    mediaHeight - (prevState?.y || 0),
                     4000,
                   ),
                 }))
