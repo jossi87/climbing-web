@@ -237,10 +237,11 @@ const MediaModal = ({
   const canOrder = isAdmin && isImage && orderableMedia?.includes(m);
   const canMove = isAdmin && isImage;
   const activePitch =
-    pitch &&
-    pitches &&
-    pitches.some((p) => p.nr === pitch) &&
-    pitches.filter((p) => p.nr === pitch)[0];
+    (pitch &&
+      pitches &&
+      pitches.some((p) => p.nr === pitch) &&
+      pitches.filter((p) => p.nr === pitch)[0]) ||
+    null;
   return (
     <Dimmer active={true} onClickOutside={onClose} page>
       <Sidebar.Pushable style={{ minWidth: "360px" }}>
