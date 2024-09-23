@@ -636,7 +636,7 @@ const MediaModal = ({
                   {canDelete && (
                     <Dropdown.Item
                       icon="trash"
-                      text="Delete image"
+                      text={isImage ? "Delete image" : "Delete video"}
                       onClick={onDelete}
                     />
                   )}
