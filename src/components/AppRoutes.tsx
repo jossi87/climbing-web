@@ -1,5 +1,5 @@
-import React, { Suspense, useLayoutEffect } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import React, { Suspense } from "react";
+import { Routes, Route } from "react-router-dom";
 import { Loading } from "./common/widgets/widgets";
 import { lazy } from "../utils/lazyRetry";
 

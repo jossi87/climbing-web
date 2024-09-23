@@ -6,7 +6,6 @@ import React, {
 } from "react";
 import LazyLoad from "react-lazyload";
 import {
-  matchRoutes,
   useLocation,
   useNavigate,
   useParams,
@@ -136,9 +135,15 @@ const Media = ({
     }
   }
 
-  function onDeleteImage() {
-    if (confirm("Are you sure you want to delete this image?")) {
-      const id = m.id;
+  function onDeleteMedia() {
+    const { id, idType } = m;
+    if (
+      confirm(
+        "Are you sure you want to delete this " +
+          (idType === 1 ? "image" : "video") +
+          "?",
+      )
+    ) {
       getAccessTokenSilently().then((accessToken) => {
         deleteMedia(accessToken, id)
           .then(() => {
@@ -273,7 +278,7 @@ const Media = ({
           pitches={pitches}
           autoPlayVideo={autoPlayVideo}
           onEdit={() => setEditM(m)}
-          onDelete={onDeleteImage}
+          onDelete={onDeleteMedia}
           onRotate={onRotate}
           onMoveImageLeft={onMoveImageLeft}
           onMoveImageRight={onMoveImageRight}
