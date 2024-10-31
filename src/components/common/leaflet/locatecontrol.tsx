@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useMap } from "react-leaflet";
-import Locate from "leaflet.locatecontrol";
+import { locate } from "leaflet.locatecontrol";
 import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
 
 export default function LocateControl() {
@@ -19,7 +19,7 @@ export default function LocateControl() {
       icon: "black map marker alternate icon",
       onActivate: () => undefined, // callback before engine starts retrieving locations
     };
-    const lc = new Locate(locateOptions);
+    const lc = new locate(locateOptions);
     lc.addTo(map);
   }, [map]);
 
