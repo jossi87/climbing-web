@@ -194,10 +194,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
         data.comment ?? "",
         data.accessInfo ?? "",
         data.accessClosed ?? "",
-        data.parking ?? {
-          latitude: defaultCenter.lat,
-          longitude: defaultCenter.lng,
-        },
+        data.parking ?? null,
         data.outline ?? [],
         data.wallDirectionManual ?? meta.compassDirections[0],
         data.approach ?? {},
