@@ -547,8 +547,7 @@ const Sector = () => {
           )}
           {conditionLat > 0 &&
             conditionLng > 0 &&
-            data.wallDirectionCalculated &&
-            data.wallDirectionManual && (
+            (data.wallDirectionCalculated || data.wallDirectionManual) && (
               <Table.Row verticalAlign="top">
                 <Table.Cell>Conditions:</Table.Cell>
                 <Table.Cell>
