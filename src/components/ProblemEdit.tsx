@@ -439,9 +439,10 @@ const ProblemEdit = ({ problem, sector }: Props) => {
           <>
             <Icon name="info" />
             Contact{" "}
-            <a href="mailto:jostein.oygarden@gmail.com">Jostein Øygarden</a> if
-            you want to move {meta.isBouldering ? "problem" : "route"} to an
-            other sector.
+            <a href="mailto:jostein.oygarden@gmail.com">
+              Jostein Øygarden
+            </a> if you want to move {meta.isBouldering ? "problem" : "route"}{" "}
+            to an other sector.
           </>
         }
       />

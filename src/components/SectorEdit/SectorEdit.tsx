@@ -340,8 +340,9 @@ export const SectorEdit = ({ sector, area }: Props) => {
           <>
             <Icon name="info" />
             Contact{" "}
-            <a href="mailto:jostein.oygarden@gmail.com">Jostein Øygarden</a> if
-            you want to move or split sector.
+            <a href="mailto:jostein.oygarden@gmail.com">
+              Jostein Øygarden
+            </a> if you want to move or split sector.
           </>
         }
       />

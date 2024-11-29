@@ -5,7 +5,7 @@ import { MetaContext, DEFAULT_META } from "./meta";
 export const withMeta = makeDecorator({
   name: "withMeta",
   parameterName: "meta",
-  wrapper: (Story, context, { parameters: meta }) => {
+  wrapper: (Story: any, context, { parameters: meta }) => {
     return (
       <MetaContext.Provider
         value={{
