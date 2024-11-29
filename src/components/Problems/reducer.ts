@@ -295,8 +295,9 @@ const filter = (state: State): State => {
                           const high =
                             filterFaYearHigh ?? Number.MAX_SAFE_INTEGER;
                           if (
-                            problem.faYear &&
-                            (problem.faYear < low || problem.faYear > high)
+                            !problem.faYear ||
+                            problem.faYear < low ||
+                            problem.faYear > high
                           ) {
                             filteredOut.problems += 1;
                             return false;
