@@ -104,9 +104,8 @@ export const AreaEdit = () => {
           <>
             <Icon name="info" />
             Contact{" "}
-            <a href="mailto:jostein.oygarden@gmail.com">
-              Jostein Øygarden
-            </a> if you want to split area.
+            <a href="mailto:jostein.oygarden@gmail.com">Jostein Øygarden</a> if
+            you want to split area.
           </>
         }
       />
