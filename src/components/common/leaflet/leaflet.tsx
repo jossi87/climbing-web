@@ -11,7 +11,7 @@ import {
   useMap,
 } from "react-leaflet";
 import { LeafletMouseEventHandlerFn, latLngBounds } from "leaflet";
-import LocateControl from "./locatecontrol";
+import Locate from "./locate";
 import FullscreenControl from "./fullscreencontrol";
 import Markers, { MarkerDef } from "./markers";
 import Polygons from "./polygons";
@@ -226,7 +226,7 @@ const Leaflet = ({
       />
       <MapEvent onMouseClick={onMouseClick} onMouseMove={onMouseMove} />
       <FullscreenControl />
-      <LocateControl />
+      <Locate />
       <ScaleControl maxWidth={100} metric={true} imperial={false} />
       <UseControl position="bottomleft">
         {rocks != null && rocks.length > 0 && (
