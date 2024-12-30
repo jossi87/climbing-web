@@ -1,6 +1,5 @@
 import { createContext, useContext, useMemo } from "react";
 import { useData } from "../../../api";
-import { Helmet } from "react-helmet";
 import { components } from "../../../@types/buldreinfo/swagger";
 
 type CompassDirection = {
@@ -156,10 +155,6 @@ export const MetaProvider = ({ children }: Props) => {
 
   return (
     <MetaContext.Provider value={meta || DEFAULT_META}>
-      <Helmet
-        titleTemplate={`%s | ${meta?.title}`}
-        defaultTitle={meta?.title ?? "Loading ..."}
-      />
       {children}
     </MetaContext.Provider>
   );

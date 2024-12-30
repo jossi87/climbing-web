@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Helmet } from "react-helmet";
 import { Loading, LockSymbol } from "./common/widgets/widgets";
 import { usePermissions } from "../api";
+import { useMeta } from "./common/meta";
 import {
   Header,
   Icon,
@@ -49,6 +49,7 @@ const OPTIONS = [
 ] as const;
 
 const Permissions = () => {
+  const meta = useMeta();
   const [query, setQuery] = useState<string>("");
   const {
     data = [],
@@ -69,9 +70,7 @@ const Permissions = () => {
     : `${data.length} users`;
   return (
     <>
-      <Helmet>
-        <title>Permissions</title>
-      </Helmet>
+      <title>{`Permissins | ${meta?.title}`}</title>
       <Segment>
         <Header as="h2">
           <Icon name="users" />

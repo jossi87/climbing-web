@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Helmet } from "react-helmet";
 import {
   Segment,
   Icon,
@@ -72,7 +71,7 @@ type FilterArea = {
 };
 
 export const Problems = ({ filterOpen }: Props) => {
-  const { isBouldering, isClimbing } = useMeta();
+  const meta = useMeta();
   const [state, dispatch] = useFilterState({
     visible: !!filterOpen || window.innerWidth > 991,
   });
@@ -109,8 +108,8 @@ export const Problems = ({ filterOpen }: Props) => {
     return <Segment>No data</Segment>;
   }
 
-  const title = isBouldering ? "Problems" : "Routes";
-  const things = isBouldering ? "problems" : "routes";
+  const title = meta.isBouldering ? "Problems" : "Routes";
+  const things = meta.isBouldering ? "problems" : "routes";
   const totalDescription = description(
     totalRegions,
     totalAreas,
@@ -158,7 +157,7 @@ export const Problems = ({ filterOpen }: Props) => {
                             fa += " " + problem.faYear;
                           }
                           let typeAscents;
-                          if (isClimbing) {
+                          if (meta.isClimbing) {
                             let t = problem.t?.subType;
                             if (problem.numPitches && problem.numPitches > 1)
                               t += ", " + problem.numPitches + " pitches";
@@ -167,7 +166,7 @@ export const Problems = ({ filterOpen }: Props) => {
                             } else {
                               typeAscents = " (" + t + ") ";
                             }
-                          } else if (!isClimbing) {
+                          } else if (!meta.isClimbing) {
                             if (ascents) {
                               typeAscents = " (" + ascents + ") ";
                             } else {
@@ -203,10 +202,8 @@ export const Problems = ({ filterOpen }: Props) => {
 
   return (
     <FilterContext.Provider value={{ ...state, dispatch }}>
-      <Helmet>
-        <title>{title}</title>
-        <meta name="description" content={totalDescription}></meta>
-      </Helmet>
+      <title>{`${title} | ${meta?.title}`}</title>
+      <meta name="description" content={totalDescription}></meta>
       <Segment>
         <div className="filter-container">
           <div className="filter-header">

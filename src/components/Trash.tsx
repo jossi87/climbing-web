@@ -1,6 +1,6 @@
-import { Helmet } from "react-helmet";
 import { Loading } from "./common/widgets/widgets";
 import { getImageUrl, useTrash } from "../api";
+import { useMeta } from "./common/meta";
 import { Segment, Icon, Header, List, Button, Image } from "semantic-ui-react";
 import { useNavigate } from "react-router";
 import { components } from "../@types/buldreinfo/swagger";
@@ -41,6 +41,7 @@ const getLabel = ({
 
 const Trash = () => {
   const navigate = useNavigate();
+  const meta = useMeta();
   const { data, restore } = useTrash();
 
   if (!data) {
@@ -49,9 +50,7 @@ const Trash = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Trash</title>
-      </Helmet>
+      <title>{`Trash | ${meta?.title}`}</title>
       <Segment>
         <Header as="h2">
           <Icon name="trash" />

@@ -12,6 +12,7 @@ import {
   Divider,
   Button,
   Tab,
+  TabPane,
   Message,
 } from "semantic-ui-react";
 import {
@@ -121,7 +122,7 @@ const ProfileStatistics = ({ userId, canDownload }: ProfileStatisticsProps) => {
   panes.push({
     menuItem: { key: "stats", icon: "area graph" },
     render: () => (
-      <Tab.Pane>
+      <TabPane>
         {regions?.length > 0 && (
           <Header as="h5">
             <Icon name="world" />
@@ -184,7 +185,7 @@ const ProfileStatistics = ({ userId, canDownload }: ProfileStatisticsProps) => {
             {chart}
           </>
         )}
-      </Tab.Pane>
+      </TabPane>
     ),
   });
   const markers: NonNullable<React.ComponentProps<typeof Leaflet>["markers"]> =
@@ -202,7 +203,7 @@ const ProfileStatistics = ({ userId, canDownload }: ProfileStatisticsProps) => {
     panes.push({
       menuItem: { key: "map", icon: "map" },
       render: () => (
-        <Tab.Pane>
+        <TabPane>
           <Leaflet
             key={"ticked=" + userId}
             autoZoom={true}
@@ -214,7 +215,7 @@ const ProfileStatistics = ({ userId, canDownload }: ProfileStatisticsProps) => {
             clusterMarkers={true}
             flyToId={null}
           />
-        </Tab.Pane>
+        </TabPane>
       ),
     });
   }

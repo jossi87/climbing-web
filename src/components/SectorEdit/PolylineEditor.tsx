@@ -1,5 +1,6 @@
 import {
   Tab,
+  TabPane,
   Form,
   Label,
   Icon,
@@ -109,7 +110,7 @@ export const PolylineEditor = ({
     {
       menuItem: "Points",
       render: () => (
-        <Tab.Pane>
+        <TabPane>
           {coordinates?.map((c, i) => {
             const [backgroundColor, color] = colorLatLng(c);
             return (
@@ -132,13 +133,13 @@ export const PolylineEditor = ({
               </Label>
             );
           })}
-        </Tab.Pane>
+        </TabPane>
       ),
     },
     {
       menuItem: "Data",
       render: () => (
-        <Tab.Pane>
+        <TabPane>
           <Input
             placeholder="Outline"
             value={
@@ -148,7 +149,7 @@ export const PolylineEditor = ({
             }
             onChange={(_, { value }) => onChange(parsePolyline(value))}
           />
-        </Tab.Pane>
+        </TabPane>
       ),
     },
   ];

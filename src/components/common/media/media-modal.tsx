@@ -133,7 +133,7 @@ const MediaModal = ({
       .filter((value, index, self) => self.indexOf(value) === index).length > 1;
   const [prevHover, setPrevHover] = useState(false);
   const [nextHover, setNextHover] = useState(false);
-  const playerRef = useRef<ReactPlayer | null>();
+  const playerRef = useRef<ReactPlayer | null>(null);
   const isImage = m?.idType === 1;
 
   const content = (() => {

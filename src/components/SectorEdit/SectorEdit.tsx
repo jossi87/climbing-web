@@ -1,5 +1,4 @@
 import React, { useState, ComponentProps, useCallback } from "react";
-import { Helmet } from "react-helmet";
 import ImageUpload from "../common/image-upload/image-upload";
 import { Loading } from "../common/widgets/widgets";
 import {
@@ -331,9 +330,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
 
   return (
     <>
-      <Helmet>
-        <title>Edit {data.name}</title>
-      </Helmet>
+      <title>{`Edit ${data.name} | ${meta?.title}`}</title>
       <Message
         size="tiny"
         content={

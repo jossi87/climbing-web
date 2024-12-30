@@ -1,5 +1,4 @@
 import React, { useState, useCallback, ComponentProps } from "react";
-import { Helmet } from "react-helmet";
 import ImageUpload from "../common/image-upload/image-upload";
 import Leaflet from "../common/leaflet/leaflet";
 import {
@@ -95,9 +94,7 @@ export const AreaEdit = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Edit {data.name}</title>
-      </Helmet>
+      <title>{`Edit ${data.name} | ${meta?.title}`}</title>
       <Message
         size="tiny"
         content={

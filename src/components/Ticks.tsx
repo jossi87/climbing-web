@@ -1,8 +1,8 @@
 import React from "react";
-import { Helmet } from "react-helmet";
 import { Segment, Pagination, Feed, Placeholder } from "semantic-ui-react";
 import { LockSymbol } from "./common/widgets/widgets";
 import { Link, useParams, useNavigate } from "react-router-dom";
+import { useMeta } from "./common/meta";
 import { useTicks } from "../api";
 import { HeaderButtons } from "./common/HeaderButtons";
 
@@ -20,14 +20,13 @@ const PlaceholderFeed = () => {
 
 const Ticks = () => {
   const { page } = useParams();
+  const meta = useMeta();
   const { data, isLoading } = useTicks(+page);
   const navigate = useNavigate();
 
   return (
     <>
-      <Helmet>
-        <title>Ticks</title>
-      </Helmet>
+      <title>{`Ticks | ${meta?.title}`}</title>
       <Segment>
         <HeaderButtons header="Public ascents" icon="checkmark" />
         <Feed>

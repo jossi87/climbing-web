@@ -1,5 +1,4 @@
 import React, { useState, ComponentProps } from "react";
-import { Helmet } from "react-helmet";
 import { Link, useParams } from "react-router-dom";
 import Leaflet from "../common/leaflet/leaflet";
 import { getDistanceWithUnit } from "../common/leaflet/geo-utils";
@@ -10,6 +9,7 @@ import {
   Grid,
   Breadcrumb,
   Tab,
+  TabPane,
   Label,
   Icon,
   Header,
@@ -28,11 +28,10 @@ import { useProblem } from "../../api";
 import TickModal from "../common/tick-modal/tick-modal";
 import CommentModal from "../common/comment-modal/comment-modal";
 import { ApproachProfile } from "../common/ApproachProfile";
-import Linkify from "react-linkify";
+import Linkify from "linkify-react";
 import { ProblemsOnRock } from "./ProblemsOnRock";
 import { ProblemTicks } from "./ProblemTicks";
 import { ProblemComments } from "./ProblemComments";
-import { componentDecorator } from "../../utils/componentDecorator";
 import { DownloadButton } from "../common/DownloadButton";
 
 const useIds = (): {
@@ -145,7 +144,7 @@ export const Problem = () => {
     panes.push({
       menuItem: { key: "media", icon: "image" },
       render: () => (
-        <Tab.Pane>
+        <TabPane>
           <Media
             pitches={data.sections}
             media={media}
@@ -154,7 +153,7 @@ export const Problem = () => {
             optProblemId={data.id ?? 0}
             showLocation={false}
           />
-        </Tab.Pane>
+        </TabPane>
       ),
     });
   }
@@ -178,7 +177,7 @@ export const Problem = () => {
     panes.push({
       menuItem: { key: "map", icon: "map" },
       render: () => (
-        <Tab.Pane>
+        <TabPane>
           <Leaflet
             key={"sector=" + data.id}
             autoZoom={true}
@@ -200,7 +199,7 @@ export const Problem = () => {
             clusterMarkers={false}
             flyToId={null}
           />
-        </Tab.Pane>
+        </TabPane>
       ),
     });
   }
@@ -318,12 +317,8 @@ export const Problem = () => {
 
   return (
     <>
-      <Helmet>
-        <title>
-          {data.name} [{data.grade}] ({data.areaName} / {data.sectorName})
-        </title>
-        <meta name="description" content={data.comment}></meta>
-      </Helmet>
+      <title>{`${data.name} [${data.grade}] (${data.areaName} / ${data.sectorName}) | ${meta?.title}`}</title>
+      <meta name="description" content={data.comment}></meta>
       {tickModal}
       {showCommentModal && (
         <CommentModal
@@ -569,7 +564,7 @@ export const Problem = () => {
                   </>
                 )}
                 {data.faAid.description && (
-                  <Linkify componentDecorator={componentDecorator}>
+                  <Linkify>
                     <br />
                     {data.faAid.description}
                   </Linkify>
@@ -618,7 +613,7 @@ export const Problem = () => {
                 </>
               )}
               {data.comment && data.comment.trim().length > 0 && (
-                <Linkify componentDecorator={componentDecorator}>
+                <Linkify>
                   <br />
                   {data.comment}
                 </Linkify>
@@ -645,11 +640,7 @@ export const Problem = () => {
             <Table.Row verticalAlign="top">
               <Table.Cell>Trivia:</Table.Cell>
               <Table.Cell>
-                {data.trivia && (
-                  <Linkify componentDecorator={componentDecorator}>
-                    {data.trivia}
-                  </Linkify>
-                )}
+                {data.trivia && <Linkify>{data.trivia}</Linkify>}
                 {data.triviaMedia && (
                   <Feed.Extra>
                     <Media

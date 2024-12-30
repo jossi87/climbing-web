@@ -1,4 +1,3 @@
-import { Helmet } from "react-helmet";
 import {
   Label,
   Grid,
@@ -32,10 +31,9 @@ const Frontpage = () => {
 
   return (
     <>
+      <title>{meta?.title}</title>
       {numMedia && numProblems && numTicks && (
-        <Helmet>
-          <meta name="description" content={description}></meta>
-        </Helmet>
+        <meta name="description" content={description}></meta>
       )}
       <Grid>
         <Grid.Row>

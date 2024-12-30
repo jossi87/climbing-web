@@ -1,13 +1,12 @@
-import { Helmet } from "react-helmet";
+import { useMeta } from "./common/meta";
 import { Segment, Header, Icon, List } from "semantic-ui-react";
 
 const PrivacyPolicy = () => {
+  const meta = useMeta();
   return (
     <>
-      <Helmet titleTemplate={undefined}>
-        <title>Privacy Policy</title>
-        <meta name="description" content="Privacy Policy" />
-      </Helmet>
+      <title>{`Privacy Policy | ${meta?.title}`}</title>
+      <meta name="description" content="Privacy Policy" />
       <Segment>
         <Header as="h2">
           <Icon name="law" />

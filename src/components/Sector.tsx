@@ -1,5 +1,4 @@
 import React, { ComponentProps } from "react";
-import { Helmet } from "react-helmet";
 import { Link, useParams } from "react-router-dom";
 import ProblemList from "./common/problem-list";
 import ChartGradeDistribution from "./common/chart-grade-distribution/chart-grade-distribution";
@@ -21,6 +20,7 @@ import {
   Icon,
   Button,
   Tab,
+  TabPane,
   Breadcrumb,
   Table,
   Label,
@@ -32,8 +32,7 @@ import {
 } from "semantic-ui-react";
 import { useMeta } from "./common/meta";
 import { useSector } from "../api";
-import Linkify from "react-linkify";
-import { componentDecorator } from "../utils/componentDecorator";
+import Linkify from "linkify-react";
 import { components } from "../@types/buldreinfo/swagger";
 import { DownloadButton } from "./common/DownloadButton";
 import { MarkerDef } from "./common/leaflet/markers";
@@ -203,7 +202,7 @@ const Sector = () => {
       panes.push({
         menuItem: { key: "media", icon: "image" },
         render: () => (
-          <Tab.Pane>
+          <TabPane>
             <Media
               pitches={null}
               media={media}
@@ -212,7 +211,7 @@ const Sector = () => {
               optProblemId={null}
               showLocation={false}
             />
-          </Tab.Pane>
+          </TabPane>
         ),
       });
     }
@@ -249,7 +248,7 @@ const Sector = () => {
     panes.push({
       menuItem: { key: "map", icon: "map" },
       render: () => (
-        <Tab.Pane>
+        <TabPane>
           <Leaflet
             key={"sector=" + data.id}
             autoZoom={true}
@@ -266,7 +265,7 @@ const Sector = () => {
             rocks={uniqueRocks}
             flyToId={null}
           />
-        </Tab.Pane>
+        </TabPane>
       ),
     });
   }
@@ -274,7 +273,7 @@ const Sector = () => {
     panes.push({
       menuItem: { key: "topo", icon: "images" },
       render: () => (
-        <Tab.Pane>
+        <TabPane>
           <Media
             pitches={null}
             media={topoImages}
@@ -283,7 +282,7 @@ const Sector = () => {
             optProblemId={null}
             showLocation={false}
           />
-        </Tab.Pane>
+        </TabPane>
       ),
     });
   }
@@ -291,33 +290,33 @@ const Sector = () => {
     panes.push({
       menuItem: { key: "distribution", icon: "area graph" },
       render: () => (
-        <Tab.Pane>
+        <TabPane>
           <ChartGradeDistribution idSector={data.id ?? 0} />
-        </Tab.Pane>
+        </TabPane>
       ),
     });
     panes.push({
       menuItem: { key: "top", icon: "trophy" },
       render: () => (
-        <Tab.Pane>
+        <TabPane>
           <Top idArea={0} idSector={data.id ?? 0} />
-        </Tab.Pane>
+        </TabPane>
       ),
     });
     panes.push({
       menuItem: { key: "activity", icon: "time" },
       render: () => (
-        <Tab.Pane>
+        <TabPane>
           <Activity idArea={0} idSector={data.id ?? 0} />
-        </Tab.Pane>
+        </TabPane>
       ),
     });
     panes.push({
       menuItem: { key: "todo", icon: "bookmark" },
       render: () => (
-        <Tab.Pane>
+        <TabPane>
           <Todo idArea={0} idSector={data.id ?? 0} />
-        </Tab.Pane>
+        </TabPane>
       ),
     });
   }
@@ -362,12 +361,8 @@ const Sector = () => {
 
   return (
     <>
-      <Helmet>
-        <title>
-          {data.name} ({data.areaName})
-        </title>
-        <meta name="description" content={data.comment}></meta>
-      </Helmet>
+      <title>{`${data.name} (${data.areaName}) | ${meta?.title}`}</title>
+      <meta name="description" content={data.comment}></meta>
       <div style={{ marginBottom: "5px" }}>
         <div style={{ float: "right" }}>
           {data && meta.isAdmin && (
@@ -486,11 +481,7 @@ const Sector = () => {
                 <Label.Detail>{data.hits}</Label.Detail>
               </Label>
               <br />
-              {data.comment && (
-                <Linkify componentDecorator={componentDecorator}>
-                  {data.comment}
-                </Linkify>
-              )}
+              {data.comment && <Linkify>{data.comment}</Linkify>}
             </Table.Cell>
           </Table.Row>
           {data.approach?.coordinates?.length && (

@@ -9,8 +9,7 @@ import {
   Icon,
 } from "semantic-ui-react";
 import { Stars } from "../../common/widgets/widgets";
-import Linkify from "react-linkify";
-import { componentDecorator } from "../../../utils/componentDecorator";
+import Linkify from "linkify-react";
 import { components } from "../../../@types/buldreinfo/swagger";
 
 type Props = {
@@ -86,9 +85,7 @@ export const ProblemTicks = ({ ticks }: Props) => {
                   )}{" "}
                   <Stars numStars={t.stars} includeStarOutlines={true} />
                   <br />
-                  <Linkify componentDecorator={componentDecorator}>
-                    {com}
-                  </Linkify>
+                  <Linkify>{com}</Linkify>
                 </Comment.Text>
               </Comment.Content>
             </Comment>

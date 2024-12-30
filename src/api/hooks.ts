@@ -474,7 +474,7 @@ export function useElevation() {
   });
 
   const lastCalledTime = useRef(0);
-  const pendingTimer = useRef<ReturnType<typeof setTimeout>>();
+  const pendingTimer = useRef<ReturnType<typeof setTimeout>>(null);
   const throttledSetLocation = useCallback<typeof setLocation>((v) => {
     if (pendingTimer.current) {
       clearTimeout(pendingTimer.current);

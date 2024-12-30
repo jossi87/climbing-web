@@ -1,4 +1,3 @@
-import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 import {
   Grid,
@@ -57,13 +56,11 @@ const About = () => {
 
   return (
     <>
-      <Helmet>
-        <title>About</title>
-        <meta
-          name="description"
-          content="History, information and administrators."
-        ></meta>
-      </Helmet>
+      <title>{`About | ${meta?.title}`}</title>
+      <meta
+        name="description"
+        content="History, information and administrators."
+      ></meta>
       <Grid columns={2} stackable>
         <Grid.Column>
           <Segment>

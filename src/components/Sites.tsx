@@ -1,5 +1,4 @@
 import React from "react";
-import { Helmet } from "react-helmet";
 import { useParams, Link } from "react-router-dom";
 import { Segment, Button, Header, Icon } from "semantic-ui-react";
 import Leaflet from "./common/leaflet/leaflet";
@@ -48,10 +47,8 @@ const Sites = () => {
   }
   return (
     <>
-      <Helmet>
-        <title>Sites</title>
-        <meta name="description" content={description}></meta>
-      </Helmet>
+      <title>{`Sites | ${meta?.title}`}</title>
+      <meta name="description" content={description}></meta>
       <Segment>
         <Header as="h2">
           <Icon name="world" />

@@ -1,5 +1,4 @@
 import React, { useState, useCallback, ComponentProps, UIEvent } from "react";
-import { Helmet } from "react-helmet";
 import { UsersSelector } from "./common/user-selector/user-selector";
 import RockSelector from "./common/rock-selector/rock-selector";
 import ProblemSection from "./common/problem-section/problem-section";
@@ -430,9 +429,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
 
   return (
     <>
-      <Helmet>
-        <title>Edit {data.name}</title>
-      </Helmet>
+      <title>{`Edit ${data.name} | ${meta?.title}`}</title>
       <Message
         size="tiny"
         content={

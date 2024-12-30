@@ -1,5 +1,4 @@
 import React, { ComponentProps, useMemo } from "react";
-import { Helmet } from "react-helmet";
 import { Link, useParams } from "react-router-dom";
 import ChartGradeDistribution from "./common/chart-grade-distribution/chart-grade-distribution";
 import Top from "./common/top/top";
@@ -19,6 +18,7 @@ import {
   Label,
   Button,
   Tab,
+  TabPane,
   Item,
   Icon,
   Image,
@@ -274,7 +274,7 @@ const Area = () => {
     panes.push({
       menuItem: { key: "image", icon: "image" },
       render: () => (
-        <Tab.Pane>
+        <TabPane>
           <Media
             pitches={null}
             media={data.media ?? []}
@@ -283,7 +283,7 @@ const Area = () => {
             optProblemId={null}
             showLocation={false}
           />
-        </Tab.Pane>
+        </TabPane>
       ),
     });
   }
@@ -298,7 +298,7 @@ const Area = () => {
     panes.push({
       menuItem: { key: "map", icon: "map" },
       render: () => (
-        <Tab.Pane>
+        <TabPane>
           <Leaflet
             key={"area=" + data.id}
             autoZoom={true}
@@ -312,7 +312,7 @@ const Area = () => {
             clusterMarkers={false}
             flyToId={null}
           />
-        </Tab.Pane>
+        </TabPane>
       ),
     });
   }
@@ -320,33 +320,33 @@ const Area = () => {
     panes.push({
       menuItem: { key: "distribution", icon: "area graph" },
       render: () => (
-        <Tab.Pane>
+        <TabPane>
           <ChartGradeDistribution idArea={data.id ?? 0} />
-        </Tab.Pane>
+        </TabPane>
       ),
     });
     panes.push({
       menuItem: { key: "top", icon: "trophy" },
       render: () => (
-        <Tab.Pane>
+        <TabPane>
           <Top idArea={data.id ?? 0} idSector={0} />
-        </Tab.Pane>
+        </TabPane>
       ),
     });
     panes.push({
       menuItem: { key: "activity", icon: "time" },
       render: () => (
-        <Tab.Pane>
+        <TabPane>
           <Activity idArea={data.id ?? 0} idSector={0} />
-        </Tab.Pane>
+        </TabPane>
       ),
     });
     panes.push({
       menuItem: { key: "todo", icon: "bookmark" },
       render: () => (
-        <Tab.Pane>
+        <TabPane>
           <Todo idArea={data.id ?? 0} idSector={0} />
-        </Tab.Pane>
+        </TabPane>
       ),
     });
   }
@@ -361,7 +361,7 @@ const Area = () => {
     sectorPanes.push({
       menuItem: "Sectors (" + data.sectors.length + ")",
       render: () => (
-        <Tab.Pane>
+        <TabPane>
           <Item.Group link unstackable>
             {data.sectors?.map((sector) => {
               let percent;
@@ -442,7 +442,7 @@ const Area = () => {
               );
             })}
           </Item.Group>
-        </Tab.Pane>
+        </TabPane>
       ),
     });
     sectorPanes.push({
@@ -499,10 +499,8 @@ const Area = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{data.name}</title>
-        <meta name="description" content={data.comment}></meta>
-      </Helmet>
+      <title>{`${data.name} | ${meta?.title}`}</title>
+      <meta name="description" content={data.comment}></meta>
       <div style={{ marginBottom: "5px" }}>
         <div style={{ float: "right" }}>
           {meta.isAdmin ? (

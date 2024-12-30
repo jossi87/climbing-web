@@ -1,5 +1,4 @@
 import { useParams } from "react-router-dom";
-import { Helmet } from "react-helmet";
 import Leaflet from "./common/leaflet/leaflet";
 import { Segment, Header, Icon } from "semantic-ui-react";
 import { Loading } from "./common/widgets/widgets";
@@ -41,10 +40,8 @@ const Webcams = () => {
   const description = markers.length + " cameras";
   return (
     <>
-      <Helmet>
-        <title>Webcams</title>
-        <meta name="description" content={description}></meta>
-      </Helmet>
+      <title>{`Webcams | ${meta?.title}`}</title>
+      <meta name="description" content={description}></meta>
       <Segment>
         <Header as="h2">
           <Icon name="camera" />

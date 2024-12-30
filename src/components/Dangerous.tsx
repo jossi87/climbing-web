@@ -1,5 +1,4 @@
 import React from "react";
-import { Helmet } from "react-helmet";
 import { Loading } from "./common/widgets/widgets";
 import { Segment, Icon, Header } from "semantic-ui-react";
 import { useMeta } from "./common/meta";
@@ -57,10 +56,8 @@ const Dangerous = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Dangerous</title>
-        <meta name="description" content={description}></meta>
-      </Helmet>
+      <title>{`Dangerous | ${meta?.title}`}</title>
+      <meta name="description" content={description}></meta>
       <Segment>
         <Header as="h2">
           <Icon name="warning sign" />

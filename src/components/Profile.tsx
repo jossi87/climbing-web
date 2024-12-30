@@ -1,6 +1,5 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Helmet } from "react-helmet";
 import { Loading } from "./common/widgets/widgets";
 import { Header, Image, Menu, Icon, Message } from "semantic-ui-react";
 import { useMeta } from "./common/meta";
@@ -12,11 +11,11 @@ import ProfileMedia from "./common/profile/profile-media";
 import ProfileSettings from "./common/profile/profile-settings";
 
 enum Page {
-  user,
-  todo,
-  media,
-  captured,
-  settings,
+  user = "user",
+  todo = "todo",
+  media = "media",
+  captured = "captured",
+  settings = "settings",
 }
 
 const Profile = () => {
@@ -24,7 +23,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const { data: profile, isLoading, error } = useProfile(userId ? +userId : -1);
   const { isAuthenticated } = useAuth0();
-  const activePage = Page[page] ?? Page.user;
+  const activePage = (page as Page) ?? Page.user;
   const meta = useMeta();
 
   function onPageChanged(page: Page) {
@@ -76,13 +75,11 @@ const Profile = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{firstLast}</title>
-        <meta
-          name="description"
-          content="Profile with public ascents, media, and other statistics."
-        ></meta>
-      </Helmet>
+      <title>{`${firstLast} | ${meta?.title}`}</title>
+      <meta
+        name="description"
+        content="Profile with public ascents, media, and other statistics."
+      ></meta>
       <Header as="h5" textAlign="center" className="buldreinfo-visible-mobile">
         {profile.picture && <Image circular src={profile.picture} />}
         <Header.Content>{firstLast}</Header.Content>

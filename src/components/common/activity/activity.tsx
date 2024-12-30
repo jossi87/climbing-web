@@ -16,8 +16,7 @@ import { useLocalStorage } from "../../../utils/use-local-storage";
 import { useMeta } from "../../common/meta";
 import { getImageUrl, useActivity } from "../../../api";
 import { LockSymbol, Stars } from "./../../common/widgets/widgets";
-import Linkify from "react-linkify";
-import { componentDecorator } from "../../../utils/componentDecorator";
+import Linkify from "linkify-react";
 
 type ProblemNameProps = {
   a: components["schemas"]["Activity"];
@@ -321,9 +320,7 @@ const Activity = ({ idArea, idSector }: Props) => {
                       <Feed.Date>{a.timeAgo}</Feed.Date>
                     </Feed.Summary>
                     <Feed.Extra text>
-                      <Linkify componentDecorator={componentDecorator}>
-                        {a.message}
-                      </Linkify>
+                      <Linkify>{a.message}</Linkify>
                     </Feed.Extra>
                     {a.media && (
                       <LazyLoad>

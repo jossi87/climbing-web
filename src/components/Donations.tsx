@@ -1,14 +1,13 @@
 import React from "react";
-import { Helmet } from "react-helmet";
 import { Segment, Header, Icon } from "semantic-ui-react";
+import { useMeta } from "./common/meta";
 
 const Donations = () => {
+  const meta = useMeta();
   return (
     <>
-      <Helmet titleTemplate={undefined}>
-        <title>Donations</title>
-        <meta name="description" content="Donations" />
-      </Helmet>
+      <title>{`Donations | ${meta?.title}`}</title>
+      <meta name="description" content="Donations" />
       <Segment>
         <Header as="h2">
           <Icon name="money" />

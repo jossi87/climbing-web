@@ -1,4 +1,3 @@
-import { Helmet } from "react-helmet";
 import { Header, Segment, Icon } from "semantic-ui-react";
 import { Loading } from "./common/widgets/widgets";
 import { useData } from "../api";
@@ -18,10 +17,8 @@ const Graph = () => {
     : "Routes grouped by grade";
   return (
     <>
-      <Helmet>
-        <title>Graph</title>
-        <meta name="description" content={description}></meta>
-      </Helmet>
+      <title>{`Graph | ${meta?.title}`}</title>
+      <meta name="description" content={description}></meta>
       <Segment>
         <Header as="h2">
           <Icon name="area graph" />

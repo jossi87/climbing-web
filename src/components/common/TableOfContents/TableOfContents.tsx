@@ -93,7 +93,9 @@ export const TableOfContents = ({ areas, header, subHeader }: Props) => {
             <List.Header>
               <Link
                 to={`/area/${area.id}`}
-                ref={(ref) => (areaRefs.current[area.id] = ref)}
+                ref={(ref) => {
+                  areaRefs.current[area.id] = ref;
+                }}
               >
                 {area.name}
               </Link>{" "}

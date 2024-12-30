@@ -201,7 +201,9 @@ export default function Markers({
           key={["html", m.coordinates.latitude, m.coordinates.longitude].join(
             "/",
           )}
-          ref={(ref) => (markerRefs.current[m.id] = ref)}
+          ref={(ref) => {
+            markerRefs.current[m.id] = ref;
+          }}
         >
           <Tooltip
             opacity={opacity}

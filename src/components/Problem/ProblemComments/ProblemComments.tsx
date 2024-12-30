@@ -4,8 +4,7 @@ import { Comment, Segment, Header, Label, Button } from "semantic-ui-react";
 import { useAccessToken, useProblem, postComment } from "../../../api";
 import Media from "../../common/media/media";
 import { useMeta } from "../../common/meta";
-import Linkify from "react-linkify";
-import { componentDecorator } from "../../../utils/componentDecorator";
+import Linkify from "linkify-react";
 import { components } from "../../../@types/buldreinfo/swagger";
 
 export const ProblemComments = ({
@@ -66,9 +65,7 @@ export const ProblemComments = ({
           </Comment.Author>
           <Comment.Metadata>{c.date}</Comment.Metadata>
           <Comment.Text>
-            <Linkify componentDecorator={componentDecorator}>
-              {c.message}
-            </Linkify>
+            <Linkify>{c.message}</Linkify>
             {c.media && c.media.length > 0 && (
               <Media
                 pitches={data.sections}

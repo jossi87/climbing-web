@@ -240,7 +240,7 @@ export const SvgEdit = ({
   const [{ path, points, activePoint }, dispatch] = useReducer(
     reducer,
     {
-      mode: "idle",
+      mode: "idle" as any,
       activePoint: 0,
       points: [],
       path: initialPath,
