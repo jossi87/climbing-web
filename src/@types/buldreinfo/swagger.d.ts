@@ -658,6 +658,40 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/v2/without-js/problem/{id}/{mediaId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get problem by id and idMedia without JavaScript (for embedding on e.g. Facebook) */
+        get: operations["getWithoutJsProblemMedia"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/without-js/problem/{id}/{mediaId}/{pitch}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get problem by id, idMedia and pitch without JavaScript (for embedding on e.g. Facebook) */
+        get: operations["getWithoutJsProblemMediaPitch"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/without-js/sector/{id}": {
         parameters: {
             query?: never;
@@ -1640,6 +1674,7 @@ export type components = {
             /** Format: double */
             stars?: number;
             ticked?: boolean;
+            todo?: boolean;
             t?: components["schemas"]["Type"];
             /** Format: int32 */
             numPitches?: number;
@@ -2912,6 +2947,56 @@ export interface operations {
             path: {
                 /** @description Problem id */
                 id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+        };
+    };
+    getWithoutJsProblemMedia: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Problem id */
+                id: number;
+                /** @description Media id */
+                mediaId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+        };
+    };
+    getWithoutJsProblemMediaPitch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Problem id */
+                id: number;
+                /** @description Media id */
+                mediaId: number;
+                /** @description Pitch */
+                pitch: number;
             };
             cookie?: never;
         };

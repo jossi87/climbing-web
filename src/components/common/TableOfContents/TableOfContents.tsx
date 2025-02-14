@@ -47,7 +47,7 @@ export type Props = {
         > &
           Pick<
             components["schemas"]["Problem"],
-            "stars" | "ticked" | "coordinates" | "broken"
+            "stars" | "ticked" | "todo" | "coordinates" | "broken"
           > & {
             text?: string;
             subText?: string;
@@ -127,7 +127,11 @@ export const TableOfContents = ({ areas, header, subHeader }: Props) => {
                     <List.Item
                       key={problem.id}
                       style={{
-                        backgroundColor: problem.ticked ? "#d2f8d2" : "#ffffff",
+                        backgroundColor: problem.ticked
+                          ? "#d2f8d2"
+                          : problem.todo
+                            ? "#d2d2f8"
+                            : "#ffffff",
                       }}
                     >
                       <List.Header>

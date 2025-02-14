@@ -39,6 +39,7 @@ type FilterProblem = {
   grade: string;
   stars?: number;
   ticked?: boolean;
+  todo?: boolean;
   text: string;
   subText?: string;
   lat?: number;
@@ -188,6 +189,7 @@ export const Problems = ({ filterOpen }: Props) => {
                             grade: problem.grade ?? "",
                             stars: problem.stars,
                             ticked: problem.ticked,
+                            todo: problem.todo,
                             text: text,
                             subText: problem.description,
                             faYear: problem.faYear ?? 0,
