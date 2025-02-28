@@ -25,7 +25,9 @@ const Donations = () => {
         <a href="https://brv.no" rel="noreferrer noopener" target="_blank">
           BRV (Bratte Rogalands Venner)
         </a>{" "}
-        pays all monthly operating expences (server and domains).
+        pays all monthly operating expences (server and domains). By the end of
+        the year, these costs are split between the clubs who use these
+        services.
         <br />
         You can help out by{" "}
         <a
