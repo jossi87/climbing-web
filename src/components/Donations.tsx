@@ -25,19 +25,13 @@ const Donations = () => {
         <a href="https://brv.no" rel="noreferrer noopener" target="_blank">
           BRV (Bratte Rogalands Venner)
         </a>{" "}
-        pays all monthly operating expences (server and domains). By the end of
-        the year, these costs are split between the clubs who use these
-        services.
+        pays all monthly operating expences (server and domains).
         <br />
-        You can help out by{" "}
-        <a
-          href="https://brv.no/om-brv/medlemskap/"
-          rel="norefferer noopener noreferrer"
-          target="_blank"
-        >
-          joining BRV
-        </a>{" "}
-        or donating a gift{" "}
+        By the end of the year, these costs are split between the climbing clubs
+        who use these services.
+        <br />
+        <br />
+        You can help out by donating a gift{" "}
         <a
           href="https://shop.tpgo.no/#/?countryCode=NO&companyIdent=986175830"
           rel="noreferrer noopener"
@@ -45,7 +39,16 @@ const Donations = () => {
         >
           here
         </a>{" "}
-        (see &quot;Støtte nettfører&quot;).
+        (see &quot;Støtte nettfører&quot;), or joining your local climbing club
+        (e.g.{" "}
+        <a
+          href="https://brv.no/om-brv/medlemskap/"
+          rel="norefferer noopener noreferrer"
+          target="_blank"
+        >
+          BRV
+        </a>
+        ).
       </Segment>
     </>
   );
