@@ -730,9 +730,23 @@ export const Problem = () => {
                   basic
                 >
                   <Icon name="map" />
-                  Parking (Google Maps)
+                  Parking
                 </Label>
               )}
+              {meta.isClimbing &&
+                data.sectorOutline?.length > 0 &&
+                !data.coordinates && (
+                  <Label
+                    href={`https://www.google.com/maps/search/?api=1&query=${data.sectorOutline[0].latitude},${data.sectorOutline[0].longitude}`}
+                    rel="noreferrer noopener"
+                    target="_blank"
+                    image
+                    basic
+                  >
+                    <Icon name="map" />
+                    Sector (Google Maps)
+                  </Label>
+                )}
               {data.coordinates && (
                 <Label
                   href={`https://www.google.com/maps/search/?api=1&query=${data.coordinates.latitude},${data.coordinates.longitude}`}
@@ -742,7 +756,7 @@ export const Problem = () => {
                   basic
                 >
                   <Icon name="map" />
-                  {meta.isBouldering ? "Boulder" : "Route"} (Google Maps)
+                  {meta.isBouldering ? "Boulder" : "Route"}
                 </Label>
               )}
               <Label basic>

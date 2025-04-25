@@ -572,7 +572,19 @@ const Sector = () => {
                   basic
                 >
                   <Icon name="map" />
-                  Parking (Google Maps)
+                  Parking
+                </Label>
+              )}
+              {meta.isClimbing && data.outline?.length > 0 && (
+                <Label
+                  href={`https://www.google.com/maps/search/?api=1&query=${data.outline[0].latitude},${data.outline[0].longitude}`}
+                  rel="noreferrer noopener"
+                  target="_blank"
+                  image
+                  basic
+                >
+                  <Icon name="map" />
+                  Sector
                 </Label>
               )}
             </Table.Cell>
