@@ -147,14 +147,14 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
                       placeholder="In photo/video"
                       defaultValue={m.inPhoto}
                       onUserUpdated={(u) => {
-                        updateItem({ inPhoto: u?.name });
+                        updateItem({ inPhoto: u?.label });
                       }}
                     />
                     <UserSelector
                       placeholder="Photographer"
                       defaultValue={m.photographer}
                       onUserUpdated={(u) => {
-                        updateItem({ photographer: u?.name });
+                        updateItem({ photographer: u?.label });
                       }}
                     />
                     {m.embedThumbnailUrl && (
