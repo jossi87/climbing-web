@@ -4,32 +4,33 @@ import { components } from "../../../@types/buldreinfo/swagger";
 
 type Props = {
   opacity: number;
-  approaches: {
+  slopes: {
+    backgroundColor: string;
     background?: boolean;
-    approach: components["schemas"]["Approach"];
+    slope: components["schemas"]["Slope"];
     label?: string;
   }[];
 };
 
-export default function Polylines({ opacity, approaches }: Props) {
-  if (!approaches) {
+export default function Polylines({ opacity, slopes }: Props) {
+  if (!slopes) {
     return null;
   }
-  return approaches.map((a) => {
-    if (a.approach.coordinates.length === 1) {
+  return slopes.map((a) => {
+    if (a.slope.coordinates.length === 1) {
       return (
         <Circle
-          color="lime"
-          key={a.approach.coordinates[0].id}
+          color={a.backgroundColor}
+          key={a.slope.coordinates[0].id}
           center={[
-            a.approach.coordinates[0].latitude,
-            a.approach.coordinates[0].longitude,
+            a.slope.coordinates[0].latitude,
+            a.slope.coordinates[0].longitude,
           ]}
           radius={0.5}
         />
       );
     } else {
-      let color = "lime";
+      let color = a.backgroundColor;
       let weight = 3;
       if (a.background === true) {
         color = "red";
@@ -37,15 +38,12 @@ export default function Polylines({ opacity, approaches }: Props) {
       }
       return (
         <Polyline
-          key={a.approach.coordinates
+          key={a.slope.coordinates
             .map((c) => c.latitude + "," + c.longitude)
             .join(" -> ")}
           color={color}
           weight={weight}
-          positions={a.approach.coordinates.map((c) => [
-            c.latitude,
-            c.longitude,
-          ])}
+          positions={a.slope.coordinates.map((c) => [c.latitude, c.longitude])}
         >
           {a.label && (
             <Tooltip

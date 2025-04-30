@@ -27,7 +27,7 @@ import { useMeta } from "../common/meta";
 import { useProblem } from "../../api";
 import TickModal from "../common/tick-modal/tick-modal";
 import CommentModal from "../common/comment-modal/comment-modal";
-import { ApproachProfile } from "../common/ApproachProfile";
+import { SlopeProfile } from "../common/SlopeProfile";
 import Linkify from "linkify-react";
 import { ProblemsOnRock } from "./ProblemsOnRock";
 import { ProblemTicks } from "./ProblemTicks";
@@ -159,7 +159,7 @@ export const Problem = () => {
   }
   if (markers.length > 0) {
     let outlines: ComponentProps<typeof Leaflet>["outlines"];
-    let approaches: ComponentProps<typeof Leaflet>["approaches"];
+    const slopes: ComponentProps<typeof Leaflet>["slopes"] = [];
     if (data.sectorOutline?.length && !data.coordinates) {
       const outline = data.sectorOutline;
       outlines = [
@@ -167,12 +167,18 @@ export const Problem = () => {
       ];
     }
     if (data.sectorApproach?.coordinates?.length) {
-      approaches = [
-        {
-          approach: data.sectorApproach,
-          label: getDistanceWithUnit(data.sectorApproach) ?? undefined,
-        },
-      ];
+      slopes.push({
+        slope: data.sectorApproach,
+        backgroundColor: "lime",
+        label: getDistanceWithUnit(data.sectorApproach) ?? undefined,
+      });
+    }
+    if (data.sectorDescent?.coordinates?.length) {
+      slopes.push({
+        slope: data.sectorDescent,
+        backgroundColor: "lime",
+        label: getDistanceWithUnit(data.sectorDescent) ?? undefined,
+      });
     }
     panes.push({
       menuItem: { key: "map", icon: "map" },
@@ -184,7 +190,7 @@ export const Problem = () => {
             height="40vh"
             markers={markers}
             outlines={outlines}
-            approaches={approaches}
+            slopes={slopes}
             defaultCenter={
               markers[0].coordinates.latitude &&
               markers[0].coordinates.longitude
@@ -665,10 +671,22 @@ export const Problem = () => {
             <Table.Row verticalAlign="top">
               <Table.Cell>Approach:</Table.Cell>
               <Table.Cell>
-                <ApproachProfile
+                <SlopeProfile
                   areaName={data.areaName}
                   sectorName={data.sectorName}
-                  approach={data.sectorApproach}
+                  slope={data.sectorApproach}
+                />
+              </Table.Cell>
+            </Table.Row>
+          )}
+          {(data.sectorDescent?.coordinates?.length ?? 0) > 1 && (
+            <Table.Row verticalAlign="top">
+              <Table.Cell>Descent:</Table.Cell>
+              <Table.Cell>
+                <SlopeProfile
+                  areaName={data.areaName}
+                  sectorName={data.sectorName}
+                  slope={data.sectorDescent}
                 />
               </Table.Cell>
             </Table.Row>

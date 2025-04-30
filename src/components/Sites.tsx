@@ -27,7 +27,7 @@ const Sites = () => {
       defaultCenter={meta.defaultCenter}
       defaultZoom={meta.defaultZoom}
       markers={null}
-      approaches={null}
+      slopes={null}
       onMouseClick={null}
       onMouseMove={null}
       showSatelliteImage={false}

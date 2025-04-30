@@ -2,7 +2,7 @@ import React, { ComponentProps } from "react";
 import { Link, useParams } from "react-router-dom";
 import ProblemList from "./common/problem-list";
 import ChartGradeDistribution from "./common/chart-grade-distribution/chart-grade-distribution";
-import { ApproachProfile } from "./common/ApproachProfile";
+import { SlopeProfile } from "./common/SlopeProfile";
 import Top from "./common/top/top";
 import Activity from "./common/activity/activity";
 import Leaflet from "./common/leaflet/leaflet";
@@ -223,19 +223,26 @@ const Sector = () => {
         : meta.defaultCenter;
     const defaultZoom = data.parking ? 15 : meta.defaultZoom;
     let outlines: ComponentProps<typeof Leaflet>["outlines"] = undefined;
-    let approaches: ComponentProps<typeof Leaflet>["approaches"] = undefined;
+    const slopes: ComponentProps<typeof Leaflet>["slopes"] = [];
     if (data.outline?.length && addPolygon) {
       outlines = [
         { url: "/sector/" + data.id, label: data.name, outline: data.outline },
       ];
     }
+
     if (data.approach?.coordinates?.length) {
-      approaches = [
-        {
-          approach: data.approach,
-          label: getDistanceWithUnit(data.approach) ?? "",
-        },
-      ];
+      slopes.push({
+        backgroundColor: "lime",
+        slope: data.approach,
+        label: getDistanceWithUnit(data.approach),
+      });
+    }
+    if (data.descent?.coordinates?.length) {
+      slopes.push({
+        backgroundColor: "purple",
+        slope: data.descent,
+        label: getDistanceWithUnit(data.descent),
+      });
     }
     const uniqueRocks =
       data.problems
@@ -255,7 +262,7 @@ const Sector = () => {
             height="40vh"
             markers={markers}
             outlines={outlines}
-            approaches={approaches}
+            slopes={slopes}
             defaultCenter={defaultCenter}
             defaultZoom={defaultZoom}
             onMouseClick={undefined}
@@ -488,10 +495,22 @@ const Sector = () => {
             <Table.Row verticalAlign="top">
               <Table.Cell>Approach:</Table.Cell>
               <Table.Cell>
-                <ApproachProfile
+                <SlopeProfile
                   areaName={data.areaName}
                   sectorName={data.name}
-                  approach={data.approach}
+                  slope={data.approach}
+                />
+              </Table.Cell>
+            </Table.Row>
+          )}
+          {data.descent?.coordinates?.length && (
+            <Table.Row verticalAlign="top">
+              <Table.Cell>Descent:</Table.Cell>
+              <Table.Cell>
+                <SlopeProfile
+                  areaName={data.areaName}
+                  sectorName={data.name}
+                  slope={data.descent}
                 />
               </Table.Cell>
             </Table.Row>

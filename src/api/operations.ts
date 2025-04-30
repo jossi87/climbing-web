@@ -287,7 +287,8 @@ export function postSector(
   parking: components["schemas"]["Coordinates"],
   outline: components["schemas"]["Coordinates"][],
   wallDirectionManual: components["schemas"]["CompassDirection"],
-  approach: components["schemas"]["Approach"],
+  approach: components["schemas"]["Slope"],
+  descent: components["schemas"]["Slope"],
   media: any,
   problemOrder: any,
 ): Promise<Success<"postSectors">> {
@@ -320,6 +321,7 @@ export function postSector(
       wallDirectionManual,
       outline,
       approach,
+      descent,
       newMedia,
       problemOrder,
     }),

@@ -243,8 +243,8 @@ const Area = () => {
   }
 
   const outlines: ComponentProps<typeof Leaflet>["outlines"] = [];
-  const approaches: ComponentProps<typeof Leaflet>["approaches"] = [];
-  const showApproachLengthOnOutline =
+  const slopes: ComponentProps<typeof Leaflet>["slopes"] = [];
+  const showSlopeLengthOnOutline =
     (data.sectors?.filter((s) => s.approach && s.outline).length ?? 0) > 1;
 
   for (const s of data.sectors ?? []) {
@@ -252,15 +252,27 @@ const Area = () => {
     if (s.approach?.coordinates?.length) {
       distance = getDistanceWithUnit(s.approach);
       const label =
-        (!s.outline || !showApproachLengthOnOutline) && distance
-          ? distance
-          : "";
-      approaches.push({ approach: s.approach, label: label ?? "" });
+        (!s.outline || !showSlopeLengthOnOutline) && distance ? distance : "";
+      slopes.push({
+        backgroundColor: "lime",
+        slope: s.approach,
+        label: label ?? "",
+      });
+    }
+    if (s.descent?.coordinates?.length) {
+      distance = getDistanceWithUnit(s.approach);
+      const label =
+        (!s.outline || !showSlopeLengthOnOutline) && distance ? distance : "";
+      slopes.push({
+        backgroundColor: "purple",
+        slope: s.descent,
+        label: label ?? "",
+      });
     }
     if (s.outline?.length) {
       const label =
         s.name +
-        (showApproachLengthOnOutline && distance ? " (" + distance + ")" : "");
+        (showSlopeLengthOnOutline && distance ? " (" + distance + ")" : "");
       outlines.push({
         url: "/sector/" + s.id,
         label,
@@ -305,7 +317,7 @@ const Area = () => {
             height={height}
             markers={markers}
             outlines={outlines}
-            approaches={approaches}
+            slopes={slopes}
             defaultCenter={defaultCenter}
             defaultZoom={defaultZoom}
             showSatelliteImage={false}

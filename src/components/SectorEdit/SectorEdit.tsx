@@ -197,6 +197,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
         data.outline ?? [],
         data.wallDirectionManual,
         data.approach ?? {},
+        data.descent ?? {},
         data.newMedia,
         data.problemOrder,
       )
@@ -232,13 +233,20 @@ export const SectorEdit = ({ sector, area }: Props) => {
         longitude: event.latlng.lng,
       });
       setData((prevState) => ({ ...prevState, outline }));
-    } else if (leafletMode == "POLYLINE") {
+    } else if (leafletMode == "APPROACH") {
       const coordinates = data.approach?.coordinates || [];
       coordinates.push({
         latitude: event.latlng.lat,
         longitude: event.latlng.lng,
       });
       setData((prevState) => ({ ...prevState, approach: { coordinates } }));
+    } else if (leafletMode == "DESCENT") {
+      const coordinates = data.descent?.coordinates || [];
+      coordinates.push({
+        latitude: event.latlng.lat,
+        longitude: event.latlng.lng,
+      });
+      setData((prevState) => ({ ...prevState, descent: { coordinates } }));
     }
   };
 
@@ -258,7 +266,9 @@ export const SectorEdit = ({ sector, area }: Props) => {
       setData((prevState) => ({ ...prevState, parking: undefined }));
     } else if (leafletMode == "POLYGON") {
       setData((prevState) => ({ ...prevState, outline: undefined }));
-    } else if (leafletMode == "POLYLINE") {
+    } else if (leafletMode == "APPROACH") {
+      setData((prevState) => ({ ...prevState, approach: undefined }));
+    } else if (leafletMode == "DESCENT") {
       setData((prevState) => ({ ...prevState, approach: undefined }));
     }
   }
@@ -294,7 +304,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
   }, []);
 
   const outlines: ComponentProps<typeof Leaflet>["outlines"] = [];
-  const approaches: ComponentProps<typeof Leaflet>["approaches"] = [];
+  const slopes: ComponentProps<typeof Leaflet>["slopes"] = [];
   area.sectors?.forEach((sector) => {
     if (sector.id != data.id) {
       if (sector.outline?.length) {
@@ -305,7 +315,18 @@ export const SectorEdit = ({ sector, area }: Props) => {
         });
       }
       if (sector.approach?.coordinates?.length) {
-        approaches.push({ approach: sector.approach, background: true });
+        slopes.push({
+          slope: sector.approach,
+          backgroundColor: "lime",
+          background: true,
+        });
+      }
+      if (sector.descent?.coordinates?.length) {
+        slopes.push({
+          slope: sector.descent,
+          backgroundColor: "purple",
+          background: true,
+        });
       }
     }
   });
@@ -314,7 +335,18 @@ export const SectorEdit = ({ sector, area }: Props) => {
     outlines.push({ outline: data.outline, background: false });
   }
   if (data.approach?.coordinates?.length) {
-    approaches.push({ approach: data.approach, background: false });
+    slopes.push({
+      slope: data.approach,
+      backgroundColor: "lime",
+      background: false,
+    });
+  }
+  if (data.descent?.coordinates?.length) {
+    slopes.push({
+      slope: data.descent,
+      backgroundColor: "purple",
+      background: false,
+    });
   }
 
   const markers: ComponentProps<typeof Leaflet>["markers"] = [];
@@ -452,10 +484,16 @@ export const SectorEdit = ({ sector, area }: Props) => {
                   Outline
                 </Button>
                 <Button
-                  positive={leafletMode == "POLYLINE"}
-                  onClick={() => setLeafletMode("POLYLINE")}
+                  positive={leafletMode == "APPROACH"}
+                  onClick={() => setLeafletMode("APPROACH")}
                 >
                   Approach
+                </Button>
+                <Button
+                  positive={leafletMode == "DESCENT"}
+                  onClick={() => setLeafletMode("DESCENT")}
+                >
+                  Descent
                 </Button>
                 <Button color="orange" onClick={clearDrawing}>
                   Reset selected
@@ -499,7 +537,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
               <Leaflet
                 markers={markers}
                 outlines={outlines}
-                approaches={approaches}
+                slopes={slopes}
                 defaultCenter={defaultCenter}
                 defaultZoom={defaultZoom}
                 onMouseClick={onMapMouseClick}
@@ -514,9 +552,14 @@ export const SectorEdit = ({ sector, area }: Props) => {
                 {leafletMode === "POLYGON" && (
                   <PolylineMarkers coordinates={data.outline ?? []} />
                 )}
-                {leafletMode === "POLYLINE" && (
+                {leafletMode === "APPROACH" && (
                   <PolylineMarkers
                     coordinates={data.approach?.coordinates ?? []}
+                  />
+                )}
+                {leafletMode === "DESCENT" && (
+                  <PolylineMarkers
+                    coordinates={data.descent?.coordinates ?? []}
                   />
                 )}
               </Leaflet>
@@ -560,7 +603,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
                 />
               </Form.Field>
             )}
-            {leafletMode === "POLYLINE" && (
+            {leafletMode === "APPROACH" && (
               <Form.Field>
                 <label>Approach</label>
                 <PolylineEditor
@@ -570,6 +613,22 @@ export const SectorEdit = ({ sector, area }: Props) => {
                     setData((prevState) => ({
                       ...prevState,
                       approach: { coordinates },
+                    }));
+                  }}
+                  upload
+                />
+              </Form.Field>
+            )}
+            {leafletMode === "DESCENT" && (
+              <Form.Field>
+                <label>Descent</label>
+                <PolylineEditor
+                  coordinates={data.descent?.coordinates ?? []}
+                  parking={data.parking ?? {}}
+                  onChange={(coordinates) => {
+                    setData((prevState) => ({
+                      ...prevState,
+                      descent: { coordinates },
                     }));
                   }}
                   upload

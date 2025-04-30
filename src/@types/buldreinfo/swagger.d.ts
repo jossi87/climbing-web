@@ -924,17 +924,6 @@ export type components = {
             picture?: string;
             lastLogin?: string;
         };
-        Approach: {
-            coordinates?: components["schemas"]["Coordinates"][];
-            /** Format: double */
-            calculatedDurationInMinutes?: number;
-            /** Format: int64 */
-            distance?: number;
-            /** Format: int64 */
-            elevationGain?: number;
-            /** Format: int64 */
-            elevationLoss?: number;
-        };
         Area: {
             redirectUrl?: string;
             /** Format: int32 */
@@ -985,7 +974,8 @@ export type components = {
             outline?: components["schemas"]["Coordinates"][];
             wallDirectionCalculated?: components["schemas"]["CompassDirection"];
             wallDirectionManual?: components["schemas"]["CompassDirection"];
-            approach?: components["schemas"]["Approach"];
+            approach?: components["schemas"]["Slope"];
+            descent?: components["schemas"]["Slope"];
             /** Format: int32 */
             randomMediaId?: number;
             /** Format: int32 */
@@ -1114,6 +1104,17 @@ export type components = {
             todo?: boolean;
             t?: components["schemas"]["Type"];
             danger?: boolean;
+        };
+        Slope: {
+            coordinates?: components["schemas"]["Coordinates"][];
+            /** Format: double */
+            calculatedDurationInMinutes?: number;
+            /** Format: int64 */
+            distance?: number;
+            /** Format: int64 */
+            elevationGain?: number;
+            /** Format: int64 */
+            elevationLoss?: number;
         };
         Svg: {
             delete?: boolean;
@@ -1355,7 +1356,8 @@ export type components = {
             sectorOutline?: components["schemas"]["Coordinates"][];
             sectorWallDirectionCalculated?: components["schemas"]["CompassDirection"];
             sectorWallDirectionManual?: components["schemas"]["CompassDirection"];
-            sectorApproach?: components["schemas"]["Approach"];
+            sectorApproach?: components["schemas"]["Slope"];
+            sectorDescent?: components["schemas"]["Slope"];
             neighbourPrev?: components["schemas"]["SectorProblem"];
             neighbourNext?: components["schemas"]["SectorProblem"];
             canonical?: string;
@@ -1578,7 +1580,8 @@ export type components = {
             outline?: components["schemas"]["Coordinates"][];
             wallDirectionCalculated?: components["schemas"]["CompassDirection"];
             wallDirectionManual?: components["schemas"]["CompassDirection"];
-            approach?: components["schemas"]["Approach"];
+            approach?: components["schemas"]["Slope"];
+            descent?: components["schemas"]["Slope"];
             media?: components["schemas"]["Media"][];
             triviaMedia?: components["schemas"]["Media"][];
             sectors?: components["schemas"]["SectorJump"][];

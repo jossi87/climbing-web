@@ -62,10 +62,11 @@ type Props = {
         label?: string;
       }[]
     | undefined;
-  approaches?: {
+  slopes?: {
     background?: boolean;
+    backgroundColor: string;
     label?: string;
-    approach: components["schemas"]["Approach"];
+    slope: components["schemas"]["Slope"];
   }[];
   rocks?: string[];
   showSatelliteImage?: boolean;
@@ -76,8 +77,8 @@ const UpdateBounds = ({
   autoZoom,
   markers,
   outlines,
-  approaches,
-}: Pick<Props, "autoZoom" | "markers" | "outlines" | "approaches">) => {
+  slopes,
+}: Pick<Props, "autoZoom" | "markers" | "outlines" | "slopes">) => {
   const map = useMap();
 
   if (!autoZoom) {
@@ -100,10 +101,10 @@ const UpdateBounds = ({
         bounds.extend({ lat: c.latitude, lng: c.longitude }),
       ),
     );
-  approaches
-    ?.filter(({ approach }) => !!approach)
-    ?.forEach(({ approach }) =>
-      approach.coordinates.forEach((c) =>
+  slopes
+    ?.filter(({ slope }) => !!slope)
+    ?.forEach(({ slope }) =>
+      slope.coordinates.forEach((c) =>
         bounds.extend({ lat: c.latitude, lng: c.longitude }),
       ),
     );
@@ -130,7 +131,7 @@ const Leaflet = ({
   onMouseClick,
   onMouseMove,
   outlines,
-  approaches,
+  slopes,
   rocks = [],
   showSatelliteImage,
   children,
@@ -219,7 +220,7 @@ const Leaflet = ({
       center={defaultCenter}
     >
       <UpdateBounds
-        approaches={approaches}
+        slopes={slopes}
         outlines={outlines}
         autoZoom={autoZoom}
         markers={markers}
@@ -319,7 +320,7 @@ const Leaflet = ({
           addEventHandlers={addEventHandlers}
           showElevation={showElevation}
         />
-        <Polylines opacity={opacity} approaches={approaches} />
+        <Polylines opacity={opacity} slopes={slopes} />
       </FeatureGroup>
       {children}
     </MapContainer>
