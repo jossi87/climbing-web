@@ -269,7 +269,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
     } else if (leafletMode == "APPROACH") {
       setData((prevState) => ({ ...prevState, approach: undefined }));
     } else if (leafletMode == "DESCENT") {
-      setData((prevState) => ({ ...prevState, approach: undefined }));
+      setData((prevState) => ({ ...prevState, descent: undefined }));
     }
   }
 
