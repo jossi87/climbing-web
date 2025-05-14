@@ -721,8 +721,10 @@ export const Problem = () => {
                   label={data.name ?? ""}
                   wallDirectionCalculated={data.sectorWallDirectionCalculated}
                   wallDirectionManual={data.sectorWallDirectionManual}
-                  sunFromHour={data.areaSunFromHour ?? 0}
-                  sunToHour={data.areaSunToHour ?? 0}
+                  sunFromHour={
+                    data.sectorSunFromHour ?? data.areaSunFromHour ?? 0
+                  }
+                  sunToHour={data.sectorSunToHour ?? data.areaSunToHour ?? 0}
                 />
               </Table.Cell>
             </Table.Row>

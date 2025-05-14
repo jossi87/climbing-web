@@ -30,6 +30,7 @@ import { PolylineEditor } from "./PolylineEditor";
 import { ZoomLogic } from "./ZoomLogic";
 import { PolylineMarkers } from "./PolylineMarkers";
 import { captureMessage } from "@sentry/react";
+import { hours } from "../../utils/hours";
 
 type Area = components["schemas"]["Area"];
 type Sector = components["schemas"]["Sector"];
@@ -161,6 +162,14 @@ export const SectorEdit = ({ sector, area }: Props) => {
     [],
   );
 
+  const onSunFromHourChanged: OnChange = useCallback((_, { value }) => {
+    setData((prevState) => ({ ...prevState, sunFromHour: +value }));
+  }, []);
+
+  const onSunToHourChanged: OnChange = useCallback((_, { value }) => {
+    setData((prevState) => ({ ...prevState, sunToHour: +value }));
+  }, []);
+
   const onCommentChanged: OnChange = useCallback((_, { value }) => {
     setData((prevState) => ({ ...prevState, comment: value }));
   }, []);
@@ -193,6 +202,8 @@ export const SectorEdit = ({ sector, area }: Props) => {
         data.comment ?? "",
         data.accessInfo ?? "",
         data.accessClosed ?? "",
+        data.sunFromHour,
+        data.sunToHour,
         data.parking,
         data.outline ?? [],
         data.wallDirectionManual,
@@ -430,6 +441,26 @@ export const SectorEdit = ({ sector, area }: Props) => {
               />
             </Form.Field>
           </Form.Group>
+          {meta.isClimbing && (
+            <Form.Group widths="equal">
+              <Form.Field
+                label="Sun from hour"
+                control={Dropdown}
+                selection
+                value={data.sunFromHour}
+                onChange={onSunFromHourChanged}
+                options={hours}
+              />
+              <Form.Field
+                label="Sun to hour"
+                control={Dropdown}
+                selection
+                value={data.sunToHour}
+                onChange={onSunToHourChanged}
+                options={hours}
+              />
+            </Form.Group>
+          )}
           <Form.Field
             label="Description"
             control={TextArea}

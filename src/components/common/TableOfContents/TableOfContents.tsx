@@ -36,6 +36,8 @@ export type Props = {
         | "lockedSuperadmin"
         | "wallDirectionCalculated"
         | "wallDirectionManual"
+        | "sunFromHour"
+        | "sunToHour"
       >
     > &
       Pick<components["schemas"]["TocSector"], "outline" | "parking"> & {
@@ -120,6 +122,10 @@ export const TableOfContents = ({ areas, header, subHeader }: Props) => {
                   <WallDirection
                     wallDirectionCalculated={sector.wallDirectionCalculated}
                     wallDirectionManual={sector.wallDirectionManual}
+                  />
+                  <SunOnWall
+                    sunFromHour={sector.sunFromHour}
+                    sunToHour={sector.sunToHour}
                   />
                 </List.Header>
                 <List.List>

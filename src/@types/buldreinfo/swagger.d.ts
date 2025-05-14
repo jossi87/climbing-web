@@ -970,6 +970,10 @@ export type components = {
             comment?: string;
             accessInfo?: string;
             accessClosed?: string;
+            /** Format: int32 */
+            sunFromHour?: number;
+            /** Format: int32 */
+            sunToHour?: number;
             parking?: components["schemas"]["Coordinates"];
             outline?: components["schemas"]["Coordinates"][];
             wallDirectionCalculated?: components["schemas"]["CompassDirection"];
@@ -1352,6 +1356,10 @@ export type components = {
             sectorName?: string;
             sectorAccessInfo?: string;
             sectorAccessClosed?: string;
+            /** Format: int32 */
+            sectorSunFromHour?: number;
+            /** Format: int32 */
+            sectorSunToHour?: number;
             sectorParking?: components["schemas"]["Coordinates"];
             sectorOutline?: components["schemas"]["Coordinates"][];
             sectorWallDirectionCalculated?: components["schemas"]["CompassDirection"];
@@ -1576,6 +1584,10 @@ export type components = {
             comment?: string;
             accessInfo?: string;
             accessClosed?: string;
+            /** Format: int32 */
+            sunFromHour?: number;
+            /** Format: int32 */
+            sunToHour?: number;
             parking?: components["schemas"]["Coordinates"];
             outline?: components["schemas"]["Coordinates"][];
             wallDirectionCalculated?: components["schemas"]["CompassDirection"];
@@ -1701,6 +1713,10 @@ export type components = {
             wallDirectionManual?: components["schemas"]["CompassDirection"];
             lockedAdmin?: boolean;
             lockedSuperadmin?: boolean;
+            /** Format: int32 */
+            sunFromHour?: number;
+            /** Format: int32 */
+            sunToHour?: number;
             problems?: components["schemas"]["TocProblem"][];
         };
         Todo: {

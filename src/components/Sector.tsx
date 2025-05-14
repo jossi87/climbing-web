@@ -567,8 +567,8 @@ const Sector = () => {
                     label={data.name ?? ""}
                     wallDirectionCalculated={data.wallDirectionCalculated}
                     wallDirectionManual={data.wallDirectionManual}
-                    sunFromHour={data.areaSunFromHour ?? 0}
-                    sunToHour={data.areaSunToHour ?? 0}
+                    sunFromHour={data.sunFromHour ?? data.areaSunFromHour ?? 0}
+                    sunToHour={data.sunToHour ?? data.areaSunToHour ?? 0}
                   />
                 </Table.Cell>
               </Table.Row>

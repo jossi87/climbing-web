@@ -13,6 +13,7 @@ import {
   Loading,
   ConditionLabels,
   WallDirection,
+  SunOnWall,
 } from "./common/widgets/widgets";
 import {
   Label,
@@ -419,6 +420,10 @@ const Area = () => {
                       <WallDirection
                         wallDirectionCalculated={sector.wallDirectionCalculated}
                         wallDirectionManual={sector.wallDirectionManual}
+                      />
+                      <SunOnWall
+                        sunFromHour={sector.sunFromHour}
+                        sunToHour={sector.sunToHour}
                       />
                     </Item.Header>
                     <Item.Extra>

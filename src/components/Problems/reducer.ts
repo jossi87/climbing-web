@@ -20,8 +20,8 @@ type FilterResults = {
 type FilterInputs = {
   filterRegionIds: Record<number, true>;
   filterAreaIds: Record<number, true>;
-  filterAreaOnlySunOnWallAt: number;
-  filterAreaOnlyShadeOnWallAt: number;
+  filterOnlySunOnWallAt: number;
+  filterOnlyShadeOnWallAt: number;
   filterSectorWallDirections: Record<number, boolean>;
   filterGradeLow: string | undefined;
   filterGradeHigh: string | undefined;
@@ -52,8 +52,8 @@ const DEFAULT_INITIAL_FILTER: FilterInputs = {
   filterTypes: {},
   filterOnlyAdmin: false,
   filterOnlySuperAdmin: false,
-  filterAreaOnlySunOnWallAt: 0,
-  filterAreaOnlyShadeOnWallAt: 0,
+  filterOnlySunOnWallAt: 0,
+  filterOnlyShadeOnWallAt: 0,
   filterSectorWallDirections: {},
 } as const;
 
@@ -107,8 +107,8 @@ export type Update =
     }
   | { action: "toggle-region"; regionId: number; enabled: boolean }
   | { action: "toggle-area"; areaId: number; enabled: boolean }
-  | { action: "set-area-only-sun-on-wall-at"; hour: number }
-  | { action: "set-area-only-shade-on-wall-at"; hour: number }
+  | { action: "set-only-sun-on-wall-at"; hour: number }
+  | { action: "set-only-shade-on-wall-at"; hour: number }
   | {
       action: "toggle-sector-wall-directions";
       option: keyof State["filterSectorWallDirections"];
@@ -136,8 +136,8 @@ const filter = (state: State): State => {
   const {
     filterRegionIds,
     filterAreaIds,
-    filterAreaOnlySunOnWallAt,
-    filterAreaOnlyShadeOnWallAt,
+    filterOnlySunOnWallAt,
+    filterOnlyShadeOnWallAt,
     filterSectorWallDirections,
     filterGradeHigh,
     filterGradeLow,
@@ -189,24 +189,30 @@ const filter = (state: State): State => {
                           }
                         }
 
-                        if (filterAreaOnlySunOnWallAt > 0) {
+                        if (filterOnlySunOnWallAt > 0) {
+                          const sunFromHour =
+                            sector.sunFromHour || area.sunFromHour;
+                          const sunToHour = sector.sunToHour || area.sunToHour;
                           if (
-                            !area.sunFromHour ||
-                            !area.sunToHour ||
-                            area.sunFromHour > filterAreaOnlySunOnWallAt ||
-                            area.sunToHour < filterAreaOnlySunOnWallAt
+                            !sunFromHour ||
+                            !sunToHour ||
+                            sunFromHour > filterOnlySunOnWallAt ||
+                            sunToHour < filterOnlySunOnWallAt
                           ) {
                             filteredOut.problems += 1;
                             return false;
                           }
                         }
 
-                        if (filterAreaOnlyShadeOnWallAt > 0) {
+                        if (filterOnlyShadeOnWallAt > 0) {
+                          const sunFromHour =
+                            sector.sunFromHour || area.sunFromHour;
+                          const sunToHour = sector.sunToHour || area.sunToHour;
                           if (
-                            !area.sunFromHour ||
-                            !area.sunToHour ||
-                            (area.sunFromHour <= filterAreaOnlyShadeOnWallAt &&
-                              area.sunToHour > filterAreaOnlyShadeOnWallAt)
+                            !sunFromHour ||
+                            !sunToHour ||
+                            (sunFromHour <= filterOnlyShadeOnWallAt &&
+                              sunToHour > filterOnlyShadeOnWallAt)
                           ) {
                             filteredOut.problems += 1;
                             return false;
@@ -456,19 +462,19 @@ const reducer = (state: State, update: Update): State => {
       };
     }
 
-    case "set-area-only-sun-on-wall-at": {
+    case "set-only-sun-on-wall-at": {
       const { hour } = update;
       return {
         ...state,
-        filterAreaOnlySunOnWallAt: hour,
+        filterOnlySunOnWallAt: hour,
       };
     }
 
-    case "set-area-only-shade-on-wall-at": {
+    case "set-only-shade-on-wall-at": {
       const { hour } = update;
       return {
         ...state,
-        filterAreaOnlyShadeOnWallAt: hour,
+        filterOnlyShadeOnWallAt: hour,
       };
     }
 
@@ -602,10 +608,9 @@ const reducer = (state: State, update: Update): State => {
         case "conditions": {
           return {
             ...state,
-            filterAreaOnlySunOnWallAt:
-              DEFAULT_INITIAL_FILTER.filterAreaOnlySunOnWallAt,
-            filterAreaOnlyShadeOnWallAt:
-              DEFAULT_INITIAL_FILTER.filterAreaOnlyShadeOnWallAt,
+            filterOnlySunOnWallAt: DEFAULT_INITIAL_FILTER.filterOnlySunOnWallAt,
+            filterOnlyShadeOnWallAt:
+              DEFAULT_INITIAL_FILTER.filterOnlyShadeOnWallAt,
           };
         }
         case "wall-directions": {
@@ -677,13 +682,13 @@ const storageItems = {
     "filter/area-ids",
     DEFAULT_INITIAL_FILTER.filterAreaIds,
   ),
-  areaOnlySunOnWallAt: itemLocalStorage(
-    "filter/area-only-sun-on-wall-at",
-    DEFAULT_INITIAL_FILTER.filterAreaOnlySunOnWallAt,
+  onlySunOnWallAt: itemLocalStorage(
+    "filter/only-sun-on-wall-at",
+    DEFAULT_INITIAL_FILTER.filterOnlySunOnWallAt,
   ),
-  areaOnlyShadeOnWallAt: itemLocalStorage(
-    "filter/area-only-shade-on-wall-at",
-    DEFAULT_INITIAL_FILTER.filterAreaOnlyShadeOnWallAt,
+  onlyShadeOnWallAt: itemLocalStorage(
+    "filter/only-shade-on-wall-at",
+    DEFAULT_INITIAL_FILTER.filterOnlyShadeOnWallAt,
   ),
   sectorWallDirections: itemLocalStorage(
     "filter/sector-wall-directions",
@@ -729,8 +734,8 @@ const wrappedReducer: typeof reducer = (state, update) => {
 
   storageItems.regionIds.set(reduced.filterRegionIds);
   storageItems.areaIds.set(reduced.filterAreaIds);
-  storageItems.areaOnlySunOnWallAt.set(reduced.filterAreaOnlySunOnWallAt);
-  storageItems.areaOnlyShadeOnWallAt.set(reduced.filterAreaOnlyShadeOnWallAt);
+  storageItems.onlySunOnWallAt.set(reduced.filterOnlySunOnWallAt);
+  storageItems.onlyShadeOnWallAt.set(reduced.filterOnlyShadeOnWallAt);
   storageItems.sectorWallDirections.set(reduced.filterSectorWallDirections);
   storageItems.gradeHigh.set(reduced.filterGradeHigh);
   storageItems.gradeLow.set(reduced.filterGradeLow);
@@ -866,8 +871,8 @@ export const useFilterState = (init?: Partial<UiState>) => {
       // Information about the filters
       filterRegionIds: storageItems.regionIds.get(),
       filterAreaIds: storageItems.areaIds.get(),
-      filterAreaOnlySunOnWallAt: storageItems.areaOnlySunOnWallAt.get(),
-      filterAreaOnlyShadeOnWallAt: storageItems.areaOnlyShadeOnWallAt.get(),
+      filterOnlySunOnWallAt: storageItems.onlySunOnWallAt.get(),
+      filterOnlyShadeOnWallAt: storageItems.onlyShadeOnWallAt.get(),
       filterSectorWallDirections: storageItems.sectorWallDirections.get(),
       filterGradeHigh: storageItems.gradeHigh.get(),
       filterGradeLow: storageItems.gradeLow.get(),

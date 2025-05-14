@@ -54,6 +54,8 @@ type FilterSector = Pick<components["schemas"]["TocSector"], "outline"> & {
   name: string;
   wallDirectionCalculated: components["schemas"]["CompassDirection"];
   wallDirectionManual: components["schemas"]["CompassDirection"];
+  sunFromHour: number;
+  sunToHour: number;
   lat?: number;
   lng?: number;
   problems: FilterProblem[];
@@ -103,10 +105,8 @@ export const Problems = ({ filterOpen }: Props) => {
     visible,
   } = state;
 
-  if (status === "pending") {
+  if (status === "pending" || totalProblems === 0) {
     return <Loading />;
-  } else if (totalProblems === 0) {
-    return <Segment>No data</Segment>;
   }
 
   const title = meta.isBouldering ? "Problems" : "Routes";
@@ -147,6 +147,8 @@ export const Problems = ({ filterOpen }: Props) => {
                       wallDirectionCalculated:
                         sector.wallDirectionCalculated ?? {},
                       wallDirectionManual: sector.wallDirectionManual ?? {},
+                      sunFromHour: sector.sunFromHour,
+                      sunToHour: sector.sunToHour,
                       problems:
                         sector.problems?.map((problem) => {
                           const ascents =
