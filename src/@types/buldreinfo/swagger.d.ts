@@ -1207,6 +1207,10 @@ export type components = {
             wallDirectionManual?: components["schemas"]["CompassDirection"];
             lockedAdmin?: boolean;
             lockedSuperadmin?: boolean;
+            /** Format: int32 */
+            sunFromHour?: number;
+            /** Format: int32 */
+            sunToHour?: number;
             problems?: components["schemas"]["DangerousProblem"][];
         };
         FrontpageNumMedia: {

@@ -32,8 +32,6 @@ const Dangerous = () => {
     sunFromHour: area.sunFromHour,
     sunToHour: area.sunToHour,
     name: area.name,
-    sunFromHour: sector.sunFromHour,
-                      sunToHour: sector.sunToHour,
     sectors: area.sectors.map((sector) => ({
       id: sector.id,
       lockedAdmin: sector.lockedAdmin,
@@ -42,6 +40,8 @@ const Dangerous = () => {
       wallDirectionCalculated: sector.wallDirectionCalculated,
       wallDirectionManual: sector.wallDirectionManual,
       name: sector.name,
+      sunFromHour: sector.sunFromHour,
+      sunToHour: sector.sunToHour,
       problems: sector.problems.map((problem) => ({
         id: problem.id,
         broken: problem.broken,
