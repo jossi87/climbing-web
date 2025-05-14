@@ -97,7 +97,7 @@ export const PolylineEditor = ({
     [onChange, parking],
   );
 
-  const { getRootProps } = useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
     multiple: false,
     accept: {
       "application/gpx+xml": [".gpx"],
@@ -181,7 +181,10 @@ export const PolylineEditor = ({
               .
               <br />
               <br />
-              <Button primary>Upload</Button>
+              <Button primary>
+                <input {...getInputProps()} />
+                Upload
+              </Button>
             </Message.Content>
           </Message>
         </div>
