@@ -152,7 +152,12 @@ export const SvgRoute = ({
       </text>
     ));
   let info;
-  if (showText && !thumbnail && optProblemId === svg.problemId) {
+  if (
+    showText &&
+    !thumbnail &&
+    optProblemId === svg.problemId &&
+    svg.pitch === 0
+  ) {
     let text = `#${svg.nr} - ${svg.problemName} [${svg.problemGrade}]`;
     if (svg.problemSubtype) {
       text += " - " + svg.problemSubtype;

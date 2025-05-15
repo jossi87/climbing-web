@@ -259,7 +259,13 @@ const MediaModal = ({
           {canShowSidebar &&
             m.svgs
               .slice(0) // Create copy, dont change svgs-order (used to draw topo in correct order)
-              .sort((a, b) => a.nr - b.nr)
+              .filter((svg) => svg.pitch === 0 || svg.pitch === 1)
+              .sort((a, b) => {
+                if (a.nr !== b.nr) {
+                  return a.nr - b.nr;
+                }
+                return a.problemName.localeCompare(b.problemName);
+              })
               .map((svg) => {
                 const url = `/problem/${svg.problemId}/${m.id}`;
                 return (
@@ -277,7 +283,10 @@ const MediaModal = ({
                     onMouseEnter={() => setProblemIdHovered(svg.problemId)}
                     onMouseLeave={() => setProblemIdHovered(null)}
                   >
-                    {`#${svg.nr} ${svg.problemName}`} <i>{svg.problemGrade}</i>
+                    {svg.pitch === 0
+                      ? `#${svg.nr} ${svg.problemName} [${svg.problemGrade}]`
+                      : svg.problemName}
+
                     {svg.ticked && (
                       <Icon color="green" inverted={true} name="check" />
                     )}
