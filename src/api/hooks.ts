@@ -627,7 +627,10 @@ export function useSvgEdit(
           m.width,
           m.height,
         );
-        mediaRegion.y = Math.max(0, mediaRegion.y - mediaRegion.height / 2);
+        mediaRegion.y = Math.max(
+          0,
+          mediaRegion.y - Math.round(mediaRegion.height / 2),
+        );
       }
     }
   }
