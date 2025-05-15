@@ -612,10 +612,24 @@ export function useSvgEdit(
   }
 
   const svg = m.svgs.filter(
-    (x) => x.problemId == data.id && pitch == x.pitch,
+    (x) => x.problemId == data.id && x.pitch == pitch,
   )[0];
-  if (pitch && !mediaRegion && svg && svg.path) {
-    mediaRegion = calculateMediaRegion(svg.path, m.width, m.height);
+  if (pitch && !mediaRegion) {
+    if (svg && svg.path) {
+      mediaRegion = calculateMediaRegion(svg.path, m.width, m.height);
+    } else {
+      const prevPitchSvg = m.svgs.filter(
+        (x) => x.problemId == data.id && x.pitch == pitch - 1,
+      )[0];
+      if (prevPitchSvg && prevPitchSvg.path) {
+        mediaRegion = calculateMediaRegion(
+          prevPitchSvg.path,
+          m.width,
+          m.height,
+        );
+        mediaRegion.y = Math.max(0, mediaRegion.y - mediaRegion.height / 2);
+      }
+    }
   }
 
   const svgId = svg?.id ?? 0;
