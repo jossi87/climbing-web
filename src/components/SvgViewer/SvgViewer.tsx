@@ -38,8 +38,14 @@ export const SvgViewer = ({
   let imgH = m.height;
   let mediaRegion;
   let svgs = m.svgs;
-  if (pitch && m.svgs?.length > 0 && m.svgs.some((x) => x.nr === pitch)) {
-    const pitchSvg = m.svgs.filter((x) => x.nr === pitch)[0];
+  if (
+    pitch &&
+    m.svgs?.length > 0 &&
+    m.svgs.some((x) => x.problemId == optProblemId && x.nr === pitch)
+  ) {
+    const pitchSvg = m.svgs.filter(
+      (x) => x.problemId == optProblemId && x.nr === pitch,
+    )[0];
     mediaRegion = calculateMediaRegion(pitchSvg.path, m.width, m.height);
     svgs = m.svgs
       .filter((x) => x === pitchSvg || isPathVisible(x.path, mediaRegion))
