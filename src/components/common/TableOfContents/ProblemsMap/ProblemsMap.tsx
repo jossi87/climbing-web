@@ -187,7 +187,7 @@ const SectorOutlines = ({ areas }: Props) => {
         ...rest,
         label: zoom > 12 ? label : undefined,
       }))}
-      addEventHandlers={false}
+      addEventHandlers={true}
     />
   );
 };
