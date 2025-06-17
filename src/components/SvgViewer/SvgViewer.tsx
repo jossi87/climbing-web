@@ -41,10 +41,10 @@ export const SvgViewer = ({
   if (
     pitch &&
     m.svgs?.length > 0 &&
-    m.svgs.some((x) => x.problemId == optProblemId && x.nr === pitch)
+    m.svgs.some((x) => x.problemId == optProblemId && x.pitch === pitch)
   ) {
     const pitchSvg = m.svgs.filter(
-      (x) => x.problemId == optProblemId && x.nr === pitch,
+      (x) => x.problemId == optProblemId && x.pitch === pitch,
     )[0];
     mediaRegion = calculateMediaRegion(pitchSvg.path, m.width, m.height);
     svgs = m.svgs

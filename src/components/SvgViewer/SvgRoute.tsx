@@ -39,7 +39,7 @@ export const SvgRoute = ({
   if (optProblemId || problemIdHovered) {
     if (
       (svg.problemId != optProblemId && svg.problemId != problemIdHovered) ||
-      (pitch && svg.nr != pitch)
+      (pitch && svg.pitch != pitch)
     ) {
       gClassName += " buldreinfo-svg-opacity-low";
     } else {
@@ -200,9 +200,9 @@ export const SvgRoute = ({
           let url = "/problem/" + svg.problemId + "/" + mediaId;
           if (
             optProblemId === svg.problemId &&
-            ((!pitch && svg.pitch > 0) || (pitch && pitch != svg.nr))
+            ((!pitch && svg.pitch > 0) || (pitch && pitch != svg.pitch))
           ) {
-            url += "/" + svg.nr;
+            url += "/" + svg.pitch;
           }
           navigate(url);
         }
@@ -247,7 +247,7 @@ export const SvgRoute = ({
         x={x}
         y={y}
       >
-        {svg.nr}
+        {svg.nr + (svg.pitch !== 0 && "-" + svg.pitch)}
       </text>
       {svg.hasAnchor && (
         <circle
