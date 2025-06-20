@@ -68,8 +68,9 @@ const Media = ({
   const { isLoading, getAccessTokenSilently } = useAuth0();
   useEffect(() => {
     function handleKeyPress({ keyCode }) {
-      if (editM == null) {
+      if (editM == null && m != null) {
         if (keyCode === 27) {
+          // Escape
           closeModal();
         } else if (keyCode === 37) {
           gotoPrev();
