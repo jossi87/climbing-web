@@ -569,7 +569,13 @@ export type EditableSvg = {
   tradBelayStations: { x: number; y: number }[];
   readOnlySvgs: (Pick<
     EditableSvg,
-    "nr" | "pitch" | "hasAnchor" | "path" | "anchors" | "tradBelayStations" | "texts"
+    | "nr"
+    | "pitch"
+    | "hasAnchor"
+    | "path"
+    | "anchors"
+    | "tradBelayStations"
+    | "texts"
   > & { t: "other" })[];
 };
 
