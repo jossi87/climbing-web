@@ -75,6 +75,7 @@ export const WithOtherSvgs: Story = {
     readOnlySvgs: [
       {
         nr: 1,
+        pitch: 0,
         anchors: [],
         hasAnchor: false,
         path: WithPath.args?.path ?? "",
@@ -90,6 +91,7 @@ export const WithOtherSvgs: Story = {
       },
       {
         nr: 2,
+        pitch: 0,
         anchors: [],
         hasAnchor: false,
         path: "M 396 379 C 344.5 357.5 402 316 343 336 C 284 354 300 276 368 248 C 375 225.5 480 244 432 203 C 384 174 458 171 386 145 C 333.5 135 384 117 331 125 ",

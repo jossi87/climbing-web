@@ -581,6 +581,7 @@ export const SvgEdit = ({
             }
             toggle
             active={mode === "add-text"}
+            disabled={pitch !== 0}
           >
             Text
           </Button>
@@ -628,6 +629,7 @@ export const SvgEdit = ({
                 }
                 toggle
                 active={mode === "add-anchor"}
+                disabled={pitch !== 0}
               >
                 Extra anchors
               </Button>
@@ -648,6 +650,7 @@ export const SvgEdit = ({
                 }
                 toggle
                 active={mode === "add-trad-belay"}
+                disabled={pitch !== 0}
               >
                 Trad belay stations
               </Button>

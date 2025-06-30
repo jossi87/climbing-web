@@ -569,7 +569,7 @@ export type EditableSvg = {
   tradBelayStations: { x: number; y: number }[];
   readOnlySvgs: (Pick<
     EditableSvg,
-    "nr" | "hasAnchor" | "path" | "anchors" | "tradBelayStations" | "texts"
+    "nr" | "pitch" | "hasAnchor" | "path" | "anchors" | "tradBelayStations" | "texts"
   > & { t: "other" })[];
 };
 
@@ -697,6 +697,7 @@ export function useSvgEdit(
     if (!svg || s !== svg) {
       readOnlySvgs.push({
         nr: s.nr ?? 0,
+        pitch: s.pitch ?? 0,
         hasAnchor: !!s.hasAnchor,
         path:
           (s.path && mediaRegion ? scalePath(s.path, mediaRegion) : s.path) ??

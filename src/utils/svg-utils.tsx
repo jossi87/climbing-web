@@ -384,6 +384,7 @@ type SvgType = {
   path: string;
   anchors: { x: number; y: number }[];
   nr: number;
+  pitch: number;
   hasAnchor: boolean;
 } & (
   | { t: "PATH" }
@@ -438,7 +439,7 @@ export function parseReadOnlySvgs(
         return [
           ...acc,
           generateSvgNrAndAnchor(
-            svg.nr + "_path",
+            svg.nr + "_" + svg.pitch + "_path",
             commands as Parameters<typeof generateSvgNrAndAnchor>[1],
             svg.nr,
             svg.hasAnchor,
