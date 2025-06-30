@@ -133,7 +133,7 @@ const MediaModal = ({
       .filter((value, index, self) => self.indexOf(value) === index).length > 1;
   const [prevHover, setPrevHover] = useState(false);
   const [nextHover, setNextHover] = useState(false);
-  const playerRef = useRef<ReactPlayer | null>(null);
+  const playerRef = useRef<HTMLVideoElement | null>(null);
   const isImage = m?.idType === 1;
 
   const content = (() => {
@@ -193,19 +193,19 @@ const MediaModal = ({
         <ReactPlayer
           style={style.video}
           ref={playerRef}
-          url={getBuldreinfoMediaUrlSupported(m.id)}
+          src={getBuldreinfoMediaUrlSupported(m.id)}
           controls={true}
           playing={true}
-          onDuration={(duration) => {
-            const amount = parseInt(m.t) / duration;
+          onPlay={() => {
+            const seconds = parseInt(m.t);
             if (
-              Number.isNaN(amount) ||
-              !Number.isFinite(amount) ||
-              !playerRef.current
+              !Number.isNaN(seconds) &&
+              Number.isFinite(seconds) &&
+              playerRef.current &&
+              seconds < playerRef.current.duration
             ) {
-              return;
+              playerRef.current.currentTime = seconds;
             }
-            playerRef.current.seekTo(amount);
           }}
         />
       );

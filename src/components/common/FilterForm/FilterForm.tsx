@@ -64,18 +64,16 @@ const GroupHeader = ({ title, reset, buttons }: GroupHeaderProps) => {
       <Header as="h5" style={{ flex: 1, margin: 0 }}>
         {title}
       </Header>
-      {buttons
-        ?.filter(Boolean)
-        ?.map(({ icon, onClick }) => (
-          <Button
-            key={icon}
-            icon={icon}
-            onClick={onClick}
-            size="mini"
-            basic
-            compact
-          />
-        ))}
+      {buttons?.filter(Boolean)?.map(({ icon, onClick }) => (
+        <Button
+          key={icon}
+          icon={icon}
+          onClick={onClick}
+          size="mini"
+          basic
+          compact
+        />
+      ))}
       <Button
         icon="trash alternate outline"
         onClick={() => dispatch({ action: "reset", section: reset })}

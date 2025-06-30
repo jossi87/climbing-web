@@ -103,7 +103,7 @@ export const SlopeProfile = ({ areaName, sectorName, slope }: Props) => {
               }
               return (
                 <Segment size="mini" compact style={{ opacity: 0.7 }}>
-                  {`Dist.: ${parseInt(label)}m, elev.: ${parseInt(
+                  {`Dist.: ${parseInt(label.toString())}m, elev.: ${parseInt(
                     payload[0].payload.elevation,
                   )}m`}
                 </Segment>
