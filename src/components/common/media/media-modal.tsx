@@ -196,7 +196,7 @@ const MediaModal = ({
           src={getBuldreinfoMediaUrlSupported(m.id)}
           controls={true}
           playing={true}
-          onPlay={() => {
+          onProgress={() => {
             const seconds = parseInt(m.t);
             if (
               !Number.isNaN(seconds) &&
