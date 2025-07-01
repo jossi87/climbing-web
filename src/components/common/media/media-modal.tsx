@@ -135,7 +135,6 @@ const MediaModal = ({
       .filter((value, index, self) => self.indexOf(value) === index).length > 1;
   const [prevHover, setPrevHover] = useState(false);
   const [nextHover, setNextHover] = useState(false);
-  const playerRef = useRef<any>(null);
   const isImage = m?.idType === 1;
 
   const content = (() => {
@@ -194,7 +193,6 @@ const MediaModal = ({
       return (
         <ReactPlayer
           style={style.video}
-          ref={playerRef}
           src={getBuldreinfoMediaUrlSupported(m.id)}
           controls={true}
           playing={true}
@@ -718,4 +716,4 @@ const MediaModal = ({
   );
 };
 
-export default MediaModal
+export default MediaModal;
