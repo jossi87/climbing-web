@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { components } from "../../../@types/buldreinfo/swagger";
 import { useLocalStorage } from "../../../utils/use-local-storage";
 import {
@@ -135,7 +135,16 @@ const MediaModal = ({
       .filter((value, index, self) => self.indexOf(value) === index).length > 1;
   const [prevHover, setPrevHover] = useState(false);
   const [nextHover, setNextHover] = useState(false);
+  const [hasSetVideoTimestamp, setHasSetVideoTimestamp] = useState(false);
+  const [videoVolume, setVideoVolume] = useState(1);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const playerRef = useRef<HTMLVideoElement | null>(null);
   const isImage = m?.idType === 1;
+
+  useEffect(() => {
+    setHasSetVideoTimestamp(false);
+    setIsPlaying(true);
+  }, [m.id]);
 
   const content = (() => {
     if (isImage) {
@@ -192,10 +201,32 @@ const MediaModal = ({
     if (autoPlayVideo) {
       return (
         <ReactPlayer
+          ref={playerRef}
           style={style.video}
           src={getBuldreinfoMediaUrlSupported(m.id)}
           controls={true}
-          playing={true}
+          playing={isPlaying}
+          volume={videoVolume}
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
+          onVolumeChange={() => {
+            if (playerRef.current) {
+              setVideoVolume(playerRef.current.volume);
+            }
+          }}
+          onProgress={() => {
+            const seconds = parseInt(m.t);
+            if (
+              !hasSetVideoTimestamp &&
+              !Number.isNaN(seconds) &&
+              Number.isFinite(seconds) &&
+              playerRef.current &&
+              seconds < playerRef.current.duration
+            ) {
+              playerRef.current.currentTime = seconds;
+              setHasSetVideoTimestamp(true);
+            }
+          }}
         />
       );
     }
