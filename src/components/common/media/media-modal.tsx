@@ -35,6 +35,8 @@ const style = {
     objectFit: "scale-down",
   },
   video: {
+    width: "100vw",
+    height: "80vh",
     maxHeight: "100vh",
     maxWidth: "100vw",
   },
@@ -133,7 +135,7 @@ const MediaModal = ({
       .filter((value, index, self) => self.indexOf(value) === index).length > 1;
   const [prevHover, setPrevHover] = useState(false);
   const [nextHover, setNextHover] = useState(false);
-  const playerRef = useRef<HTMLVideoElement | null>(null);
+  const playerRef = useRef<any>(null);
   const isImage = m?.idType === 1;
 
   const content = (() => {
@@ -196,17 +198,6 @@ const MediaModal = ({
           src={getBuldreinfoMediaUrlSupported(m.id)}
           controls={true}
           playing={true}
-          onProgress={() => {
-            const seconds = parseInt(m.t);
-            if (
-              !Number.isNaN(seconds) &&
-              Number.isFinite(seconds) &&
-              playerRef.current &&
-              seconds < playerRef.current.duration
-            ) {
-              playerRef.current.currentTime = seconds;
-            }
-          }}
         />
       );
     }
@@ -727,4 +718,4 @@ const MediaModal = ({
   );
 };
 
-export default MediaModal;
+export default MediaModal
