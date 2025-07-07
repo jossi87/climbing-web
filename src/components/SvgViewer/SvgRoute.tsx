@@ -79,7 +79,7 @@ export const SvgRoute = ({
     textColor = "#FF0000";
   }
 
-  let ixNr;
+  let ixNr = 0;
   let maxY = 0;
   let ixAnchor;
   let minY = 99999999;
@@ -249,7 +249,7 @@ export const SvgRoute = ({
       >
         {svg.nr + (svg.pitch !== 0 && "-" + svg.pitch)}
       </text>
-      {svg.hasAnchor && (
+      {svg.hasAnchor && ixAnchor && (
         <circle
           fill={groupColor}
           stroke="black"
