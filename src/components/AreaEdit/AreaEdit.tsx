@@ -141,6 +141,12 @@ export const AreaEdit = () => {
                 value={data.sunFromHour}
                 onChange={setNumber("sunFromHour")}
                 options={hours}
+                error={
+                  (!data.sunFromHour && !data.sunToHour) ||
+                  (data.sunFromHour && data.sunToHour)
+                    ? false
+                    : "Sun from and to hour must both be empty or set"
+                }
               />
               <Form.Field
                 label="Sun to hour"
@@ -149,6 +155,12 @@ export const AreaEdit = () => {
                 value={data.sunToHour}
                 onChange={setNumber("sunToHour")}
                 options={hours}
+                error={
+                  (!data.sunFromHour && !data.sunToHour) ||
+                  (data.sunFromHour && data.sunToHour)
+                    ? false
+                    : "Sun from and to hour must both be empty or set"
+                }
               />
             </Form.Group>
           )}
@@ -297,7 +309,11 @@ export const AreaEdit = () => {
           <Button
             positive
             loading={isSaving}
-            disabled={!data.name}
+            disabled={Boolean(
+              !data.name ||
+                (data.sunFromHour && !data.sunToHour) ||
+                (!data.sunFromHour && data.sunToHour),
+            )}
             type="submit"
           >
             Save area
