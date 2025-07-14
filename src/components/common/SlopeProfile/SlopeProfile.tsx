@@ -57,7 +57,7 @@ const downloadGpxFile = (
 export const SlopeProfile = ({ areaName, sectorName, slope }: Props) => {
   return (
     <>
-      <ResponsiveContainer aspect={3} width={200}>
+      <ResponsiveContainer aspect={3} width={200} maxHeight={50} minHeight={50}>
         <AreaChart
           data={slope.coordinates}
           margin={{ top: 4, right: 0, left: 0, bottom: 4 }}
