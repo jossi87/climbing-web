@@ -1068,7 +1068,7 @@ export type components = {
         NewMedia: {
             name?: string;
             photographer?: string;
-            inPhoto?: string;
+            inPhoto?: components["schemas"]["User"][];
             /** Format: int32 */
             pitch?: number;
             trivia?: boolean;
@@ -1826,8 +1826,8 @@ export type components = {
             value?: string;
             content?: Record<string, never>;
             fileName?: string;
-            formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
             simple?: boolean;
+            formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
             parameterizedHeaders?: {
                 empty?: boolean;
             } & {

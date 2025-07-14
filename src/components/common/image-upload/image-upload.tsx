@@ -3,6 +3,7 @@ import { DropzoneOptions, useDropzone } from "react-dropzone";
 import { Button, Card, Image, Input, Checkbox } from "semantic-ui-react";
 import VideoEmbedder from "./video-embedder";
 import { UserSelector } from "../user-selector/user-selector";
+import { UsersSelector } from "../../common/user-selector/user-selector";
 import { components } from "../../../@types/buldreinfo/swagger";
 import { useMeta } from "../../common/meta";
 
@@ -143,11 +144,17 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
                         updateItem({ trivia: !m.trivia });
                       }}
                     />
-                    <UserSelector
+                    <UsersSelector
                       placeholder="In photo/video"
-                      defaultValue={m.inPhoto}
-                      onUserUpdated={(u) => {
-                        updateItem({ inPhoto: u?.label });
+                      users={m.inPhoto}
+                      onUsersUpdated={(newUsers) => {
+                        const inPhoto = newUsers.map((u) => {
+                          return {
+                            id: typeof u.value === "string" ? -1 : u.value,
+                            name: u.label,
+                          };
+                        });
+                        updateItem({ inPhoto });
                       }}
                     />
                     <UserSelector
