@@ -450,6 +450,12 @@ export const SectorEdit = ({ sector, area }: Props) => {
                 value={data.sunFromHour}
                 onChange={onSunFromHourChanged}
                 options={hours}
+                error={
+                  (!data.sunFromHour && !data.sunToHour) ||
+                  (data.sunFromHour && data.sunToHour)
+                    ? false
+                    : "Sun from and to hour must both be empty or set"
+                }
               />
               <Form.Field
                 label="Sun to hour"
@@ -458,6 +464,12 @@ export const SectorEdit = ({ sector, area }: Props) => {
                 value={data.sunToHour}
                 onChange={onSunToHourChanged}
                 options={hours}
+                error={
+                  (!data.sunFromHour && !data.sunToHour) ||
+                  (data.sunFromHour && data.sunToHour)
+                    ? false
+                    : "Sun from and to hour must both be empty or set"
+                }
               />
             </Form.Group>
           )}
@@ -712,7 +724,11 @@ export const SectorEdit = ({ sector, area }: Props) => {
             positive
             loading={saving}
             onClick={save}
-            disabled={!data.name}
+            disabled={Boolean(
+              !data.name ||
+                (data.sunFromHour && !data.sunToHour) ||
+                (!data.sunFromHour && data.sunToHour),
+            )}
           >
             Save sector
           </Button>
