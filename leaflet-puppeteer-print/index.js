@@ -18,7 +18,7 @@ async function start() {
     headless: "new",
     executablePath:
       "/opt/google/chrome/chrome",
-  }); // TODO Fix this, now referencing directly to chrome path with version...
+  });
   const page = await browser.newPage();
   await page.setViewport({
     width: 1280,
