@@ -176,7 +176,7 @@ export const Problem = () => {
     if (data.sectorDescent?.coordinates?.length) {
       slopes.push({
         slope: data.sectorDescent,
-        backgroundColor: "lime",
+        backgroundColor: "purple",
         label: getDistanceWithUnit(data.sectorDescent) ?? undefined,
       });
     }
