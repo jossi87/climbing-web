@@ -1930,6 +1930,8 @@ export type components = {
             crc32?: number;
             lockedadmin?: boolean;
             lockedsuperadmin?: boolean;
+            /** Format: int32 */
+            hits?: number;
         };
         SearchRequest: {
             value?: string;
@@ -2098,6 +2100,8 @@ export interface operations {
             query?: {
                 /** @description Area id */
                 id?: number;
+                /** @description Dont update hits */
+                dontUpdateHits?: boolean;
             };
             header?: never;
             path?: never;
@@ -2444,6 +2448,8 @@ export interface operations {
                 id: number;
                 /** @description Include hidden media (example: if a sector has multiple topo-images, the topo-images without this route will be hidden) */
                 showHiddenMedia?: boolean;
+                /** @description Dont update hits */
+                dontUpdateHits?: boolean;
             };
             header?: never;
             path?: never;
@@ -2597,6 +2603,8 @@ export interface operations {
             query: {
                 /** @description Sector id */
                 id: number;
+                /** @description Dont update hits */
+                dontUpdateHits?: boolean;
             };
             header?: never;
             path?: never;
@@ -2943,7 +2951,10 @@ export interface operations {
     };
     getWithoutJsArea: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Dont update hits */
+                dontUpdateHits?: boolean;
+            };
             header?: never;
             path: {
                 /** @description Area id */
@@ -2965,7 +2976,10 @@ export interface operations {
     };
     getWithoutJsProblem: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Dont update hits */
+                dontUpdateHits?: boolean;
+            };
             header?: never;
             path: {
                 /** @description Problem id */
@@ -2987,7 +3001,10 @@ export interface operations {
     };
     getWithoutJsProblemMedia: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Dont update hits */
+                dontUpdateHits?: boolean;
+            };
             header?: never;
             path: {
                 /** @description Problem id */
@@ -3011,7 +3028,10 @@ export interface operations {
     };
     getWithoutJsProblemMediaPitch: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Dont update hits */
+                dontUpdateHits?: boolean;
+            };
             header?: never;
             path: {
                 /** @description Problem id */
@@ -3037,7 +3057,10 @@ export interface operations {
     };
     getWithoutJsSector: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Dont update hits */
+                dontUpdateHits?: boolean;
+            };
             header?: never;
             path: {
                 /** @description Sector id */
