@@ -862,6 +862,23 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/v2/user/email-visible-for-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update email visible to all for profile */
+        put: operations["putUserEmailVisibleForAll"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 };
 export type webhooks = Record<string, never>;
 export type components = {
@@ -921,6 +938,7 @@ export type components = {
             /** Format: int32 */
             userId?: number;
             name?: string;
+            emails?: string[];
             picture?: string;
             lastLogin?: string;
         };
@@ -1470,6 +1488,7 @@ export type components = {
             picture?: string;
             firstname?: string;
             lastname?: string;
+            emails?: string[];
             userRegions?: components["schemas"]["UserRegion"][];
         };
         UserRegion: {
@@ -3280,6 +3299,29 @@ export interface operations {
                 idMedia: number;
                 /** @description Degrees (90/180/270) */
                 degrees: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": unknown;
+                };
+            };
+        };
+    };
+    putUserEmailVisibleForAll: {
+        parameters: {
+            query: {
+                /** @description Email visible for all */
+                emailVisibleForAll: boolean;
             };
             header?: never;
             path?: never;

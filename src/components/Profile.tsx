@@ -51,7 +51,11 @@ const Profile = () => {
   let content = null;
   if (activePage === Page.user) {
     content = (
-      <ProfileStatistics userId={profile.id} canDownload={loggedInProfile} />
+      <ProfileStatistics
+        userId={profile.id}
+        emails={profile.emails}
+        canDownload={loggedInProfile}
+      />
     );
   } else if (activePage === Page.todo) {
     content = (

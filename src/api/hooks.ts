@@ -263,6 +263,32 @@ export function useProfile(userId: number = -1) {
       `/user/regions?regionId=${regionId}&delete=${true}`,
   });
 
+  const setUserEmailVisibleForAll = usePostData<{
+    emailVisibleForAll: boolean;
+  }>(`/user/regions`, {
+    createUrl: ({ emailVisibleForAll }) =>
+      `/user/email-visible-for-all?emailVisibleForAll=${emailVisibleForAll}`,
+    fetchOptions: {
+      method: "PUT",
+      consistencyAction: "nop",
+    },
+    onMutate: () => {
+      client.refetchQueries({
+        queryKey: [`/profile`],
+      });
+    },
+    onError: () => {
+      client.refetchQueries({
+        queryKey: [`/profile`],
+      });
+    },
+    onSettled: () => {
+      client.refetchQueries({
+        queryKey: [`/permissions`],
+      });
+    },
+  });
+
   const setRegion = usePostData<{
     region: components["schemas"]["UserRegion"];
     del: boolean;
@@ -316,6 +342,7 @@ export function useProfile(userId: number = -1) {
   return {
     ...profile,
     addRegion: addRegion.mutateAsync,
+    setUserEmailVisibleForAll: setUserEmailVisibleForAll.mutateAsync,
     removeRegion: removeRegion.mutateAsync,
     setRegion: setRegion.mutateAsync,
   };

@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import {
+  Button,
   Grid,
   Segment,
   Header,
@@ -36,6 +37,12 @@ const About = () => {
                     {u.name}
                   </List.Header>
                   <List.Description>Last seen {u.lastLogin}</List.Description>
+                  {u.emails?.map((email) => (
+                    <Label size="tiny" as="a" href={`mailto:${email}`}>
+                      <Icon name="mail outline"></Icon>
+                      {email}
+                    </Label>
+                  ))}
                 </List.Content>
               </List.Item>
             ))

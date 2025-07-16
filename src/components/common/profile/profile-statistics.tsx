@@ -5,7 +5,6 @@ import ProblemList from "../problem-list";
 import Leaflet from "../../common/leaflet/leaflet";
 import { Loading, LockSymbol, Stars } from "../widgets/widgets";
 import {
-  Header,
   Icon,
   List,
   Label,
@@ -83,10 +82,15 @@ const TickListItem = ({ tick }: TickListItemProps) => (
 
 type ProfileStatisticsProps = {
   userId: number;
+  emails: string[];
   canDownload: boolean;
 };
 
-const ProfileStatistics = ({ userId, canDownload }: ProfileStatisticsProps) => {
+const ProfileStatistics = ({
+  userId,
+  emails,
+  canDownload,
+}: ProfileStatisticsProps) => {
   const { defaultCenter, defaultZoom } = useMeta();
   const accessToken = useAccessToken();
   const { data, isLoading, error } = useProfileStatistics(userId);
@@ -123,12 +127,6 @@ const ProfileStatistics = ({ userId, canDownload }: ProfileStatisticsProps) => {
     menuItem: { key: "stats", icon: "area graph" },
     render: () => (
       <TabPane>
-        {regions?.length > 0 && (
-          <Header as="h5">
-            <Icon name="world" />
-            {regions.join(", ")}
-          </Header>
-        )}
         {canDownload && (
           <Button
             floated="right"
@@ -178,6 +176,19 @@ const ProfileStatistics = ({ userId, canDownload }: ProfileStatisticsProps) => {
             {numberWithCommas(data.numVideosCreated ?? 0)}
             <Label.Detail>Captured</Label.Detail>
           </Label>
+          {regions?.length > 0 && (
+            <Label color="brown" image>
+              <Icon name="world" />
+              Regions
+              <Label.Detail>{regions.join(", ")}</Label.Detail>
+            </Label>
+          )}
+          {emails?.map((email) => (
+            <Label color="purple" image as="a" href={`mailto:${email}`}>
+              <Icon name="mail outline" />
+              {email}
+            </Label>
+          ))}
         </Label.Group>
         {chart && (
           <>
