@@ -184,7 +184,13 @@ const ProfileStatistics = ({
             </Label>
           )}
           {emails?.map((email) => (
-            <Label key={email} color="purple" image as="a" href={`mailto:${email}`}>
+            <Label
+              key={email}
+              color="purple"
+              image
+              as="a"
+              href={`mailto:${email}`}
+            >
               <Icon name="mail outline" />
               {email}
             </Label>

@@ -37,7 +37,12 @@ const About = () => {
                   </List.Header>
                   <List.Description>Last seen {u.lastLogin}</List.Description>
                   {u.emails?.map((email) => (
-                    <Label key={email} size="tiny" as="a" href={`mailto:${email}`}>
+                    <Label
+                      key={email}
+                      size="tiny"
+                      as="a"
+                      href={`mailto:${email}`}
+                    >
                       <Icon name="mail outline"></Icon>
                       {email}
                     </Label>
