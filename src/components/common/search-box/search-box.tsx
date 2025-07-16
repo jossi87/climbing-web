@@ -17,19 +17,6 @@ type SearchBoxProps = Omit<
   | "value"
 >;
 
-function formatHits(num) {
-  if (num >= 1000000000) {
-    return (num / 1000000000).toFixed(1).replace(/\.0$/, "") + "B";
-  }
-  if (num >= 1000000) {
-    return (num / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
-  }
-  if (num >= 1000) {
-    return (num / 1000).toFixed(1).replace(/\.0$/, "") + "K";
-  }
-  return num.toString();
-}
-
 const SearchBox = ({ children: _, ...searchProps }: SearchBoxProps) => {
   const navigate = useNavigate();
   const { search, isPending, data } = useSearch();
@@ -66,7 +53,7 @@ const SearchBox = ({ children: _, ...searchProps }: SearchBoxProps) => {
           lockedadmin,
           lockedsuperadmin,
           externalurl,
-          hits,
+          pageViews,
         } = data;
         let imageSrc = null;
         if (mediaid > 0) {
@@ -81,9 +68,9 @@ const SearchBox = ({ children: _, ...searchProps }: SearchBoxProps) => {
                 <Icon name="external" />
               </div>
               <div className="content">
-                {hits > 0 && (
+                {pageViews && (
                   <div className="price">
-                    <small>{formatHits(hits)}</small>
+                    <small>{pageViews}</small>
                   </div>
                 )}
                 {title && (
@@ -111,9 +98,9 @@ const SearchBox = ({ children: _, ...searchProps }: SearchBoxProps) => {
               )}
             </div>
             <div className="content">
-              {hits > 0 && (
+              {pageViews && (
                 <div className="price">
-                  <small>{formatHits(hits)}</small>
+                  <small>{pageViews}</small>
                 </div>
               )}
               {title && (
@@ -142,7 +129,7 @@ const SearchBox = ({ children: _, ...searchProps }: SearchBoxProps) => {
         description: s.description,
         lockedadmin: String(s.lockedadmin),
         lockedsuperadmin: String(s.lockedsuperadmin),
-        hits: s.hits,
+        pageViews: s.pageViews,
       }))}
       {...searchProps}
       value={value}

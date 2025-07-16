@@ -954,8 +954,7 @@ export type components = {
             media?: components["schemas"]["Media"][];
             triviaMedia?: components["schemas"]["Media"][];
             newMedia?: components["schemas"]["NewMedia"][];
-            /** Format: int64 */
-            hits?: number;
+            pageViews?: string;
             typeNumTicked?: components["schemas"]["TypeNumTicked"][];
         };
         AreaSector: {
@@ -1403,8 +1402,7 @@ export type components = {
             t?: components["schemas"]["Type"];
             sections?: components["schemas"]["ProblemSection"][];
             todo?: boolean;
-            /** Format: int64 */
-            hits?: number;
+            pageViews?: string;
             faAid?: components["schemas"]["FaAid"];
             trivia?: string;
             triviaMedia?: components["schemas"]["Media"][];
@@ -1604,8 +1602,7 @@ export type components = {
             problems?: components["schemas"]["SectorProblem"][];
             problemOrder?: components["schemas"]["SectorProblemOrder"][];
             newMedia?: components["schemas"]["NewMedia"][];
-            /** Format: int64 */
-            hits?: number;
+            pageViews?: string;
             siblings?: components["schemas"]["SectorJump"][];
         };
         SectorJump: {
@@ -1930,8 +1927,7 @@ export type components = {
             crc32?: number;
             lockedadmin?: boolean;
             lockedsuperadmin?: boolean;
-            /** Format: int32 */
-            hits?: number;
+            pageViews?: string;
         };
         SearchRequest: {
             value?: string;

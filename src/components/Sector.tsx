@@ -485,7 +485,7 @@ const Sector = () => {
               })}
               <Label basic>
                 Page views:
-                <Label.Detail>{data.hits}</Label.Detail>
+                <Label.Detail>{data.pageViews}</Label.Detail>
               </Label>
               <br />
               {data.comment && <Linkify>{data.comment}</Linkify>}

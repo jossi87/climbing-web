@@ -155,7 +155,7 @@ const Areas = () => {
                     />
                   </List.Header>
                   <List.Description>
-                    <i>{`${area.numSectors} sectors, ${area.numProblems} ${typeDescription}, ${area.hits} page views`}</i>
+                    <i>{`${area.numSectors} sectors, ${area.numProblems} ${typeDescription}, ${area.pageViews} page views`}</i>
                     <br />
                     <div
                       className="area-description"

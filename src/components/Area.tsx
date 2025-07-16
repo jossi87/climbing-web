@@ -617,7 +617,7 @@ const Area = () => {
           ))}
           <Label basic>
             Page views:
-            <Label.Detail>{data.hits}</Label.Detail>
+            <Label.Detail>{data.pageViews}</Label.Detail>
           </Label>
           <DownloadButton href={`/areas/pdf?id=${data.id}`}>
             area.pdf

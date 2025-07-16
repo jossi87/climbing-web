@@ -1803,42 +1803,42 @@
   dependencies:
     mux-embed "5.9.0"
 
-"@mux/mux-player-react@^3.5.0":
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/@mux/mux-player-react/-/mux-player-react-3.5.0.tgz#68400f3b0f2f5b6d8fcc424e5a14bc4c1a3997bf"
-  integrity sha512-dukPqPM8iHGBNPGEwf0Kk4evtPIPixIAziTF0e2iuWLIUvycyLWPL52g2CUxjvpvN/zUdHU9yMsIAFCyOC7RYA==
+"@mux/mux-player-react@^3.5.1":
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/@mux/mux-player-react/-/mux-player-react-3.5.1.tgz#53218cbb1ab95d8106236bb6960c9c151b9997ba"
+  integrity sha512-tm32fSo9IBA/J8AD99bp64CyBkmv8jtsn4RhSHgNufvfWJUMBFJ7cfXgLsxiG/VdegpfBLRatMC5YiuZjoZ6yg==
   dependencies:
-    "@mux/mux-player" "3.5.0"
-    "@mux/playback-core" "0.30.0"
+    "@mux/mux-player" "3.5.1"
+    "@mux/playback-core" "0.30.1"
     prop-types "^15.8.1"
 
-"@mux/mux-player@3.5.0":
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/@mux/mux-player/-/mux-player-3.5.0.tgz#06fd501d9167d6416315482a183799d0da5cbad2"
-  integrity sha512-z11ZZuGJMCjtd9DYqhGVA2Hhgs/qN2oWgstjexXWbTQZfK4ok4qKFce4opKSKtRByEPDHAPrEiAiTkGqwKyIrg==
+"@mux/mux-player@3.5.1":
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/@mux/mux-player/-/mux-player-3.5.1.tgz#97e555979ce99dce6461bf06e9bec6a1931c942b"
+  integrity sha512-PSi3mPb4LrEh4i3xUdodaEvMrbbpKbL2yaewRjsqBr3PFb+hd/Dp1KtyaAnXaBCHl09hDURUSrqYpg1cZvwDiQ==
   dependencies:
-    "@mux/mux-video" "0.26.0"
-    "@mux/playback-core" "0.30.0"
+    "@mux/mux-video" "0.26.1"
+    "@mux/playback-core" "0.30.1"
     media-chrome "~4.11.1"
     player.style "^0.1.9"
 
-"@mux/mux-video@0.26.0":
-  version "0.26.0"
-  resolved "https://registry.yarnpkg.com/@mux/mux-video/-/mux-video-0.26.0.tgz#a7464083081a82cc6fc3366db5afab4a9d7ad741"
-  integrity sha512-AwvgJHI3KyQunzOiVAwTT5nPKMIhrh0h5G2kBvunYsi3eegXBGvSIgwEOfpDWnqZ/r6HeyJBN+iPYu6LMyToMw==
+"@mux/mux-video@0.26.1":
+  version "0.26.1"
+  resolved "https://registry.yarnpkg.com/@mux/mux-video/-/mux-video-0.26.1.tgz#fa57c53e9c2ab0bbf7b8a2610f75c0feb71e344f"
+  integrity sha512-gkMdBAgNlB4+krANZHkQFzYWjWeNsJz69y1/hnPtmNQnpvW+O7oc71OffcZrbblyibSxWMQ6MQpYmBVjXlp6sA==
   dependencies:
     "@mux/mux-data-google-ima" "0.2.8"
-    "@mux/playback-core" "0.30.0"
+    "@mux/playback-core" "0.30.1"
     castable-video "~1.1.10"
     custom-media-element "~1.4.5"
     media-tracks "~0.3.3"
 
-"@mux/playback-core@0.30.0":
-  version "0.30.0"
-  resolved "https://registry.yarnpkg.com/@mux/playback-core/-/playback-core-0.30.0.tgz#5eb9dddae43ffb1ec0c0d98cf608dc2e8ba6101e"
-  integrity sha512-f3izFwSl5qzalvxY0Qxtsw7CiPMW7lm2dnikEf+DmLXGN0nai92HFqWU7932qqXMDhJutLEvD3QcrcWOeqRomg==
+"@mux/playback-core@0.30.1":
+  version "0.30.1"
+  resolved "https://registry.yarnpkg.com/@mux/playback-core/-/playback-core-0.30.1.tgz#53cd2c65bdb30053be41dedce85b3bb07f58ff6b"
+  integrity sha512-rnO1NE9xHDyzbAkmE6ygJYcD7cyyMt7xXqWTykxlceaoSXLjUqgp42HDio7Lcidto4x/O4FIa7ztjV2aCBCXgQ==
   dependencies:
-    hls.js "~1.5.19"
+    hls.js "~1.6.6"
     mux-embed "^5.8.3"
 
 "@neoconfetti/react@^1.0.0":
@@ -1962,67 +1962,67 @@
     exenv "^1.2.2"
     prop-types "^15.6.2"
 
-"@sentry-internal/browser-utils@9.38.0":
-  version "9.38.0"
-  resolved "https://registry.yarnpkg.com/@sentry-internal/browser-utils/-/browser-utils-9.38.0.tgz#e5faa6325a3db4ff4872594360ab771ea979d634"
-  integrity sha512-BkTaMPm4pjgoT1qNsLX5e3HjTCwBmsR/OGyKHFpMUnN+HINi9L1nGGbRroOEtfU49vMKi8MlM7HpuzzYV/3D1A==
+"@sentry-internal/browser-utils@9.39.0":
+  version "9.39.0"
+  resolved "https://registry.yarnpkg.com/@sentry-internal/browser-utils/-/browser-utils-9.39.0.tgz#417e281ecd97f11dc80f7841e54b401860489b58"
+  integrity sha512-f1qUAftQ/aMTJHJDCG9jDJIwLEkSVZ6xWGn2xQMj7PfD1uuYlTy3KHn+wPy1VlPJTZQ44WclTPnY2U/OBIPmsg==
   dependencies:
-    "@sentry/core" "9.38.0"
+    "@sentry/core" "9.39.0"
 
-"@sentry-internal/feedback@9.38.0":
-  version "9.38.0"
-  resolved "https://registry.yarnpkg.com/@sentry-internal/feedback/-/feedback-9.38.0.tgz#dc816c819dbacb0ff3dcfe863e9f3bc06a687b93"
-  integrity sha512-vDVufE9WLqHCmUL2sa3nIKz5ARaBdaqCG+b9/hwkmkLnqaQUBiHE+ArxoYuc2toWqaELxSHcMDp2ajkeDBQeLA==
+"@sentry-internal/feedback@9.39.0":
+  version "9.39.0"
+  resolved "https://registry.yarnpkg.com/@sentry-internal/feedback/-/feedback-9.39.0.tgz#a5bd38b5faa327dedae5218cd365fdff46a486ff"
+  integrity sha512-IvD2LDKFderPn6pXN6N8cFJWWIXUADys9WRtfh1CK8DIuU1fXYi61tO23Z+sCsvXReQgr/mdJg5dHa0qY/vDww==
   dependencies:
-    "@sentry/core" "9.38.0"
+    "@sentry/core" "9.39.0"
 
-"@sentry-internal/replay-canvas@9.38.0":
-  version "9.38.0"
-  resolved "https://registry.yarnpkg.com/@sentry-internal/replay-canvas/-/replay-canvas-9.38.0.tgz#1ae9ad3547c0d696d1714878d5bb98c7f832bac9"
-  integrity sha512-87BZDTjszdaSB5p0CTiVav2QgxLMAab/6q1jcIUBzNsrXHZbqcoMaJmd446mCsQkR6wAccM/uAxJlgh9FIqA8w==
+"@sentry-internal/replay-canvas@9.39.0":
+  version "9.39.0"
+  resolved "https://registry.yarnpkg.com/@sentry-internal/replay-canvas/-/replay-canvas-9.39.0.tgz#099680a35ad7d33ff13d59ca5fc4747f0420341f"
+  integrity sha512-rTw0WZuAwzo36/hXRSuftu7e3qtwXc+bSs1q7M+w7Tb98aoOyXs3GlnYmgP6q3t2v/h7zoIiQcfjnPqo6+DVtQ==
   dependencies:
-    "@sentry-internal/replay" "9.38.0"
-    "@sentry/core" "9.38.0"
+    "@sentry-internal/replay" "9.39.0"
+    "@sentry/core" "9.39.0"
 
-"@sentry-internal/replay@9.38.0":
-  version "9.38.0"
-  resolved "https://registry.yarnpkg.com/@sentry-internal/replay/-/replay-9.38.0.tgz#a14470dafc79ead02f75da0b019961e1d3ca2b91"
-  integrity sha512-LLZuQk5Khvco+EYKg2+woiSNMLyR4XZeoAdgvAa+HZriFoAQR6GFNAuu+TlynCDDt2H+w90HcIAV66NWFy8QoQ==
+"@sentry-internal/replay@9.39.0":
+  version "9.39.0"
+  resolved "https://registry.yarnpkg.com/@sentry-internal/replay/-/replay-9.39.0.tgz#9172fc33976d88f2462f6c9aafcf4496840b8b00"
+  integrity sha512-6mweqQtfcVG2+FEPjmgjrpCThgs9bR2cmQM2Ew/SlINj8ETq5P/7Z3rdIp+Zs7LArXFIJUA7KX9ZW+noVPI8Gg==
   dependencies:
-    "@sentry-internal/browser-utils" "9.38.0"
-    "@sentry/core" "9.38.0"
+    "@sentry-internal/browser-utils" "9.39.0"
+    "@sentry/core" "9.39.0"
 
-"@sentry/browser@9.38.0":
-  version "9.38.0"
-  resolved "https://registry.yarnpkg.com/@sentry/browser/-/browser-9.38.0.tgz#b3a5c317afa1d66dcb4cf0ca618ba9835b5469a6"
-  integrity sha512-ZUIeU+3VUD3BntYgB2DkhBD6N9oybsuk1+U7yK1ezHIw/nvkPILcH6MZgPs0Km0RcWWozMUDSbdZNud9/isYmw==
+"@sentry/browser@9.39.0":
+  version "9.39.0"
+  resolved "https://registry.yarnpkg.com/@sentry/browser/-/browser-9.39.0.tgz#d7ed62d5515dba1f4f008d492046256536212106"
+  integrity sha512-RZ4Zp22ohFLwkR3y6pmSWDrPVP7ErX0ClNOh2Kal3TNWlOGb4WPBPaWj2tiOvc4n/l6EDYaFvQ0Hh8RhesB98A==
   dependencies:
-    "@sentry-internal/browser-utils" "9.38.0"
-    "@sentry-internal/feedback" "9.38.0"
-    "@sentry-internal/replay" "9.38.0"
-    "@sentry-internal/replay-canvas" "9.38.0"
-    "@sentry/core" "9.38.0"
+    "@sentry-internal/browser-utils" "9.39.0"
+    "@sentry-internal/feedback" "9.39.0"
+    "@sentry-internal/replay" "9.39.0"
+    "@sentry-internal/replay-canvas" "9.39.0"
+    "@sentry/core" "9.39.0"
 
-"@sentry/core@9.38.0":
-  version "9.38.0"
-  resolved "https://registry.yarnpkg.com/@sentry/core/-/core-9.38.0.tgz#8055bb856b1f0fc799040cbd34d1f6c6b3883ad3"
-  integrity sha512-dUwSv1VXDfsrcY69a/cgZNDsFal6iYOf0C4T+/ylpmgYp5SVe3vQK+2FLXUMuvgnOf+kHO6IeW0RhnhSyUflmA==
+"@sentry/core@9.39.0":
+  version "9.39.0"
+  resolved "https://registry.yarnpkg.com/@sentry/core/-/core-9.39.0.tgz#98ebaeadb4a61840de79fcc06ecd7b5043d2a291"
+  integrity sha512-9Z32C64rUGEI0ROxXXOtpJDaldPYtkzOQyGzToVgq5LefXkdgQInd8BhCt6PIBALfj7n25lLOYllTrHlboFJug==
 
-"@sentry/react@^9.38.0":
-  version "9.38.0"
-  resolved "https://registry.yarnpkg.com/@sentry/react/-/react-9.38.0.tgz#bd417f88330bfa522e5664740a9f22c3d0e380b1"
-  integrity sha512-MGnrzEJdwCEhGnQrFvljCGM+19agsC5ONAExRM+TuCVjeDJ/ifegZ4eEUyaGHt7YyjAUszddSbWbpEBUg2zBvQ==
+"@sentry/react@^9.39.0":
+  version "9.39.0"
+  resolved "https://registry.yarnpkg.com/@sentry/react/-/react-9.39.0.tgz#6e7256ae748a07ee912187f283be795b28b3fe38"
+  integrity sha512-oSc0ReVM9ZCJqDs7IDS//hVg+29SynmnufBUpDKETXiq2+1B6UXcVM2Vq2pIJHD03v1UMalTp2HIb6S3NROUUQ==
   dependencies:
-    "@sentry/browser" "9.38.0"
-    "@sentry/core" "9.38.0"
+    "@sentry/browser" "9.39.0"
+    "@sentry/core" "9.39.0"
     hoist-non-react-statics "^3.3.2"
 
-"@sentry/types@^9.38.0":
-  version "9.38.0"
-  resolved "https://registry.yarnpkg.com/@sentry/types/-/types-9.38.0.tgz#b64f9a7e3fac260614f5fb677466918d59ca7bb8"
-  integrity sha512-Jq9QjllPOmCESZ/RVjAquqHUYcl79Ek2J6R1vGqTc4GoQtiY2tyb24YORZ1B7rNd26k6wF5o8PVq1ycKJG27GA==
+"@sentry/types@^9.39.0":
+  version "9.39.0"
+  resolved "https://registry.yarnpkg.com/@sentry/types/-/types-9.39.0.tgz#8efc38346cf6bb215fefb756be3258537f1bdb41"
+  integrity sha512-fI0hMcgFqz1SVf4eYaDTuiZF99dR8BcoOWhMfhLun0vZ8VSISZgGg0SN55OVUsL+jj7A88Bmv85/MHlpru1Row==
   dependencies:
-    "@sentry/core" "9.38.0"
+    "@sentry/core" "9.39.0"
 
 "@standard-schema/spec@^1.0.0":
   version "1.0.0"
@@ -2110,10 +2110,10 @@
     polished "^4.2.2"
     ts-dedent "^2.2.0"
 
-"@storybook/addon-links@^9.0.16":
-  version "9.0.16"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-links/-/addon-links-9.0.16.tgz#57f75312d247e649736872f2dc09e9e9cc1eed73"
-  integrity sha512-8jiFKeW7gTGZ/WhBnB38dTVFDapyiyLMCvktIcrsVrJTBbj/bC1+ts7OoeuJCs7/EN+2zn9vf+V17ZqI0I2sIA==
+"@storybook/addon-links@^9.0.17":
+  version "9.0.17"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-links/-/addon-links-9.0.17.tgz#f401b8782221ddd1a72baa2ec1edf6abbe964fed"
+  integrity sha512-c4hYojq0O6n5fD8MS+Ss1njR3qs88LLlO3LLaRD4bxsIgn8WFNjgG5677M7m8WjzTgWSxFWN0KAra2kaDZ8Jlg==
   dependencies:
     "@storybook/global" "^5.0.0"
 
@@ -2125,10 +2125,10 @@
     "@storybook/global" "^5.0.0"
     tiny-invariant "^1.3.1"
 
-"@storybook/addon-onboarding@^9.0.16":
-  version "9.0.16"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-onboarding/-/addon-onboarding-9.0.16.tgz#d1551e2484e5b1250bef3223aa426138fc718fb6"
-  integrity sha512-69BPJ9fGNGpDAcGvNJ58V5uQOmpHkQMLcgp/ON3NepoCHiSReUzojB6wV8Ag13PUZmvWXVnE14SWKBZp93xTFQ==
+"@storybook/addon-onboarding@^9.0.17":
+  version "9.0.17"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-onboarding/-/addon-onboarding-9.0.17.tgz#97c8dc4249f30a1afed2a1a05b4d9c3dde10f59c"
+  integrity sha512-WoZZ8d58gP6uBu6OJ2K1GjBSM4+Kcr0I9lo0z3convzYqxrhfUm9pNEwVm57KCbVVyBbIKmevddCsSFoPC5u6Q==
 
 "@storybook/addon-outline@8.6.14":
   version "8.6.14"
@@ -2166,12 +2166,12 @@
     "@storybook/icons" "^1.2.12"
     ts-dedent "^2.0.0"
 
-"@storybook/builder-webpack5@9.0.16":
-  version "9.0.16"
-  resolved "https://registry.yarnpkg.com/@storybook/builder-webpack5/-/builder-webpack5-9.0.16.tgz#823e97408f49c7dd0353866363f41dbed3410f79"
-  integrity sha512-Hb45cgUr6aYK24HBt42EGApbJVosunt7x6DTjawHD2BAqpfSxo6urLnKFIhx8H+af88XN37MTbp5bNozvw4WPA==
+"@storybook/builder-webpack5@9.0.17":
+  version "9.0.17"
+  resolved "https://registry.yarnpkg.com/@storybook/builder-webpack5/-/builder-webpack5-9.0.17.tgz#4f9f3080adff4c461085c6a4536156e087819c23"
+  integrity sha512-LiP/nq3qv+Nowxeo4v/p/Rv7FkZS347iBnjTQJxXWpFXrCjfJujzcYizQ1WXKC5jXnLSl4hqLmaB0tzMc/zFiQ==
   dependencies:
-    "@storybook/core-webpack" "9.0.16"
+    "@storybook/core-webpack" "9.0.17"
     case-sensitive-paths-webpack-plugin "^2.4.0"
     cjs-module-lexer "^1.2.3"
     css-loader "^6.7.1"
@@ -2187,10 +2187,10 @@
     webpack-hot-middleware "^2.25.1"
     webpack-virtual-modules "^0.6.0"
 
-"@storybook/core-webpack@9.0.16":
-  version "9.0.16"
-  resolved "https://registry.yarnpkg.com/@storybook/core-webpack/-/core-webpack-9.0.16.tgz#27130b6879643e918731a8f6b98331d4f2442587"
-  integrity sha512-U1SiqRywp6pu0DNy1uSH6b6B4aw7clYvICf+HNRzULYfS6V7ZHD2VaBmcf1xgx0aqVEPUGv6f46oZr2pzmcjGw==
+"@storybook/core-webpack@9.0.17":
+  version "9.0.17"
+  resolved "https://registry.yarnpkg.com/@storybook/core-webpack/-/core-webpack-9.0.17.tgz#f463a13459cab0ca21e129d1f3c826e47a82373a"
+  integrity sha512-NyPSqYUZiD3ICHq/07IC06cDI5mwLA7cqmekWbD9BfSriI9RES88aQ7/WzliHLWwqQXj5Van3tt4IUfaU4Q3ng==
   dependencies:
     ts-dedent "^2.0.0"
 
@@ -2219,12 +2219,12 @@
     "@storybook/global" "^5.0.0"
     "@vitest/utils" "^2.1.1"
 
-"@storybook/preset-react-webpack@9.0.16":
-  version "9.0.16"
-  resolved "https://registry.yarnpkg.com/@storybook/preset-react-webpack/-/preset-react-webpack-9.0.16.tgz#9b91626f1b7f4122c3d05e94640c5f7bcb7b67d5"
-  integrity sha512-esAGMKxeXfbW2O86u9foSOGegGQz78335u9RiCKaHXz6gl/xsoE60q3EEQhYxftO630YRfIXbZY7+N9rvbs78w==
+"@storybook/preset-react-webpack@9.0.17":
+  version "9.0.17"
+  resolved "https://registry.yarnpkg.com/@storybook/preset-react-webpack/-/preset-react-webpack-9.0.17.tgz#aa42c3ced575bd8c0916703c841b2875f4b2399f"
+  integrity sha512-7PnsgK1T8qqR5TwzGN7lYcnpIUgp7B716V6hYClAhn8rVMHHvK0HD4Inu5vyCCTZUHimr6XAxGmeyGSzuwA1WA==
   dependencies:
-    "@storybook/core-webpack" "9.0.16"
+    "@storybook/core-webpack" "9.0.17"
     "@storybook/react-docgen-typescript-plugin" "1.0.6--canary.9.0c3f3b7.0"
     "@types/semver" "^7.3.4"
     find-up "^7.0.0"
@@ -2258,27 +2258,27 @@
   resolved "https://registry.yarnpkg.com/@storybook/react-dom-shim/-/react-dom-shim-8.6.14.tgz#02fc8aeab701040744d93b6ef46b9e5727123370"
   integrity sha512-0hixr3dOy3f3M+HBofp3jtMQMS+sqzjKNgl7Arfuj3fvjmyXOks/yGjDImySR4imPtEllvPZfhiQNlejheaInw==
 
-"@storybook/react-dom-shim@9.0.16":
-  version "9.0.16"
-  resolved "https://registry.yarnpkg.com/@storybook/react-dom-shim/-/react-dom-shim-9.0.16.tgz#246b074f468ae8e164a4161fa6cc3caca5e7f66d"
-  integrity sha512-5aIK+31R41mRUvDB4vmBv8hwh3IVHIk/Zbs6kkWF2a+swOsB2+a06aLX21lma4/0T/AuFVXHWat0+inQ4nrXRg==
+"@storybook/react-dom-shim@9.0.17":
+  version "9.0.17"
+  resolved "https://registry.yarnpkg.com/@storybook/react-dom-shim/-/react-dom-shim-9.0.17.tgz#fe0e6431ff6002269b18e9bb32cbe3fc01b13b10"
+  integrity sha512-ak/x/m6MDDxdE6rCDymTltaiQF3oiKrPHSwfM+YPgQR6MVmzTTs4+qaPfeev7FZEHq23IkfDMTmSTTJtX7Vs9A==
 
-"@storybook/react-webpack5@^9.0.16":
-  version "9.0.16"
-  resolved "https://registry.yarnpkg.com/@storybook/react-webpack5/-/react-webpack5-9.0.16.tgz#b2f96f789c1803b9ced9059f50168331f41eaf18"
-  integrity sha512-0m2JKE+ZiEquC6CBwVnsgzOFlkRNNRKnBUJg/K38QSeK62l3zD8Dy7j19LQzUUyMCnYdKYql67kKn8tDOeekOw==
+"@storybook/react-webpack5@^9.0.17":
+  version "9.0.17"
+  resolved "https://registry.yarnpkg.com/@storybook/react-webpack5/-/react-webpack5-9.0.17.tgz#10819a5eceb9ae432c10a94a5e1a4d9b70e0ff80"
+  integrity sha512-hRDaUvQnB517jhB2FvNrhdhP2mF4up+CNYP8RnYI9zPEHXkaM9qpUxkoZF4NouS4RAZxsJXJI7fT+nNc/niE1A==
   dependencies:
-    "@storybook/builder-webpack5" "9.0.16"
-    "@storybook/preset-react-webpack" "9.0.16"
-    "@storybook/react" "9.0.16"
+    "@storybook/builder-webpack5" "9.0.17"
+    "@storybook/preset-react-webpack" "9.0.17"
+    "@storybook/react" "9.0.17"
 
-"@storybook/react@9.0.16", "@storybook/react@^9.0.16":
-  version "9.0.16"
-  resolved "https://registry.yarnpkg.com/@storybook/react/-/react-9.0.16.tgz#7030f0c1af3f807c7fc117fe8a4f979842d049da"
-  integrity sha512-1jk9fBe8vEoZrba9cK19ZDdZgYMXUNl3Egjj5RsTMYMc1L2mtIu9o56VyK/1V4Q52N9IyawHvmIIuxc5pCZHkQ==
+"@storybook/react@9.0.17", "@storybook/react@^9.0.17":
+  version "9.0.17"
+  resolved "https://registry.yarnpkg.com/@storybook/react/-/react-9.0.17.tgz#a5be821f010394c76e09989381eba407cdb0d520"
+  integrity sha512-wssao+uXg72OHtEJdQmmQJGdX90x/aU/6avoP3fgVgepWdZXVgciS9mnqHjKRF/vP+vPOlNQcJjojF/zTtq5qg==
   dependencies:
     "@storybook/global" "^5.0.0"
-    "@storybook/react-dom-shim" "9.0.16"
+    "@storybook/react-dom-shim" "9.0.17"
 
 "@storybook/test@8.6.14", "@storybook/test@^8.6.14":
   version "8.6.14"
@@ -4682,10 +4682,10 @@ chrome-trace-event@^1.0.2:
   resolved "https://registry.yarnpkg.com/chrome-trace-event/-/chrome-trace-event-1.0.3.tgz#1015eced4741e15d06664a957dbbf50d041e26ac"
   integrity sha512-p3KULyQg4S7NIHixdwbGX+nFHkoBiA4YQmyWtjb8XngSKV124nJmRysgAeujbUVb15vh+RvFUfCPqU7rXk+hZg==
 
-chromium-bidi@5.1.0:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/chromium-bidi/-/chromium-bidi-5.1.0.tgz#8d0e47f7ac9270262df29792318dd5378e983e62"
-  integrity sha512-9MSRhWRVoRPDG0TgzkHrshFSJJNZzfY5UFqUMuksg7zL1yoZIZ3jLB0YAgHclbiAxPI86pBnwDX1tbzoiV8aFw==
+chromium-bidi@7.1.0:
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/chromium-bidi/-/chromium-bidi-7.1.0.tgz#0e562c804e7fe5b8d69cecd46c3b22cab053b400"
+  integrity sha512-UVYuuZfwi7AIiV+OWIRePZD6kX1bSNxoWjEsYG+Xkb97hzQIt9qnV662I5A6BAcdKO4bcZQVrkK/VhNHzFjNDg==
   dependencies:
     mitt "^3.0.1"
     zod "^3.24.1"
@@ -4732,10 +4732,10 @@ clone-deep@^4.0.1:
     kind-of "^6.0.2"
     shallow-clone "^3.0.0"
 
-cloudflare-video-element@^1.3.2:
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/cloudflare-video-element/-/cloudflare-video-element-1.3.2.tgz#d7f7084ff49f83521f9da438cc03104f99445b2a"
-  integrity sha512-6M55oHTqDKVIu7sUhuvJnjTfZDEfyNEhBi5gP9dcUK3m2ECWm4J6xLEbwWaaRhgbfQ3cR5zIazEYXuFwoxUp0w==
+cloudflare-video-element@^1.3.3:
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/cloudflare-video-element/-/cloudflare-video-element-1.3.3.tgz#37a89a602cfc9dd00914e9e140c8d79ff5d7bf8a"
+  integrity sha512-qrHzwLmUhisoIuEoKc7iBbdzBNj2Pi7ThHslU/9U/6PY9DEvo4mh/U+w7OVuzXT9ks7ZXfARvDBfPAaMGF/hIg==
 
 clsx@^1.1.1:
   version "1.2.1"
@@ -5120,10 +5120,10 @@ d3-timer@^3.0.1:
   resolved "https://registry.yarnpkg.com/d3-timer/-/d3-timer-3.0.1.tgz#6284d2a2708285b1abb7e201eda4380af35e63b0"
   integrity sha512-ndfJ/JxxMd3nw31uyKoY2naivF+r29V+Lc0svZxe1JvvIRmi8hUsrMvdOwgS1o6uBHmiz91geQ0ylPP0aj1VUA==
 
-dash-video-element@^0.1.5:
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/dash-video-element/-/dash-video-element-0.1.5.tgz#b1f88fc5195cf1e90a4af4d8fa043ac4ac926d51"
-  integrity sha512-sPXsm1evfjLPXLTpE5a1a/9swmQP+kHUDu4HfPN4qXPHIKh8OJ6Vfr3kbidbLEke3MpS4c02iVBBpo4oiejWjw==
+dash-video-element@^0.1.6:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/dash-video-element/-/dash-video-element-0.1.6.tgz#d7708c79681efc28342f61fe7188c6d2a3a5aa86"
+  integrity sha512-4gHShaQjcFv6diX5EzB6qAdUGKlIUGGZY8J8yp2pQkWqR0jX4c6plYy0cFraN7mr0DZINe8ujDN1fssDYxJjcg==
   dependencies:
     custom-media-element "^1.4.5"
     dashjs "^5.0.3"
@@ -5921,10 +5921,10 @@ eslint-plugin-react@^7.37.5:
     string.prototype.matchall "^4.0.12"
     string.prototype.repeat "^1.0.0"
 
-eslint-plugin-storybook@^9.0.16:
-  version "9.0.16"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-storybook/-/eslint-plugin-storybook-9.0.16.tgz#e46d2d85960b1ff9d3a2d6b420fde1aec505a6d5"
-  integrity sha512-A9kJaYBGYswo11t9coo1rpY5i8qPJx9JX5/6YWK3L3zT9lCxJWkYFAed/1Jt92yk7EkOzLrwrIIjMj/+7erlgw==
+eslint-plugin-storybook@^9.0.17:
+  version "9.0.17"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-storybook/-/eslint-plugin-storybook-9.0.17.tgz#4a7d6d51882d52a5f946e74cf910a425ead4a7de"
+  integrity sha512-IuTdlwCEwoDNobdygRCxNhlKXHmsDfPtPvHGcsY35x2Bx8KItrjfekO19gJrjc1VT2CMfcZMYF8OBKaxHELupw==
   dependencies:
     "@typescript-eslint/utils" "^8.8.1"
 
@@ -6774,10 +6774,10 @@ highlightjs-vue@^1.0.0:
   resolved "https://registry.yarnpkg.com/highlightjs-vue/-/highlightjs-vue-1.0.0.tgz#fdfe97fbea6354e70ee44e3a955875e114db086d"
   integrity sha512-PDEfEF102G23vHmPhLyPboFCD+BkMGu+GuJe2d9/eH4FsCwvgBpnc9n0pGE+ffKdph38s6foEZiEjdgHdzp+IA==
 
-hls-video-element@^1.5.5:
-  version "1.5.5"
-  resolved "https://registry.yarnpkg.com/hls-video-element/-/hls-video-element-1.5.5.tgz#f375c371fcb87d5b70cd47cf53c3ae3f34049b3e"
-  integrity sha512-7HYIf+jeeCtazcBVVmj16qfTDRKvxd92TMdscocNWPoAePmovPPnii1aBdRsinsiw4rt90B8FgYoHzMhLi1qYQ==
+hls-video-element@^1.5.6:
+  version "1.5.6"
+  resolved "https://registry.yarnpkg.com/hls-video-element/-/hls-video-element-1.5.6.tgz#cbaf43a2869d0d6fc842ddc511cbf039a2ac2568"
+  integrity sha512-KPdvSR+oBJPiCVb+m6pd2mn3rJEjNbaK8pGhSkxFI2pmyvZIeTVQrPbEO9PT/juwXHwhvCoKJnNxAuFwJG9H5A==
   dependencies:
     custom-media-element "^1.4.5"
     hls.js "^1.6.5"
@@ -6788,10 +6788,10 @@ hls.js@^1.6.5:
   resolved "https://registry.yarnpkg.com/hls.js/-/hls.js-1.6.5.tgz#0912177e0663836c0f9469739c8deb3d8e598778"
   integrity sha512-KMn5n7JBK+olC342740hDPHnGWfE8FiHtGMOdJPfUjRdARTWj9OB+8c13fnsf9sk1VtpuU2fKSgUjHvg4rNbzQ==
 
-hls.js@~1.5.19:
-  version "1.5.20"
-  resolved "https://registry.yarnpkg.com/hls.js/-/hls.js-1.5.20.tgz#7eb23bb5e2595311d4e2761038ca6882673de7e2"
-  integrity sha512-uu0VXUK52JhihhnN/MVVo1lvqNNuhoxkonqgO3IpjvQiGpJBdIXMGkofjQb/j9zvV7a1SW8U9g1FslWx/1HOiQ==
+hls.js@~1.6.6:
+  version "1.6.7"
+  resolved "https://registry.yarnpkg.com/hls.js/-/hls.js-1.6.7.tgz#1b45ed55dfc92e06edc15b98e6374bd13f78af65"
+  integrity sha512-QW2fnwDGKGc9DwQUGLbmMOz8G48UZK7PVNJPcOUql1b8jubKx4/eMHNP5mGqr6tYlJNDG1g10Lx2U/qPzL6zwQ==
 
 hoist-non-react-statics@^3.3.1, hoist-non-react-statics@^3.3.2:
   version "3.3.2"
@@ -8839,28 +8839,28 @@ punycode@^2.1.0:
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.3.1.tgz#027422e2faec0b25e1549c3e1bd8309b9133b6e5"
   integrity sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==
 
-puppeteer-core@24.12.1:
-  version "24.12.1"
-  resolved "https://registry.yarnpkg.com/puppeteer-core/-/puppeteer-core-24.12.1.tgz#66338926570ae904ce8ea0acb68b1bda361f5884"
-  integrity sha512-8odp6d3ERKBa3BAVaYWXn95UxQv3sxvP1reD+xZamaX6ed8nCykhwlOiHSaHR9t/MtmIB+rJmNencI6Zy4Gxvg==
+puppeteer-core@24.13.0:
+  version "24.13.0"
+  resolved "https://registry.yarnpkg.com/puppeteer-core/-/puppeteer-core-24.13.0.tgz#4b4524486fb788e35c3a4d09174527612a26c5b6"
+  integrity sha512-2Mr1zFCMfAJpKN5mRGqDAmwVEtS6qsalLnUZJn1uJxMdbZLMiqNuMf12gDmZGizg0CjvcfXxoaJhEZB8W0DXlw==
   dependencies:
     "@puppeteer/browsers" "2.10.5"
-    chromium-bidi "5.1.0"
+    chromium-bidi "7.1.0"
     debug "^4.4.1"
     devtools-protocol "0.0.1464554"
     typed-query-selector "^2.12.0"
     ws "^8.18.3"
 
-puppeteer@^24.12.1:
-  version "24.12.1"
-  resolved "https://registry.yarnpkg.com/puppeteer/-/puppeteer-24.12.1.tgz#04f23bc65d592277fef5a306c671f464e8ec9042"
-  integrity sha512-+vvwl+Xo4z5uXLLHG+XW8uXnUXQ62oY6KU6bEFZJvHWLutbmv5dw9A/jcMQ0fqpQdLydHmK0Uy7/9Ilj8ufwSQ==
+puppeteer@^24.13.0:
+  version "24.13.0"
+  resolved "https://registry.yarnpkg.com/puppeteer/-/puppeteer-24.13.0.tgz#ce6e0fcfcc3d3b28ebe408ad898159fa4107a005"
+  integrity sha512-3dpT7LIdlRBJBGKb7SjJeno/C3cl0bBpgwie+cxvf8PKmK502QdRU9TT/hvfchyFG7BzJKBHPxK5Boholx7zow==
   dependencies:
     "@puppeteer/browsers" "2.10.5"
-    chromium-bidi "5.1.0"
+    chromium-bidi "7.1.0"
     cosmiconfig "^9.0.0"
     devtools-protocol "0.0.1464554"
-    puppeteer-core "24.12.1"
+    puppeteer-core "24.13.0"
     typed-query-selector "^2.12.0"
 
 qs@6.13.0:
@@ -9070,21 +9070,21 @@ react-leaflet@^5.0.0:
   dependencies:
     "@react-leaflet/core" "^3.0.0"
 
-react-player@^3.2.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/react-player/-/react-player-3.2.0.tgz#05f9ddeb0a33647006748e1796176c6309033f3c"
-  integrity sha512-ZbrtiNSJPpJyHQxHGDAgJBL+USU0mauHnRrMJqbKO7vTUQYUfiNcBxeAgkIHWTsjQCrhN3PqyK8HYPpbN2tbdA==
+react-player@^3.2.1:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/react-player/-/react-player-3.2.1.tgz#b02db50455798215bdca8a076d79860cda479651"
+  integrity sha512-M48FXqaYLW1foYy99+TZuBF2NPaicfcH3Juj0usE28QBUkLGaG5pqoKe9b1SwJgz918vB9OC/p25QhmzdFAOuA==
   dependencies:
-    "@mux/mux-player-react" "^3.5.0"
-    cloudflare-video-element "^1.3.2"
-    dash-video-element "^0.1.5"
+    "@mux/mux-player-react" "^3.5.1"
+    cloudflare-video-element "^1.3.3"
+    dash-video-element "^0.1.6"
     deepmerge "^4.0.0"
-    hls-video-element "^1.5.5"
-    spotify-audio-element "^1.0.1"
-    twitch-video-element "^0.1.0"
-    vimeo-video-element "^1.5.1"
-    wistia-video-element "^1.3.2"
-    youtube-video-element "^1.6.0"
+    hls-video-element "^1.5.6"
+    spotify-audio-element "^1.0.2"
+    twitch-video-element "^0.1.1"
+    vimeo-video-element "^1.5.2"
+    wistia-video-element "^1.3.3"
+    youtube-video-element "^1.6.1"
 
 react-popper@^2.3.0:
   version "2.3.0"
@@ -9996,10 +9996,10 @@ spdy@^4.0.2:
     select-hose "^2.0.0"
     spdy-transport "^3.0.0"
 
-spotify-audio-element@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/spotify-audio-element/-/spotify-audio-element-1.0.1.tgz#756e74ec58e5e6059dd8eb4333a5f679909efdb0"
-  integrity sha512-Uc30QxulPAoWxkMSVeMGcHmEij9KXedzbsliwlhNWnZP2Fgkz1Ifl2laj0poAXiqUDdJTWapfUI9IkGkhwgTEg==
+spotify-audio-element@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/spotify-audio-element/-/spotify-audio-element-1.0.2.tgz#e33bc2afa4442764dd0515bd76576a23906ab45a"
+  integrity sha512-YEovyyeJTJMzdSVqFw/Fx19e1gdcD4bmZZ/fWS0Ji58KTpvAT2rophgK87ocqpy6eJNSmIHikhgbRjGWumgZew==
 
 sprintf-js@^1.1.3:
   version "1.1.3"
@@ -10042,10 +10042,10 @@ storybook-addon-remix-react-router@^5.0.0:
     compare-versions "^6.0.0"
     react-inspector "6.0.2"
 
-storybook@^9.0.16:
-  version "9.0.16"
-  resolved "https://registry.yarnpkg.com/storybook/-/storybook-9.0.16.tgz#6e0a229a282166ea4a5f8113d4668928d22cbe6c"
-  integrity sha512-DzjzeggdzlXKKBK1L9iqNKqqNpyfeaL1hxxeAOmqgeMezwy5d5mCJmjNcZEmx+prsRmvj1OWm4ZZAg6iP/wABg==
+storybook@^9.0.17:
+  version "9.0.17"
+  resolved "https://registry.yarnpkg.com/storybook/-/storybook-9.0.17.tgz#d17628db97314a441d0e4ad5c5f71956d0436a90"
+  integrity sha512-O+9jgJ+Trlq9VGD1uY4OBLKQWHHDKM/A/pA8vMW6PVehhGHNvpzcIC1bngr6mL5gGHZP2nBv+9XG8pTMcggMmg==
   dependencies:
     "@storybook/global" "^5.0.0"
     "@testing-library/jest-dom" "^6.6.3"
@@ -10558,10 +10558,10 @@ tslib@^2.7.0:
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.8.1.tgz#612efe4ed235d567e8aba5f2a5fab70280ade83f"
   integrity sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==
 
-twitch-video-element@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/twitch-video-element/-/twitch-video-element-0.1.0.tgz#862455a49bf4e7df756b01a6981ca5371c251ea6"
-  integrity sha512-9aV0OD9/QtMqV554RkjOHxg/WzMjDwxtp1l+M0OXIaQiLOrrL16FYqyng6g0dm9NY3Sx35ybdGTmDC/NvC3Xkw==
+twitch-video-element@^0.1.1:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/twitch-video-element/-/twitch-video-element-0.1.2.tgz#3a29fc9227c24e8cdd615c836accb269e3c10a61"
+  integrity sha512-/up4KiWiTYiav+CUo+/DbV8JhP4COwEKSo8h1H/Zft/5NzZ/ZiIQ48h7erFKvwzalN0GfkEGGIfwIzAO0h7FHQ==
 
 type-check@^0.4.0, type-check@~0.4.0:
   version "0.4.0"
@@ -10902,10 +10902,10 @@ victory-vendor@^37.0.2:
     d3-time "^3.0.0"
     d3-timer "^3.0.1"
 
-vimeo-video-element@^1.5.1:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/vimeo-video-element/-/vimeo-video-element-1.5.1.tgz#20c81db60aae96e344417f076dfcbe92f8c7350e"
-  integrity sha512-KV1PCBYqnwsA364/Lr6UhKhQAAwhyxtv9AhS1Yex43u1Yk9roClYRcvfKldo/K66lMHWMKs4G0GcaItOjvqQmw==
+vimeo-video-element@^1.5.2:
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/vimeo-video-element/-/vimeo-video-element-1.5.2.tgz#938e3fb42870b774f88d027a3753ad57801e773c"
+  integrity sha512-ws/CN1vJdvgmBHkudn8k4uBYx7nYEBUxml86X6TVMvFFHoXn41sPCVIKq0osN3/7bNygn+fjMxraqK1+Z8T90w==
   dependencies:
     "@vimeo/player" "2.29.0"
 
@@ -11112,10 +11112,10 @@ webpack@5:
     watchpack "^2.4.1"
     webpack-sources "^3.2.3"
 
-webpack@^5.100.1:
-  version "5.100.1"
-  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.100.1.tgz#d8a7e7761d253b961248ed9ed7661c51698593de"
-  integrity sha512-YJB/ESPUe2Locd0NKXmw72Dx8fZQk1gTzI6rc9TAT4+Sypbnhl8jd8RywB1bDsDF9Dy1RUR7gn3q/ZJTd0OZZg==
+webpack@^5.100.2:
+  version "5.100.2"
+  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.100.2.tgz#e2341facf9f7de1d702147c91bcb65b693adf9e8"
+  integrity sha512-QaNKAvGCDRh3wW1dsDjeMdDXwZm2vqq3zn6Pvq4rHOEOGSaUMgOOjG2Y9ZbIGzpfkJk9ZYTHpDqgDfeBDcnLaw==
   dependencies:
     "@types/eslint-scope" "^3.7.7"
     "@types/estree" "^1.0.8"
@@ -11256,10 +11256,10 @@ wildcard@^2.0.1:
   resolved "https://registry.yarnpkg.com/wildcard/-/wildcard-2.0.1.tgz#5ab10d02487198954836b6349f74fff961e10f67"
   integrity sha512-CC1bOL87PIWSBhDcTrdeLo6eGT7mCFtrg0uIJtqJUFyK+eJnzl8A1niH56uu7KMa5XFrtiV+AQuHO3n7DsHnLQ==
 
-wistia-video-element@^1.3.2:
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/wistia-video-element/-/wistia-video-element-1.3.2.tgz#0d79ca69145272bf3b5e9afaff1b7f69199c6585"
-  integrity sha512-7aSvKXAxBQErewJaDCoZGPOQaFGLljtMMo88eT1ZGRu6TQBwNSqBSIF/Q3x7hBtYWI6ZgqVTKbCACIZn4tAiOQ==
+wistia-video-element@^1.3.3:
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/wistia-video-element/-/wistia-video-element-1.3.3.tgz#5e4effe82305c1e9e203f464541353fcc4eb1b82"
+  integrity sha512-ZVC8HH8uV3mQGcSz10MACLDalao/0YdVverNN4GNFsOXiumfqSiZnRVc8WZEywgVckBkR7+yerQYESYPDzvTfQ==
   dependencies:
     super-media-element "~1.4.2"
 
@@ -11370,10 +11370,10 @@ yocto-queue@^1.0.0:
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-1.2.1.tgz#36d7c4739f775b3cbc28e6136e21aa057adec418"
   integrity sha512-AyeEbWOu/TAXdxlV9wmGcR0+yh2j3vYPGOECcIj2S7MkrLyC7ne+oye2BKTItt0ii2PHk4cDy+95+LshzbXnGg==
 
-youtube-video-element@^1.6.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/youtube-video-element/-/youtube-video-element-1.6.0.tgz#8c78d812f48632d5f41408ed0d390b18a789daf2"
-  integrity sha512-yu6aMaSyyp8ygqNNnf01xjJdy7AaWwEhLlJ/XRdFteLP/djM7i7JOrK0INgjvBnv88dAtiW9PKZ0OQQzGFeydw==
+youtube-video-element@^1.6.1:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/youtube-video-element/-/youtube-video-element-1.6.1.tgz#b0fc560f443744ae5a234fbcbebaf21c5253b789"
+  integrity sha512-FDRgXlPxpe1bh6HlhL6GfJVcvVNaZKCcLEZ90X1G3Iu+z2g2cIhm2OWj9abPZq1Zqit6SY7Gwh13H9g7acoBnQ==
 
 zenscroll@^4.0.2:
   version "4.0.2"

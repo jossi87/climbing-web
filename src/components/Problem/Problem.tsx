@@ -781,7 +781,7 @@ export const Problem = () => {
               )}
               <Label basic>
                 Page views:
-                <Label.Detail>{data.hits}</Label.Detail>
+                <Label.Detail>{data.pageViews}</Label.Detail>
               </Label>
             </Table.Cell>
           </Table.Row>
