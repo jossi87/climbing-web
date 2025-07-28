@@ -4,6 +4,8 @@
 
 name: validate-pull-requests
 run-name: "Simple validation of pull requests"
+permissions:
+  contents: read
 on:
   pull_request:
     branches:
