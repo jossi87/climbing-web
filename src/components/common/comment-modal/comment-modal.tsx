@@ -99,7 +99,7 @@ const CommentModal = ({
             <Message error size="small">
               <Icon name="warning" />A loose hanger should not be flagged as
               dangerous. All climbers should carry a 17mm spanner (wrench), and
-              if you don't have it just tight the nut by hand. Be specific, is
+              if you don%apos;t have it just tight the nut by hand. Be specific, is
               the bolt spinning freely in the rock? Are there loose rocks/flakes
               that you were not able to safely remove by hand? What kind of
               tools are needed?
