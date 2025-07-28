@@ -1,6 +1,14 @@
 import React, { useState } from "react";
+import { useMeta } from "../../common/meta";
 import { postComment, useAccessToken } from "./../../../api";
-import { Button, Modal, Form, TextArea } from "semantic-ui-react";
+import {
+  Button,
+  Modal,
+  Form,
+  TextArea,
+  Message,
+  Icon,
+} from "semantic-ui-react";
 import ImageUpload from "../image-upload/image-upload";
 
 const CommentModal = ({
@@ -20,6 +28,7 @@ const CommentModal = ({
     resolved: boolean;
   };
 }) => {
+  const meta = useMeta();
   const accessToken = useAccessToken();
   const [message, setMessage] = useState(comment?.message ?? "");
   const [danger, setDanger] = useState(comment?.danger);
@@ -86,6 +95,16 @@ const CommentModal = ({
               </Form.Field>
             )}
           </Form>
+          {danger && meta.isClimbing && (
+            <Message error size="small">
+              <Icon name="warning" />A loose hanger should not be flagged as
+              dangerous. All climbers should carry a 17mm spanner (wrench), and
+              if you don't have it just tight the nut by hand. Be specific, is
+              the bolt spinning freely in the rock? Are there loose rocks/flakes
+              that you were not able to safely remove by hand? What kind of
+              tools are needed?
+            </Message>
+          )}
         </Modal.Description>
       </Modal.Content>
       <Modal.Actions>
