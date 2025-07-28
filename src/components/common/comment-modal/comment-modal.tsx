@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useMeta } from "../../common/meta";
 import { postComment, useAccessToken } from "./../../../api";
 import {
   Button,
@@ -28,7 +27,6 @@ const CommentModal = ({
     resolved: boolean;
   };
 }) => {
-  const meta = useMeta();
   const accessToken = useAccessToken();
   const [message, setMessage] = useState(comment?.message ?? "");
   const [danger, setDanger] = useState(comment?.danger);
@@ -95,7 +93,7 @@ const CommentModal = ({
               </Form.Field>
             )}
           </Form>
-          {danger && meta.isClimbing && (
+          {danger && (
             <Message error size="small">
               <Icon name="warning" />A loose hanger should not be flagged as
               dangerous. All climbers should carry a 17mm spanner (wrench), and
