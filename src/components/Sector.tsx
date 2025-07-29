@@ -15,6 +15,7 @@ import {
   LockSymbol,
   Loading,
   ConditionLabels,
+  ExternalLinkLabels,
 } from "./common/widgets/widgets";
 import {
   Icon,
@@ -606,6 +607,7 @@ const Sector = () => {
                   Sector
                 </Label>
               )}
+              <ExternalLinkLabels externalLinks={data.externalLinks} />
             </Table.Cell>
           </Table.Row>
         </Table.Body>

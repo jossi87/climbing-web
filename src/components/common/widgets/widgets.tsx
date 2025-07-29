@@ -393,3 +393,26 @@ export function ConditionLabels({
     </>
   );
 }
+
+export function ExternalLinkLabels({
+  externalLinks,
+}: {
+  externalLinks: components["schemas"]["ExternalLink"][];
+}) {
+  if (externalLinks?.length === 0) {
+    return;
+  }
+  return externalLinks.map((l) => (
+    <Label
+      color="blue"
+      key={l.id}
+      href={l.url}
+      rel="noopener"
+      target="_blank"
+      size="small"
+    >
+      <Icon name="linkify" />
+      {l.title}
+    </Label>
+  ));
+}

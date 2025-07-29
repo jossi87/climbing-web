@@ -22,6 +22,7 @@ import {
   Loading,
   LockSymbol,
   ConditionLabels,
+  ExternalLinkLabels,
 } from "../common/widgets/widgets";
 import { useMeta } from "../common/meta";
 import { useProblem } from "../../api";
@@ -783,6 +784,7 @@ export const Problem = () => {
                 Page views:
                 <Label.Detail>{data.pageViews}</Label.Detail>
               </Label>
+              <ExternalLinkLabels externalLinks={data.externalLinks} />
             </Table.Cell>
           </Table.Row>
           {data.sections && (

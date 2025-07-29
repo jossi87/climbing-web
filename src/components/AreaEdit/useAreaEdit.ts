@@ -13,8 +13,11 @@ import { components } from "../../@types/buldreinfo/swagger";
 import { neverGuard } from "../../utils/neverGuard";
 import { Checkbox, Input } from "semantic-ui-react";
 import { UseMutateAsyncFunction } from "@tanstack/react-query";
+import ExternalLinks from "../common/external-links/external-links";
 
 type NewMedia = components["schemas"]["NewMedia"] & { file?: File };
+
+type ExternalLink = components["schemas"]["ExternalLink"];
 
 type State =
   | undefined
@@ -36,6 +39,7 @@ type State =
         | "sectorOrder"
         | "sectors"
         | "trash"
+        | "externalLinks"
       >
     > & {
       newMedia: NewMedia[];
@@ -66,7 +70,8 @@ type Update =
   | { action: "set-coord"; key: "latitude" | "longitude"; value: string }
   | { action: "set-lat-lng"; lat: number; lng: number }
   | { action: "set-sort"; sectorId: number; sorting: number }
-  | { action: "set-media"; newMedia: NewMedia[] };
+  | { action: "set-media"; newMedia: NewMedia[] }
+  | { action: "set-external-links"; externalLinks: ExternalLink[] };
 
 const getCoord = (value: string | number) => {
   const str = String(value).replace(",", ".");
@@ -93,6 +98,7 @@ const DEFAULT_STATE: NonNullable<State> = {
   sectors: [],
   trash: false,
   newMedia: [],
+  externalLinks: [],
 };
 
 const reducer = (state: State, update: Update): State => {
@@ -153,6 +159,9 @@ const reducer = (state: State, update: Update): State => {
     case "set-media": {
       return { ...state, newMedia: update.newMedia };
     }
+    case "set-external-links": {
+      return { ...state, externalLinks: update.externalLinks };
+    }
     default: {
       return neverGuard(action, state);
     }
@@ -186,6 +195,9 @@ type UseAreaEdit = (_: { areaId: number }) => {
     key: "trash" | "forDevelopers" | "noDogsAllowed",
   ) => ComponentProps<typeof Checkbox>["onChange"];
   setNewMedia: ComponentProps<typeof ImageUpload>["onMediaChanged"];
+  setExternalLinks: ComponentProps<
+    typeof ExternalLinks
+  >["onExternalLinksUpdated"];
 };
 
 export const useAreaEdit: UseAreaEdit = ({ areaId }) => {
@@ -220,6 +232,7 @@ export const useAreaEdit: UseAreaEdit = ({ areaId }) => {
         comment,
         coordinates,
         newMedia: media,
+        externalLinks,
         sectorOrder,
       }) {
         const formData = new FormData();
@@ -252,6 +265,7 @@ export const useAreaEdit: UseAreaEdit = ({ areaId }) => {
             comment,
             coordinates,
             newMedia,
+            externalLinks: externalLinks?.filter((l) => l.title && l.url),
             sectorOrder,
           }),
         );
@@ -331,6 +345,11 @@ export const useAreaEdit: UseAreaEdit = ({ areaId }) => {
     ),
     setNewMedia: useCallback(
       (newMedia) => dispatch({ action: "set-media", newMedia }),
+      [],
+    ),
+    setExternalLinks: useCallback(
+      (externalLinks) =>
+        dispatch({ action: "set-external-links", externalLinks }),
       [],
     ),
   };

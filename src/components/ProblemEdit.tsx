@@ -33,6 +33,7 @@ import { VisibilitySelectorField } from "./common/VisibilitySelector";
 import { useQueryClient } from "@tanstack/react-query";
 import { components } from "../@types/buldreinfo/swagger";
 import { captureException, captureMessage } from "@sentry/react";
+import ExternalLinks from "./common/external-links/external-links";
 
 type Problem = components["schemas"]["Problem"];
 
@@ -212,6 +213,13 @@ const ProblemEdit = ({ problem, sector }: Props) => {
     }));
   }, []);
 
+  const onExternalLinksUpdated = useCallback(
+    (externalLinks: components["schemas"]["ExternalLink"][]) => {
+      setData((prevState) => ({ ...prevState, externalLinks: externalLinks }));
+    },
+    [],
+  );
+
   const onNewMediaChanged: ComponentProps<
     typeof ImageUpload
   >["onMediaChanged"] = useCallback((newMedia) => {
@@ -340,6 +348,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
           data.newMedia,
           data.faAid,
           data.trivia ?? "",
+          data.externalLinks,
           data.startingAltitude ?? "",
           data.aspect ?? "",
           data.routeLength ?? "",
@@ -593,6 +602,11 @@ const ProblemEdit = ({ problem, sector }: Props) => {
             </>
           )}
         </Segment>
+
+        <ExternalLinks
+          externalLinks={data.externalLinks ?? []}
+          onExternalLinksUpdated={onExternalLinksUpdated}
+        />
 
         <Segment>
           <Form.Field>

@@ -20,6 +20,7 @@ import { VisibilitySelectorField } from "../common/VisibilitySelector";
 import { captureException } from "@sentry/react";
 import { useAreaEdit } from "./useAreaEdit";
 import { hours } from "../../utils/hours";
+import ExternalLink from "../common/external-links/external-links";
 
 export const AreaEdit = () => {
   const meta = useMeta();
@@ -37,6 +38,7 @@ export const AreaEdit = () => {
     setString,
     setVisibility,
     setNumber,
+    setExternalLinks,
   } = useAreaEdit({ areaId: +(areaId ?? 0) });
   const [showSectorOrder, setShowSectorOrder] = useState(false);
 
@@ -201,6 +203,11 @@ export const AreaEdit = () => {
             />
           </Form.Field>
         </Segment>
+
+        <ExternalLink
+          externalLinks={data.externalLinks ?? []}
+          onExternalLinksUpdated={setExternalLinks}
+        />
 
         <Segment>
           <Form.Field>

@@ -14,6 +14,7 @@ import {
   ConditionLabels,
   WallDirection,
   SunOnWall,
+  ExternalLinkLabels,
 } from "./common/widgets/widgets";
 import {
   Label,
@@ -635,6 +636,7 @@ const Area = () => {
               sunToHour={data.sunToHour ?? 0}
             />
           ) : null}
+          <ExternalLinkLabels externalLinks={data.externalLinks} />
         </Label.Group>
         {data.comment ? (
           <div

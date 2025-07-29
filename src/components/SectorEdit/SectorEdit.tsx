@@ -31,6 +31,7 @@ import { ZoomLogic } from "./ZoomLogic";
 import { PolylineMarkers } from "./PolylineMarkers";
 import { captureMessage } from "@sentry/react";
 import { hours } from "../../utils/hours";
+import ExternalLinks from "../common/external-links/external-links";
 
 type Area = components["schemas"]["Area"];
 type Sector = components["schemas"]["Sector"];
@@ -182,6 +183,13 @@ export const SectorEdit = ({ sector, area }: Props) => {
     setData((prevState) => ({ ...prevState, accessClosed: value }));
   }, []);
 
+  const onExternalLinksUpdated = useCallback(
+    (externalLinks: components["schemas"]["ExternalLink"][]) => {
+      setData((prevState) => ({ ...prevState, externalLinks: externalLinks }));
+    },
+    [],
+  );
+
   const onNewMediaChanged = useCallback((newMedia: Sector["newMedia"]) => {
     setData((prevState) => ({ ...prevState, newMedia }));
   }, []);
@@ -209,6 +217,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
         data.wallDirectionManual,
         data.approach ?? {},
         data.descent ?? {},
+        data.externalLinks,
         data.newMedia,
         data.problemOrder,
       )
@@ -499,6 +508,11 @@ export const SectorEdit = ({ sector, area }: Props) => {
             />
           </Form.Field>
         </Segment>
+
+        <ExternalLinks
+          externalLinks={data.externalLinks ?? []}
+          onExternalLinksUpdated={onExternalLinksUpdated}
+        />
 
         <Segment>
           <Form.Field>
