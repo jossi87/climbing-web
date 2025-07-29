@@ -1037,6 +1037,7 @@ export type components = {
             id?: number;
             url?: string;
             title?: string;
+            inherited?: boolean;
         };
         Media: {
             /** Format: int32 */

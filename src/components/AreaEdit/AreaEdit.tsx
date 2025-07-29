@@ -205,7 +205,7 @@ export const AreaEdit = () => {
         </Segment>
 
         <ExternalLink
-          externalLinks={data.externalLinks ?? []}
+          externalLinks={data.externalLinks?.filter(l => !l.inherited) || []}
           onExternalLinksUpdated={setExternalLinks}
         />
 
