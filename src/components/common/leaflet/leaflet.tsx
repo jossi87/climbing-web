@@ -282,7 +282,7 @@ const Leaflet = ({
           name="Kartverket N50 topo"
         >
           <TileLayer
-            maxZoom={19}
+            maxZoom={18}
             attribution='<a href="http://www.kartverket.no/">Kartverket</a>'
             url="https://cache.kartverket.no/v1/wmts/1.0.0/topo/default/webmercator/{z}/{y}/{x}.png"
           />

@@ -972,6 +972,7 @@ export type components = {
             media?: components["schemas"]["Media"][];
             triviaMedia?: components["schemas"]["Media"][];
             newMedia?: components["schemas"]["NewMedia"][];
+            externalLinks?: components["schemas"]["ExternalLink"][];
             pageViews?: string;
             typeNumTicked?: components["schemas"]["TypeNumTicked"][];
         };
@@ -1030,6 +1031,12 @@ export type components = {
             elevationSource?: string;
             /** Format: double */
             distance?: number;
+        };
+        ExternalLink: {
+            /** Format: int32 */
+            id?: number;
+            url?: string;
+            title?: string;
         };
         Media: {
             /** Format: int32 */
@@ -1420,6 +1427,7 @@ export type components = {
             t?: components["schemas"]["Type"];
             sections?: components["schemas"]["ProblemSection"][];
             todo?: boolean;
+            externalLinks?: components["schemas"]["ExternalLink"][];
             pageViews?: string;
             faAid?: components["schemas"]["FaAid"];
             trivia?: string;
@@ -1621,6 +1629,7 @@ export type components = {
             problems?: components["schemas"]["SectorProblem"][];
             problemOrder?: components["schemas"]["SectorProblemOrder"][];
             newMedia?: components["schemas"]["NewMedia"][];
+            externalLinks?: components["schemas"]["ExternalLink"][];
             pageViews?: string;
             siblings?: components["schemas"]["SectorJump"][];
         };
