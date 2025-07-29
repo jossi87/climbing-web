@@ -253,25 +253,33 @@ export function useProfile(userId: number = -1) {
     },
   );
 
-  const addRegion = usePostData<number>(`/user/regions`, {
-    createUrl: (regionId) =>
-      `/user/regions?regionId=${regionId}&delete=${false}`,
-  });
-
-  const removeRegion = usePostData<number>(`/user/regions`, {
-    createUrl: (regionId) =>
-      `/user/regions?regionId=${regionId}&delete=${true}`,
-  });
-
-  const setUserEmailVisibleForAll = usePostData<{
-    emailVisibleForAll: boolean;
-  }>(`/user/regions`, {
-    createUrl: ({ emailVisibleForAll }) =>
-      `/user/email-visible-for-all?emailVisibleForAll=${emailVisibleForAll}`,
-    fetchOptions: {
-      method: "PUT",
-      consistencyAction: "nop",
+  const setProfile = usePostData<{
+    firstname: string,
+    lastname: string,
+    emailVisibleToAll: boolean,
+  }>(`/profile`, {
+    createBody({
+      firstname,
+      lastname,
+      emailVisibleToAll
+    }) {
+      const formData = new FormData();
+      formData.append(
+        "json",
+        JSON.stringify({
+          firstname,
+          lastname,
+          emailVisibleToAll
+        }),
+      );
+      return formData;
     },
+    select: (res) => res.json(),
+    fetchOptions: {
+        headers: {
+          Accept: "application/json",
+        },
+      },
     onMutate: () => {
       client.refetchQueries({
         queryKey: [`/profile`],
@@ -287,6 +295,16 @@ export function useProfile(userId: number = -1) {
         queryKey: [`/permissions`],
       });
     },
+  });
+
+  const addRegion = usePostData<number>(`/user/regions`, {
+    createUrl: (regionId) =>
+      `/user/regions?regionId=${regionId}&delete=${false}`,
+  });
+
+  const removeRegion = usePostData<number>(`/user/regions`, {
+    createUrl: (regionId) =>
+      `/user/regions?regionId=${regionId}&delete=${true}`,
   });
 
   const setRegion = usePostData<{
@@ -342,7 +360,7 @@ export function useProfile(userId: number = -1) {
   return {
     ...profile,
     addRegion: addRegion.mutateAsync,
-    setUserEmailVisibleForAll: setUserEmailVisibleForAll.mutateAsync,
+    setProfile: setProfile.mutateAsync,
     removeRegion: removeRegion.mutateAsync,
     setRegion: setRegion.mutateAsync,
   };

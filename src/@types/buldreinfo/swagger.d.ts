@@ -341,7 +341,8 @@ export type paths = {
         /** Get profile by id */
         get: operations["getProfile"];
         put?: never;
-        post?: never;
+        /** Update profile (profile must be provided as json on field "json" in multiPart, "avatar" is optional) */
+        post: operations["putProfile"];
         delete?: never;
         options?: never;
         head?: never;
@@ -855,23 +856,6 @@ export type paths = {
         get?: never;
         /** Update media rotation (allowed for administrators + user who uploaded specific image) */
         put: operations["putMediaJpegRotate"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/user/email-visible-for-all": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Update email visible to all for profile */
-        put: operations["putUserEmailVisibleForAll"];
         post?: never;
         delete?: never;
         options?: never;
@@ -1497,6 +1481,7 @@ export type components = {
             picture?: string;
             firstname?: string;
             lastname?: string;
+            emailVisibleToAll?: boolean;
             emails?: string[];
             userRegions?: components["schemas"]["UserRegion"][];
         };
@@ -2536,6 +2521,30 @@ export interface operations {
             };
         };
     };
+    putProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": components["schemas"]["FormDataMultiPart"];
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
     getProfileStatistics: {
         parameters: {
             query: {
@@ -3309,29 +3318,6 @@ export interface operations {
                 idMedia: number;
                 /** @description Degrees (90/180/270) */
                 degrees: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": unknown;
-                };
-            };
-        };
-    };
-    putUserEmailVisibleForAll: {
-        parameters: {
-            query: {
-                /** @description Email visible for all */
-                emailVisibleForAll: boolean;
             };
             header?: never;
             path?: never;
