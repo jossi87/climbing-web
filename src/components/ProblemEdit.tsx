@@ -604,7 +604,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
         </Segment>
 
         <ExternalLinks
-          externalLinks={data.externalLinks?.filter(l => !l.inherited) || []}
+          externalLinks={data.externalLinks?.filter((l) => !l.inherited) || []}
           onExternalLinksUpdated={onExternalLinksUpdated}
         />
 

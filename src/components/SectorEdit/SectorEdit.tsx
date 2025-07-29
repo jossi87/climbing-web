@@ -510,7 +510,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
         </Segment>
 
         <ExternalLinks
-          externalLinks={data.externalLinks?.filter(l => !l.inherited) || []}
+          externalLinks={data.externalLinks?.filter((l) => !l.inherited) || []}
           onExternalLinksUpdated={onExternalLinksUpdated}
         />
 
