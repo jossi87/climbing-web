@@ -254,32 +254,31 @@ export function useProfile(userId: number = -1) {
   );
 
   const setProfile = usePostData<{
-    firstname: string,
-    lastname: string,
-    emailVisibleToAll: boolean,
+    firstname: string;
+    lastname: string;
+    emailVisibleToAll: boolean;
+    avatarFile: File;
   }>(`/profile`, {
-    createBody({
-      firstname,
-      lastname,
-      emailVisibleToAll
-    }) {
+    createBody({ firstname, lastname, emailVisibleToAll, avatarFile }) {
       const formData = new FormData();
       formData.append(
         "json",
         JSON.stringify({
           firstname,
           lastname,
-          emailVisibleToAll
+          emailVisibleToAll,
         }),
       );
+      if (avatarFile) {
+        formData.append("avatar", avatarFile);
+      }
       return formData;
     },
-    select: (res) => res.json(),
     fetchOptions: {
-        headers: {
-          Accept: "application/json",
-        },
+      headers: {
+        Accept: "application/json",
       },
+    },
     onMutate: () => {
       client.refetchQueries({
         queryKey: [`/profile`],

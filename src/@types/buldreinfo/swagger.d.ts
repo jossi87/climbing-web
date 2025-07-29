@@ -342,7 +342,7 @@ export type paths = {
         get: operations["getProfile"];
         put?: never;
         /** Update profile (profile must be provided as json on field "json" in multiPart, "avatar" is optional) */
-        post: operations["putProfile"];
+        post: operations["postProfile"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2521,7 +2521,7 @@ export interface operations {
             };
         };
     };
-    putProfile: {
+    postProfile: {
         parameters: {
             query?: never;
             header?: never;
@@ -2540,7 +2540,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "*/*": unknown;
                 };
             };
         };
