@@ -78,7 +78,7 @@ const About = () => {
             <Header as="h3">
               <Icon name="info" />
               <Header.Content>
-                Statues
+                Statutes
                 <Header.Subheader>
                   This is a nonprofit website created by climbers, for climbers.
                 </Header.Subheader>
