@@ -87,11 +87,7 @@ const Profile = () => {
       ></meta>
       <Header as="h5" textAlign="center" className="buldreinfo-visible-mobile">
         {profile.picture && (
-          <Avatar
-            userId={profile.id}
-            picture={profile.picture}
-            circular={true}
-          />
+          <Avatar userId={profile.id} picture={profile.picture} />
         )}
         <Header.Content>{firstLast}</Header.Content>
       </Header>
@@ -99,11 +95,7 @@ const Profile = () => {
         <Menu.Item header className="buldreinfo-hidden-mobile">
           <Header as="h4">
             {profile.picture && (
-              <Avatar
-                userId={profile.id}
-                picture={profile.picture}
-                circular={true}
-              />
+              <Avatar userId={profile.id} picture={profile.picture} />
             )}
             <Header.Content>
               {profile.firstname}
