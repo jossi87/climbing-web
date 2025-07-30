@@ -1,6 +1,6 @@
 import React from "react";
 import { Loading } from "../widgets/widgets";
-import { Table, Header, Image } from "semantic-ui-react";
+import { Table, Header } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { useTop } from "../../../api";
 import Avatar from "../../common/avatar/avatar";

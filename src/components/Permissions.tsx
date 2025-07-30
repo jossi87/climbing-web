@@ -7,7 +7,6 @@ import {
   Header,
   Icon,
   Segment,
-  Image,
   Dropdown,
   Card,
   Input,
