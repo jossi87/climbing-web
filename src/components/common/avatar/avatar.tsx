@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { getAvatarUrl } from "../../../api/utils";
 import { Image, Modal } from "semantic-ui-react";
-import { ImageProps } from "semantic-ui-react";
 
 type Props = {
   userId: number;
