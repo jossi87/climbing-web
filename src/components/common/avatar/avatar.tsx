@@ -39,7 +39,9 @@ function Avatar({ userId, picture, floated, size }: Props) {
         <Image src={getAvatarUrl(userId, picture)} {...commonImageProps} />
       }
     >
-      <Image src={getAvatarUrl(userId, picture, true)} />
+      <div style={{display: "flex", justifyContent: "center"}}>
+        <Image src={getAvatarUrl(userId, picture, true)} />
+      </div>
     </Modal>
   );
 }
