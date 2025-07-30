@@ -92,6 +92,23 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/v2/avatar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get avatar by user id */
+        get: operations["getAvatar"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/webcams": {
         parameters: {
             query?: never;
@@ -2174,6 +2191,32 @@ export interface operations {
             };
         };
     };
+    getAvatar: {
+        parameters: {
+            query: {
+                /** @description User id */
+                id: number;
+                /** @description Picture (cache buster) */
+                picture?: string;
+                /** @description Full size */
+                fullSize?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/*": string[];
+                };
+            };
+        };
+    };
     getCameras: {
         parameters: {
             query?: never;
@@ -2360,7 +2403,7 @@ export interface operations {
             query: {
                 /** @description Media id */
                 id: number;
-                /** @description Checksum - not used in ws, but necessary to include on client when an image is changed (e.g. rotated) to avoid cached version */
+                /** @description Checksum - not used in ws, but necessary to include on client when an image is changed (e.g. rotated) to avoid cached version (cache buster) */
                 crc32?: number;
                 /** @description Image region - x */
                 x?: number;

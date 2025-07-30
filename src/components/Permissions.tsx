@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Loading, LockSymbol } from "./common/widgets/widgets";
 import { usePermissions } from "../api";
+import Avatar from "./common/avatar/avatar";
 import { useMeta } from "./common/meta";
 import {
   Header,
@@ -106,10 +107,11 @@ const Permissions = () => {
             return (
               <Card color={color} key={u.userId} raised>
                 <Card.Content>
-                  <Image
+                  <Avatar
+                    userId={u.userId}
+                    picture={u.picture}
                     floated="right"
                     size="mini"
-                    src={u.picture ? u.picture : "/png/image.png"}
                   />
                   <Card.Header as={Link} to={`/user/${u.userId}`}>
                     {u.name}{" "}

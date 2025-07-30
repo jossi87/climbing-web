@@ -26,6 +26,7 @@ import {
 } from "../common/widgets/widgets";
 import { useMeta } from "../common/meta";
 import { useProblem } from "../../api";
+import Avatar from "../common/avatar/avatar";
 import TickModal from "../common/tick-modal/tick-modal";
 import CommentModal from "../common/comment-modal/comment-modal";
 import { SlopeProfile } from "../common/SlopeProfile";
@@ -561,7 +562,7 @@ export const Problem = () => {
                         basic
                       >
                         {u.picture ? (
-                          <img src={u.picture} />
+                          <Avatar userId={u.id} picture={u.picture} />
                         ) : (
                           <Icon name="user" />
                         )}
@@ -610,7 +611,7 @@ export const Problem = () => {
                       basic
                     >
                       {u.picture ? (
-                        <img src={u.picture} />
+                        <Avatar userId={u.id} picture={u.picture} />
                       ) : (
                         <Icon name="user" />
                       )}
@@ -705,7 +706,11 @@ export const Problem = () => {
                     image
                     basic
                   >
-                    {u.picture ? <img src={u.picture} /> : <Icon name="user" />}
+                    {u.picture ? (
+                      <Avatar userId={u.idUser} picture={u.picture} />
+                    ) : (
+                      <Icon name="user" />
+                    )}
                     {u.name}
                   </Label>
                 ))}

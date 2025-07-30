@@ -33,6 +33,14 @@ export function useAccessToken() {
   return accessToken;
 }
 
+export function getAvatarUrl(
+  id: number,
+  picture: string,
+  fullSize?: boolean,
+): string {
+  return getUrl(`/avatar?id=${id}&picture=${picture}&fullSize=${fullSize}`);
+}
+
 export function getImageUrl(
   id: number,
   checksum: number,

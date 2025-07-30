@@ -9,6 +9,7 @@ import {
   Icon,
 } from "semantic-ui-react";
 import { Stars } from "../../common/widgets/widgets";
+import { getAvatarUrl } from "../../../api/utils";
 import Linkify from "linkify-react";
 import { components } from "../../../@types/buldreinfo/swagger";
 
@@ -68,7 +69,13 @@ export const ProblemTicks = ({ ticks }: Props) => {
               key={[t.idUser, t.date].join("@")}
               style={{ backgroundColor: t.writable ? "#d2f8d2" : "#ffffff" }}
             >
-              <Comment.Avatar src={t.picture ? t.picture : "/png/image.png"} />
+              <Comment.Avatar
+                src={
+                  t.picture
+                    ? getAvatarUrl(t.idUser, t.picture)
+                    : "/png/image.png"
+                }
+              />
               <Comment.Content>
                 <Comment.Author as={Link} to={`/user/${t.idUser}`}>
                   {t.name}

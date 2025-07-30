@@ -15,6 +15,7 @@ import LazyLoad from "react-lazyload";
 import { useLocalStorage } from "../../../utils/use-local-storage";
 import { useMeta } from "../../common/meta";
 import { getImageUrl, useActivity } from "../../../api";
+import Avatar from "../../common/avatar/avatar";
 import { LockSymbol, Stars } from "./../../common/widgets/widgets";
 import Linkify from "linkify-react";
 
@@ -288,7 +289,7 @@ const Activity = ({ idArea, idSector }: Props) => {
                           image
                         >
                           {u.picture ? (
-                            <img src={u.picture} />
+                            <Avatar userId={u.id} picture={u.picture} />
                           ) : (
                             <Icon name="user" />
                           )}{" "}
@@ -305,7 +306,7 @@ const Activity = ({ idArea, idSector }: Props) => {
               return (
                 <Feed.Event key={a.activityIds.join("+")}>
                   <Feed.Label>
-                    {a.picture && <img src={a.picture} />}
+                    {a.picture && <Avatar userId={a.id} picture={a.picture} />}
                   </Feed.Label>
                   <Feed.Content>
                     <Feed.Summary>
@@ -428,7 +429,7 @@ const Activity = ({ idArea, idSector }: Props) => {
               return (
                 <Feed.Event key={a.activityIds.join("+")}>
                   <Feed.Label>
-                    {a.picture && <img src={a.picture} />}
+                    {a.picture && <Avatar userId={a.id} picture={a.picture} />}
                   </Feed.Label>
                   <Feed.Content>
                     <Feed.Summary>

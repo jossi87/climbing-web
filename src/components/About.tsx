@@ -11,6 +11,7 @@ import {
 } from "semantic-ui-react";
 import { useMeta } from "./common/meta";
 import { useData } from "../api";
+import Avatar from "./common/avatar/avatar";
 import { Success } from "../@types/buldreinfo";
 
 const About = () => {
@@ -30,7 +31,7 @@ const About = () => {
           {data ? (
             data.map((u) => (
               <List.Item key={u.userId}>
-                <Image src={u.picture ? u.picture : "/png/image.png"} />
+                <Avatar userId={u.userId} picture={u.picture} />
                 <List.Content>
                   <List.Header as={Link} to={`/user/${u.userId}`}>
                     {u.name}

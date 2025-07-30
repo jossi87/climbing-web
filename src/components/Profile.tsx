@@ -1,11 +1,12 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Loading } from "./common/widgets/widgets";
-import { Header, Image, Menu, Icon, Message } from "semantic-ui-react";
+import { Header, Menu, Icon, Message } from "semantic-ui-react";
 import { useMeta } from "./common/meta";
 import { useProfile } from "../api";
 import { useAuth0 } from "@auth0/auth0-react";
 import ProfileStatistics from "./common/profile/profile-statistics";
+import Avatar from "./common/avatar/avatar";
 import ProfileTodo from "./common/profile/profile-todo";
 import ProfileMedia from "./common/profile/profile-media";
 import ProfileSettings from "./common/profile/profile-settings";
@@ -85,13 +86,25 @@ const Profile = () => {
         content="Profile with public ascents, media, and other statistics."
       ></meta>
       <Header as="h5" textAlign="center" className="buldreinfo-visible-mobile">
-        {profile.picture && <Image circular src={profile.picture} />}
+        {profile.picture && (
+          <Avatar
+            userId={profile.id}
+            picture={profile.picture}
+            circular={true}
+          />
+        )}
         <Header.Content>{firstLast}</Header.Content>
       </Header>
       <Menu pointing icon="labeled" size="mini">
         <Menu.Item header className="buldreinfo-hidden-mobile">
           <Header as="h4">
-            {profile.picture && <Image circular src={profile.picture} />}
+            {profile.picture && (
+              <Avatar
+                userId={profile.id}
+                picture={profile.picture}
+                circular={true}
+              />
+            )}
             <Header.Content>
               {profile.firstname}
               {profile.lastname && (

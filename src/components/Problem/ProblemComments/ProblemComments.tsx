@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Comment, Segment, Header, Label, Button } from "semantic-ui-react";
 import { useAccessToken, useProblem, postComment } from "../../../api";
+import { getAvatarUrl } from "../../../api/utils";
 import Media from "../../common/media/media";
 import { useMeta } from "../../common/meta";
 import Linkify from "linkify-react";
@@ -42,7 +43,9 @@ export const ProblemComments = ({
     }
     return (
       <>
-        <Comment.Avatar src={c.picture ? c.picture : "/png/image.png"} />
+        <Comment.Avatar
+          src={c.picture ? getAvatarUrl(c.idUser, c.picture) : "/png/image.png"}
+        />
         <Comment.Content>
           {(c.editable || expandable) && (
             <Button.Group size="tiny" basic compact floated="right">

@@ -3,6 +3,7 @@ import { Loading } from "../widgets/widgets";
 import { Table, Header, Image } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { useTop } from "../../../api";
+import Avatar from "../../common/avatar/avatar";
 
 type TopProps = {
   idArea: number;
@@ -24,7 +25,7 @@ const Top = ({ idArea, idSector }: TopProps) => {
       <Table.Cell>#{t.rank}</Table.Cell>
       <Table.Cell>
         <Header as="h4" image>
-          <Image src={t.picture} circular size="tiny" />
+          <Avatar userId={t.userId} picture={t.picture} />
           <Header.Content as={Link} to={`/user/${t.userId}`}>
             {t.name}
           </Header.Content>
