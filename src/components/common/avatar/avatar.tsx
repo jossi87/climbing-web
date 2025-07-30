@@ -1,0 +1,51 @@
+import React, { useState } from "react";
+import { getAvatarUrl } from "../../../api/utils";
+import { Image, Modal } from "semantic-ui-react";
+import { ImageProps } from "semantic-ui-react";
+
+type Props = {
+  userId: number;
+  picture: string;
+  circular?: boolean;
+  floated?: "left" | "right";
+  size?:
+    | "mini"
+    | "tiny"
+    | "small"
+    | "medium"
+    | "large"
+    | "big"
+    | "huge"
+    | "massive";
+};
+
+function Avatar({ userId, picture, circular, floated, size }: Props) {
+  const [open, setOpen] = useState(false);
+
+  const commonImageProps = {
+    circular,
+    floated,
+    size,
+  };
+
+  if (!picture) {
+    return <Image src="/png/image.png" {...commonImageProps} />;
+  }
+
+  return (
+    <Modal
+      onClose={() => setOpen(false)}
+      onOpen={() => setOpen(true)}
+      basic
+      size="mini"
+      open={open}
+      trigger={
+        <Image src={getAvatarUrl(userId, picture)} {...commonImageProps} />
+      }
+    >
+      <Image size="medium" src={getAvatarUrl(userId, "picture", true)} />
+    </Modal>
+  );
+}
+
+export default Avatar;
