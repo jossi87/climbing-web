@@ -43,7 +43,7 @@ function Avatar({ userId, picture, circular, floated, size }: Props) {
         <Image src={getAvatarUrl(userId, picture)} {...commonImageProps} />
       }
     >
-      <Image size="medium" src={getAvatarUrl(userId, "picture", true)} />
+      <Image src={getAvatarUrl(userId, "picture", true)} />
     </Modal>
   );
 }

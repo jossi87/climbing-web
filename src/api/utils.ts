@@ -38,7 +38,7 @@ export function getAvatarUrl(
   picture: string,
   fullSize?: boolean,
 ): string {
-  return getUrl(`/avatar?id=${id}&picture=${picture}&fullSize=${fullSize}`);
+  return getUrl(`/avatar?id=${id}&picture=${picture}&fullSize=${fullSize || false}`);
 }
 
 export function getImageUrl(
