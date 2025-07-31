@@ -4,6 +4,7 @@ export {
   downloadTocXlsx,
   deleteMedia,
   moveMedia,
+  setMediaAsAvatar,
   downloadUsersTicks,
   postComment,
   postProblem,

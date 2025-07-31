@@ -846,6 +846,23 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/v2/media/avatar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Set media as avatar */
+        put: operations["putMediaAvatar"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/media/info": {
         parameters: {
             query?: never;
@@ -2029,7 +2046,7 @@ export interface operations {
     putMedia: {
         parameters: {
             query: {
-                /** @description Move right */
+                /** @description Media id */
                 id: number;
                 /** @description Move left */
                 left: boolean;
@@ -3323,6 +3340,29 @@ export interface operations {
                 regionId: number;
                 /** @description Delete (TRUE=hide, FALSE=show) */
                 delete: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": unknown;
+                };
+            };
+        };
+    };
+    putMediaAvatar: {
+        parameters: {
+            query: {
+                /** @description Media id */
+                id: number;
             };
             header?: never;
             path?: never;

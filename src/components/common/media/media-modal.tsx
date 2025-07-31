@@ -79,6 +79,7 @@ const style = {
 };
 
 type Props = {
+  isSaving: boolean;
   onClose: () => void;
   onEdit: () => void;
   onDelete: () => void;
@@ -88,6 +89,7 @@ type Props = {
   onMoveImageToArea: () => void;
   onMoveImageToSector: () => void;
   onMoveImageToProblem: () => void;
+  onSetMediaAsAvatar: () => void;
   m: components["schemas"]["Media"];
   pitch: number;
   pitches: components["schemas"]["ProblemSection"][];
@@ -103,6 +105,7 @@ type Props = {
 };
 
 const MediaModal = ({
+  isSaving,
   onClose,
   onEdit,
   onDelete,
@@ -112,6 +115,7 @@ const MediaModal = ({
   onMoveImageToArea,
   onMoveImageToSector,
   onMoveImageToProblem,
+  onSetMediaAsAvatar,
   m,
   pitch,
   pitches,
@@ -125,7 +129,7 @@ const MediaModal = ({
   autoPlayVideo,
   optProblemId,
 }: Props) => {
-  const { isAdmin, isBouldering } = useMeta();
+  const { isAuthenticated, isAdmin, isBouldering } = useMeta();
   const navigate = useNavigate();
   const [showSidebar, setShowSidebar] = useLocalStorage("showSidebar", true);
   const [problemIdHovered, setProblemIdHovered] = useState<number>(null);
@@ -145,6 +149,14 @@ const MediaModal = ({
     setHasSetVideoTimestamp(false);
     setIsPlaying(true);
   }, [m.id]);
+
+  if (isSaving) {
+    return (
+      <Dimmer active={true} onClickOutside={onClose} page>
+        <Icon name="spinner" size="huge" loading />
+      </Dimmer>
+    );
+  }
 
   const content = (() => {
     if (isImage) {
@@ -248,6 +260,7 @@ const MediaModal = ({
       </>
     );
   })();
+  const canSetMediaAsAvatar = isAuthenticated && isImage;
   const canEdit = isAdmin && isImage;
   const canDelete = isAdmin;
   const canRotate =
@@ -552,6 +565,7 @@ const MediaModal = ({
               </Modal>
             )}
             {(!m.embedUrl ||
+              canSetMediaAsAvatar ||
               canRotate ||
               canEdit ||
               canDelete ||
@@ -616,7 +630,18 @@ const MediaModal = ({
                       onClick={onMoveImageToProblem}
                     />
                   )}
-                  {(canDrawTopo || canDrawMedia || canOrder || canMove) &&
+                  {canSetMediaAsAvatar && (
+                    <Dropdown.Item
+                      icon="user"
+                      text="Set as avatar"
+                      onClick={onSetMediaAsAvatar}
+                    />
+                  )}
+                  {(canDrawTopo ||
+                    canDrawMedia ||
+                    canOrder ||
+                    canMove ||
+                    canSetMediaAsAvatar) &&
                     (!m.embedUrl || canRotate || canEdit || canDelete) && (
                       <Dropdown.Divider />
                     )}

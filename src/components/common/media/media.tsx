@@ -10,6 +10,7 @@ import {
   getImageUrl,
   deleteMedia,
   moveMedia,
+  setMediaAsAvatar,
   putMediaJpegRotate,
   putMediaInfo,
 } from "../../../api";
@@ -62,6 +63,7 @@ const Media = ({
   const { mediaId, pitch } = useIds();
   const location = useLocation();
   const navigate = useNavigate();
+  const [isSaving, setIsSaving] = useState(false);
   const [m, setM] = useState<components["schemas"]["Media"]>(null);
   const [editM, setEditM] = useState<components["schemas"]["Media"]>(null);
   const [autoPlayVideo, setAutoPlayVideo] = useState(false);
@@ -141,9 +143,11 @@ const Media = ({
           "?",
       )
     ) {
+      setIsSaving(true);
       getAccessTokenSilently().then((accessToken) => {
         deleteMedia(accessToken, id)
           .then(() => {
+            setIsSaving(false);
             closeModal();
           })
           .catch((error) => {
@@ -159,9 +163,11 @@ const Media = ({
         "Are you sure you want to rotate this image " + degrees + " degrees?",
       )
     ) {
+      setIsSaving(true);
       getAccessTokenSilently().then((accessToken) => {
         putMediaJpegRotate(accessToken, m.id, degrees)
           .then(() => {
+            setIsSaving(false);
             closeModal();
           })
           .catch((error) => {
@@ -172,9 +178,11 @@ const Media = ({
   }
 
   function onMoveImageLeft() {
+    setIsSaving(true);
     getAccessTokenSilently().then((accessToken) => {
       moveMedia(accessToken, m.id, true, 0, 0, 0)
         .then(() => {
+          setIsSaving(false);
           closeModal();
         })
         .catch((error) => {
@@ -184,9 +192,11 @@ const Media = ({
   }
 
   function onMoveImageRight() {
+    setIsSaving(true);
     getAccessTokenSilently().then((accessToken) => {
       moveMedia(accessToken, m.id, false, 0, 0, 0)
         .then(() => {
+          setIsSaving(false);
           closeModal();
         })
         .catch((error) => {
@@ -196,9 +206,11 @@ const Media = ({
   }
 
   function onMoveImageToArea() {
+    setIsSaving(true);
     getAccessTokenSilently().then((accessToken) => {
       moveMedia(accessToken, m.id, false, m.enableMoveToIdArea, 0, 0)
         .then(() => {
+          setIsSaving(false);
           closeModal();
         })
         .catch((error) => {
@@ -208,9 +220,11 @@ const Media = ({
   }
 
   function onMoveImageToSector() {
+    setIsSaving(true);
     getAccessTokenSilently().then((accessToken) => {
       moveMedia(accessToken, m.id, false, 0, m.enableMoveToIdSector, 0)
         .then(() => {
+          setIsSaving(false);
           closeModal();
         })
         .catch((error) => {
@@ -220,15 +234,33 @@ const Media = ({
   }
 
   function onMoveImageToProblem() {
+    setIsSaving(true);
     getAccessTokenSilently().then((accessToken) => {
       moveMedia(accessToken, m.id, false, 0, 0, m.enableMoveToIdProblem)
         .then(() => {
+          setIsSaving(false);
           closeModal();
         })
         .catch((error) => {
           console.warn(error);
         });
     });
+  }
+
+  function onSetMediaAsAvatar() {
+    if (confirm("Are you sure you want to change your avatar to this image?")) {
+      setIsSaving(true);
+      getAccessTokenSilently().then((accessToken) => {
+        setMediaAsAvatar(accessToken, m.id)
+          .then(() => {
+            setIsSaving(false);
+            closeModal();
+          })
+          .catch((error) => {
+            console.warn(error);
+          });
+      });
+    }
   }
 
   if (isLoading) {
@@ -269,6 +301,7 @@ const Media = ({
       )}
       {m && (
         <MediaModal
+          isSaving={isSaving}
           onClose={closeModal}
           m={m}
           pitch={pitch}
@@ -282,6 +315,7 @@ const Media = ({
           onMoveImageToArea={onMoveImageToArea}
           onMoveImageToSector={onMoveImageToSector}
           onMoveImageToProblem={onMoveImageToProblem}
+          onSetMediaAsAvatar={onSetMediaAsAvatar}
           orderableMedia={orderableMedia}
           carouselIndex={carouselMedia.findIndex((x) => x.id === m.id) + 1}
           carouselSize={carouselMedia.length}

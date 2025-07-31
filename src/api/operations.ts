@@ -32,6 +32,15 @@ export function moveMedia(
   );
 }
 
+export function setMediaAsAvatar(
+  accessToken: string | null,
+  id: number,
+): Promise<Success<"putMediaAvatar">> {
+  return makeAuthenticatedRequest(accessToken, `/media/avatar?id=${id}`, {
+    method: "PUT",
+  });
+}
+
 export function downloadUsersTicks(accessToken: string | null) {
   return downloadFile(accessToken, `/users/ticks`);
 }
