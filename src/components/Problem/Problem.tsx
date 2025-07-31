@@ -561,11 +561,7 @@ export const Problem = () => {
                         image
                         basic
                       >
-                        {u.picture ? (
-                          <Avatar userId={u.id} picture={u.picture} />
-                        ) : (
-                          <Icon name="user" />
-                        )}
+                        <Avatar userId={u.id} picture={u.picture} />
                         {u.name}
                       </Label>
                     ))}
@@ -610,11 +606,7 @@ export const Problem = () => {
                       image
                       basic
                     >
-                      {u.picture ? (
-                        <Avatar userId={u.id} picture={u.picture} />
-                      ) : (
-                        <Icon name="user" />
-                      )}
+                      <Avatar userId={u.id} picture={u.picture} />
                       {u.name}
                     </Label>
                   ))}
@@ -706,11 +698,7 @@ export const Problem = () => {
                     image
                     basic
                   >
-                    {u.picture ? (
-                      <Avatar userId={u.idUser} picture={u.picture} />
-                    ) : (
-                      <Icon name="user" />
-                    )}
+                    <Avatar userId={u.idUser} picture={u.picture} />
                     {u.name}
                   </Label>
                 ))}

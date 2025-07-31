@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { getAvatarUrl } from "../../../api/utils";
-import { Image, Modal } from "semantic-ui-react";
+import { Icon, Image, Modal } from "semantic-ui-react";
 
 type Props = {
   userId: number;
@@ -26,7 +26,11 @@ function Avatar({ userId, picture, floated, size }: Props) {
   };
 
   if (!picture) {
-    return <Image src="/png/image.png" {...commonImageProps} />;
+    return (
+      <Image {...commonImageProps}>
+        <Icon name="user" style={{ width: "100%", height: "100%" }} />
+      </Image>
+    );
   }
 
   return (

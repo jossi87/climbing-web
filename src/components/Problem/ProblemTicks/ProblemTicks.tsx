@@ -1,15 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import {
-  Comment,
-  Segment,
-  Header,
-  Table,
-  Label,
-  Icon,
-} from "semantic-ui-react";
+import { Feed, Segment, Header, Table, Label, Icon } from "semantic-ui-react";
+import Avatar from "../../common/avatar/avatar";
 import { Stars } from "../../common/widgets/widgets";
-import { getAvatarUrl } from "../../../api/utils";
 import Linkify from "linkify-react";
 import { components } from "../../../@types/buldreinfo/swagger";
 
@@ -19,7 +12,7 @@ type Props = {
 
 export const ProblemTicks = ({ ticks }: Props) => {
   return (
-    <Comment.Group as={Segment} style={{ maxWidth: "100%" }}>
+    <Segment as={Feed} style={{ maxWidth: "100%" }}>
       <Header as="h3" dividing>
         Ticks
         {ticks?.length > 0 && <Label circular>{ticks.length}</Label>}
@@ -65,42 +58,45 @@ export const ProblemTicks = ({ ticks }: Props) => {
             com = t.comment;
           }
           return (
-            <Comment
+            <Feed.Event
               key={[t.idUser, t.date].join("@")}
-              style={{ backgroundColor: t.writable ? "#d2f8d2" : "#ffffff" }}
+              style={{
+                padding: 0,
+                backgroundColor: t.writable ? "#d2f8d2" : "#ffffff",
+              }}
             >
-              <Comment.Avatar
-                src={
-                  t.picture
-                    ? getAvatarUrl(t.idUser, t.picture)
-                    : "/png/image.png"
-                }
-              />
-              <Comment.Content>
-                <Comment.Author as={Link} to={`/user/${t.idUser}`}>
-                  {t.name}
-                </Comment.Author>
-                <Comment.Metadata>{dt}</Comment.Metadata>
-                <Comment.Text>
-                  {t.noPersonalGrade ? (
-                    <Label basic size="mini">
-                      <Icon name="x" />
-                      No personal grade
-                    </Label>
-                  ) : (
-                    t.suggestedGrade
-                  )}{" "}
-                  <Stars numStars={t.stars} includeStarOutlines={true} />
-                  <br />
-                  <Linkify>{com}</Linkify>
-                </Comment.Text>
-              </Comment.Content>
-            </Comment>
+              <Feed.Label>
+                <Avatar userId={t.idUser} picture={t.picture} />
+              </Feed.Label>
+              <Feed.Content>
+                <Feed.Summary>
+                  <Feed.User as={Link} to={`/user/${t.idUser}`}>
+                    {t.name}
+                  </Feed.User>
+                  <Feed.Date>{dt}</Feed.Date>
+                </Feed.Summary>
+                {t.noPersonalGrade ? (
+                  <Label basic size="mini">
+                    <Icon name="x" />
+                    No personal grade
+                  </Label>
+                ) : (
+                  t.suggestedGrade
+                )}{" "}
+                <Stars numStars={t.stars} includeStarOutlines={true} />
+                {com && (
+                  <Linkify>
+                    <br />
+                    {com}
+                  </Linkify>
+                )}
+              </Feed.Content>
+            </Feed.Event>
           );
         })
       ) : (
         <i>No ticks</i>
       )}
-    </Comment.Group>
+    </Segment>
   );
 };

@@ -1,12 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import { Comment, Segment, Header, Label, Button } from "semantic-ui-react";
+import { Feed, Segment, Header, Label, Button } from "semantic-ui-react";
 import { useAccessToken, useProblem, postComment } from "../../../api";
-import { getAvatarUrl } from "../../../api/utils";
 import Media from "../../common/media/media";
+import Avatar from "../../common/avatar/avatar";
 import { useMeta } from "../../common/meta";
 import Linkify from "linkify-react";
-import { components } from "../../../@types/buldreinfo/swagger";
 
 export const ProblemComments = ({
   problemId,
@@ -20,71 +19,6 @@ export const ProblemComments = ({
   const accessToken = useAccessToken();
   const meta = useMeta();
   const { data } = useProblem(+problemId, showHiddenMedia);
-  const [collapseComments, setCollapseComments] = useState(true);
-
-  const CommentBody = ({
-    c,
-    expandable,
-  }: {
-    c: components["schemas"]["ProblemComment"];
-    expandable?: boolean;
-  }) => {
-    let extra: React.JSX.Element | null = null;
-    if (c.danger) {
-      extra = <Label color="red">Flagged as dangerous</Label>;
-    } else if (c.resolved) {
-      extra = <Label color="green">Flagged as safe</Label>;
-    } else if (meta.isAuthenticated && meta.isClimbing) {
-      extra = (
-        <Button basic size="tiny" compact onClick={() => flagAsDangerous(c)}>
-          Flag as dangerous
-        </Button>
-      );
-    }
-    return (
-      <>
-        <Comment.Avatar
-          src={c.picture ? getAvatarUrl(c.idUser, c.picture) : "/png/image.png"}
-        />
-        <Comment.Content>
-          {(c.editable || expandable) && (
-            <Button.Group size="tiny" basic compact floated="right">
-              {c.editable && (
-                <>
-                  <Button onClick={() => onShowCommentModal(c)} icon="edit" />
-                  <Button onClick={() => deleteComment(c.id)} icon="trash" />
-                </>
-              )}
-              {expandable && (
-                <Button
-                  onClick={() => setCollapseComments(!collapseComments)}
-                  icon={collapseComments ? "plus" : "minus"}
-                />
-              )}
-            </Button.Group>
-          )}
-          <Comment.Author as={Link} to={`/user/${c.idUser}`}>
-            {c.name}
-          </Comment.Author>
-          <Comment.Metadata>{c.date}</Comment.Metadata>
-          <Comment.Text>
-            <Linkify>{c.message}</Linkify>
-            {c.media && c.media.length > 0 && (
-              <Media
-                pitches={data.sections}
-                media={c.media}
-                orderableMedia={c.media}
-                carouselMedia={c.media}
-                optProblemId={null}
-                showLocation={false}
-              />
-            )}
-          </Comment.Text>
-          {extra && <Comment.Actions>{extra}</Comment.Actions>}
-        </Comment.Content>
-      </>
-    );
-  };
 
   function flagAsDangerous({ id, message }: { id?: number; message?: string }) {
     if (!id || !message) {
@@ -125,51 +59,75 @@ export const ProblemComments = ({
   if (data.comments?.length == 0) {
     return null;
   }
-  const latestSafetyComment = data.comments
-    ?.filter((c) => c.danger || c.resolved)
-    .reduce((prev, current) => (prev?.id > current.id ? prev : current), null);
-  const rootComments = data.comments?.filter(
-    (c) => (!c.danger && !c.resolved) || c.id == latestSafetyComment?.id,
-  );
-  const safetyHistoryComments =
-    latestSafetyComment &&
-    data.comments?.filter(
-      (c) => (c.danger || c.resolved) && c.id !== latestSafetyComment.id,
-    );
-
   return (
-    <Comment.Group threaded as={Segment} style={{ maxWidth: "100%" }}>
+    <Feed as={Segment} style={{ maxWidth: "100%" }}>
       <Header as="h3" dividing>
         Comments
         {data.comments?.length > 0 && (
           <Label circular>{data.comments?.length}</Label>
         )}
       </Header>
-      {rootComments?.length ? (
-        rootComments.map((c) => (
-          <Comment key={c.id}>
-            <CommentBody
-              c={c}
-              expandable={
-                c.id === latestSafetyComment?.id &&
-                safetyHistoryComments?.length > 0
-              }
-            />
-            {c.id === latestSafetyComment?.id &&
-              safetyHistoryComments?.length > 0 && (
-                <Comment.Group collapsed={collapseComments}>
-                  {safetyHistoryComments.map((cHistory) => (
-                    <Comment key={cHistory.id}>
-                      <CommentBody c={cHistory} />
-                    </Comment>
-                  ))}
-                </Comment.Group>
-              )}
-          </Comment>
-        ))
+      {data.comments?.length ? (
+        data.comments.map((c) => {
+          let extra: React.JSX.Element | null = null;
+          if (c.danger) {
+            extra = <Label color="red">Flagged as dangerous</Label>;
+          } else if (c.resolved) {
+            extra = <Label color="green">Flagged as safe</Label>;
+          } else if (meta.isAuthenticated && meta.isClimbing) {
+            extra = (
+              <Button
+                basic
+                size="tiny"
+                compact
+                onClick={() => flagAsDangerous(c)}
+              >
+                Flag as dangerous
+              </Button>
+            );
+          }
+          return (
+            <Feed.Event key={c.id} style={{ padding: 0 }}>
+              <Feed.Label>
+                <Avatar userId={c.idUser} picture={c.picture} />
+              </Feed.Label>
+              <Feed.Content>
+                {c.editable && (
+                  <Button.Group size="tiny" basic compact floated="right">
+                    <Button onClick={() => onShowCommentModal(c)} icon="edit" />
+                    <Button onClick={() => deleteComment(c.id)} icon="trash" />
+                  </Button.Group>
+                )}
+                <Feed.Summary>
+                  <Feed.User as={Link} to={`/user/${c.idUser}`}>
+                    {c.name}
+                  </Feed.User>
+                  <Feed.Date>{c.date}</Feed.Date>
+                </Feed.Summary>
+                <Linkify>{c.message}</Linkify>
+                {c.media && c.media.length > 0 && (
+                  <Media
+                    pitches={data.sections}
+                    media={c.media}
+                    orderableMedia={c.media}
+                    carouselMedia={c.media}
+                    optProblemId={null}
+                    showLocation={false}
+                  />
+                )}
+                {extra && (
+                  <>
+                    <br />
+                    {extra}
+                  </>
+                )}
+              </Feed.Content>
+            </Feed.Event>
+          );
+        })
       ) : (
         <i>No comments</i>
       )}
-    </Comment.Group>
+    </Feed>
   );
 };
