@@ -916,7 +916,8 @@ export type components = {
             /** Format: int32 */
             id?: number;
             name?: string;
-            picture?: string;
+            /** Format: int64 */
+            avatarCrc32?: number;
             description?: string;
             message?: string;
             users?: components["schemas"]["User"][];
@@ -933,14 +934,16 @@ export type components = {
             /** Format: int32 */
             id?: number;
             name?: string;
-            picture?: string;
+            /** Format: int64 */
+            avatarCrc32?: number;
         };
         Administrator: {
             /** Format: int32 */
             userId?: number;
             name?: string;
             emails?: string[];
-            picture?: string;
+            /** Format: int64 */
+            avatarCrc32?: number;
             lastLogin?: string;
         };
         Area: {
@@ -1349,7 +1352,8 @@ export type components = {
             /** Format: int32 */
             userId?: number;
             name?: string;
-            picture?: string;
+            /** Format: int64 */
+            avatarCrc32?: number;
             lastLogin?: string;
             adminRead?: boolean;
             adminWrite?: boolean;
@@ -1445,7 +1449,8 @@ export type components = {
             date?: string;
             /** Format: int32 */
             idUser?: number;
-            picture?: string;
+            /** Format: int64 */
+            avatarCrc32?: number;
             name?: string;
             message?: string;
             danger?: boolean;
@@ -1468,7 +1473,8 @@ export type components = {
             id?: number;
             /** Format: int32 */
             idUser?: number;
-            picture?: string;
+            /** Format: int64 */
+            avatarCrc32?: number;
             date?: string;
             name?: string;
             suggestedGrade?: string;
@@ -1481,7 +1487,8 @@ export type components = {
         ProblemTodo: {
             /** Format: int32 */
             idUser?: number;
-            picture?: string;
+            /** Format: int64 */
+            avatarCrc32?: number;
             name?: string;
         };
         TickRepeat: {
@@ -1495,7 +1502,8 @@ export type components = {
         Profile: {
             /** Format: int32 */
             id?: number;
-            picture?: string;
+            /** Format: int64 */
+            avatarCrc32?: number;
             firstname?: string;
             lastname?: string;
             emailVisibleToAll?: boolean;
@@ -1779,7 +1787,8 @@ export type components = {
             /** Format: int32 */
             userId?: number;
             name?: string;
-            picture?: string;
+            /** Format: int64 */
+            avatarCrc32?: number;
             /** Format: double */
             percentage?: number;
             mine?: boolean;
@@ -1854,8 +1863,8 @@ export type components = {
             value?: string;
             content?: Record<string, never>;
             fileName?: string;
-            simple?: boolean;
             formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
+            simple?: boolean;
             parameterizedHeaders?: {
                 empty?: boolean;
             } & {
@@ -1958,6 +1967,8 @@ export type components = {
             crc32?: number;
             lockedadmin?: boolean;
             lockedsuperadmin?: boolean;
+            /** Format: int64 */
+            hits?: number;
             pageViews?: string;
         };
         SearchRequest: {
@@ -2196,8 +2207,8 @@ export interface operations {
             query: {
                 /** @description User id */
                 id: number;
-                /** @description Picture (cache buster) */
-                picture?: string;
+                /** @description Avatar CRC32 (cache buster) */
+                avatarCrc32?: number;
                 /** @description Full size */
                 fullSize?: boolean;
             };

@@ -35,11 +35,11 @@ export function useAccessToken() {
 
 export function getAvatarUrl(
   id: number,
-  picture: string,
+  avatarCrc32: number,
   fullSize?: boolean,
 ): string {
   return getUrl(
-    `/avatar?id=${id}&picture=${picture}&fullSize=${fullSize || false}`,
+    `/avatar?id=${id}&avatarCrc32=${avatarCrc32}&fullSize=${fullSize || false}`,
   );
 }
 

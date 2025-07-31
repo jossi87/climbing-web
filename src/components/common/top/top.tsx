@@ -25,7 +25,7 @@ const Top = ({ idArea, idSector }: TopProps) => {
       <Table.Cell>#{t.rank}</Table.Cell>
       <Table.Cell>
         <Header as="h4" image>
-          <Avatar userId={t.userId} picture={t.picture} />
+          <Avatar userId={t.userId} avatarCrc32={t.avatarCrc32} />
           <Header.Content as={Link} to={`/user/${t.userId}`}>
             {t.name}
           </Header.Content>

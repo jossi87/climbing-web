@@ -561,7 +561,7 @@ export const Problem = () => {
                         image
                         basic
                       >
-                        <Avatar userId={u.id} picture={u.picture} />
+                        <Avatar userId={u.id} avatarCrc32={u.avatarCrc32} />
                         {u.name}
                       </Label>
                     ))}
@@ -606,7 +606,7 @@ export const Problem = () => {
                       image
                       basic
                     >
-                      <Avatar userId={u.id} picture={u.picture} />
+                      <Avatar userId={u.id} avatarCrc32={u.avatarCrc32} />
                       {u.name}
                     </Label>
                   ))}
@@ -698,7 +698,7 @@ export const Problem = () => {
                     image
                     basic
                   >
-                    <Avatar userId={u.idUser} picture={u.picture} />
+                    <Avatar userId={u.idUser} avatarCrc32={u.avatarCrc32} />
                     {u.name}
                   </Label>
                 ))}

@@ -86,17 +86,13 @@ const Profile = () => {
         content="Profile with public ascents, media, and other statistics."
       ></meta>
       <Header as="h5" textAlign="center" className="buldreinfo-visible-mobile">
-        {profile.picture && (
-          <Avatar userId={profile.id} picture={profile.picture} />
-        )}
+        <Avatar userId={profile.id} avatarCrc32={profile.avatarCrc32} />
         <Header.Content>{firstLast}</Header.Content>
       </Header>
       <Menu pointing icon="labeled" size="mini">
         <Menu.Item header className="buldreinfo-hidden-mobile">
           <Header as="h4">
-            {profile.picture && (
-              <Avatar userId={profile.id} picture={profile.picture} />
-            )}
+            <Avatar userId={profile.id} avatarCrc32={profile.avatarCrc32} />
             <Header.Content>
               {profile.firstname}
               {profile.lastname && (

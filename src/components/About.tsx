@@ -30,7 +30,7 @@ const About = () => {
           {data ? (
             data.map((u) => (
               <List.Item key={u.userId}>
-                <Avatar userId={u.userId} picture={u.picture} />
+                <Avatar userId={u.userId} avatarCrc32={u.avatarCrc32} />
                 <List.Content>
                   <List.Header as={Link} to={`/user/${u.userId}`}>
                     {u.name}
