@@ -1,4 +1,4 @@
-import React, { ComponentProps } from "react";
+import React, { ComponentProps, useState } from "react";
 import CreatableSelect from "react-select/creatable";
 import { useUserSearch } from "./../../../api";
 import { components } from "../../../@types/buldreinfo/swagger";
@@ -35,13 +35,15 @@ const UserSelect = (
         > & { isMulti: false }
       >,
 ) => {
-  const { data: options = [] } = useUserSearch();
+  const [value, setValue] = useState("");
+  const { data: options = [] } = useUserSearch(value);
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
       <div style={{ width: "100%" }}>
         <CreatableSelect<UserOption, boolean>
           isClearable
+          onInputChange={(newValue) => setValue(newValue)}
           options={options
             .filter((user) => user.id && user.name)
             .map((user) => ({

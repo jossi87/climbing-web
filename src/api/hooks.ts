@@ -565,9 +565,10 @@ export function useGradeDistribution(
   );
 }
 
-export function useUserSearch(value: string = "") {
+export function useUserSearch(value: string) {
   return useData<Success<"getUsersSearch">>(`/users/search?value=${value}`, {
     queryKey: [`/users/search`, { value }],
+    enabled: !!value,
   });
 }
 
