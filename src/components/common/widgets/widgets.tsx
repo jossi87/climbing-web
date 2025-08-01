@@ -402,17 +402,23 @@ export function ExternalLinkLabels({
   if (externalLinks?.length === 0) {
     return;
   }
-  return externalLinks.map((l) => (
-    <Label
-      color="blue"
-      key={l.id}
-      href={l.url}
-      rel="noopener"
-      target="_blank"
-      size="small"
-    >
-      <Icon name="linkify" />
-      {l.title}
-    </Label>
-  ));
+  return externalLinks.map((l) => {
+    const ixOfPage = l.url.indexOf("page=");
+    return (
+      <Label
+        color="blue"
+        key={l.id}
+        href={l.url}
+        rel="noopener"
+        target="_blank"
+        size="small"
+      >
+        <Icon name="linkify" />
+        {l.title}
+        {ixOfPage !== -1 && (
+          <LabelDetail>Page {l.url.substring(ixOfPage + 5)}</LabelDetail>
+        )}
+      </Label>
+    );
+  });
 }
