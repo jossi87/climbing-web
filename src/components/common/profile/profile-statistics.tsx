@@ -83,12 +83,14 @@ const TickListItem = ({ tick }: TickListItemProps) => (
 type ProfileStatisticsProps = {
   userId: number;
   emails: string[];
+  lastActivity: string;
   canDownload: boolean;
 };
 
 const ProfileStatistics = ({
   userId,
   emails,
+  lastActivity,
   canDownload,
 }: ProfileStatisticsProps) => {
   const { defaultCenter, defaultZoom } = useMeta();
@@ -195,6 +197,13 @@ const ProfileStatistics = ({
               {email}
             </Label>
           ))}
+          {lastActivity && (
+            <Label key={lastActivity} color="pink" image>
+              <Icon name="time" />
+              Active
+              <Label.Detail>{lastActivity}</Label.Detail>
+            </Label>
+          )}
         </Label.Group>
         {chart && (
           <>

@@ -1526,6 +1526,7 @@ export type components = {
             emailVisibleToAll?: boolean;
             emails?: string[];
             userRegions?: components["schemas"]["UserRegion"][];
+            lastActivity?: string;
         };
         UserRegion: {
             /** Format: int32 */

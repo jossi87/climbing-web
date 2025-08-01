@@ -55,6 +55,7 @@ const Profile = () => {
       <ProfileStatistics
         userId={profile.id}
         emails={profile.emails}
+        lastActivity={profile.lastActivity}
         canDownload={loggedInProfile}
       />
     );
