@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Button, Modal, Form, Input, Checkbox } from "semantic-ui-react";
+import {
+  Button,
+  Modal,
+  Form,
+  Input,
+  Checkbox,
+  Dropdown,
+} from "semantic-ui-react";
 import { components } from "../../../@types/buldreinfo/swagger";
 
 type Media = components["schemas"]["Media"];
@@ -24,7 +31,9 @@ const MediaEditModal = ({
   m,
   numPitches,
 }: Props) => {
-  const [media, setMedia] = useState(m);
+  const [description, setDescription] = useState(m.mediaMetadata.description);
+  const [pitch, setPitch] = useState(m.pitch);
+  const [trivia, setTrivia] = useState(m.trivia);
   const [saving, setSaving] = useState(false);
 
   return (
@@ -36,34 +45,28 @@ const MediaEditModal = ({
             <Form.Field>
               <label>Description:</label>
               <Input
-                size="mini"
                 icon="comment"
                 iconPosition="left"
                 fluid
                 placeholder="Description"
-                value={media.mediaMetadata.description}
-                onChange={(e, { value }) => {
-                  const newMedia = media;
-                  newMedia.mediaMetadata.description = value;
-                  setMedia({ ...newMedia });
-                }}
+                value={description}
+                onChange={(e, { value }) => setDescription(value)}
               />
             </Form.Field>
             {numPitches > 0 && (
-              <Form.Field disabled={media.trivia}>
+              <Form.Field disabled={trivia}>
                 <label>Pitch (route has {numPitches} pitches):</label>
-                <Input
-                  size="mini"
-                  icon="hashtag"
-                  iconPosition="left"
+                <Dropdown
+                  clearable
                   fluid
-                  placeholder="Pitch"
-                  value={media.pitch}
-                  onChange={(e, { value }) => {
-                    const newMedia = media;
-                    newMedia.pitch = parseInt(value);
-                    setMedia({ ...newMedia });
-                  }}
+                  placeholder="Not connected to a pitch"
+                  options={Array.from(
+                    { length: numPitches },
+                    (_, i) => i + 1,
+                  ).map((x) => ({ key: x, text: `Pitch ${x}`, value: x }))}
+                  selection
+                  value={pitch}
+                  onChange={(e, { _, value }) => setPitch(+value)}
                 />
               </Form.Field>
             )}
@@ -71,14 +74,11 @@ const MediaEditModal = ({
               <label>Trivia-image?</label>
               <Checkbox
                 toggle
-                checked={media.trivia}
-                onChange={() =>
-                  setMedia((prevState) => ({
-                    ...prevState,
-                    trivia: !media.trivia,
-                    pitch: 0,
-                  }))
-                }
+                checked={trivia}
+                onChange={() => {
+                  setTrivia((prevTrivia) => !prevTrivia);
+                  setPitch(0);
+                }}
               />
             </Form.Field>
           </Form>
@@ -96,12 +96,10 @@ const MediaEditModal = ({
             content="Save"
             onClick={() => {
               setSaving(true);
-              save(
-                media.id,
-                media.mediaMetadata.description,
-                media.pitch,
-                media.trivia,
-              );
+              m.mediaMetadata.description = description;
+              m.pitch = pitch;
+              m.trivia = trivia;
+              save(m.id, description, pitch, trivia);
             }}
           />
         </Button.Group>
