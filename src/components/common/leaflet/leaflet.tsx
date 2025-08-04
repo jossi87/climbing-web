@@ -109,11 +109,7 @@ const UpdateBounds = ({
       ),
     );
 
-  if (
-    bounds.isValid() &&
-    bounds.getWest() !== bounds.getEast() &&
-    bounds.getNorth() !== bounds.getSouth()
-  ) {
+  if (bounds.isValid() && bounds.getNorthWest() !== bounds.getSouthEast()) {
     map.fitBounds(bounds);
   }
 
