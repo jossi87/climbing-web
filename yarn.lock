@@ -7579,6 +7579,11 @@ jest-worker@^27.4.5:
     merge-stream "^2.0.0"
     supports-color "^8.0.0"
 
+jquery@x.*:
+  version "3.7.1"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.7.1.tgz#083ef98927c9a6a74d05a6af02806566d16274de"
+  integrity sha512-m4avr8yL8kmFN8psrbFFFmB/If14iN5o9nw/NgnnM+kybDJpRsAynV2BsfpTYrTRysYUdADVD7CkUUizgkpLfg==
+
 js-file-download@^0.4.12:
   version "0.4.12"
   resolved "https://registry.yarnpkg.com/js-file-download/-/js-file-download-0.4.12.tgz#10c70ef362559a5b23cdbdc3bd6f399c3d91d821"
@@ -9682,6 +9687,13 @@ selfsigned@^2.4.1:
   dependencies:
     "@types/node-forge" "^1.3.0"
     node-forge "^1"
+
+semantic-ui-css@^2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/semantic-ui-css/-/semantic-ui-css-2.5.0.tgz#b3b7b58b5ffbe6d6fb6549beded16e79a9aa64eb"
+  integrity sha512-jIWn3WXXE2uSaWCcB+gVJVRG3masIKtTMNEP2X8Aw909H2rHpXGneYOxzO3hT8TpyvB5/dEEo9mBFCitGwoj1A==
+  dependencies:
+    jquery x.*
 
 semantic-ui-react@^3.0.0-beta.2:
   version "3.0.0-beta.2"

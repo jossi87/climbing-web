@@ -89,7 +89,7 @@ const Profile = () => {
       <Header as="h5" textAlign="center" className="buldreinfo-visible-mobile">
         <Avatar
           userId={profile.id}
-          name={profile.firstname + " " + profile.lastname}
+          name={`${profile.firstname} ${profile.lastname}`}
           avatarCrc32={profile.avatarCrc32}
         />
         <Header.Content>{firstLast}</Header.Content>
@@ -99,7 +99,7 @@ const Profile = () => {
           <Header as="h4">
             <Avatar
               userId={profile.id}
-              name={profile.firstname + " " + profile.lastname}
+              name={`${profile.firstname} ${profile.lastname}`}
               avatarCrc32={profile.avatarCrc32}
             />
             <Header.Content>

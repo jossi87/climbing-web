@@ -73,12 +73,7 @@ module.exports = {
       {
         test: /\.css$/i,
         use: [
-          {
-            loader: stylesHandler,
-            options: {
-              publicPath: "/build/static/",
-            },
-          },
+          stylesHandler,
           "css-loader",
         ],
       },
