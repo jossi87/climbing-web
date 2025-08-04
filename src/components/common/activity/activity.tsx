@@ -288,7 +288,11 @@ const Activity = ({ idArea, idSector }: Props) => {
                           to={`/user/${u.id}`}
                           image
                         >
-                          <Avatar userId={u.id} avatarCrc32={u.avatarCrc32} />{" "}
+                          <Avatar
+                            userId={u.id}
+                            name={u.name}
+                            avatarCrc32={u.avatarCrc32}
+                          />{" "}
                           {u.name}
                         </Label>
                       ))}
@@ -302,7 +306,11 @@ const Activity = ({ idArea, idSector }: Props) => {
               return (
                 <Feed.Event key={a.activityIds.join("+")}>
                   <Feed.Label>
-                    <Avatar userId={a.id} avatarCrc32={a.avatarCrc32} />
+                    <Avatar
+                      userId={a.id}
+                      name={a.name}
+                      avatarCrc32={a.avatarCrc32}
+                    />
                   </Feed.Label>
                   <Feed.Content>
                     <Feed.Summary>
@@ -425,7 +433,11 @@ const Activity = ({ idArea, idSector }: Props) => {
               return (
                 <Feed.Event key={a.activityIds.join("+")}>
                   <Feed.Label>
-                    <Avatar userId={a.id} avatarCrc32={a.avatarCrc32} />
+                    <Avatar
+                      userId={a.id}
+                      name={a.name}
+                      avatarCrc32={a.avatarCrc32}
+                    />
                   </Feed.Label>
                   <Feed.Content>
                     <Feed.Summary>

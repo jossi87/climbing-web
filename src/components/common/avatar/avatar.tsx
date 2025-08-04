@@ -4,6 +4,7 @@ import { Icon, Image, Modal } from "semantic-ui-react";
 
 type Props = {
   userId: number;
+  name: string;
   avatarCrc32: number;
   floated?: "left" | "right";
   size?:
@@ -17,7 +18,7 @@ type Props = {
     | "massive";
 };
 
-function Avatar({ userId, avatarCrc32, floated, size }: Props) {
+function Avatar({ userId, name, avatarCrc32, floated, size }: Props) {
   const [open, setOpen] = useState(false);
 
   const commonImageProps = {
@@ -40,11 +41,15 @@ function Avatar({ userId, avatarCrc32, floated, size }: Props) {
       basic
       open={open}
       trigger={
-        <Image src={getAvatarUrl(userId, avatarCrc32)} {...commonImageProps} />
+        <Image
+          src={getAvatarUrl(userId, avatarCrc32)}
+          alt={name}
+          {...commonImageProps}
+        />
       }
     >
       <div style={{ display: "flex", justifyContent: "center" }}>
-        <Image src={getAvatarUrl(userId, avatarCrc32, true)} />
+        <Image src={getAvatarUrl(userId, avatarCrc32, true)} alt={name} />
       </div>
     </Modal>
   );

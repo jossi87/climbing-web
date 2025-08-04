@@ -66,7 +66,11 @@ export const ProblemTicks = ({ ticks }: Props) => {
               }}
             >
               <Feed.Label>
-                <Avatar userId={t.idUser} avatarCrc32={t.avatarCrc32} />
+                <Avatar
+                  userId={t.idUser}
+                  name={t.name}
+                  avatarCrc32={t.avatarCrc32}
+                />
               </Feed.Label>
               <Feed.Content>
                 <Feed.Summary>

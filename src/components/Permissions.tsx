@@ -108,6 +108,7 @@ const Permissions = () => {
                 <Card.Content>
                   <Avatar
                     userId={u.userId}
+                    name={u.name}
                     avatarCrc32={u.avatarCrc32}
                     floated="right"
                     size="mini"
