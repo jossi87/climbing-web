@@ -2,7 +2,6 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useState, useEffect } from "react";
 import { DATA_MUTATION_EVENT } from "../components/DataReloader";
 import { FetchOptions } from "./types";
-import fetch from "isomorphic-fetch";
 import { captureMessage } from "@sentry/react";
 import { saveAs } from "file-saver";
 import { MediaRegion } from "../utils/svg-scaler";

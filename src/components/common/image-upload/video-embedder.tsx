@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Input } from "semantic-ui-react";
-import fetch from "isomorphic-fetch";
 
 type Info = {
   embedVideoUrl: string | undefined;
