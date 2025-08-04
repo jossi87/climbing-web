@@ -8,6 +8,7 @@ import {
   Segment,
   Placeholder,
 } from "semantic-ui-react";
+import Avatar from "./common/avatar/avatar";
 import { Link } from "react-router-dom";
 import { useMeta } from "./common/meta";
 import { getImageUrl, numberWithCommas, useData } from "../api";
@@ -131,23 +132,36 @@ const Frontpage = () => {
                         {randomMedia.tagged &&
                           randomMedia.tagged.map((x) => (
                             <Label
+                              image
                               basic
                               key={x.id}
                               as={Link}
                               to={`/user/${x.id}`}
                             >
-                              <Icon name="user" />
+                              <Avatar
+                                userId={x.id}
+                                name={x.name}
+                                avatarCrc32={x.avatarCrc32}
+                              />
                               {x.name}
                             </Label>
                           ))}
                         {randomMedia.photographer && (
                           <Label
+                            image
                             basic
                             as={Link}
                             to={`/user/${randomMedia.photographer.id}`}
                           >
-                            <Icon name="photo" />
-                            {randomMedia.photographer.name}
+                            <Avatar
+                              userId={randomMedia.photographer.id}
+                              name={randomMedia.photographer.name}
+                              avatarCrc32={randomMedia.photographer.avatarCrc32}
+                            />
+                            Photog:
+                            <Label.Detail color={"FFF"}>
+                              {randomMedia.photographer.name}
+                            </Label.Detail>
                           </Label>
                         )}
                       </Label.Group>

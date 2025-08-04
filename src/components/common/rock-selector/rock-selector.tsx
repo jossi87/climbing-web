@@ -18,7 +18,7 @@ const RockSelector = ({
     rock ? { label: rock, value: rock } : null,
   );
 
-  function handleChange(newValue: any) {
+  function handleChange(newValue: S) {
     if (!newValue) {
       newValue = null;
     }
