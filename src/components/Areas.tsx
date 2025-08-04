@@ -13,7 +13,7 @@ import { md } from "../utils/md";
 const Areas = () => {
   const { data } = useAreas();
   const meta = useMeta();
-  const [flyToId, setFlyToId] = useState<any>(null);
+  const [flyToId, setFlyToId] = useState<number>(null);
   const [showForDevelopers, setShowForDevelopers] = useState(false);
   const leafletRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();

@@ -6,6 +6,7 @@ import Media from "../../common/media/media";
 import Avatar from "../../common/avatar/avatar";
 import { useMeta } from "../../common/meta";
 import Linkify from "linkify-react";
+import { components } from "../../../@types/buldreinfo/swagger";
 
 export const ProblemComments = ({
   problemId,
@@ -14,7 +15,7 @@ export const ProblemComments = ({
 }: {
   problemId: number;
   showHiddenMedia: boolean;
-  onShowCommentModal: (comment: any) => void;
+  onShowCommentModal: (comment: components["schemas"]["ProblemComment"]) => void;
 }) => {
   const accessToken = useAccessToken();
   const meta = useMeta();
