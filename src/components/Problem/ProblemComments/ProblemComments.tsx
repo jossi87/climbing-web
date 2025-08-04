@@ -15,7 +15,9 @@ export const ProblemComments = ({
 }: {
   problemId: number;
   showHiddenMedia: boolean;
-  onShowCommentModal: (comment: components["schemas"]["ProblemComment"]) => void;
+  onShowCommentModal: (
+    comment: components["schemas"]["ProblemComment"],
+  ) => void;
 }) => {
   const accessToken = useAccessToken();
   const meta = useMeta();
