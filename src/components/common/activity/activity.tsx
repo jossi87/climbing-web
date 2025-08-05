@@ -230,7 +230,9 @@ const Activity = ({ idArea, idSector }: Props) => {
           </Placeholder>
         </Segment>
       )}
-      {activity && activity.length === 0 && <Segment vertical>No data</Segment>}
+      {activity && activity.length === 0 && (
+        <Segment vertical>No recent activity</Segment>
+      )}
       {activity && activity.length != 0 && (
         <Feed>
           {activity.map((a) => {
