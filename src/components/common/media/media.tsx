@@ -14,13 +14,14 @@ import {
   putMediaJpegRotate,
   putMediaInfo,
 } from "../../../api";
-import { Card, Image } from "semantic-ui-react";
+import { Button, Card, Icon, Image } from "semantic-ui-react";
 import MediaModal from "./media-modal";
 import MediaEditModal from "./media-edit-modal";
 import SvgViewer from "../../SvgViewer";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Loading } from "../widgets/widgets";
 import { components } from "../../../@types/buldreinfo/swagger";
+import { background } from "storybook/internal/theming";
 
 const style: CSSProperties = {
   objectFit: "cover",
@@ -344,15 +345,32 @@ const Media = ({
             );
           } else {
             content = (
-              <Image
-                alt={x.mediaMetadata.description}
-                style={style}
-                src={getImageUrl(x.id, x.crc32, 205)}
-                onError={(img) =>
-                  (img.target.src = "/png/video_placeholder.png")
-                }
-                rounded
-              />
+              <>
+                <Image
+                  alt={x.mediaMetadata.description}
+                  style={style}
+                  src={getImageUrl(x.id, x.crc32, 205)}
+                  onError={(img) =>
+                    (img.target.src = "/png/video_placeholder.png")
+                  }
+                  rounded
+                />
+                {x.idType === 2 && (
+                  <Icon
+                    name="play"
+                    circular
+                    style={{
+                      background: "red",
+                      color: "white",
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      zIndex: 2,
+                    }}
+                  />
+                )}
+              </>
             );
           }
           return (
