@@ -1,6 +1,6 @@
 import React from "react";
 import { Loading } from "../widgets/widgets";
-import { Table, Header } from "semantic-ui-react";
+import { Table, Label } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { useTop } from "../../../api";
 import Avatar from "../../common/avatar/avatar";
@@ -18,20 +18,30 @@ const Top = ({ idArea, idSector }: TopProps) => {
   }
 
   const rows = top.map((t) => (
-    <Table.Row
-      key={t.userId}
-      style={{ backgroundColor: t.mine ? "#d2f8d2" : "#ffffff" }}
-    >
-      <Table.Cell>#{t.rank}</Table.Cell>
+    <Table.Row key={t.percentage}>
+      <Table.Cell verticalAlign="top">#{t.rank}</Table.Cell>
+      <Table.Cell verticalAlign="top">{t.percentage}%</Table.Cell>
       <Table.Cell>
-        <Header as="h4" image>
-          <Avatar userId={t.userId} name={t.name} avatarCrc32={t.avatarCrc32} />
-          <Header.Content as={Link} to={`/user/${t.userId}`}>
-            {t.name}
-          </Header.Content>
-        </Header>
+        <Label.Group>
+          {t.users.map((u) => (
+            <Label
+              key={u.userId}
+              as={Link}
+              to={`/user/${u.userId}`}
+              image
+              style={{ backgroundColor: u.mine ? "#d2f8d2" : "#ffffff" }}
+              basic
+            >
+              <Avatar
+                userId={u.userId}
+                name={u.name}
+                avatarCrc32={u.avatarCrc32}
+              />
+              {u.name}
+            </Label>
+          ))}
+        </Label.Group>
       </Table.Cell>
-      <Table.Cell>{t.percentage}%</Table.Cell>
     </Table.Row>
   ));
 
@@ -40,8 +50,8 @@ const Top = ({ idArea, idSector }: TopProps) => {
       <Table.Header>
         <Table.Row>
           <Table.HeaderCell>Rank</Table.HeaderCell>
-          <Table.HeaderCell>Name</Table.HeaderCell>
           <Table.HeaderCell>Completed</Table.HeaderCell>
+          <Table.HeaderCell>People</Table.HeaderCell>
         </Table.Row>
       </Table.Header>
       <Table.Body>{rows}</Table.Body>

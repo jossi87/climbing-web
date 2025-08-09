@@ -1804,13 +1804,16 @@ export type components = {
         Top: {
             /** Format: int32 */
             rank?: number;
+            /** Format: double */
+            percentage?: number;
+            users?: components["schemas"]["TopUser"][];
+        };
+        TopUser: {
             /** Format: int32 */
             userId?: number;
             name?: string;
             /** Format: int64 */
             avatarCrc32?: number;
-            /** Format: double */
-            percentage?: number;
             mine?: boolean;
         };
         Trash: {
