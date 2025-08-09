@@ -995,7 +995,7 @@ export type components = {
             newMedia?: components["schemas"]["NewMedia"][];
             externalLinks?: components["schemas"]["ExternalLink"][];
             pageViews?: string;
-            typeNumTicked?: components["schemas"]["TypeNumTicked"][];
+            typeNumTickedTodo?: components["schemas"]["TypeNumTickedTodo"][];
         };
         AreaSector: {
             areaName?: string;
@@ -1024,7 +1024,7 @@ export type components = {
             /** Format: int32 */
             randomMediaCrc32?: number;
             problems?: components["schemas"]["SectorProblem"][];
-            typeNumTicked?: components["schemas"]["TypeNumTicked"][];
+            typeNumTickedTodo?: components["schemas"]["TypeNumTickedTodo"][];
             /** Format: int32 */
             numProblems?: number;
         };
@@ -1197,12 +1197,14 @@ export type components = {
             type?: string;
             subType?: string;
         };
-        TypeNumTicked: {
+        TypeNumTickedTodo: {
             type?: string;
             /** Format: int32 */
             num?: number;
             /** Format: int32 */
             ticked?: number;
+            /** Format: int32 */
+            todo?: number;
         };
         Webcam: {
             id?: string;
@@ -1881,8 +1883,8 @@ export type components = {
             value?: string;
             content?: Record<string, never>;
             fileName?: string;
-            formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
             simple?: boolean;
+            formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
             parameterizedHeaders?: {
                 empty?: boolean;
             } & {

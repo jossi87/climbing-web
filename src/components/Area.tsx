@@ -380,7 +380,7 @@ const Area = () => {
             {data.sectors?.map((sector) => {
               let percent;
               if (numTickedProblemsInArea > 0) {
-                const [total, ticked] = sector.typeNumTicked
+                const [total, ticked] = sector.typeNumTickedTodo
                   ?.filter((s) => s.type != "Projects" && s.type != "Broken")
                   ?.reduce(
                     ([total, ticked], d) => [
@@ -429,7 +429,7 @@ const Area = () => {
                     </Item.Header>
                     <Item.Extra>
                       {numTickedProblemsInArea &&
-                      sector.typeNumTicked?.find(
+                      sector.typeNumTickedTodo?.find(
                         (x) => x.type != "Projects",
                       ) ? (
                         <Progress
@@ -440,10 +440,12 @@ const Area = () => {
                           inverted={true}
                         />
                       ) : null}
-                      {sector.typeNumTicked?.map((x) => (
+                      {sector.typeNumTickedTodo?.map((x) => (
                         <p key={`${x.type}/${x.num}/${x.ticked}`}>
                           {x.type + ": " + x.num}
-                          {x.ticked ? " (" + x.ticked + " ticked)" : ""}
+                          {x.ticked || x.todo
+                            ? ` (${[x.ticked && `${x.ticked} ticked`, x.todo && `${x.todo} todo`].filter(Boolean).join(", ")})`
+                            : ""}
                         </p>
                       ))}
                     </Item.Extra>
@@ -466,7 +468,7 @@ const Area = () => {
     sectorPanes.push({
       menuItem:
         (meta.isBouldering ? "Problems (" : "Routes (") +
-        (data.typeNumTicked?.reduce(
+        (data.typeNumTickedTodo?.reduce(
           (count, current) => count + (current?.num ?? 0),
           0,
         ) ?? []) +
@@ -607,7 +609,7 @@ const Area = () => {
             Sectors:
             <Label.Detail>{data.sectors?.length}</Label.Detail>
           </Label>
-          {data.typeNumTicked?.map((t) => (
+          {data.typeNumTickedTodo?.map((t) => (
             <Label key={t.type} basic>
               {t.type}:
               <Label.Detail>
