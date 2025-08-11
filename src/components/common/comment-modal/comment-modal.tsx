@@ -37,7 +37,7 @@ const CommentModal = ({
   return (
     <Modal open={true} onClose={onClose}>
       <Modal.Header>Add comment</Modal.Header>
-      <Modal.Content>
+      <Modal.Content scrolling>
         <Modal.Description>
           <Form>
             <Form.Field>

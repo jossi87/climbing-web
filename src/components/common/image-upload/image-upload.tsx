@@ -110,7 +110,7 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
 
               return (
                 <Card key={key}>
-                  <Image src={m.preview ?? m.embedThumbnailUrl} />
+                  <Image size="medium" src={m.preview ?? m.embedThumbnailUrl} />
                   <Card.Content>
                     {isMultiPitch && (
                       <Input
