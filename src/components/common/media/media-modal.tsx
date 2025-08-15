@@ -395,7 +395,7 @@ const MediaModal = ({
             </Modal>
             {!isBouldering && (m.mediaSvgs || m.svgs) && (
               <Modal trigger={<Button icon="help" />}>
-                <Modal.Content image>
+                <Modal.Content image scrolling>
                   <Modal.Description>
                     <Header>Topo</Header>
                     <List divided relaxed>
