@@ -14,14 +14,13 @@ import {
   putMediaJpegRotate,
   putMediaInfo,
 } from "../../../api";
-import { Button, Card, Icon, Image } from "semantic-ui-react";
+import { Card, Icon, Image } from "semantic-ui-react";
 import MediaModal from "./media-modal";
 import MediaEditModal from "./media-edit-modal";
 import SvgViewer from "../../SvgViewer";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Loading } from "../widgets/widgets";
 import { components } from "../../../@types/buldreinfo/swagger";
-import { background } from "storybook/internal/theming";
 
 const style: CSSProperties = {
   objectFit: "cover",
