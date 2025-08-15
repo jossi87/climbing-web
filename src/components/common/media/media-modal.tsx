@@ -347,7 +347,7 @@ const MediaModal = ({
               />
             )}
             <Modal trigger={<Button icon="info" />}>
-              <Modal.Content image>
+              <Modal.Content image scrolling>
                 <Image wrapped size="medium" src={getImageUrl(m.id, 150)} />
                 <Modal.Description>
                   <Header>Info</Header>

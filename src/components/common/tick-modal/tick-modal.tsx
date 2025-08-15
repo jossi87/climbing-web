@@ -66,7 +66,7 @@ const TickModal = ({
   return (
     <Modal open={open} onClose={onClose}>
       <Modal.Header>Tick</Modal.Header>
-      <Modal.Content>
+      <Modal.Content scrolling>
         <Modal.Description>
           <Form>
             {validDate ? (

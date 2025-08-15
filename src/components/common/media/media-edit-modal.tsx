@@ -39,7 +39,7 @@ const MediaEditModal = ({
   return (
     <Modal open={true} onClose={onCloseWithoutReload}>
       <Modal.Header>Edit media</Modal.Header>
-      <Modal.Content>
+      <Modal.Content scrolling>
         <Modal.Description>
           <Form>
             <Form.Field>
