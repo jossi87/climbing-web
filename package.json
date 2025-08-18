@@ -55,7 +55,7 @@
     "storybook-addon-remix-react-router": "^5.0.0",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.39.1",
-    "webpack": "^5.101.2",
+    "webpack": "^5.101.3",
     "webpack-bundle-analyzer": "^4.10.2",
     "webpack-cli": "^6.0.1",
     "webpack-dev-server": "^5.2.2",

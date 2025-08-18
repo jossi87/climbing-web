@@ -148,67 +148,90 @@ const ProfileStatistics = ({
             }}
           />
         )}
-        <Label.Group size="small">
-          <Label color="orange" image>
-            <Icon name="check" />
-            {numberWithCommas(numTicks + numFas)}
-            {numFas > 0 && ` (${numberWithCommas(numFas)} FA's)`}
-            <Label.Detail>Ascents</Label.Detail>
-          </Label>
-          {numTickRepeats > 0 && (
-            <Label color="olive" image>
-              <Icon name="check" />
-              {numberWithCommas(numTickRepeats)}
-              <Label.Detail>Repeat</Label.Detail>
-            </Label>
-          )}
-          <Label color="green" image>
-            <Icon name="photo" />
-            {numberWithCommas(data.numImageTags ?? 0)}
-            <Label.Detail>Tag</Label.Detail>
-          </Label>
-          <Label color="teal" image>
-            <Icon name="photo" />
-            {numberWithCommas(data.numImagesCreated ?? 0)}
-            <Label.Detail>Captured</Label.Detail>
-          </Label>
-          <Label color="blue" image>
-            <Icon name="video" />
-            {numberWithCommas(data.numVideoTags ?? 0)}
-            <Label.Detail>Tag</Label.Detail>
-          </Label>
-          <Label color="violet" image>
-            <Icon name="video" />
-            {numberWithCommas(data.numVideosCreated ?? 0)}
-            <Label.Detail>Captured</Label.Detail>
-          </Label>
-          {regions?.length > 0 && (
-            <Label color="brown" image>
-              <Icon name="world" />
-              Regions
-              <Label.Detail>{regions.join(", ")}</Label.Detail>
-            </Label>
-          )}
-          {emails?.map((email) => (
-            <Label
-              key={email}
-              color="purple"
-              image
-              as="a"
-              href={`mailto:${email}`}
-            >
-              <Icon name="mail outline" />
-              {email}
-            </Label>
-          ))}
-          {lastActivity && (
-            <Label key={lastActivity} color="pink" image>
-              <Icon name="time" />
-              Active
-              <Label.Detail>{lastActivity}</Label.Detail>
-            </Label>
-          )}
-        </Label.Group>
+        {numTicks > 0 ||
+        numFas > 0 ||
+        numTickRepeats > 0 ||
+        data.numImageTags > 0 ||
+        data.numImagesCreated > 0 ||
+        data.numVideoTags > 0 ||
+        data.numVideosCreated > 0 ||
+        regions?.length > 0 ||
+        emails?.length > 0 ||
+        lastActivity ? (
+          <Label.Group size="small">
+            {(numTicks > 0 || numFas > 0) && (
+              <Label color="orange" image>
+                <Icon name="check" />
+                {numberWithCommas(numTicks + numFas)}
+                {numFas > 0 && ` (${numberWithCommas(numFas)} FA's)`}
+                <Label.Detail>Ascents</Label.Detail>
+              </Label>
+            )}
+            {numTickRepeats > 0 && (
+              <Label color="olive" image>
+                <Icon name="check" />
+                {numberWithCommas(numTickRepeats)}
+                <Label.Detail>Repeat</Label.Detail>
+              </Label>
+            )}
+            {data.numImageTags > 0 && (
+              <Label color="green" image>
+                <Icon name="photo" />
+                {numberWithCommas(data.numImageTags)}
+                <Label.Detail>Tag</Label.Detail>
+              </Label>
+            )}
+            {data.numImagesCreated > 0 && (
+              <Label color="teal" image>
+                <Icon name="photo" />
+                {numberWithCommas(data.numImagesCreated)}
+                <Label.Detail>Captured</Label.Detail>
+              </Label>
+            )}
+            {data.numVideoTags > 0 && (
+              <Label color="blue" image>
+                <Icon name="video" />
+                {numberWithCommas(data.numVideoTags)}
+                <Label.Detail>Tag</Label.Detail>
+              </Label>
+            )}
+            {data.numVideosCreated > 0 && (
+              <Label color="violet" image>
+                <Icon name="video" />
+                {numberWithCommas(data.numVideosCreated)}
+                <Label.Detail>Captured</Label.Detail>
+              </Label>
+            )}
+            {regions?.length > 0 && (
+              <Label color="brown" image>
+                <Icon name="world" />
+                {regions.length === 1 ? "Region" : "Regions"}
+                <Label.Detail>{regions.join(", ")}</Label.Detail>
+              </Label>
+            )}
+            {emails?.map((email) => (
+              <Label
+                key={email}
+                color="purple"
+                image
+                as="a"
+                href={`mailto:${email}`}
+              >
+                <Icon name="mail outline" />
+                {email}
+              </Label>
+            ))}
+            {lastActivity && (
+              <Label key={lastActivity} color="pink" image>
+                <Icon name="time" />
+                Active
+                <Label.Detail>{lastActivity}</Label.Detail>
+              </Label>
+            )}
+          </Label.Group>
+        ) : (
+          "No data"
+        )}
         {chart && (
           <>
             <Divider />
