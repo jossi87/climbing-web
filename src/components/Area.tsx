@@ -28,7 +28,7 @@ import {
   Header,
   List,
   Message,
-  Progress,
+  Statistic,
   Feed,
   Segment,
 } from "semantic-ui-react";
@@ -428,18 +428,7 @@ const Area = () => {
                       />
                     </Item.Header>
                     <Item.Extra>
-                      {numTickedProblemsInArea &&
-                      sector.typeNumTickedTodo?.find(
-                        (x) => x.type != "Projects",
-                      ) ? (
-                        <Progress
-                          percent={percent}
-                          progress={true}
-                          autoSuccess
-                          size="small"
-                          inverted={true}
-                        />
-                      ) : null}
+                      {percent > 0 && <p>Ticked: {percent}%</p>}
                       {sector.typeNumTickedTodo?.map((x) => (
                         <p key={`${x.type}/${x.num}/${x.ticked}`}>
                           {x.type + ": " + x.num}
