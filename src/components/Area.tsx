@@ -377,79 +377,102 @@ const Area = () => {
       render: () => (
         <TabPane>
           <Item.Group link unstackable>
-            {data.sectors?.map((sector) => {
-              let percent;
-              if (numTickedProblemsInArea > 0) {
-                const [total, ticked] = sector.typeNumTickedTodo
-                  ?.filter((s) => s.type != "Projects" && s.type != "Broken")
-                  ?.reduce(
-                    ([total, ticked], d) => [
-                      total + (d.num ?? 0),
-                      ticked + (d.ticked ?? 0),
-                    ],
-                    [0, 0],
-                  ) ?? [0, 0];
-                percent = Math.round((ticked / total) * 100);
-              }
-              return (
-                <Item as={Link} to={`/sector/${sector.id}`} key={sector.id}>
-                  <Image
-                    size="small"
-                    style={{ maxHeight: "150px", objectFit: "cover" }}
-                    src={
-                      sector.randomMediaId
-                        ? getImageUrl(
-                            sector.randomMediaId,
-                            sector.randomMediaCrc32 ?? 0,
-                            150,
-                          )
-                        : "/png/image.png"
-                    }
-                  />
-                  <Item.Content>
-                    <Item.Header>
-                      {sector.accessClosed ? (
-                        <Header as="h3" color="red">
-                          {sector.accessClosed}
-                        </Header>
-                      ) : null}
-                      {sector.name}{" "}
-                      <LockSymbol
-                        lockedAdmin={!!sector.lockedAdmin}
-                        lockedSuperadmin={!!sector.lockedSuperadmin}
-                      />
-                      <WallDirection
-                        wallDirectionCalculated={sector.wallDirectionCalculated}
-                        wallDirectionManual={sector.wallDirectionManual}
-                      />
-                      <SunOnWall
-                        sunFromHour={sector.sunFromHour}
-                        sunToHour={sector.sunToHour}
-                      />
-                    </Item.Header>
-                    <Item.Extra>
-                      {percent > 0 && <p>Ticked: {percent}%</p>}
-                      {sector.typeNumTickedTodo?.map((x) => (
-                        <p key={`${x.type}/${x.num}/${x.ticked}`}>
-                          {x.type + ": " + x.num}
-                          {x.ticked || x.todo
-                            ? ` (${[x.ticked && `${x.ticked} ticked`, x.todo && `${x.todo} todo`].filter(Boolean).join(", ")})`
-                            : ""}
-                        </p>
-                      ))}
-                    </Item.Extra>
-                    <Item.Description>
-                      {sector.accessInfo ? (
-                        <Header as="h5" color="red">
-                          {sector.accessInfo}
-                        </Header>
-                      ) : null}
-                      {sector.comment}
-                    </Item.Description>
-                  </Item.Content>
-                </Item>
-              );
-            })}
+            {data.sectors?.map((sector) => (
+              <Item as={Link} to={`/sector/${sector.id}`} key={sector.id}>
+                <Image
+                  size="small"
+                  style={{ maxHeight: "150px", objectFit: "cover" }}
+                  src={
+                    sector.randomMediaId
+                      ? getImageUrl(
+                          sector.randomMediaId,
+                          sector.randomMediaCrc32 ?? 0,
+                          150,
+                        )
+                      : "/png/image.png"
+                  }
+                />
+                <Item.Content>
+                  <Item.Header>
+                    {sector.accessClosed ? (
+                      <Header as="h3" color="red">
+                        {sector.accessClosed}
+                      </Header>
+                    ) : null}
+                    {sector.name}{" "}
+                    <LockSymbol
+                      lockedAdmin={!!sector.lockedAdmin}
+                      lockedSuperadmin={!!sector.lockedSuperadmin}
+                    />
+                    <WallDirection
+                      wallDirectionCalculated={sector.wallDirectionCalculated}
+                      wallDirectionManual={sector.wallDirectionManual}
+                    />
+                    <SunOnWall
+                      sunFromHour={sector.sunFromHour}
+                      sunToHour={sector.sunToHour}
+                    />
+                  </Item.Header>
+                  <Item.Extra>
+                    {sector.typeNumTickedTodo && (
+                      <List>
+                        {sector.typeNumTickedTodo.map((x) => {
+                          let icon = <List.Icon name="circle outline" />;
+                          if (x.type === "Projects") {
+                            icon = (
+                              <List.Icon
+                                color="blue"
+                                name="pause circle outline"
+                              />
+                            );
+                          } else if (x.type === "Broken") {
+                            icon = (
+                              <List.Icon
+                                color="red"
+                                name="times circle outline"
+                              />
+                            );
+                          } else if (x.ticked === x.num) {
+                            icon = (
+                              <List.Icon
+                                color="green"
+                                name="check circle outline"
+                              />
+                            );
+                          } else if (x.ticked > 0) {
+                            icon = (
+                              <List.Icon
+                                color="yellow"
+                                name="dot circle outline"
+                              />
+                            );
+                          }
+                          return (
+                            <List.Item key={`${x.type}/${x.num}/${x.ticked}`}>
+                              {icon}
+                              <List.Content>
+                                {x.type + ": " + x.num}
+                                {x.ticked || x.todo
+                                  ? ` (${[x.ticked && `${x.ticked} ticked`, x.todo && `${x.todo} todo`].filter(Boolean).join(", ")})`
+                                  : ""}
+                              </List.Content>
+                            </List.Item>
+                          );
+                        })}
+                      </List>
+                    )}
+                  </Item.Extra>
+                  <Item.Description>
+                    {sector.accessInfo ? (
+                      <Header as="h5" color="red">
+                        {sector.accessInfo}
+                      </Header>
+                    ) : null}
+                    {sector.comment}
+                  </Item.Description>
+                </Item.Content>
+              </Item>
+            ))}
           </Item.Group>
         </TabPane>
       ),
