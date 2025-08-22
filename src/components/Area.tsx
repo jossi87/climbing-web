@@ -28,7 +28,6 @@ import {
   Header,
   List,
   Message,
-  Statistic,
   Feed,
   Segment,
 } from "semantic-ui-react";
@@ -367,11 +366,6 @@ const Area = () => {
 
   const sectorPanes: ComponentProps<typeof Tab>["panes"] = [];
   if (data.sectors) {
-    const numTickedProblemsInArea = data.sectors.reduce(
-      (count, current) =>
-        count + (current.problems?.filter((p) => p.ticked)?.length ?? 0),
-      0,
-    );
     sectorPanes.push({
       menuItem: "Sectors (" + data.sectors.length + ")",
       render: () => (
