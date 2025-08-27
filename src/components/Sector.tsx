@@ -515,11 +515,7 @@ const Sector = () => {
                     ))}
                   </Label.Group>
                 )}
-                <ExpandableText
-                  text={data.areaComment}
-                  maxLength={50}
-                  initialIsExpanded={!data.comment}
-                />
+                <ExpandableText text={data.areaComment} maxLength={75} />
               </Table.Cell>
             </Table.Row>
           )}

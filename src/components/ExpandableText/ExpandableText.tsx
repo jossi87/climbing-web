@@ -8,12 +8,8 @@ interface ExpandableTextProps {
   initialIsExpanded?: boolean;
 }
 
-const ExpandableText: React.FC<ExpandableTextProps> = ({
-  text,
-  maxLength = 50,
-  initialIsExpanded = false,
-}) => {
-  const [isExpanded, setIsExpanded] = useState(initialIsExpanded);
+const ExpandableText: React.FC<ExpandableTextProps> = ({ text, maxLength }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
