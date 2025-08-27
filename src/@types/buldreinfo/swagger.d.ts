@@ -1634,6 +1634,7 @@ export type components = {
             /** Format: int32 */
             areaSunToHour?: number;
             areaName?: string;
+            areaComment?: string;
             canonical?: string;
             /** Format: int32 */
             id?: number;
@@ -1886,8 +1887,8 @@ export type components = {
             value?: string;
             content?: Record<string, never>;
             fileName?: string;
-            simple?: boolean;
             formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
+            simple?: boolean;
             parameterizedHeaders?: {
                 empty?: boolean;
             } & {

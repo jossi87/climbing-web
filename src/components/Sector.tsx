@@ -37,6 +37,7 @@ import { components } from "../@types/buldreinfo/swagger";
 import { DownloadButton } from "./common/DownloadButton";
 import { MarkerDef } from "./common/leaflet/markers";
 import { Markdown } from "./Markdown/Markdown";
+import ExpandableText from "./ExpandableText/ExpandableText";
 
 type Props = {
   problem: NonNullable<components["schemas"]["Sector"]["problems"]>[number];
@@ -462,7 +463,7 @@ const Sector = () => {
             </Table.Row>
           )}
           <Table.Row verticalAlign="top">
-            <Table.Cell width={3}>Info:</Table.Cell>
+            <Table.Cell width={3}>Sector:</Table.Cell>
             <Table.Cell>
               {uniqueTypes.map((subType) => {
                 const header = subType ? subType : "Boulders";
@@ -492,6 +493,36 @@ const Sector = () => {
               <Markdown content={data.comment} />
             </Table.Cell>
           </Table.Row>
+          {(data.sectors.length > 1 || data.areaComment) && (
+            <Table.Row verticalAlign="top">
+              <Table.Cell width={3}>Area:</Table.Cell>
+              <Table.Cell>
+                {data.sectors.length > 1 && (
+                  <Label.Group size="tiny">
+                    {data.sectors.map((s) => (
+                      <Label
+                        key={s.id}
+                        as={Link}
+                        to={`/sector/${s.id}`}
+                        active={data.id === s.id}
+                      >
+                        <LockSymbol
+                          lockedAdmin={!!s.lockedAdmin}
+                          lockedSuperadmin={!!s.lockedSuperadmin}
+                        />
+                        {s.name}
+                      </Label>
+                    ))}
+                  </Label.Group>
+                )}
+                <ExpandableText
+                  text={data.areaComment}
+                  maxLength={50}
+                  initialIsExpanded={!data.comment}
+                />
+              </Table.Cell>
+            </Table.Row>
+          )}
           {data.approach?.coordinates?.length && (
             <Table.Row verticalAlign="top">
               <Table.Cell>Approach:</Table.Cell>
@@ -513,29 +544,6 @@ const Sector = () => {
                   sectorName={data.name}
                   slope={data.descent}
                 />
-              </Table.Cell>
-            </Table.Row>
-          )}
-          {data.sectors?.length && (
-            <Table.Row verticalAlign="top">
-              <Table.Cell>Sectors:</Table.Cell>
-              <Table.Cell>
-                <Label.Group size="tiny">
-                  {data.sectors.map((s) => (
-                    <Label
-                      key={s.id}
-                      as={Link}
-                      to={`/sector/${s.id}`}
-                      active={data.id === s.id}
-                    >
-                      <LockSymbol
-                        lockedAdmin={!!s.lockedAdmin}
-                        lockedSuperadmin={!!s.lockedSuperadmin}
-                      />
-                      {s.name}
-                    </Label>
-                  ))}
-                </Label.Group>
               </Table.Cell>
             </Table.Row>
           )}
