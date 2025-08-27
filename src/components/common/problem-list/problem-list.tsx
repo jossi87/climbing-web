@@ -360,7 +360,7 @@ export const ProblemList = ({
           </Step.Content>
         </Step>
       </Step.Group>
-      {showFilter ? (
+      {showFilter && (
         <Segment attached>
           <div className="problem-list-filter-container">
             <strong>Grades</strong>
@@ -421,7 +421,7 @@ export const ProblemList = ({
             )}
           </div>
         </Segment>
-      ) : null}
+      )}
       {list}
     </>
   );

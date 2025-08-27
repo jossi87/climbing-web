@@ -483,7 +483,19 @@ export const SectorEdit = ({ sector, area }: Props) => {
             </Form.Group>
           )}
           <Form.Field
-            label="Description"
+            label={
+              <label htmlFor="description">
+                Description (supports&nbsp;
+                <a
+                  href="https://jonschlinkert.github.io/remarkable/demo/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  markdown
+                </a>
+                &nbsp;formatting)
+              </label>
+            }
             control={TextArea}
             placeholder="Enter description"
             style={{ minHeight: 100 }}

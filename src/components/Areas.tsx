@@ -8,7 +8,7 @@ import { useAreas } from "../api";
 import { useMeta } from "./common/meta";
 import { HeaderButtons } from "./common/HeaderButtons";
 import "./Areas.css";
-import { md } from "../utils/md";
+import { Markdown } from "./Markdown/Markdown";
 
 const Areas = () => {
   const { data } = useAreas();
@@ -54,14 +54,7 @@ const Areas = () => {
             <i>{`(${a.numSectors} sectors, ${a.numProblems} ${typeDescription})`}</i>
             <br />
             {a.numProblems > 0 && <ChartGradeDistribution idArea={a.id} />}
-            {a.comment && (
-              <div
-                className="area-description"
-                dangerouslySetInnerHTML={{
-                  __html: md.render(a.comment),
-                }}
-              />
-            )}
+            <Markdown content={a.comment} />
           </div>
         ),
       };
@@ -157,12 +150,7 @@ const Areas = () => {
                   <List.Description>
                     <i>{`${area.numSectors} sectors, ${area.numProblems} ${typeDescription}, ${area.pageViews} page views`}</i>
                     <br />
-                    <div
-                      className="area-description"
-                      dangerouslySetInnerHTML={{
-                        __html: area.comment,
-                      }}
-                    />
+                    <Markdown content={area.comment} />
                   </List.Description>
                 </List.Content>
               </List.Item>

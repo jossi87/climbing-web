@@ -33,10 +33,10 @@ import {
 } from "semantic-ui-react";
 import { useMeta } from "./common/meta";
 import { useSector } from "../api";
-import Linkify from "linkify-react";
 import { components } from "../@types/buldreinfo/swagger";
 import { DownloadButton } from "./common/DownloadButton";
 import { MarkerDef } from "./common/leaflet/markers";
+import { Markdown } from "./Markdown/Markdown";
 
 type Props = {
   problem: NonNullable<components["schemas"]["Sector"]["problems"]>[number];
@@ -489,7 +489,7 @@ const Sector = () => {
                 <Label.Detail>{data.pageViews}</Label.Detail>
               </Label>
               <br />
-              {data.comment && <Linkify>{data.comment}</Linkify>}
+              <Markdown content={data.comment} />
             </Table.Cell>
           </Table.Row>
           {data.approach?.coordinates?.length && (

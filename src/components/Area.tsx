@@ -33,8 +33,7 @@ import {
 } from "semantic-ui-react";
 import { useMeta } from "./common/meta";
 import { getImageUrl, useArea } from "../api";
-import { Remarkable } from "remarkable";
-import { linkify } from "remarkable/linkify";
+import { Markdown } from "./Markdown/Markdown";
 import ProblemList from "./common/problem-list";
 import { components } from "../@types/buldreinfo/swagger";
 import { DownloadButton } from "./common/DownloadButton";
@@ -126,22 +125,6 @@ const SectorListItem = ({ sectorName, problem }: Props) => {
     </List.Item>
   );
 };
-
-const md = (() => {
-  const md = new Remarkable({ breaks: true }).use(linkify);
-  // open links in new windows
-  md.renderer.rules.link_open = (function () {
-    const original = md.renderer.rules.link_open;
-    return function (...args: Parameters<typeof original>) {
-      const link = original(...args);
-      return (
-        link.substring(0, link.length - 1) +
-        ' rel="noreferrer noopener" target="_blank">'
-      );
-    };
-  })();
-  return md;
-})();
 
 type AreaSectorType = NonNullable<
   components["schemas"]["Area"]["sectors"]
@@ -457,12 +440,12 @@ const Area = () => {
                     )}
                   </Item.Extra>
                   <Item.Description>
-                    {sector.accessInfo ? (
+                    {sector.accessInfo && (
                       <Header as="h5" color="red">
                         {sector.accessInfo}
                       </Header>
-                    ) : null}
-                    {sector.comment}
+                    )}
+                    <Markdown content={sector.comment} />
                   </Item.Description>
                 </Item.Content>
               </Item>
@@ -646,14 +629,7 @@ const Area = () => {
           ) : null}
           <ExternalLinkLabels externalLinks={data.externalLinks} />
         </Label.Group>
-        {data.comment ? (
-          <div
-            style={{ paddingTop: "10px" }}
-            dangerouslySetInnerHTML={{
-              __html: md.render(data.comment),
-            }}
-          />
-        ) : null}
+        <Markdown content={data.comment} />
         {data.triviaMedia?.length ? (
           <Feed.Extra style={{ paddingTop: "10px" }}>
             <Media
@@ -668,7 +644,7 @@ const Area = () => {
         ) : null}
       </Segment>
 
-      {sectorPanes.length ? <Tab panes={sectorPanes} /> : null}
+      {sectorPanes.length && <Tab panes={sectorPanes} />}
     </>
   );
 };

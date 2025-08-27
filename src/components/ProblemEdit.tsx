@@ -547,7 +547,19 @@ const ProblemEdit = ({ problem, sector }: Props) => {
             )}
           </Form.Group>
           <Form.Field
-            label="Description"
+            label={
+              <label htmlFor="description">
+                Description (supports&nbsp;
+                <a
+                  href="https://jonschlinkert.github.io/remarkable/demo/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  markdown
+                </a>
+                &nbsp;formatting)
+              </label>
+            }
             control={TextArea}
             placeholder="Enter description"
             style={{ minHeight: 100 }}
@@ -555,7 +567,19 @@ const ProblemEdit = ({ problem, sector }: Props) => {
             onChange={onCommentChanged}
           />
           <Form.Field
-            label="Trivia (e.g. name origin)"
+            label={
+              <label htmlFor="description">
+                Trivia (supports&nbsp;
+                <a
+                  href="https://jonschlinkert.github.io/remarkable/demo/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  markdown
+                </a>
+                &nbsp;formatting)
+              </label>
+            }
             control={TextArea}
             placeholder="Enter trivia"
             style={{ minHeight: 100 }}

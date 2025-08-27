@@ -35,6 +35,7 @@ import { ProblemsOnRock } from "./ProblemsOnRock";
 import { ProblemTicks } from "./ProblemTicks";
 import { ProblemComments } from "./ProblemComments";
 import { DownloadButton } from "../common/DownloadButton";
+import { Markdown } from "../Markdown/Markdown";
 
 const useIds = (): {
   problemId: number;
@@ -621,10 +622,10 @@ export const Problem = () => {
                 </>
               )}
               {data.comment && data.comment.trim().length > 0 && (
-                <Linkify>
+                <>
                   <br />
-                  {data.comment}
-                </Linkify>
+                  <Markdown content={data.comment} />
+                </>
               )}
               {meta.isIce && (
                 <>
@@ -648,7 +649,7 @@ export const Problem = () => {
             <Table.Row verticalAlign="top">
               <Table.Cell>Trivia:</Table.Cell>
               <Table.Cell>
-                {data.trivia && <Linkify>{data.trivia}</Linkify>}
+                <Markdown content={data.trivia} />
                 {data.triviaMedia && (
                   <Feed.Extra>
                     <Media

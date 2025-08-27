@@ -168,15 +168,15 @@ export const AreaEdit = () => {
           )}
           <Form.Field>
             <label>
-              Description (supports remarkable formatting, more info{" "}
+              Description (supports&nbsp;
               <a
                 href="https://jonschlinkert.github.io/remarkable/demo/"
-                rel="noreferrer noopener"
                 target="_blank"
+                rel="noopener noreferrer"
               >
-                here
+                markdown
               </a>
-              )
+              &nbsp;formatting)
             </label>
             <TextArea
               placeholder="Enter description"
