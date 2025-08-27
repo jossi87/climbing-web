@@ -10,10 +10,5 @@ export const Markdown: React.FC<MarkdownProps> = ({ content }) => {
     return null;
   }
 
-  return (
-    <div
-      style={{ paddingTop: "10px" }}
-      dangerouslySetInnerHTML={{ __html: md.render(content) }}
-    />
-  );
+  return <div dangerouslySetInnerHTML={{ __html: md.render(content) }} />;
 };
