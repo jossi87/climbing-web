@@ -1,6 +1,14 @@
 import React, { useEffect, useState, useCallback, ComponentProps } from "react";
-import { DropzoneOptions, useDropzone } from "react-dropzone";
-import { Button, Card, Image, Input, Checkbox } from "semantic-ui-react";
+import heic2any from "heic2any";
+import { useDropzone } from "react-dropzone";
+import {
+  Button,
+  Card,
+  Image,
+  Input,
+  Checkbox,
+  Loader,
+} from "semantic-ui-react";
 import VideoEmbedder from "./video-embedder";
 import { UserSelector } from "../user-selector/user-selector";
 import { UsersSelector } from "../../common/user-selector/user-selector";
@@ -24,21 +32,47 @@ const different = (a: UploadedMedia, b: UploadedMedia) => {
 const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
   const meta = useMeta();
   const [media, setMedia] = useState<UploadedMedia[]>([]);
+  const [isConverting, setIsConverting] = useState(false);
 
   useEffect(() => {
     onMediaChanged(media as UploadedMedia[]);
   }, [media, onMediaChanged]);
 
-  const onDrop = useCallback<DropzoneOptions["onDrop"]>(
-    (acceptedFiles) => {
-      setMedia((existing) => [
-        ...existing,
-        ...acceptedFiles.map((file) => ({
-          file,
-          preview: URL.createObjectURL(file),
-          photographer: meta?.authenticatedName,
-        })),
-      ]);
+  const onDrop = useCallback(
+    async (acceptedFiles) => {
+      setIsConverting(true);
+      try {
+        const processedFiles = await Promise.all(
+          acceptedFiles.map(async (file) => {
+            if (file.type === "image/heic" || file.type === "image/heif") {
+              const result = await heic2any({
+                blob: file,
+                toType: "image/jpeg",
+                quality: 0.8,
+              });
+              const jpegBlobs = Array.isArray(result) ? result : [result];
+              const newFile = new File(
+                jpegBlobs,
+                file.name.replace(/\.heic|\.heif/i, ".jpeg"),
+                { type: "image/jpeg" },
+              );
+              return newFile;
+            }
+            return file;
+          }),
+        );
+
+        setMedia((existing) => [
+          ...existing,
+          ...processedFiles.map((file) => ({
+            file,
+            preview: URL.createObjectURL(file),
+            photographer: meta?.authenticatedName,
+          })),
+        ]);
+      } finally {
+        setIsConverting(false);
+      }
     },
     [meta],
   );
@@ -48,7 +82,11 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
     accept: {
       "image/jpeg": [],
       "image/png": [],
+      "image/heic": [],
+      "image/heif": [],
     },
+    noClick: isConverting,
+    noKeyboard: isConverting,
   });
 
   const addMedia = useCallback<
@@ -74,7 +112,11 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
         }}
       >
         <input {...getInputProps()} />
-        {isDragActive ? (
+        {isConverting ? (
+          <Loader active inline size="small" style={{ margin: "auto" }}>
+            Converting HEIC files...
+          </Loader>
+        ) : isDragActive ? (
           <p>Drop files here...</p>
         ) : (
           <p>Drop images here, or click to select files to upload.</p>
