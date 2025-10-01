@@ -12,10 +12,8 @@ import {
   TabPane,
   Label,
   Icon,
-  Header,
   Table,
   Feed,
-  Image,
   Message,
 } from "semantic-ui-react";
 import {
@@ -23,6 +21,7 @@ import {
   LockSymbol,
   ConditionLabels,
   ExternalLinkLabels,
+  NoDogsAllowed,
 } from "../common/widgets/widgets";
 import { useMeta } from "../common/meta";
 import { useProblem } from "../../api";
@@ -482,24 +481,7 @@ export const Problem = () => {
             <Table.Row warning verticalAlign="top">
               <Table.Cell>Restrictions:</Table.Cell>
               <Table.Cell>
-                {data.areaNoDogsAllowed && (
-                  <Header as="h5" color="red" image>
-                    <Image
-                      src="/svg/no-animals.svg"
-                      alt="No dogs allowed"
-                      rounded
-                      size="mini"
-                    />
-                    <Header.Content>
-                      The access to our crags are at the mercy of the farmers
-                      who own the land.
-                      <Header.Subheader>
-                        Because of conflicts between dog-owners and farmers we
-                        ask you to not bring your dog to this specific crag.
-                      </Header.Subheader>
-                    </Header.Content>
-                  </Header>
-                )}
+                {data.areaNoDogsAllowed && <NoDogsAllowed />}
                 {data.areaAccessInfo && <p>{data.areaAccessInfo}</p>}
                 {data.sectorAccessInfo && <p>{data.sectorAccessInfo}</p>}
               </Table.Cell>

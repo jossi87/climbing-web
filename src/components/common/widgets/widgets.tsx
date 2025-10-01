@@ -7,6 +7,7 @@ import {
   Header,
   Message,
   Icon,
+  Image,
   Popup,
   Label,
   Button,
@@ -421,4 +422,23 @@ export function ExternalLinkLabels({
       </Label>
     );
   });
+}
+
+export function NoDogsAllowed() {
+  return (
+    <Header as="h5" color="red" image>
+      <Image
+        src="/svg/no-animals.svg"
+        alt="No dogs allowed"
+        rounded
+        size="mini"
+      />
+      <Header.Content>
+        No dogs allowed
+        <Header.Subheader>
+          The landowner asks us not to bring dogs to this crag.
+        </Header.Subheader>
+      </Header.Content>
+    </Header>
+  );
 }

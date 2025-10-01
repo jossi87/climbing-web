@@ -15,6 +15,7 @@ import {
   WallDirection,
   SunOnWall,
   ExternalLinkLabels,
+  NoDogsAllowed,
 } from "./common/widgets/widgets";
 import {
   Label,
@@ -563,26 +564,7 @@ const Area = () => {
       <Tab panes={panes} />
 
       {data.noDogsAllowed ? (
-        <Message warning>
-          {data.noDogsAllowed ? (
-            <Header as="h5" color="red" image>
-              <Image
-                src="/svg/no-animals.svg"
-                alt="No dogs allowed"
-                rounded
-                size="mini"
-              />
-              <Header.Content>
-                The access to our crags are at the mercy of the farmers who own
-                the land.
-                <Header.Subheader>
-                  Because of conflicts between dog-owners and farmers we ask you
-                  to not bring your dog to this specific crag.
-                </Header.Subheader>
-              </Header.Content>
-            </Header>
-          ) : null}
-        </Message>
+        <Message warning>{data.noDogsAllowed && <NoDogsAllowed />}</Message>
       ) : null}
 
       {data.accessInfo ? (
