@@ -365,7 +365,7 @@ const Area = () => {
                       ? getImageUrl(
                           sector.randomMediaId,
                           sector.randomMediaCrc32 ?? 0,
-                          150,
+                          { minDimension: 150 },
                         )
                       : "/png/image.png"
                   }

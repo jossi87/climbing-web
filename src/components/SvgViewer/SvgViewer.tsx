@@ -162,7 +162,7 @@ export const SvgViewer = ({
         onMouseLeave={() => setProblemIdHovered && setProblemIdHovered(null)}
       >
         <image
-          xlinkHref={getImageUrl(m.id, m.crc32, null, mediaRegion)}
+          xlinkHref={getImageUrl(m.id, m.crc32, { mediaRegion })}
           width="100%"
           height="100%"
         />

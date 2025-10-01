@@ -24,6 +24,7 @@ export {
   useAccessToken,
   getUrl,
   getImageUrl,
+  getImageUrlSrcSet,
   getBuldreinfoMediaUrlSupported,
   getBuldreinfoMediaUrl,
   numberWithCommas,

@@ -800,7 +800,7 @@ export const SvgEdit = ({
       >
         <image
           ref={imageRef}
-          xlinkHref={getImageUrl(mediaId, crc32, undefined, mediaRegion)}
+          xlinkHref={getImageUrl(mediaId, crc32, { mediaRegion })}
           width="100%"
           height="100%"
         />

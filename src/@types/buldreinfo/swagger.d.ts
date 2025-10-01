@@ -1887,8 +1887,8 @@ export type components = {
             value?: string;
             content?: Record<string, never>;
             fileName?: string;
-            formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
             simple?: boolean;
+            formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
             parameterizedHeaders?: {
                 empty?: boolean;
             } & {
@@ -2448,8 +2448,10 @@ export interface operations {
                 width?: number;
                 /** @description Image region - height */
                 height?: number;
-                /** @description Image size - E.g. minDimention=100 can return an image with the size 100x133px */
-                minDimention?: number;
+                /** @description Target Width - The image will be resized to fit this exact width (without upscaling). */
+                targetWidth?: number;
+                /** @description Minimum Dimension - Ensures the *shortest* edge (min(width, height)) of the returned image is at least this many pixels (without upscaling). */
+                minDimension?: number;
             };
             header?: never;
             path?: never;

@@ -45,18 +45,40 @@ export function getAvatarUrl(
 export function getImageUrl(
   id: number,
   checksum: number,
-  minDimension?: number,
-  mediaRegion?: MediaRegion,
+  options?: {
+    mediaRegion?: MediaRegion;
+    targetWidth?: number;
+    minDimension?: number;
+  },
 ): string {
   const crc32 = checksum || 0;
   let url = `/images?id=${id}&crc32=${crc32}`;
-  if (minDimension) {
-    url += `&minDimention=${minDimension}`;
-  }
-  if (mediaRegion) {
-    url += `&x=${mediaRegion.x}&y=${mediaRegion.y}&width=${mediaRegion.width}&height=${mediaRegion.height}`;
+  if (options?.mediaRegion) {
+    const region = options.mediaRegion;
+    url += `&x=${region.x}&y=${region.y}&width=${region.width}&height=${region.height}`;
+  } else if (options?.targetWidth) {
+    url += `&targetWidth=${options.targetWidth}`;
+  } else if (options?.minDimension) {
+    url += `&minDimension=${options.minDimension}`;
   }
   return getUrl(url);
+}
+
+export function getImageUrlSrcSet(id: number, checksum: number): string {
+  return [
+    { size: 480 }, // Small mobile/Portrait
+    { size: 800 }, // Large mobile/Tablet (for 2x DPR)
+    { size: 1280 }, // Tablet landscape/Small laptop
+    { size: 1920 }, // Standard HD desktop
+    { size: 2560 }, // QHD / 1440p
+    { size: 3840 }, // 4K / UHD Monitors (to match your screen)
+    { size: 5120 }, // 5K / High-end displays
+  ]
+    .map(({ size }) => {
+      const url = getImageUrl(id, checksum, { targetWidth: size });
+      return `${url} ${size}w`;
+    })
+    .join(",\n");
 }
 
 export function getBuldreinfoMediaUrlSupported(id: number): string {

@@ -348,7 +348,7 @@ const Media = ({
                 <Image
                   alt={x.mediaMetadata.description}
                   style={style}
-                  src={getImageUrl(x.id, x.crc32, 205)}
+                  src={getImageUrl(x.id, x.crc32, { minDimension: 205 })}
                   onError={(img) =>
                     (img.target.src = "/png/video_placeholder.png")
                   }

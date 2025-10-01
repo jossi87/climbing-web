@@ -57,7 +57,7 @@ const SearchBox = ({ children: _, ...searchProps }: SearchBoxProps) => {
         } = data;
         let imageSrc = null;
         if (mediaid > 0) {
-          imageSrc = getImageUrl(mediaid, crc32, 45);
+          imageSrc = getImageUrl(mediaid, crc32, { minDimension: 45 });
         } else if (mediaurl) {
           imageSrc = mediaurl;
         }

@@ -248,7 +248,7 @@ const Activity = ({ idArea, idSector }: Props) => {
                         src={getImageUrl(
                           a.problemRandomMediaId,
                           a.problemRandomMediaCrc32,
-                          35,
+                          { minDimension: 35 },
                         )}
                       />
                     )}
@@ -269,7 +269,9 @@ const Activity = ({ idArea, idSector }: Props) => {
                             >
                               <Image
                                 style={imgStyle}
-                                src={getImageUrl(m.id, m.crc32, 85)}
+                                src={getImageUrl(m.id, m.crc32, {
+                                  minDimension: 85,
+                                })}
                                 onError={(img) =>
                                   (img.target.src =
                                     "/png/video_placeholder.png")
@@ -339,7 +341,9 @@ const Activity = ({ idArea, idSector }: Props) => {
                             >
                               <Image
                                 style={imgStyle}
-                                src={getImageUrl(m.id, m.crc32, 85)}
+                                src={getImageUrl(m.id, m.crc32, {
+                                  minDimension: 85,
+                                })}
                                 onError={(i) =>
                                   (i.target.src = "/png/video_placeholder.png")
                                 }
@@ -397,7 +401,7 @@ const Activity = ({ idArea, idSector }: Props) => {
                         src={getImageUrl(
                           a.problemRandomMediaId,
                           a.problemRandomMediaCrc32,
-                          35,
+                          { minDimension: 35 },
                         )}
                       />
                     )}
@@ -416,7 +420,9 @@ const Activity = ({ idArea, idSector }: Props) => {
                           >
                             <Image
                               style={imgStyle}
-                              src={getImageUrl(m.id, m.crc32, 85)}
+                              src={getImageUrl(m.id, m.crc32, {
+                                minDimension: 85,
+                              })}
                               onError={(img) =>
                                 (img.target.src = "/png/video_placeholder.png")
                               }

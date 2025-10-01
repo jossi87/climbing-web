@@ -20,6 +20,7 @@ import {
   getBuldreinfoMediaUrlSupported,
   getBuldreinfoMediaUrl,
   getImageUrl,
+  getImageUrlSrcSet,
 } from "../../../api";
 import ReactPlayer from "react-player";
 import SvgViewer from "../../SvgViewer";
@@ -181,7 +182,9 @@ const MediaModal = ({
         <Image
           style={style.img}
           alt={m.mediaMetadata.alt}
-          src={getImageUrl(m.id, m.crc32, 1080)}
+          src={getImageUrl(m.id, m.crc32, { targetWidth: 1080 })}
+          srcSet={getImageUrlSrcSet(m.id, m.crc32)}
+          sizes="100vw"
         />
       );
     }
