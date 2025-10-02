@@ -178,12 +178,13 @@ const MediaModal = ({
           </Image>
         );
       }
+      const fallbackWidth = Math.min(1080, m.width);
       return (
         <Image
           style={style.img}
           alt={m.mediaMetadata.alt}
-          src={getImageUrl(m.id, m.crc32, { targetWidth: 1080 })}
-          srcSet={getImageUrlSrcSet(m.id, m.crc32)}
+          src={getImageUrl(m.id, m.crc32, { targetWidth: fallbackWidth })}
+          srcSet={getImageUrlSrcSet(m.id, m.crc32, m.width)}
           sizes="100vw"
         />
       );

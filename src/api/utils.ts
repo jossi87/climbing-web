@@ -64,17 +64,17 @@ export function getImageUrl(
   return getUrl(url);
 }
 
-export function getImageUrlSrcSet(id: number, checksum: number): string {
-  return [
-    { size: 480 }, // Small mobile/Portrait
-    { size: 800 }, // Large mobile/Tablet (for 2x DPR)
-    { size: 1280 }, // Tablet landscape/Small laptop
-    { size: 1920 }, // Standard HD desktop
-    { size: 2560 }, // QHD / 1440p
-    { size: 3840 }, // 4K / UHD Monitors (to match your screen)
-    { size: 5120 }, // 5K / High-end displays
-  ]
-    .map(({ size }) => {
+export function getImageUrlSrcSet(
+  id: number,
+  checksum: number,
+  originalWidth: number,
+): string {
+  const SIZES = [480, 800, 1280, 1920, 2560];
+  const uniqueSizes = new Set(SIZES.filter((size) => size <= originalWidth));
+  uniqueSizes.add(originalWidth);
+  const finalSizes = Array.from(uniqueSizes).sort((a, b) => a - b);
+  return finalSizes
+    .map((size) => {
       const url = getImageUrl(id, checksum, { targetWidth: size });
       return `${url} ${size}w`;
     })
