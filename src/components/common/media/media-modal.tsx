@@ -178,7 +178,7 @@ const MediaModal = ({
           </Image>
         );
       }
-      const fallbackWidth = Math.min(1080, m.width);
+      const fallbackWidth = Math.min(1920, m.width);
       return (
         <Image
           style={style.img}
