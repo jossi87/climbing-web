@@ -69,11 +69,9 @@ export function getImageUrlSrcSet(
   checksum: number,
   originalWidth: number,
 ): string {
-  const SIZES = [480, 800, 1280, 1920, 2560];
+  const SIZES = [480, 800, 1280, 1920, 2560, 3840, 5120];
   const uniqueSizes = new Set(SIZES.filter((size) => size <= originalWidth));
-  if (originalWidth < 2560) {
-    uniqueSizes.add(originalWidth); // If the original width is not a standard breakpoint
-  }
+  uniqueSizes.add(originalWidth); // If the original width is not a standard breakpoint
   const finalSizes = Array.from(uniqueSizes).sort((a, b) => a - b);
   return finalSizes
     .map((size) => {
