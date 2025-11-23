@@ -1,8 +1,8 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { Loading, LockSymbol } from "../widgets/widgets";
-import { Header, Icon, List } from "semantic-ui-react";
-import { useTodo } from "../../../api";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Loading, LockSymbol } from '../widgets/widgets';
+import { Header, Icon, List } from 'semantic-ui-react';
+import { useTodo } from '../../../api';
 
 const Todo = ({ idArea, idSector }: { idArea: number; idSector: number }) => {
   const { data } = useTodo({ idArea, idSector });
@@ -17,13 +17,11 @@ const Todo = ({ idArea, idSector }: { idArea: number; idSector: number }) => {
 
   return (
     <>
-      <Header as="h4">
-        <Icon name="bookmark" />
+      <Header as='h4'>
+        <Icon name='bookmark' />
         <Header.Content>
           Todo
-          <Header.Subheader>
-            Find other users with projects in the same area.
-          </Header.Subheader>
+          <Header.Subheader>Find other users with projects in the same area.</Header.Subheader>
         </Header.Content>
       </Header>
       <List>
@@ -44,16 +42,13 @@ const Todo = ({ idArea, idSector }: { idArea: number; idSector: number }) => {
                   <List.Item key={problem.id}>
                     <List.Header>
                       {`#${problem.nr} `}
-                      <Link to={`/problem/${problem.id}`}>
-                        {problem.name}
-                      </Link>{" "}
-                      {problem.grade}
+                      <Link to={`/problem/${problem.id}`}>{problem.name}</Link> {problem.grade}
                       {problem.partners && problem.partners.length > 0 && (
                         <small>
-                          <i style={{ color: "gray" }}>
+                          <i style={{ color: 'gray' }}>
                             {problem.partners.map((u, i) => (
                               <React.Fragment key={u.id}>
-                                {i === 0 ? " User(s): " : ", "}
+                                {i === 0 ? ' User(s): ' : ', '}
                                 <Link to={`/user/${u.id}/todo`}>{u.name}</Link>
                               </React.Fragment>
                             ))}

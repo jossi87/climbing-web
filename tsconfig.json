@@ -1,37 +1,23 @@
 {
   "compilerOptions": {
-    // Basic options
     "rootDir": "./",
     "module": "ESNext",
-    "target": "es2018",
-
+    "target": "ES2020",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "sourceMap": true,
     "allowJs": true,
-    "jsx": "preserve",
-    "checkJs": false,
-
-    // we rely on bable for transpiling ts(x) js(x)
-    "noEmit": true,
-
-    // Stict type checking
-    // "strict": true,
-    "noImplicitThis": true,
-    // "noImplicitAny": true,
-    // "strictNullChecks": true, // will re enable later
-    "noUnusedParameters": false,
-    // "alwaysStrict": true,
-
-    // Module Resolution
-    "moduleResolution": "Node",
-    "resolveJsonModule": true,
+    "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-
-    // Error Handling
-    "pretty": true,
-
-    //Other
-    "skipLibCheck": true
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "types": ["vite/client", "node"]
   },
-  "include": ["src", "server.js"]
+  "include": ["src", "server.js", "vite.config.ts"]
 }

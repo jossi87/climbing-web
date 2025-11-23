@@ -1,22 +1,15 @@
-import React, { useEffect, useState } from "react";
-import {
-  Segment,
-  Icon,
-  Button,
-  ButtonGroup,
-  Message,
-  Divider,
-} from "semantic-ui-react";
-import { Loading } from "../common/widgets/widgets";
-import { useMeta } from "../common/meta";
-import { downloadTocXlsx, useAccessToken, useToc } from "../../api";
-import TableOfContents from "../common/TableOfContents";
-import { useFilterState } from "./reducer";
-import { FilterContext, FilterForm } from "../common/FilterForm";
-import { HeaderButtons } from "../common/HeaderButtons";
-import { components } from "../../@types/buldreinfo/swagger";
-import "./Problems.css";
-import { ProblemsMap } from "../common/TableOfContents/ProblemsMap";
+import React, { useEffect, useState } from 'react';
+import { Segment, Icon, Button, ButtonGroup, Message, Divider } from 'semantic-ui-react';
+import { Loading } from '../common/widgets/widgets';
+import { useMeta } from '../common/meta';
+import { downloadTocXlsx, useAccessToken, useToc } from '../../api';
+import TableOfContents from '../common/TableOfContents';
+import { useFilterState } from './reducer';
+import { FilterContext, FilterForm } from '../common/FilterForm';
+import { HeaderButtons } from '../common/HeaderButtons';
+import { components } from '../../@types/buldreinfo/swagger';
+import './Problems.css';
+import { ProblemsMap } from '../common/TableOfContents/ProblemsMap';
 
 type Props = { filterOpen?: boolean };
 
@@ -25,9 +18,8 @@ const description = (
   areas: number,
   sectors: number,
   problems: number,
-  kind: "routes" | "problems",
-): string =>
-  `${regions} regions, ${areas} areas, ${sectors} sectors, ${problems} ${kind}`;
+  kind: 'routes' | 'problems',
+): string => `${regions} regions, ${areas} areas, ${sectors} sectors, ${problems} ${kind}`;
 
 type FilterProblem = {
   id: number;
@@ -47,13 +39,13 @@ type FilterProblem = {
   faYear: number;
 };
 
-type FilterSector = Pick<components["schemas"]["TocSector"], "outline"> & {
+type FilterSector = Pick<components['schemas']['TocSector'], 'outline'> & {
   id: number;
   lockedAdmin: boolean;
   lockedSuperadmin: boolean;
   name: string;
-  wallDirectionCalculated: components["schemas"]["CompassDirection"];
-  wallDirectionManual: components["schemas"]["CompassDirection"];
+  wallDirectionCalculated: components['schemas']['CompassDirection'];
+  wallDirectionManual: components['schemas']['CompassDirection'];
   sunFromHour: number;
   sunToHour: number;
   lat?: number;
@@ -82,13 +74,11 @@ export const Problems = ({ filterOpen }: Props) => {
   const accessToken = useAccessToken();
   const { data: loadedData, status } = useToc();
   const [isSaving, setIsSaving] = useState(false);
-  const [showMap, setShowMap] = useState(
-    !!(matchMedia && matchMedia("(pointer:fine)")?.matches),
-  );
+  const [showMap, setShowMap] = useState(!!(matchMedia && matchMedia('(pointer:fine)')?.matches));
 
   useEffect(() => {
-    if (status === "success") {
-      dispatch({ action: "set-data", data: loadedData });
+    if (status === 'success') {
+      dispatch({ action: 'set-data', data: loadedData });
     }
   }, [dispatch, loadedData, status]);
 
@@ -105,12 +95,12 @@ export const Problems = ({ filterOpen }: Props) => {
     visible,
   } = state;
 
-  if (status === "pending" || totalProblems === 0) {
+  if (status === 'pending' || totalProblems === 0) {
     return <Loading />;
   }
 
-  const title = meta.isBouldering ? "Problems" : "Routes";
-  const things = meta.isBouldering ? "problems" : "routes";
+  const title = meta.isBouldering ? 'Problems' : 'Routes';
+  const things = meta.isBouldering ? 'problems' : 'routes';
   const totalDescription = description(
     totalRegions,
     totalAreas,
@@ -130,7 +120,7 @@ export const Problems = ({ filterOpen }: Props) => {
               lockedSuperadmin: !!area.lockedSuperadmin,
               sunFromHour: area.sunFromHour ?? 0,
               sunToHour: area.sunToHour ?? 0,
-              name: area.name ?? "",
+              name: area.name ?? '',
               lat: area.coordinates?.latitude,
               lng: area.coordinates?.longitude,
               sectors:
@@ -140,12 +130,11 @@ export const Problems = ({ filterOpen }: Props) => {
                       id: sector.id ?? 0,
                       lockedAdmin: !!sector.lockedAdmin,
                       lockedSuperadmin: !!sector.lockedSuperadmin,
-                      name: sector.name ?? "",
+                      name: sector.name ?? '',
                       lat: sector.parking?.latitude,
                       lng: sector.parking?.longitude,
                       outline: sector.outline,
-                      wallDirectionCalculated:
-                        sector.wallDirectionCalculated ?? {},
+                      wallDirectionCalculated: sector.wallDirectionCalculated ?? {},
                       wallDirectionManual: sector.wallDirectionManual ?? {},
                       sunFromHour: sector.sunFromHour,
                       sunToHour: sector.sunToHour,
@@ -153,42 +142,39 @@ export const Problems = ({ filterOpen }: Props) => {
                         sector.problems?.map((problem) => {
                           const ascents =
                             problem.numTicks &&
-                            problem.numTicks +
-                              (problem.numTicks == 1 ? " ascent" : " ascents");
+                            problem.numTicks + (problem.numTicks == 1 ? ' ascent' : ' ascents');
                           let fa = problem.fa;
                           if (problem.faYear) {
-                            fa += " " + problem.faYear;
+                            fa += ' ' + problem.faYear;
                           }
                           let typeAscents;
                           if (meta.isClimbing) {
                             let t = problem.t?.subType;
                             if (problem.numPitches && problem.numPitches > 1)
-                              t += ", " + problem.numPitches + " pitches";
+                              t += ', ' + problem.numPitches + ' pitches';
                             if (ascents) {
-                              typeAscents = " (" + t + ", " + ascents + ") ";
+                              typeAscents = ' (' + t + ', ' + ascents + ') ';
                             } else {
-                              typeAscents = " (" + t + ") ";
+                              typeAscents = ' (' + t + ') ';
                             }
                           } else if (!meta.isClimbing) {
                             if (ascents) {
-                              typeAscents = " (" + ascents + ") ";
+                              typeAscents = ' (' + ascents + ') ';
                             } else {
-                              typeAscents = " ";
+                              typeAscents = ' ';
                             }
                           }
-                          const text = [fa, typeAscents]
-                            .filter(Boolean)
-                            .join(" ");
+                          const text = [fa, typeAscents].filter(Boolean).join(' ');
                           return {
                             id: problem.id ?? 0,
-                            broken: problem.broken ?? "",
+                            broken: problem.broken ?? '',
                             lockedAdmin: !!problem.lockedAdmin,
                             lockedSuperadmin: !!problem.lockedSuperadmin,
-                            name: problem.name ?? "",
+                            name: problem.name ?? '',
                             lat: problem.coordinates?.latitude,
                             lng: problem.coordinates?.longitude,
                             nr: problem.nr ?? 0,
-                            grade: problem.grade ?? "",
+                            grade: problem.grade ?? '',
                             stars: problem.stars,
                             ticked: problem.ticked,
                             todo: problem.todo,
@@ -207,30 +193,26 @@ export const Problems = ({ filterOpen }: Props) => {
   return (
     <FilterContext.Provider value={{ ...state, dispatch }}>
       <title>{`${title} | ${meta?.title}`}</title>
-      <meta name="description" content={totalDescription}></meta>
+      <meta name='description' content={totalDescription}></meta>
       <Segment>
-        <div className="filter-container">
-          <div className="filter-header">
-            <HeaderButtons
-              header={title}
-              subheader={totalDescription}
-              icon="database"
-            >
+        <div className='filter-container'>
+          <div className='filter-header'>
+            <HeaderButtons header={title} subheader={totalDescription} icon='database'>
               <Button
-                labelPosition="left"
+                labelPosition='left'
                 icon
                 toggle
                 active={visible}
-                onClick={() => dispatch({ action: "toggle-filter" })}
+                onClick={() => dispatch({ action: 'toggle-filter' })}
                 primary={filteredProblems > 0}
               >
-                <Icon name="filter" />
+                <Icon name='filter' />
                 Filter {things}
               </Button>
               <Button
                 loading={isSaving}
                 icon
-                labelPosition="left"
+                labelPosition='left'
                 onClick={() => {
                   setIsSaving(true);
                   downloadTocXlsx(accessToken).finally(() => {
@@ -238,23 +220,23 @@ export const Problems = ({ filterOpen }: Props) => {
                   });
                 }}
               >
-                <Icon name="file excel" />
+                <Icon name='file excel' />
                 Download
               </Button>
             </HeaderButtons>
             <Divider />
           </div>
-          <div className="filter-form">
+          <div className='filter-form'>
             {visible && (
               <div>
                 <FilterForm />
               </div>
             )}
           </div>
-          <div className="filter-results">
+          <div className='filter-results'>
             {!visible && filteredProblems > 0 && (
               <Message warning>
-                There is an active filter which is hiding{" "}
+                There is an active filter which is hiding{' '}
                 <strong>
                   {description(
                     filteredRegions,
@@ -266,22 +248,14 @@ export const Problems = ({ filterOpen }: Props) => {
                 </strong>
                 .
                 <br />
-                <ButtonGroup size="tiny">
-                  <Button
-                    compact
-                    onClick={() => dispatch({ action: "open-filter" })}
-                  >
-                    <Icon name="edit outline" />
+                <ButtonGroup size='tiny'>
+                  <Button compact onClick={() => dispatch({ action: 'open-filter' })}>
+                    <Icon name='edit outline' />
                     Edit filter
                   </Button>
                   <Button.Or />
-                  <Button
-                    compact
-                    onClick={() =>
-                      dispatch({ action: "reset", section: "all" })
-                    }
-                  >
-                    <Icon name="trash alternate outline" />
+                  <Button compact onClick={() => dispatch({ action: 'reset', section: 'all' })}>
+                    <Icon name='trash alternate outline' />
                     Clear filter
                   </Button>
                 </ButtonGroup>
@@ -294,10 +268,10 @@ export const Problems = ({ filterOpen }: Props) => {
                     toggle={showMap}
                     active={showMap}
                     icon
-                    labelPosition="left"
+                    labelPosition='left'
                     onClick={() => setShowMap((v) => !v)}
                   >
-                    <Icon name="map outline" />
+                    <Icon name='map outline' />
                     Map
                   </Button>
                 </HeaderButtons>

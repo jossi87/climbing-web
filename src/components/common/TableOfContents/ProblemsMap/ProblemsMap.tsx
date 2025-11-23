@@ -1,21 +1,17 @@
-import React, { ComponentProps, useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import Leaflet from "../../leaflet/leaflet";
-import { useMeta } from "../../meta";
-import Markers, { MarkerDef } from "../../leaflet/markers";
-import type { Props as TocProps } from "../TableOfContents";
-import MarkerClusterGroup from "../../leaflet/react-leaflet-markercluster";
-import { useMap } from "react-leaflet";
-import Polygons from "../../leaflet/polygons";
-import { LatLngBounds, LeafletEventHandlerFn, latLngBounds } from "leaflet";
-import { LockSymbol } from "../../../common/widgets/widgets";
-import {
-  BreadcrumbSection,
-  BreadcrumbDivider,
-  Breadcrumb,
-} from "semantic-ui-react";
+import React, { ComponentProps, useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import Leaflet from '../../leaflet/leaflet';
+import { useMeta } from '../../meta';
+import Markers, { MarkerDef } from '../../leaflet/markers';
+import type { Props as TocProps } from '../TableOfContents';
+import MarkerClusterGroup from '../../leaflet/react-leaflet-markercluster';
+import { useMap } from 'react-leaflet';
+import Polygons from '../../leaflet/polygons';
+import { LatLngBounds, LeafletEventHandlerFn, latLngBounds } from 'leaflet';
+import { LockSymbol } from '../../../common/widgets/widgets';
+import { BreadcrumbSection, BreadcrumbDivider, Breadcrumb } from 'semantic-ui-react';
 
-type Props = Pick<TocProps, "areas">;
+type Props = Pick<TocProps, 'areas'>;
 
 const useMapZoom = () => {
   const map = useMap();
@@ -26,16 +22,16 @@ const useMapZoom = () => {
       setZoom(map.getZoom());
     };
 
-    map.addEventListener("zoomend", onZoom);
+    map.addEventListener('zoomend', onZoom);
     return () => {
-      map.removeEventListener("zoomend", onZoom);
+      map.removeEventListener('zoomend', onZoom);
     };
   }, [map]);
 
   return zoom;
 };
 
-const useMarkers = (areas: Props["areas"]): MarkerDef[] => {
+const useMarkers = (areas: Props['areas']): MarkerDef[] => {
   return useMemo(() => {
     const markers: MarkerDef[] = [];
 
@@ -54,8 +50,7 @@ const useMarkers = (areas: Props["areas"]): MarkerDef[] => {
                   sectorBounds.extend([c.latitude, c.longitude]);
                 }
               }
-              const { lat: centerLat, lng: centerLng } =
-                sectorBounds.getCenter();
+              const { lat: centerLat, lng: centerLng } = sectorBounds.getCenter();
               lat = centerLat;
               lng = centerLng;
             } else if (sector.parking) {
@@ -95,7 +90,7 @@ const useMarkers = (areas: Props["areas"]): MarkerDef[] => {
                     {`#${problem.nr} `}
                     <Link to={`/problem/${problem.id}`}>
                       <b>{problem.name}</b>
-                    </Link>{" "}
+                    </Link>{' '}
                     {problem.grade}
                   </BreadcrumbSection>
                 </Breadcrumb>
@@ -115,12 +110,7 @@ const ProblemMarkers = ({ areas }: Props) => {
 
   return (
     <MarkerClusterGroup>
-      <Markers
-        opacity={0.6}
-        markers={markers}
-        addEventHandlers={false}
-        flyToId={null}
-      />
+      <Markers opacity={0.6} markers={markers} addEventHandlers={false} flyToId={null} />
     </MarkerClusterGroup>
   );
 };
@@ -136,12 +126,7 @@ const ProblemClusters = ({ areas }: Props) => {
 
   return (
     <MarkerClusterGroup>
-      <Markers
-        opacity={0.6}
-        markers={markers}
-        addEventHandlers={false}
-        flyToId={null}
-      />
+      <Markers opacity={0.6} markers={markers} addEventHandlers={false} flyToId={null} />
     </MarkerClusterGroup>
   );
 };
@@ -150,7 +135,7 @@ const SectorOutlines = ({ areas }: Props) => {
   const map = useMap();
   const zoom = useMapZoom();
 
-  const outlines: ComponentProps<typeof Leaflet>["outlines"] = useMemo(() => {
+  const outlines: ComponentProps<typeof Leaflet>['outlines'] = useMemo(() => {
     const out = [];
     for (const area of areas) {
       for (const sector of area.sectors) {

@@ -1,11 +1,8 @@
-import { captureMessage } from "@sentry/core";
-import { hashHexColor } from "./colors";
-import { components } from "../@types/buldreinfo/swagger";
+import { captureMessage } from '@sentry/core';
+import { hashHexColor } from './colors';
+import { components } from '../@types/buldreinfo/swagger';
 
-type LatLngPair = Pick<
-  components["schemas"]["Coordinates"],
-  "latitude" | "longitude"
->;
+type LatLngPair = Pick<components['schemas']['Coordinates'], 'latitude' | 'longitude'>;
 
 export const parsePolyline = (
   polyline: string,
@@ -14,7 +11,7 @@ export const parsePolyline = (
   const reportError =
     onError ??
     ((message) => {
-      captureMessage("Failed to parse polyline", {
+      captureMessage('Failed to parse polyline', {
         extra: { message, polyline },
       });
     });
@@ -24,22 +21,22 @@ export const parsePolyline = (
   }
 
   return polyline
-    .split(";")
+    .split(';')
     .filter(Boolean)
     .reduce<LatLngPair[]>((acc, value) => {
-      const latlng = value.split(",");
+      const latlng = value.split(',');
       if (latlng.length !== 2) {
-        reportError("Wrong number of entries", { value });
+        reportError('Wrong number of entries', { value });
         return acc;
       }
       const [lat, lng] = latlng.map((v) => +v);
       if (Number.isNaN(lat)) {
-        reportError("Invalid latitude", { lat: String(lat), value });
+        reportError('Invalid latitude', { lat: String(lat), value });
         return acc;
       }
 
       if (Number.isNaN(lng)) {
-        reportError("Invalid longitude", { lng: String(lng), value });
+        reportError('Invalid longitude', { lng: String(lng), value });
         return acc;
       }
 
@@ -57,28 +54,25 @@ export const parsePolyline = (
  * will have a representative hash code. It's not intended to be perfect, but we
  * just need "good enough".
  */
-const hashLatLng = ({
-  latitude,
-  longitude,
-}: components["schemas"]["Coordinates"]): number => {
+const hashLatLng = ({ latitude, longitude }: components['schemas']['Coordinates']): number => {
   const componentSize = Math.floor(String(Number.MAX_SAFE_INTEGER).length / 2);
   const msbLat = String(latitude)
-    .replace(/[^\d]/g, "")
-    .split("")
+    .replace(/[^\d]/g, '')
+    .split('')
     .reverse()
-    .join("")
+    .join('')
     .substring(0, componentSize - 1);
   const msbLng = String(longitude)
-    .replace(/[^\d]/g, "")
-    .split("")
+    .replace(/[^\d]/g, '')
+    .split('')
     .reverse()
-    .join("")
+    .join('')
     .substring(0, componentSize);
   return Number(`${msbLat}${msbLng}`) % Number.MAX_SAFE_INTEGER;
 };
 
 export const colorLatLng = (
-  c: components["schemas"]["Coordinates"],
+  c: components['schemas']['Coordinates'],
 ): ReturnType<typeof hashHexColor> => {
   return hashHexColor(hashLatLng(c));
 };

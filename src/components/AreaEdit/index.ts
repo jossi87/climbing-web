@@ -1,1 +1,1 @@
-export { AreaEdit as default } from "./AreaEdit";
+export { AreaEdit as default } from './AreaEdit';

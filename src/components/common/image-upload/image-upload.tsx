@@ -1,24 +1,17 @@
-import React, { useEffect, useState, useCallback, ComponentProps } from "react";
-import heic2any from "heic2any";
-import { useDropzone } from "react-dropzone";
-import {
-  Button,
-  Card,
-  Image,
-  Input,
-  Checkbox,
-  Loader,
-} from "semantic-ui-react";
-import VideoEmbedder from "./video-embedder";
-import { UserSelector } from "../user-selector/user-selector";
-import { UsersSelector } from "../../common/user-selector/user-selector";
-import { components } from "../../../@types/buldreinfo/swagger";
-import { useMeta } from "../../common/meta";
+import React, { useEffect, useState, useCallback, ComponentProps } from 'react';
+import heic2any from 'heic2any';
+import { useDropzone } from 'react-dropzone';
+import { Button, Card, Image, Input, Checkbox, Loader } from 'semantic-ui-react';
+import VideoEmbedder from './video-embedder';
+import { UserSelector } from '../user-selector/user-selector';
+import { UsersSelector } from '../../common/user-selector/user-selector';
+import { components } from '../../../@types/buldreinfo/swagger';
+import { useMeta } from '../../common/meta';
 
 type UploadedMedia = {
   file?: File;
   preview?: string;
-} & components["schemas"]["NewMedia"];
+} & components['schemas']['NewMedia'];
 
 type Props = {
   onMediaChanged: (newMedia: UploadedMedia[]) => void;
@@ -44,18 +37,16 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
       try {
         const processedFiles = await Promise.all(
           acceptedFiles.map(async (file) => {
-            if (file.type === "image/heic" || file.type === "image/heif") {
+            if (file.type === 'image/heic' || file.type === 'image/heif') {
               const result = await heic2any({
                 blob: file,
-                toType: "image/jpeg",
+                toType: 'image/jpeg',
                 quality: 0.8,
               });
               const jpegBlobs = Array.isArray(result) ? result : [result];
-              const newFile = new File(
-                jpegBlobs,
-                file.name.replace(/\.heic|\.heif/i, ".jpeg"),
-                { type: "image/jpeg" },
-              );
+              const newFile = new File(jpegBlobs, file.name.replace(/\.heic|\.heif/i, '.jpeg'), {
+                type: 'image/jpeg',
+              });
               return newFile;
             }
             return file;
@@ -80,40 +71,38 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      "image/jpeg": [],
-      "image/png": [],
-      "image/heic": [],
-      "image/heif": [],
+      'image/jpeg': [],
+      'image/png': [],
+      'image/heic': [],
+      'image/heif': [],
     },
     noClick: isConverting,
     noKeyboard: isConverting,
   });
 
-  const addMedia = useCallback<
-    ComponentProps<typeof VideoEmbedder>["addMedia"]
-  >(({ embedVideoUrl, embedThumbnailUrl, embedMilliseconds }) => {
-    setMedia((old) => [
-      ...old,
-      { embedVideoUrl, embedThumbnailUrl, embedMilliseconds },
-    ]);
-  }, []);
+  const addMedia = useCallback<ComponentProps<typeof VideoEmbedder>['addMedia']>(
+    ({ embedVideoUrl, embedThumbnailUrl, embedMilliseconds }) => {
+      setMedia((old) => [...old, { embedVideoUrl, embedThumbnailUrl, embedMilliseconds }]);
+    },
+    [],
+  );
 
   return (
     <>
       <div
         {...getRootProps()}
         style={{
-          padding: "15px",
-          borderWidth: "1px",
-          borderColor: "#666",
-          borderStyle: "dashed",
-          borderRadius: "5px",
-          backgroundColor: "white",
+          padding: '15px',
+          borderWidth: '1px',
+          borderColor: '#666',
+          borderStyle: 'dashed',
+          borderRadius: '5px',
+          backgroundColor: 'white',
         }}
       >
         <input {...getInputProps()} />
         {isConverting ? (
-          <Loader active inline size="small" style={{ margin: "auto" }}>
+          <Loader active inline size='small' style={{ margin: 'auto' }}>
             Converting HEIC files...
           </Loader>
         ) : isDragActive ? (
@@ -134,33 +123,27 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
 
               const updateItem = (patch: Partial<typeof m>) =>
                 setMedia((oldValue) =>
-                  oldValue.map((item) =>
-                    different(item, m) ? item : { ...item, ...patch },
-                  ),
+                  oldValue.map((item) => (different(item, m) ? item : { ...item, ...patch })),
                 );
 
               let min = 0;
               let sec = 0;
-              if (
-                m.embedThumbnailUrl &&
-                m.embedMilliseconds &&
-                m.embedMilliseconds > 0
-              ) {
+              if (m.embedThumbnailUrl && m.embedMilliseconds && m.embedMilliseconds > 0) {
                 min = Math.floor((m.embedMilliseconds / 1000 / 60) << 0);
                 sec = Math.floor((m.embedMilliseconds / 1000) % 60);
               }
 
               return (
                 <Card key={key}>
-                  <Image size="medium" src={m.preview ?? m.embedThumbnailUrl} />
+                  <Image size='medium' src={m.preview ?? m.embedThumbnailUrl} />
                   <Card.Content>
                     {isMultiPitch && (
                       <Input
-                        size="mini"
-                        icon="hashtag"
-                        iconPosition="left"
+                        size='mini'
+                        icon='hashtag'
+                        iconPosition='left'
                         fluid
-                        placeholder="Pitch"
+                        placeholder='Pitch'
                         value={m.pitch}
                         onChange={(_, { value }) => {
                           updateItem({ pitch: +value });
@@ -168,18 +151,18 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
                       />
                     )}
                     <Input
-                      size="mini"
-                      icon="comment"
-                      iconPosition="left"
+                      size='mini'
+                      icon='comment'
+                      iconPosition='left'
                       fluid
-                      placeholder="Description"
-                      value={m.description ?? ""}
+                      placeholder='Description'
+                      value={m.description ?? ''}
                       onChange={(_, { value }) => {
                         updateItem({ description: value });
                       }}
                     />
                     <Checkbox
-                      label="Trivia"
+                      label='Trivia'
                       toggle
                       checked={m.trivia}
                       onChange={() => {
@@ -187,12 +170,12 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
                       }}
                     />
                     <UsersSelector
-                      placeholder="In photo/video"
+                      placeholder='In photo/video'
                       users={m.inPhoto}
                       onUsersUpdated={(newUsers) => {
                         const inPhoto = newUsers.map((u) => {
                           return {
-                            id: typeof u.value === "string" ? -1 : u.value,
+                            id: typeof u.value === 'string' ? -1 : u.value,
                             name: u.label,
                           };
                         });
@@ -200,7 +183,7 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
                       }}
                     />
                     <UserSelector
-                      placeholder="Photographer"
+                      placeholder='Photographer'
                       defaultValue={m.photographer}
                       onUserUpdated={(u) => {
                         updateItem({ photographer: u?.label });
@@ -210,8 +193,8 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
                       <>
                         <label>Start video at:</label>
                         <Input
-                          size="mini"
-                          label="Min"
+                          size='mini'
+                          label='Min'
                           value={min}
                           onChange={(_, { value }) => {
                             const val = +value;
@@ -220,8 +203,8 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
                           }}
                         />
                         <Input
-                          size="mini"
-                          label="Sec"
+                          size='mini'
+                          label='Sec'
                           value={sec}
                           onChange={(_, { value }) => {
                             const val = +value;
@@ -238,9 +221,7 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
                       basic
                       negative
                       onClick={() => {
-                        setMedia((old) =>
-                          old.filter((item) => different(m, item)),
-                        );
+                        setMedia((old) => old.filter((item) => different(m, item)));
                       }}
                     >
                       Remove

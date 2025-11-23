@@ -1,8 +1,8 @@
-import React, { useState, useCallback, ComponentProps, UIEvent } from "react";
-import { UsersSelector } from "./common/user-selector/user-selector";
-import RockSelector from "./common/rock-selector/rock-selector";
-import ProblemSection from "./common/problem-section/problem-section";
-import ImageUpload from "./common/image-upload/image-upload";
+import React, { useState, useCallback, ComponentProps, UIEvent } from 'react';
+import { UsersSelector } from './common/user-selector/user-selector';
+import RockSelector from './common/rock-selector/rock-selector';
+import ProblemSection from './common/problem-section/problem-section';
+import ImageUpload from './common/image-upload/image-upload';
 import {
   Icon,
   Form,
@@ -14,9 +14,9 @@ import {
   Message,
   Container,
   Checkbox,
-} from "semantic-ui-react";
-import Leaflet from "./common/leaflet/leaflet";
-import { useMeta } from "./common/meta";
+} from 'semantic-ui-react';
+import Leaflet from './common/leaflet/leaflet';
+import { useMeta } from './common/meta';
 import {
   convertFromDateToString,
   convertFromStringToDate,
@@ -24,27 +24,27 @@ import {
   useAccessToken,
   useSector,
   useProblem,
-} from "../api";
-import { Loading } from "./common/widgets/widgets";
-import { useNavigate, useParams } from "react-router-dom";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { VisibilitySelectorField } from "./common/VisibilitySelector";
-import { useQueryClient } from "@tanstack/react-query";
-import { components } from "../@types/buldreinfo/swagger";
-import { captureException, captureMessage } from "@sentry/react";
-import ExternalLinks from "./common/external-links/external-links";
+} from '../api';
+import { Loading } from './common/widgets/widgets';
+import { useNavigate, useParams } from 'react-router-dom';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { VisibilitySelectorField } from './common/VisibilitySelector';
+import { useQueryClient } from '@tanstack/react-query';
+import { components } from '../@types/buldreinfo/swagger';
+import { captureException, captureMessage } from '@sentry/react';
+import ExternalLinks from './common/external-links/external-links';
 
-type Problem = components["schemas"]["Problem"];
+type Problem = components['schemas']['Problem'];
 
 const useIds = (): { sectorId: number; problemId: number } => {
   const { sectorId, problemId } = useParams();
   if (!sectorId) {
-    throw new Error("Missing sectorId param");
+    throw new Error('Missing sectorId param');
   }
 
   if (!problemId) {
-    throw new Error("Missing problemId param");
+    throw new Error('Missing problemId param');
   }
 
   return { sectorId: +sectorId, problemId: +problemId };
@@ -53,21 +53,17 @@ const useIds = (): { sectorId: number; problemId: number } => {
 const ProblemEditLoader = () => {
   const { sectorId, problemId } = useIds();
   const { data: sector } = useSector(sectorId);
-  const {
-    data: problem,
-    status: problemStatus,
-    error,
-  } = useProblem(problemId, true);
+  const { data: problem, status: problemStatus, error } = useProblem(problemId, true);
 
   if (error) {
     return (
       <Message
-        size="huge"
-        style={{ backgroundColor: "#FFF" }}
-        icon="meh"
-        header="404"
+        size='huge'
+        style={{ backgroundColor: '#FFF' }}
+        icon='meh'
+        header='404'
         content={
-          "Cannot find the specified problem because it does not exist or you do not have sufficient permissions."
+          'Cannot find the specified problem because it does not exist or you do not have sufficient permissions.'
         }
       />
     );
@@ -77,7 +73,7 @@ const ProblemEditLoader = () => {
     return <Loading />;
   }
 
-  if (problemStatus === "pending" && problemId < 0) {
+  if (problemStatus === 'pending' && problemId < 0) {
     return <Loading />;
   }
 
@@ -90,19 +86,19 @@ const ProblemEditLoader = () => {
       broken: undefined,
       lockedAdmin: !!sector.lockedAdmin,
       lockedSuperadmin: !!sector.lockedSuperadmin,
-      name: "",
-      comment: "",
+      name: '',
+      comment: '',
       rock: undefined,
-      originalGrade: "n/a",
+      originalGrade: 'n/a',
       fa: [],
       faDate: convertFromDateToString(new Date()),
       nr: 0,
       coordinates: undefined,
-      trivia: "",
-      startingAltitude: "",
-      aspect: "",
-      routeLength: "",
-      descent: "",
+      trivia: '',
+      startingAltitude: '',
+      aspect: '',
+      routeLength: '',
+      descent: '',
       newMedia: [],
     } satisfies Problem);
 
@@ -111,17 +107,15 @@ const ProblemEditLoader = () => {
 
 type Props = {
   problem: Problem;
-  sector: components["schemas"]["Sector"];
+  sector: components['schemas']['Sector'];
 };
 
 type OnChange<V> = (_: unknown, { value }: { value: V }) => void;
 
-type SectorProblem = NonNullable<
-  components["schemas"]["Sector"]["problems"]
->[number];
+type SectorProblem = NonNullable<components['schemas']['Sector']['problems']>[number];
 const isPlottableProblem = (
   problem: SectorProblem,
-): problem is Required<Pick<SectorProblem, "coordinates" | "name">> => {
+): problem is Required<Pick<SectorProblem, 'coordinates' | 'name'>> => {
   return problem.coordinates !== undefined && problem.name !== undefined;
 };
 
@@ -146,7 +140,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
   }, []);
 
   const onLatChanged: OnChange<string> = useCallback((_, { value }) => {
-    let lat = parseFloat(value.replace(",", "."));
+    let lat = parseFloat(value.replace(',', '.'));
     if (isNaN(lat)) {
       lat = 0;
     }
@@ -157,7 +151,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
   }, []);
 
   const onLngChanged: OnChange<string> = useCallback((_, { value }) => {
-    let lng = parseFloat(value.replace(",", "."));
+    let lng = parseFloat(value.replace(',', '.'));
     if (isNaN(lng)) {
       lng = 0;
     }
@@ -171,7 +165,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
     ({
       lockedAdmin,
       lockedSuperadmin,
-    }: Required<Pick<Problem, "lockedAdmin" | "lockedSuperadmin">>) => {
+    }: Required<Pick<Problem, 'lockedAdmin' | 'lockedSuperadmin'>>) => {
       setData((prevState) => ({
         ...prevState,
         lockedAdmin,
@@ -181,7 +175,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
     [],
   );
 
-  const onRockChanged = useCallback((rock: NonNullable<Problem["rock"]>) => {
+  const onRockChanged = useCallback((rock: NonNullable<Problem['rock']>) => {
     setData((prevState) => ({ ...prevState, rock }));
   }, []);
 
@@ -196,12 +190,9 @@ const ProblemEdit = ({ problem, sector }: Props) => {
     }));
   }, []);
 
-  const onOriginalGradeChanged: OnChange<string> = useCallback(
-    (_, { value }) => {
-      setData((prevState) => ({ ...prevState, originalGrade: value }));
-    },
-    [],
-  );
+  const onOriginalGradeChanged: OnChange<string> = useCallback((_, { value }) => {
+    setData((prevState) => ({ ...prevState, originalGrade: value }));
+  }, []);
 
   const onTypeIdChanged: OnChange<string> = useCallback((_, { value }) => {
     setData((prevState) => ({
@@ -214,17 +205,18 @@ const ProblemEdit = ({ problem, sector }: Props) => {
   }, []);
 
   const onExternalLinksUpdated = useCallback(
-    (externalLinks: components["schemas"]["ExternalLink"][]) => {
+    (externalLinks: components['schemas']['ExternalLink'][]) => {
       setData((prevState) => ({ ...prevState, externalLinks: externalLinks }));
     },
     [],
   );
 
-  const onNewMediaChanged: ComponentProps<
-    typeof ImageUpload
-  >["onMediaChanged"] = useCallback((newMedia) => {
-    setData((prevState) => ({ ...prevState, newMedia }));
-  }, []);
+  const onNewMediaChanged: ComponentProps<typeof ImageUpload>['onMediaChanged'] = useCallback(
+    (newMedia) => {
+      setData((prevState) => ({ ...prevState, newMedia }));
+    },
+    [],
+  );
 
   const onFaAidDateChanged = useCallback((newFaDate: Date | null) => {
     setData((prevState) => ({
@@ -236,35 +228,35 @@ const ProblemEdit = ({ problem, sector }: Props) => {
     }));
   }, []);
 
-  const onFaAidDescriptionChanged: NonNullable<
-    ComponentProps<typeof TextArea>["onChange"]
-  > = useCallback((_, { value }) => {
-    setData((prevState) => ({
-      ...prevState,
-      faAid: {
-        ...prevState.faAid,
-        description: String(value ?? ""),
-      },
-    }));
-  }, []);
+  const onFaAidDescriptionChanged: NonNullable<ComponentProps<typeof TextArea>['onChange']> =
+    useCallback((_, { value }) => {
+      setData((prevState) => ({
+        ...prevState,
+        faAid: {
+          ...prevState.faAid,
+          description: String(value ?? ''),
+        },
+      }));
+    }, []);
 
-  const onFaAidUsersUpdated: ComponentProps<
-    typeof UsersSelector
-  >["onUsersUpdated"] = useCallback((newUsers) => {
-    const fa = newUsers.map((u) => {
-      return {
-        id: typeof u.value === "string" ? -1 : u.value,
-        name: u.label,
-      };
-    });
-    setData((prevState) => ({
-      ...prevState,
-      faAid: {
-        ...prevState.faAid,
-        users: fa,
-      },
-    }));
-  }, []);
+  const onFaAidUsersUpdated: ComponentProps<typeof UsersSelector>['onUsersUpdated'] = useCallback(
+    (newUsers) => {
+      const fa = newUsers.map((u) => {
+        return {
+          id: typeof u.value === 'string' ? -1 : u.value,
+          name: u.label,
+        };
+      });
+      setData((prevState) => ({
+        ...prevState,
+        faAid: {
+          ...prevState.faAid,
+          users: fa,
+        },
+      }));
+    },
+    [],
+  );
 
   const onBrokenChanged: OnChange<string> = useCallback((_, { value }) => {
     setData((prevState) => ({ ...prevState, broken: value }));
@@ -274,12 +266,9 @@ const ProblemEdit = ({ problem, sector }: Props) => {
     setData((prevState) => ({ ...prevState, trivia: value }));
   }, []);
 
-  const onStartingAltitudeChanged: OnChange<string> = useCallback(
-    (_, { value }) => {
-      setData((prevState) => ({ ...prevState, startingAltitude: value }));
-    },
-    [],
-  );
+  const onStartingAltitudeChanged: OnChange<string> = useCallback((_, { value }) => {
+    setData((prevState) => ({ ...prevState, startingAltitude: value }));
+  }, []);
 
   const onAspectChanged: OnChange<string> = useCallback((_, { value }) => {
     setData((prevState) => ({ ...prevState, aspect: value }));
@@ -298,10 +287,8 @@ const ProblemEdit = ({ problem, sector }: Props) => {
       event.preventDefault();
       const trash = !!data.trash;
       if (trash) {
-        if (
-          !confirm("Are you sure you want to move this problem/route to trash?")
-        ) {
-          captureMessage("Decided to not delete problem", {
+        if (!confirm('Are you sure you want to move this problem/route to trash?')) {
+          captureMessage('Decided to not delete problem', {
             extra: {
               problemId,
               sectorId,
@@ -329,32 +316,30 @@ const ProblemEdit = ({ problem, sector }: Props) => {
           accessToken,
           sectorId,
           problemId,
-          data.broken ?? "",
+          data.broken ?? '',
           !!data.trash,
           !!data.lockedAdmin,
           !!data.lockedSuperadmin,
-          data.name ?? "",
-          data.rock ?? "",
-          data.comment ?? "",
-          data.originalGrade ?? "",
+          data.name ?? '',
+          data.rock ?? '',
+          data.comment ?? '',
+          data.originalGrade ?? '',
           data.fa,
-          data.faDate ?? "",
+          data.faDate ?? '',
           data.nr ?? 0,
-          data.t?.id
-            ? meta.types.find((t) => t.id === data.t?.id) || meta.types[0]
-            : meta.types[0],
+          data.t?.id ? meta.types.find((t) => t.id === data.t?.id) || meta.types[0] : meta.types[0],
           data.coordinates ?? undefined,
           data.sections,
           data.newMedia,
           data.faAid,
-          data.trivia ?? "",
+          data.trivia ?? '',
           data.externalLinks,
-          data.startingAltitude ?? "",
-          data.aspect ?? "",
-          data.routeLength ?? "",
-          data.descent ?? "",
+          data.startingAltitude ?? '',
+          data.aspect ?? '',
+          data.routeLength ?? '',
+          data.descent ?? '',
         );
-        return res.destination ?? "";
+        return res.destination ?? '';
       } catch (error) {
         console.warn(error);
         captureException(error);
@@ -364,34 +349,38 @@ const ProblemEdit = ({ problem, sector }: Props) => {
     [accessToken, client, meta.types, problemId, sectorId],
   );
 
-  const onMapClick: NonNullable<
-    ComponentProps<typeof Leaflet>["onMouseClick"]
-  > = useCallback((event) => {
-    setData((prevState) => ({
-      ...prevState,
-      coordinates: {
-        latitude: event.latlng.lat,
-        longitude: event.latlng.lng,
-      },
-    }));
-  }, []);
+  const onMapClick: NonNullable<ComponentProps<typeof Leaflet>['onMouseClick']> = useCallback(
+    (event) => {
+      setData((prevState) => ({
+        ...prevState,
+        coordinates: {
+          latitude: event.latlng.lat,
+          longitude: event.latlng.lng,
+        },
+      }));
+    },
+    [],
+  );
 
-  const onUsersUpdated: ComponentProps<typeof UsersSelector>["onUsersUpdated"] =
-    useCallback((newUsers) => {
+  const onUsersUpdated: ComponentProps<typeof UsersSelector>['onUsersUpdated'] = useCallback(
+    (newUsers) => {
       const fa = newUsers.map((u) => {
         return {
-          id: typeof u.value === "string" ? -1 : u.value,
+          id: typeof u.value === 'string' ? -1 : u.value,
           name: u.label,
         };
       });
       setData((prevState) => ({ ...prevState, fa }));
-    }, []);
+    },
+    [],
+  );
 
-  const onSectionsUpdated: ComponentProps<
-    typeof ProblemSection
-  >["onSectionsUpdated"] = useCallback((sections) => {
-    setData((prevState) => ({ ...prevState, sections }));
-  }, []);
+  const onSectionsUpdated: ComponentProps<typeof ProblemSection>['onSectionsUpdated'] = useCallback(
+    (sections) => {
+      setData((prevState) => ({ ...prevState, sections }));
+    },
+    [],
+  );
 
   let defaultCenter: { lat: number; lng: number };
   let defaultZoom: number;
@@ -412,7 +401,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
     defaultZoom = meta.defaultZoom;
   }
 
-  const markers: NonNullable<ComponentProps<typeof Leaflet>["markers"]> = [];
+  const markers: NonNullable<ComponentProps<typeof Leaflet>['markers']> = [];
   if (data.coordinates) {
     markers.push({
       coordinates: data.coordinates,
@@ -425,7 +414,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
         .filter(isPlottableProblem)
         .map((p) => ({
           coordinates: p.coordinates,
-          label: p.name ?? "",
+          label: p.name ?? '',
         })),
     );
   }
@@ -440,30 +429,28 @@ const ProblemEdit = ({ problem, sector }: Props) => {
     <>
       <title>{`Edit ${data.name} | ${meta?.title}`}</title>
       <Message
-        size="tiny"
+        size='tiny'
         content={
           <>
-            <Icon name="info" />
-            Contact{" "}
-            <a href="mailto:jostein.oygarden@gmail.com">Jostein Øygarden</a> if
-            you want to move {meta.isBouldering ? "problem" : "route"} to an
-            other sector.
+            <Icon name='info' />
+            Contact <a href='mailto:jostein.oygarden@gmail.com'>Jostein Øygarden</a> if you want to
+            move {meta.isBouldering ? 'problem' : 'route'} to an other sector.
           </>
         }
       />
       <Form>
         <Segment>
-          <Form.Group widths="equal">
+          <Form.Group widths='equal'>
             <Form.Field
-              label="Name"
+              label='Name'
               control={Input}
-              placeholder="Enter name"
+              placeholder='Enter name'
               value={data.name}
               onChange={onNameChanged}
-              error={data.name ? false : "Name required"}
+              error={data.name ? false : 'Name required'}
             />
             <VisibilitySelectorField
-              label="Visibility"
+              label='Visibility'
               selection
               value={{
                 lockedAdmin: !!data.lockedAdmin,
@@ -472,9 +459,9 @@ const ProblemEdit = ({ problem, sector }: Props) => {
               onChange={onLockedChanged}
             />
             <Form.Field
-              label="Number"
+              label='Number'
               control={Input}
-              placeholder="Enter number"
+              placeholder='Enter number'
               value={data.nr}
               onChange={onNrChanged}
             />
@@ -493,9 +480,9 @@ const ProblemEdit = ({ problem, sector }: Props) => {
               />
             </Form.Field>
           </Form.Group>
-          <Form.Group widths="equal">
+          <Form.Group widths='equal'>
             <Form.Field
-              label="Grade"
+              label='Grade'
               control={Dropdown}
               selection
               value={data.originalGrade}
@@ -505,12 +492,12 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                 value: g.grade,
                 text: g.grade,
               }))}
-              error={data.originalGrade ? false : "grade required"}
+              error={data.originalGrade ? false : 'grade required'}
             />
             <Form.Field>
               <label>FA User(s)</label>
               <UsersSelector
-                placeholder="Select user(s)"
+                placeholder='Select user(s)'
                 users={data.fa ?? []}
                 onUsersUpdated={onUsersUpdated}
               />
@@ -518,25 +505,21 @@ const ProblemEdit = ({ problem, sector }: Props) => {
             <Form.Field>
               <label>FA Date</label>
               <DatePicker
-                placeholderText="Click to select a date"
-                dateFormat="dd-MM-yyyy"
+                placeholderText='Click to select a date'
+                dateFormat='dd-MM-yyyy'
                 isClearable
                 showMonthDropdown
                 showYearDropdown
-                dropdownMode="select"
-                selected={
-                  data.faDate ? convertFromStringToDate(data.faDate) : undefined
-                }
-                onChange={(date: Date | null) =>
-                  onFaDateChanged(date ?? undefined)
-                }
+                dropdownMode='select'
+                selected={data.faDate ? convertFromStringToDate(data.faDate) : undefined}
+                onChange={(date: Date | null) => onFaDateChanged(date ?? undefined)}
               />
             </Form.Field>
             {meta.isBouldering ? (
               <Form.Field
-                label="Rock (this field is optional, use to group boulders by rock in sector)"
+                label='Rock (this field is optional, use to group boulders by rock in sector)'
                 control={RockSelector}
-                placeholder="Add rock"
+                placeholder='Add rock'
                 rock={data.rock}
                 onRockUpdated={onRockChanged}
                 rocks={sectorRocks}
@@ -548,12 +531,12 @@ const ProblemEdit = ({ problem, sector }: Props) => {
           </Form.Group>
           <Form.Field
             label={
-              <label htmlFor="description">
+              <label htmlFor='description'>
                 Description (supports&nbsp;
                 <a
-                  href="https://jonschlinkert.github.io/remarkable/demo/"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href='https://jonschlinkert.github.io/remarkable/demo/'
+                  target='_blank'
+                  rel='noopener noreferrer'
                 >
                   markdown
                 </a>
@@ -561,19 +544,19 @@ const ProblemEdit = ({ problem, sector }: Props) => {
               </label>
             }
             control={TextArea}
-            placeholder="Enter description"
+            placeholder='Enter description'
             style={{ minHeight: 100 }}
             value={data.comment}
             onChange={onCommentChanged}
           />
           <Form.Field
             label={
-              <label htmlFor="description">
+              <label htmlFor='description'>
                 Trivia (supports&nbsp;
                 <a
-                  href="https://jonschlinkert.github.io/remarkable/demo/"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href='https://jonschlinkert.github.io/remarkable/demo/'
+                  target='_blank'
+                  rel='noopener noreferrer'
                 >
                   markdown
                 </a>
@@ -581,45 +564,45 @@ const ProblemEdit = ({ problem, sector }: Props) => {
               </label>
             }
             control={TextArea}
-            placeholder="Enter trivia"
+            placeholder='Enter trivia'
             style={{ minHeight: 100 }}
             value={data.trivia}
             onChange={onTriviaChanged}
           />
           <Form.Field
-            label="Broken"
+            label='Broken'
             control={Input}
-            placeholder="Enter reason if problem is broken"
+            placeholder='Enter reason if problem is broken'
             value={data.broken}
             onChange={onBrokenChanged}
           />
           {meta.isIce && (
             <>
               <Form.Field
-                label="Starting altitude"
+                label='Starting altitude'
                 control={Input}
-                placeholder="Enter starting altitude"
+                placeholder='Enter starting altitude'
                 value={data.startingAltitude}
                 onChange={onStartingAltitudeChanged}
               />
               <Form.Field
-                label="Aspect"
+                label='Aspect'
                 control={Input}
-                placeholder="Enter aspect"
+                placeholder='Enter aspect'
                 value={data.aspect}
                 onChange={onAspectChanged}
               />
               <Form.Field
-                label="Route length"
+                label='Route length'
                 control={Input}
-                placeholder="Enter route length"
+                placeholder='Enter route length'
                 value={data.routeLength}
                 onChange={onRouteLengthChanged}
               />
               <Form.Field
-                label="Descent"
+                label='Descent'
                 control={Input}
-                placeholder="Enter descent"
+                placeholder='Enter descent'
                 value={data.descent}
                 onChange={onDescentChanged}
               />
@@ -646,28 +629,28 @@ const ProblemEdit = ({ problem, sector }: Props) => {
         {meta.isClimbing && (
           <Segment>
             <Form.Field
-              label="Type"
+              label='Type'
               control={Dropdown}
               selection
               value={data.t?.id}
               onChange={onTypeIdChanged}
               options={meta.types.map((t, i) => {
-                const text = t.type + (t.subType ? " - " + t.subType : "");
+                const text = t.type + (t.subType ? ' - ' + t.subType : '');
                 return { key: i, value: t.id, text: text };
               })}
-              error={data.t?.id ? false : "Type required"}
+              error={data.t?.id ? false : 'Type required'}
             />
             <Form.Field>
               <label>First AID ascent?</label>
-              <Button.Group size="tiny">
+              <Button.Group size='tiny'>
                 <Button
                   onClick={() =>
                     setData((prevState) => ({
                       ...prevState,
                       faAid: {
                         problemId: data.id,
-                        date: "",
-                        description: "",
+                        date: '',
+                        description: '',
                       },
                     }))
                   }
@@ -677,9 +660,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                 </Button>
                 <Button.Or />
                 <Button
-                  onClick={() =>
-                    setData((prevState) => ({ ...prevState, faAid: undefined }))
-                  }
+                  onClick={() => setData((prevState) => ({ ...prevState, faAid: undefined }))}
                   positive={data.faAid ? false : true}
                 >
                   No
@@ -688,29 +669,27 @@ const ProblemEdit = ({ problem, sector }: Props) => {
               {data.faAid && (
                 <Container>
                   <DatePicker
-                    placeholderText="Click to select a date"
-                    dateFormat="dd-MM-yyyy"
+                    placeholderText='Click to select a date'
+                    dateFormat='dd-MM-yyyy'
                     isClearable
                     withPortal
-                    portalId="root-portal"
+                    portalId='root-portal'
                     showMonthDropdown
                     showYearDropdown
-                    dropdownMode="select"
+                    dropdownMode='select'
                     selected={
-                      data.faAid.date
-                        ? convertFromStringToDate(data.faAid.date)
-                        : undefined
+                      data.faAid.date ? convertFromStringToDate(data.faAid.date) : undefined
                     }
                     onChange={(date: Date | null) => onFaAidDateChanged(date)}
                   />
                   <TextArea
-                    placeholder="Enter description"
+                    placeholder='Enter description'
                     style={{ minHeight: 75 }}
                     value={data.faAid.description}
                     onChange={onFaAidDescriptionChanged}
                   />
                   <UsersSelector
-                    placeholder="Select user(s)"
+                    placeholder='Select user(s)'
                     users={data.faAid.users ?? []}
                     onUsersUpdated={onFaAidUsersUpdated}
                   />
@@ -736,25 +715,25 @@ const ProblemEdit = ({ problem, sector }: Props) => {
               defaultCenter={defaultCenter}
               defaultZoom={defaultZoom}
               onMouseClick={onMapClick}
-              height={"300px"}
+              height={'300px'}
               showSatelliteImage={true}
               clusterMarkers={false}
             />
           </Form.Field>
-          <Form.Group widths="equal">
+          <Form.Group widths='equal'>
             <Form.Field>
               <label>Latitude</label>
               <Input
-                placeholder="Latitude"
-                value={data.coordinates?.latitude || ""}
+                placeholder='Latitude'
+                value={data.coordinates?.latitude || ''}
                 onChange={onLatChanged}
               />
             </Form.Field>
             <Form.Field>
               <label>Longitude</label>
               <Input
-                placeholder="Longitude"
-                value={data.coordinates?.longitude || ""}
+                placeholder='Longitude'
+                value={data.coordinates?.longitude || ''}
                 onChange={onLngChanged}
               />
             </Form.Field>

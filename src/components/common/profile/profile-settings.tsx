@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   Segment,
   Header,
@@ -10,9 +10,9 @@ import {
   FormGroup,
   Form,
   Image,
-} from "semantic-ui-react";
-import { useProfile } from "../../../api";
-import { DropzoneOptions, useDropzone } from "react-dropzone";
+} from 'semantic-ui-react';
+import { useProfile } from '../../../api';
+import { DropzoneOptions, useDropzone } from 'react-dropzone';
 
 const ProfileSettings = () => {
   const { setProfile, setRegion, data } = useProfile();
@@ -22,7 +22,7 @@ const ProfileSettings = () => {
   const [avatar, setAvatar] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  const onDrop = useCallback<DropzoneOptions["onDrop"]>((acceptedFiles) => {
+  const onDrop = useCallback<DropzoneOptions['onDrop']>((acceptedFiles) => {
     setAvatar(
       acceptedFiles.map((file) => ({
         file,
@@ -33,8 +33,8 @@ const ProfileSettings = () => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      "image/jpeg": [],
-      "image/png": [],
+      'image/jpeg': [],
+      'image/png': [],
     },
   });
 
@@ -64,31 +64,31 @@ const ProfileSettings = () => {
     <>
       <Segment>
         <Form>
-          <FormGroup widths="equal">
+          <FormGroup widths='equal'>
             <FormInput
               required
               fluid
-              label="First name"
-              name="firstname"
-              placeholder="First name"
-              value={firstname || ""}
+              label='First name'
+              name='firstname'
+              placeholder='First name'
+              value={firstname || ''}
               error={!firstname}
               onChange={(e, { value }) => setFirstname(value)}
             />
             <FormInput
               required
               fluid
-              label="Last name"
-              name="lastname"
-              placeholder="Last name"
-              value={lastname || ""}
+              label='Last name'
+              name='lastname'
+              placeholder='Last name'
+              value={lastname || ''}
               error={!lastname}
               onChange={(e, { value }) => setLastname(value)}
             />
           </FormGroup>
           <FormField>
             <Checkbox
-              label="Allow others to contact me by email"
+              label='Allow others to contact me by email'
               checked={emailVisibleToAll}
               onChange={(_, { checked }) => {
                 setEmailVisibleToAll(checked);
@@ -99,9 +99,9 @@ const ProfileSettings = () => {
             <label>Avatar:</label>
             {avatar ? (
               <>
-                <Image size="medium" src={avatar.preview}></Image>
-                <FormButton size="mini" onClick={() => setAvatar(null)}>
-                  <Icon name="cancel" />
+                <Image size='medium' src={avatar.preview}></Image>
+                <FormButton size='mini' onClick={() => setAvatar(null)}>
+                  <Icon name='cancel' />
                   Remove image
                 </FormButton>
               </>
@@ -109,12 +109,12 @@ const ProfileSettings = () => {
               <div
                 {...getRootProps()}
                 style={{
-                  padding: "15px",
-                  borderWidth: "1px",
-                  borderColor: "#666",
-                  borderStyle: "dashed",
-                  borderRadius: "5px",
-                  backgroundColor: "white",
+                  padding: '15px',
+                  borderWidth: '1px',
+                  borderColor: '#666',
+                  borderStyle: 'dashed',
+                  borderRadius: '5px',
+                  backgroundColor: 'white',
                 }}
               >
                 <input {...getInputProps()} />
@@ -140,18 +140,16 @@ const ProfileSettings = () => {
               });
             }}
           >
-            <Icon name="save" />
+            <Icon name='save' />
             Save
           </FormButton>
         </Form>
       </Segment>
       <Segment>
-        <Header as="h4">Specify the different regions you want to show:</Header>
+        <Header as='h4'>Specify the different regions you want to show:</Header>
         <Form>
           {data?.userRegions.map((region) => {
-            const label = region.role
-              ? `${region.name} (${region.role})`
-              : region.name;
+            const label = region.role ? `${region.name} (${region.role})` : region.name;
             return (
               <Form.Field key={region.id}>
                 <Checkbox

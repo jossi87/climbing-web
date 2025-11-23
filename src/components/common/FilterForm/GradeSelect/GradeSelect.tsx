@@ -1,13 +1,13 @@
-import React, { CSSProperties } from "react";
-import RangeSlider from "react-range-slider-input";
-import "react-range-slider-input/dist/style.css";
-import { Dropdown } from "semantic-ui-react";
-import { useGrades } from "../../meta";
+import React, { CSSProperties } from 'react';
+import RangeSlider from 'react-range-slider-input';
+import 'react-range-slider-input/dist/style.css';
+import { Dropdown } from 'semantic-ui-react';
+import { useGrades } from '../../meta';
 
 export type DispatchUpdate =
-  | { action: "set-grades"; low: string; high: string }
-  | { action: "set-grade"; low: string }
-  | { action: "set-grade"; high: string };
+  | { action: 'set-grades'; low: string; high: string }
+  | { action: 'set-grade'; low: string }
+  | { action: 'set-grade'; high: string };
 
 type Props = {
   low: string | undefined;
@@ -38,7 +38,7 @@ export const GradeSelect = ({
           value={[gradeIndexMapping[low] ?? 0, gradeIndexMapping[high] ?? max]}
           onInput={([l, h]) => {
             dispatch({
-              action: "set-grades",
+              action: 'set-grades',
               low: easyToHard[l] ?? easyToHard[0],
               high: easyToHard[h] ?? easyToHard[max],
             });
@@ -46,15 +46,13 @@ export const GradeSelect = ({
           disabled={max === 0}
         />
       </div>
-      <div
-        style={{ display: "flex", flexDirection: "row", alignItems: "start" }}
-      >
-        <div style={{ display: "flex", flex: 1, justifyContent: "flex-start" }}>
+      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start' }}>
+        <div style={{ display: 'flex', flex: 1, justifyContent: 'flex-start' }}>
           <Dropdown
             text={low}
             value={low}
             scrolling
-            pointing="top left"
+            pointing='top left'
             options={easyToHard
               .filter((label) => {
                 const rank = gradeIndexMapping[label];
@@ -63,18 +61,18 @@ export const GradeSelect = ({
               .map((label) => ({ key: label, text: label, value: label }))}
             onChange={(_, { value }) => {
               dispatch({
-                action: "set-grade",
+                action: 'set-grade',
                 low: String(value),
               });
             }}
           />
         </div>
-        <div style={{ display: "flex", flex: 1, justifyContent: "flex-end" }}>
+        <div style={{ display: 'flex', flex: 1, justifyContent: 'flex-end' }}>
           <Dropdown
             text={high}
             value={high}
             scrolling
-            pointing="top right"
+            pointing='top right'
             options={easyToHard
               .filter((label) => {
                 const rank = gradeIndexMapping[label];
@@ -83,7 +81,7 @@ export const GradeSelect = ({
               .map((label) => ({ key: label, text: label, value: label }))}
             onChange={(_, { value }) => {
               dispatch({
-                action: "set-grade",
+                action: 'set-grade',
                 high: String(value),
               });
             }}

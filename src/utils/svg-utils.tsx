@@ -1,34 +1,24 @@
-import React from "react";
-import { parseSVG, makeAbsolute } from "svg-path-parser";
-import { svgPathProperties } from "svg-path-properties";
-import { neverGuard } from "./neverGuard";
-import { MediaRegion } from "./svg-scaler";
+import React from 'react';
+import { parseSVG, makeAbsolute } from 'svg-path-parser';
+import { svgPathProperties } from 'svg-path-properties';
+import { neverGuard } from './neverGuard';
+import { MediaRegion } from './svg-scaler';
 
 type DescentProps = {
-  path: React.SVGProps<SVGPathElement>["d"];
+  path: React.SVGProps<SVGPathElement>['d'];
   whiteNotBlack: boolean;
   scale: number;
   thumb: boolean;
 };
 
-export function Descent({
-  path = "",
-  whiteNotBlack,
-  scale,
-  thumb,
-}: DescentProps) {
+export function Descent({ path = '', whiteNotBlack, scale, thumb }: DescentProps) {
   const properties = new svgPathProperties(path);
-  const descentKey = path.replace(/\s/g, ""); // Key cannot contains spaces
-  const deltaPercent =
-    ((scale * 1000) / properties.getTotalLength()) * (thumb ? 6 : 3);
+  const descentKey = path.replace(/\s/g, ''); // Key cannot contains spaces
+  const deltaPercent = ((scale * 1000) / properties.getTotalLength()) * (thumb ? 6 : 3);
   const texts: React.JSX.Element[] = [];
   for (let i = 0; i <= 100; i += deltaPercent) {
     texts.push(
-      <textPath
-        key={i}
-        xlinkHref={"#descent" + descentKey}
-        startOffset={i + "%"}
-      >
+      <textPath key={i} xlinkHref={'#descent' + descentKey} startOffset={i + '%'}>
         ➤
       </textPath>,
     );
@@ -36,18 +26,13 @@ export function Descent({
   const fontSize = 20 * scale * (thumb ? 2 : 1);
   return (
     <g opacity={0.9} key={path}>
-      <path
-        id={"descent" + descentKey}
-        style={{ fill: "none" }}
-        strokeWidth={0}
-        d={path}
-      />
+      <path id={'descent' + descentKey} style={{ fill: 'none' }} strokeWidth={0} d={path} />
       <text
         fontSize={fontSize}
-        fontWeight="bolder"
+        fontWeight='bolder'
         style={{
-          fill: whiteNotBlack ? "black" : "white",
-          dominantBaseline: "central",
+          fill: whiteNotBlack ? 'black' : 'white',
+          dominantBaseline: 'central',
         }}
       >
         {texts}
@@ -55,8 +40,8 @@ export function Descent({
       <text
         fontSize={fontSize}
         style={{
-          fill: whiteNotBlack ? "white" : "black",
-          dominantBaseline: "central",
+          fill: whiteNotBlack ? 'white' : 'black',
+          dominantBaseline: 'central',
         }}
       >
         {texts}
@@ -65,28 +50,30 @@ export function Descent({
   );
 }
 
-type AnchorProps = Pick<
-  React.SVGProps<SVGCircleElement>,
-  "strokeWidth" | "stroke"
-> & { bolted: boolean; r: number; x: number; y: number };
+type AnchorProps = Pick<React.SVGProps<SVGCircleElement>, 'strokeWidth' | 'stroke'> & {
+  bolted: boolean;
+  r: number;
+  x: number;
+  y: number;
+};
 
 function Anchor({ strokeWidth, r, x, y, bolted, stroke }: AnchorProps) {
   return (
     <g opacity={0.9}>
       {bolted ? (
         <circle
-          strokeLinecap="round"
+          strokeLinecap='round'
           cx={x}
           cy={y}
           r={r}
-          fill="none"
+          fill='none'
           strokeWidth={strokeWidth}
           stroke={stroke}
         />
       ) : (
         <>
           <line
-            strokeLinecap="round"
+            strokeLinecap='round'
             x1={x - r}
             y1={y - r}
             x2={x + r}
@@ -95,7 +82,7 @@ function Anchor({ strokeWidth, r, x, y, bolted, stroke }: AnchorProps) {
             stroke={stroke}
           />
           <line
-            strokeLinecap="round"
+            strokeLinecap='round'
             x1={x - r}
             y1={y - r}
             x2={x}
@@ -104,7 +91,7 @@ function Anchor({ strokeWidth, r, x, y, bolted, stroke }: AnchorProps) {
             stroke={stroke}
           />
           <line
-            strokeLinecap="round"
+            strokeLinecap='round'
             x1={x + r}
             y1={y - r}
             x2={x}
@@ -115,7 +102,7 @@ function Anchor({ strokeWidth, r, x, y, bolted, stroke }: AnchorProps) {
         </>
       )}
       <line
-        strokeLinecap="round"
+        strokeLinecap='round'
         x1={x}
         y1={y + r}
         x2={x}
@@ -124,7 +111,7 @@ function Anchor({ strokeWidth, r, x, y, bolted, stroke }: AnchorProps) {
         stroke={stroke}
       />
       <line
-        strokeLinecap="round"
+        strokeLinecap='round'
         x1={x - r}
         y1={y + r + r}
         x2={x}
@@ -133,7 +120,7 @@ function Anchor({ strokeWidth, r, x, y, bolted, stroke }: AnchorProps) {
         stroke={stroke}
       />
       <line
-        strokeLinecap="round"
+        strokeLinecap='round'
         x1={x + r}
         y1={y + r + r}
         x2={x}
@@ -145,26 +132,18 @@ function Anchor({ strokeWidth, r, x, y, bolted, stroke }: AnchorProps) {
   );
 }
 
-type RappelProps = Omit<AnchorProps, "r"> & {
+type RappelProps = Omit<AnchorProps, 'r'> & {
   scale: number;
   backgroundColor: string;
   thumb: boolean;
   color: string;
 };
 
-export function Rappel({
-  x,
-  y,
-  bolted,
-  scale,
-  thumb,
-  backgroundColor,
-  color,
-}: RappelProps) {
+export function Rappel({ x, y, bolted, scale, thumb, backgroundColor, color }: RappelProps) {
   const strokeWidth = 3 * scale * (thumb ? 3 : 1);
   const r = 6 * scale * (thumb ? 3 : 1);
   return (
-    <g key={[x, y, bolted].join("/")}>
+    <g key={[x, y, bolted].join('/')}>
       {Anchor({
         strokeWidth: strokeWidth * 2,
         r,
@@ -218,33 +197,19 @@ function generateSvgNrAndAnchor(
   let anchor: React.JSX.Element | null = null;
   if (hasAnchor === true) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    anchor = (
-      <circle
-        fill="#E2011A"
-        cx={path[ixAnchor].x}
-        cy={path[ixAnchor].y}
-        r={0.006 * w}
-      />
-    );
+    anchor = <circle fill='#E2011A' cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.006 * w} />;
   }
   return (
-    <g key={key} className="buldreinfo-svg-edit-opacity">
+    <g key={key} className='buldreinfo-svg-edit-opacity'>
       {nr && (
         <>
-          <rect
-            fill="#000000"
-            x={x - r}
-            y={y - r}
-            width={r * 2}
-            height={r * 1.9}
-            rx={r / 3}
-          />
+          <rect fill='#000000' x={x - r} y={y - r} width={r * 2} height={r * 1.9} rx={r / 3} />
           <text
-            dominantBaseline="central"
-            textAnchor="middle"
+            dominantBaseline='central'
+            textAnchor='middle'
             fontSize={0.015 * w}
-            fontWeight="bolder"
-            fill="#FFFFFF"
+            fontWeight='bolder'
+            fill='#FFFFFF'
             x={x}
             y={y}
           >
@@ -253,12 +218,7 @@ function generateSvgNrAndAnchor(
         </>
       )}
       {hasAnchor && (
-        <circle
-          fill={"#000000"}
-          cx={path[ixAnchor].x}
-          cy={path[ixAnchor].y}
-          r={0.005 * w}
-        />
+        <circle fill={'#000000'} cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.005 * w} />
       )}
     </g>
   );
@@ -317,10 +277,10 @@ export function parsePath(d: string, mediaRegion?: MediaRegion): ParsedEntry[] {
     .map<ParsedEntry | undefined>((c) => {
       const { code } = c;
       switch (code) {
-        case "L":
-        case "M":
+        case 'L':
+        case 'M':
           return { x: Math.round(c.x + deltaX), y: Math.round(c.y + deltaY) };
-        case "C":
+        case 'C':
           return {
             x: Math.round(c.x + deltaX),
             y: Math.round(c.y + deltaY),
@@ -329,7 +289,7 @@ export function parsePath(d: string, mediaRegion?: MediaRegion): ParsedEntry[] {
               { x: Math.round(c.x2 + deltaX), y: Math.round(c.y2 + deltaY) },
             ],
           };
-        case "S":
+        case 'S':
           return {
             x: Math.round(c.x + deltaX),
             y: Math.round(c.y + deltaY),
@@ -339,12 +299,12 @@ export function parsePath(d: string, mediaRegion?: MediaRegion): ParsedEntry[] {
             ],
           };
 
-        case "Z":
-        case "A":
-        case "H":
-        case "Q":
-        case "T":
-        case "V": {
+        case 'Z':
+        case 'A':
+        case 'H':
+        case 'Q':
+        case 'T':
+        case 'V': {
           return undefined;
         }
 
@@ -387,26 +347,21 @@ type SvgType = {
   pitch: number;
   hasAnchor: boolean;
 } & (
-  | { t: "PATH" }
-  | (({ t: "RAPPEL_BOLTED" } | { t: "RAPPEL_NOT_BOLTED" }) & {
+  | { t: 'PATH' }
+  | (({ t: 'RAPPEL_BOLTED' } | { t: 'RAPPEL_NOT_BOLTED' }) & {
       rappelX: number;
       rappelY: number;
     })
-  | { t: "other" }
+  | { t: 'other' }
 );
 
-export function parseReadOnlySvgs(
-  readOnlySvgs: SvgType[],
-  w: number,
-  h: number,
-  scale: number,
-) {
-  const backgroundColor = "black";
-  const color = "white";
+export function parseReadOnlySvgs(readOnlySvgs: SvgType[], w: number, h: number, scale: number) {
+  const backgroundColor = 'black';
+  const color = 'white';
   const shapes = readOnlySvgs.reduce<React.ReactNode[]>((acc, svg) => {
     const { t } = svg;
     switch (t) {
-      case "PATH": {
+      case 'PATH': {
         return [
           ...acc,
           <Descent
@@ -418,15 +373,15 @@ export function parseReadOnlySvgs(
           />,
         ];
       }
-      case "RAPPEL_BOLTED":
-      case "RAPPEL_NOT_BOLTED": {
+      case 'RAPPEL_BOLTED':
+      case 'RAPPEL_NOT_BOLTED': {
         return [
           ...acc,
           <Rappel
-            key={[svg.rappelX, svg.rappelY].join("x")}
+            key={[svg.rappelX, svg.rappelY].join('x')}
             x={svg.rappelX}
             y={svg.rappelY}
-            bolted={t === "RAPPEL_BOLTED"}
+            bolted={t === 'RAPPEL_BOLTED'}
             scale={scale}
             thumb={false}
             backgroundColor={backgroundColor}
@@ -439,7 +394,7 @@ export function parseReadOnlySvgs(
         return [
           ...acc,
           generateSvgNrAndAnchor(
-            svg.nr + "_" + svg.pitch + "_path",
+            svg.nr + '_' + svg.pitch + '_path',
             commands as Parameters<typeof generateSvgNrAndAnchor>[1],
             svg.nr,
             svg.hasAnchor,
@@ -449,16 +404,16 @@ export function parseReadOnlySvgs(
           <path
             key={svg.path}
             d={svg.path}
-            className={"buldreinfo-svg-edit-opacity"}
-            style={{ fill: "none", stroke: "#000000" }}
+            className={'buldreinfo-svg-edit-opacity'}
+            style={{ fill: 'none', stroke: '#000000' }}
             strokeWidth={0.003 * w}
             strokeDasharray={0.006 * w}
           />,
           ...svg.anchors.map((a) => (
             <circle
               key={`${a.x}x${a.y}`}
-              className="buldreinfo-svg-edit-opacity"
-              fill="#000000"
+              className='buldreinfo-svg-edit-opacity'
+              fill='#000000'
               cx={a.x}
               cy={a.y}
               r={0.006 * w}

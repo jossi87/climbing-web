@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import "leaflet/dist/leaflet.css";
+import React, { useState } from 'react';
+import 'leaflet/dist/leaflet.css';
 import {
   useMapEvents,
   MapContainer,
@@ -9,18 +9,18 @@ import {
   ScaleControl,
   FeatureGroup,
   useMap,
-} from "react-leaflet";
-import { LeafletMouseEventHandlerFn, latLngBounds } from "leaflet";
-import Locate from "./locate";
-import FullscreenControl from "./fullscreencontrol";
-import Markers, { MarkerDef } from "./markers";
-import Polygons from "./polygons";
-import Polylines from "./polylines";
-import MarkerClusterGroup from "./react-leaflet-markercluster";
-import { Segment, Checkbox } from "semantic-ui-react";
-import UseControl from "../../../utils/use-leaflet-control";
-import GetCenterFromDegrees from "../../../utils/map-utils";
-import { components } from "../../../@types/buldreinfo/swagger";
+} from 'react-leaflet';
+import { LeafletMouseEventHandlerFn, latLngBounds } from 'leaflet';
+import Locate from './locate';
+import FullscreenControl from './fullscreencontrol';
+import Markers, { MarkerDef } from './markers';
+import Polygons from './polygons';
+import Polylines from './polylines';
+import MarkerClusterGroup from './react-leaflet-markercluster';
+import { Segment, Checkbox } from 'semantic-ui-react';
+import UseControl from '../../../utils/use-leaflet-control';
+import GetCenterFromDegrees from '../../../utils/map-utils';
+import { components } from '../../../@types/buldreinfo/swagger';
 
 function MapEvent({
   onMouseClick,
@@ -57,7 +57,7 @@ type Props = {
   outlines?:
     | {
         background?: boolean;
-        outline: components["schemas"]["Coordinates"][];
+        outline: components['schemas']['Coordinates'][];
         url?: string;
         label?: string;
       }[]
@@ -66,7 +66,7 @@ type Props = {
     background?: boolean;
     backgroundColor: string;
     label?: string;
-    slope: components["schemas"]["Slope"];
+    slope: components['schemas']['Slope'];
   }[];
   rocks?: string[];
   showSatelliteImage?: boolean;
@@ -78,7 +78,7 @@ const UpdateBounds = ({
   markers,
   outlines,
   slopes,
-}: Pick<Props, "autoZoom" | "markers" | "outlines" | "slopes">) => {
+}: Pick<Props, 'autoZoom' | 'markers' | 'outlines' | 'slopes'>) => {
   const map = useMap();
 
   if (!autoZoom) {
@@ -87,26 +87,17 @@ const UpdateBounds = ({
 
   const bounds = latLngBounds([]);
   markers
-    ?.filter(
-      ({ coordinates }) =>
-        coordinates.latitude > 0 && coordinates.longitude > 0,
-    )
-    ?.forEach(({ coordinates }) =>
-      bounds.extend([coordinates.latitude, coordinates.longitude]),
-    );
+    ?.filter(({ coordinates }) => coordinates.latitude > 0 && coordinates.longitude > 0)
+    ?.forEach(({ coordinates }) => bounds.extend([coordinates.latitude, coordinates.longitude]));
   outlines
     ?.filter(({ outline }) => !!outline)
     ?.forEach(({ outline }) =>
-      outline.forEach((c) =>
-        bounds.extend({ lat: c.latitude, lng: c.longitude }),
-      ),
+      outline.forEach((c) => bounds.extend({ lat: c.latitude, lng: c.longitude })),
     );
   slopes
     ?.filter(({ slope }) => !!slope)
     ?.forEach(({ slope }) =>
-      slope.coordinates.forEach((c) =>
-        bounds.extend({ lat: c.latitude, lng: c.longitude }),
-      ),
+      slope.coordinates.forEach((c) => bounds.extend({ lat: c.latitude, lng: c.longitude })),
     );
 
   if (
@@ -145,18 +136,10 @@ const Leaflet = ({
   if (groupByRock) {
     const rockMarkers: MarkerDef[] = rocks
       .map((r) => {
-        const markersOnRock = markers.filter(
-          (m) => "rock" in m && m.rock === r,
-        );
+        const markersOnRock = markers.filter((m) => 'rock' in m && m.rock === r);
         const coords = markersOnRock
-          .filter(
-            ({ coordinates }) =>
-              coordinates.latitude > 0 && coordinates.longitude > 0,
-          )
-          .map(({ coordinates }) => [
-            coordinates.latitude,
-            coordinates.longitude,
-          ]);
+          .filter(({ coordinates }) => coordinates.latitude > 0 && coordinates.longitude > 0)
+          .map(({ coordinates }) => [coordinates.latitude, coordinates.longitude]);
         if (coords && coords.length > 0) {
           const centerCoordinates = GetCenterFromDegrees(coords);
           const html = (
@@ -164,11 +147,11 @@ const Leaflet = ({
               <b>{r}:</b>
               <br />
               {markersOnRock
-                .filter((m) => "url" in m)
+                .filter((m) => 'url' in m)
                 .map((m: MarkerDef & { url: string }) => (
                   <React.Fragment key={m.url}>
-                    <a rel="noreferrer noopener" target="_blank" href={m.url}>
-                      {"label" in m ? m.label : ""}
+                    <a rel='noreferrer noopener' target='_blank' href={m.url}>
+                      {'label' in m ? m.label : ''}
                     </a>
                     <br />
                   </React.Fragment>
@@ -187,7 +170,7 @@ const Leaflet = ({
         }
       })
       .filter((item) => item); // Remove undefined
-    const markersWithoutRock = markers.filter((m) => !("rock" in m) || !m.rock);
+    const markersWithoutRock = markers.filter((m) => !('rock' in m) || !m.rock);
     markerGroup = (
       <Markers
         opacity={opacity}
@@ -214,26 +197,21 @@ const Leaflet = ({
 
   return (
     <MapContainer
-      style={{ height: height ? height : "500px", width: "100%", zIndex: 0 }}
+      style={{ height: height ? height : '500px', width: '100%', zIndex: 0 }}
       zoomControl={true}
       zoom={defaultZoom}
       center={defaultCenter}
     >
-      <UpdateBounds
-        slopes={slopes}
-        outlines={outlines}
-        autoZoom={autoZoom}
-        markers={markers}
-      />
+      <UpdateBounds slopes={slopes} outlines={outlines} autoZoom={autoZoom} markers={markers} />
       <MapEvent onMouseClick={onMouseClick} onMouseMove={onMouseMove} />
       <FullscreenControl />
       <Locate />
       <ScaleControl maxWidth={100} metric={true} imperial={false} />
-      <UseControl position="bottomleft">
+      <UseControl position='bottomleft'>
         {rocks != null && rocks.length > 0 && (
           <Checkbox
             as={Segment}
-            size="mini"
+            size='mini'
             label={<label>Group by rock</label>}
             toggle
             checked={groupByRock}
@@ -244,10 +222,10 @@ const Leaflet = ({
         )}
       </UseControl>
       {(outlines?.length > 0 || markers?.length > 0) && (
-        <UseControl position="bottomright">
+        <UseControl position='bottomright'>
           <Checkbox
             as={Segment}
-            size="mini"
+            size='mini'
             label={<label>Elevation</label>}
             toggle
             checked={showElevation}
@@ -258,57 +236,51 @@ const Leaflet = ({
         </UseControl>
       )}
       <LayersControl>
-        <LayersControl.BaseLayer
-          checked={showSatelliteImage}
-          name="Norge i Bilder"
-        >
+        <LayersControl.BaseLayer checked={showSatelliteImage} name='Norge i Bilder'>
           <TileLayer
             maxZoom={21}
             attribution='<a href="https://www.norgeibilder.no/" rel="noreferrer noopener" target="_blank">Geovekst</a>'
-            url="https://waapi.webatlas.no/maptiles/tiles/webatlas-orto-newup/wa_grid/{z}/{x}/{y}.jpeg?api_key=b8e36d51-119a-423b-b156-d744d54123d5"
+            url='https://waapi.webatlas.no/maptiles/tiles/webatlas-orto-newup/wa_grid/{z}/{x}/{y}.jpeg?api_key=b8e36d51-119a-423b-b156-d744d54123d5'
           />
         </LayersControl.BaseLayer>
 
-        <LayersControl.BaseLayer name="OpenStreetMap">
+        <LayersControl.BaseLayer name='OpenStreetMap'>
           <TileLayer
             maxZoom={19}
             attribution='<a href="https://openstreetmap.org/copyright" rel="noreferrer noopener" target="_blank">OpenStreetMap contributors</a>'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
           />
         </LayersControl.BaseLayer>
 
-        <LayersControl.BaseLayer
-          checked={!showSatelliteImage}
-          name="Kartverket N50 topo"
-        >
+        <LayersControl.BaseLayer checked={!showSatelliteImage} name='Kartverket N50 topo'>
           <TileLayer
             maxZoom={18}
             attribution='<a href="http://www.kartverket.no/">Kartverket</a>'
-            url="https://cache.kartverket.no/v1/wmts/1.0.0/topo/default/webmercator/{z}/{y}/{x}.png"
+            url='https://cache.kartverket.no/v1/wmts/1.0.0/topo/default/webmercator/{z}/{y}/{x}.png'
           />
         </LayersControl.BaseLayer>
 
-        <LayersControl.Overlay checked={true} name="Stedsnavn">
+        <LayersControl.Overlay checked={true} name='Stedsnavn'>
           <WMSTileLayer
             params={{
               transparent: true,
-              format: "image/png",
-              layers: "Stedsnavn",
-              version: "1.3.0",
+              format: 'image/png',
+              layers: 'Stedsnavn',
+              version: '1.3.0',
             }}
-            url="https://openwms.statkart.no/skwms1/wms.topo4"
+            url='https://openwms.statkart.no/skwms1/wms.topo4'
           />
         </LayersControl.Overlay>
 
-        <LayersControl.Overlay checked={true} name="Vegnett">
+        <LayersControl.Overlay checked={true} name='Vegnett'>
           <WMSTileLayer
             params={{
               transparent: true,
-              format: "image/png",
-              layers: "all",
-              version: "1.3.0",
+              format: 'image/png',
+              layers: 'all',
+              version: '1.3.0',
             }}
-            url="https://openwms.statkart.no/skwms1/wms.vegnett"
+            url='https://openwms.statkart.no/skwms1/wms.vegnett'
           />
         </LayersControl.Overlay>
       </LayersControl>

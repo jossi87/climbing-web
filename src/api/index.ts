@@ -1,4 +1,4 @@
-export * from "./hooks";
+export * from './hooks';
 
 export {
   downloadTocXlsx,
@@ -15,7 +15,7 @@ export {
   postUserRegion,
   putMediaInfo,
   putMediaJpegRotate,
-} from "./operations";
+} from './operations';
 
 export {
   getLocales,
@@ -30,4 +30,4 @@ export {
   numberWithCommas,
   convertFromDateToString,
   convertFromStringToDate,
-} from "./utils";
+} from './utils';

@@ -1,9 +1,9 @@
-import React from "react";
-import RangeSlider from "react-range-slider-input";
-import "react-range-slider-input/dist/style.css";
-import { useFilter } from "../context";
-import { Dropdown } from "semantic-ui-react";
-import { useFaYears } from "../../meta";
+import React from 'react';
+import RangeSlider from 'react-range-slider-input';
+import 'react-range-slider-input/dist/style.css';
+import { useFilter } from '../context';
+import { Dropdown } from 'semantic-ui-react';
+import { useFaYears } from '../../meta';
 
 // TODO: This was created by copy-and-pasting the GradeSelect component and then
 //       simplifying (because the data is much less complex). Is there an
@@ -28,7 +28,7 @@ export const YearSelect = () => {
           value={[low, high]}
           onInput={([l, h]) => {
             dispatch({
-              action: "set-fa-years",
+              action: 'set-fa-years',
               low: l ?? faYears[0],
               high: h ?? faYears[max],
             });
@@ -36,38 +36,36 @@ export const YearSelect = () => {
           disabled={max === 0}
         />
       </div>
-      <div
-        style={{ display: "flex", flexDirection: "row", alignItems: "start" }}
-      >
-        <div style={{ display: "flex", flex: 1, justifyContent: "flex-start" }}>
+      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start' }}>
+        <div style={{ display: 'flex', flex: 1, justifyContent: 'flex-start' }}>
           <Dropdown
             text={String(low)}
             value={low}
             scrolling
-            pointing="top left"
+            pointing='top left'
             options={faYears
               .filter((value) => value < high)
               .map((year) => ({ key: year, text: String(year), value: year }))}
             onChange={(_, { value = 0 }) => {
               dispatch({
-                action: "set-fa-year",
+                action: 'set-fa-year',
                 low: +value,
               });
             }}
           />
         </div>
-        <div style={{ display: "flex", flex: 1, justifyContent: "flex-end" }}>
+        <div style={{ display: 'flex', flex: 1, justifyContent: 'flex-end' }}>
           <Dropdown
             text={String(high)}
             value={high}
             scrolling
-            pointing="top right"
+            pointing='top right'
             options={faYears
               .filter((value) => value > low)
               .map((year) => ({ key: year, text: String(year), value: year }))}
             onChange={(_, { value = 0 }) => {
               dispatch({
-                action: "set-fa-year",
+                action: 'set-fa-year',
                 high: +value,
               });
             }}

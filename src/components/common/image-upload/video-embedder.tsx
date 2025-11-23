@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Input } from "semantic-ui-react";
+import React, { useState } from 'react';
+import { Input } from 'semantic-ui-react';
 
 type Info = {
   embedVideoUrl: string | undefined;
@@ -18,8 +18,7 @@ const INIT: Info = {
 };
 
 const VideoEmbedder = ({ addMedia }: Props) => {
-  const [{ embedVideoUrl, embedThumbnailUrl, embedMilliseconds }, setInfo] =
-    useState<Info>(INIT);
+  const [{ embedVideoUrl, embedThumbnailUrl, embedMilliseconds }, setInfo] = useState<Info>(INIT);
 
   const enabled = embedVideoUrl && embedThumbnailUrl;
 
@@ -27,10 +26,10 @@ const VideoEmbedder = ({ addMedia }: Props) => {
     <Input
       placeholder='YouTube/Vimeo video URL (supports "start"/"t"-parameter)'
       action={{
-        labelPosition: "right",
-        color: enabled ? "youtube" : "grey",
-        icon: "youtube",
-        content: "Add",
+        labelPosition: 'right',
+        color: enabled ? 'youtube' : 'grey',
+        icon: 'youtube',
+        content: 'Add',
         disabled: !enabled,
         onClick: () => {
           addMedia({ embedVideoUrl, embedThumbnailUrl, embedMilliseconds });
@@ -51,16 +50,12 @@ const VideoEmbedder = ({ addMedia }: Props) => {
           const id = match[6];
           if (type && id) {
             const urlObj = new URL(videoUrl);
-            let start = urlObj.searchParams.get("t");
+            let start = urlObj.searchParams.get('t');
             if (!start) {
-              start = urlObj.searchParams.get("start");
+              start = urlObj.searchParams.get('start');
             }
-            if (
-              !start &&
-              videoUrl.includes("vimeo") &&
-              videoUrl.includes("#t=")
-            ) {
-              const ix = videoUrl.lastIndexOf("#t=");
+            if (!start && videoUrl.includes('vimeo') && videoUrl.includes('#t=')) {
+              const ix = videoUrl.lastIndexOf('#t=');
               start = videoUrl.substring(ix + 3);
             }
             if (start) {
@@ -80,12 +75,12 @@ const VideoEmbedder = ({ addMedia }: Props) => {
                 ms = total * 1000;
               }
             }
-            if (type == "youtu.be" || type == "youtube.com") {
-              videoUrl = "https://www.youtube.com/embed/" + id;
-              thumbnailUrl = "https://img.youtube.com/vi/" + id + "/0.jpg";
-            } else if (type == "vimeo.com") {
-              videoUrl = "https://player.vimeo.com/video/" + id;
-              fetch("https://vimeo.com/api/v2/video/" + id + ".json")
+            if (type == 'youtu.be' || type == 'youtube.com') {
+              videoUrl = 'https://www.youtube.com/embed/' + id;
+              thumbnailUrl = 'https://img.youtube.com/vi/' + id + '/0.jpg';
+            } else if (type == 'vimeo.com') {
+              videoUrl = 'https://player.vimeo.com/video/' + id;
+              fetch('https://vimeo.com/api/v2/video/' + id + '.json')
                 .then((data) => data.json())
                 .then((json) =>
                   setInfo((old) => ({
@@ -94,7 +89,7 @@ const VideoEmbedder = ({ addMedia }: Props) => {
                   })),
                 );
             } else {
-              console.log(type + " - " + id);
+              console.log(type + ' - ' + id);
             }
           }
 

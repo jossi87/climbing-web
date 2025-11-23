@@ -1,17 +1,17 @@
 const colors = [
-  "red",
-  "orange",
-  "yellow",
-  "olive",
-  "green",
-  "teal",
-  "blue",
-  "violet",
-  "purple",
-  "pink",
-  "brown",
-  "grey",
-  "black",
+  'red',
+  'orange',
+  'yellow',
+  'olive',
+  'green',
+  'teal',
+  'blue',
+  'violet',
+  'purple',
+  'pink',
+  'brown',
+  'grey',
+  'black',
 ] as const;
 
 export const hashSemanticColor = (hash: number): (typeof colors)[number] => {
@@ -27,7 +27,7 @@ export const hashHexColor = (hash: number): [`#${string}`, `#${string}`] => {
 };
 
 const contrastingColor = (color: string): string => {
-  return luma(color) >= 165 ? "000000" : "ffffff";
+  return luma(color) >= 165 ? '000000' : 'ffffff';
 };
 
 const luma = (color: string): number => {
@@ -38,7 +38,7 @@ const luma = (color: string): number => {
 
 const hexToRGBArray = (color: string): [number, number, number] => {
   if (color.length !== 6) {
-    throw new Error("Invalid hex color: " + color);
+    throw new Error('Invalid hex color: ' + color);
   }
 
   return [

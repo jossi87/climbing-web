@@ -14,7 +14,7 @@ export function calculateMediaRegion(
     return null;
   }
 
-  const pathLst = path.replace("  ", " ").trim().split(" ");
+  const pathLst = path.replace('  ', ' ').trim().split(' ');
 
   // Calculate image region
   let minX = Number.MAX_VALUE;
@@ -26,8 +26,8 @@ export function calculateMediaRegion(
     const part = pathLst[i];
 
     switch (part) {
-      case "M":
-      case "L": {
+      case 'M':
+      case 'L': {
         const x = parseInt(pathLst[i + 1]);
         const y = parseInt(pathLst[i + 2]);
         minX = Math.min(minX, x);
@@ -36,7 +36,7 @@ export function calculateMediaRegion(
         maxY = Math.max(maxY, y);
         break;
       }
-      case "C": {
+      case 'C': {
         const x = parseInt(pathLst[i + 5]);
         const y = parseInt(pathLst[i + 6]);
         minX = Math.min(minX, x);
@@ -102,7 +102,7 @@ export function isPathVisible(path: string, mediaRegion: MediaRegion): boolean {
   const regionY1 = mediaRegion.y;
   const regionX2 = mediaRegion.x + mediaRegion.width;
   const regionY2 = mediaRegion.y + mediaRegion.height;
-  const pathLst = path.replace("  ", " ").trim().split(" ");
+  const pathLst = path.replace('  ', ' ').trim().split(' ');
   const x1 = parseInt(pathLst[1]);
   const y1 = parseInt(pathLst[2]);
   const x2 = parseInt(pathLst[pathLst.length - 2]);
@@ -131,7 +131,7 @@ export function scalePath(path: string, mediaRegion: MediaRegion): string {
   if (!mediaRegion) {
     return path;
   }
-  const pathLst = path.replace("  ", " ").trim().split(" ");
+  const pathLst = path.replace('  ', ' ').trim().split(' ');
   // Update path
   const newPathLst = [];
 
@@ -145,5 +145,5 @@ export function scalePath(path: string, mediaRegion: MediaRegion): string {
       newPathLst.push(parseInt(pathLst[i]) - mediaRegion.y);
     }
   }
-  return newPathLst.join(" ");
+  return newPathLst.join(' ');
 }

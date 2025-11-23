@@ -1,12 +1,12 @@
-import React, { ComponentProps, useState } from "react";
-import CreatableSelect from "react-select/creatable";
-import { useUserSearch } from "./../../../api";
-import { components } from "../../../@types/buldreinfo/swagger";
+import React, { ComponentProps, useState } from 'react';
+import CreatableSelect from 'react-select/creatable';
+import { useUserSearch } from './../../../api';
+import { components } from '../../../@types/buldreinfo/swagger';
 
 type UserOption = {
   value?: string | number;
   label?: string;
-} & components["schemas"]["User"];
+} & components['schemas']['User'];
 
 type MultiUserProps = {
   onUsersUpdated: (user: UserOption[]) => void;
@@ -25,22 +25,22 @@ const UserSelect = (
     | Required<
         Pick<
           ComponentProps<typeof CreatableSelect<UserOption, true>>,
-          "onChange" | "placeholder" | "value"
+          'onChange' | 'placeholder' | 'value'
         > & { isMulti: true }
       >
     | Required<
         Pick<
           ComponentProps<typeof CreatableSelect<UserOption, false>>,
-          "onChange" | "placeholder" | "defaultValue"
+          'onChange' | 'placeholder' | 'defaultValue'
         > & { isMulti: false }
       >,
 ) => {
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState('');
   const { data: options = [] } = useUserSearch(value);
 
   return (
-    <div style={{ position: "relative", width: "100%" }}>
-      <div style={{ width: "100%" }}>
+    <div style={{ position: 'relative', width: '100%' }}>
+      <div style={{ width: '100%' }}>
         <CreatableSelect<UserOption, boolean>
           isClearable
           onInputChange={(newValue) => setValue(newValue)}
@@ -49,12 +49,11 @@ const UserSelect = (
             .map((user) => ({
               ...user,
               value: user.id ?? 0,
-              label: user.name ?? "",
+              label: user.name ?? '',
             }))}
           isValidNewOption={(inputValue) => {
             const userExist = !!options.find(
-              (u) =>
-                u.name && inputValue.toLowerCase() === u.name.toLowerCase(),
+              (u) => u.name && inputValue.toLowerCase() === u.name.toLowerCase(),
             );
             return !userExist;
           }}
@@ -65,11 +64,7 @@ const UserSelect = (
   );
 };
 
-export const UserSelector = ({
-  placeholder,
-  defaultValue,
-  onUserUpdated,
-}: SingleUserProps) => {
+export const UserSelector = ({ placeholder, defaultValue, onUserUpdated }: SingleUserProps) => {
   return (
     <UserSelect
       isMulti={false}
@@ -80,11 +75,7 @@ export const UserSelector = ({
   );
 };
 
-export const UsersSelector = ({
-  placeholder,
-  users,
-  onUsersUpdated,
-}: MultiUserProps) => {
+export const UsersSelector = ({ placeholder, users, onUsersUpdated }: MultiUserProps) => {
   return (
     <UserSelect
       isMulti={true}
@@ -92,7 +83,7 @@ export const UsersSelector = ({
       value={users?.map((user) => ({
         ...user,
         value: user.id ?? 0,
-        label: user.name ?? "",
+        label: user.name ?? '',
       }))}
       onChange={onUsersUpdated}
     />

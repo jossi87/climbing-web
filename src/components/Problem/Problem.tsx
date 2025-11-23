@@ -1,9 +1,9 @@
-import React, { useState, ComponentProps } from "react";
-import { Link, useParams } from "react-router-dom";
-import Leaflet from "../common/leaflet/leaflet";
-import { getDistanceWithUnit } from "../common/leaflet/geo-utils";
-import GetCenterFromDegrees from "../../utils/map-utils";
-import Media from "../common/media/media";
+import React, { useState, ComponentProps } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import Leaflet from '../common/leaflet/leaflet';
+import { getDistanceWithUnit } from '../common/leaflet/geo-utils';
+import GetCenterFromDegrees from '../../utils/map-utils';
+import Media from '../common/media/media';
 import {
   Button,
   Grid,
@@ -15,33 +15,33 @@ import {
   Table,
   Feed,
   Message,
-} from "semantic-ui-react";
+} from 'semantic-ui-react';
 import {
   Loading,
   LockSymbol,
   ConditionLabels,
   ExternalLinkLabels,
   NoDogsAllowed,
-} from "../common/widgets/widgets";
-import { useMeta } from "../common/meta";
-import { useProblem } from "../../api";
-import Avatar from "../common/avatar/avatar";
-import TickModal from "../common/tick-modal/tick-modal";
-import CommentModal from "../common/comment-modal/comment-modal";
-import { SlopeProfile } from "../common/SlopeProfile";
-import Linkify from "linkify-react";
-import { ProblemsOnRock } from "./ProblemsOnRock";
-import { ProblemTicks } from "./ProblemTicks";
-import { ProblemComments } from "./ProblemComments";
-import { DownloadButton } from "../common/DownloadButton";
-import { Markdown } from "../Markdown/Markdown";
+} from '../common/widgets/widgets';
+import { useMeta } from '../common/meta';
+import { useProblem } from '../../api';
+import Avatar from '../common/avatar/avatar';
+import TickModal from '../common/tick-modal/tick-modal';
+import CommentModal from '../common/comment-modal/comment-modal';
+import { SlopeProfile } from '../common/SlopeProfile';
+import Linkify from 'linkify-react';
+import { ProblemsOnRock } from './ProblemsOnRock';
+import { ProblemTicks } from './ProblemTicks';
+import { ProblemComments } from './ProblemComments';
+import { DownloadButton } from '../common/DownloadButton';
+import { Markdown } from '../Markdown/Markdown';
 
 const useIds = (): {
   problemId: number;
 } => {
   const { problemId } = useParams();
   if (!problemId) {
-    throw new Error("Missing problemId param");
+    throw new Error('Missing problemId param');
   }
   return {
     problemId: +problemId,
@@ -52,10 +52,7 @@ export const Problem = () => {
   const { problemId } = useIds();
   const [showHiddenMedia, setShowHiddenMedia] = useState(false);
   const meta = useMeta();
-  const { data, error, toggleTodo, redirectUi } = useProblem(
-    +problemId,
-    showHiddenMedia,
-  );
+  const { data, error, toggleTodo, redirectUi } = useProblem(+problemId, showHiddenMedia);
 
   const [showTickModal, setShowTickModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState<any>(null);
@@ -79,12 +76,12 @@ export const Problem = () => {
   if (error) {
     return (
       <Message
-        size="huge"
-        style={{ backgroundColor: "#FFF" }}
-        icon="meh"
-        header="404"
+        size='huge'
+        style={{ backgroundColor: '#FFF' }}
+        icon='meh'
+        header='404'
         content={
-          "Cannot find the specified problem because it does not exist or you do not have sufficient permissions."
+          'Cannot find the specified problem because it does not exist or you do not have sufficient permissions.'
         }
       />
     );
@@ -92,8 +89,8 @@ export const Problem = () => {
     return <Loading />;
   }
 
-  const orderableMedia: ComponentProps<typeof Media>["orderableMedia"] = [];
-  const carouselMedia: ComponentProps<typeof Media>["carouselMedia"] = [];
+  const orderableMedia: ComponentProps<typeof Media>['orderableMedia'] = [];
+  const carouselMedia: ComponentProps<typeof Media>['carouselMedia'] = [];
   if (data.media?.length) {
     carouselMedia.push(...data.media);
     if (data.media.length > 1) {
@@ -126,12 +123,12 @@ export const Problem = () => {
       }
     });
   }
-  const markers: ComponentProps<typeof Leaflet>["markers"] = [];
+  const markers: ComponentProps<typeof Leaflet>['markers'] = [];
   if (data.coordinates) {
     markers.push({
       coordinates: data.coordinates,
-      label: data.name + " [" + data.grade + "]",
-      url: "/problem/" + data.id,
+      label: data.name + ' [' + data.grade + ']',
+      url: '/problem/' + data.id,
     });
   }
   if (data.sectorParking) {
@@ -140,11 +137,11 @@ export const Problem = () => {
       isParking: true,
     });
   }
-  const panes: ComponentProps<typeof Tab>["panes"] = [];
+  const panes: ComponentProps<typeof Tab>['panes'] = [];
   if (data.media && data.media.length > 0) {
     const media = data.media;
     panes.push({
-      menuItem: { key: "media", icon: "image" },
+      menuItem: { key: 'media', icon: 'image' },
       render: () => (
         <TabPane>
           <Media
@@ -160,42 +157,39 @@ export const Problem = () => {
     });
   }
   if (markers.length > 0) {
-    let outlines: ComponentProps<typeof Leaflet>["outlines"];
-    const slopes: ComponentProps<typeof Leaflet>["slopes"] = [];
+    let outlines: ComponentProps<typeof Leaflet>['outlines'];
+    const slopes: ComponentProps<typeof Leaflet>['slopes'] = [];
     if (data.sectorOutline?.length && !data.coordinates) {
       const outline = data.sectorOutline;
-      outlines = [
-        { url: "/sector/" + data.sectorId, label: data.sectorName, outline },
-      ];
+      outlines = [{ url: '/sector/' + data.sectorId, label: data.sectorName, outline }];
     }
     if (data.sectorApproach?.coordinates?.length) {
       slopes.push({
         slope: data.sectorApproach,
-        backgroundColor: "lime",
+        backgroundColor: 'lime',
         label: getDistanceWithUnit(data.sectorApproach) ?? undefined,
       });
     }
     if (data.sectorDescent?.coordinates?.length) {
       slopes.push({
         slope: data.sectorDescent,
-        backgroundColor: "purple",
+        backgroundColor: 'purple',
         label: getDistanceWithUnit(data.sectorDescent) ?? undefined,
       });
     }
     panes.push({
-      menuItem: { key: "map", icon: "map" },
+      menuItem: { key: 'map', icon: 'map' },
       render: () => (
         <TabPane>
           <Leaflet
-            key={"sector=" + data.id}
+            key={'sector=' + data.id}
             autoZoom={true}
-            height="40vh"
+            height='40vh'
             markers={markers}
             outlines={outlines}
             slopes={slopes}
             defaultCenter={
-              markers[0].coordinates.latitude &&
-              markers[0].coordinates.longitude
+              markers[0].coordinates.latitude && markers[0].coordinates.longitude
                 ? {
                     lat: markers[0].coordinates.latitude,
                     lng: markers[0].coordinates.longitude,
@@ -224,11 +218,11 @@ export const Problem = () => {
           idTick={userTicks[0].id ?? 0}
           idProblem={data.id}
           date={userTicks[0].date}
-          comment={userTicks[0].comment ?? ""}
+          comment={userTicks[0].comment ?? ''}
           grade={
             userTicks[0].noPersonalGrade
-              ? "No personal grade"
-              : (userTicks[0].suggestedGrade ?? "No personal grade")
+              ? 'No personal grade'
+              : (userTicks[0].suggestedGrade ?? 'No personal grade')
           }
           gradeFa={data.originalGrade}
           gradeConsensus={data.grade}
@@ -251,7 +245,7 @@ export const Problem = () => {
         grades={meta.grades}
         open={showTickModal}
         onClose={onTickModalClose}
-        comment={""}
+        comment={''}
         stars={null}
         repeats={undefined}
         date={undefined}
@@ -269,7 +263,7 @@ export const Problem = () => {
       const center = GetCenterFromDegrees(
         data.sectorOutline
           .filter(
-            (c): c is Required<Pick<typeof c, "latitude" | "longitude">> =>
+            (c): c is Required<Pick<typeof c, 'latitude' | 'longitude'>> =>
               !!(c.latitude && c.longitude),
           )
           .map((c) => [c.latitude, c.longitude]),
@@ -326,7 +320,7 @@ export const Problem = () => {
   return (
     <>
       <title>{`${data.name} [${data.grade}] (${data.areaName} / ${data.sectorName}) | ${meta?.title}`}</title>
-      <meta name="description" content={data.comment}></meta>
+      <meta name='description' content={data.comment}></meta>
       {tickModal}
       {showCommentModal && (
         <CommentModal
@@ -339,34 +333,26 @@ export const Problem = () => {
           idProblem={data.id}
         />
       )}
-      <div style={{ marginBottom: "5px" }}>
-        <div style={{ float: "right" }}>
+      <div style={{ marginBottom: '5px' }}>
+        <div style={{ float: 'right' }}>
           {meta.isAuthenticated && (
-            <Button.Group size="mini" compact>
+            <Button.Group size='mini' compact>
               {!isTicked && (
-                <Button
-                  positive={data.todo}
-                  animated="fade"
-                  onClick={() => toggleTodo(data.id)}
-                >
+                <Button positive={data.todo} animated='fade' onClick={() => toggleTodo(data.id)}>
                   <Button.Content hidden>To-do</Button.Content>
                   <Button.Content visible>
-                    <Icon name="bookmark" />
+                    <Icon name='bookmark' />
                   </Button.Content>
                 </Button>
               )}
-              <Button
-                positive={isTicked}
-                animated="fade"
-                onClick={openTickModal}
-              >
+              <Button positive={isTicked} animated='fade' onClick={openTickModal}>
                 <Button.Content hidden>Tick</Button.Content>
                 <Button.Content visible>
-                  <Icon name="check" />
+                  <Icon name='check' />
                 </Button.Content>
               </Button>
               <Button
-                animated="fade"
+                animated='fade'
                 onClick={() =>
                   setShowCommentModal({
                     id: -1,
@@ -378,43 +364,35 @@ export const Problem = () => {
               >
                 <Button.Content hidden>Comment</Button.Content>
                 <Button.Content visible>
-                  <Icon name="comment" />
+                  <Icon name='comment' />
                 </Button.Content>
               </Button>
               {meta.isAdmin && (
                 <Button
                   positive={showHiddenMedia}
-                  animated="fade"
+                  animated='fade'
                   onClick={async () => {
                     setShowHiddenMedia(!showHiddenMedia);
                   }}
                 >
                   <Button.Content hidden>Images</Button.Content>
                   <Button.Content visible>
-                    <Icon name="eye" />
+                    <Icon name='eye' />
                   </Button.Content>
                 </Button>
               )}
               {meta.isAdmin ? (
-                <Button
-                  animated="fade"
-                  as={Link}
-                  to={`/problem/edit/${data.sectorId}/${data.id}`}
-                >
+                <Button animated='fade' as={Link} to={`/problem/edit/${data.sectorId}/${data.id}`}>
                   <Button.Content hidden>Edit</Button.Content>
                   <Button.Content visible>
-                    <Icon name="edit" />
+                    <Icon name='edit' />
                   </Button.Content>
                 </Button>
               ) : (
-                <Button
-                  animated="fade"
-                  as={Link}
-                  to={`/problem/edit/media/${data.id}`}
-                >
+                <Button animated='fade' as={Link} to={`/problem/edit/media/${data.id}`}>
                   <Button.Content hidden>Image</Button.Content>
                   <Button.Content visible>
-                    <Icon name="plus" />
+                    <Icon name='plus' />
                   </Button.Content>
                 </Button>
               )}
@@ -423,28 +401,28 @@ export const Problem = () => {
         </div>
         <Breadcrumb>
           <Breadcrumb.Section>
-            <Link to="/areas">Areas</Link>
+            <Link to='/areas'>Areas</Link>
           </Breadcrumb.Section>
-          <Breadcrumb.Divider icon="right angle" />
+          <Breadcrumb.Divider icon='right angle' />
           <Breadcrumb.Section>
-            <Link to={`/area/${data.areaId}`}>{data.areaName}</Link>{" "}
+            <Link to={`/area/${data.areaId}`}>{data.areaName}</Link>{' '}
             <LockSymbol
               lockedAdmin={!!data.areaLockedAdmin}
               lockedSuperadmin={!!data.areaLockedSuperadmin}
             />
           </Breadcrumb.Section>
-          <Breadcrumb.Divider icon="right angle" />
+          <Breadcrumb.Divider icon='right angle' />
           <Breadcrumb.Section>
-            <Link to={`/sector/${data.sectorId}`}>{data.sectorName}</Link>{" "}
+            <Link to={`/sector/${data.sectorId}`}>{data.sectorName}</Link>{' '}
             <LockSymbol
               lockedAdmin={!!data.sectorLockedAdmin}
               lockedSuperadmin={!!data.sectorLockedSuperadmin}
             />
           </Breadcrumb.Section>
-          <Breadcrumb.Divider icon="right angle" />
+          <Breadcrumb.Divider icon='right angle' />
           <Breadcrumb.Section active>
-            <span style={{ fontWeight: "normal" }}>#{data.nr}</span> {data.name}{" "}
-            <span style={{ fontWeight: "normal" }}>{data.grade}</span>{" "}
+            <span style={{ fontWeight: 'normal' }}>#{data.nr}</span> {data.name}{' '}
+            <span style={{ fontWeight: 'normal' }}>{data.grade}</span>{' '}
             <LockSymbol
               lockedAdmin={!!data.lockedAdmin}
               lockedSuperadmin={!!data.lockedSuperadmin}
@@ -454,31 +432,27 @@ export const Problem = () => {
       </div>
       {data.broken && (
         <Message
-          size="huge"
+          size='huge'
           negative
-          icon="attention"
-          header={meta.isBouldering ? "Problem broken" : "Route broken"}
+          icon='attention'
+          header={meta.isBouldering ? 'Problem broken' : 'Route broken'}
           content={data.broken}
         />
       )}
       {(data.areaAccessClosed || data.sectorAccessClosed) && (
         <Message
-          size="huge"
+          size='huge'
           negative
-          icon="attention"
-          header={(data.areaAccessClosed ? "Area" : "Sector") + " closed!"}
-          content={
-            (data.areaAccessClosed || "") + (data.sectorAccessClosed || "")
-          }
+          icon='attention'
+          header={(data.areaAccessClosed ? 'Area' : 'Sector') + ' closed!'}
+          content={(data.areaAccessClosed || '') + (data.sectorAccessClosed || '')}
         />
       )}
       {panes?.length && <Tab panes={panes} />}
       <Table definition unstackable>
         <Table.Body>
-          {(data.areaAccessInfo ||
-            data.sectorAccessInfo ||
-            data.areaNoDogsAllowed) && (
-            <Table.Row warning verticalAlign="top">
+          {(data.areaAccessInfo || data.sectorAccessInfo || data.areaNoDogsAllowed) && (
+            <Table.Row warning verticalAlign='top'>
               <Table.Cell>Restrictions:</Table.Cell>
               <Table.Cell>
                 {data.areaNoDogsAllowed && <NoDogsAllowed />}
@@ -488,36 +462,24 @@ export const Problem = () => {
             </Table.Row>
           )}
           {(data.neighbourPrev || data.neighbourNext) && (
-            <Table.Row verticalAlign="top">
+            <Table.Row verticalAlign='top'>
               <Table.Cell>Neighbour(s):</Table.Cell>
               <Table.Cell>
                 {data.neighbourPrev && (
-                  <Label
-                    as={Link}
-                    to={`/problem/${data.neighbourPrev.id}`}
-                    basic
-                  >
+                  <Label as={Link} to={`/problem/${data.neighbourPrev.id}`} basic>
                     #{data.neighbourPrev.nr}
                     <Label.Detail>
-                      {data.neighbourPrev.name}{" "}
-                      <span style={{ fontWeight: "normal" }}>
-                        {data.neighbourPrev.grade}
-                      </span>
+                      {data.neighbourPrev.name}{' '}
+                      <span style={{ fontWeight: 'normal' }}>{data.neighbourPrev.grade}</span>
                     </Label.Detail>
                   </Label>
                 )}
                 {data.neighbourNext && (
-                  <Label
-                    as={Link}
-                    to={`/problem/${data.neighbourNext.id}`}
-                    basic
-                  >
+                  <Label as={Link} to={`/problem/${data.neighbourNext.id}`} basic>
                     #{data.neighbourNext.nr}
                     <Label.Detail>
-                      {data.neighbourNext.name}{" "}
-                      <span style={{ fontWeight: "normal" }}>
-                        {data.neighbourNext.grade}
-                      </span>
+                      {data.neighbourNext.name}{' '}
+                      <span style={{ fontWeight: 'normal' }}>{data.neighbourNext.grade}</span>
                     </Label.Detail>
                   </Label>
                 )}
@@ -525,30 +487,20 @@ export const Problem = () => {
             </Table.Row>
           )}
           {data.faAid && (
-            <Table.Row verticalAlign="top">
+            <Table.Row verticalAlign='top'>
               <Table.Cell>First ascent (Aid):</Table.Cell>
               <Table.Cell>
                 {data.faAid.dateHr && (
                   <Label basic>
-                    <Icon name="calendar check" />
+                    <Icon name='calendar check' />
                     {data.faAid.dateHr}
                   </Label>
                 )}
                 {data.faAid.users && (
                   <>
                     {data.faAid.users.map((u) => (
-                      <Label
-                        key={u.id}
-                        as={Link}
-                        to={`/user/${u.id}`}
-                        image
-                        basic
-                      >
-                        <Avatar
-                          userId={u.id}
-                          name={u.name}
-                          avatarCrc32={u.avatarCrc32}
-                        />
+                      <Label key={u.id} as={Link} to={`/user/${u.id}`} image basic>
+                        <Avatar userId={u.id} name={u.name} avatarCrc32={u.avatarCrc32} />
                         {u.name}
                       </Label>
                     ))}
@@ -563,9 +515,9 @@ export const Problem = () => {
               </Table.Cell>
             </Table.Row>
           )}
-          <Table.Row verticalAlign="top">
+          <Table.Row verticalAlign='top'>
             <Table.Cell width={3}>
-              {data.faAid ? "First free ascent (FFA):" : "First ascent:"}
+              {data.faAid ? 'First free ascent (FFA):' : 'First ascent:'}
             </Table.Cell>
             <Table.Cell>
               <Label basic>
@@ -573,31 +525,21 @@ export const Problem = () => {
               </Label>
               {meta.isClimbing && data.t?.subType && (
                 <Label basic>
-                  <Icon name="tag" />
+                  <Icon name='tag' />
                   {data.t.subType}
                 </Label>
               )}
               {data.faDateHr && (
                 <Label basic>
-                  <Icon name="calendar check" />
+                  <Icon name='calendar check' />
                   {data.faDateHr}
                 </Label>
               )}
               {data.fa && (
                 <>
                   {data.fa.map((u) => (
-                    <Label
-                      key={u.id}
-                      as={Link}
-                      to={`/user/${u.id}`}
-                      image
-                      basic
-                    >
-                      <Avatar
-                        userId={u.id}
-                        name={u.name}
-                        avatarCrc32={u.avatarCrc32}
-                      />
+                    <Label key={u.id} as={Link} to={`/user/${u.id}`} image basic>
+                      <Avatar userId={u.id} name={u.name} avatarCrc32={u.avatarCrc32} />
                       {u.name}
                     </Label>
                   ))}
@@ -628,7 +570,7 @@ export const Problem = () => {
             </Table.Cell>
           </Table.Row>
           {(data.trivia || data.triviaMedia?.length) && (
-            <Table.Row verticalAlign="top">
+            <Table.Row verticalAlign='top'>
               <Table.Cell>Trivia:</Table.Cell>
               <Table.Cell>
                 <Markdown content={data.trivia} />
@@ -647,13 +589,9 @@ export const Problem = () => {
               </Table.Cell>
             </Table.Row>
           )}
-          <ProblemsOnRock
-            sectorId={data?.sectorId}
-            problemId={+problemId}
-            rock={data?.rock}
-          />
+          <ProblemsOnRock sectorId={data?.sectorId} problemId={+problemId} rock={data?.rock} />
           {(data.sectorApproach?.coordinates?.length ?? 0) > 1 && (
-            <Table.Row verticalAlign="top">
+            <Table.Row verticalAlign='top'>
               <Table.Cell>Approach:</Table.Cell>
               <Table.Cell>
                 <SlopeProfile
@@ -665,7 +603,7 @@ export const Problem = () => {
             </Table.Row>
           )}
           {(data.sectorDescent?.coordinates?.length ?? 0) > 1 && (
-            <Table.Row verticalAlign="top">
+            <Table.Row verticalAlign='top'>
               <Table.Cell>Descent:</Table.Cell>
               <Table.Cell>
                 <SlopeProfile
@@ -677,23 +615,12 @@ export const Problem = () => {
             </Table.Row>
           )}
           {data.todos && (
-            <Table.Row verticalAlign="top">
+            <Table.Row verticalAlign='top'>
               <Table.Cell>Todo:</Table.Cell>
               <Table.Cell>
                 {data.todos.map((u) => (
-                  <Label
-                    size="mini"
-                    key={u.idUser}
-                    as={Link}
-                    to={`/user/${u.idUser}`}
-                    image
-                    basic
-                  >
-                    <Avatar
-                      userId={u.idUser}
-                      name={u.name}
-                      avatarCrc32={u.avatarCrc32}
-                    />
+                  <Label size='mini' key={u.idUser} as={Link} to={`/user/${u.idUser}`} image basic>
+                    <Avatar userId={u.idUser} name={u.name} avatarCrc32={u.avatarCrc32} />
                     {u.name}
                   </Label>
                 ))}
@@ -707,65 +634,57 @@ export const Problem = () => {
                 <ConditionLabels
                   lat={conditionLat}
                   lng={conditionLng}
-                  label={data.name ?? ""}
+                  label={data.name ?? ''}
                   wallDirectionCalculated={data.sectorWallDirectionCalculated}
                   wallDirectionManual={data.sectorWallDirectionManual}
-                  sunFromHour={
-                    data.sectorSunFromHour ?? data.areaSunFromHour ?? 0
-                  }
+                  sunFromHour={data.sectorSunFromHour ?? data.areaSunFromHour ?? 0}
                   sunToHour={data.sectorSunToHour ?? data.areaSunToHour ?? 0}
                 />
               </Table.Cell>
             </Table.Row>
           )}
-          <Table.Row verticalAlign="top">
+          <Table.Row verticalAlign='top'>
             <Table.Cell>Misc:</Table.Cell>
             <Table.Cell>
               <DownloadButton href={`/problem/pdf?id=${data.id}`}>
-                {meta.isBouldering ? "boulder.pdf" : "route.pdf"}
+                {meta.isBouldering ? 'boulder.pdf' : 'route.pdf'}
               </DownloadButton>
-              <DownloadButton href={`/sectors/pdf?id=${data.sectorId}`}>
-                sector.pdf
-              </DownloadButton>
-              <DownloadButton href={`/areas/pdf?id=${data.areaId}`}>
-                area.pdf
-              </DownloadButton>
+              <DownloadButton href={`/sectors/pdf?id=${data.sectorId}`}>sector.pdf</DownloadButton>
+              <DownloadButton href={`/areas/pdf?id=${data.areaId}`}>area.pdf</DownloadButton>
               {data.sectorParking && (
                 <Label
                   href={`https://www.google.com/maps/search/?api=1&query=${data.sectorParking.latitude},${data.sectorParking.longitude}`}
-                  rel="noreferrer noopener"
-                  target="_blank"
+                  rel='noreferrer noopener'
+                  target='_blank'
                   image
                   basic
                 >
-                  <Icon name="map" />
+                  <Icon name='map' />
                   Parking
                 </Label>
               )}
-              {meta.isClimbing &&
-                data.sectorOutline?.length > 0 &&
-                !data.coordinates && (
-                  <Label
-                    href={`https://www.google.com/maps/search/?api=1&query=${data.sectorOutline[0].latitude},${data.sectorOutline[0].longitude}`}
-                    rel="noreferrer noopener"
-                    target="_blank"
-                    image
-                    basic
-                  >
-                    <Icon name="map" />
-                    Sector (Google Maps)
-                  </Label>
-                )}
-              {data.coordinates && (
+              {meta.isClimbing && data.sectorOutline?.length > 0 && !data.coordinates && (
                 <Label
-                  href={`https://www.google.com/maps/search/?api=1&query=${data.coordinates.latitude},${data.coordinates.longitude}`}
-                  rel="noreferrer noopener"
-                  target="_blank"
+                  href={`https://www.google.com/maps/search/?api=1&query=${data.sectorOutline[0].latitude},${data.sectorOutline[0].longitude}`}
+                  rel='noreferrer noopener'
+                  target='_blank'
                   image
                   basic
                 >
-                  <Icon name="map" />
-                  {meta.isBouldering ? "Boulder" : "Route"}
+                  <Icon name='map' />
+                  Sector (Google Maps)
+                </Label>
+              )}
+              {data.coordinates && (
+                <Label
+                  href={`https://www.google.com/maps/search/?api=1&query=${data.coordinates.latitude},${data.coordinates.longitude}`}
+                  rel='noreferrer noopener'
+                  target='_blank'
+                  image
+                  basic
+                >
+                  <Icon name='map' />
+                  {meta.isBouldering ? 'Boulder' : 'Route'}
                 </Label>
               )}
               <Label basic>
@@ -776,15 +695,13 @@ export const Problem = () => {
             </Table.Cell>
           </Table.Row>
           {data.sections && (
-            <Table.Row verticalAlign="top">
-              <Table.Cell verticalAlign="top">Pitches:</Table.Cell>
+            <Table.Row verticalAlign='top'>
+              <Table.Cell verticalAlign='top'>Pitches:</Table.Cell>
               <Table.Cell>
-                <Feed size="small">
+                <Feed size='small'>
                   {data.sections.map((s) => (
                     <Feed.Event key={s.nr}>
-                      <Feed.Label style={{ marginTop: "8px" }}>
-                        {s.nr}
-                      </Feed.Label>
+                      <Feed.Label style={{ marginTop: '8px' }}>{s.nr}</Feed.Label>
                       <Feed.Content>
                         <Feed.Summary>
                           <Feed.Label>{s.grade}</Feed.Label>

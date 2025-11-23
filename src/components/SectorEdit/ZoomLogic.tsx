@@ -1,18 +1,15 @@
-import { latLngBounds } from "leaflet";
-import { useRef, useEffect } from "react";
-import { useMap } from "react-leaflet";
-import { components } from "../../@types/buldreinfo/swagger";
-import { useMeta } from "../common/meta";
+import { latLngBounds } from 'leaflet';
+import { useRef, useEffect } from 'react';
+import { useMap } from 'react-leaflet';
+import { components } from '../../@types/buldreinfo/swagger';
+import { useMeta } from '../common/meta';
 
 type Props = {
-  area: components["schemas"]["Area"];
-  sector: components["schemas"]["Sector"];
+  area: components['schemas']['Area'];
+  sector: components['schemas']['Sector'];
 };
 
-export const ZoomLogic = ({
-  area: loadedArea,
-  sector: loadedSector,
-}: Props) => {
+export const ZoomLogic = ({ area: loadedArea, sector: loadedSector }: Props) => {
   const { defaultCenter } = useMeta();
   const map = useMap();
   const sectorRef = useRef(loadedSector);

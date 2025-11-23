@@ -1,16 +1,16 @@
-import { useCallback, useEffect, useReducer } from "react";
-import { neverGuard } from "../../utils/neverGuard";
-import { useGrades, useMeta } from "../common/meta/meta";
-import { itemLocalStorage } from "../../utils/use-local-storage";
-import { components } from "../../@types/buldreinfo/swagger";
-import { flatten, unflatten } from "flat";
-import jsonUrl from "json-url";
-import { captureMessage, captureException } from "@sentry/react";
+import { useCallback, useEffect, useReducer } from 'react';
+import { neverGuard } from '../../utils/neverGuard';
+import { useGrades, useMeta } from '../common/meta/meta';
+import { itemLocalStorage } from '../../utils/use-local-storage';
+import { components } from '../../@types/buldreinfo/swagger';
+import { flatten, unflatten } from 'flat';
+import jsonUrl from 'json-url';
+import { captureMessage, captureException } from '@sentry/react';
 
-const codec = jsonUrl("lzw");
+const codec = jsonUrl('lzw');
 
 type FilterResults = {
-  filteredData: components["schemas"]["Toc"];
+  filteredData: components['schemas']['Toc'];
   filteredRegions: number;
   filteredAreas: number;
   filteredSectors: number;
@@ -29,8 +29,8 @@ type FilterInputs = {
   filterFaYearHigh: number;
   filterTypes: Record<number, boolean>;
   filterPitches: {
-    "Single-pitch": boolean;
-    "Multi-pitch": boolean;
+    'Single-pitch': boolean;
+    'Multi-pitch': boolean;
   };
   filterHideTicked: boolean;
   filterOnlyAdmin: boolean;
@@ -46,8 +46,8 @@ const DEFAULT_INITIAL_FILTER: FilterInputs = {
   filterFaYearHigh: 0,
   filterHideTicked: false,
   filterPitches: {
-    "Single-pitch": false,
-    "Multi-pitch": false,
+    'Single-pitch': false,
+    'Multi-pitch': false,
   },
   filterTypes: {},
   filterOnlyAdmin: false,
@@ -57,9 +57,7 @@ const DEFAULT_INITIAL_FILTER: FilterInputs = {
   filterSectorWallDirections: {},
 } as const;
 
-const FLAT_FILTER: Readonly<Record<string, unknown>> = flatten(
-  DEFAULT_INITIAL_FILTER,
-);
+const FLAT_FILTER: Readonly<Record<string, unknown>> = flatten(DEFAULT_INITIAL_FILTER);
 
 const FILTER_INPUT_KEYS: Readonly<string[]> = Object.keys(FLAT_FILTER);
 const FILTER_INPUT_KEYS_SET: Readonly<Set<string>> = new Set(FILTER_INPUT_KEYS);
@@ -76,61 +74,61 @@ type DataState = {
   totalAreas: number;
   totalSectors: number;
   totalProblems: number;
-  unfilteredData: components["schemas"]["Toc"];
+  unfilteredData: components['schemas']['Toc'];
 };
 
 export type State = UiState & DataState & FilterState;
 
 export type ResetField =
-  | "all"
-  | "regions"
-  | "areas"
-  | "fa-year"
-  | "options"
-  | "wall-directions"
-  | "conditions"
-  | "pitches"
-  | "types"
-  | "grades";
+  | 'all'
+  | 'regions'
+  | 'areas'
+  | 'fa-year'
+  | 'options'
+  | 'wall-directions'
+  | 'conditions'
+  | 'pitches'
+  | 'types'
+  | 'grades';
 
 export type Update =
-  | { action: "set-data"; data: components["schemas"]["Toc"] }
+  | { action: 'set-data'; data: components['schemas']['Toc'] }
   | {
-      action: "toggle-pitches";
-      option: keyof State["filterPitches"];
+      action: 'toggle-pitches';
+      option: keyof State['filterPitches'];
       checked: boolean;
     }
   | {
-      action: "toggle-types";
-      option: keyof State["filterTypes"];
+      action: 'toggle-types';
+      option: keyof State['filterTypes'];
       checked: boolean;
     }
-  | { action: "toggle-region"; regionId: number; enabled: boolean }
-  | { action: "toggle-area"; areaId: number; enabled: boolean }
-  | { action: "set-only-sun-on-wall-at"; hour: number }
-  | { action: "set-only-shade-on-wall-at"; hour: number }
+  | { action: 'toggle-region'; regionId: number; enabled: boolean }
+  | { action: 'toggle-area'; areaId: number; enabled: boolean }
+  | { action: 'set-only-sun-on-wall-at'; hour: number }
+  | { action: 'set-only-shade-on-wall-at'; hour: number }
   | {
-      action: "toggle-sector-wall-directions";
-      option: keyof State["filterSectorWallDirections"];
+      action: 'toggle-sector-wall-directions';
+      option: keyof State['filterSectorWallDirections'];
       checked: boolean;
     }
   | {
-      action: "set-grade-mapping";
-      gradeDifficultyLookup: State["gradeDifficultyLookup"];
+      action: 'set-grade-mapping';
+      gradeDifficultyLookup: State['gradeDifficultyLookup'];
     }
-  | { action: "set-grades"; low: string; high: string }
-  | { action: "set-fa-years"; low: number; high: number }
-  | { action: "set-hide-ticked"; checked: boolean }
-  | { action: "set-only-admin"; checked: boolean }
-  | { action: "set-only-super-admin"; checked: boolean }
-  | ({ action: "set-grade" } & ({ low: string } | { high: string }))
-  | ({ action: "set-fa-year" } & ({ low: number } | { high: number }))
-  | { action: "close-filter" }
-  | { action: "open-filter" }
-  | { action: "toggle-filter" }
-  | { action: "reset"; section: ResetField }
+  | { action: 'set-grades'; low: string; high: string }
+  | { action: 'set-fa-years'; low: number; high: number }
+  | { action: 'set-hide-ticked'; checked: boolean }
+  | { action: 'set-only-admin'; checked: boolean }
+  | { action: 'set-only-super-admin'; checked: boolean }
+  | ({ action: 'set-grade' } & ({ low: string } | { high: string }))
+  | ({ action: 'set-fa-year' } & ({ low: number } | { high: number }))
+  | { action: 'close-filter' }
+  | { action: 'open-filter' }
+  | { action: 'toggle-filter' }
+  | { action: 'reset'; section: ResetField }
   // Not intended to be used "externally" (ie, at the component level)
-  | ({ action: "init-filter-state" } & Partial<FilterInputs>);
+  | ({ action: 'init-filter-state' } & Partial<FilterInputs>);
 
 const filter = (state: State): State => {
   const {
@@ -190,8 +188,7 @@ const filter = (state: State): State => {
                         }
 
                         if (filterOnlySunOnWallAt > 0) {
-                          const sunFromHour =
-                            sector.sunFromHour || area.sunFromHour;
+                          const sunFromHour = sector.sunFromHour || area.sunFromHour;
                           const sunToHour = sector.sunToHour || area.sunToHour;
                           if (
                             !sunFromHour ||
@@ -205,8 +202,7 @@ const filter = (state: State): State => {
                         }
 
                         if (filterOnlyShadeOnWallAt > 0) {
-                          const sunFromHour =
-                            sector.sunFromHour || area.sunFromHour;
+                          const sunFromHour = sector.sunFromHour || area.sunFromHour;
                           const sunToHour = sector.sunToHour || area.sunToHour;
                           if (
                             !sunFromHour ||
@@ -221,17 +217,11 @@ const filter = (state: State): State => {
 
                         if (
                           filterSectorWallDirections &&
-                          Object.values(filterSectorWallDirections).some(
-                            (v) => !!v,
-                          )
+                          Object.values(filterSectorWallDirections).some((v) => !!v)
                         ) {
                           const wallDirectionId =
-                            sector.wallDirectionManual?.id ||
-                            sector.wallDirectionCalculated?.id;
-                          if (
-                            !wallDirectionId ||
-                            !filterSectorWallDirections[wallDirectionId]
-                          ) {
+                            sector.wallDirectionManual?.id || sector.wallDirectionCalculated?.id;
+                          if (!wallDirectionId || !filterSectorWallDirections[wallDirectionId]) {
                             filteredOut.problems += 1;
                             return false;
                           }
@@ -244,10 +234,7 @@ const filter = (state: State): State => {
                           }
                         }
 
-                        if (
-                          filterTypes &&
-                          Object.values(filterTypes).some((v) => !!v)
-                        ) {
+                        if (filterTypes && Object.values(filterTypes).some((v) => !!v)) {
                           if (!problem.t?.id || !filterTypes[problem.t?.id]) {
                             filteredOut.problems += 1;
                             return false;
@@ -256,11 +243,10 @@ const filter = (state: State): State => {
 
                         if (
                           filterPitches &&
-                          (filterPitches["Multi-pitch"] ||
-                            filterPitches["Single-pitch"])
+                          (filterPitches['Multi-pitch'] || filterPitches['Single-pitch'])
                         ) {
                           if (
-                            !filterPitches["Multi-pitch"] &&
+                            !filterPitches['Multi-pitch'] &&
                             problem.numPitches &&
                             problem.numPitches >= 2
                           ) {
@@ -268,9 +254,8 @@ const filter = (state: State): State => {
                             return false;
                           }
                           if (
-                            !filterPitches["Single-pitch"] &&
-                            (problem.numPitches === undefined ||
-                              problem.numPitches <= 1)
+                            !filterPitches['Single-pitch'] &&
+                            (problem.numPitches === undefined || problem.numPitches <= 1)
                           ) {
                             filteredOut.problems += 1;
                             return false;
@@ -279,15 +264,12 @@ const filter = (state: State): State => {
 
                         if (filterGradeLow || filterGradeHigh) {
                           const low =
-                            gradeDifficultyLookup[
-                              filterGradeLow ?? "undefined"
-                            ] ?? Number.MIN_SAFE_INTEGER;
+                            gradeDifficultyLookup[filterGradeLow ?? 'undefined'] ??
+                            Number.MIN_SAFE_INTEGER;
                           const high =
-                            gradeDifficultyLookup[
-                              filterGradeHigh ?? "undefined"
-                            ] ?? Number.MAX_SAFE_INTEGER;
-                          const test =
-                            gradeDifficultyLookup[problem.grade ?? "ungraded"];
+                            gradeDifficultyLookup[filterGradeHigh ?? 'undefined'] ??
+                            Number.MAX_SAFE_INTEGER;
+                          const test = gradeDifficultyLookup[problem.grade ?? 'ungraded'];
 
                           if (test === undefined || test < low || test > high) {
                             filteredOut.problems += 1;
@@ -296,15 +278,9 @@ const filter = (state: State): State => {
                         }
 
                         if (filterFaYearLow || filterFaYearHigh) {
-                          const low =
-                            filterFaYearLow ?? Number.MIN_SAFE_INTEGER;
-                          const high =
-                            filterFaYearHigh ?? Number.MAX_SAFE_INTEGER;
-                          if (
-                            !problem.faYear ||
-                            problem.faYear < low ||
-                            problem.faYear > high
-                          ) {
+                          const low = filterFaYearLow ?? Number.MIN_SAFE_INTEGER;
+                          const high = filterFaYearHigh ?? Number.MAX_SAFE_INTEGER;
+                          if (!problem.faYear || problem.faYear < low || problem.faYear > high) {
                             filteredOut.problems += 1;
                             return false;
                           }
@@ -379,7 +355,7 @@ const filter = (state: State): State => {
 const reducer = (state: State, update: Update): State => {
   const { action } = update;
   switch (action) {
-    case "set-data": {
+    case 'set-data': {
       const { data } = update;
       const { numRegions, numAreas, numSectors, numProblems } = data;
 
@@ -393,7 +369,7 @@ const reducer = (state: State, update: Update): State => {
       };
     }
 
-    case "toggle-pitches": {
+    case 'toggle-pitches': {
       const { checked, option } = update;
 
       return {
@@ -405,7 +381,7 @@ const reducer = (state: State, update: Update): State => {
       };
     }
 
-    case "toggle-types": {
+    case 'toggle-types': {
       const { checked, option } = update;
       return {
         ...state,
@@ -416,7 +392,7 @@ const reducer = (state: State, update: Update): State => {
       };
     }
 
-    case "toggle-region": {
+    case 'toggle-region': {
       const { regionId, enabled } = update;
       if (enabled) {
         return {
@@ -439,7 +415,7 @@ const reducer = (state: State, update: Update): State => {
       };
     }
 
-    case "toggle-area": {
+    case 'toggle-area': {
       const { areaId, enabled } = update;
       if (enabled) {
         return {
@@ -462,7 +438,7 @@ const reducer = (state: State, update: Update): State => {
       };
     }
 
-    case "set-only-sun-on-wall-at": {
+    case 'set-only-sun-on-wall-at': {
       const { hour } = update;
       return {
         ...state,
@@ -470,7 +446,7 @@ const reducer = (state: State, update: Update): State => {
       };
     }
 
-    case "set-only-shade-on-wall-at": {
+    case 'set-only-shade-on-wall-at': {
       const { hour } = update;
       return {
         ...state,
@@ -478,7 +454,7 @@ const reducer = (state: State, update: Update): State => {
       };
     }
 
-    case "toggle-sector-wall-directions": {
+    case 'toggle-sector-wall-directions': {
       const { checked, option } = update;
       return {
         ...state,
@@ -489,7 +465,7 @@ const reducer = (state: State, update: Update): State => {
       };
     }
 
-    case "set-grade-mapping": {
+    case 'set-grade-mapping': {
       const { gradeDifficultyLookup } = update;
       return {
         ...state,
@@ -497,7 +473,7 @@ const reducer = (state: State, update: Update): State => {
       };
     }
 
-    case "set-grades": {
+    case 'set-grades': {
       const { low, high } = update;
       return {
         ...state,
@@ -506,9 +482,9 @@ const reducer = (state: State, update: Update): State => {
       };
     }
 
-    case "set-grade": {
-      const low = "low" in update ? update.low : undefined;
-      const high = "high" in update ? update.high : undefined;
+    case 'set-grade': {
+      const low = 'low' in update ? update.low : undefined;
+      const high = 'high' in update ? update.high : undefined;
       return {
         ...state,
         filterGradeLow: low ?? state.filterGradeLow ?? undefined,
@@ -516,7 +492,7 @@ const reducer = (state: State, update: Update): State => {
       };
     }
 
-    case "set-fa-years": {
+    case 'set-fa-years': {
       const { low, high } = update;
       return {
         ...state,
@@ -525,9 +501,9 @@ const reducer = (state: State, update: Update): State => {
       };
     }
 
-    case "set-fa-year": {
-      const low = "low" in update ? update.low : undefined;
-      const high = "high" in update ? update.high : undefined;
+    case 'set-fa-year': {
+      const low = 'low' in update ? update.low : undefined;
+      const high = 'high' in update ? update.high : undefined;
       return {
         ...state,
         filterFaYearLow: low ?? state.filterFaYearLow ?? undefined,
@@ -535,7 +511,7 @@ const reducer = (state: State, update: Update): State => {
       };
     }
 
-    case "set-hide-ticked": {
+    case 'set-hide-ticked': {
       const { checked } = update;
       return {
         ...state,
@@ -543,7 +519,7 @@ const reducer = (state: State, update: Update): State => {
       };
     }
 
-    case "set-only-admin": {
+    case 'set-only-admin': {
       const { checked } = update;
       return {
         ...state,
@@ -552,7 +528,7 @@ const reducer = (state: State, update: Update): State => {
       };
     }
 
-    case "set-only-super-admin": {
+    case 'set-only-super-admin': {
       const { checked } = update;
       return {
         ...state,
@@ -561,43 +537,43 @@ const reducer = (state: State, update: Update): State => {
       };
     }
 
-    case "reset": {
+    case 'reset': {
       const { section } = update;
 
       switch (section) {
-        case "all": {
+        case 'all': {
           return {
             ...state,
             ...DEFAULT_INITIAL_FILTER,
           };
         }
-        case "regions": {
+        case 'regions': {
           return {
             ...state,
             filterRegionIds: DEFAULT_INITIAL_FILTER.filterRegionIds,
           };
         }
-        case "areas": {
+        case 'areas': {
           return {
             ...state,
             filterAreaIds: DEFAULT_INITIAL_FILTER.filterAreaIds,
           };
         }
-        case "grades": {
+        case 'grades': {
           return {
             ...state,
             filterGradeLow: DEFAULT_INITIAL_FILTER.filterGradeLow,
             filterGradeHigh: DEFAULT_INITIAL_FILTER.filterGradeHigh,
           };
         }
-        case "fa-year": {
+        case 'fa-year': {
           return {
             ...state,
             filterFaYearLow: DEFAULT_INITIAL_FILTER.filterFaYearLow,
             filterFaYearHigh: DEFAULT_INITIAL_FILTER.filterFaYearHigh,
           };
         }
-        case "options": {
+        case 'options': {
           return {
             ...state,
             filterHideTicked: DEFAULT_INITIAL_FILTER.filterHideTicked,
@@ -605,28 +581,26 @@ const reducer = (state: State, update: Update): State => {
             filterOnlySuperAdmin: DEFAULT_INITIAL_FILTER.filterOnlySuperAdmin,
           };
         }
-        case "conditions": {
+        case 'conditions': {
           return {
             ...state,
             filterOnlySunOnWallAt: DEFAULT_INITIAL_FILTER.filterOnlySunOnWallAt,
-            filterOnlyShadeOnWallAt:
-              DEFAULT_INITIAL_FILTER.filterOnlyShadeOnWallAt,
+            filterOnlyShadeOnWallAt: DEFAULT_INITIAL_FILTER.filterOnlyShadeOnWallAt,
           };
         }
-        case "wall-directions": {
+        case 'wall-directions': {
           return {
             ...state,
-            filterSectorWallDirections:
-              DEFAULT_INITIAL_FILTER.filterSectorWallDirections,
+            filterSectorWallDirections: DEFAULT_INITIAL_FILTER.filterSectorWallDirections,
           };
         }
-        case "pitches": {
+        case 'pitches': {
           return {
             ...state,
             filterPitches: DEFAULT_INITIAL_FILTER.filterPitches,
           };
         }
-        case "types": {
+        case 'types': {
           return {
             ...state,
             filterTypes: DEFAULT_INITIAL_FILTER.filterTypes,
@@ -638,28 +612,28 @@ const reducer = (state: State, update: Update): State => {
       }
     }
 
-    case "close-filter": {
+    case 'close-filter': {
       return {
         ...state,
         visible: false,
       };
     }
 
-    case "open-filter": {
+    case 'open-filter': {
       return {
         ...state,
         visible: true,
       };
     }
 
-    case "toggle-filter": {
+    case 'toggle-filter': {
       return {
         ...state,
         visible: !state.visible,
       };
     }
 
-    case "init-filter-state": {
+    case 'init-filter-state': {
       return {
         ...state,
         ...DEFAULT_INITIAL_FILTER,
@@ -674,59 +648,32 @@ const reducer = (state: State, update: Update): State => {
 };
 
 const storageItems = {
-  regionIds: itemLocalStorage(
-    "filter/region-ids",
-    DEFAULT_INITIAL_FILTER.filterRegionIds,
-  ),
-  areaIds: itemLocalStorage(
-    "filter/area-ids",
-    DEFAULT_INITIAL_FILTER.filterAreaIds,
-  ),
+  regionIds: itemLocalStorage('filter/region-ids', DEFAULT_INITIAL_FILTER.filterRegionIds),
+  areaIds: itemLocalStorage('filter/area-ids', DEFAULT_INITIAL_FILTER.filterAreaIds),
   onlySunOnWallAt: itemLocalStorage(
-    "filter/only-sun-on-wall-at",
+    'filter/only-sun-on-wall-at',
     DEFAULT_INITIAL_FILTER.filterOnlySunOnWallAt,
   ),
   onlyShadeOnWallAt: itemLocalStorage(
-    "filter/only-shade-on-wall-at",
+    'filter/only-shade-on-wall-at',
     DEFAULT_INITIAL_FILTER.filterOnlyShadeOnWallAt,
   ),
   sectorWallDirections: itemLocalStorage(
-    "filter/sector-wall-directions",
+    'filter/sector-wall-directions',
     DEFAULT_INITIAL_FILTER.filterSectorWallDirections,
   ),
-  gradeHigh: itemLocalStorage(
-    "filter/grades/high",
-    DEFAULT_INITIAL_FILTER.filterGradeHigh,
-  ),
-  gradeLow: itemLocalStorage(
-    "filter/grades/low",
-    DEFAULT_INITIAL_FILTER.filterGradeLow,
-  ),
-  faYearHigh: itemLocalStorage(
-    "filter/fa-year/high",
-    DEFAULT_INITIAL_FILTER.filterFaYearHigh,
-  ),
-  faYearLow: itemLocalStorage(
-    "filter/fa-year/low",
-    DEFAULT_INITIAL_FILTER.filterFaYearLow,
-  ),
-  hideTicked: itemLocalStorage(
-    "filter/hide-ticked",
-    DEFAULT_INITIAL_FILTER.filterHideTicked,
-  ),
-  onlyAdmin: itemLocalStorage(
-    "filter/only-admin",
-    DEFAULT_INITIAL_FILTER.filterOnlyAdmin,
-  ),
+  gradeHigh: itemLocalStorage('filter/grades/high', DEFAULT_INITIAL_FILTER.filterGradeHigh),
+  gradeLow: itemLocalStorage('filter/grades/low', DEFAULT_INITIAL_FILTER.filterGradeLow),
+  faYearHigh: itemLocalStorage('filter/fa-year/high', DEFAULT_INITIAL_FILTER.filterFaYearHigh),
+  faYearLow: itemLocalStorage('filter/fa-year/low', DEFAULT_INITIAL_FILTER.filterFaYearLow),
+  hideTicked: itemLocalStorage('filter/hide-ticked', DEFAULT_INITIAL_FILTER.filterHideTicked),
+  onlyAdmin: itemLocalStorage('filter/only-admin', DEFAULT_INITIAL_FILTER.filterOnlyAdmin),
   onlySuperAdmin: itemLocalStorage(
-    "filter/only-super-admin",
+    'filter/only-super-admin',
     DEFAULT_INITIAL_FILTER.filterOnlySuperAdmin,
   ),
-  pitches: itemLocalStorage(
-    "filter/pitches",
-    DEFAULT_INITIAL_FILTER.filterPitches,
-  ),
-  types: itemLocalStorage("filter/types", DEFAULT_INITIAL_FILTER.filterTypes),
+  pitches: itemLocalStorage('filter/pitches', DEFAULT_INITIAL_FILTER.filterPitches),
+  types: itemLocalStorage('filter/types', DEFAULT_INITIAL_FILTER.filterTypes),
 };
 
 const wrappedReducer: typeof reducer = (state, update) => {
@@ -751,7 +698,7 @@ const wrappedReducer: typeof reducer = (state, update) => {
 };
 
 const parseHash = (hash: string): Promise<Partial<FilterInputs>> => {
-  return codec.decompress(hash.replace(/^#/, "")).then((obj) => {
+  return codec.decompress(hash.replace(/^#/, '')).then((obj) => {
     // TODO: Validate the object
     const unflattened: Partial<FilterInputs> = unflatten(obj, { object: true });
     return unflattened;
@@ -785,7 +732,7 @@ export const useFilterState = (init?: Partial<UiState>) => {
   });
 
   useEffect(() => {
-    dispatch({ action: "set-grade-mapping", gradeDifficultyLookup: mapping });
+    dispatch({ action: 'set-grade-mapping', gradeDifficultyLookup: mapping });
   }, [mapping]);
 
   useEffect(() => {
@@ -803,19 +750,17 @@ export const useFilterState = (init?: Partial<UiState>) => {
     // the default filter. The simplest way to do this is by flattening the two
     // objects and comparing the keys (so we don't have to do any recursion).
     const flattenedInput: Record<string, unknown> = flatten(inputState);
-    const minimalDiffEntries = Object.entries(flattenedInput).filter(
-      ([k, filterValue]) => {
-        if (!!filterValue && typeof filterValue === "object") {
-          return Object.keys(filterValue).length > 0;
-        }
+    const minimalDiffEntries = Object.entries(flattenedInput).filter(([k, filterValue]) => {
+      if (!!filterValue && typeof filterValue === 'object') {
+        return Object.keys(filterValue).length > 0;
+      }
 
-        const defaultValue = FLAT_FILTER[k] ?? false;
-        return filterValue !== undefined && filterValue !== defaultValue;
-      },
-    );
+      const defaultValue = FLAT_FILTER[k] ?? false;
+      return filterValue !== undefined && filterValue !== defaultValue;
+    });
 
     (minimalDiffEntries.length === 0
-      ? Promise.resolve("")
+      ? Promise.resolve('')
       : codec.compress(
           minimalDiffEntries.reduce<Record<string, unknown>>((acc, [k, v]) => {
             if (!acc) {
@@ -826,7 +771,7 @@ export const useFilterState = (init?: Partial<UiState>) => {
           }, {}),
         )
     ).then((out) => {
-      history.replaceState(undefined, "", `#${out}`);
+      history.replaceState(undefined, '', `#${out}`);
     });
   }, [state]);
 
@@ -835,13 +780,13 @@ export const useFilterState = (init?: Partial<UiState>) => {
       try {
         const out = await parseHash(hash);
         dispatch({
-          action: "init-filter-state",
+          action: 'init-filter-state',
           ...out,
           filterOnlyAdmin: isAdmin && !!out.filterOnlyAdmin,
           filterOnlySuperAdmin: isSuperAdmin && !!out.filterOnlySuperAdmin,
         });
       } catch (e) {
-        console.warn("Failed to parse hash", e);
+        console.warn('Failed to parse hash', e);
         captureException(e, { extra: { hash } });
         throw e;
       }
@@ -852,17 +797,17 @@ export const useFilterState = (init?: Partial<UiState>) => {
   useEffect(() => {
     const onHashChange = (e: HashChangeEvent) => {
       const url = new URL(e.newURL);
-      captureMessage("filter-hashchange", { extra: { hash: url.hash } });
+      captureMessage('filter-hashchange', { extra: { hash: url.hash } });
       loadFromHash(url.hash).catch((e) => {
-        window.history.replaceState(undefined, "", "");
+        window.history.replaceState(undefined, '', '');
         console.warn(e);
         // TODO: Anything else? Should we show an alert or something?
       });
     };
 
-    window.addEventListener("hashchange", onHashChange);
+    window.addEventListener('hashchange', onHashChange);
     return () => {
-      window.removeEventListener("hashchange", onHashChange);
+      window.removeEventListener('hashchange', onHashChange);
     };
   }, [loadFromHash]);
 
@@ -885,14 +830,14 @@ export const useFilterState = (init?: Partial<UiState>) => {
       filterTypes: storageItems.types.get(),
     };
 
-    dispatch({ action: "init-filter-state", ...partial });
+    dispatch({ action: 'init-filter-state', ...partial });
   }, [isAdmin, isSuperAdmin]);
 
   useEffect(() => {
     if (window.location.hash) {
-      captureMessage("filter-hash", { extra: { hash: window.location.hash } });
+      captureMessage('filter-hash', { extra: { hash: window.location.hash } });
       loadFromHash(window.location.hash).catch((e) => {
-        window.history.replaceState(undefined, "", "");
+        window.history.replaceState(undefined, '', '');
         console.warn(e);
         loadFromLocalStorage();
       });

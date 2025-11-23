@@ -1,6 +1,6 @@
-import React, { useState, useCallback, ComponentProps } from "react";
-import ImageUpload from "../common/image-upload/image-upload";
-import Leaflet from "../common/leaflet/leaflet";
+import React, { useState, useCallback, ComponentProps } from 'react';
+import ImageUpload from '../common/image-upload/image-upload';
+import Leaflet from '../common/leaflet/leaflet';
 import {
   Form,
   Button,
@@ -12,15 +12,15 @@ import {
   Icon,
   Message,
   Accordion,
-} from "semantic-ui-react";
-import { useMeta } from "../common/meta";
-import { Loading } from "../common/widgets/widgets";
-import { useNavigate, useParams } from "react-router-dom";
-import { VisibilitySelectorField } from "../common/VisibilitySelector";
-import { captureException } from "@sentry/react";
-import { useAreaEdit } from "./useAreaEdit";
-import { hours } from "../../utils/hours";
-import ExternalLink from "../common/external-links/external-links";
+} from 'semantic-ui-react';
+import { useMeta } from '../common/meta';
+import { Loading } from '../common/widgets/widgets';
+import { useNavigate, useParams } from 'react-router-dom';
+import { VisibilitySelectorField } from '../common/VisibilitySelector';
+import { captureException } from '@sentry/react';
+import { useAreaEdit } from './useAreaEdit';
+import { hours } from '../../utils/hours';
+import ExternalLink from '../common/external-links/external-links';
 
 export const AreaEdit = () => {
   const meta = useMeta();
@@ -42,20 +42,17 @@ export const AreaEdit = () => {
   } = useAreaEdit({ areaId: +(areaId ?? 0) });
   const [showSectorOrder, setShowSectorOrder] = useState(false);
 
-  const save = useCallback<ComponentProps<typeof Form>["onSubmit"]>(
+  const save = useCallback<ComponentProps<typeof Form>['onSubmit']>(
     (event) => {
       event.preventDefault();
       if (!data.name) {
         return;
       }
 
-      if (
-        !data.trash ||
-        confirm("Are you sure you want to move area to trash?")
-      ) {
+      if (!data.trash || confirm('Are you sure you want to move area to trash?')) {
         performSave(data)
           .then(async (res) => {
-            navigate(res.destination ?? "/areas");
+            navigate(res.destination ?? '/areas');
           })
           .catch((error) => {
             captureException(error);
@@ -78,29 +75,28 @@ export const AreaEdit = () => {
     <>
       <title>{`Edit ${data.name} | ${meta?.title}`}</title>
       <Message
-        size="tiny"
+        size='tiny'
         content={
           <>
-            <Icon name="info" />
-            Contact{" "}
-            <a href="mailto:jostein.oygarden@gmail.com">Jostein Øygarden</a> if
-            you want to split area.
+            <Icon name='info' />
+            Contact <a href='mailto:jostein.oygarden@gmail.com'>Jostein Øygarden</a> if you want to
+            split area.
           </>
         }
       />
       <Form action={`/area/${areaId}`} onSubmit={save}>
         <Segment>
-          <Form.Group widths="equal">
+          <Form.Group widths='equal'>
             <Form.Field
-              label="Area name"
+              label='Area name'
               control={Input}
-              placeholder="Enter name"
-              value={data.name ?? ""}
-              onChange={setString("name")}
-              error={data.name ? false : "Area name required"}
+              placeholder='Enter name'
+              value={data.name ?? ''}
+              onChange={setString('name')}
+              error={data.name ? false : 'Area name required'}
             />
             <VisibilitySelectorField
-              label="Visibility"
+              label='Visibility'
               selection
               value={{
                 lockedAdmin: !!data.lockedAdmin,
@@ -113,7 +109,7 @@ export const AreaEdit = () => {
               <Checkbox
                 toggle
                 checked={data.forDevelopers}
-                onChange={setBoolean("forDevelopers")}
+                onChange={setBoolean('forDevelopers')}
               />
             </Form.Field>
             <Form.Field>
@@ -121,7 +117,7 @@ export const AreaEdit = () => {
               <Checkbox
                 toggle
                 checked={data.noDogsAllowed}
-                onChange={setBoolean("noDogsAllowed")}
+                onChange={setBoolean('noDogsAllowed')}
               />
             </Form.Field>
             <Form.Field>
@@ -130,38 +126,36 @@ export const AreaEdit = () => {
                 disabled={!data.id || data.id <= 0}
                 toggle
                 checked={data.trash}
-                onChange={setBoolean("trash")}
+                onChange={setBoolean('trash')}
               />
             </Form.Field>
           </Form.Group>
           {meta.isClimbing && (
-            <Form.Group widths="equal">
+            <Form.Group widths='equal'>
               <Form.Field
-                label="Sun from hour"
+                label='Sun from hour'
                 control={Dropdown}
                 selection
                 value={data.sunFromHour}
-                onChange={setNumber("sunFromHour")}
+                onChange={setNumber('sunFromHour')}
                 options={hours}
                 error={
-                  (!data.sunFromHour && !data.sunToHour) ||
-                  (data.sunFromHour && data.sunToHour)
+                  (!data.sunFromHour && !data.sunToHour) || (data.sunFromHour && data.sunToHour)
                     ? false
-                    : "Sun from and to hour must both be empty or set"
+                    : 'Sun from and to hour must both be empty or set'
                 }
               />
               <Form.Field
-                label="Sun to hour"
+                label='Sun to hour'
                 control={Dropdown}
                 selection
                 value={data.sunToHour}
-                onChange={setNumber("sunToHour")}
+                onChange={setNumber('sunToHour')}
                 options={hours}
                 error={
-                  (!data.sunFromHour && !data.sunToHour) ||
-                  (data.sunFromHour && data.sunToHour)
+                  (!data.sunFromHour && !data.sunToHour) || (data.sunFromHour && data.sunToHour)
                     ? false
-                    : "Sun from and to hour must both be empty or set"
+                    : 'Sun from and to hour must both be empty or set'
                 }
               />
             </Form.Group>
@@ -170,36 +164,36 @@ export const AreaEdit = () => {
             <label>
               Description (supports&nbsp;
               <a
-                href="https://jonschlinkert.github.io/remarkable/demo/"
-                target="_blank"
-                rel="noopener noreferrer"
+                href='https://jonschlinkert.github.io/remarkable/demo/'
+                target='_blank'
+                rel='noopener noreferrer'
               >
                 markdown
               </a>
               &nbsp;formatting)
             </label>
             <TextArea
-              placeholder="Enter description"
+              placeholder='Enter description'
               style={{ minHeight: 100 }}
-              value={data.comment ?? ""}
-              onChange={setString("comment")}
+              value={data.comment ?? ''}
+              onChange={setString('comment')}
             />
           </Form.Field>
           <Form.Field>
             <Input
-              label="Area closed:"
-              placeholder="Enter closed-reason..."
-              value={data.accessClosed ?? ""}
-              onChange={setString("accessClosed")}
-              icon="attention"
+              label='Area closed:'
+              placeholder='Enter closed-reason...'
+              value={data.accessClosed ?? ''}
+              onChange={setString('accessClosed')}
+              icon='attention'
             />
           </Form.Field>
           <Form.Field>
             <Input
-              label="Area restrictions:"
-              placeholder="Enter specific restrictions..."
-              value={data.accessInfo ?? ""}
-              onChange={setString("accessInfo")}
+              label='Area restrictions:'
+              placeholder='Enter specific restrictions...'
+              value={data.accessInfo ?? ''}
+              onChange={setString('accessInfo')}
             />
           </Form.Field>
         </Segment>
@@ -238,28 +232,28 @@ export const AreaEdit = () => {
                 ?.filter((s) => s.outline?.length > 0)
                 .map((s) => ({ background: true, outline: s.outline }))}
               slopes={null}
-              height={"300px"}
+              height={'300px'}
               showSatelliteImage={false}
               clusterMarkers={false}
               rocks={null}
               flyToId={null}
             />
           </Form.Field>
-          <Form.Group widths="equal">
+          <Form.Group widths='equal'>
             <Form.Field>
               <label>Latitude</label>
               <Input
-                placeholder="Latitude"
-                value={data.coordinates?.latitude || ""}
-                onChange={setCoord("latitude")}
+                placeholder='Latitude'
+                value={data.coordinates?.latitude || ''}
+                onChange={setCoord('latitude')}
               />
             </Form.Field>
             <Form.Field>
               <label>Longitude</label>
               <Input
-                placeholder="Longitude"
-                value={data.coordinates?.longitude || ""}
-                onChange={setCoord("longitude")}
+                placeholder='Longitude'
+                value={data.coordinates?.longitude || ''}
+                onChange={setCoord('longitude')}
               />
             </Form.Field>
           </Form.Group>
@@ -272,7 +266,7 @@ export const AreaEdit = () => {
                 active={showSectorOrder}
                 onClick={() => setShowSectorOrder(!showSectorOrder)}
               >
-                <Icon name="dropdown" />
+                <Icon name='dropdown' />
                 Change order of sectors in area
               </Accordion.Title>
               <Accordion.Content active={showSectorOrder}>
@@ -281,14 +275,14 @@ export const AreaEdit = () => {
                   return (
                     <Input
                       key={s.id}
-                      size="small"
+                      size='small'
                       fluid
-                      icon="hashtag"
-                      iconPosition="left"
-                      placeholder="Number"
+                      icon='hashtag'
+                      iconPosition='left'
+                      placeholder='Number'
                       value={s.sorting}
                       label={{ basic: true, content: s.name }}
-                      labelPosition="right"
+                      labelPosition='right'
                       onChange={setSectorSort(s.id)}
                     />
                   );
@@ -308,7 +302,7 @@ export const AreaEdit = () => {
                 navigate(`/areas`);
               }
             }}
-            type="button"
+            type='button'
           >
             Cancel
           </Button>
@@ -321,7 +315,7 @@ export const AreaEdit = () => {
                 (data.sunFromHour && !data.sunToHour) ||
                 (!data.sunFromHour && data.sunToHour),
             )}
-            type="submit"
+            type='submit'
           >
             Save area
           </Button>

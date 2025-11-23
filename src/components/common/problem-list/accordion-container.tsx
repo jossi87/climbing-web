@@ -1,5 +1,5 @@
-import React, { type ComponentProps, useCallback, useState } from "react";
-import { Accordion, Icon } from "semantic-ui-react";
+import React, { type ComponentProps, useCallback, useState } from 'react';
+import { Accordion, Icon } from 'semantic-ui-react';
 
 type Props = {
   accordionRows: {
@@ -9,9 +9,7 @@ type Props = {
   }[];
 };
 
-type OnClickHandler = NonNullable<
-  ComponentProps<typeof Accordion.Title>["onClick"]
->;
+type OnClickHandler = NonNullable<ComponentProps<typeof Accordion.Title>['onClick']>;
 
 const AccordionContainer = ({ accordionRows }: Props) => {
   const [activeIndex, setActiveIndex] = useState<string | number>(-1);
@@ -21,15 +19,11 @@ const AccordionContainer = ({ accordionRows }: Props) => {
   }, []);
 
   return (
-    <Accordion fluid styled attached="bottom">
+    <Accordion fluid styled attached='bottom'>
       {accordionRows.map((d, i) => (
         <span key={d.label}>
-          <Accordion.Title
-            active={activeIndex === i}
-            index={i}
-            onClick={handleOnClick}
-          >
-            <Icon name="dropdown" />
+          <Accordion.Title active={activeIndex === i} index={i} onClick={handleOnClick}>
+            <Icon name='dropdown' />
             {d.label}
           </Accordion.Title>
           <Accordion.Content active={activeIndex === i}>

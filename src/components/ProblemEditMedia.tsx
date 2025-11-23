@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import ImageUpload from "./common/image-upload/image-upload";
-import { useAuth0 } from "@auth0/auth0-react";
-import { postProblemMedia, useProblem } from "../api";
-import { Loading } from "./common/widgets/widgets";
-import { Segment, Button } from "semantic-ui-react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useState } from 'react';
+import ImageUpload from './common/image-upload/image-upload';
+import { useAuth0 } from '@auth0/auth0-react';
+import { postProblemMedia, useProblem } from '../api';
+import { Loading } from './common/widgets/widgets';
+import { Segment, Button } from 'semantic-ui-react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const ProblemEditMedia = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -13,7 +13,7 @@ const ProblemEditMedia = () => {
   const { problemId } = useParams();
   const navigate = useNavigate();
 
-  const { data: problem, isLoading } = useProblem(+(problemId || "-1"), false);
+  const { data: problem, isLoading } = useProblem(+(problemId || '-1'), false);
 
   function save(event) {
     event.preventDefault();
@@ -38,18 +38,13 @@ const ProblemEditMedia = () => {
       <Segment>
         <h3>Upload image(s) or embed video(s)</h3>
         <form onSubmit={save}>
-          <ImageUpload
-            onMediaChanged={setMedia}
-            isMultiPitch={problem?.sections?.length > 0}
-          />
+          <ImageUpload onMediaChanged={setMedia} isMultiPitch={problem?.sections?.length > 0} />
         </form>
       </Segment>
       <Button.Group>
-        <Button onClick={() => navigate(`/problem/${problemId}`)}>
-          Cancel
-        </Button>
+        <Button onClick={() => navigate(`/problem/${problemId}`)}>Cancel</Button>
         <Button.Or />
-        <Button type="submit" positive loading={saving} onClick={save}>
+        <Button type='submit' positive loading={saving} onClick={save}>
           Save
         </Button>
       </Button.Group>

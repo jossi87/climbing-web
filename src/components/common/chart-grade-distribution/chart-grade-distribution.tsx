@@ -1,26 +1,18 @@
-import React from "react";
-import { Loading } from "../widgets/widgets";
-import { Popup, Table } from "semantic-ui-react";
-import { useGradeDistribution } from "./../../../api";
-import { components } from "../../../@types/buldreinfo/swagger";
+import React from 'react';
+import { Loading } from '../widgets/widgets';
+import { Popup, Table } from 'semantic-ui-react';
+import { useGradeDistribution } from './../../../api';
+import { components } from '../../../@types/buldreinfo/swagger';
 
-type Data = components["schemas"]["GradeDistribution"][];
+type Data = components['schemas']['GradeDistribution'][];
 
 type Props =
   | { idArea: number; idSector?: never; data?: never }
   | { idArea?: never; idSector: number; data?: never }
   | { idArea?: never; idSector?: never; data: Data };
 
-const ChartGradeDistribution = ({
-  idArea = 0,
-  idSector = 0,
-  data = undefined,
-}: Props) => {
-  const { data: gradeDistribution } = useGradeDistribution(
-    idArea,
-    idSector,
-    data || undefined,
-  );
+const ChartGradeDistribution = ({ idArea = 0, idSector = 0, data = undefined }: Props) => {
+  const { data: gradeDistribution } = useGradeDistribution(idArea, idSector, data || undefined);
 
   if (!gradeDistribution) {
     return <Loading />;
@@ -32,32 +24,32 @@ const ChartGradeDistribution = ({
     }),
   );
   const cols = gradeDistribution.map((g) => {
-    const hPrim = (g.prim / maxValue) * 80 + "%";
-    const hSec = (g.sec / maxValue) * 80 + "%";
+    const hPrim = (g.prim / maxValue) * 80 + '%';
+    const hSec = (g.sec / maxValue) * 80 + '%';
     const col = (
       <td
-        key={[g.grade, g.prim, g.sec, g.num, g.sec].join("/")}
-        style={{ height: "100%", verticalAlign: "bottom", textAlign: "center" }}
+        key={[g.grade, g.prim, g.sec, g.num, g.sec].join('/')}
+        style={{ height: '100%', verticalAlign: 'bottom', textAlign: 'center' }}
       >
         {g.num > 0 && g.num}
         {g.sec > 0 && (
           <div
             style={{
-              marginLeft: "3px",
-              marginRight: "3px",
+              marginLeft: '3px',
+              marginRight: '3px',
               height: hSec,
-              backgroundColor: "#BD313C",
+              backgroundColor: '#BD313C',
             }}
           />
         )}
         {g.prim > 0 && (
           <div
             style={{
-              marginLeft: "3px",
-              marginRight: "3px",
+              marginLeft: '3px',
+              marginRight: '3px',
               paddingBottom: hSec,
               height: hPrim,
-              backgroundColor: "#3182bd",
+              backgroundColor: '#3182bd',
             }}
           />
         )}
@@ -74,9 +66,9 @@ const ChartGradeDistribution = ({
       const hasIce = g.rows.filter((x) => x.numIce > 0).length > 0;
       return (
         <Popup
-          key={[g.grade, g.prim, g.sec, g.num, g.sec].join("/")}
+          key={[g.grade, g.prim, g.sec, g.num, g.sec].join('/')}
           inverted
-          position="bottom center"
+          position='bottom center'
           offset={[0, 20]}
           trigger={col}
           content={
@@ -84,7 +76,7 @@ const ChartGradeDistribution = ({
               <Table.Header>
                 <Table.Row>
                   <Table.HeaderCell>
-                    {idArea > 0 || idSector > 0 ? "Sector" : "Region"}
+                    {idArea > 0 || idSector > 0 ? 'Sector' : 'Region'}
                   </Table.HeaderCell>
                   {hasBoulder && <Table.HeaderCell>Boulder</Table.HeaderCell>}
                   {hasSport && <Table.HeaderCell>Sport</Table.HeaderCell>}
@@ -113,7 +105,7 @@ const ChartGradeDistribution = ({
               </Table.Body>
             </Table>
           }
-          size="mini"
+          size='mini'
         />
       );
     }
@@ -122,17 +114,17 @@ const ChartGradeDistribution = ({
   return (
     <table
       style={{
-        height: "20vh",
-        tableLayout: "fixed",
-        width: "100%",
-        maxWidth: "400px",
+        height: '20vh',
+        tableLayout: 'fixed',
+        width: '100%',
+        maxWidth: '400px',
       }}
     >
       <tbody>
         <tr>{cols}</tr>
         <tr>
           {gradeDistribution.map((g) => (
-            <td style={{ width: "40px", textAlign: "center" }} key={g.grade}>
+            <td style={{ width: '40px', textAlign: 'center' }} key={g.grade}>
               <strong>{g.grade}</strong>
             </td>
           ))}

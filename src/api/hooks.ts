@@ -1,4 +1,4 @@
-import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth0 } from '@auth0/auth0-react';
 import {
   UseMutationOptions,
   MutationFunction,
@@ -6,30 +6,22 @@ import {
   UseQueryOptions,
   useQuery,
   useQueryClient,
-} from "@tanstack/react-query";
-import { Success, WithoutFirstParameter } from "../@types/buldreinfo";
-import { components } from "../@types/buldreinfo/swagger";
-import { useLocalStorage } from "../utils/use-local-storage";
-import { useRedirect } from "../utils/useRedirect";
-import { makeAuthenticatedRequest, useAccessToken } from "./utils";
-import { FetchOptions } from "./types";
-import { useCallback, useRef, useState } from "react";
-import { postPermissions } from "./operations";
-import { captureException } from "@sentry/react";
-import {
-  MediaRegion,
-  calculateMediaRegion,
-  isPathVisible,
-  scalePath,
-} from "../utils/svg-scaler";
+} from '@tanstack/react-query';
+import { Success, WithoutFirstParameter } from '../@types/buldreinfo';
+import { components } from '../@types/buldreinfo/swagger';
+import { useLocalStorage } from '../utils/use-local-storage';
+import { useRedirect } from '../utils/useRedirect';
+import { makeAuthenticatedRequest, useAccessToken } from './utils';
+import { FetchOptions } from './types';
+import { useCallback, useRef, useState } from 'react';
+import { postPermissions } from './operations';
+import { captureException } from '@sentry/react';
+import { MediaRegion, calculateMediaRegion, isPathVisible, scalePath } from '../utils/svg-scaler';
 
-function useKey(
-  customKey: readonly unknown[] | undefined,
-  urlSuffix: string,
-): readonly unknown[] {
+function useKey(customKey: readonly unknown[] | undefined, urlSuffix: string): readonly unknown[] {
   const { isAuthenticated } = useAuth0();
   const key = customKey ?? [urlSuffix, { isAuthenticated }];
-  if (Array.isArray(key) && key[1] && typeof key[1] === "object") {
+  if (Array.isArray(key) && key[1] && typeof key[1] === 'object') {
     // Spread them in this order so that callers can choose to ignore the
     // isAuthenticated variable if they choose to.
     key[1] = {
@@ -51,10 +43,7 @@ export function usePostData<TVariables, TData = Response>(
     UseMutationOptions<TData, unknown, TVariables> & {
       fetchOptions: FetchOptions;
       createUrl: (variables: TVariables) => string;
-      select: (
-        response: Response,
-        variables: TVariables,
-      ) => TData | Promise<TData>;
+      select: (response: Response, variables: TVariables) => TData | Promise<TData>;
       createBody: (variables: TVariables) => BodyInit;
     }
   > = {},
@@ -69,10 +58,10 @@ export function usePostData<TVariables, TData = Response>(
     const createBody = options.createBody ?? JSON.stringify;
 
     const res = await makeAuthenticatedRequest(accessToken, url, {
-      method: "POST",
+      method: 'POST',
       body: createBody(variables),
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         ...fetchOptions?.headers,
       },
       ...fetchOptions,
@@ -94,10 +83,7 @@ export function useData<TQueryData = unknown, TData = TQueryData>(
     queryKey: customQueryKey,
     ...options
   }: Partial<
-    Omit<
-      UseQueryOptions<TQueryData, unknown, TData>,
-      "queryFn" | "structuralSharing"
-    >
+    Omit<UseQueryOptions<TQueryData, unknown, TData>, 'queryFn' | 'structuralSharing'>
   > = {},
 ) {
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
@@ -119,11 +105,12 @@ export function useData<TQueryData = unknown, TData = TQueryData>(
 }
 
 export function useToc() {
-  const [cachedData, _, writeCachedData] = useLocalStorage<
-    components["schemas"]["Toc"]
-  >("cache/toc", {});
+  const [cachedData, _, writeCachedData] = useLocalStorage<components['schemas']['Toc']>(
+    'cache/toc',
+    {},
+  );
 
-  return useData<components["schemas"]["Toc"]>("/toc", {
+  return useData<components['schemas']['Toc']>('/toc', {
     placeholderData: cachedData,
     select(data) {
       writeCachedData(data);
@@ -149,37 +136,31 @@ export function useActivity({
   ticks: boolean;
   media: boolean;
 }) {
-  return useData<Success<"getActivity">>(
+  return useData<Success<'getActivity'>>(
     `/activity?idArea=${idArea}&idSector=${idSector}&lowerGrade=${lowerGrade}&fa=${fa}&comments=${comments}&ticks=${ticks}&media=${media}`,
     {
-      queryKey: [
-        `/activity`,
-        { idArea, idSector, lowerGrade, fa, comments, ticks, media },
-      ],
+      queryKey: [`/activity`, { idArea, idSector, lowerGrade, fa, comments, ticks, media }],
     },
   );
 }
 
 export function useAreas() {
-  return useData<Success<"getAreas">>(`/areas`, {
+  return useData<Success<'getAreas'>>(`/areas`, {
     queryKey: [`/areas`],
   });
 }
 
 export function useArea(id: number) {
-  return useData<Success<"getAreas">, Success<"getAreas">[number] | undefined>(
-    `/areas?id=${id}`,
-    {
-      queryKey: [`/areas`, { id }],
-      enabled: id > 0,
-      select(response) {
-        if (response?.[0].redirectUrl) {
-          window.location.href = response?.[0].redirectUrl;
-        }
-        return response?.[0];
-      },
+  return useData<Success<'getAreas'>, Success<'getAreas'>[number] | undefined>(`/areas?id=${id}`, {
+    queryKey: [`/areas`, { id }],
+    enabled: id > 0,
+    select(response) {
+      if (response?.[0].redirectUrl) {
+        window.location.href = response?.[0].redirectUrl;
+      }
+      return response?.[0];
     },
-  );
+  });
 }
 
 export function useMediaSvg(idMedia: number) {
@@ -194,7 +175,7 @@ export function useMediaSvg(idMedia: number) {
 
 export function useProblem(id: number, showHiddenMedia: boolean) {
   const client = useQueryClient();
-  const problem = useData<Success<"getProblem">>(
+  const problem = useData<Success<'getProblem'>>(
     `/problem?id=${id}&showHiddenMedia=${showHiddenMedia}`,
     {
       enabled: id > 0,
@@ -235,23 +216,20 @@ export function useProblem(id: number, showHiddenMedia: boolean) {
       }
     },
     fetchOptions: {
-      consistencyAction: "nop",
+      consistencyAction: 'nop',
     },
   });
 
   return { ...problem, toggleTodo: toggleTodo.mutateAsync };
 }
 
-export function useProfile(userId: number = -1) {
+export function useProfile(userId = -1) {
   const client = useQueryClient();
   const { isAuthenticated } = useAuth0();
-  const profile = useData<components["schemas"]["Profile"]>(
-    `/profile?id=${userId}`,
-    {
-      queryKey: [`/profile`, { id: userId }],
-      enabled: userId > 0 || isAuthenticated,
-    },
-  );
+  const profile = useData<components['schemas']['Profile']>(`/profile?id=${userId}`, {
+    queryKey: [`/profile`, { id: userId }],
+    enabled: userId > 0 || isAuthenticated,
+  });
 
   const setProfile = usePostData<{
     firstname: string;
@@ -262,7 +240,7 @@ export function useProfile(userId: number = -1) {
     createBody({ firstname, lastname, emailVisibleToAll, avatarFile }) {
       const formData = new FormData();
       formData.append(
-        "json",
+        'json',
         JSON.stringify({
           firstname,
           lastname,
@@ -270,13 +248,13 @@ export function useProfile(userId: number = -1) {
         }),
       );
       if (avatarFile) {
-        formData.append("avatar", avatarFile);
+        formData.append('avatar', avatarFile);
       }
       return formData;
     },
     fetchOptions: {
       headers: {
-        Accept: "application/json",
+        Accept: 'application/json',
       },
     },
     onMutate: () => {
@@ -297,29 +275,26 @@ export function useProfile(userId: number = -1) {
   });
 
   const addRegion = usePostData<number>(`/user/regions`, {
-    createUrl: (regionId) =>
-      `/user/regions?regionId=${regionId}&delete=${false}`,
+    createUrl: (regionId) => `/user/regions?regionId=${regionId}&delete=${false}`,
   });
 
   const removeRegion = usePostData<number>(`/user/regions`, {
-    createUrl: (regionId) =>
-      `/user/regions?regionId=${regionId}&delete=${true}`,
+    createUrl: (regionId) => `/user/regions?regionId=${regionId}&delete=${true}`,
   });
 
   const setRegion = usePostData<{
-    region: components["schemas"]["UserRegion"];
+    region: components['schemas']['UserRegion'];
     del: boolean;
   }>(`/user/regions`, {
-    createUrl: ({ region: { id }, del }) =>
-      `/user/regions?regionId=${id}&delete=${del}`,
+    createUrl: ({ region: { id }, del }) => `/user/regions?regionId=${id}&delete=${del}`,
     fetchOptions: {
-      consistencyAction: "nop",
+      consistencyAction: 'nop',
     },
     onMutate: ({ region, del }) => {
-      client.setQueryData<components["schemas"]["Profile"]>(
+      client.setQueryData<components['schemas']['Profile']>(
         [`/profile`, { id: userId, isAuthenticated }],
         (old) => {
-          if (old && typeof old === "object") {
+          if (old && typeof old === 'object') {
             const next = {
               ...old,
               userRegions: old.userRegions?.map((oldRegion) => {
@@ -365,38 +340,26 @@ export function useProfile(userId: number = -1) {
   };
 }
 
-export function useProfileMedia({
-  userId,
-  captured,
-}: {
-  userId: number;
-  captured: boolean;
-}) {
-  return useData<Success<"getProfilemedia">>(
-    `/profile/media?id=${userId}&captured=${captured}`,
-    {
-      queryKey: [`/profile/media`, { id: userId, captured }],
-    },
-  );
+export function useProfileMedia({ userId, captured }: { userId: number; captured: boolean }) {
+  return useData<Success<'getProfilemedia'>>(`/profile/media?id=${userId}&captured=${captured}`, {
+    queryKey: [`/profile/media`, { id: userId, captured }],
+  });
 }
 
 export function useProfileStatistics(id: number) {
-  return useData<components["schemas"]["ProfileStatistics"]>(
-    `/profile/statistics?id=${id}`,
-    {
-      queryKey: [`/profile/statistics`, { id }],
-    },
-  );
+  return useData<components['schemas']['ProfileStatistics']>(`/profile/statistics?id=${id}`, {
+    queryKey: [`/profile/statistics`, { id }],
+  });
 }
 
 export function useProfileTodo(id: number) {
-  return useData<Success<"getProfileTodo">>(`/profile/todo?id=${id}`, {
+  return useData<Success<'getProfileTodo'>>(`/profile/todo?id=${id}`, {
     queryKey: [`/profile/todo`, { id }],
   });
 }
 
 export function useSector(id: number | undefined) {
-  return useData<Success<"getSectors"> | undefined>(`/sectors?id=${id}`, {
+  return useData<Success<'getSectors'> | undefined>(`/sectors?id=${id}`, {
     enabled: !!id && id > 0,
     queryKey: [`/sectors`, { id }],
   });
@@ -427,40 +390,24 @@ export function useTicks(page: number) {
   });
 }
 
-export function useTodo({
-  idArea,
-  idSector,
-}: {
-  idArea: number;
-  idSector: number;
-}) {
-  return useData<Success<"getTodo">>(
-    `/todo?idArea=${idArea}&idSector=${idSector}`,
-  );
+export function useTodo({ idArea, idSector }: { idArea: number; idSector: number }) {
+  return useData<Success<'getTodo'>>(`/todo?idArea=${idArea}&idSector=${idSector}`);
 }
 
-export function useTop({
-  idArea,
-  idSector,
-}: {
-  idArea: number;
-  idSector: number;
-}) {
-  return useData<Success<"getTop">>(
-    `/top?idArea=${idArea}&idSector=${idSector}`,
-  );
+export function useTop({ idArea, idSector }: { idArea: number; idSector: number }) {
+  return useData<Success<'getTop'>>(`/top?idArea=${idArea}&idSector=${idSector}`);
 }
 
 export function useSearch() {
   const { mutateAsync, data, ...rest } = usePostData<
     { value: string },
-    components["schemas"]["Search"][]
+    components['schemas']['Search'][]
   >(`/search`, {
     select(response) {
       return response.json();
     },
     fetchOptions: {
-      consistencyAction: "nop",
+      consistencyAction: 'nop',
     },
   });
 
@@ -468,33 +415,30 @@ export function useSearch() {
 }
 
 export function useTrash() {
-  const { data } = useData<components["schemas"]["Trash"][]>(`/trash`);
+  const { data } = useData<components['schemas']['Trash'][]>(`/trash`);
 
-  const restore = usePostData<components["schemas"]["Trash"], string>(
-    `/trash`,
-    {
-      fetchOptions: {
-        method: "PUT",
-        body: undefined,
-      },
-      createUrl: ({ idArea, idProblem, idSector, idMedia }) =>
-        `/trash?idArea=${idArea}&idSector=${idSector}&idProblem=${idProblem}&idMedia=${idMedia}`,
-      select(_response, { idArea, idSector, idProblem, idMedia }) {
-        let url = `/`;
-        if (idArea) {
-          url = `/area/${idArea}`;
-        } else if (idSector) {
-          url = `/sector/${idSector}`;
-        } else if (idProblem) {
-          url = `/problem/${idProblem}`;
-        }
-        if (idMedia) {
-          url += `?idMedia=${idMedia}`;
-        }
-        return url;
-      },
+  const restore = usePostData<components['schemas']['Trash'], string>(`/trash`, {
+    fetchOptions: {
+      method: 'PUT',
+      body: undefined,
     },
-  );
+    createUrl: ({ idArea, idProblem, idSector, idMedia }) =>
+      `/trash?idArea=${idArea}&idSector=${idSector}&idProblem=${idProblem}&idMedia=${idMedia}`,
+    select(_response, { idArea, idSector, idProblem, idMedia }) {
+      let url = `/`;
+      if (idArea) {
+        url = `/area/${idArea}`;
+      } else if (idSector) {
+        url = `/sector/${idSector}`;
+      } else if (idProblem) {
+        url = `/problem/${idProblem}`;
+      }
+      if (idMedia) {
+        url += `?idMedia=${idMedia}`;
+      }
+      return url;
+    },
+  });
 
   return {
     data,
@@ -535,14 +479,10 @@ export function useElevation() {
 
   const elevation = [
     lat && lng && ` - ${lat.toFixed(10)},${lng.toFixed(10)}`,
-    result.fetchStatus === "fetching"
-      ? "..."
-      : result.data
-        ? `(${result.data}m)`
-        : "",
+    result.fetchStatus === 'fetching' ? '...' : result.data ? `(${result.data}m)` : '',
   ]
     .filter(Boolean)
-    .join(" ");
+    .join(' ');
 
   return {
     elevation,
@@ -553,9 +493,9 @@ export function useElevation() {
 export function useGradeDistribution(
   idArea: number,
   idSector: number,
-  data: components["schemas"]["GradeDistribution"][] | undefined,
+  data: components['schemas']['GradeDistribution'][] | undefined,
 ) {
-  return useData<Success<"getGradeDistribution">>(
+  return useData<Success<'getGradeDistribution'>>(
     `/grade/distribution?idArea=${idArea}&idSector=${idSector}`,
     {
       queryKey: [`/grade/distribution`, { idArea, idSector }],
@@ -566,7 +506,7 @@ export function useGradeDistribution(
 }
 
 export function useUserSearch(value: string) {
-  return useData<Success<"getUsersSearch">>(`/users/search?value=${value}`, {
+  return useData<Success<'getUsersSearch'>>(`/users/search?value=${value}`, {
     queryKey: [`/users/search`, { value }],
     enabled: !!value,
   });
@@ -576,16 +516,14 @@ export function usePermissions() {
   const { isAuthenticated } = useAuth0();
   const accessToken = useAccessToken();
 
-  const result = useData<Success<"getPermissions">>(`/permissions`, {
+  const result = useData<Success<'getPermissions'>>(`/permissions`, {
     queryKey: [`/permissions`],
     enabled: isAuthenticated,
     staleTime: 30 * 1000,
   });
 
   const updatePermissions = useCallback(
-    (
-      ...args: WithoutFirstParameter<typeof postPermissions>
-    ): ReturnType<typeof postPermissions> =>
+    (...args: WithoutFirstParameter<typeof postPermissions>): ReturnType<typeof postPermissions> =>
       postPermissions(accessToken, ...args),
     [accessToken],
   );
@@ -604,7 +542,7 @@ export type EditableSvg = {
   mediaWidth: number;
   mediaHeight: number;
   mediaRegion?: MediaRegion;
-  sections: components["schemas"]["ProblemSection"][];
+  sections: components['schemas']['ProblemSection'][];
   crc32: number;
   anchors: { x: number; y: number }[];
   hasAnchor: boolean;
@@ -614,14 +552,8 @@ export type EditableSvg = {
   tradBelayStations: { x: number; y: number }[];
   readOnlySvgs: (Pick<
     EditableSvg,
-    | "nr"
-    | "pitch"
-    | "hasAnchor"
-    | "path"
-    | "anchors"
-    | "tradBelayStations"
-    | "texts"
-  > & { t: "other" })[];
+    'nr' | 'pitch' | 'hasAnchor' | 'path' | 'anchors' | 'tradBelayStations' | 'texts'
+  > & { t: 'other' })[];
 };
 
 export function useSvgEdit(
@@ -655,33 +587,22 @@ export function useSvgEdit(
       anchors: [],
       hasAnchor: true,
       nr: 0,
-      path: "",
+      path: '',
       texts: [],
       tradBelayStations: [],
       readOnlySvgs: [],
     };
   }
 
-  const svg = m.svgs.filter(
-    (x) => x.problemId == data.id && x.pitch == pitch,
-  )[0];
+  const svg = m.svgs.filter((x) => x.problemId == data.id && x.pitch == pitch)[0];
   if (pitch && !mediaRegion) {
     if (svg && svg.path) {
       mediaRegion = calculateMediaRegion(svg.path, m.width, m.height);
     } else {
-      const prevPitchSvg = m.svgs.filter(
-        (x) => x.problemId == data.id && x.pitch == pitch - 1,
-      )[0];
+      const prevPitchSvg = m.svgs.filter((x) => x.problemId == data.id && x.pitch == pitch - 1)[0];
       if (prevPitchSvg && prevPitchSvg.path) {
-        mediaRegion = calculateMediaRegion(
-          prevPitchSvg.path,
-          m.width,
-          m.height,
-        );
-        mediaRegion.y = Math.max(
-          0,
-          mediaRegion.y - Math.round(mediaRegion.height / 2),
-        );
+        mediaRegion = calculateMediaRegion(prevPitchSvg.path, m.width, m.height);
+        mediaRegion.y = Math.max(0, mediaRegion.y - Math.round(mediaRegion.height / 2));
       }
     }
   }
@@ -689,9 +610,7 @@ export function useSvgEdit(
   const svgId = svg?.id ?? 0;
   const svgNr = svg?.nr ?? 0;
   const hasAnchor = svg?.hasAnchor ?? pitch === 0;
-  const path =
-    (svg?.path && mediaRegion ? scalePath(svg.path, mediaRegion) : svg?.path) ??
-    "";
+  const path = (svg?.path && mediaRegion ? scalePath(svg.path, mediaRegion) : svg?.path) ?? '';
   const anchors = [];
   if (svg?.anchors) {
     try {
@@ -741,24 +660,18 @@ export function useSvgEdit(
     }
   }
 
-  const readOnlySvgs: EditableSvg["readOnlySvgs"] = [];
-  for (const s of m.svgs.filter(
-    (x) => !mediaRegion || isPathVisible(x.path, mediaRegion),
-  )) {
+  const readOnlySvgs: EditableSvg['readOnlySvgs'] = [];
+  for (const s of m.svgs.filter((x) => !mediaRegion || isPathVisible(x.path, mediaRegion))) {
     if (!svg || s !== svg) {
       readOnlySvgs.push({
         nr: s.nr ?? 0,
         pitch: s.pitch ?? 0,
         hasAnchor: !!s.hasAnchor,
-        path:
-          (s.path && mediaRegion ? scalePath(s.path, mediaRegion) : s.path) ??
-          "",
+        path: (s.path && mediaRegion ? scalePath(s.path, mediaRegion) : s.path) ?? '',
         anchors: s.anchors ? JSON.parse(s.anchors) : [],
-        tradBelayStations: s.tradBelayStations
-          ? JSON.parse(s.tradBelayStations)
-          : [],
+        tradBelayStations: s.tradBelayStations ? JSON.parse(s.tradBelayStations) : [],
         texts: s.texts ? JSON.parse(s.texts) : [],
-        t: "other",
+        t: 'other',
       });
     }
   }
@@ -774,7 +687,7 @@ export function useSvgEdit(
     sections: data.sections,
     nr: svgNr,
     crc32: m.crc32 ?? 0,
-    path: path ?? "",
+    path: path ?? '',
     anchors,
     tradBelayStations,
     texts,

@@ -1,7 +1,7 @@
-import { CSSProperties } from "react";
-import { components } from "../../@types/buldreinfo/swagger";
-import { useNavigate } from "react-router-dom";
-import { parseSVG, makeAbsolute } from "svg-path-parser";
+import { CSSProperties } from 'react';
+import { components } from '../../@types/buldreinfo/swagger';
+import { useNavigate } from 'react-router-dom';
+import { parseSVG, makeAbsolute } from 'svg-path-parser';
 
 type Props = {
   style?: CSSProperties;
@@ -11,7 +11,7 @@ type Props = {
   mediaId: number;
   mediaHeight: number;
   mediaWidth: number;
-  svg: components["schemas"]["Svg"];
+  svg: components['schemas']['Svg'];
   optProblemId: number;
   problemIdHovered: number;
   setProblemIdHovered?: (problemId: number) => void;
@@ -35,48 +35,48 @@ export const SvgRoute = ({
   const navigate = useNavigate();
   const path = makeAbsolute(parseSVG(svg.path)); // Note: mutates the commands in place!
 
-  let gClassName = "buldreinfo-svg-pointer";
+  let gClassName = 'buldreinfo-svg-pointer';
   if (optProblemId || problemIdHovered) {
     if (
       (svg.problemId != optProblemId && svg.problemId != problemIdHovered) ||
       (pitch && svg.pitch != pitch)
     ) {
-      gClassName += " buldreinfo-svg-opacity-low";
+      gClassName += ' buldreinfo-svg-opacity-low';
     } else {
-      gClassName += " buldreinfo-svg-opacity-high";
+      gClassName += ' buldreinfo-svg-opacity-high';
     }
   }
   let groupColor;
   switch (svg.problemGradeGroup) {
     case 0:
-      groupColor = "#FFFFFF";
+      groupColor = '#FFFFFF';
       break;
     case 1:
-      groupColor = "#00FF00";
+      groupColor = '#00FF00';
       break;
     case 2:
-      groupColor = "#0000FF";
+      groupColor = '#0000FF';
       break;
     case 3:
-      groupColor = "#FFFF00";
+      groupColor = '#FFFF00';
       break;
     case 4:
-      groupColor = "#FF0000";
+      groupColor = '#FF0000';
       break;
     case 5:
-      groupColor = "#FF00FF";
+      groupColor = '#FF00FF';
       break;
     default:
-      groupColor = "#000000";
+      groupColor = '#000000';
       break;
   }
-  let textColor = "#FFFFFF";
+  let textColor = '#FFFFFF';
   if (svg.ticked) {
-    textColor = "#21ba45";
+    textColor = '#21ba45';
   } else if (svg.todo) {
-    textColor = "#659DBD";
+    textColor = '#659DBD';
   } else if (svg.dangerous) {
-    textColor = "#FF0000";
+    textColor = '#FF0000';
   }
 
   let ixNr = 0;
@@ -101,17 +101,16 @@ export const SvgRoute = ({
   if (y < border) y = border;
   if (y > mediaHeight - border) y = mediaHeight - border;
 
-  const isHoveredOrActive =
-    optProblemId === svg.problemId || problemIdHovered == svg.problemId;
+  const isHoveredOrActive = optProblemId === svg.problemId || problemIdHovered == svg.problemId;
   const hoveredOrActiveScale = isHoveredOrActive ? 1.2 : 1;
   const pathIdentifier = `svg-route-path-${mediaId}-${svg.problemId}-${svg.pitch}-${thumbnail}`;
   const extraAnchors =
     svg.anchors &&
     JSON.parse(svg.anchors).map((a) => (
       <circle
-        key={[a.x, a.y].join("x")}
+        key={[a.x, a.y].join('x')}
         fill={groupColor}
-        stroke="black"
+        stroke='black'
         strokeWidth={scale * 2 * hoveredOrActiveScale * (thumbnail ? 3 : 1)}
         cx={a.x}
         cy={a.y}
@@ -124,9 +123,9 @@ export const SvgRoute = ({
       const r = 8 * scale * hoveredOrActiveScale * (thumbnail ? 3 : 1);
       return (
         <polygon
-          key={[a.x, a.y].join("x")}
-          fill="white"
-          stroke="black"
+          key={[a.x, a.y].join('x')}
+          fill='white'
+          stroke='black'
           strokeWidth={scale * 2 * hoveredOrActiveScale * (thumbnail ? 3 : 1)}
           points={`${a.x},${a.y - r}, ${a.x - r},${a.y + r}, ${a.x + r},${a.y + r}`}
         />
@@ -136,52 +135,47 @@ export const SvgRoute = ({
     svg.texts &&
     JSON.parse(svg.texts).map((t) => (
       <text
-        stroke="white"
+        stroke='white'
         strokeWidth={2 * scale}
         style={{
-          paintOrder: "stroke fill",
-          clipPath: "inset(-5px -5px -5px -5px round 10px)",
+          paintOrder: 'stroke fill',
+          clipPath: 'inset(-5px -5px -5px -5px round 10px)',
         }}
-        key={[t.x, t.y].join("x")}
+        key={[t.x, t.y].join('x')}
         x={t.x}
         y={t.y}
         fontSize={14 * scale}
-        fill="red"
+        fill='red'
       >
         {t.txt}
       </text>
     ));
   let info;
-  if (
-    showText &&
-    !thumbnail &&
-    optProblemId === svg.problemId &&
-    svg.pitch === 0
-  ) {
+  if (showText && !thumbnail && optProblemId === svg.problemId && svg.pitch === 0) {
     let text = `#${svg.nr} - ${svg.problemName} [${svg.problemGrade}]`;
     if (svg.problemSubtype) {
-      text += " - " + svg.problemSubtype;
+      text += ' - ' + svg.problemSubtype;
     }
     if (svg.ticked) {
-      text += " - Ticked";
+      text += ' - Ticked';
     } else if (svg.todo) {
-      text += " - In TODO-list";
+      text += ' - In TODO-list';
     }
     if (svg.dangerous) {
-      text += " - Flagged as dangerous";
+      text += ' - Flagged as dangerous';
     }
     info = (
       <text
-        stroke="black"
+        stroke='black'
         strokeWidth={5 * scale}
         style={{
-          paintOrder: "stroke fill",
-          clipPath: "inset(-5px -5px -5px -5px round 10px)",
+          paintOrder: 'stroke fill',
+          clipPath: 'inset(-5px -5px -5px -5px round 10px)',
         }}
         fontSize={25 * scale}
-        dominantBaseline="text-before-edge"
-        fontWeight="bolder"
-        fill="white"
+        dominantBaseline='text-before-edge'
+        fontWeight='bolder'
+        fill='white'
       >
         {text}
       </text>
@@ -193,66 +187,62 @@ export const SvgRoute = ({
       className={gClassName}
       style={{
         ...style,
-        filter: isHoveredOrActive ? "contrast(2)" : undefined,
+        filter: isHoveredOrActive ? 'contrast(2)' : undefined,
       }}
       onClick={() => {
         if (close && !thumbnail) {
-          let url = "/problem/" + svg.problemId + "/" + mediaId;
+          let url = '/problem/' + svg.problemId + '/' + mediaId;
           if (
             optProblemId === svg.problemId &&
             ((!pitch && svg.pitch > 0) || (pitch && pitch != svg.pitch))
           ) {
-            url += "/" + svg.pitch;
+            url += '/' + svg.pitch;
           }
           navigate(url);
         }
       }}
-      onMouseEnter={() =>
-        setProblemIdHovered && setProblemIdHovered(svg.problemId)
-      }
+      onMouseEnter={() => setProblemIdHovered && setProblemIdHovered(svg.problemId)}
       onMouseLeave={() => setProblemIdHovered && setProblemIdHovered(null)}
     >
       <defs>
         <path
           id={pathIdentifier}
           d={svg.path}
-          strokeDasharray={
-            svg.primary ? scale * 10 * (thumbnail ? 2 : 1) : undefined
-          }
-          strokeLinecap="round"
+          strokeDasharray={svg.primary ? scale * 10 * (thumbnail ? 2 : 1) : undefined}
+          strokeLinecap='round'
         />
       </defs>
       <use
         xlinkHref={`#${pathIdentifier}`}
-        style={{ fill: "none", stroke: "black" }}
+        style={{ fill: 'none', stroke: 'black' }}
         strokeWidth={5 * scale * (thumbnail ? 3 : 1)}
       />
       <use
         xlinkHref={`#${pathIdentifier}`}
-        style={{ fill: "none", stroke: groupColor }}
+        style={{ fill: 'none', stroke: groupColor }}
         strokeWidth={2 * scale * hoveredOrActiveScale * (thumbnail ? 3 : 1)}
       />
       <text
         fill={textColor}
-        stroke="black"
+        stroke='black'
         strokeWidth={5 * scale * hoveredOrActiveScale * (thumbnail ? 3 : 1)}
         style={{
-          paintOrder: "stroke fill",
-          clipPath: "inset(-5px -5px -5px -5px round 10px)",
+          paintOrder: 'stroke fill',
+          clipPath: 'inset(-5px -5px -5px -5px round 10px)',
         }}
         fontSize={25 * scale * hoveredOrActiveScale * (thumbnail ? 3 : 1)}
-        fontWeight={isHoveredOrActive ? "bolder" : "normal"}
-        textAnchor="middle"
-        dominantBaseline="central"
+        fontWeight={isHoveredOrActive ? 'bolder' : 'normal'}
+        textAnchor='middle'
+        dominantBaseline='central'
         x={x}
         y={y}
       >
-        {svg.nr + (svg.pitch !== 0 && "-" + svg.pitch)}
+        {svg.nr + (svg.pitch !== 0 && '-' + svg.pitch)}
       </text>
       {svg.hasAnchor && ixAnchor && (
         <circle
           fill={groupColor}
-          stroke="black"
+          stroke='black'
           strokeWidth={scale * 2 * hoveredOrActiveScale * (thumbnail ? 3 : 1)}
           cx={path[ixAnchor].x}
           cy={path[ixAnchor].y}

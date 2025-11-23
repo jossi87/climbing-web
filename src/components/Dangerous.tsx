@@ -1,14 +1,14 @@
-import React from "react";
-import { Loading } from "./common/widgets/widgets";
-import { Segment, Icon, Header } from "semantic-ui-react";
-import { useMeta } from "./common/meta";
-import { useData } from "../api";
-import TableOfContents from "./common/TableOfContents";
-import { Success } from "../@types/buldreinfo";
+import React from 'react';
+import { Loading } from './common/widgets/widgets';
+import { Segment, Icon, Header } from 'semantic-ui-react';
+import { useMeta } from './common/meta';
+import { useData } from '../api';
+import TableOfContents from './common/TableOfContents';
+import { Success } from '../@types/buldreinfo';
 
 const Dangerous = () => {
   const meta = useMeta();
-  const { data } = useData<Success<"getDangerous">>(`/dangerous`);
+  const { data } = useData<Success<'getDangerous'>>(`/dangerous`);
 
   if (!data) {
     return <Loading />;
@@ -17,13 +17,12 @@ const Dangerous = () => {
   const [numSectors, numProblems] = data.reduce(
     ([sectors, problems], area) => [
       sectors + area.sectors.length,
-      problems +
-        area.sectors.reduce((acc, sector) => sector.problems.length + acc, 0),
+      problems + area.sectors.reduce((acc, sector) => sector.problems.length + acc, 0),
     ],
     [0, 0],
   );
   const description = `${numProblems} ${
-    meta.isClimbing ? "routes" : "boulders"
+    meta.isClimbing ? 'routes' : 'boulders'
   } flagged as dangerous (located in ${numAreas} areas, ${numSectors} sectors)`;
   const areas = data.map((area) => ({
     id: area.id,
@@ -36,7 +35,7 @@ const Dangerous = () => {
       id: sector.id,
       lockedAdmin: sector.lockedAdmin,
       lockedSuperadmin: sector.lockedSuperadmin,
-      polygonCoords: "",
+      polygonCoords: '',
       wallDirectionCalculated: sector.wallDirectionCalculated,
       wallDirectionManual: sector.wallDirectionManual,
       name: sector.name,
@@ -51,7 +50,7 @@ const Dangerous = () => {
         nr: problem.nr,
         grade: problem.grade,
         text: problem.postTxt,
-        subText: "(" + problem.postWhen + " - " + problem.postBy + ")",
+        subText: '(' + problem.postWhen + ' - ' + problem.postBy + ')',
       })),
     })),
   }));
@@ -59,10 +58,10 @@ const Dangerous = () => {
   return (
     <>
       <title>{`Dangerous | ${meta?.title}`}</title>
-      <meta name="description" content={description}></meta>
+      <meta name='description' content={description}></meta>
       <Segment>
-        <Header as="h2">
-          <Icon name="warning sign" />
+        <Header as='h2'>
+          <Icon name='warning sign' />
           <Header.Content>
             Dangerous
             <Header.Subheader>{description}</Header.Subheader>

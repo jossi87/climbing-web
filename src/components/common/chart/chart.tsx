@@ -1,8 +1,8 @@
-import React, { memo } from "react";
-import { components } from "../../../@types/buldreinfo/swagger";
+import React, { memo } from 'react';
+import { components } from '../../../@types/buldreinfo/swagger';
 
 type Props = {
-  ticks: NonNullable<components["schemas"]["ProfileStatistics"]["ticks"]>;
+  ticks: NonNullable<components['schemas']['ProfileStatistics']['ticks']>;
 };
 
 function Chart({ ticks: data }: Props) {
@@ -35,32 +35,30 @@ function Chart({ ticks: data }: Props) {
     }),
   );
   const rows = grades.map((g) => {
-    const faWidth = (g.fa / maxValue) * 100 + "%";
-    const tickWidth = (g.tick / maxValue) * 100 + "%";
+    const faWidth = (g.fa / maxValue) * 100 + '%';
+    const tickWidth = (g.tick / maxValue) * 100 + '%';
     return (
-      <tr key={[g.grade, g.fa, g.tick].join("/")}>
-        <td style={{ padding: 0, textAlign: "center", whiteSpace: "nowrap" }}>
-          {g.grade}
-        </td>
-        <td style={{ padding: 0, textAlign: "center" }}>{g.fa}</td>
-        <td style={{ padding: 0, textAlign: "center" }}>{g.tick}</td>
-        <td style={{ padding: 0, textAlign: "center" }}>
+      <tr key={[g.grade, g.fa, g.tick].join('/')}>
+        <td style={{ padding: 0, textAlign: 'center', whiteSpace: 'nowrap' }}>{g.grade}</td>
+        <td style={{ padding: 0, textAlign: 'center' }}>{g.fa}</td>
+        <td style={{ padding: 0, textAlign: 'center' }}>{g.tick}</td>
+        <td style={{ padding: 0, textAlign: 'center' }}>
           <strong>{g.fa + g.tick}</strong>
         </td>
-        <td style={{ width: "100%", verticalAlign: "middle" }}>
+        <td style={{ width: '100%', verticalAlign: 'middle' }}>
           <div
             style={{
               width: faWidth,
-              height: "10px",
-              backgroundColor: "#3182bd",
-              float: "left",
+              height: '10px',
+              backgroundColor: '#3182bd',
+              float: 'left',
             }}
           ></div>
           <div
             style={{
               width: tickWidth,
-              height: "10px",
-              backgroundColor: "#6baed6",
+              height: '10px',
+              backgroundColor: '#6baed6',
               marginLeft: faWidth,
             }}
           ></div>

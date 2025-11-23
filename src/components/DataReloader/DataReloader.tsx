@@ -1,12 +1,12 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 
-export const DATA_MUTATION_EVENT = "brattelinjer/refetch";
+export const DATA_MUTATION_EVENT = 'brattelinjer/refetch';
 
 const HANDLERS = {
   nop: async (...args) => {
-    if (process.env.REACT_APP_ENV === "development") {
-      console.debug("DataReloader: stubbed-out reload", ...args);
+    if (process.env.REACT_APP_ENV === 'development') {
+      console.debug('DataReloader: stubbed-out reload', ...args);
     }
   },
   invalidate: (client) => client.invalidateQueries({ predicate: () => true }),
@@ -33,8 +33,8 @@ export const DataReloader = ({ children }: { children: React.ReactNode }) => {
   const client = useQueryClient();
   useEffect(() => {
     const onEvent = (event: CustomEvent) => {
-      const mode = event?.detail?.mode ?? "nop";
-      HANDLERS[mode in HANDLERS ? mode : "nop"]?.(client);
+      const mode = event?.detail?.mode ?? 'nop';
+      HANDLERS[mode in HANDLERS ? mode : 'nop']?.(client);
     };
 
     window.addEventListener(DATA_MUTATION_EVENT, onEvent);

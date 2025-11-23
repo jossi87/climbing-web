@@ -1,57 +1,53 @@
-import React, { ComponentProps, useCallback, useState } from "react";
-import { Form, Input, Dropdown } from "semantic-ui-react";
-import { components } from "../../../@types/buldreinfo/swagger";
-import { useMeta } from "../meta";
+import React, { ComponentProps, useCallback, useState } from 'react';
+import { Form, Input, Dropdown } from 'semantic-ui-react';
+import { components } from '../../../@types/buldreinfo/swagger';
+import { useMeta } from '../meta';
 
-type ProblemSections = components["schemas"]["ProblemSection"][];
+type ProblemSections = components['schemas']['ProblemSection'][];
 
 type Props = {
   sections: ProblemSections;
   onSectionsUpdated: (sections: ProblemSections) => void;
 };
 
-const ProblemSection = ({
-  sections: initSections,
-  onSectionsUpdated,
-}: Props) => {
+const ProblemSection = ({ sections: initSections, onSectionsUpdated }: Props) => {
   const { grades } = useMeta();
   const [sections, setSections] = useState(initSections);
 
-  const onNumberOfSectionsChange: NonNullable<
-    ComponentProps<typeof Dropdown>["onChange"]
-  > = useCallback(
-    (e, { value }) => {
-      if (value === undefined) {
-        return;
-      } else if (
-        !confirm(
-          `Are you sure you want to change number of pitches from ${sections?.length || 1} to ${value}?`,
-        )
-      ) {
-        return;
-      }
+  const onNumberOfSectionsChange: NonNullable<ComponentProps<typeof Dropdown>['onChange']> =
+    useCallback(
+      (e, { value }) => {
+        if (value === undefined) {
+          return;
+        } else if (
+          !confirm(
+            `Are you sure you want to change number of pitches from ${sections?.length || 1} to ${value}?`,
+          )
+        ) {
+          return;
+        }
 
-      const num = +value;
-      let newSections: ProblemSections = [];
-      if (num > 1) {
-        newSections = sections ? [...sections] : [];
-        while (num > newSections.length) {
-          newSections.push({
-            id: newSections.length * -1,
-            nr: newSections.length + 1,
-            grade: "n/a",
-            description: undefined,
-          });
+        const num = +value;
+        let newSections: ProblemSections = [];
+        if (num > 1) {
+          newSections = sections ? [...sections] : [];
+          while (num > newSections.length) {
+            newSections.push({
+              id: newSections.length * -1,
+              nr: newSections.length + 1,
+              grade: 'n/a',
+              description: undefined,
+            });
+          }
+          while (num < newSections.length) {
+            newSections.pop();
+          }
         }
-        while (num < newSections.length) {
-          newSections.pop();
-        }
-      }
-      onSectionsUpdated(newSections);
-      setSections(newSections);
-    },
-    [onSectionsUpdated, sections],
-  );
+        onSectionsUpdated(newSections);
+        setSections(newSections);
+      },
+      [onSectionsUpdated, sections],
+    );
 
   return (
     <>
@@ -95,14 +91,14 @@ const ProblemSection = ({
       {sections &&
         sections.length > 1 &&
         sections.map((s) => (
-          <Form.Group widths="equal" key={s.nr} inline>
+          <Form.Group widths='equal' key={s.nr} inline>
             <Form.Field>
               <Input
-                size="mini"
-                icon="hashtag"
-                iconPosition="left"
+                size='mini'
+                icon='hashtag'
+                iconPosition='left'
                 fluid
-                placeholder="Number"
+                placeholder='Number'
                 value={s.nr}
                 onChange={(e, { value }) => {
                   s.nr = parseInt(value);
@@ -113,8 +109,8 @@ const ProblemSection = ({
             </Form.Field>
             <Form.Field>
               <Dropdown
-                size="mini"
-                icon="dropdown"
+                size='mini'
+                icon='dropdown'
                 fluid
                 selection
                 value={s.grade}
@@ -132,12 +128,12 @@ const ProblemSection = ({
             </Form.Field>
             <Form.Field>
               <Input
-                size="mini"
-                icon="info"
-                iconPosition="left"
+                size='mini'
+                icon='info'
+                iconPosition='left'
                 fluid
-                placeholder="Description"
-                value={s.description ? s.description : ""}
+                placeholder='Description'
+                value={s.description ? s.description : ''}
                 onChange={(e, { value }) => {
                   s.description = value;
                   setSections([...sections]);

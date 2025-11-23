@@ -1,36 +1,22 @@
-import React, { useState } from "react";
-import {
-  Button,
-  Modal,
-  Form,
-  Input,
-  Checkbox,
-  Dropdown,
-} from "semantic-ui-react";
-import { components } from "../../../@types/buldreinfo/swagger";
+import React, { useState } from 'react';
+import { Button, Modal, Form, Input, Checkbox, Dropdown } from 'semantic-ui-react';
+import { components } from '../../../@types/buldreinfo/swagger';
 
-type Media = components["schemas"]["Media"];
+type Media = components['schemas']['Media'];
 
 type Props = {
   save: (
-    id: NonNullable<Media["id"]>,
-    metadataDescription: NonNullable<
-      NonNullable<Media["mediaMetadata"]>["description"]
-    >,
-    pitch: NonNullable<Media["pitch"]>,
-    trivia: NonNullable<Media["trivia"]>,
+    id: NonNullable<Media['id']>,
+    metadataDescription: NonNullable<NonNullable<Media['mediaMetadata']>['description']>,
+    pitch: NonNullable<Media['pitch']>,
+    trivia: NonNullable<Media['trivia']>,
   ) => void;
   onCloseWithoutReload: () => void;
   m: Media;
   numPitches: number;
 };
 
-const MediaEditModal = ({
-  save,
-  onCloseWithoutReload,
-  m,
-  numPitches,
-}: Props) => {
+const MediaEditModal = ({ save, onCloseWithoutReload, m, numPitches }: Props) => {
   const [description, setDescription] = useState(m.mediaMetadata.description);
   const [pitch, setPitch] = useState(m.pitch);
   const [trivia, setTrivia] = useState(m.trivia);
@@ -45,10 +31,10 @@ const MediaEditModal = ({
             <Form.Field>
               <label>Description:</label>
               <Input
-                icon="comment"
-                iconPosition="left"
+                icon='comment'
+                iconPosition='left'
                 fluid
-                placeholder="Description"
+                placeholder='Description'
                 value={description}
                 onChange={(e, { value }) => setDescription(value)}
               />
@@ -59,11 +45,12 @@ const MediaEditModal = ({
                 <Dropdown
                   clearable
                   fluid
-                  placeholder="Not connected to a pitch"
-                  options={Array.from(
-                    { length: numPitches },
-                    (_, i) => i + 1,
-                  ).map((x) => ({ key: x, text: `Pitch ${x}`, value: x }))}
+                  placeholder='Not connected to a pitch'
+                  options={Array.from({ length: numPitches }, (_, i) => i + 1).map((x) => ({
+                    key: x,
+                    text: `Pitch ${x}`,
+                    value: x,
+                  }))}
                   selection
                   value={pitch}
                   onChange={(e, { _, value }) => setPitch(+value)}
@@ -85,20 +72,17 @@ const MediaEditModal = ({
         </Modal.Description>
       </Modal.Content>
       <Modal.Actions>
-        <Button.Group compact size="tiny">
+        <Button.Group compact size='tiny'>
           <Button onClick={onCloseWithoutReload}>Cancel</Button>
           <Button.Or />
           <Button
             positive
             loading={saving}
-            icon="checkmark"
-            labelPosition="right"
-            content="Save"
+            icon='checkmark'
+            labelPosition='right'
+            content='Save'
             onClick={() => {
               setSaving(true);
-              m.mediaMetadata.description = description;
-              m.pitch = pitch;
-              m.trivia = trivia;
               save(m.id, description, pitch, trivia);
             }}
           />

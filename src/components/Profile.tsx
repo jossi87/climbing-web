@@ -1,22 +1,22 @@
-import React from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { Loading } from "./common/widgets/widgets";
-import { Header, Menu, Icon, Message } from "semantic-ui-react";
-import { useMeta } from "./common/meta";
-import { useProfile } from "../api";
-import { useAuth0 } from "@auth0/auth0-react";
-import ProfileStatistics from "./common/profile/profile-statistics";
-import Avatar from "./common/avatar/avatar";
-import ProfileTodo from "./common/profile/profile-todo";
-import ProfileMedia from "./common/profile/profile-media";
-import ProfileSettings from "./common/profile/profile-settings";
+import React from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Loading } from './common/widgets/widgets';
+import { Header, Menu, Icon, Message } from 'semantic-ui-react';
+import { useMeta } from './common/meta';
+import { useProfile } from '../api';
+import { useAuth0 } from '@auth0/auth0-react';
+import ProfileStatistics from './common/profile/profile-statistics';
+import Avatar from './common/avatar/avatar';
+import ProfileTodo from './common/profile/profile-todo';
+import ProfileMedia from './common/profile/profile-media';
+import ProfileSettings from './common/profile/profile-settings';
 
 enum Page {
-  user = "user",
-  todo = "todo",
-  media = "media",
-  captured = "captured",
-  settings = "settings",
+  user = 'user',
+  todo = 'todo',
+  media = 'media',
+  captured = 'captured',
+  settings = 'settings',
 }
 
 const Profile = () => {
@@ -28,7 +28,7 @@ const Profile = () => {
   const meta = useMeta();
 
   function onPageChanged(page: Page) {
-    navigate("/user/" + profile.id + "/" + Page[page]);
+    navigate('/user/' + profile.id + '/' + Page[page]);
   }
 
   if (isLoading) {
@@ -38,10 +38,10 @@ const Profile = () => {
   if (error) {
     return (
       <Message
-        size="huge"
-        style={{ backgroundColor: "#FFF" }}
-        icon="meh"
-        header="404"
+        size='huge'
+        style={{ backgroundColor: '#FFF' }}
+        icon='meh'
+        header='404'
         content={String(error)}
       />
     );
@@ -75,18 +75,16 @@ const Profile = () => {
     content = <ProfileSettings />;
   }
 
-  const firstLast = [profile.firstname, profile.lastname]
-    .filter(Boolean)
-    .join(" ");
+  const firstLast = [profile.firstname, profile.lastname].filter(Boolean).join(' ');
 
   return (
     <>
       <title>{`${firstLast} | ${meta?.title}`}</title>
       <meta
-        name="description"
-        content="Profile with public ascents, media, and other statistics."
+        name='description'
+        content='Profile with public ascents, media, and other statistics.'
       ></meta>
-      <Header as="h5" textAlign="center" className="buldreinfo-visible-mobile">
+      <Header as='h5' textAlign='center' className='buldreinfo-visible-mobile'>
         <Avatar
           userId={profile.id}
           name={`${profile.firstname} ${profile.lastname}`}
@@ -94,9 +92,9 @@ const Profile = () => {
         />
         <Header.Content>{firstLast}</Header.Content>
       </Header>
-      <Menu pointing icon="labeled" size="mini">
-        <Menu.Item header className="buldreinfo-hidden-mobile">
-          <Header as="h4">
+      <Menu pointing icon='labeled' size='mini'>
+        <Menu.Item header className='buldreinfo-hidden-mobile'>
+          <Header as='h4'>
             <Avatar
               userId={profile.id}
               name={`${profile.firstname} ${profile.lastname}`}
@@ -118,7 +116,7 @@ const Profile = () => {
           active={activePage === Page.user}
           onClick={() => onPageChanged(Page.user)}
         >
-          <Icon name="user" />
+          <Icon name='user' />
           User
         </Menu.Item>
         <Menu.Item
@@ -126,7 +124,7 @@ const Profile = () => {
           active={activePage === Page.todo}
           onClick={() => onPageChanged(Page.todo)}
         >
-          <Icon name="bookmark" />
+          <Icon name='bookmark' />
           Todo
         </Menu.Item>
         <Menu.Item
@@ -134,7 +132,7 @@ const Profile = () => {
           active={activePage === Page.media}
           onClick={() => onPageChanged(Page.media)}
         >
-          <Icon name="images" />
+          <Icon name='images' />
           Media
         </Menu.Item>
         <Menu.Item
@@ -142,7 +140,7 @@ const Profile = () => {
           active={activePage === Page.captured}
           onClick={() => onPageChanged(Page.captured)}
         >
-          <Icon name="photo" />
+          <Icon name='photo' />
           Captured
         </Menu.Item>
         {isAuthenticated && loggedInProfile && (
@@ -151,7 +149,7 @@ const Profile = () => {
             active={activePage === Page.settings}
             onClick={() => onPageChanged(Page.settings)}
           >
-            <Icon name="cogs" />
+            <Icon name='cogs' />
             Settings
           </Menu.Item>
         )}

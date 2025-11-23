@@ -1,22 +1,22 @@
-import { useParams } from "react-router-dom";
-import Leaflet from "./common/leaflet/leaflet";
-import { Segment, Header, Icon } from "semantic-ui-react";
-import { Loading } from "./common/widgets/widgets";
-import { useMeta } from "./common/meta";
-import { useData } from "../api";
-import { Success } from "../@types/buldreinfo";
-import { ComponentProps } from "react";
+import { useParams } from 'react-router-dom';
+import Leaflet from './common/leaflet/leaflet';
+import { Segment, Header, Icon } from 'semantic-ui-react';
+import { Loading } from './common/widgets/widgets';
+import { useMeta } from './common/meta';
+import { useData } from '../api';
+import { Success } from '../@types/buldreinfo';
+import { ComponentProps } from 'react';
 
 const Webcams = () => {
   const meta = useMeta();
-  const { data } = useData<Success<"getCameras">>(`/webcams`);
+  const { data } = useData<Success<'getCameras'>>(`/webcams`);
   const { json } = useParams();
 
   if (!data) {
     return <Loading />;
   }
 
-  const markers: ComponentProps<typeof Leaflet>["markers"] = data
+  const markers: ComponentProps<typeof Leaflet>['markers'] = data
     .filter((c) => c.lat != 0 && c.lng != 0)
     .map((c) => {
       return {
@@ -37,21 +37,21 @@ const Webcams = () => {
     defaultZoom = 10;
     markers.push({ coordinates: { latitude: lat, longitude: lng }, label });
   }
-  const description = markers.length + " cameras";
+  const description = markers.length + ' cameras';
   return (
     <>
       <title>{`Webcams | ${meta?.title}`}</title>
-      <meta name="description" content={description}></meta>
+      <meta name='description' content={description}></meta>
       <Segment>
-        <Header as="h2">
-          <Icon name="camera" />
+        <Header as='h2'>
+          <Icon name='camera' />
           <Header.Content>
             Webcams
             <Header.Subheader>{description}</Header.Subheader>
           </Header.Content>
         </Header>
         <Leaflet
-          height="85vh"
+          height='85vh'
           autoZoom={false}
           defaultCenter={defaultCenter}
           defaultZoom={defaultZoom}

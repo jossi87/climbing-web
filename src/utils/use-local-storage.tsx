@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState } from 'react';
 
 function readLocalStorage<T = unknown>(
   system: typeof window.localStorage,
@@ -34,11 +34,7 @@ export function itemLocalStorage<T = unknown>(
   };
 }
 
-function useStorage<T = unknown>(
-  system: typeof window.localStorage,
-  key: string,
-  initialValue: T,
-) {
+function useStorage<T = unknown>(system: typeof window.localStorage, key: string, initialValue: T) {
   const [storedValue, setStoredValue] = useState(() => {
     return readLocalStorage(system, key, initialValue);
   });
@@ -46,8 +42,7 @@ function useStorage<T = unknown>(
   const setValue = useCallback(
     (value: Parameters<typeof setStoredValue>[0]) => {
       try {
-        const valueToStore =
-          value instanceof Function ? value(storedValue) : value;
+        const valueToStore = value instanceof Function ? value(storedValue) : value;
         setStoredValue(value);
         system.setItem(key, JSON.stringify(valueToStore));
       } catch (error) {
@@ -60,8 +55,7 @@ function useStorage<T = unknown>(
   const writeValue = useCallback(
     (value: Parameters<typeof setStoredValue>[0]) => {
       try {
-        const valueToStore =
-          value instanceof Function ? value(storedValue) : value;
+        const valueToStore = value instanceof Function ? value(storedValue) : value;
         system.setItem(key, JSON.stringify(valueToStore));
       } catch (error) {
         console.log(error);

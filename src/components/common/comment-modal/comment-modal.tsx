@@ -1,14 +1,7 @@
-import React, { useState } from "react";
-import { postComment, useAccessToken } from "./../../../api";
-import {
-  Button,
-  Modal,
-  Form,
-  TextArea,
-  Message,
-  Icon,
-} from "semantic-ui-react";
-import ImageUpload from "../image-upload/image-upload";
+import React, { useState } from 'react';
+import { postComment, useAccessToken } from './../../../api';
+import { Button, Modal, Form, TextArea, Message, Icon } from 'semantic-ui-react';
+import ImageUpload from '../image-upload/image-upload';
 
 const CommentModal = ({
   comment,
@@ -28,7 +21,7 @@ const CommentModal = ({
   };
 }) => {
   const accessToken = useAccessToken();
-  const [message, setMessage] = useState(comment?.message ?? "");
+  const [message, setMessage] = useState(comment?.message ?? '');
   const [danger, setDanger] = useState(comment?.danger);
   const [resolved, setResolved] = useState(comment?.resolved);
   const [media, setMedia] = useState([]);
@@ -43,7 +36,7 @@ const CommentModal = ({
             <Form.Field>
               <label>Comment</label>
               <TextArea
-                placeholder="Comment"
+                placeholder='Comment'
                 style={{ minHeight: 100 }}
                 defaultValue={message}
                 onChange={(_, data) => {
@@ -57,7 +50,7 @@ const CommentModal = ({
             </Form.Field>
             {showHse && (
               <Form.Field>
-                <Button.Group size="mini" compact>
+                <Button.Group size='mini' compact>
                   <Button
                     onClick={() => {
                       setDanger(false);
@@ -94,40 +87,30 @@ const CommentModal = ({
             )}
           </Form>
           {danger && (
-            <Message error size="small">
-              <Icon name="warning" />A loose hanger should not be flagged as
-              dangerous. All climbers should carry a 17mm spanner (wrench), and
-              if you don%apos;t have it just tight the nut by hand. Be specific,
-              is the bolt spinning freely in the rock? Are there loose
-              rocks/flakes that you were not able to safely remove by hand? What
-              kind of tools are needed?
+            <Message error size='small'>
+              <Icon name='warning' />A loose hanger should not be flagged as dangerous. All climbers
+              should carry a 17mm spanner (wrench), and if you don%apos;t have it just tight the nut
+              by hand. Be specific, is the bolt spinning freely in the rock? Are there loose
+              rocks/flakes that you were not able to safely remove by hand? What kind of tools are
+              needed?
             </Message>
           )}
         </Modal.Description>
       </Modal.Content>
       <Modal.Actions>
-        <Button.Group compact size="tiny">
+        <Button.Group compact size='tiny'>
           <Button onClick={onClose}>Cancel</Button>
           <Button.Or />
           <Button
             positive
             loading={saving}
-            icon="checkmark"
-            labelPosition="right"
-            content="Save"
+            icon='checkmark'
+            labelPosition='right'
+            content='Save'
             disabled={!message.trim()}
             onClick={() => {
               setSaving(true);
-              postComment(
-                accessToken,
-                id,
-                idProblem,
-                message,
-                danger,
-                resolved,
-                false,
-                media,
-              )
+              postComment(accessToken, id, idProblem, message, danger, resolved, false, media)
                 .then(() => {
                   onClose();
                 })

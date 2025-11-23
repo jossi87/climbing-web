@@ -1,1 +1,1 @@
-export { SectorEditLoader as default } from "./SectorEdit";
+export { SectorEditLoader as default } from './SectorEdit';

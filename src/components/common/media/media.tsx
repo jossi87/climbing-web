@@ -1,11 +1,6 @@
-import React, {
-  useState,
-  useEffect,
-  ComponentProps,
-  CSSProperties,
-} from "react";
-import LazyLoad from "react-lazyload";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import React, { useState, useEffect, ComponentProps, CSSProperties, useCallback } from 'react';
+import { useInView } from 'react-intersection-observer';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
   getImageUrl,
   deleteMedia,
@@ -13,31 +8,31 @@ import {
   setMediaAsAvatar,
   putMediaJpegRotate,
   putMediaInfo,
-} from "../../../api";
-import { Card, Icon, Image } from "semantic-ui-react";
-import MediaModal from "./media-modal";
-import MediaEditModal from "./media-edit-modal";
-import SvgViewer from "../../SvgViewer";
-import { useAuth0 } from "@auth0/auth0-react";
-import { Loading } from "../widgets/widgets";
-import { components } from "../../../@types/buldreinfo/swagger";
+} from '../../../api';
+import { Card, Icon, Image } from 'semantic-ui-react';
+import MediaModal from './media-modal';
+import MediaEditModal from './media-edit-modal';
+import SvgViewer from '../../SvgViewer';
+import { useAuth0 } from '@auth0/auth0-react';
+import { Loading } from '../widgets/widgets';
+import { components } from '../../../@types/buldreinfo/swagger';
 
 const style: CSSProperties = {
-  objectFit: "cover",
-  position: "absolute",
+  objectFit: 'cover',
+  position: 'absolute',
   top: 0,
   left: 0,
   bottom: 0,
   right: 0,
-  width: "100%",
-  height: "100%",
+  width: '100%',
+  height: '100%',
 };
 
-type Props = Pick<ComponentProps<typeof MediaModal>, "optProblemId"> & {
-  pitches: components["schemas"]["ProblemSection"][];
-  media: components["schemas"]["Media"][];
-  orderableMedia: components["schemas"]["Media"][];
-  carouselMedia: components["schemas"]["Media"][];
+type Props = Pick<ComponentProps<typeof MediaModal>, 'optProblemId'> & {
+  pitches: components['schemas']['ProblemSection'][];
+  media: components['schemas']['Media'][];
+  orderableMedia: components['schemas']['Media'][];
+  carouselMedia: components['schemas']['Media'][];
   showLocation: boolean;
 };
 
@@ -52,6 +47,12 @@ const useIds = (): {
   };
 };
 
+interface ConfirmationState {
+  isOpen: boolean;
+  message: string;
+  action: () => void;
+}
+
 const Media = ({
   pitches,
   media,
@@ -64,15 +65,28 @@ const Media = ({
   const location = useLocation();
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
-  const [m, setM] = useState<components["schemas"]["Media"]>(null);
-  const [editM, setEditM] = useState<components["schemas"]["Media"]>(null);
+  const [m, setM] = useState<components['schemas']['Media'] | null>(null);
+  const [editM, setEditM] = useState<components['schemas']['Media'] | null>(null);
   const [autoPlayVideo, setAutoPlayVideo] = useState(false);
   const { isLoading, getAccessTokenSilently } = useAuth0();
+  const [confirmation, setConfirmation] = useState<ConfirmationState | null>(null);
+  const showConfirmation = useCallback((message: string, action: () => void) => {
+    setConfirmation({ isOpen: true, message, action });
+  }, []);
+  const handleCancel = useCallback(() => {
+    setConfirmation(null);
+  }, []);
+  const handleProceed = useCallback(() => {
+    if (confirmation) {
+      confirmation.action();
+      setConfirmation(null);
+    }
+  }, [confirmation]);
+
   useEffect(() => {
-    function handleKeyPress({ keyCode }) {
+    function handleKeyPress({ keyCode }: KeyboardEvent) {
       if (editM == null && m != null) {
         if (keyCode === 27) {
-          // Escape
           closeModal();
         } else if (keyCode === 37) {
           gotoPrev();
@@ -81,27 +95,24 @@ const Media = ({
         }
       }
     }
-    document.addEventListener("keydown", handleKeyPress);
+    document.addEventListener('keydown', handleKeyPress);
     return () => {
-      document.removeEventListener("keydown", handleKeyPress);
+      document.removeEventListener('keydown', handleKeyPress as EventListener);
     };
-  });
+  }, [editM, m]);
 
-  function openModal(newM) {
+  function openModal(newM: components['schemas']['Media']) {
     const prevMediaId = m?.id;
     const url = prevMediaId
-      ? location.pathname.replace(prevMediaId.toString(), newM.id)
-      : location.pathname + "/" + newM.id;
+      ? location.pathname.replace(prevMediaId.toString(), newM.id.toString())
+      : location.pathname + '/' + newM.id;
     setM(newM);
     setEditM(null);
     navigate(url);
   }
 
   function closeModal() {
-    const url = location.pathname.substring(
-      0,
-      location.pathname.lastIndexOf("/"),
-    );
+    const url = location.pathname.substring(0, location.pathname.lastIndexOf('/'));
     if (!pitch) {
       setM(null);
     }
@@ -111,9 +122,7 @@ const Media = ({
   function gotoPrev() {
     if (m && carouselMedia.length > 1) {
       const ix =
-        (carouselMedia.findIndex((x) => x.id === m.id) -
-          1 +
-          carouselMedia.length) %
+        (carouselMedia.findIndex((x) => x.id === m.id) - 1 + carouselMedia.length) %
         carouselMedia.length;
       openModal(carouselMedia[ix]);
     }
@@ -121,9 +130,7 @@ const Media = ({
 
   function gotoNext() {
     if (m && carouselMedia.length > 1) {
-      const ix =
-        (carouselMedia.findIndex((x) => x.id === m.id) + 1) %
-        carouselMedia.length;
+      const ix = (carouselMedia.findIndex((x) => x.id === m.id) + 1) % carouselMedia.length;
       openModal(carouselMedia[ix]);
     }
   }
@@ -135,14 +142,11 @@ const Media = ({
   }
 
   function onDeleteMedia() {
+    if (!m) return;
     const { id, idType } = m;
-    if (
-      confirm(
-        "Are you sure you want to delete this " +
-          (idType === 1 ? "image" : "video") +
-          "?",
-      )
-    ) {
+    const mediaType = idType === 1 ? 'image' : 'video';
+
+    showConfirmation(`Are you sure you want to delete this ${mediaType}?`, () => {
       setIsSaving(true);
       getAccessTokenSilently().then((accessToken) => {
         deleteMedia(accessToken, id)
@@ -151,18 +155,16 @@ const Media = ({
             closeModal();
           })
           .catch((error) => {
-            console.warn(error);
+            console.warn('Delete Media Error:', error);
           });
       });
-    }
+    });
   }
 
-  function onRotate(degrees) {
-    if (
-      confirm(
-        "Are you sure you want to rotate this image " + degrees + " degrees?",
-      )
-    ) {
+  function onRotate(degrees: number) {
+    if (!m) return;
+
+    showConfirmation(`Are you sure you want to rotate this image ${degrees} degrees?`, () => {
       setIsSaving(true);
       getAccessTokenSilently().then((accessToken) => {
         putMediaJpegRotate(accessToken, m.id, degrees)
@@ -171,13 +173,14 @@ const Media = ({
             closeModal();
           })
           .catch((error) => {
-            console.warn(error);
+            console.warn('Rotate Error:', error);
           });
       });
-    }
+    });
   }
 
   function onMoveImageLeft() {
+    if (!m) return;
     setIsSaving(true);
     getAccessTokenSilently().then((accessToken) => {
       moveMedia(accessToken, m.id, true, 0, 0, 0)
@@ -186,12 +189,13 @@ const Media = ({
           closeModal();
         })
         .catch((error) => {
-          console.warn(error);
+          console.warn('Move Left Error:', error);
         });
     });
   }
 
   function onMoveImageRight() {
+    if (!m) return;
     setIsSaving(true);
     getAccessTokenSilently().then((accessToken) => {
       moveMedia(accessToken, m.id, false, 0, 0, 0)
@@ -200,12 +204,13 @@ const Media = ({
           closeModal();
         })
         .catch((error) => {
-          console.warn(error);
+          console.warn('Move Right Error:', error);
         });
     });
   }
 
   function onMoveImageToArea() {
+    if (!m || !m.enableMoveToIdArea) return;
     setIsSaving(true);
     getAccessTokenSilently().then((accessToken) => {
       moveMedia(accessToken, m.id, false, m.enableMoveToIdArea, 0, 0)
@@ -214,12 +219,13 @@ const Media = ({
           closeModal();
         })
         .catch((error) => {
-          console.warn(error);
+          console.warn('Move to Area Error:', error);
         });
     });
   }
 
   function onMoveImageToSector() {
+    if (!m || !m.enableMoveToIdSector) return;
     setIsSaving(true);
     getAccessTokenSilently().then((accessToken) => {
       moveMedia(accessToken, m.id, false, 0, m.enableMoveToIdSector, 0)
@@ -228,12 +234,13 @@ const Media = ({
           closeModal();
         })
         .catch((error) => {
-          console.warn(error);
+          console.warn('Move to Sector Error:', error);
         });
     });
   }
 
   function onMoveImageToProblem() {
+    if (!m || !m.enableMoveToIdProblem) return;
     setIsSaving(true);
     getAccessTokenSilently().then((accessToken) => {
       moveMedia(accessToken, m.id, false, 0, 0, m.enableMoveToIdProblem)
@@ -242,13 +249,15 @@ const Media = ({
           closeModal();
         })
         .catch((error) => {
-          console.warn(error);
+          console.warn('Move to Problem Error:', error);
         });
     });
   }
 
   function onSetMediaAsAvatar() {
-    if (confirm("Are you sure you want to change your avatar to this image?")) {
+    if (!m) return;
+
+    showConfirmation('Are you sure you want to change your avatar to this image?', () => {
       setIsSaving(true);
       getAccessTokenSilently().then((accessToken) => {
         setMediaAsAvatar(accessToken, m.id)
@@ -257,10 +266,10 @@ const Media = ({
             closeModal();
           })
           .catch((error) => {
-            console.warn(error);
+            console.warn('Set Avatar Error:', error);
           });
       });
-    }
+    });
   }
 
   if (isLoading) {
@@ -271,7 +280,7 @@ const Media = ({
     const newMediaArr = media.filter((m) => m.id === mediaId);
     if (newMediaArr && newMediaArr.length === 1) {
       const newM = newMediaArr[0];
-      if (!m || m.id != newM.id || m.mediaSvgs != newM.mediaSvgs) {
+      if (!m || m.id !== newM.id || m.mediaSvgs !== newM.mediaSvgs) {
         setM(newM);
       }
     }
@@ -279,8 +288,132 @@ const Media = ({
     setM(null);
   }
 
+  const LazyMediaCard = ({ x }: { x: components['schemas']['Media'] }) => {
+    const { ref, inView } = useInView({
+      triggerOnce: true,
+      rootMargin: '200px 0px',
+    });
+
+    const content: React.ReactNode = null;
+
+    return (
+      <Card
+        as='a'
+        onClick={() => openModal(x)}
+        key={x.id}
+        raised
+        style={{
+          backgroundColor: 'rgb(245, 245, 245)',
+          border: x.inherited ? '1px solid black' : '1px solid rgb(245, 245, 245)',
+        }}
+        ref={ref}
+      >
+        <div style={{ paddingTop: '75%' }}>
+          {inView ? (
+            x.svgs || x.mediaSvgs ? (
+              <SvgViewer
+                close={null}
+                thumb={true}
+                m={x}
+                pitch={null}
+                style={style}
+                optProblemId={optProblemId}
+                showText={false}
+                problemIdHovered={null}
+              />
+            ) : (
+              <>
+                <Image
+                  alt={x.mediaMetadata.description}
+                  style={style}
+                  src={getImageUrl(x.id, x.crc32, { minDimension: 205 })}
+                  onError={(img) =>
+                    ((img.target as HTMLImageElement).src = '/png/video_placeholder.png')
+                  }
+                  rounded
+                />
+                {x.idType === 2 && (
+                  <Icon
+                    name='play'
+                    circular
+                    style={{
+                      background: 'red',
+                      color: 'white',
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      zIndex: 2,
+                    }}
+                  />
+                )}
+              </>
+            )
+          ) : (
+            <div style={{ ...style, backgroundColor: '#e0e0e0' }}></div>
+          )}
+        </div>
+      </Card>
+    );
+  };
+
   return (
     <>
+      {confirmation?.isOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: 'white',
+              padding: '2rem',
+              borderRadius: '0.5rem',
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+              minWidth: '300px',
+            }}
+          >
+            <p style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>{confirmation.message}</p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+              <button
+                onClick={handleCancel}
+                style={{
+                  padding: '0.5rem 1rem',
+                  border: '1px solid #ccc',
+                  borderRadius: '0.25rem',
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleProceed}
+                style={{
+                  padding: '0.5rem 1rem',
+                  backgroundColor: '#db2828',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '0.25rem',
+                  cursor: 'pointer',
+                }}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {editM && (
         <MediaEditModal
           numPitches={pitches?.length || 0}
@@ -327,70 +460,9 @@ const Media = ({
         />
       )}
       <Card.Group itemsPerRow={5} doubling>
-        {media.map((x) => {
-          let content;
-          if (x.svgs || x.mediaSvgs) {
-            content = (
-              <SvgViewer
-                close={null}
-                thumb={true}
-                m={x}
-                pitch={null}
-                style={style}
-                optProblemId={optProblemId}
-                showText={false}
-                problemIdHovered={null}
-              />
-            );
-          } else {
-            content = (
-              <>
-                <Image
-                  alt={x.mediaMetadata.description}
-                  style={style}
-                  src={getImageUrl(x.id, x.crc32, { minDimension: 205 })}
-                  onError={(img) =>
-                    (img.target.src = "/png/video_placeholder.png")
-                  }
-                  rounded
-                />
-                {x.idType === 2 && (
-                  <Icon
-                    name="play"
-                    circular
-                    style={{
-                      background: "red",
-                      color: "white",
-                      position: "absolute",
-                      top: "50%",
-                      left: "50%",
-                      transform: "translate(-50%, -50%)",
-                      zIndex: 2,
-                    }}
-                  />
-                )}
-              </>
-            );
-          }
-          return (
-            <Card
-              as="a"
-              onClick={() => openModal(x)}
-              key={x.id}
-              raised
-              style={{
-                backgroundColor: "rgb(245, 245, 245)",
-                border: x.inherited
-                  ? "1px solid black"
-                  : "1px solid rgb(245, 245, 245)",
-              }}
-            >
-              <div style={{ paddingTop: "75%" }}>
-                <LazyLoad offset={100}>{content}</LazyLoad>
-              </div>
-            </Card>
-          );
-        })}
+        {media.map((x) => (
+          <LazyMediaCard x={x} key={x.id} />
+        ))}
       </Card.Group>
     </>
   );

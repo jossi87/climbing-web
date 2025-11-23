@@ -1,15 +1,11 @@
-import { useAuth0 } from "@auth0/auth0-react";
-import React from "react";
-import {
-  InsufficientPrivileges,
-  Loading,
-  NotLoggedIn,
-} from "../common/widgets/widgets";
-import { useMeta } from "../common/meta";
+import { useAuth0 } from '@auth0/auth0-react';
+import React from 'react';
+import { InsufficientPrivileges, Loading, NotLoggedIn } from '../common/widgets/widgets';
+import { useMeta } from '../common/meta';
 
 type Props = {
   children: React.ReactNode;
-  level: "logged-in" | "admin" | "super-admin";
+  level: 'logged-in' | 'admin' | 'super-admin';
 };
 
 export const AuthContainer = ({ children, level }: Props) => {
@@ -24,11 +20,11 @@ export const AuthContainer = ({ children, level }: Props) => {
     return <NotLoggedIn />;
   }
 
-  if (level === "admin" && !meta.isAdmin) {
+  if (level === 'admin' && !meta.isAdmin) {
     return <InsufficientPrivileges />;
   }
 
-  if (level === "super-admin" && !meta.isSuperAdmin) {
+  if (level === 'super-admin' && !meta.isSuperAdmin) {
     return <InsufficientPrivileges />;
   }
 

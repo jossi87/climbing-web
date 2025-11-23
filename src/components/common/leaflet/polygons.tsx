@@ -1,12 +1,12 @@
-import React from "react";
-import { CircleMarker, Polygon, Tooltip } from "react-leaflet";
-import { useNavigate } from "react-router";
-import { components } from "../../../@types/buldreinfo/swagger";
+import React from 'react';
+import { CircleMarker, Polygon, Tooltip } from 'react-leaflet';
+import { useNavigate } from 'react-router';
+import { components } from '../../../@types/buldreinfo/swagger';
 
 type Props = {
   opacity: number;
   outlines: {
-    outline: components["schemas"]["Coordinates"][];
+    outline: components['schemas']['Coordinates'][];
     background?: boolean;
     url?: string;
     label?: string;
@@ -15,27 +15,22 @@ type Props = {
   showElevation?: boolean;
 };
 
-export default function Polygons({
-  opacity,
-  outlines,
-  addEventHandlers,
-  showElevation,
-}: Props) {
+export default function Polygons({ opacity, outlines, addEventHandlers, showElevation }: Props) {
   const navigate = useNavigate();
   if (!outlines || outlines.length === 0) {
     return null;
   }
   const polygons = outlines.map((o) => (
     <Polygon
-      key={o.outline.map((c) => c.latitude + "," + c.longitude).join(" -> ")}
+      key={o.outline.map((c) => c.latitude + ',' + c.longitude).join(' -> ')}
       positions={o.outline.map((c) => [c.latitude, c.longitude])}
-      color={o.background ? "red" : "#3388ff"}
+      color={o.background ? 'red' : '#3388ff'}
       weight={o.background ? 1 : 3}
       eventHandlers={{
         click: () => {
           if (addEventHandlers) {
-            if (o.url?.startsWith("https")) {
-              const win = window.open(o.url, "_blank");
+            if (o.url?.startsWith('https')) {
+              const win = window.open(o.url, '_blank');
               win?.focus();
             } else {
               navigate(o.url);
@@ -45,11 +40,7 @@ export default function Polygons({
       }}
     >
       {o.label && (
-        <Tooltip
-          opacity={opacity}
-          permanent
-          className="buldreinfo-tooltip-compact"
-        >
+        <Tooltip opacity={opacity} permanent className='buldreinfo-tooltip-compact'>
           {o.label}
         </Tooltip>
       )}
@@ -63,17 +54,9 @@ export default function Polygons({
         o.outline
           .filter((c) => c.elevation > 0)
           .map((c) => (
-            <CircleMarker
-              key={c.id}
-              radius={3}
-              center={[c.latitude, c.longitude]}
-            >
-              <Tooltip
-                opacity={opacity}
-                permanent
-                className="buldreinfo-tooltip-compact"
-              >
-                {Math.round(c.elevation) + "m"}
+            <CircleMarker key={c.id} radius={3} center={[c.latitude, c.longitude]}>
+              <Tooltip opacity={opacity} permanent className='buldreinfo-tooltip-compact'>
+                {Math.round(c.elevation) + 'm'}
               </Tooltip>
             </CircleMarker>
           )),

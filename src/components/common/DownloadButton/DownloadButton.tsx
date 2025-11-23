@@ -1,6 +1,6 @@
-import { useCallback, useState } from "react";
-import { Icon, Label, LabelProps, SemanticICONS } from "semantic-ui-react";
-import { getUrl, downloadFile, useAccessToken } from "../../../api";
+import { useCallback, useState } from 'react';
+import { Icon, Label, LabelProps, SemanticICONS } from 'semantic-ui-react';
+import { getUrl, downloadFile, useAccessToken } from '../../../api';
 
 type Props = {
   href: string;
@@ -8,16 +8,12 @@ type Props = {
   children: string;
 };
 
-export const DownloadButton = ({
-  href,
-  icon = "file pdf outline",
-  children,
-}: Props) => {
+export const DownloadButton = ({ href, icon = 'file pdf outline', children }: Props) => {
   const accessToken = useAccessToken();
   const [loading, setLoading] = useState(false);
-  const onClick: LabelProps["onClick"] = useCallback(
+  const onClick: LabelProps['onClick'] = useCallback(
     (e) => {
-      const url = e.currentTarget.getAttribute("href");
+      const url = e.currentTarget.getAttribute('href');
       if (!url) {
         return;
       }
@@ -35,12 +31,12 @@ export const DownloadButton = ({
     <Label
       href={getUrl(href)}
       onClick={onClick}
-      rel="noreferrer noopener"
-      target="_blank"
+      rel='noreferrer noopener'
+      target='_blank'
       image
       basic
     >
-      <Icon name={loading ? "spinner" : icon} loading={loading} />
+      <Icon name={loading ? 'spinner' : icon} loading={loading} />
       {children}
     </Label>
   );

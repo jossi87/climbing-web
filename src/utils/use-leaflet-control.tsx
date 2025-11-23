@@ -1,17 +1,17 @@
-import { useState, forwardRef, useEffect, useCallback } from "react";
-import { createPortal } from "react-dom";
-import { createElementHook, createControlHook } from "@react-leaflet/core";
-import { Control, DomUtil, DomEvent } from "leaflet";
+import { useState, forwardRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
+import { createElementHook, createControlHook } from '@react-leaflet/core';
+import { Control, DomUtil, DomEvent } from 'leaflet';
 
 const DumbControl = Control.extend({
   options: {
-    className: "",
-    onOff: "",
+    className: '',
+    onOff: '',
     handleOff: () => undefined,
   },
 
   onAdd(/* map */) {
-    const _controlDiv = DomUtil.create("div", this.options.className);
+    const _controlDiv = DomUtil.create('div', this.options.className);
     DomEvent.disableClickPropagation(_controlDiv);
     return _controlDiv;
   },

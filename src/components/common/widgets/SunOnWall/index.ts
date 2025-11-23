@@ -1,1 +1,1 @@
-export { SunOnWall } from "./SunOnWall";
+export { SunOnWall } from './SunOnWall';

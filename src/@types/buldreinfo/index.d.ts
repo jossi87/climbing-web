@@ -1,4 +1,4 @@
-import { operations } from "./swagger";
+import { operations } from './swagger';
 
 interface Window {
   // Allow us to put arbitrary objects in window
@@ -17,8 +17,8 @@ type Mutable<T> = {
 
 type Success<
   T extends keyof operations,
-  content = "application/json",
-> = operations[T]["responses"]["200"]["content"][content];
+  content = 'application/json',
+> = operations[T]['responses']['200']['content'][content];
 
 type WithoutFirstParameter<F> = F extends (x: any, ...args: infer P) => infer R
   ? Parameters<(...args: P) => R>

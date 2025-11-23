@@ -1,20 +1,15 @@
-import { getImageUrl } from "../../api";
-import { SvgRoute } from "./SvgRoute";
-import { Descent, Rappel } from "../../utils/svg-utils";
-import { components } from "../../@types/buldreinfo/swagger";
-import { CSSProperties } from "react";
-import {
-  calculateMediaRegion,
-  isPathVisible,
-  scalePath,
-  scalePoint,
-} from "../../utils/svg-scaler";
-import "./SvgViewer.css";
+import { getImageUrl } from '../../api';
+import { SvgRoute } from './SvgRoute';
+import { Descent, Rappel } from '../../utils/svg-utils';
+import { components } from '../../@types/buldreinfo/swagger';
+import { CSSProperties } from 'react';
+import { calculateMediaRegion, isPathVisible, scalePath, scalePoint } from '../../utils/svg-scaler';
+import './SvgViewer.css';
 
 type SvgProps = {
   style?: CSSProperties;
   close: () => void;
-  m: components["schemas"]["Media"];
+  m: components['schemas']['Media'];
   pitch: number;
   thumb: boolean;
   optProblemId: number;
@@ -43,9 +38,7 @@ export const SvgViewer = ({
     m.svgs?.length > 0 &&
     m.svgs.some((x) => x.problemId == optProblemId && x.pitch === pitch)
   ) {
-    const pitchSvg = m.svgs.filter(
-      (x) => x.problemId == optProblemId && x.pitch === pitch,
-    )[0];
+    const pitchSvg = m.svgs.filter((x) => x.problemId == optProblemId && x.pitch === pitch)[0];
     mediaRegion = calculateMediaRegion(pitchSvg.path, m.width, m.height);
     svgs = m.svgs
       .filter((x) => x === pitchSvg || isPathVisible(x.path, mediaRegion))
@@ -61,10 +54,10 @@ export const SvgViewer = ({
       .filter((svg) => !svg.path || isPathVisible(svg.path, mediaRegion))
       .map((svg) => {
         switch (svg.t) {
-          case "PATH": {
+          case 'PATH': {
             return (
               <Descent
-                key={[m.id, thumb, svg.path].join("x")}
+                key={[m.id, thumb, svg.path].join('x')}
                 path={scalePath(svg.path, mediaRegion)}
                 whiteNotBlack={true}
                 scale={scale}
@@ -72,33 +65,33 @@ export const SvgViewer = ({
               />
             );
           }
-          case "RAPPEL_BOLTED": {
+          case 'RAPPEL_BOLTED': {
             const { x, y } = scalePoint(svg.rappelX, svg.rappelY, mediaRegion);
             return (
               <Rappel
-                key={[m.id, thumb, svg.rappelX, svg.rappelY].join("x")}
+                key={[m.id, thumb, svg.rappelX, svg.rappelY].join('x')}
                 x={x}
                 y={y}
                 bolted={true}
                 scale={scale}
                 thumb={thumb}
-                backgroundColor="black"
-                color="white"
+                backgroundColor='black'
+                color='white'
               />
             );
           }
-          case "RAPPEL_NOT_BOLTED": {
+          case 'RAPPEL_NOT_BOLTED': {
             const { x, y } = scalePoint(svg.rappelX, svg.rappelY, mediaRegion);
             return (
               <Rappel
-                key={[m.id, thumb, svg.rappelX, svg.rappelY].join("x")}
+                key={[m.id, thumb, svg.rappelX, svg.rappelY].join('x')}
                 x={x}
                 y={y}
                 bolted={false}
                 scale={scale}
                 thumb={thumb}
-                backgroundColor="black"
-                color="white"
+                backgroundColor='black'
+                color='white'
               />
             );
           }
@@ -125,7 +118,7 @@ export const SvgViewer = ({
       })
       .map((svg) => (
         <SvgRoute
-          key={[m.id, svg.problemId, svg.pitch, thumb].join("-")}
+          key={[m.id, svg.problemId, svg.pitch, thumb].join('-')}
           thumbnail={thumb}
           showText={showText}
           scale={scale}
@@ -142,18 +135,13 @@ export const SvgViewer = ({
 
   return (
     <>
-      <canvas
-        className="buldreinfo-svg-canvas"
-        width={imgW}
-        height={imgH}
-        style={style}
-      />
+      <canvas className='buldreinfo-svg-canvas' width={imgW} height={imgH} style={style} />
       <svg
-        xmlns="http://www.w3.org/2000/svg"
-        overflow="visible"
-        className="buldreinfo-svg"
-        viewBox={"0 0 " + imgW + " " + imgH}
-        preserveAspectRatio="xMidYMid meet"
+        xmlns='http://www.w3.org/2000/svg'
+        overflow='visible'
+        className='buldreinfo-svg'
+        viewBox={'0 0 ' + imgW + ' ' + imgH}
+        preserveAspectRatio='xMidYMid meet'
         onClick={(e: React.MouseEvent<SVGSVGElement>) => {
           if (e.target instanceof SVGSVGElement && close) {
             close();
@@ -161,17 +149,9 @@ export const SvgViewer = ({
         }}
         onMouseLeave={() => setProblemIdHovered && setProblemIdHovered(null)}
       >
-        <image
-          xlinkHref={getImageUrl(m.id, m.crc32, { mediaRegion })}
-          width="100%"
-          height="100%"
-        />
+        <image xlinkHref={getImageUrl(m.id, m.crc32, { mediaRegion })} width='100%' height='100%' />
         {mediaSvgs}
-        {routes && (
-          <g className={thumb ? undefined : "buldreinfo-svg-sibling-fade"}>
-            {routes}
-          </g>
-        )}
+        {routes && <g className={thumb ? undefined : 'buldreinfo-svg-sibling-fade'}>{routes}</g>}
       </svg>
     </>
   );

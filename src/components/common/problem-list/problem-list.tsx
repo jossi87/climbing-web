@@ -1,4 +1,4 @@
-import React, { ComponentProps, useMemo, useState } from "react";
+import React, { ComponentProps, useMemo, useState } from 'react';
 import {
   Step,
   Dropdown,
@@ -9,124 +9,116 @@ import {
   Message,
   MessageHeader,
   Icon,
-} from "semantic-ui-react";
-import AccordionContainer from "./accordion-container";
-import { GradeSelect } from "../FilterForm/GradeSelect";
-import { type Row } from "./types";
-import { GroupOption, OrderOption, State, useProblemListState } from "./state";
-import "./ProblemList.css";
+} from 'semantic-ui-react';
+import AccordionContainer from './accordion-container';
+import { GradeSelect } from '../FilterForm/GradeSelect';
+import { type Row } from './types';
+import { GroupOption, OrderOption, State, useProblemListState } from './state';
+import './ProblemList.css';
 
 type Props = {
   rows: Row[];
-  mode: "sector" | "user";
+  mode: 'sector' | 'user';
   defaultOrder: OrderOption;
   storageKey: string;
 };
 
-const ORDER_BY_OPTIONS: Record<
-  "sector" | "user",
-  (DropdownItemProps & { value: OrderOption })[]
-> = {
-  sector: [
-    {
-      key: "name",
-      text: "name",
-      value: "name",
-    },
-    {
-      key: "ascents",
-      text: "ascents",
-      value: "ascents",
-    },
-    {
-      key: "first-ascent",
-      text: "first ascent",
-      value: "first-ascent",
-    },
-    {
-      key: "grade-asc",
-      text: "grade (easy -> hard)",
-      value: "grade-asc",
-    },
-    {
-      key: "grade-desc",
-      text: "grade (hard -> easy)",
-      value: "grade-desc",
-    },
-    {
-      key: "number",
-      text: "number",
-      value: "number",
-    },
-    {
-      key: "rating",
-      text: "rating",
-      value: "rating",
-    },
-  ],
-  user: [
-    {
-      key: "name",
-      text: "name",
-      value: "name",
-    },
-    {
-      key: "date",
-      text: "date",
-      value: "date",
-    },
-    {
-      key: "grade-asc",
-      text: "grade (easy -> hard)",
-      value: "grade-asc",
-    },
-    {
-      key: "grade-desc",
-      text: "grade (hard -> easy)",
-      value: "grade-desc",
-    },
-    {
-      key: "rating",
-      text: "rating",
-      value: "rating",
-    },
-  ],
-} as const;
+const ORDER_BY_OPTIONS: Record<'sector' | 'user', (DropdownItemProps & { value: OrderOption })[]> =
+  {
+    sector: [
+      {
+        key: 'name',
+        text: 'name',
+        value: 'name',
+      },
+      {
+        key: 'ascents',
+        text: 'ascents',
+        value: 'ascents',
+      },
+      {
+        key: 'first-ascent',
+        text: 'first ascent',
+        value: 'first-ascent',
+      },
+      {
+        key: 'grade-asc',
+        text: 'grade (easy -> hard)',
+        value: 'grade-asc',
+      },
+      {
+        key: 'grade-desc',
+        text: 'grade (hard -> easy)',
+        value: 'grade-desc',
+      },
+      {
+        key: 'number',
+        text: 'number',
+        value: 'number',
+      },
+      {
+        key: 'rating',
+        text: 'rating',
+        value: 'rating',
+      },
+    ],
+    user: [
+      {
+        key: 'name',
+        text: 'name',
+        value: 'name',
+      },
+      {
+        key: 'date',
+        text: 'date',
+        value: 'date',
+      },
+      {
+        key: 'grade-asc',
+        text: 'grade (easy -> hard)',
+        value: 'grade-asc',
+      },
+      {
+        key: 'grade-desc',
+        text: 'grade (hard -> easy)',
+        value: 'grade-desc',
+      },
+      {
+        key: 'rating',
+        text: 'rating',
+        value: 'rating',
+      },
+    ],
+  } as const;
 
 const GROUP_BY: Record<
   GroupOption,
   (
     partialState: Pick<
       State,
-      | "uniqueAreas"
-      | "uniqueRocks"
-      | "uniqueSectors"
-      | "uniqueTypes"
-      | "filtered"
+      'uniqueAreas' | 'uniqueRocks' | 'uniqueSectors' | 'uniqueTypes' | 'filtered'
     >,
-  ) => ComponentProps<typeof AccordionContainer>["accordionRows"]
+  ) => ComponentProps<typeof AccordionContainer>['accordionRows']
 > = {
   area: ({ uniqueAreas, filtered }) =>
     uniqueAreas.map((areaName) => {
-      const list = filtered
-        .filter((p) => p.areaName == areaName)
-        .map((p) => p.element);
+      const list = filtered.filter((p) => p.areaName == areaName).map((p) => p.element);
       return {
-        label: `${areaName || "<Without area>"} (${list.length})`,
+        label: `${areaName || '<Without area>'} (${list.length})`,
         length: list.length,
         content: <List selection>{list}</List>,
       };
     }),
 
   none: () => {
-    throw new Error("This should not have been called");
+    throw new Error('This should not have been called');
   },
 
   rock: ({ uniqueRocks, filtered }) =>
     uniqueRocks.map((rock) => {
       const list = filtered.filter((p) => p.rock == rock).map((p) => p.element);
       return {
-        label: `${rock || "<Without rock>"} (${list.length})`,
+        label: `${rock || '<Without rock>'} (${list.length})`,
         length: list.length,
         content: <List selection>{list}</List>,
       };
@@ -134,23 +126,19 @@ const GROUP_BY: Record<
 
   sector: ({ uniqueSectors, filtered }) =>
     uniqueSectors.map((sectorName) => {
-      const list = filtered
-        .filter((p) => p.sectorName === sectorName)
-        .map((p) => p.element);
+      const list = filtered.filter((p) => p.sectorName === sectorName).map((p) => p.element);
       return {
         length: list.length,
-        label: `${sectorName || "<No sector>"} (${list.length})`,
+        label: `${sectorName || '<No sector>'} (${list.length})`,
         content: <List selection>{list}</List>,
       };
     }),
 
   type: ({ uniqueTypes, filtered }) =>
     uniqueTypes.map((subType) => {
-      const list = filtered
-        .filter((p) => p.subType == subType)
-        .map((p) => p.element);
+      const list = filtered.filter((p) => p.subType == subType).map((p) => p.element);
       return {
-        label: `${subType || "<No type>"} (${list.length})`,
+        label: `${subType || '<No type>'} (${list.length})`,
         length: list.length,
         content: <List selection>{list}</List>,
       };
@@ -162,55 +150,47 @@ const GROUP_BY_OPTIONS: Record<
   DropdownItemProps & {
     value: GroupOption;
     isApplicable: (
-      state: Pick<
-        State,
-        "uniqueAreas" | "uniqueRocks" | "uniqueSectors" | "uniqueTypes"
-      >,
+      state: Pick<State, 'uniqueAreas' | 'uniqueRocks' | 'uniqueSectors' | 'uniqueTypes'>,
     ) => boolean;
   }
 > = {
   area: {
-    key: "area",
-    text: "area",
-    value: "area",
+    key: 'area',
+    text: 'area',
+    value: 'area',
     isApplicable: ({ uniqueAreas }) => uniqueAreas.length > 1,
   },
 
   none: {
-    key: "none",
-    text: "none",
-    value: "none",
+    key: 'none',
+    text: 'none',
+    value: 'none',
     isApplicable: () => true,
   },
 
   rock: {
-    key: "rock",
-    text: "rock",
-    value: "rock",
+    key: 'rock',
+    text: 'rock',
+    value: 'rock',
     isApplicable: ({ uniqueRocks }) => uniqueRocks.length > 1,
   },
 
   sector: {
-    key: "sector",
-    text: "sector",
-    value: "sector",
+    key: 'sector',
+    text: 'sector',
+    value: 'sector',
     isApplicable: ({ uniqueSectors }) => uniqueSectors.length > 1,
   },
 
   type: {
-    key: "type",
-    text: "type",
-    value: "type",
+    key: 'type',
+    text: 'type',
+    value: 'type',
     isApplicable: ({ uniqueTypes }) => uniqueTypes.length > 1,
   },
 };
 
-export const ProblemList = ({
-  rows: allRows,
-  mode,
-  defaultOrder,
-  storageKey,
-}: Props) => {
+export const ProblemList = ({ rows: allRows, mode, defaultOrder, storageKey }: Props) => {
   const [showFilter, setFilterShowing] = useState(false);
 
   const [allTypes, lookup] = useMemo(() => {
@@ -261,13 +241,12 @@ export const ProblemList = ({
       return (
         <Message>
           <MessageHeader>No visible data</MessageHeader>
-          There are active filters which are hiding {hidden}{" "}
-          {hidden > 1 ? "results" : "result"}.
+          There are active filters which are hiding {hidden} {hidden > 1 ? 'results' : 'result'}.
         </Message>
       );
     }
 
-    if (groupBy && groupBy !== "none") {
+    if (groupBy && groupBy !== 'none') {
       const mapper = GROUP_BY[groupBy];
       return (
         <AccordionContainer
@@ -283,7 +262,7 @@ export const ProblemList = ({
     }
 
     return (
-      <Segment attached="bottom">
+      <Segment attached='bottom'>
         <List selection>{filtered.map(({ element }) => element)}</List>
       </Segment>
     );
@@ -302,13 +281,11 @@ export const ProblemList = ({
 
   return (
     <>
-      <Step.Group attached="top" size="mini" unstackable fluid>
+      <Step.Group attached='top' size='mini' unstackable fluid>
         {groupByOptions.length > 1 ? (
           <Step
             link
-            onClick={(e) =>
-              e.currentTarget.querySelector<HTMLElement>(".dropdown")?.focus()
-            }
+            onClick={(e) => e.currentTarget.querySelector<HTMLElement>('.dropdown')?.focus()}
           >
             <Step.Content>
               <Step.Title>Group by</Step.Title>
@@ -319,8 +296,8 @@ export const ProblemList = ({
                   value={groupBy}
                   onChange={(e, { value }) =>
                     dispatch({
-                      action: "group-by",
-                      groupBy: (value as GroupOption) ?? "none",
+                      action: 'group-by',
+                      groupBy: (value as GroupOption) ?? 'none',
                     })
                   }
                 />
@@ -330,9 +307,7 @@ export const ProblemList = ({
         ) : null}
         <Step
           link
-          onClick={(e) =>
-            e.currentTarget.querySelector<HTMLElement>(".dropdown")?.focus()
-          }
+          onClick={(e) => e.currentTarget.querySelector<HTMLElement>('.dropdown')?.focus()}
         >
           <Step.Content>
             <Step.Title>Order by</Step.Title>
@@ -343,8 +318,8 @@ export const ProblemList = ({
                 value={order}
                 onChange={(e, { value }) =>
                   dispatch({
-                    action: "order-by",
-                    order: (value as OrderOption) ?? "grade-desc",
+                    action: 'order-by',
+                    order: (value as OrderOption) ?? 'grade-desc',
                   })
                 }
               />
@@ -355,30 +330,25 @@ export const ProblemList = ({
           <Step.Content>
             <Step.Title>Filter</Step.Title>
             <Step.Description>
-              <Icon name="filter" />
+              <Icon name='filter' />
             </Step.Description>
           </Step.Content>
         </Step>
       </Step.Group>
       {showFilter && (
         <Segment attached>
-          <div className="problem-list-filter-container">
+          <div className='problem-list-filter-container'>
             <strong>Grades</strong>
-            <GradeSelect
-              low={gradeLow}
-              high={gradeHigh}
-              dispatch={dispatch}
-              style={{ flex: 1 }}
-            />
+            <GradeSelect low={gradeLow} high={gradeHigh} dispatch={dispatch} style={{ flex: 1 }} />
             {allTypes.length > 1 ? (
               <>
                 <strong>Types</strong>
                 <div
                   style={{
-                    display: "flex",
-                    flexDirection: "row",
+                    display: 'flex',
+                    flexDirection: 'row',
                     gap: 8,
-                    flexWrap: "wrap",
+                    flexWrap: 'wrap',
                   }}
                 >
                   {allTypes.map((type) => (
@@ -388,7 +358,7 @@ export const ProblemList = ({
                       checked={types[type]}
                       onChange={(_, { checked }) => {
                         dispatch({
-                          action: "type",
+                          action: 'type',
                           type,
                           enabled: !!checked,
                         });
@@ -399,23 +369,23 @@ export const ProblemList = ({
               </>
             ) : null}
 
-            {mode === "sector" && containsTicked && (
+            {mode === 'sector' && containsTicked && (
               <>
                 <strong>Hide ticked</strong>
                 <Checkbox
                   toggle
                   checked={hideTicked}
-                  onChange={() => dispatch({ action: "hide-ticked" })}
+                  onChange={() => dispatch({ action: 'hide-ticked' })}
                 />
               </>
             )}
-            {mode === "user" && containsFa && (
+            {mode === 'user' && containsFa && (
               <>
                 <strong>Only show FA</strong>
                 <Checkbox
                   toggle
                   checked={onlyFa}
-                  onChange={() => dispatch({ action: "only-fa" })}
+                  onChange={() => dispatch({ action: 'only-fa' })}
                 />
               </>
             )}

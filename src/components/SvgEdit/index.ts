@@ -1,1 +1,1 @@
-export { default } from "./SvgEdit";
+export { default } from './SvgEdit';

@@ -1,14 +1,14 @@
-import React, { useState, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Button, List, Icon, Segment } from "semantic-ui-react";
-import Leaflet from "./common/leaflet/leaflet";
-import ChartGradeDistribution from "./common/chart-grade-distribution/chart-grade-distribution";
-import { Loading, LockSymbol, SunOnWall } from "./common/widgets/widgets";
-import { useAreas } from "../api";
-import { useMeta } from "./common/meta";
-import { HeaderButtons } from "./common/HeaderButtons";
-import "./Areas.css";
-import { Markdown } from "./Markdown/Markdown";
+import React, { useState, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Button, List, Icon, Segment } from 'semantic-ui-react';
+import Leaflet from './common/leaflet/leaflet';
+import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
+import { Loading, LockSymbol, SunOnWall } from './common/widgets/widgets';
+import { useAreas } from '../api';
+import { useMeta } from './common/meta';
+import { HeaderButtons } from './common/HeaderButtons';
+import './Areas.css';
+import { Markdown } from './Markdown/Markdown';
 
 const Areas = () => {
   const { data } = useAreas();
@@ -21,7 +21,7 @@ const Areas = () => {
   if (!data) {
     return <Loading />;
   }
-  const typeDescription = meta.isBouldering ? "problems" : "routes";
+  const typeDescription = meta.isBouldering ? 'problems' : 'routes';
   const markers = data
     .filter((a) => a.forDevelopers === showForDevelopers && a.coordinates)
     .map((a) => {
@@ -29,27 +29,24 @@ const Areas = () => {
         id: a.id,
         coordinates: a.coordinates,
         label: a.name,
-        url: "/area/" + a.id,
+        url: '/area/' + a.id,
         html: (
-          <div style={{ minWidth: "300px" }}>
+          <div style={{ minWidth: '300px' }}>
             <Button
-              floated="right"
+              floated='right'
               compact
-              size="mini"
+              size='mini'
               icon
               as={Link}
-              to={"/area/" + a.id}
-              target="_blank"
-              rel="noreferrer noopener"
+              to={'/area/' + a.id}
+              target='_blank'
+              rel='noreferrer noopener'
             >
-              <Icon name="external" />
+              <Icon name='external' />
             </Button>
-            <Link to={"/area/" + a.id}>
-              <b>{a.name}</b>{" "}
-              <LockSymbol
-                lockedAdmin={a.lockedAdmin}
-                lockedSuperadmin={a.lockedSuperadmin}
-              />
+            <Link to={'/area/' + a.id}>
+              <b>{a.name}</b>{' '}
+              <LockSymbol lockedAdmin={a.lockedAdmin} lockedSuperadmin={a.lockedSuperadmin} />
             </Link>
             <i>{`(${a.numSectors} sectors, ${a.numProblems} ${typeDescription})`}</i>
             <br />
@@ -63,7 +60,7 @@ const Areas = () => {
     <div ref={leafletRef}>
       <Leaflet
         autoZoom={true}
-        height="75vh"
+        height='75vh'
         markers={markers}
         defaultCenter={meta.defaultCenter}
         defaultZoom={meta.defaultZoom}
@@ -76,47 +73,41 @@ const Areas = () => {
   return (
     <>
       <title>{`Areas | ${meta?.title}`}</title>
-      <meta name="description" content={`${data.length} areas for climbing.`} />
+      <meta name='description' content={`${data.length} areas for climbing.`} />
       <Segment>
         <HeaderButtons
-          header="Areas"
-          subheader={data.length ? `${data.length} areas` : ""}
-          icon="list"
+          header='Areas'
+          subheader={data.length ? `${data.length} areas` : ''}
+          icon='list'
         >
-          <Button
-            positive={!showForDevelopers}
-            onClick={() => setShowForDevelopers(false)}
-          >
+          <Button positive={!showForDevelopers} onClick={() => setShowForDevelopers(false)}>
             Developed areas
           </Button>
-          <Button
-            positive={showForDevelopers}
-            onClick={() => setShowForDevelopers(true)}
-          >
+          <Button positive={showForDevelopers} onClick={() => setShowForDevelopers(true)}>
             Areas for developers
           </Button>
           {meta.isAdmin && (
-            <Button animated="fade" as={Link} to={`/area/edit/-1`}>
+            <Button animated='fade' as={Link} to={`/area/edit/-1`}>
               <Button.Content hidden>Add</Button.Content>
               <Button.Content visible>
-                <Icon name="plus" />
+                <Icon name='plus' />
               </Button.Content>
             </Button>
           )}
         </HeaderButtons>
-        <List celled link horizontal size="small">
+        <List celled link horizontal size='small'>
           {data
             .filter((area) => area.forDevelopers === showForDevelopers)
             .map((area) => (
               <React.Fragment key={area.id}>
                 <List.Item
-                  as="a"
+                  as='a'
                   onClick={() => {
                     if (area.coordinates) {
                       setFlyToId(area.id);
-                      leafletRef?.current?.scrollIntoView({ block: "center" });
+                      leafletRef?.current?.scrollIntoView({ block: 'center' });
                     } else {
-                      navigate("/area/" + area.id);
+                      navigate('/area/' + area.id);
                     }
                   }}
                 >
@@ -137,15 +128,12 @@ const Areas = () => {
               <List.Item key={area.id}>
                 <List.Content as={Link} to={`/area/${area.id}`}>
                   <List.Header>
-                    {area.name}{" "}
+                    {area.name}{' '}
                     <LockSymbol
                       lockedAdmin={area.lockedAdmin}
                       lockedSuperadmin={area.lockedSuperadmin}
                     />
-                    <SunOnWall
-                      sunFromHour={area.sunFromHour}
-                      sunToHour={area.sunToHour}
-                    />
+                    <SunOnWall sunFromHour={area.sunFromHour} sunToHour={area.sunToHour} />
                   </List.Header>
                   <List.Description>
                     <i>{`${area.numSectors} sectors, ${area.numProblems} ${typeDescription}, ${area.pageViews} page views`}</i>

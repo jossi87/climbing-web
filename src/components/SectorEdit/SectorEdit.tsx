@@ -1,6 +1,6 @@
-import React, { useState, ComponentProps, useCallback } from "react";
-import ImageUpload from "../common/image-upload/image-upload";
-import { Loading } from "../common/widgets/widgets";
+import React, { useState, ComponentProps, useCallback } from 'react';
+import ImageUpload from '../common/image-upload/image-upload';
+import { Loading } from '../common/widgets/widgets';
 import {
   Checkbox,
   Form,
@@ -12,38 +12,32 @@ import {
   Accordion,
   Icon,
   Message,
-} from "semantic-ui-react";
-import { useMeta } from "../common/meta";
-import {
-  postSector,
-  useAccessToken,
-  useArea,
-  useElevation,
-  useSector,
-} from "../../api";
-import Leaflet from "../common/leaflet/leaflet";
-import { useNavigate, useParams } from "react-router-dom";
-import { VisibilitySelectorField } from "../common/VisibilitySelector";
-import { components } from "../../@types/buldreinfo/swagger";
-import { ProblemOrder } from "./ProblemOrder";
-import { PolylineEditor } from "./PolylineEditor";
-import { ZoomLogic } from "./ZoomLogic";
-import { PolylineMarkers } from "./PolylineMarkers";
-import { captureMessage } from "@sentry/react";
-import { hours } from "../../utils/hours";
-import ExternalLinks from "../common/external-links/external-links";
+} from 'semantic-ui-react';
+import { useMeta } from '../common/meta';
+import { postSector, useAccessToken, useArea, useElevation, useSector } from '../../api';
+import Leaflet from '../common/leaflet/leaflet';
+import { useNavigate, useParams } from 'react-router-dom';
+import { VisibilitySelectorField } from '../common/VisibilitySelector';
+import { components } from '../../@types/buldreinfo/swagger';
+import { ProblemOrder } from './ProblemOrder';
+import { PolylineEditor } from './PolylineEditor';
+import { ZoomLogic } from './ZoomLogic';
+import { PolylineMarkers } from './PolylineMarkers';
+import { captureMessage } from '@sentry/react';
+import { hours } from '../../utils/hours';
+import ExternalLinks from '../common/external-links/external-links';
 
-type Area = components["schemas"]["Area"];
-type Sector = components["schemas"]["Sector"];
+type Area = components['schemas']['Area'];
+type Sector = components['schemas']['Sector'];
 
 const useIds = (): { areaId: number; sectorId: number } => {
   const { sectorId, areaId } = useParams();
   if (!sectorId) {
-    throw new Error("Missing sectorId parameter");
+    throw new Error('Missing sectorId parameter');
   }
 
   if (!areaId) {
-    throw new Error("Missing areaId parameter");
+    throw new Error('Missing areaId parameter');
   }
 
   return { sectorId: +sectorId, areaId: +areaId };
@@ -57,12 +51,12 @@ export const SectorEditLoader = () => {
   if (error) {
     return (
       <Message
-        size="huge"
-        style={{ backgroundColor: "#FFF" }}
-        icon="meh"
-        header="404"
+        size='huge'
+        style={{ backgroundColor: '#FFF' }}
+        icon='meh'
+        header='404'
         content={
-          "Cannot find the specified sector because it does not exist or you do not have sufficient permissions."
+          'Cannot find the specified sector because it does not exist or you do not have sufficient permissions.'
         }
       />
     );
@@ -79,10 +73,10 @@ export const SectorEditLoader = () => {
       id: -1,
       lockedAdmin: area.lockedAdmin,
       lockedSuperadmin: area.lockedSuperadmin,
-      name: "",
-      comment: "",
-      accessInfo: "",
-      accessClosed: "",
+      name: '',
+      comment: '',
+      accessInfo: '',
+      accessClosed: '',
       parking: undefined,
       newMedia: [],
       problemOrder: [],
@@ -103,15 +97,13 @@ export const SectorEdit = ({ sector, area }: Props) => {
   const meta = useMeta();
   const accessToken = useAccessToken();
   const { areaId, sectorId } = useIds();
-  const [leafletMode, setLeafletMode] = useState("PARKING");
+  const [leafletMode, setLeafletMode] = useState('PARKING');
   const { elevation, setLocation } = useElevation();
 
   const [data, setData] = useState<Sector>(sector);
 
   const [showProblemOrder, setShowProblemOrder] = useState(false);
-  const [sectorMarkers, setSectorMarkers] = useState<
-    ComponentProps<typeof Leaflet>["markers"]
-  >([]);
+  const [sectorMarkers, setSectorMarkers] = useState<ComponentProps<typeof Leaflet>['markers']>([]);
 
   const [saving, setSaving] = useState(false);
 
@@ -141,9 +133,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
       const wallDirectionManual =
         compassDirectionId == 0
           ? undefined
-          : meta.compassDirections.filter(
-              (cd) => cd.id === compassDirectionId,
-            )[0];
+          : meta.compassDirections.filter((cd) => cd.id === compassDirectionId)[0];
       setData((prevState) => ({ ...prevState, wallDirectionManual }));
     },
     [meta.compassDirections],
@@ -153,7 +143,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
     ({
       lockedAdmin,
       lockedSuperadmin,
-    }: Required<Pick<Sector, "lockedAdmin" | "lockedSuperadmin">>) => {
+    }: Required<Pick<Sector, 'lockedAdmin' | 'lockedSuperadmin'>>) => {
       setData((prevState) => ({
         ...prevState,
         lockedAdmin,
@@ -184,20 +174,20 @@ export const SectorEdit = ({ sector, area }: Props) => {
   }, []);
 
   const onExternalLinksUpdated = useCallback(
-    (externalLinks: components["schemas"]["ExternalLink"][]) => {
+    (externalLinks: components['schemas']['ExternalLink'][]) => {
       setData((prevState) => ({ ...prevState, externalLinks: externalLinks }));
     },
     [],
   );
 
-  const onNewMediaChanged = useCallback((newMedia: Sector["newMedia"]) => {
+  const onNewMediaChanged = useCallback((newMedia: Sector['newMedia']) => {
     setData((prevState) => ({ ...prevState, newMedia }));
   }, []);
 
   const save = (event: React.UIEvent) => {
     event.preventDefault();
     const trash = data.trash ? true : false;
-    if (!trash || confirm("Are you sure you want to move sector to trash?")) {
+    if (!trash || confirm('Are you sure you want to move sector to trash?')) {
       setSaving(true);
       postSector(
         accessToken,
@@ -206,10 +196,10 @@ export const SectorEdit = ({ sector, area }: Props) => {
         !!data.trash,
         !!data.lockedAdmin,
         !!data.lockedSuperadmin,
-        data.name ?? "",
-        data.comment ?? "",
-        data.accessInfo ?? "",
-        data.accessClosed ?? "",
+        data.name ?? '',
+        data.comment ?? '',
+        data.accessInfo ?? '',
+        data.accessClosed ?? '',
         data.sunFromHour,
         data.sunToHour,
         data.parking,
@@ -223,7 +213,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
       )
         .then(async (res) => {
           if (!res.destination) {
-            captureMessage("Missing res.destination");
+            captureMessage('Missing res.destination');
             navigate(-1);
           } else {
             navigate(res.destination);
@@ -235,10 +225,8 @@ export const SectorEdit = ({ sector, area }: Props) => {
     }
   };
 
-  const onMapMouseClick: ComponentProps<typeof Leaflet>["onMouseClick"] = (
-    event,
-  ) => {
-    if (leafletMode == "PARKING") {
+  const onMapMouseClick: ComponentProps<typeof Leaflet>['onMouseClick'] = (event) => {
+    if (leafletMode == 'PARKING') {
       setData((prevState) => ({
         ...prevState,
         parking: {
@@ -246,21 +234,21 @@ export const SectorEdit = ({ sector, area }: Props) => {
           longitude: event.latlng.lng,
         },
       }));
-    } else if (leafletMode == "POLYGON") {
+    } else if (leafletMode == 'POLYGON') {
       const outline = data.outline || [];
       outline.push({
         latitude: event.latlng.lat,
         longitude: event.latlng.lng,
       });
       setData((prevState) => ({ ...prevState, outline }));
-    } else if (leafletMode == "APPROACH") {
+    } else if (leafletMode == 'APPROACH') {
       const coordinates = data.approach?.coordinates || [];
       coordinates.push({
         latitude: event.latlng.lat,
         longitude: event.latlng.lng,
       });
       setData((prevState) => ({ ...prevState, approach: { coordinates } }));
-    } else if (leafletMode == "DESCENT") {
+    } else if (leafletMode == 'DESCENT') {
       const coordinates = data.descent?.coordinates || [];
       coordinates.push({
         latitude: event.latlng.lat,
@@ -270,11 +258,9 @@ export const SectorEdit = ({ sector, area }: Props) => {
     }
   };
 
-  const onMouseMove: NonNullable<
-    ComponentProps<typeof Leaflet>["onMouseMove"]
-  > = useCallback(
+  const onMouseMove: NonNullable<ComponentProps<typeof Leaflet>['onMouseMove']> = useCallback(
     (event) => {
-      if (leafletMode == "POLYGON") {
+      if (leafletMode == 'POLYGON') {
         setLocation(event.latlng);
       }
     },
@@ -282,19 +268,19 @@ export const SectorEdit = ({ sector, area }: Props) => {
   );
 
   function clearDrawing() {
-    if (leafletMode == "PARKING") {
+    if (leafletMode == 'PARKING') {
       setData((prevState) => ({ ...prevState, parking: undefined }));
-    } else if (leafletMode == "POLYGON") {
+    } else if (leafletMode == 'POLYGON') {
       setData((prevState) => ({ ...prevState, outline: undefined }));
-    } else if (leafletMode == "APPROACH") {
+    } else if (leafletMode == 'APPROACH') {
       setData((prevState) => ({ ...prevState, approach: undefined }));
-    } else if (leafletMode == "DESCENT") {
+    } else if (leafletMode == 'DESCENT') {
       setData((prevState) => ({ ...prevState, descent: undefined }));
     }
   }
 
   const onLatChanged: OnChange = useCallback((_, { value }) => {
-    let lat = parseFloat(value.replace(",", "."));
+    let lat = parseFloat(value.replace(',', '.'));
     if (isNaN(lat)) {
       lat = 0;
     }
@@ -309,7 +295,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
   }, []);
 
   const onLngChanged: OnChange = useCallback((_, { value }) => {
-    let lng = parseFloat(value.replace(",", "."));
+    let lng = parseFloat(value.replace(',', '.'));
     if (isNaN(lng)) {
       lng = 0;
     }
@@ -323,8 +309,8 @@ export const SectorEdit = ({ sector, area }: Props) => {
     }));
   }, []);
 
-  const outlines: ComponentProps<typeof Leaflet>["outlines"] = [];
-  const slopes: ComponentProps<typeof Leaflet>["slopes"] = [];
+  const outlines: ComponentProps<typeof Leaflet>['outlines'] = [];
+  const slopes: ComponentProps<typeof Leaflet>['slopes'] = [];
   area.sectors?.forEach((sector) => {
     if (sector.id != data.id) {
       if (sector.outline?.length) {
@@ -337,14 +323,14 @@ export const SectorEdit = ({ sector, area }: Props) => {
       if (sector.approach?.coordinates?.length) {
         slopes.push({
           slope: sector.approach,
-          backgroundColor: "lime",
+          backgroundColor: 'lime',
           background: true,
         });
       }
       if (sector.descent?.coordinates?.length) {
         slopes.push({
           slope: sector.descent,
-          backgroundColor: "purple",
+          backgroundColor: 'purple',
           background: true,
         });
       }
@@ -357,19 +343,19 @@ export const SectorEdit = ({ sector, area }: Props) => {
   if (data.approach?.coordinates?.length) {
     slopes.push({
       slope: data.approach,
-      backgroundColor: "lime",
+      backgroundColor: 'lime',
       background: false,
     });
   }
   if (data.descent?.coordinates?.length) {
     slopes.push({
       slope: data.descent,
-      backgroundColor: "purple",
+      backgroundColor: 'purple',
       background: false,
     });
   }
 
-  const markers: ComponentProps<typeof Leaflet>["markers"] = [];
+  const markers: ComponentProps<typeof Leaflet>['markers'] = [];
   if (data.parking) {
     markers.push({
       coordinates: data.parking,
@@ -384,30 +370,29 @@ export const SectorEdit = ({ sector, area }: Props) => {
     <>
       <title>{`Edit ${data.name} | ${meta?.title}`}</title>
       <Message
-        size="tiny"
+        size='tiny'
         content={
           <>
-            <Icon name="info" />
-            Contact{" "}
-            <a href="mailto:jostein.oygarden@gmail.com">Jostein Øygarden</a> if
-            you want to move or split sector.
+            <Icon name='info' />
+            Contact <a href='mailto:jostein.oygarden@gmail.com'>Jostein Øygarden</a> if you want to
+            move or split sector.
           </>
         }
       />
       <Form>
         <Segment>
-          <Form.Group widths="equal">
+          <Form.Group widths='equal'>
             <Form.Field
-              label="Sector name"
+              label='Sector name'
               control={Input}
-              placeholder="Enter name"
+              placeholder='Enter name'
               value={data.name}
               onChange={onNameChanged}
-              error={data.name ? false : "Sector name required"}
+              error={data.name ? false : 'Sector name required'}
             />
             {meta.isClimbing && (
               <Form.Field
-                label="Wall direction"
+                label='Wall direction'
                 control={Dropdown}
                 selection
                 value={data.wallDirectionManual?.id || 0}
@@ -418,7 +403,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
                     value: 0,
                     text: data.wallDirectionCalculated
                       ? `${data.wallDirectionCalculated.direction} (calculated from outline)`
-                      : "<calculate from outline>",
+                      : '<calculate from outline>',
                   },
                   ...meta.compassDirections.map((cd) => {
                     return { key: cd.id, value: cd.id, text: cd.direction };
@@ -427,7 +412,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
               />
             )}
             <VisibilitySelectorField
-              label="Visibility"
+              label='Visibility'
               selection
               value={{
                 lockedAdmin: !!data.lockedAdmin,
@@ -451,45 +436,43 @@ export const SectorEdit = ({ sector, area }: Props) => {
             </Form.Field>
           </Form.Group>
           {meta.isClimbing && (
-            <Form.Group widths="equal">
+            <Form.Group widths='equal'>
               <Form.Field
-                label="Sun from hour"
+                label='Sun from hour'
                 control={Dropdown}
                 selection
                 value={data.sunFromHour}
                 onChange={onSunFromHourChanged}
                 options={hours}
                 error={
-                  (!data.sunFromHour && !data.sunToHour) ||
-                  (data.sunFromHour && data.sunToHour)
+                  (!data.sunFromHour && !data.sunToHour) || (data.sunFromHour && data.sunToHour)
                     ? false
-                    : "Sun from and to hour must both be empty or set"
+                    : 'Sun from and to hour must both be empty or set'
                 }
               />
               <Form.Field
-                label="Sun to hour"
+                label='Sun to hour'
                 control={Dropdown}
                 selection
                 value={data.sunToHour}
                 onChange={onSunToHourChanged}
                 options={hours}
                 error={
-                  (!data.sunFromHour && !data.sunToHour) ||
-                  (data.sunFromHour && data.sunToHour)
+                  (!data.sunFromHour && !data.sunToHour) || (data.sunFromHour && data.sunToHour)
                     ? false
-                    : "Sun from and to hour must both be empty or set"
+                    : 'Sun from and to hour must both be empty or set'
                 }
               />
             </Form.Group>
           )}
           <Form.Field
             label={
-              <label htmlFor="description">
+              <label htmlFor='description'>
                 Description (supports&nbsp;
                 <a
-                  href="https://jonschlinkert.github.io/remarkable/demo/"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href='https://jonschlinkert.github.io/remarkable/demo/'
+                  target='_blank'
+                  rel='noopener noreferrer'
                 >
                   markdown
                 </a>
@@ -497,24 +480,24 @@ export const SectorEdit = ({ sector, area }: Props) => {
               </label>
             }
             control={TextArea}
-            placeholder="Enter description"
+            placeholder='Enter description'
             style={{ minHeight: 100 }}
             value={data.comment}
             onChange={onCommentChanged}
           />
           <Form.Field>
             <Input
-              label="Sector closed:"
-              placeholder="Enter closed-reason..."
+              label='Sector closed:'
+              placeholder='Enter closed-reason...'
               value={data.accessClosed}
               onChange={onAccessClosedChanged}
-              icon="attention"
+              icon='attention'
             />
           </Form.Field>
           <Form.Field>
             <Input
-              label="Sector restrictions:"
-              placeholder="Enter specific restrictions..."
+              label='Sector restrictions:'
+              placeholder='Enter specific restrictions...'
               value={data.accessInfo}
               onChange={onAccessInfoChanged}
             />
@@ -529,49 +512,46 @@ export const SectorEdit = ({ sector, area }: Props) => {
         <Segment>
           <Form.Field>
             <label>Upload image(s)</label>
-            <ImageUpload
-              onMediaChanged={onNewMediaChanged}
-              isMultiPitch={false}
-            />
+            <ImageUpload onMediaChanged={onNewMediaChanged} isMultiPitch={false} />
           </Form.Field>
         </Segment>
 
         <Segment>
-          <Form.Group widths="equal">
+          <Form.Group widths='equal'>
             <Form.Field>
-              <Button.Group size="tiny" compact>
+              <Button.Group size='tiny' compact>
                 <Button
-                  positive={leafletMode == "PARKING"}
-                  onClick={() => setLeafletMode("PARKING")}
+                  positive={leafletMode == 'PARKING'}
+                  onClick={() => setLeafletMode('PARKING')}
                 >
                   Parking
                 </Button>
                 <Button
-                  positive={leafletMode == "POLYGON"}
-                  onClick={() => setLeafletMode("POLYGON")}
+                  positive={leafletMode == 'POLYGON'}
+                  onClick={() => setLeafletMode('POLYGON')}
                 >
                   Outline
                 </Button>
                 <Button
-                  positive={leafletMode == "APPROACH"}
-                  onClick={() => setLeafletMode("APPROACH")}
+                  positive={leafletMode == 'APPROACH'}
+                  onClick={() => setLeafletMode('APPROACH')}
                 >
                   Approach
                 </Button>
                 <Button
-                  positive={leafletMode == "DESCENT"}
-                  onClick={() => setLeafletMode("DESCENT")}
+                  positive={leafletMode == 'DESCENT'}
+                  onClick={() => setLeafletMode('DESCENT')}
                 >
                   Descent
                 </Button>
-                <Button color="orange" onClick={clearDrawing}>
+                <Button color='orange' onClick={clearDrawing}>
                   Reset selected
                 </Button>
               </Button.Group>
             </Form.Field>
             <Form.Field>
               <Button
-                size="tiny"
+                size='tiny'
                 compact
                 positive={sectorMarkers != null}
                 onClick={() => {
@@ -580,11 +560,8 @@ export const SectorEdit = ({ sector, area }: Props) => {
                       setSectorMarkers(
                         data.problems
                           ?.filter(
-                            (
-                              p,
-                            ): p is Required<
-                              Pick<typeof p, "coordinates" | "name">
-                            > => !!p.coordinates,
+                            (p): p is Required<Pick<typeof p, 'coordinates' | 'name'>> =>
+                              !!p.coordinates,
                           )
                           .map((p) => ({
                             coordinates: p.coordinates,
@@ -601,7 +578,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
               </Button>
             </Form.Field>
           </Form.Group>
-          <Form.Group widths="equal">
+          <Form.Group widths='equal'>
             <Form.Field>
               <Leaflet
                 markers={markers}
@@ -611,55 +588,47 @@ export const SectorEdit = ({ sector, area }: Props) => {
                 defaultZoom={defaultZoom}
                 onMouseClick={onMapMouseClick}
                 onMouseMove={onMouseMove}
-                height={"300px"}
+                height={'300px'}
                 showSatelliteImage={meta.isBouldering}
                 clusterMarkers={false}
                 rocks={undefined}
                 flyToId={null}
               >
                 <ZoomLogic area={area} sector={data} />
-                {leafletMode === "POLYGON" && (
-                  <PolylineMarkers coordinates={data.outline ?? []} />
+                {leafletMode === 'POLYGON' && <PolylineMarkers coordinates={data.outline ?? []} />}
+                {leafletMode === 'APPROACH' && (
+                  <PolylineMarkers coordinates={data.approach?.coordinates ?? []} />
                 )}
-                {leafletMode === "APPROACH" && (
-                  <PolylineMarkers
-                    coordinates={data.approach?.coordinates ?? []}
-                  />
-                )}
-                {leafletMode === "DESCENT" && (
-                  <PolylineMarkers
-                    coordinates={data.descent?.coordinates ?? []}
-                  />
+                {leafletMode === 'DESCENT' && (
+                  <PolylineMarkers coordinates={data.descent?.coordinates ?? []} />
                 )}
               </Leaflet>
             </Form.Field>
           </Form.Group>
-          <Form.Group widths="equal">
-            {leafletMode === "PARKING" && (
+          <Form.Group widths='equal'>
+            {leafletMode === 'PARKING' && (
               <>
                 <Form.Field>
                   <label>Latitude</label>
                   <Input
-                    placeholder="Latitude"
-                    value={data.parking?.latitude ?? ""}
+                    placeholder='Latitude'
+                    value={data.parking?.latitude ?? ''}
                     onChange={onLatChanged}
                   />
                 </Form.Field>
                 <Form.Field>
                   <label>Longitude</label>
                   <Input
-                    placeholder="Longitude"
-                    value={data.parking?.longitude ?? ""}
+                    placeholder='Longitude'
+                    value={data.parking?.longitude ?? ''}
                     onChange={onLngChanged}
                   />
                 </Form.Field>
               </>
             )}
-            {leafletMode === "POLYGON" && (
+            {leafletMode === 'POLYGON' && (
               <Form.Field>
-                <label>
-                  {["Outline", elevation].filter(Boolean).join(" ")}
-                </label>
+                <label>{['Outline', elevation].filter(Boolean).join(' ')}</label>
                 <PolylineEditor
                   coordinates={data.outline ?? []}
                   parking={data.parking ?? {}}
@@ -672,7 +641,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
                 />
               </Form.Field>
             )}
-            {leafletMode === "APPROACH" && (
+            {leafletMode === 'APPROACH' && (
               <Form.Field>
                 <label>Approach</label>
                 <PolylineEditor
@@ -688,7 +657,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
                 />
               </Form.Field>
             )}
-            {leafletMode === "DESCENT" && (
+            {leafletMode === 'DESCENT' && (
               <Form.Field>
                 <label>Descent</label>
                 <PolylineEditor
@@ -714,7 +683,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
                 active={showProblemOrder}
                 onClick={() => setShowProblemOrder(!showProblemOrder)}
               >
-                <Icon name="dropdown" />
+                <Icon name='dropdown' />
                 Change order of problems in sector
               </Accordion.Title>
               <Accordion.Content

@@ -1,4 +1,4 @@
-import { neverGuard } from "../../utils/neverGuard";
+import { neverGuard } from '../../utils/neverGuard';
 import {
   CubicPoint,
   isArc,
@@ -7,14 +7,14 @@ import {
   ParsedEntry,
   parsePath,
   Point,
-} from "../../utils/svg-utils";
+} from '../../utils/svg-utils';
 
 export const generatePath = (points: ParsedEntry[]) => {
-  let d = "";
+  let d = '';
   points.forEach((p, i) => {
     if (i === 0) {
       // first point
-      d += "M ";
+      d += 'M ';
     } else {
       if (isQuadraticPoint(p)) {
         // quadratic
@@ -26,7 +26,7 @@ export const generatePath = (points: ParsedEntry[]) => {
         // arc
         d += `A ${p.a.rx} ${p.a.ry} ${p.a.rot} ${p.a.laf} ${p.a.sf} `;
       } else {
-        d += "L ";
+        d += 'L ';
       }
     }
     d += `${p.x} ${p.y} `;
@@ -35,7 +35,7 @@ export const generatePath = (points: ParsedEntry[]) => {
 };
 
 type State = {
-  mode: "idle" | "drag-point" | "drag-cubic-0" | "drag-cubic-1";
+  mode: 'idle' | 'drag-point' | 'drag-cubic-0' | 'drag-cubic-1';
   activePoint: number;
   points: Readonly<ParsedEntry[]>;
   path: string;
@@ -44,31 +44,31 @@ type State = {
 };
 
 type Update =
-  | { action: "reset" }
-  | { action: "add-point"; x: number; y: number }
-  | { action: "remove-point" }
-  | { action: "update-path"; path: string }
-  | { action: "idle" }
-  | { action: "drag-point"; index: number }
-  | { action: "drag-cubic"; index: number; c: 0 | 1 }
-  | { action: "set-type"; type: "line" | "curve" }
-  | { action: "mouse-move"; x: number; y: number }
-  | { action: "mouse-up" };
+  | { action: 'reset' }
+  | { action: 'add-point'; x: number; y: number }
+  | { action: 'remove-point' }
+  | { action: 'update-path'; path: string }
+  | { action: 'idle' }
+  | { action: 'drag-point'; index: number }
+  | { action: 'drag-cubic'; index: number; c: 0 | 1 }
+  | { action: 'set-type'; type: 'line' | 'curve' }
+  | { action: 'mouse-move'; x: number; y: number }
+  | { action: 'mouse-up' };
 
 export const reducer = (state: State, update: Update): State => {
   const { action } = update;
   switch (action) {
-    case "reset": {
+    case 'reset': {
       return {
         ...state,
-        mode: "idle",
+        mode: 'idle',
         activePoint: 0,
         points: [],
-        path: "",
+        path: '',
       };
     }
 
-    case "add-point": {
+    case 'add-point': {
       if (state.points.length > 0) {
         const lastPoint = state.points[state.points.length - 1];
         if (lastPoint.x === update.x && lastPoint.y === update.y) {
@@ -81,10 +81,7 @@ export const reducer = (state: State, update: Update): State => {
       if (points.length > 1) {
         const latest = points[points.length - 1];
         const previous = points[points.length - 2];
-        const distance = Math.hypot(
-          latest.x - previous.x,
-          latest.y - previous.y,
-        );
+        const distance = Math.hypot(latest.x - previous.x, latest.y - previous.y);
         if (distance > 130) {
           // If the points are sufficiently far away from each other,
           // automatically connect them with a curve, rather than a line.
@@ -115,7 +112,7 @@ export const reducer = (state: State, update: Update): State => {
       };
     }
 
-    case "remove-point": {
+    case 'remove-point': {
       const points = state.points.filter((_, i) => i !== state.activePoint);
       if (points.length > 0 && isCubicPoint(points[0])) {
         delete points[0].c;
@@ -130,7 +127,7 @@ export const reducer = (state: State, update: Update): State => {
       };
     }
 
-    case "update-path": {
+    case 'update-path': {
       try {
         const points = parsePath(update.path);
         return {
@@ -149,48 +146,45 @@ export const reducer = (state: State, update: Update): State => {
       }
     }
 
-    case "drag-point": {
+    case 'drag-point': {
       if (!state.points[update.index]) {
         return state;
       }
 
       return {
         ...state,
-        mode: "drag-point",
+        mode: 'drag-point',
         activePoint: update.index,
       };
     }
 
-    case "drag-cubic": {
-      if (
-        !state.points[update.index] ||
-        !isCubicPoint(state.points[update.index])
-      ) {
+    case 'drag-cubic': {
+      if (!state.points[update.index] || !isCubicPoint(state.points[update.index])) {
         return state;
       }
 
       return {
         ...state,
-        mode: update.c === 0 ? "drag-cubic-0" : "drag-cubic-1",
+        mode: update.c === 0 ? 'drag-cubic-0' : 'drag-cubic-1',
         activePoint: update.index,
       };
     }
 
-    case "idle": {
+    case 'idle': {
       return {
         ...state,
-        mode: "idle",
+        mode: 'idle',
       };
     }
 
-    case "mouse-move": {
+    case 'mouse-move': {
       const { mode } = state;
       switch (mode) {
-        case "idle": {
+        case 'idle': {
           return state;
         }
 
-        case "drag-point": {
+        case 'drag-point': {
           const points = state.points.map((p, i) => {
             if (i === state.activePoint) {
               return {
@@ -208,9 +202,9 @@ export const reducer = (state: State, update: Update): State => {
           };
         }
 
-        case "drag-cubic-0":
-        case "drag-cubic-1": {
-          const which = mode === "drag-cubic-0" ? 0 : 1;
+        case 'drag-cubic-0':
+        case 'drag-cubic-1': {
+          const which = mode === 'drag-cubic-0' ? 0 : 1;
           const points = state.points.map((p, i) => {
             if (i !== state.activePoint) {
               return p;
@@ -245,7 +239,7 @@ export const reducer = (state: State, update: Update): State => {
       }
     }
 
-    case "set-type": {
+    case 'set-type': {
       const points = state.points.map((p, i, points) => {
         if (i !== state.activePoint || i === 0) {
           return p;
@@ -254,17 +248,17 @@ export const reducer = (state: State, update: Update): State => {
         const { type } = update;
 
         switch (type) {
-          case "line": {
+          case 'line': {
             if (!isCubicPoint(p)) {
               return p;
             }
 
-            const next: Point & { c?: CubicPoint["c"] } = { ...p };
+            const next: Point & { c?: CubicPoint['c'] } = { ...p };
             delete next.c;
             return next;
           }
 
-          case "curve": {
+          case 'curve': {
             const previous = points[i - 1];
 
             return {
@@ -296,7 +290,7 @@ export const reducer = (state: State, update: Update): State => {
 
     // They're done editing things - do a sanity-check on the data and
     // align things if necessary.
-    case "mouse-up": {
+    case 'mouse-up': {
       const { otherPoints } = state;
 
       const keys = new Map<string, number>();

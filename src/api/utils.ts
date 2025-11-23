@@ -1,18 +1,18 @@
-import { useAuth0 } from "@auth0/auth0-react";
-import { useState, useEffect } from "react";
-import { DATA_MUTATION_EVENT } from "../components/DataReloader";
-import { FetchOptions } from "./types";
-import { captureMessage } from "@sentry/react";
-import { saveAs } from "file-saver";
-import { MediaRegion } from "../utils/svg-scaler";
+import { useAuth0 } from '@auth0/auth0-react';
+import { useState, useEffect } from 'react';
+import { DATA_MUTATION_EVENT } from '../components/DataReloader';
+import { FetchOptions } from './types';
+import { captureMessage } from '@sentry/react';
+import { saveAs } from 'file-saver';
+import { MediaRegion } from '../utils/svg-scaler';
 
 export function getLocales() {
-  return "nb-NO";
+  return 'nb-NO';
 }
 
 export function getBaseUrl(): string {
-  if (process.env.REACT_APP_ENV === "development") {
-    return process.env.REACT_APP_API_URL ?? "https://brattelinjer.no";
+  if (import.meta.env.DEV) {
+    return process.env.REACT_APP_API_URL ?? 'https://brattelinjer.no';
   }
   return window.origin;
 }
@@ -32,14 +32,8 @@ export function useAccessToken() {
   return accessToken;
 }
 
-export function getAvatarUrl(
-  id: number,
-  avatarCrc32: number,
-  fullSize?: boolean,
-): string {
-  return getUrl(
-    `/avatar?id=${id}&avatarCrc32=${avatarCrc32}&fullSize=${fullSize || false}`,
-  );
+export function getAvatarUrl(id: number, avatarCrc32: number, fullSize?: boolean): string {
+  return getUrl(`/avatar?id=${id}&avatarCrc32=${avatarCrc32}&fullSize=${fullSize || false}`);
 }
 
 export function getImageUrl(
@@ -64,11 +58,7 @@ export function getImageUrl(
   return getUrl(url);
 }
 
-export function getImageUrlSrcSet(
-  id: number,
-  checksum: number,
-  originalWidth: number,
-): string {
+export function getImageUrlSrcSet(id: number, checksum: number, originalWidth: number): string {
   const SIZES = [480, 800, 1280, 1920, 2560, 3840, 5120];
   const uniqueSizes = new Set(SIZES.filter((size) => size <= originalWidth));
   uniqueSizes.add(originalWidth); // If the original width is not a standard breakpoint
@@ -78,56 +68,37 @@ export function getImageUrlSrcSet(
       const url = getImageUrl(id, checksum, { targetWidth: size });
       return `${url} ${size}w`;
     })
-    .join(",\n");
+    .join(',\n');
 }
 
 export function getBuldreinfoMediaUrlSupported(id: number): string {
-  const video = document.createElement("video");
-  const webm = video.canPlayType("video/webm");
-  return getBuldreinfoMediaUrl(id, webm ? "webm" : "mp4");
+  const video = document.createElement('video');
+  const webm = video.canPlayType('video/webm');
+  return getBuldreinfoMediaUrl(id, webm ? 'webm' : 'mp4');
 }
 
 export function getBuldreinfoMediaUrl(id: number, suffix: string): string {
-  if (suffix === "jpg") {
+  if (suffix === 'jpg') {
     return (
       getBaseUrl() +
-      "/buldreinfo_media/original/jpg/" +
+      '/buldreinfo_media/original/jpg/' +
       Math.floor(id / 100) * 100 +
-      "/" +
+      '/' +
       id +
-      ".jpg"
+      '.jpg'
     );
-  } else if (suffix === "webm") {
+  } else if (suffix === 'webm') {
     return (
-      getBaseUrl() +
-      "/buldreinfo_media/webm/" +
-      Math.floor(id / 100) * 100 +
-      "/" +
-      id +
-      ".webm"
+      getBaseUrl() + '/buldreinfo_media/webm/' + Math.floor(id / 100) * 100 + '/' + id + '.webm'
     );
-  } else if (suffix === "mp4") {
-    return (
-      getBaseUrl() +
-      "/buldreinfo_media/mp4/" +
-      Math.floor(id / 100) * 100 +
-      "/" +
-      id +
-      ".mp4"
-    );
+  } else if (suffix === 'mp4') {
+    return getBaseUrl() + '/buldreinfo_media/mp4/' + Math.floor(id / 100) * 100 + '/' + id + '.mp4';
   }
-  return (
-    getBaseUrl() +
-    "/buldreinfo_media/webp/" +
-    Math.floor(id / 100) * 100 +
-    "/" +
-    id +
-    ".webp"
-  );
+  return getBaseUrl() + '/buldreinfo_media/webp/' + Math.floor(id / 100) * 100 + '/' + id + '.webp';
 }
 
 export function numberWithCommas(number: number) {
-  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
 export function convertFromDateToString(date: Date | null): string | undefined {
@@ -137,7 +108,7 @@ export function convertFromDateToString(date: Date | null): string | undefined {
   const d = date.getDate();
   const m = date.getMonth() + 1;
   const y = date.getFullYear();
-  return y + "-" + (m <= 9 ? "0" + m : m) + "-" + (d <= 9 ? "0" + d : d);
+  return y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
 }
 
 export function convertFromStringToDate(yyyy_MM_dd: string): Date | null {
@@ -167,7 +138,7 @@ export function makeAuthenticatedRequest(
   const { consistencyAction, ...opts } = extraOptions || {};
   const options = {
     ...opts,
-    mode: "cors" as const,
+    mode: 'cors' as const,
     headers: {
       ...opts?.headers,
       Authorization: accessToken ? `Bearer ${accessToken}` : undefined,
@@ -175,10 +146,10 @@ export function makeAuthenticatedRequest(
   };
 
   return fetch(url, options).then((res) => {
-    if ((options.method ?? "GET") !== "GET") {
+    if ((options.method ?? 'GET') !== 'GET') {
       window.dispatchEvent(
         new CustomEvent(DATA_MUTATION_EVENT, {
-          detail: { mode: consistencyAction ?? "refetch" },
+          detail: { mode: consistencyAction ?? 'refetch' },
         }),
       );
     }
@@ -190,11 +161,11 @@ export function downloadFile(accessToken: string, url: string) {
   return makeAuthenticatedRequest(accessToken, url, {
     // @ts-expect-error - I don't think that this is necessary, but I'm going
     //                    to investigate this later.
-    expose: ["Content-Disposition"],
+    expose: ['Content-Disposition'],
   }).then((response) => {
-    const contentDisposition = response.headers.get("content-disposition");
+    const contentDisposition = response.headers.get('content-disposition');
     if (!contentDisposition) {
-      captureMessage("No content-disposition header", {
+      captureMessage('No content-disposition header', {
         extra: {
           url,
           contentDisposition,
@@ -205,7 +176,7 @@ export function downloadFile(accessToken: string, url: string) {
 
     const match = /\bfilename="([^"]+)"/.exec(contentDisposition);
     if (!match) {
-      captureMessage("Unable to get filename", {
+      captureMessage('Unable to get filename', {
         extra: {
           url,
           contentDisposition,
@@ -216,7 +187,7 @@ export function downloadFile(accessToken: string, url: string) {
 
     const [_, filename] = match;
     if (!filename) {
-      captureMessage("No filename", {
+      captureMessage('No filename', {
         extra: {
           url,
           contentDisposition,

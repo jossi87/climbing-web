@@ -1,8 +1,4 @@
 /node_modules
-/build/static/*
-/build/index.html
-
-.yarnrc
-yarn-error.log
-
-*storybook.log
+/build
+npm-debug.log*
+.vite

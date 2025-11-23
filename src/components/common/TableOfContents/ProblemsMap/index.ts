@@ -1,1 +1,1 @@
-export { ProblemsMap } from "./ProblemsMap";
+export { ProblemsMap } from './ProblemsMap';

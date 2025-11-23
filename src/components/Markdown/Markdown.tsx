@@ -1,5 +1,5 @@
-import React from "react";
-import { md } from "./parser";
+import React from 'react';
+import { md } from './parser';
 
 interface MarkdownProps {
   content: string;

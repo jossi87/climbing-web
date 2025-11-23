@@ -1,4 +1,4 @@
-declare module "json-url" {
+declare module 'json-url' {
   type JsonUrl = (codec: string) => {
     compress: (input: object) => Promise<string>;
     decompress: (input: string) => Promise<object>;

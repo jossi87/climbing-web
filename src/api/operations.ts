@@ -1,17 +1,17 @@
-import { Success } from "../@types/buldreinfo";
-import { components, operations } from "../@types/buldreinfo/swagger";
-import { downloadFile, makeAuthenticatedRequest } from "./utils";
+import { Success } from '../@types/buldreinfo';
+import { components, operations } from '../@types/buldreinfo/swagger';
+import { downloadFile, makeAuthenticatedRequest } from './utils';
 
 export function downloadTocXlsx(accessToken: string | null) {
-  return downloadFile(accessToken, "/toc/xlsx");
+  return downloadFile(accessToken, '/toc/xlsx');
 }
 
 export function deleteMedia(
   accessToken: string | null,
   id: number,
-): Promise<Success<"deleteMedia">> {
+): Promise<Success<'deleteMedia'>> {
   return makeAuthenticatedRequest(accessToken, `/media?id=${id}`, {
-    method: "DELETE",
+    method: 'DELETE',
   });
 }
 
@@ -22,12 +22,12 @@ export function moveMedia(
   toIdArea: number,
   toIdSector: number,
   toIdProblem: number,
-): Promise<Success<"putMedia">> {
+): Promise<Success<'putMedia'>> {
   return makeAuthenticatedRequest(
     accessToken,
     `/media?id=${id}&left=${left}&toIdArea=${toIdArea}&toIdSector=${toIdSector}&toIdProblem=${toIdProblem}`,
     {
-      method: "PUT",
+      method: 'PUT',
     },
   );
 }
@@ -35,9 +35,9 @@ export function moveMedia(
 export function setMediaAsAvatar(
   accessToken: string | null,
   id: number,
-): Promise<Success<"putMediaAvatar">> {
+): Promise<Success<'putMediaAvatar'>> {
   return makeAuthenticatedRequest(accessToken, `/media/avatar?id=${id}`, {
-    method: "PUT",
+    method: 'PUT',
   });
 }
 
@@ -54,13 +54,11 @@ export function postComment(
   resolved: boolean,
   del: boolean,
   media: any,
-): Promise<
-  operations["postComments"]["responses"]["default"]["content"]["application/json"]
-> {
+): Promise<operations['postComments']['responses']['default']['content']['application/json']> {
   const formData = new FormData();
   const newMedia = media.map((m) => {
     return {
-      name: m.file && m.file.name.replace(/[^-a-z0-9.]/gi, "_"),
+      name: m.file && m.file.name.replace(/[^-a-z0-9.]/gi, '_'),
       photographer: m.photographer,
       inPhoto: m.inPhoto,
       pitch: m.pitch,
@@ -72,7 +70,7 @@ export function postComment(
     };
   });
   formData.append(
-    "json",
+    'json',
     JSON.stringify({
       id,
       idProblem,
@@ -84,16 +82,14 @@ export function postComment(
     }),
   );
   media.forEach(
-    (m) =>
-      m.file &&
-      formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, "_"), m.file),
+    (m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file),
   );
 
   return makeAuthenticatedRequest(accessToken, `/comments`, {
-    method: "POST",
+    method: 'POST',
     body: formData,
     headers: {
-      Accept: "application/json",
+      Accept: 'application/json',
     },
   });
 }
@@ -105,9 +101,9 @@ export function postPermissions(
   adminWrite: boolean,
   superadminRead: boolean,
   superadminWrite: boolean,
-): Promise<Success<"postPermissions">> {
+): Promise<Success<'postPermissions'>> {
   return makeAuthenticatedRequest(accessToken, `/permissions`, {
-    method: "POST",
+    method: 'POST',
     body: JSON.stringify({
       userId,
       adminRead,
@@ -116,7 +112,7 @@ export function postPermissions(
       superadminWrite,
     }),
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   });
 }
@@ -137,21 +133,21 @@ export function postProblem(
   faDate: string,
   nr: number,
   t: any,
-  coordinates: components["schemas"]["Coordinates"],
+  coordinates: components['schemas']['Coordinates'],
   sections: any,
   media: any,
   faAid: any,
   trivia: string,
-  externalLinks: components["schemas"]["ExternalLink"][],
+  externalLinks: components['schemas']['ExternalLink'][],
   startingAltitude: string,
   aspect: string,
   routeLength: string,
   descent: string,
-): Promise<Success<"postProblems">> {
+): Promise<Success<'postProblems'>> {
   const formData = new FormData();
   const newMedia = media.map((m) => {
     return {
-      name: m.file && m.file.name.replace(/[^-a-z0-9.]/gi, "_"),
+      name: m.file && m.file.name.replace(/[^-a-z0-9.]/gi, '_'),
       photographer: m.photographer,
       inPhoto: m.inPhoto,
       pitch: m.pitch,
@@ -163,7 +159,7 @@ export function postProblem(
     };
   });
   formData.append(
-    "json",
+    'json',
     JSON.stringify({
       sectorId,
       id,
@@ -192,15 +188,13 @@ export function postProblem(
     }),
   );
   media.forEach(
-    (m) =>
-      m.file &&
-      formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, "_"), m.file),
+    (m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file),
   );
   return makeAuthenticatedRequest(accessToken, `/problems`, {
-    method: "POST",
+    method: 'POST',
     body: formData,
     headers: {
-      Accept: "application/json",
+      Accept: 'application/json',
     },
   })
     .then((data) => data.json())
@@ -214,11 +208,11 @@ export function postProblemMedia(
   accessToken: string | null,
   id: number,
   media: any,
-): Promise<Success<"postProblemsMedia">> {
+): Promise<Success<'postProblemsMedia'>> {
   const formData = new FormData();
   const newMedia = media.map((m) => {
     return {
-      name: m.file && m.file.name.replace(/[^-a-z0-9.]/gi, "_"),
+      name: m.file && m.file.name.replace(/[^-a-z0-9.]/gi, '_'),
       photographer: m.photographer,
       inPhoto: m.inPhoto,
       pitch: m.pitch,
@@ -229,17 +223,15 @@ export function postProblemMedia(
       embedMilliseconds: m.embedMilliseconds,
     };
   });
-  formData.append("json", JSON.stringify({ id, newMedia }));
+  formData.append('json', JSON.stringify({ id, newMedia }));
   media.forEach(
-    (m) =>
-      m.file &&
-      formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, "_"), m.file),
+    (m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file),
   );
   return makeAuthenticatedRequest(accessToken, `/problems/media`, {
-    method: "POST",
+    method: 'POST',
     body: formData,
     headers: {
-      Accept: "application/json",
+      Accept: 'application/json',
     },
   })
     .then((data) => data.json())
@@ -261,12 +253,12 @@ export function postProblemSvg(
   anchors: string,
   tradBelayStations: string,
   texts: string,
-): Promise<Success<"postProblemsSvg">> {
+): Promise<Success<'postProblemsSvg'>> {
   return makeAuthenticatedRequest(
     accessToken,
     `/problems/svg?problemId=${problemId}&pitch=${pitch}&mediaId=${mediaId}`,
     {
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify({
         delete: del,
         id,
@@ -277,8 +269,8 @@ export function postProblemSvg(
         texts,
       }),
       headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
       },
     },
   );
@@ -297,19 +289,19 @@ export function postSector(
   accessClosed: string,
   sunFromHour: number,
   sunToHour: number,
-  parking: components["schemas"]["Coordinates"],
-  outline: components["schemas"]["Coordinates"][],
-  wallDirectionManual: components["schemas"]["CompassDirection"],
-  approach: components["schemas"]["Slope"],
-  descent: components["schemas"]["Slope"],
-  externalLinks: components["schemas"]["ExternalLink"][],
+  parking: components['schemas']['Coordinates'],
+  outline: components['schemas']['Coordinates'][],
+  wallDirectionManual: components['schemas']['CompassDirection'],
+  approach: components['schemas']['Slope'],
+  descent: components['schemas']['Slope'],
+  externalLinks: components['schemas']['ExternalLink'][],
   media: any,
   problemOrder: any,
-): Promise<Success<"postSectors">> {
+): Promise<Success<'postSectors'>> {
   const formData = new FormData();
   const newMedia = media.map((m) => {
     return {
-      name: m.file && m.file.name.replace(/[^-a-z0-9.]/gi, "_"),
+      name: m.file && m.file.name.replace(/[^-a-z0-9.]/gi, '_'),
       photographer: m.photographer,
       inPhoto: m.inPhoto,
       description: m.description,
@@ -320,7 +312,7 @@ export function postSector(
     };
   });
   formData.append(
-    "json",
+    'json',
     JSON.stringify({
       areaId,
       id,
@@ -344,15 +336,13 @@ export function postSector(
     }),
   );
   media.forEach(
-    (m) =>
-      m.file &&
-      formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, "_"), m.file),
+    (m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file),
   );
   return makeAuthenticatedRequest(accessToken, `/sectors`, {
-    method: "POST",
+    method: 'POST',
     body: formData,
     headers: {
-      Accept: "application/json",
+      Accept: 'application/json',
     },
   })
     .then((data) => data.json())
@@ -372,9 +362,9 @@ export function postTicks(
   stars: number,
   grade: string,
   repeats: any,
-): Promise<Success<"postTicks">> {
+): Promise<Success<'postTicks'>> {
   return makeAuthenticatedRequest(accessToken, `/ticks`, {
-    method: "POST",
+    method: 'POST',
     body: JSON.stringify({
       delete: del,
       id,
@@ -386,7 +376,7 @@ export function postTicks(
       repeats,
     }),
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   });
 }
@@ -395,14 +385,10 @@ export function postUserRegion(
   accessToken: string | null,
   regionId: number,
   del: boolean,
-): Promise<Success<"postUserRegions">> {
-  return makeAuthenticatedRequest(
-    accessToken,
-    `/user/regions?regionId=${regionId}&delete=${del}`,
-    {
-      method: "POST",
-    },
-  );
+): Promise<Success<'postUserRegions'>> {
+  return makeAuthenticatedRequest(accessToken, `/user/regions?regionId=${regionId}&delete=${del}`, {
+    method: 'POST',
+  });
 }
 
 export function putMediaInfo(
@@ -411,12 +397,12 @@ export function putMediaInfo(
   description: string,
   pitch: number,
   trivia: boolean,
-): Promise<Success<"putMediaInfo">> {
+): Promise<Success<'putMediaInfo'>> {
   return makeAuthenticatedRequest(accessToken, `/media/info`, {
-    method: "PUT",
+    method: 'PUT',
     body: JSON.stringify({ mediaId, description, pitch, trivia }),
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   });
 }
@@ -430,7 +416,7 @@ export function putMediaJpegRotate(
     accessToken,
     `/media/jpeg/rotate?idMedia=${idMedia}&degrees=${degrees}`,
     {
-      method: "PUT",
+      method: 'PUT',
     },
   );
 }

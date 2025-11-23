@@ -1,9 +1,9 @@
-import React from "react";
-import { Loading } from "../widgets/widgets";
-import { Table, Label } from "semantic-ui-react";
-import { Link } from "react-router-dom";
-import { useTop } from "../../../api";
-import Avatar from "../../common/avatar/avatar";
+import React from 'react';
+import { Loading } from '../widgets/widgets';
+import { Table, Label } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
+import { useTop } from '../../../api';
+import Avatar from '../../common/avatar/avatar';
 
 type TopProps = {
   idArea: number;
@@ -19,8 +19,8 @@ const Top = ({ idArea, idSector }: TopProps) => {
 
   const rows = top.map((t) => (
     <Table.Row key={t.percentage}>
-      <Table.Cell verticalAlign="top">#{t.rank}</Table.Cell>
-      <Table.Cell verticalAlign="top">{t.percentage}%</Table.Cell>
+      <Table.Cell verticalAlign='top'>#{t.rank}</Table.Cell>
+      <Table.Cell verticalAlign='top'>{t.percentage}%</Table.Cell>
       <Table.Cell>
         <Label.Group>
           {t.users.map((u) => (
@@ -29,14 +29,10 @@ const Top = ({ idArea, idSector }: TopProps) => {
               as={Link}
               to={`/user/${u.userId}`}
               image
-              style={{ backgroundColor: u.mine ? "#d2f8d2" : "#ffffff" }}
+              style={{ backgroundColor: u.mine ? '#d2f8d2' : '#ffffff' }}
               basic
             >
-              <Avatar
-                userId={u.userId}
-                name={u.name}
-                avatarCrc32={u.avatarCrc32}
-              />
+              <Avatar userId={u.userId} name={u.name} avatarCrc32={u.avatarCrc32} />
               {u.name}
             </Label>
           ))}
@@ -46,7 +42,7 @@ const Top = ({ idArea, idSector }: TopProps) => {
   ));
 
   return (
-    <Table basic="very" size="small" celled collapsing unstackable compact>
+    <Table basic='very' size='small' celled collapsing unstackable compact>
       <Table.Header>
         <Table.Row>
           <Table.HeaderCell>Rank</Table.HeaderCell>

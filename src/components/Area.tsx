@@ -1,12 +1,12 @@
-import React, { ComponentProps, useMemo } from "react";
-import { Link, useParams } from "react-router-dom";
-import ChartGradeDistribution from "./common/chart-grade-distribution/chart-grade-distribution";
-import Top from "./common/top/top";
-import Activity from "./common/activity/activity";
-import Leaflet from "./common/leaflet/leaflet";
-import { getDistanceWithUnit } from "./common/leaflet/geo-utils";
-import Media from "./common/media/media";
-import Todo from "./common/todo/todo";
+import React, { ComponentProps, useMemo } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
+import Top from './common/top/top';
+import Activity from './common/activity/activity';
+import Leaflet from './common/leaflet/leaflet';
+import { getDistanceWithUnit } from './common/leaflet/geo-utils';
+import Media from './common/media/media';
+import Todo from './common/todo/todo';
 import {
   Stars,
   LockSymbol,
@@ -16,7 +16,7 @@ import {
   SunOnWall,
   ExternalLinkLabels,
   NoDogsAllowed,
-} from "./common/widgets/widgets";
+} from './common/widgets/widgets';
 import {
   Label,
   Button,
@@ -31,18 +31,18 @@ import {
   Message,
   Feed,
   Segment,
-} from "semantic-ui-react";
-import { useMeta } from "./common/meta";
-import { getImageUrl, useArea } from "../api";
-import { Markdown } from "./Markdown/Markdown";
-import ProblemList from "./common/problem-list";
-import { components } from "../@types/buldreinfo/swagger";
-import { DownloadButton } from "./common/DownloadButton";
+} from 'semantic-ui-react';
+import { useMeta } from './common/meta';
+import { getImageUrl, useArea } from '../api';
+import { Markdown } from './Markdown/Markdown';
+import ProblemList from './common/problem-list';
+import { components } from '../@types/buldreinfo/swagger';
+import { DownloadButton } from './common/DownloadButton';
 
 type Props = {
   sectorName: string;
   problem: NonNullable<
-    NonNullable<components["schemas"]["Area"]["sectors"]>[number]["problems"]
+    NonNullable<components['schemas']['Area']['sectors']>[number]['problems']
   >[number];
 };
 
@@ -50,91 +50,67 @@ const SectorListItem = ({ sectorName, problem }: Props) => {
   const { isClimbing } = useMeta();
   const type = isClimbing
     ? problem.t?.subType +
-      ((problem.numPitches ?? 1) > 1
-        ? ", " + problem.numPitches + " pitches"
-        : "")
+      ((problem.numPitches ?? 1) > 1 ? ', ' + problem.numPitches + ' pitches' : '')
     : null;
   const ascents =
-    problem.numTicks &&
-    problem.numTicks + (problem.numTicks == 1 ? " ascent" : " ascents");
+    problem.numTicks && problem.numTicks + (problem.numTicks == 1 ? ' ascent' : ' ascents');
   let faTypeAscents = problem.fa;
   if (problem.faDate) {
-    faTypeAscents += " " + problem.faDate.substring(0, 4);
+    faTypeAscents += ' ' + problem.faDate.substring(0, 4);
   }
   if (type && ascents) {
     faTypeAscents =
-      (faTypeAscents != null ? faTypeAscents + " (" : "(") +
-      type +
-      ", " +
-      ascents +
-      ")";
+      (faTypeAscents != null ? faTypeAscents + ' (' : '(') + type + ', ' + ascents + ')';
   } else if (type) {
-    faTypeAscents =
-      (faTypeAscents != null ? faTypeAscents + " (" : "(") + type + ")";
+    faTypeAscents = (faTypeAscents != null ? faTypeAscents + ' (' : '(') + type + ')';
   } else if (ascents) {
-    faTypeAscents =
-      (faTypeAscents != null ? faTypeAscents + " (" : "(") + ascents + ")";
+    faTypeAscents = (faTypeAscents != null ? faTypeAscents + ' (' : '(') + ascents + ')';
   }
-  let backgroundColor = "#ffffff";
+  let backgroundColor = '#ffffff';
   if (problem.ticked) {
-    backgroundColor = "#d2f8d2";
+    backgroundColor = '#d2f8d2';
   } else if (problem.todo) {
-    backgroundColor = "#d2d2f8";
+    backgroundColor = '#d2d2f8';
   }
   return (
     <List.Item style={{ backgroundColor }} key={problem.id}>
       <List.Header>
-        {problem.danger ? <Icon color="red" name="warning" /> : null}
-        <Link to={`/problem/${problem.id}`}>{problem.name}</Link>{" "}
-        {problem.grade}
+        {problem.danger ? <Icon color='red' name='warning' /> : null}
+        <Link to={`/problem/${problem.id}`}>{problem.name}</Link> {problem.grade}
         <Stars numStars={problem.stars ?? 0} includeStarOutlines={false} />
         <small>
-          <i style={{ color: "gray" }}>
-            {" "}
-            {sectorName} {`#${problem.nr}`}{" "}
+          <i style={{ color: 'gray' }}>
+            {' '}
+            {sectorName} {`#${problem.nr}`}{' '}
           </i>
         </small>
         {faTypeAscents && <small> {faTypeAscents}</small>}
         <small>
-          <i style={{ color: "gray" }}>
-            {" "}
+          <i style={{ color: 'gray' }}>
+            {' '}
             {problem.rock ? <>Rock: {problem.rock}. </> : null}
-            {problem.comment}{" "}
+            {problem.comment}{' '}
           </i>
         </small>
-        {problem.coordinates ? (
-          <Icon size="small" name="map marker alternate" />
-        ) : null}
-        {problem.hasTopo ? <Icon size="small" name="paint brush" /> : null}
-        {problem.hasImages ? (
-          <Icon size="small" color="black" name="photo" />
-        ) : null}
-        {problem.hasMovies ? (
-          <Icon size="small" color="black" name="film" />
-        ) : null}
+        {problem.coordinates ? <Icon size='small' name='map marker alternate' /> : null}
+        {problem.hasTopo ? <Icon size='small' name='paint brush' /> : null}
+        {problem.hasImages ? <Icon size='small' color='black' name='photo' /> : null}
+        {problem.hasMovies ? <Icon size='small' color='black' name='film' /> : null}
         <LockSymbol
           lockedAdmin={!!problem.lockedAdmin}
           lockedSuperadmin={!!problem.lockedSuperadmin}
         />
-        {problem.ticked ? (
-          <Icon size="small" color="green" name="check" />
-        ) : null}
-        {problem.todo ? (
-          <Icon size="small" color="blue" name="bookmark" />
-        ) : null}
+        {problem.ticked ? <Icon size='small' color='green' name='check' /> : null}
+        {problem.todo ? <Icon size='small' color='blue' name='bookmark' /> : null}
       </List.Header>
     </List.Item>
   );
 };
 
-type AreaSectorType = NonNullable<
-  components["schemas"]["Area"]["sectors"]
->[number];
+type AreaSectorType = NonNullable<components['schemas']['Area']['sectors']>[number];
 type SectorWithParking = AreaSectorType &
-  (Pick<AreaSectorType, "parking"> & {
-    parking: Required<
-      Pick<NonNullable<AreaSectorType["parking"]>, "latitude" | "longitude">
-    >;
+  (Pick<AreaSectorType, 'parking'> & {
+    parking: Required<Pick<NonNullable<AreaSectorType['parking']>, 'latitude' | 'longitude'>>;
   });
 
 const isSectorWithParking = (s: AreaSectorType): s is SectorWithParking => {
@@ -145,38 +121,34 @@ const Area = () => {
   const meta = useMeta();
   const { areaId } = useParams();
   if (areaId === undefined) {
-    throw new Error("Missing areaId parameter");
+    throw new Error('Missing areaId parameter');
   }
 
   const { data, error, redirectUi } = useArea(+areaId);
 
-  const markers: ComponentProps<typeof Leaflet>["markers"] = useMemo(() => {
+  const markers: ComponentProps<typeof Leaflet>['markers'] = useMemo(() => {
     if (!data?.sectors) {
       return [];
     }
 
-    type SectorParkingMarker = Pick<
-      SectorWithParking["parking"],
-      "latitude" | "longitude"
-    > & {
-      sectors: Pick<NonNullable<SectorWithParking>, "id" | "name">[];
+    type SectorParkingMarker = Pick<SectorWithParking['parking'], 'latitude' | 'longitude'> & {
+      sectors: Pick<NonNullable<SectorWithParking>, 'id' | 'name'>[];
     };
 
-    const uniqueSectors: Record<string /* lat,lng */, SectorParkingMarker> =
-      data.sectors
-        ?.filter(isSectorWithParking)
-        ?.reduce((acc, { parking, name, id }) => {
-          const key = `${parking.latitude},${parking.longitude}`;
-          return {
-            ...acc,
-            [key]: {
-              ...acc[key],
-              latitude: parking.latitude,
-              longitude: parking.longitude,
-              sectors: [...(acc[key]?.sectors ?? []), { name, id }],
-            } satisfies SectorParkingMarker,
-          };
-        }, {});
+    const uniqueSectors: Record<string /* lat,lng */, SectorParkingMarker> = data.sectors
+      ?.filter(isSectorWithParking)
+      ?.reduce((acc, { parking, name, id }) => {
+        const key = `${parking.latitude},${parking.longitude}`;
+        return {
+          ...acc,
+          [key]: {
+            ...acc[key],
+            latitude: parking.latitude,
+            longitude: parking.longitude,
+            sectors: [...(acc[key]?.sectors ?? []), { name, id }],
+          } satisfies SectorParkingMarker,
+        };
+      }, {});
 
     return (
       Object.values(uniqueSectors)?.map((info) => ({
@@ -197,12 +169,12 @@ const Area = () => {
   if (error) {
     return (
       <Message
-        size="huge"
-        style={{ backgroundColor: "#FFF" }}
-        icon="meh"
-        header="404"
+        size='huge'
+        style={{ backgroundColor: '#FFF' }}
+        icon='meh'
+        header='404'
         content={
-          "Cannot find the specified area because it does not exist or you do not have sufficient permissions."
+          'Cannot find the specified area because it does not exist or you do not have sufficient permissions.'
         }
       />
     );
@@ -212,8 +184,8 @@ const Area = () => {
     return <Loading />;
   }
 
-  const orderableMedia: ComponentProps<typeof Media>["orderableMedia"] = [];
-  const carouselMedia: ComponentProps<typeof Media>["carouselMedia"] = [];
+  const orderableMedia: ComponentProps<typeof Media>['orderableMedia'] = [];
+  const carouselMedia: ComponentProps<typeof Media>['carouselMedia'] = [];
   if (data.media?.length) {
     carouselMedia.push(...data.media);
     if (data.media.length > 1) {
@@ -227,8 +199,8 @@ const Area = () => {
     }
   }
 
-  const outlines: ComponentProps<typeof Leaflet>["outlines"] = [];
-  const slopes: ComponentProps<typeof Leaflet>["slopes"] = [];
+  const outlines: ComponentProps<typeof Leaflet>['outlines'] = [];
+  const slopes: ComponentProps<typeof Leaflet>['slopes'] = [];
   const showSlopeLengthOnOutline =
     (data.sectors?.filter((s) => s.approach && s.outline).length ?? 0) > 1;
 
@@ -236,40 +208,36 @@ const Area = () => {
     let distance: string | null = null;
     if (s.approach?.coordinates?.length) {
       distance = getDistanceWithUnit(s.approach);
-      const label =
-        (!s.outline || !showSlopeLengthOnOutline) && distance ? distance : "";
+      const label = (!s.outline || !showSlopeLengthOnOutline) && distance ? distance : '';
       slopes.push({
-        backgroundColor: "lime",
+        backgroundColor: 'lime',
         slope: s.approach,
-        label: label ?? "",
+        label: label ?? '',
       });
     }
     if (s.descent?.coordinates?.length) {
       distance = getDistanceWithUnit(s.approach);
-      const label =
-        (!s.outline || !showSlopeLengthOnOutline) && distance ? distance : "";
+      const label = (!s.outline || !showSlopeLengthOnOutline) && distance ? distance : '';
       slopes.push({
-        backgroundColor: "purple",
+        backgroundColor: 'purple',
         slope: s.descent,
-        label: label ?? "",
+        label: label ?? '',
       });
     }
     if (s.outline?.length) {
-      const label =
-        s.name +
-        (showSlopeLengthOnOutline && distance ? " (" + distance + ")" : "");
+      const label = s.name + (showSlopeLengthOnOutline && distance ? ' (' + distance + ')' : '');
       outlines.push({
-        url: "/sector/" + s.id,
+        url: '/sector/' + s.id,
         label,
         outline: s.outline,
       });
     }
   }
-  const panes: ComponentProps<typeof Tab>["panes"] = [];
-  const height = "40vh";
+  const panes: ComponentProps<typeof Tab>['panes'] = [];
+  const height = '40vh';
   if (data.media && data.media.length) {
     panes.push({
-      menuItem: { key: "image", icon: "image" },
+      menuItem: { key: 'image', icon: 'image' },
       render: () => (
         <TabPane>
           <Media
@@ -286,18 +254,16 @@ const Area = () => {
   }
   if (markers.length || outlines.length || data.coordinates) {
     const defaultCenter =
-      data.coordinates &&
-      data.coordinates.latitude &&
-      data.coordinates.longitude
+      data.coordinates && data.coordinates.latitude && data.coordinates.longitude
         ? { lat: data.coordinates.latitude, lng: data.coordinates.longitude }
         : meta.defaultCenter;
     const defaultZoom = data.coordinates ? 14 : meta.defaultZoom;
     panes.push({
-      menuItem: { key: "map", icon: "map" },
+      menuItem: { key: 'map', icon: 'map' },
       render: () => (
         <TabPane>
           <Leaflet
-            key={"area=" + data.id}
+            key={'area=' + data.id}
             autoZoom={true}
             height={height}
             markers={markers}
@@ -315,7 +281,7 @@ const Area = () => {
   }
   if (data.sectors?.length) {
     panes.push({
-      menuItem: { key: "distribution", icon: "area graph" },
+      menuItem: { key: 'distribution', icon: 'area graph' },
       render: () => (
         <TabPane>
           <ChartGradeDistribution idArea={data.id ?? 0} />
@@ -323,7 +289,7 @@ const Area = () => {
       ),
     });
     panes.push({
-      menuItem: { key: "top", icon: "trophy" },
+      menuItem: { key: 'top', icon: 'trophy' },
       render: () => (
         <TabPane>
           <Top idArea={data.id ?? 0} idSector={0} />
@@ -331,7 +297,7 @@ const Area = () => {
       ),
     });
     panes.push({
-      menuItem: { key: "activity", icon: "time" },
+      menuItem: { key: 'activity', icon: 'time' },
       render: () => (
         <TabPane>
           <Activity idArea={data.id ?? 0} idSector={0} />
@@ -339,7 +305,7 @@ const Area = () => {
       ),
     });
     panes.push({
-      menuItem: { key: "todo", icon: "bookmark" },
+      menuItem: { key: 'todo', icon: 'bookmark' },
       render: () => (
         <TabPane>
           <Todo idArea={data.id ?? 0} idSector={0} />
@@ -348,36 +314,34 @@ const Area = () => {
     });
   }
 
-  const sectorPanes: ComponentProps<typeof Tab>["panes"] = [];
+  const sectorPanes: ComponentProps<typeof Tab>['panes'] = [];
   if (data.sectors) {
     sectorPanes.push({
-      menuItem: "Sectors (" + data.sectors.length + ")",
+      menuItem: 'Sectors (' + data.sectors.length + ')',
       render: () => (
         <TabPane>
           <Item.Group link unstackable>
             {data.sectors?.map((sector) => (
               <Item as={Link} to={`/sector/${sector.id}`} key={sector.id}>
                 <Image
-                  size="small"
-                  style={{ maxHeight: "150px", objectFit: "cover" }}
+                  size='small'
+                  style={{ maxHeight: '150px', objectFit: 'cover' }}
                   src={
                     sector.randomMediaId
-                      ? getImageUrl(
-                          sector.randomMediaId,
-                          sector.randomMediaCrc32 ?? 0,
-                          { minDimension: 150 },
-                        )
-                      : "/png/image.png"
+                      ? getImageUrl(sector.randomMediaId, sector.randomMediaCrc32 ?? 0, {
+                          minDimension: 150,
+                        })
+                      : '/png/image.png'
                   }
                 />
                 <Item.Content>
                   <Item.Header>
                     {sector.accessClosed ? (
-                      <Header as="h3" color="red">
+                      <Header as='h3' color='red'>
                         {sector.accessClosed}
                       </Header>
                     ) : null}
-                    {sector.name}{" "}
+                    {sector.name}{' '}
                     <LockSymbol
                       lockedAdmin={!!sector.lockedAdmin}
                       lockedSuperadmin={!!sector.lockedSuperadmin}
@@ -386,53 +350,30 @@ const Area = () => {
                       wallDirectionCalculated={sector.wallDirectionCalculated}
                       wallDirectionManual={sector.wallDirectionManual}
                     />
-                    <SunOnWall
-                      sunFromHour={sector.sunFromHour}
-                      sunToHour={sector.sunToHour}
-                    />
+                    <SunOnWall sunFromHour={sector.sunFromHour} sunToHour={sector.sunToHour} />
                   </Item.Header>
                   <Item.Extra>
                     {sector.typeNumTickedTodo && (
                       <List>
                         {sector.typeNumTickedTodo.map((x) => {
-                          let icon = <List.Icon name="circle outline" />;
-                          if (x.type === "Projects") {
-                            icon = (
-                              <List.Icon
-                                color="blue"
-                                name="pause circle outline"
-                              />
-                            );
-                          } else if (x.type === "Broken") {
-                            icon = (
-                              <List.Icon
-                                color="red"
-                                name="times circle outline"
-                              />
-                            );
+                          let icon = <List.Icon name='circle outline' />;
+                          if (x.type === 'Projects') {
+                            icon = <List.Icon color='blue' name='pause circle outline' />;
+                          } else if (x.type === 'Broken') {
+                            icon = <List.Icon color='red' name='times circle outline' />;
                           } else if (x.ticked === x.num) {
-                            icon = (
-                              <List.Icon
-                                color="green"
-                                name="check circle outline"
-                              />
-                            );
+                            icon = <List.Icon color='green' name='check circle outline' />;
                           } else if (x.ticked > 0) {
-                            icon = (
-                              <List.Icon
-                                color="yellow"
-                                name="dot circle outline"
-                              />
-                            );
+                            icon = <List.Icon color='yellow' name='dot circle outline' />;
                           }
                           return (
                             <List.Item key={`${x.type}/${x.num}/${x.ticked}`}>
                               {icon}
                               <List.Content>
-                                {x.type + ": " + x.num}
+                                {x.type + ': ' + x.num}
                                 {x.ticked || x.todo
-                                  ? ` (${[x.ticked && `${x.ticked} ticked`, x.todo && `${x.todo} todo`].filter(Boolean).join(", ")})`
-                                  : ""}
+                                  ? ` (${[x.ticked && `${x.ticked} ticked`, x.todo && `${x.todo} todo`].filter(Boolean).join(', ')})`
+                                  : ''}
                               </List.Content>
                             </List.Item>
                           );
@@ -442,7 +383,7 @@ const Area = () => {
                   </Item.Extra>
                   <Item.Description>
                     {sector.accessInfo && (
-                      <Header as="h5" color="red">
+                      <Header as='h5' color='red'>
                         {sector.accessInfo}
                       </Header>
                     )}
@@ -457,37 +398,28 @@ const Area = () => {
     });
     sectorPanes.push({
       menuItem:
-        (meta.isBouldering ? "Problems (" : "Routes (") +
-        (data.typeNumTickedTodo?.reduce(
-          (count, current) => count + (current?.num ?? 0),
-          0,
-        ) ?? []) +
-        ")",
+        (meta.isBouldering ? 'Problems (' : 'Routes (') +
+        (data.typeNumTickedTodo?.reduce((count, current) => count + (current?.num ?? 0), 0) ?? []) +
+        ')',
       render: () => {
-        type Rows = ComponentProps<typeof ProblemList>["rows"];
+        type Rows = ComponentProps<typeof ProblemList>['rows'];
         const rows: Rows =
           data.sectors
-            ?.flatMap(({ name = "", problems = [] }) => {
+            ?.flatMap(({ name = '', problems = [] }) => {
               return problems.map(
                 (p) =>
                   ({
-                    element: (
-                      <SectorListItem
-                        key={p.id}
-                        sectorName={name}
-                        problem={p}
-                      />
-                    ),
-                    name: p.name ?? "",
-                    areaName: data.name ?? "",
+                    element: <SectorListItem key={p.id} sectorName={name} problem={p} />,
+                    name: p.name ?? '',
+                    areaName: data.name ?? '',
                     sectorName: name,
                     nr: p.nr ?? 0,
                     gradeNumber: p.gradeNumber ?? 0,
                     stars: p.stars ?? 0,
                     numTicks: p.numTicks ?? 0,
                     ticked: p.ticked ?? false,
-                    rock: p.rock ?? "",
-                    subType: p.t?.subType ?? "",
+                    rock: p.rock ?? '',
+                    subType: p.t?.subType ?? '',
                     num: p.nr ?? 0,
                     fa: !!p.fa,
                     faDate: p.faDate,
@@ -498,8 +430,8 @@ const Area = () => {
         return (
           <ProblemList
             storageKey={`area/${areaId}`}
-            mode="sector"
-            defaultOrder="grade-desc"
+            mode='sector'
+            defaultOrder='grade-desc'
             rows={rows}
           />
         );
@@ -510,25 +442,21 @@ const Area = () => {
   return (
     <>
       <title>{`${data.name} | ${meta?.title}`}</title>
-      <meta name="description" content={data.comment}></meta>
-      <div style={{ marginBottom: "5px" }}>
-        <div style={{ float: "right" }}>
+      <meta name='description' content={data.comment}></meta>
+      <div style={{ marginBottom: '5px' }}>
+        <div style={{ float: 'right' }}>
           {meta.isAdmin ? (
-            <Button.Group size="mini" compact>
-              <Button
-                animated="fade"
-                as={Link}
-                to={`/sector/edit/${data.id}/0`}
-              >
+            <Button.Group size='mini' compact>
+              <Button animated='fade' as={Link} to={`/sector/edit/${data.id}/0`}>
                 <Button.Content hidden>Add</Button.Content>
                 <Button.Content visible>
-                  <Icon name="plus" />
+                  <Icon name='plus' />
                 </Button.Content>
               </Button>
-              <Button animated="fade" as={Link} to={`/area/edit/${data.id}`}>
+              <Button animated='fade' as={Link} to={`/area/edit/${data.id}`}>
                 <Button.Content hidden>Edit</Button.Content>
                 <Button.Content visible>
-                  <Icon name="edit" />
+                  <Icon name='edit' />
                 </Button.Content>
               </Button>
             </Button.Group>
@@ -536,14 +464,14 @@ const Area = () => {
         </div>
         <Breadcrumb>
           <Breadcrumb.Section>
-            <Link to="/areas">Areas</Link>
+            <Link to='/areas'>Areas</Link>
           </Breadcrumb.Section>
-          <Breadcrumb.Divider icon="right angle" />
+          <Breadcrumb.Divider icon='right angle' />
           <Breadcrumb.Section active>
             {data.name}
             {data.forDevelopers ? (
-              <span style={{ fontWeight: "normal" }}> (under development)</span>
-            ) : null}{" "}
+              <span style={{ fontWeight: 'normal' }}> (under development)</span>
+            ) : null}{' '}
             <LockSymbol
               lockedAdmin={!!data.lockedAdmin}
               lockedSuperadmin={!!data.lockedSuperadmin}
@@ -553,10 +481,10 @@ const Area = () => {
       </div>
       {data.accessClosed ? (
         <Message
-          size="huge"
+          size='huge'
           negative
-          icon="attention"
-          header="Area closed!"
+          icon='attention'
+          header='Area closed!'
           content={data.accessClosed}
         />
       ) : null}
@@ -585,7 +513,7 @@ const Area = () => {
               {t.type}:
               <Label.Detail>
                 {t.num}
-                {t.ticked ? " (" + t.ticked + " ticked)" : ""}
+                {t.ticked ? ' (' + t.ticked + ' ticked)' : ''}
               </Label.Detail>
             </Label>
           ))}
@@ -593,16 +521,12 @@ const Area = () => {
             Page views:
             <Label.Detail>{data.pageViews}</Label.Detail>
           </Label>
-          <DownloadButton href={`/areas/pdf?id=${data.id}`}>
-            area.pdf
-          </DownloadButton>
-          {data.coordinates &&
-          data.coordinates.latitude &&
-          data.coordinates.longitude ? (
+          <DownloadButton href={`/areas/pdf?id=${data.id}`}>area.pdf</DownloadButton>
+          {data.coordinates && data.coordinates.latitude && data.coordinates.longitude ? (
             <ConditionLabels
               lat={data.coordinates.latitude}
               lng={data.coordinates.longitude}
-              label={data.name ?? ""}
+              label={data.name ?? ''}
               wallDirectionCalculated={undefined}
               wallDirectionManual={undefined}
               sunFromHour={data.sunFromHour ?? 0}
@@ -613,7 +537,7 @@ const Area = () => {
         </Label.Group>
         <Markdown content={data.comment} />
         {data.triviaMedia?.length ? (
-          <Feed.Extra style={{ paddingTop: "10px" }}>
+          <Feed.Extra style={{ paddingTop: '10px' }}>
             <Media
               pitches={null}
               media={data.triviaMedia}

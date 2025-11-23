@@ -1,1 +1,1 @@
-export { SlopeProfile } from "./SlopeProfile";
+export { SlopeProfile } from './SlopeProfile';

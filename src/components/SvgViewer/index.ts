@@ -1,1 +1,1 @@
-export { SvgViewer as default } from "./SvgViewer";
+export { SvgViewer as default } from './SvgViewer';

@@ -1,1 +1,1 @@
-export { ProblemTicks } from "./ProblemTicks";
+export { ProblemTicks } from './ProblemTicks';

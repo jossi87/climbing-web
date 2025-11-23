@@ -5,36 +5,18 @@ import React, {
   useCallback,
   MouseEventHandler,
   useReducer,
-} from "react";
-import {
-  Container,
-  Button,
-  Segment,
-  Dropdown,
-  Input,
-  Icon,
-  Divider,
-} from "semantic-ui-react";
-import { Link } from "react-router-dom";
-import { useMeta } from "../common/meta";
-import {
-  EditableSvg,
-  getImageUrl,
-  postProblemSvg,
-  useAccessToken,
-  useSvgEdit,
-} from "../../api";
-import {
-  parseReadOnlySvgs,
-  parsePath,
-  isCubicPoint,
-} from "../../utils/svg-utils";
-import { Loading } from "../common/widgets/widgets";
-import { useNavigate, useParams } from "react-router-dom";
-import { captureException } from "@sentry/react";
-import { generatePath, reducer } from "./state";
-import { neverGuard } from "../../utils/neverGuard";
-import { MediaRegion } from "../../utils/svg-scaler";
+} from 'react';
+import { Container, Button, Segment, Dropdown, Input, Icon, Divider } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
+import { useMeta } from '../common/meta';
+import { EditableSvg, getImageUrl, postProblemSvg, useAccessToken, useSvgEdit } from '../../api';
+import { parseReadOnlySvgs, parsePath, isCubicPoint } from '../../utils/svg-utils';
+import { Loading } from '../common/widgets/widgets';
+import { useNavigate, useParams } from 'react-router-dom';
+import { captureException } from '@sentry/react';
+import { generatePath, reducer } from './state';
+import { neverGuard } from '../../utils/neverGuard';
+import { MediaRegion } from '../../utils/svg-scaler';
 
 const useIds = (): {
   problemId: number;
@@ -43,13 +25,13 @@ const useIds = (): {
 } => {
   const { problemId, pitch, mediaId } = useParams();
   if (!problemId) {
-    throw new Error("Missing problemId param");
+    throw new Error('Missing problemId param');
   }
   if (!pitch) {
-    throw new Error("Missing pitch param");
+    throw new Error('Missing pitch param');
   }
   if (!mediaId) {
-    throw new Error("Missing mediaId param");
+    throw new Error('Missing mediaId param');
   }
   return {
     problemId: +problemId,
@@ -66,11 +48,11 @@ const SvgEditLoader = () => {
   const [saving, setSaving] = useState(false);
   const navigate = useNavigate();
 
-  const save: Props["onSave"] = useCallback(
+  const save: Props['onSave'] = useCallback(
     ({ path, hasAnchor, anchors, tradBelayStations, texts }) => {
       setSaving(true);
 
-      const correctPoints = parsePath(path ?? "", data.mediaRegion);
+      const correctPoints = parsePath(path ?? '', data.mediaRegion);
       const correctPathTxt = generatePath(correctPoints);
 
       return postProblemSvg(
@@ -106,15 +88,7 @@ const SvgEditLoader = () => {
           setSaving(false);
         });
     },
-    [
-      accessToken,
-      problemId,
-      pitch,
-      mediaId,
-      data?.svgId,
-      data?.mediaRegion,
-      navigate,
-    ],
+    [accessToken, problemId, pitch, mediaId, data?.svgId, data?.mediaRegion, navigate],
   );
 
   const onCancel = useCallback(() => {
@@ -144,29 +118,26 @@ const SvgEditLoader = () => {
 
 type Props = Pick<
   EditableSvg,
-  | "svgId"
-  | "problemId"
-  | "pitch"
-  | "mediaId"
-  | "mediaWidth"
-  | "mediaHeight"
-  | "mediaRegion"
-  | "sections"
-  | "crc32"
-  | "anchors"
-  | "hasAnchor"
-  | "nr"
-  | "path"
-  | "texts"
-  | "tradBelayStations"
-  | "readOnlySvgs"
+  | 'svgId'
+  | 'problemId'
+  | 'pitch'
+  | 'mediaId'
+  | 'mediaWidth'
+  | 'mediaHeight'
+  | 'mediaRegion'
+  | 'sections'
+  | 'crc32'
+  | 'anchors'
+  | 'hasAnchor'
+  | 'nr'
+  | 'path'
+  | 'texts'
+  | 'tradBelayStations'
+  | 'readOnlySvgs'
 > & {
   onSave: (
     updated: Required<
-      Pick<
-        EditableSvg,
-        "path" | "hasAnchor" | "anchors" | "tradBelayStations" | "texts"
-      >
+      Pick<EditableSvg, 'path' | 'hasAnchor' | 'anchors' | 'tradBelayStations' | 'texts'>
     >,
   ) => void;
   saving: boolean;
@@ -174,8 +145,8 @@ type Props = Pick<
   onUpdateMediaRegion: (customMediaRegion: MediaRegion) => void;
 };
 
-const black = "#000000";
-const stroke = "#FFFFFF";
+const black = '#000000';
+const stroke = '#FFFFFF';
 
 type Coords = { x: number; y: number };
 
@@ -190,9 +161,9 @@ const useMinWindowScale = () => {
       setMinWindowScale(min);
     };
 
-    window.addEventListener("resize", onResize);
+    window.addEventListener('resize', onResize);
     return () => {
-      window.removeEventListener("resize", onResize);
+      window.removeEventListener('resize', onResize);
     };
   }, []);
 
@@ -219,8 +190,7 @@ export const SvgEdit = ({
   texts: initialTexts,
   hasAnchor: initialHasAnchor,
 }: Props) => {
-  const [customMediaRegion, setCustomMediaRegion] =
-    useState<MediaRegion>(mediaRegion);
+  const [customMediaRegion, setCustomMediaRegion] = useState<MediaRegion>(mediaRegion);
   const w = mediaRegion?.width || mediaWidth;
   const h = mediaRegion?.height || mediaHeight;
   const navigate = useNavigate();
@@ -232,15 +202,13 @@ export const SvgEdit = ({
   };
 
   const readOnlyPointsRef = useRef(
-    readOnlySvgs
-      .map((svg) => parsePath(svg.path).map((p, ix) => ({ ...p, ix })))
-      .flat(),
+    readOnlySvgs.map((svg) => parsePath(svg.path).map((p, ix) => ({ ...p, ix }))).flat(),
   );
 
   const [{ path, points, activePoint }, dispatch] = useReducer(
     reducer,
     {
-      mode: "idle" as any,
+      mode: 'idle' as any,
       activePoint: 0,
       points: [],
       path: initialPath,
@@ -260,17 +228,15 @@ export const SvgEdit = ({
     },
   );
 
-  const [anchors, setAnchors] =
-    useState<EditableSvg["anchors"]>(initialAnchors);
-  const [tradBelayStations, setTradBelayStations] = useState<
-    EditableSvg["tradBelayStations"]
-  >(initialTradBelayStations);
-  const [texts, setTexts] = useState<EditableSvg["texts"]>(initialTexts);
+  const [anchors, setAnchors] = useState<EditableSvg['anchors']>(initialAnchors);
+  const [tradBelayStations, setTradBelayStations] =
+    useState<EditableSvg['tradBelayStations']>(initialTradBelayStations);
+  const [texts, setTexts] = useState<EditableSvg['texts']>(initialTexts);
 
   const [hasAnchor, setHasAnchor] = useState(initialHasAnchor);
-  const [mode, setMode] = useState<
-    "points" | "add-anchor" | "add-text" | "add-trad-belay"
-  >("points");
+  const [mode, setMode] = useState<'points' | 'add-anchor' | 'add-text' | 'add-trad-belay'>(
+    'points',
+  );
   const imageRef = useRef<SVGImageElement>(null);
 
   const minWindowScale = useMinWindowScale();
@@ -296,23 +262,20 @@ export const SvgEdit = ({
       shift.current = e.shiftKey;
     };
 
-    document.addEventListener("keydown", handleKey);
-    document.addEventListener("keyup", handleKey);
+    document.addEventListener('keydown', handleKey);
+    document.addEventListener('keyup', handleKey);
     return () => {
-      document.removeEventListener("keydown", handleKey);
-      document.removeEventListener("keyup", handleKey);
+      document.removeEventListener('keydown', handleKey);
+      document.removeEventListener('keyup', handleKey);
     };
   }, []);
 
   const cancelDragging = useCallback(() => {
-    dispatch({ action: "idle" });
+    dispatch({ action: 'idle' });
   }, []);
 
   const getMouseCoords = useCallback(
-    (
-      e: Pick<MouseEvent, "clientX" | "clientY">,
-      snapToClosePoint: boolean,
-    ): Coords => {
+    (e: Pick<MouseEvent, 'clientX' | 'clientY'>, snapToClosePoint: boolean): Coords => {
       const dim = imageRef.current?.getBoundingClientRect();
       if (!dim) {
         return { x: 0, y: 0 };
@@ -326,9 +289,7 @@ export const SvgEdit = ({
 
       const readOnlyPoints = readOnlyPointsRef.current;
       if (snapToClosePoint) {
-        const foundPoint = readOnlyPoints?.find(
-          (p2) => Math.hypot(p.x - p2.x, p.y - p2.y) < 20,
-        );
+        const foundPoint = readOnlyPoints?.find((p2) => Math.hypot(p.x - p2.x, p.y - p2.y) < 20);
         if (foundPoint) {
           p = { x: foundPoint.x, y: foundPoint.y };
         }
@@ -343,39 +304,39 @@ export const SvgEdit = ({
     (e) => {
       e.preventDefault();
       switch (mode) {
-        case "points": {
+        case 'points': {
           if (shift.current) {
             const { x, y } = getMouseCoords(e, true);
-            dispatch({ action: "add-point", x, y });
+            dispatch({ action: 'add-point', x, y });
           }
-          dispatch({ action: "mouse-up" });
+          dispatch({ action: 'mouse-up' });
           break;
         }
 
-        case "add-text": {
+        case 'add-text': {
           const coords = getMouseCoords(e, false);
-          const txt = prompt("Enter text", "");
+          const txt = prompt('Enter text', '');
           if (txt) {
             texts.push({ txt, x: coords.x, y: coords.y });
             setTexts(texts);
           }
-          setMode("points");
+          setMode('points');
           break;
         }
 
-        case "add-anchor": {
+        case 'add-anchor': {
           const coords = getMouseCoords(e, true);
           anchors.push(coords);
           setAnchors(anchors);
-          setMode("points");
+          setMode('points');
           break;
         }
 
-        case "add-trad-belay": {
+        case 'add-trad-belay': {
           const coords = getMouseCoords(e, true);
           tradBelayStations.push(coords);
           setTradBelayStations(tradBelayStations);
-          setMode("points");
+          setMode('points');
           break;
         }
 
@@ -391,7 +352,7 @@ export const SvgEdit = ({
     (e) => {
       e.preventDefault();
       const { x, y } = getMouseCoords(e, true);
-      dispatch({ action: "mouse-move", x, y });
+      dispatch({ action: 'mouse-move', x, y });
     },
     [getMouseCoords],
   );
@@ -400,25 +361,25 @@ export const SvgEdit = ({
     // Remove selection caused by shift-button used to create new points
     document.getSelection()?.removeAllRanges();
     e.preventDefault();
-    dispatch({ action: "mouse-up" });
+    dispatch({ action: 'mouse-up' });
     return false;
   }, []);
 
   const setPointType = useCallback((pointType: string) => {
     dispatch({
-      action: "set-type",
-      type: pointType === "C" ? "curve" : "line",
+      action: 'set-type',
+      type: pointType === 'C' ? 'curve' : 'line',
     });
   }, []);
 
   const removeActivePoint = useCallback(() => {
-    dispatch({ action: "remove-point" });
+    dispatch({ action: 'remove-point' });
   }, []);
 
   const reset = useCallback(() => {
     shift.current = false;
-    dispatch({ action: "reset" });
-    setMode("points");
+    dispatch({ action: 'reset' });
+    setMode('points');
     setAnchors([]);
     setTradBelayStations([]);
     setTexts([]);
@@ -427,10 +388,10 @@ export const SvgEdit = ({
 
   const circles = points.map((p, i, a) => {
     const handle: React.ReactNode = isCubicPoint(p) ? (
-      <g className="buldreinfo-svg-edit-opacity">
+      <g className='buldreinfo-svg-edit-opacity'>
         <line
-          className={"buldreinfo-svg-pointer"}
-          style={{ fill: "none", stroke: black }}
+          className={'buldreinfo-svg-pointer'}
+          style={{ fill: 'none', stroke: black }}
           x1={a[i - 1].x}
           y1={a[i - 1].y}
           x2={p.c[0].x}
@@ -439,8 +400,8 @@ export const SvgEdit = ({
           strokeDasharray={0.003 * w}
         />
         <line
-          className={"buldreinfo-svg-pointer"}
-          style={{ fill: "none", stroke: black }}
+          className={'buldreinfo-svg-pointer'}
+          style={{ fill: 'none', stroke: black }}
           x1={p.x}
           y1={p.y}
           x2={p.c[1].x}
@@ -449,25 +410,25 @@ export const SvgEdit = ({
           strokeDasharray={0.003 * w}
         />
         <circle
-          className={"buldreinfo-svg-pointer"}
+          className={'buldreinfo-svg-pointer'}
           fill={black}
           cx={p.c[0].x}
           cy={p.c[0].y}
           r={0.003 * w}
-          onMouseDown={() => dispatch({ action: "drag-cubic", index: i, c: 0 })}
+          onMouseDown={() => dispatch({ action: 'drag-cubic', index: i, c: 0 })}
         />
         <circle
-          className={"buldreinfo-svg-pointer"}
+          className={'buldreinfo-svg-pointer'}
           fill={black}
           cx={p.c[1].x}
           cy={p.c[1].y}
           r={0.003 * w}
-          onMouseDown={() => dispatch({ action: "drag-cubic", index: i, c: 1 })}
+          onMouseDown={() => dispatch({ action: 'drag-cubic', index: i, c: 1 })}
         />
 
         <line
-          className={"buldreinfo-svg-pointer"}
-          style={{ fill: "none", stroke: stroke }}
+          className={'buldreinfo-svg-pointer'}
+          style={{ fill: 'none', stroke: stroke }}
           x1={a[i - 1].x}
           y1={a[i - 1].y}
           x2={p.c[0].x}
@@ -476,8 +437,8 @@ export const SvgEdit = ({
           strokeDasharray={0.003 * w}
         />
         <line
-          className={"buldreinfo-svg-pointer"}
-          style={{ fill: "none", stroke: stroke }}
+          className={'buldreinfo-svg-pointer'}
+          style={{ fill: 'none', stroke: stroke }}
           x1={p.x}
           y1={p.y}
           x2={p.c[1].x}
@@ -486,37 +447,37 @@ export const SvgEdit = ({
           strokeDasharray={0.003 * w}
         />
         <circle
-          className={"buldreinfo-svg-pointer"}
+          className={'buldreinfo-svg-pointer'}
           fill={stroke}
           cx={p.c[0].x}
           cy={p.c[0].y}
           r={0.002 * w}
-          onMouseDown={() => dispatch({ action: "drag-cubic", index: i, c: 0 })}
+          onMouseDown={() => dispatch({ action: 'drag-cubic', index: i, c: 0 })}
         />
         <circle
-          className={"buldreinfo-svg-pointer"}
+          className={'buldreinfo-svg-pointer'}
           fill={stroke}
           cx={p.c[1].x}
           cy={p.c[1].y}
           r={0.002 * w}
-          onMouseDown={() => dispatch({ action: "drag-cubic", index: i, c: 1 })}
+          onMouseDown={() => dispatch({ action: 'drag-cubic', index: i, c: 1 })}
         />
       </g>
     ) : null;
 
-    const fill = activePoint === i ? "#00FF00" : "#FF0000";
+    const fill = activePoint === i ? '#00FF00' : '#FF0000';
     return (
-      <g key={[p.x, p.y, i].join("x")}>
+      <g key={[p.x, p.y, i].join('x')}>
         {handle}
         <circle
-          className={"buldreinfo-svg-pointer"}
+          className={'buldreinfo-svg-pointer'}
           fill={fill}
           stroke={black}
           strokeWidth={Math.min(1, 0.001 * w)}
           cx={p.x}
           cy={p.y}
           r={0.005 * w}
-          onMouseDown={() => dispatch({ action: "drag-point", index: i })}
+          onMouseDown={() => dispatch({ action: 'drag-point', index: i })}
         />
       </g>
     );
@@ -524,14 +485,14 @@ export const SvgEdit = ({
 
   return (
     <Container onMouseUp={cancelDragging} onMouseLeave={cancelDragging}>
-      <Segment size="mini">
-        <Button.Group size="mini" floated="right">
+      <Segment size='mini'>
+        <Button.Group size='mini' floated='right'>
           <Button
             primary
             as={Link}
-            to="/mp4/20230718_SvgEditExample.mp4"
-            target="_blank"
-            rel="noopener noreferrer"
+            to='/mp4/20230718_SvgEditExample.mp4'
+            target='_blank'
+            rel='noopener noreferrer'
           >
             Example-video
           </Button>
@@ -546,18 +507,18 @@ export const SvgEdit = ({
                 return (
                   <polygon
                     points={`${a.x},${a.y - r}, ${a.x - r},${a.y + r}, ${a.x + r},${a.y + r}`}
-                    key={[a.x, a.y].join("x")}
-                    fill="#E2011A"
+                    key={[a.x, a.y].join('x')}
+                    fill='#E2011A'
                   />
                 );
               }).length === 0 &&
               texts.map((text) => (
                 <text
-                  key={[text.x, text.y].join("x")}
+                  key={[text.x, text.y].join('x')}
                   x={text.x}
                   y={text.y}
-                  fontSize="5em"
-                  fill={"red"}
+                  fontSize='5em'
+                  fill={'red'}
                 >
                   {text.txt}
                 </text>
@@ -574,28 +535,26 @@ export const SvgEdit = ({
             Save
           </Button>
         </Button.Group>
-        <Button.Group size="mini">
+        <Button.Group size='mini'>
           <Button
-            onClick={() =>
-              setMode((val) => (val === "add-text" ? "points" : "add-text"))
-            }
+            onClick={() => setMode((val) => (val === 'add-text' ? 'points' : 'add-text'))}
             toggle
-            active={mode === "add-text"}
+            active={mode === 'add-text'}
             disabled={pitch !== 0}
           >
             Text
           </Button>
           <Button.Or />
           <Button
-            icon="trash"
+            icon='trash'
             negative={
               texts.map((text) => (
                 <text
-                  key={[text.x, text.y].join("x")}
+                  key={[text.x, text.y].join('x')}
                   x={text.x}
                   y={text.y}
-                  fontSize="5em"
-                  fill={"red"}
+                  fontSize='5em'
+                  fill={'red'}
                 >
                   {text.txt}
                 </text>
@@ -604,11 +563,11 @@ export const SvgEdit = ({
             disabled={
               texts.map((text) => (
                 <text
-                  key={[text.x, text.y].join("x")}
+                  key={[text.x, text.y].join('x')}
                   x={text.x}
                   y={text.y}
-                  fontSize="5em"
-                  fill={"red"}
+                  fontSize='5em'
+                  fill={'red'}
                 >
                   {text.txt}
                 </text>
@@ -619,59 +578,51 @@ export const SvgEdit = ({
         </Button.Group>
         {meta.isClimbing && (
           <>
-            {" "}
-            <Button.Group size="mini">
+            {' '}
+            <Button.Group size='mini'>
               <Button
-                onClick={() =>
-                  setMode((val) =>
-                    val === "add-anchor" ? "points" : "add-anchor",
-                  )
-                }
+                onClick={() => setMode((val) => (val === 'add-anchor' ? 'points' : 'add-anchor'))}
                 toggle
-                active={mode === "add-anchor"}
+                active={mode === 'add-anchor'}
                 disabled={pitch !== 0}
               >
                 Extra anchors
               </Button>
               <Button.Or />
               <Button
-                icon="trash"
+                icon='trash'
                 negative={anchors.length !== 0}
                 disabled={anchors.length === 0}
                 onClick={() => setAnchors([])}
               />
-            </Button.Group>{" "}
-            <Button.Group size="mini">
+            </Button.Group>{' '}
+            <Button.Group size='mini'>
               <Button
                 onClick={() =>
-                  setMode((val) =>
-                    val === "add-trad-belay" ? "points" : "add-trad-belay",
-                  )
+                  setMode((val) => (val === 'add-trad-belay' ? 'points' : 'add-trad-belay'))
                 }
                 toggle
-                active={mode === "add-trad-belay"}
+                active={mode === 'add-trad-belay'}
                 disabled={pitch !== 0}
               >
                 Trad belay stations
               </Button>
               <Button.Or />
               <Button
-                icon="trash"
+                icon='trash'
                 negative={tradBelayStations.length !== 0}
                 disabled={tradBelayStations.length === 0}
                 onClick={() => setTradBelayStations([])}
               />
-            </Button.Group>{" "}
+            </Button.Group>{' '}
             <Button
               icon
-              labelPosition="left"
-              size="mini"
+              labelPosition='left'
+              size='mini'
               onClick={() => setHasAnchor(!hasAnchor)}
               disabled={points.length === 0}
             >
-              <Icon
-                name={hasAnchor ? "check square outline" : "square outline"}
-              />
+              <Icon name={hasAnchor ? 'check square outline' : 'square outline'} />
               Anchor
             </Button>
             {meta.isClimbing && sections?.length > 1 && (
@@ -682,11 +633,11 @@ export const SvgEdit = ({
                   refresh(problemId, +value, mediaId);
                 }}
                 options={[
-                  { key: -1, value: 0, text: "Entire route" },
+                  { key: -1, value: 0, text: 'Entire route' },
                   ...sections.map((s, i) => ({
                     key: i,
                     value: s.nr,
-                    text: "Pitch " + s.nr,
+                    text: 'Pitch ' + s.nr,
                   })),
                 ]}
               />
@@ -694,35 +645,29 @@ export const SvgEdit = ({
           </>
         )}
         <br />
-        <strong>SHIFT + CLICK</strong> to add a point | <strong>CLICK</strong>{" "}
-        to select a point | <strong>CLICK AND DRAG</strong> to move a point
+        <strong>SHIFT + CLICK</strong> to add a point | <strong>CLICK</strong> to select a point |{' '}
+        <strong>CLICK AND DRAG</strong> to move a point
         <br />
         {activePoint !== 0 && (
           <Dropdown
             selection
-            value={isCubicPoint(points[activePoint]) ? "C" : "L"}
-            onChange={(_, { value }) =>
-              setPointType(value ? String(value) : "")
-            }
+            value={isCubicPoint(points[activePoint]) ? 'C' : 'L'}
+            onChange={(_, { value }) => setPointType(value ? String(value) : '')}
             options={[
-              { key: 1, value: "L", text: "Selected point: Line to" },
-              { key: 2, value: "C", text: "Selected point: Curve to" },
+              { key: 1, value: 'L', text: 'Selected point: Line to' },
+              { key: 2, value: 'C', text: 'Selected point: Curve to' },
             ]}
           />
         )}
-        <Button
-          size="mini"
-          disabled={!points || points.length === 0}
-          onClick={removeActivePoint}
-        >
+        <Button size='mini' disabled={!points || points.length === 0} onClick={removeActivePoint}>
           Remove this point
         </Button>
         {pitch != 0 && (
           <>
             <Divider horizontal>Image region</Divider>
             <Input
-              size="mini"
-              label="x"
+              size='mini'
+              label='x'
               value={customMediaRegion?.x}
               onChange={(_, { value }) =>
                 setCustomMediaRegion((prevState) => ({
@@ -732,8 +677,8 @@ export const SvgEdit = ({
               }
             />
             <Input
-              size="mini"
-              label="y"
+              size='mini'
+              label='y'
               value={customMediaRegion?.y}
               onChange={(_, { value }) =>
                 setCustomMediaRegion((prevState) => ({
@@ -743,46 +688,38 @@ export const SvgEdit = ({
               }
             />
             <Input
-              size="mini"
-              label="width"
+              size='mini'
+              label='width'
               value={customMediaRegion?.width}
               onChange={(_, { value }) =>
                 setCustomMediaRegion((prevState) => ({
                   ...prevState,
-                  width: Math.min(
-                    +value || 1920,
-                    mediaWidth - (prevState?.x || 0),
-                    3000,
-                  ),
+                  width: Math.min(+value || 1920, mediaWidth - (prevState?.x || 0), 3000),
                 }))
               }
             />
             <Input
-              size="mini"
-              label="height"
+              size='mini'
+              label='height'
               value={customMediaRegion?.height}
               onChange={(_, { value }) =>
                 setCustomMediaRegion((prevState) => ({
                   ...prevState,
-                  height: Math.min(
-                    +value || 1080,
-                    mediaHeight - (prevState?.y || 0),
-                    4000,
-                  ),
+                  height: Math.min(+value || 1080, mediaHeight - (prevState?.y || 0), 4000),
                 }))
               }
             />
             {customMediaRegion && customMediaRegion !== mediaRegion && (
               <>
-                {" "}
+                {' '}
                 <Button
-                  size="mini"
+                  size='mini'
                   positive
                   circular
                   icon
                   onClick={() => onUpdateMediaRegion(customMediaRegion)}
                 >
-                  <Icon name="refresh" />
+                  <Icon name='refresh' />
                 </Button>
               </>
             )}
@@ -791,48 +728,28 @@ export const SvgEdit = ({
       </Segment>
 
       <svg
-        viewBox={"0 0 " + w + " " + h}
+        viewBox={'0 0 ' + w + ' ' + h}
         onClick={handleOnClick}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
-        width="100%"
-        height="100%"
+        width='100%'
+        height='100%'
       >
         <image
           ref={imageRef}
           xlinkHref={getImageUrl(mediaId, crc32, { mediaRegion })}
-          width="100%"
-          height="100%"
+          width='100%'
+          height='100%'
         />
         {parseReadOnlySvgs(readOnlySvgs, w, h, minWindowScale)}
-        <path
-          style={{ fill: "none", stroke: black }}
-          d={path}
-          strokeWidth={0.003 * w}
-        />
-        <path
-          style={{ fill: "none", stroke: "#FF0000" }}
-          d={path}
-          strokeWidth={0.002 * w}
-        />
+        <path style={{ fill: 'none', stroke: black }} d={path} strokeWidth={0.003 * w} />
+        <path style={{ fill: 'none', stroke: '#FF0000' }} d={path} strokeWidth={0.002 * w} />
         {circles}
         {anchors.map((a) => (
-          <circle
-            key={[a.x, a.y].join("x")}
-            fill="#E2011A"
-            cx={a.x}
-            cy={a.y}
-            r={0.006 * w}
-          />
+          <circle key={[a.x, a.y].join('x')} fill='#E2011A' cx={a.x} cy={a.y} r={0.006 * w} />
         ))}
         {texts.map((text) => (
-          <text
-            key={[text.x, text.y].join("x")}
-            x={text.x}
-            y={text.y}
-            fontSize="5em"
-            fill={"red"}
-          >
+          <text key={[text.x, text.y].join('x')} x={text.x} y={text.y} fontSize='5em' fill={'red'}>
             {text.txt}
           </text>
         ))}
@@ -841,20 +758,20 @@ export const SvgEdit = ({
           return (
             <polygon
               points={`${a.x},${a.y - r}, ${a.x - r},${a.y + r}, ${a.x + r},${a.y + r}`}
-              key={[a.x, a.y].join("x")}
-              fill="#E2011A"
+              key={[a.x, a.y].join('x')}
+              fill='#E2011A'
             />
           );
         })}
       </svg>
       <br />
       <Input
-        label="SVG Path:"
+        label='SVG Path:'
         fluid
-        placeholder="SVG Path"
-        value={path || ""}
+        placeholder='SVG Path'
+        value={path || ''}
         onChange={(_, { value }) => {
-          dispatch({ action: "update-path", path: value ?? "" });
+          dispatch({ action: 'update-path', path: value ?? '' });
         }}
       />
     </Container>

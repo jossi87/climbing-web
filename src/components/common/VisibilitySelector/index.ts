@@ -1,4 +1,1 @@
-export {
-  VisibilitySelector,
-  VisibilitySelectorField,
-} from "./VisibilitySelector";
+export { VisibilitySelector, VisibilitySelectorField } from './VisibilitySelector';

@@ -1,9 +1,9 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import Leaflet from "../../common/leaflet/leaflet";
-import { Loading, LockSymbol } from "../../common/widgets/widgets";
-import { List, Segment } from "semantic-ui-react";
-import { useProfileTodo } from "../../../api";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import Leaflet from '../../common/leaflet/leaflet';
+import { Loading, LockSymbol } from '../../common/widgets/widgets';
+import { List, Segment } from 'semantic-ui-react';
+import { useProfileTodo } from '../../../api';
 
 type ProfileTodoProps = {
   userId: number;
@@ -11,19 +11,14 @@ type ProfileTodoProps = {
   defaultZoom: number;
 };
 
-const ProfileTodo = ({
-  userId,
-  defaultCenter,
-  defaultZoom,
-}: ProfileTodoProps) => {
+const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) => {
   const { data } = useProfileTodo(userId);
 
   if (!data) {
     return <Loading />;
   }
 
-  const markers: NonNullable<React.ComponentProps<typeof Leaflet>["markers"]> =
-    [];
+  const markers: NonNullable<React.ComponentProps<typeof Leaflet>['markers']> = [];
   data.areas.forEach((a) => {
     a.sectors.forEach((s) => {
       s.problems.forEach((p) => {
@@ -31,7 +26,7 @@ const ProfileTodo = ({
           markers.push({
             coordinates: p.coordinates,
             label: p.name,
-            url: "/problem/" + p.id,
+            url: '/problem/' + p.id,
           });
         }
       });
@@ -45,9 +40,9 @@ const ProfileTodo = ({
     <Segment>
       <>
         <Leaflet
-          key={"todo=" + userId}
+          key={'todo=' + userId}
           autoZoom={true}
-          height="40vh"
+          height='40vh'
           markers={markers}
           defaultCenter={defaultCenter}
           defaultZoom={defaultZoom}
@@ -79,19 +74,14 @@ const ProfileTodo = ({
                       <List.Item key={problem.id}>
                         <List.Header>
                           {`#${problem.nr} `}
-                          <Link to={`/problem/${problem.id}`}>
-                            {problem.name}
-                          </Link>{" "}
-                          {problem.grade}
+                          <Link to={`/problem/${problem.id}`}>{problem.name}</Link> {problem.grade}
                           {problem.partners && problem.partners.length > 0 && (
                             <small>
-                              <i style={{ color: "gray" }}>
+                              <i style={{ color: 'gray' }}>
                                 {problem.partners.map((u, i) => (
                                   <React.Fragment key={u.id}>
-                                    {i === 0 ? " Other users: " : ", "}
-                                    <Link to={`/user/${u.id}/todo`}>
-                                      {u.name}
-                                    </Link>
+                                    {i === 0 ? ' Other users: ' : ', '}
+                                    <Link to={`/user/${u.id}/todo`}>{u.name}</Link>
                                   </React.Fragment>
                                 ))}
                               </i>
