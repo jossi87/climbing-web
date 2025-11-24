@@ -164,7 +164,7 @@ export function useArea(id: number) {
 }
 
 export function useMediaSvg(idMedia: number) {
-  const { data, ...dataResult } = useData<any>(`/media?idMedia=${idMedia}`, {
+  const { data, ...dataResult } = useData<Success<'getMedia'>>(`/media?idMedia=${idMedia}`, {
     queryKey: [`/media`, { idMedia }],
   });
 

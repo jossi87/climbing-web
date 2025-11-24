@@ -1,5 +1,17 @@
 import { Success } from '../@types/buldreinfo';
 import { components, operations } from '../@types/buldreinfo/swagger';
+
+type UploadMedia = {
+  file?: File | null;
+  photographer?: string;
+  inPhoto?: components['schemas']['User'][];
+  pitch?: number;
+  trivia?: boolean;
+  description?: string;
+  embedVideoUrl?: string;
+  embedThumbnailUrl?: string;
+  embedMilliseconds?: number;
+};
 import { downloadFile, makeAuthenticatedRequest } from './utils';
 
 export function downloadTocXlsx(accessToken: string | null) {
@@ -53,7 +65,7 @@ export function postComment(
   danger: boolean,
   resolved: boolean,
   del: boolean,
-  media: any,
+  media: UploadMedia[],
 ): Promise<operations['postComments']['responses']['default']['content']['application/json']> {
   const formData = new FormData();
   const newMedia = media.map((m) => {
@@ -129,14 +141,14 @@ export function postProblem(
   rock: string,
   comment: string,
   originalGrade: string,
-  fa: any,
+  fa: components['schemas']['User'][] | undefined,
   faDate: string,
   nr: number,
-  t: any,
+  t: components['schemas']['Type'] | undefined,
   coordinates: components['schemas']['Coordinates'],
-  sections: any,
-  media: any,
-  faAid: any,
+  sections: components['schemas']['ProblemSection'][] | undefined,
+  media: UploadMedia[],
+  faAid: components['schemas']['FaAid'] | undefined,
   trivia: string,
   externalLinks: components['schemas']['ExternalLink'][],
   startingAltitude: string,
@@ -207,7 +219,7 @@ export function postProblem(
 export function postProblemMedia(
   accessToken: string | null,
   id: number,
-  media: any,
+  media: UploadMedia[],
 ): Promise<Success<'postProblemsMedia'>> {
   const formData = new FormData();
   const newMedia = media.map((m) => {
@@ -295,8 +307,8 @@ export function postSector(
   approach: components['schemas']['Slope'],
   descent: components['schemas']['Slope'],
   externalLinks: components['schemas']['ExternalLink'][],
-  media: any,
-  problemOrder: any,
+  media: UploadMedia[],
+  problemOrder: components['schemas']['SectorProblemOrder'][] | undefined,
 ): Promise<Success<'postSectors'>> {
   const formData = new FormData();
   const newMedia = media.map((m) => {
@@ -361,7 +373,7 @@ export function postTicks(
   date: string | undefined,
   stars: number,
   grade: string,
-  repeats: any,
+  repeats: components['schemas']['TickRepeat'][] | undefined,
 ): Promise<Success<'postTicks'>> {
   return makeAuthenticatedRequest(accessToken, `/ticks`, {
     method: 'POST',
