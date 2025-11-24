@@ -34,7 +34,7 @@ export const generatePath = (points: ParsedEntry[]) => {
   return d;
 };
 
-type State = {
+export type State = {
   mode: 'idle' | 'drag-point' | 'drag-cubic-0' | 'drag-cubic-1';
   activePoint: number;
   points: Readonly<ParsedEntry[]>;
@@ -43,7 +43,7 @@ type State = {
   otherPoints: Record<string, ParsedEntry & { ix: number }>;
 };
 
-type Update =
+export type Update =
   | { action: 'reset' }
   | { action: 'add-point'; x: number; y: number }
   | { action: 'remove-point' }

@@ -8,7 +8,7 @@ import { UsersSelector } from '../../common/user-selector/user-selector';
 import { components } from '../../../@types/buldreinfo/swagger';
 import { useMeta } from '../../common/meta/context';
 
-type UploadedMedia = {
+export type UploadedMedia = {
   file?: File;
   preview?: string;
 } & components['schemas']['NewMedia'];

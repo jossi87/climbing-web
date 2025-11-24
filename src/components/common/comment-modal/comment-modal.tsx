@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { postComment, useAccessToken } from './../../../api';
 import { Button, Modal, Form, TextArea, Message, Icon } from 'semantic-ui-react';
 import ImageUpload from '../image-upload/image-upload';
+import { components } from '../../../@types/buldreinfo/swagger';
 
 const CommentModal = ({
   comment,
@@ -14,11 +15,7 @@ const CommentModal = ({
   showHse: boolean;
   id: number;
   idProblem: number;
-  comment?: {
-    message: string;
-    danger: boolean;
-    resolved: boolean;
-  };
+  comment?: components['schemas']['ProblemComment'];
 }) => {
   const accessToken = useAccessToken();
   const [message, setMessage] = useState(comment?.message ?? '');

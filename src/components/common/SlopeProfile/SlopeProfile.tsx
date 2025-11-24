@@ -24,7 +24,7 @@ const createXmlString = (
   result += '\t<trkseg>\r\n';
   result += coordinates.reduce((accum, curr) => {
     const segmentTag = `\t\t<trkpt lat="${curr.latitude}" lon="${curr.longitude}"><ele>${curr.elevation}</ele></trkpt>\r\n`;
-    return (accum += segmentTag);
+    return accum + segmentTag;
   }, '');
   result += '\t</trkseg>\r\n';
   result += '</trk>\r\n';

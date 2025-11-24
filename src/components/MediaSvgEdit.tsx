@@ -14,6 +14,7 @@ import {
 } from '../utils/svg-helpers';
 import { Loading } from './common/widgets/widgets';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Success } from '../@types/buldreinfo';
 
 // These string literals are used directly where needed.
 
@@ -23,7 +24,7 @@ const MediaSvgEdit = () => {
   const { outerWidth, outerHeight } = window;
   const { media: data, status, isLoading, save: newSave } = useMediaSvg(+mediaId);
 
-  const [modifiedData, setData] = useState<any>(null);
+  const [modifiedData, setData] = useState<Success<'getMedia'> | undefined | null>(null);
 
   type EditableSvg = SvgType & {
     points?: ParsedEntry[];
@@ -52,8 +53,8 @@ const MediaSvgEdit = () => {
   const [saving, setSaving] = useState(false);
   const [activeElementIndex, setActiveElementIndex] = useState(-1);
   const shift = useRef<boolean>(false);
-  const [activePoint, setActivePoint] = useState<any>(null);
-  const [draggedPoint, setDraggedPoint] = useState<any>(null);
+  const [activePoint, setActivePoint] = useState<number | null>(null);
+  const [draggedPoint, setDraggedPoint] = useState<boolean>(false);
   const [draggedCubic, setDraggedCubic] = useState(false);
   const imageRef = useRef<SVGImageElement | null>(null);
 

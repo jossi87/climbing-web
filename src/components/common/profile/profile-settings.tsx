@@ -25,7 +25,7 @@ const ProfileSettings = () => {
     const [firstname, setFirstname] = useState(d.firstname ?? null);
     const [lastname, setLastname] = useState(d.lastname ?? null);
     const [emailVisibleToAll, setEmailVisibleToAll] = useState(!!d.emailVisibleToAll);
-    const [avatar, setAvatar] = useState<any>(null);
+    const [avatar, setAvatar] = useState<{ file: File; preview: string } | null>(null);
     const [isSaving, setIsSaving] = useState(false);
 
     const onDrop = useCallback<DropzoneOptions['onDrop']>((acceptedFiles) => {

@@ -67,4 +67,20 @@ export default defineConfig([
   {
     ...prettierConfig,
   }
+  ,
+  {
+    files: ['src/@types/**'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/consistent-type-definitions': 'off',
+    },
+  }
+  ,
+  {
+    files: ['src/vite-env.d.ts'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/consistent-type-definitions': 'off',
+    },
+  }
 ]);

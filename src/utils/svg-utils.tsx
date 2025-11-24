@@ -1,6 +1,6 @@
 import React from 'react';
 import { svgPathProperties } from 'svg-path-properties';
-import { MediaRegion } from './svg-scaler';
+// MediaRegion is intentionally not used here; remove import to avoid unused var warning
 
 type DescentProps = {
   path: React.SVGProps<SVGPathElement>['d'];

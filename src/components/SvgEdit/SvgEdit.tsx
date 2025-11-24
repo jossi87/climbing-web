@@ -14,7 +14,7 @@ import { parseReadOnlySvgs, parsePath, isCubicPoint } from '../../utils/svg-help
 import { Loading } from '../common/widgets/widgets';
 import { useNavigate, useParams } from 'react-router-dom';
 import { captureException } from '@sentry/react';
-import { generatePath, reducer } from './state';
+import { generatePath, reducer, State } from './state';
 import { neverGuard } from '../../utils/neverGuard';
 import { MediaRegion } from '../../utils/svg-scaler';
 
@@ -208,7 +208,7 @@ export const SvgEdit = ({
   const [{ path, points, activePoint }, dispatch] = useReducer(
     reducer,
     {
-      mode: 'idle' as any,
+      mode: 'idle' as State['mode'],
       activePoint: 0,
       points: [],
       path: initialPath,

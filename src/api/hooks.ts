@@ -595,14 +595,19 @@ export function useSvgEdit(
   }
 
   const svg = m.svgs.filter((x) => x.problemId == data.id && x.pitch == pitch)[0];
-  if (pitch && !mediaRegion) {
+  // Avoid reassigning the function parameter `mediaRegion` (eslint `no-param-reassign`).
+  let mediaRegionLocal = mediaRegion;
+  if (pitch && !mediaRegionLocal) {
     if (svg && svg.path) {
-      mediaRegion = calculateMediaRegion(svg.path, m.width, m.height);
+      mediaRegionLocal = calculateMediaRegion(svg.path, m.width, m.height);
     } else {
       const prevPitchSvg = m.svgs.filter((x) => x.problemId == data.id && x.pitch == pitch - 1)[0];
       if (prevPitchSvg && prevPitchSvg.path) {
-        mediaRegion = calculateMediaRegion(prevPitchSvg.path, m.width, m.height);
-        mediaRegion.y = Math.max(0, mediaRegion.y - Math.round(mediaRegion.height / 2));
+        mediaRegionLocal = calculateMediaRegion(prevPitchSvg.path, m.width, m.height);
+        mediaRegionLocal.y = Math.max(
+          0,
+          mediaRegionLocal.y - Math.round(mediaRegionLocal.height / 2),
+        );
       }
     }
   }
@@ -610,7 +615,8 @@ export function useSvgEdit(
   const svgId = svg?.id ?? 0;
   const svgNr = svg?.nr ?? 0;
   const hasAnchor = svg?.hasAnchor ?? pitch === 0;
-  const path = (svg?.path && mediaRegion ? scalePath(svg.path, mediaRegion) : svg?.path) ?? '';
+  const path =
+    (svg?.path && mediaRegionLocal ? scalePath(svg.path, mediaRegionLocal) : svg?.path) ?? '';
   const anchors = [];
   if (svg?.anchors) {
     try {

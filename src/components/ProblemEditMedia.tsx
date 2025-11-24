@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ImageUpload from './common/image-upload/image-upload';
+import ImageUpload, { UploadedMedia } from './common/image-upload/image-upload';
 import { useAuth0 } from '@auth0/auth0-react';
 import { postProblemMedia, useProblem } from '../api';
 import { Loading } from './common/widgets/widgets';
@@ -8,7 +8,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 const ProblemEditMedia = () => {
   const { getAccessTokenSilently } = useAuth0();
-  const [media, setMedia] = useState<any>(null);
+  const [media, setMedia] = useState<UploadedMedia[] | null>(null);
   const [saving, setSaving] = useState(false);
   const { problemId } = useParams();
   const navigate = useNavigate();

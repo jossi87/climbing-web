@@ -25,6 +25,7 @@ import {
 } from '../common/widgets/widgets';
 import { useMeta } from '../common/meta/context';
 import { useProblem } from '../../api';
+import { components } from '../../@types/buldreinfo/swagger';
 import Avatar from '../common/avatar/avatar';
 import TickModal from '../common/tick-modal/tick-modal';
 import CommentModal from '../common/comment-modal/comment-modal';
@@ -55,7 +56,9 @@ export const Problem = () => {
   const { data, error, toggleTodo, redirectUi } = useProblem(+problemId, showHiddenMedia);
 
   const [showTickModal, setShowTickModal] = useState(false);
-  const [showCommentModal, setShowCommentModal] = useState<any>(null);
+  const [showCommentModal, setShowCommentModal] = useState<
+    components['schemas']['ProblemComment'] | null
+  >(null);
 
   const onTickModalClose = () => {
     setShowTickModal(false);
@@ -356,7 +359,6 @@ export const Problem = () => {
                 onClick={() =>
                   setShowCommentModal({
                     id: -1,
-                    idProblem: data.id,
                     danger: false,
                     resolved: false,
                   })

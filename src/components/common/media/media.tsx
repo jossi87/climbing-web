@@ -294,8 +294,6 @@ const Media = ({
       rootMargin: '200px 0px',
     });
 
-    const content: React.ReactNode = null;
-
     return (
       <Card
         as='a'

@@ -8,7 +8,9 @@ export default function FullscreenControl() {
   const map = useMap();
   useEffect(() => {
     // Dirty hack (https://github.com/brunob/leaflet.fullscreen/issues/123)
-    const fullscreen = (L as any).control.fullscreen();
+    const fullscreen = (
+      L as unknown as { control: { fullscreen: () => L.Control } }
+    ).control.fullscreen();
     fullscreen.addTo(map);
   }, [map]);
   return null;

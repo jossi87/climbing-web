@@ -4,17 +4,14 @@ import CreatableSelect from 'react-select/creatable';
 type RockSelectorProps = {
   rock: string | null;
   rocks: string[] | null;
-  onRockUpdated: (_: any) => void;
+  onRockUpdated: (newValue: string | null) => void;
   placeholder: string;
 };
 
 const RockSelector = ({ rock, rocks, onRockUpdated, placeholder }: RockSelectorProps) => {
   const [value, setValue] = useState(rock ? { label: rock, value: rock } : null);
 
-  function handleChange(newValue: any) {
-    if (!newValue) {
-      newValue = null;
-    }
+  function handleChange(newValue: { label: string; value: string } | null) {
     setValue(newValue);
     onRockUpdated(newValue ? newValue.value : null);
   }

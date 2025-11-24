@@ -22,9 +22,9 @@ function GetCenterFromDegrees(data: number[][]) {
   let Y = 0.0;
   let Z = 0.0;
 
-  for (let i = 0; i < data.length; i++) {
-    const lat = (data[i][0] * Math.PI) / 180;
-    const lon = (data[i][1] * Math.PI) / 180;
+  for (const coord of data) {
+    const lat = (coord[0] * Math.PI) / 180;
+    const lon = (coord[1] * Math.PI) / 180;
 
     const a = Math.cos(lat) * Math.cos(lon);
     const b = Math.cos(lat) * Math.sin(lon);
