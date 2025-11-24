@@ -47,11 +47,11 @@ const useIds = (): {
   };
 };
 
-interface ConfirmationState {
+type ConfirmationState = {
   isOpen: boolean;
   message: string;
   action: () => void;
-}
+};
 
 const Media = ({
   pitches,

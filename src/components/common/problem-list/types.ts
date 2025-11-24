@@ -1,4 +1,4 @@
-export interface Row {
+export type Row = {
   element: React.ReactNode;
   areaName: string;
   sectorName: string;
@@ -13,4 +13,4 @@ export interface Row {
   num: number;
   fa: boolean;
   faDate: string | null;
-}
+};

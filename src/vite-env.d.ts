@@ -1,6 +1,6 @@
-interface ImportMetaEnv {
+type ImportMetaEnv = {
   readonly VITE_APP_TITLE: string;
-}
+};
 
 interface ImportMeta {
   readonly env: ImportMetaEnv;

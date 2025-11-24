@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { Label, Icon } from 'semantic-ui-react';
 import { Markdown } from '../Markdown/Markdown';
 
-interface ExpandableTextProps {
+type ExpandableTextProps = {
   text: string;
   maxLength: number;
   initialIsExpanded?: boolean;
-}
+};
 
 const ExpandableText: React.FC<ExpandableTextProps> = ({ text, maxLength }) => {
   const [isExpanded, setIsExpanded] = useState(false);

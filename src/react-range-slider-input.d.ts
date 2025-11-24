@@ -9,7 +9,7 @@ declare module 'react-range-slider-input' {
   export type InputEvent = [number, number];
   export type InputEventHandler = (event: InputEvent) => void;
 
-  export interface ReactRangeSliderInputProps {
+  export type ReactRangeSliderInputProps = {
     /* @default null
      * Identifier string (id attribute value) to be passed to the range slider element.
      * */
