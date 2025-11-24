@@ -30,7 +30,7 @@ import {
   Message,
   Feed,
 } from 'semantic-ui-react';
-import { useMeta } from './common/meta';
+import { useMeta } from './common/meta/context';
 import { useSector } from '../api';
 import { components } from '../@types/buldreinfo/swagger';
 import { DownloadButton } from './common/DownloadButton';

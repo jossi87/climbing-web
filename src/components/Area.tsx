@@ -32,7 +32,7 @@ import {
   Feed,
   Segment,
 } from 'semantic-ui-react';
-import { useMeta } from './common/meta';
+import { useMeta } from './common/meta/context';
 import { getImageUrl, useArea } from '../api';
 import { Markdown } from './Markdown/Markdown';
 import ProblemList from './common/problem-list';

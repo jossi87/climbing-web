@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import { components } from '../../../@types/buldreinfo/swagger';
 import { useLocalStorage } from '../../../utils/use-local-storage';
 import {
@@ -139,16 +139,13 @@ const MediaModal = ({
       .length > 1;
   const [prevHover, setPrevHover] = useState(false);
   const [nextHover, setNextHover] = useState(false);
-  const [hasSetVideoTimestamp, setHasSetVideoTimestamp] = useState(false);
   const [videoVolume, setVideoVolume] = useState(1);
-  const [isPlaying, setIsPlaying] = useState(true);
-  const playerRef = useRef<HTMLVideoElement | null>(null);
   const isImage = m?.idType === 1;
 
-  useEffect(() => {
-    setHasSetVideoTimestamp(false);
-    setIsPlaying(true);
-  }, [m.id]);
+  // When `m.id` changes we want the player state (isPlaying, hasSetVideoTimestamp)
+  // to reset. To avoid setting state synchronously inside an effect we create
+  // a small keyed child component below (`VideoPlayer`) which will remount when
+  // `m.id` changes and therefore reset its internal state automatically.
 
   if (isSaving) {
     return (
@@ -214,36 +211,45 @@ const MediaModal = ({
       );
     }
     if (autoPlayVideo) {
-      return (
-        <ReactPlayer
-          ref={playerRef}
-          style={style.video}
-          src={getBuldreinfoMediaUrlSupported(m.id)}
-          controls={true}
-          playing={isPlaying}
-          volume={videoVolume}
-          onPlay={() => setIsPlaying(true)}
-          onPause={() => setIsPlaying(false)}
-          onVolumeChange={() => {
-            if (playerRef.current) {
-              setVideoVolume(playerRef.current.volume);
-            }
-          }}
-          onProgress={() => {
-            const seconds = parseInt(m.t);
-            if (
-              !hasSetVideoTimestamp &&
-              !Number.isNaN(seconds) &&
-              Number.isFinite(seconds) &&
-              playerRef.current &&
-              seconds < playerRef.current.duration
-            ) {
-              playerRef.current.currentTime = seconds;
-              setHasSetVideoTimestamp(true);
-            }
-          }}
-        />
-      );
+      const VideoPlayer: React.FC<{ media: typeof m }> = ({ media }) => {
+        const [hasSetVideoTimestamp, setHasSetVideoTimestamp] = useState(false);
+        const [isPlaying, setIsPlaying] = useState(true);
+        const localPlayerRef = useRef<HTMLVideoElement | null>(null);
+
+        return (
+          <ReactPlayer
+            key={media.id}
+            ref={localPlayerRef}
+            style={style.video}
+            src={getBuldreinfoMediaUrlSupported(media.id)}
+            controls={true}
+            playing={isPlaying}
+            volume={videoVolume}
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+            onVolumeChange={() => {
+              if (localPlayerRef.current) {
+                setVideoVolume(localPlayerRef.current.volume);
+              }
+            }}
+            onProgress={() => {
+              const seconds = parseInt(media.t);
+              if (
+                !hasSetVideoTimestamp &&
+                !Number.isNaN(seconds) &&
+                Number.isFinite(seconds) &&
+                localPlayerRef.current &&
+                seconds < localPlayerRef.current.duration
+              ) {
+                localPlayerRef.current.currentTime = seconds;
+                setHasSetVideoTimestamp(true);
+              }
+            }}
+          />
+        );
+      };
+
+      return <VideoPlayer media={m} />;
     }
     return (
       <>

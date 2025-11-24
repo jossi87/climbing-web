@@ -10,7 +10,7 @@ import { Container, Button, Segment, Dropdown, Input, Icon, Divider } from 'sema
 import { Link } from 'react-router-dom';
 import { useMeta } from '../common/meta';
 import { EditableSvg, getImageUrl, postProblemSvg, useAccessToken, useSvgEdit } from '../../api';
-import { parseReadOnlySvgs, parsePath, isCubicPoint } from '../../utils/svg-utils';
+import { parseReadOnlySvgs, parsePath, isCubicPoint } from '../../utils/svg-helpers';
 import { Loading } from '../common/widgets/widgets';
 import { useNavigate, useParams } from 'react-router-dom';
 import { captureException } from '@sentry/react';

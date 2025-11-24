@@ -1,4 +1,4 @@
-import { useMeta } from './common/meta';
+import { useMeta } from './common/meta/context';
 import { Segment, Header, Icon, List } from 'semantic-ui-react';
 
 const PrivacyPolicy = () => {

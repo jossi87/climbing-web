@@ -61,6 +61,7 @@
     "react-dom": "^19.2.0",
     "react-dropzone": "^14.3.8",
     "react-intersection-observer": "^10.0.0",
+    "react-is": "^19.2.0",
     "react-leaflet": "^5.0.0",
     "react-player": "^3.4.0",
     "react-range-slider-input": "^3.3.2",

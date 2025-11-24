@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Container, Button, Label, Icon, Segment, Dropdown } from 'semantic-ui-react';
 import { getImageUrl, useMediaSvg } from '../api';
-import { Rappel, parseReadOnlySvgs, parsePath } from '../utils/svg-utils';
+import { Rappel } from '../utils/svg-utils';
+import { parseReadOnlySvgs, parsePath } from '../utils/svg-helpers';
 import { Loading } from './common/widgets/widgets';
 import { useNavigate, useParams } from 'react-router-dom';
 

@@ -97,7 +97,7 @@ declare module 'react-range-slider-input' {
      * It takes two different values: horizontal and vertical.
      * */
     orientation?: Orientation;
-  }
+  };
 
   const ReactRangeSliderInput: FC<ReactRangeSliderInputProps>;
 

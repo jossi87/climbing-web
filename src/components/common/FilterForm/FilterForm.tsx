@@ -1,4 +1,4 @@
-import React, { CSSProperties, useCallback, useLayoutEffect, useRef, useState } from 'react';
+import React, { CSSProperties, useCallback, useRef, useState } from 'react';
 import {
   Form,
   Header,
@@ -17,7 +17,7 @@ import { useMeta } from '../meta';
 import { useFilter } from './context';
 import { HeaderButtons } from '../HeaderButtons';
 import { ResetField } from '../../Problems/reducer';
-import { neverGuard } from '../../../utils/neverGuard';
+// kept for potential future guards
 import { YearSelect } from './YearSelect';
 import { hours } from '../../../utils/hours';
 
@@ -88,39 +88,28 @@ const ICONS: Record<AreaSizeState, SemanticICONS | undefined> = {
 
 const useSizing = () => {
   const ref = useRef<HTMLDivElement | null>(null);
-  const [status, setStatus] = useState<AreaSizeState>('show-some');
+  const [expanded, setExpanded] = useState(false);
 
-  useLayoutEffect(() => {
-    if (!ref.current) {
-      return;
-    }
+  const measuredTooFew = () => {
+    const el = ref.current;
+    if (!el) return false;
+    const { clientHeight: containerHeight, scrollHeight: contentsHeight } = el;
+    return (
+      contentsHeight < containerHeight || contentsHeight - containerHeight < containerHeight * 0.25
+    );
+  };
 
-    const { clientHeight: containerHeight, scrollHeight: contentsHeight } = ref.current;
-    if (
-      contentsHeight < containerHeight ||
-      contentsHeight - containerHeight < containerHeight * 0.25
-    ) {
-      setStatus('too-few');
-    } else {
-      setStatus('show-some');
-    }
-  }, []);
+  const getStatus = (): AreaSizeState => {
+    if (measuredTooFew()) return 'too-few';
+    return expanded ? 'show-all' : 'show-some';
+  };
 
   const onClick = useCallback(() => {
-    setStatus((v) => {
-      switch (v) {
-        case 'too-few':
-          return v;
-        case 'show-all':
-          return 'show-some';
-        case 'show-some':
-          return 'show-all';
-        default: {
-          return neverGuard(v, 'show-all');
-        }
-      }
-    });
+    if (measuredTooFew()) return;
+    setExpanded((v) => !v);
   }, []);
+
+  const status = getStatus();
 
   return {
     ref,

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Grid, Segment, Header, Icon, List, Label, Placeholder } from 'semantic-ui-react';
-import { useMeta } from './common/meta';
+import { useMeta } from './common/meta/context';
 import { useData } from '../api';
 import Avatar from './common/avatar/avatar';
 import { Success } from '../@types/buldreinfo';

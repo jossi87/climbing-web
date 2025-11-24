@@ -1,7 +1,7 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import React from 'react';
 import { InsufficientPrivileges, Loading, NotLoggedIn } from '../common/widgets/widgets';
-import { useMeta } from '../common/meta';
+import { useMeta } from '../common/meta/context';
 
 type Props = {
   children: React.ReactNode;

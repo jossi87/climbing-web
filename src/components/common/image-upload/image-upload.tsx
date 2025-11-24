@@ -6,7 +6,7 @@ import VideoEmbedder from './video-embedder';
 import { UserSelector } from '../user-selector/user-selector';
 import { UsersSelector } from '../../common/user-selector/user-selector';
 import { components } from '../../../@types/buldreinfo/swagger';
-import { useMeta } from '../../common/meta';
+import { useMeta } from '../../common/meta/context';
 
 type UploadedMedia = {
   file?: File;

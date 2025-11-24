@@ -13,7 +13,7 @@ import {
 } from 'semantic-ui-react';
 import { useInView } from 'react-intersection-observer';
 import { useLocalStorage } from '../../../utils/use-local-storage';
-import { useMeta } from '../../common/meta';
+import { useMeta } from '../../common/meta/context';
 import { getImageUrl, useActivity } from '../../../api';
 import Avatar from '../../common/avatar/avatar';
 import { LockSymbol, Stars } from './../../common/widgets/widgets';

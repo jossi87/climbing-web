@@ -58,8 +58,8 @@ export default defineConfig([
         },
       ],
       'no-param-reassign': 'warn',
-      'react-refresh/only-export-components': [
-        'warn',
+        'react-refresh/only-export-components': [
+          'error',
         { allowConstantExport: true },
       ],
     },

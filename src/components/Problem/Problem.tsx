@@ -23,7 +23,7 @@ import {
   ExternalLinkLabels,
   NoDogsAllowed,
 } from '../common/widgets/widgets';
-import { useMeta } from '../common/meta';
+import { useMeta } from '../common/meta/context';
 import { useProblem } from '../../api';
 import Avatar from '../common/avatar/avatar';
 import TickModal from '../common/tick-modal/tick-modal';

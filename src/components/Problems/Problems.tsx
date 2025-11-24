@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Segment, Icon, Button, ButtonGroup, Message, Divider } from 'semantic-ui-react';
 import { Loading } from '../common/widgets/widgets';
-import { useMeta } from '../common/meta';
+import { useMeta } from '../common/meta/context';
 import { downloadTocXlsx, useAccessToken, useToc } from '../../api';
 import TableOfContents from '../common/TableOfContents';
 import { useFilterState } from './reducer';

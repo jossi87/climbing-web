@@ -16,7 +16,7 @@ import {
   Checkbox,
 } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
-import { useMeta } from './common/meta';
+import { useMeta } from './common/meta/context';
 import {
   convertFromDateToString,
   convertFromStringToDate,

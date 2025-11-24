@@ -2,7 +2,7 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Loading } from './common/widgets/widgets';
 import { Header, Menu, Icon, Message } from 'semantic-ui-react';
-import { useMeta } from './common/meta';
+import { useMeta } from './common/meta/context';
 import { useProfile } from '../api';
 import { useAuth0 } from '@auth0/auth0-react';
 import ProfileStatistics from './common/profile/profile-statistics';

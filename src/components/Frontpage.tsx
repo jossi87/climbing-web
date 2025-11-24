@@ -1,7 +1,7 @@
 import { Label, Grid, Statistic, Icon, Image, Card, Segment, Placeholder } from 'semantic-ui-react';
 import Avatar from './common/avatar/avatar';
 import { Link } from 'react-router-dom';
-import { useMeta } from './common/meta';
+import { useMeta } from './common/meta/context';
 import { getImageUrl, numberWithCommas, useData } from '../api';
 import Activity from './common/activity/activity';
 import { Success } from '../@types/buldreinfo';

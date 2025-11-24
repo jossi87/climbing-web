@@ -57,7 +57,15 @@ const createLeafletControl = (useElement) => {
     // eslint-disable-next-line react/prop-types
     return contentNode ? createPortal(props.children, contentNode) : null;
   };
-  return forwardRef(Component);
+  const LeafletControl = forwardRef(Component);
+  // Name the forwarded component so Fast Refresh can identify it
+  // and avoid anonymous export issues.
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore - displayName is allowed on function components
+  LeafletControl.displayName = 'LeafletControl';
+  return LeafletControl;
 };
 
-export default createLeafletControl(useControl);
+const LeafletControlExport = createLeafletControl(useControl);
+
+export default LeafletControlExport;

@@ -1,8 +1,6 @@
 import React from 'react';
-import { Segment } from 'semantic-ui-react';
 import { components } from '../@types/buldreinfo/swagger';
-
-const Redirecting = () => <Segment>Redirecting &hellip;</Segment>;
+import { Redirecting } from '../components/common/Redirecting';
 
 const isRedirect = (v: unknown): v is components['schemas']['Redirect'] => {
   return (

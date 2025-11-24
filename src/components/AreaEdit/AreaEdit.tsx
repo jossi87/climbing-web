@@ -13,7 +13,7 @@ import {
   Message,
   Accordion,
 } from 'semantic-ui-react';
-import { useMeta } from '../common/meta';
+import { useMeta } from '../common/meta/context';
 import { Loading } from '../common/widgets/widgets';
 import { useNavigate, useParams } from 'react-router-dom';
 import { VisibilitySelectorField } from '../common/VisibilitySelector';

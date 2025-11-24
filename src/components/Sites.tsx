@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Segment, Button, Header, Icon } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
 import { Loading } from './common/widgets/widgets';
-import { useMeta } from './common/meta';
+import { useMeta } from './common/meta/context';
 
 const Sites = () => {
   const meta = useMeta();

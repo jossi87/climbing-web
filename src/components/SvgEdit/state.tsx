@@ -7,7 +7,7 @@ import {
   ParsedEntry,
   parsePath,
   Point,
-} from '../../utils/svg-utils';
+} from '../../utils/svg-helpers';
 
 export const generatePath = (points: ParsedEntry[]) => {
   let d = '';

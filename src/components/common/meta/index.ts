@@ -1,1 +1,2 @@
-export { MetaProvider, useFaYears, useGrades, useMeta } from './meta';
+export { MetaProvider } from './meta';
+export { useFaYears, useGrades, useMeta } from './context';

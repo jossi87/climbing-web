@@ -5,7 +5,7 @@ import Leaflet from './common/leaflet/leaflet';
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
 import { Loading, LockSymbol, SunOnWall } from './common/widgets/widgets';
 import { useAreas } from '../api';
-import { useMeta } from './common/meta';
+import { useMeta } from './common/meta/context';
 import { HeaderButtons } from './common/HeaderButtons';
 import './Areas.css';
 import { Markdown } from './Markdown/Markdown';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Segment, Header, Icon } from 'semantic-ui-react';
-import { useMeta } from './common/meta';
+import { useMeta } from './common/meta/context';
 
 const Donations = () => {
   const meta = useMeta();
