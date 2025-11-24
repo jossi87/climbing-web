@@ -2,13 +2,20 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Container, Button, Label, Icon, Segment, Dropdown } from 'semantic-ui-react';
 import { getImageUrl, useMediaSvg } from '../api';
 import { Rappel } from '../utils/svg-utils';
-import { parseReadOnlySvgs, parsePath } from '../utils/svg-helpers';
+import {
+  parseReadOnlySvgs,
+  parsePath,
+  ParsedEntry,
+  SvgType,
+  isCubicPoint,
+  isQuadraticPoint,
+  isArc,
+  isPoint,
+} from '../utils/svg-helpers';
 import { Loading } from './common/widgets/widgets';
 import { useNavigate, useParams } from 'react-router-dom';
 
-const TYPE_PATH = 'PATH';
-const TYPE_RAPPEL_BOLTED = 'RAPPEL_BOLTED';
-const TYPE_RAPPEL_NOT_BOLTED = 'RAPPEL_NOT_BOLTED';
+// These string literals are used directly where needed.
 
 const MediaSvgEdit = () => {
   const navigate = useNavigate();
@@ -17,6 +24,16 @@ const MediaSvgEdit = () => {
   const { media: data, status, isLoading, save: newSave } = useMediaSvg(+mediaId);
 
   const [modifiedData, setData] = useState<any>(null);
+
+  type EditableSvg = SvgType & {
+    points?: ParsedEntry[];
+    id?: number;
+    rappelX?: number;
+    rappelY?: number;
+  };
+
+  // helper to always return the live mediaSvgs array (creates if missing)
+  const getMediaSvgs = () => (data.mediaSvgs = data.mediaSvgs ?? []) as EditableSvg[];
 
   useEffect(() => {
     switch (status) {
@@ -88,27 +105,27 @@ const MediaSvgEdit = () => {
     if (
       shift.current &&
       activeElementIndex != -1 &&
-      data.mediaSvgs[activeElementIndex] &&
-      data.mediaSvgs[activeElementIndex].points
+      getMediaSvgs()[activeElementIndex] &&
+      getMediaSvgs()[activeElementIndex].points
     ) {
       const coords = getMouseCoords(e);
-      const points = data.mediaSvgs[activeElementIndex].points;
+      const points = getMediaSvgs()[activeElementIndex].points;
       points.push(coords);
       const p = generatePath(points);
-      data.mediaSvgs[activeElementIndex].path = p;
-      data.mediaSvgs[activeElementIndex].points = points;
+      getMediaSvgs()[activeElementIndex].path = p;
+      getMediaSvgs()[activeElementIndex].points = points;
       setData(data);
       setActivePoint(points.length - 1);
       setForceUpdate(forceUpdate + 1);
     } else if (
       activeElementIndex != -1 &&
-      data.mediaSvgs[activeElementIndex] &&
-      (data.mediaSvgs[activeElementIndex].t === TYPE_RAPPEL_BOLTED ||
-        data.mediaSvgs[activeElementIndex].t === TYPE_RAPPEL_NOT_BOLTED)
+      getMediaSvgs()[activeElementIndex] &&
+      (getMediaSvgs()[activeElementIndex].t === 'RAPPEL_BOLTED' ||
+        getMediaSvgs()[activeElementIndex].t === 'RAPPEL_NOT_BOLTED')
     ) {
       const coords = getMouseCoords(e);
-      data.mediaSvgs[activeElementIndex].rappelX = coords.x;
-      data.mediaSvgs[activeElementIndex].rappelY = coords.y;
+      getMediaSvgs()[activeElementIndex].rappelX = coords.x;
+      getMediaSvgs()[activeElementIndex].rappelY = coords.y;
       setData(data);
       setForceUpdate(forceUpdate + 1);
     }
@@ -120,15 +137,17 @@ const MediaSvgEdit = () => {
       if (i === 0) {
         // first point
         d += 'M ';
-      } else if (p.q) {
+      } else if (isQuadraticPoint(p)) {
         // quadratic
         d += `Q ${p.q.x} ${p.q.y} `;
-      } else if (p.c) {
+      } else if (isCubicPoint(p)) {
         // cubic
         d += `C ${p.c[0].x} ${p.c[0].y} ${p.c[1].x} ${p.c[1].y} `;
-      } else if (p.a) {
+      } else if (isArc(p)) {
         // arc
         d += `A ${p.a.rx} ${p.a.ry} ${p.a.rot} ${p.a.laf} ${p.a.sf} `;
+      } else if (isPoint(p)) {
+        d += 'L ';
       } else {
         d += 'L ';
       }
@@ -151,24 +170,27 @@ const MediaSvgEdit = () => {
 
   function setPointCoords(coords) {
     const active = activePoint;
-    const points = data.mediaSvgs[activeElementIndex].points;
+    const points = (data.mediaSvgs[activeElementIndex] as EditableSvg).points!;
     points[active].x = coords.x;
     points[active].y = coords.y;
     const p = generatePath(points);
-    data.mediaSvgs[activeElementIndex].path = p;
-    data.mediaSvgs[activeElementIndex].points = points;
+    (data.mediaSvgs[activeElementIndex] as EditableSvg).path = p;
+    (data.mediaSvgs[activeElementIndex] as EditableSvg).points = points;
     setData(data);
     setForceUpdate(forceUpdate + 1);
   }
 
   function setCubicCoords(coords, anchor) {
     const active = activePoint;
-    const points = data.mediaSvgs[activeElementIndex].points;
+    const points = (data.mediaSvgs[activeElementIndex] as EditableSvg).points!;
+    if (!isCubicPoint(points[active])) {
+      return;
+    }
     points[active].c[anchor].x = coords.x;
     points[active].c[anchor].y = coords.y;
     const p = generatePath(points);
-    data.mediaSvgs[activeElementIndex].path = p;
-    data.mediaSvgs[activeElementIndex].points = points;
+    (data.mediaSvgs[activeElementIndex] as EditableSvg).path = p;
+    (data.mediaSvgs[activeElementIndex] as EditableSvg).points = points;
     setData(data);
     setForceUpdate(forceUpdate + 1);
   }
@@ -189,7 +211,7 @@ const MediaSvgEdit = () => {
 
   function setPointType(e, { value }) {
     const active = activePoint;
-    const points = data.mediaSvgs[activeElementIndex].points;
+    const points = (data.mediaSvgs[activeElementIndex] as EditableSvg).points!;
     if (active !== 0) {
       // not the first point
       switch (value) {
@@ -214,8 +236,8 @@ const MediaSvgEdit = () => {
           break;
       }
       const p = generatePath(points);
-      data.mediaSvgs[activeElementIndex].path = p;
-      data.mediaSvgs[activeElementIndex].points = points;
+      (data.mediaSvgs[activeElementIndex] as EditableSvg).path = p;
+      (data.mediaSvgs[activeElementIndex] as EditableSvg).points = points;
       setData(data);
       setForceUpdate(forceUpdate + 1);
     }
@@ -223,13 +245,13 @@ const MediaSvgEdit = () => {
 
   function removeActivePoint() {
     const active = activePoint;
-    const points = data.mediaSvgs[activeElementIndex].points;
+    const points = (data.mediaSvgs[activeElementIndex] as EditableSvg).points!;
     if (points.length > 1 && active !== 0) {
       points.splice(active, 1);
       const p = generatePath(points);
-      data.mediaSvgs[activeElementIndex].path = p;
-      data.mediaSvgs[activeElementIndex].points = points;
-      setActivePoint(data.mediaSvgs[activeElementIndex].points.length - 1);
+      (data.mediaSvgs[activeElementIndex] as EditableSvg).path = p;
+      (data.mediaSvgs[activeElementIndex] as EditableSvg).points = points;
+      setActivePoint((data.mediaSvgs[activeElementIndex] as EditableSvg).points!.length - 1);
       setData(data);
     }
   }
@@ -249,6 +271,10 @@ const MediaSvgEdit = () => {
     return <Loading />;
   }
 
+  // Ensure we have a typed reference to the mediaSvgs array so TS understands
+  // it may have editing-specific fields like `points`.
+  const mediaSvgs = (data.mediaSvgs = data.mediaSvgs ?? []) as EditableSvg[];
+
   let scale = 1;
   if (data.width > outerWidth || data.height > outerHeight) {
     scale = Math.max(
@@ -259,11 +285,11 @@ const MediaSvgEdit = () => {
 
   const circles =
     activeElementIndex >= 0 &&
-    data.mediaSvgs[activeElementIndex] &&
-    data.mediaSvgs[activeElementIndex].t === 'PATH' &&
-    data.mediaSvgs[activeElementIndex].points.map((p, i, a) => {
+    mediaSvgs[activeElementIndex] &&
+    mediaSvgs[activeElementIndex].t === 'PATH' &&
+    mediaSvgs[activeElementIndex].points.map((p, i, a) => {
       const anchors: React.JSX.Element[] = [];
-      if (p.c) {
+      if (isCubicPoint(p)) {
         anchors.push(
           <g key={anchors.length} className='buldreinfo-svg-edit-opacity'>
             <line
@@ -324,18 +350,18 @@ const MediaSvgEdit = () => {
   let activeRappel: React.JSX.Element | null = null;
   if (
     activeElementIndex >= 0 &&
-    data.mediaSvgs[activeElementIndex] &&
-    (data.mediaSvgs[activeElementIndex].t === TYPE_RAPPEL_BOLTED ||
-      data.mediaSvgs[activeElementIndex].t === TYPE_RAPPEL_NOT_BOLTED)
+    mediaSvgs[activeElementIndex] &&
+    (mediaSvgs[activeElementIndex].t === 'RAPPEL_BOLTED' ||
+      mediaSvgs[activeElementIndex].t === 'RAPPEL_NOT_BOLTED')
   ) {
-    const x = data.mediaSvgs[activeElementIndex].rappelX;
-    const y = data.mediaSvgs[activeElementIndex].rappelY;
+    const x = mediaSvgs[activeElementIndex].rappelX;
+    const y = mediaSvgs[activeElementIndex].rappelY;
 
     activeRappel = (
       <Rappel
         key={'ACTIVE_RAPPEL'}
         backgroundColor={'white'}
-        bolted={data.mediaSvgs[activeElementIndex].t === TYPE_RAPPEL_BOLTED}
+        bolted={mediaSvgs[activeElementIndex].t === 'RAPPEL_BOLTED'}
         color={'red'}
         scale={scale}
         thumb={false}
@@ -349,11 +375,7 @@ const MediaSvgEdit = () => {
     <Container onMouseUp={cancelDragging} onMouseLeave={cancelDragging}>
       <Segment style={{ minHeight: '130px' }}>
         <Button.Group floated='right'>
-          <Button
-            negative
-            disabled={!data.mediaSvgs || data.mediaSvgs.length === 0}
-            onClick={reset}
-          >
+          <Button negative disabled={!mediaSvgs || mediaSvgs.length === 0} onClick={reset}>
             Reset
           </Button>
           <Button.Or />
@@ -367,13 +389,22 @@ const MediaSvgEdit = () => {
           <Button
             size='mini'
             onClick={() => {
-              const element = { t: TYPE_PATH, id: -1, path: '', points: [] };
+              const element: EditableSvg = {
+                t: 'PATH',
+                id: -1,
+                path: '',
+                anchors: [],
+                nr: -1,
+                pitch: 0,
+                hasAnchor: false,
+                points: [],
+              };
               if (!data.mediaSvgs) {
                 data.mediaSvgs = [];
               }
-              data.mediaSvgs.push(element);
+              mediaSvgs.push(element);
               setData(data);
-              setActiveElementIndex(data.mediaSvgs.length - 1);
+              setActiveElementIndex(mediaSvgs.length - 1);
               setActivePoint(0);
               setDraggedPoint(false);
               setDraggedCubic(false);
@@ -386,18 +417,23 @@ const MediaSvgEdit = () => {
           <Button
             size='mini'
             onClick={() => {
-              const element = {
-                t: TYPE_RAPPEL_BOLTED,
+              const element: EditableSvg = {
+                t: 'RAPPEL_BOLTED',
                 id: -1,
+                path: '',
+                anchors: [],
+                nr: -1,
+                pitch: 0,
+                hasAnchor: false,
                 rappelX: data.width / 2,
                 rappelY: data.height / 2,
               };
               if (!data.mediaSvgs) {
                 data.mediaSvgs = [];
               }
-              data.mediaSvgs.push(element);
+              mediaSvgs.push(element);
               setData(data);
-              setActiveElementIndex(data.mediaSvgs.length - 1);
+              setActiveElementIndex(mediaSvgs.length - 1);
               setActivePoint(0);
               setDraggedPoint(false);
               setDraggedCubic(false);
@@ -410,18 +446,23 @@ const MediaSvgEdit = () => {
           <Button
             size='mini'
             onClick={() => {
-              const element = {
-                t: TYPE_RAPPEL_NOT_BOLTED,
+              const element: EditableSvg = {
+                t: 'RAPPEL_NOT_BOLTED',
                 id: -1,
+                path: '',
+                anchors: [],
+                nr: -1,
+                pitch: 0,
+                hasAnchor: false,
                 rappelX: data.width / 2,
                 rappelY: data.height / 2,
               };
               if (!data.mediaSvgs) {
                 data.mediaSvgs = [];
               }
-              data.mediaSvgs.push(element);
+              mediaSvgs.push(element);
               setData(data);
-              setActiveElementIndex(data.mediaSvgs.length - 1);
+              setActiveElementIndex(mediaSvgs.length - 1);
               setActivePoint(0);
               setDraggedPoint(false);
               setDraggedCubic(false);
@@ -432,16 +473,16 @@ const MediaSvgEdit = () => {
           </Button>
         </Button.Group>
         <Label.Group>
-          {data.mediaSvgs &&
-            data.mediaSvgs.map((svg, index) => (
+          {mediaSvgs &&
+            mediaSvgs.map((svg, index) => (
               <Label
                 as='a'
                 image
                 key={[svg.t, svg.id]?.join('x')}
                 color={activeElementIndex === index ? 'green' : 'grey'}
                 onClick={() => {
-                  if (svg.t === 'PATH' && data.mediaSvgs[index] && !data.mediaSvgs[index].points) {
-                    data.mediaSvgs[index].points = parsePath(data.mediaSvgs[index].path);
+                  if (svg.t === 'PATH' && mediaSvgs[index] && !mediaSvgs[index].points) {
+                    mediaSvgs[index].points = parsePath(mediaSvgs[index].path);
                     setData(data);
                   }
                   setActiveElementIndex(index);
@@ -454,7 +495,7 @@ const MediaSvgEdit = () => {
                 <Icon
                   name='delete'
                   onClick={() => {
-                    data.mediaSvgs.splice(index, 1);
+                    mediaSvgs.splice(index, 1);
                     setData(data);
                     setActiveElementIndex(-1);
                     setActivePoint(0);
@@ -468,8 +509,8 @@ const MediaSvgEdit = () => {
         </Label.Group>
         <br />
         {activeElementIndex >= 0 &&
-          data.mediaSvgs[activeElementIndex] &&
-          data.mediaSvgs[activeElementIndex].t === 'PATH' && (
+          mediaSvgs[activeElementIndex] &&
+          mediaSvgs[activeElementIndex].t === 'PATH' && (
             <>
               <strong>SHIFT + CLICK</strong> to add a point | <strong>CLICK</strong> to select a
               point | <strong>CLICK AND DRAG</strong> to move a point
@@ -477,7 +518,12 @@ const MediaSvgEdit = () => {
               {activePoint !== 0 && (
                 <Dropdown
                   selection
-                  value={data.mediaSvgs[activeElementIndex].points[activePoint].c ? 'C' : 'L'}
+                  value={
+                    mediaSvgs[activeElementIndex]?.points?.[activePoint] &&
+                    isCubicPoint(mediaSvgs[activeElementIndex].points[activePoint])
+                      ? 'C'
+                      : 'L'
+                  }
                   onChange={(...args) => {
                     // @ts-expect-error - I don't know why this works right now.
                     return setPointType(...args);
@@ -496,9 +542,9 @@ const MediaSvgEdit = () => {
             </>
           )}
         {activeElementIndex >= 0 &&
-          data.mediaSvgs[activeElementIndex] &&
-          (data.mediaSvgs[activeElementIndex].t === TYPE_RAPPEL_BOLTED ||
-            data.mediaSvgs[activeElementIndex].t === TYPE_RAPPEL_NOT_BOLTED) && (
+          mediaSvgs[activeElementIndex] &&
+          (mediaSvgs[activeElementIndex].t === 'RAPPEL_BOLTED' ||
+            mediaSvgs[activeElementIndex].t === 'RAPPEL_NOT_BOLTED') && (
             <>
               <strong>CLICK</strong> to move anchor
             </>
@@ -517,18 +563,18 @@ const MediaSvgEdit = () => {
           width='100%'
           height='100%'
         />
-        {activeElementIndex >= 0 && data.mediaSvgs[activeElementIndex] && (
+        {activeElementIndex >= 0 && mediaSvgs[activeElementIndex] && (
           <path
             style={{ fill: 'none', stroke: '#FF0000' }}
-            d={data.mediaSvgs[activeElementIndex].path}
+            d={mediaSvgs[activeElementIndex].path}
             strokeWidth={0.002 * data.width}
           />
         )}
         {circles}
         {activeRappel}
-        {data.mediaSvgs &&
+        {mediaSvgs &&
           parseReadOnlySvgs(
-            data.mediaSvgs.filter((svg, index) => index != activeElementIndex),
+            mediaSvgs.filter((svg, index) => index != activeElementIndex) as SvgType[],
             data.width,
             data.height,
             scale,

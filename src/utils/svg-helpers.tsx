@@ -120,7 +120,7 @@ export function parsePath(d: string, mediaRegion?: MediaRegion): ParsedEntry[] {
   return reversed;
 }
 
-type SvgType = {
+export type SvgType = {
   path: string;
   anchors: { x: number; y: number }[];
   nr: number;
