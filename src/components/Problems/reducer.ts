@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useReducer } from 'react';
 import { neverGuard } from '../../utils/neverGuard';
-import { useGrades, useMeta } from '../common/meta/meta';
+import { useGrades, useMeta } from '../common/meta/context';
 import { itemLocalStorage } from '../../utils/use-local-storage';
 import { components } from '../../@types/buldreinfo/swagger';
 import { flatten, unflatten } from 'flat';

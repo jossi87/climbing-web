@@ -4,7 +4,7 @@ import { Segment } from 'semantic-ui-react';
 import { useProfileMedia } from '../../../api';
 import Media from '../../common/media/media';
 import { useMeta } from '../meta';
-import { MetaContext } from '../meta/meta';
+import { MetaContext } from '../meta/context';
 
 type Props = {
   userId: number;
