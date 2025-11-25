@@ -550,10 +550,7 @@ const MediaSvgEdit = () => {
                       ? 'C'
                       : 'L'
                   }
-                  onChange={(...args) => {
-                    // @ts-expect-error - I don't know why this works right now.
-                    return setPointType(...args);
-                  }}
+                  onChange={(e, data) => setPointType(e, data as { value: string })}
                   options={[
                     { key: 1, value: 'L', text: 'Selected point: Line to' },
                     { key: 2, value: 'C', text: 'Selected point: Curve to' },

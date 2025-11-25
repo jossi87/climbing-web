@@ -123,10 +123,9 @@ const Activity = ({ idArea, idSector }: Props) => {
 
   if (
     meta.grades.filter((g) => {
-      const gradeText =
-        g.grade.indexOf('(') > 0
-          ? g.grade.substring(g.grade.indexOf('(') + 1).replace(')', '')
-          : g.grade;
+      const gradeText = g.grade.includes('(')
+        ? g.grade.substring(g.grade.indexOf('(') + 1).replace(')', '')
+        : g.grade;
       return gradeText == lowerGradeText && g.id == lowerGradeId;
     }).length === 0
   ) {
@@ -164,10 +163,9 @@ const Activity = ({ idArea, idSector }: Props) => {
                     key={a.grade}
                     text={a.grade}
                     onClick={() => {
-                      const gradeText =
-                        a.grade.indexOf('(') > 0
-                          ? a.grade.substring(a.grade.indexOf('(') + 1).replace(')', '')
-                          : a.grade;
+                      const gradeText = a.grade.includes('(')
+                        ? a.grade.substring(a.grade.indexOf('(') + 1).replace(')', '')
+                        : a.grade;
                       setLowerGradeId(a.id);
                       setLowerGradeText(gradeText);
                       refetch();

@@ -64,8 +64,7 @@ const createLeafletControl = (useElement: unknown) => {
   const LeafletControl = forwardRef(Component as any);
   // Name the forwarded component so Fast Refresh can identify it
   // and avoid anonymous export issues.
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore - displayName is allowed on function components
+  // displayName is a standard React property for ForwardRefExoticComponent
   LeafletControl.displayName = 'LeafletControl';
   return LeafletControl;
 };

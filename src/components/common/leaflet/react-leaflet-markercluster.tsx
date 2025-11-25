@@ -4,6 +4,11 @@ import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster';
 
+// Extend Leaflet types to include markerClusterGroup from the plugin
+declare module 'leaflet' {
+  function markerClusterGroup(options?: Record<string, unknown>): L.FeatureGroup;
+}
+
 const MarkerClusterGroup = createPathComponent(({ children: _c, ...props }, ctx) => {
   const clusterProps: Record<string, unknown> = {
     maxClusterRadius: 19,
@@ -18,13 +23,13 @@ const MarkerClusterGroup = createPathComponent(({ children: _c, ...props }, ctx)
   );
 
   // Creating markerClusterGroup Leaflet element
-  // @ts-expect-error - I'm not sure why we're new-ing this.
-  const markerClusterGroup = new L.markerClusterGroup(clusterProps);
+  // MarkerClusterGroup is added to L namespace by the leaflet.markercluster plugin
+  const markerClusterGroup = L.markerClusterGroup(clusterProps);
 
   // Initializing event listeners
   Object.entries(clusterEvents).forEach(([eventAsProp, callback]) => {
     const clusterEvent = `cluster${eventAsProp.substring(2).toLowerCase()}`;
-    markerClusterGroup.on(clusterEvent, callback);
+    markerClusterGroup.on(clusterEvent, callback as L.LeafletEventHandlerFn);
   });
 
   return {

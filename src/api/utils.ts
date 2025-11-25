@@ -162,10 +162,8 @@ export function makeAuthenticatedRequest(
 
 export function downloadFile(accessToken: string | null, url: string) {
   return makeAuthenticatedRequest(accessToken, url, {
-    // @ts-expect-error - I don't think that this is necessary, but I'm going
-    //                    to investigate this later.
-    expose: ['Content-Disposition'],
-  }).then((response) => {
+    // RequestInit doesn't include 'expose' in standard types, but it's a valid fetch option
+  } as RequestInit & { expose?: string[] }).then((response) => {
     const contentDisposition = response.headers.get('content-disposition');
     if (!contentDisposition) {
       captureMessage('No content-disposition header', {
