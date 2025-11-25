@@ -4,13 +4,15 @@ import { useEffect } from 'react';
 export const DATA_MUTATION_EVENT = 'brattelinjer/refetch';
 
 const HANDLERS = {
-  nop: async (...args) => {
+  nop: async (..._args: unknown[]) => {
     if (process.env.REACT_APP_ENV === 'development') {
-      console.debug('DataReloader: stubbed-out reload', ...args);
+      console.debug('DataReloader: stubbed-out reload', ..._args);
     }
   },
-  invalidate: (client) => client.invalidateQueries({ predicate: () => true }),
-  refetch: (client) => client.refetchQueries({ predicate: () => true }),
+  invalidate: (client: ReturnType<typeof useQueryClient>) =>
+    client.invalidateQueries({ predicate: () => true }),
+  refetch: (client: ReturnType<typeof useQueryClient>) =>
+    client.refetchQueries({ predicate: () => true }),
 } as const;
 
 export type ConsistencyAction = keyof typeof HANDLERS;
@@ -32,14 +34,16 @@ export type ConsistencyAction = keyof typeof HANDLERS;
 export const DataReloader = ({ children }: { children: React.ReactNode }) => {
   const client = useQueryClient();
   useEffect(() => {
-    const onEvent = (event: CustomEvent) => {
-      const mode = event?.detail?.mode ?? 'nop';
-      HANDLERS[mode in HANDLERS ? mode : 'nop']?.(client);
+    const onEvent = (event: Event) => {
+      const ce = event as CustomEvent | undefined;
+      const mode = ce?.detail?.mode ?? 'nop';
+      const key = (mode in HANDLERS ? mode : 'nop') as keyof typeof HANDLERS;
+      HANDLERS[key]?.(client);
     };
 
-    window.addEventListener(DATA_MUTATION_EVENT, onEvent);
+    window.addEventListener(DATA_MUTATION_EVENT, onEvent as EventListener);
     return () => {
-      window.removeEventListener(DATA_MUTATION_EVENT, onEvent);
+      window.removeEventListener(DATA_MUTATION_EVENT, onEvent as EventListener);
     };
   }, [client]);
 

@@ -1,4 +1,4 @@
-import React, { ComponentProps, useState } from 'react';
+import React, { useState } from 'react';
 import CreatableSelect from 'react-select/creatable';
 import { useUserSearch } from './../../../api';
 import { components } from '../../../@types/buldreinfo/swagger';
@@ -9,39 +9,25 @@ type UserOption = {
 } & components['schemas']['User'];
 
 type MultiUserProps = {
-  onUsersUpdated: (user: UserOption[]) => void;
   placeholder: string;
   users: UserOption[];
+  onUsersUpdated: (user: UserOption[]) => void;
 };
 
 type SingleUserProps = {
-  onUserUpdated: (user: UserOption) => void;
   placeholder: string;
   defaultValue: string;
+  onUserUpdated: (user: UserOption) => void;
 };
 
-const UserSelect = (
-  props:
-    | Required<
-        Pick<
-          ComponentProps<typeof CreatableSelect<UserOption, true>>,
-          'onChange' | 'placeholder' | 'value'
-        > & { isMulti: true }
-      >
-    | Required<
-        Pick<
-          ComponentProps<typeof CreatableSelect<UserOption, false>>,
-          'onChange' | 'placeholder' | 'defaultValue'
-        > & { isMulti: false }
-      >,
-) => {
+export const UserSelector = ({ placeholder, defaultValue, onUserUpdated }: SingleUserProps) => {
   const [value, setValue] = useState('');
   const { data: options = [] } = useUserSearch(value);
 
   return (
     <div style={{ position: 'relative', width: '100%' }}>
       <div style={{ width: '100%' }}>
-        <CreatableSelect<UserOption, boolean>
+        <CreatableSelect<UserOption, false>
           isClearable
           onInputChange={(newValue) => setValue(newValue)}
           options={options
@@ -57,35 +43,50 @@ const UserSelect = (
             );
             return !userExist;
           }}
-          {...props}
+          placeholder={placeholder}
+          onChange={(newValue) => onUserUpdated(newValue as UserOption)}
+          defaultValue={
+            defaultValue != null ? { label: defaultValue, value: defaultValue } : undefined
+          }
         />
       </div>
     </div>
   );
 };
 
-export const UserSelector = ({ placeholder, defaultValue, onUserUpdated }: SingleUserProps) => {
-  return (
-    <UserSelect
-      isMulti={false}
-      placeholder={placeholder}
-      onChange={onUserUpdated}
-      defaultValue={defaultValue != null ? { label: defaultValue } : null}
-    />
-  );
-};
-
 export const UsersSelector = ({ placeholder, users, onUsersUpdated }: MultiUserProps) => {
+  const [value, setValue] = useState('');
+  const { data: options = [] } = useUserSearch(value);
+
   return (
-    <UserSelect
-      isMulti={true}
-      placeholder={placeholder}
-      value={users?.map((user) => ({
-        ...user,
-        value: user.id ?? 0,
-        label: user.name ?? '',
-      }))}
-      onChange={onUsersUpdated}
-    />
+    <div style={{ position: 'relative', width: '100%' }}>
+      <div style={{ width: '100%' }}>
+        <CreatableSelect<UserOption, true>
+          isMulti
+          isClearable
+          onInputChange={(newValue) => setValue(newValue)}
+          options={options
+            .filter((user) => user.id && user.name)
+            .map((user) => ({
+              ...user,
+              value: user.id ?? 0,
+              label: user.name ?? '',
+            }))}
+          isValidNewOption={(inputValue) => {
+            const userExist = !!options.find(
+              (u) => u.name && inputValue.toLowerCase() === u.name.toLowerCase(),
+            );
+            return !userExist;
+          }}
+          placeholder={placeholder}
+          value={users?.map((user) => ({
+            ...user,
+            value: user.id ?? 0,
+            label: user.name ?? '',
+          }))}
+          onChange={(newValue) => onUsersUpdated(newValue as UserOption[])}
+        />
+      </div>
+    </div>
   );
 };

@@ -32,7 +32,7 @@ const Sites = () => {
       onMouseMove={null}
       showSatelliteImage={false}
       clusterMarkers={false}
-      rocks={null}
+      rocks={undefined}
       flyToId={null}
     />
   );

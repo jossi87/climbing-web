@@ -19,15 +19,31 @@ import Polylines from './polylines';
 import MarkerClusterGroup from './react-leaflet-markercluster';
 import { Segment, Checkbox } from 'semantic-ui-react';
 import UseControl from '../../../utils/use-leaflet-control';
-import GetCenterFromDegrees from '../../../utils/map-utils';
+
+// Local fallback for computing the geographic center from an array of [lat,lng]
+function computeCenterFromDegrees(coords: number[][]): [number, number] | null {
+  if (!coords || coords.length === 0) return null;
+  let sumLat = 0;
+  let sumLng = 0;
+  let count = 0;
+  for (const c of coords) {
+    const lat = c[0] ?? 0;
+    const lng = c[1] ?? 0;
+    sumLat += lat;
+    sumLng += lng;
+    count += 1;
+  }
+  if (count === 0) return null;
+  return [sumLat / count, sumLng / count];
+}
 import { components } from '../../../@types/buldreinfo/swagger';
 
 function MapEvent({
   onMouseClick,
   onMouseMove,
 }: {
-  onMouseClick?: LeafletMouseEventHandlerFn;
-  onMouseMove?: LeafletMouseEventHandlerFn;
+  onMouseClick?: LeafletMouseEventHandlerFn | null;
+  onMouseMove?: LeafletMouseEventHandlerFn | null;
 }) {
   useMapEvents({
     click: (e) => {
@@ -51,9 +67,9 @@ type Props = {
   defaultZoom: number;
   flyToId?: number | null;
   height?: number | string;
-  markers?: MarkerDef[];
-  onMouseClick?: LeafletMouseEventHandlerFn;
-  onMouseMove?: LeafletMouseEventHandlerFn;
+  markers?: MarkerDef[] | null;
+  onMouseClick?: LeafletMouseEventHandlerFn | null;
+  onMouseMove?: LeafletMouseEventHandlerFn | null;
   outlines?:
     | {
         background?: boolean;
@@ -62,12 +78,14 @@ type Props = {
         label?: string;
       }[]
     | undefined;
-  slopes?: {
-    background?: boolean;
-    backgroundColor: string;
-    label?: string;
-    slope: components['schemas']['Slope'];
-  }[];
+  slopes?:
+    | {
+        background?: boolean;
+        backgroundColor: string;
+        label?: string;
+        slope: components['schemas']['Slope'];
+      }[]
+    | null;
   rocks?: string[];
   showSatelliteImage?: boolean;
   children?: React.ReactNode | React.ReactNode[];
@@ -87,17 +105,28 @@ const UpdateBounds = ({
 
   const bounds = latLngBounds([]);
   markers
-    ?.filter(({ coordinates }) => coordinates.latitude > 0 && coordinates.longitude > 0)
-    ?.forEach(({ coordinates }) => bounds.extend([coordinates.latitude, coordinates.longitude]));
+    ?.filter(
+      ({ coordinates }) => (coordinates?.latitude ?? 0) > 0 && (coordinates?.longitude ?? 0) > 0,
+    )
+    ?.forEach(({ coordinates }) =>
+      bounds.extend([
+        (coordinates?.latitude ?? 0) as number,
+        (coordinates?.longitude ?? 0) as number,
+      ]),
+    );
   outlines
     ?.filter(({ outline }) => !!outline)
     ?.forEach(({ outline }) =>
-      outline.forEach((c) => bounds.extend({ lat: c.latitude, lng: c.longitude })),
+      outline.forEach((c) =>
+        bounds.extend({ lat: (c.latitude ?? 0) as number, lng: (c.longitude ?? 0) as number }),
+      ),
     );
   slopes
     ?.filter(({ slope }) => !!slope)
     ?.forEach(({ slope }) =>
-      slope.coordinates.forEach((c) => bounds.extend({ lat: c.latitude, lng: c.longitude })),
+      slope.coordinates?.forEach((c) =>
+        bounds.extend({ lat: (c.latitude ?? 0) as number, lng: (c.longitude ?? 0) as number }),
+      ),
     );
 
   if (
@@ -118,11 +147,11 @@ const Leaflet = ({
   defaultZoom,
   flyToId,
   height,
-  markers,
-  onMouseClick,
-  onMouseMove,
+  markers = null,
+  onMouseClick = undefined,
+  onMouseMove = undefined,
   outlines,
-  slopes,
+  slopes = null,
   rocks = [],
   showSatelliteImage,
   children,
@@ -134,21 +163,27 @@ const Leaflet = ({
   const addEventHandlers = !onMouseClick && !onMouseMove;
   let markerGroup;
   if (groupByRock) {
-    const rockMarkers: MarkerDef[] = rocks
+    const rockMarkers: MarkerDef[] = (rocks ?? [])
       .map((r) => {
-        const markersOnRock = markers.filter((m) => 'rock' in m && m.rock === r);
+        const markersOnRock = (markers ?? []).filter((m) => 'rock' in m && m.rock === r);
         const coords = markersOnRock
-          .filter(({ coordinates }) => coordinates.latitude > 0 && coordinates.longitude > 0)
-          .map(({ coordinates }) => [coordinates.latitude, coordinates.longitude]);
+          .filter(
+            ({ coordinates }) =>
+              (coordinates?.latitude ?? 0) > 0 && (coordinates?.longitude ?? 0) > 0,
+          )
+          .map(({ coordinates }) => [coordinates?.latitude ?? 0, coordinates?.longitude ?? 0]);
         if (coords && coords.length > 0) {
-          const centerCoordinates = GetCenterFromDegrees(coords);
+          const centerCoordinates = computeCenterFromDegrees(coords) ?? [
+            coords[0][0],
+            coords[0][1],
+          ];
           const html = (
             <>
               <b>{r}:</b>
               <br />
               {markersOnRock
-                .filter((m) => 'url' in m)
-                .map((m: MarkerDef & { url: string }) => (
+                .filter((m): m is MarkerDef & { url: string } => 'url' in m && !!m.url)
+                .map((m) => (
                   <React.Fragment key={m.url}>
                     <a rel='noreferrer noopener' target='_blank' href={m.url}>
                       {'label' in m ? m.label : ''}
@@ -166,11 +201,12 @@ const Leaflet = ({
             label: r,
             rock: true,
             html,
-          } satisfies MarkerDef;
+          } as MarkerDef;
         }
+        return undefined;
       })
-      .filter((item) => item); // Remove undefined
-    const markersWithoutRock = markers.filter((m) => !('rock' in m) || !m.rock);
+      .filter((item) => !!item) as MarkerDef[];
+    const markersWithoutRock = (markers ?? []).filter((m) => !('rock' in m) || !m.rock);
     markerGroup = (
       <Markers
         opacity={opacity}
@@ -195,6 +231,12 @@ const Leaflet = ({
     }
   }
 
+  // Use a generic wrapper to allow passing children to the control
+  const UseControlWrapper = UseControl as React.FC<{
+    children?: React.ReactNode;
+    position?: string;
+  }>;
+
   return (
     <MapContainer
       style={{ height: height ? height : '500px', width: '100%', zIndex: 0 }}
@@ -207,7 +249,7 @@ const Leaflet = ({
       <FullscreenControl />
       <Locate />
       <ScaleControl maxWidth={100} metric={true} imperial={false} />
-      <UseControl position='bottomleft'>
+      <UseControlWrapper position='bottomleft'>
         {rocks != null && rocks.length > 0 && (
           <Checkbox
             as={Segment}
@@ -216,13 +258,13 @@ const Leaflet = ({
             toggle
             checked={groupByRock}
             onChange={(e, d) => {
-              setGroupByRock(d.checked);
+              setGroupByRock(!!d.checked);
             }}
           />
         )}
-      </UseControl>
-      {(outlines?.length > 0 || markers?.length > 0) && (
-        <UseControl position='bottomright'>
+      </UseControlWrapper>
+      {((outlines?.length ?? 0) > 0 || (markers?.length ?? 0) > 0) && (
+        <UseControlWrapper position='bottomright'>
           <Checkbox
             as={Segment}
             size='mini'
@@ -230,10 +272,10 @@ const Leaflet = ({
             toggle
             checked={showElevation}
             onChange={(e, d) => {
-              setShowElevation(d.checked);
+              setShowElevation(!!d.checked);
             }}
           />
-        </UseControl>
+        </UseControlWrapper>
       )}
       <LayersControl>
         <LayersControl.BaseLayer checked={showSatelliteImage} name='Norge i Bilder'>
@@ -288,11 +330,11 @@ const Leaflet = ({
         {markerGroup}
         <Polygons
           opacity={opacity}
-          outlines={outlines}
+          outlines={outlines ?? []}
           addEventHandlers={addEventHandlers}
           showElevation={showElevation}
         />
-        <Polylines opacity={opacity} slopes={slopes} />
+        <Polylines opacity={opacity} slopes={slopes ?? []} />
       </FeatureGroup>
       {children}
     </MapContainer>

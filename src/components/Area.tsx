@@ -137,18 +137,21 @@ const Area = () => {
 
     const uniqueSectors: Record<string /* lat,lng */, SectorParkingMarker> = data.sectors
       ?.filter(isSectorWithParking)
-      ?.reduce((acc, { parking, name, id }) => {
-        const key = `${parking.latitude},${parking.longitude}`;
-        return {
-          ...acc,
-          [key]: {
-            ...acc[key],
-            latitude: parking.latitude,
-            longitude: parking.longitude,
-            sectors: [...(acc[key]?.sectors ?? []), { name, id }],
-          } satisfies SectorParkingMarker,
-        };
-      }, {});
+      ?.reduce(
+        (acc, { parking, name, id }) => {
+          const key = `${parking.latitude},${parking.longitude}`;
+          return {
+            ...acc,
+            [key]: {
+              ...(acc[key] as SectorParkingMarker | undefined),
+              latitude: parking.latitude,
+              longitude: parking.longitude,
+              sectors: [...(acc[key]?.sectors ?? []), { name, id }],
+            } satisfies SectorParkingMarker,
+          };
+        },
+        {} as Record<string, SectorParkingMarker>,
+      );
 
     return (
       Object.values(uniqueSectors)?.map((info) => ({
@@ -206,17 +209,18 @@ const Area = () => {
 
   for (const s of data.sectors ?? []) {
     let distance: string | null = null;
-    if (s.approach?.coordinates?.length) {
-      distance = getDistanceWithUnit(s.approach);
+    const approach = s.approach;
+    if (approach?.coordinates?.length) {
+      distance = getDistanceWithUnit(approach);
       const label = (!s.outline || !showSlopeLengthOnOutline) && distance ? distance : '';
       slopes.push({
         backgroundColor: 'lime',
-        slope: s.approach,
+        slope: approach,
         label: label ?? '',
       });
     }
     if (s.descent?.coordinates?.length) {
-      distance = getDistanceWithUnit(s.approach);
+      distance = getDistanceWithUnit(s.descent);
       const label = (!s.outline || !showSlopeLengthOnOutline) && distance ? distance : '';
       slopes.push({
         backgroundColor: 'purple',
@@ -350,7 +354,10 @@ const Area = () => {
                       wallDirectionCalculated={sector.wallDirectionCalculated}
                       wallDirectionManual={sector.wallDirectionManual}
                     />
-                    <SunOnWall sunFromHour={sector.sunFromHour} sunToHour={sector.sunToHour} />
+                    <SunOnWall
+                      sunFromHour={sector.sunFromHour ?? 0}
+                      sunToHour={sector.sunToHour ?? 0}
+                    />
                   </Item.Header>
                   <Item.Extra>
                     {sector.typeNumTickedTodo && (
@@ -363,7 +370,7 @@ const Area = () => {
                             icon = <List.Icon color='red' name='times circle outline' />;
                           } else if (x.ticked === x.num) {
                             icon = <List.Icon color='green' name='check circle outline' />;
-                          } else if (x.ticked > 0) {
+                          } else if ((x.ticked ?? 0) > 0) {
                             icon = <List.Icon color='yellow' name='dot circle outline' />;
                           }
                           return (
@@ -422,7 +429,7 @@ const Area = () => {
                     subType: p.t?.subType ?? '',
                     num: p.nr ?? 0,
                     fa: !!p.fa,
-                    faDate: p.faDate,
+                    faDate: p.faDate ?? null,
                   }) satisfies Rows[number],
               );
             })

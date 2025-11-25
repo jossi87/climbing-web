@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { postComment, useAccessToken } from './../../../api';
 import { Button, Modal, Form, TextArea, Message, Icon } from 'semantic-ui-react';
-import ImageUpload from '../image-upload/image-upload';
+import ImageUpload, { UploadedMedia } from '../image-upload/image-upload';
 import { components } from '../../../@types/buldreinfo/swagger';
 
 const CommentModal = ({
@@ -13,15 +13,15 @@ const CommentModal = ({
 }: {
   onClose: () => void;
   showHse: boolean;
-  id: number;
-  idProblem: number;
+  id?: number;
+  idProblem?: number;
   comment?: components['schemas']['ProblemComment'];
 }) => {
   const accessToken = useAccessToken();
   const [message, setMessage] = useState(comment?.message ?? '');
   const [danger, setDanger] = useState(comment?.danger);
   const [resolved, setResolved] = useState(comment?.resolved);
-  const [media, setMedia] = useState([]);
+  const [media, setMedia] = useState<UploadedMedia[]>([]);
   const [saving, setSaving] = useState(false);
 
   return (
@@ -43,7 +43,7 @@ const CommentModal = ({
             </Form.Field>
             <Form.Field>
               <label>Attach image(s)</label>
-              <ImageUpload onMediaChanged={setMedia} isMultiPitch={false} />
+              <ImageUpload onMediaChanged={(nm) => setMedia(nm)} isMultiPitch={false} />
             </Form.Field>
             {showHse && (
               <Form.Field>
@@ -106,8 +106,18 @@ const CommentModal = ({
             content='Save'
             disabled={!message.trim()}
             onClick={() => {
+              if (id == null || idProblem == null) return;
               setSaving(true);
-              postComment(accessToken, id, idProblem, message, danger, resolved, false, media)
+              postComment(
+                accessToken,
+                id,
+                idProblem,
+                message,
+                danger ?? false,
+                resolved ?? false,
+                false,
+                media,
+              )
                 .then(() => {
                   onClose();
                 })

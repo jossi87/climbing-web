@@ -30,7 +30,7 @@ const Frontpage = () => {
               <Statistic.Group size='mini' horizontal as={Segment}>
                 <Statistic as={Link} to='/problems' color='blue'>
                   <Statistic.Value>
-                    <Icon name='database' /> {numberWithCommas(numProblems.numProblems)}
+                    <Icon name='database' /> {numberWithCommas(numProblems?.numProblems ?? 0)}
                   </Statistic.Value>
                   <Statistic.Label>{meta.isBouldering ? 'Problems' : 'Routes'}</Statistic.Label>
                 </Statistic>
@@ -38,7 +38,7 @@ const Frontpage = () => {
                   <Statistic>
                     <Statistic.Value>
                       <Icon name='image outline' />{' '}
-                      {numberWithCommas(numProblems.numProblemsWithTopo)}
+                      {numberWithCommas(numProblems?.numProblemsWithTopo ?? 0)}
                     </Statistic.Value>
                     <Statistic.Label>With topo</Statistic.Label>
                   </Statistic>
@@ -46,26 +46,26 @@ const Frontpage = () => {
                   <Statistic>
                     <Statistic.Value>
                       <Icon name='map marker' />{' '}
-                      {numberWithCommas(numProblems.numProblemsWithCoordinates)}
+                      {numberWithCommas(numProblems?.numProblemsWithCoordinates ?? 0)}
                     </Statistic.Value>
                     <Statistic.Label>Coordinates</Statistic.Label>
                   </Statistic>
                 )}
                 <Statistic as={Link} to='/ticks/1' color='blue'>
                   <Statistic.Value>
-                    <Icon name='check' /> {numberWithCommas(numTicks.numTicks)}
+                    <Icon name='check' /> {numberWithCommas(numTicks?.numTicks ?? 0)}
                   </Statistic.Value>
                   <Statistic.Label>Ticks</Statistic.Label>
                 </Statistic>
                 <Statistic>
                   <Statistic.Value>
-                    <Icon name='image' /> {numberWithCommas(numMedia.numImages)}
+                    <Icon name='image' /> {numberWithCommas(numMedia?.numImages ?? 0)}
                   </Statistic.Value>
                   <Statistic.Label>Images</Statistic.Label>
                 </Statistic>
                 <Statistic>
                   <Statistic.Value>
-                    <Icon name='film' /> {numberWithCommas(numMedia.numMovies)}
+                    <Icon name='film' /> {numberWithCommas(numMedia?.numMovies ?? 0)}
                   </Statistic.Value>
                   <Statistic.Label>Videos</Statistic.Label>
                 </Statistic>
@@ -83,9 +83,13 @@ const Frontpage = () => {
                       <Image
                         size='medium'
                         style={{ maxHeight: '250px', objectFit: 'cover' }}
-                        src={getImageUrl(randomMedia.idMedia, randomMedia.crc32, {
-                          minDimension: 275,
-                        })}
+                        src={getImageUrl(
+                          Number(randomMedia.idMedia ?? 0),
+                          Number(randomMedia.crc32 ?? 0),
+                          {
+                            minDimension: 275,
+                          },
+                        )}
                       />
                     </Link>
                     <Card.Content>

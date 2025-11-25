@@ -3,9 +3,9 @@ import { getAvatarUrl } from '../../../api/utils';
 import { Icon, Image, Modal } from 'semantic-ui-react';
 
 type Props = {
-  userId: number;
-  name: string;
-  avatarCrc32: number;
+  userId?: number;
+  name?: string;
+  avatarCrc32?: number;
   floated?: 'left' | 'right';
   size?: 'mini' | 'tiny' | 'small' | 'medium' | 'large' | 'big' | 'huge' | 'massive';
 };
@@ -18,7 +18,11 @@ function Avatar({ userId, name, avatarCrc32, floated, size }: Props) {
     size,
   };
 
-  if (avatarCrc32 === 0) {
+  const uid = userId ?? 0;
+  const crc = avatarCrc32 ?? 0;
+  const alt = name ?? '';
+
+  if (crc === 0) {
     return (
       <Image {...commonImageProps}>
         <Icon name='user' style={{ width: '100%', height: '100%' }} />
@@ -32,10 +36,10 @@ function Avatar({ userId, name, avatarCrc32, floated, size }: Props) {
       onOpen={() => setOpen(true)}
       basic
       open={open}
-      trigger={<Image src={getAvatarUrl(userId, avatarCrc32)} alt={name} {...commonImageProps} />}
+      trigger={<Image src={getAvatarUrl(uid, crc)} alt={alt} {...commonImageProps} />}
     >
       <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <Image src={getAvatarUrl(userId, avatarCrc32, true)} alt={name} />
+        <Image src={getAvatarUrl(uid, crc, true)} alt={alt} />
       </div>
     </Modal>
   );

@@ -12,8 +12,8 @@ export const DownloadButton = ({ href, icon = 'file pdf outline', children }: Pr
   const accessToken = useAccessToken();
   const [loading, setLoading] = useState(false);
   const onClick: LabelProps['onClick'] = useCallback(
-    (e) => {
-      const url = e.currentTarget.getAttribute('href');
+    (e: React.MouseEvent<HTMLElement>, _data: LabelProps) => {
+      const url = (e.currentTarget as HTMLElement).getAttribute('href');
       if (!url) {
         return;
       }

@@ -19,7 +19,7 @@ const ProfileMedia = ({ userId, captured }: Props) => {
     return <Loading />;
   }
 
-  if (data.length === 0) {
+  if (!data || data.length === 0) {
     return <Segment>Empty list.</Segment>;
   }
 

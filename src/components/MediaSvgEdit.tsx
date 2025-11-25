@@ -12,17 +12,24 @@ import {
   isArc,
   isPoint,
 } from '../utils/svg-helpers';
+
 import { Loading } from './common/widgets/widgets';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Success } from '../@types/buldreinfo';
-
-// These string literals are used directly where needed.
 
 const MediaSvgEdit = () => {
   const navigate = useNavigate();
   const { mediaId } = useParams();
   const { outerWidth, outerHeight } = window;
-  const { media: data, status, isLoading, save: newSave } = useMediaSvg(+mediaId);
+  const mediaIdNum = Number(mediaId ?? 0);
+  const {
+    media: data,
+    status,
+    isLoading,
+    save: newSave,
+  } = useMediaSvg(mediaIdNum) as ReturnType<typeof useMediaSvg>;
+
+  if (!data) return <div />;
 
   const [modifiedData, setData] = useState<Success<'getMedia'> | undefined | null>(null);
 
@@ -53,9 +60,9 @@ const MediaSvgEdit = () => {
   const [saving, setSaving] = useState(false);
   const [activeElementIndex, setActiveElementIndex] = useState(-1);
   const shift = useRef<boolean>(false);
-  const [activePoint, setActivePoint] = useState<number | null>(null);
+  const [activePoint, setActivePoint] = useState<number>(0);
   const [draggedPoint, setDraggedPoint] = useState<boolean>(false);
-  const [draggedCubic, setDraggedCubic] = useState(false);
+  const [draggedCubic, setDraggedCubic] = useState<number | false>(false);
   const imageRef = useRef<SVGImageElement | null>(null);
 
   useEffect(() => {
@@ -67,19 +74,19 @@ const MediaSvgEdit = () => {
     };
   }, []);
 
-  function handleKeyDown(e) {
+  function handleKeyDown(e: KeyboardEvent) {
     if (e.shiftKey) {
       shift.current = true;
     }
   }
 
-  function handleKeyUp(e) {
+  function handleKeyUp(e: KeyboardEvent) {
     if (!e.shiftKey) {
       shift.current = false;
     }
   }
 
-  function save(event) {
+  function save(event: React.FormEvent) {
     event.preventDefault();
     setSaving(true);
     newSave(modifiedData).then(() => navigate(-1));
@@ -90,19 +97,19 @@ const MediaSvgEdit = () => {
     setDraggedCubic(false);
   }
 
-  function getMouseCoords(e) {
+  function getMouseCoords(e: React.MouseEvent) {
     const dim = imageRef.current?.getBoundingClientRect();
     if (!dim) {
       return { x: 0, y: 0 };
     }
-    const dx = data.width / dim.width;
-    const dy = data.height / dim.height;
+    const dx = data!.width! / dim.width;
+    const dy = data!.height! / dim.height;
     const x = Math.round((e.clientX - dim.left) * dx);
     const y = Math.round((e.clientY - dim.top) * dy);
     return { x, y };
   }
 
-  function handleOnClick(e) {
+  function handleOnClick(e: React.MouseEvent<SVGSVGElement>) {
     if (
       shift.current &&
       activeElementIndex != -1 &&
@@ -110,11 +117,14 @@ const MediaSvgEdit = () => {
       getMediaSvgs()[activeElementIndex].points
     ) {
       const coords = getMouseCoords(e);
-      const points = getMediaSvgs()[activeElementIndex].points;
+      const svgs = getMediaSvgs();
+      const cur = svgs[activeElementIndex];
+      cur.points = cur.points ?? [];
+      const points = cur.points as ParsedEntry[];
       points.push(coords);
       const p = generatePath(points);
-      getMediaSvgs()[activeElementIndex].path = p;
-      getMediaSvgs()[activeElementIndex].points = points;
+      cur.path = p;
+      cur.points = points;
       setData(data);
       setActivePoint(points.length - 1);
       setForceUpdate(forceUpdate + 1);
@@ -132,7 +142,7 @@ const MediaSvgEdit = () => {
     }
   }
 
-  function generatePath(points) {
+  function generatePath(points: ParsedEntry[]) {
     let d = '';
     points.forEach((p, i) => {
       if (i === 0) {
@@ -157,7 +167,7 @@ const MediaSvgEdit = () => {
     return d;
   }
 
-  function handleMouseMove(e) {
+  function handleMouseMove(e: React.MouseEvent<SVGSVGElement>) {
     e.preventDefault();
     if (!shift.current) {
       if (draggedPoint) {
@@ -169,50 +179,59 @@ const MediaSvgEdit = () => {
     return false;
   }
 
-  function setPointCoords(coords) {
+  function setPointCoords(coords: { x: number; y: number }) {
     const active = activePoint;
-    const points = (data.mediaSvgs[activeElementIndex] as EditableSvg).points!;
+    const svgs = getMediaSvgs();
+    const cur = svgs[activeElementIndex];
+    cur.points = cur.points ?? [];
+    const points = cur.points as ParsedEntry[];
     points[active].x = coords.x;
     points[active].y = coords.y;
     const p = generatePath(points);
-    (data.mediaSvgs[activeElementIndex] as EditableSvg).path = p;
-    (data.mediaSvgs[activeElementIndex] as EditableSvg).points = points;
+    cur.path = p;
+    cur.points = points;
     setData(data);
     setForceUpdate(forceUpdate + 1);
   }
 
-  function setCubicCoords(coords, anchor) {
+  function setCubicCoords(coords: { x: number; y: number }, anchor: number) {
     const active = activePoint;
-    const points = (data.mediaSvgs[activeElementIndex] as EditableSvg).points!;
+    const svgs = getMediaSvgs();
+    const cur = svgs[activeElementIndex];
+    cur.points = cur.points ?? [];
+    const points = cur.points as ParsedEntry[];
     if (!isCubicPoint(points[active])) {
       return;
     }
     points[active].c[anchor].x = coords.x;
     points[active].c[anchor].y = coords.y;
     const p = generatePath(points);
-    (data.mediaSvgs[activeElementIndex] as EditableSvg).path = p;
-    (data.mediaSvgs[activeElementIndex] as EditableSvg).points = points;
+    cur.path = p;
+    cur.points = points;
     setData(data);
     setForceUpdate(forceUpdate + 1);
   }
 
-  function setCurrDraggedPoint(index) {
+  function setCurrDraggedPoint(index: number) {
     if (!shift.current) {
       setActivePoint(index);
       setDraggedPoint(true);
     }
   }
 
-  function setCurrDraggedCubic(index, anchor) {
+  function setCurrDraggedCubic(index: number, anchor: number) {
     if (!shift.current) {
       setActivePoint(index);
       setDraggedCubic(anchor);
     }
   }
 
-  function setPointType(e, { value }) {
+  function setPointType(e: React.SyntheticEvent, { value }: { value: string }) {
     const active = activePoint;
-    const points = (data.mediaSvgs[activeElementIndex] as EditableSvg).points!;
+    const svgs = getMediaSvgs();
+    const cur = svgs[activeElementIndex];
+    cur.points = cur.points ?? [];
+    const points = cur.points as ParsedEntry[];
     if (active !== 0) {
       // not the first point
       switch (value) {
@@ -237,8 +256,8 @@ const MediaSvgEdit = () => {
           break;
       }
       const p = generatePath(points);
-      (data.mediaSvgs[activeElementIndex] as EditableSvg).path = p;
-      (data.mediaSvgs[activeElementIndex] as EditableSvg).points = points;
+      cur.path = p;
+      cur.points = points;
       setData(data);
       setForceUpdate(forceUpdate + 1);
     }
@@ -246,19 +265,24 @@ const MediaSvgEdit = () => {
 
   function removeActivePoint() {
     const active = activePoint;
-    const points = (data.mediaSvgs[activeElementIndex] as EditableSvg).points!;
+    const svgs = getMediaSvgs();
+    const cur = svgs[activeElementIndex];
+    cur.points = cur.points ?? [];
+    const points = cur.points as ParsedEntry[];
     if (points.length > 1 && active !== 0) {
       points.splice(active, 1);
       const p = generatePath(points);
-      (data.mediaSvgs[activeElementIndex] as EditableSvg).path = p;
-      (data.mediaSvgs[activeElementIndex] as EditableSvg).points = points;
-      setActivePoint((data.mediaSvgs[activeElementIndex] as EditableSvg).points!.length - 1);
+      cur.path = p;
+      cur.points = points;
+      setActivePoint(cur.points.length - 1);
       setData(data);
     }
   }
 
   function reset() {
-    data.mediaSvgs = [];
+    if (!data) return;
+    const svgs = getMediaSvgs();
+    svgs.length = 0;
     setData(data);
     setActiveElementIndex(-1);
     shift.current = false;
@@ -277,18 +301,18 @@ const MediaSvgEdit = () => {
   const mediaSvgs = (data.mediaSvgs = data.mediaSvgs ?? []) as EditableSvg[];
 
   let scale = 1;
-  if (data.width > outerWidth || data.height > outerHeight) {
+  if ((data.width ?? 0) > outerWidth || (data.height ?? 0) > outerHeight) {
     scale = Math.max(
-      Math.max(data.width, window.outerWidth) / 1920,
-      Math.max(data.height, window.outerHeight) / 1080,
+      Math.max(data.width ?? 0, window.outerWidth) / 1920,
+      Math.max(data.height ?? 0, window.outerHeight) / 1080,
     );
   }
 
-  const circles =
-    activeElementIndex >= 0 &&
-    mediaSvgs[activeElementIndex] &&
-    mediaSvgs[activeElementIndex].t === 'PATH' &&
-    mediaSvgs[activeElementIndex].points.map((p, i, a) => {
+  const circles = (() => {
+    if (activeElementIndex < 0) return null;
+    const cur = mediaSvgs[activeElementIndex];
+    if (!cur || cur.t !== 'PATH' || !cur.points) return null;
+    return cur.points.map((p, i, a) => {
       const anchors: React.JSX.Element[] = [];
       if (isCubicPoint(p)) {
         anchors.push(
@@ -300,8 +324,8 @@ const MediaSvgEdit = () => {
               y1={a[i - 1].y}
               x2={p.c[0].x}
               y2={p.c[0].y}
-              strokeWidth={0.0026 * data.width}
-              strokeDasharray={0.003 * data.width}
+              strokeWidth={0.0026 * (data.width ?? 1)}
+              strokeDasharray={0.003 * (data.width ?? 1)}
             />
             <line
               className={'buldreinfo-svg-pointer'}
@@ -310,15 +334,15 @@ const MediaSvgEdit = () => {
               y1={p.y}
               x2={p.c[1].x}
               y2={p.c[1].y}
-              strokeWidth={0.0026 * data.width}
-              strokeDasharray={0.003 * data.width}
+              strokeWidth={0.0026 * (data.width ?? 1)}
+              strokeDasharray={0.003 * (data.width ?? 1)}
             />
             <circle
               className={'buldreinfo-svg-pointer'}
               fill='#E2011A'
               cx={p.c[0].x}
               cy={p.c[0].y}
-              r={0.003 * data.width}
+              r={0.003 * (data.width ?? 1)}
               onMouseDown={() => setCurrDraggedCubic(i, 0)}
             />
             <circle
@@ -326,7 +350,7 @@ const MediaSvgEdit = () => {
               fill='#E2011A'
               cx={p.c[1].x}
               cy={p.c[1].y}
-              r={0.003 * data.width}
+              r={0.003 * (data.width ?? 1)}
               onMouseDown={() => setCurrDraggedCubic(i, 1)}
             />
           </g>,
@@ -341,12 +365,13 @@ const MediaSvgEdit = () => {
             fill={fill}
             cx={p.x}
             cy={p.y}
-            r={0.003 * data.width}
+            r={0.003 * (data.width ?? 1)}
             onMouseDown={() => setCurrDraggedPoint(i)}
           />
         </g>
       );
     });
+  })();
 
   let activeRappel: React.JSX.Element | null = null;
   if (
@@ -426,8 +451,8 @@ const MediaSvgEdit = () => {
                 nr: -1,
                 pitch: 0,
                 hasAnchor: false,
-                rappelX: data.width / 2,
-                rappelY: data.height / 2,
+                rappelX: (data.width ?? 0) / 2,
+                rappelY: (data.height ?? 0) / 2,
               };
               if (!data.mediaSvgs) {
                 data.mediaSvgs = [];
@@ -455,8 +480,8 @@ const MediaSvgEdit = () => {
                 nr: -1,
                 pitch: 0,
                 hasAnchor: false,
-                rappelX: data.width / 2,
-                rappelY: data.height / 2,
+                rappelX: (data.width ?? 0) / 2,
+                rappelY: (data.height ?? 0) / 2,
               };
               if (!data.mediaSvgs) {
                 data.mediaSvgs = [];
@@ -560,7 +585,7 @@ const MediaSvgEdit = () => {
       >
         <image
           ref={imageRef}
-          xlinkHref={getImageUrl(data.id, data.crc32)}
+          xlinkHref={getImageUrl(data.id ?? 0, data.crc32 ?? 0)}
           width='100%'
           height='100%'
         />
@@ -568,7 +593,7 @@ const MediaSvgEdit = () => {
           <path
             style={{ fill: 'none', stroke: '#FF0000' }}
             d={mediaSvgs[activeElementIndex].path}
-            strokeWidth={0.002 * data.width}
+            strokeWidth={0.002 * (data.width ?? 0)}
           />
         )}
         {circles}
@@ -576,8 +601,8 @@ const MediaSvgEdit = () => {
         {mediaSvgs &&
           parseReadOnlySvgs(
             mediaSvgs.filter((svg, index) => index != activeElementIndex) as SvgType[],
-            data.width,
-            data.height,
+            data.width ?? 0,
+            data.height ?? 0,
             scale,
           )}
       </svg>

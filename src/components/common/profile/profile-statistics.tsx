@@ -132,10 +132,10 @@ const ProfileStatistics = ({
         {numTicks > 0 ||
         numFas > 0 ||
         numTickRepeats > 0 ||
-        data.numImageTags > 0 ||
-        data.numImagesCreated > 0 ||
-        data.numVideoTags > 0 ||
-        data.numVideosCreated > 0 ||
+        (data.numImageTags ?? 0) > 0 ||
+        (data.numImagesCreated ?? 0) > 0 ||
+        (data.numVideoTags ?? 0) > 0 ||
+        (data.numVideosCreated ?? 0) > 0 ||
         regions?.length > 0 ||
         emails?.length > 0 ||
         lastActivity ? (
@@ -155,31 +155,31 @@ const ProfileStatistics = ({
                 <Label.Detail>Repeat</Label.Detail>
               </Label>
             )}
-            {data.numImageTags > 0 && (
+            {(data.numImageTags ?? 0) > 0 && (
               <Label color='green' image>
                 <Icon name='photo' />
-                {numberWithCommas(data.numImageTags)}
+                {numberWithCommas(data.numImageTags ?? 0)}
                 <Label.Detail>Tag</Label.Detail>
               </Label>
             )}
-            {data.numImagesCreated > 0 && (
+            {(data.numImagesCreated ?? 0) > 0 && (
               <Label color='teal' image>
                 <Icon name='photo' />
-                {numberWithCommas(data.numImagesCreated)}
+                {numberWithCommas(data.numImagesCreated ?? 0)}
                 <Label.Detail>Captured</Label.Detail>
               </Label>
             )}
-            {data.numVideoTags > 0 && (
+            {(data.numVideoTags ?? 0) > 0 && (
               <Label color='blue' image>
                 <Icon name='video' />
-                {numberWithCommas(data.numVideoTags)}
+                {numberWithCommas(data.numVideoTags ?? 0)}
                 <Label.Detail>Tag</Label.Detail>
               </Label>
             )}
-            {data.numVideosCreated > 0 && (
+            {(data.numVideosCreated ?? 0) > 0 && (
               <Label color='violet' image>
                 <Icon name='video' />
-                {numberWithCommas(data.numVideosCreated)}
+                {numberWithCommas(data.numVideosCreated ?? 0)}
                 <Label.Detail>Captured</Label.Detail>
               </Label>
             )}

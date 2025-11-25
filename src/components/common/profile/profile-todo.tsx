@@ -19,9 +19,9 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
   }
 
   const markers: NonNullable<React.ComponentProps<typeof Leaflet>['markers']> = [];
-  data.areas.forEach((a) => {
-    a.sectors.forEach((s) => {
-      s.problems.forEach((p) => {
+  (data.areas ?? []).forEach((a) => {
+    (a.sectors ?? []).forEach((s) => {
+      (s.problems ?? []).forEach((p) => {
         if (p.coordinates) {
           markers.push({
             coordinates: p.coordinates,
@@ -32,7 +32,7 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
       });
     });
   });
-  if (data.areas.length === 0) {
+  if ((data.areas ?? []).length === 0) {
     return <Segment>Empty list.</Segment>;
   }
 
@@ -51,7 +51,7 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
           flyToId={null}
         />
         <List celled>
-          {data.areas.map((area) => (
+          {(data.areas ?? []).map((area) => (
             <List.Item key={area.id}>
               <List.Header>
                 <Link to={`/area/${area.id}`}>{area.name}</Link>
@@ -60,7 +60,7 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
                   lockedSuperadmin={area.lockedSuperadmin}
                 />
               </List.Header>
-              {area.sectors.map((sector) => (
+              {(area.sectors ?? []).map((sector) => (
                 <List.List key={sector.id}>
                   <List.Header>
                     <Link to={`/sector/${sector.id}`}>{sector.name}</Link>
@@ -70,7 +70,7 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
                     />
                   </List.Header>
                   <List.List>
-                    {sector.problems.map((problem) => (
+                    {(sector.problems ?? []).map((problem) => (
                       <List.Item key={problem.id}>
                         <List.Header>
                           {`#${problem.nr} `}

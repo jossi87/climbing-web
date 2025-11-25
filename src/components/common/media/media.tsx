@@ -29,10 +29,10 @@ const style: CSSProperties = {
 };
 
 type Props = Pick<ComponentProps<typeof MediaModal>, 'optProblemId'> & {
-  pitches: components['schemas']['ProblemSection'][];
-  media: components['schemas']['Media'][];
-  orderableMedia: components['schemas']['Media'][];
-  carouselMedia: components['schemas']['Media'][];
+  pitches?: components['schemas']['ProblemSection'][] | null;
+  media?: components['schemas']['Media'][] | null;
+  orderableMedia?: components['schemas']['Media'][] | null;
+  carouselMedia?: components['schemas']['Media'][] | null;
   showLocation: boolean;
 };
 
@@ -42,8 +42,8 @@ const useIds = (): {
 } => {
   const { mediaId, pitch } = useParams();
   return {
-    mediaId: +mediaId,
-    pitch: +pitch,
+    mediaId: mediaId ? +mediaId : 0,
+    pitch: pitch ? +pitch : 0,
   };
 };
 
@@ -61,6 +61,10 @@ const Media = ({
   optProblemId,
   showLocation,
 }: Props) => {
+  const _safePitches = pitches ?? [];
+  const _safeMedia = media ?? [];
+  const _safeOrderable = orderableMedia ?? [];
+  const _safeCarousel = carouselMedia ?? [];
   const { mediaId, pitch } = useIds();
   const location = useLocation();
   const navigate = useNavigate();
@@ -104,8 +108,8 @@ const Media = ({
   function openModal(newM: components['schemas']['Media']) {
     const prevMediaId = m?.id;
     const url = prevMediaId
-      ? location.pathname.replace(prevMediaId.toString(), newM.id.toString())
-      : location.pathname + '/' + newM.id;
+      ? location.pathname.replace(prevMediaId.toString(), (newM.id ?? 0).toString())
+      : location.pathname + '/' + (newM.id ?? 0);
     setM(newM);
     setEditM(null);
     navigate(url);
@@ -120,18 +124,18 @@ const Media = ({
   }
 
   function gotoPrev() {
-    if (m && carouselMedia.length > 1) {
+    if (m && _safeCarousel.length > 1) {
       const ix =
-        (carouselMedia.findIndex((x) => x.id === m.id) - 1 + carouselMedia.length) %
-        carouselMedia.length;
-      openModal(carouselMedia[ix]);
+        (_safeCarousel.findIndex((x) => x.id === m.id) - 1 + _safeCarousel.length) %
+        _safeCarousel.length;
+      openModal(_safeCarousel[ix]);
     }
   }
 
   function gotoNext() {
-    if (m && carouselMedia.length > 1) {
-      const ix = (carouselMedia.findIndex((x) => x.id === m.id) + 1) % carouselMedia.length;
-      openModal(carouselMedia[ix]);
+    if (m && _safeCarousel.length > 1) {
+      const ix = (_safeCarousel.findIndex((x) => x.id === m.id) + 1) % _safeCarousel.length;
+      openModal(_safeCarousel[ix]);
     }
   }
 
@@ -149,7 +153,7 @@ const Media = ({
     showConfirmation(`Are you sure you want to delete this ${mediaType}?`, () => {
       setIsSaving(true);
       getAccessTokenSilently().then((accessToken) => {
-        deleteMedia(accessToken, id)
+        deleteMedia(accessToken, id ?? 0)
           .then(() => {
             setIsSaving(false);
             closeModal();
@@ -167,7 +171,7 @@ const Media = ({
     showConfirmation(`Are you sure you want to rotate this image ${degrees} degrees?`, () => {
       setIsSaving(true);
       getAccessTokenSilently().then((accessToken) => {
-        putMediaJpegRotate(accessToken, m.id, degrees)
+        putMediaJpegRotate(accessToken, m.id ?? 0, degrees)
           .then(() => {
             setIsSaving(false);
             closeModal();
@@ -183,7 +187,7 @@ const Media = ({
     if (!m) return;
     setIsSaving(true);
     getAccessTokenSilently().then((accessToken) => {
-      moveMedia(accessToken, m.id, true, 0, 0, 0)
+      moveMedia(accessToken, m.id ?? 0, true, 0, 0, 0)
         .then(() => {
           setIsSaving(false);
           closeModal();
@@ -198,7 +202,7 @@ const Media = ({
     if (!m) return;
     setIsSaving(true);
     getAccessTokenSilently().then((accessToken) => {
-      moveMedia(accessToken, m.id, false, 0, 0, 0)
+      moveMedia(accessToken, m.id ?? 0, false, 0, 0, 0)
         .then(() => {
           setIsSaving(false);
           closeModal();
@@ -213,7 +217,7 @@ const Media = ({
     if (!m || !m.enableMoveToIdArea) return;
     setIsSaving(true);
     getAccessTokenSilently().then((accessToken) => {
-      moveMedia(accessToken, m.id, false, m.enableMoveToIdArea, 0, 0)
+      moveMedia(accessToken, m.id ?? 0, false, m.enableMoveToIdArea ?? 0, 0, 0)
         .then(() => {
           setIsSaving(false);
           closeModal();
@@ -228,7 +232,7 @@ const Media = ({
     if (!m || !m.enableMoveToIdSector) return;
     setIsSaving(true);
     getAccessTokenSilently().then((accessToken) => {
-      moveMedia(accessToken, m.id, false, 0, m.enableMoveToIdSector, 0)
+      moveMedia(accessToken, m.id ?? 0, false, 0, m.enableMoveToIdSector ?? 0, 0)
         .then(() => {
           setIsSaving(false);
           closeModal();
@@ -243,7 +247,7 @@ const Media = ({
     if (!m || !m.enableMoveToIdProblem) return;
     setIsSaving(true);
     getAccessTokenSilently().then((accessToken) => {
-      moveMedia(accessToken, m.id, false, 0, 0, m.enableMoveToIdProblem)
+      moveMedia(accessToken, m.id ?? 0, false, 0, 0, m.enableMoveToIdProblem ?? 0)
         .then(() => {
           setIsSaving(false);
           closeModal();
@@ -260,7 +264,7 @@ const Media = ({
     showConfirmation('Are you sure you want to change your avatar to this image?', () => {
       setIsSaving(true);
       getAccessTokenSilently().then((accessToken) => {
-        setMediaAsAvatar(accessToken, m.id)
+        setMediaAsAvatar(accessToken, m.id ?? 0)
           .then(() => {
             setIsSaving(false);
             closeModal();
@@ -310,23 +314,20 @@ const Media = ({
           {inView ? (
             x.svgs || x.mediaSvgs ? (
               <SvgViewer
-                close={null}
                 thumb={true}
                 m={x}
-                pitch={null}
                 style={style}
                 optProblemId={optProblemId}
                 showText={false}
-                problemIdHovered={null}
               />
             ) : (
               <>
                 <Image
-                  alt={x.mediaMetadata.description}
+                  alt={x.mediaMetadata?.description ?? ''}
                   style={style}
-                  src={getImageUrl(x.id, x.crc32, { minDimension: 205 })}
-                  onError={(img) =>
-                    ((img.target as HTMLImageElement).src = '/png/video_placeholder.png')
+                  src={getImageUrl(Number(x.id ?? 0), Number(x.crc32 ?? 0), { minDimension: 205 })}
+                  onError={(e: React.SyntheticEvent<HTMLImageElement>) =>
+                    ((e.currentTarget as HTMLImageElement).src = '/png/video_placeholder.png')
                   }
                   rounded
                 />
@@ -435,8 +436,8 @@ const Media = ({
           isSaving={isSaving}
           onClose={closeModal}
           m={m}
-          pitch={pitch}
-          pitches={pitches}
+          pitch={pitch ?? 0}
+          pitches={pitches ?? []}
           autoPlayVideo={autoPlayVideo}
           onEdit={() => setEditM(m)}
           onDelete={onDeleteMedia}
@@ -447,9 +448,9 @@ const Media = ({
           onMoveImageToSector={onMoveImageToSector}
           onMoveImageToProblem={onMoveImageToProblem}
           onSetMediaAsAvatar={onSetMediaAsAvatar}
-          orderableMedia={orderableMedia}
-          carouselIndex={carouselMedia.findIndex((x) => x.id === m.id) + 1}
-          carouselSize={carouselMedia.length}
+          orderableMedia={orderableMedia ?? []}
+          carouselIndex={(_safeCarousel.findIndex((x) => x.id === (m.id ?? 0)) ?? -1) + 1}
+          carouselSize={_safeCarousel.length}
           showLocation={showLocation}
           gotoPrev={gotoPrev}
           gotoNext={gotoNext}
@@ -458,8 +459,8 @@ const Media = ({
         />
       )}
       <Card.Group itemsPerRow={5} doubling>
-        {media.map((x) => (
-          <LazyMediaCard x={x} key={x.id} />
+        {_safeMedia.map((x) => (
+          <LazyMediaCard x={x} key={x.id ?? 0} />
         ))}
       </Card.Group>
     </>

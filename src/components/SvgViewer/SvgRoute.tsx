@@ -3,6 +3,9 @@ import { components } from '../../@types/buldreinfo/swagger';
 import { useNavigate } from 'react-router-dom';
 import { parseSVG, makeAbsolute } from 'svg-path-parser';
 
+type Anchor = { x: number; y: number };
+type TextItem = { x: number; y: number; txt: string };
+
 type Props = {
   style?: CSSProperties;
   thumbnail: boolean;
@@ -14,7 +17,7 @@ type Props = {
   svg: components['schemas']['Svg'];
   optProblemId: number;
   problemIdHovered: number;
-  setProblemIdHovered?: (problemId: number) => void;
+  setProblemIdHovered?: (problemId: number | null) => void;
   pitch: number;
 };
 
@@ -33,13 +36,16 @@ export const SvgRoute = ({
   pitch,
 }: Props) => {
   const navigate = useNavigate();
-  const path = makeAbsolute(parseSVG(svg.path)); // Note: mutates the commands in place!
+  const path = makeAbsolute(parseSVG(svg.path ?? '')); // Note: mutates the commands in place!
+  if (!path || path.length === 0) {
+    return null;
+  }
 
   let gClassName = 'buldreinfo-svg-pointer';
   if (optProblemId || problemIdHovered) {
     if (
       (svg.problemId != optProblemId && svg.problemId != problemIdHovered) ||
-      (pitch && svg.pitch != pitch)
+      (pitch && (svg.pitch ?? 0) != pitch)
     ) {
       gClassName += ' buldreinfo-svg-opacity-low';
     } else {
@@ -80,17 +86,18 @@ export const SvgRoute = ({
   }
 
   let ixNr = 0;
-  let maxY = 0;
-  let ixAnchor;
-  let minY = 99999999;
-  for (let i = 0, len = path.length; i < len; i++) {
-    if (path[i].y > maxY) {
+  let maxY = -Infinity;
+  let ixAnchor = 0;
+  let minY = Infinity;
+  for (let i = 0; i < path.length; i++) {
+    const cmd = path[i];
+    if (typeof cmd.y === 'number' && cmd.y > maxY) {
       ixNr = i;
-      maxY = path[i].y;
+      maxY = cmd.y;
     }
-    if (path[i].y < minY) {
+    if (typeof cmd.y === 'number' && cmd.y < minY) {
       ixAnchor = i;
-      minY = path[i].y;
+      minY = cmd.y;
     }
   }
   let x = path[ixNr].x;
@@ -106,7 +113,7 @@ export const SvgRoute = ({
   const pathIdentifier = `svg-route-path-${mediaId}-${svg.problemId}-${svg.pitch}-${thumbnail}`;
   const extraAnchors =
     svg.anchors &&
-    JSON.parse(svg.anchors).map((a) => (
+    (JSON.parse(svg.anchors ?? '[]') as Anchor[]).map((a: Anchor) => (
       <circle
         key={[a.x, a.y].join('x')}
         fill={groupColor}
@@ -119,7 +126,7 @@ export const SvgRoute = ({
     ));
   const tradBelayStations =
     svg.tradBelayStations &&
-    JSON.parse(svg.tradBelayStations).map((a) => {
+    (JSON.parse(svg.tradBelayStations ?? '[]') as Anchor[]).map((a: Anchor) => {
       const r = 8 * scale * hoveredOrActiveScale * (thumbnail ? 3 : 1);
       return (
         <polygon
@@ -133,7 +140,7 @@ export const SvgRoute = ({
     });
   const extraTexts =
     svg.texts &&
-    JSON.parse(svg.texts).map((t) => (
+    (JSON.parse(svg.texts ?? '[]') as TextItem[]).map((t: TextItem) => (
       <text
         stroke='white'
         strokeWidth={2 * scale}
@@ -190,18 +197,18 @@ export const SvgRoute = ({
         filter: isHoveredOrActive ? 'contrast(2)' : undefined,
       }}
       onClick={() => {
-        if (close && !thumbnail) {
+        if (!thumbnail) {
           let url = '/problem/' + svg.problemId + '/' + mediaId;
           if (
             optProblemId === svg.problemId &&
-            ((!pitch && svg.pitch > 0) || (pitch && pitch != svg.pitch))
+            ((!pitch && (svg.pitch ?? 0) > 0) || (pitch && (svg.pitch ?? 0) != pitch))
           ) {
-            url += '/' + svg.pitch;
+            url += '/' + (svg.pitch ?? 0);
           }
           navigate(url);
         }
       }}
-      onMouseEnter={() => setProblemIdHovered && setProblemIdHovered(svg.problemId)}
+      onMouseEnter={() => setProblemIdHovered && setProblemIdHovered(svg.problemId ?? null)}
       onMouseLeave={() => setProblemIdHovered && setProblemIdHovered(null)}
     >
       <defs>
@@ -237,9 +244,9 @@ export const SvgRoute = ({
         x={x}
         y={y}
       >
-        {svg.nr + (svg.pitch !== 0 && '-' + svg.pitch)}
+        {`${svg.nr}${(svg.pitch ?? 0) !== 0 ? '-' + svg.pitch : ''}`}
       </text>
-      {svg.hasAnchor && ixAnchor && (
+      {svg.hasAnchor && ixAnchor != null && path[ixAnchor] && (
         <circle
           fill={groupColor}
           stroke='black'
@@ -251,8 +258,8 @@ export const SvgRoute = ({
       )}
       {tradBelayStations}
       {extraAnchors}
-      {extraTexts}
       {info}
+      {extraTexts}
     </g>
   );
 };

@@ -21,7 +21,8 @@ const PlaceholderFeed = () => {
 const Ticks = () => {
   const { page } = useParams();
   const meta = useMeta();
-  const { data, isLoading } = useTicks(+page);
+  const pageNum = Number(page ?? 0);
+  const { data, isLoading } = useTicks(pageNum);
   const navigate = useNavigate();
 
   return (

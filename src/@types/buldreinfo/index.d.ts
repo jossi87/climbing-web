@@ -1,3 +1,4 @@
+export type Slope = import('./swagger').components['schemas']['Slope'];
 import { operations } from './swagger';
 
 interface Window {

@@ -5,12 +5,12 @@ import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster';
 
 const MarkerClusterGroup = createPathComponent(({ children: _c, ...props }, ctx) => {
-  const clusterProps = {
+  const clusterProps: Record<string, unknown> = {
     maxClusterRadius: 19,
     spiderfyOnMaxZoom: true,
     disableClusteringAtZoom: 19,
   };
-  const clusterEvents = {};
+  const clusterEvents: Record<string, unknown> = {};
 
   // Splitting props and events to different objects
   Object.entries(props).forEach(([propName, prop]) =>

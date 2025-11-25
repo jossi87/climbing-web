@@ -25,8 +25,10 @@ export const ProblemComments = ({
     if (!id || !message) {
       return;
     }
+    const pid = data?.id;
+    if (!pid) return;
     if (confirm('Are you sure you want to flag this comment?')) {
-      postComment(accessToken, id, data.id, message, true, false, false, []).catch((error) => {
+      postComment(accessToken, id, pid, message, true, false, false, []).catch((error) => {
         console.warn(error);
         alert(error.toString());
       });
@@ -37,26 +39,31 @@ export const ProblemComments = ({
     if (!id) {
       return;
     }
+    const pid = data?.id;
+    if (!pid) return;
 
     if (confirm('Are you sure you want to delete this comment?')) {
-      postComment(accessToken, id, data.id, null, false, false, true, []).catch((error) => {
+      postComment(accessToken, id, pid, null, false, false, true, []).catch((error) => {
         console.warn(error);
         alert(error.toString());
       });
     }
   }
 
-  if (data.comments?.length == 0) {
+  const comments = data?.comments ?? [];
+  const sections = data?.sections ?? [];
+
+  if (comments.length === 0) {
     return null;
   }
   return (
     <Feed as={Segment} style={{ maxWidth: '100%' }}>
       <Header as='h3' dividing>
         Comments
-        {data.comments?.length > 0 && <Label circular>{data.comments?.length}</Label>}
+        {comments.length > 0 && <Label circular>{comments.length}</Label>}
       </Header>
-      {data.comments?.length ? (
-        data.comments.map((c) => {
+      {comments.length ? (
+        comments.map((c) => {
           let extra: React.JSX.Element | null = null;
           if (c.danger) {
             extra = <Label color='red'>Flagged as dangerous</Label>;
@@ -88,12 +95,12 @@ export const ProblemComments = ({
                   <Feed.Date>{c.date}</Feed.Date>
                 </Feed.Summary>
                 <Linkify>{c.message}</Linkify>
-                {c.media && c.media.length > 0 && (
+                {(c.media ?? []).length > 0 && (
                   <Media
-                    pitches={data.sections}
-                    media={c.media}
-                    orderableMedia={c.media}
-                    carouselMedia={c.media}
+                    pitches={sections}
+                    media={c.media ?? []}
+                    orderableMedia={c.media ?? []}
+                    carouselMedia={c.media ?? []}
                     optProblemId={null}
                     showLocation={false}
                   />

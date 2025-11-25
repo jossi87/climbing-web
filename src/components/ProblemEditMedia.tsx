@@ -15,11 +15,11 @@ const ProblemEditMedia = () => {
 
   const { data: problem, isLoading } = useProblem(+(problemId || '-1'), false);
 
-  function save(event) {
+  function save(event: React.FormEvent) {
     event.preventDefault();
     setSaving(true);
     getAccessTokenSilently().then((accessToken) => {
-      postProblemMedia(accessToken, +problemId, media)
+      postProblemMedia(accessToken, +(problemId || '-1'), media ?? [])
         .then(async (res) => {
           navigate(`/problem/${res.id}`);
         })
@@ -38,7 +38,10 @@ const ProblemEditMedia = () => {
       <Segment>
         <h3>Upload image(s) or embed video(s)</h3>
         <form onSubmit={save}>
-          <ImageUpload onMediaChanged={setMedia} isMultiPitch={problem?.sections?.length > 0} />
+          <ImageUpload
+            onMediaChanged={setMedia}
+            isMultiPitch={(problem?.sections ?? []).length > 0}
+          />
         </form>
       </Segment>
       <Button.Group>

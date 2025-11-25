@@ -3,7 +3,7 @@
 # There's no other validation yet.
 
 name: validate-pull-requests
-run-name: "Simple validation of pull requests"
+run-name: 'Simple validation of pull requests'
 permissions:
   contents: read
 on:
@@ -12,23 +12,23 @@ on:
       - main
 jobs:
   check-build-and-lint:
-    name: "Check that it builds & lints"
+    name: 'Check that it builds & lints'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
-      - name: "Install dependencies"
+          node-version: '20'
+      - name: 'Install dependencies'
         run: |
           yarn global add node-gyp@11.2.0
           yarn install --frozen-lock-file
-      - name: "Run lint"
+      - name: 'Run lint'
         run: |
           yarn lint
-      - name: "Run prettier"
+      - name: 'Run prettier'
         run: |
           yarn prettier --check src/
-      - name: "Run the build"
+      - name: 'Run the build'
         run: |
           yarn tsc

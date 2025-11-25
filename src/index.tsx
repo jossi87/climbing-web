@@ -18,20 +18,29 @@ import {
 
 Sentry.init({
   dsn: 'https://32152968271f46afa0efa8608b252e42@o4505452714786816.ingest.sentry.io/4505452716556288',
-  integrations: [
-    Sentry.reactRouterV6BrowserTracingIntegration({
-      useEffect,
-      useLocation,
-      useNavigationType,
-      createRoutesFromChildren,
-      matchRoutes,
-    }),
-    process.env.REACT_APP_ENV !== 'development' &&
-      Sentry.replayIntegration({
-        unblock: ['.sentry-unblock, [data-sentry-unblock]'],
-        unmask: ['.sentry-unmask, [data-sentry-unmask]'],
+  integrations: (() => {
+    const arr: ReturnType<
+      typeof Sentry.reactRouterV6BrowserTracingIntegration | typeof Sentry.replayIntegration
+    >[] = [];
+    arr.push(
+      Sentry.reactRouterV6BrowserTracingIntegration({
+        useEffect,
+        useLocation,
+        useNavigationType,
+        createRoutesFromChildren,
+        matchRoutes,
       }),
-  ].filter(Boolean),
+    );
+    if (process.env.REACT_APP_ENV !== 'development') {
+      arr.push(
+        Sentry.replayIntegration({
+          unblock: ['.sentry-unblock, [data-sentry-unblock]'],
+          unmask: ['.sentry-unmask, [data-sentry-unmask]'],
+        }),
+      );
+    }
+    return arr;
+  })(),
   environment: process.env.REACT_APP_ENV ?? 'unknown',
   // Performance Monitoring
   tracesSampleRate: process.env.REACT_APP_ENV === 'production' ? 0.5 : 1.0,
@@ -90,7 +99,7 @@ export const Auth0ProviderWithNavigate = ({ children }: { children: React.ReactN
   const navigate = useNavigate();
   const domain = 'climbing.eu.auth0.com';
   const clientId = 'DNJNVzhxbF7PtaBFh7H6iBSNLh2UJWHt';
-  const onRedirectCallback = (appState) => {
+  const onRedirectCallback = (appState?: { returnTo?: string } | null) => {
     navigate(appState?.returnTo || window.location.pathname);
   };
   if (!(domain && clientId)) {
@@ -136,5 +145,5 @@ const Index = () => (
   </QueryClientProvider>
 );
 
-const root = createRoot(document.getElementById('root'));
+const root = createRoot(document.getElementById('root') as HTMLElement);
 root.render(<Index />);

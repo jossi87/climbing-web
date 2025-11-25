@@ -42,8 +42,8 @@ export const AreaEdit = () => {
   } = useAreaEdit({ areaId: +(areaId ?? 0) });
   const [showSectorOrder, setShowSectorOrder] = useState(false);
 
-  const save = useCallback<ComponentProps<typeof Form>['onSubmit']>(
-    (event) => {
+  const save: ComponentProps<typeof Form>['onSubmit'] = useCallback(
+    (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       if (!data.name) {
         return;
@@ -66,8 +66,11 @@ export const AreaEdit = () => {
     return <Loading />;
   }
 
+  const safeSectors = data.sectors ?? [];
+  const safeSectorOrder = data.sectorOrder ?? [];
+
   const defaultCenter = data.coordinates
-    ? { lat: +data.coordinates.latitude, lng: +data.coordinates.longitude }
+    ? { lat: +(data.coordinates.latitude ?? 0), lng: +(data.coordinates.longitude ?? 0) }
     : meta.defaultCenter;
   const defaultZoom: number = data.coordinates ? 8 : meta.defaultZoom;
 
@@ -219,7 +222,10 @@ export const AreaEdit = () => {
                 data.coordinates
                   ? [
                       {
-                        coordinates: data.coordinates,
+                        coordinates: {
+                          latitude: data.coordinates.latitude ?? 0,
+                          longitude: data.coordinates.longitude ?? 0,
+                        },
                       },
                     ]
                   : []
@@ -228,14 +234,14 @@ export const AreaEdit = () => {
               defaultZoom={defaultZoom}
               onMouseClick={setLatLng}
               onMouseMove={null}
-              outlines={data.sectors
-                ?.filter((s) => s.outline?.length > 0)
-                .map((s) => ({ background: true, outline: s.outline }))}
+              outlines={safeSectors
+                .filter((s) => (s.outline ?? []).length > 0)
+                .map((s) => ({ background: true, outline: s.outline ?? [] }))}
               slopes={null}
               height={'300px'}
               showSatelliteImage={false}
               clusterMarkers={false}
-              rocks={null}
+              rocks={undefined}
               flyToId={null}
             />
           </Form.Field>
@@ -259,7 +265,7 @@ export const AreaEdit = () => {
           </Form.Group>
         </Segment>
 
-        {(data?.sectorOrder?.length ?? 0) > 1 && (
+        {(safeSectorOrder.length ?? 0) > 1 && (
           <Segment>
             <Accordion>
               <Accordion.Title
@@ -271,7 +277,7 @@ export const AreaEdit = () => {
               </Accordion.Title>
               <Accordion.Content active={showSectorOrder}>
                 <em>(Presented from low to high)</em>
-                {data.sectorOrder.map((s) => {
+                {safeSectorOrder.map((s) => {
                   return (
                     <Input
                       key={s.id}
@@ -283,7 +289,7 @@ export const AreaEdit = () => {
                       value={s.sorting}
                       label={{ basic: true, content: s.name }}
                       labelPosition='right'
-                      onChange={setSectorSort(s.id)}
+                      onChange={s.id != null ? setSectorSort(s.id) : undefined}
                     />
                   );
                 })}

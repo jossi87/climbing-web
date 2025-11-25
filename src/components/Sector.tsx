@@ -32,6 +32,7 @@ import {
 } from 'semantic-ui-react';
 import { useMeta } from './common/meta/context';
 import { useSector } from '../api';
+import { Slope } from '../@types/buldreinfo';
 import { components } from '../@types/buldreinfo/swagger';
 import { DownloadButton } from './common/DownloadButton';
 import { MarkerDef } from './common/leaflet/markers';
@@ -202,7 +203,7 @@ const Sector = () => {
       });
     }
   }
-  if (markers.length > 0 || data.outline?.length) {
+  if (markers.length > 0 || (data.outline ?? []).length) {
     const defaultCenter =
       data.parking && data.parking.latitude && data.parking.longitude
         ? { lat: data.parking.latitude, lng: data.parking.longitude }
@@ -210,22 +211,22 @@ const Sector = () => {
     const defaultZoom = data.parking ? 15 : meta.defaultZoom;
     let outlines: ComponentProps<typeof Leaflet>['outlines'] = undefined;
     const slopes: ComponentProps<typeof Leaflet>['slopes'] = [];
-    if (data.outline?.length && addPolygon) {
-      outlines = [{ url: '/sector/' + data.id, label: data.name, outline: data.outline }];
+    if ((data.outline ?? []).length && addPolygon) {
+      outlines = [{ url: '/sector/' + data.id, label: data.name, outline: data.outline ?? [] }];
     }
 
-    if (data.approach?.coordinates?.length) {
+    if ((data.approach?.coordinates ?? []).length) {
       slopes.push({
         backgroundColor: 'lime',
-        slope: data.approach,
-        label: getDistanceWithUnit(data.approach),
+        slope: data.approach as Slope,
+        label: getDistanceWithUnit(data.approach as Slope) ?? undefined,
       });
     }
-    if (data.descent?.coordinates?.length) {
+    if ((data.descent?.coordinates ?? []).length) {
       slopes.push({
         backgroundColor: 'purple',
-        slope: data.descent,
-        label: getDistanceWithUnit(data.descent),
+        slope: data.descent as Slope,
+        label: getDistanceWithUnit(data.descent as Slope) ?? undefined,
       });
     }
     const uniqueRocks =
@@ -277,7 +278,7 @@ const Sector = () => {
       ),
     });
   }
-  if (data.problems?.length) {
+  if ((data.problems ?? []).length) {
     panes.push({
       menuItem: { key: 'distribution', icon: 'area graph' },
       render: () => (
@@ -312,15 +313,15 @@ const Sector = () => {
     });
   }
   const uniqueTypes =
-    data.problems
-      ?.map((p) => p.t?.subType)
-      ?.filter((p): p is string => !!p)
+    (data.problems ?? [])
+      .map((p) => p.t?.subType)
+      .filter((p): p is string => !!p)
       // TODO: Consider using a Set or something for this
-      ?.filter((value, index, self) => self.indexOf(value) === index) ?? [];
-  if (data.problems?.filter((p) => p.broken)?.length) {
+      .filter((value, index, self) => self.indexOf(value) === index) ?? [];
+  if ((data.problems ?? []).filter((p) => p.broken)?.length) {
     uniqueTypes.push('Broken');
   }
-  if (data.problems?.filter((p) => p.gradeNumber === 0)?.length) {
+  if ((data.problems ?? []).filter((p) => p.gradeNumber === 0)?.length) {
     uniqueTypes.push('Projects');
   }
   uniqueTypes.sort();
@@ -443,13 +444,13 @@ const Sector = () => {
               <Markdown content={data.comment} />
             </Table.Cell>
           </Table.Row>
-          {(data.sectors.length > 1 || data.areaComment) && (
+          {((data.sectors ?? []).length > 1 || data.areaComment) && (
             <Table.Row verticalAlign='top'>
               <Table.Cell width={3}>Area:</Table.Cell>
               <Table.Cell>
-                {data.sectors.length > 1 && (
+                {(data.sectors ?? []).length > 1 && (
                   <Label.Group size='tiny'>
-                    {data.sectors.map((s) => (
+                    {(data.sectors ?? []).map((s) => (
                       <Label key={s.id} as={Link} to={`/sector/${s.id}`} active={data.id === s.id}>
                         <LockSymbol
                           lockedAdmin={!!s.lockedAdmin}
@@ -464,31 +465,31 @@ const Sector = () => {
               </Table.Cell>
             </Table.Row>
           )}
-          {data.approach?.coordinates?.length && (
+          {(data.approach?.coordinates ?? []).length > 0 && (
             <Table.Row verticalAlign='top'>
               <Table.Cell>Approach:</Table.Cell>
               <Table.Cell>
                 <SlopeProfile
                   areaName={data.areaName}
                   sectorName={data.name}
-                  slope={data.approach}
+                  slope={data.approach as Slope}
                 />
               </Table.Cell>
             </Table.Row>
           )}
-          {data.descent?.coordinates?.length && (
+          {(data.descent?.coordinates ?? []).length > 0 && (
             <Table.Row verticalAlign='top'>
               <Table.Cell>Descent:</Table.Cell>
               <Table.Cell>
                 <SlopeProfile
                   areaName={data.areaName}
                   sectorName={data.name}
-                  slope={data.descent}
+                  slope={data.descent as Slope}
                 />
               </Table.Cell>
             </Table.Row>
           )}
-          {data.triviaMedia?.length && (
+          {(data.triviaMedia ?? []).length > 0 && (
             <Table.Row verticalAlign='top'>
               <Table.Cell>Trivia:</Table.Cell>
               <Table.Cell>
@@ -540,9 +541,9 @@ const Sector = () => {
                   Parking
                 </Label>
               )}
-              {meta.isClimbing && data.outline?.length > 0 && (
+              {meta.isClimbing && (data.outline ?? []).length > 0 && (
                 <Label
-                  href={`https://www.google.com/maps/search/?api=1&query=${data.outline[0].latitude},${data.outline[0].longitude}`}
+                  href={`https://www.google.com/maps/search/?api=1&query=${(data.outline ?? [])[0]?.latitude},${(data.outline ?? [])[0]?.longitude}`}
                   rel='noreferrer noopener'
                   target='_blank'
                   image
@@ -575,7 +576,7 @@ const Sector = () => {
               subType: p.t?.subType ?? '',
               num: 0,
               fa: false,
-              faDate: p.faDate,
+              faDate: p.faDate ?? null,
               areaName: '',
               sectorName: '',
             } satisfies ComponentProps<typeof ProblemList>['rows'][number];

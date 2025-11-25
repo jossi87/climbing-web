@@ -5,7 +5,18 @@ import {
   postTicks,
   useAccessToken,
 } from './../../../api';
-import { Button, Dropdown, Icon, Modal, Form, TextArea, Input } from 'semantic-ui-react';
+import {
+  Button,
+  Dropdown,
+  DropdownProps,
+  Icon,
+  Modal,
+  Form,
+  TextArea,
+  TextAreaProps,
+  Input,
+  InputOnChangeData,
+} from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { components } from '../../../@types/buldreinfo/swagger';
@@ -20,11 +31,11 @@ type TickModalProps = {
   grades: components['schemas']['Grade'][];
   comment: string;
   grade: string;
-  gradeFa: string;
-  gradeConsensus: string;
-  stars: number;
-  repeats: Repeat[] | undefined;
-  date: string | undefined;
+  gradeFa?: string | null;
+  gradeConsensus?: string | null;
+  stars?: number | null;
+  repeats?: Repeat[] | undefined;
+  date?: string | undefined;
   enableTickRepeats: boolean;
 };
 
@@ -46,11 +57,11 @@ const TickModal = ({
   const accessToken = useAccessToken();
   const [comment, setComment] = useState(initialComment ?? '');
   const [grade, setGrade] = useState(initialGrade);
-  const [stars, setStars] = useState(initialStars);
+  const [stars, setStars] = useState<number | null>(initialStars ?? null);
   const [date, setDate] = useState<string | undefined>(
     idTick === -1 ? (convertFromDateToString(new Date()) ?? initialDate) : initialDate,
   );
-  const [repeats, setRepeats] = useState(initialRepeats || []);
+  const [repeats, setRepeats] = useState<Repeat[]>(initialRepeats || []);
   const [apiError, setApiError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -169,7 +180,7 @@ const TickModal = ({
               <Dropdown
                 selection
                 value={grade}
-                onChange={(e, data) => {
+                onChange={(e: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
                   setGrade(String(data.value));
                 }}
                 options={[
@@ -199,9 +210,9 @@ const TickModal = ({
               )}
               <Dropdown
                 selection
-                value={stars}
+                value={stars ?? undefined}
                 selectOnBlur={false}
-                onChange={(e, data) => {
+                onChange={(e: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
                   setStars(Number(data.value));
                 }}
                 options={[
@@ -264,8 +275,8 @@ const TickModal = ({
                 placeholder='Comment'
                 style={{ minHeight: 100 }}
                 value={comment ? comment : ''}
-                onChange={(e, data) => {
-                  setComment(String(data.value));
+                onChange={(e: React.SyntheticEvent<HTMLTextAreaElement>, data: TextAreaProps) => {
+                  setComment(String((data.value as string) || ''));
                 }}
               />
             </Form.Field>
@@ -294,8 +305,11 @@ const TickModal = ({
                         fluid
                         placeholder='Comment'
                         value={r.comment ? r.comment : ''}
-                        onChange={(e, data) => {
-                          handleUpdateRepeat(index, 'comment', data.value);
+                        onChange={(
+                          e: React.ChangeEvent<HTMLInputElement>,
+                          data: InputOnChangeData,
+                        ) => {
+                          handleUpdateRepeat(index, 'comment', data.value as string);
                         }}
                       />
                     </Form.Field>

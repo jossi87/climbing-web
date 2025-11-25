@@ -36,24 +36,32 @@ const useMarkers = (areas: Props['areas']): MarkerDef[] => {
     const markers: MarkerDef[] = [];
 
     for (const area of areas) {
-      for (const sector of area.sectors) {
-        let sectorBounds: LatLngBounds;
-        for (const problem of sector.problems) {
+      for (const sector of area.sectors ?? []) {
+        let sectorBounds: LatLngBounds | null = null;
+        for (const problem of sector.problems ?? []) {
           let lat = 0;
           let lng = 0;
 
           if (!problem.coordinates) {
-            if (sector.outline?.length > 0) {
+            if ((sector.outline ?? []).length > 0) {
               if (!sectorBounds) {
                 sectorBounds = latLngBounds([]);
-                for (const c of sector.outline) {
-                  sectorBounds.extend([c.latitude, c.longitude]);
+                for (const c of sector.outline ?? []) {
+                  if (typeof c.latitude === 'number' && typeof c.longitude === 'number') {
+                    sectorBounds.extend([c.latitude, c.longitude]);
+                  }
                 }
               }
-              const { lat: centerLat, lng: centerLng } = sectorBounds.getCenter();
-              lat = centerLat;
-              lng = centerLng;
-            } else if (sector.parking) {
+              if (sectorBounds && sectorBounds.isValid()) {
+                const { lat: centerLat, lng: centerLng } = sectorBounds.getCenter();
+                lat = centerLat;
+                lng = centerLng;
+              }
+            } else if (
+              sector.parking &&
+              typeof sector.parking.latitude === 'number' &&
+              typeof sector.parking.longitude === 'number'
+            ) {
               lat = sector.parking.latitude;
               lng = sector.parking.longitude;
             }
@@ -136,15 +144,15 @@ const SectorOutlines = ({ areas }: Props) => {
   const zoom = useMapZoom();
 
   const outlines: ComponentProps<typeof Leaflet>['outlines'] = useMemo(() => {
-    const out = [];
+    const out: ComponentProps<typeof Leaflet>['outlines'] = [];
     for (const area of areas) {
-      for (const sector of area.sectors) {
-        if (!sector.outline || sector.outline.length == 0) {
+      for (const sector of area.sectors ?? []) {
+        if ((sector.outline ?? []).length == 0) {
           continue;
         }
 
         out.push({
-          outline: sector.outline,
+          outline: sector.outline ?? [],
           url: `/sector/${sector.id}`,
           label: sector.name,
         });
@@ -156,8 +164,10 @@ const SectorOutlines = ({ areas }: Props) => {
   useEffect(() => {
     const bounds = new LatLngBounds([]);
     for (const outline of outlines) {
-      for (const c of outline.outline) {
-        bounds.extend([c.latitude, c.longitude]);
+      for (const c of outline.outline ?? []) {
+        if (typeof c.latitude === 'number' && typeof c.longitude === 'number') {
+          bounds.extend([c.latitude, c.longitude]);
+        }
       }
     }
     if (bounds.isValid()) {

@@ -5,11 +5,7 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 import path from 'path';
 
 export default defineConfig({
-  plugins: [
-    react(),
-    envCompatible({ prefix: 'REACT_APP_' }),
-    tsconfigPaths(),
-  ],
+  plugins: [react(), envCompatible({ prefix: 'REACT_APP_' }), tsconfigPaths()],
   server: {
     port: 3000,
     open: true,

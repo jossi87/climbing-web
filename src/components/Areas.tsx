@@ -13,7 +13,7 @@ import { Markdown } from './Markdown/Markdown';
 const Areas = () => {
   const { data } = useAreas();
   const meta = useMeta();
-  const [flyToId, setFlyToId] = useState<number>(null);
+  const [flyToId, setFlyToId] = useState<number | null>(null);
   const [showForDevelopers, setShowForDevelopers] = useState(false);
   const leafletRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
@@ -26,10 +26,13 @@ const Areas = () => {
     .filter((a) => a.forDevelopers === showForDevelopers && a.coordinates)
     .map((a) => {
       return {
-        id: a.id,
-        coordinates: a.coordinates,
+        id: a.id ?? 0,
+        coordinates: {
+          latitude: a.coordinates?.latitude ?? 0,
+          longitude: a.coordinates?.longitude ?? 0,
+        },
         label: a.name,
-        url: '/area/' + a.id,
+        url: '/area/' + (a.id ?? 0),
         html: (
           <div style={{ minWidth: '300px' }}>
             <Button
@@ -38,19 +41,19 @@ const Areas = () => {
               size='mini'
               icon
               as={Link}
-              to={'/area/' + a.id}
+              to={'/area/' + (a.id ?? 0)}
               target='_blank'
               rel='noreferrer noopener'
             >
               <Icon name='external' />
             </Button>
-            <Link to={'/area/' + a.id}>
+            <Link to={'/area/' + (a.id ?? 0)}>
               <b>{a.name}</b>{' '}
               <LockSymbol lockedAdmin={a.lockedAdmin} lockedSuperadmin={a.lockedSuperadmin} />
             </Link>
-            <i>{`(${a.numSectors} sectors, ${a.numProblems} ${typeDescription})`}</i>
+            <i>{`(${a.numSectors ?? 0} sectors, ${a.numProblems ?? 0} ${typeDescription})`}</i>
             <br />
-            {a.numProblems > 0 && <ChartGradeDistribution idArea={a.id} />}
+            {(a.numProblems ?? 0) > 0 && <ChartGradeDistribution idArea={a.id ?? 0} />}
             <Markdown content={a.comment} />
           </div>
         ),
@@ -104,10 +107,10 @@ const Areas = () => {
                   as='a'
                   onClick={() => {
                     if (area.coordinates) {
-                      setFlyToId(area.id);
+                      setFlyToId(area.id ?? null);
                       leafletRef?.current?.scrollIntoView({ block: 'center' });
                     } else {
-                      navigate('/area/' + area.id);
+                      navigate('/area/' + (area.id ?? 0));
                     }
                   }}
                 >
@@ -133,10 +136,13 @@ const Areas = () => {
                       lockedAdmin={area.lockedAdmin}
                       lockedSuperadmin={area.lockedSuperadmin}
                     />
-                    <SunOnWall sunFromHour={area.sunFromHour} sunToHour={area.sunToHour} />
+                    <SunOnWall
+                      sunFromHour={area.sunFromHour ?? 0}
+                      sunToHour={area.sunToHour ?? 0}
+                    />
                   </List.Header>
                   <List.Description>
-                    <i>{`${area.numSectors} sectors, ${area.numProblems} ${typeDescription}, ${area.pageViews} page views`}</i>
+                    <i>{`${area.numSectors ?? 0} sectors, ${area.numProblems ?? 0} ${typeDescription}, ${area.pageViews ?? 0} page views`}</i>
                     <br />
                     <Markdown content={area.comment} />
                   </List.Description>

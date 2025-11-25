@@ -1,7 +1,9 @@
 import { useState, forwardRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { createElementHook, createControlHook } from '@react-leaflet/core';
-import { Control, DomUtil, DomEvent } from 'leaflet';
+import { Control, DomUtil, DomEvent, Map as LeafletMap } from 'leaflet';
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 const DumbControl = Control.extend({
   options: {
@@ -16,7 +18,7 @@ const DumbControl = Control.extend({
     return _controlDiv;
   },
 
-  onRemove(map) {
+  onRemove(map: LeafletMap) {
     if (this.options.onOff) {
       map.off(this.options.onOff, this.options.handleOff, this);
     }
@@ -25,9 +27,9 @@ const DumbControl = Control.extend({
   },
 });
 
-const createControl = (props, context) => {
-  const instance = new DumbControl(props);
-  return { instance, context: { ...context, overlayContainer: instance } };
+const createControl = (props: unknown, context: unknown) => {
+  const instance = new DumbControl(props as any);
+  return { instance, context: { ...(context as any), overlayContainer: instance } };
 };
 
 const useControlElement = createElementHook(createControl);
@@ -39,10 +41,13 @@ const useForceUpdate = () => {
   return useCallback(() => setValue((value) => value + 1), []); // update the state to force render
 };
 
-const createLeafletControl = (useElement) => {
-  const Component = (props, _ref) => {
+const createLeafletControl = (useElement: unknown) => {
+  const Component = (
+    props: { children?: React.ReactNode } & Record<string, unknown>,
+    _ref: unknown,
+  ) => {
     const forceUpdate = useForceUpdate();
-    const { instance } = useElement(props).current;
+    const { instance } = (useElement as any)(props).current;
 
     useEffect(() => {
       // Origin: https://github.com/LiveBy/react-leaflet-control/blob/master/lib/control.jsx
@@ -56,7 +61,7 @@ const createLeafletControl = (useElement) => {
     const contentNode = instance.getContainer();
     return contentNode ? createPortal(props.children, contentNode) : null;
   };
-  const LeafletControl = forwardRef(Component);
+  const LeafletControl = forwardRef(Component as any);
   // Name the forwarded component so Fast Refresh can identify it
   // and avoid anonymous export issues.
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment

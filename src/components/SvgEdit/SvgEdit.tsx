@@ -42,7 +42,7 @@ const useIds = (): {
 
 const SvgEditLoader = () => {
   const { problemId, pitch, mediaId } = useIds();
-  const [customMediaRegion, setCustomMediaRegion] = useState<MediaRegion>(null);
+  const [customMediaRegion, setCustomMediaRegion] = useState<MediaRegion | null>(null);
   const data = useSvgEdit(problemId, pitch, mediaId, customMediaRegion);
   const accessToken = useAccessToken();
   const [saving, setSaving] = useState(false);
@@ -52,7 +52,7 @@ const SvgEditLoader = () => {
     ({ path, hasAnchor, anchors, tradBelayStations, texts }) => {
       setSaving(true);
 
-      const correctPoints = parsePath(path ?? '', data.mediaRegion);
+      const correctPoints = parsePath(path ?? '', data?.mediaRegion ?? undefined);
       const correctPathTxt = generatePath(correctPoints);
 
       return postProblemSvg(
@@ -95,7 +95,7 @@ const SvgEditLoader = () => {
     navigate(`/problem/${problemId}`);
   }, [navigate, problemId]);
 
-  const onUpdateMediaRegion = (mediaRegion) => {
+  const onUpdateMediaRegion = (mediaRegion: MediaRegion | null) => {
     setCustomMediaRegion(mediaRegion);
   };
 
@@ -107,7 +107,8 @@ const SvgEditLoader = () => {
     <SvgEdit
       key={JSON.stringify(data)}
       {...data}
-      sections={data.sections}
+      mediaRegion={data.mediaRegion ?? undefined}
+      sections={data.sections ?? []}
       onSave={save}
       saving={saving}
       onCancel={onCancel}
@@ -142,7 +143,7 @@ type Props = Pick<
   ) => void;
   saving: boolean;
   onCancel: () => void;
-  onUpdateMediaRegion: (customMediaRegion: MediaRegion) => void;
+  onUpdateMediaRegion: (customMediaRegion: MediaRegion | null) => void;
 };
 
 const black = '#000000';
@@ -190,9 +191,11 @@ export const SvgEdit = ({
   texts: initialTexts,
   hasAnchor: initialHasAnchor,
 }: Props) => {
-  const [customMediaRegion, setCustomMediaRegion] = useState<MediaRegion>(mediaRegion);
-  const w = mediaRegion?.width || mediaWidth;
-  const h = mediaRegion?.height || mediaHeight;
+  const [customMediaRegion, setCustomMediaRegion] = useState<MediaRegion | undefined>(
+    mediaRegion ?? undefined,
+  );
+  const w = (mediaRegion ?? customMediaRegion)?.width || mediaWidth;
+  const h = (mediaRegion ?? customMediaRegion)?.height || mediaHeight;
   const navigate = useNavigate();
   const shift = useRef(false);
 
@@ -202,7 +205,9 @@ export const SvgEdit = ({
   };
 
   const readOnlyPointsRef = useRef(
-    readOnlySvgs.map((svg) => parsePath(svg.path).map((p, ix) => ({ ...p, ix }))).flat(),
+    (readOnlySvgs ?? [])
+      .map((svg) => parsePath(svg.path ?? '').map((p, ix) => ({ ...p, ix })))
+      .flat(),
   );
 
   const [{ path, points, activePoint }, dispatch] = useReducer(
@@ -228,12 +233,13 @@ export const SvgEdit = ({
     },
   );
 
-  const [anchors, setAnchors] = useState<EditableSvg['anchors']>(initialAnchors);
-  const [tradBelayStations, setTradBelayStations] =
-    useState<EditableSvg['tradBelayStations']>(initialTradBelayStations);
-  const [texts, setTexts] = useState<EditableSvg['texts']>(initialTexts);
+  const [anchors, setAnchors] = useState<EditableSvg['anchors']>(initialAnchors ?? []);
+  const [tradBelayStations, setTradBelayStations] = useState<EditableSvg['tradBelayStations']>(
+    initialTradBelayStations ?? [],
+  );
+  const [texts, setTexts] = useState<EditableSvg['texts']>(initialTexts ?? []);
 
-  const [hasAnchor, setHasAnchor] = useState(initialHasAnchor);
+  const [hasAnchor, setHasAnchor] = useState(!!initialHasAnchor);
   const [mode, setMode] = useState<'points' | 'add-anchor' | 'add-text' | 'add-trad-belay'>(
     'points',
   );
@@ -630,7 +636,8 @@ export const SvgEdit = ({
                 selection
                 value={pitch}
                 onChange={(_, { value }) => {
-                  refresh(problemId, +value, mediaId);
+                  const v = value ? Number(value) : 0;
+                  refresh(problemId, v, mediaId);
                 }}
                 options={[
                   { key: -1, value: 0, text: 'Entire route' },
@@ -671,7 +678,7 @@ export const SvgEdit = ({
               value={customMediaRegion?.x}
               onChange={(_, { value }) =>
                 setCustomMediaRegion((prevState) => ({
-                  ...prevState,
+                  ...(prevState ?? { x: 0, y: 0, width: 1920, height: 1080 }),
                   x: Math.min(+value || 0, mediaWidth - 1920),
                 }))
               }
@@ -682,7 +689,7 @@ export const SvgEdit = ({
               value={customMediaRegion?.y}
               onChange={(_, { value }) =>
                 setCustomMediaRegion((prevState) => ({
-                  ...prevState,
+                  ...(prevState ?? { x: 0, y: 0, width: 1920, height: 1080 }),
                   y: Math.min(+value || 0, mediaHeight - 1080),
                 }))
               }
@@ -693,8 +700,12 @@ export const SvgEdit = ({
               value={customMediaRegion?.width}
               onChange={(_, { value }) =>
                 setCustomMediaRegion((prevState) => ({
-                  ...prevState,
-                  width: Math.min(+value || 1920, mediaWidth - (prevState?.x || 0), 3000),
+                  ...(prevState ?? { x: 0, y: 0, width: 1920, height: 1080 }),
+                  width: Math.min(
+                    +value || 1920,
+                    mediaWidth - ((prevState ?? { x: 0 }).x || 0),
+                    3000,
+                  ),
                 }))
               }
             />
@@ -704,25 +715,32 @@ export const SvgEdit = ({
               value={customMediaRegion?.height}
               onChange={(_, { value }) =>
                 setCustomMediaRegion((prevState) => ({
-                  ...prevState,
-                  height: Math.min(+value || 1080, mediaHeight - (prevState?.y || 0), 4000),
+                  ...(prevState ?? { x: 0, y: 0, width: 1920, height: 1080 }),
+                  height: Math.min(
+                    +value || 1080,
+                    mediaHeight - ((prevState ?? { y: 0 }).y || 0),
+                    4000,
+                  ),
                 }))
               }
             />
-            {customMediaRegion && customMediaRegion !== mediaRegion && (
-              <>
-                {' '}
-                <Button
-                  size='mini'
-                  positive
-                  circular
-                  icon
-                  onClick={() => onUpdateMediaRegion(customMediaRegion)}
-                >
-                  <Icon name='refresh' />
-                </Button>
-              </>
-            )}
+            {customMediaRegion &&
+              (mediaRegion
+                ? JSON.stringify(customMediaRegion) !== JSON.stringify(mediaRegion)
+                : true) && (
+                <>
+                  {' '}
+                  <Button
+                    size='mini'
+                    positive
+                    circular
+                    icon
+                    onClick={() => onUpdateMediaRegion(customMediaRegion ?? null)}
+                  >
+                    <Icon name='refresh' />
+                  </Button>
+                </>
+              )}
           </>
         )}
       </Segment>

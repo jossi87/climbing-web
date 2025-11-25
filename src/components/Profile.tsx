@@ -28,7 +28,7 @@ const Profile = () => {
   const meta = useMeta();
 
   function onPageChanged(page: Page) {
-    navigate('/user/' + profile.id + '/' + Page[page]);
+    navigate('/user/' + (profile?.id ?? -1) + '/' + Page[page]);
   }
 
   if (isLoading) {
@@ -47,35 +47,47 @@ const Profile = () => {
     );
   }
 
-  const loggedInProfile = profile.userRegions && profile.userRegions.length > 0;
+  if (!profile) {
+    return (
+      <Message
+        size='huge'
+        style={{ backgroundColor: '#FFF' }}
+        icon='meh'
+        header='Not found'
+        content='Profile not found'
+      />
+    );
+  }
+
+  const loggedInProfile = !!(profile.userRegions && profile.userRegions.length > 0);
 
   let content = null;
   if (activePage === Page.user) {
     content = (
       <ProfileStatistics
-        userId={profile.id}
-        emails={profile.emails}
-        lastActivity={profile.lastActivity}
+        userId={profile.id ?? 0}
+        emails={profile.emails ?? []}
+        lastActivity={profile.lastActivity ?? ''}
         canDownload={loggedInProfile}
       />
     );
   } else if (activePage === Page.todo) {
     content = (
       <ProfileTodo
-        userId={profile.id}
+        userId={profile.id ?? 0}
         defaultCenter={meta.defaultCenter}
         defaultZoom={meta.defaultZoom}
       />
     );
   } else if (activePage === Page.media) {
-    content = <ProfileMedia userId={profile.id} captured={false} />;
+    content = <ProfileMedia userId={profile.id ?? 0} captured={false} />;
   } else if (activePage === Page.captured) {
-    content = <ProfileMedia userId={profile.id} captured={true} />;
+    content = <ProfileMedia userId={profile.id ?? 0} captured={true} />;
   } else if (activePage === Page.settings) {
     content = <ProfileSettings />;
   }
 
-  const firstLast = [profile.firstname, profile.lastname].filter(Boolean).join(' ');
+  const firstLast = [profile.firstname ?? '', profile.lastname ?? ''].filter(Boolean).join(' ');
 
   return (
     <>
@@ -86,8 +98,8 @@ const Profile = () => {
       ></meta>
       <Header as='h5' textAlign='center' className='buldreinfo-visible-mobile'>
         <Avatar
-          userId={profile.id}
-          name={`${profile.firstname} ${profile.lastname}`}
+          userId={profile.id ?? 0}
+          name={`${profile.firstname ?? ''} ${profile.lastname ?? ''}`}
           avatarCrc32={profile.avatarCrc32}
         />
         <Header.Content>{firstLast}</Header.Content>
@@ -96,12 +108,12 @@ const Profile = () => {
         <Menu.Item header className='buldreinfo-hidden-mobile'>
           <Header as='h4'>
             <Avatar
-              userId={profile.id}
-              name={`${profile.firstname} ${profile.lastname}`}
+              userId={profile.id ?? 0}
+              name={`${profile.firstname ?? ''} ${profile.lastname ?? ''}`}
               avatarCrc32={profile.avatarCrc32}
             />
             <Header.Content>
-              {profile.firstname}
+              {profile.firstname ?? ''}
               {profile.lastname && (
                 <>
                   <br />

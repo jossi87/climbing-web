@@ -12,7 +12,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
-    "@sentry/types": "^10.26.0",
     "@types/file-saver": "^2.0.7",
     "@types/leaflet": "^1.9.21",
     "@types/node": "^24.10.1",
@@ -42,9 +41,6 @@
     "@sentry/react": "^10.26.0",
     "@tanstack/react-query": "^5.90.10",
     "@tanstack/react-query-devtools": "^5.91.0",
-    "atob": "^2.1.2",
-    "classnames": "^2.5.1",
-    "express": "^5.1.0",
     "file-saver": "^2.0.5",
     "flat": "^6.0.1",
     "heic2any": "^0.0.4",

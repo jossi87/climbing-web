@@ -6,30 +6,30 @@ type Props = {
 };
 
 function Chart({ ticks: data }: Props) {
-  const grades = [];
-  data.map((t) => {
-    const d = grades.filter((val) => {
-      return val.gradeNumber === t.gradeNumber;
-    });
-    if (!d[0]) {
+  type LocalGrade = { gradeNumber: number; grade: string; fa: number; tick: number };
+  const grades: LocalGrade[] = [];
+  data.forEach((t) => {
+    const gradeNumber = t.gradeNumber ?? 0;
+    const gradeLabel = t.grade ?? '';
+    const d = grades.find((val) => val.gradeNumber === gradeNumber);
+    if (!d) {
       grades.push({
-        gradeNumber: t.gradeNumber,
-        grade: t.grade,
+        gradeNumber,
+        grade: gradeLabel,
         fa: t.fa ? 1 : 0,
         tick: t.fa ? 0 : 1,
       });
     } else {
       if (t.fa) {
-        d[0].fa++;
+        d.fa++;
       } else {
-        d[0].tick++;
+        d.tick++;
       }
     }
   });
-  grades.sort((a, b) => {
-    return b.gradeNumber - a.gradeNumber;
-  });
+  grades.sort((a, b) => b.gradeNumber - a.gradeNumber);
   const maxValue = Math.max(
+    1,
     ...grades.map((d) => {
       return d.fa + d.tick;
     }),

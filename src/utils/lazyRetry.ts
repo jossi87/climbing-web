@@ -1,6 +1,5 @@
 import { lazy as reactLazy } from 'react';
 import * as Sentry from '@sentry/react';
-import { Extras } from '@sentry/types';
 
 /**
  * This was heavily inspired by this blog post: https://www.codemzy.com/blog/fix-chunkloaderror-react
@@ -33,7 +32,7 @@ const lazyRetry = function (
       })
       .catch((error) => {
         if (refreshTime) {
-          const extra: Extras = {
+          const extra: Record<string, unknown> = {
             componentName,
           };
 

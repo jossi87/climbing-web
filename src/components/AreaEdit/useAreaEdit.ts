@@ -13,31 +13,29 @@ type NewMedia = components['schemas']['NewMedia'] & { file?: File };
 
 type ExternalLink = components['schemas']['ExternalLink'];
 
-type State =
-  | undefined
-  | (Required<
-      Pick<
-        components['schemas']['Area'],
-        | 'accessClosed'
-        | 'accessInfo'
-        | 'comment'
-        | 'forDevelopers'
-        | 'id'
-        | 'coordinates'
-        | 'lockedAdmin'
-        | 'lockedSuperadmin'
-        | 'name'
-        | 'noDogsAllowed'
-        | 'sunFromHour'
-        | 'sunToHour'
-        | 'sectorOrder'
-        | 'sectors'
-        | 'trash'
-        | 'externalLinks'
-      >
-    > & {
-      newMedia: NewMedia[];
-    });
+type State = Required<
+  Pick<
+    components['schemas']['Area'],
+    | 'accessClosed'
+    | 'accessInfo'
+    | 'comment'
+    | 'forDevelopers'
+    | 'id'
+    | 'coordinates'
+    | 'lockedAdmin'
+    | 'lockedSuperadmin'
+    | 'name'
+    | 'noDogsAllowed'
+    | 'sunFromHour'
+    | 'sunToHour'
+    | 'sectorOrder'
+    | 'sectors'
+    | 'trash'
+    | 'externalLinks'
+  >
+> & {
+  newMedia: NewMedia[];
+};
 
 type Update =
   | { action: 'set-data'; data: components['schemas']['Area'] }
@@ -81,7 +79,7 @@ const DEFAULT_STATE: NonNullable<State> = {
   comment: '',
   forDevelopers: false,
   id: -1,
-  coordinates: null,
+  coordinates: { latitude: 0, longitude: 0 },
   lockedAdmin: false,
   lockedSuperadmin: false,
   name: '',
@@ -118,7 +116,7 @@ const reducer = (state: State, update: Update): State => {
     case 'set-coord': {
       const { key, value } = update;
       const coordinates = state.coordinates || { latitude: 0, longitude: 0 };
-      coordinates[key] = getCoord(value);
+      coordinates[key] = getCoord(value as string | number);
       return { ...state, coordinates };
     }
     case 'set-lat-lng': {
@@ -187,11 +185,11 @@ type UseAreaEdit = (_: { areaId: number }) => {
 };
 
 export const useAreaEdit: UseAreaEdit = ({ areaId }) => {
-  const [state, dispatch] = useReducer(reducer, areaId > 0 ? undefined : DEFAULT_STATE);
+  const [state, dispatch] = useReducer(reducer, DEFAULT_STATE);
   const { data, status, isLoading } = useArea(areaId);
 
   useEffect(() => {
-    if (status === 'success') {
+    if (status === 'success' && data) {
       dispatch({ action: 'set-data', data });
     }
   }, [data, status]);
@@ -289,7 +287,7 @@ export const useAreaEdit: UseAreaEdit = ({ areaId }) => {
           dispatch({
             action: 'set-number',
             key,
-            value: value ? Number(value) : null,
+            value: value ? Number(value) : 0,
           }),
       [],
     ),
@@ -301,11 +299,11 @@ export const useAreaEdit: UseAreaEdit = ({ areaId }) => {
       [],
     ),
     setLatLng: useCallback(
-      ({ latlng }) =>
+      (payload: { latlng: { lat: number; lng: number } }) =>
         dispatch({
           action: 'set-lat-lng',
-          lat: +(latlng.lat || 0),
-          lng: +(latlng.lng || 0),
+          lat: +(payload.latlng?.lat || 0),
+          lng: +(payload.latlng?.lng || 0),
         }),
       [],
     ),

@@ -18,11 +18,11 @@ import { SunOnWall } from './SunOnWall';
 import { SunriseSunset } from './SunriseSunset';
 
 type LockSymbolProps = {
-  lockedAdmin: boolean;
-  lockedSuperadmin: boolean;
+  lockedAdmin?: boolean;
+  lockedSuperadmin?: boolean;
 };
 
-export function LockSymbol({ lockedAdmin, lockedSuperadmin }: LockSymbolProps) {
+export function LockSymbol({ lockedAdmin = false, lockedSuperadmin = false }: LockSymbolProps) {
   if (lockedSuperadmin) {
     return <Icon color='black' name='user secret' />;
   } else if (lockedAdmin) {
@@ -32,11 +32,11 @@ export function LockSymbol({ lockedAdmin, lockedSuperadmin }: LockSymbolProps) {
 }
 
 type StarsProps = {
-  numStars: number;
-  includeStarOutlines: boolean;
+  numStars?: number;
+  includeStarOutlines?: boolean;
 };
 
-export function Stars({ numStars, includeStarOutlines }: StarsProps) {
+export function Stars({ numStars = -1, includeStarOutlines = false }: StarsProps) {
   if (numStars === -1) {
     return null;
   } else if (numStars === 0.0) {
@@ -322,7 +322,7 @@ export function ConditionLabels({
   sunToHour,
 }: ConditionLabelsProps) {
   if (!lat || !lng) {
-    return;
+    return null;
   }
 
   const d = new Date();
@@ -368,18 +368,19 @@ export function ConditionLabels({
 export function ExternalLinkLabels({
   externalLinks,
 }: {
-  externalLinks: components['schemas']['ExternalLink'][];
+  externalLinks?: components['schemas']['ExternalLink'][] | null;
 }) {
-  if (externalLinks?.length === 0) {
-    return;
+  if (!externalLinks || externalLinks.length === 0) {
+    return null;
   }
   return externalLinks.map((l) => {
-    const ixOfPage = l.url.indexOf('page=');
+    const url = l.url ?? '';
+    const ixOfPage = url.indexOf('page=');
     return (
-      <Label color='blue' key={l.id} href={l.url} rel='noopener' target='_blank' size='small'>
+      <Label color='blue' key={l.id} href={url} rel='noopener' target='_blank' size='small'>
         <Icon name='linkify' />
         {l.title}
-        {ixOfPage !== -1 && <LabelDetail>Page {l.url.substring(ixOfPage + 5)}</LabelDetail>}
+        {ixOfPage !== -1 && <LabelDetail>Page {url.substring(ixOfPage + 5)}</LabelDetail>}
       </Label>
     );
   });

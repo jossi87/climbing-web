@@ -136,8 +136,8 @@ export const Problems = ({ filterOpen }: Props) => {
                       outline: sector.outline,
                       wallDirectionCalculated: sector.wallDirectionCalculated ?? {},
                       wallDirectionManual: sector.wallDirectionManual ?? {},
-                      sunFromHour: sector.sunFromHour,
-                      sunToHour: sector.sunToHour,
+                      sunFromHour: sector.sunFromHour ?? 0,
+                      sunToHour: sector.sunToHour ?? 0,
                       problems:
                         sector.problems?.map((problem) => {
                           const ascents =

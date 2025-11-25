@@ -26,6 +26,7 @@ import {
 import { useMeta } from '../common/meta/context';
 import { useProblem } from '../../api';
 import { components } from '../../@types/buldreinfo/swagger';
+import { Slope } from '../../@types/buldreinfo';
 import Avatar from '../common/avatar/avatar';
 import TickModal from '../common/tick-modal/tick-modal';
 import CommentModal from '../common/comment-modal/comment-modal';
@@ -599,7 +600,7 @@ export const Problem = () => {
                 <SlopeProfile
                   areaName={data.areaName}
                   sectorName={data.sectorName}
-                  slope={data.sectorApproach}
+                  slope={data.sectorApproach as Slope}
                 />
               </Table.Cell>
             </Table.Row>
@@ -611,7 +612,7 @@ export const Problem = () => {
                 <SlopeProfile
                   areaName={data.areaName}
                   sectorName={data.sectorName}
-                  slope={data.sectorDescent}
+                  slope={data.sectorDescent as Slope}
                 />
               </Table.Cell>
             </Table.Row>
@@ -665,9 +666,9 @@ export const Problem = () => {
                   Parking
                 </Label>
               )}
-              {meta.isClimbing && data.sectorOutline?.length > 0 && !data.coordinates && (
+              {meta.isClimbing && (data.sectorOutline ?? []).length > 0 && !data.coordinates && (
                 <Label
-                  href={`https://www.google.com/maps/search/?api=1&query=${data.sectorOutline[0].latitude},${data.sectorOutline[0].longitude}`}
+                  href={`https://www.google.com/maps/search/?api=1&query=${(data.sectorOutline ?? [])[0]?.latitude},${(data.sectorOutline ?? [])[0]?.longitude}`}
                   rel='noreferrer noopener'
                   target='_blank'
                   image

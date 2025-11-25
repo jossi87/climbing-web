@@ -133,10 +133,12 @@ const MediaModal = ({
   const { isAuthenticated, isAdmin, isBouldering } = useMeta();
   const navigate = useNavigate();
   const [showSidebar, setShowSidebar] = useLocalStorage('showSidebar', true);
-  const [problemIdHovered, setProblemIdHovered] = useState<number>(null);
+  const [problemIdHovered, setProblemIdHovered] = useState<number | null>(null);
   const canShowSidebar =
-    m.svgs?.map((v) => v.problemId).filter((value, index, self) => self.indexOf(value) === index)
-      .length > 1;
+    (m.svgs ?? m.mediaSvgs ?? [])
+      .filter((svg): svg is components['schemas']['Svg'] => 'problemId' in svg)
+      .map((v) => v.problemId)
+      .filter((value, index, self) => self.indexOf(value) === index).length > 1;
   const [prevHover, setPrevHover] = useState(false);
   const [nextHover, setNextHover] = useState(false);
   const [videoVolume, setVideoVolume] = useState(1);
@@ -157,7 +159,7 @@ const MediaModal = ({
 
   const content = (() => {
     if (isImage) {
-      if (m.svgs || m.mediaSvgs) {
+      if ((m.svgs ?? m.mediaSvgs ?? []).length > 0) {
         return (
           <Image style={style.img}>
             <SvgViewer
@@ -166,7 +168,7 @@ const MediaModal = ({
               m={m}
               pitch={pitch}
               close={onClose}
-              optProblemId={optProblemId ?? 0}
+              optProblemId={optProblemId ?? null}
               showText={canShowSidebar && !showSidebar}
               problemIdHovered={problemIdHovered}
               setProblemIdHovered={(id) => setProblemIdHovered(id)}
@@ -174,13 +176,13 @@ const MediaModal = ({
           </Image>
         );
       }
-      const fallbackWidth = Math.min(1920, m.width);
+      const fallbackWidth = Math.min(1920, m.width ?? 1920);
       return (
         <Image
           style={style.img}
-          alt={m.mediaMetadata.alt}
-          src={getImageUrl(m.id, m.crc32, { targetWidth: fallbackWidth })}
-          srcSet={getImageUrlSrcSet(m.id, m.crc32, m.width)}
+          alt={m.mediaMetadata?.alt ?? ''}
+          src={getImageUrl(m.id ?? 0, m.crc32 ?? 0, { targetWidth: fallbackWidth })}
+          srcSet={getImageUrlSrcSet(m.id ?? 0, m.crc32 ?? 0, m.width ?? 0)}
           sizes='100vw'
         />
       );
@@ -218,10 +220,10 @@ const MediaModal = ({
 
         return (
           <ReactPlayer
-            key={media.id}
+            key={media.id ?? 0}
             ref={localPlayerRef}
             style={style.video}
-            src={getBuldreinfoMediaUrlSupported(media.id)}
+            src={getBuldreinfoMediaUrlSupported(media.id ?? 0)}
             controls={true}
             playing={isPlaying}
             volume={videoVolume}
@@ -233,7 +235,7 @@ const MediaModal = ({
               }
             }}
             onProgress={() => {
-              const seconds = parseInt(media.t);
+              const seconds = parseInt(String(media.t ?? '0'));
               if (
                 !hasSetVideoTimestamp &&
                 !Number.isNaN(seconds) &&
@@ -253,7 +255,11 @@ const MediaModal = ({
     }
     return (
       <>
-        <Image style={style.img} alt={m.mediaMetadata?.description} src={getImageUrl(m.id, 360)} />
+        <Image
+          style={style.img}
+          alt={m.mediaMetadata?.description ?? ''}
+          src={getImageUrl(m.id ?? 0, m.crc32 ?? 0, { targetWidth: 360 })}
+        />
         <Button
           size='massive'
           color='youtube'
@@ -268,16 +274,20 @@ const MediaModal = ({
   const canSetMediaAsAvatar = isAuthenticated && isImage;
   const canEdit = isAdmin && isImage;
   const canDelete = isAdmin;
-  const canRotate = (isAdmin || m.uploadedByMe) && isImage && !m.svgs && !m.mediaSvgs;
-  const canDrawTopo = isAdmin && isImage && optProblemId;
+  const canRotate =
+    (isAdmin || m.uploadedByMe) &&
+    isImage &&
+    (m.svgs ?? []).length === 0 &&
+    (m.mediaSvgs ?? []).length === 0;
+  const canDrawTopo = isAdmin && isImage && !!optProblemId;
   const canDrawMedia = isAdmin && isImage && !isBouldering;
-  const canOrder = isAdmin && isImage && orderableMedia?.includes(m);
+  const canOrder = isAdmin && isImage && (orderableMedia ?? []).some((om) => om.id === (m.id ?? 0));
   const canMove = isAdmin && isImage;
   const activePitch =
-    (pitch &&
-      pitches &&
-      pitches.some((p) => p.nr === pitch) &&
-      pitches.filter((p) => p.nr === pitch)[0]) ||
+    (!!pitch &&
+      (pitches ?? []) &&
+      (pitches ?? []).some((p) => p.nr === pitch) &&
+      (pitches ?? []).filter((p) => p.nr === pitch)[0]) ||
     null;
   return (
     <Dimmer active={true} onClickOutside={onClose} page>
@@ -294,17 +304,18 @@ const MediaModal = ({
           visible={canShowSidebar && showSidebar}
         >
           {canShowSidebar &&
-            m.svgs
+            (m.svgs ?? m.mediaSvgs ?? [])
+              .filter((svg): svg is components['schemas']['Svg'] => 'problemId' in svg)
               .slice(0) // Create copy, dont change svgs-order (used to draw topo in correct order)
-              .filter((svg) => svg.pitch === 0 || svg.pitch === 1)
+              .filter((svg) => (svg.pitch ?? 0) === 0 || (svg.pitch ?? 0) === 1)
               .sort((a, b) => {
-                if (a.nr !== b.nr) {
-                  return a.nr - b.nr;
+                if ((a.nr ?? 0) !== (b.nr ?? 0)) {
+                  return (a.nr ?? 0) - (b.nr ?? 0);
                 }
-                return a.problemName.localeCompare(b.problemName);
+                return (a.problemName ?? '').localeCompare(b.problemName ?? '');
               })
               .map((svg) => {
-                const url = `/problem/${svg.problemId}/${m.id}`;
+                const url = `/problem/${svg.problemId}/${m.id ?? 0}`;
                 return (
                   <Menu.Item
                     key={url}
@@ -314,7 +325,7 @@ const MediaModal = ({
                     to={url}
                     active={problemIdHovered === svg.problemId || optProblemId === svg.problemId}
                     color='blue'
-                    onMouseEnter={() => setProblemIdHovered(svg.problemId)}
+                    onMouseEnter={() => setProblemIdHovered(svg.problemId ?? null)}
                     onMouseLeave={() => setProblemIdHovered(null)}
                   >
                     {svg.pitch === 0
@@ -340,33 +351,37 @@ const MediaModal = ({
             )}
             <Modal trigger={<Button icon='info' />}>
               <Modal.Content image scrolling>
-                <Image wrapped size='medium' src={getImageUrl(m.id, 150)} />
+                <Image
+                  wrapped
+                  size='medium'
+                  src={getImageUrl(m.id ?? 0, m.crc32 ?? 0, { targetWidth: 150 })}
+                />
                 <Modal.Description>
                   <Header>Info</Header>
-                  <b>Location: </b> {m.mediaMetadata.location}
+                  <b>Location: </b> {m.mediaMetadata?.location ?? ''}
                   <br />
-                  {m.mediaMetadata.dateCreated && (
+                  {m.mediaMetadata?.dateCreated && (
                     <>
-                      <b>Date uploaded:</b> {m.mediaMetadata.dateCreated}
+                      <b>Date uploaded:</b> {m.mediaMetadata?.dateCreated}
                       <br />
                     </>
                   )}
-                  {m.mediaMetadata.dateTaken && (
+                  {m.mediaMetadata?.dateTaken && (
                     <>
-                      <b>Date taken:</b> {m.mediaMetadata.dateTaken}
+                      <b>Date taken:</b> {m.mediaMetadata?.dateTaken}
                       <br />
                     </>
                   )}
-                  {m.mediaMetadata.capturer && (
+                  {m.mediaMetadata?.capturer && (
                     <>
                       <b>{m.idType === 1 ? 'Photographer' : 'Video created by'}:</b>{' '}
-                      {m.mediaMetadata.capturer}
+                      {m.mediaMetadata?.capturer}
                       <br />
                     </>
                   )}
-                  {m.mediaMetadata.tagged && (
+                  {m.mediaMetadata?.tagged && (
                     <>
-                      <b>In {m.idType === 1 ? 'photo' : 'video'}:</b> {m.mediaMetadata.tagged}
+                      <b>In {m.idType === 1 ? 'photo' : 'video'}:</b> {m.mediaMetadata?.tagged}
                       <br />
                     </>
                   )}
@@ -376,7 +391,7 @@ const MediaModal = ({
                       <br />
                     </>
                   )}
-                  {m.mediaMetadata.description && <i>{m.mediaMetadata.description}</i>}
+                  {m.mediaMetadata?.description && <i>{m.mediaMetadata?.description}</i>}
                 </Modal.Description>
               </Modal.Content>
             </Modal>
@@ -555,7 +570,7 @@ const MediaModal = ({
                       icon='paint brush'
                       text='Draw topo line'
                       onClick={() =>
-                        navigate(`/problem/svg-edit/${optProblemId}/${pitch || 0}/${m.id}`)
+                        navigate(`/problem/svg-edit/${optProblemId}/${pitch || 0}/${m.id ?? 0}`)
                       }
                     />
                   )}
@@ -563,7 +578,7 @@ const MediaModal = ({
                     <Dropdown.Item
                       icon='paint brush'
                       text='Draw on image'
-                      onClick={() => navigate(`/media/svg-edit/${m.id}`)}
+                      onClick={() => navigate(`/media/svg-edit/${m.id ?? 0}`)}
                     />
                   )}
                   {canOrder && (
@@ -580,21 +595,21 @@ const MediaModal = ({
                       onClick={onMoveImageRight}
                     />
                   )}
-                  {canMove && m.enableMoveToIdArea > 0 && (
+                  {canMove && (m.enableMoveToIdArea ?? 0) > 0 && (
                     <Dropdown.Item
                       icon='move'
                       text={'Move image to area'}
                       onClick={onMoveImageToArea}
                     />
                   )}
-                  {canMove && m.enableMoveToIdSector > 0 && (
+                  {canMove && (m.enableMoveToIdSector ?? 0) > 0 && (
                     <Dropdown.Item
                       icon='move'
                       text={'Move image to sector'}
                       onClick={onMoveImageToSector}
                     />
                   )}
-                  {canMove && m.enableMoveToIdProblem > 0 && (
+                  {canMove && (m.enableMoveToIdProblem ?? 0) > 0 && (
                     <Dropdown.Item
                       icon='move'
                       text={'Move image to ' + (isBouldering ? 'problem' : 'route')}
@@ -614,8 +629,8 @@ const MediaModal = ({
                         const isMovie = m.idType !== 1;
                         const ext = isMovie ? 'mp4' : 'jpg';
                         saveAs(
-                          getBuldreinfoMediaUrl(m.id, ext),
-                          'buldreinfo_brattelinjer_' + m.id + '.' + ext,
+                          getBuldreinfoMediaUrl(m.id ?? 0, ext),
+                          'buldreinfo_brattelinjer_' + (m.id ?? 0) + '.' + ext,
                         );
                       }}
                     />
@@ -689,10 +704,10 @@ const MediaModal = ({
                 backgroundColor: 'rgba(0,0,0,0.6)',
               }}
             >
-              {m.mediaMetadata.location}
+              {m.mediaMetadata?.location}
             </div>
           )}
-          {m.mediaMetadata.description && (
+          {m.mediaMetadata?.description && (
             <div
               style={{
                 position: 'absolute',
@@ -701,10 +716,10 @@ const MediaModal = ({
                 backgroundColor: 'rgba(0,0,0,0.6)',
               }}
             >
-              {m.mediaMetadata.description}
+              {m.mediaMetadata?.description}
             </div>
           )}
-          {(carouselSize > 1 || m.pitch > 0 || activePitch) && (
+          {(carouselSize > 1 || (m.pitch ?? 0) > 0 || activePitch) && (
             <div
               style={{
                 position: 'absolute',
@@ -715,7 +730,7 @@ const MediaModal = ({
             >
               {[
                 activePitch && `${activePitch.grade} | ${activePitch.description}`,
-                m.pitch > 0 && `Pitch ${m.pitch}`,
+                (m.pitch ?? 0) > 0 && `Pitch ${m.pitch ?? 0}`,
                 carouselSize > 1 && `${carouselIndex}/${carouselSize}`,
               ]
                 .filter(Boolean)

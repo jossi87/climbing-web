@@ -23,7 +23,7 @@ const Top = ({ idArea, idSector }: TopProps) => {
       <Table.Cell verticalAlign='top'>{t.percentage}%</Table.Cell>
       <Table.Cell>
         <Label.Group>
-          {t.users.map((u) => (
+          {(t.users ?? []).map((u) => (
             <Label
               key={u.userId}
               as={Link}

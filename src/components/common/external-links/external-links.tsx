@@ -15,14 +15,14 @@ const ExternalLinks = ({ externalLinks: initExternalLinks, onExternalLinksUpdate
   const onNumberOfExternalLinksChange: NonNullable<ComponentProps<typeof Dropdown>['onChange']> =
     useCallback(
       (e, { value }) => {
-        const num = +value;
+        const num = +(value ?? 0);
         let newExternalLinks: ExternalLink = [];
         if (num > 0) {
           newExternalLinks = externalLinks ? [...externalLinks] : [];
           while (num > newExternalLinks.length) {
             newExternalLinks.push({
-              url: null,
-              title: null,
+              url: undefined,
+              title: undefined,
             });
           }
           while (num < newExternalLinks.length) {

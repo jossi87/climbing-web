@@ -2,7 +2,7 @@ import React from 'react';
 import { md } from './parser';
 
 type MarkdownProps = {
-  content: string;
+  content?: string | null;
 };
 
 export const Markdown: React.FC<MarkdownProps> = ({ content }) => {

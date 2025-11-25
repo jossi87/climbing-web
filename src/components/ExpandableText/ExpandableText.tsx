@@ -3,7 +3,7 @@ import { Label, Icon } from 'semantic-ui-react';
 import { Markdown } from '../Markdown/Markdown';
 
 type ExpandableTextProps = {
-  text: string;
+  text?: string | null;
   maxLength: number;
   initialIsExpanded?: boolean;
 };

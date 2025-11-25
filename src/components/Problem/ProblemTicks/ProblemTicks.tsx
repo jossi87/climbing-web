@@ -11,21 +11,23 @@ type Props = {
 };
 
 export const ProblemTicks = ({ ticks }: Props) => {
+  const safeTicks = ticks ?? [];
   return (
     <Segment as={Feed} style={{ maxWidth: '100%' }}>
       <Header as='h3' dividing>
         Ticks
-        {ticks?.length > 0 && <Label circular>{ticks.length}</Label>}
+        {safeTicks.length > 0 && <Label circular>{safeTicks.length}</Label>}
       </Header>
-      {ticks?.length ? (
-        ticks.map((t) => {
+      {safeTicks.length ? (
+        safeTicks.map((t) => {
           let dt = t.date;
           let com: React.ReactNode | null = null;
-          if (t.repeats?.length > 0) {
+          const repeats = t.repeats ?? [];
+          if (repeats.length > 0) {
             dt =
               (dt ? dt : 'no-date') +
               ', ' +
-              t.repeats.map((x) => (x.date ? x.date : 'no-date')).join(', ');
+              repeats.map((x) => (x.date ? x.date : 'no-date')).join(', ');
             com = (
               <Table collapsing compact unstackable size='small'>
                 <Table.Body>
@@ -35,7 +37,7 @@ export const ProblemTicks = ({ ticks }: Props) => {
                     </Table.Cell>
                     <Table.Cell verticalAlign='top'>{t.comment}</Table.Cell>
                   </Table.Row>
-                  {t.repeats.map((r) => (
+                  {repeats.map((r) => (
                     <Table.Row key={[r.date, r.comment].join('/')}>
                       <Table.Cell verticalAlign='top' singleLine className='metadata'>
                         {r.date ? r.date : 'no-date'}
@@ -75,7 +77,7 @@ export const ProblemTicks = ({ ticks }: Props) => {
                 ) : (
                   t.suggestedGrade
                 )}{' '}
-                <Stars numStars={t.stars} includeStarOutlines={true} />
+                <Stars numStars={t.stars ?? 0} includeStarOutlines={true} />
                 {com && (
                   <Linkify>
                     <br />

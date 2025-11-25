@@ -17,9 +17,9 @@ type Props = {
 };
 
 const MediaEditModal = ({ save, onCloseWithoutReload, m, numPitches }: Props) => {
-  const [description, setDescription] = useState(m.mediaMetadata.description);
-  const [pitch, setPitch] = useState(m.pitch);
-  const [trivia, setTrivia] = useState(m.trivia);
+  const [description, setDescription] = useState(m.mediaMetadata?.description ?? '');
+  const [pitch, setPitch] = useState<number>(m.pitch ?? 0);
+  const [trivia, setTrivia] = useState<boolean>(!!m.trivia);
   const [saving, setSaving] = useState(false);
 
   return (
@@ -53,7 +53,7 @@ const MediaEditModal = ({ save, onCloseWithoutReload, m, numPitches }: Props) =>
                   }))}
                   selection
                   value={pitch}
-                  onChange={(e, { _, value }) => setPitch(+value)}
+                  onChange={(e, { _, value }) => setPitch(Number(value ?? 0))}
                 />
               </Form.Field>
             )}
@@ -83,7 +83,7 @@ const MediaEditModal = ({ save, onCloseWithoutReload, m, numPitches }: Props) =>
             content='Save'
             onClick={() => {
               setSaving(true);
-              save(m.id, description, pitch, trivia);
+              save(m.id ?? 0, description, pitch ?? 0, !!trivia);
             }}
           />
         </Button.Group>

@@ -16,37 +16,47 @@ export default function Polylines({ opacity, slopes }: Props) {
   if (!slopes) {
     return null;
   }
-  return slopes.map((a) => {
-    if (a.slope.coordinates.length === 1) {
-      return (
-        <Circle
-          color={a.backgroundColor}
-          key={a.slope.coordinates[0].id}
-          center={[a.slope.coordinates[0].latitude, a.slope.coordinates[0].longitude]}
-          radius={0.5}
-        />
-      );
-    } else {
-      let color = a.backgroundColor;
-      let weight = 3;
-      if (a.background === true) {
-        color = 'red';
-        weight = 1;
-      }
-      return (
-        <Polyline
-          key={a.slope.coordinates.map((c) => c.latitude + ',' + c.longitude).join(' -> ')}
-          color={color}
-          weight={weight}
-          positions={a.slope.coordinates.map((c) => [c.latitude, c.longitude])}
-        >
-          {a.label && (
-            <Tooltip opacity={opacity} permanent className='buldreinfo-tooltip-compact'>
-              {a.label}
-            </Tooltip>
-          )}
-        </Polyline>
-      );
-    }
-  });
+  return (
+    <>
+      {slopes.map((a) => {
+        const coords = (a.slope?.coordinates ?? []).map((c) => ({
+          lat: c.latitude ?? 0,
+          lng: c.longitude ?? 0,
+          id: c.id,
+          elevation: c.elevation ?? 0,
+        }));
+        if (coords.length === 1) {
+          return (
+            <Circle
+              color={a.backgroundColor}
+              key={coords[0].id}
+              center={[coords[0].lat, coords[0].lng]}
+              radius={0.5}
+            />
+          );
+        }
+        let color = a.backgroundColor;
+        let weight = 3;
+        if (a.background === true) {
+          color = 'red';
+          weight = 1;
+        }
+        const positions = coords.map((c) => [c.lat, c.lng] as [number, number]);
+        return (
+          <Polyline
+            key={positions.map((p) => p[0] + ',' + p[1]).join(' -> ')}
+            color={color}
+            weight={weight}
+            positions={positions}
+          >
+            {a.label && (
+              <Tooltip opacity={opacity} permanent className='buldreinfo-tooltip-compact'>
+                {a.label}
+              </Tooltip>
+            )}
+          </Polyline>
+        );
+      })}
+    </>
+  );
 }

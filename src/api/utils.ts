@@ -136,13 +136,16 @@ export function makeAuthenticatedRequest(
       getUrl(incomingUrl);
 
   const { consistencyAction, ...opts } = extraOptions || {};
-  const options = {
+  const baseHeaders = (opts?.headers as Record<string, string> | undefined) ?? {};
+  const headers: Record<string, string> = {
+    ...baseHeaders,
+    ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+  };
+
+  const options: RequestInit = {
     ...opts,
-    mode: 'cors' as const,
-    headers: {
-      ...opts?.headers,
-      Authorization: accessToken ? `Bearer ${accessToken}` : undefined,
-    },
+    mode: 'cors',
+    headers,
   };
 
   return fetch(url, options).then((res) => {
@@ -157,7 +160,7 @@ export function makeAuthenticatedRequest(
   });
 }
 
-export function downloadFile(accessToken: string, url: string) {
+export function downloadFile(accessToken: string | null, url: string) {
   return makeAuthenticatedRequest(accessToken, url, {
     // @ts-expect-error - I don't think that this is necessary, but I'm going
     //                    to investigate this later.

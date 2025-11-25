@@ -15,7 +15,8 @@ const AccordionContainer = ({ accordionRows }: Props) => {
   const [activeIndex, setActiveIndex] = useState<string | number>(-1);
 
   const handleOnClick: OnClickHandler = useCallback((_, { index }) => {
-    setActiveIndex((oldValue) => (oldValue === index ? -1 : index));
+    const idx = typeof index === 'number' ? index : -1;
+    setActiveIndex((oldValue) => (oldValue === idx ? -1 : idx));
   }, []);
 
   return (

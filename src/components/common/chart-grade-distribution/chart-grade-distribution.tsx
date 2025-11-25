@@ -19,20 +19,23 @@ const ChartGradeDistribution = ({ idArea = 0, idSector = 0, data = undefined }: 
   }
 
   const maxValue = Math.max(
+    1,
     ...gradeDistribution.map((d) => {
-      return d.num;
+      return d.num ?? 0;
     }),
   );
   const cols = gradeDistribution.map((g) => {
-    const hPrim = (g.prim / maxValue) * 80 + '%';
-    const hSec = (g.sec / maxValue) * 80 + '%';
+    const prim = g.prim ?? 0;
+    const sec = g.sec ?? 0;
+    const hPrim = (prim / maxValue) * 80 + '%';
+    const hSec = (sec / maxValue) * 80 + '%';
     const col = (
       <td
         key={[g.grade, g.prim, g.sec, g.num, g.sec].join('/')}
         style={{ height: '100%', verticalAlign: 'bottom', textAlign: 'center' }}
       >
-        {g.num > 0 && g.num}
-        {g.sec > 0 && (
+        {(g.num ?? 0) > 0 && (g.num ?? 0)}
+        {(g.sec ?? 0) > 0 && (
           <div
             style={{
               marginLeft: '3px',
@@ -42,7 +45,7 @@ const ChartGradeDistribution = ({ idArea = 0, idSector = 0, data = undefined }: 
             }}
           />
         )}
-        {g.prim > 0 && (
+        {(g.prim ?? 0) > 0 && (
           <div
             style={{
               marginLeft: '3px',
@@ -56,14 +59,14 @@ const ChartGradeDistribution = ({ idArea = 0, idSector = 0, data = undefined }: 
       </td>
     );
     if (g.rows && g.rows.length > 0) {
-      const hasBoulder = g.rows.filter((x) => x.numBoulder > 0).length > 0;
-      const hasSport = g.rows.filter((x) => x.numSport > 0).length > 0;
-      const hasTrad = g.rows.filter((x) => x.numTrad > 0).length > 0;
-      const hasMixed = g.rows.filter((x) => x.numMixed > 0).length > 0;
-      const hasTopRope = g.rows.filter((x) => x.numTopRope > 0).length > 0;
-      const hasAid = g.rows.filter((x) => x.numAid > 0).length > 0;
-      const hasAidTrad = g.rows.filter((x) => x.numAidTrad > 0).length > 0;
-      const hasIce = g.rows.filter((x) => x.numIce > 0).length > 0;
+      const hasBoulder = g.rows.filter((x) => (x.numBoulder ?? 0) > 0).length > 0;
+      const hasSport = g.rows.filter((x) => (x.numSport ?? 0) > 0).length > 0;
+      const hasTrad = g.rows.filter((x) => (x.numTrad ?? 0) > 0).length > 0;
+      const hasMixed = g.rows.filter((x) => (x.numMixed ?? 0) > 0).length > 0;
+      const hasTopRope = g.rows.filter((x) => (x.numTopRope ?? 0) > 0).length > 0;
+      const hasAid = g.rows.filter((x) => (x.numAid ?? 0) > 0).length > 0;
+      const hasAidTrad = g.rows.filter((x) => (x.numAidTrad ?? 0) > 0).length > 0;
+      const hasIce = g.rows.filter((x) => (x.numIce ?? 0) > 0).length > 0;
       return (
         <Popup
           key={[g.grade, g.prim, g.sec, g.num, g.sec].join('/')}
@@ -92,14 +95,14 @@ const ChartGradeDistribution = ({ idArea = 0, idSector = 0, data = undefined }: 
                 {g.rows.map((s) => (
                   <Table.Row key={s.name}>
                     <Table.Cell>{s.name}</Table.Cell>
-                    {hasBoulder && <Table.Cell>{s.numBoulder}</Table.Cell>}
-                    {hasSport && <Table.Cell>{s.numSport}</Table.Cell>}
-                    {hasTrad && <Table.Cell>{s.numTrad}</Table.Cell>}
-                    {hasMixed && <Table.Cell>{s.numMixed}</Table.Cell>}
-                    {hasTopRope && <Table.Cell>{s.numTopRope}</Table.Cell>}
-                    {hasAid && <Table.Cell>{s.numAid}</Table.Cell>}
-                    {hasAidTrad && <Table.Cell>{s.numAidTrad}</Table.Cell>}
-                    {hasIce && <Table.Cell>{s.numIce}</Table.Cell>}
+                    {hasBoulder && <Table.Cell>{s.numBoulder ?? 0}</Table.Cell>}
+                    {hasSport && <Table.Cell>{s.numSport ?? 0}</Table.Cell>}
+                    {hasTrad && <Table.Cell>{s.numTrad ?? 0}</Table.Cell>}
+                    {hasMixed && <Table.Cell>{s.numMixed ?? 0}</Table.Cell>}
+                    {hasTopRope && <Table.Cell>{s.numTopRope ?? 0}</Table.Cell>}
+                    {hasAid && <Table.Cell>{s.numAid ?? 0}</Table.Cell>}
+                    {hasAidTrad && <Table.Cell>{s.numAidTrad ?? 0}</Table.Cell>}
+                    {hasIce && <Table.Cell>{s.numIce ?? 0}</Table.Cell>}
                   </Table.Row>
                 ))}
               </Table.Body>

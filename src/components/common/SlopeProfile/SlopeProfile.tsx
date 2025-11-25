@@ -1,13 +1,14 @@
 import React from 'react';
+import { Slope } from '../../../@types/buldreinfo';
 import { components } from '../../../@types/buldreinfo/swagger';
 import { ResponsiveContainer, AreaChart, Area, Tooltip, XAxis, YAxis } from 'recharts';
 import { Segment, Label, Icon } from 'semantic-ui-react';
 import { getDistanceWithUnit } from '../leaflet/geo-utils';
 
 type Props = {
-  areaName: string;
-  sectorName: string;
-  slope: components['schemas']['Slope'];
+  areaName?: string | null;
+  sectorName?: string | null;
+  slope: Slope;
 };
 
 const createXmlString = (
@@ -46,11 +47,11 @@ const downloadGpxFile = (
   link.click();
 };
 
-export const SlopeProfile = ({ areaName, sectorName, slope }: Props) => {
+export const SlopeProfile = ({ areaName = '', sectorName = '', slope }: Props) => {
   return (
     <>
       <ResponsiveContainer aspect={3} width={200} maxHeight={50} minHeight={50}>
-        <AreaChart data={slope.coordinates} margin={{ top: 4, right: 0, left: 0, bottom: 4 }}>
+        <AreaChart data={slope.coordinates ?? []} margin={{ top: 4, right: 0, left: 0, bottom: 4 }}>
           <defs>
             <linearGradient id='color' x1='0' y1='0' x2='0' y2='1'>
               <stop offset='0%' stopColor='#2451B7' stopOpacity={0.4} />
@@ -92,8 +93,8 @@ export const SlopeProfile = ({ areaName, sectorName, slope }: Props) => {
               }
               return (
                 <Segment size='mini' compact style={{ opacity: 0.7 }}>
-                  {`Dist.: ${parseInt(label.toString())}m, elev.: ${parseInt(
-                    payload[0].payload.elevation,
+                  {`Dist.: ${parseInt(String(label ?? '0'))}m, elev.: ${parseInt(
+                    String(payload?.[0]?.payload?.elevation ?? '0'),
                   )}m`}
                 </Segment>
               );
@@ -107,16 +108,16 @@ export const SlopeProfile = ({ areaName, sectorName, slope }: Props) => {
       </Label>
       <Label basic size='small'>
         Elevation:
-        <Label.Detail>{`+${slope.elevationGain}m, -${slope.elevationLoss}m`}</Label.Detail>
+        <Label.Detail>{`+${slope.elevationGain ?? 0}m, -${slope.elevationLoss ?? 0}m`}</Label.Detail>
       </Label>
       <Label basic size='small'>
         Estimated time:
-        <Label.Detail>{`${slope.calculatedDurationInMinutes} min`}</Label.Detail>
+        <Label.Detail>{`${slope.calculatedDurationInMinutes ?? 0} min`}</Label.Detail>
       </Label>
       <Label basic size='small'>
         Elevation source:
         <Label.Detail>
-          {Array.from(new Set(slope.coordinates.map((a) => a.elevationSource))).join(', ')}
+          {Array.from(new Set((slope.coordinates ?? []).map((a) => a.elevationSource))).join(', ')}
         </Label.Detail>
       </Label>
       <Label
@@ -124,7 +125,7 @@ export const SlopeProfile = ({ areaName, sectorName, slope }: Props) => {
         size='small'
         image
         as='a'
-        onClick={() => downloadGpxFile(areaName, sectorName, slope.coordinates)}
+        onClick={() => downloadGpxFile(areaName ?? '', sectorName ?? '', slope.coordinates ?? [])}
       >
         <Icon name='download' />
         GPX

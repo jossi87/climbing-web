@@ -11,7 +11,7 @@ const Todo = ({ idArea, idSector }: { idArea: number; idSector: number }) => {
     return <Loading />;
   }
 
-  if (data.sectors.length === 0) {
+  if ((data.sectors ?? []).length === 0) {
     return <>Empty list.</>;
   }
 
@@ -26,7 +26,7 @@ const Todo = ({ idArea, idSector }: { idArea: number; idSector: number }) => {
       </Header>
       <List>
         <List.Item>
-          {data.sectors.map((sector) => (
+          {(data.sectors ?? []).map((sector) => (
             <List.List key={sector.id}>
               {idArea > 0 && (
                 <List.Header>
@@ -38,7 +38,7 @@ const Todo = ({ idArea, idSector }: { idArea: number; idSector: number }) => {
                 </List.Header>
               )}
               <List.List>
-                {sector.problems.map((problem) => (
+                {(sector.problems ?? []).map((problem) => (
                   <List.Item key={problem.id}>
                     <List.Header>
                       {`#${problem.nr} `}

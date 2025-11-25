@@ -134,7 +134,8 @@ const SORTS: Record<State['order'], (a: Row, b: Row) => number> = {
       return 1;
     }
     return (
-      a.faDate?.localeCompare(b.faDate, getLocales()) || a.name.localeCompare(b.name, getLocales())
+      (a.faDate ?? '').localeCompare(b.faDate ?? '', getLocales()) ||
+      a.name.localeCompare(b.name, getLocales())
     );
   },
 

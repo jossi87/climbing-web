@@ -1,7 +1,16 @@
 import React, { useEffect, useState, useCallback, ComponentProps } from 'react';
 import heic2any from 'heic2any';
 import { useDropzone } from 'react-dropzone';
-import { Button, Card, Image, Input, Checkbox, Loader } from 'semantic-ui-react';
+import {
+  Button,
+  Card,
+  Image,
+  Input,
+  Checkbox,
+  Loader,
+  InputOnChangeData,
+  CheckboxProps,
+} from 'semantic-ui-react';
 import VideoEmbedder from './video-embedder';
 import { UserSelector } from '../user-selector/user-selector';
 import { UsersSelector } from '../../common/user-selector/user-selector';
@@ -32,7 +41,7 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
   }, [media, onMediaChanged]);
 
   const onDrop = useCallback(
-    async (acceptedFiles) => {
+    async (acceptedFiles: File[]) => {
       setIsConverting(true);
       try {
         const processedFiles = await Promise.all(
@@ -144,8 +153,11 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
                         iconPosition='left'
                         fluid
                         placeholder='Pitch'
-                        value={m.pitch}
-                        onChange={(_, { value }) => {
+                        value={m.pitch ?? ''}
+                        onChange={(
+                          _: React.ChangeEvent<HTMLInputElement>,
+                          { value }: InputOnChangeData,
+                        ) => {
                           updateItem({ pitch: +value });
                         }}
                       />
@@ -157,21 +169,24 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
                       fluid
                       placeholder='Description'
                       value={m.description ?? ''}
-                      onChange={(_, { value }) => {
-                        updateItem({ description: value });
+                      onChange={(
+                        _: React.ChangeEvent<HTMLInputElement>,
+                        { value }: InputOnChangeData,
+                      ) => {
+                        updateItem({ description: value as string });
                       }}
                     />
                     <Checkbox
                       label='Trivia'
                       toggle
-                      checked={m.trivia}
-                      onChange={() => {
-                        updateItem({ trivia: !m.trivia });
+                      checked={!!m.trivia}
+                      onChange={(_: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
+                        updateItem({ trivia: !!data.checked });
                       }}
                     />
                     <UsersSelector
                       placeholder='In photo/video'
-                      users={m.inPhoto}
+                      users={m.inPhoto ?? []}
                       onUsersUpdated={(newUsers) => {
                         const inPhoto = newUsers.map((u) => {
                           return {
@@ -184,7 +199,7 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
                     />
                     <UserSelector
                       placeholder='Photographer'
-                      defaultValue={m.photographer}
+                      defaultValue={m.photographer ?? ''}
                       onUserUpdated={(u) => {
                         updateItem({ photographer: u?.label });
                       }}
@@ -196,7 +211,10 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
                           size='mini'
                           label='Min'
                           value={min}
-                          onChange={(_, { value }) => {
+                          onChange={(
+                            _: React.ChangeEvent<HTMLInputElement>,
+                            { value }: InputOnChangeData,
+                          ) => {
                             const val = +value;
                             const ms = (val * 60 + sec) * 1000;
                             updateItem({ embedMilliseconds: ms });
@@ -206,7 +224,10 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
                           size='mini'
                           label='Sec'
                           value={sec}
-                          onChange={(_, { value }) => {
+                          onChange={(
+                            _: React.ChangeEvent<HTMLInputElement>,
+                            { value }: InputOnChangeData,
+                          ) => {
                             const val = +value;
                             const ms = (min * 60 + val) * 1000;
                             updateItem({ embedMilliseconds: ms });

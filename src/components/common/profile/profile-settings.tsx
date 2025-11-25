@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import {
   Segment,
   Header,
@@ -22,20 +22,20 @@ const ProfileSettings = () => {
   const ProfileForm: React.FC<{
     data: typeof data;
   }> = ({ data: d }) => {
-    const [firstname, setFirstname] = useState(d.firstname ?? null);
-    const [lastname, setLastname] = useState(d.lastname ?? null);
+    const [firstname, setFirstname] = useState(d.firstname ?? '');
+    const [lastname, setLastname] = useState(d.lastname ?? '');
     const [emailVisibleToAll, setEmailVisibleToAll] = useState(!!d.emailVisibleToAll);
     const [avatar, setAvatar] = useState<{ file: File; preview: string } | null>(null);
     const [isSaving, setIsSaving] = useState(false);
 
-    const onDrop = useCallback<DropzoneOptions['onDrop']>((acceptedFiles) => {
+    const onDrop: DropzoneOptions['onDrop'] = (acceptedFiles) => {
       setAvatar(
         acceptedFiles.map((file) => ({
           file,
           preview: URL.createObjectURL(file),
         }))[0],
       );
-    }, []);
+    };
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
       onDrop,
       accept: {
@@ -57,7 +57,7 @@ const ProfileSettings = () => {
                 placeholder='First name'
                 value={firstname || ''}
                 error={!firstname}
-                onChange={(e, { value }) => setFirstname(value)}
+                onChange={(e, { value }) => setFirstname(String(value))}
               />
               <FormInput
                 required
@@ -67,7 +67,7 @@ const ProfileSettings = () => {
                 placeholder='Last name'
                 value={lastname || ''}
                 error={!lastname}
-                onChange={(e, { value }) => setLastname(value)}
+                onChange={(e, { value }) => setLastname(String(value))}
               />
             </FormGroup>
             <FormField>
@@ -75,7 +75,7 @@ const ProfileSettings = () => {
                 label='Allow others to contact me by email'
                 checked={emailVisibleToAll}
                 onChange={(_, { checked }) => {
-                  setEmailVisibleToAll(checked);
+                  setEmailVisibleToAll(!!checked);
                 }}
               />
             </FormField>
@@ -118,7 +118,7 @@ const ProfileSettings = () => {
                   lastname &&
                   (d?.firstname !== firstname ||
                     d?.lastname !== lastname ||
-                    d.emails?.length > 0 != emailVisibleToAll ||
+                    (d.emails?.length ?? 0) > 0 !== emailVisibleToAll ||
                     avatar)
                 )
               }
@@ -141,7 +141,7 @@ const ProfileSettings = () => {
         <Segment>
           <Header as='h4'>Specify the different regions you want to show:</Header>
           <Form>
-            {d?.userRegions.map((region) => {
+            {(d.userRegions ?? []).map((region) => {
               const label = region.role ? `${region.name} (${region.role})` : region.name;
               return (
                 <Form.Field key={region.id}>
@@ -150,7 +150,7 @@ const ProfileSettings = () => {
                     checked={region.enabled}
                     disabled={region.readOnly}
                     onChange={(_, { checked }) => {
-                      setRegion({ region, del: !checked });
+                      setRegion({ region, del: !(checked ?? false) });
                     }}
                   />
                 </Form.Field>

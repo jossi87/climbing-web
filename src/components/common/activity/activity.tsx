@@ -57,7 +57,7 @@ const LazyLoadedMedia = ({
   imgStyle,
 }: {
   media: components['schemas']['Media'][];
-  problemId: number;
+  problemId?: number;
   imgStyle: React.CSSProperties;
 }) => {
   const { ref, inView } = useInView({
@@ -68,14 +68,16 @@ const LazyLoadedMedia = ({
   return (
     <Feed.Extra images ref={ref}>
       {media.map((m) => (
-        <Link key={m.id} to={`/problem/${problemId}/${m.id}`}>
+        <Link key={m.id ?? 0} to={`/problem/${problemId ?? 0}/${m.id ?? 0}`}>
           {inView ? (
             <Image
               style={imgStyle}
-              src={getImageUrl(m.id, m.crc32, {
+              src={getImageUrl(Number(m.id ?? 0), Number(m.crc32 ?? 0), {
                 minDimension: 85,
               })}
-              onError={(i) => ((i.target as HTMLImageElement).src = '/png/video_placeholder.png')}
+              onError={(e: React.SyntheticEvent<HTMLImageElement>) =>
+                ((e.target as HTMLImageElement).src = '/png/video_placeholder.png')
+              }
             />
           ) : (
             <div
@@ -249,15 +251,19 @@ const Activity = ({ idArea, idSector }: Props) => {
             if (a.users) {
               const typeDescription = meta.isBouldering ? 'problem' : 'route';
               return (
-                <Feed.Event key={a.activityIds.join('+')}>
+                <Feed.Event key={a.activityIds?.join('+') ?? `activity-${a.id ?? 0}`}>
                   <Feed.Label>
-                    {a.problemRandomMediaId > 0 && (
+                    {(a.problemRandomMediaId ?? 0) > 0 && (
                       <img
                         style={{ height: '35px', objectFit: 'cover' }}
-                        src={getImageUrl(a.problemRandomMediaId, a.problemRandomMediaCrc32, {
-                          minDimension: 35,
-                        })}
-                        onError={(e) =>
+                        src={getImageUrl(
+                          Number(a.problemRandomMediaId ?? 0),
+                          Number(a.problemRandomMediaCrc32 ?? 0),
+                          {
+                            minDimension: 35,
+                          },
+                        )}
+                        onError={(e: React.SyntheticEvent<HTMLImageElement>) =>
                           ((e.target as HTMLImageElement).src = '/png/video_placeholder.png')
                         }
                       />
@@ -294,7 +300,7 @@ const Activity = ({ idArea, idSector }: Props) => {
             // Guestbook
             else if (a.message) {
               return (
-                <Feed.Event key={a.activityIds.join('+')}>
+                <Feed.Event key={a.activityIds?.join('+') ?? `activity-${a.id ?? 0}`}>
                   <Feed.Label>
                     <Avatar userId={a.id} name={a.name} avatarCrc32={a.avatarCrc32} />
                   </Feed.Label>
@@ -313,7 +319,7 @@ const Activity = ({ idArea, idSector }: Props) => {
                       <>
                         <LazyLoadedMedia
                           media={a.media}
-                          problemId={a.problemId}
+                          problemId={a.problemId ?? 0}
                           imgStyle={imgStyle}
                         />
                         <br />
@@ -358,15 +364,19 @@ const Activity = ({ idArea, idSector }: Props) => {
                 summary = img;
               }
               return (
-                <Feed.Event key={a.activityIds.join('+')}>
+                <Feed.Event key={a.activityIds?.join('+') ?? `activity-${a.id ?? 0}`}>
                   <Feed.Label>
-                    {a.problemRandomMediaId > 0 && (
+                    {(a.problemRandomMediaId ?? 0) > 0 && (
                       <img
                         style={{ height: '35px', objectFit: 'cover' }}
-                        src={getImageUrl(a.problemRandomMediaId, a.problemRandomMediaCrc32, {
-                          minDimension: 35,
-                        })}
-                        onError={(e) =>
+                        src={getImageUrl(
+                          Number(a.problemRandomMediaId ?? 0),
+                          Number(a.problemRandomMediaCrc32 ?? 0),
+                          {
+                            minDimension: 35,
+                          },
+                        )}
+                        onError={(e: React.SyntheticEvent<HTMLImageElement>) =>
                           ((e.target as HTMLImageElement).src = '/png/video_placeholder.png')
                         }
                       />
@@ -377,7 +387,11 @@ const Activity = ({ idArea, idSector }: Props) => {
                       {summary} on <ProblemName a={a} />
                       <Feed.Date>{a.timeAgo}</Feed.Date>
                     </Feed.Summary>
-                    <LazyLoadedMedia media={a.media} problemId={a.problemId} imgStyle={imgStyle} />
+                    <LazyLoadedMedia
+                      media={a.media}
+                      problemId={a.problemId ?? 0}
+                      imgStyle={imgStyle}
+                    />
                   </Feed.Content>
                 </Feed.Event>
               );
@@ -386,7 +400,7 @@ const Activity = ({ idArea, idSector }: Props) => {
             else {
               const action = a.repeat ? 'repeated' : 'ticked';
               return (
-                <Feed.Event key={a.activityIds.join('+')}>
+                <Feed.Event key={a.activityIds?.join('+') ?? `activity-${a.id ?? 0}`}>
                   <Feed.Label>
                     <Avatar userId={a.id} name={a.name} avatarCrc32={a.avatarCrc32} />
                   </Feed.Label>

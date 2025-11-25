@@ -80,8 +80,10 @@ const Trash = () => {
                     <Image
                       alt={t.name}
                       key={t.idMedia}
-                      src={getImageUrl(t.idMedia, null, { minDimension: 50 })}
-                      onError={(e) => (e.target.src = '/png/video_placeholder.png')}
+                      src={getImageUrl(t.idMedia, 0, { minDimension: 50 })}
+                      onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) =>
+                        (e.currentTarget.src = '/png/video_placeholder.png')
+                      }
                       rounded
                     />
                   )}

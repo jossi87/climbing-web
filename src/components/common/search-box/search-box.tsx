@@ -40,7 +40,7 @@ const SearchBox = ({ children: _, ...searchProps }: SearchBoxProps) => {
         }
       }}
       onSearchChange={(_, { value }) => {
-        setValue(value);
+        setValue(String(value ?? ''));
       }}
       placeholder='Search'
       resultRenderer={(data) => {

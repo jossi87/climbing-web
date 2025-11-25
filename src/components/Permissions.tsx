@@ -47,7 +47,7 @@ const Permissions = () => {
   const { data = [], isLoading: loading, update: postPermissions } = usePermissions();
 
   const filteredData = data.filter(
-    (item) => !query || item.name.toLowerCase().includes(query.toLowerCase()),
+    (item) => !query || (item.name ?? '').toLowerCase().includes(query.toLowerCase()),
   );
 
   if (loading) {
@@ -119,7 +119,7 @@ const Permissions = () => {
                         const superadminRead = d.value === 3;
                         const superadminWrite = d.value === 3;
                         postPermissions(
-                          u.userId,
+                          u.userId ?? 0,
                           adminRead,
                           adminWrite,
                           superadminRead,
