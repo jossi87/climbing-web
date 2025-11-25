@@ -9,7 +9,7 @@ import { HeaderButtons } from './common/HeaderButtons';
 const PlaceholderFeed = () => {
   return (
     <Placeholder>
-      {new Array(20).fill(0).map((_, i) => (
+      {Array.from({ length: 20 }, (_, i) => (
         <Placeholder.Header key={i}>
           <Placeholder.Line length='full' />
         </Placeholder.Header>

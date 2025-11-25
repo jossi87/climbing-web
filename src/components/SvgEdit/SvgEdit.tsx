@@ -347,7 +347,8 @@ export const SvgEdit = ({
         }
 
         default: {
-          return neverGuard(mode, null);
+          neverGuard(mode, null);
+          break;
         }
       }
     },

@@ -24,7 +24,7 @@ const convertGpxToCoordinates: CoordinateParser = (gpx) => {
   const parser = new DOMParser();
   const xmlDoc = parser.parseFromString(gpx, 'text/xml');
   const children = xmlDoc.querySelectorAll('trkpt');
-  const coords = [];
+  const coords: ParsedCoordinates = [];
   for (let i = 0; i < children.length; i++) {
     const trkpt = children[i];
     const latitude = +(trkpt.getAttribute('lat') ?? 0);

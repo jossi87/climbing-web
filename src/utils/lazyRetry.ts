@@ -58,7 +58,6 @@ const lazyRetry = function (
           });
           window.sessionStorage.setItem(key, String(Date.now())); // we are now going to refresh
           window.location.reload(); // refresh the page
-          return { default: () => null };
         }
       });
   });

@@ -139,7 +139,7 @@ export const reducer = (state: State, update: Update): State => {
           path: update.path,
         };
       } catch (ex) {
-        console.debug(ex);
+        console.warn('SVG parse error:', ex);
         return {
           ...state,
           path: update.path,

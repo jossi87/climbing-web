@@ -89,7 +89,7 @@ const VideoEmbedder = ({ addMedia }: Props) => {
                   })),
                 );
             } else {
-              console.log(type + ' - ' + id);
+              console.warn('Unknown embed type:', type, 'ID:', id);
             }
           }
 

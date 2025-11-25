@@ -58,6 +58,7 @@ export default defineConfig([
         },
       ],
       'no-param-reassign': 'warn',
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
       'react-refresh/only-export-components': ['error', { allowConstantExport: true }],
     },
   },
@@ -66,13 +67,6 @@ export default defineConfig([
   },
   {
     files: ['src/@types/**'],
-    rules: {
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/consistent-type-definitions': 'off',
-    },
-  },
-  {
-    files: ['src/vite-env.d.ts'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/consistent-type-definitions': 'off',

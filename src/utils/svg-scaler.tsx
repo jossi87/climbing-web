@@ -133,7 +133,7 @@ export function scalePath(path: string, mediaRegion: MediaRegion | null): string
   }
   const pathLst = path.replace('  ', ' ').trim().split(' ');
   // Update path
-  const newPathLst = [];
+  const newPathLst: (string | number)[] = [];
 
   for (let i = 0; i < pathLst.length; i++) {
     const part = pathLst[i];

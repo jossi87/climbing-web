@@ -6,7 +6,7 @@ export const DATA_MUTATION_EVENT = 'brattelinjer/refetch';
 const HANDLERS = {
   nop: async (..._args: unknown[]) => {
     if (process.env.REACT_APP_ENV === 'development') {
-      console.debug('DataReloader: stubbed-out reload', ..._args);
+      console.warn('DataReloader: stubbed-out reload', ..._args);
     }
   },
   invalidate: (client: ReturnType<typeof useQueryClient>) =>

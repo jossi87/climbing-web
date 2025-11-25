@@ -619,7 +619,7 @@ export function useSvgEdit(
   const hasAnchor = svg?.hasAnchor ?? pitch === 0;
   const path =
     (svg?.path && mediaRegionLocal ? scalePath(svg.path, mediaRegionLocal) : svg?.path) ?? '';
-  const anchors = [];
+  const anchors: { x: number; y: number }[] = [];
   if (svg?.anchors) {
     try {
       const parsed = JSON.parse(svg.anchors);
@@ -635,7 +635,7 @@ export function useSvgEdit(
       });
     }
   }
-  const tradBelayStations = [];
+  const tradBelayStations: { x: number; y: number }[] = [];
   if (svg?.tradBelayStations) {
     try {
       const parsed = JSON.parse(svg.tradBelayStations);
@@ -651,7 +651,7 @@ export function useSvgEdit(
       });
     }
   }
-  const texts = [];
+  const texts: { txt: string; x: number; y: number }[] = [];
   if (svg?.texts) {
     try {
       const parsed = JSON.parse(svg.texts);

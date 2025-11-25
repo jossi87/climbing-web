@@ -186,7 +186,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
 
   const save = (event: React.UIEvent) => {
     event.preventDefault();
-    const trash = data.trash ? true : false;
+    const trash = !!data.trash;
     if (!trash || confirm('Are you sure you want to move sector to trash?')) {
       setSaving(true);
       postSector(

@@ -37,7 +37,7 @@ export default function Polylines({ opacity, slopes }: Props) {
         }
         let color = a.backgroundColor;
         let weight = 3;
-        if (a.background === true) {
+        if (a.background) {
           color = 'red';
           weight = 1;
         }

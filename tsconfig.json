@@ -16,6 +16,8 @@
     "strictPropertyInitialization": false,
     "noImplicitThis": true,
     "alwaysStrict": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,

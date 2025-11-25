@@ -9,7 +9,7 @@ function readLocalStorage<T = unknown>(
     const item = system.getItem(key);
     return item ? (JSON.parse(item) as T) : initialValue;
   } catch (error) {
-    console.log(error);
+    console.warn('localStorage read error:', error);
     return initialValue;
   }
 }
@@ -46,7 +46,7 @@ function useStorage<T = unknown>(system: typeof window.localStorage, key: string
         setStoredValue(value);
         system.setItem(key, JSON.stringify(valueToStore));
       } catch (error) {
-        console.log(error);
+        console.warn('localStorage setValue error:', error);
       }
     },
     [key, storedValue, system],
@@ -58,7 +58,7 @@ function useStorage<T = unknown>(system: typeof window.localStorage, key: string
         const valueToStore = value instanceof Function ? value(storedValue) : value;
         system.setItem(key, JSON.stringify(valueToStore));
       } catch (error) {
-        console.log(error);
+        console.warn('localStorage writeValue error:', error);
       }
     },
     [key, storedValue, system],

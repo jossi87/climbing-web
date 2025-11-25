@@ -117,6 +117,9 @@ export const SvgViewer = ({
             />
           );
         }
+        default: {
+          return null;
+        }
       }
     });
   const problemIdHoveredNum = problemIdHovered ?? 0;

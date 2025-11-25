@@ -654,14 +654,14 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                       },
                     }))
                   }
-                  positive={data.faAid ? true : false}
+                  positive={!!data.faAid}
                 >
                   Yes
                 </Button>
                 <Button.Or />
                 <Button
                   onClick={() => setData((prevState) => ({ ...prevState, faAid: undefined }))}
-                  positive={data.faAid ? false : true}
+                  positive={!data.faAid}
                 >
                   No
                 </Button>

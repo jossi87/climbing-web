@@ -304,9 +304,8 @@ const MediaModal = ({
           visible={canShowSidebar && showSidebar}
         >
           {canShowSidebar &&
-            (m.svgs ?? m.mediaSvgs ?? [])
+            [...(m.svgs ?? m.mediaSvgs ?? [])]
               .filter((svg): svg is components['schemas']['Svg'] => 'problemId' in svg)
-              .slice(0) // Create copy, dont change svgs-order (used to draw topo in correct order)
               .filter((svg) => (svg.pitch ?? 0) === 0 || (svg.pitch ?? 0) === 1)
               .sort((a, b) => {
                 if ((a.nr ?? 0) !== (b.nr ?? 0)) {
