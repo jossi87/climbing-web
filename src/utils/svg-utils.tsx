@@ -9,43 +9,59 @@ type DescentProps = {
   thumb: boolean;
 };
 
-export function Descent({ path = '', whiteNotBlack, scale, thumb }: DescentProps) {
-  const properties = new svgPathProperties(path);
-  const descentKey = path.replace(/\s/g, ''); // Key cannot contains spaces
-  const deltaPercent = ((scale * 1000) / properties.getTotalLength()) * (thumb ? 6 : 3);
-  const texts: React.JSX.Element[] = [];
-  for (let i = 0; i <= 100; i += deltaPercent) {
-    texts.push(
-      <textPath key={i} xlinkHref={'#descent' + descentKey} startOffset={i + '%'}>
-        ➤
-      </textPath>,
-    );
+export function Descent({ path, whiteNotBlack, scale, thumb }: DescentProps) {
+  if (!path || typeof path !== 'string' || path.trim().length === 0) {
+    return null;
   }
-  const fontSize = 20 * scale * (thumb ? 2 : 1);
-  return (
-    <g opacity={0.9} key={path}>
-      <path id={'descent' + descentKey} style={{ fill: 'none' }} strokeWidth={0} d={path} />
-      <text
-        fontSize={fontSize}
-        fontWeight='bolder'
-        style={{
-          fill: whiteNotBlack ? 'black' : 'white',
-          dominantBaseline: 'central',
-        }}
-      >
-        {texts}
-      </text>
-      <text
-        fontSize={fontSize}
-        style={{
-          fill: whiteNotBlack ? 'white' : 'black',
-          dominantBaseline: 'central',
-        }}
-      >
-        {texts}
-      </text>
-    </g>
-  );
+
+  try {
+    const properties = new svgPathProperties(path);
+    const totalLength = properties.getTotalLength();
+
+    if (!totalLength || !isFinite(totalLength)) {
+      return null;
+    }
+
+    const descentKey = path.replace(/\s/g, ''); // Key cannot contains spaces
+    const deltaPercent = ((scale * 1000) / totalLength) * (thumb ? 6 : 3);
+    const texts: React.JSX.Element[] = [];
+    for (let i = 0; i <= 100; i += deltaPercent) {
+      texts.push(
+        <textPath key={i} xlinkHref={'#descent' + descentKey} startOffset={i + '%'}>
+          ➤
+        </textPath>,
+      );
+    }
+    const fontSize = 20 * scale * (thumb ? 2 : 1);
+    return (
+      <g opacity={0.9} key={path}>
+        <path id={'descent' + descentKey} style={{ fill: 'none' }} strokeWidth={0} d={path} />
+        <text
+          fontSize={fontSize}
+          fontWeight='bolder'
+          style={{
+            fill: whiteNotBlack ? 'black' : 'white',
+            dominantBaseline: 'central',
+          }}
+        >
+          {texts}
+        </text>
+        <text
+          fontSize={fontSize}
+          style={{
+            fill: whiteNotBlack ? 'white' : 'black',
+            dominantBaseline: 'central',
+          }}
+        >
+          {texts}
+        </text>
+      </g>
+    );
+  } catch (error) {
+    // Invalid SVG path data, return null to prevent crash
+    console.warn('Invalid SVG path data:', path, error);
+    return null;
+  }
 }
 
 type AnchorProps = Pick<React.SVGProps<SVGCircleElement>, 'strokeWidth' | 'stroke'> & {

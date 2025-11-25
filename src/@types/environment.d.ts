@@ -6,7 +6,8 @@ type ImportMetaEnv = {
   readonly BASE_URL: string;
   readonly DEV: boolean;
   readonly PROD: boolean;
-  [key: string]: string | boolean;
+  readonly REACT_APP_API_URL?: string;
+  readonly REACT_APP_ENV?: 'development' | 'production' | 'unknown';
 };
 
 interface ImportMeta {

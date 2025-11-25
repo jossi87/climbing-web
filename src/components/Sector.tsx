@@ -229,14 +229,14 @@ const Sector = () => {
         label: getDistanceWithUnit(data.descent as Slope) ?? undefined,
       });
     }
-    const uniqueRocks =
-      data.problems
-        ?.filter((p) => p.rock)
-        ?.map((p) => p.rock)
-        ?.filter((p): p is string => !!p)
-        // TODO: Consider using a Set or something for this
-        ?.filter((value, index, self) => self.indexOf(value) === index)
-        ?.sort() ?? [];
+    const uniqueRocks = Array.from(
+      new Set(
+        data.problems
+          ?.filter((p) => p.rock)
+          ?.map((p) => p.rock)
+          ?.filter((p): p is string => !!p) ?? [],
+      ),
+    ).sort();
     panes.push({
       menuItem: { key: 'map', icon: 'map' },
       render: () => (
@@ -312,12 +312,9 @@ const Sector = () => {
       ),
     });
   }
-  const uniqueTypes =
-    (data.problems ?? [])
-      .map((p) => p.t?.subType)
-      .filter((p): p is string => !!p)
-      // TODO: Consider using a Set or something for this
-      .filter((value, index, self) => self.indexOf(value) === index) ?? [];
+  const uniqueTypes = Array.from(
+    new Set((data.problems ?? []).map((p) => p.t?.subType).filter((p): p is string => !!p)),
+  );
   if ((data.problems ?? []).filter((p) => p.broken)?.length) {
     uniqueTypes.push('Broken');
   }
