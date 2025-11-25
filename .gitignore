@@ -2,3 +2,6 @@
 /build
 npm-debug.log*
 .vite
+
+# Bundle analysis
+build/stats.html
