@@ -18,17 +18,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version-file: '.nvmrc'
+          cache: 'npm'
       - name: 'Install dependencies'
-        run: |
-          yarn global add node-gyp@11.2.0
-          yarn install --frozen-lock-file
-      - name: 'Run lint'
-        run: |
-          yarn lint
-      - name: 'Run prettier'
-        run: |
-          yarn prettier --check src/
+        run: npm ci
+      - name: 'Run validation'
+        run: npm run validate
       - name: 'Run the build'
-        run: |
-          yarn tsc
+        run: npm run build
