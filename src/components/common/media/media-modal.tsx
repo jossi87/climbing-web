@@ -258,7 +258,7 @@ const MediaModal = ({
         <Image
           style={style.img}
           alt={m.mediaMetadata?.description ?? ''}
-          src={getImageUrl(m.id ?? 0, m.crc32 ?? 0, { targetWidth: 360 })}
+          src={getImageUrl(m.id ?? 0, m.crc32 ?? 0, { targetWidth: 1080 })}
         />
         <Button
           size='massive'
