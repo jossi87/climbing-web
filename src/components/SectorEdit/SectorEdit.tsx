@@ -721,8 +721,8 @@ export const SectorEdit = ({ sector, area }: Props) => {
             onClick={save}
             disabled={Boolean(
               !data.name ||
-                (data.sunFromHour && !data.sunToHour) ||
-                (!data.sunFromHour && data.sunToHour),
+              (data.sunFromHour && !data.sunToHour) ||
+              (!data.sunFromHour && data.sunToHour),
             )}
           >
             Save sector

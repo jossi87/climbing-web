@@ -1,17 +1,28 @@
 import { useEffect } from 'react';
 import { useMap } from 'react-leaflet';
 import L from 'leaflet';
-import 'leaflet.fullscreen/Control.FullScreen.css';
+import 'leaflet.fullscreen/dist/Control.FullScreen.css';
 import 'leaflet.fullscreen';
 
 export default function FullscreenControl() {
   const map = useMap();
+
   useEffect(() => {
-    // Dirty hack (https://github.com/brunob/leaflet.fullscreen/issues/123)
-    const fullscreen = (
-      L as unknown as { control: { fullscreen: () => L.Control } }
-    ).control.fullscreen();
-    fullscreen.addTo(map);
+    if (!map) return;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if ((L.Control as any).Fullscreen) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const fsControl = new (L.Control as any).Fullscreen({
+        position: 'topleft',
+      });
+      fsControl.addTo(map);
+
+      return () => {
+        map.removeControl(fsControl);
+      };
+    }
+    return;
   }, [map]);
+
   return null;
 }

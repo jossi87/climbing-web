@@ -318,8 +318,8 @@ export const AreaEdit = () => {
             loading={isSaving}
             disabled={Boolean(
               !data.name ||
-                (data.sunFromHour && !data.sunToHour) ||
-                (!data.sunFromHour && data.sunToHour),
+              (data.sunFromHour && !data.sunToHour) ||
+              (!data.sunFromHour && data.sunToHour),
             )}
             type='submit'
           >
