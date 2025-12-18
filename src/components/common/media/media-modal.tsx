@@ -157,6 +157,14 @@ const MediaModal = ({
     );
   }
 
+  const handleDimmerClick = (e: React.MouseEvent) => {
+    // Close if clicking on the dimmer itself (dark area)
+    // but not if clicking on content or the action buttons
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   const content = (() => {
     if (isImage) {
       if ((m.svgs ?? m.mediaSvgs ?? []).length > 0) {
@@ -290,7 +298,7 @@ const MediaModal = ({
       (pitches ?? []).filter((p) => p.nr === pitch)[0]) ||
     null;
   return (
-    <Dimmer active={true} onClickOutside={onClose} page>
+    <Dimmer active={true} onClick={handleDimmerClick} page>
       <Sidebar.Pushable style={{ minWidth: '360px' }}>
         <Sidebar
           style={{ opacity: 0.7 }}

@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => ({
       }),
   ].filter(Boolean),
   server: {
-    port: 3000,
+    port: 3001,
     open: true,
   },
   build: {
