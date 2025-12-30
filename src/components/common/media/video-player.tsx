@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import ReactPlayer from 'react-player';
 import { components } from '../../../@types/buldreinfo/swagger';
 import { getBuldreinfoMediaUrlSupported } from '../../../api';
@@ -17,31 +17,43 @@ const style = {
 
 const VideoPlayer: React.FC<Props> = ({ media, autoPlay = true }) => {
   const [hasSetVideoTimestamp, setHasSetVideoTimestamp] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(autoPlay);
-  const playerRef = useRef<HTMLVideoElement | null>(null);
+  const playerRef = useRef<any>(null);
+  useEffect(() => {
+    if (!autoPlay) return;
+    const tryPlay = async () => {
+      try {
+        const internal = playerRef.current?.getInternalPlayer?.() ?? playerRef.current;
+        if (internal && typeof internal.play === 'function') {
+          // play may return a promise on some browsers
+          await internal.play();
+        }
+      } catch (e) {
+        // ignore play errors (autoplay policies)
+      }
+    };
+    tryPlay();
+  }, [autoPlay, media.id]);
 
   return (
     <ReactPlayer
       key={media.id ?? 0}
-      ref={playerRef as any}
+      ref={playerRef}
       style={style}
       src={getBuldreinfoMediaUrlSupported(media.id ?? 0)}
       controls
-      playing={isPlaying}
-      onPlay={() => setIsPlaying(true)}
-      onPause={() => setIsPlaying(false)}
       onProgress={() => {
         const seconds = Number(media.t ?? 0);
-        if (
-          !hasSetVideoTimestamp &&
-          !Number.isNaN(seconds) &&
-          Number.isFinite(seconds) &&
-          playerRef.current &&
-          seconds < (playerRef.current as any).duration
-        ) {
+        if (!hasSetVideoTimestamp && !Number.isNaN(seconds) && Number.isFinite(seconds)) {
           setHasSetVideoTimestamp(true);
           try {
-            (playerRef.current as any).currentTime = seconds;
+            if (typeof playerRef.current?.seekTo === 'function') {
+              playerRef.current.seekTo(seconds, 'seconds');
+            } else {
+              const internal = playerRef.current?.getInternalPlayer?.() ?? playerRef.current;
+              if (internal) {
+                internal.currentTime = seconds;
+              }
+            }
           } catch (e) {
             // ignore seek errors
           }

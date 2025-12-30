@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { components } from '../../../@types/buldreinfo/swagger';
 import { useLocalStorage } from '../../../utils/use-local-storage';
 import {
@@ -16,13 +16,7 @@ import {
   Sidebar,
   Menu,
 } from 'semantic-ui-react';
-import {
-  getBuldreinfoMediaUrlSupported,
-  getBuldreinfoMediaUrl,
-  getImageUrl,
-  getImageUrlSrcSet,
-} from '../../../api';
-import ReactPlayer from 'react-player';
+import { getBuldreinfoMediaUrl, getImageUrl, getImageUrlSrcSet } from '../../../api';
 import SvgViewer from '../../SvgViewer';
 import VideoPlayer from './video-player';
 import { Link, useNavigate } from 'react-router-dom';
@@ -214,7 +208,7 @@ const MediaModal = ({
       );
     }
     if (autoPlayVideo) {
-      return <VideoPlayer media={m} />;
+      return <VideoPlayer key={m.id ?? 0} media={m} />;
     }
     return (
       <>
