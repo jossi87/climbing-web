@@ -319,10 +319,13 @@ const MediaModal = ({
               <Button
                 icon='numbered list'
                 inverted={showSidebar}
-                onClick={() => setShowSidebar(true)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowSidebar(true);
+                }}
               />
             )}
-            <Modal trigger={<Button icon='info' />}>
+            <Modal trigger={<Button icon='info' onClick={(e) => e.stopPropagation()} />}>
               <Modal.Content image scrolling>
                 <Image
                   wrapped
@@ -369,7 +372,7 @@ const MediaModal = ({
               </Modal.Content>
             </Modal>
             {!isBouldering && (m.mediaSvgs || m.svgs) && (
-              <Modal trigger={<Button icon='help' />}>
+              <Modal trigger={<Button icon='help' onClick={(e) => e.stopPropagation()} />}>
                 <Modal.Content image scrolling>
                   <Modal.Description>
                     <Header>Topo</Header>
@@ -653,7 +656,10 @@ const MediaModal = ({
                 style={style.prev}
                 name={prevHover ? 'chevron circle left' : 'angle left'}
                 link
-                onClick={gotoPrev}
+                onClick={(e: React.MouseEvent) => {
+                  e.stopPropagation();
+                  gotoPrev();
+                }}
               />
               <Icon
                 onMouseEnter={() => setNextHover(true)}
@@ -663,7 +669,10 @@ const MediaModal = ({
                 style={style.next}
                 name={nextHover ? 'chevron circle right' : 'angle right'}
                 link
-                onClick={gotoNext}
+                onClick={(e: React.MouseEvent) => {
+                  e.stopPropagation();
+                  gotoNext();
+                }}
               />
             </>
           )}
