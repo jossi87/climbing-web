@@ -17,17 +17,17 @@ const style = {
 
 const VideoPlayer: React.FC<Props> = ({ media, autoPlay = true }) => {
   const [hasSetVideoTimestamp, setHasSetVideoTimestamp] = useState(false);
-  const playerRef = useRef<any>(null);
+  const playerRef = useRef<typeof ReactPlayer>(null);
   useEffect(() => {
     if (!autoPlay) return;
     const tryPlay = async () => {
       try {
-        const internal = playerRef.current?.getInternalPlayer?.() ?? playerRef.current;
+        const internal = (playerRef.current as any)?.getInternalPlayer?.() ?? playerRef.current;
         if (internal && typeof internal.play === 'function') {
           // play may return a promise on some browsers
           await internal.play();
         }
-      } catch (e) {
+      } catch (_) {
         // ignore play errors (autoplay policies)
       }
     };
@@ -37,7 +37,7 @@ const VideoPlayer: React.FC<Props> = ({ media, autoPlay = true }) => {
   return (
     <ReactPlayer
       key={media.id ?? 0}
-      ref={playerRef}
+      ref={playerRef as any}
       style={style}
       src={getBuldreinfoMediaUrlSupported(media.id ?? 0)}
       controls
@@ -46,15 +46,16 @@ const VideoPlayer: React.FC<Props> = ({ media, autoPlay = true }) => {
         if (!hasSetVideoTimestamp && !Number.isNaN(seconds) && Number.isFinite(seconds)) {
           setHasSetVideoTimestamp(true);
           try {
-            if (typeof playerRef.current?.seekTo === 'function') {
-              playerRef.current.seekTo(seconds, 'seconds');
+            if (typeof (playerRef.current as any)?.seekTo === 'function') {
+              (playerRef.current as any).seekTo(seconds, 'seconds');
             } else {
-              const internal = playerRef.current?.getInternalPlayer?.() ?? playerRef.current;
+              const internal =
+                (playerRef.current as any)?.getInternalPlayer?.() ?? playerRef.current;
               if (internal) {
                 internal.currentTime = seconds;
               }
             }
-          } catch (e) {
+          } catch (_) {
             // ignore seek errors
           }
         }
