@@ -325,7 +325,7 @@ const MediaModal = ({
                 inverted={showSidebar}
                 onClick={(e) => {
                   e.stopPropagation();
-                  setShowSidebar(true);
+                  setShowSidebar((prev) => !prev);
                 }}
               />
             )}
