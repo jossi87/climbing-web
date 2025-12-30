@@ -221,7 +221,7 @@ const MediaModal = ({
     }
     if (autoPlayVideo) {
       return (
-        <div style={style.imgContainer} onClick={onClose}>
+        <div style={style.imgContainer} onClick={(e) => e.stopPropagation()}>
           <VideoPlayer key={m.id ?? 0} media={m} />
         </div>
       );
@@ -232,6 +232,7 @@ const MediaModal = ({
           style={style.img}
           alt={m.mediaMetadata?.description ?? ''}
           src={getImageUrl(m.id ?? 0, m.crc32 ?? 0, { targetWidth: 1080 })}
+          onClick={(e: React.MouseEvent) => e.stopPropagation()}
         />
         <Button
           size='massive'
@@ -239,7 +240,10 @@ const MediaModal = ({
           circular
           style={style.play}
           icon='play'
-          onClick={playVideo}
+          onClick={(e) => {
+            e.stopPropagation();
+            playVideo();
+          }}
         />
       </>
     );

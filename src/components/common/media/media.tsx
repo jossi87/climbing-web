@@ -120,6 +120,7 @@ const Media = ({
     if (!pitch) {
       setM(null);
     }
+    setAutoPlayVideo(false); // Reset video autoplay state
     navigate(url);
   }
 

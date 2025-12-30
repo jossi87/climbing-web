@@ -8,36 +8,40 @@ type Props = {
   autoPlay?: boolean;
 };
 
-type ReactPlayerInstance = HTMLVideoElement & {
-  seekTo: (seconds: number, type: string) => void;
-  getInternalPlayer: () => HTMLVideoElement;
-};
-
 const style = {
-  width: '100vw',
-  height: '80vh',
-  maxHeight: '100vh',
-  maxWidth: '100vw',
+  width: '100%',
+  height: '100%',
+  maxHeight: '100%',
+  maxWidth: '100%',
 };
 
 const VideoPlayer: React.FC<Props> = ({ media, autoPlay = true }) => {
-  const [hasSetVideoTimestamp, setHasSetVideoTimestamp] = useState(false);
-  const playerRef = useRef<ReactPlayerInstance>(null);
+  const [isReady, setIsReady] = useState(false);
+  const playerRef = useRef<any>(null);
+  const hasSetTimestampRef = useRef<number | null>(null);
+
+  const handleReady = () => {
+    setIsReady(true);
+  };
+
+  const handleStart = () => {
+    const seconds = Number(media.t ?? 0);
+    if (
+      hasSetTimestampRef.current !== (media.id ?? 0) &&
+      !Number.isNaN(seconds) &&
+      Number.isFinite(seconds) &&
+      seconds > 0
+    ) {
+      hasSetTimestampRef.current = media.id ?? 0;
+      playerRef.current.currentTime = seconds;
+    }
+  };
+
   useEffect(() => {
-    if (!autoPlay) return;
-    const tryPlay = async () => {
-      try {
-        const internal = playerRef.current?.getInternalPlayer();
-        if (internal && typeof internal.play === 'function') {
-          // play may return a promise on some browsers
-          await internal.play();
-        }
-      } catch (_) {
-        // ignore play errors (autoplay policies)
-      }
+    return () => {
+      hasSetTimestampRef.current = null;
     };
-    tryPlay();
-  }, [autoPlay, media.id]);
+  }, []);
 
   return (
     <ReactPlayer
@@ -46,24 +50,11 @@ const VideoPlayer: React.FC<Props> = ({ media, autoPlay = true }) => {
       style={style}
       src={getBuldreinfoMediaUrlSupported(media.id ?? 0)}
       controls
-      onProgress={() => {
-        const seconds = Number(media.t ?? 0);
-        if (!hasSetVideoTimestamp && !Number.isNaN(seconds) && Number.isFinite(seconds)) {
-          setHasSetVideoTimestamp(true);
-          try {
-            if (playerRef.current?.seekTo) {
-              playerRef.current.seekTo(seconds, 'seconds');
-            } else {
-              const internal = playerRef.current?.getInternalPlayer();
-              if (internal) {
-                internal.currentTime = seconds;
-              }
-            }
-          } catch (_) {
-            // ignore seek errors
-          }
-        }
-      }}
+      playing={autoPlay && isReady}
+      playsInline
+      preload='metadata'
+      onReady={handleReady}
+      onStart={handleStart}
     />
   );
 };
