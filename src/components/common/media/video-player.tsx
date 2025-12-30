@@ -8,6 +8,11 @@ type Props = {
   autoPlay?: boolean;
 };
 
+type ReactPlayerInstance = HTMLVideoElement & {
+  seekTo: (seconds: number, type: string) => void;
+  getInternalPlayer: () => HTMLVideoElement;
+};
+
 const style = {
   width: '100vw',
   height: '80vh',
@@ -17,12 +22,12 @@ const style = {
 
 const VideoPlayer: React.FC<Props> = ({ media, autoPlay = true }) => {
   const [hasSetVideoTimestamp, setHasSetVideoTimestamp] = useState(false);
-  const playerRef = useRef<typeof ReactPlayer>(null);
+  const playerRef = useRef<ReactPlayerInstance>(null);
   useEffect(() => {
     if (!autoPlay) return;
     const tryPlay = async () => {
       try {
-        const internal = (playerRef.current as any)?.getInternalPlayer?.() ?? playerRef.current;
+        const internal = playerRef.current?.getInternalPlayer();
         if (internal && typeof internal.play === 'function') {
           // play may return a promise on some browsers
           await internal.play();
@@ -37,7 +42,7 @@ const VideoPlayer: React.FC<Props> = ({ media, autoPlay = true }) => {
   return (
     <ReactPlayer
       key={media.id ?? 0}
-      ref={playerRef as any}
+      ref={playerRef}
       style={style}
       src={getBuldreinfoMediaUrlSupported(media.id ?? 0)}
       controls
@@ -46,11 +51,10 @@ const VideoPlayer: React.FC<Props> = ({ media, autoPlay = true }) => {
         if (!hasSetVideoTimestamp && !Number.isNaN(seconds) && Number.isFinite(seconds)) {
           setHasSetVideoTimestamp(true);
           try {
-            if (typeof (playerRef.current as any)?.seekTo === 'function') {
-              (playerRef.current as any).seekTo(seconds, 'seconds');
+            if (playerRef.current?.seekTo) {
+              playerRef.current.seekTo(seconds, 'seconds');
             } else {
-              const internal =
-                (playerRef.current as any)?.getInternalPlayer?.() ?? playerRef.current;
+              const internal = playerRef.current?.getInternalPlayer();
               if (internal) {
                 internal.currentTime = seconds;
               }
