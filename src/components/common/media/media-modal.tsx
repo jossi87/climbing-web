@@ -24,6 +24,7 @@ import {
 } from '../../../api';
 import ReactPlayer from 'react-player';
 import SvgViewer from '../../SvgViewer';
+import VideoPlayer from './video-player';
 import { Link, useNavigate } from 'react-router-dom';
 import { saveAs } from 'file-saver';
 import { Descent, Rappel } from '../../../utils/svg-utils';
@@ -141,13 +142,7 @@ const MediaModal = ({
       .filter((value, index, self) => self.indexOf(value) === index).length > 1;
   const [prevHover, setPrevHover] = useState(false);
   const [nextHover, setNextHover] = useState(false);
-  const [videoVolume, setVideoVolume] = useState(1);
   const isImage = m?.idType === 1;
-
-  // When `m.id` changes we want the player state (isPlaying, hasSetVideoTimestamp)
-  // to reset. To avoid setting state synchronously inside an effect we create
-  // a small keyed child component below (`VideoPlayer`) which will remount when
-  // `m.id` changes and therefore reset its internal state automatically.
 
   if (isSaving) {
     return (
@@ -158,8 +153,6 @@ const MediaModal = ({
   }
 
   const handleDimmerClick = (e: React.MouseEvent) => {
-    // Close if clicking on the dimmer itself (dark area)
-    // but not if clicking on content or the action buttons
     if (e.target === e.currentTarget) {
       onClose();
     }
@@ -221,44 +214,6 @@ const MediaModal = ({
       );
     }
     if (autoPlayVideo) {
-      const VideoPlayer: React.FC<{ media: typeof m }> = ({ media }) => {
-        const [hasSetVideoTimestamp, setHasSetVideoTimestamp] = useState(false);
-        const [isPlaying, setIsPlaying] = useState(true);
-        const localPlayerRef = useRef<HTMLVideoElement | null>(null);
-
-        return (
-          <ReactPlayer
-            key={media.id ?? 0}
-            ref={localPlayerRef}
-            style={style.video}
-            src={getBuldreinfoMediaUrlSupported(media.id ?? 0)}
-            controls={true}
-            playing={isPlaying}
-            volume={videoVolume}
-            onPlay={() => setIsPlaying(true)}
-            onPause={() => setIsPlaying(false)}
-            onVolumeChange={() => {
-              if (localPlayerRef.current) {
-                setVideoVolume(localPlayerRef.current.volume);
-              }
-            }}
-            onProgress={() => {
-              const seconds = parseInt(String(media.t ?? '0'));
-              if (
-                !hasSetVideoTimestamp &&
-                !Number.isNaN(seconds) &&
-                Number.isFinite(seconds) &&
-                localPlayerRef.current &&
-                seconds < localPlayerRef.current.duration
-              ) {
-                localPlayerRef.current.currentTime = seconds;
-                setHasSetVideoTimestamp(true);
-              }
-            }}
-          />
-        );
-      };
-
       return <VideoPlayer media={m} />;
     }
     return (
