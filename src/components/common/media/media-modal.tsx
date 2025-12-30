@@ -26,9 +26,16 @@ import { useMeta } from '../meta';
 
 const style = {
   img: {
-    maxHeight: '100vh',
-    maxWidth: '100vw',
     objectFit: 'scale-down',
+    maxHeight: '100%',
+    maxWidth: '100%',
+  },
+  imgContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    maxHeight: '90vh',
+    maxWidth: '90vw',
   },
   video: {
     width: '100vw',
@@ -156,30 +163,35 @@ const MediaModal = ({
     if (isImage) {
       if ((m.svgs ?? m.mediaSvgs ?? []).length > 0) {
         return (
-          <Image style={style.img}>
-            <SvgViewer
-              thumb={false}
-              style={{}}
-              m={m}
-              pitch={pitch}
-              close={onClose}
-              optProblemId={optProblemId ?? null}
-              showText={canShowSidebar && !showSidebar}
-              problemIdHovered={problemIdHovered}
-              setProblemIdHovered={(id) => setProblemIdHovered(id)}
-            />
-          </Image>
+          <div style={style.imgContainer} onClick={onClose}>
+            <Image style={style.img} onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+              <SvgViewer
+                thumb={false}
+                style={{}}
+                m={m}
+                pitch={pitch}
+                close={onClose}
+                optProblemId={optProblemId ?? null}
+                showText={canShowSidebar && !showSidebar}
+                problemIdHovered={problemIdHovered}
+                setProblemIdHovered={(id) => setProblemIdHovered(id)}
+              />
+            </Image>
+          </div>
         );
       }
       const fallbackWidth = Math.min(1920, m.width ?? 1920);
       return (
-        <Image
-          style={style.img}
-          alt={m.mediaMetadata?.alt ?? ''}
-          src={getImageUrl(m.id ?? 0, m.crc32 ?? 0, { targetWidth: fallbackWidth })}
-          srcSet={getImageUrlSrcSet(m.id ?? 0, m.crc32 ?? 0, m.width ?? 0)}
-          sizes='100vw'
-        />
+        <div style={style.imgContainer} onClick={onClose}>
+          <Image
+            style={style.img}
+            alt={m.mediaMetadata?.alt ?? ''}
+            src={getImageUrl(m.id ?? 0, m.crc32 ?? 0, { targetWidth: fallbackWidth })}
+            srcSet={getImageUrlSrcSet(m.id ?? 0, m.crc32 ?? 0, m.width ?? 0)}
+            sizes='100vw'
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}
+          />
+        </div>
       );
     }
     if (m.embedUrl) {
@@ -208,7 +220,11 @@ const MediaModal = ({
       );
     }
     if (autoPlayVideo) {
-      return <VideoPlayer key={m.id ?? 0} media={m} />;
+      return (
+        <div style={style.imgContainer} onClick={onClose}>
+          <VideoPlayer key={m.id ?? 0} media={m} />
+        </div>
+      );
     }
     return (
       <>
@@ -248,7 +264,7 @@ const MediaModal = ({
     null;
   return (
     <Dimmer active={true} onClick={handleDimmerClick} page>
-      <Sidebar.Pushable style={{ minWidth: '360px' }}>
+      <Sidebar.Pushable style={{ minWidth: '360px' }} onClick={onClose}>
         <Sidebar
           style={{ opacity: 0.7 }}
           as={Menu}
@@ -259,6 +275,7 @@ const MediaModal = ({
           onHide={() => setShowSidebar(false)}
           vertical
           visible={canShowSidebar && showSidebar}
+          onClick={(e: React.MouseEvent) => e.stopPropagation()}
         >
           {canShowSidebar &&
             [...(m.svgs ?? m.mediaSvgs ?? [])]
