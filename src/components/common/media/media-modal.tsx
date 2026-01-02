@@ -164,7 +164,6 @@ const MediaModal = ({
             <Image style={style.img} onClick={(e: MouseEvent) => e.stopPropagation()}>
               <SvgViewer
                 thumb={false}
-                style={{}}
                 m={m}
                 pitch={pitch}
                 close={onClose}
@@ -219,7 +218,7 @@ const MediaModal = ({
     if (autoPlayVideo) {
       return (
         <div style={style.imgContainer} onClick={(e) => e.stopPropagation()}>
-          <VideoPlayer key={m.id ?? 0} media={m} />
+          <VideoPlayer media={m} />
         </div>
       );
     }
