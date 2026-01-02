@@ -43,14 +43,14 @@ const style = {
   actions: {
     zIndex: 2,
     position: 'fixed',
-    top: '0px',
-    right: '0px',
+    top: '10px',
+    right: '10px',
   },
   prev: {
     zIndex: 2,
     position: 'fixed',
     top: '50%',
-    left: '2px',
+    left: '10px',
     height: '40px',
     marginTop: '-20px' /* 1/2 the height of the button */,
   },
@@ -58,7 +58,7 @@ const style = {
     zIndex: 2,
     position: 'fixed',
     top: '50%',
-    right: '2px',
+    right: '10px',
     height: '40px',
     marginTop: '-20px' /* 1/2 the height of the button */,
   },
@@ -644,8 +644,8 @@ const MediaModal = ({
         <div
           style={{
             position: 'fixed',
-            top: '1px',
-            left: '1px',
+            top: '10px',
+            left: '10px',
             backgroundColor: 'rgba(0,0,0,0.6)',
           }}
         >
@@ -656,8 +656,8 @@ const MediaModal = ({
         <div
           style={{
             position: 'fixed',
-            bottom: '1px',
-            left: '1px',
+            bottom: '10px',
+            left: '10px',
             backgroundColor: 'rgba(0,0,0,0.6)',
           }}
         >
@@ -668,8 +668,8 @@ const MediaModal = ({
         <div
           style={{
             position: 'fixed',
-            bottom: '1px',
-            right: '1px',
+            bottom: '10px',
+            right: '10px',
             backgroundColor: 'rgba(0,0,0,0.6)',
           }}
         >
@@ -684,7 +684,6 @@ const MediaModal = ({
       )}
       <Sidebar.Pushable style={{ minWidth: '360px' }} onClick={onClose}>
         <Sidebar
-          style={{ opacity: 0.7 }}
           as={Menu}
           size='small'
           direction='left'
