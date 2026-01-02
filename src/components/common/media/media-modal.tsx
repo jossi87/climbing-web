@@ -26,8 +26,8 @@ import { useMeta } from '../meta';
 
 const style = {
   img: {
-    maxHeight: '90vh',
-    maxWidth: '90vw',
+    maxHeight: '100vh',
+    maxWidth: '100vw',
   },
   imgContainer: {
     display: 'flex',
