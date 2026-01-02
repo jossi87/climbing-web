@@ -17,7 +17,7 @@ const style = {
 
 const VideoPlayer: FC<Props> = ({ media, autoPlay = true }) => {
   const [isReady, setIsReady] = useState(false);
-  const playerRef = useRef<any>(null);
+  const playerRef = useRef<HTMLVideoElement>(null);
   const hasSetTimestampRef = useRef<number | null>(null);
 
   const handleReady = () => {
@@ -30,7 +30,8 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true }) => {
       hasSetTimestampRef.current !== (media.id ?? 0) &&
       !Number.isNaN(seconds) &&
       Number.isFinite(seconds) &&
-      seconds > 0
+      seconds > 0 &&
+      playerRef.current
     ) {
       hasSetTimestampRef.current = media.id ?? 0;
       playerRef.current.currentTime = seconds;
