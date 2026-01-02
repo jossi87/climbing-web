@@ -68,10 +68,6 @@ const Media = ({
   optProblemId,
   showLocation,
 }: Props) => {
-  const _safePitches = pitches ?? [];
-  const _safeMedia = media ?? [];
-  const _safeOrderable = orderableMedia ?? [];
-  const _safeCarousel = carouselMedia ?? [];
   const { mediaId, pitch } = useIds();
   const location = useLocation();
   const navigate = useNavigate();
@@ -132,18 +128,18 @@ const Media = ({
   }
 
   function gotoPrev() {
-    if (m && _safeCarousel.length > 1) {
+    if (m && carouselMedia && carouselMedia.length > 1) {
       const ix =
-        (_safeCarousel.findIndex((x) => x.id === m.id) - 1 + _safeCarousel.length) %
-        _safeCarousel.length;
-      openModal(_safeCarousel[ix]);
+        (carouselMedia.findIndex((x) => x.id === m.id) - 1 + carouselMedia.length) %
+        carouselMedia.length;
+      openModal(carouselMedia[ix]);
     }
   }
 
   function gotoNext() {
-    if (m && _safeCarousel.length > 1) {
-      const ix = (_safeCarousel.findIndex((x) => x.id === m.id) + 1) % _safeCarousel.length;
-      openModal(_safeCarousel[ix]);
+    if (m && carouselMedia && carouselMedia.length > 1) {
+      const ix = (carouselMedia.findIndex((x) => x.id === m.id) + 1) % carouselMedia.length;
+      openModal(carouselMedia[ix]);
     }
   }
 
@@ -441,6 +437,7 @@ const Media = ({
       )}
       {m && (
         <MediaModal
+          key={m.id ?? 0}
           isSaving={isSaving}
           onClose={closeModal}
           m={m}
@@ -457,8 +454,8 @@ const Media = ({
           onMoveImageToProblem={onMoveImageToProblem}
           onSetMediaAsAvatar={onSetMediaAsAvatar}
           orderableMedia={orderableMedia ?? []}
-          carouselIndex={(_safeCarousel.findIndex((x) => x.id === (m.id ?? 0)) ?? -1) + 1}
-          carouselSize={_safeCarousel.length}
+          carouselIndex={(carouselMedia?.findIndex((x) => x.id === (m.id ?? 0)) ?? -1) + 1}
+          carouselSize={carouselMedia?.length ?? 0}
           showLocation={showLocation}
           gotoPrev={gotoPrev}
           gotoNext={gotoNext}
@@ -467,7 +464,7 @@ const Media = ({
         />
       )}
       <Card.Group itemsPerRow={5} doubling>
-        {_safeMedia.map((x) => (
+        {media?.map((x) => (
           <LazyMediaCard x={x} key={x.id ?? 0} />
         ))}
       </Card.Group>

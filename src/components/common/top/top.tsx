@@ -46,7 +46,9 @@ const Top = ({ idArea, idSector }: TopProps) => {
         <Table.Row>
           <Table.HeaderCell>Rank</Table.HeaderCell>
           <Table.HeaderCell>Completed</Table.HeaderCell>
-          <Table.HeaderCell>People ({top.numUsers})</Table.HeaderCell>
+          <Table.HeaderCell>
+            People <Label circular>{top.numUsers}</Label>
+          </Table.HeaderCell>
         </Table.Row>
       </Table.Header>
       <Table.Body>{rows}</Table.Body>

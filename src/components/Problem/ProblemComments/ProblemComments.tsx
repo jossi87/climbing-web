@@ -12,9 +12,13 @@ export const ProblemComments = ({
   problemId,
   showHiddenMedia,
   onShowCommentModal,
+  orderableMedia,
+  carouselMedia,
 }: {
   problemId: number;
   showHiddenMedia: boolean;
+  orderableMedia: components['schemas']['Media'][];
+  carouselMedia: components['schemas']['Media'][];
   onShowCommentModal: (comment: components['schemas']['ProblemComment']) => void;
 }) => {
   const accessToken = useAccessToken();
@@ -99,8 +103,8 @@ export const ProblemComments = ({
                   <Media
                     pitches={sections}
                     media={c.media ?? []}
-                    orderableMedia={c.media ?? []}
-                    carouselMedia={c.media ?? []}
+                    orderableMedia={orderableMedia}
+                    carouselMedia={carouselMedia}
                     optProblemId={null}
                     showLocation={false}
                   />

@@ -303,6 +303,8 @@ export const Problem = () => {
               onShowCommentModal={setShowCommentModal}
               problemId={+problemId}
               showHiddenMedia={showHiddenMedia}
+              orderableMedia={orderableMedia}
+              carouselMedia={carouselMedia}
             />
           </Grid.Column>
         )}
@@ -316,6 +318,8 @@ export const Problem = () => {
         onShowCommentModal={setShowCommentModal}
         problemId={+problemId}
         showHiddenMedia={showHiddenMedia}
+        orderableMedia={orderableMedia}
+        carouselMedia={carouselMedia}
       />
     );
   }
@@ -328,7 +332,6 @@ export const Problem = () => {
       {tickModal}
       {showCommentModal && (
         <CommentModal
-          // Ensure that a fresh instance is made each time
           key={JSON.stringify(showCommentModal)}
           comment={showCommentModal}
           onClose={onCommentModalClosed}
