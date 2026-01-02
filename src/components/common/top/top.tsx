@@ -1,9 +1,9 @@
-import React from 'react';
 import { Loading } from '../widgets/widgets';
 import { Table, Label } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { useTop } from '../../../api';
 import Avatar from '../../common/avatar/avatar';
+import { components } from '../../../@types/buldreinfo/swagger';
 
 type TopProps = {
   idArea: number;
@@ -17,7 +17,7 @@ const Top = ({ idArea, idSector }: TopProps) => {
     return <Loading />;
   }
 
-  const rows = top.map((t) => (
+  const rows = top.rows?.map((t) => (
     <Table.Row key={t.percentage}>
       <Table.Cell verticalAlign='top'>#{t.rank}</Table.Cell>
       <Table.Cell verticalAlign='top'>{t.percentage}%</Table.Cell>
@@ -47,7 +47,7 @@ const Top = ({ idArea, idSector }: TopProps) => {
         <Table.Row>
           <Table.HeaderCell>Rank</Table.HeaderCell>
           <Table.HeaderCell>Completed</Table.HeaderCell>
-          <Table.HeaderCell>People</Table.HeaderCell>
+          <Table.HeaderCell>People ({top.numUsers})</Table.HeaderCell>
         </Table.Row>
       </Table.Header>
       <Table.Body>{rows}</Table.Body>

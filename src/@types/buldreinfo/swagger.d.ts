@@ -924,7 +924,7 @@ export type components = {
             noPersonalGrade?: boolean;
             /** Format: int32 */
             problemRandomMediaId?: number;
-            /** Format: int32 */
+            /** Format: int64 */
             problemRandomMediaCrc32?: number;
             media?: components["schemas"]["ActivityMedia"][];
             /** Format: int32 */
@@ -942,7 +942,7 @@ export type components = {
         ActivityMedia: {
             /** Format: int32 */
             id?: number;
-            /** Format: int32 */
+            /** Format: int64 */
             crc32?: number;
             movie?: boolean;
             embedUrl?: string;
@@ -1021,7 +1021,7 @@ export type components = {
             descent?: components["schemas"]["Slope"];
             /** Format: int32 */
             randomMediaId?: number;
-            /** Format: int32 */
+            /** Format: int64 */
             randomMediaCrc32?: number;
             problems?: components["schemas"]["SectorProblem"][];
             typeNumTickedTodo?: components["schemas"]["TypeNumTickedTodo"][];
@@ -1064,7 +1064,7 @@ export type components = {
             /** Format: int32 */
             id?: number;
             uploadedByMe?: boolean;
-            /** Format: int32 */
+            /** Format: int64 */
             crc32?: number;
             /** Format: int32 */
             pitch?: number;
@@ -1282,7 +1282,7 @@ export type components = {
         FrontpageRandomMedia: {
             /** Format: int32 */
             idMedia?: number;
-            /** Format: int32 */
+            /** Format: int64 */
             crc32?: number;
             /** Format: int32 */
             width?: number;
@@ -1803,6 +1803,11 @@ export type components = {
             problems?: components["schemas"]["TodoProblem"][];
         };
         Top: {
+            rows?: components["schemas"]["TopRank"][];
+            /** Format: int32 */
+            numUsers?: number;
+        };
+        TopRank: {
             /** Format: int32 */
             rank?: number;
             /** Format: double */
@@ -1887,8 +1892,8 @@ export type components = {
             value?: string;
             content?: Record<string, never>;
             fileName?: string;
-            simple?: boolean;
             formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
+            simple?: boolean;
             parameterizedHeaders?: {
                 empty?: boolean;
             } & {
@@ -1987,7 +1992,7 @@ export type components = {
             mediaurl?: string;
             /** Format: int32 */
             mediaid?: number;
-            /** Format: int32 */
+            /** Format: int64 */
             crc32?: number;
             lockedadmin?: boolean;
             lockedsuperadmin?: boolean;
@@ -2950,7 +2955,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Top"][];
+                    "application/json": components["schemas"]["Top"];
                 };
             };
         };
