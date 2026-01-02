@@ -647,6 +647,7 @@ const MediaModal = ({
             top: '10px',
             left: '10px',
             backgroundColor: 'rgba(0,0,0,0.6)',
+            zIndex: 1,
           }}
         >
           {m.mediaMetadata?.location}
@@ -659,6 +660,7 @@ const MediaModal = ({
             bottom: '10px',
             left: '10px',
             backgroundColor: 'rgba(0,0,0,0.6)',
+            zIndex: 1,
           }}
         >
           {m.mediaMetadata?.description}
@@ -671,6 +673,7 @@ const MediaModal = ({
             bottom: '10px',
             right: '10px',
             backgroundColor: 'rgba(0,0,0,0.6)',
+            zIndex: 1,
           }}
         >
           {[
