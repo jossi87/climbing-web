@@ -1,4 +1,3 @@
-import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Loading } from './common/widgets/widgets';
 import { Header, Menu, Icon, Message } from 'semantic-ui-react';

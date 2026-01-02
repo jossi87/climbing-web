@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, FC, Fragment, ReactNode } from 'react';
 import 'leaflet/dist/leaflet.css';
 import {
   useMapEvents,
@@ -88,7 +88,7 @@ type Props = {
     | null;
   rocks?: string[];
   showSatelliteImage?: boolean;
-  children?: React.ReactNode | React.ReactNode[];
+  children?: ReactNode | ReactNode[];
 };
 
 const UpdateBounds = ({
@@ -184,12 +184,12 @@ const Leaflet = ({
               {markersOnRock
                 .filter((m): m is MarkerDef & { url: string } => 'url' in m && !!m.url)
                 .map((m) => (
-                  <React.Fragment key={m.url}>
+                  <Fragment key={m.url}>
                     <a rel='noreferrer noopener' target='_blank' href={m.url}>
                       {'label' in m ? m.label : ''}
                     </a>
                     <br />
-                  </React.Fragment>
+                  </Fragment>
                 ))}
             </>
           );
@@ -232,8 +232,8 @@ const Leaflet = ({
   }
 
   // Use a generic wrapper to allow passing children to the control
-  const UseControlWrapper = UseControl as React.FC<{
-    children?: React.ReactNode;
+  const UseControlWrapper = UseControl as FC<{
+    children?: ReactNode;
     position?: string;
   }>;
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Loading, LockSymbol } from './common/widgets/widgets';
 import { usePermissions } from '../api';
 import Avatar from './common/avatar/avatar';

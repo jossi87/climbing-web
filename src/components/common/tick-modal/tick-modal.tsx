@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import { SyntheticEvent, ChangeEvent, useState, useCallback } from 'react';
 import {
   convertFromDateToString,
   convertFromStringToDate,
@@ -180,7 +180,7 @@ const TickModal = ({
               <Dropdown
                 selection
                 value={grade}
-                onChange={(e: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
+                onChange={(e: SyntheticEvent<HTMLElement>, data: DropdownProps) => {
                   setGrade(String(data.value));
                 }}
                 options={[
@@ -212,7 +212,7 @@ const TickModal = ({
                 selection
                 value={stars ?? undefined}
                 selectOnBlur={false}
-                onChange={(e: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
+                onChange={(e: SyntheticEvent<HTMLElement>, data: DropdownProps) => {
                   setStars(Number(data.value));
                 }}
                 options={[
@@ -275,7 +275,7 @@ const TickModal = ({
                 placeholder='Comment'
                 style={{ minHeight: 100 }}
                 value={comment ? comment : ''}
-                onChange={(e: React.SyntheticEvent<HTMLTextAreaElement>, data: TextAreaProps) => {
+                onChange={(e: SyntheticEvent<HTMLTextAreaElement>, data: TextAreaProps) => {
                   setComment(String((data.value as string) || ''));
                 }}
               />
@@ -305,10 +305,7 @@ const TickModal = ({
                         fluid
                         placeholder='Comment'
                         value={r.comment ? r.comment : ''}
-                        onChange={(
-                          e: React.ChangeEvent<HTMLInputElement>,
-                          data: InputOnChangeData,
-                        ) => {
+                        onChange={(e: ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => {
                           handleUpdateRepeat(index, 'comment', data.value as string);
                         }}
                       />

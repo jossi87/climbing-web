@@ -8,7 +8,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { DataReloader } from './components/DataReloader';
 import * as Sentry from '@sentry/react';
-import { useEffect } from 'react';
+import { useEffect, ReactNode } from 'react';
 import {
   createRoutesFromChildren,
   matchRoutes,
@@ -95,7 +95,7 @@ function ErrorFallback({
   );
 }
 
-export const Auth0ProviderWithNavigate = ({ children }: { children: React.ReactNode }) => {
+export const Auth0ProviderWithNavigate = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
   const domain = 'climbing.eu.auth0.com';
   const clientId = 'DNJNVzhxbF7PtaBFh7H6iBSNLh2UJWHt';

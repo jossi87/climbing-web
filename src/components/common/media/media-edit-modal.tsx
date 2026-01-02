@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button, Modal, Form, Input, Checkbox, Dropdown } from 'semantic-ui-react';
 import { components } from '../../../@types/buldreinfo/swagger';
 

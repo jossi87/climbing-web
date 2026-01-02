@@ -1,4 +1,3 @@
-import React from 'react';
 import { Slope } from '../../../@types/buldreinfo';
 import { components } from '../../../@types/buldreinfo/swagger';
 import { ResponsiveContainer, AreaChart, Area, Tooltip, XAxis, YAxis } from 'recharts';

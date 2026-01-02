@@ -1,4 +1,4 @@
-import React, { useState, ComponentProps } from 'react';
+import { useState, ComponentProps } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Leaflet from '../common/leaflet/leaflet';
 import { getDistanceWithUnit } from '../common/leaflet/geo-utils';

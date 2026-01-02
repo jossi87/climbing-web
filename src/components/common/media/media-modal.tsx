@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, MouseEvent } from 'react';
 import { components } from '../../../@types/buldreinfo/swagger';
 import { useLocalStorage } from '../../../utils/use-local-storage';
 import {
@@ -153,7 +153,7 @@ const MediaModal = ({
     );
   }
 
-  const handleDimmerClick = (e: React.MouseEvent) => {
+  const handleDimmerClick = (e: MouseEvent) => {
     if (e.target === e.currentTarget) {
       onClose();
     }
@@ -164,7 +164,7 @@ const MediaModal = ({
       if ((m.svgs ?? m.mediaSvgs ?? []).length > 0) {
         return (
           <div style={style.imgContainer} onClick={onClose}>
-            <Image style={style.img} onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+            <Image style={style.img} onClick={(e: MouseEvent) => e.stopPropagation()}>
               <SvgViewer
                 thumb={false}
                 style={{}}
@@ -189,7 +189,7 @@ const MediaModal = ({
             src={getImageUrl(m.id ?? 0, m.crc32 ?? 0, { targetWidth: fallbackWidth })}
             srcSet={getImageUrlSrcSet(m.id ?? 0, m.crc32 ?? 0, m.width ?? 0)}
             sizes='100vw'
-            onClick={(e: React.MouseEvent) => e.stopPropagation()}
+            onClick={(e: MouseEvent) => e.stopPropagation()}
           />
         </div>
       );
@@ -232,7 +232,7 @@ const MediaModal = ({
           style={style.img}
           alt={m.mediaMetadata?.description ?? ''}
           src={getImageUrl(m.id ?? 0, m.crc32 ?? 0, { targetWidth: 1080 })}
-          onClick={(e: React.MouseEvent) => e.stopPropagation()}
+          onClick={(e: MouseEvent) => e.stopPropagation()}
         />
         <Button
           size='massive'
@@ -279,7 +279,7 @@ const MediaModal = ({
           onHide={() => setShowSidebar(false)}
           vertical
           visible={canShowSidebar && showSidebar}
-          onClick={(e: React.MouseEvent) => e.stopPropagation()}
+          onClick={(e: MouseEvent) => e.stopPropagation()}
         >
           {canShowSidebar &&
             [...(m.svgs ?? m.mediaSvgs ?? [])]
@@ -660,7 +660,7 @@ const MediaModal = ({
                 style={style.prev}
                 name={prevHover ? 'chevron circle left' : 'angle left'}
                 link
-                onClick={(e: React.MouseEvent) => {
+                onClick={(e: MouseEvent) => {
                   e.stopPropagation();
                   gotoPrev();
                 }}
@@ -673,7 +673,7 @@ const MediaModal = ({
                 style={style.next}
                 name={nextHover ? 'chevron circle right' : 'angle right'}
                 link
-                onClick={(e: React.MouseEvent) => {
+                onClick={(e: MouseEvent) => {
                   e.stopPropagation();
                   gotoNext();
                 }}

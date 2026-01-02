@@ -1,4 +1,4 @@
-import React from 'react';
+import { Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { Loading, LockSymbol } from '../widgets/widgets';
 import { Header, Icon, List } from 'semantic-ui-react';
@@ -47,10 +47,10 @@ const Todo = ({ idArea, idSector }: { idArea: number; idSector: number }) => {
                         <small>
                           <i style={{ color: 'gray' }}>
                             {problem.partners.map((u, i) => (
-                              <React.Fragment key={u.id}>
+                              <Fragment key={u.id}>
                                 {i === 0 ? ' User(s): ' : ', '}
                                 <Link to={`/user/${u.id}/todo`}>{u.name}</Link>
-                              </React.Fragment>
+                              </Fragment>
                             ))}
                           </i>
                         </small>

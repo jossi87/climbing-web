@@ -1,4 +1,4 @@
-import React from 'react';
+import { ReactNode } from 'react';
 import { components } from '../@types/buldreinfo/swagger';
 import { Redirecting } from '../components/common/Redirecting';
 
@@ -10,7 +10,7 @@ const isRedirect = (v: unknown): v is components['schemas']['Redirect'] => {
   );
 };
 
-export const useRedirect = (data: unknown): React.ReactNode | null => {
+export const useRedirect = (data: unknown): ReactNode | null => {
   if (isRedirect(data) && data.redirectUrl && data.redirectUrl !== window.location.href) {
     window.location.replace(data.redirectUrl);
     return <Redirecting />;

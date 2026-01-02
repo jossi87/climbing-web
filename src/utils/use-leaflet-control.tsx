@@ -1,4 +1,4 @@
-import { useState, forwardRef, useEffect, useCallback } from 'react';
+import { useState, forwardRef, useEffect, useCallback, ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { createElementHook, createControlHook } from '@react-leaflet/core';
 import { Control, DomUtil, DomEvent, Map as LeafletMap } from 'leaflet';
@@ -42,10 +42,7 @@ const useForceUpdate = () => {
 };
 
 const createLeafletControl = (useElement: unknown) => {
-  const Component = (
-    props: { children?: React.ReactNode } & Record<string, unknown>,
-    _ref: unknown,
-  ) => {
+  const Component = (props: { children?: ReactNode } & Record<string, unknown>, _ref: unknown) => {
     const forceUpdate = useForceUpdate();
     const { instance } = (useElement as any)(props).current;
 

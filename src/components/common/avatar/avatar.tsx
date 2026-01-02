@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { getAvatarUrl } from '../../../api/utils';
 import { Icon, Image, Modal } from 'semantic-ui-react';
 

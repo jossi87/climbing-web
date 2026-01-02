@@ -1,4 +1,3 @@
-import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Segment, Button, Header, Icon } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';

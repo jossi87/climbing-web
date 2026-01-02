@@ -1,4 +1,4 @@
-import React, { ComponentProps } from 'react';
+import { ComponentProps } from 'react';
 import { Dropdown, DropdownProps, Form } from 'semantic-ui-react';
 import { useMeta } from '../meta';
 

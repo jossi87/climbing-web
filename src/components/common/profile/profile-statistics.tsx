@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, ComponentProps } from 'react';
 import { Link } from 'react-router-dom';
 import Chart from '../chart/chart';
 import ProblemList from '../problem-list';
@@ -109,7 +109,7 @@ const ProfileStatistics = ({
   const numTickRepeats = data.ticks?.filter((t) => !t.fa && t.idTickRepeat).length ?? 0;
   const numFas = data.ticks?.filter((t) => t.fa).length ?? 0;
   const chart = data.ticks?.length ? <Chart ticks={data.ticks} /> : null;
-  const panes: NonNullable<React.ComponentProps<typeof Tab>['panes']> = [];
+  const panes: NonNullable<ComponentProps<typeof Tab>['panes']> = [];
   panes.push({
     menuItem: { key: 'stats', icon: 'area graph' },
     render: () => (
@@ -216,7 +216,7 @@ const ProfileStatistics = ({
       </TabPane>
     ),
   });
-  const markers: NonNullable<React.ComponentProps<typeof Leaflet>['markers']> = [];
+  const markers: NonNullable<ComponentProps<typeof Leaflet>['markers']> = [];
   data.ticks?.forEach((t) => {
     if (t.coordinates) {
       markers.push({

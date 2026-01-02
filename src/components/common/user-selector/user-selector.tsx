@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import CreatableSelect from 'react-select/creatable';
 import { useUserSearch } from './../../../api';
 import { components } from '../../../@types/buldreinfo/swagger';

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Segment, Icon, Button, ButtonGroup, Message, Divider } from 'semantic-ui-react';
 import { Loading } from '../common/widgets/widgets';
 import { useMeta } from '../common/meta/context';

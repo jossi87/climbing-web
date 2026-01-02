@@ -1,11 +1,11 @@
-import React, { type ComponentProps, useCallback, useState } from 'react';
+import { type ComponentProps, ReactNode, useCallback, useState } from 'react';
 import { Accordion, Icon } from 'semantic-ui-react';
 
 type Props = {
   accordionRows: {
     label: string;
     length?: number;
-    content: React.ReactNode | string;
+    content: ReactNode | string;
   }[];
 };
 

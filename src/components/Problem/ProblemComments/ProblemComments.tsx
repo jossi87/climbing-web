@@ -1,4 +1,4 @@
-import React from 'react';
+import { JSX } from 'react';
 import { Link } from 'react-router-dom';
 import { Feed, Segment, Header, Label, Button } from 'semantic-ui-react';
 import { useAccessToken, useProblem, postComment } from '../../../api';
@@ -64,7 +64,7 @@ export const ProblemComments = ({
       </Header>
       {comments.length ? (
         comments.map((c) => {
-          let extra: React.JSX.Element | null = null;
+          let extra: JSX.Element | null = null;
           if (c.danger) {
             extra = <Label color='red'>Flagged as dangerous</Label>;
           } else if (c.resolved) {

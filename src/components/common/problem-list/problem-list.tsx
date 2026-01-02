@@ -1,4 +1,4 @@
-import React, { ComponentProps, useMemo, useState } from 'react';
+import { ComponentProps, useMemo, useState } from 'react';
 import {
   Step,
   Dropdown,

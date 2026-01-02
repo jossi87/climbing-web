@@ -1,4 +1,4 @@
-import React from 'react';
+import { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { Feed, Segment, Header, Table, Label, Icon } from 'semantic-ui-react';
 import Avatar from '../../common/avatar/avatar';
@@ -21,7 +21,7 @@ export const ProblemTicks = ({ ticks }: Props) => {
       {safeTicks.length ? (
         safeTicks.map((t) => {
           let dt = t.date;
-          let com: React.ReactNode | null = null;
+          let com: ReactNode | null = null;
           const repeats = t.repeats ?? [];
           if (repeats.length > 0) {
             dt =

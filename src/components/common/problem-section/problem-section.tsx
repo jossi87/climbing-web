@@ -1,4 +1,4 @@
-import React, { ComponentProps, useCallback, useState } from 'react';
+import { ComponentProps, useCallback, useState } from 'react';
 import { Form, Input, Dropdown } from 'semantic-ui-react';
 import { components } from '../../../@types/buldreinfo/swagger';
 import { useMeta } from '../meta';

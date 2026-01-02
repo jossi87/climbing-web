@@ -2,7 +2,7 @@ import { getImageUrl } from '../../api';
 import { SvgRoute } from './SvgRoute';
 import { Descent, Rappel } from '../../utils/svg-utils';
 import { components } from '../../@types/buldreinfo/swagger';
-import { CSSProperties } from 'react';
+import { CSSProperties, MouseEvent } from 'react';
 import {
   calculateMediaRegion,
   isPathVisible,
@@ -169,7 +169,7 @@ export const SvgViewer = ({
         className='buldreinfo-svg'
         viewBox={'0 0 ' + imgW + ' ' + imgH}
         preserveAspectRatio='xMidYMid meet'
-        onClick={(e: React.MouseEvent<SVGSVGElement>) => {
+        onClick={(e: MouseEvent<SVGSVGElement>) => {
           if (e.target instanceof SVGSVGElement && close) {
             close();
           }

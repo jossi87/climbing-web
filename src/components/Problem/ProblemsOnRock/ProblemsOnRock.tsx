@@ -1,4 +1,3 @@
-import React from 'react';
 import { Icon, Label, Table } from 'semantic-ui-react';
 import { useSector } from '../../../api';
 import { LockSymbol, Stars } from '../../common/widgets/widgets';

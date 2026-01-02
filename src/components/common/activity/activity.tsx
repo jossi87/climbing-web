@@ -1,4 +1,4 @@
-import React from 'react';
+import { CSSProperties, SyntheticEvent } from 'react';
 import { components } from '../../../@types/buldreinfo/swagger';
 import { Link } from 'react-router-dom';
 import {
@@ -58,7 +58,7 @@ const LazyLoadedMedia = ({
 }: {
   media: components['schemas']['Media'][];
   problemId?: number;
-  imgStyle: React.CSSProperties;
+  imgStyle: CSSProperties;
 }) => {
   const { ref, inView } = useInView({
     triggerOnce: true,
@@ -75,7 +75,7 @@ const LazyLoadedMedia = ({
               src={getImageUrl(Number(m.id ?? 0), Number(m.crc32 ?? 0), {
                 minDimension: 85,
               })}
-              onError={(e: React.SyntheticEvent<HTMLImageElement>) =>
+              onError={(e: SyntheticEvent<HTMLImageElement>) =>
                 ((e.target as HTMLImageElement).src = '/png/video_placeholder.png')
               }
             />
@@ -261,7 +261,7 @@ const Activity = ({ idArea, idSector }: Props) => {
                             minDimension: 35,
                           },
                         )}
-                        onError={(e: React.SyntheticEvent<HTMLImageElement>) =>
+                        onError={(e: SyntheticEvent<HTMLImageElement>) =>
                           ((e.target as HTMLImageElement).src = '/png/video_placeholder.png')
                         }
                       />
@@ -374,7 +374,7 @@ const Activity = ({ idArea, idSector }: Props) => {
                             minDimension: 35,
                           },
                         )}
-                        onError={(e: React.SyntheticEvent<HTMLImageElement>) =>
+                        onError={(e: SyntheticEvent<HTMLImageElement>) =>
                           ((e.target as HTMLImageElement).src = '/png/video_placeholder.png')
                         }
                       />

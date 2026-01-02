@@ -1,4 +1,4 @@
-import React, { ComponentProps } from 'react';
+import { ComponentProps } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import ProblemList from './common/problem-list';
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';

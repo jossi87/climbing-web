@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, ComponentProps } from 'react';
 import { Search, Image, Icon } from 'semantic-ui-react';
 import { getImageUrl, useSearch } from './../../../api';
 import { LockSymbol } from '../widgets/widgets';
 import { useNavigate } from 'react-router-dom';
 
 type SearchBoxProps = Omit<
-  React.ComponentProps<typeof Search>,
+  ComponentProps<typeof Search>,
   | 'children'
   | 'id'
   | 'loading'

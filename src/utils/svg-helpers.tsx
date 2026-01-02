@@ -1,4 +1,4 @@
-import React from 'react';
+import { JSX, ReactNode } from 'react';
 import { parseSVG, makeAbsolute } from 'svg-path-parser';
 import { neverGuard } from './neverGuard';
 import { MediaRegion } from './svg-scaler';
@@ -172,7 +172,7 @@ export function generateSvgNrAndAnchor(
   if (x > w - r) x = w - r;
   if (y < r) y = r;
   if (y > h - r) y = h - r;
-  let anchor: React.JSX.Element | null = null;
+  let anchor: JSX.Element | null = null;
   if (hasAnchor === true) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     anchor = <circle fill='#E2011A' cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.006 * w} />;
@@ -205,7 +205,7 @@ export function generateSvgNrAndAnchor(
 export function parseReadOnlySvgs(readOnlySvgs: SvgType[], w: number, h: number, scale: number) {
   const backgroundColor = 'black';
   const color = 'white';
-  const shapes = readOnlySvgs.reduce<React.ReactNode[]>((acc, svg) => {
+  const shapes = readOnlySvgs.reduce<ReactNode[]>((acc, svg) => {
     const { t } = svg;
     switch (t) {
       case 'PATH': {

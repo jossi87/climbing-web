@@ -1,4 +1,4 @@
-import React, { ComponentProps, useEffect, useMemo, useState } from 'react';
+import { ComponentProps, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Leaflet from '../../leaflet/leaflet';
 import { useMeta } from '../../meta';

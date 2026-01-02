@@ -1,4 +1,11 @@
-import React, { useState, useEffect, ComponentProps, CSSProperties, useCallback } from 'react';
+import {
+  useState,
+  useEffect,
+  ComponentProps,
+  SyntheticEvent,
+  CSSProperties,
+  useCallback,
+} from 'react';
 import { useInView } from 'react-intersection-observer';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
@@ -327,7 +334,7 @@ const Media = ({
                   alt={x.mediaMetadata?.description ?? ''}
                   style={style}
                   src={getImageUrl(Number(x.id ?? 0), Number(x.crc32 ?? 0), { minDimension: 205 })}
-                  onError={(e: React.SyntheticEvent<HTMLImageElement>) =>
+                  onError={(e: SyntheticEvent<HTMLImageElement>) =>
                     ((e.currentTarget as HTMLImageElement).src = '/png/video_placeholder.png')
                   }
                   rounded

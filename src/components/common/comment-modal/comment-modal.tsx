@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { postComment, useAccessToken } from './../../../api';
 import { Button, Modal, Form, TextArea, Message, Icon } from 'semantic-ui-react';
 import ImageUpload, { UploadedMedia } from '../image-upload/image-upload';

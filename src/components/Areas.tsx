@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef, Fragment } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button, List, Icon, Segment } from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
@@ -102,7 +102,7 @@ const Areas = () => {
           {data
             .filter((area) => area.forDevelopers === showForDevelopers)
             .map((area) => (
-              <React.Fragment key={area.id}>
+              <Fragment key={area.id}>
                 <List.Item
                   as='a'
                   onClick={() => {
@@ -120,7 +120,7 @@ const Areas = () => {
                   lockedAdmin={area.lockedAdmin}
                   lockedSuperadmin={area.lockedSuperadmin}
                 />
-              </React.Fragment>
+              </Fragment>
             ))}
         </List>
         {map}

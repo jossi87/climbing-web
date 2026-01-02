@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, FC } from 'react';
 import {
   Segment,
   Header,
@@ -19,7 +19,7 @@ const ProfileSettings = () => {
 
   if (!data) return <Segment>Loading...</Segment>;
 
-  const ProfileForm: React.FC<{
+  const ProfileForm: FC<{
     data: typeof data;
   }> = ({ data: d }) => {
     const [firstname, setFirstname] = useState(d.firstname ?? '');

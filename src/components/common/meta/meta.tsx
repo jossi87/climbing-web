@@ -1,9 +1,10 @@
+import { ReactNode } from 'react';
 import { useData } from '../../../api';
 import { DEFAULT_META, Metadata } from './defaultMeta';
 import { MetaContext } from './context';
 
 type Props = {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 export const MetaProvider = ({ children }: Props) => {

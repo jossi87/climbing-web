@@ -1,4 +1,4 @@
-import React, { ComponentProps, useMemo } from 'react';
+import { ComponentProps, useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
 import Top from './common/top/top';

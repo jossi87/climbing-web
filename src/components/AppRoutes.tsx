@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import { Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Loading } from './common/widgets/widgets';
 import { lazy } from '../utils/lazyRetry';

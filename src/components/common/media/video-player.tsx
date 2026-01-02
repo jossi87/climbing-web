@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, FC } from 'react';
 import ReactPlayer from 'react-player';
 import { components } from '../../../@types/buldreinfo/swagger';
 import { getBuldreinfoMediaUrlSupported } from '../../../api';
@@ -15,7 +15,7 @@ const style = {
   maxWidth: '100%',
 };
 
-const VideoPlayer: React.FC<Props> = ({ media, autoPlay = true }) => {
+const VideoPlayer: FC<Props> = ({ media, autoPlay = true }) => {
   const [isReady, setIsReady] = useState(false);
   const playerRef = useRef<any>(null);
   const hasSetTimestampRef = useRef<number | null>(null);

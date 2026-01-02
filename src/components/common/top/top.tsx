@@ -3,7 +3,6 @@ import { Table, Label } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { useTop } from '../../../api';
 import Avatar from '../../common/avatar/avatar';
-import { components } from '../../../@types/buldreinfo/swagger';
 
 type TopProps = {
   idArea: number;

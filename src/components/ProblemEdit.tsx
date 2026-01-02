@@ -1,4 +1,4 @@
-import React, { useState, useCallback, ComponentProps, UIEvent } from 'react';
+import { useState, useCallback, ComponentProps, UIEvent } from 'react';
 import { UsersSelector } from './common/user-selector/user-selector';
 import RockSelector from './common/rock-selector/rock-selector';
 import ProblemSection from './common/problem-section/problem-section';

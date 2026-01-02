@@ -1,4 +1,3 @@
-import React from 'react';
 import { Image, Label, Popup } from 'semantic-ui-react';
 import SunCalc from 'suncalc';
 

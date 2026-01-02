@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, FC } from 'react';
 import { Label, Icon } from 'semantic-ui-react';
 import { Markdown } from '../Markdown/Markdown';
 
@@ -8,7 +8,7 @@ type ExpandableTextProps = {
   initialIsExpanded?: boolean;
 };
 
-const ExpandableText: React.FC<ExpandableTextProps> = ({ text, maxLength }) => {
+const ExpandableText: FC<ExpandableTextProps> = ({ text, maxLength }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpand = () => {

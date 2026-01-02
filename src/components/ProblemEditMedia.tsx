@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, FormEvent } from 'react';
 import ImageUpload, { UploadedMedia } from './common/image-upload/image-upload';
 import { useAuth0 } from '@auth0/auth0-react';
 import { postProblemMedia, useProblem } from '../api';
@@ -15,7 +15,7 @@ const ProblemEditMedia = () => {
 
   const { data: problem, isLoading } = useProblem(+(problemId || '-1'), false);
 
-  function save(event: React.FormEvent) {
+  function save(event: FormEvent) {
     event.preventDefault();
     setSaving(true);
     getAccessTokenSilently().then((accessToken) => {

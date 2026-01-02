@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { components } from '../../../@types/buldreinfo/swagger';
 
 type Props = {

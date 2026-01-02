@@ -1,4 +1,3 @@
-import React from 'react';
 import { Segment, List, Grid, Container, Divider, Button, Icon } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 

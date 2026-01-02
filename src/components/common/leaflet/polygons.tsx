@@ -1,4 +1,3 @@
-import React from 'react';
 import { CircleMarker, Polygon, Tooltip } from 'react-leaflet';
 import { useNavigate } from 'react-router';
 import { components } from '../../../@types/buldreinfo/swagger';

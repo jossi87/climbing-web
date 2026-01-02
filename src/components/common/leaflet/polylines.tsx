@@ -1,4 +1,3 @@
-import React from 'react';
 import { Circle, Polyline, Tooltip } from 'react-leaflet';
 import { components } from '../../../@types/buldreinfo/swagger';
 

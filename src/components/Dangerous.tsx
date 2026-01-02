@@ -1,4 +1,3 @@
-import React from 'react';
 import { Loading } from './common/widgets/widgets';
 import { Segment, Icon, Header } from 'semantic-ui-react';
 import { useMeta } from './common/meta/context';

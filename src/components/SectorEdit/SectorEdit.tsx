@@ -1,4 +1,4 @@
-import React, { useState, ComponentProps, useCallback } from 'react';
+import { useState, ComponentProps, UIEvent, useCallback } from 'react';
 import ImageUpload from '../common/image-upload/image-upload';
 import { Loading } from '../common/widgets/widgets';
 import {
@@ -184,7 +184,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
     setData((prevState) => ({ ...prevState, newMedia }));
   }, []);
 
-  const save = (event: React.UIEvent) => {
+  const save = (event: UIEvent) => {
     event.preventDefault();
     const trash = !!data.trash;
     if (!trash || confirm('Are you sure you want to move sector to trash?')) {

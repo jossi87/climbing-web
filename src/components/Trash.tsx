@@ -1,3 +1,4 @@
+import { SyntheticEvent } from 'react';
 import { Loading } from './common/widgets/widgets';
 import { getImageUrl, useTrash } from '../api';
 import { useMeta } from './common/meta';
@@ -81,7 +82,7 @@ const Trash = () => {
                       alt={t.name}
                       key={t.idMedia}
                       src={getImageUrl(t.idMedia, 0, { minDimension: 50 })}
-                      onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) =>
+                      onError={(e: SyntheticEvent<HTMLImageElement, Event>) =>
                         (e.currentTarget.src = '/png/video_placeholder.png')
                       }
                       rounded

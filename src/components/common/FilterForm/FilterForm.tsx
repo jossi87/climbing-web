@@ -1,4 +1,4 @@
-import React, { CSSProperties, useCallback, useRef, useState } from 'react';
+import { CSSProperties, useCallback, useRef, useState } from 'react';
 import {
   Form,
   Header,
@@ -17,7 +17,6 @@ import { useMeta } from '../meta';
 import { useFilter } from './context';
 import { HeaderButtons } from '../HeaderButtons';
 import { ResetField } from '../../Problems/reducer';
-// kept for potential future guards
 import { YearSelect } from './YearSelect';
 import { hours } from '../../../utils/hours';
 

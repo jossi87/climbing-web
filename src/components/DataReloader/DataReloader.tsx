@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useEffect, ReactNode } from 'react';
 
 export const DATA_MUTATION_EVENT = 'brattelinjer/refetch';
 
@@ -31,7 +31,7 @@ export type ConsistencyAction = keyof typeof HANDLERS;
  *
  * So, here we are!
  */
-export const DataReloader = ({ children }: { children: React.ReactNode }) => {
+export const DataReloader = ({ children }: { children: ReactNode }) => {
   const client = useQueryClient();
   useEffect(() => {
     const onEvent = (event: Event) => {

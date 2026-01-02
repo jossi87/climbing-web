@@ -1,4 +1,3 @@
-import React from 'react';
 import { Loading } from '../widgets/widgets';
 import { Popup, Table } from 'semantic-ui-react';
 import { useGradeDistribution } from './../../../api';

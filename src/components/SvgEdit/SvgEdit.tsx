@@ -1,9 +1,10 @@
-import React, {
+import {
   useState,
   useEffect,
   useRef,
   useCallback,
   MouseEventHandler,
+  ReactNode,
   useReducer,
 } from 'react';
 import { Container, Button, Segment, Dropdown, Input, Icon, Divider } from 'semantic-ui-react';
@@ -394,7 +395,7 @@ export const SvgEdit = ({
   }, []);
 
   const circles = points.map((p, i, a) => {
-    const handle: React.ReactNode = isCubicPoint(p) ? (
+    const handle: ReactNode = isCubicPoint(p) ? (
       <g className='buldreinfo-svg-edit-opacity'>
         <line
           className={'buldreinfo-svg-pointer'}

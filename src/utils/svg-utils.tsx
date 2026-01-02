@@ -1,9 +1,8 @@
-import React from 'react';
+import { SVGProps, JSX } from 'react';
 import { svgPathProperties } from 'svg-path-properties';
-// MediaRegion is intentionally not used here; remove import to avoid unused var warning
 
 type DescentProps = {
-  path: React.SVGProps<SVGPathElement>['d'];
+  path: SVGProps<SVGPathElement>['d'];
   whiteNotBlack: boolean;
   scale: number;
   thumb: boolean;
@@ -24,7 +23,7 @@ export function Descent({ path, whiteNotBlack, scale, thumb }: DescentProps) {
 
     const descentKey = path.replace(/\s/g, ''); // Key cannot contains spaces
     const deltaPercent = ((scale * 1000) / totalLength) * (thumb ? 6 : 3);
-    const texts: React.JSX.Element[] = [];
+    const texts: JSX.Element[] = [];
     for (let i = 0; i <= 100; i += deltaPercent) {
       texts.push(
         <textPath key={i} xlinkHref={'#descent' + descentKey} startOffset={i + '%'}>
@@ -64,7 +63,7 @@ export function Descent({ path, whiteNotBlack, scale, thumb }: DescentProps) {
   }
 }
 
-type AnchorProps = Pick<React.SVGProps<SVGCircleElement>, 'strokeWidth' | 'stroke'> & {
+type AnchorProps = Pick<SVGProps<SVGCircleElement>, 'strokeWidth' | 'stroke'> & {
   bolted: boolean;
   r: number;
   x: number;

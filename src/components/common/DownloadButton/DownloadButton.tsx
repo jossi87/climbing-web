@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, MouseEvent } from 'react';
 import { Icon, Label, LabelProps, SemanticICONS } from 'semantic-ui-react';
 import { getUrl, downloadFile, useAccessToken } from '../../../api';
 
@@ -12,7 +12,7 @@ export const DownloadButton = ({ href, icon = 'file pdf outline', children }: Pr
   const accessToken = useAccessToken();
   const [loading, setLoading] = useState(false);
   const onClick: LabelProps['onClick'] = useCallback(
-    (e: React.MouseEvent<HTMLElement>, _data: LabelProps) => {
+    (e: MouseEvent<HTMLElement>, _data: LabelProps) => {
       const url = (e.currentTarget as HTMLElement).getAttribute('href');
       if (!url) {
         return;

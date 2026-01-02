@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, FormEvent, MouseEvent, SyntheticEvent, JSX } from 'react';
 import { Container, Button, Label, Icon, Segment, Dropdown } from 'semantic-ui-react';
 import { getImageUrl, useMediaSvg } from '../api';
 import { Rappel } from '../utils/svg-utils';
@@ -86,7 +86,7 @@ const MediaSvgEdit = () => {
     }
   }
 
-  function save(event: React.FormEvent) {
+  function save(event: FormEvent) {
     event.preventDefault();
     setSaving(true);
     newSave(modifiedData).then(() => navigate(-1));
@@ -97,7 +97,7 @@ const MediaSvgEdit = () => {
     setDraggedCubic(false);
   }
 
-  function getMouseCoords(e: React.MouseEvent) {
+  function getMouseCoords(e: MouseEvent) {
     const dim = imageRef.current?.getBoundingClientRect();
     if (!dim) {
       return { x: 0, y: 0 };
@@ -109,7 +109,7 @@ const MediaSvgEdit = () => {
     return { x, y };
   }
 
-  function handleOnClick(e: React.MouseEvent<SVGSVGElement>) {
+  function handleOnClick(e: MouseEvent<SVGSVGElement>) {
     if (
       shift.current &&
       activeElementIndex != -1 &&
@@ -167,7 +167,7 @@ const MediaSvgEdit = () => {
     return d;
   }
 
-  function handleMouseMove(e: React.MouseEvent<SVGSVGElement>) {
+  function handleMouseMove(e: MouseEvent<SVGSVGElement>) {
     e.preventDefault();
     if (!shift.current) {
       if (draggedPoint) {
@@ -226,7 +226,7 @@ const MediaSvgEdit = () => {
     }
   }
 
-  function setPointType(e: React.SyntheticEvent, { value }: { value: string }) {
+  function setPointType(e: SyntheticEvent, { value }: { value: string }) {
     const active = activePoint;
     const svgs = getMediaSvgs();
     const cur = svgs[activeElementIndex];
@@ -313,7 +313,7 @@ const MediaSvgEdit = () => {
     const cur = mediaSvgs[activeElementIndex];
     if (!cur || cur.t !== 'PATH' || !cur.points) return null;
     return cur.points.map((p, i, a) => {
-      const anchors: React.JSX.Element[] = [];
+      const anchors: JSX.Element[] = [];
       if (isCubicPoint(p)) {
         anchors.push(
           <g key={anchors.length} className='buldreinfo-svg-edit-opacity'>
@@ -373,7 +373,7 @@ const MediaSvgEdit = () => {
     });
   })();
 
-  let activeRappel: React.JSX.Element | null = null;
+  let activeRappel: JSX.Element | null = null;
   if (
     activeElementIndex >= 0 &&
     mediaSvgs[activeElementIndex] &&

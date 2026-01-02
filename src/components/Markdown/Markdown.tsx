@@ -1,11 +1,11 @@
-import React from 'react';
+import { FC } from 'react';
 import { md } from './parser';
 
 type MarkdownProps = {
   content?: string | null;
 };
 
-export const Markdown: React.FC<MarkdownProps> = ({ content }) => {
+export const Markdown: FC<MarkdownProps> = ({ content }) => {
   if (!content) {
     return null;
   }

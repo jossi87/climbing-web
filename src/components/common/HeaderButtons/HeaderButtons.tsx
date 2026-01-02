@@ -1,11 +1,11 @@
-import React, { ComponentProps } from 'react';
+import { ComponentProps, ReactNode } from 'react';
 import { ButtonGroup, Header, Icon } from 'semantic-ui-react';
 
 type Props = {
   icon?: ComponentProps<typeof Icon>['name'];
   header?: string;
-  subheader?: React.ReactNode;
-  children?: React.ReactNode | React.ReactNode[];
+  subheader?: ReactNode;
+  children?: ReactNode | ReactNode[];
 };
 
 export const HeaderButtons = ({ header, subheader, icon, children }: Props) => {

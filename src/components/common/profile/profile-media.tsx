@@ -1,4 +1,3 @@
-import React from 'react';
 import { Loading } from './../../common/widgets/widgets';
 import { Segment } from 'semantic-ui-react';
 import { useProfileMedia } from '../../../api';

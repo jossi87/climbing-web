@@ -1,4 +1,4 @@
-import React, { useState, useCallback, ComponentProps } from 'react';
+import { useState, useCallback, ComponentProps, FormEvent } from 'react';
 import ImageUpload from '../common/image-upload/image-upload';
 import Leaflet from '../common/leaflet/leaflet';
 import {
@@ -43,7 +43,7 @@ export const AreaEdit = () => {
   const [showSectorOrder, setShowSectorOrder] = useState(false);
 
   const save: ComponentProps<typeof Form>['onSubmit'] = useCallback(
-    (event: React.FormEvent<HTMLFormElement>) => {
+    (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       if (!data.name) {
         return;

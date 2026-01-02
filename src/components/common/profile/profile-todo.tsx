@@ -1,4 +1,4 @@
-import React from 'react';
+import { ComponentProps, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import Leaflet from '../../common/leaflet/leaflet';
 import { Loading, LockSymbol } from '../../common/widgets/widgets';
@@ -18,7 +18,7 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
     return <Loading />;
   }
 
-  const markers: NonNullable<React.ComponentProps<typeof Leaflet>['markers']> = [];
+  const markers: NonNullable<ComponentProps<typeof Leaflet>['markers']> = [];
   (data.areas ?? []).forEach((a) => {
     (a.sectors ?? []).forEach((s) => {
       (s.problems ?? []).forEach((p) => {
@@ -79,10 +79,10 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
                             <small>
                               <i style={{ color: 'gray' }}>
                                 {problem.partners.map((u, i) => (
-                                  <React.Fragment key={u.id}>
+                                  <Fragment key={u.id}>
                                     {i === 0 ? ' Other users: ' : ', '}
                                     <Link to={`/user/${u.id}/todo`}>{u.name}</Link>
-                                  </React.Fragment>
+                                  </Fragment>
                                 ))}
                               </i>
                             </small>

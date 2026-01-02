@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useRef, ReactNode, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { List, Icon } from 'semantic-ui-react';
 import { LockSymbol, Stars, SunOnWall, WallDirection } from '../../common/widgets/widgets';
@@ -46,8 +46,8 @@ export type Props = {
           })[];
       })[];
   })[];
-  header?: React.ReactNode;
-  subHeader?: React.ReactNode;
+  header?: ReactNode;
+  subHeader?: ReactNode;
 };
 
 export const TableOfContents = ({ areas, header, subHeader }: Props) => {
@@ -62,7 +62,7 @@ export const TableOfContents = ({ areas, header, subHeader }: Props) => {
       {header}
       <List celled link horizontal size='small'>
         {areas.map((area) => (
-          <React.Fragment key={area.id}>
+          <Fragment key={area.id}>
             <List.Item
               as='a'
               onClick={() => areaRefs.current[area.id]?.scrollIntoView({ block: 'start' })}
@@ -70,7 +70,7 @@ export const TableOfContents = ({ areas, header, subHeader }: Props) => {
               {area.name}
             </List.Item>
             <LockSymbol lockedAdmin={area.lockedAdmin} lockedSuperadmin={area.lockedSuperadmin} />
-          </React.Fragment>
+          </Fragment>
         ))}
       </List>
       {subHeader}

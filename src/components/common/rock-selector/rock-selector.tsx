@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import CreatableSelect from 'react-select/creatable';
 
 type RockSelectorProps = {

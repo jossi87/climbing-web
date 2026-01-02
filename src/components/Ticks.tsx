@@ -1,4 +1,3 @@
-import React from 'react';
 import { Segment, Pagination, Feed, Placeholder } from 'semantic-ui-react';
 import { LockSymbol } from './common/widgets/widgets';
 import { Link, useParams, useNavigate } from 'react-router-dom';

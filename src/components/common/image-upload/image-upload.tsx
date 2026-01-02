@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, ComponentProps } from 'react';
+import { useEffect, useState, useCallback, ComponentProps, ChangeEvent, FormEvent } from 'react';
 import heic2any from 'heic2any';
 import { useDropzone } from 'react-dropzone';
 import {
@@ -155,7 +155,7 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
                         placeholder='Pitch'
                         value={m.pitch ?? ''}
                         onChange={(
-                          _: React.ChangeEvent<HTMLInputElement>,
+                          _: ChangeEvent<HTMLInputElement>,
                           { value }: InputOnChangeData,
                         ) => {
                           updateItem({ pitch: +value });
@@ -170,7 +170,7 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
                       placeholder='Description'
                       value={m.description ?? ''}
                       onChange={(
-                        _: React.ChangeEvent<HTMLInputElement>,
+                        _: ChangeEvent<HTMLInputElement>,
                         { value }: InputOnChangeData,
                       ) => {
                         updateItem({ description: value as string });
@@ -180,7 +180,7 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
                       label='Trivia'
                       toggle
                       checked={!!m.trivia}
-                      onChange={(_: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
+                      onChange={(_: FormEvent<HTMLInputElement>, data: CheckboxProps) => {
                         updateItem({ trivia: !!data.checked });
                       }}
                     />
@@ -212,7 +212,7 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
                           label='Min'
                           value={min}
                           onChange={(
-                            _: React.ChangeEvent<HTMLInputElement>,
+                            _: ChangeEvent<HTMLInputElement>,
                             { value }: InputOnChangeData,
                           ) => {
                             const val = +value;
@@ -225,7 +225,7 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
                           label='Sec'
                           value={sec}
                           onChange={(
-                            _: React.ChangeEvent<HTMLInputElement>,
+                            _: ChangeEvent<HTMLInputElement>,
                             { value }: InputOnChangeData,
                           ) => {
                             const val = +value;

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect, ReactNode } from 'react';
 import { Marker, Tooltip, Popup, useMap } from 'react-leaflet';
 import { markerBlueIcon, markerRedIcon, parkingIcon, weatherIcon, rockIcon } from './icons';
 import { useNavigate } from 'react-router';
@@ -27,7 +27,7 @@ type HtmlMarker = {
   id: number;
   coordinates: components['schemas']['Coordinates'];
   label: string;
-  html: React.ReactNode;
+  html: ReactNode;
   rock?: string;
 };
 
