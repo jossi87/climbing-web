@@ -11,7 +11,9 @@ const useProblemsOnRock = ({
   rock: string | undefined;
 }) => {
   const { data } = useSector(sectorId);
-  return data?.problems?.filter((problem) => problem.rock && problem.rock === rock);
+  return data?.problems
+    ?.filter((problem) => problem.rock && problem.rock === rock)
+    .sort((a, b) => (a.nr ?? 0) - (b.nr ?? 0));
 };
 
 export const ProblemsOnRock = ({
