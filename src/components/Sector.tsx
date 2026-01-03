@@ -178,21 +178,15 @@ const Sector = () => {
   }
   const panes = [];
 
-  let topoImages = null;
   if (data.media && data.media.length > 0) {
-    let media = data.media;
-    if (isBouldering) {
-      media = data.media.filter((m) => m.svgs == null || m.svgs.length === 0);
-      topoImages = data.media.filter((m) => m.svgs && m.svgs.length !== 0);
-    }
-    if (media && media.length > 0) {
+    if (data.media && data.media.length > 0) {
       panes.push({
         menuItem: { key: 'media', icon: 'image' },
         render: () => (
           <TabPane>
             <Media
               pitches={null}
-              media={media}
+              media={data.media}
               orderableMedia={orderableMedia}
               carouselMedia={carouselMedia}
               optProblemId={null}
@@ -256,23 +250,6 @@ const Sector = () => {
             clusterMarkers={true}
             rocks={uniqueRocks}
             flyToId={null}
-          />
-        </TabPane>
-      ),
-    });
-  }
-  if (topoImages && topoImages.length > 0) {
-    panes.push({
-      menuItem: { key: 'topo', icon: 'images' },
-      render: () => (
-        <TabPane>
-          <Media
-            pitches={null}
-            media={topoImages}
-            orderableMedia={orderableMedia}
-            carouselMedia={carouselMedia}
-            optProblemId={null}
-            showLocation={false}
           />
         </TabPane>
       ),
