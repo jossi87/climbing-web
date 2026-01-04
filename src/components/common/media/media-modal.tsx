@@ -10,7 +10,6 @@ import {
   Header,
   ButtonGroup,
   Embed,
-  Container,
   Dropdown,
   List,
   Sidebar,
@@ -298,7 +297,7 @@ const MediaModal = ({
               url={m.embedUrl}
               defaultActive={true}
               iframe={{ allowFullScreen: true, style: { padding: 10 } }}
-              onClick={(e: any) => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
             />
           </div>
         </div>
