@@ -1,4 +1,4 @@
-import { useState, MouseEvent, useRef } from 'react';
+import { useState, MouseEvent, useRef, useEffect } from 'react';
 import { components } from '../../../@types/buldreinfo/swagger';
 import { useLocalStorage } from '../../../utils/use-local-storage';
 import {
@@ -145,10 +145,17 @@ const MediaModal = ({
   const [problemIdHovered, setProblemIdHovered] = useState<number | null>(null);
   const [prevHover, setPrevHover] = useState(false);
   const [nextHover, setNextHover] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   const [offsetX, setOffsetX] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
   const wasSwiping = useRef(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const canShowSidebar =
     (m.svgs ?? m.mediaSvgs ?? [])
@@ -159,13 +166,13 @@ const MediaModal = ({
 
   const handlers = useSwipeable({
     onSwiping: (e) => {
-      if (carouselSize <= 1) return;
+      if (carouselSize <= 1 || !isMobile) return;
       setIsSwiping(true);
       wasSwiping.current = true;
       setOffsetX(e.deltaX);
     },
     onSwipedLeft: () => {
-      if (carouselSize > 1) gotoNext();
+      if (carouselSize > 1 && isMobile) gotoNext();
       setOffsetX(0);
       setIsSwiping(false);
       setTimeout(() => {
@@ -173,7 +180,7 @@ const MediaModal = ({
       }, 50);
     },
     onSwipedRight: () => {
-      if (carouselSize > 1) gotoPrev();
+      if (carouselSize > 1 && isMobile) gotoPrev();
       setOffsetX(0);
       setIsSwiping(false);
       setTimeout(() => {
@@ -192,7 +199,7 @@ const MediaModal = ({
       }
     },
     preventScrollOnSwipe: true,
-    trackMouse: false,
+    trackMouse: false, // Desktop users should use buttons/keyboard, not mouse-swipe
     delta: 10,
   });
 
@@ -657,7 +664,7 @@ const MediaModal = ({
           <Button icon='close' onClick={onClose} />
         </ButtonGroup>
 
-        {carouselSize > 1 && (
+        {carouselSize > 1 && !isMobile && (
           <>
             <Icon
               onMouseEnter={() => setPrevHover(true)}
