@@ -26,13 +26,17 @@ import { useMeta } from '../meta';
 
 const style = {
   img: {
-    maxHeight: '100vh',
-    maxWidth: '100vw',
+    height: '100vh',
+    width: '100vw',
+    objectFit: 'contain',
   },
   imgContainer: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden',
+    height: '100vh',
+    width: '100vw',
   },
   video: {
     width: '100vw',
@@ -160,9 +164,8 @@ const MediaModal = ({
       if ((m.svgs ?? m.mediaSvgs ?? []).length > 0) {
         return (
           <div key={`${m.id}-${carouselIndex}`} style={style.imgContainer} onClick={onClose}>
-            <Image
-              key={`${m.id}-${carouselIndex}`}
-              style={style.img}
+            <div
+              style={style.img as React.CSSProperties}
               onClick={(e: MouseEvent) => e.stopPropagation()}
             >
               <SvgViewer
@@ -176,7 +179,7 @@ const MediaModal = ({
                 problemIdHovered={problemIdHovered}
                 setProblemIdHovered={(id) => setProblemIdHovered(id)}
               />
-            </Image>
+            </div>
           </div>
         );
       }
@@ -277,7 +280,7 @@ const MediaModal = ({
       active={true}
       onClick={handleDimmerClick}
       page
-      style={{ backgroundColor: 'rgba(0,0,0,1)' }}
+      style={{ backgroundColor: 'rgba(0,0,0,1)', padding: 0 }}
     >
       <ButtonGroup secondary size='mini' style={style.actions}>
         {m.url && <Button icon='external' onClick={() => window.open(m.url, '_blank')} />}
