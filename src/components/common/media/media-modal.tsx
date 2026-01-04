@@ -148,7 +148,6 @@ const MediaModal = ({
   const [prevHover, setPrevHover] = useState(false);
   const [nextHover, setNextHover] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-
   const [offsetX, setOffsetX] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
   const wasSwiping = useRef(false);
@@ -168,12 +167,11 @@ const MediaModal = ({
 
   const handlers = useSwipeable({
     onSwiping: (e) => {
-      // Logic: Ignore swipes if zoomed in or using multiple fingers
-      const isZoomed = window.visualViewport ? window.visualViewport.scale > 1.01 : false;
+      const scale = window.visualViewport ? window.visualViewport.scale : 1;
       if (
         carouselSize <= 1 ||
         !isMobile ||
-        isZoomed ||
+        scale > 1.05 ||
         (e.event as TouchEvent).touches?.length > 1
       ) {
         return;
@@ -183,8 +181,8 @@ const MediaModal = ({
       setOffsetX(e.deltaX);
     },
     onSwipedLeft: () => {
-      const isZoomed = window.visualViewport ? window.visualViewport.scale > 1.01 : false;
-      if (carouselSize > 1 && isMobile && !isZoomed && isSwiping) gotoNext();
+      const scale = window.visualViewport ? window.visualViewport.scale : 1;
+      if (carouselSize > 1 && isMobile && scale <= 1.05 && isSwiping) gotoNext();
       setOffsetX(0);
       setIsSwiping(false);
       setTimeout(() => {
@@ -192,8 +190,8 @@ const MediaModal = ({
       }, 100);
     },
     onSwipedRight: () => {
-      const isZoomed = window.visualViewport ? window.visualViewport.scale > 1.01 : false;
-      if (carouselSize > 1 && isMobile && !isZoomed && isSwiping) gotoPrev();
+      const scale = window.visualViewport ? window.visualViewport.scale : 1;
+      if (carouselSize > 1 && isMobile && scale <= 1.05 && isSwiping) gotoPrev();
       setOffsetX(0);
       setIsSwiping(false);
       setTimeout(() => {
@@ -209,7 +207,7 @@ const MediaModal = ({
     },
     preventScrollOnSwipe: false,
     trackMouse: false,
-    delta: 50, // Higher threshold to avoid accidental swipes during pinch/zoom
+    delta: 50,
   });
 
   if (isSaving) {
@@ -289,20 +287,23 @@ const MediaModal = ({
         styleEmbed = { minWidth: '320px', minHeight: '200px', backgroundColor: 'transparent' };
       }
       return (
-        <Embed
-          as={Container}
-          style={styleEmbed}
-          url={m.embedUrl}
-          defaultActive={true}
-          iframe={{ allowFullScreen: true, style: { padding: 10 } }}
-        />
+        <div style={{ ...style.imgContainer, ...swipeStyle }} onClick={handleDimmerClick}>
+          <Embed
+            as={Container}
+            style={styleEmbed}
+            url={m.embedUrl}
+            defaultActive={true}
+            iframe={{ allowFullScreen: true, style: { padding: 10 } }}
+            onClick={(e: any) => e.stopPropagation()}
+          />
+        </div>
       );
     }
     if (autoPlayVideo) {
       return (
         <div
           key={`${m.id}-${carouselIndex}`}
-          style={style.imgContainer}
+          style={{ ...style.imgContainer, ...swipeStyle }}
           onClick={(e) => e.stopPropagation()}
         >
           <VideoPlayer media={m} />
