@@ -36,6 +36,7 @@ const style = {
     WebkitUserDrag: 'none' as const,
     display: 'block',
     pointerEvents: 'none' as const,
+    touchAction: 'pinch-zoom', // Allows native pinch zoom while swiping is active
   },
   imgContainer: {
     display: 'flex',
@@ -166,7 +167,8 @@ const MediaModal = ({
 
   const handlers = useSwipeable({
     onSwiping: (e) => {
-      if (carouselSize <= 1 || !isMobile) return;
+      // If user is using two fingers (pinching), stop swipe tracking
+      if (carouselSize <= 1 || !isMobile || (e.event as TouchEvent).touches?.length > 1) return;
       setIsSwiping(true);
       wasSwiping.current = true;
       setOffsetX(e.deltaX);
@@ -198,8 +200,8 @@ const MediaModal = ({
         wasSwiping.current = false;
       }
     },
-    preventScrollOnSwipe: true,
-    trackMouse: false, // Desktop users should use buttons/keyboard, not mouse-swipe
+    preventScrollOnSwipe: false, // Essential for allowing zoom/scroll
+    trackMouse: false,
     delta: 10,
   });
 
@@ -244,7 +246,7 @@ const MediaModal = ({
           {hasSvgs ? (
             <div
               key={`${m.id}-${carouselIndex}`}
-              style={{ ...style.img, pointerEvents: 'auto' }}
+              style={{ ...style.img, pointerEvents: 'auto', touchAction: 'auto' }}
               onClick={(e: MouseEvent) => e.stopPropagation()}
             >
               <SvgViewer
@@ -350,7 +352,7 @@ const MediaModal = ({
       page
       style={{ backgroundColor: 'rgba(0,0,0,1)', overflow: 'hidden' }}
     >
-      <div {...handlers} style={{ height: '100%', width: '100%', touchAction: 'pan-y' }}>
+      <div {...handlers} style={{ height: '100%', width: '100%', touchAction: 'pan-y pinch-zoom' }}>
         <ButtonGroup secondary size='mini' style={style.actions}>
           {m.url && <Button icon='external' onClick={() => window.open(m.url, '_blank')} />}
           {canShowSidebar && (
@@ -633,8 +635,7 @@ const MediaModal = ({
                   icon='download'
                   text='Download original'
                   onClick={() => {
-                    const isMovie = m.idType !== 1;
-                    const ext = isMovie ? 'mp4' : 'jpg';
+                    const ext = m.idType !== 1 ? 'mp4' : 'jpg';
                     saveAs(
                       getBuldreinfoMediaUrl(m.id ?? 0, ext),
                       'buldreinfo_brattelinjer_' + (m.id ?? 0) + '.' + ext,
@@ -681,7 +682,6 @@ const MediaModal = ({
             <Icon
               onMouseEnter={() => setNextHover(true)}
               onMouseLeave={() => setNextHover(false)}
-              as={Icon}
               size='big'
               style={style.next}
               name={nextHover ? 'chevron circle right' : 'angle right'}
