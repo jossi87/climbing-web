@@ -7,7 +7,7 @@ import { MetaProvider } from './components/common/meta';
 const App = () => {
   return (
     <MetaProvider>
-      <div style={{ background: '#F5F5F5' }}>
+      <div style={{ background: '#F5F5F5', overflowWrap: 'break-word', wordBreak: 'break-word' }}>
         <Header />
         <Container style={{ marginTop: '1em' }}>
           <AppRoutes />
