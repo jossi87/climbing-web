@@ -52,9 +52,12 @@ const style = {
     height: '80dvh',
     maxHeight: '100dvh',
     maxWidth: '100vw',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   actions: {
-    zIndex: 2,
+    zIndex: 10,
     position: 'fixed',
     top: '10px',
     right: '10px',
@@ -289,14 +292,15 @@ const MediaModal = ({
       }
       return (
         <div style={{ ...style.imgContainer, ...swipeStyle }} onClick={handleDimmerClick}>
-          <Embed
-            as={Container}
-            style={styleEmbed}
-            url={m.embedUrl}
-            defaultActive={true}
-            iframe={{ allowFullScreen: true, style: { padding: 10 } }}
-            onClick={(e) => e.stopPropagation()}
-          />
+          <div style={style.video}>
+            <Embed
+              style={styleEmbed}
+              url={m.embedUrl}
+              defaultActive={true}
+              iframe={{ allowFullScreen: true, style: { padding: 10 } }}
+              onClick={(e: any) => e.stopPropagation()}
+            />
+          </div>
         </div>
       );
     }
@@ -305,32 +309,35 @@ const MediaModal = ({
         <div
           key={`${m.id}-${carouselIndex}`}
           style={{ ...style.imgContainer, ...swipeStyle }}
-          onClick={(e) => e.stopPropagation()}
+          onClick={handleDimmerClick}
         >
-          <VideoPlayer media={m} />
+          <div style={style.video} onClick={(e) => e.stopPropagation()}>
+            <VideoPlayer media={m} />
+          </div>
         </div>
       );
     }
     return (
-      <div style={swipeStyle}>
-        <Image
-          key={`${m.id}-${carouselIndex}`}
-          style={{ ...style.img, pointerEvents: 'auto' }}
-          alt={m.mediaMetadata?.description ?? ''}
-          src={getImageUrl(m.id ?? 0, m.crc32 ?? 0, { targetWidth: 1080 })}
-          onClick={(e: MouseEvent) => e.stopPropagation()}
-        />
-        <Button
-          size='massive'
-          color='youtube'
-          circular
-          style={style.play}
-          icon='play'
-          onClick={(e) => {
-            e.stopPropagation();
-            playVideo();
-          }}
-        />
+      <div style={{ ...style.imgContainer, ...swipeStyle }} onClick={handleDimmerClick}>
+        <div style={{ position: 'relative' }} onClick={(e) => e.stopPropagation()}>
+          <Image
+            key={`${m.id}-${carouselIndex}`}
+            style={{ ...style.img, pointerEvents: 'auto' }}
+            alt={m.mediaMetadata?.description ?? ''}
+            src={getImageUrl(m.id ?? 0, m.crc32 ?? 0, { targetWidth: 1080 })}
+          />
+          <Button
+            size='massive'
+            color='youtube'
+            circular
+            style={style.play}
+            icon='play'
+            onClick={(e) => {
+              e.stopPropagation();
+              playVideo();
+            }}
+          />
+        </div>
       </div>
     );
   })();
