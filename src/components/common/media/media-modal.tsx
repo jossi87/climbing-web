@@ -145,6 +145,7 @@ const MediaModal = ({
   const [problemIdHovered, setProblemIdHovered] = useState<number | null>(null);
   const [prevHover, setPrevHover] = useState(false);
   const [nextHover, setNextHover] = useState(false);
+
   const [offsetX, setOffsetX] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
   const wasSwiping = useRef(false);
@@ -167,23 +168,31 @@ const MediaModal = ({
       if (carouselSize > 1) gotoNext();
       setOffsetX(0);
       setIsSwiping(false);
-      setTimeout(() => (wasSwiping.current = false), 100);
+      setTimeout(() => {
+        wasSwiping.current = false;
+      }, 50);
     },
     onSwipedRight: () => {
       if (carouselSize > 1) gotoPrev();
       setOffsetX(0);
       setIsSwiping(false);
-      setTimeout(() => (wasSwiping.current = false), 100);
+      setTimeout(() => {
+        wasSwiping.current = false;
+      }, 50);
     },
     onTouchEndOrOnMouseUp: () => {
-      if (!isSwiping) {
+      if (isSwiping) {
         setOffsetX(0);
         setIsSwiping(false);
+        setTimeout(() => {
+          wasSwiping.current = false;
+        }, 50);
+      } else {
         wasSwiping.current = false;
       }
     },
     preventScrollOnSwipe: true,
-    trackMouse: true,
+    trackMouse: false,
     delta: 10,
   });
 
@@ -554,109 +563,97 @@ const MediaModal = ({
             </Modal>
           )}
 
-          {(!m.embedUrl ||
-            canSetMediaAsAvatar ||
-            canRotate ||
-            canEdit ||
-            canDelete ||
-            canDrawTopo ||
-            canDrawMedia ||
-            canOrder ||
-            canMove) && (
-            <Dropdown direction='left' icon='ellipsis vertical' button>
-              <Dropdown.Menu>
-                {canDrawTopo && (
-                  <Dropdown.Item
-                    icon='paint brush'
-                    text='Draw topo line'
-                    onClick={() =>
-                      navigate(`/problem/svg-edit/${optProblemId}/${pitch || 0}/${m.id ?? 0}`)
-                    }
-                  />
-                )}
-                {canDrawMedia && (
-                  <Dropdown.Item
-                    icon='paint brush'
-                    text='Draw on image'
-                    onClick={() => navigate(`/media/svg-edit/${m.id ?? 0}`)}
-                  />
-                )}
-                {canOrder && (
-                  <Dropdown.Item
-                    icon='arrow left'
-                    text='Move image to the left'
-                    onClick={onMoveImageLeft}
-                  />
-                )}
-                {canOrder && (
-                  <Dropdown.Item
-                    icon='arrow right'
-                    text='Move image to the right'
-                    onClick={onMoveImageRight}
-                  />
-                )}
-                {canMove && (m.enableMoveToIdArea ?? 0) > 0 && (
-                  <Dropdown.Item
-                    icon='move'
-                    text={'Move image to area'}
-                    onClick={onMoveImageToArea}
-                  />
-                )}
-                {canMove && (m.enableMoveToIdSector ?? 0) > 0 && (
-                  <Dropdown.Item
-                    icon='move'
-                    text={'Move image to sector'}
-                    onClick={onMoveImageToSector}
-                  />
-                )}
-                {canMove && (m.enableMoveToIdProblem ?? 0) > 0 && (
-                  <Dropdown.Item
-                    icon='move'
-                    text={'Move image to ' + (isBouldering ? 'problem' : 'route')}
-                    onClick={onMoveImageToProblem}
-                  />
-                )}
-                {canSetMediaAsAvatar && (
-                  <Dropdown.Item icon='user' text='Set as avatar' onClick={onSetMediaAsAvatar} />
-                )}
-                {(canDrawTopo || canDrawMedia || canOrder || canMove || canSetMediaAsAvatar) &&
-                  (!m.embedUrl || canRotate || canEdit || canDelete) && <Dropdown.Divider />}
-                {!m.embedUrl && (
-                  <Dropdown.Item
-                    icon='download'
-                    text='Download original'
-                    onClick={() => {
-                      const isMovie = m.idType !== 1;
-                      const ext = isMovie ? 'mp4' : 'jpg';
-                      saveAs(
-                        getBuldreinfoMediaUrl(m.id ?? 0, ext),
-                        'buldreinfo_brattelinjer_' + (m.id ?? 0) + '.' + ext,
-                      );
-                    }}
-                  />
-                )}
-                {canRotate && (
-                  <Dropdown.Item icon='redo' text='Rotate 90 CW' onClick={() => onRotate(90)} />
-                )}
-                {canRotate && (
-                  <Dropdown.Item icon='undo' text='Rotate 90 CCW' onClick={() => onRotate(270)} />
-                )}
-                {canRotate && (
-                  <Dropdown.Item icon='sync' text='Rotate 180' onClick={() => onRotate(180)} />
-                )}
-                {canEdit && (
-                  <Dropdown.Item icon='edit' text='Edit image' onClick={() => onEdit()} />
-                )}
-                {canDelete && (
-                  <Dropdown.Item
-                    icon='trash'
-                    text={isImage ? 'Delete image' : 'Delete video'}
-                    onClick={onDelete}
-                  />
-                )}
-              </Dropdown.Menu>
-            </Dropdown>
-          )}
+          <Dropdown direction='left' icon='ellipsis vertical' button>
+            <Dropdown.Menu>
+              {canDrawTopo && (
+                <Dropdown.Item
+                  icon='paint brush'
+                  text='Draw topo line'
+                  onClick={() =>
+                    navigate(`/problem/svg-edit/${optProblemId}/${pitch || 0}/${m.id ?? 0}`)
+                  }
+                />
+              )}
+              {canDrawMedia && (
+                <Dropdown.Item
+                  icon='paint brush'
+                  text='Draw on image'
+                  onClick={() => navigate(`/media/svg-edit/${m.id ?? 0}`)}
+                />
+              )}
+              {canOrder && (
+                <Dropdown.Item
+                  icon='arrow left'
+                  text='Move image to the left'
+                  onClick={onMoveImageLeft}
+                />
+              )}
+              {canOrder && (
+                <Dropdown.Item
+                  icon='arrow right'
+                  text='Move image to the right'
+                  onClick={onMoveImageRight}
+                />
+              )}
+              {canMove && (m.enableMoveToIdArea ?? 0) > 0 && (
+                <Dropdown.Item
+                  icon='move'
+                  text={'Move image to area'}
+                  onClick={onMoveImageToArea}
+                />
+              )}
+              {canMove && (m.enableMoveToIdSector ?? 0) > 0 && (
+                <Dropdown.Item
+                  icon='move'
+                  text={'Move image to sector'}
+                  onClick={onMoveImageToSector}
+                />
+              )}
+              {canMove && (m.enableMoveToIdProblem ?? 0) > 0 && (
+                <Dropdown.Item
+                  icon='move'
+                  text={'Move image to ' + (isBouldering ? 'problem' : 'route')}
+                  onClick={onMoveImageToProblem}
+                />
+              )}
+              {canSetMediaAsAvatar && (
+                <Dropdown.Item icon='user' text='Set as avatar' onClick={onSetMediaAsAvatar} />
+              )}
+              {(canDrawTopo || canDrawMedia || canOrder || canMove || canSetMediaAsAvatar) &&
+                (!m.embedUrl || canRotate || canEdit || canDelete) && <Dropdown.Divider />}
+              {!m.embedUrl && (
+                <Dropdown.Item
+                  icon='download'
+                  text='Download original'
+                  onClick={() => {
+                    const isMovie = m.idType !== 1;
+                    const ext = isMovie ? 'mp4' : 'jpg';
+                    saveAs(
+                      getBuldreinfoMediaUrl(m.id ?? 0, ext),
+                      'buldreinfo_brattelinjer_' + (m.id ?? 0) + '.' + ext,
+                    );
+                  }}
+                />
+              )}
+              {canRotate && (
+                <Dropdown.Item icon='redo' text='Rotate 90 CW' onClick={() => onRotate(90)} />
+              )}
+              {canRotate && (
+                <Dropdown.Item icon='undo' text='Rotate 90 CCW' onClick={() => onRotate(270)} />
+              )}
+              {canRotate && (
+                <Dropdown.Item icon='sync' text='Rotate 180' onClick={() => onRotate(180)} />
+              )}
+              {canEdit && <Dropdown.Item icon='edit' text='Edit image' onClick={() => onEdit()} />}
+              {canDelete && (
+                <Dropdown.Item
+                  icon='trash'
+                  text={isImage ? 'Delete image' : 'Delete video'}
+                  onClick={onDelete}
+                />
+              )}
+            </Dropdown.Menu>
+          </Dropdown>
           <Button icon='close' onClick={onClose} />
         </ButtonGroup>
 
