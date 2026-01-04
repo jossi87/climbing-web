@@ -29,7 +29,7 @@ const style = {
   img: {
     height: '100%',
     width: '100%',
-    maxHeight: '100vh',
+    maxHeight: '100dvh', // Fixed: Use dvh for mobile
     maxWidth: '100vw',
     objectFit: 'contain' as const,
     userSelect: 'none' as const,
@@ -42,15 +42,15 @@ const style = {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    height: '100vh',
+    height: '100dvh', // Fixed: Use dvh for mobile
     width: '100vw',
     backgroundColor: 'black',
     overflow: 'hidden' as const,
   },
   video: {
     width: '100vw',
-    height: '80vh',
-    maxHeight: '100vh',
+    height: '80dvh', // Fixed: Use dvh for mobile
+    maxHeight: '100dvh',
     maxWidth: '100vw',
   },
   actions: {
@@ -148,6 +148,7 @@ const MediaModal = ({
   const [prevHover, setPrevHover] = useState(false);
   const [nextHover, setNextHover] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
   const [offsetX, setOffsetX] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
   const wasSwiping = useRef(false);
@@ -360,7 +361,10 @@ const MediaModal = ({
       page
       style={{ backgroundColor: 'rgba(0,0,0,1)', overflow: 'hidden' }}
     >
-      <div {...handlers} style={{ height: '100%', width: '100%', touchAction: 'pan-y pinch-zoom' }}>
+      <div
+        {...handlers}
+        style={{ height: '100dvh', width: '100vw', touchAction: 'pan-y pinch-zoom' }}
+      >
         <ButtonGroup secondary size='mini' style={style.actions}>
           {m.url && <Button icon='external' onClick={() => window.open(m.url, '_blank')} />}
           {canShowSidebar && (
@@ -751,7 +755,10 @@ const MediaModal = ({
           </div>
         )}
 
-        <Sidebar.Pushable style={{ minWidth: '360px', backgroundColor: 'black' }} onClick={onClose}>
+        <Sidebar.Pushable
+          style={{ minWidth: '360px', backgroundColor: 'black', height: '100dvh' }}
+          onClick={onClose}
+        >
           <Sidebar
             as={Menu}
             size='small'
@@ -762,6 +769,7 @@ const MediaModal = ({
             vertical
             visible={canShowSidebar && showSidebar}
             onClick={(e: MouseEvent) => e.stopPropagation()}
+            style={{ height: '100dvh' }}
           >
             {canShowSidebar &&
               [...(m.svgs ?? m.mediaSvgs ?? [])]
@@ -794,8 +802,10 @@ const MediaModal = ({
                   );
                 })}
           </Sidebar>
-          <Sidebar.Pusher>
-            <div style={{ position: 'relative', backgroundColor: 'black' }}>{content}</div>
+          <Sidebar.Pusher style={{ height: '100dvh' }}>
+            <div style={{ position: 'relative', backgroundColor: 'black', height: '100dvh' }}>
+              {content}
+            </div>
           </Sidebar.Pusher>
         </Sidebar.Pushable>
       </div>
