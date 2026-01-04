@@ -29,7 +29,7 @@ const style = {
   img: {
     height: '100%',
     width: '100%',
-    maxHeight: '100dvh', // Fixed: Use dvh for mobile
+    maxHeight: '100dvh',
     maxWidth: '100vw',
     objectFit: 'contain' as const,
     userSelect: 'none' as const,
@@ -42,14 +42,14 @@ const style = {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    height: '100dvh', // Fixed: Use dvh for mobile
+    height: '100dvh',
     width: '100vw',
     backgroundColor: 'black',
     overflow: 'hidden' as const,
   },
   video: {
     width: '100vw',
-    height: '80dvh', // Fixed: Use dvh for mobile
+    height: '80dvh',
     maxHeight: '100dvh',
     maxWidth: '100vw',
   },
@@ -295,7 +295,7 @@ const MediaModal = ({
             url={m.embedUrl}
             defaultActive={true}
             iframe={{ allowFullScreen: true, style: { padding: 10 } }}
-            onClick={(e: any) => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
           />
         </div>
       );
