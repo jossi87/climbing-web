@@ -36,7 +36,7 @@ const style = {
     WebkitUserDrag: 'none' as const,
     display: 'block',
     pointerEvents: 'none' as const,
-    touchAction: 'pinch-zoom', // Allows native pinch zoom while swiping is active
+    touchAction: 'pinch-zoom',
   },
   imgContainer: {
     display: 'flex',
@@ -45,6 +45,7 @@ const style = {
     height: '100vh',
     width: '100vw',
     backgroundColor: 'black',
+    overflow: 'hidden' as const,
   },
   video: {
     width: '100vw',
@@ -64,7 +65,7 @@ const style = {
     top: '50%',
     left: '10px',
     height: '40px',
-    marginTop: '-20px' /* 1/2 the height of the button */,
+    marginTop: '-20px',
   },
   next: {
     zIndex: 2,
@@ -72,7 +73,7 @@ const style = {
     top: '50%',
     right: '10px',
     height: '40px',
-    marginTop: '-20px' /* 1/2 the height of the button */,
+    marginTop: '-20px',
   },
   play: {
     zIndex: 2,
@@ -81,8 +82,8 @@ const style = {
     left: '50%',
     height: '60px',
     width: '60px',
-    marginTop: '-30px' /* 1/2 the height of the button */,
-    marginLeft: '-30px' /* 1/2 the width of the button */,
+    marginTop: '-30px',
+    marginLeft: '-30px',
   },
   textLeft: {
     textAlign: 'left' as const,
@@ -167,42 +168,48 @@ const MediaModal = ({
 
   const handlers = useSwipeable({
     onSwiping: (e) => {
-      // If user is using two fingers (pinching), stop swipe tracking
-      if (carouselSize <= 1 || !isMobile || (e.event as TouchEvent).touches?.length > 1) return;
+      // Logic: Ignore swipes if zoomed in or using multiple fingers
+      const isZoomed = window.visualViewport ? window.visualViewport.scale > 1.01 : false;
+      if (
+        carouselSize <= 1 ||
+        !isMobile ||
+        isZoomed ||
+        (e.event as TouchEvent).touches?.length > 1
+      ) {
+        return;
+      }
       setIsSwiping(true);
       wasSwiping.current = true;
       setOffsetX(e.deltaX);
     },
     onSwipedLeft: () => {
-      if (carouselSize > 1 && isMobile) gotoNext();
+      const isZoomed = window.visualViewport ? window.visualViewport.scale > 1.01 : false;
+      if (carouselSize > 1 && isMobile && !isZoomed && isSwiping) gotoNext();
       setOffsetX(0);
       setIsSwiping(false);
       setTimeout(() => {
         wasSwiping.current = false;
-      }, 50);
+      }, 100);
     },
     onSwipedRight: () => {
-      if (carouselSize > 1 && isMobile) gotoPrev();
+      const isZoomed = window.visualViewport ? window.visualViewport.scale > 1.01 : false;
+      if (carouselSize > 1 && isMobile && !isZoomed && isSwiping) gotoPrev();
       setOffsetX(0);
       setIsSwiping(false);
       setTimeout(() => {
         wasSwiping.current = false;
-      }, 50);
+      }, 100);
     },
     onTouchEndOrOnMouseUp: () => {
-      if (isSwiping) {
-        setOffsetX(0);
-        setIsSwiping(false);
-        setTimeout(() => {
-          wasSwiping.current = false;
-        }, 50);
-      } else {
+      setOffsetX(0);
+      setIsSwiping(false);
+      setTimeout(() => {
         wasSwiping.current = false;
-      }
+      }, 100);
     },
-    preventScrollOnSwipe: false, // Essential for allowing zoom/scroll
+    preventScrollOnSwipe: false,
     trackMouse: false,
-    delta: 10,
+    delta: 50, // Higher threshold to avoid accidental swipes during pinch/zoom
   });
 
   if (isSaving) {
