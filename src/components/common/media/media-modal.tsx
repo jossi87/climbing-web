@@ -58,14 +58,14 @@ const style = {
   actions: {
     zIndex: 10,
     position: 'fixed',
-    top: '10px',
-    right: '10px',
+    top: '15px',
+    right: '15px',
   },
   prev: {
     zIndex: 2,
     position: 'fixed',
     top: '50%',
-    left: '10px',
+    left: '15px',
     height: '40px',
     marginTop: '-20px',
   },
@@ -73,7 +73,7 @@ const style = {
     zIndex: 2,
     position: 'fixed',
     top: '50%',
-    right: '10px',
+    right: '15px',
     height: '40px',
     marginTop: '-20px',
   },
@@ -716,8 +716,8 @@ const MediaModal = ({
           <div
             style={{
               position: 'fixed',
-              top: '10px',
-              left: '10px',
+              top: '15px',
+              left: '15px',
               backgroundColor: 'rgba(0,0,0,0.6)',
               zIndex: 1,
               padding: '4px',
@@ -730,8 +730,8 @@ const MediaModal = ({
           <div
             style={{
               position: 'fixed',
-              bottom: '10px',
-              left: '10px',
+              bottom: '15px',
+              left: '15px',
               backgroundColor: 'rgba(0,0,0,0.6)',
               zIndex: 1,
               padding: '4px',
@@ -744,8 +744,8 @@ const MediaModal = ({
           <div
             style={{
               position: 'fixed',
-              bottom: '10px',
-              right: '10px',
+              bottom: '15px',
+              right: '15px',
               backgroundColor: 'rgba(0,0,0,0.6)',
               zIndex: 1,
               padding: '4px',
