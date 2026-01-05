@@ -68,7 +68,7 @@ function Chart({ ticks: data }: Props) {
   });
 
   return (
-    <table>
+    <table style={{ overflowWrap: 'normal', wordBreak: 'normal' }}>
       <thead>
         <tr>
           <th>Grade</th>
