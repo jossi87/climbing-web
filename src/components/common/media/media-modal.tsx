@@ -656,7 +656,7 @@ const MediaModal = ({
           <Button icon='close' onClick={onClose} />
         </ButtonGroup>
 
-        {carouselSize > 1 && !isMobile && (
+        {carouselSize > 1 && (!isMobile || m.embedUrl) && (
           <>
             <Icon
               onMouseEnter={() => setPrevHover(true)}
