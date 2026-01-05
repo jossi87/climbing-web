@@ -287,7 +287,7 @@ const MediaModal = ({
           style={style.video}
           url={m.embedUrl}
           defaultActive={true}
-          iframe={{ allowFullScreen: true, style: { padding: 10 } }}
+          iframe={{ allowFullScreen: true }}
           onClick={(e) => e.stopPropagation()}
         />
       );
