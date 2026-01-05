@@ -46,8 +46,8 @@ const style = {
     overflow: 'hidden' as const,
   },
   video: {
-    width: '100vw',
-    height: '80dvh',
+    width: '100%',
+    height: '100%',
     maxHeight: '100dvh',
     maxWidth: '100vw',
     padding: '0px', // Needed for Vimeo to work properly
