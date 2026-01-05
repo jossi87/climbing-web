@@ -43,7 +43,6 @@ const style = {
     alignItems: 'center',
     height: '100dvh',
     width: '100vw',
-    backgroundColor: 'black',
     overflow: 'hidden' as const,
   },
   video: {
@@ -361,12 +360,7 @@ const MediaModal = ({
     null;
 
   return (
-    <Dimmer
-      active={true}
-      onClick={handleDimmerClick}
-      page
-      style={{ backgroundColor: 'rgba(0,0,0,1)', overflow: 'hidden' }}
-    >
+    <Dimmer active={true} onClick={handleDimmerClick} page>
       <div
         {...handlers}
         style={{ height: '100dvh', width: '100vw', touchAction: 'pan-y pinch-zoom' }}
@@ -808,11 +802,7 @@ const MediaModal = ({
                   );
                 })}
           </Sidebar>
-          <Sidebar.Pusher style={{ height: '100dvh' }}>
-            <div style={{ position: 'relative', backgroundColor: 'black', height: '100dvh' }}>
-              {content}
-            </div>
-          </Sidebar.Pusher>
+          <Sidebar.Pusher>{content}</Sidebar.Pusher>
         </Sidebar.Pushable>
       </div>
     </Dimmer>
