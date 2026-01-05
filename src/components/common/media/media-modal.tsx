@@ -50,6 +50,8 @@ const style = {
     height: '80dvh',
     maxHeight: '100dvh',
     maxWidth: '100vw',
+    padding: '0px', // Needed for Vimeo to work properly
+    backgroundColor: 'black',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
