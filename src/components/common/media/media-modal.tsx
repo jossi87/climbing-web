@@ -289,6 +289,7 @@ const MediaModal = ({
           defaultActive={true}
           iframe={{ allowFullScreen: true, style: { padding: 10 } }}
           onClick={(e) => e.stopPropagation()}
+          source={m.embedUrl.includes('vimeo') ? 'vimeo' : 'youtube'}
         />
       );
     }
