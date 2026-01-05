@@ -6,16 +6,10 @@ import { getBuldreinfoMediaUrlSupported } from '../../../api';
 type Props = {
   media: components['schemas']['Media'];
   autoPlay?: boolean;
+  style?: React.CSSProperties;
 };
 
-const style = {
-  width: '100%',
-  height: '100%',
-  maxHeight: '100%',
-  maxWidth: '100%',
-};
-
-const VideoPlayer: FC<Props> = ({ media, autoPlay = true }) => {
+const VideoPlayer: FC<Props> = ({ media, autoPlay = true, style }) => {
   const [isReady, setIsReady] = useState(false);
   const playerRef = useRef<HTMLVideoElement>(null);
   const hasSetTimestampRef = useRef<number | null>(null);
@@ -56,6 +50,7 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true }) => {
       preload='metadata'
       onReady={handleReady}
       onStart={handleStart}
+      onClick={(e) => e.stopPropagation()}
     />
   );
 };

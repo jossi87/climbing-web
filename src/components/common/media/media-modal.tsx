@@ -231,7 +231,7 @@ const MediaModal = ({
     transition: isSwiping ? 'none' : 'transform 0.3s ease-out',
   };
 
-  const content = (() => {
+  const item = (() => {
     if (isImage) {
       const hasSvgs = (m.svgs ?? m.mediaSvgs ?? []).length > 0;
       const targetWidth = Math.min(1920, m.width ?? 1920);
@@ -244,98 +244,76 @@ const MediaModal = ({
         sizes = `(orientation: portrait) ${vhWidth}vh, 100vw`;
       }
 
-      return (
-        <div
-          key={`${m.id}-${carouselIndex}`}
-          style={{ ...style.imgContainer, ...swipeStyle }}
-          onClick={handleDimmerClick}
-        >
-          {hasSvgs ? (
-            <div
+      if (hasSvgs) {
+        return (
+          <div
+            key={`${m.id}-${carouselIndex}`}
+            style={{ ...style.img, pointerEvents: 'auto', touchAction: 'auto' }}
+            onClick={(e: MouseEvent) => {
+              e.stopPropagation();
+              if (showSidebar) {
+                setShowSidebar(false);
+              }
+            }}
+          >
+            <SvgViewer
               key={`${m.id}-${carouselIndex}`}
-              style={{ ...style.img, pointerEvents: 'auto', touchAction: 'auto' }}
-              onClick={(e: MouseEvent) => e.stopPropagation()}
-            >
-              <SvgViewer
-                key={`${m.id}-${carouselIndex}`}
-                thumb={false}
-                m={m}
-                pitch={pitch}
-                close={onClose}
-                optProblemId={optProblemId ?? null}
-                showText={canShowSidebar && !showSidebar}
-                problemIdHovered={problemIdHovered}
-                setProblemIdHovered={(id) => setProblemIdHovered(id)}
-              />
-            </div>
-          ) : (
-            <Image
-              key={`${m.id}-${carouselIndex}`}
-              style={style.img}
-              alt={m.mediaMetadata?.alt ?? ''}
-              src={getImageUrl(m.id ?? 0, m.crc32 ?? 0, { targetWidth })}
-              srcSet={getImageUrlSrcSet(m.id ?? 0, m.crc32 ?? 0, m.width ?? 0)}
-              sizes={sizes}
+              thumb={false}
+              m={m}
+              pitch={pitch}
+              close={onClose}
+              optProblemId={optProblemId ?? null}
+              showText={canShowSidebar && !showSidebar}
+              problemIdHovered={problemIdHovered}
+              setProblemIdHovered={(id) => setProblemIdHovered(id)}
             />
-          )}
-        </div>
+          </div>
+        );
+      }
+      return (
+        <Image
+          key={`${m.id}-${carouselIndex}`}
+          style={style.img}
+          alt={m.mediaMetadata?.alt ?? ''}
+          src={getImageUrl(m.id ?? 0, m.crc32 ?? 0, { targetWidth })}
+          srcSet={getImageUrlSrcSet(m.id ?? 0, m.crc32 ?? 0, m.width ?? 0)}
+          sizes={sizes}
+        />
       );
     }
     if (m.embedUrl) {
-      let styleEmbed;
-      if (m.embedUrl.includes('vimeo')) {
-        styleEmbed = { minWidth: '640px', minHeight: '360px', backgroundColor: 'transparent' };
-      } else {
-        styleEmbed = { minWidth: '320px', minHeight: '200px', backgroundColor: 'transparent' };
-      }
       return (
-        <div style={{ ...style.imgContainer, ...swipeStyle }} onClick={handleDimmerClick}>
-          <div style={style.video}>
-            <Embed
-              style={styleEmbed}
-              url={m.embedUrl}
-              defaultActive={true}
-              iframe={{ allowFullScreen: true, style: { padding: 10 } }}
-              onClick={(e) => e.stopPropagation()}
-            />
-          </div>
-        </div>
+        <Embed
+          style={style.video}
+          url={m.embedUrl}
+          defaultActive={true}
+          iframe={{ allowFullScreen: true, style: { padding: 10 } }}
+          onClick={(e) => e.stopPropagation()}
+        />
       );
     }
     if (autoPlayVideo) {
-      return (
-        <div
-          key={`${m.id}-${carouselIndex}`}
-          style={{ ...style.imgContainer, ...swipeStyle }}
-          onClick={handleDimmerClick}
-        >
-          <div style={style.video} onClick={(e) => e.stopPropagation()}>
-            <VideoPlayer media={m} />
-          </div>
-        </div>
-      );
+      return <VideoPlayer media={m} style={style.video} />;
     }
     return (
-      <div style={{ ...style.imgContainer, ...swipeStyle }} onClick={handleDimmerClick}>
-        <div style={{ position: 'relative' }} onClick={(e) => e.stopPropagation()}>
-          <Image
-            key={`${m.id}-${carouselIndex}`}
-            style={{ ...style.img, pointerEvents: 'auto' }}
-            alt={m.mediaMetadata?.description ?? ''}
-            src={getImageUrl(m.id ?? 0, m.crc32 ?? 0, { targetWidth: 1080 })}
-          />
-          <Button
-            size='massive'
-            color='youtube'
-            circular
-            style={style.play}
-            icon='play'
-            onClick={(e) => {
-              e.stopPropagation();
-              playVideo();
-            }}
-          />
-        </div>
+      <div style={{ position: 'relative' }} onClick={(e) => e.stopPropagation()}>
+        <Image
+          key={`${m.id}-${carouselIndex}`}
+          style={{ ...style.img, pointerEvents: 'auto' }}
+          alt={m.mediaMetadata?.description ?? ''}
+          src={getImageUrl(m.id ?? 0, m.crc32 ?? 0, { targetWidth: 1080 })}
+        />
+        <Button
+          size='massive'
+          color='youtube'
+          circular
+          style={style.play}
+          icon='play'
+          onClick={(e) => {
+            e.stopPropagation();
+            playVideo();
+          }}
+        />
       </div>
     );
   })();
@@ -755,10 +733,7 @@ const MediaModal = ({
           </div>
         )}
 
-        <Sidebar.Pushable
-          style={{ minWidth: '360px', backgroundColor: 'black', height: '100dvh' }}
-          onClick={onClose}
-        >
+        <Sidebar.Pushable style={{ minWidth: '360px', height: '100dvh' }} onClick={onClose}>
           <Sidebar
             as={Menu}
             size='small'
@@ -802,7 +777,12 @@ const MediaModal = ({
                   );
                 })}
           </Sidebar>
-          <Sidebar.Pusher>{content}</Sidebar.Pusher>
+          <Sidebar.Pusher
+            style={{ ...style.imgContainer, ...swipeStyle }}
+            onClick={handleDimmerClick}
+          >
+            {item}
+          </Sidebar.Pusher>
         </Sidebar.Pushable>
       </div>
     </Dimmer>
