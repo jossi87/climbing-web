@@ -24,20 +24,15 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     outDir: 'build',
-    sourcemap: true,
+    sourcemap: false,
     cssCodeSplit: true,
-    cssMinify: true,
+    cssMinify: 'lightningcss',
     rollupOptions: {
       output: {
         manualChunks: {
-          // React ecosystem
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-
-          // Large UI libraries
-          'semantic-ui': ['semantic-ui-react', 'semantic-ui-css'],
+          'semantic-ui': ['semantic-ui-react'],
           'recharts-vendor': ['recharts'],
-
-          // Leaflet mapping
           'leaflet-vendor': [
             'leaflet',
             'react-leaflet',
@@ -46,37 +41,23 @@ export default defineConfig(({ mode }) => ({
             'leaflet.locatecontrol',
             'leaflet.markercluster',
           ],
-
-          // Heavy dependencies
           'swagger-ui': ['swagger-ui-react'],
-          'video-player': ['react-player', 'hls.js'],
-
-          // Auth & monitoring
-          'auth-sentry': ['@auth0/auth0-react', '@sentry/react'],
-
-          // React Query
-          'react-query': ['@tanstack/react-query', '@tanstack/react-query-devtools'],
-
-          // Utilities
-          utils: [
-            'file-saver',
-            'heic2any',
-            'linkifyjs',
-            'linkify-react',
-            'remarkable',
-            'suncalc',
-            'svg-path-parser',
-            'svg-path-properties',
-          ],
+          'video-player': ['react-player'],
+          'auth-provider': ['@auth0/auth0-react'],
+          monitoring: ['@sentry/react'],
+          'react-query': ['@tanstack/react-query'],
+          'utils-heavy': ['heic2any', 'remarkable', 'file-saver'],
+          'utils-light': ['linkifyjs', 'linkify-react', 'suncalc'],
         },
       },
     },
-    chunkSizeWarningLimit: 600,
+    chunkSizeWarningLimit: 1000,
     minify: 'terser',
     terserOptions: {
       compress: {
         drop_console: true,
         drop_debugger: true,
+        pure_funcs: ['console.info', 'console.debug', 'console.warn'],
       },
     },
   },

@@ -1,17 +1,7 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { useQuery } from '@tanstack/react-query';
 import { components } from '../../../@types/buldreinfo/swagger';
-import {
-  Segment,
-  Header,
-  Message,
-  Icon,
-  Image,
-  Popup,
-  Label,
-  Button,
-  LabelDetail,
-} from 'semantic-ui-react';
+import { Segment, Header, Icon, Image, Popup, Label, Button, LabelDetail } from 'semantic-ui-react';
 import { TWeatherSymbolKey, weatherSymbolKeys } from '../../../yr';
 import { SunOnWall } from './SunOnWall';
 import { SunriseSunset } from './SunriseSunset';
@@ -109,13 +99,32 @@ export function Stars({ numStars = -1, includeStarOutlines = false }: StarsProps
 
 export function Loading() {
   return (
-    <Message icon style={{ backgroundColor: 'white' }}>
-      <Icon name='circle notched' loading />
-      <Message.Content>
-        <Message.Header>Just one second</Message.Header>
-        We are fetching that content for you.
-      </Message.Content>
-    </Message>
+    <div
+      style={{
+        padding: '2em',
+        textAlign: 'center',
+        background: 'white',
+        borderRadius: '4px',
+        border: '1px solid #eee',
+      }}
+    >
+      <div className='pure-css-spinner'></div>
+      <h3 style={{ margin: '1em 0 0.5em', fontFamily: 'sans-serif' }}>Just one second</h3>
+      <p style={{ color: '#666' }}>We are fetching that content for you.</p>
+
+      <style>{`
+        .pure-css-spinner {
+          width: 40px;
+          height: 40px;
+          margin: 0 auto;
+          border: 4px solid rgba(0,0,0,0.1);
+          border-left-color: #2185d0;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+      `}</style>
+    </div>
   );
 }
 

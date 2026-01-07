@@ -1,4 +1,26 @@
-/* Buldreinfo / Bratte Linjer */
+/* 1. Fix Lato (Main Text) */
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  /* We point to the CDN sources so it matches the Semantic UI version */
+  src:
+    local('Lato Regular'),
+    local('Lato-Regular'),
+    url('https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/themes/default/assets/fonts/lato-regular.woff2')
+      format('woff2');
+}
+
+/* 2. Fix Icons (Prevents "jumping" icons) */
+@font-face {
+  font-family: 'Icons';
+  src: url('https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/themes/default/assets/fonts/icons.woff2')
+    format('woff2');
+  font-family: 'Icons';
+  font-display: swap;
+}
+
 @media (max-width: 500px) {
   .buldreinfo-hidden-mobile {
     display: none !important;

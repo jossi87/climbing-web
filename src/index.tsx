@@ -2,48 +2,28 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter, useNavigate } from 'react-router-dom';
 import { Auth0Provider } from '@auth0/auth0-react';
 import App from './App';
-import 'semantic-ui-css/semantic.min.css';
-import './buldreinfo.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { DataReloader } from './components/DataReloader';
 import * as Sentry from '@sentry/react';
-import { useEffect, ReactNode } from 'react';
-import {
-  createRoutesFromChildren,
-  matchRoutes,
-  useLocation,
-  useNavigationType,
-} from 'react-router-dom';
+import { ReactNode, lazy, Suspense } from 'react';
+
+const ReactQueryDevtoolsLazy = lazy(() =>
+  import('@tanstack/react-query-devtools').then((module) => ({
+    default: module.ReactQueryDevtools,
+  })),
+);
 
 Sentry.init({
   dsn: 'https://32152968271f46afa0efa8608b252e42@o4505452714786816.ingest.sentry.io/4505452716556288',
-  integrations: (() => {
-    const arr: ReturnType<
-      typeof Sentry.reactRouterV6BrowserTracingIntegration | typeof Sentry.replayIntegration
-    >[] = [];
-    arr.push(
-      Sentry.reactRouterV6BrowserTracingIntegration({
-        useEffect,
-        useLocation,
-        useNavigationType,
-        createRoutesFromChildren,
-        matchRoutes,
-      }),
-    );
-    if (process.env.REACT_APP_ENV !== 'development') {
-      arr.push(
-        Sentry.replayIntegration({
-          unblock: ['.sentry-unblock, [data-sentry-unblock]'],
-          unmask: ['.sentry-unmask, [data-sentry-unmask]'],
-        }),
-      );
-    }
-    return arr;
-  })(),
+  integrations: [
+    Sentry.browserTracingIntegration(),
+    Sentry.replayIntegration({
+      maskAllText: true,
+      blockAllMedia: true,
+    }),
+  ],
   environment: process.env.REACT_APP_ENV ?? 'unknown',
-  // Performance Monitoring
-  tracesSampleRate: process.env.REACT_APP_ENV === 'production' ? 0.5 : 1.0,
+  tracesSampleRate: process.env.REACT_APP_ENV === 'production' ? 0.1 : 1.0,
   replaysOnErrorSampleRate: 1.0,
 });
 
@@ -141,7 +121,11 @@ const Index = () => (
         </DataReloader>
       </Sentry.ErrorBoundary>
     </BrowserRouter>
-    {process.env.REACT_APP_ENV === 'development' && <ReactQueryDevtools />}
+    {process.env.REACT_APP_ENV === 'development' && (
+      <Suspense fallback={null}>
+        <ReactQueryDevtoolsLazy />
+      </Suspense>
+    )}
   </QueryClientProvider>
 );
 

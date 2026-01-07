@@ -3,58 +3,31 @@ import { Routes, Route } from 'react-router-dom';
 import { Loading } from './common/widgets/widgets';
 import { lazy } from '../utils/lazyRetry';
 
-const AuthContainer = lazy(() => import(/* webpackChunkName: "auth" */ './AuthContainer'), 'auth');
-const About = lazy(() => import(/* webpackChunkName: "about" */ './About'), 'about');
-const Area = lazy(() => import(/* webpackChunkName: "area" */ './Area'), 'area');
-const AreaEdit = lazy(() => import(/* webpackChunkName: "area-edit" */ './AreaEdit'), 'area-edit');
-const Areas = lazy(() => import(/* webpackChunkName: "areas" */ './Areas'), 'areas');
-const Dangerous = lazy(
-  () => import(/* webpackChunkName: "dangerous" */ './Dangerous'),
-  'dangerous',
-);
-const Donations = lazy(
-  () => import(/* webpackChunkName: "donations" */ './Donations'),
-  'donations',
-);
-const Frontpage = lazy(
-  () => import(/* webpackPrefetch: true, webpackChunkName: "frontpage" */ './Frontpage'),
-  'frontpage',
-);
-const Graph = lazy(() => import(/* webpackChunkName: "graph" */ './Graph'), 'graph');
-const MediaSvgEdit = lazy(
-  () => import(/* webpackChunkName: "media-svg-edit" */ './MediaSvgEdit'),
-  'media-svg-edit',
-);
-const Permissions = lazy(
-  () => import(/* webpackChunkName: "permissions" */ './Permissions'),
-  'permissions',
-);
-const PrivacyPolicy = lazy(
-  () => import(/* webpackChunkName: "privacy-policy" */ './PrivacyPolicy'),
-  'privacy-policy',
-);
-const Problem = lazy(() => import(/* webpackChunkName: "problem" */ './Problem'), 'problem');
-const ProblemEdit = lazy(
-  () => import(/* webpackChunkName: "problem-edit" */ './ProblemEdit'),
-  'problem-edit',
-);
-const ProblemEditMedia = lazy(
-  () => import(/* webpackChunkName: "problem-edit-media" */ './ProblemEditMedia'),
-  'problem-edit-media',
-);
-const Problems = lazy(() => import(/* webpackChunkName: "problems" */ './Problems'), 'problems');
-const Profile = lazy(() => import(/* webpackChunkName: "profile" */ './Profile'), 'profile');
-const Sector = lazy(() => import(/* webpackChunkName: "sector" */ './Sector'), 'sector');
-const SectorEdit = lazy(
-  () => import(/* webpackChunkName: "sector-edit" */ './SectorEdit'),
-  'sector-edit',
-);
-const Sites = lazy(() => import(/* webpackChunkName: "sites" */ './Sites'), 'sites');
-const SvgEdit = lazy(() => import(/* webpackChunkName: "svg-edit" */ './SvgEdit'), 'svg-edit');
-const Swagger = lazy(() => import(/* webpackChunkName: "swagger" */ './Swagger'), 'swagger');
-const Ticks = lazy(() => import(/* webpackChunkName: "ticks" */ './Ticks'), 'ticks');
-const Trash = lazy(() => import(/* webpackChunkName: "trash" */ './Trash'), 'trash');
-const Webcams = lazy(() => import(/* webpackChunkName: "webcams" */ './Webcams'), 'webcams');
+const AuthContainer = lazy(() => import('./AuthContainer'), 'auth');
+const About = lazy(() => import('./About'), 'about');
+const Area = lazy(() => import('./Area'), 'area');
+const AreaEdit = lazy(() => import('./AreaEdit'), 'area-edit');
+const Areas = lazy(() => import('./Areas'), 'areas');
+const Dangerous = lazy(() => import('./Dangerous'), 'dangerous');
+const Donations = lazy(() => import('./Donations'), 'donations');
+const Frontpage = lazy(() => import('./Frontpage'), 'frontpage');
+const Graph = lazy(() => import('./Graph'), 'graph');
+const MediaSvgEdit = lazy(() => import('./MediaSvgEdit'), 'media-svg-edit');
+const Permissions = lazy(() => import('./Permissions'), 'permissions');
+const PrivacyPolicy = lazy(() => import('./PrivacyPolicy'), 'privacy-policy');
+const Problem = lazy(() => import('./Problem'), 'problem');
+const ProblemEdit = lazy(() => import('./ProblemEdit'), 'problem-edit');
+const ProblemEditMedia = lazy(() => import('./ProblemEditMedia'), 'problem-edit-media');
+const Problems = lazy(() => import('./Problems'), 'problems');
+const Profile = lazy(() => import('./Profile'), 'profile');
+const Sector = lazy(() => import('./Sector'), 'sector');
+const SectorEdit = lazy(() => import('./SectorEdit'), 'sector-edit');
+const Sites = lazy(() => import('./Sites'), 'sites');
+const SvgEdit = lazy(() => import('./SvgEdit'), 'svg-edit');
+const Swagger = lazy(() => import('./Swagger'), 'swagger');
+const Ticks = lazy(() => import('./Ticks'), 'ticks');
+const Trash = lazy(() => import('./Trash'), 'trash');
+const Webcams = lazy(() => import('./Webcams'), 'webcams');
 
 function AppRoutes() {
   return (
