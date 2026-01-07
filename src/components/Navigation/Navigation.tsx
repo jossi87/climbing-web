@@ -150,7 +150,11 @@ export const Navigation = () => {
           ) : (
             <Menu.Item
               as='a'
-              onClick={() => loginWithRedirect({ appState: { returnTo: location.pathname } })}
+              href='/login'
+              onClick={(e) => {
+                e.preventDefault();
+                loginWithRedirect({ appState: { returnTo: location.pathname } });
+              }}
               className='collapse-1'
             >
               <Icon name='sign in' />

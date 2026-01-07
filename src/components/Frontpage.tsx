@@ -83,6 +83,7 @@ const Frontpage = () => {
                       <Image
                         size='medium'
                         style={{ maxHeight: '250px', objectFit: 'cover' }}
+                        alt={`${randomMedia.problem} ${randomMedia.grade} (${randomMedia.area} / ${randomMedia.sector}) - Photog: ${randomMedia.photographer?.name ?? 'unknown'}, tagged: ${randomMedia.tagged?.[0].name}`}
                         src={getImageUrl(
                           Number(randomMedia.idMedia ?? 0),
                           Number(randomMedia.crc32 ?? 0),

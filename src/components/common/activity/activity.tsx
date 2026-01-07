@@ -367,6 +367,7 @@ const Activity = ({ idArea, idSector }: Props) => {
                     {(a.problemRandomMediaId ?? 0) > 0 && (
                       <img
                         style={{ height: '35px', objectFit: 'cover' }}
+                        alt={`${a.problemName} ${a.grade} (${a.areaName} / ${a.sectorName})`}
                         src={getImageUrl(
                           Number(a.problemRandomMediaId ?? 0),
                           Number(a.problemRandomMediaCrc32 ?? 0),
