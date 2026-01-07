@@ -26,7 +26,7 @@ export default defineConfig(({ mode }) => ({
     outDir: 'build',
     sourcemap: false,
     cssCodeSplit: true,
-    cssMinify: 'lightningcss',
+    cssMinify: true,
     rollupOptions: {
       output: {
         manualChunks: {
