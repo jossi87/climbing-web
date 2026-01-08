@@ -41,7 +41,15 @@ const Top = ({ idArea, idSector }: TopProps) => {
   ));
 
   return (
-    <Table basic='very' size='small' celled collapsing unstackable compact>
+    <Table
+      basic='very'
+      size='small'
+      celled
+      collapsing
+      unstackable
+      compact
+      style={{ overflowWrap: 'normal', wordBreak: 'normal' }}
+    >
       <Table.Header>
         <Table.Row>
           <Table.HeaderCell>Rank</Table.HeaderCell>
