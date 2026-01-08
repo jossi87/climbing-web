@@ -104,7 +104,7 @@ export function Loading() {
         padding: '2em',
         textAlign: 'center',
         background: 'white',
-        borderRadius: '4px',
+        borderRadius: '5px',
         border: '1px solid #eee',
       }}
     >
@@ -118,7 +118,7 @@ export function Loading() {
           height: 40px;
           margin: 0 auto;
           border: 4px solid rgba(0,0,0,0.1);
-          border-left-color: #2185d0;
+          border-left-color: black;
           border-radius: 50%;
           animation: spin 1s linear infinite;
         }
