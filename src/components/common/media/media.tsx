@@ -90,6 +90,44 @@ const Media = ({
     }
   }, [confirmation]);
 
+  const openModal = useCallback(
+    (newM: components['schemas']['Media']) => {
+      const prevMediaId = m?.id;
+      const url = prevMediaId
+        ? location.pathname.replace(prevMediaId.toString(), (newM.id ?? 0).toString())
+        : location.pathname + '/' + (newM.id ?? 0);
+      setM(newM);
+      setEditM(null);
+      navigate(url);
+    },
+    [m?.id, location.pathname, navigate],
+  );
+
+  const closeModal = useCallback(() => {
+    const url = location.pathname.substring(0, location.pathname.lastIndexOf('/'));
+    if (!pitch) {
+      setM(null);
+    }
+    setAutoPlayVideo(false);
+    navigate(url);
+  }, [location.pathname, pitch, navigate]);
+
+  const gotoPrev = useCallback(() => {
+    if (m && carouselMedia && carouselMedia.length > 1) {
+      const ix =
+        (carouselMedia.findIndex((x) => x.id === m.id) - 1 + carouselMedia.length) %
+        carouselMedia.length;
+      openModal(carouselMedia[ix]);
+    }
+  }, [m, carouselMedia, openModal]);
+
+  const gotoNext = useCallback(() => {
+    if (m && carouselMedia && carouselMedia.length > 1) {
+      const ix = (carouselMedia.findIndex((x) => x.id === m.id) + 1) % carouselMedia.length;
+      openModal(carouselMedia[ix]);
+    }
+  }, [m, carouselMedia, openModal]);
+
   useEffect(() => {
     function handleKeyPress({ keyCode }: KeyboardEvent) {
       if (editM == null && m != null) {
@@ -106,42 +144,7 @@ const Media = ({
     return () => {
       document.removeEventListener('keydown', handleKeyPress as EventListener);
     };
-  }, [editM, m]);
-
-  function openModal(newM: components['schemas']['Media']) {
-    const prevMediaId = m?.id;
-    const url = prevMediaId
-      ? location.pathname.replace(prevMediaId.toString(), (newM.id ?? 0).toString())
-      : location.pathname + '/' + (newM.id ?? 0);
-    setM(newM);
-    setEditM(null);
-    navigate(url);
-  }
-
-  function closeModal() {
-    const url = location.pathname.substring(0, location.pathname.lastIndexOf('/'));
-    if (!pitch) {
-      setM(null);
-    }
-    setAutoPlayVideo(false); // Reset video autoplay state
-    navigate(url);
-  }
-
-  function gotoPrev() {
-    if (m && carouselMedia && carouselMedia.length > 1) {
-      const ix =
-        (carouselMedia.findIndex((x) => x.id === m.id) - 1 + carouselMedia.length) %
-        carouselMedia.length;
-      openModal(carouselMedia[ix]);
-    }
-  }
-
-  function gotoNext() {
-    if (m && carouselMedia && carouselMedia.length > 1) {
-      const ix = (carouselMedia.findIndex((x) => x.id === m.id) + 1) % carouselMedia.length;
-      openModal(carouselMedia[ix]);
-    }
-  }
+  }, [editM, m, closeModal, gotoNext, gotoPrev]);
 
   function playVideo() {
     if (m) {
