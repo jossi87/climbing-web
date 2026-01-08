@@ -1,4 +1,4 @@
-import { useState, useCallback, ComponentProps, UIEvent } from 'react';
+import { useState, useCallback, type ComponentProps, type UIEvent } from 'react';
 import { UsersSelector } from './common/user-selector/user-selector';
 import RockSelector from './common/rock-selector/rock-selector';
 import ProblemSection from './common/problem-section/problem-section';
@@ -31,7 +31,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { VisibilitySelectorField } from './common/VisibilitySelector';
 import { useQueryClient } from '@tanstack/react-query';
-import { components } from '../@types/buldreinfo/swagger';
+import type { components } from '../@types/buldreinfo/swagger';
 import { captureException, captureMessage } from '@sentry/react';
 import ExternalLinks from './common/external-links/external-links';
 

@@ -3,8 +3,8 @@ import { Segment, Icon, Header } from 'semantic-ui-react';
 import { useMeta } from './common/meta/context';
 import { useData } from '../api';
 import TableOfContents from './common/TableOfContents';
-import { Success } from '../@types/buldreinfo';
-import { components } from '../@types/buldreinfo/swagger';
+import type { Success } from '../@types/buldreinfo';
+import type { components } from '../@types/buldreinfo/swagger';
 
 const Dangerous = () => {
   const meta = useMeta();

@@ -1,9 +1,9 @@
-import { useRef, useEffect, ReactNode } from 'react';
+import { useRef, useEffect, type ReactNode } from 'react';
 import { Marker, Tooltip, Popup, useMap } from 'react-leaflet';
 import { markerBlueIcon, markerRedIcon, parkingIcon, weatherIcon, rockIcon } from './icons';
 import { useNavigate } from 'react-router';
-import { LatLngExpression } from 'leaflet';
-import { components } from '../../../@types/buldreinfo/swagger';
+import type { LatLngExpression } from 'leaflet';
+import type { components } from '../../../@types/buldreinfo/swagger';
 import { captureException } from '@sentry/react';
 import { Button, Icon } from 'semantic-ui-react';
 

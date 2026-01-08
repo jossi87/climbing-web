@@ -3,7 +3,7 @@ import { Loading } from './common/widgets/widgets';
 import { useData } from '../api';
 import { useMeta } from './common/meta/context';
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
-import { Success } from '../@types/buldreinfo';
+import type { Success } from '../@types/buldreinfo';
 
 const Graph = () => {
   const meta = useMeta();

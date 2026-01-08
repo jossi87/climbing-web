@@ -1,4 +1,4 @@
-import { useState, ComponentProps } from 'react';
+import { useState, type ComponentProps } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Leaflet from '../common/leaflet/leaflet';
 import { getDistanceWithUnit } from '../common/leaflet/geo-utils';
@@ -25,8 +25,8 @@ import {
 } from '../common/widgets/widgets';
 import { useMeta } from '../common/meta/context';
 import { useProblem } from '../../api';
-import { components } from '../../@types/buldreinfo/swagger';
-import { Slope } from '../../@types/buldreinfo';
+import type { components } from '../../@types/buldreinfo/swagger';
+import type { Slope } from '../../@types/buldreinfo';
 import Avatar from '../common/avatar/avatar';
 import TickModal from '../common/tick-modal/tick-modal';
 import CommentModal from '../common/comment-modal/comment-modal';

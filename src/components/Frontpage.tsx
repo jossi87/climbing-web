@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useMeta } from './common/meta/context';
 import { getImageUrl, numberWithCommas, useData } from '../api';
 import Activity from './common/activity/activity';
-import { Success } from '../@types/buldreinfo';
+import type { Success } from '../@types/buldreinfo';
 
 const Frontpage = () => {
   const meta = useMeta();

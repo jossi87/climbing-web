@@ -1,4 +1,4 @@
-import { CSSProperties, useCallback, useRef, useState } from 'react';
+import { type CSSProperties, useCallback, useRef, useState } from 'react';
 import {
   Form,
   Header,
@@ -8,15 +8,15 @@ import {
   Icon,
   Divider,
   Container,
-  SemanticICONS,
-  ButtonProps,
+  type SemanticICONS,
+  type ButtonProps,
 } from 'semantic-ui-react';
 import { GradeSelect } from './GradeSelect';
 import { getLocales } from '../../../api';
 import { useMeta } from '../meta';
 import { useFilter } from './context';
 import { HeaderButtons } from '../HeaderButtons';
-import { ResetField } from '../../Problems/reducer';
+import type { ResetField } from '../../Problems/reducer';
 import { YearSelect } from './YearSelect';
 import { hours } from '../../../utils/hours';
 

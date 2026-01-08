@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { components } from '../../@types/buldreinfo/swagger';
+import type { components } from '../../@types/buldreinfo/swagger';
 import { Input } from 'semantic-ui-react';
 
 type Props = Pick<components['schemas']['Sector'], 'problemOrder'> & {

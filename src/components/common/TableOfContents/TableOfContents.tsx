@@ -1,8 +1,8 @@
-import { useRef, ReactNode, Fragment } from 'react';
+import { useRef, type ReactNode, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { List, Icon } from 'semantic-ui-react';
 import { LockSymbol, Stars, SunOnWall, WallDirection } from '../../common/widgets/widgets';
-import { components } from '../../../@types/buldreinfo/swagger';
+import type { components } from '../../../@types/buldreinfo/swagger';
 
 const JumpToTop = () => (
   <a onClick={() => window.scrollTo(0, 0)}>

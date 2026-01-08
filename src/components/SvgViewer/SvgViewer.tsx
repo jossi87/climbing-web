@@ -1,14 +1,14 @@
 import { getImageUrl } from '../../api';
 import { SvgRoute } from './SvgRoute';
 import { Descent, Rappel } from '../../utils/svg-utils';
-import { components } from '../../@types/buldreinfo/swagger';
-import { CSSProperties, MouseEvent } from 'react';
+import type { components } from '../../@types/buldreinfo/swagger';
+import type { CSSProperties, MouseEvent } from 'react';
 import {
   calculateMediaRegion,
   isPathVisible,
   scalePath,
   scalePoint,
-  MediaRegion,
+  type MediaRegion,
 } from '../../utils/svg-scaler';
 import './SvgViewer.css';
 

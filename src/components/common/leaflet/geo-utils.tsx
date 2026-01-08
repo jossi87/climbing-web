@@ -1,4 +1,4 @@
-import { components } from '../../../@types/buldreinfo/swagger';
+import type { components } from '../../../@types/buldreinfo/swagger';
 
 export function getDistanceWithUnit(slope: components['schemas']['Slope']) {
   if (!slope) {

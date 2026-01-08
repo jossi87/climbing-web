@@ -1,7 +1,7 @@
-import { Dispatch, useEffect, useMemo, useReducer } from 'react';
+import { type Dispatch, useEffect, useMemo, useReducer } from 'react';
 import { neverGuard } from '../../../utils/neverGuard';
-import { DispatchUpdate } from '../FilterForm/GradeSelect/GradeSelect';
-import { Row } from './types';
+import type { DispatchUpdate } from '../FilterForm/GradeSelect/GradeSelect';
+import type { Row } from './types';
 import { useGrades } from '../meta';
 import { getLocales } from '../../../api';
 import { useSessionStorage } from '../../../utils/use-local-storage';

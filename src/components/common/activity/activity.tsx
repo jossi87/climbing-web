@@ -1,5 +1,5 @@
-import { CSSProperties, SyntheticEvent } from 'react';
-import { components } from '../../../@types/buldreinfo/swagger';
+import type { CSSProperties, SyntheticEvent } from 'react';
+import type { components } from '../../../@types/buldreinfo/swagger';
 import { Link } from 'react-router-dom';
 import {
   Label,

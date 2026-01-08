@@ -1,5 +1,5 @@
-import { useState, MouseEvent, useRef, useEffect } from 'react';
-import { components } from '../../../@types/buldreinfo/swagger';
+import { useState, type MouseEvent, useRef, useEffect } from 'react';
+import type { components } from '../../../@types/buldreinfo/swagger';
 import { useLocalStorage } from '../../../utils/use-local-storage';
 import {
   Dimmer,

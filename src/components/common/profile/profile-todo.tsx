@@ -1,4 +1,4 @@
-import { ComponentProps, Fragment } from 'react';
+import { type ComponentProps, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import Leaflet from '../../common/leaflet/leaflet';
 import { Loading, LockSymbol } from '../../common/widgets/widgets';

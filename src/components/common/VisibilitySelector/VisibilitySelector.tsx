@@ -1,5 +1,5 @@
-import { ComponentProps } from 'react';
-import { Dropdown, DropdownProps, Form } from 'semantic-ui-react';
+import type { ComponentProps } from 'react';
+import { Dropdown, type DropdownProps, Form } from 'semantic-ui-react';
 import { useMeta } from '../meta';
 
 type CustomProps = {

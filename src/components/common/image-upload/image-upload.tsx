@@ -1,4 +1,11 @@
-import { useEffect, useState, useCallback, ComponentProps, ChangeEvent, FormEvent } from 'react';
+import {
+  useEffect,
+  useState,
+  useCallback,
+  type ComponentProps,
+  type ChangeEvent,
+  type FormEvent,
+} from 'react';
 import heic2any from 'heic2any';
 import { useDropzone } from 'react-dropzone';
 import {
@@ -8,13 +15,13 @@ import {
   Input,
   Checkbox,
   Loader,
-  InputOnChangeData,
-  CheckboxProps,
+  type InputOnChangeData,
+  type CheckboxProps,
 } from 'semantic-ui-react';
 import VideoEmbedder from './video-embedder';
 import { UserSelector } from '../user-selector/user-selector';
 import { UsersSelector } from '../../common/user-selector/user-selector';
-import { components } from '../../../@types/buldreinfo/swagger';
+import type { components } from '../../../@types/buldreinfo/swagger';
 import { useMeta } from '../../common/meta/context';
 
 export type UploadedMedia = {

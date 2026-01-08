@@ -1,12 +1,12 @@
-import { useEffect, useReducer, useCallback, ComponentProps, ChangeEvent } from 'react';
+import { useEffect, useReducer, useCallback, type ComponentProps } from 'react';
 import ImageUpload from '../common/image-upload/image-upload';
 import Leaflet from '../common/leaflet/leaflet';
 import { useArea, usePostData } from '../../api';
 import { VisibilitySelectorField } from '../common/VisibilitySelector';
-import { components } from '../../@types/buldreinfo/swagger';
+import type { components } from '../../@types/buldreinfo/swagger';
 import { neverGuard } from '../../utils/neverGuard';
 import { Checkbox, Input } from 'semantic-ui-react';
-import { UseMutateAsyncFunction } from '@tanstack/react-query';
+import type { UseMutateAsyncFunction } from '@tanstack/react-query';
 import ExternalLinks from '../common/external-links/external-links';
 
 type NewMedia = components['schemas']['NewMedia'] & { file?: File };

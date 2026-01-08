@@ -1,14 +1,13 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import envCompatible from 'vite-plugin-env-compatible';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { visualizer } from 'rollup-plugin-visualizer';
 import path from 'path';
 
 export default defineConfig(({ mode }) => ({
+  envPrefix: 'REACT_APP_',
   plugins: [
     react(),
-    envCompatible({ prefix: 'REACT_APP_' }),
     tsconfigPaths(),
     mode === 'analyze' &&
       visualizer({
@@ -27,6 +26,7 @@ export default defineConfig(({ mode }) => ({
     sourcemap: false,
     cssCodeSplit: true,
     cssMinify: 'lightningcss',
+    minify: 'esbuild',
     rollupOptions: {
       output: {
         manualChunks: {
@@ -52,14 +52,9 @@ export default defineConfig(({ mode }) => ({
       },
     },
     chunkSizeWarningLimit: 1000,
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-        pure_funcs: ['console.info', 'console.debug', 'console.warn'],
-      },
-    },
+  },
+  esbuild: {
+    drop: mode === 'production' ? ['console', 'debugger'] : [],
   },
   resolve: {
     alias: {

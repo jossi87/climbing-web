@@ -1,12 +1,12 @@
 import { neverGuard } from '../../utils/neverGuard';
 import {
-  CubicPoint,
+  type CubicPoint,
   isArc,
   isCubicPoint,
   isQuadraticPoint,
-  ParsedEntry,
+  type ParsedEntry,
   parsePath,
-  Point,
+  type Point,
 } from '../../utils/svg-helpers';
 
 export const generatePath = (points: ParsedEntry[]) => {

@@ -1,4 +1,4 @@
-import { ComponentProps, ReactNode } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import { ButtonGroup, Header, Icon } from 'semantic-ui-react';
 
 type Props = {

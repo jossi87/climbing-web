@@ -1,11 +1,11 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect, ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 
 export const DATA_MUTATION_EVENT = 'brattelinjer/refetch';
 
 const HANDLERS = {
   nop: async (..._args: unknown[]) => {
-    if (process.env.REACT_APP_ENV === 'development') {
+    if (import.meta.env.REACT_APP_ENV === 'development') {
       console.warn('DataReloader: stubbed-out reload', ..._args);
     }
   },

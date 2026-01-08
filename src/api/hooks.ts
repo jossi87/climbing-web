@@ -1,22 +1,27 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import {
-  UseMutationOptions,
-  MutationFunction,
+  type UseMutationOptions,
+  type MutationFunction,
   useMutation,
-  UseQueryOptions,
+  type UseQueryOptions,
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { Success, WithoutFirstParameter } from '../@types/buldreinfo';
-import { components } from '../@types/buldreinfo/swagger';
+import type { Success, WithoutFirstParameter } from '../@types/buldreinfo';
+import type { components } from '../@types/buldreinfo/swagger';
 import { useLocalStorage } from '../utils/use-local-storage';
 import { useRedirect } from '../utils/useRedirect';
 import { makeAuthenticatedRequest, useAccessToken } from './utils';
-import { FetchOptions } from './types';
+import type { FetchOptions } from './types';
 import { useCallback, useRef, useState } from 'react';
 import { postPermissions } from './operations';
 import { captureException } from '@sentry/react';
-import { MediaRegion, calculateMediaRegion, isPathVisible, scalePath } from '../utils/svg-scaler';
+import {
+  type MediaRegion,
+  calculateMediaRegion,
+  isPathVisible,
+  scalePath,
+} from '../utils/svg-scaler';
 
 function useKey(customKey: readonly unknown[] | undefined, urlSuffix: string): readonly unknown[] {
   const { isAuthenticated } = useAuth0();

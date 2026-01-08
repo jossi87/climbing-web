@@ -1,7 +1,7 @@
 import { latLngBounds } from 'leaflet';
 import { useRef, useEffect } from 'react';
 import { useMap } from 'react-leaflet';
-import { components } from '../../@types/buldreinfo/swagger';
+import type { components } from '../../@types/buldreinfo/swagger';
 import { useMeta } from '../common/meta';
 
 type Props = {

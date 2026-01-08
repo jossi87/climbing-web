@@ -1,4 +1,4 @@
-import { useState, forwardRef, useEffect, useCallback, ReactNode } from 'react';
+import { useState, forwardRef, useEffect, useCallback, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { createElementHook, createControlHook } from '@react-leaflet/core';
 import { Control, DomUtil, DomEvent, Map as LeafletMap } from 'leaflet';

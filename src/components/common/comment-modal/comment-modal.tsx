@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { postComment, useAccessToken } from './../../../api';
 import { Button, Modal, Form, TextArea, Message, Icon } from 'semantic-ui-react';
-import ImageUpload, { UploadedMedia } from '../image-upload/image-upload';
-import { components } from '../../../@types/buldreinfo/swagger';
+import ImageUpload, { type UploadedMedia } from '../image-upload/image-upload';
+import type { components } from '../../../@types/buldreinfo/swagger';
 
 const CommentModal = ({
   comment,

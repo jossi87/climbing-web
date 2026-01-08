@@ -4,8 +4,8 @@ import { Segment, Header, Icon } from 'semantic-ui-react';
 import { Loading } from './common/widgets/widgets';
 import { useMeta } from './common/meta';
 import { useData } from '../api';
-import { Success } from '../@types/buldreinfo';
-import { ComponentProps } from 'react';
+import type { Success } from '../@types/buldreinfo';
+import type { ComponentProps } from 'react';
 
 const Webcams = () => {
   const meta = useMeta();

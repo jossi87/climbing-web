@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button, Modal, Form, Input, Checkbox, Dropdown } from 'semantic-ui-react';
-import { components } from '../../../@types/buldreinfo/swagger';
+import type { components } from '../../../@types/buldreinfo/swagger';
 
 type Media = components['schemas']['Media'];
 

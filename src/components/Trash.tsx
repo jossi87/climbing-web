@@ -1,10 +1,10 @@
-import { SyntheticEvent } from 'react';
+import type { SyntheticEvent } from 'react';
 import { Loading } from './common/widgets/widgets';
 import { getImageUrl, useTrash } from '../api';
 import { useMeta } from './common/meta';
 import { Segment, Icon, Header, List, Button, Image } from 'semantic-ui-react';
 import { useNavigate } from 'react-router';
-import { components } from '../@types/buldreinfo/swagger';
+import type { components } from '../@types/buldreinfo/swagger';
 
 const getKey = ({ idArea, idSector, idProblem, idMedia }: components['schemas']['Trash']) => {
   return [idArea, idSector, idProblem, idMedia].join('/');

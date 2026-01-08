@@ -6,7 +6,7 @@ import App from './App';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { DataReloader } from './components/DataReloader';
 import * as Sentry from '@sentry/react';
-import { ReactNode, lazy, Suspense } from 'react';
+import { type ReactNode, lazy, Suspense } from 'react';
 
 const ReactQueryDevtoolsLazy = lazy(() =>
   import('@tanstack/react-query-devtools').then((module) => ({
@@ -14,6 +14,7 @@ const ReactQueryDevtoolsLazy = lazy(() =>
   })),
 );
 
+const APP_ENV = import.meta.env.REACT_APP_ENV;
 Sentry.init({
   dsn: 'https://32152968271f46afa0efa8608b252e42@o4505452714786816.ingest.sentry.io/4505452716556288',
   integrations: [
@@ -23,8 +24,8 @@ Sentry.init({
       blockAllMedia: true,
     }),
   ],
-  environment: process.env.REACT_APP_ENV ?? 'unknown',
-  tracesSampleRate: process.env.REACT_APP_ENV === 'production' ? 0.1 : 1.0,
+  environment: APP_ENV ?? 'unknown',
+  tracesSampleRate: APP_ENV === 'production' ? 0.1 : 1.0,
   replaysOnErrorSampleRate: 1.0,
 });
 
@@ -122,7 +123,7 @@ const Index = () => (
         </DataReloader>
       </Sentry.ErrorBoundary>
     </BrowserRouter>
-    {process.env.REACT_APP_ENV === 'development' && (
+    {APP_ENV === 'development' && (
       <Suspense fallback={null}>
         <ReactQueryDevtoolsLazy />
       </Suspense>

@@ -1,4 +1,4 @@
-import { useState, useCallback, ComponentProps, FormEvent } from 'react';
+import { useState, useCallback, type ComponentProps, type FormEvent } from 'react';
 import ImageUpload from '../common/image-upload/image-upload';
 import Leaflet from '../common/leaflet/leaflet';
 import {

@@ -1,5 +1,5 @@
-import { useState, FormEvent } from 'react';
-import ImageUpload, { UploadedMedia } from './common/image-upload/image-upload';
+import { useState, type FormEvent } from 'react';
+import ImageUpload, { type UploadedMedia } from './common/image-upload/image-upload';
 import { useAuth0 } from '@auth0/auth0-react';
 import { postProblemMedia, useProblem } from '../api';
 import { Loading } from './common/widgets/widgets';

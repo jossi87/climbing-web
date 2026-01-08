@@ -1,19 +1,19 @@
-import { ComponentProps, useMemo, useState } from 'react';
+import { type ComponentProps, useMemo, useState } from 'react';
 import {
   Step,
   Dropdown,
   List,
   Segment,
   Checkbox,
-  DropdownItemProps,
+  type DropdownItemProps,
   Message,
   MessageHeader,
   Icon,
 } from 'semantic-ui-react';
 import AccordionContainer from './accordion-container';
 import { GradeSelect } from '../FilterForm/GradeSelect';
-import { type Row } from './types';
-import { GroupOption, OrderOption, State, useProblemListState } from './state';
+import type { Row } from './types';
+import { type GroupOption, type OrderOption, type State, useProblemListState } from './state';
 import './ProblemList.css';
 
 type Props = {

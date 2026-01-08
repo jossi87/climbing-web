@@ -1,6 +1,6 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useData } from '../../../api';
-import { DEFAULT_META, Metadata } from './defaultMeta';
+import { DEFAULT_META, type Metadata } from './defaultMeta';
 import { MetaContext } from './context';
 
 type Props = {

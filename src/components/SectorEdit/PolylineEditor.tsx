@@ -1,8 +1,8 @@
 import { Tab, TabPane, Form, Label, Icon, Input, Button, Message } from 'semantic-ui-react';
 import { colorLatLng, parsePolyline } from '../../utils/polyline';
 import { useCallback } from 'react';
-import { DropzoneOptions, useDropzone } from 'react-dropzone';
-import { components } from '../../@types/buldreinfo/swagger';
+import { type DropzoneOptions, useDropzone } from 'react-dropzone';
+import type { components } from '../../@types/buldreinfo/swagger';
 import { calculateDistanceBetweenCoordinates, parsers } from '../common/leaflet/geo-utils';
 import { captureMessage } from '@sentry/react';
 

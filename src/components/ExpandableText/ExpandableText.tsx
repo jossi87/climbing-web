@@ -1,4 +1,4 @@
-import { useState, FC } from 'react';
+import { useState, type FC } from 'react';
 import { Label, Icon } from 'semantic-ui-react';
 import { Markdown } from '../Markdown/Markdown';
 

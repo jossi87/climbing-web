@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { InsufficientPrivileges, Loading, NotLoggedIn } from '../common/widgets/widgets';
 import { useMeta } from '../common/meta/context';

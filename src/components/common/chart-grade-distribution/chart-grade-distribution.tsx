@@ -1,7 +1,7 @@
 import { Loading } from '../widgets/widgets';
 import { Popup, Table } from 'semantic-ui-react';
 import { useGradeDistribution } from './../../../api';
-import { components } from '../../../@types/buldreinfo/swagger';
+import type { components } from '../../../@types/buldreinfo/swagger';
 
 type Data = components['schemas']['GradeDistribution'][];
 

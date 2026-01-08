@@ -1,6 +1,6 @@
 import { CircleMarker } from 'react-leaflet';
 import { colorLatLng } from '../../utils/polyline';
-import { components } from '../../@types/buldreinfo/swagger';
+import type { components } from '../../@types/buldreinfo/swagger';
 import { useMeta } from '../common/meta';
 
 type Props = {

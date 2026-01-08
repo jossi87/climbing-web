@@ -1,5 +1,5 @@
-import { Slope } from '../../../@types/buldreinfo';
-import { components } from '../../../@types/buldreinfo/swagger';
+import type { Slope } from '../../../@types/buldreinfo';
+import type { components } from '../../../@types/buldreinfo/swagger';
 import { ResponsiveContainer, AreaChart, Area, Tooltip, XAxis, YAxis } from 'recharts';
 import { Segment, Label, Icon } from 'semantic-ui-react';
 import { getDistanceWithUnit } from '../leaflet/geo-utils';

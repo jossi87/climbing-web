@@ -1,4 +1,4 @@
-import { type ComponentProps, ReactNode, useCallback, useState } from 'react';
+import { type ComponentProps, type ReactNode, useCallback, useState } from 'react';
 import { Accordion, Icon } from 'semantic-ui-react';
 
 type Props = {

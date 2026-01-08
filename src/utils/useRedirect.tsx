@@ -1,5 +1,5 @@
-import { ReactNode } from 'react';
-import { components } from '../@types/buldreinfo/swagger';
+import type { ReactNode } from 'react';
+import type { components } from '../@types/buldreinfo/swagger';
 import { Redirecting } from '../components/common/Redirecting';
 
 const isRedirect = (v: unknown): v is components['schemas']['Redirect'] => {

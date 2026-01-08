@@ -1,10 +1,10 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { Feed, Segment, Header, Table, Label, Icon } from 'semantic-ui-react';
 import Avatar from '../../common/avatar/avatar';
 import { Stars } from '../../common/widgets/widgets';
 import Linkify from 'linkify-react';
-import { components } from '../../../@types/buldreinfo/swagger';
+import type { components } from '../../../@types/buldreinfo/swagger';
 
 type Props = {
   ticks: components['schemas']['ProblemTick'][];

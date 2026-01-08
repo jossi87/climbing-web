@@ -1,4 +1,4 @@
-import { SVGProps, JSX } from 'react';
+import type { SVGProps, JSX } from 'react';
 import { svgPathProperties } from 'svg-path-properties';
 
 type DescentProps = {

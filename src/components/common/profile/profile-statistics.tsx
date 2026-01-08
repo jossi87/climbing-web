@@ -1,4 +1,4 @@
-import { useState, ComponentProps } from 'react';
+import { useState, type ComponentProps } from 'react';
 import { Link } from 'react-router-dom';
 import Chart from '../chart/chart';
 import ProblemList from '../problem-list';
@@ -13,7 +13,7 @@ import {
 } from '../../../api';
 import { useMeta } from '../meta';
 import * as Sentry from '@sentry/react';
-import { components } from '../../../@types/buldreinfo/swagger';
+import type { components } from '../../../@types/buldreinfo/swagger';
 
 type TickListItemProps = {
   tick: NonNullable<components['schemas']['ProfileStatistics']['ticks']>[number];

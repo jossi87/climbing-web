@@ -1,4 +1,4 @@
-import { useState, FC, Fragment, ReactNode } from 'react';
+import { useState, type FC, Fragment, type ReactNode } from 'react';
 import 'leaflet/dist/leaflet.css';
 import {
   useMapEvents,
@@ -10,10 +10,10 @@ import {
   FeatureGroup,
   useMap,
 } from 'react-leaflet';
-import { LeafletMouseEventHandlerFn, latLngBounds } from 'leaflet';
+import { type LeafletMouseEventHandlerFn, latLngBounds } from 'leaflet';
 import Locate from './locate';
 import FullscreenControl from './fullscreencontrol';
-import Markers, { MarkerDef } from './markers';
+import Markers, { type MarkerDef } from './markers';
 import Polygons from './polygons';
 import Polylines from './polylines';
 import MarkerClusterGroup from './react-leaflet-markercluster';
@@ -36,7 +36,7 @@ function computeCenterFromDegrees(coords: number[][]): [number, number] | null {
   if (count === 0) return null;
   return [sumLat / count, sumLng / count];
 }
-import { components } from '../../../@types/buldreinfo/swagger';
+import type { components } from '../../../@types/buldreinfo/swagger';
 
 function MapEvent({
   onMouseClick,

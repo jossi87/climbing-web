@@ -1,7 +1,7 @@
-import { JSX, ReactNode } from 'react';
+import type { JSX, ReactNode } from 'react';
 import { parseSVG, makeAbsolute } from 'svg-path-parser';
 import { neverGuard } from './neverGuard';
-import { MediaRegion } from './svg-scaler';
+import type { MediaRegion } from './svg-scaler';
 import { Descent, Rappel } from './svg-utils';
 
 export type Point = {

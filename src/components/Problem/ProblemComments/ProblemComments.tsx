@@ -1,4 +1,4 @@
-import { JSX } from 'react';
+import type { JSX } from 'react';
 import { Link } from 'react-router-dom';
 import { Feed, Segment, Header, Label, Button } from 'semantic-ui-react';
 import { useAccessToken, useProblem, postComment } from '../../../api';
@@ -6,7 +6,7 @@ import Media from '../../common/media/media';
 import Avatar from '../../common/avatar/avatar';
 import { useMeta } from '../../common/meta/context';
 import Linkify from 'linkify-react';
-import { components } from '../../../@types/buldreinfo/swagger';
+import type { components } from '../../../@types/buldreinfo/swagger';
 
 export const ProblemComments = ({
   problemId,

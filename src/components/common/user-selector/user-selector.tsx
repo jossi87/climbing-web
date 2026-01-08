@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import CreatableSelect from 'react-select/creatable';
 import { useUserSearch } from './../../../api';
-import { components } from '../../../@types/buldreinfo/swagger';
+import type { components } from '../../../@types/buldreinfo/swagger';
 
 type UserOption = {
   value?: string | number;

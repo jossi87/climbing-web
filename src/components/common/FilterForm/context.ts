@@ -1,5 +1,5 @@
-import { Dispatch, createContext, useContext } from 'react';
-import { State, Update } from '../../Problems/reducer';
+import { type Dispatch, createContext, useContext } from 'react';
+import type { State, Update } from '../../Problems/reducer';
 
 export const FilterContext = createContext<(State & { dispatch: Dispatch<Update> }) | undefined>(
   undefined,

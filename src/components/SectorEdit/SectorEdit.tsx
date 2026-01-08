@@ -1,4 +1,4 @@
-import { useState, ComponentProps, UIEvent, useCallback } from 'react';
+import { useState, type ComponentProps, type UIEvent, useCallback } from 'react';
 import ImageUpload from '../common/image-upload/image-upload';
 import { Loading } from '../common/widgets/widgets';
 import {
@@ -18,7 +18,7 @@ import { postSector, useAccessToken, useArea, useElevation, useSector } from '..
 import Leaflet from '../common/leaflet/leaflet';
 import { useNavigate, useParams } from 'react-router-dom';
 import { VisibilitySelectorField } from '../common/VisibilitySelector';
-import { components } from '../../@types/buldreinfo/swagger';
+import type { components } from '../../@types/buldreinfo/swagger';
 import { ProblemOrder } from './ProblemOrder';
 import { PolylineEditor } from './PolylineEditor';
 import { ZoomLogic } from './ZoomLogic';

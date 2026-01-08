@@ -1,4 +1,4 @@
-import { SyntheticEvent, ChangeEvent, useState, useCallback } from 'react';
+import { type SyntheticEvent, type ChangeEvent, useState, useCallback } from 'react';
 import {
   convertFromDateToString,
   convertFromStringToDate,
@@ -8,18 +8,18 @@ import {
 import {
   Button,
   Dropdown,
-  DropdownProps,
+  type DropdownProps,
   Icon,
   Modal,
   Form,
   TextArea,
-  TextAreaProps,
+  type TextAreaProps,
   Input,
-  InputOnChangeData,
+  type InputOnChangeData,
 } from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { components } from '../../../@types/buldreinfo/swagger';
+import type { components } from '../../../@types/buldreinfo/swagger';
 
 type Repeat = { date?: string; comment?: string };
 

@@ -1,4 +1,4 @@
-import { ComponentProps, useMemo } from 'react';
+import { type ComponentProps, useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
 import Top from './common/top/top';
@@ -36,7 +36,7 @@ import { useMeta } from './common/meta/context';
 import { getImageUrl, useArea } from '../api';
 import { Markdown } from './Markdown/Markdown';
 import ProblemList from './common/problem-list';
-import { components } from '../@types/buldreinfo/swagger';
+import type { components } from '../@types/buldreinfo/swagger';
 import { DownloadButton } from './common/DownloadButton';
 
 type Props = {

@@ -1,4 +1,4 @@
-import { useState, FC } from 'react';
+import { useState, type FC } from 'react';
 import {
   Segment,
   Header,
@@ -12,7 +12,7 @@ import {
   Image,
 } from 'semantic-ui-react';
 import { useProfile } from '../../../api';
-import { DropzoneOptions, useDropzone } from 'react-dropzone';
+import { type DropzoneOptions, useDropzone } from 'react-dropzone';
 
 const ProfileSettings = () => {
   const { setProfile, setRegion, data } = useProfile();

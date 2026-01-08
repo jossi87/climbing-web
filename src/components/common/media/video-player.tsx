@@ -1,6 +1,6 @@
-import { useRef, useState, useEffect, FC } from 'react';
+import { useRef, useState, useEffect, type FC } from 'react';
 import ReactPlayer from 'react-player';
-import { components } from '../../../@types/buldreinfo/swagger';
+import type { components } from '../../../@types/buldreinfo/swagger';
 import { getBuldreinfoMediaUrlSupported } from '../../../api';
 
 type Props = {

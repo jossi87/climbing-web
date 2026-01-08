@@ -1,5 +1,5 @@
 import { Circle, Polyline, Tooltip } from 'react-leaflet';
-import { components } from '../../../@types/buldreinfo/swagger';
+import type { components } from '../../../@types/buldreinfo/swagger';
 
 type Props = {
   opacity: number;

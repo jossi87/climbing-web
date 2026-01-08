@@ -1,6 +1,6 @@
-import { ComponentProps, useCallback, useState } from 'react';
+import { type ComponentProps, useCallback, useState } from 'react';
 import { Form, Input, Dropdown, Segment } from 'semantic-ui-react';
-import { components } from '../../../@types/buldreinfo/swagger';
+import type { components } from '../../../@types/buldreinfo/swagger';
 
 type ExternalLink = components['schemas']['ExternalLink'][];
 

@@ -3,7 +3,7 @@ import { Grid, Segment, Header, Icon, List, Label, Placeholder } from 'semantic-
 import { useMeta } from './common/meta/context';
 import { useData } from '../api';
 import Avatar from './common/avatar/avatar';
-import { Success } from '../@types/buldreinfo';
+import type { Success } from '../@types/buldreinfo';
 
 const About = () => {
   const meta = useMeta();

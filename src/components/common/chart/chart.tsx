@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { components } from '../../../@types/buldreinfo/swagger';
+import type { components } from '../../../@types/buldreinfo/swagger';
 
 type Props = {
   ticks: NonNullable<components['schemas']['ProfileStatistics']['ticks']>;

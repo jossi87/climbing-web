@@ -7,7 +7,7 @@ import TableOfContents from '../common/TableOfContents';
 import { useFilterState } from './reducer';
 import { FilterContext, FilterForm } from '../common/FilterForm';
 import { HeaderButtons } from '../common/HeaderButtons';
-import { components } from '../../@types/buldreinfo/swagger';
+import type { components } from '../../@types/buldreinfo/swagger';
 import './Problems.css';
 import { ProblemsMap } from '../common/TableOfContents/ProblemsMap';
 

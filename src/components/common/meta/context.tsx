@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo } from 'react';
-import { Metadata } from './defaultMeta';
+import type { Metadata } from './defaultMeta';
 
 export const MetaContext = createContext<Metadata | undefined>(undefined);
 

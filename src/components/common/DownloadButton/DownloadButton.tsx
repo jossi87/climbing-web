@@ -1,5 +1,5 @@
-import { useCallback, useState, MouseEvent } from 'react';
-import { Icon, Label, LabelProps, SemanticICONS } from 'semantic-ui-react';
+import { useCallback, useState, type MouseEvent } from 'react';
+import { Icon, Label, type LabelProps, type SemanticICONS } from 'semantic-ui-react';
 import { getUrl, downloadFile, useAccessToken } from '../../../api';
 
 type Props = {

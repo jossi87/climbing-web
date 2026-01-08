@@ -1,4 +1,4 @@
-import { ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import ProblemList from './common/problem-list';
 import ChartGradeDistribution from './common/chart-grade-distribution/chart-grade-distribution';
@@ -32,10 +32,10 @@ import {
 } from 'semantic-ui-react';
 import { useMeta } from './common/meta/context';
 import { useSector } from '../api';
-import { Slope } from '../@types/buldreinfo';
-import { components } from '../@types/buldreinfo/swagger';
+import type { Slope } from '../@types/buldreinfo';
+import type { components } from '../@types/buldreinfo/swagger';
 import { DownloadButton } from './common/DownloadButton';
-import { MarkerDef } from './common/leaflet/markers';
+import type { MarkerDef } from './common/leaflet/markers';
 import { Markdown } from './Markdown/Markdown';
 import ExpandableText from './ExpandableText/ExpandableText';
 

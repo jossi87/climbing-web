@@ -1,12 +1,20 @@
-import { useState, useEffect, useRef, FormEvent, MouseEvent, SyntheticEvent, JSX } from 'react';
+import {
+  useState,
+  useEffect,
+  useRef,
+  type FormEvent,
+  type MouseEvent,
+  type SyntheticEvent,
+  type JSX,
+} from 'react';
 import { Container, Button, Label, Icon, Segment, Dropdown } from 'semantic-ui-react';
 import { getImageUrl, useMediaSvg } from '../api';
 import { Rappel } from '../utils/svg-utils';
 import {
   parseReadOnlySvgs,
   parsePath,
-  ParsedEntry,
-  SvgType,
+  type ParsedEntry,
+  type SvgType,
   isCubicPoint,
   isQuadraticPoint,
   isArc,
@@ -15,7 +23,7 @@ import {
 
 import { Loading } from './common/widgets/widgets';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Success } from '../@types/buldreinfo';
+import type { Success } from '../@types/buldreinfo';
 
 type EditableSvg = SvgType & {
   points?: ParsedEntry[];

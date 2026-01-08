@@ -1,8 +1,8 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { useQuery } from '@tanstack/react-query';
-import { components } from '../../../@types/buldreinfo/swagger';
+import type { components } from '../../../@types/buldreinfo/swagger';
 import { Segment, Header, Icon, Image, Popup, Label, Button, LabelDetail } from 'semantic-ui-react';
-import { TWeatherSymbolKey, weatherSymbolKeys } from '../../../yr';
+import { type TWeatherSymbolKey, weatherSymbolKeys } from '../../../yr';
 import { SunOnWall } from './SunOnWall';
 import { SunriseSunset } from './SunriseSunset';
 

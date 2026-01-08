@@ -1,5 +1,5 @@
-import { CSSProperties } from 'react';
-import { components } from '../../@types/buldreinfo/swagger';
+import type { CSSProperties } from 'react';
+import type { components } from '../../@types/buldreinfo/swagger';
 import { useNavigate } from 'react-router-dom';
 import { parseSVG, makeAbsolute } from 'svg-path-parser';
 

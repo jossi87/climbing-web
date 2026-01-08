@@ -1,10 +1,10 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { useState, useEffect } from 'react';
 import { DATA_MUTATION_EVENT } from '../components/DataReloader';
-import { FetchOptions } from './types';
+import type { FetchOptions } from './types';
 import { captureMessage } from '@sentry/react';
 import { saveAs } from 'file-saver';
-import { MediaRegion } from '../utils/svg-scaler';
+import type { MediaRegion } from '../utils/svg-scaler';
 
 export function getLocales() {
   return 'nb-NO';
@@ -12,7 +12,7 @@ export function getLocales() {
 
 export function getBaseUrl(): string {
   if (import.meta.env.DEV) {
-    return process.env.REACT_APP_API_URL ?? 'https://brattelinjer.no';
+    return import.meta.env.REACT_APP_API_URL ?? 'https://brattelinjer.no';
   }
   return window.origin;
 }

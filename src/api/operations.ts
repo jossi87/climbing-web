@@ -1,5 +1,5 @@
-import { Success } from '../@types/buldreinfo';
-import { components, operations } from '../@types/buldreinfo/swagger';
+import type { Success } from '../@types/buldreinfo';
+import type { components, operations } from '../@types/buldreinfo/swagger';
 
 type UploadMedia = {
   file?: File | null;

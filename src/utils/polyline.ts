@@ -1,6 +1,6 @@
 import { captureMessage } from '@sentry/core';
 import { hashHexColor } from './colors';
-import { components } from '../@types/buldreinfo/swagger';
+import type { components } from '../@types/buldreinfo/swagger';
 
 type LatLngPair = Pick<components['schemas']['Coordinates'], 'latitude' | 'longitude'>;
 

@@ -1,9 +1,9 @@
 import {
   useState,
   useEffect,
-  ComponentProps,
-  SyntheticEvent,
-  CSSProperties,
+  type ComponentProps,
+  type SyntheticEvent,
+  type CSSProperties,
   useCallback,
 } from 'react';
 import { useInView } from 'react-intersection-observer';
@@ -22,7 +22,7 @@ import MediaEditModal from './media-edit-modal';
 import SvgViewer from '../../SvgViewer';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Loading } from '../widgets/widgets';
-import { components } from '../../../@types/buldreinfo/swagger';
+import type { components } from '../../../@types/buldreinfo/swagger';
 
 const style: CSSProperties = {
   objectFit: 'cover',

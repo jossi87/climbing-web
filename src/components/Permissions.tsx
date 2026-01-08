@@ -5,7 +5,7 @@ import Avatar from './common/avatar/avatar';
 import { useMeta } from './common/meta/context';
 import { Header, Icon, Segment, Dropdown, Card, Input } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
-import { Mutable } from '../@types/buldreinfo';
+import type { Mutable } from '../@types/buldreinfo';
 
 const COLORS = [
   'yellow', // default user

@@ -1,13 +1,13 @@
-import { ComponentProps, useEffect, useMemo, useState } from 'react';
+import { type ComponentProps, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Leaflet from '../../leaflet/leaflet';
 import { useMeta } from '../../meta';
-import Markers, { MarkerDef } from '../../leaflet/markers';
+import Markers, { type MarkerDef } from '../../leaflet/markers';
 import type { Props as TocProps } from '../TableOfContents';
 import MarkerClusterGroup from '../../leaflet/react-leaflet-markercluster';
 import { useMap } from 'react-leaflet';
 import Polygons from '../../leaflet/polygons';
-import { LatLngBounds, LeafletEventHandlerFn, latLngBounds } from 'leaflet';
+import { LatLngBounds, type LeafletEventHandlerFn, latLngBounds } from 'leaflet';
 import { LockSymbol } from '../../../common/widgets/widgets';
 import { BreadcrumbSection, BreadcrumbDivider, Breadcrumb } from 'semantic-ui-react';
 

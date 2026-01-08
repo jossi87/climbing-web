@@ -1,6 +1,6 @@
 import { CircleMarker, Polygon, Tooltip } from 'react-leaflet';
 import { useNavigate } from 'react-router';
-import { components } from '../../../@types/buldreinfo/swagger';
+import type { components } from '../../../@types/buldreinfo/swagger';
 
 type Props = {
   opacity: number;
