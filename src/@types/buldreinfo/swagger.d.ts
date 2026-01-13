@@ -1740,6 +1740,8 @@ export type components = {
             nr?: number;
             name?: string;
             description?: string;
+            /** Format: int32 */
+            startingAltitude?: number;
             coordinates?: components["schemas"]["Coordinates"];
             grade?: string;
             fa?: string;

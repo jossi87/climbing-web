@@ -140,29 +140,34 @@ export const Problems = ({ filterOpen }: Props) => {
                       sunToHour: sector.sunToHour ?? 0,
                       problems:
                         sector.problems?.map((problem) => {
-                          const ascents =
-                            problem.numTicks &&
-                            problem.numTicks + (problem.numTicks == 1 ? ' ascent' : ' ascents');
-                          let typeAscents;
+                          const metaParts: string[] = [];
                           if (meta.isClimbing) {
-                            let t = problem.t?.subType;
-                            if (problem.numPitches && problem.numPitches > 1)
-                              t += ', ' + problem.numPitches + ' pitches';
-                            if (ascents) {
-                              typeAscents = ' (' + t + ', ' + ascents + ') ';
-                            } else {
-                              typeAscents = ' (' + t + ') ';
-                            }
-                          } else if (!meta.isClimbing) {
-                            if (ascents) {
-                              typeAscents = ' (' + ascents + ') ';
-                            } else {
-                              typeAscents = ' ';
-                            }
+                            if (problem.t?.subType) metaParts.push(problem.t.subType);
+                            if ((problem.numPitches ?? 0) > 1)
+                              metaParts.push(`${problem.numPitches}p`);
                           }
-                          const text = [problem.fa, problem.faYear, typeAscents]
+                          if (problem.numTicks) {
+                            metaParts.push(
+                              `${problem.numTicks} asc${problem.numTicks === 1 ? '' : 's'}`,
+                            );
+                          }
+                          const sAlt = problem.startingAltitude;
+                          const cElev = problem.coordinates?.elevation;
+                          const elev =
+                            (sAlt ?? 0) > 0
+                              ? { v: sAlt as number, p: '' }
+                              : typeof cElev === 'number'
+                                ? { v: cElev, p: '~' }
+                                : null;
+
+                          if (elev) {
+                            metaParts.push(`${elev.p}${Math.round(elev.v)}m a.s.l.`);
+                          }
+                          const metaString = metaParts.length ? `(${metaParts.join(', ')})` : '';
+                          const text = [problem.fa, problem.faYear, metaString]
                             .filter(Boolean)
-                            .join(' ');
+                            .join(' ')
+                            .trim();
                           return {
                             id: problem.id ?? 0,
                             broken: problem.broken ?? '',
