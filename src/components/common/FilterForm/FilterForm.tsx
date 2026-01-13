@@ -19,6 +19,7 @@ import { HeaderButtons } from '../HeaderButtons';
 import type { ResetField } from '../../Problems/reducer';
 import { YearSelect } from './YearSelect';
 import { hours } from '../../../utils/hours';
+import { StartingAltitudeSelect } from './StartingAltitudeSelect';
 
 const CLIMBING_OPTIONS = [
   {
@@ -234,6 +235,10 @@ export const FilterForm = () => {
       <Form.Field>
         <GroupHeader title='First Ascent Year' reset='fa-year' />
         <YearSelect />
+      </Form.Field>
+      <Form.Field>
+        <GroupHeader title='Starting altitude' reset='starting-altitude' />
+        <StartingAltitudeSelect />
       </Form.Field>
       <GroupHeader title='Options' reset='options' />
       <Form.Group inline>

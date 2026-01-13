@@ -117,7 +117,7 @@ const ProblemMarkers = ({ areas }: Props) => {
   const markers: MarkerDef[] = useMarkers(areas);
 
   return (
-    <MarkerClusterGroup>
+    <MarkerClusterGroup key={markers.length}>
       <Markers opacity={0.6} markers={markers} addEventHandlers={false} flyToId={null} />
     </MarkerClusterGroup>
   );
@@ -133,7 +133,7 @@ const ProblemClusters = ({ areas }: Props) => {
   }
 
   return (
-    <MarkerClusterGroup>
+    <MarkerClusterGroup key={markers.length}>
       <Markers opacity={0.6} markers={markers} addEventHandlers={false} flyToId={null} />
     </MarkerClusterGroup>
   );

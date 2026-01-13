@@ -37,6 +37,7 @@ type FilterProblem = {
   lat?: number;
   lng?: number;
   faYear: number;
+  mAsl: number;
 };
 
 type FilterSector = Pick<components['schemas']['TocSector'], 'outline'> & {
@@ -184,6 +185,10 @@ export const Problems = ({ filterOpen }: Props) => {
                             text: text,
                             subText: problem.description,
                             faYear: problem.faYear ?? 0,
+                            mAsl:
+                              (problem.startingAltitude ?? 0 > 0)
+                                ? (problem.startingAltitude ?? 0)
+                                : (cElev ?? 0),
                           } satisfies FilterProblem;
                         }) ?? [],
                     }) satisfies FilterSector,

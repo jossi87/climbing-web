@@ -27,6 +27,8 @@ type FilterInputs = {
   filterGradeHigh: string | undefined;
   filterFaYearLow: number;
   filterFaYearHigh: number;
+  filterStartingAltitudeLow: number;
+  filterStartingAltitudeHigh: number;
   filterTypes: Record<number, boolean>;
   filterPitches: {
     'Single-pitch': boolean;
@@ -44,6 +46,8 @@ const DEFAULT_INITIAL_FILTER: FilterInputs = {
   filterGradeHigh: undefined,
   filterFaYearLow: 0,
   filterFaYearHigh: 0,
+  filterStartingAltitudeLow: 0,
+  filterStartingAltitudeHigh: 1000,
   filterHideTicked: false,
   filterPitches: {
     'Single-pitch': false,
@@ -89,7 +93,8 @@ export type ResetField =
   | 'conditions'
   | 'pitches'
   | 'types'
-  | 'grades';
+  | 'grades'
+  | 'starting-altitude';
 
 export type Update =
   | { action: 'set-data'; data: components['schemas']['Toc'] }
@@ -118,9 +123,11 @@ export type Update =
     }
   | { action: 'set-grades'; low: string; high: string }
   | { action: 'set-fa-years'; low: number; high: number }
+  | { action: 'set-starting-altitudes'; low: number; high: number }
   | { action: 'set-hide-ticked'; checked: boolean }
   | { action: 'set-only-admin'; checked: boolean }
   | { action: 'set-only-super-admin'; checked: boolean }
+  | ({ action: 'set-starting-altitude' } & ({ low: number } | { high: number }))
   | ({ action: 'set-grade' } & ({ low: string } | { high: string }))
   | ({ action: 'set-fa-year' } & ({ low: number } | { high: number }))
   | { action: 'close-filter' }
@@ -141,6 +148,8 @@ const filter = (state: State): State => {
     filterGradeLow,
     filterFaYearHigh,
     filterFaYearLow,
+    filterStartingAltitudeHigh,
+    filterStartingAltitudeLow,
     filterHideTicked,
     filterOnlyAdmin,
     filterOnlySuperAdmin,
@@ -286,6 +295,19 @@ const filter = (state: State): State => {
                           }
                         }
 
+                        if (filterStartingAltitudeLow || filterStartingAltitudeHigh) {
+                          const low = filterStartingAltitudeLow ?? Number.MIN_SAFE_INTEGER;
+                          const high = filterStartingAltitudeHigh ?? Number.MAX_SAFE_INTEGER;
+                          const actualAlt: number =
+                            ((problem.startingAltitude ?? 0) > 0
+                              ? problem.startingAltitude
+                              : (problem.coordinates?.elevation ?? 0)) ?? 0;
+
+                          if (actualAlt < low || actualAlt > high) {
+                            filteredOut.problems += 1;
+                            return false;
+                          }
+                        }
                         if (filterOnlySuperAdmin) {
                           const locked = problem.lockedSuperadmin;
                           if (!locked) {
@@ -511,6 +533,25 @@ const reducer = (state: State, update: Update): State => {
       };
     }
 
+    case 'set-starting-altitudes': {
+      const { low, high } = update;
+      return {
+        ...state,
+        filterStartingAltitudeLow: low,
+        filterStartingAltitudeHigh: high,
+      };
+    }
+
+    case 'set-starting-altitude': {
+      const low = 'low' in update ? update.low : undefined;
+      const high = 'high' in update ? update.high : undefined;
+      return {
+        ...state,
+        filterStartingAltitudeLow: low ?? state.filterStartingAltitudeLow ?? undefined,
+        filterStartingAltitudeHigh: high ?? state.filterStartingAltitudeHigh ?? undefined,
+      };
+    }
+
     case 'set-hide-ticked': {
       const { checked } = update;
       return {
@@ -571,6 +612,13 @@ const reducer = (state: State, update: Update): State => {
             ...state,
             filterFaYearLow: DEFAULT_INITIAL_FILTER.filterFaYearLow,
             filterFaYearHigh: DEFAULT_INITIAL_FILTER.filterFaYearHigh,
+          };
+        }
+        case 'starting-altitude': {
+          return {
+            ...state,
+            filterStartingAltitudeLow: DEFAULT_INITIAL_FILTER.filterStartingAltitudeLow,
+            filterStartingAltitudeHigh: DEFAULT_INITIAL_FILTER.filterStartingAltitudeHigh,
           };
         }
         case 'options': {
@@ -666,6 +714,14 @@ const storageItems = {
   gradeLow: itemLocalStorage('filter/grades/low', DEFAULT_INITIAL_FILTER.filterGradeLow),
   faYearHigh: itemLocalStorage('filter/fa-year/high', DEFAULT_INITIAL_FILTER.filterFaYearHigh),
   faYearLow: itemLocalStorage('filter/fa-year/low', DEFAULT_INITIAL_FILTER.filterFaYearLow),
+  startingAltitudeLow: itemLocalStorage(
+    'filter/starting-altitude/low',
+    DEFAULT_INITIAL_FILTER.filterStartingAltitudeLow,
+  ),
+  startingAltitudeHigh: itemLocalStorage(
+    'filter/starting-altitude/high',
+    DEFAULT_INITIAL_FILTER.filterStartingAltitudeHigh,
+  ),
   hideTicked: itemLocalStorage('filter/hide-ticked', DEFAULT_INITIAL_FILTER.filterHideTicked),
   onlyAdmin: itemLocalStorage('filter/only-admin', DEFAULT_INITIAL_FILTER.filterOnlyAdmin),
   onlySuperAdmin: itemLocalStorage(
@@ -688,6 +744,8 @@ const wrappedReducer: typeof reducer = (state, update) => {
   storageItems.gradeLow.set(reduced.filterGradeLow);
   storageItems.faYearHigh.set(reduced.filterFaYearHigh);
   storageItems.faYearLow.set(reduced.filterFaYearLow);
+  storageItems.startingAltitudeLow.set(reduced.filterStartingAltitudeLow);
+  storageItems.startingAltitudeHigh.set(reduced.filterStartingAltitudeHigh);
   storageItems.hideTicked.set(reduced.filterHideTicked);
   storageItems.onlyAdmin.set(reduced.filterOnlyAdmin);
   storageItems.onlySuperAdmin.set(reduced.filterOnlySuperAdmin);
@@ -823,6 +881,8 @@ export const useFilterState = (init?: Partial<UiState>) => {
       filterGradeLow: storageItems.gradeLow.get(),
       filterFaYearHigh: storageItems.faYearHigh.get(),
       filterFaYearLow: storageItems.faYearLow.get(),
+      filterStartingAltitudeHigh: storageItems.startingAltitudeHigh.get(),
+      filterStartingAltitudeLow: storageItems.startingAltitudeLow.get(),
       filterHideTicked: storageItems.hideTicked.get(),
       filterOnlyAdmin: isAdmin && storageItems.onlyAdmin.get(),
       filterOnlySuperAdmin: isSuperAdmin && storageItems.onlySuperAdmin.get(),
