@@ -81,8 +81,15 @@ const Frontpage = () => {
                   <Card>
                     <Link to={`/problem/${randomMedia.idProblem}`}>
                       <Image
+                        fetchpriority='high'
+                        width='275'
+                        height='250'
                         size='medium'
-                        style={{ maxHeight: '250px', objectFit: 'cover' }}
+                        style={{
+                          width: '275px',
+                          height: '250px',
+                          objectFit: 'cover',
+                        }}
                         alt={`${randomMedia.problem} ${randomMedia.grade} (${randomMedia.area} / ${randomMedia.sector}) - Photog: ${randomMedia.photographer?.name ?? 'unknown'}, tagged: ${randomMedia.tagged?.[0].name}`}
                         src={getImageUrl(
                           Number(randomMedia.idMedia ?? 0),

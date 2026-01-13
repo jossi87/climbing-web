@@ -24,10 +24,11 @@ export const Navigation = () => {
           <Menu.Item header as={Link} to='/'>
             <Image
               size='mini'
-              src='/png/bulreinfo_logo_35x30.png'
+              src='/png/logo_35x30.png'
               alt='Logo'
               width='35'
               height='30'
+              style={{ width: '35px', height: '30px' }}
             />
           </Menu.Item>
           <Menu.Item as={SearchBox} style={{ flex: 1 }} />
