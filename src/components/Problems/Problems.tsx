@@ -143,10 +143,6 @@ export const Problems = ({ filterOpen }: Props) => {
                           const ascents =
                             problem.numTicks &&
                             problem.numTicks + (problem.numTicks == 1 ? ' ascent' : ' ascents');
-                          let fa = problem.fa;
-                          if (problem.faYear) {
-                            fa += ' ' + problem.faYear;
-                          }
                           let typeAscents;
                           if (meta.isClimbing) {
                             let t = problem.t?.subType;
@@ -164,7 +160,9 @@ export const Problems = ({ filterOpen }: Props) => {
                               typeAscents = ' ';
                             }
                           }
-                          const text = [fa, typeAscents].filter(Boolean).join(' ');
+                          const text = [problem.fa, problem.faYear, typeAscents]
+                            .filter(Boolean)
+                            .join(' ');
                           return {
                             id: problem.id ?? 0,
                             broken: problem.broken ?? '',
