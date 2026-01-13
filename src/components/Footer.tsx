@@ -9,10 +9,11 @@ const styleGitHubBrv = {
   paddingLeft: '10px',
   paddingRight: '10px',
   maxWidth: '170px',
+  height: 'auto',
   backgroundColor: '#FFFFFF',
 };
 const styleFacebook = {
-  width: '175px',
+  width: '170px',
   marginLeft: '5px',
   marginBottom: '5px',
 };
@@ -30,12 +31,24 @@ function Footer() {
                 rel='noreferrer noopener'
                 target='_blank'
               >
-                <img style={styleGitHubBrv} src={'/png/GitHub_Logo.png'} alt='GitHub' />
+                <img
+                  style={styleGitHubBrv}
+                  src={'/png/GitHub_Logo.png'}
+                  alt='GitHub'
+                  width='170'
+                  height='69'
+                />
               </a>
             </Grid.Column>
             <Grid.Column>
               <a href={'https://brv.no'} rel='noreferrer noopener' target='_blank'>
-                <img style={styleGitHubBrv} src={'/png/brv.png'} alt='Bratte Rogalands venner' />
+                <img
+                  style={styleGitHubBrv}
+                  src={'/png/brv.png'}
+                  alt='Bratte Rogalands venner'
+                  width='170'
+                  height='102'
+                />
               </a>
             </Grid.Column>
             <Grid.Column>

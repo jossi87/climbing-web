@@ -64,6 +64,8 @@ const LazyLoadedMedia = ({
     triggerOnce: true,
     rootMargin: '200px 0px',
   });
+  const numericHeight = 80;
+  const numericWidth = 85;
 
   return (
     <Feed.Extra images ref={ref}>
@@ -72,8 +74,10 @@ const LazyLoadedMedia = ({
           {inView ? (
             <Image
               style={imgStyle}
+              width={numericWidth}
+              height={numericHeight}
               src={getImageUrl(Number(m.id ?? 0), Number(m.crc32 ?? 0), {
-                minDimension: 85,
+                minDimension: numericWidth,
               })}
               onError={(e: SyntheticEvent<HTMLImageElement>) =>
                 ((e.target as HTMLImageElement).src = '/png/video_placeholder.png')
@@ -84,8 +88,8 @@ const LazyLoadedMedia = ({
               style={{
                 ...imgStyle,
                 backgroundColor: '#e0e0e0',
-                width: 'auto',
-                height: imgStyle.maxHeight,
+                width: `${numericWidth}px`,
+                height: `${numericHeight}px`,
               }}
             ></div>
           )}
@@ -253,7 +257,9 @@ const Activity = ({ idArea, idSector }: Props) => {
                   <Feed.Label>
                     {(a.problemRandomMediaId ?? 0) > 0 && (
                       <img
-                        style={{ height: '35px', objectFit: 'cover' }}
+                        style={{ height: '35px', width: '35px', objectFit: 'cover' }}
+                        width='35'
+                        height='35'
                         src={getImageUrl(
                           Number(a.problemRandomMediaId ?? 0),
                           Number(a.problemRandomMediaCrc32 ?? 0),
@@ -366,7 +372,9 @@ const Activity = ({ idArea, idSector }: Props) => {
                   <Feed.Label>
                     {(a.problemRandomMediaId ?? 0) > 0 && (
                       <img
-                        style={{ height: '35px', objectFit: 'cover' }}
+                        style={{ height: '35px', width: '35px', objectFit: 'cover' }}
+                        width='35'
+                        height='35'
                         alt={`${a.problemName} ${a.grade} (${a.areaName} / ${a.sectorName})`}
                         src={getImageUrl(
                           Number(a.problemRandomMediaId ?? 0),

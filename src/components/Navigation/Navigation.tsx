@@ -22,7 +22,13 @@ export const Navigation = () => {
           className='row-1'
         >
           <Menu.Item header as={Link} to='/'>
-            <Image size='mini' src='/png/buldreinfo.png' alt='Logo' />
+            <Image
+              size='mini'
+              src='/png/bulreinfo_logo_35x30.png'
+              alt='Logo'
+              width='35'
+              height='30'
+            />
           </Menu.Item>
           <Menu.Item as={SearchBox} style={{ flex: 1 }} />
         </div>

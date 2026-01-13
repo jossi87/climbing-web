@@ -10,12 +10,26 @@ type Props = {
   size?: 'mini' | 'tiny' | 'small' | 'medium' | 'large' | 'big' | 'huge' | 'massive';
 };
 
-function Avatar({ userId, name, avatarCrc32, floated, size }: Props) {
+const SIZE_MAP: Record<string, number> = {
+  mini: 35,
+  tiny: 80,
+  small: 150,
+  medium: 300,
+  large: 450,
+  big: 600,
+  huge: 800,
+  massive: 960,
+};
+
+function Avatar({ userId, name, avatarCrc32, floated, size = 'mini' }: Props) {
   const [open, setOpen] = useState(false);
+  const pixelSize = SIZE_MAP[size] || 35;
 
   const commonImageProps = {
     floated,
     size,
+    width: pixelSize,
+    height: pixelSize,
   };
 
   const uid = userId ?? 0;
@@ -24,8 +38,18 @@ function Avatar({ userId, name, avatarCrc32, floated, size }: Props) {
 
   if (crc === 0) {
     return (
-      <Image {...commonImageProps}>
-        <Icon name='user' style={{ width: '100%', height: '100%' }} />
+      <Image {...commonImageProps} as='div' style={{ display: 'inline-block' }}>
+        <Icon
+          name='user'
+          style={{
+            width: '100%',
+            height: '100%',
+            margin: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        />
       </Image>
     );
   }
@@ -36,7 +60,14 @@ function Avatar({ userId, name, avatarCrc32, floated, size }: Props) {
       onOpen={() => setOpen(true)}
       basic
       open={open}
-      trigger={<Image src={getAvatarUrl(uid, crc)} alt={alt} {...commonImageProps} />}
+      trigger={
+        <Image
+          src={getAvatarUrl(uid, crc)}
+          alt={alt}
+          {...commonImageProps}
+          style={{ objectFit: 'cover' }}
+        />
+      }
     >
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <Image src={getAvatarUrl(uid, crc, true)} alt={alt} />
