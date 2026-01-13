@@ -600,7 +600,6 @@ export function useSvgEdit(
   }
 
   const svg = m.svgs.filter((x) => x.problemId == data.id && x.pitch == pitch)[0];
-  // Avoid reassigning the function parameter `mediaRegion` (eslint `no-param-reassign`).
   let mediaRegionLocal: MediaRegion | null = mediaRegion;
   if (pitch && !mediaRegionLocal) {
     if (svg && svg.path) {
@@ -675,14 +674,14 @@ export function useSvgEdit(
 
   const readOnlySvgs: EditableSvg['readOnlySvgs'] = [];
   for (const s of m.svgs.filter(
-    (x) => !mediaRegion || isPathVisible(x.path ?? '', mediaRegion as MediaRegion),
+    (x) => !mediaRegionLocal || isPathVisible(x.path ?? '', mediaRegionLocal as MediaRegion),
   )) {
     if (!svg || s !== svg) {
       readOnlySvgs.push({
         nr: s.nr ?? 0,
         pitch: s.pitch ?? 0,
         hasAnchor: !!s.hasAnchor,
-        path: (s.path && mediaRegion ? scalePath(s.path, mediaRegion) : s.path) ?? '',
+        path: (s.path && mediaRegionLocal ? scalePath(s.path, mediaRegionLocal) : s.path) ?? '',
         anchors: s.anchors ? JSON.parse(s.anchors) : [],
         tradBelayStations: s.tradBelayStations ? JSON.parse(s.tradBelayStations) : [],
         texts: s.texts ? JSON.parse(s.texts) : [],
@@ -698,7 +697,7 @@ export function useSvgEdit(
     mediaId: m.id ?? 0,
     mediaWidth: m.width ?? 0,
     mediaHeight: m.height ?? 0,
-    mediaRegion,
+    mediaRegion: mediaRegionLocal,
     sections: data.sections ?? [],
     nr: svgNr,
     crc32: m.crc32 ?? 0,
