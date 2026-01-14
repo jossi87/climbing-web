@@ -156,7 +156,7 @@ const Media = ({
     if (!m) return;
     const { id, idType } = m;
     const mediaType = idType === 1 ? 'image' : 'video';
-
+    closeModal();
     showConfirmation(`Are you sure you want to delete this ${mediaType}?`, () => {
       setIsSaving(true);
       getAccessTokenSilently().then((accessToken) => {
@@ -174,7 +174,7 @@ const Media = ({
 
   function onRotate(degrees: number) {
     if (!m) return;
-
+    closeModal();
     showConfirmation(`Are you sure you want to rotate this image ${degrees} degrees?`, () => {
       setIsSaving(true);
       getAccessTokenSilently().then((accessToken) => {
@@ -267,7 +267,7 @@ const Media = ({
 
   function onSetMediaAsAvatar() {
     if (!m) return;
-
+    closeModal();
     showConfirmation('Are you sure you want to change your avatar to this image?', () => {
       setIsSaving(true);
       getAccessTokenSilently().then((accessToken) => {
