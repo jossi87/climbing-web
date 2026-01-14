@@ -184,10 +184,22 @@ const ProblemEdit = ({ problem, sector }: Props) => {
   }, []);
 
   const onFaDateChanged = useCallback((newFaDate: Date | undefined) => {
-    setData((prevState) => ({
-      ...prevState,
-      faDate: newFaDate ? convertFromDateToString(newFaDate) : undefined,
-    }));
+    if (!newFaDate) {
+      setData((prev) => ({ ...prev, faDate: undefined }));
+      return;
+    }
+    const year = newFaDate.getFullYear();
+    const isValid = !isNaN(newFaDate.getTime()) && year > 1000;
+    if (isValid) {
+      const dateString = convertFromDateToString(newFaDate);
+      setData((prevState) => {
+        if (prevState.faDate === dateString) return prevState;
+        return {
+          ...prevState,
+          faDate: dateString,
+        };
+      });
+    }
   }, []);
 
   const onOriginalGradeChanged: OnChange<string> = useCallback((_, { value }) => {

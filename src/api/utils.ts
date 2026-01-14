@@ -102,7 +102,7 @@ export function numberWithCommas(number: number) {
 }
 
 export function convertFromDateToString(date: Date | null): string | undefined {
-  if (!date) {
+  if (!date || isNaN(date.getTime())) {
     return undefined;
   }
   const d = date.getDate();

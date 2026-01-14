@@ -1,38 +1,55 @@
-import { type ComponentProps, useCallback, useState } from 'react';
+import { type ComponentProps, useCallback, useMemo } from 'react';
 import { Form, Input, Dropdown, Segment } from 'semantic-ui-react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 
-type ExternalLink = components['schemas']['ExternalLink'][];
+type ExternalLink = components['schemas']['ExternalLink'];
+type ExternalLinksArray = ExternalLink[];
 
 type Props = {
-  externalLinks: ExternalLink;
-  onExternalLinksUpdated: (externalLinks: ExternalLink) => void;
+  externalLinks: ExternalLinksArray;
+  onExternalLinksUpdated: (externalLinks: ExternalLinksArray) => void;
 };
 
-const ExternalLinks = ({ externalLinks: initExternalLinks, onExternalLinksUpdated }: Props) => {
-  const [externalLinks, setExternalLinks] = useState(initExternalLinks);
+const ExternalLinks = ({ externalLinks, onExternalLinksUpdated }: Props) => {
+  // Fixes: react-hooks/exhaustive-deps
+  // This ensures 'links' has a stable reference if externalLinks is null/undefined
+  const links = useMemo(() => externalLinks || [], [externalLinks]);
+
+  const handleLinkChange = (
+    index: number,
+    field: keyof ExternalLink,
+    value: string | undefined,
+  ) => {
+    const updatedLinks = links.map((link, i) => {
+      if (i === index) {
+        return { ...link, [field]: value };
+      }
+      return link;
+    });
+
+    onExternalLinksUpdated(updatedLinks);
+  };
 
   const onNumberOfExternalLinksChange: NonNullable<ComponentProps<typeof Dropdown>['onChange']> =
     useCallback(
       (e, { value }) => {
         const num = +(value ?? 0);
-        let newExternalLinks: ExternalLink = [];
-        if (num > 0) {
-          newExternalLinks = externalLinks ? [...externalLinks] : [];
+        let newExternalLinks: ExternalLinksArray = [...links];
+
+        if (num > newExternalLinks.length) {
           while (num > newExternalLinks.length) {
             newExternalLinks.push({
               url: undefined,
               title: undefined,
             });
           }
-          while (num < newExternalLinks.length) {
-            newExternalLinks.pop();
-          }
+        } else if (num < newExternalLinks.length) {
+          newExternalLinks = newExternalLinks.slice(0, num);
         }
+
         onExternalLinksUpdated(newExternalLinks);
-        setExternalLinks(newExternalLinks);
       },
-      [onExternalLinksUpdated, externalLinks],
+      [onExternalLinksUpdated, links],
     );
 
   return (
@@ -41,7 +58,7 @@ const ExternalLinks = ({ externalLinks: initExternalLinks, onExternalLinksUpdate
         <label>
           <Dropdown
             inline
-            value={externalLinks?.length}
+            value={links.length}
             onChange={onNumberOfExternalLinksChange}
             options={[
               { key: 0, value: 0, text: 'No external links' },
@@ -53,9 +70,10 @@ const ExternalLinks = ({ externalLinks: initExternalLinks, onExternalLinksUpdate
             ]}
           />
         </label>
-        {externalLinks?.length !== 0 &&
-          externalLinks.map((l) => (
-            <Form.Group widths='equal' key={l.id} inline>
+
+        {links.length > 0 &&
+          links.map((l, index) => (
+            <Form.Group widths='equal' key={index} inline>
               <Form.Field>
                 <Input
                   size='mini'
@@ -64,11 +82,9 @@ const ExternalLinks = ({ externalLinks: initExternalLinks, onExternalLinksUpdate
                   fluid
                   placeholder='URL'
                   value={l.url || ''}
-                  onChange={(e, { value }) => {
-                    l.url = value;
-                    setExternalLinks([...externalLinks]);
-                    onExternalLinksUpdated(externalLinks);
-                  }}
+                  onChange={(_e, { value }) =>
+                    handleLinkChange(index, 'url', value === '' ? undefined : String(value))
+                  }
                 />
               </Form.Field>
               <Form.Field>
@@ -79,11 +95,9 @@ const ExternalLinks = ({ externalLinks: initExternalLinks, onExternalLinksUpdate
                   fluid
                   placeholder='Title'
                   value={l.title || ''}
-                  onChange={(e, { value }) => {
-                    l.title = value;
-                    setExternalLinks([...externalLinks]);
-                    onExternalLinksUpdated(externalLinks);
-                  }}
+                  onChange={(_e, { value }) =>
+                    handleLinkChange(index, 'title', value === '' ? undefined : String(value))
+                  }
                 />
               </Form.Field>
             </Form.Group>
