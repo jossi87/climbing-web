@@ -32,7 +32,7 @@ function Footer() {
                 target='_blank'
               >
                 <img
-                  style={styleGitHubBrv}
+                  style={{ ...styleGitHubBrv, width: '170px', height: '69px' }}
                   src={'/png/GitHub_Logo.png'}
                   alt='GitHub'
                   width='170'
@@ -43,7 +43,7 @@ function Footer() {
             <Grid.Column>
               <a href={'https://brv.no'} rel='noreferrer noopener' target='_blank'>
                 <img
-                  style={styleGitHubBrv}
+                  style={{ ...styleGitHubBrv, width: '170px', height: '102px' }}
                   src={'/png/brv.png'}
                   alt='Bratte Rogalands venner'
                   width='170'

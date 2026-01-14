@@ -22,6 +22,7 @@ import Linkify from 'linkify-react';
 type ProblemNameProps = {
   a: components['schemas']['Activity'];
 };
+
 function ProblemName({ a }: ProblemNameProps) {
   return (
     <>
@@ -103,6 +104,7 @@ type Props = {
   idArea: number;
   idSector: number;
 };
+
 const Activity = ({ idArea, idSector }: Props) => {
   const [lowerGradeId, setLowerGradeId] = useLocalStorage('lower_grade_id', 0);
   const [lowerGradeText, setLowerGradeText] = useLocalStorage('lower_grade_text', 'n/a');
@@ -125,21 +127,28 @@ const Activity = ({ idArea, idSector }: Props) => {
     media: activityTypeMedia,
   });
 
+  const gradeOptions = meta.grades.map((g) => ({
+    key: g.id,
+    text: g.grade,
+    value: g.id,
+  }));
+
   if (
     meta.grades.filter((g) => {
       const gradeText = g.grade.includes('(')
         ? g.grade.substring(g.grade.indexOf('(') + 1).replace(')', '')
         : g.grade;
-      return gradeText == lowerGradeText && g.id == lowerGradeId;
+      return gradeText === lowerGradeText && g.id === lowerGradeId;
     }).length === 0
   ) {
-    if (lowerGradeId != 0) setLowerGradeId(0);
-    if (lowerGradeText != 'n/a') setLowerGradeText('n/a');
+    if (lowerGradeId !== 0) setLowerGradeId(0);
+    if (lowerGradeText !== 'n/a') setLowerGradeText('n/a');
     if (!activityTypeTicks) setActivityTypeTicks(true);
     if (!activityTypeFa) setActivityTypeFa(true);
     if (!activityTypeComments) setActivityTypeComments(true);
     if (!activityTypeMedia) setActivityTypeMedia(true);
   }
+
   const imgStyle = {
     height: 'fit-content',
     maxHeight: '80px',
@@ -152,33 +161,32 @@ const Activity = ({ idArea, idSector }: Props) => {
       <Segment vertical style={{ paddingTop: 0 }}>
         <Button.Group size='mini' compact>
           <Dropdown
-            text={'Lower grade: ' + lowerGradeText}
-            icon='filter'
+            button
             floating
             compact
-            labeled
-            button
             className='icon'
-          >
-            <Dropdown.Menu>
-              <Dropdown.Menu scrolling>
-                {meta.grades.map((a) => (
-                  <Dropdown.Item
-                    key={a.grade}
-                    text={a.grade}
-                    onClick={() => {
-                      const gradeText = a.grade.includes('(')
-                        ? a.grade.substring(a.grade.indexOf('(') + 1).replace(')', '')
-                        : a.grade;
-                      setLowerGradeId(a.id);
-                      setLowerGradeText(gradeText);
-                      refetch();
-                    }}
-                  />
-                ))}
-              </Dropdown.Menu>
-            </Dropdown.Menu>
-          </Dropdown>
+            scrolling
+            options={gradeOptions}
+            trigger={
+              <span>
+                <Icon name='filter' />
+                {'Lower grade: ' + lowerGradeText}
+              </span>
+            }
+            onChange={(_e, { value }) => {
+              const selectedGrade = meta.grades.find((g) => g.id === value);
+              if (selectedGrade) {
+                const gradeText = selectedGrade.grade.includes('(')
+                  ? selectedGrade.grade
+                      .substring(selectedGrade.grade.indexOf('(') + 1)
+                      .replace(')', '')
+                  : selectedGrade.grade;
+                setLowerGradeId(selectedGrade.id);
+                setLowerGradeText(gradeText);
+                refetch();
+              }
+            }}
+          />
           <Button
             animated='fade'
             inverted={!activityTypeFa}
@@ -226,13 +234,14 @@ const Activity = ({ idArea, idSector }: Props) => {
               refetch();
             }}
           >
-            <Button.Content hidden>Comment</Button.Content>
+            <Button.Content hidden>Com</Button.Content>
             <Button.Content visible>
               <Icon name='comments' color='black' />
             </Button.Content>
           </Button>
         </Button.Group>
       </Segment>
+
       {!activity && (
         <Segment vertical>
           <Placeholder fluid>
@@ -245,15 +254,19 @@ const Activity = ({ idArea, idSector }: Props) => {
           </Placeholder>
         </Segment>
       )}
+
       {activity && activity.length === 0 && <Segment vertical>No recent activity</Segment>}
-      {activity && activity.length != 0 && (
+
+      {activity && activity.length !== 0 && (
         <Feed>
           {activity.map((a) => {
+            const currentKey = a.activityIds?.join('+') ?? `activity-${a.id ?? 0}`;
+
             // FA
             if (a.users) {
               const typeDescription = meta.isBouldering ? 'problem' : 'route';
               return (
-                <Feed.Event key={a.activityIds?.join('+') ?? `activity-${a.id ?? 0}`}>
+                <Feed.Event key={currentKey}>
                   <Feed.Label>
                     {(a.problemRandomMediaId ?? 0) > 0 && (
                       <img
@@ -263,9 +276,7 @@ const Activity = ({ idArea, idSector }: Props) => {
                         src={getImageUrl(
                           Number(a.problemRandomMediaId ?? 0),
                           Number(a.problemRandomMediaCrc32 ?? 0),
-                          {
-                            minDimension: 35,
-                          },
+                          { minDimension: 35 },
                         )}
                         onError={(e: SyntheticEvent<HTMLImageElement>) =>
                           ((e.target as HTMLImageElement).src = '/png/video_placeholder.png')
@@ -301,10 +312,10 @@ const Activity = ({ idArea, idSector }: Props) => {
                 </Feed.Event>
               );
             }
-            // Guestbook
+            // Comments
             else if (a.message) {
               return (
-                <Feed.Event key={a.activityIds?.join('+') ?? `activity-${a.id ?? 0}`}>
+                <Feed.Event key={currentKey}>
                   <Feed.Label>
                     <Avatar userId={a.id} name={a.name} avatarCrc32={a.avatarCrc32} />
                   </Feed.Label>
@@ -336,52 +347,38 @@ const Activity = ({ idArea, idSector }: Props) => {
             // Media
             else if (a.media) {
               const [numImg, numMov] = a.media.reduce(
-                (acc, { movie }) => {
-                  if (movie) {
-                    return [acc[0], acc[1] + 1];
-                  } else {
-                    return [acc[0] + 1, acc[1]];
-                  }
-                },
+                (acc, { movie }) => (movie ? [acc[0], acc[1] + 1] : [acc[0] + 1, acc[1]]),
                 [0, 0],
               );
-              const img = numImg > 0 && (
+
+              const summaryText = (
                 <>
-                  {numImg} new <Icon name='photo' />
+                  {numImg > 0 && (
+                    <>
+                      {numImg} new <Icon name='photo' />{' '}
+                    </>
+                  )}
+                  {numImg > 0 && numMov > 0 && 'and '}
+                  {numMov > 0 && (
+                    <>
+                      {numMov} new <Icon name='film' />
+                    </>
+                  )}
                 </>
               );
-              const mov = numMov > 0 && (
-                <>
-                  {numMov} new <Icon name='film' />
-                </>
-              );
-              let summary;
-              if (img && mov) {
-                summary = (
-                  <>
-                    {img} and {mov}
-                  </>
-                );
-              } else if (mov) {
-                summary = mov;
-              } else {
-                summary = img;
-              }
+
               return (
-                <Feed.Event key={a.activityIds?.join('+') ?? `activity-${a.id ?? 0}`}>
+                <Feed.Event key={currentKey}>
                   <Feed.Label>
                     {(a.problemRandomMediaId ?? 0) > 0 && (
                       <img
                         style={{ height: '35px', width: '35px', objectFit: 'cover' }}
                         width='35'
                         height='35'
-                        alt={`${a.problemName} ${a.grade} (${a.areaName} / ${a.sectorName})`}
                         src={getImageUrl(
                           Number(a.problemRandomMediaId ?? 0),
                           Number(a.problemRandomMediaCrc32 ?? 0),
-                          {
-                            minDimension: 35,
-                          },
+                          { minDimension: 35 },
                         )}
                         onError={(e: SyntheticEvent<HTMLImageElement>) =>
                           ((e.target as HTMLImageElement).src = '/png/video_placeholder.png')
@@ -391,7 +388,7 @@ const Activity = ({ idArea, idSector }: Props) => {
                   </Feed.Label>
                   <Feed.Content>
                     <Feed.Summary style={{ marginBottom: '3px' }}>
-                      {summary} on <ProblemName a={a} />
+                      {summaryText} on <ProblemName a={a} />
                       <Feed.Date>{a.timeAgo}</Feed.Date>
                     </Feed.Summary>
                     <LazyLoadedMedia
@@ -403,11 +400,11 @@ const Activity = ({ idArea, idSector }: Props) => {
                 </Feed.Event>
               );
             }
-            // Tick
+            // Ticks
             else {
               const action = a.repeat ? 'repeated' : 'ticked';
               return (
-                <Feed.Event key={a.activityIds?.join('+') ?? `activity-${a.id ?? 0}`}>
+                <Feed.Event key={currentKey}>
                   <Feed.Label>
                     <Avatar userId={a.id} name={a.name} avatarCrc32={a.avatarCrc32} />
                   </Feed.Label>
@@ -420,15 +417,14 @@ const Activity = ({ idArea, idSector }: Props) => {
                       <Feed.Date>{a.timeAgo}</Feed.Date>
                     </Feed.Summary>
                     {a.description && <Feed.Extra text>{a.description}</Feed.Extra>}
-                    {(a.noPersonalGrade || a.stars != 0) && (
+                    {(a.noPersonalGrade || a.stars !== 0) && (
                       <Feed.Meta>
                         {a.noPersonalGrade && (
                           <Label basic size='mini'>
-                            <Icon name='x' />
-                            No personal grade
+                            <Icon name='x' /> No personal grade
                           </Label>
                         )}
-                        {a.stars != 0 && <Stars numStars={a.stars} includeStarOutlines={true} />}
+                        {a.stars !== 0 && <Stars numStars={a.stars} includeStarOutlines={true} />}
                       </Feed.Meta>
                     )}
                   </Feed.Content>

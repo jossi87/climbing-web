@@ -81,7 +81,6 @@ const Frontpage = () => {
                   <Card>
                     <Link to={`/problem/${randomMedia.idProblem}`}>
                       <Image
-                        fetchpriority='high'
                         width='275'
                         height='250'
                         size='medium'
