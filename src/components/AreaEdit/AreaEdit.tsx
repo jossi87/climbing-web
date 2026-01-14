@@ -69,9 +69,10 @@ export const AreaEdit = () => {
   const safeSectors = data.sectors ?? [];
   const safeSectorOrder = data.sectorOrder ?? [];
 
-  const defaultCenter = data.coordinates
-    ? { lat: +(data.coordinates.latitude ?? 0), lng: +(data.coordinates.longitude ?? 0) }
-    : meta.defaultCenter;
+  const defaultCenter =
+    data.coordinates && data.coordinates.latitude !== 0 && data.coordinates.longitude !== 0
+      ? { lat: +(data.coordinates.latitude ?? 0), lng: +(data.coordinates.longitude ?? 0) }
+      : meta.defaultCenter;
   const defaultZoom: number = data.coordinates ? 8 : meta.defaultZoom;
 
   return (
@@ -219,7 +220,9 @@ export const AreaEdit = () => {
             <Leaflet
               autoZoom={true}
               markers={
-                data.coordinates
+                data.coordinates &&
+                data.coordinates.latitude !== 0 &&
+                data.coordinates.longitude !== 0
                   ? [
                       {
                         coordinates: {
