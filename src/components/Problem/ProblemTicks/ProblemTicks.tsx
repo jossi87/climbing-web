@@ -21,7 +21,7 @@ export const ProblemTicks = ({ ticks }: Props) => {
       {safeTicks.length ? (
         safeTicks.map((t) => {
           let dt = t.date;
-          let com: ReactNode | null = null;
+          let com: ReactNode | null | undefined;
           const repeats = t.repeats ?? [];
           if (repeats.length > 0) {
             dt =

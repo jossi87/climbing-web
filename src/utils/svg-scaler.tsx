@@ -68,7 +68,6 @@ export function calculateMediaRegion(
     }
 
     minX -= addLeft;
-    maxX += addRight;
   }
 
   // Crop should have at least 1080 in height (if possible)
@@ -83,7 +82,6 @@ export function calculateMediaRegion(
       addTop = addY - addBottom;
     }
     minY -= addTop;
-    maxY += addBottom;
   }
 
   return {
