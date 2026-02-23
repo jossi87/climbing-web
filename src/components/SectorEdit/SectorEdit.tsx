@@ -553,9 +553,9 @@ export const SectorEdit = ({ sector, area }: Props) => {
               <Button
                 size='tiny'
                 compact
-                positive={sectorMarkers != null}
+                positive={sectorMarkers != null && sectorMarkers.length > 0}
                 onClick={() => {
-                  if (sectorMarkers == null) {
+                  if (sectorMarkers == null || sectorMarkers.length == 0) {
                     if (sectorId) {
                       setSectorMarkers(
                         data.problems
