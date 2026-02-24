@@ -84,12 +84,12 @@ export function getBuldreinfoMediaUrl(id: number, suffix: string): string {
     return `${S3_BASE}/original/jpg/${bucketSubfolder}/${id}.jpg`;
   }
   if (suffix === 'webm') {
-    return `${S3_BASE}/webm/${bucketSubfolder}/${id}.webm`;
+    return `${S3_BASE}/web/webm/${bucketSubfolder}/${id}.webm`;
   }
   if (suffix === 'mp4') {
-    return `${S3_BASE}/mp4/${bucketSubfolder}/${id}.mp4`;
+    return `${S3_BASE}/web/mp4/${bucketSubfolder}/${id}.mp4`;
   }
-  return `${S3_BASE}/webp/${bucketSubfolder}/${id}.webp`;
+  return `${S3_BASE}/web/webp/${bucketSubfolder}/${id}.webp`;
 }
 
 export function numberWithCommas(number: number) {
