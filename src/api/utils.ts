@@ -78,23 +78,18 @@ export function getBuldreinfoMediaUrlSupported(id: number): string {
 }
 
 export function getBuldreinfoMediaUrl(id: number, suffix: string): string {
+  const S3_BASE = 'https://climbing-web.se-sto-1.linodeobjects.com';
+  const bucketSubfolder = Math.floor(id / 100) * 100;
   if (suffix === 'jpg') {
-    return (
-      getBaseUrl() +
-      '/buldreinfo_media/original/jpg/' +
-      Math.floor(id / 100) * 100 +
-      '/' +
-      id +
-      '.jpg'
-    );
-  } else if (suffix === 'webm') {
-    return (
-      getBaseUrl() + '/buldreinfo_media/webm/' + Math.floor(id / 100) * 100 + '/' + id + '.webm'
-    );
-  } else if (suffix === 'mp4') {
-    return getBaseUrl() + '/buldreinfo_media/mp4/' + Math.floor(id / 100) * 100 + '/' + id + '.mp4';
+    return `${S3_BASE}/original/jpg/${bucketSubfolder}/${id}.jpg`;
   }
-  return getBaseUrl() + '/buldreinfo_media/webp/' + Math.floor(id / 100) * 100 + '/' + id + '.webp';
+  if (suffix === 'webm') {
+    return `${S3_BASE}/webm/${bucketSubfolder}/${id}.webm`;
+  }
+  if (suffix === 'mp4') {
+    return `${S3_BASE}/mp4/${bucketSubfolder}/${id}.mp4`;
+  }
+  return `${S3_BASE}/webp/${bucketSubfolder}/${id}.webp`;
 }
 
 export function numberWithCommas(number: number) {
