@@ -99,7 +99,8 @@ const Profile = () => {
         <Avatar
           userId={profile.id ?? 0}
           name={`${profile.firstname ?? ''} ${profile.lastname ?? ''}`}
-          avatarCrc32={profile.avatarCrc32}
+          mediaId={profile.mediaId}
+          mediaVersionStamp={profile.mediaVersionStamp}
         />
         <Header.Content>{firstLast}</Header.Content>
       </Header>
@@ -109,7 +110,8 @@ const Profile = () => {
             <Avatar
               userId={profile.id ?? 0}
               name={`${profile.firstname ?? ''} ${profile.lastname ?? ''}`}
-              avatarCrc32={profile.avatarCrc32}
+              mediaId={profile.mediaId}
+              mediaVersionStamp={profile.mediaVersionStamp}
             />
             <Header.Content>
               {profile.firstname ?? ''}

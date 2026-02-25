@@ -506,7 +506,12 @@ export const Problem = () => {
                   <>
                     {data.faAid.users.map((u) => (
                       <Label key={u.id} as={Link} to={`/user/${u.id}`} image basic>
-                        <Avatar userId={u.id} name={u.name} avatarCrc32={u.avatarCrc32} />
+                        <Avatar
+                          userId={u.id}
+                          name={u.name}
+                          mediaId={u.mediaId}
+                          mediaVersionStamp={u.mediaVersionStamp}
+                        />
                         {u.name}
                       </Label>
                     ))}
@@ -545,7 +550,12 @@ export const Problem = () => {
                 <>
                   {data.fa.map((u) => (
                     <Label key={u.id} as={Link} to={`/user/${u.id}`} image basic>
-                      <Avatar userId={u.id} name={u.name} avatarCrc32={u.avatarCrc32} />
+                      <Avatar
+                        userId={u.id}
+                        name={u.name}
+                        mediaId={u.mediaId}
+                        mediaVersionStamp={u.mediaVersionStamp}
+                      />
                       {u.name}
                     </Label>
                   ))}
@@ -626,7 +636,12 @@ export const Problem = () => {
               <Table.Cell>
                 {data.todos.map((u) => (
                   <Label size='mini' key={u.idUser} as={Link} to={`/user/${u.idUser}`} image basic>
-                    <Avatar userId={u.idUser} name={u.name} avatarCrc32={u.avatarCrc32} />
+                    <Avatar
+                      userId={u.idUser}
+                      name={u.name}
+                      mediaId={u.mediaId}
+                      mediaVersionStamp={u.mediaVersionStamp}
+                    />
                     {u.name}
                   </Label>
                 ))}

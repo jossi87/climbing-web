@@ -32,10 +32,6 @@ export function useAccessToken() {
   return accessToken;
 }
 
-export function getAvatarUrl(id: number, avatarCrc32: number, fullSize?: boolean): string {
-  return getUrl(`/avatar?id=${id}&versionStamp=${avatarCrc32}&fullSize=${fullSize || false}`);
-}
-
 export function getImageUrl(
   id: number,
   versionStamp: number,

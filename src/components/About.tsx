@@ -22,7 +22,12 @@ const About = () => {
           {data ? (
             data.map((u) => (
               <List.Item key={u.userId}>
-                <Avatar userId={u.userId} name={u.name} avatarCrc32={u.avatarCrc32} />
+                <Avatar
+                  userId={u.userId}
+                  name={u.name}
+                  mediaId={u.mediaId}
+                  mediaVersionStamp={u.mediaVersionStamp}
+                />
                 <List.Content>
                   <List.Header as={Link} to={`/user/${u.userId}`}>
                     {u.name}

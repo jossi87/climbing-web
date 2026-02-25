@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { getAvatarUrl } from '../../../api/utils';
+import { getImageUrl } from '../../../api/utils';
 import { Icon, Image, Modal } from 'semantic-ui-react';
 
 type Props = {
   userId?: number;
   name?: string;
-  avatarCrc32?: number;
+  mediaId?: number;
+  mediaVersionStamp?: number;
   floated?: 'left' | 'right';
   size?: 'mini' | 'tiny' | 'small' | 'medium' | 'large' | 'big' | 'huge' | 'massive';
 };
@@ -21,7 +22,7 @@ const SIZE_MAP: Record<string, number> = {
   massive: 960,
 };
 
-function Avatar({ userId, name, avatarCrc32, floated, size = 'mini' }: Props) {
+function Avatar({ userId, name, mediaId, mediaVersionStamp, floated, size = 'mini' }: Props) {
   const [open, setOpen] = useState(false);
   const pixelSize = SIZE_MAP[size] || 35;
 
@@ -33,10 +34,10 @@ function Avatar({ userId, name, avatarCrc32, floated, size = 'mini' }: Props) {
   };
 
   const uid = userId ?? 0;
-  const crc = avatarCrc32 ?? 0;
+  const mid = mediaId ?? 0;
   const alt = name ?? '';
 
-  if (crc === 0) {
+  if (mid === 0) {
     return (
       <Image {...commonImageProps} as='div' style={{ display: 'inline-block' }}>
         <Icon
@@ -62,7 +63,7 @@ function Avatar({ userId, name, avatarCrc32, floated, size = 'mini' }: Props) {
       open={open}
       trigger={
         <Image
-          src={getAvatarUrl(uid, crc)}
+          src={getImageUrl(uid, mediaVersionStamp ?? 0, { targetWidth: 50 })}
           alt={alt}
           {...commonImageProps}
           style={{ objectFit: 'cover' }}
@@ -70,7 +71,7 @@ function Avatar({ userId, name, avatarCrc32, floated, size = 'mini' }: Props) {
       }
     >
       <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <Image src={getAvatarUrl(uid, crc, true)} alt={alt} />
+        <Image src={getImageUrl(uid, mediaVersionStamp ?? 0, { targetWidth: 50 })} alt={alt} />
       </div>
     </Modal>
   );

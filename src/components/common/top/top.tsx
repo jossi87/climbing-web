@@ -31,7 +31,12 @@ const Top = ({ idArea, idSector }: TopProps) => {
               style={{ backgroundColor: u.mine ? '#d2f8d2' : '#ffffff' }}
               basic
             >
-              <Avatar userId={u.userId} name={u.name} avatarCrc32={u.avatarCrc32} />
+              <Avatar
+                userId={u.userId}
+                name={u.name}
+                mediaId={u.mediaId}
+                mediaVersionStamp={u.mediaVersionStamp}
+              />
               {u.name}
             </Label>
           ))}

@@ -303,7 +303,12 @@ const Activity = ({ idArea, idSector }: Props) => {
                     <Feed.Meta>
                       {a.users.map((u) => (
                         <Label basic key={u.id} as={Link} to={`/user/${u.id}`} image>
-                          <Avatar userId={u.id} name={u.name} avatarCrc32={u.avatarCrc32} />{' '}
+                          <Avatar
+                            userId={u.id}
+                            name={u.name}
+                            mediaId={u.mediaId}
+                            mediaVersionStamp={u.mediaVersionStamp}
+                          />{' '}
                           {u.name}
                         </Label>
                       ))}
@@ -317,7 +322,12 @@ const Activity = ({ idArea, idSector }: Props) => {
               return (
                 <Feed.Event key={currentKey}>
                   <Feed.Label>
-                    <Avatar userId={a.id} name={a.name} avatarCrc32={a.avatarCrc32} />
+                    <Avatar
+                      userId={a.id}
+                      name={a.name}
+                      mediaId={a.mediaId}
+                      mediaVersionStamp={a.mediaVersionStamp}
+                    />
                   </Feed.Label>
                   <Feed.Content>
                     <Feed.Summary>
@@ -406,7 +416,12 @@ const Activity = ({ idArea, idSector }: Props) => {
               return (
                 <Feed.Event key={currentKey}>
                   <Feed.Label>
-                    <Avatar userId={a.id} name={a.name} avatarCrc32={a.avatarCrc32} />
+                    <Avatar
+                      userId={a.id}
+                      name={a.name}
+                      mediaId={a.mediaId}
+                      mediaVersionStamp={a.mediaVersionStamp}
+                    />
                   </Feed.Label>
                   <Feed.Content>
                     <Feed.Summary>

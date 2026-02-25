@@ -96,7 +96,8 @@ const Permissions = () => {
                   <Avatar
                     userId={u.userId}
                     name={u.name}
-                    avatarCrc32={u.avatarCrc32}
+                    mediaId={u.mediaId}
+                    mediaVersionStamp={u.mediaVersionStamp}
                     floated='right'
                     size='mini'
                   />

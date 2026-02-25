@@ -92,23 +92,6 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/v2/avatar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get avatar by user id */
-        get: operations["getAvatar"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/v2/webcams": {
         parameters: {
             query?: never;
@@ -933,8 +916,10 @@ export type components = {
             /** Format: int32 */
             id?: number;
             name?: string;
+            /** Format: int32 */
+            mediaId?: number;
             /** Format: int64 */
-            avatarCrc32?: number;
+            mediaVersionStamp?: number;
             description?: string;
             message?: string;
             users?: components["schemas"]["User"][];
@@ -951,16 +936,20 @@ export type components = {
             /** Format: int32 */
             id?: number;
             name?: string;
+            /** Format: int32 */
+            mediaId?: number;
             /** Format: int64 */
-            avatarCrc32?: number;
+            mediaVersionStamp?: number;
         };
         Administrator: {
             /** Format: int32 */
             userId?: number;
             name?: string;
             emails?: string[];
+            /** Format: int32 */
+            mediaId?: number;
             /** Format: int64 */
-            avatarCrc32?: number;
+            mediaVersionStamp?: number;
             lastLogin?: string;
         };
         Area: {
@@ -1371,8 +1360,10 @@ export type components = {
             /** Format: int32 */
             userId?: number;
             name?: string;
+            /** Format: int32 */
+            mediaId?: number;
             /** Format: int64 */
-            avatarCrc32?: number;
+            mediaVersionStamp?: number;
             lastLogin?: string;
             adminRead?: boolean;
             adminWrite?: boolean;
@@ -1468,8 +1459,10 @@ export type components = {
             date?: string;
             /** Format: int32 */
             idUser?: number;
+            /** Format: int32 */
+            mediaId?: number;
             /** Format: int64 */
-            avatarCrc32?: number;
+            mediaVersionStamp?: number;
             name?: string;
             message?: string;
             danger?: boolean;
@@ -1492,8 +1485,10 @@ export type components = {
             id?: number;
             /** Format: int32 */
             idUser?: number;
+            /** Format: int32 */
+            mediaId?: number;
             /** Format: int64 */
-            avatarCrc32?: number;
+            mediaVersionStamp?: number;
             date?: string;
             name?: string;
             suggestedGrade?: string;
@@ -1506,8 +1501,10 @@ export type components = {
         ProblemTodo: {
             /** Format: int32 */
             idUser?: number;
+            /** Format: int32 */
+            mediaId?: number;
             /** Format: int64 */
-            avatarCrc32?: number;
+            mediaVersionStamp?: number;
             name?: string;
         };
         TickRepeat: {
@@ -1521,11 +1518,13 @@ export type components = {
         Profile: {
             /** Format: int32 */
             id?: number;
-            /** Format: int64 */
-            avatarCrc32?: number;
             firstname?: string;
             lastname?: string;
             emailVisibleToAll?: boolean;
+            /** Format: int32 */
+            mediaId?: number;
+            /** Format: int64 */
+            mediaVersionStamp?: number;
             emails?: string[];
             userRegions?: components["schemas"]["UserRegion"][];
             lastActivity?: string;
@@ -1820,8 +1819,10 @@ export type components = {
             /** Format: int32 */
             userId?: number;
             name?: string;
+            /** Format: int32 */
+            mediaId?: number;
             /** Format: int64 */
-            avatarCrc32?: number;
+            mediaVersionStamp?: number;
             mine?: boolean;
         };
         Trash: {
@@ -1990,14 +1991,13 @@ export type components = {
             title?: string;
             description?: string;
             url?: string;
-            externalurl?: string;
-            mediaurl?: string;
+            externalUrl?: string;
             /** Format: int32 */
-            mediaid?: number;
+            mediaId?: number;
             /** Format: int64 */
-            crc32?: number;
-            lockedadmin?: boolean;
-            lockedsuperadmin?: boolean;
+            mediaVersionStamp?: number;
+            lockedAdmin?: boolean;
+            lockedSuperadmin?: boolean;
             /** Format: int64 */
             hits?: number;
             pageViews?: string;
@@ -2230,31 +2230,6 @@ export interface operations {
                 content: {
                     "application/pdf": string[];
                 };
-            };
-        };
-    };
-    getAvatar: {
-        parameters: {
-            query: {
-                /** @description User id */
-                id: number;
-                /** @description Avatar CRC32 (cache buster) */
-                avatarCrc32?: number;
-                /** @description Full size */
-                fullSize?: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Redirects to the public object storage URL */
-            302: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
         };
     };

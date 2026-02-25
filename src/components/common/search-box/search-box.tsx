@@ -46,8 +46,7 @@ const SearchBox = ({ children: _, ...searchProps }: SearchBoxProps) => {
       resultRenderer={(data) => {
         const {
           mediaid,
-          crc32,
-          mediaurl,
+          mediaversionstamp,
           title,
           description,
           lockedadmin,
@@ -57,9 +56,7 @@ const SearchBox = ({ children: _, ...searchProps }: SearchBoxProps) => {
         } = data;
         let imageSrc = null;
         if (mediaid > 0) {
-          imageSrc = getImageUrl(mediaid, crc32, { minDimension: 45 });
-        } else if (mediaurl) {
-          imageSrc = mediaurl;
+          imageSrc = getImageUrl(mediaid, mediaversionstamp, { minDimension: 45 });
         }
         if (externalurl) {
           return (
@@ -119,16 +116,15 @@ const SearchBox = ({ children: _, ...searchProps }: SearchBoxProps) => {
       }}
       minCharacters={1}
       results={data.map((s) => ({
-        key: s.url || s.externalurl,
+        key: s.url || s.externalUrl,
         url: s.url,
-        externalurl: s.externalurl,
-        mediaid: s.mediaid,
-        mediaurl: s.mediaurl,
-        crc32: s.crc32,
+        externalurl: s.externalUrl,
+        mediaid: s.mediaId,
+        mediaversionstamp: s.mediaVersionStamp,
         title: s.title,
         description: s.description,
-        lockedadmin: String(s.lockedadmin),
-        lockedsuperadmin: String(s.lockedsuperadmin),
+        lockedadmin: String(s.lockedAdmin),
+        lockedsuperadmin: String(s.lockedSuperadmin),
         pageViews: s.pageViews,
       }))}
       {...searchProps}

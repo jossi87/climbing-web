@@ -118,7 +118,12 @@ const Frontpage = () => {
                         {randomMedia.tagged &&
                           randomMedia.tagged.map((x) => (
                             <Label image basic key={x.id} as={Link} to={`/user/${x.id}`}>
-                              <Avatar userId={x.id} name={x.name} avatarCrc32={x.avatarCrc32} />
+                              <Avatar
+                                userId={x.id}
+                                name={x.name}
+                                mediaId={x.mediaId}
+                                mediaVersionStamp={x.mediaVersionStamp}
+                              />
                               {x.name}
                             </Label>
                           ))}
@@ -127,7 +132,8 @@ const Frontpage = () => {
                             <Avatar
                               userId={randomMedia.photographer.id}
                               name={randomMedia.photographer.name}
-                              avatarCrc32={randomMedia.photographer.avatarCrc32}
+                              mediaId={randomMedia.photographer.mediaId}
+                              mediaVersionStamp={randomMedia.photographer.mediaVersionStamp}
                             />
                             Photog:
                             <Label.Detail color={'FFF'}>
