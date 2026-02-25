@@ -33,20 +33,19 @@ export function useAccessToken() {
 }
 
 export function getAvatarUrl(id: number, avatarCrc32: number, fullSize?: boolean): string {
-  return getUrl(`/avatar?id=${id}&avatarCrc32=${avatarCrc32}&fullSize=${fullSize || false}`);
+  return getUrl(`/avatar?id=${id}&versionStamp=${avatarCrc32}&fullSize=${fullSize || false}`);
 }
 
 export function getImageUrl(
   id: number,
-  checksum: number,
+  versionStamp: number,
   options?: {
     mediaRegion?: MediaRegion;
     targetWidth?: number;
     minDimension?: number;
   },
 ): string {
-  const crc32 = checksum || 0;
-  let url = `/images?id=${id}&crc32=${crc32}`;
+  let url = `/images?id=${id}&versionStamp=${versionStamp}`;
   if (options?.mediaRegion) {
     const region = options.mediaRegion;
     url += `&x=${region.x}&y=${region.y}&width=${region.width}&height=${region.height}`;
