@@ -63,7 +63,7 @@ function Avatar({ userId, name, mediaId, mediaVersionStamp, floated, size = 'min
       open={open}
       trigger={
         <Image
-          src={getImageUrl(uid, mediaVersionStamp ?? 0, { targetWidth: 50 })}
+          src={getImageUrl(mid, mediaVersionStamp ?? 0, { targetWidth: 50 })}
           alt={alt}
           {...commonImageProps}
           style={{ objectFit: 'cover' }}
@@ -71,7 +71,7 @@ function Avatar({ userId, name, mediaId, mediaVersionStamp, floated, size = 'min
       }
     >
       <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <Image src={getImageUrl(uid, mediaVersionStamp ?? 0, { targetWidth: 50 })} alt={alt} />
+        <Image src={getImageUrl(mid, mediaVersionStamp ?? 0, { targetWidth: 50 })} alt={alt} />
       </div>
     </Modal>
   );
