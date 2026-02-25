@@ -83,12 +83,7 @@ export const ProblemComments = ({
           return (
             <Feed.Event key={c.id} style={{ padding: 0 }}>
               <Feed.Label>
-                <Avatar
-                  userId={c.idUser}
-                  name={c.name}
-                  mediaId={c.mediaId}
-                  mediaVersionStamp={c.mediaVersionStamp}
-                />
+                <Avatar name={c.name} mediaId={c.mediaId} mediaVersionStamp={c.mediaVersionStamp} />
               </Feed.Label>
               <Feed.Content>
                 {c.editable && (

@@ -304,7 +304,6 @@ const Activity = ({ idArea, idSector }: Props) => {
                       {a.users.map((u) => (
                         <Label basic key={u.id} as={Link} to={`/user/${u.id}`} image>
                           <Avatar
-                            userId={u.id}
                             name={u.name}
                             mediaId={u.mediaId}
                             mediaVersionStamp={u.mediaVersionStamp}
@@ -323,7 +322,6 @@ const Activity = ({ idArea, idSector }: Props) => {
                 <Feed.Event key={currentKey}>
                   <Feed.Label>
                     <Avatar
-                      userId={a.id}
                       name={a.name}
                       mediaId={a.mediaId}
                       mediaVersionStamp={a.mediaVersionStamp}
@@ -417,7 +415,6 @@ const Activity = ({ idArea, idSector }: Props) => {
                 <Feed.Event key={currentKey}>
                   <Feed.Label>
                     <Avatar
-                      userId={a.id}
                       name={a.name}
                       mediaId={a.mediaId}
                       mediaVersionStamp={a.mediaVersionStamp}

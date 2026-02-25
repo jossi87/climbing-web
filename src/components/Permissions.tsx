@@ -94,7 +94,6 @@ const Permissions = () => {
               <Card color={color} key={u.userId} raised>
                 <Card.Content>
                   <Avatar
-                    userId={u.userId}
                     name={u.name}
                     mediaId={u.mediaId}
                     mediaVersionStamp={u.mediaVersionStamp}

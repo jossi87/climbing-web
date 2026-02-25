@@ -97,7 +97,6 @@ const Profile = () => {
       ></meta>
       <Header as='h5' textAlign='center' className='buldreinfo-visible-mobile'>
         <Avatar
-          userId={profile.id ?? 0}
           name={`${profile.firstname ?? ''} ${profile.lastname ?? ''}`}
           mediaId={profile.mediaId}
           mediaVersionStamp={profile.mediaVersionStamp}
@@ -108,7 +107,6 @@ const Profile = () => {
         <Menu.Item header className='buldreinfo-hidden-mobile'>
           <Header as='h4'>
             <Avatar
-              userId={profile.id ?? 0}
               name={`${profile.firstname ?? ''} ${profile.lastname ?? ''}`}
               mediaId={profile.mediaId}
               mediaVersionStamp={profile.mediaVersionStamp}

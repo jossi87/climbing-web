@@ -119,7 +119,6 @@ const Frontpage = () => {
                           randomMedia.tagged.map((x) => (
                             <Label image basic key={x.id} as={Link} to={`/user/${x.id}`}>
                               <Avatar
-                                userId={x.id}
                                 name={x.name}
                                 mediaId={x.mediaId}
                                 mediaVersionStamp={x.mediaVersionStamp}
@@ -130,7 +129,6 @@ const Frontpage = () => {
                         {randomMedia.photographer && (
                           <Label image basic as={Link} to={`/user/${randomMedia.photographer.id}`}>
                             <Avatar
-                              userId={randomMedia.photographer.id}
                               name={randomMedia.photographer.name}
                               mediaId={randomMedia.photographer.mediaId}
                               mediaVersionStamp={randomMedia.photographer.mediaVersionStamp}
