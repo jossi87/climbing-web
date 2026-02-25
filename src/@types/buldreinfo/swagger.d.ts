@@ -925,7 +925,7 @@ export type components = {
             /** Format: int32 */
             problemRandomMediaId?: number;
             /** Format: int64 */
-            problemRandomMediaCrc32?: number;
+            problemRandomMediaVersionStamp?: number;
             media?: components["schemas"]["ActivityMedia"][];
             /** Format: int32 */
             stars?: number;
@@ -943,7 +943,7 @@ export type components = {
             /** Format: int32 */
             id?: number;
             /** Format: int64 */
-            crc32?: number;
+            versionStamp?: number;
             movie?: boolean;
             embedUrl?: string;
         };
@@ -1022,7 +1022,7 @@ export type components = {
             /** Format: int32 */
             randomMediaId?: number;
             /** Format: int64 */
-            randomMediaCrc32?: number;
+            randomMediaVersionStamp?: number;
             problems?: components["schemas"]["SectorProblem"][];
             typeNumTickedTodo?: components["schemas"]["TypeNumTickedTodo"][];
             /** Format: int32 */
@@ -1065,7 +1065,7 @@ export type components = {
             id?: number;
             uploadedByMe?: boolean;
             /** Format: int64 */
-            crc32?: number;
+            versionStamp?: number;
             /** Format: int32 */
             pitch?: number;
             trivia?: boolean;
@@ -1283,7 +1283,7 @@ export type components = {
             /** Format: int32 */
             idMedia?: number;
             /** Format: int64 */
-            crc32?: number;
+            versionStamp?: number;
             /** Format: int32 */
             width?: number;
             /** Format: int32 */
@@ -1946,8 +1946,8 @@ export type components = {
             parameters?: {
                 [key: string]: string;
             };
-            wildcardSubtype?: boolean;
             wildcardType?: boolean;
+            wildcardSubtype?: boolean;
         };
         MessageBodyWorkers: Record<string, never>;
         MultiPart: {
@@ -2444,8 +2444,8 @@ export interface operations {
             query: {
                 /** @description Media id */
                 id: number;
-                /** @description Checksum cache buster */
-                crc32?: number;
+                /** @description Version stamp (cache buster) */
+                versionStamp?: number;
                 /** @description Image region - x */
                 x?: number;
                 /** @description Image region - y */

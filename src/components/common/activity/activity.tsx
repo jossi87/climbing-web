@@ -77,7 +77,7 @@ const LazyLoadedMedia = ({
               style={imgStyle}
               width={numericWidth}
               height={numericHeight}
-              src={getImageUrl(Number(m.id ?? 0), Number(m.crc32 ?? 0), {
+              src={getImageUrl(Number(m.id ?? 0), Number(m.versionStamp ?? 0), {
                 minDimension: numericWidth,
               })}
               onError={(e: SyntheticEvent<HTMLImageElement>) =>
@@ -275,7 +275,7 @@ const Activity = ({ idArea, idSector }: Props) => {
                         height='35'
                         src={getImageUrl(
                           Number(a.problemRandomMediaId ?? 0),
-                          Number(a.problemRandomMediaCrc32 ?? 0),
+                          Number(a.problemRandomMediaVersionStamp ?? 0),
                           { minDimension: 35 },
                         )}
                         onError={(e: SyntheticEvent<HTMLImageElement>) =>
@@ -377,7 +377,7 @@ const Activity = ({ idArea, idSector }: Props) => {
                         height='35'
                         src={getImageUrl(
                           Number(a.problemRandomMediaId ?? 0),
-                          Number(a.problemRandomMediaCrc32 ?? 0),
+                          Number(a.problemRandomMediaVersionStamp ?? 0),
                           { minDimension: 35 },
                         )}
                         onError={(e: SyntheticEvent<HTMLImageElement>) =>

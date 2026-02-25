@@ -92,7 +92,7 @@ const Frontpage = () => {
                         alt={`${randomMedia.problem} ${randomMedia.grade} (${randomMedia.area} / ${randomMedia.sector}) - Photog: ${randomMedia.photographer?.name ?? 'unknown'}, tagged: ${randomMedia.tagged?.[0].name}`}
                         src={getImageUrl(
                           Number(randomMedia.idMedia ?? 0),
-                          Number(randomMedia.crc32 ?? 0),
+                          Number(randomMedia.versionStamp ?? 0),
                           {
                             minDimension: 275,
                           },

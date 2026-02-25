@@ -332,7 +332,7 @@ const Area = () => {
                   style={{ maxHeight: '150px', objectFit: 'cover' }}
                   src={
                     sector.randomMediaId
-                      ? getImageUrl(sector.randomMediaId, sector.randomMediaCrc32 ?? 0, {
+                      ? getImageUrl(sector.randomMediaId, sector.randomMediaVersionStamp ?? 0, {
                           minDimension: 150,
                         })
                       : '/png/image.png'

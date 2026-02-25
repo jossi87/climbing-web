@@ -548,7 +548,7 @@ export type EditableSvg = {
   mediaHeight: number;
   mediaRegion?: MediaRegion;
   sections: components['schemas']['ProblemSection'][];
-  crc32: number;
+  versionStamp: number;
   anchors: { x: number; y: number }[];
   hasAnchor: boolean;
   nr: number;
@@ -587,7 +587,7 @@ export function useSvgEdit(
       mediaWidth: m.width ?? 0,
       mediaHeight: m.height ?? 0,
       mediaRegion,
-      crc32: m.crc32 ?? 0,
+      versionStamp: m.versionStamp ?? 0,
       sections: data.sections ?? [],
       anchors: [],
       hasAnchor: true,
@@ -700,7 +700,7 @@ export function useSvgEdit(
     mediaRegion: mediaRegionLocal,
     sections: data.sections ?? [],
     nr: svgNr,
-    crc32: m.crc32 ?? 0,
+    versionStamp: m.versionStamp ?? 0,
     path: path ?? '',
     anchors,
     tradBelayStations,

@@ -276,8 +276,8 @@ const MediaModal = ({
           key={`${m.id}-${carouselIndex}`}
           style={style.img}
           alt={m.mediaMetadata?.alt ?? ''}
-          src={getImageUrl(m.id ?? 0, m.crc32 ?? 0, { targetWidth })}
-          srcSet={getImageUrlSrcSet(m.id ?? 0, m.crc32 ?? 0, m.width ?? 0)}
+          src={getImageUrl(m.id ?? 0, m.versionStamp ?? 0, { targetWidth })}
+          srcSet={getImageUrlSrcSet(m.id ?? 0, m.versionStamp ?? 0, m.width ?? 0)}
           sizes={sizes}
         />
       );
@@ -302,7 +302,7 @@ const MediaModal = ({
           key={`${m.id}-${carouselIndex}`}
           style={{ ...style.img, pointerEvents: 'auto' }}
           alt={m.mediaMetadata?.description ?? ''}
-          src={getImageUrl(m.id ?? 0, m.crc32 ?? 0, { targetWidth: 1080 })}
+          src={getImageUrl(m.id ?? 0, m.versionStamp ?? 0, { targetWidth: 1080 })}
         />
         <Button
           size='massive'
@@ -361,7 +361,7 @@ const MediaModal = ({
               <Image
                 wrapped
                 size='medium'
-                src={getImageUrl(m.id ?? 0, m.crc32 ?? 0, { targetWidth: 150 })}
+                src={getImageUrl(m.id ?? 0, m.versionStamp ?? 0, { targetWidth: 150 })}
               />
               <Modal.Description>
                 <Header>Info</Header>

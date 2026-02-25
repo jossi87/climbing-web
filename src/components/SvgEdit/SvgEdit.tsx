@@ -134,7 +134,7 @@ type Props = Pick<
   | 'mediaHeight'
   | 'mediaRegion'
   | 'sections'
-  | 'crc32'
+  | 'versionStamp'
   | 'anchors'
   | 'hasAnchor'
   | 'nr'
@@ -186,7 +186,7 @@ export const SvgEdit = ({
   problemId,
   pitch,
   mediaId,
-  crc32,
+  versionStamp,
   mediaWidth,
   mediaHeight,
   mediaRegion,
@@ -763,7 +763,7 @@ export const SvgEdit = ({
       >
         <image
           ref={imageRef}
-          xlinkHref={getImageUrl(mediaId, crc32, { mediaRegion })}
+          xlinkHref={getImageUrl(mediaId, versionStamp, { mediaRegion })}
           width='100%'
           height='100%'
         />
