@@ -1946,8 +1946,8 @@ export type components = {
             parameters?: {
                 [key: string]: string;
             };
-            wildcardType?: boolean;
             wildcardSubtype?: boolean;
+            wildcardType?: boolean;
         };
         MessageBodyWorkers: Record<string, never>;
         MultiPart: {
@@ -2249,13 +2249,12 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            200: {
+            /** @description Redirects to the public object storage URL */
+            302: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "image/*": string[];
-                };
+                content?: never;
             };
         };
     };
@@ -2445,7 +2444,7 @@ export interface operations {
             query: {
                 /** @description Media id */
                 id: number;
-                /** @description Checksum - not used in ws, but necessary to include on client when an image is changed (e.g. rotated) to avoid cached version (cache buster) */
+                /** @description Checksum cache buster */
                 crc32?: number;
                 /** @description Image region - x */
                 x?: number;
@@ -2455,9 +2454,9 @@ export interface operations {
                 width?: number;
                 /** @description Image region - height */
                 height?: number;
-                /** @description Target Width - The image will be resized to fit this exact width (without upscaling). */
+                /** @description Target Width */
                 targetWidth?: number;
-                /** @description Minimum Dimension - Ensures the *shortest* edge (min(width, height)) of the returned image is at least this many pixels (without upscaling). */
+                /** @description Minimum Dimension */
                 minDimension?: number;
             };
             header?: never;
@@ -2466,13 +2465,12 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            200: {
+            /** @description Redirects to the public object storage URL */
+            302: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "image/*": string[];
-                };
+                content?: never;
             };
         };
     };
