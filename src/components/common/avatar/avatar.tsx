@@ -64,7 +64,7 @@ function Avatar({ name, mediaId, mediaVersionStamp, floated, size = 'mini' }: Pr
           src={getImageUrl(mid, mediaVersionStamp ?? 0, { targetWidth: pixelSize })}
           alt={alt}
           {...commonImageProps}
-          style={{ objectFit: 'cover' }}
+          style={{ objectFit: 'cover', width: pixelSize, height: pixelSize, cursor: 'pointer' }}
         />
       }
     >
