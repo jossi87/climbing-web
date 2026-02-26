@@ -1,6 +1,6 @@
 import { useEffect, useState, type ComponentProps } from 'react';
 import { Search, Image, Icon } from 'semantic-ui-react';
-import { getImageUrl, useSearch } from './../../../api';
+import { getMediaFileUrl, useSearch } from './../../../api';
 import { LockSymbol } from '../widgets/widgets';
 import { useNavigate } from 'react-router-dom';
 
@@ -56,7 +56,7 @@ const SearchBox = ({ children: _, ...searchProps }: SearchBoxProps) => {
         } = data;
         let imageSrc = null;
         if (mediaid > 0) {
-          imageSrc = getImageUrl(mediaid, mediaversionstamp, { minDimension: 45 });
+          imageSrc = getMediaFileUrl(mediaid, mediaversionstamp, false, { minDimension: 45 });
         }
         if (externalurl) {
           return (

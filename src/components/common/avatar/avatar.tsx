@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { getImageUrl } from '../../../api/utils';
+import { getMediaFileUrl } from '../../../api/utils';
 import { Icon, Image, Modal } from 'semantic-ui-react';
 
 type Props = {
@@ -61,7 +61,7 @@ function Avatar({ name, mediaId, mediaVersionStamp, floated, size = 'mini' }: Pr
       open={open}
       trigger={
         <Image
-          src={getImageUrl(mid, mediaVersionStamp ?? 0, { targetWidth: pixelSize })}
+          src={getMediaFileUrl(mid, mediaVersionStamp ?? 0, false, { targetWidth: pixelSize })}
           alt={alt}
           {...commonImageProps}
           style={{ objectFit: 'cover', width: pixelSize, height: pixelSize, cursor: 'pointer' }}
@@ -69,7 +69,7 @@ function Avatar({ name, mediaId, mediaVersionStamp, floated, size = 'mini' }: Pr
       }
     >
       <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <Image src={getImageUrl(mid, mediaVersionStamp ?? 0)} alt={alt} />
+        <Image src={getMediaFileUrl(mid, mediaVersionStamp ?? 0, false)} alt={alt} />
       </div>
     </Modal>
   );

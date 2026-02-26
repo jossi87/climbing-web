@@ -15,7 +15,7 @@ import {
   Sidebar,
   Menu,
 } from 'semantic-ui-react';
-import { getBuldreinfoMediaUrl, getImageUrl, getImageUrlSrcSet } from '../../../api';
+import { getMediaFileUrl, getMediaFileUrlSrcSet } from '../../../api';
 import SvgViewer from '../../SvgViewer';
 import VideoPlayer from './video-player';
 import { Link, useNavigate } from 'react-router-dom';
@@ -276,8 +276,8 @@ const MediaModal = ({
           key={`${m.id}-${carouselIndex}`}
           style={style.img}
           alt={m.mediaMetadata?.alt ?? ''}
-          src={getImageUrl(m.id ?? 0, m.versionStamp ?? 0, { targetWidth })}
-          srcSet={getImageUrlSrcSet(m.id ?? 0, m.versionStamp ?? 0, m.width ?? 0)}
+          src={getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, false, { targetWidth })}
+          srcSet={getMediaFileUrlSrcSet(m.id ?? 0, m.versionStamp ?? 0, m.width ?? 0)}
           sizes={sizes}
         />
       );
@@ -302,7 +302,7 @@ const MediaModal = ({
           key={`${m.id}-${carouselIndex}`}
           style={{ ...style.img, pointerEvents: 'auto' }}
           alt={m.mediaMetadata?.description ?? ''}
-          src={getImageUrl(m.id ?? 0, m.versionStamp ?? 0, { targetWidth: 1080 })}
+          src={getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, false, { targetWidth: 1080 })}
         />
         <Button
           size='massive'
@@ -361,7 +361,7 @@ const MediaModal = ({
               <Image
                 wrapped
                 size='medium'
-                src={getImageUrl(m.id ?? 0, m.versionStamp ?? 0, { targetWidth: 150 })}
+                src={getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, false, { targetWidth: 150 })}
               />
               <Modal.Description>
                 <Header>Info</Header>
@@ -626,10 +626,10 @@ const MediaModal = ({
                   icon='download'
                   text='Download original'
                   onClick={() => {
-                    const ext = m.idType !== 1 ? 'mp4' : 'jpg';
                     saveAs(
-                      getBuldreinfoMediaUrl(m.id ?? 0, ext),
-                      'buldreinfo_brattelinjer_' + (m.id ?? 0) + '.' + ext,
+                      getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, m.idType !== 1, {
+                        original: true,
+                      }),
                     );
                   }}
                 />

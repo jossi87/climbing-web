@@ -1,4 +1,4 @@
-import { getImageUrl } from '../../api';
+import { getMediaFileUrl } from '../../api';
 import { SvgRoute } from './SvgRoute';
 import { Descent, Rappel } from '../../utils/svg-utils';
 import type { components } from '../../@types/buldreinfo/swagger';
@@ -177,7 +177,7 @@ export const SvgViewer = ({
         onMouseLeave={() => setProblemIdHovered && setProblemIdHovered(null)}
       >
         <image
-          xlinkHref={getImageUrl(m.id ?? 0, m.versionStamp ?? 0, {
+          xlinkHref={getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, false, {
             mediaRegion: mediaRegion ?? undefined,
           })}
           width='100%'

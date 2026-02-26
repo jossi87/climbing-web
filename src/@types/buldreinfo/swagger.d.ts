@@ -245,15 +245,15 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/v2/images": {
+    "/v2/media/file": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get media by id */
-        get: operations["getImages"];
+        /** Get media file by id */
+        get: operations["getMediaFile"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1947,8 +1947,8 @@ export type components = {
             parameters?: {
                 [key: string]: string;
             };
-            wildcardType?: boolean;
             wildcardSubtype?: boolean;
+            wildcardType?: boolean;
         };
         MessageBodyWorkers: Record<string, never>;
         MultiPart: {
@@ -2414,21 +2414,17 @@ export interface operations {
             };
         };
     };
-    getImages: {
+    getMediaFile: {
         parameters: {
             query: {
                 /** @description Media id */
                 id: number;
+                /** @description Is movie (true) or image (false) */
+                isMovie: boolean;
                 /** @description Version stamp (cache buster) */
                 versionStamp?: number;
-                /** @description Image region - x */
-                x?: number;
-                /** @description Image region - y */
-                y?: number;
-                /** @description Image region - width */
-                width?: number;
-                /** @description Image region - height */
-                height?: number;
+                /** @description Download original source */
+                original?: boolean;
                 /** @description Target Width */
                 targetWidth?: number;
                 /** @description Minimum Dimension */

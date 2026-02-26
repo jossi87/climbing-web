@@ -14,7 +14,7 @@ import {
 import { useInView } from 'react-intersection-observer';
 import { useLocalStorage } from '../../../utils/use-local-storage';
 import { useMeta } from '../../common/meta/context';
-import { getImageUrl, useActivity } from '../../../api';
+import { getMediaFileUrl, useActivity } from '../../../api';
 import Avatar from '../../common/avatar/avatar';
 import { LockSymbol, Stars } from './../../common/widgets/widgets';
 import Linkify from 'linkify-react';
@@ -77,7 +77,7 @@ const LazyLoadedMedia = ({
               style={imgStyle}
               width={numericWidth}
               height={numericHeight}
-              src={getImageUrl(Number(m.id ?? 0), Number(m.versionStamp ?? 0), {
+              src={getMediaFileUrl(Number(m.id ?? 0), Number(m.versionStamp ?? 0), false, {
                 minDimension: numericWidth,
               })}
               onError={(e: SyntheticEvent<HTMLImageElement>) =>
@@ -273,9 +273,10 @@ const Activity = ({ idArea, idSector }: Props) => {
                         style={{ height: '35px', width: '35px', objectFit: 'cover' }}
                         width='35'
                         height='35'
-                        src={getImageUrl(
+                        src={getMediaFileUrl(
                           Number(a.problemRandomMediaId ?? 0),
                           Number(a.problemRandomMediaVersionStamp ?? 0),
+                          false,
                           { minDimension: 35 },
                         )}
                         onError={(e: SyntheticEvent<HTMLImageElement>) =>
@@ -383,9 +384,10 @@ const Activity = ({ idArea, idSector }: Props) => {
                         style={{ height: '35px', width: '35px', objectFit: 'cover' }}
                         width='35'
                         height='35'
-                        src={getImageUrl(
+                        src={getMediaFileUrl(
                           Number(a.problemRandomMediaId ?? 0),
                           Number(a.problemRandomMediaVersionStamp ?? 0),
+                          false,
                           { minDimension: 35 },
                         )}
                         onError={(e: SyntheticEvent<HTMLImageElement>) =>

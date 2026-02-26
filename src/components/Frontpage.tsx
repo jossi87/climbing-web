@@ -2,7 +2,7 @@ import { Label, Grid, Statistic, Icon, Image, Card, Segment, Placeholder } from 
 import Avatar from './common/avatar/avatar';
 import { Link } from 'react-router-dom';
 import { useMeta } from './common/meta/context';
-import { getImageUrl, numberWithCommas, useData } from '../api';
+import { getMediaFileUrl, numberWithCommas, useData } from '../api';
 import Activity from './common/activity/activity';
 import type { Success } from '../@types/buldreinfo';
 
@@ -90,9 +90,10 @@ const Frontpage = () => {
                           objectFit: 'cover',
                         }}
                         alt={`${randomMedia.problem} ${randomMedia.grade} (${randomMedia.area} / ${randomMedia.sector}) - Photog: ${randomMedia.photographer?.name ?? 'unknown'}, tagged: ${randomMedia.tagged?.[0].name}`}
-                        src={getImageUrl(
+                        src={getMediaFileUrl(
                           Number(randomMedia.idMedia ?? 0),
                           Number(randomMedia.versionStamp ?? 0),
+                          false,
                           {
                             minDimension: 275,
                           },

@@ -32,19 +32,23 @@ export function useAccessToken() {
   return accessToken;
 }
 
-export function getImageUrl(
+export function getMediaFileUrl(
   id: number,
   versionStamp: number,
+  isMovie: boolean,
   options?: {
+    original?: boolean;
     mediaRegion?: MediaRegion;
     targetWidth?: number;
     minDimension?: number;
   },
 ): string {
-  let url = `/images?id=${id}&versionStamp=${versionStamp}`;
-  if (options?.mediaRegion) {
-    const region = options.mediaRegion;
-    url += `&x=${region.x}&y=${region.y}&width=${region.width}&height=${region.height}`;
+  let url = `/media/file?id=${id}&isMovie=${isMovie}&versionStamp=${versionStamp}`;
+  if (options?.original) {
+    url += '&original=true';
+  } else if (options?.mediaRegion) {
+    const r = options.mediaRegion;
+    url += `&x=${r.x}&y=${r.y}&width=${r.width}&height=${r.height}`;
   } else if (options?.targetWidth) {
     url += `&targetWidth=${options.targetWidth}`;
   } else if (options?.minDimension) {
@@ -53,38 +57,19 @@ export function getImageUrl(
   return getUrl(url);
 }
 
-export function getImageUrlSrcSet(id: number, checksum: number, originalWidth: number): string {
+export function getMediaFileUrlSrcSet(
+  id: number,
+  versionStamp: number,
+  originalWidth: number,
+): string {
   const SIZES = [480, 800, 1280, 1920, 2560, 3840, 5120];
-  const uniqueSizes = new Set(SIZES.filter((size) => size <= originalWidth));
-  uniqueSizes.add(originalWidth); // If the original width is not a standard breakpoint
-  const finalSizes = Array.from(uniqueSizes).sort((a, b) => a - b);
+  const finalSizes = Array.from(
+    new Set([...SIZES.filter((s) => s <= originalWidth), originalWidth]),
+  ).sort((a, b) => a - b);
+
   return finalSizes
-    .map((size) => {
-      const url = getImageUrl(id, checksum, { targetWidth: size });
-      return `${url} ${size}w`;
-    })
+    .map((size) => `${getMediaFileUrl(id, versionStamp, false, { targetWidth: size })} ${size}w`)
     .join(',\n');
-}
-
-export function getBuldreinfoMediaUrlSupported(id: number): string {
-  const video = document.createElement('video');
-  const webm = video.canPlayType('video/webm');
-  return getBuldreinfoMediaUrl(id, webm ? 'webm' : 'mp4');
-}
-
-export function getBuldreinfoMediaUrl(id: number, suffix: string): string {
-  const S3_BASE = 'https://climbing-web.se-sto-1.linodeobjects.com';
-  const bucketSubfolder = Math.floor(id / 100) * 100;
-  if (suffix === 'jpg') {
-    return `${S3_BASE}/original/jpg/${bucketSubfolder}/${id}.jpg`;
-  }
-  if (suffix === 'webm') {
-    return `${S3_BASE}/web/webm/${bucketSubfolder}/${id}.webm`;
-  }
-  if (suffix === 'mp4') {
-    return `${S3_BASE}/web/mp4/${bucketSubfolder}/${id}.mp4`;
-  }
-  return `${S3_BASE}/web/webp/${bucketSubfolder}/${id}.webp`;
 }
 
 export function numberWithCommas(number: number) {

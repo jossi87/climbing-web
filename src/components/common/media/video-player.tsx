@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, type FC } from 'react';
 import ReactPlayer from 'react-player';
 import type { components } from '../../../@types/buldreinfo/swagger';
-import { getBuldreinfoMediaUrlSupported } from '../../../api';
+import { getMediaFileUrl } from '../../../api';
 
 type Props = {
   media: components['schemas']['Media'];
@@ -43,7 +43,7 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, style }) => {
       key={media.id ?? 0}
       ref={playerRef}
       style={style}
-      src={getBuldreinfoMediaUrlSupported(media.id ?? 0)}
+      src={getMediaFileUrl(media.id ?? 0, media.versionStamp ?? 0, true)}
       controls
       playing={autoPlay && isReady}
       playsInline

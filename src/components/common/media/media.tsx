@@ -9,7 +9,7 @@ import {
 import { useInView } from 'react-intersection-observer';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
-  getImageUrl,
+  getMediaFileUrl,
   deleteMedia,
   moveMedia,
   setMediaAsAvatar,
@@ -332,7 +332,7 @@ const Media = ({
                 <Image
                   alt={x.mediaMetadata?.description ?? ''}
                   style={style}
-                  src={getImageUrl(Number(x.id ?? 0), Number(x.versionStamp ?? 0), {
+                  src={getMediaFileUrl(Number(x.id ?? 0), Number(x.versionStamp ?? 0), false, {
                     minDimension: 205,
                   })}
                   onError={(e: SyntheticEvent<HTMLImageElement>) =>

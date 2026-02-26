@@ -1,6 +1,6 @@
 import type { SyntheticEvent } from 'react';
 import { Loading } from './common/widgets/widgets';
-import { getImageUrl, useTrash } from '../api';
+import { getMediaFileUrl, useTrash } from '../api';
 import { useMeta } from './common/meta';
 import { Segment, Icon, Header, List, Button, Image } from 'semantic-ui-react';
 import { useNavigate } from 'react-router';
@@ -81,7 +81,7 @@ const Trash = () => {
                     <Image
                       alt={t.name}
                       key={t.idMedia}
-                      src={getImageUrl(t.idMedia, 0, { minDimension: 50 })}
+                      src={getMediaFileUrl(t.idMedia, 0, false, { minDimension: 50 })}
                       onError={(e: SyntheticEvent<HTMLImageElement, Event>) =>
                         (e.currentTarget.src = '/png/video_placeholder.png')
                       }

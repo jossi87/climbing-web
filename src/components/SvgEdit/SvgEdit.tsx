@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 import { useMeta } from '../common/meta';
 import {
   type EditableSvg,
-  getImageUrl,
+  getMediaFileUrl,
   postProblemSvg,
   useAccessToken,
   useSvgEdit,
@@ -763,7 +763,7 @@ export const SvgEdit = ({
       >
         <image
           ref={imageRef}
-          xlinkHref={getImageUrl(mediaId, versionStamp, { mediaRegion })}
+          xlinkHref={getMediaFileUrl(mediaId, versionStamp, false, { mediaRegion })}
           width='100%'
           height='100%'
         />

@@ -33,7 +33,7 @@ import {
   Segment,
 } from 'semantic-ui-react';
 import { useMeta } from './common/meta/context';
-import { getImageUrl, useArea } from '../api';
+import { getMediaFileUrl, useArea } from '../api';
 import { Markdown } from './Markdown/Markdown';
 import ProblemList from './common/problem-list';
 import type { components } from '../@types/buldreinfo/swagger';
@@ -332,9 +332,14 @@ const Area = () => {
                   style={{ maxHeight: '150px', objectFit: 'cover' }}
                   src={
                     sector.randomMediaId
-                      ? getImageUrl(sector.randomMediaId, sector.randomMediaVersionStamp ?? 0, {
-                          minDimension: 150,
-                        })
+                      ? getMediaFileUrl(
+                          sector.randomMediaId,
+                          sector.randomMediaVersionStamp ?? 0,
+                          false,
+                          {
+                            minDimension: 150,
+                          },
+                        )
                       : '/png/image.png'
                   }
                 />

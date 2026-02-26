@@ -8,7 +8,7 @@ import {
   type JSX,
 } from 'react';
 import { Container, Button, Label, Icon, Segment, Dropdown } from 'semantic-ui-react';
-import { getImageUrl, useMediaSvg } from '../api';
+import { getMediaFileUrl, useMediaSvg } from '../api';
 import { Rappel } from '../utils/svg-utils';
 import {
   parseReadOnlySvgs,
@@ -579,7 +579,7 @@ const MediaSvgEdit = () => {
       >
         <image
           ref={imageRef}
-          xlinkHref={getImageUrl(data.id ?? 0, data.versionStamp ?? 0)}
+          xlinkHref={getMediaFileUrl(data.id ?? 0, data.versionStamp ?? 0, false)}
           width='100%'
           height='100%'
         />
