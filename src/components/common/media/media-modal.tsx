@@ -625,12 +625,23 @@ const MediaModal = ({
                 <Dropdown.Item
                   icon='download'
                   text='Download original'
-                  onClick={() => {
-                    saveAs(
-                      getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, m.idType !== 1, {
-                        original: true,
-                      }),
-                    );
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    const url = getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, m.idType !== 1, {
+                      original: true,
+                    });
+                    try {
+                      const response = await fetch(url);
+                      if (!response.ok) throw new Error('Download request failed');
+                      const blob = await response.blob();
+                      const extension =
+                        m.idType === 1 ? 'jpg' : url.includes('webm') ? 'webm' : 'mp4';
+                      const fileName = `buldreinfo_brattelinjer_${m.id}.${extension}`;
+                      saveAs(blob, fileName);
+                    } catch (err) {
+                      console.error('Blob download failed, falling back to new tab:', err);
+                      window.open(url, '_blank');
+                    }
                   }}
                 />
               )}
