@@ -1,4 +1,4 @@
-import { useState, type ComponentProps } from 'react';
+import { useState, useOptimistic, useTransition, type ComponentProps } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Leaflet from '../common/leaflet/leaflet';
 import { getDistanceWithUnit } from '../common/leaflet/geo-utils';
@@ -55,6 +55,25 @@ export const Problem = () => {
   const [showHiddenMedia, setShowHiddenMedia] = useState(false);
   const meta = useMeta();
   const { data, error, toggleTodo, redirectUi } = useProblem(+problemId, showHiddenMedia);
+  const [isPending, startTransition] = useTransition();
+  const [optimisticTodo, setOptimisticTodo] = useOptimistic(
+    data?.todo,
+    (state, newTodo: boolean) => newTodo,
+  );
+
+  const handleToggleTodo = async () => {
+    if (!data) return;
+    const newTodoValue = !optimisticTodo;
+    startTransition(async () => {
+      setOptimisticTodo(newTodoValue);
+      try {
+        await toggleTodo(data.id);
+      } catch (_e) {
+        // useOptimistic automatically reverts on error when the parent state updates,
+        // but since we are using a transition here, it handles the sync.
+      }
+    });
+  };
 
   const [showTickModal, setShowTickModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState<
@@ -345,7 +364,12 @@ export const Problem = () => {
           {meta.isAuthenticated && (
             <Button.Group size='mini' compact>
               {!isTicked && (
-                <Button positive={data.todo} animated='fade' onClick={() => toggleTodo(data.id)}>
+                <Button
+                  positive={optimisticTodo}
+                  animated='fade'
+                  onClick={handleToggleTodo}
+                  loading={isPending}
+                >
                   <Button.Content hidden>To-do</Button.Content>
                   <Button.Content visible>
                     <Icon name='bookmark' />
@@ -628,7 +652,7 @@ export const Problem = () => {
               </Table.Cell>
             </Table.Row>
           )}
-          {data.todos && (
+          {optimisticTodo && data.todos && (
             <Table.Row verticalAlign='top'>
               <Table.Cell>Todo:</Table.Cell>
               <Table.Cell>

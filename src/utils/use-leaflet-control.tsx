@@ -1,4 +1,4 @@
-import { useState, forwardRef, useEffect, useCallback, type ReactNode } from 'react';
+import { useState, useEffect, useCallback, type ReactNode, type Ref } from 'react';
 import { createPortal } from 'react-dom';
 import { createElementHook, createControlHook } from '@react-leaflet/core';
 import { Control, DomUtil, DomEvent, Map as LeafletMap } from 'leaflet';
@@ -42,7 +42,9 @@ const useForceUpdate = () => {
 };
 
 const createLeafletControl = (useElement: unknown) => {
-  const Component = (props: { children?: ReactNode } & Record<string, unknown>, _ref: unknown) => {
+  const LeafletControl = (
+    props: { children?: ReactNode; ref?: Ref<any> } & Record<string, unknown>,
+  ) => {
     const forceUpdate = useForceUpdate();
     const { instance } = (useElement as any)(props).current;
 
@@ -58,10 +60,8 @@ const createLeafletControl = (useElement: unknown) => {
     const contentNode = instance.getContainer();
     return contentNode ? createPortal(props.children, contentNode) : null;
   };
-  const LeafletControl = forwardRef(Component as any);
-  // Name the forwarded component so Fast Refresh can identify it
+  // Name the component so Fast Refresh can identify it
   // and avoid anonymous export issues.
-  // displayName is a standard React property for ForwardRefExoticComponent
   LeafletControl.displayName = 'LeafletControl';
   return LeafletControl;
 };

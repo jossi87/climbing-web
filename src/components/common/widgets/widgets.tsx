@@ -28,73 +28,27 @@ type StarsProps = {
 export function Stars({ numStars = -1, includeStarOutlines = false }: StarsProps) {
   if (numStars === -1) {
     return null;
-  } else if (numStars === 0.0) {
-    if (includeStarOutlines) {
-      return (
-        <div style={{ whiteSpace: 'nowrap', display: 'inline-flex', opacity: 0.5 }}>
-          <Icon color='black' name='star outline' />
-          <Icon color='black' name='star outline' />
-          <Icon color='black' name='star outline' />
-        </div>
-      );
-    }
-    return null;
-  } else if (numStars === 0.5) {
-    if (includeStarOutlines) {
-      return (
-        <div style={{ whiteSpace: 'nowrap', display: 'inline-flex' }}>
-          <Icon color='black' name='star half' />
-          <Icon color='black' name='star outline' style={{ opacity: 0.5 }} />
-          <Icon color='black' name='star outline' style={{ opacity: 0.5 }} />
-        </div>
-      );
-    }
-    return <Icon color='black' name='star half' />;
-  } else if (numStars === 1.0) {
-    if (includeStarOutlines) {
-      return (
-        <div style={{ whiteSpace: 'nowrap', display: 'inline-flex' }}>
-          <Icon color='black' name='star' />
-          <Icon color='black' name='star outline' style={{ opacity: 0.5 }} />
-          <Icon color='black' name='star outline' style={{ opacity: 0.5 }} />
-        </div>
-      );
-    }
-    return <Icon color='black' name='star' />;
-  } else if (numStars === 1.5) {
-    return (
-      <div style={{ whiteSpace: 'nowrap', display: 'inline-flex' }}>
-        <Icon color='black' name='star' />
-        <Icon color='black' name='star half' />
-        {includeStarOutlines && <Icon color='black' name='star outline' style={{ opacity: 0.5 }} />}
-      </div>
-    );
-  } else if (numStars === 2.0) {
-    return (
-      <div style={{ whiteSpace: 'nowrap', display: 'inline-flex' }}>
-        <Icon color='black' name='star' />
-        <Icon color='black' name='star' />
-        {includeStarOutlines && <Icon color='black' name='star outline' style={{ opacity: 0.5 }} />}
-      </div>
-    );
-  } else if (numStars === 2.5) {
-    return (
-      <div style={{ whiteSpace: 'nowrap', display: 'inline-flex' }}>
-        <Icon color='black' name='star' />
-        <Icon color='black' name='star' />
-        <Icon color='black' name='star half' />
-      </div>
-    );
-  } else if (numStars === 3.0) {
-    return (
-      <div style={{ whiteSpace: 'nowrap', display: 'inline-flex' }}>
-        <Icon color='black' name='star' />
-        <Icon color='black' name='star' />
-        <Icon color='black' name='star' />
-      </div>
-    );
   }
-  return null;
+
+  const fullStars = Math.floor(numStars);
+  const hasHalfStar = numStars % 1 !== 0;
+  const stars = [];
+
+  for (let i = 0; i < 3; i++) {
+    if (i < fullStars) {
+      stars.push(<Icon key={i} color='black' name='star' />);
+    } else if (i === fullStars && hasHalfStar) {
+      stars.push(<Icon key={i} color='black' name='star half' />);
+    } else if (includeStarOutlines) {
+      stars.push(<Icon key={i} color='black' name='star outline' style={{ opacity: 0.5 }} />);
+    }
+  }
+
+  if (stars.length === 0) {
+    return null;
+  }
+
+  return <div style={{ whiteSpace: 'nowrap', display: 'inline-flex' }}>{stars}</div>;
 }
 
 export function Loading() {
