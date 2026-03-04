@@ -9,6 +9,8 @@ jobs:
   docker-build-push:
     name: 'Build Docker Image & Push to Hub'
     runs-on: ubuntu-latest
+    outputs:
+      status: ${{ job.status }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -25,3 +27,19 @@ jobs:
           context: .
           push: true
           tags: jossi87/climbing-web:latest
+
+  deploy:
+    name: 'Deploy to Linode'
+    needs: docker-build-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Execute remote SSH commands
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: root
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /opt/jossi-infra
+            docker compose pull climbing-web
+            docker compose up -d climbing-web
