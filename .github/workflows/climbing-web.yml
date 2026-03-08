@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   docker-build-push:
     name: 'Build Docker Image & Push to Hub'
