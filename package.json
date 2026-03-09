@@ -58,7 +58,7 @@
     "json-url": "^4.0.0",
     "leaflet": "^1.9.4",
     "leaflet.fullscreen": "^5.3.0",
-    "leaflet.locatecontrol": "^0.88.0",
+    "leaflet.locatecontrol": "^0.89.0",
     "leaflet.markercluster": "^1.5.3",
     "linkify-react": "^4.3.2",
     "linkifyjs": "^4.3.2",
