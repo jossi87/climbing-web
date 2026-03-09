@@ -12,9 +12,10 @@ import {
   TabPane,
   Label,
   Icon,
-  Table,
   Feed,
   Message,
+  Segment,
+  Header,
 } from 'semantic-ui-react';
 import {
   Loading,
@@ -479,49 +480,61 @@ export const Problem = () => {
         />
       )}
       {panes?.length && <Tab panes={panes} />}
-      <Table definition unstackable>
-        <Table.Body>
-          {(data.areaAccessInfo || data.sectorAccessInfo || data.areaNoDogsAllowed) && (
-            <Table.Row warning verticalAlign='top'>
-              <Table.Cell>Restrictions:</Table.Cell>
-              <Table.Cell>
-                {data.areaNoDogsAllowed && <NoDogsAllowed />}
-                {data.areaAccessInfo && <p>{data.areaAccessInfo}</p>}
-                {data.sectorAccessInfo && <p>{data.sectorAccessInfo}</p>}
-              </Table.Cell>
-            </Table.Row>
-          )}
+      {(data.areaAccessInfo || data.sectorAccessInfo || data.areaNoDogsAllowed) && (
+        <Segment as={Feed} style={{ maxWidth: '100%' }}>
+          <Header as='h5' style={{ marginBottom: '5px' }} color='orange'>
+            <Icon name='warning sign' /> RESTRICTIONS
+          </Header>
+          <div style={{ fontSize: '0.9em', paddingLeft: '22px' }}>
+            {data.areaNoDogsAllowed && <NoDogsAllowed />}
+            <Linkify>
+              {data.areaAccessInfo && <p style={{ margin: '2px 0' }}>{data.areaAccessInfo}</p>}
+              {data.sectorAccessInfo && <p style={{ margin: '2px 0' }}>{data.sectorAccessInfo}</p>}
+            </Linkify>
+          </div>
+        </Segment>
+      )}
+      <Segment as={Feed} style={{ maxWidth: '100%' }}>
+        <Grid>
           {(data.neighbourPrev || data.neighbourNext) && (
-            <Table.Row verticalAlign='top'>
-              <Table.Cell>Neighbour(s):</Table.Cell>
-              <Table.Cell>
-                {data.neighbourPrev && (
-                  <Label as={Link} to={`/problem/${data.neighbourPrev.id}`} basic>
-                    #{data.neighbourPrev.nr}
-                    <Label.Detail>
-                      {data.neighbourPrev.name}{' '}
-                      <span style={{ fontWeight: 'normal' }}>{data.neighbourPrev.grade}</span>
-                    </Label.Detail>
-                  </Label>
-                )}
-                {data.neighbourNext && (
-                  <Label as={Link} to={`/problem/${data.neighbourNext.id}`} basic>
-                    #{data.neighbourNext.nr}
-                    <Label.Detail>
-                      {data.neighbourNext.name}{' '}
-                      <span style={{ fontWeight: 'normal' }}>{data.neighbourNext.grade}</span>
-                    </Label.Detail>
-                  </Label>
-                )}
-              </Table.Cell>
-            </Table.Row>
+            <Grid.Row style={{ padding: '5px 0', borderBottom: '1px solid rgba(34, 36, 38, 0.1)' }}>
+              <Grid.Column mobile={16} tablet={3} computer={2}>
+                <Header as='h5' style={{ fontSize: '0.8em' }}>
+                  NEIGHBOURS
+                </Header>
+              </Grid.Column>
+              <Grid.Column mobile={16} tablet={13} computer={14}>
+                <Label.Group size='small'>
+                  {data.neighbourPrev && (
+                    <Label as={Link} to={`/problem/${data.neighbourPrev.id}`} basic>
+                      #{data.neighbourPrev.nr}{' '}
+                      <Label.Detail>
+                        {data.neighbourPrev.name} {data.neighbourPrev.grade}
+                      </Label.Detail>
+                    </Label>
+                  )}
+                  {data.neighbourNext && (
+                    <Label as={Link} to={`/problem/${data.neighbourNext.id}`} basic>
+                      #{data.neighbourNext.nr}{' '}
+                      <Label.Detail>
+                        {data.neighbourNext.name} {data.neighbourNext.grade}
+                      </Label.Detail>
+                    </Label>
+                  )}
+                </Label.Group>
+              </Grid.Column>
+            </Grid.Row>
           )}
           {data.faAid && (
-            <Table.Row verticalAlign='top'>
-              <Table.Cell>First ascent (Aid):</Table.Cell>
-              <Table.Cell>
+            <Grid.Row style={{ padding: '5px 0', borderBottom: '1px solid rgba(34, 36, 38, 0.1)' }}>
+              <Grid.Column mobile={16} tablet={3} computer={2}>
+                <Header as='h5' style={{ fontSize: '0.8em' }}>
+                  FIRST ASCENT (AID)
+                </Header>
+              </Grid.Column>
+              <Grid.Column mobile={16} tablet={13} computer={14}>
                 {data.faAid.dateHr && (
-                  <Label basic>
+                  <Label basic size='small'>
                     <Icon name='calendar check' />
                     {data.faAid.dateHr}
                   </Label>
@@ -529,7 +542,7 @@ export const Problem = () => {
                 {data.faAid.users && (
                   <>
                     {data.faAid.users.map((u) => (
-                      <Label key={u.id} as={Link} to={`/user/${u.id}`} image basic>
+                      <Label key={u.id} as={Link} to={`/user/${u.id}`} image basic size='small'>
                         <Avatar
                           name={u.name}
                           mediaId={u.mediaId}
@@ -546,118 +559,34 @@ export const Problem = () => {
                     {data.faAid.description}
                   </Linkify>
                 )}
-              </Table.Cell>
-            </Table.Row>
+              </Grid.Column>
+            </Grid.Row>
           )}
-          <Table.Row verticalAlign='top'>
-            <Table.Cell width={3}>
-              {data.faAid ? 'First free ascent (FFA):' : 'First ascent:'}
-            </Table.Cell>
-            <Table.Cell>
-              <Label basic>
-                Grade:<Label.Detail>{data.originalGrade}</Label.Detail>
-              </Label>
-              {meta.isClimbing && data.t?.subType && (
+          <Grid.Row style={{ padding: '5px 0', borderBottom: '1px solid rgba(34, 36, 38, 0.1)' }}>
+            <Grid.Column mobile={16} tablet={3} computer={2}>
+              <Header as='h5' style={{ fontSize: '0.8em' }}>
+                {data.faAid ? 'FIRST FREE ASCENT (FFA)' : 'FIRST ASCENT'}
+              </Header>
+            </Grid.Column>
+            <Grid.Column mobile={16} tablet={13} computer={14}>
+              <Label.Group size='small'>
                 <Label basic>
-                  <Icon name='tag' />
-                  {data.t.subType}
+                  Grade: <Label.Detail>{data.originalGrade}</Label.Detail>
                 </Label>
-              )}
-              {data.faDateHr && (
-                <Label basic>
-                  <Icon name='calendar check' />
-                  {data.faDateHr}
-                </Label>
-              )}
-              {data.fa && (
-                <>
-                  {data.fa.map((u) => (
-                    <Label key={u.id} as={Link} to={`/user/${u.id}`} image basic>
-                      <Avatar
-                        name={u.name}
-                        mediaId={u.mediaId}
-                        mediaVersionStamp={u.mediaVersionStamp}
-                      />
-                      {u.name}
-                    </Label>
-                  ))}
-                </>
-              )}
-              {data.comment && data.comment.trim().length > 0 && (
-                <>
-                  <br />
-                  <Markdown content={data.comment} />
-                </>
-              )}
-              {meta.isIce && (
-                <>
-                  <br />
-                  <b>Starting altitude: </b>
-                  {data.startingAltitude}
-                  <br />
-                  <b>Aspect: </b>
-                  {data.aspect}
-                  <br />
-                  <b>Route length: </b>
-                  {data.routeLength}
-                  <br />
-                  <b>Descent: </b>
-                  {data.descent}
-                </>
-              )}
-            </Table.Cell>
-          </Table.Row>
-          {(data.trivia || data.triviaMedia?.length) && (
-            <Table.Row verticalAlign='top'>
-              <Table.Cell>Trivia:</Table.Cell>
-              <Table.Cell>
-                <Markdown content={data.trivia} />
-                {data.triviaMedia && (
-                  <Feed.Extra>
-                    <Media
-                      pitches={data.sections}
-                      media={data.triviaMedia}
-                      orderableMedia={orderableMedia}
-                      carouselMedia={carouselMedia}
-                      optProblemId={null}
-                      showLocation={false}
-                    />
-                  </Feed.Extra>
+                {meta.isClimbing && data.t?.subType && (
+                  <Label basic>
+                    <Icon name='tag' />
+                    {data.t.subType}
+                  </Label>
                 )}
-              </Table.Cell>
-            </Table.Row>
-          )}
-          <ProblemsOnRock sectorId={data?.sectorId} problemId={+problemId} rock={data?.rock} />
-          {(data.sectorApproach?.coordinates?.length ?? 0) > 1 && (
-            <Table.Row verticalAlign='top'>
-              <Table.Cell>Approach:</Table.Cell>
-              <Table.Cell>
-                <SlopeProfile
-                  areaName={data.areaName}
-                  sectorName={data.sectorName}
-                  slope={data.sectorApproach as Slope}
-                />
-              </Table.Cell>
-            </Table.Row>
-          )}
-          {(data.sectorDescent?.coordinates?.length ?? 0) > 1 && (
-            <Table.Row verticalAlign='top'>
-              <Table.Cell>Descent:</Table.Cell>
-              <Table.Cell>
-                <SlopeProfile
-                  areaName={data.areaName}
-                  sectorName={data.sectorName}
-                  slope={data.sectorDescent as Slope}
-                />
-              </Table.Cell>
-            </Table.Row>
-          )}
-          {optimisticTodo && data.todos && (
-            <Table.Row verticalAlign='top'>
-              <Table.Cell>Todo:</Table.Cell>
-              <Table.Cell>
-                {data.todos.map((u) => (
-                  <Label size='mini' key={u.idUser} as={Link} to={`/user/${u.idUser}`} image basic>
+                {(data.faDateHr || data.faAid?.dateHr) && (
+                  <Label basic>
+                    <Icon name='calendar check' />
+                    {data.faDateHr || data.faAid?.dateHr}
+                  </Label>
+                )}
+                {(data.fa || data.faAid?.users)?.map((u) => (
+                  <Label key={u.id} as={Link} to={`/user/${u.id}`} image basic>
                     <Avatar
                       name={u.name}
                       mediaId={u.mediaId}
@@ -666,13 +595,104 @@ export const Problem = () => {
                     {u.name}
                   </Label>
                 ))}
-              </Table.Cell>
-            </Table.Row>
+              </Label.Group>
+              <div style={{ fontSize: '0.9em', lineHeight: '1.3' }}>
+                <Linkify>
+                  <Markdown content={data.comment || data.faAid?.description || ''} />
+                </Linkify>
+              </div>
+              {meta.isIce && (
+                <div style={{ fontSize: '0.85em', marginTop: '4px', opacity: 0.8 }}>
+                  <b>Alt:</b> {data.startingAltitude} | <b>Aspect:</b> {data.aspect} | <b>Len:</b>{' '}
+                  {data.routeLength} | <b>Descent:</b> {data.descent}
+                </div>
+              )}
+            </Grid.Column>
+          </Grid.Row>
+          {(data.trivia || data.triviaMedia?.length) && (
+            <Grid.Row style={{ padding: '5px 0', borderBottom: '1px solid rgba(34, 36, 38, 0.1)' }}>
+              <Grid.Column mobile={16} tablet={3} computer={2}>
+                <Header as='h5' style={{ fontSize: '0.8em' }}>
+                  TRIVIA
+                </Header>
+              </Grid.Column>
+              <Grid.Column mobile={16} tablet={13} computer={14}>
+                <div style={{ fontSize: '0.9em' }}>
+                  <Linkify>
+                    <Markdown content={data.trivia} />
+                  </Linkify>
+                </div>
+                {data.triviaMedia && (
+                  <div style={{ marginTop: '5px' }}>
+                    <Media
+                      pitches={data.sections}
+                      media={data.triviaMedia}
+                      orderableMedia={orderableMedia}
+                      carouselMedia={carouselMedia}
+                      optProblemId={null}
+                      showLocation={false}
+                    />
+                  </div>
+                )}
+              </Grid.Column>
+            </Grid.Row>
           )}
-          {conditionLat > 0 && conditionLng > 0 && (
-            <Table.Row>
-              <Table.Cell>Conditions:</Table.Cell>
-              <Table.Cell>
+          {data?.rock && (
+            <Grid.Row style={{ padding: '5px 0', borderBottom: '1px solid rgba(34, 36, 38, 0.1)' }}>
+              <Grid.Column mobile={16} tablet={3} computer={2}>
+                <Header as='h5' style={{ fontSize: '0.8em' }}>
+                  ROCK «{data.rock}»
+                </Header>
+              </Grid.Column>
+              <Grid.Column mobile={16} tablet={13} computer={14}>
+                <ProblemsOnRock
+                  sectorId={data?.sectorId}
+                  problemId={+problemId}
+                  rock={data?.rock}
+                />
+              </Grid.Column>
+            </Grid.Row>
+          )}
+          {(data.sectorApproach?.coordinates?.length ?? 0) > 1 && (
+            <Grid.Row style={{ padding: '5px 0', borderBottom: '1px solid rgba(34, 36, 38, 0.1)' }}>
+              <Grid.Column mobile={16} tablet={3} computer={2}>
+                <Header as='h5' style={{ fontSize: '0.8em' }}>
+                  APPROACH
+                </Header>
+              </Grid.Column>
+              <Grid.Column mobile={16} tablet={13} computer={14}>
+                <SlopeProfile
+                  areaName={data.areaName}
+                  sectorName={data.sectorName}
+                  slope={data.sectorApproach as Slope}
+                />
+              </Grid.Column>
+            </Grid.Row>
+          )}
+          {(data.sectorDescent?.coordinates?.length ?? 0) > 1 && (
+            <Grid.Row style={{ padding: '5px 0', borderBottom: '1px solid rgba(34, 36, 38, 0.1)' }}>
+              <Grid.Column mobile={16} tablet={3} computer={2}>
+                <Header as='h5' style={{ fontSize: '0.8em' }}>
+                  DESCENT
+                </Header>
+              </Grid.Column>
+              <Grid.Column mobile={16} tablet={13} computer={14}>
+                <SlopeProfile
+                  areaName={data.areaName}
+                  sectorName={data.sectorName}
+                  slope={data.sectorDescent as Slope}
+                />
+              </Grid.Column>
+            </Grid.Row>
+          )}
+          <Grid.Row style={{ padding: '5px 0', borderBottom: '1px solid rgba(34, 36, 38, 0.1)' }}>
+            <Grid.Column mobile={16} tablet={3} computer={2}>
+              <Header as='h5' style={{ fontSize: '0.8em' }}>
+                CONDITIONS
+              </Header>
+            </Grid.Column>
+            <Grid.Column mobile={16} tablet={13} computer={14}>
+              {conditionLat > 0 && (
                 <ConditionLabels
                   lat={conditionLat}
                   lng={conditionLng}
@@ -682,12 +702,16 @@ export const Problem = () => {
                   sunFromHour={data.sectorSunFromHour ?? data.areaSunFromHour ?? 0}
                   sunToHour={data.sectorSunToHour ?? data.areaSunToHour ?? 0}
                 />
-              </Table.Cell>
-            </Table.Row>
-          )}
-          <Table.Row verticalAlign='top'>
-            <Table.Cell>Misc:</Table.Cell>
-            <Table.Cell>
+              )}
+            </Grid.Column>
+          </Grid.Row>
+          <Grid.Row style={{ padding: '5px 0', borderBottom: '1px solid rgba(34, 36, 38, 0.1)' }}>
+            <Grid.Column mobile={16} tablet={3} computer={2}>
+              <Header as='h5' style={{ fontSize: '0.8em' }}>
+                MISC
+              </Header>
+            </Grid.Column>
+            <Grid.Column mobile={16} tablet={13} computer={14}>
               <DownloadButton href={`/problem/pdf?id=${data.id}`}>
                 {meta.isBouldering ? 'boulder.pdf' : 'route.pdf'}
               </DownloadButton>
@@ -698,11 +722,10 @@ export const Problem = () => {
                   href={`https://www.google.com/maps/search/?api=1&query=${data.sectorParking.latitude},${data.sectorParking.longitude}`}
                   rel='noreferrer noopener'
                   target='_blank'
-                  image
                   basic
+                  size='mini'
                 >
-                  <Icon name='map' />
-                  Parking
+                  <Icon name='map' /> Parking
                 </Label>
               )}
               {meta.isClimbing && (data.sectorOutline ?? []).length > 0 && !data.coordinates && (
@@ -712,6 +735,7 @@ export const Problem = () => {
                   target='_blank'
                   image
                   basic
+                  size='mini'
                 >
                   <Icon name='map' />
                   Sector (Google Maps)
@@ -722,54 +746,88 @@ export const Problem = () => {
                   href={`https://www.google.com/maps/search/?api=1&query=${data.coordinates.latitude},${data.coordinates.longitude}`}
                   rel='noreferrer noopener'
                   target='_blank'
-                  image
                   basic
+                  size='mini'
                 >
-                  <Icon name='map' />
-                  {meta.isBouldering ? 'Boulder' : 'Route'}
+                  <Icon name='map' /> {meta.isBouldering ? 'Boulder' : 'Route'}
                 </Label>
               )}
-              <Label basic>
-                Page views:
-                <Label.Detail>{data.pageViews}</Label.Detail>
+              <Label basic size='mini'>
+                Views: <Label.Detail>{data.pageViews}</Label.Detail>
               </Label>
               <ExternalLinkLabels externalLinks={data.externalLinks} />
-            </Table.Cell>
-          </Table.Row>
+            </Grid.Column>
+          </Grid.Row>
+          {optimisticTodo && data.todos && (
+            <Grid.Row style={{ padding: '5px 0', borderBottom: '1px solid rgba(34, 36, 38, 0.1)' }}>
+              <Grid.Column mobile={16} tablet={3} computer={2}>
+                <Header as='h5' style={{ fontSize: '0.8em' }}>
+                  TODO
+                </Header>
+              </Grid.Column>
+              <Grid.Column mobile={16} tablet={13} computer={14}>
+                {data.todos.map((u) => (
+                  <Label size='mini' key={u.idUser} as={Link} to={`/user/${u.idUser}`} image basic>
+                    <Avatar
+                      name={u.name}
+                      mediaId={u.mediaId}
+                      mediaVersionStamp={u.mediaVersionStamp}
+                    />
+                    {u.name}
+                  </Label>
+                ))}
+              </Grid.Column>
+            </Grid.Row>
+          )}
           {data.sections && (
-            <Table.Row verticalAlign='top'>
-              <Table.Cell verticalAlign='top'>Pitches:</Table.Cell>
-              <Table.Cell>
+            <Grid.Row style={{ padding: '5px 0', borderBottom: '1px solid rgba(34, 36, 38, 0.1)' }}>
+              <Grid.Column mobile={16} tablet={3} computer={2}>
+                <Header as='h5' style={{ fontSize: '0.8em' }}>
+                  PITCHES
+                </Header>
+              </Grid.Column>
+              <Grid.Column mobile={16} tablet={13} computer={14}>
                 <Feed size='small'>
                   {data.sections.map((s) => (
-                    <Feed.Event key={s.nr}>
-                      <Feed.Label style={{ marginTop: '8px' }}>{s.nr}</Feed.Label>
+                    <Feed.Event key={s.nr} style={{ padding: '0', margin: '0' }}>
+                      <Feed.Label style={{ width: '20px', fontSize: '0.85em', paddingTop: '4px' }}>
+                        {s.nr}
+                      </Feed.Label>
                       <Feed.Content>
-                        <Feed.Summary>
-                          <Feed.Label>{s.grade}</Feed.Label>
-                          <Feed.Date>{s.description}</Feed.Date>
-                          {s.media && (
-                            <Feed.Extra>
-                              <Media
-                                pitches={data.sections}
-                                media={s.media}
-                                orderableMedia={orderableMedia}
-                                carouselMedia={carouselMedia}
-                                optProblemId={null}
-                                showLocation={false}
-                              />
-                            </Feed.Extra>
-                          )}
+                        <Feed.Summary
+                          style={{ fontWeight: 'normal', fontSize: '0.85em', lineHeight: '1.2' }}
+                        >
+                          <Label
+                            size='mini'
+                            basic
+                            circular
+                            style={{ marginRight: '5px', padding: '2px 5px' }}
+                          >
+                            {s.grade}
+                          </Label>
+                          <Linkify>{s.description}</Linkify>
                         </Feed.Summary>
+                        {s.media && (
+                          <div style={{ marginTop: '4px' }}>
+                            <Media
+                              pitches={data.sections}
+                              media={s.media}
+                              orderableMedia={orderableMedia}
+                              carouselMedia={carouselMedia}
+                              optProblemId={null}
+                              showLocation={false}
+                            />
+                          </div>
+                        )}
                       </Feed.Content>
                     </Feed.Event>
                   ))}
                 </Feed>
-              </Table.Cell>
-            </Table.Row>
+              </Grid.Column>
+            </Grid.Row>
           )}
-        </Table.Body>
-      </Table>
+        </Grid>
+      </Segment>
       {ticksComments}
     </>
   );

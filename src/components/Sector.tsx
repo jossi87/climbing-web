@@ -24,11 +24,13 @@ import {
   Tab,
   TabPane,
   Breadcrumb,
-  Table,
+  Segment,
   Label,
   List,
   Message,
   Feed,
+  Header,
+  Grid,
 } from 'semantic-ui-react';
 import { useMeta } from './common/meta/context';
 import { useSector } from '../api';
@@ -375,21 +377,27 @@ const Sector = () => {
         />
       )}
       <Tab panes={panes} />
-      <Table definition unstackable>
-        <Table.Body>
-          {(data.areaAccessInfo || data.accessInfo || data.areaNoDogsAllowed) && (
-            <Table.Row warning verticalAlign='top'>
-              <Table.Cell>Restrictions:</Table.Cell>
-              <Table.Cell>
-                {data.areaNoDogsAllowed && <NoDogsAllowed />}
-                {data.areaAccessInfo && <p>{data.areaAccessInfo}</p>}
-                {data.accessInfo && <p>{data.accessInfo}</p>}
-              </Table.Cell>
-            </Table.Row>
-          )}
-          <Table.Row verticalAlign='top'>
-            <Table.Cell width={3}>Sector:</Table.Cell>
-            <Table.Cell>
+      {(data.areaAccessInfo || data.accessInfo || data.areaNoDogsAllowed) && (
+        <Segment as={Feed} style={{ maxWidth: '100%' }}>
+          <Header as='h5' style={{ marginBottom: '5px' }} color='orange'>
+            <Icon name='warning sign' /> RESTRICTIONS
+          </Header>
+          <div style={{ fontSize: '0.9em', paddingLeft: '22px' }}>
+            {data.areaNoDogsAllowed && <NoDogsAllowed />}
+            {data.areaAccessInfo && <p>{data.areaAccessInfo}</p>}
+            {data.accessInfo && <p>{data.accessInfo}</p>}
+          </div>
+        </Segment>
+      )}
+      <Segment as={Feed} style={{ maxWidth: '100%' }}>
+        <Grid>
+          <Grid.Row style={{ padding: '5px 0', borderBottom: '1px solid rgba(34, 36, 38, 0.1)' }}>
+            <Grid.Column mobile={16} tablet={3} computer={2}>
+              <Header as='h5' style={{ fontSize: '0.8em' }}>
+                SECTOR
+              </Header>
+            </Grid.Column>
+            <Grid.Column mobile={16} tablet={13} computer={14}>
               {uniqueTypes.map((subType) => {
                 const header = subType ? subType : 'Boulders';
                 const problemsOfType =
@@ -416,12 +424,16 @@ const Sector = () => {
               </Label>
               <br />
               <Markdown content={data.comment} />
-            </Table.Cell>
-          </Table.Row>
+            </Grid.Column>
+          </Grid.Row>
           {((data.sectors ?? []).length > 1 || data.areaComment) && (
-            <Table.Row verticalAlign='top'>
-              <Table.Cell width={3}>Area:</Table.Cell>
-              <Table.Cell>
+            <Grid.Row style={{ padding: '5px 0', borderBottom: '1px solid rgba(34, 36, 38, 0.1)' }}>
+              <Grid.Column mobile={16} tablet={3} computer={2}>
+                <Header as='h5' style={{ fontSize: '0.8em' }}>
+                  AREA
+                </Header>
+              </Grid.Column>
+              <Grid.Column mobile={16} tablet={13} computer={14}>
                 {(data.sectors ?? []).length > 1 && (
                   <Label.Group size='tiny'>
                     {(data.sectors ?? []).map((s) => (
@@ -436,37 +448,49 @@ const Sector = () => {
                   </Label.Group>
                 )}
                 <ExpandableText text={data.areaComment} maxLength={75} />
-              </Table.Cell>
-            </Table.Row>
+              </Grid.Column>
+            </Grid.Row>
           )}
           {(data.approach?.coordinates ?? []).length > 0 && (
-            <Table.Row verticalAlign='top'>
-              <Table.Cell>Approach:</Table.Cell>
-              <Table.Cell>
+            <Grid.Row style={{ padding: '5px 0', borderBottom: '1px solid rgba(34, 36, 38, 0.1)' }}>
+              <Grid.Column mobile={16} tablet={3} computer={2}>
+                <Header as='h5' style={{ fontSize: '0.8em' }}>
+                  APPROACH
+                </Header>
+              </Grid.Column>
+              <Grid.Column mobile={16} tablet={13} computer={14}>
                 <SlopeProfile
                   areaName={data.areaName}
                   sectorName={data.name}
                   slope={data.approach as Slope}
                 />
-              </Table.Cell>
-            </Table.Row>
+              </Grid.Column>
+            </Grid.Row>
           )}
           {(data.descent?.coordinates ?? []).length > 0 && (
-            <Table.Row verticalAlign='top'>
-              <Table.Cell>Descent:</Table.Cell>
-              <Table.Cell>
+            <Grid.Row style={{ padding: '5px 0', borderBottom: '1px solid rgba(34, 36, 38, 0.1)' }}>
+              <Grid.Column mobile={16} tablet={3} computer={2}>
+                <Header as='h5' style={{ fontSize: '0.8em' }}>
+                  DESCENT
+                </Header>
+              </Grid.Column>
+              <Grid.Column mobile={16} tablet={13} computer={14}>
                 <SlopeProfile
                   areaName={data.areaName}
                   sectorName={data.name}
                   slope={data.descent as Slope}
                 />
-              </Table.Cell>
-            </Table.Row>
+              </Grid.Column>
+            </Grid.Row>
           )}
           {(data.triviaMedia ?? []).length > 0 && (
-            <Table.Row verticalAlign='top'>
-              <Table.Cell>Trivia:</Table.Cell>
-              <Table.Cell>
+            <Grid.Row style={{ padding: '5px 0', borderBottom: '1px solid rgba(34, 36, 38, 0.1)' }}>
+              <Grid.Column mobile={16} tablet={3} computer={2}>
+                <Header as='h5' style={{ fontSize: '0.8em' }}>
+                  TRIVIA
+                </Header>
+              </Grid.Column>
+              <Grid.Column mobile={16} tablet={13} computer={14}>
                 <Feed.Extra>
                   <Media
                     pitches={null}
@@ -477,15 +501,21 @@ const Sector = () => {
                     showLocation={false}
                   />
                 </Feed.Extra>
-              </Table.Cell>
-            </Table.Row>
+              </Grid.Column>
+            </Grid.Row>
           )}
           {conditionLat > 0 &&
             conditionLng > 0 &&
             (data.wallDirectionCalculated || data.wallDirectionManual) && (
-              <Table.Row verticalAlign='top'>
-                <Table.Cell>Conditions:</Table.Cell>
-                <Table.Cell>
+              <Grid.Row
+                style={{ padding: '5px 0', borderBottom: '1px solid rgba(34, 36, 38, 0.1)' }}
+              >
+                <Grid.Column mobile={16} tablet={3} computer={2}>
+                  <Header as='h5' style={{ fontSize: '0.8em' }}>
+                    CONDITIONS
+                  </Header>
+                </Grid.Column>
+                <Grid.Column mobile={16} tablet={13} computer={14}>
                   <ConditionLabels
                     lat={conditionLat}
                     lng={conditionLng}
@@ -495,12 +525,16 @@ const Sector = () => {
                     sunFromHour={data.sunFromHour ?? data.areaSunFromHour ?? 0}
                     sunToHour={data.sunToHour ?? data.areaSunToHour ?? 0}
                   />
-                </Table.Cell>
-              </Table.Row>
+                </Grid.Column>
+              </Grid.Row>
             )}
-          <Table.Row verticalAlign='top'>
-            <Table.Cell>Misc:</Table.Cell>
-            <Table.Cell>
+          <Grid.Row style={{ padding: '5px 0', borderBottom: '1px solid rgba(34, 36, 38, 0.1)' }}>
+            <Grid.Column mobile={16} tablet={3} computer={2}>
+              <Header as='h5' style={{ fontSize: '0.8em' }}>
+                MISC
+              </Header>
+            </Grid.Column>
+            <Grid.Column mobile={16} tablet={13} computer={14}>
               <DownloadButton href={`/sectors/pdf?id=${data.id}`}>sector.pdf</DownloadButton>
               <DownloadButton href={`/areas/pdf?id=${data.areaId}`}>area.pdf</DownloadButton>
               {data.parking && (
@@ -510,6 +544,7 @@ const Sector = () => {
                   target='_blank'
                   image
                   basic
+                  size='tiny'
                 >
                   <Icon name='map' />
                   Parking
@@ -522,16 +557,17 @@ const Sector = () => {
                   target='_blank'
                   image
                   basic
+                  size='tiny'
                 >
                   <Icon name='map' />
                   Sector
                 </Label>
               )}
               <ExternalLinkLabels externalLinks={data.externalLinks} />
-            </Table.Cell>
-          </Table.Row>
-        </Table.Body>
-      </Table>
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
+      </Segment>
       <ProblemList
         storageKey={`sector/${sectorId}`}
         mode='sector'

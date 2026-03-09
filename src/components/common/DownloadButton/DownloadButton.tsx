@@ -34,6 +34,7 @@ export const DownloadButton = ({ href, icon = 'file pdf outline', children }: Pr
       rel='noreferrer noopener'
       target='_blank'
       image
+      size='mini'
       basic
     >
       <Icon name={loading ? 'spinner' : icon} loading={loading} />

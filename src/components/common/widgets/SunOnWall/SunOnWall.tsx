@@ -1,4 +1,4 @@
-import { Image, Label, Popup } from 'semantic-ui-react';
+import { Icon, Label, Popup } from 'semantic-ui-react';
 
 type Props = {
   sunFromHour: number;
@@ -18,10 +18,11 @@ export const SunOnWall = ({ sunFromHour, sunToHour }: Props) => {
 
   return (
     <Popup
+      size='tiny'
       content='Sun on wall'
       trigger={
-        <Label image basic size='small'>
-          <Image src='/svg/sun-on-wall.svg' alt='Sun on wall' size='mini' />
+        <Label image basic size='tiny'>
+          <Icon name='sun' />
           {String(sunFromHour).padStart(2, '0') +
             ':00' +
             ' - ' +

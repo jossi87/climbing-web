@@ -101,34 +101,37 @@ export const SlopeProfile = ({ areaName = '', sectorName = '', slope }: Props) =
           />
         </AreaChart>
       </ResponsiveContainer>
-      <Label basic size='small'>
-        Distance:
-        <Label.Detail>{getDistanceWithUnit(slope)}</Label.Detail>
-      </Label>
-      <Label basic size='small'>
-        Elevation:
-        <Label.Detail>{`+${slope.elevationGain ?? 0}m, -${slope.elevationLoss ?? 0}m`}</Label.Detail>
-      </Label>
-      <Label basic size='small'>
-        Estimated time:
-        <Label.Detail>{`${slope.calculatedDurationInMinutes ?? 0} min`}</Label.Detail>
-      </Label>
-      <Label basic size='small'>
-        Elevation source:
-        <Label.Detail>
-          {Array.from(new Set((slope.coordinates ?? []).map((a) => a.elevationSource))).join(', ')}
-        </Label.Detail>
-      </Label>
-      <Label
-        basic
-        size='small'
-        image
-        as='a'
-        onClick={() => downloadGpxFile(areaName ?? '', sectorName ?? '', slope.coordinates ?? [])}
-      >
-        <Icon name='download' />
-        GPX
-      </Label>
+      <Label.Group size='tiny'>
+        <Label basic>
+          Distance:
+          <Label.Detail>{getDistanceWithUnit(slope)}</Label.Detail>
+        </Label>
+        <Label basic>
+          Elevation:
+          <Label.Detail>{`+${slope.elevationGain ?? 0}m, -${slope.elevationLoss ?? 0}m`}</Label.Detail>
+        </Label>
+        <Label basic>
+          Estimated time:
+          <Label.Detail>{`${slope.calculatedDurationInMinutes ?? 0} min`}</Label.Detail>
+        </Label>
+        <Label basic>
+          Elevation source:
+          <Label.Detail>
+            {Array.from(new Set((slope.coordinates ?? []).map((a) => a.elevationSource))).join(
+              ', ',
+            )}
+          </Label.Detail>
+        </Label>
+        <Label
+          basic
+          image
+          as='a'
+          onClick={() => downloadGpxFile(areaName ?? '', sectorName ?? '', slope.coordinates ?? [])}
+        >
+          <Icon name='download' />
+          GPX
+        </Label>
+      </Label.Group>
     </>
   );
 };

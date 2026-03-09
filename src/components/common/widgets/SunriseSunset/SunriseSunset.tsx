@@ -1,4 +1,4 @@
-import { Image, Label, Popup } from 'semantic-ui-react';
+import { Icon, Label, Popup } from 'semantic-ui-react';
 import SunCalc from 'suncalc';
 
 type Props = {
@@ -16,9 +16,10 @@ export const SunriseSunset = ({ lat, lng, date }: Props) => {
   return (
     <Popup
       content='Sunrise and sunset'
+      size='tiny'
       trigger={
-        <Label image basic size='small'>
-          <Image src='/svg/sunrise-sunset.svg' alt='Sunrise and Sunset' size='mini' />
+        <Label basic size='mini'>
+          <Icon name='eye' />
           {String(sunrise.getHours()).padStart(2, '0') +
             ':' +
             String(sunrise.getMinutes()).padStart(2, '0') +

@@ -142,13 +142,14 @@ export const WallDirection = ({
   if (wallDirectionCalculated?.direction || wallDirectionManual?.direction) {
     return (
       <Popup
+        size='tiny'
         content={
           wallDirectionManual
             ? 'Wall direction (manually set)'
             : 'Wall direction (calculated from outline)'
         }
         trigger={
-          <Label basic size='small'>
+          <Label basic size='mini'>
             <Icon name='compass outline' />
             {wallDirectionManual?.direction ?? wallDirectionCalculated?.direction}
           </Label>
@@ -218,7 +219,7 @@ const YrLink = ({ lat, lng }: Pick<ConditionLabelsProps, 'lat' | 'lng'>) => {
       target='_blank'
       image
       basic
-      size='small'
+      size='mini'
       onClick={(e) => {
         if (matchMedia && !matchMedia('(hover:hover)')?.matches) {
           // If the device doesn't have the ability to hover, don't take them
@@ -237,7 +238,7 @@ const YrLink = ({ lat, lng }: Pick<ConditionLabelsProps, 'lat' | 'lng'>) => {
   }
 
   return (
-    <Popup trigger={label}>
+    <Popup trigger={label} size='tiny'>
       <table>
         <tbody>
           <tr>
@@ -288,7 +289,7 @@ export function ConditionLabels({
   }
 
   const d = new Date();
-  const date = `${d.getFullYear()}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getDate()}`;
+  const date = `${d.getFullYear()}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getDate().toString().padStart(2, '0')}`;
   const time = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
 
   return (
@@ -305,7 +306,7 @@ export function ConditionLabels({
         rel='noopener'
         target='_blank'
         basic
-        size='small'
+        size='mini'
       >
         <Icon name='camera' />
         Webcams
@@ -315,7 +316,7 @@ export function ConditionLabels({
         rel='noopener'
         target='_blank'
         basic
-        size='small'
+        size='mini'
       >
         <Icon name='external alternate' />
         SunCalc
@@ -339,7 +340,7 @@ export function ExternalLinkLabels({
     const url = l.url ?? '';
     const ixOfPage = url.indexOf('page=');
     return (
-      <Label color='blue' key={l.id} href={url} rel='noopener' target='_blank' size='small'>
+      <Label basic key={l.id} href={url} rel='noopener' target='_blank' size='mini'>
         <Icon name='linkify' />
         {l.title}
         {ixOfPage !== -1 && <LabelDetail>Page {url.substring(ixOfPage + 5)}</LabelDetail>}
