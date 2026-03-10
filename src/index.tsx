@@ -93,6 +93,8 @@ export const Auth0ProviderWithNavigate = ({ children }: { children: ReactNode })
       clientId={clientId}
       authorizationParams={{
         redirect_uri: window.location.origin,
+        audience: 'https://buldreinfo.com',
+        scope: 'openid profile email',
       }}
       onRedirectCallback={onRedirectCallback}
       useRefreshTokens={true}
