@@ -17,7 +17,7 @@ jobs:
           node-version: '22'
           cache: 'npm'
       - name: 'Install dependencies'
-        run: npm ci
+        run: npm ci --legacy-peer-deps
       - name: 'Run validation'
         run: npm run validate
       - name: 'Run the build'
