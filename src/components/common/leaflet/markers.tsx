@@ -149,7 +149,12 @@ export default function Markers({
               </>
             )}
             <a rel='noreferrer noopener' target='_blank' href={m.urlStillImage}>
-              <img style={{ maxWidth: '180px' }} src={m.urlStillImage} />
+              <img
+                style={{ maxWidth: '180px' }}
+                src={m.urlStillImage}
+                alt={m.name}
+                loading='lazy'
+              />
             </a>
             <br />
             <i>Click on image to open in new tab</i>

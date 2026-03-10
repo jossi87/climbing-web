@@ -191,7 +191,15 @@ export const WeatherIcon = ({ symbol }: { symbol: undefined | 'loading' | TWeath
   }
 
   if (symbol && weatherSymbolKeys[symbol]) {
-    return <img src={`/svg/yr/${weatherSymbolKeys[symbol]}.svg`} />;
+    return (
+      <img
+        alt={symbol}
+        src={`/svg/yr/${weatherSymbolKeys[symbol]}.svg`}
+        width={20}
+        height={20}
+        loading='lazy'
+      />
+    );
   }
 
   return <Icon name='rain' />;
@@ -243,13 +251,31 @@ const YrLink = ({ lat, lng }: Pick<ConditionLabelsProps, 'lat' | 'lng'>) => {
         <tbody>
           <tr>
             <td>
-              <img width={50} src={`/svg/yr/${weatherSymbolKeys[next1Hours]}.svg`} />
+              <img
+                width={50}
+                height={50}
+                alt={next1Hours}
+                src={`/svg/yr/${weatherSymbolKeys[next1Hours]}.svg`}
+                loading='lazy'
+              />
             </td>
             <td>
-              <img width={50} src={`/svg/yr/${weatherSymbolKeys[next6Hours]}.svg`} />
+              <img
+                width={50}
+                height={50}
+                alt={next6Hours}
+                src={`/svg/yr/${weatherSymbolKeys[next6Hours]}.svg`}
+                loading='lazy'
+              />
             </td>
             <td>
-              <img width={50} src={`/svg/yr/${weatherSymbolKeys[next12Hours]}.svg`} />
+              <img
+                width={50}
+                height={50}
+                alt={next12Hours}
+                src={`/svg/yr/${weatherSymbolKeys[next12Hours]}.svg`}
+                loading='lazy'
+              />
             </td>
           </tr>
           <tr>
@@ -352,7 +378,15 @@ export function ExternalLinkLabels({
 export function NoDogsAllowed() {
   return (
     <Header as='h5' color='red' image>
-      <Image src='/svg/no-animals.svg' alt='No dogs allowed' rounded size='mini' />
+      <Image
+        src='/svg/no-animals.svg'
+        alt='No dogs allowed'
+        rounded
+        size='mini'
+        width={35}
+        height={35}
+        loading='lazy'
+      />
       <Header.Content>
         No dogs allowed
         <Header.Subheader>The landowner asks us not to bring dogs to this crag.</Header.Subheader>

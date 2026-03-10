@@ -37,6 +37,7 @@ function Footer() {
                   alt='GitHub'
                   width='170'
                   height='69'
+                  loading='lazy'
                 />
               </a>
             </Grid.Column>
@@ -48,6 +49,7 @@ function Footer() {
                   alt='Bratte Rogalands venner'
                   width='170'
                   height='102'
+                  loading='lazy'
                 />
               </a>
             </Grid.Column>

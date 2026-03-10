@@ -64,12 +64,13 @@ function Avatar({ name, mediaId, mediaVersionStamp, floated, size = 'mini' }: Pr
           src={getMediaFileUrl(mid, mediaVersionStamp ?? 0, false, { targetWidth: pixelSize })}
           alt={alt}
           {...commonImageProps}
+          loading='lazy'
           style={{ objectFit: 'cover', width: pixelSize, height: pixelSize, cursor: 'pointer' }}
         />
       }
     >
       <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <Image src={getMediaFileUrl(mid, mediaVersionStamp ?? 0, false)} alt={alt} />
+        <Image src={getMediaFileUrl(mid, mediaVersionStamp ?? 0, false)} alt={alt} loading='lazy' />
       </div>
     </Modal>
   );

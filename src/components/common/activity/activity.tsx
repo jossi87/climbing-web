@@ -77,6 +77,7 @@ const LazyLoadedMedia = ({
               style={imgStyle}
               width={numericWidth}
               height={numericHeight}
+              loading='lazy'
               src={getMediaFileUrl(Number(m.id ?? 0), Number(m.versionStamp ?? 0), false, {
                 minDimension: numericWidth,
               })}
@@ -273,6 +274,8 @@ const Activity = ({ idArea, idSector }: Props) => {
                         style={{ height: '35px', width: '35px', objectFit: 'cover' }}
                         width='35'
                         height='35'
+                        alt='Problem thumbnail'
+                        loading='lazy'
                         src={getMediaFileUrl(
                           Number(a.problemRandomMediaId ?? 0),
                           Number(a.problemRandomMediaVersionStamp ?? 0),
@@ -384,6 +387,8 @@ const Activity = ({ idArea, idSector }: Props) => {
                         style={{ height: '35px', width: '35px', objectFit: 'cover' }}
                         width='35'
                         height='35'
+                        alt='Random media thumbnail'
+                        loading='lazy'
                         src={getMediaFileUrl(
                           Number(a.problemRandomMediaId ?? 0),
                           Number(a.problemRandomMediaVersionStamp ?? 0),

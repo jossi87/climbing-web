@@ -28,6 +28,7 @@ export const Navigation = () => {
               alt='Logo'
               width='35'
               height='30'
+              loading='lazy'
               style={{ width: '35px', height: '30px' }}
             />
           </Menu.Item>

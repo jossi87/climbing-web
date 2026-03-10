@@ -1,3 +1,4 @@
+import 'semantic-ui-css/semantic.min.css';
 import './buldreinfo.css';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, useNavigate } from 'react-router-dom';

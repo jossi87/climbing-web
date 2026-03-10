@@ -84,6 +84,7 @@ const Frontpage = () => {
                         width='275'
                         height='250'
                         size='medium'
+                        loading='lazy'
                         style={{
                           width: '275px',
                           height: '250px',
