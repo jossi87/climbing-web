@@ -25,7 +25,7 @@ export default defineConfig(({ mode }) => ({
     outDir: 'build',
     sourcemap: false,
     cssCodeSplit: true,
-    cssMinify: 'lightningcss',
+    cssMinify: 'esbuild',
     target: 'esnext',
     minify: 'esbuild',
     rollupOptions: {
