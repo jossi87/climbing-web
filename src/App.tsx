@@ -1,10 +1,9 @@
-import { lazy, Suspense } from 'react';
 import { Container } from 'semantic-ui-react';
 import AppRoutes from './components/AppRoutes';
 import { MetaProvider } from './components/common/meta';
 
-const Header = lazy(() => import('./components/Header'));
-const Footer = lazy(() => import('./components/Footer'));
+import Header from './components/Header';
+import Footer from './components/Footer';
 
 const App = () => {
   return (
@@ -17,17 +16,11 @@ const App = () => {
           wordBreak: 'break-word',
         }}
       >
-        <Suspense fallback={<div style={{ height: '60px', background: 'black' }} />}>
-          <Header />
-        </Suspense>
-
+        <Header />
         <Container style={{ marginTop: '1em', minHeight: '70vh' }}>
           <AppRoutes />
         </Container>
-
-        <Suspense fallback={<div style={{ height: '200px' }} />}>
-          <Footer />
-        </Suspense>
+        <Footer />
       </div>
     </MetaProvider>
   );
