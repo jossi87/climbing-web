@@ -2,7 +2,7 @@ import { Label, Grid, Statistic, Icon, Image, Card, Segment, Placeholder } from 
 import Avatar from './common/avatar/avatar';
 import { Link } from 'react-router-dom';
 import { useMeta } from './common/meta/context';
-import { getMediaFileUrl, numberWithCommas, useData } from '../api';
+import { getMediaFileUrl, getMediaFileUrlSrcSet, numberWithCommas, useData } from '../api';
 import Activity from './common/activity/activity';
 import type { Success } from '../@types/buldreinfo';
 
@@ -96,9 +96,15 @@ const Frontpage = () => {
                           Number(randomMedia.versionStamp ?? 0),
                           false,
                           {
-                            targetWidth: 600,
+                            minDimension: 275,
                           },
                         )}
+                        srcSet={getMediaFileUrlSrcSet(
+                          Number(randomMedia.idMedia ?? 0),
+                          Number(randomMedia.versionStamp ?? 0),
+                          randomMedia.width ?? 2560,
+                        )}
+                        sizes='(max-width: 767px) 100vw, (max-width: 991px) 50vw, 300px'
                       />
                     </Link>
                     <Card.Content>
