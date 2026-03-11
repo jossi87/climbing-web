@@ -37,6 +37,7 @@ export default defineConfig(({ mode }) => ({
           ],
           'swagger-ui': ['swagger-ui-react'],
           'heavy-libs': ['heic2any', 'remarkable', 'file-saver', '@sentry/react'],
+          'utils-common': ['linkifyjs', 'linkify-react', 'suncalc'],
         },
       },
     },

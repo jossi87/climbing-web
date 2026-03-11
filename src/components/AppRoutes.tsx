@@ -3,6 +3,8 @@ import { Routes, Route } from 'react-router-dom';
 import { Loading } from './common/widgets/widgets';
 import { lazy } from '../utils/lazyRetry';
 
+import Frontpage from './Frontpage';
+
 const AuthContainer = lazy(() => import('./AuthContainer'), 'auth');
 const About = lazy(() => import('./About'), 'about');
 const Area = lazy(() => import('./Area'), 'area');
@@ -10,7 +12,6 @@ const AreaEdit = lazy(() => import('./AreaEdit'), 'area-edit');
 const Areas = lazy(() => import('./Areas'), 'areas');
 const Dangerous = lazy(() => import('./Dangerous'), 'dangerous');
 const Donations = lazy(() => import('./Donations'), 'donations');
-const Frontpage = lazy(() => import('./Frontpage'), 'frontpage');
 const Graph = lazy(() => import('./Graph'), 'graph');
 const MediaSvgEdit = lazy(() => import('./MediaSvgEdit'), 'media-svg-edit');
 const Permissions = lazy(() => import('./Permissions'), 'permissions');

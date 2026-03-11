@@ -21,16 +21,9 @@ const APP_ENV = import.meta.env.REACT_APP_ENV;
 setTimeout(() => {
   Sentry.init({
     dsn: 'https://32152968271f46afa0efa8608b252e42@o4505452714786816.ingest.sentry.io/4505452716556288',
-    integrations: [
-      Sentry.browserTracingIntegration(),
-      Sentry.replayIntegration({
-        maskAllText: true,
-        blockAllMedia: true,
-      }),
-    ],
+    integrations: [Sentry.browserTracingIntegration()],
     environment: APP_ENV ?? 'unknown',
     tracesSampleRate: APP_ENV === 'production' ? 0.1 : 1.0,
-    replaysOnErrorSampleRate: 1.0,
   });
 }, 100);
 
