@@ -195,6 +195,8 @@ const Activity = ({ idArea, idSector }: Props) => {
               setActivityTypeFa(!activityTypeFa);
               refetch();
             }}
+            title='Toggle First Ascents'
+            aria-label='Toggle First Ascents'
           >
             <Button.Content hidden>FA</Button.Content>
             <Button.Content visible>
@@ -208,6 +210,8 @@ const Activity = ({ idArea, idSector }: Props) => {
               setActivityTypeTicks(!activityTypeTicks);
               refetch();
             }}
+            title='Toggle Ticks'
+            aria-label='Toggle Ticks'
           >
             <Button.Content hidden>Tick</Button.Content>
             <Button.Content visible>
@@ -221,6 +225,8 @@ const Activity = ({ idArea, idSector }: Props) => {
               setActivityTypeMedia(!activityTypeMedia);
               refetch();
             }}
+            title='Toggle Media'
+            aria-label='Toggle Media'
           >
             <Button.Content hidden>Media</Button.Content>
             <Button.Content visible>
@@ -234,6 +240,8 @@ const Activity = ({ idArea, idSector }: Props) => {
               setActivityTypeComments(!activityTypeComments);
               refetch();
             }}
+            title='Toggle Comments'
+            aria-label='Toggle Comments'
           >
             <Button.Content hidden>Com</Button.Content>
             <Button.Content visible>
@@ -274,7 +282,7 @@ const Activity = ({ idArea, idSector }: Props) => {
                         style={{ height: '35px', width: '35px', objectFit: 'cover' }}
                         width='35'
                         height='35'
-                        alt='Problem thumbnail'
+                        alt={a.problemName ?? 'Problem thumbnail'}
                         loading='lazy'
                         src={getMediaFileUrl(
                           Number(a.problemRandomMediaId ?? 0),
@@ -387,7 +395,7 @@ const Activity = ({ idArea, idSector }: Props) => {
                         style={{ height: '35px', width: '35px', objectFit: 'cover' }}
                         width='35'
                         height='35'
-                        alt='Random media thumbnail'
+                        alt={a.problemName ?? 'Problem thumbnail'}
                         loading='lazy'
                         src={getMediaFileUrl(
                           Number(a.problemRandomMediaId ?? 0),
