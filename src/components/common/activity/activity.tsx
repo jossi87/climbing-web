@@ -168,6 +168,7 @@ const Activity = ({ idArea, idSector }: Props) => {
             className='icon'
             scrolling
             options={gradeOptions}
+            aria-label='Filter by grade'
             trigger={
               <span>
                 <Icon name='filter' />

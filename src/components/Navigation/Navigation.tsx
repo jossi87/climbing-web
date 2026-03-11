@@ -28,7 +28,7 @@ export const Navigation = () => {
               alt='Bratte Linjer Logo'
               width='35'
               height='30'
-              loading='lazy'
+              loading='eager'
               style={{ width: '35px', height: '30px' }}
             />
           </Menu.Item>
@@ -39,6 +39,7 @@ export const Navigation = () => {
             item
             simple
             labeled
+            aria-label='Select Region'
             trigger={
               <>
                 <Icon name='world' />
@@ -101,6 +102,7 @@ export const Navigation = () => {
               item
               simple
               labeled
+              aria-label='Account Menu'
               trigger={
                 <>
                   <Icon name='user' />

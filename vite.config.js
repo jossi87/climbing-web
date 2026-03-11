@@ -27,15 +27,6 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: {
-          'leaflet-vendor': [
-            'leaflet',
-            'react-leaflet',
-            '@react-leaflet/core',
-            'leaflet.fullscreen',
-            'leaflet.locatecontrol',
-            'leaflet.markercluster',
-          ],
-          'swagger-ui': ['swagger-ui-react'],
           monitoring: ['@sentry/react'],
         },
       },

@@ -101,6 +101,7 @@ const Frontpage = () => {
                       height='250'
                       size='medium'
                       fetchPriority='high'
+                      loading='eager'
                       style={{
                         width: '100%',
                         aspectRatio: '275 / 250',
