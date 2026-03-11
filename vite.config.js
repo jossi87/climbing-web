@@ -23,17 +23,10 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     outDir: 'build',
-    sourcemap: false,
-    cssCodeSplit: true,
-    cssMinify: 'esbuild',
     target: 'esnext',
-    minify: 'esbuild',
     rollupOptions: {
       output: {
         manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'semantic-ui': ['semantic-ui-react'],
-          'recharts-vendor': ['recharts'],
           'leaflet-vendor': [
             'leaflet',
             'react-leaflet',
@@ -43,16 +36,11 @@ export default defineConfig(({ mode }) => ({
             'leaflet.markercluster',
           ],
           'swagger-ui': ['swagger-ui-react'],
-          'video-player': ['react-player'],
-          'auth-provider': ['@auth0/auth0-react'],
           monitoring: ['@sentry/react'],
-          'react-query': ['@tanstack/react-query'],
           'utils-heavy': ['heic2any', 'remarkable', 'file-saver'],
-          'utils-light': ['linkifyjs', 'linkify-react', 'suncalc'],
         },
       },
     },
-    chunkSizeWarningLimit: 1000,
   },
   esbuild: {
     drop: mode === 'production' ? ['console', 'debugger'] : [],
