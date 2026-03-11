@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { DATA_MUTATION_EVENT } from '../components/DataReloader';
 import type { FetchOptions } from './types';
 import { captureMessage } from '@sentry/react';
-import { saveAs } from 'file-saver';
 import type { MediaRegion } from '../utils/svg-scaler';
 
 export function getLocales() {
@@ -172,6 +171,9 @@ export function downloadFile(accessToken: string | null, url: string) {
       return;
     }
 
-    return response.blob().then((blob) => saveAs(blob, filename));
+    return response.blob().then(async (blob) => {
+      const { saveAs } = await import('file-saver');
+      saveAs(blob, filename);
+    });
   });
 }

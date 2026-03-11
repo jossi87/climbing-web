@@ -21,18 +21,18 @@ export const Navigation = () => {
           }}
           className='row-1'
         >
-          <Menu.Item header as={Link} to='/'>
+          <Menu.Item header as={Link} to='/' aria-label='Home'>
             <Image
               size='mini'
               src='/png/logo_35x30.png'
-              alt='Logo'
+              alt='Bratte Linjer Logo'
               width='35'
               height='30'
               loading='lazy'
               style={{ width: '35px', height: '30px' }}
             />
           </Menu.Item>
-          <Menu.Item as={SearchBox} style={{ flex: 1 }} />
+          <Menu.Item as={SearchBox} style={{ flex: 1 }} aria-label='Search' />
         </div>
         {activeSite && (
           <Dropdown

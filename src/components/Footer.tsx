@@ -30,6 +30,7 @@ function Footer() {
                 href={'https://github.com/jossi87/climbing-web'}
                 rel='noreferrer noopener'
                 target='_blank'
+                aria-label='GitHub Repository'
               >
                 <img
                   style={{ ...styleGitHubBrv, width: '170px', height: '69px' }}
@@ -42,7 +43,12 @@ function Footer() {
               </a>
             </Grid.Column>
             <Grid.Column>
-              <a href={'https://brv.no'} rel='noreferrer noopener' target='_blank'>
+              <a
+                href={'https://brv.no'}
+                rel='noreferrer noopener'
+                target='_blank'
+                aria-label='Bratte Rogalands Venner'
+              >
                 <img
                   style={{ ...styleGitHubBrv, width: '170px', height: '102px' }}
                   src={'/png/brv.png'}
@@ -58,6 +64,7 @@ function Footer() {
                 href={'https://www.facebook.com/groups/brattelinjer'}
                 rel='noreferrer noopener'
                 target='_blank'
+                aria-label='Facebook Group'
               >
                 <Button style={styleFacebook} color='facebook'>
                   <Icon name='facebook' /> Facebook

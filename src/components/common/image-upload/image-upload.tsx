@@ -6,7 +6,6 @@ import {
   type ChangeEvent,
   type FormEvent,
 } from 'react';
-import heic2any from 'heic2any';
 import { useDropzone } from 'react-dropzone';
 import {
   Button,
@@ -54,6 +53,7 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
         const processedFiles = await Promise.all(
           acceptedFiles.map(async (file) => {
             if (file.type === 'image/heic' || file.type === 'image/heif') {
+              const { default: heic2any } = await import('heic2any');
               const result = await heic2any({
                 blob: file,
                 toType: 'image/jpeg',
