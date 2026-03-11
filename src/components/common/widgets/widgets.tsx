@@ -13,9 +13,9 @@ type LockSymbolProps = {
 
 export function LockSymbol({ lockedAdmin = false, lockedSuperadmin = false }: LockSymbolProps) {
   if (lockedSuperadmin) {
-    return <Icon color='black' name='user secret' />;
+    return <Icon color='black' name='user secret' aria-label='Locked (Superadmin access only)' />;
   } else if (lockedAdmin) {
-    return <Icon color='black' name='lock' />;
+    return <Icon color='black' name='lock' aria-label='Locked (Admin access only)' />;
   }
   return null;
 }
@@ -36,11 +36,19 @@ export function Stars({ numStars = -1, includeStarOutlines = false }: StarsProps
 
   for (let i = 0; i < 3; i++) {
     if (i < fullStars) {
-      stars.push(<Icon key={i} color='black' name='star' />);
+      stars.push(<Icon key={i} color='black' name='star' aria-label='Full star' />);
     } else if (i === fullStars && hasHalfStar) {
-      stars.push(<Icon key={i} color='black' name='star half' />);
+      stars.push(<Icon key={i} color='black' name='star half' aria-label='Half star' />);
     } else if (includeStarOutlines) {
-      stars.push(<Icon key={i} color='black' name='star outline' style={{ opacity: 0.5 }} />);
+      stars.push(
+        <Icon
+          key={i}
+          color='black'
+          name='star outline'
+          style={{ opacity: 0.5 }}
+          aria-label='Empty star'
+        />,
+      );
     }
   }
 
@@ -48,7 +56,14 @@ export function Stars({ numStars = -1, includeStarOutlines = false }: StarsProps
     return null;
   }
 
-  return <div style={{ whiteSpace: 'nowrap', display: 'inline-flex' }}>{stars}</div>;
+  return (
+    <div
+      style={{ whiteSpace: 'nowrap', display: 'inline-flex' }}
+      aria-label={`Rating: ${numStars} out of 3 stars`}
+    >
+      {stars}
+    </div>
+  );
 }
 
 export function Loading() {
@@ -187,13 +202,13 @@ type YrData = {
 
 export const WeatherIcon = ({ symbol }: { symbol: undefined | 'loading' | TWeatherSymbolKey }) => {
   if (symbol === 'loading') {
-    return <Icon name='spinner' loading />;
+    return <Icon name='spinner' loading aria-label='Loading weather...' />;
   }
 
   if (symbol && weatherSymbolKeys[symbol]) {
     return (
       <img
-        alt={symbol}
+        alt={symbol.replace(/_/g, ' ')}
         src={`/svg/yr/${weatherSymbolKeys[symbol]}.svg`}
         width={20}
         height={20}
@@ -202,7 +217,7 @@ export const WeatherIcon = ({ symbol }: { symbol: undefined | 'loading' | TWeath
     );
   }
 
-  return <Icon name='rain' />;
+  return <Icon name='rain' aria-label='Weather unknown' />;
 };
 
 const YrLink = ({ lat, lng }: Pick<ConditionLabelsProps, 'lat' | 'lng'>) => {
@@ -228,6 +243,7 @@ const YrLink = ({ lat, lng }: Pick<ConditionLabelsProps, 'lat' | 'lng'>) => {
       image
       basic
       size='mini'
+      aria-label='Weather forecast from Yr.no'
       onClick={(e) => {
         if (matchMedia && !matchMedia('(hover:hover)')?.matches) {
           // If the device doesn't have the ability to hover, don't take them
@@ -247,14 +263,14 @@ const YrLink = ({ lat, lng }: Pick<ConditionLabelsProps, 'lat' | 'lng'>) => {
 
   return (
     <Popup trigger={label} size='tiny'>
-      <table>
+      <table aria-label='Weather forecast details'>
         <tbody>
           <tr>
             <td>
               <img
                 width={50}
                 height={50}
-                alt={next1Hours}
+                alt={next1Hours?.replace(/_/g, ' ')}
                 src={`/svg/yr/${weatherSymbolKeys[next1Hours]}.svg`}
                 loading='lazy'
               />
@@ -263,7 +279,7 @@ const YrLink = ({ lat, lng }: Pick<ConditionLabelsProps, 'lat' | 'lng'>) => {
               <img
                 width={50}
                 height={50}
-                alt={next6Hours}
+                alt={next6Hours?.replace(/_/g, ' ')}
                 src={`/svg/yr/${weatherSymbolKeys[next6Hours]}.svg`}
                 loading='lazy'
               />
@@ -272,19 +288,19 @@ const YrLink = ({ lat, lng }: Pick<ConditionLabelsProps, 'lat' | 'lng'>) => {
               <img
                 width={50}
                 height={50}
-                alt={next12Hours}
+                alt={next12Hours?.replace(/_/g, ' ')}
                 src={`/svg/yr/${weatherSymbolKeys[next12Hours]}.svg`}
                 loading='lazy'
               />
             </td>
           </tr>
           <tr>
-            <td style={{ textAlign: 'center' }}>1 hr</td>
-            <td style={{ textAlign: 'center' }}>6 hrs</td>
-            <td style={{ textAlign: 'center' }}>12 hrs</td>
+            <th style={{ textAlign: 'center', fontWeight: 'normal' }}>1 hr</th>
+            <th style={{ textAlign: 'center', fontWeight: 'normal' }}>6 hrs</th>
+            <th style={{ textAlign: 'center', fontWeight: 'normal' }}>12 hrs</th>
           </tr>
           <tr>
-            <td colSpan={3}>
+            <td colSpan={3} style={{ textAlign: 'center' }}>
               Provided by{' '}
               <a
                 href={`https://www.yr.no/en/forecast/daily-table/${lat},${lng}`}
@@ -333,6 +349,7 @@ export function ConditionLabels({
         target='_blank'
         basic
         size='mini'
+        aria-label='View webcams for this location'
       >
         <Icon name='camera' />
         Webcams
@@ -343,6 +360,7 @@ export function ConditionLabels({
         target='_blank'
         basic
         size='mini'
+        aria-label='View sun position on SunCalc'
       >
         <Icon name='external alternate' />
         SunCalc

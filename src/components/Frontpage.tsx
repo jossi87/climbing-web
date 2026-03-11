@@ -33,14 +33,19 @@ const Frontpage = () => {
                 as={Segment}
                 style={{ minHeight: '180px', margin: '0 0 1em' }}
               >
-                <Statistic as={Link} to='/problems' color='blue'>
+                <Statistic
+                  as={Link}
+                  to='/problems'
+                  color='blue'
+                  aria-label={`View all ${numProblems?.numProblems} ${meta.isBouldering ? 'problems' : 'routes'}`}
+                >
                   <Statistic.Value>
                     <Icon name='database' /> {numberWithCommas(numProblems?.numProblems ?? 0)}
                   </Statistic.Value>
                   <Statistic.Label>{meta.isBouldering ? 'Problems' : 'Routes'}</Statistic.Label>
                 </Statistic>
                 {meta.isClimbing ? (
-                  <Statistic>
+                  <Statistic aria-label={`${numProblems?.numProblemsWithTopo} problems with topo`}>
                     <Statistic.Value>
                       <Icon name='image outline' />{' '}
                       {numberWithCommas(numProblems?.numProblemsWithTopo ?? 0)}
@@ -48,7 +53,9 @@ const Frontpage = () => {
                     <Statistic.Label>With topo</Statistic.Label>
                   </Statistic>
                 ) : (
-                  <Statistic>
+                  <Statistic
+                    aria-label={`${numProblems?.numProblemsWithCoordinates} problems with coordinates`}
+                  >
                     <Statistic.Value>
                       <Icon name='map marker' />{' '}
                       {numberWithCommas(numProblems?.numProblemsWithCoordinates ?? 0)}
@@ -56,25 +63,35 @@ const Frontpage = () => {
                     <Statistic.Label>Coordinates</Statistic.Label>
                   </Statistic>
                 )}
-                <Statistic as={Link} to='/ticks/1' color='blue'>
+                <Statistic
+                  as={Link}
+                  to='/ticks/1'
+                  color='blue'
+                  aria-label={`View recent ascents, total ${numTicks?.numTicks}`}
+                >
                   <Statistic.Value>
                     <Icon name='check' /> {numberWithCommas(numTicks?.numTicks ?? 0)}
                   </Statistic.Value>
                   <Statistic.Label>Ticks</Statistic.Label>
                 </Statistic>
-                <Statistic>
+                <Statistic aria-label={`${numMedia?.numImages} images in database`}>
                   <Statistic.Value>
                     <Icon name='image' /> {numberWithCommas(numMedia?.numImages ?? 0)}
                   </Statistic.Value>
                   <Statistic.Label>Images</Statistic.Label>
                 </Statistic>
-                <Statistic>
+                <Statistic aria-label={`${numMedia?.numMovies} videos in database`}>
                   <Statistic.Value>
                     <Icon name='film' /> {numberWithCommas(numMedia?.numMovies ?? 0)}
                   </Statistic.Value>
                   <Statistic.Label>Videos</Statistic.Label>
                 </Statistic>
-                <Statistic as={Link} to={'/donations'} color='blue'>
+                <Statistic
+                  as={Link}
+                  to={'/donations'}
+                  color='blue'
+                  aria-label='Support the project with a donation'
+                >
                   <Statistic.Value>
                     <Icon name='money' />
                   </Statistic.Value>

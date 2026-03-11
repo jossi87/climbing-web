@@ -26,6 +26,7 @@ export const Navigation = () => {
               size='mini'
               src='/png/logo_35x30.png'
               alt='Bratte Linjer Logo'
+              title='Bratte Linjer Home'
               width='35'
               height='30'
               loading='eager'
@@ -70,29 +71,33 @@ export const Navigation = () => {
             </Dropdown.Menu>
           </Dropdown>
         )}
-        <Menu.Item as={Link} to='/areas'>
+        <Menu.Item as={Link} to='/areas' aria-label='Areas list'>
           <Icon name='list' />
           <span>Areas</span>
         </Menu.Item>
-        <Menu.Item as={Link} to='/problems'>
+        <Menu.Item
+          as={Link}
+          to='/problems'
+          aria-label={isBouldering ? 'Bouldering problems' : 'Climbing routes'}
+        >
           <Icon name='database' />
           <span>{isBouldering ? 'Problems' : 'Routes'}</span>
         </Menu.Item>
         {!isBouldering && (
-          <Menu.Item as={Link} to='/dangerous'>
+          <Menu.Item as={Link} to='/dangerous' aria-label='Dangerous routes warning'>
             <Icon name='warning sign' />
             <span>Dangerous</span>
           </Menu.Item>
         )}
-        <Menu.Item as={Link} to='/graph' className='collapse-1'>
+        <Menu.Item as={Link} to='/graph' className='collapse-1' aria-label='Statistics and graphs'>
           <Icon name='chart bar' />
           <span>Graph</span>
         </Menu.Item>
-        <Menu.Item as={Link} to='/webcams' className='collapse-1'>
+        <Menu.Item as={Link} to='/webcams' className='collapse-1' aria-label='Crag webcams'>
           <Icon name='camera' />
           <span>Webcams</span>
         </Menu.Item>
-        <Menu.Item as={Link} to='/about' className='collapse-1'>
+        <Menu.Item as={Link} to='/about' className='collapse-1' aria-label='About this site'>
           <Icon name='info' />
           <span>About</span>
         </Menu.Item>

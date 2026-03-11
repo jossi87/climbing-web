@@ -27,21 +27,31 @@ function ProblemName({ a }: ProblemNameProps) {
   return (
     <>
       <span style={{ opacity: 0.6, fontSize: '80%' }}>
-        <Feed.User as={Link} to={`/area/${a.areaId}`} style={{ color: 'black' }}>
+        <Feed.User
+          as={Link}
+          to={`/area/${a.areaId}`}
+          style={{ color: 'black' }}
+          aria-label={`Area: ${a.areaName}`}
+        >
           {a.areaName}
         </Feed.User>
         <LockSymbol lockedAdmin={a.areaLockedAdmin} lockedSuperadmin={a.areaLockedSuperadmin} />
         {' / '}
-        <Feed.User as={Link} to={`/sector/${a.sectorId}`} style={{ color: 'black' }}>
+        <Feed.User
+          as={Link}
+          to={`/sector/${a.sectorId}`}
+          style={{ color: 'black' }}
+          aria-label={`Sector: ${a.sectorName}`}
+        >
           {a.sectorName}
         </Feed.User>
         <LockSymbol lockedAdmin={a.sectorLockedAdmin} lockedSuperadmin={a.sectorLockedSuperadmin} />
         {' / '}
       </span>
-      <Feed.User as={Link} to={`/problem/${a.problemId}`}>
+      <Feed.User as={Link} to={`/problem/${a.problemId}`} aria-label={`Problem: ${a.problemName}`}>
         {a.problemName}
       </Feed.User>{' '}
-      {a.grade}
+      <span aria-label={`Grade: ${a.grade}`}>{a.grade}</span>
       {a.problemSubtype && (
         <Label basic size='mini'>
           {a.problemSubtype}
@@ -69,15 +79,20 @@ const LazyLoadedMedia = ({
   const numericWidth = 85;
 
   return (
-    <Feed.Extra images ref={ref}>
+    <Feed.Extra images ref={ref} aria-label='Media for this activity'>
       {media.map((m) => (
-        <Link key={m.id ?? 0} to={`/problem/${problemId ?? 0}/${m.id ?? 0}`}>
+        <Link
+          key={m.id ?? 0}
+          to={`/problem/${problemId ?? 0}/${m.id ?? 0}`}
+          aria-label={`View ${m.idType === 1 ? 'photo' : 'video'} for problem`}
+        >
           {inView ? (
             <Image
               style={imgStyle}
               width={numericWidth}
               height={numericHeight}
               loading='lazy'
+              alt={`Activity ${m.idType === 1 ? 'photo' : 'video'} thumbnail`}
               src={getMediaFileUrl(Number(m.id ?? 0), Number(m.versionStamp ?? 0), false, {
                 minDimension: numericWidth,
               })}
@@ -93,6 +108,7 @@ const LazyLoadedMedia = ({
                 width: `${numericWidth}px`,
                 height: `${numericHeight}px`,
               }}
+              aria-hidden='true'
             ></div>
           )}
         </Link>

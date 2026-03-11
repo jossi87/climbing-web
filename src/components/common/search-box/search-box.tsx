@@ -31,6 +31,7 @@ const SearchBox = ({ children: _, ...searchProps }: SearchBoxProps) => {
   return (
     <Search
       id='mySearch'
+      input={{ 'aria-label': 'Search for areas, sectors or problems' }}
       loading={isPending}
       onResultSelect={(_, { result }) => {
         if (result.externalurl) {
