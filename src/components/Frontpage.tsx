@@ -137,32 +137,36 @@ const Frontpage = () => {
                       <Link to={`/sector/${randomMedia.idSector}`}>{randomMedia.sector}</Link>
                     </Card.Description>
                   </Card.Content>
-                  <Card.Content extra style={{ minHeight: '75px' }}>
-                    <Label.Group size='mini'>
-                      {randomMedia.tagged &&
-                        randomMedia.tagged.map((x) => (
-                          <Label image basic key={x.id} as={Link} to={`/user/${x.id}`}>
+                  {(randomMedia.tagged || randomMedia.photographer) && (
+                    <Card.Content extra style={{ minHeight: '75px' }}>
+                      <Label.Group size='mini'>
+                        {randomMedia.tagged &&
+                          randomMedia.tagged.map((x) => (
+                            <Label image basic key={x.id} as={Link} to={`/user/${x.id}`}>
+                              <Avatar
+                                name={x.name}
+                                mediaId={x.mediaId}
+                                mediaVersionStamp={x.mediaVersionStamp}
+                              />
+                              {x.name}
+                            </Label>
+                          ))}
+                        {randomMedia.photographer && (
+                          <Label image basic as={Link} to={`/user/${randomMedia.photographer.id}`}>
                             <Avatar
-                              name={x.name}
-                              mediaId={x.mediaId}
-                              mediaVersionStamp={x.mediaVersionStamp}
+                              name={randomMedia.photographer.name}
+                              mediaId={randomMedia.photographer.mediaId}
+                              mediaVersionStamp={randomMedia.photographer.mediaVersionStamp}
                             />
-                            {x.name}
+                            Photog:
+                            <Label.Detail color={'FFF'}>
+                              {randomMedia.photographer.name}
+                            </Label.Detail>
                           </Label>
-                        ))}
-                      {randomMedia.photographer && (
-                        <Label image basic as={Link} to={`/user/${randomMedia.photographer.id}`}>
-                          <Avatar
-                            name={randomMedia.photographer.name}
-                            mediaId={randomMedia.photographer.mediaId}
-                            mediaVersionStamp={randomMedia.photographer.mediaVersionStamp}
-                          />
-                          Photog:
-                          <Label.Detail color={'FFF'}>{randomMedia.photographer.name}</Label.Detail>
-                        </Label>
-                      )}
-                    </Label.Group>
-                  </Card.Content>
+                        )}
+                      </Label.Group>
+                    </Card.Content>
+                  )}
                 </Card>
                 <br />
               </>
