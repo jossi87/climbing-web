@@ -78,15 +78,15 @@ const Frontpage = () => {
               </Statistic.Group>
               {randomMedia && (
                 <>
-                  <Card>
+                  <Card fluid>
                     <Link to={`/problem/${randomMedia.idProblem}`}>
                       <Image
                         width='275'
                         height='250'
                         size='medium'
-                        loading='lazy'
+                        fetchPriority='high'
                         style={{
-                          width: '275px',
+                          width: '100%',
                           height: '250px',
                           objectFit: 'cover',
                         }}
@@ -96,7 +96,7 @@ const Frontpage = () => {
                           Number(randomMedia.versionStamp ?? 0),
                           false,
                           {
-                            minDimension: 275,
+                            targetWidth: 600,
                           },
                         )}
                       />
@@ -159,7 +159,7 @@ const Frontpage = () => {
                   ))}
                 </Placeholder>
               </Segment>
-              <Card>
+              <Card fluid>
                 <Placeholder>
                   <Placeholder.Image square />
                 </Placeholder>
