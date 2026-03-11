@@ -2429,6 +2429,14 @@ export interface operations {
                 targetWidth?: number;
                 /** @description Minimum Dimension */
                 minDimension?: number;
+                /** @description Region X */
+                x?: number;
+                /** @description Region Y */
+                y?: number;
+                /** @description Region Width */
+                width?: number;
+                /** @description Region Height */
+                height?: number;
             };
             header?: never;
             path?: never;
@@ -3128,8 +3136,6 @@ export interface operations {
                 id: number;
                 /** @description Media id */
                 mediaId: number;
-                /** @description Pitch */
-                pitch: number;
             };
             cookie?: never;
         };
