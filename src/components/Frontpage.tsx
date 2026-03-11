@@ -25,9 +25,14 @@ const Frontpage = () => {
       )}
       <Grid>
         <Grid.Row>
-          {numMedia && numTicks && numProblems ? (
-            <Grid.Column mobile={16} tablet={8} computer={4}>
-              <Statistic.Group size='mini' horizontal as={Segment}>
+          <Grid.Column mobile={16} tablet={8} computer={4}>
+            {numMedia && numTicks && numProblems ? (
+              <Statistic.Group
+                size='mini'
+                horizontal
+                as={Segment}
+                style={{ minHeight: '180px', margin: '0 0 1em' }}
+              >
                 <Statistic as={Link} to='/problems' color='blue'>
                   <Statistic.Value>
                     <Icon name='database' /> {numberWithCommas(numProblems?.numProblems ?? 0)}
@@ -76,88 +81,9 @@ const Frontpage = () => {
                   <Statistic.Label>Donations</Statistic.Label>
                 </Statistic>
               </Statistic.Group>
-              {randomMedia && (
-                <>
-                  <Card fluid>
-                    <Link to={`/problem/${randomMedia.idProblem}`}>
-                      <Image
-                        width='275'
-                        height='250'
-                        size='medium'
-                        fetchPriority='high'
-                        style={{
-                          width: '100%',
-                          height: '250px',
-                          objectFit: 'cover',
-                        }}
-                        alt={`${randomMedia.problem} ${randomMedia.grade} (${randomMedia.area} / ${randomMedia.sector}) - Photog: ${randomMedia.photographer?.name ?? 'unknown'}, tagged: ${randomMedia.tagged?.[0].name}`}
-                        src={getMediaFileUrl(
-                          Number(randomMedia.idMedia ?? 0),
-                          Number(randomMedia.versionStamp ?? 0),
-                          false,
-                          {
-                            minDimension: 275,
-                          },
-                        )}
-                        srcSet={getMediaFileUrlSrcSet(
-                          Number(randomMedia.idMedia ?? 0),
-                          Number(randomMedia.versionStamp ?? 0),
-                          randomMedia.width ?? 2560,
-                        )}
-                        sizes='(max-width: 767px) 100vw, (max-width: 991px) 50vw, 300px'
-                      />
-                    </Link>
-                    <Card.Content>
-                      <Card.Header
-                        as={Link}
-                        to={`/problem/${randomMedia.idProblem}`}
-                        style={{ wordBreak: 'break-all' }}
-                      >
-                        {randomMedia.problem}{' '}
-                        <span style={{ fontWeight: 'normal' }}>{randomMedia.grade}</span>
-                      </Card.Header>
-                      <Card.Description>
-                        <Link to={`/area/${randomMedia.idArea}`}>{randomMedia.area}</Link> /{' '}
-                        <Link to={`/sector/${randomMedia.idSector}`}>{randomMedia.sector}</Link>
-                      </Card.Description>
-                    </Card.Content>
-                    <Card.Content extra>
-                      <Label.Group size='mini'>
-                        {randomMedia.tagged &&
-                          randomMedia.tagged.map((x) => (
-                            <Label image basic key={x.id} as={Link} to={`/user/${x.id}`}>
-                              <Avatar
-                                name={x.name}
-                                mediaId={x.mediaId}
-                                mediaVersionStamp={x.mediaVersionStamp}
-                              />
-                              {x.name}
-                            </Label>
-                          ))}
-                        {randomMedia.photographer && (
-                          <Label image basic as={Link} to={`/user/${randomMedia.photographer.id}`}>
-                            <Avatar
-                              name={randomMedia.photographer.name}
-                              mediaId={randomMedia.photographer.mediaId}
-                              mediaVersionStamp={randomMedia.photographer.mediaVersionStamp}
-                            />
-                            Photog:
-                            <Label.Detail color={'FFF'}>
-                              {randomMedia.photographer.name}
-                            </Label.Detail>
-                          </Label>
-                        )}
-                      </Label.Group>
-                    </Card.Content>
-                  </Card>
-                  <br />
-                </>
-              )}
-            </Grid.Column>
-          ) : (
-            <Grid.Column mobile={16} tablet={8} computer={4} style={{ marginBottom: '10px' }}>
-              <Segment>
-                <Placeholder>
+            ) : (
+              <Segment style={{ minHeight: '180px', margin: '0 0 1em' }}>
+                <Placeholder fluid>
                   {[...Array(6)].map((_, i) => (
                     <Placeholder.Header image key={i}>
                       <Placeholder.Line />
@@ -165,11 +91,87 @@ const Frontpage = () => {
                   ))}
                 </Placeholder>
               </Segment>
+            )}
+            {randomMedia ? (
+              <>
+                <Card fluid>
+                  <Link to={`/problem/${randomMedia.idProblem}`}>
+                    <Image
+                      width='275'
+                      height='250'
+                      size='medium'
+                      fetchPriority='high'
+                      style={{
+                        width: '100%',
+                        aspectRatio: '275 / 250',
+                        objectFit: 'cover',
+                      }}
+                      alt={`${randomMedia.problem} ${randomMedia.grade} (${randomMedia.area} / ${randomMedia.sector}) - Photog: ${randomMedia.photographer?.name ?? 'unknown'}, tagged: ${randomMedia.tagged?.[0].name}`}
+                      src={getMediaFileUrl(
+                        Number(randomMedia.idMedia ?? 0),
+                        Number(randomMedia.versionStamp ?? 0),
+                        false,
+                        {
+                          minDimension: 275,
+                        },
+                      )}
+                      srcSet={getMediaFileUrlSrcSet(
+                        Number(randomMedia.idMedia ?? 0),
+                        Number(randomMedia.versionStamp ?? 0),
+                        randomMedia.width ?? 2560,
+                      )}
+                      sizes='(max-width: 767px) 100vw, (max-width: 991px) 50vw, 300px'
+                    />
+                  </Link>
+                  <Card.Content style={{ minHeight: '75px' }}>
+                    <Card.Header
+                      as={Link}
+                      to={`/problem/${randomMedia.idProblem}`}
+                      style={{ wordBreak: 'break-all' }}
+                    >
+                      {randomMedia.problem}{' '}
+                      <span style={{ fontWeight: 'normal' }}>{randomMedia.grade}</span>
+                    </Card.Header>
+                    <Card.Description>
+                      <Link to={`/area/${randomMedia.idArea}`}>{randomMedia.area}</Link> /{' '}
+                      <Link to={`/sector/${randomMedia.idSector}`}>{randomMedia.sector}</Link>
+                    </Card.Description>
+                  </Card.Content>
+                  <Card.Content extra style={{ minHeight: '75px' }}>
+                    <Label.Group size='mini'>
+                      {randomMedia.tagged &&
+                        randomMedia.tagged.map((x) => (
+                          <Label image basic key={x.id} as={Link} to={`/user/${x.id}`}>
+                            <Avatar
+                              name={x.name}
+                              mediaId={x.mediaId}
+                              mediaVersionStamp={x.mediaVersionStamp}
+                            />
+                            {x.name}
+                          </Label>
+                        ))}
+                      {randomMedia.photographer && (
+                        <Label image basic as={Link} to={`/user/${randomMedia.photographer.id}`}>
+                          <Avatar
+                            name={randomMedia.photographer.name}
+                            mediaId={randomMedia.photographer.mediaId}
+                            mediaVersionStamp={randomMedia.photographer.mediaVersionStamp}
+                          />
+                          Photog:
+                          <Label.Detail color={'FFF'}>{randomMedia.photographer.name}</Label.Detail>
+                        </Label>
+                      )}
+                    </Label.Group>
+                  </Card.Content>
+                </Card>
+                <br />
+              </>
+            ) : (
               <Card fluid>
-                <Placeholder>
-                  <Placeholder.Image square />
+                <Placeholder style={{ aspectRatio: '275 / 250' }}>
+                  <Placeholder.Image />
                 </Placeholder>
-                <Card.Content>
+                <Card.Content style={{ height: '75px' }}>
                   <Placeholder>
                     <Placeholder.Header>
                       <Placeholder.Line />
@@ -179,9 +181,16 @@ const Frontpage = () => {
                     </Placeholder.Paragraph>
                   </Placeholder>
                 </Card.Content>
+                <Card.Content extra style={{ height: '75px' }}>
+                  <Placeholder>
+                    <Placeholder.Header image>
+                      <Placeholder.Line />
+                    </Placeholder.Header>
+                  </Placeholder>
+                </Card.Content>
               </Card>
-            </Grid.Column>
-          )}
+            )}
+          </Grid.Column>
           <Grid.Column mobile={16} tablet={8} computer={12}>
             <Segment>
               <Activity idArea={0} idSector={0} />
