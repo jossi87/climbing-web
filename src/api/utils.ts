@@ -62,7 +62,7 @@ export function getMediaFileUrlSrcSet(
   versionStamp: number,
   originalWidth: number,
 ): string {
-  const SIZES = [480, 800, 1280, 1920, 2560, 3840, 5120];
+  const SIZES = [300, 480, 800, 1280, 1920, 2560, 3840, 5120];
   const finalSizes = Array.from(
     new Set([...SIZES.filter((s) => s <= originalWidth), originalWidth]),
   ).sort((a, b) => a - b);

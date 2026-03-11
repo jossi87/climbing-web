@@ -6,7 +6,7 @@ import { Auth0Provider } from '@auth0/auth0-react';
 import App from './App';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { DataReloader } from './components/DataReloader';
-import * as Sentry from '@sentry/react';
+import { init, browserTracingIntegration, ErrorBoundary } from '@sentry/react';
 import { type ReactNode, lazy, Suspense } from 'react';
 
 const ReactQueryDevtoolsLazy = lazy(() =>
@@ -19,9 +19,9 @@ const APP_ENV = import.meta.env.REACT_APP_ENV;
 
 // Defer Sentry initialization to improve initial load performance
 setTimeout(() => {
-  Sentry.init({
+  init({
     dsn: 'https://32152968271f46afa0efa8608b252e42@o4505452714786816.ingest.sentry.io/4505452716556288',
-    integrations: [Sentry.browserTracingIntegration()],
+    integrations: [browserTracingIntegration()],
     environment: APP_ENV ?? 'unknown',
     tracesSampleRate: APP_ENV === 'production' ? 0.1 : 1.0,
   });
@@ -115,13 +115,13 @@ const queryClient = new QueryClient({
 const Index = () => (
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
-      <Sentry.ErrorBoundary fallback={ErrorFallback} onReset={() => window.location.reload()}>
+      <ErrorBoundary fallback={ErrorFallback} onReset={() => window.location.reload()}>
         <DataReloader>
           <Auth0ProviderWithNavigate>
             <App />
           </Auth0ProviderWithNavigate>
         </DataReloader>
-      </Sentry.ErrorBoundary>
+      </ErrorBoundary>
     </BrowserRouter>
     {APP_ENV === 'development' && (
       <Suspense fallback={null}>
