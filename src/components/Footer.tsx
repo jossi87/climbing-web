@@ -76,20 +76,21 @@ function Footer() {
 
         <Divider inverted section />
         <List horizontal inverted divided link>
-          <List.Item as={Link} to='/about'>
-            About
+          <List.Item>
+            <Link to='/about'>About</Link>
           </List.Item>
-          <List.Item
-            as='a'
-            href={`mailto:jostein.oygarden@gmail.com?subject=${window.location.href}`}
-          >
-            Contact
+          <List.Item>
+            <a href={`mailto:jostein.oygarden@gmail.com?subject=${window.location.href}`}>
+              Contact
+            </a>
           </List.Item>
-          <List.Item as='a' href='/gpl-3.0.txt' rel='noreferrer noopener' target='_blank'>
-            GNU Public License
+          <List.Item>
+            <a href='/gpl-3.0.txt' rel='noreferrer noopener' target='_blank'>
+              GNU Public License
+            </a>
           </List.Item>
-          <List.Item as={Link} to='/privacy-policy'>
-            Privacy Policy
+          <List.Item>
+            <Link to='/privacy-policy'>Privacy Policy</Link>
           </List.Item>
         </List>
         <p>Buldreinfo &amp; Bratte Linjer - 2003-{currYear}</p>

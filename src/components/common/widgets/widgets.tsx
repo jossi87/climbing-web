@@ -13,9 +13,16 @@ type LockSymbolProps = {
 
 export function LockSymbol({ lockedAdmin = false, lockedSuperadmin = false }: LockSymbolProps) {
   if (lockedSuperadmin) {
-    return <Icon color='black' name='user secret' aria-label='Locked (Superadmin access only)' />;
+    return (
+      <Icon
+        role='img'
+        color='black'
+        name='user secret'
+        aria-label='Locked (Superadmin access only)'
+      />
+    );
   } else if (lockedAdmin) {
-    return <Icon color='black' name='lock' aria-label='Locked (Admin access only)' />;
+    return <Icon role='img' color='black' name='lock' aria-label='Locked (Admin access only)' />;
   }
   return null;
 }
@@ -36,12 +43,13 @@ export function Stars({ numStars = -1, includeStarOutlines = false }: StarsProps
 
   for (let i = 0; i < 3; i++) {
     if (i < fullStars) {
-      stars.push(<Icon key={i} color='black' name='star' aria-label='Full star' />);
+      stars.push(<Icon role='img' key={i} color='black' name='star' aria-label='Full star' />);
     } else if (i === fullStars && hasHalfStar) {
-      stars.push(<Icon key={i} color='black' name='star half' aria-label='Half star' />);
+      stars.push(<Icon role='img' key={i} color='black' name='star half' aria-label='Half star' />);
     } else if (includeStarOutlines) {
       stars.push(
         <Icon
+          role='img'
           key={i}
           color='black'
           name='star outline'

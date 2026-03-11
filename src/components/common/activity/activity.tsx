@@ -148,6 +148,7 @@ const Activity = ({ idArea, idSector }: Props) => {
     key: g.id,
     text: g.grade,
     value: g.id,
+    role: 'option',
   }));
 
   if (
@@ -184,10 +185,11 @@ const Activity = ({ idArea, idSector }: Props) => {
             className='icon'
             scrolling
             options={gradeOptions}
+            role='listbox'
             aria-label='Filter by grade'
             trigger={
               <span>
-                <Icon name='filter' />
+                <Icon role='img' name='filter' aria-label='Filter by grade' />
                 {'Lower grade: ' + lowerGradeText}
               </span>
             }
@@ -217,7 +219,7 @@ const Activity = ({ idArea, idSector }: Props) => {
           >
             <Button.Content hidden>FA</Button.Content>
             <Button.Content visible>
-              <Icon name='plus' color='black' />
+              <Icon role='img' name='plus' color='black' aria-label='First Ascents' />
             </Button.Content>
           </Button>
           <Button
@@ -232,7 +234,7 @@ const Activity = ({ idArea, idSector }: Props) => {
           >
             <Button.Content hidden>Tick</Button.Content>
             <Button.Content visible>
-              <Icon name='check' color='black' />
+              <Icon role='img' name='check' color='black' aria-label='Ticks' />
             </Button.Content>
           </Button>
           <Button
@@ -247,7 +249,7 @@ const Activity = ({ idArea, idSector }: Props) => {
           >
             <Button.Content hidden>Media</Button.Content>
             <Button.Content visible>
-              <Icon name='images' color='black' />
+              <Icon role='img' name='images' color='black' aria-label='Media' />
             </Button.Content>
           </Button>
           <Button
@@ -262,7 +264,7 @@ const Activity = ({ idArea, idSector }: Props) => {
           >
             <Button.Content hidden>Com</Button.Content>
             <Button.Content visible>
-              <Icon name='comments' color='black' />
+              <Icon role='img' name='comments' color='black' aria-label='Comments' />
             </Button.Content>
           </Button>
         </Button.Group>

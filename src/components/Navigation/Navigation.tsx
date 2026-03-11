@@ -43,7 +43,7 @@ export const Navigation = () => {
             aria-label='Select Region'
             trigger={
               <>
-                <Icon name='world' />
+                <Icon role='img' name='world' aria-label='Select Region' />
                 <span>{activeSite.name}</span>
               </>
             }
@@ -72,7 +72,7 @@ export const Navigation = () => {
           </Dropdown>
         )}
         <Menu.Item as={Link} to='/areas' aria-label='Areas list'>
-          <Icon name='list' />
+          <Icon role='img' name='list' aria-label='Areas list' />
           <span>Areas</span>
         </Menu.Item>
         <Menu.Item
@@ -80,25 +80,29 @@ export const Navigation = () => {
           to='/problems'
           aria-label={isBouldering ? 'Bouldering problems' : 'Climbing routes'}
         >
-          <Icon name='database' />
+          <Icon
+            role='img'
+            name='database'
+            aria-label={isBouldering ? 'Bouldering problems' : 'Climbing routes'}
+          />
           <span>{isBouldering ? 'Problems' : 'Routes'}</span>
         </Menu.Item>
         {!isBouldering && (
           <Menu.Item as={Link} to='/dangerous' aria-label='Dangerous routes warning'>
-            <Icon name='warning sign' />
+            <Icon role='img' name='warning sign' aria-label='Dangerous routes warning' />
             <span>Dangerous</span>
           </Menu.Item>
         )}
         <Menu.Item as={Link} to='/graph' className='collapse-1' aria-label='Statistics and graphs'>
-          <Icon name='chart bar' />
+          <Icon role='img' name='chart bar' aria-label='Statistics and graphs' />
           <span>Graph</span>
         </Menu.Item>
         <Menu.Item as={Link} to='/webcams' className='collapse-1' aria-label='Crag webcams'>
-          <Icon name='camera' />
+          <Icon role='img' name='camera' aria-label='Crag webcams' />
           <span>Webcams</span>
         </Menu.Item>
         <Menu.Item as={Link} to='/about' className='collapse-1' aria-label='About this site'>
-          <Icon name='info' />
+          <Icon role='img' name='info' aria-label='About this site' />
           <span>About</span>
         </Menu.Item>
         {!isLoading &&
@@ -110,7 +114,7 @@ export const Navigation = () => {
               aria-label='Account Menu'
               trigger={
                 <>
-                  <Icon name='user' />
+                  <Icon role='img' name='user' aria-label='Account Menu' />
                   <span>Account</span>
                 </>
               }
