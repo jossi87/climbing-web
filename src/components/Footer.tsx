@@ -2,13 +2,11 @@ import { Segment, List, Grid, Container, Divider, Button, Icon } from 'semantic-
 import { Link } from 'react-router-dom';
 
 const styleGitHubBrv = {
-  borderTopLeftRadius: '8px',
-  borderTopRightRadius: '8px',
-  borderBottomLeftRadius: '8px',
-  borderBottomRightRadius: '8px',
+  borderRadius: '8px',
   paddingLeft: '10px',
   paddingRight: '10px',
   maxWidth: '170px',
+  width: '100%',
   height: 'auto',
   backgroundColor: '#FFFFFF',
 };
@@ -33,7 +31,7 @@ function Footer() {
                 aria-label='GitHub Repository'
               >
                 <img
-                  style={{ ...styleGitHubBrv, width: '170px', height: '69px' }}
+                  style={styleGitHubBrv}
                   src={'/png/GitHub_Logo.png'}
                   alt='GitHub'
                   width='170'
@@ -50,11 +48,11 @@ function Footer() {
                 aria-label='Bratte Rogalands Venner'
               >
                 <img
-                  style={{ ...styleGitHubBrv, width: '170px', height: '102px' }}
+                  style={styleGitHubBrv}
                   src={'/png/brv.png'}
                   alt='Bratte Rogalands venner'
                   width='170'
-                  height='102'
+                  height='102' // Use the real height of the file here
                   loading='lazy'
                 />
               </a>

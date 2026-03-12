@@ -17,7 +17,7 @@ const App = () => {
         }}
       >
         <Header />
-        <Container style={{ marginTop: '1em', minHeight: '70vh' }}>
+        <Container as='main' style={{ marginTop: '1em', minHeight: '70vh' }}>
           <AppRoutes />
         </Container>
         <Footer />

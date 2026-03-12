@@ -24,13 +24,12 @@ export const Navigation = () => {
           <Menu.Item header as={Link} to='/' aria-label='Home'>
             <Image
               size='mini'
-              src='/png/logo_35x30.png'
+              src='/png/logo_70x62.png'
               alt='Bratte Linjer Logo'
               title='Bratte Linjer Home'
               width='35'
-              height='30'
               loading='eager'
-              style={{ width: '35px', height: '30px' }}
+              style={{ width: '35px', height: 'auto' }}
             />
           </Menu.Item>
           <Menu.Item as={SearchBox} style={{ flex: 1 }} aria-label='Search' />
