@@ -2,7 +2,7 @@ import { useState, useCallback, type ComponentProps, type UIEvent } from 'react'
 import { UsersSelector } from './common/user-selector/user-selector';
 import RockSelector from './common/rock-selector/rock-selector';
 import ProblemSection from './common/problem-section/problem-section';
-import ImageUpload from './common/image-upload/image-upload';
+import MediaUpload from './common/media-upload/media-upload';
 import {
   Icon,
   Form,
@@ -223,7 +223,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
     [],
   );
 
-  const onNewMediaChanged: ComponentProps<typeof ImageUpload>['onMediaChanged'] = useCallback(
+  const onNewMediaChanged: ComponentProps<typeof MediaUpload>['onMediaChanged'] = useCallback(
     (newMedia) => {
       setData((prevState) => ({ ...prevState, newMedia }));
     },
@@ -629,9 +629,9 @@ const ProblemEdit = ({ problem, sector }: Props) => {
 
         <Segment>
           <Form.Field>
-            <label>Upload image(s) or embed video(s)</label>
+            <label>Add media</label>
             <br />
-            <ImageUpload
+            <MediaUpload
               onMediaChanged={onNewMediaChanged}
               isMultiPitch={!!(data.sections && data.sections.length > 1)}
             />

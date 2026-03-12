@@ -14,14 +14,15 @@ import {
   Input,
   Checkbox,
   Loader,
+  Icon,
   type InputOnChangeData,
   type CheckboxProps,
 } from 'semantic-ui-react';
 import VideoEmbedder from './video-embedder';
 import { UserSelector } from '../user-selector/user-selector';
-import { UsersSelector } from '../../common/user-selector/user-selector';
+import { UsersSelector } from '../user-selector/user-selector';
 import type { components } from '../../../@types/buldreinfo/swagger';
-import { useMeta } from '../../common/meta/context';
+import { useMeta } from '../meta/context';
 
 export type UploadedMedia = {
   file?: File;
@@ -37,7 +38,7 @@ const different = (a: UploadedMedia, b: UploadedMedia) => {
   return a.preview !== b.preview || a.embedThumbnailUrl !== b.embedThumbnailUrl;
 };
 
-const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
+const MediaUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
   const meta = useMeta();
   const [media, setMedia] = useState<UploadedMedia[]>([]);
   const [isConverting, setIsConverting] = useState(false);
@@ -73,7 +74,8 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
           ...existing,
           ...processedFiles.map((file) => ({
             file,
-            preview: URL.createObjectURL(file),
+            name: file.name,
+            preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
             photographer: meta?.authenticatedName,
           })),
         ]);
@@ -91,6 +93,9 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
       'image/png': [],
       'image/heic': [],
       'image/heif': [],
+      'video/mp4': [],
+      'video/webm': [],
+      'video/quicktime': [],
     },
     noClick: isConverting,
     noKeyboard: isConverting,
@@ -124,7 +129,7 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
         ) : isDragActive ? (
           <p>Drop files here...</p>
         ) : (
-          <p>Drop images here, or click to select files to upload.</p>
+          <p>Drop images or videos here, or click to select files to upload.</p>
         )}
       </div>
       <br />
@@ -135,7 +140,7 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
           <br />
           <Card.Group itemsPerRow={4} stackable>
             {media.map((m) => {
-              const key = m.preview ?? m.embedThumbnailUrl;
+              const key = m.preview ?? m.embedThumbnailUrl ?? m.name;
 
               const updateItem = (patch: Partial<typeof m>) =>
                 setMedia((oldValue) =>
@@ -151,7 +156,21 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
 
               return (
                 <Card key={key}>
-                  <Image size='medium' src={m.preview ?? m.embedThumbnailUrl} />
+                  {m.preview || m.embedThumbnailUrl ? (
+                    <Image size='medium' src={m.preview ?? m.embedThumbnailUrl} />
+                  ) : (
+                    <div
+                      style={{
+                        height: '150px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: '#eee',
+                      }}
+                    >
+                      <Icon name='video' size='huge' color='grey' />
+                    </div>
+                  )}
                   <Card.Content>
                     {isMultiPitch && (
                       <Input
@@ -265,4 +284,4 @@ const ImageUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
   );
 };
 
-export default ImageUpload;
+export default MediaUpload;

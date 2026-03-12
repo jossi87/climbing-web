@@ -1,5 +1,5 @@
 import { useState, type ComponentProps, type UIEvent, useCallback } from 'react';
-import ImageUpload from '../common/image-upload/image-upload';
+import MediaUpload from '../common/media-upload/media-upload';
 import { Loading } from '../common/widgets/widgets';
 import {
   Checkbox,
@@ -511,8 +511,8 @@ export const SectorEdit = ({ sector, area }: Props) => {
 
         <Segment>
           <Form.Field>
-            <label>Upload image(s)</label>
-            <ImageUpload onMediaChanged={onNewMediaChanged} isMultiPitch={false} />
+            <label>Add media</label>
+            <MediaUpload onMediaChanged={onNewMediaChanged} isMultiPitch={false} />
           </Form.Field>
         </Segment>
 

@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import ImageUpload, { type UploadedMedia } from './common/image-upload/image-upload';
+import MediaUpload, { type UploadedMedia } from './common/media-upload/media-upload';
 import { useAuth0 } from '@auth0/auth0-react';
 import { postProblemMedia, useProblem } from '../api';
 import { Loading } from './common/widgets/widgets';
@@ -36,9 +36,9 @@ const ProblemEditMedia = () => {
   return (
     <>
       <Segment>
-        <h3>Upload image(s) or embed video(s)</h3>
+        <h3>Add media</h3>
         <form onSubmit={save}>
-          <ImageUpload
+          <MediaUpload
             onMediaChanged={setMedia}
             isMultiPitch={(problem?.sections ?? []).length > 0}
           />

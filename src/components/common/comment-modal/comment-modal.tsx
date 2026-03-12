@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { postComment, useAccessToken } from './../../../api';
 import { Button, Modal, Form, TextArea, Message, Icon } from 'semantic-ui-react';
-import ImageUpload, { type UploadedMedia } from '../image-upload/image-upload';
+import MediaUpload, { type UploadedMedia } from '../media-upload/media-upload';
 import type { components } from '../../../@types/buldreinfo/swagger';
 
 const CommentModal = ({
@@ -42,8 +42,8 @@ const CommentModal = ({
               />
             </Form.Field>
             <Form.Field>
-              <label>Attach image(s)</label>
-              <ImageUpload onMediaChanged={(nm) => setMedia(nm)} isMultiPitch={false} />
+              <label>Add media</label>
+              <MediaUpload onMediaChanged={(nm) => setMedia(nm)} isMultiPitch={false} />
             </Form.Field>
             {showHse && (
               <Form.Field>

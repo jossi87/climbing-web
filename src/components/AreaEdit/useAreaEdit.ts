@@ -1,5 +1,5 @@
 import { useEffect, useReducer, useCallback, type ComponentProps } from 'react';
-import ImageUpload from '../common/image-upload/image-upload';
+import MediaUpload from '../common/media-upload/media-upload';
 import Leaflet from '../common/leaflet/leaflet';
 import { useArea, usePostData } from '../../api';
 import { VisibilitySelectorField } from '../common/VisibilitySelector';
@@ -180,7 +180,7 @@ type UseAreaEdit = (_: { areaId: number }) => {
   setBoolean: (
     key: 'trash' | 'forDevelopers' | 'noDogsAllowed',
   ) => ComponentProps<typeof Checkbox>['onChange'];
-  setNewMedia: ComponentProps<typeof ImageUpload>['onMediaChanged'];
+  setNewMedia: ComponentProps<typeof MediaUpload>['onMediaChanged'];
   setExternalLinks: ComponentProps<typeof ExternalLinks>['onExternalLinksUpdated'];
 };
 

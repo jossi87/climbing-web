@@ -1,5 +1,5 @@
 import { useState, useCallback, type ComponentProps, type FormEvent } from 'react';
-import ImageUpload from '../common/image-upload/image-upload';
+import MediaUpload from '../common/media-upload/media-upload';
 import Leaflet from '../common/leaflet/leaflet';
 import {
   Form,
@@ -209,8 +209,8 @@ export const AreaEdit = () => {
 
         <Segment>
           <Form.Field>
-            <label>Upload image(s)</label>
-            <ImageUpload onMediaChanged={setNewMedia} isMultiPitch={false} />
+            <label>Add media</label>
+            <MediaUpload onMediaChanged={setNewMedia} isMultiPitch={false} />
           </Form.Field>
         </Segment>
 
