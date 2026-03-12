@@ -25,8 +25,8 @@ export const Navigation = () => {
             <Image
               size='mini'
               src='/png/logo_70x62.png'
-              alt='Bratte Linjer Logo'
-              title='Bratte Linjer Home'
+              alt='Logo'
+              title='Home'
               width='35'
               loading='eager'
               style={{ width: '35px', height: 'auto' }}
