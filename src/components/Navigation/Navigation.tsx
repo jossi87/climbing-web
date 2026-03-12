@@ -40,10 +40,10 @@ export const Navigation = () => {
             item
             simple
             labeled
-            aria-label='Select Region'
+            aria-label={`Current region: ${activeSite.name}. Click to change region.`}
             trigger={
               <>
-                <Icon role='img' name='world' aria-label='Select Region' />
+                <Icon name='world' aria-hidden='true' />
                 <span>{activeSite.name}</span>
               </>
             }
@@ -54,7 +54,14 @@ export const Navigation = () => {
               {sites
                 .filter((s) => s.group === activeSite.group)
                 .map((s) => (
-                  <Dropdown.Item active={s.active} key={s.name} as={Link} to={s.url}>
+                  <Dropdown.Item
+                    active={s.active}
+                    key={s.name}
+                    as={Link}
+                    to={s.url}
+                    role='option'
+                    aria-selected={s.active}
+                  >
                     {s.name}
                   </Dropdown.Item>
                 ))}
@@ -64,7 +71,13 @@ export const Navigation = () => {
                 .map((g) => g.group)
                 .filter((x, i, a) => a.indexOf(x) == i)
                 .map((g) => (
-                  <Dropdown.Item key={g} as={Link} to={'/sites/' + g.toLowerCase()}>
+                  <Dropdown.Item
+                    key={g}
+                    as={Link}
+                    to={'/sites/' + g.toLowerCase()}
+                    role='option'
+                    aria-selected='false'
+                  >
                     {g}
                   </Dropdown.Item>
                 ))}
@@ -111,10 +124,10 @@ export const Navigation = () => {
               item
               simple
               labeled
-              aria-label='Account Menu'
+              aria-label='Account Menu. Click to view profile or sign out.'
               trigger={
                 <>
-                  <Icon role='img' name='user' aria-label='Account Menu' />
+                  <Icon name='user' aria-hidden='true' />
                   <span>Account</span>
                 </>
               }
@@ -122,25 +135,30 @@ export const Navigation = () => {
               className='collapse-1'
             >
               <Dropdown.Menu>
-                <Dropdown.Item as={Link} to='/user'>
-                  <Icon name='user' />
+                <Dropdown.Item as={Link} to='/user' role='option' aria-selected='false'>
+                  <Icon name='user' aria-hidden='true' />
                   Profile
                 </Dropdown.Item>
                 {(isAdmin || isSuperAdmin) && (
                   <>
                     <Dropdown.Divider />
-                    <Dropdown.Item as={Link} to='/trash'>
-                      <Icon name='trash' />
+                    <Dropdown.Item as={Link} to='/trash' role='option' aria-selected='false'>
+                      <Icon name='trash' aria-hidden='true' />
                       Trash
                     </Dropdown.Item>
                     {isSuperAdmin && (
                       <>
-                        <Dropdown.Item as={Link} to='/permissions'>
-                          <Icon name='users' />
+                        <Dropdown.Item
+                          as={Link}
+                          to='/permissions'
+                          role='option'
+                          aria-selected='false'
+                        >
+                          <Icon name='users' aria-hidden='true' />
                           Permissions
                         </Dropdown.Item>
-                        <Dropdown.Item as={Link} to='/swagger'>
-                          <Icon name='code' />
+                        <Dropdown.Item as={Link} to='/swagger' role='option' aria-selected='false'>
+                          <Icon name='code' aria-hidden='true' />
                           Swagger
                         </Dropdown.Item>
                       </>
@@ -150,8 +168,10 @@ export const Navigation = () => {
                       to='/pdf/20230525_administrator_doc.pdf'
                       target='_blank'
                       rel='noopener noreferrer'
+                      role='option'
+                      aria-selected='false'
                     >
-                      <Icon name='help' />
+                      <Icon name='help' aria-hidden='true' />
                       Help
                     </Dropdown.Item>
                   </>
@@ -160,8 +180,10 @@ export const Navigation = () => {
                 <Dropdown.Item
                   as='a'
                   onClick={() => logout({ logoutParams: { returnTo: window.origin } })}
+                  role='option'
+                  aria-selected='false'
                 >
-                  <Icon name='sign out' />
+                  <Icon name='sign out' aria-hidden='true' />
                   Sign out
                 </Dropdown.Item>
               </Dropdown.Menu>
@@ -175,8 +197,9 @@ export const Navigation = () => {
                 loginWithRedirect({ appState: { returnTo: location.pathname } });
               }}
               className='collapse-1'
+              aria-label='Sign in to your account'
             >
-              <Icon name='sign in' />
+              <Icon name='sign in' aria-hidden='true' />
               <span>Sign in</span>
             </Menu.Item>
           ))}

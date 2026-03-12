@@ -1,4 +1,4 @@
-import type { CSSProperties, SyntheticEvent } from 'react';
+import { useState, type CSSProperties, type SyntheticEvent } from 'react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { Link } from 'react-router-dom';
 import {
@@ -123,6 +123,7 @@ type Props = {
 };
 
 const Activity = ({ idArea, idSector }: Props) => {
+  const [isLowerGradeOpen, setIsLowerGradeOpen] = useState(false);
   const [lowerGradeId, setLowerGradeId] = useLocalStorage('lower_grade_id', 0);
   const [lowerGradeText, setLowerGradeText] = useLocalStorage('lower_grade_text', 'n/a');
   const [activityTypeTicks, setActivityTypeTicks] = useLocalStorage('activity_type_ticks', true);
@@ -178,35 +179,59 @@ const Activity = ({ idArea, idSector }: Props) => {
     <>
       <Segment vertical style={{ paddingTop: 0 }}>
         <Button.Group size='mini' compact>
-          <Dropdown
-            button
-            floating
-            compact
-            className='icon'
-            scrolling
-            options={gradeOptions}
-            role='listbox'
-            aria-label='Filter by grade'
-            trigger={
-              <span>
-                <Icon role='img' name='filter' aria-label='Filter by grade' />
-                {'Lower grade: ' + lowerGradeText}
-              </span>
-            }
-            onChange={(_e, { value }) => {
-              const selectedGrade = meta.grades.find((g) => g.id === value);
-              if (selectedGrade) {
-                const gradeText = selectedGrade.grade.includes('(')
-                  ? selectedGrade.grade
-                      .substring(selectedGrade.grade.indexOf('(') + 1)
-                      .replace(')', '')
-                  : selectedGrade.grade;
-                setLowerGradeId(selectedGrade.id);
-                setLowerGradeText(gradeText);
-                refetch();
-              }
-            }}
-          />
+          <div
+            className={`ui compact floating scrolling dropdown button icon ${isLowerGradeOpen ? 'active visible' : ''}`}
+            style={{ display: 'inline-block', position: 'relative' }}
+            onClick={() => setIsLowerGradeOpen(!isLowerGradeOpen)}
+            onBlur={() => setIsLowerGradeOpen(false)}
+            tabIndex={0}
+          >
+            <span
+              role='button'
+              aria-haspopup='listbox'
+              aria-expanded={isLowerGradeOpen}
+              aria-label={`Lower grade filter. Current selection: ${lowerGradeText}`}
+            >
+              <Icon name='filter' aria-hidden='true' />
+              {'Lower grade: ' + lowerGradeText}
+              <Icon name='dropdown' aria-hidden='true' />
+            </span>
+            <Dropdown.Menu
+              role='listbox'
+              className={isLowerGradeOpen ? 'transition visible' : ''}
+              style={{
+                display: isLowerGradeOpen ? 'block' : 'none',
+                zIndex: 100,
+              }}
+            >
+              {gradeOptions.map((option) => (
+                <Dropdown.Item
+                  key={option.value}
+                  value={option.value}
+                  active={option.value === lowerGradeId}
+                  role='option'
+                  aria-selected={option.value === lowerGradeId}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const selectedGrade = meta.grades.find((g) => g.id === option.value);
+                    if (selectedGrade) {
+                      const gradeText = selectedGrade.grade.includes('(')
+                        ? selectedGrade.grade
+                            .substring(selectedGrade.grade.indexOf('(') + 1)
+                            .replace(')', '')
+                        : selectedGrade.grade;
+                      setLowerGradeId(selectedGrade.id);
+                      setLowerGradeText(gradeText);
+                      setIsLowerGradeOpen(false);
+                      refetch();
+                    }
+                  }}
+                >
+                  {option.text}
+                </Dropdown.Item>
+              ))}
+            </Dropdown.Menu>
+          </div>
           <Button
             animated='fade'
             inverted={!activityTypeFa}
