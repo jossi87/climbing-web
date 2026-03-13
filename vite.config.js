@@ -1,14 +1,18 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import { visualizer } from 'rollup-plugin-visualizer';
 import path from 'path';
 
 export default defineConfig(({ mode }) => ({
   envPrefix: 'REACT_APP_',
+  resolve: {
+    tsconfigPaths: true,
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
   plugins: [
     react(),
-    tsconfigPaths(),
     mode === 'analyze' &&
       visualizer({
         open: true,
@@ -24,20 +28,8 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: 'build',
     target: 'esnext',
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          monitoring: ['@sentry/react'],
-        },
-      },
-    },
   },
   esbuild: {
     drop: mode === 'production' ? ['console', 'debugger'] : [],
-  },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
   },
 }));
