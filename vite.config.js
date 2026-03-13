@@ -28,6 +28,7 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: 'build',
     target: 'esnext',
+    cssMinify: 'esbuild',
   },
   esbuild: {
     drop: mode === 'production' ? ['console', 'debugger'] : [],
