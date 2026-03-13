@@ -43,7 +43,7 @@ jobs:
           username: root
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            set -e
+            set -eu
             cd /opt/varden-infra
             docker compose pull climbing-web
             docker compose up -d climbing-web
