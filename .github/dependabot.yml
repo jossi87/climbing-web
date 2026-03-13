@@ -5,14 +5,24 @@ updates:
     schedule:
       interval: "daily"
     groups:
-      dependencies:
+      npm-dependencies:
         patterns:
           - "*"
+
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    groups:
+      docker-dependencies:
+        patterns:
+          - "*"
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
     groups:
-      actions:
+      actions-dependencies:
         patterns:
           - "*"
