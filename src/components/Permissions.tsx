@@ -57,7 +57,7 @@ const Permissions = () => {
   const subHeader = query ? `${filteredData.length}/${data.length} users` : `${data.length} users`;
   return (
     <>
-      <title>{`Permissins | ${meta?.title}`}</title>
+      <title>{`Permissions | ${meta?.title}`}</title>
       <Segment>
         <Header as='h2'>
           <Icon name='users' />
