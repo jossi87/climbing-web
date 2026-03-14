@@ -1,4 +1,3 @@
-import { useCallback, useState, type MouseEvent } from 'react';
 import { Icon, Label, type LabelProps, type SemanticICONS } from 'semantic-ui-react';
 import { getUrl, downloadFile, useAccessToken } from '../../../api';
 
@@ -10,22 +9,14 @@ type Props = {
 
 export const DownloadButton = ({ href, icon = 'file pdf outline', children }: Props) => {
   const accessToken = useAccessToken();
-  const [loading, setLoading] = useState(false);
-  const onClick: LabelProps['onClick'] = useCallback(
-    (e: MouseEvent<HTMLElement>, _data: LabelProps) => {
-      const url = (e.currentTarget as HTMLElement).getAttribute('href');
-      if (!url) {
-        return;
-      }
 
-      e.preventDefault();
-      setLoading(true);
-      downloadFile(accessToken, url).finally(() => {
-        setLoading(false);
-      });
-    },
-    [accessToken],
-  );
+  const onClick: LabelProps['onClick'] = (e) => {
+    const fullUrl = e.currentTarget.getAttribute('href');
+    if (!fullUrl) return;
+
+    e.preventDefault();
+    downloadFile(accessToken, fullUrl);
+  };
 
   return (
     <Label
@@ -37,7 +28,7 @@ export const DownloadButton = ({ href, icon = 'file pdf outline', children }: Pr
       size='mini'
       basic
     >
-      <Icon name={loading ? 'spinner' : icon} loading={loading} />
+      <Icon name={icon} />
       {children}
     </Label>
   );

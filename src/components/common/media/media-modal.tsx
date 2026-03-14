@@ -15,11 +15,10 @@ import {
   Sidebar,
   Menu,
 } from 'semantic-ui-react';
-import { getMediaFileUrl, getMediaFileUrlSrcSet } from '../../../api';
+import { downloadFile, getMediaFileUrl, getMediaFileUrlSrcSet, useAccessToken } from '../../../api';
 import SvgViewer from '../../SvgViewer';
 import VideoPlayer from './video-player';
 import { Link, useNavigate } from 'react-router-dom';
-import { saveAs } from 'file-saver';
 import { Descent, Rappel } from '../../../utils/svg-utils';
 import { useMeta } from '../meta';
 import { useSwipeable } from 'react-swipeable';
@@ -144,6 +143,7 @@ const MediaModal = ({
   optProblemId,
 }: Props) => {
   const { isAuthenticated, isAdmin, isBouldering } = useMeta();
+  const accessToken = useAccessToken();
   const navigate = useNavigate();
   const [showSidebar, setShowSidebar] = useLocalStorage('showSidebar', true);
   const [problemIdHovered, setProblemIdHovered] = useState<number | null>(null);
@@ -625,23 +625,12 @@ const MediaModal = ({
                 <Dropdown.Item
                   icon='download'
                   text='Download original'
-                  onClick={async (e) => {
+                  onClick={(e) => {
                     e.stopPropagation();
                     const url = getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, m.idType !== 1, {
                       original: true,
                     });
-                    try {
-                      const response = await fetch(url);
-                      if (!response.ok) throw new Error('Download request failed');
-                      const blob = await response.blob();
-                      const extension =
-                        m.idType === 1 ? 'jpg' : url.includes('webm') ? 'webm' : 'mp4';
-                      const fileName = `buldreinfo_brattelinjer_${m.id}.${extension}`;
-                      saveAs(blob, fileName);
-                    } catch (err) {
-                      console.error('Blob download failed, falling back to new tab:', err);
-                      window.open(url, '_blank');
-                    }
+                    downloadFile(accessToken, url);
                   }}
                 />
               )}

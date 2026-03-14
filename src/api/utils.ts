@@ -2,7 +2,6 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { useState, useEffect } from 'react';
 import { DATA_MUTATION_EVENT } from '../components/DataReloader';
 import type { FetchOptions } from './types';
-import { captureMessage } from '@sentry/react';
 import type { MediaRegion } from '../utils/svg-scaler';
 
 export function getLocales() {
@@ -134,46 +133,9 @@ export function makeAuthenticatedRequest(
   });
 }
 
-export function downloadFile(accessToken: string | null, url: string) {
-  return makeAuthenticatedRequest(accessToken, url, {
-    // RequestInit doesn't include 'expose' in standard types, but it's a valid fetch option
-  } as RequestInit & { expose?: string[] }).then((response) => {
-    const contentDisposition = response.headers.get('content-disposition');
-    if (!contentDisposition) {
-      captureMessage('No content-disposition header', {
-        extra: {
-          url,
-          contentDisposition,
-        },
-      });
-      return;
-    }
-
-    const match = /\bfilename="([^"]+)"/.exec(contentDisposition);
-    if (!match) {
-      captureMessage('Unable to get filename', {
-        extra: {
-          url,
-          contentDisposition,
-        },
-      });
-      return;
-    }
-
-    const [_, filename] = match;
-    if (!filename) {
-      captureMessage('No filename', {
-        extra: {
-          url,
-          contentDisposition,
-        },
-      });
-      return;
-    }
-
-    return response.blob().then(async (blob) => {
-      const { saveAs } = await import('file-saver');
-      saveAs(blob, filename);
-    });
-  });
+export function downloadFile(accessToken: string | null, fullUrl: string) {
+  const separator = fullUrl.includes('?') ? '&' : '?';
+  const authenticatedUrl = `${fullUrl}${separator}access_token=${accessToken}`;
+  window.open(authenticatedUrl, '_blank');
+  return Promise.resolve();
 }
