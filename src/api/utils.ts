@@ -136,6 +136,6 @@ export function makeAuthenticatedRequest(
 export function downloadFile(accessToken: string | null, fullUrl: string) {
   const separator = fullUrl.includes('?') ? '&' : '?';
   const authenticatedUrl = `${fullUrl}${separator}access_token=${accessToken}`;
-  window.open(authenticatedUrl, '_blank');
+  window.location.href = authenticatedUrl;
   return Promise.resolve();
 }

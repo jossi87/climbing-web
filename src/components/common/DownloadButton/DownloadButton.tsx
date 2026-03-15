@@ -19,15 +19,7 @@ export const DownloadButton = ({ href, icon = 'file pdf outline', children }: Pr
   };
 
   return (
-    <Label
-      href={getUrl(href)}
-      onClick={onClick}
-      rel='noreferrer noopener'
-      target='_blank'
-      image
-      size='mini'
-      basic
-    >
+    <Label as='a' href={getUrl(href)} onClick={onClick} image size='mini' basic>
       <Icon name={icon} />
       {children}
     </Label>
