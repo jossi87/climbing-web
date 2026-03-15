@@ -141,11 +141,9 @@ export function downloadFileWithProgress(
   return new Promise((resolve, reject) => {
     const separator = fullUrl.includes('?') ? '&' : '?';
     const authenticatedUrl = `${fullUrl}${separator}access_token=${accessToken}`;
-
     const xhr = new XMLHttpRequest();
     xhr.open('GET', authenticatedUrl, true);
     xhr.responseType = 'blob';
-
     xhr.onprogress = (event) => {
       if (onProgress) {
         if (event.lengthComputable && event.total > 0) {
@@ -155,18 +153,27 @@ export function downloadFileWithProgress(
         }
       }
     };
-
     xhr.onload = () => {
       if (xhr.status === 200) {
         const blob = xhr.response;
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
+        const disposition = xhr.getResponseHeader('Content-Disposition');
+        let filename = '';
 
-        const parts = fullUrl.split('/');
-        const lastPart = parts[parts.length - 1].split('?')[0];
-        a.download = lastPart || 'download';
-
+        if (disposition && disposition.indexOf('attachment') !== -1) {
+          const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+          const matches = filenameRegex.exec(disposition);
+          if (matches != null && matches[1]) {
+            filename = matches[1].replace(/['"]/g, '');
+          }
+        }
+        if (!filename) {
+          const parts = fullUrl.split('/');
+          filename = parts[parts.length - 1].split('?')[0] || 'download';
+        }
+        a.download = filename;
         document.body.appendChild(a);
         a.click();
         a.remove();
