@@ -20,7 +20,7 @@ export {
 export {
   getLocales,
   getBaseUrl,
-  downloadFile,
+  downloadFileWithProgress,
   useAccessToken,
   getUrl,
   getMediaFileUrl,

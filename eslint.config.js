@@ -49,6 +49,7 @@ export default defineConfig([
       '@typescript-eslint/consistent-type-definitions': ['warn', 'type'],
       '@typescript-eslint/prefer-for-of': 'warn',
       '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-empty-function': ['error', { allow: ['arrowFunctions'] }],
       '@typescript-eslint/no-unused-vars': [
         'warn',
         {

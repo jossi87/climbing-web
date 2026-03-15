@@ -133,9 +133,51 @@ export function makeAuthenticatedRequest(
   });
 }
 
-export function downloadFile(accessToken: string | null, fullUrl: string) {
-  const separator = fullUrl.includes('?') ? '&' : '?';
-  const authenticatedUrl = `${fullUrl}${separator}access_token=${accessToken}`;
-  window.location.href = authenticatedUrl;
-  return Promise.resolve();
+export function downloadFileWithProgress(
+  accessToken: string | null,
+  fullUrl: string,
+  onProgress?: (percent: number | null) => void,
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const separator = fullUrl.includes('?') ? '&' : '?';
+    const authenticatedUrl = `${fullUrl}${separator}access_token=${accessToken}`;
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', authenticatedUrl, true);
+    xhr.responseType = 'blob';
+
+    xhr.onprogress = (event) => {
+      if (onProgress) {
+        if (event.lengthComputable && event.total > 0) {
+          onProgress(Math.round((event.loaded / event.total) * 100));
+        } else {
+          onProgress(null);
+        }
+      }
+    };
+
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        const blob = xhr.response;
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+
+        const parts = fullUrl.split('/');
+        const lastPart = parts[parts.length - 1].split('?')[0];
+        a.download = lastPart || 'download';
+
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+        resolve();
+      } else {
+        reject(new Error(`Server error: ${xhr.status}`));
+      }
+    };
+
+    xhr.onerror = () => reject(new Error('Network error'));
+    xhr.send();
+  });
 }

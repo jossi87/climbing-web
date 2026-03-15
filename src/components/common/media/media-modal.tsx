@@ -15,7 +15,12 @@ import {
   Sidebar,
   Menu,
 } from 'semantic-ui-react';
-import { downloadFile, getMediaFileUrl, getMediaFileUrlSrcSet, useAccessToken } from '../../../api';
+import {
+  downloadFileWithProgress,
+  getMediaFileUrl,
+  getMediaFileUrlSrcSet,
+  useAccessToken,
+} from '../../../api';
 import SvgViewer from '../../SvgViewer';
 import VideoPlayer from './video-player';
 import { Link, useNavigate } from 'react-router-dom';
@@ -630,7 +635,9 @@ const MediaModal = ({
                     const url = getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, m.idType !== 1, {
                       original: true,
                     });
-                    downloadFile(accessToken, url);
+                    downloadFileWithProgress(accessToken, url).catch((_) =>
+                      alert('Download failed'),
+                    );
                   }}
                 />
               )}

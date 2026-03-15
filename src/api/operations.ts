@@ -12,10 +12,10 @@ type UploadMedia = {
   embedThumbnailUrl?: string;
   embedMilliseconds?: number;
 };
-import { downloadFile, getUrl, makeAuthenticatedRequest } from './utils';
+import { downloadFileWithProgress, getUrl, makeAuthenticatedRequest } from './utils';
 
 export function downloadTocXlsx(accessToken: string | null) {
-  return downloadFile(accessToken, '/toc/xlsx');
+  return downloadFileWithProgress(accessToken, '/toc/xlsx');
 }
 
 export function deleteMedia(
@@ -54,7 +54,7 @@ export function setMediaAsAvatar(
 }
 
 export function downloadUsersTicks(accessToken: string | null) {
-  return downloadFile(accessToken, getUrl(`/users/ticks`));
+  return downloadFileWithProgress(accessToken, getUrl(`/users/ticks`));
 }
 
 export function postComment(
