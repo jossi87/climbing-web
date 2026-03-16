@@ -1,4 +1,4 @@
-import RangeSlider from 'react-range-slider-input';
+import RangeSlider from '../../RangeSlider';
 import 'react-range-slider-input/dist/style.css';
 import { useFilter } from '../context';
 import { Dropdown } from 'semantic-ui-react';

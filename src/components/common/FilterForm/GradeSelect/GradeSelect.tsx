@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import RangeSlider from 'react-range-slider-input';
+import RangeSlider from '../../RangeSlider';
 import 'react-range-slider-input/dist/style.css';
 import { Dropdown } from 'semantic-ui-react';
 import { useGrades } from '../../meta';
