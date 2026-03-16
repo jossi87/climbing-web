@@ -1,11 +1,13 @@
 name: validate-pull-requests
-run-name: 'Simple validation of pull requests'
-permissions:
-  contents: read
+
 on:
   pull_request:
     branches:
       - main
+
+permissions:
+  contents: read
+
 jobs:
   check-build-and-lint:
     name: 'Check that it builds & lints'
