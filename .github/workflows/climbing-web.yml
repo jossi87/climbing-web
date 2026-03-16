@@ -30,7 +30,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: jossi87/climbing-web:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/climbing-web:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -51,7 +51,7 @@ jobs:
             set -eu
             cd /opt/varden-infra
             docker compose down climbing-web --remove-orphans
-            docker rmi jossi87/climbing-web:latest || true
+            docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/climbing-web:latest || true
             docker compose pull climbing-web
             docker compose up -d climbing-web
             docker image prune -f
