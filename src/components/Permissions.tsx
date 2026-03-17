@@ -89,9 +89,8 @@ const Permissions = () => {
                 return 0;
               }
             })();
-            const color = COLORS[value];
             return (
-              <Card color={color} key={u.userId} raised>
+              <Card color={COLORS[value]} key={u.userId} raised>
                 <Card.Content>
                   <Avatar
                     name={u.name}
@@ -101,11 +100,13 @@ const Permissions = () => {
                     size='mini'
                   />
                   <Card.Header as={Link} to={`/user/${u.userId}`}>
-                    {u.name}{' '}
-                    <LockSymbol
-                      lockedAdmin={u.adminRead || u.adminWrite}
-                      lockedSuperadmin={u.superadminRead || u.superadminWrite}
-                    />
+                    {u.name}
+                    {(u.adminRead || u.adminWrite || u.superadminRead || u.superadminWrite) && (
+                      <>
+                        {' '}
+                        <Icon name={OPTIONS[value].icon} size='small' />
+                      </>
+                    )}
                   </Card.Header>
                   <Card.Meta>Last seen {u.lastLogin}</Card.Meta>
                   <Card.Description>
