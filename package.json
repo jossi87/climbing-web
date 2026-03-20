@@ -48,7 +48,7 @@
     "@auth0/auth0-react": "^2.15.1",
     "@react-leaflet/core": "^3.0.0",
     "@sentry/react": "^10.45.0",
-    "@tanstack/react-query": "^5.91.2",
+    "@tanstack/react-query": "^5.91.3",
     "flat": "^6.0.1",
     "heic2any": "^0.0.4",
     "json-url": "^4.0.0",
