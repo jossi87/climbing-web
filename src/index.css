@@ -7,28 +7,44 @@
   --color-surface-card: #161b22;
   --color-surface-hover: #21262d;
   --color-surface-border: #30363d;
-
   --color-facebook: #1877f2;
-
   --shadow-brand: 0 0 8px rgba(247, 129, 102, 0.5);
-
   --spacing-container: 1400px;
   --spacing-thumbnail-w: 85px;
   --spacing-thumbnail-h: 80px;
   --spacing-footer-stack: 280px;
 }
 
+@layer base {
+  html {
+    @apply text-slate-300 font-sans antialiased selection:bg-brand/30;
+    font-size: 14px;
+  }
+  body {
+    @apply bg-surface-dark leading-relaxed;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  b,
+  strong {
+    @apply text-slate-100 font-bold;
+  }
+}
+
 @layer components {
   .header-sticky {
     @apply fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ease-in-out;
   }
-
   .header-hidden {
     @apply -translate-y-full;
   }
-
   .header-visible {
     @apply translate-y-0 shadow-lg;
+  }
+  .mobile-bleed {
+    @apply -mx-4 sm:mx-0 w-[calc(100%+2rem)] sm:w-full;
   }
 
   .btn-glass {
@@ -38,19 +54,11 @@
     border-color: var(--color-surface-border);
     color: var(--color-slate-500);
   }
-
   .btn-glass:hover {
-    border-color: var(--color-slate-400);
-    color: var(--color-slate-300);
-    background-color: var(--color-surface-nav);
+    @apply border-slate-400 text-slate-300 bg-surface-nav;
   }
-
   .btn-glass-active {
-    background-color: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.3);
-    color: white;
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.03);
-    transform: scale(1.02);
+    @apply bg-white/10 border-white/30 text-white scale-[1.02] shadow-sm;
   }
 }
 

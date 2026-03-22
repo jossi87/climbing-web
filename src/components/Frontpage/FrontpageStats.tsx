@@ -26,31 +26,27 @@ const StatItem = ({ to, icon: Icon, label, value }: StatItemProps) => {
   const content = (
     <div
       className={cn(
-        'relative flex flex-col items-center justify-center rounded-xl transition-all duration-200 border border-surface-border bg-surface-card group p-3 hover:bg-surface-hover/50 hover:border-brand/50 h-full',
+        'relative flex flex-col items-center justify-center transition-all duration-200 border-surface-border bg-surface-card group p-2.5 sm:p-4 h-full w-full sm:rounded-xl sm:border border-b border-r last:border-r-0 sm:last:border-r',
         isDonate && 'hover:shadow-brand/10 shadow-sm',
       )}
     >
       <div
-        className={cn(
-          'transition-colors duration-200 text-slate-500 group-hover:text-brand',
-          isDonate ? 'mb-2 mt-1.5' : 'mb-1',
-        )}
+        className={cn('transition-colors duration-200 text-slate-500 group-hover:text-brand mb-1')}
       >
-        <Icon size={isDonate ? 22 : 16} strokeWidth={isDonate ? 1.5 : 2} />
+        <Icon size={isDonate ? 18 : 14} />
       </div>
-
       <div className='flex flex-col relative z-10 text-center'>
         {value !== undefined && value !== '' ? (
           <>
-            <span className='text-base font-bold text-white leading-tight tabular-nums tracking-tight'>
+            <span className='text-sm sm:text-lg font-black text-white leading-tight tabular-nums tracking-tight'>
               {value}
             </span>
-            <span className='text-[9px] uppercase tracking-widest text-slate-500 font-bold mt-0.5 group-hover:text-slate-400 transition-colors'>
+            <span className='text-[8px] sm:text-[9px] uppercase tracking-widest text-slate-500 font-black mt-0.5'>
               {label}
             </span>
           </>
         ) : (
-          <span className='text-[10px] uppercase tracking-[0.2em] text-slate-400 font-black group-hover:text-white transition-colors'>
+          <span className='text-[9px] uppercase tracking-widest text-slate-400 font-black'>
             {label}
           </span>
         )}
@@ -59,11 +55,11 @@ const StatItem = ({ to, icon: Icon, label, value }: StatItemProps) => {
   );
 
   return to ? (
-    <Link to={to} className='block h-full'>
+    <Link to={to} className='block h-full w-full'>
       {content}
     </Link>
   ) : (
-    <div className='h-full'>{content}</div>
+    <div className='h-full w-full'>{content}</div>
   );
 };
 
@@ -83,36 +79,31 @@ export const FrontpageStats = ({
   isClimbing,
 }: FrontpageStatsProps) => {
   return (
-    <div className='grid grid-cols-2 lg:grid-cols-1 gap-3 mb-6'>
-      <div className='col-span-2 lg:col-span-1 grid grid-cols-2 gap-3'>
-        <StatItem
-          to='/problems'
-          icon={Database}
-          label={isBouldering ? 'Problems' : 'Routes'}
-          value={numberWithCommas(numProblems?.numProblems ?? 0)}
-        />
-        <StatItem
-          to='/ticks/1'
-          icon={CheckCircle}
-          label='Ticks'
-          value={numberWithCommas(numTicks?.numTicks ?? 0)}
-        />
-      </div>
-
-      <div className='col-span-2 lg:col-span-1 grid grid-cols-2 gap-2'>
-        <StatItem
-          icon={isClimbing ? ImageIcon : MapPin}
-          label={isClimbing ? 'Topo' : 'Coords'}
-          value={numberWithCommas(
-            isClimbing
-              ? (numProblems?.numProblemsWithTopo ?? 0)
-              : (numProblems?.numProblemsWithCoordinates ?? 0),
-          )}
-        />
-        <StatItem icon={Camera} label='Images' value={numberWithCommas(numMedia?.numImages ?? 0)} />
-        <StatItem icon={Film} label='Videos' value={numberWithCommas(numMedia?.numMovies ?? 0)} />
-        <StatItem to='/donations' icon={Heart} label='Donate' />
-      </div>
+    <div className='grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-px sm:gap-3 bg-surface-border sm:bg-transparent border-t border-l border-surface-border sm:border-0 mb-6'>
+      <StatItem
+        to='/problems'
+        icon={Database}
+        label={isBouldering ? 'Problems' : 'Routes'}
+        value={numberWithCommas(numProblems?.numProblems ?? 0)}
+      />
+      <StatItem
+        to='/ticks/1'
+        icon={CheckCircle}
+        label='Ticks'
+        value={numberWithCommas(numTicks?.numTicks ?? 0)}
+      />
+      <StatItem
+        icon={isClimbing ? ImageIcon : MapPin}
+        label={isClimbing ? 'Topo' : 'Coords'}
+        value={numberWithCommas(
+          isClimbing
+            ? (numProblems?.numProblemsWithTopo ?? 0)
+            : (numProblems?.numProblemsWithCoordinates ?? 0),
+        )}
+      />
+      <StatItem icon={Camera} label='Images' value={numberWithCommas(numMedia?.numImages ?? 0)} />
+      <StatItem icon={Film} label='Videos' value={numberWithCommas(numMedia?.numMovies ?? 0)} />
+      <StatItem to='/donations' icon={Heart} label='Donate' />
     </div>
   );
 };
