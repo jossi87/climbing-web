@@ -23,7 +23,7 @@ const Frontpage = () => {
       {numMedia && numProblems && numTicks && <meta name='description' content={description} />}
 
       <div className='grid grid-cols-1 lg:grid-cols-12 gap-y-6 sm:gap-6 lg:gap-8 py-0 sm:py-8'>
-        <aside className='lg:col-span-3 space-y-6 lg:sticky lg:top-24 self-start'>
+        <aside className='lg:col-span-3 space-y-6 lg:sticky lg:bottom-8 lg:self-end'>
           <FrontpageStats
             numMedia={numMedia}
             numProblems={numProblems}
