@@ -11,6 +11,7 @@ permissions:
 jobs:
   docker-build-push:
     name: 'Build Docker Image & Push to Hub'
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -37,6 +38,7 @@ jobs:
   deploy:
     name: 'Deploy to Linode'
     needs: docker-build-push
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Execute remote SSH commands
