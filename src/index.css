@@ -53,16 +53,25 @@
 
   .btn-glass {
     @apply px-3 py-1.5 rounded-md border text-[10px] font-bold uppercase tracking-widest 
-           transition-all duration-200 flex items-center gap-2 h-8;
+           transition-all duration-200 flex items-center gap-2 h-8 outline-hidden;
     background-color: color-mix(in srgb, var(--color-surface-nav), transparent 50%);
     border-color: var(--color-surface-border);
     color: var(--color-slate-500);
   }
   .btn-glass:hover {
-    @apply border-slate-400 text-slate-300 bg-surface-nav;
+    @apply border-slate-500 text-slate-300 bg-surface-nav;
+  }
+  .btn-glass:focus-visible {
+    @apply ring-2 ring-slate-500 ring-offset-2 ring-offset-surface-dark;
   }
   .btn-glass-active {
-    @apply bg-slate-300/10 border-slate-300/20 text-slate-200 scale-[1.02] shadow-sm;
+    @apply bg-surface-hover border-slate-500/50 text-slate-300 shadow-sm;
+  }
+  .btn-glass-active svg {
+    color: var(--color-brand);
+  }
+  .btn-glass-active:focus-visible {
+    @apply ring-brand/50;
   }
 }
 

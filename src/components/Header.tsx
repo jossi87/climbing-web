@@ -114,15 +114,6 @@ const Header = () => {
             >
               <User size={14} /> Profile
             </Link>
-            {isAdmin && (
-              <Link
-                to='/users'
-                onClick={() => setIsAccountOpen(false)}
-                className='flex items-center gap-3 px-4 py-2 text-xs font-bold text-slate-300 hover:bg-surface-hover hover:text-slate-200 transition-colors'
-              >
-                <Users size={14} /> Users
-              </Link>
-            )}
             {isSuperAdmin && (
               <>
                 <Link
