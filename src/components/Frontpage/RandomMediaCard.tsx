@@ -38,6 +38,7 @@ export const RandomMediaCard = ({ randomMedia }: Props) => {
           alt={randomMedia.problem}
         />
         <div className='absolute inset-0 bg-linear-to-t from-surface-dark via-surface-dark/20 to-transparent sm:opacity-0 group-hover:opacity-100 transition-opacity duration-500' />
+
         <div className='absolute bottom-0 left-0 right-0 p-5 sm:hidden'>
           <div className='flex items-baseline gap-2'>
             <h3 className='text-white font-bold text-2xl leading-none'>{randomMedia.problem}</h3>

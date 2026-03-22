@@ -63,10 +63,10 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
   return (
     <div className='w-full'>
       <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 px-4 sm:px-0'>
-        <h2 className='text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]'>
+        <h2 className='text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] hidden sm:block'>
           Latest Activity
         </h2>
-        <div className='flex flex-wrap items-center gap-1.5 sm:justify-end'>
+        <div className='flex flex-wrap items-center gap-1.5 ml-auto'>
           <div className='relative' ref={filterRef}>
             <button
               onClick={() => setIsFilterOpen(!isFilterOpen)}
@@ -83,6 +83,9 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
             </button>
             {isFilterOpen && (
               <div className='absolute top-full right-0 mt-1 w-48 bg-surface-card border border-surface-border rounded-lg shadow-2xl py-1 z-50 max-h-60 overflow-y-auto'>
+                <div className='px-4 py-1.5 text-[9px] font-bold text-slate-500 uppercase tracking-widest border-b border-surface-border/50 mb-1'>
+                  Lowest Grade
+                </div>
                 {meta.grades.map((g) => (
                   <button
                     key={g.id}
@@ -179,6 +182,7 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                                 { minDimension: 40 },
                               )}
                               className='w-9 h-9 rounded-md object-cover border border-surface-border'
+                              alt=''
                             />
                           ) : (
                             <div className='w-9 h-9 rounded-md bg-surface-nav border border-surface-border flex items-center justify-center text-slate-700'>
@@ -194,9 +198,9 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                           />
                         )}
                       </div>
-                      <div className='flex-1 min-w-0 pr-2'>
-                        <div className='flex items-baseline justify-between gap-4'>
-                          <div className='text-[13px] text-slate-300 wrap-break-word whitespace-normal leading-relaxed'>
+                      <div className='flex-1 min-w-0 pr-1'>
+                        <div className='flex items-baseline justify-between gap-3'>
+                          <div className='text-[13px] text-slate-300 wrap-break-word whitespace-normal leading-relaxed overflow-hidden'>
                             {a.users ? (
                               <span>
                                 New {meta.isBouldering ? 'problem' : 'route'} in{' '}

@@ -196,7 +196,7 @@ const Header = () => {
                 )}
               />
               {isHome && (
-                <div className='absolute -bottom-5.25 left-0 right-0 h-[2.5px] bg-brand rounded-full shadow-brand hidden lg:block' />
+                <div className='absolute -bottom-3 lg:-bottom-5.25 left-0 right-0 h-[2.5px] bg-brand rounded-full shadow-brand' />
               )}
             </Link>
             <div className='flex-1 lg:max-w-md min-w-30'>
