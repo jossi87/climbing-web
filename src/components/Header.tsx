@@ -28,7 +28,6 @@ import { cn } from '../lib/utils';
 
 const Header = () => {
   const {
-    isAdmin,
     isSuperAdmin,
     isAuthenticated,
     authenticatedName,
