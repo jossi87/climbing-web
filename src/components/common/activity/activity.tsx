@@ -154,7 +154,7 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
         </div>
       </div>
 
-      <div className='bg-surface-card sm:border sm:border-surface-border sm:rounded-xl overflow-hidden -mx-4 sm:mx-0'>
+      <div className='app-card'>
         <div className='divide-y divide-surface-border/30'>
           {isPending
             ? [...Array(6)].map((_, i) => <div key={i} className='h-20 animate-pulse' />)

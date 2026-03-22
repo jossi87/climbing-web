@@ -27,7 +27,6 @@ setTimeout(() => {
 
 function ErrorFallback({
   error,
-  componentStack,
   resetError,
 }: {
   error: unknown;
@@ -37,19 +36,20 @@ function ErrorFallback({
   return (
     <div
       role='alert'
-      className='min-h-screen bg-stone-950 text-stone-600 p-6 flex flex-col items-center justify-center font-sans'
+      className='min-h-screen bg-surface-dark text-slate-400 p-6 flex flex-col items-center justify-center font-sans'
     >
-      <div className='max-w-3xl w-full bg-stone-900 border border-stone-800 rounded-stone p-8 shadow-2xl'>
-        <h1 className='text-3xl font-bold text-white mb-2'>Something went wrong</h1>
-        <div className='space-y-4 text-xs font-mono bg-stone-950 p-4 rounded-stone border border-stone-800 overflow-auto max-h-96'>
-          <div>
-            <span className='text-brand font-bold'>Error:</span> {`${error}`}
-          </div>
-          <pre className='mt-2 opacity-80'>{componentStack}</pre>
+      <div className='max-w-2xl w-full bg-surface-card border border-surface-border rounded-xl p-8 shadow-2xl'>
+        <h1 className='text-2xl font-bold text-slate-100 mb-2'>Something went wrong</h1>
+        <p className='text-sm text-slate-500 mb-6'>
+          The application encountered an unexpected error.
+        </p>
+        <div className='space-y-4 text-[11px] font-mono bg-surface-dark p-4 rounded-lg border border-surface-border overflow-auto max-h-64'>
+          <div className='text-brand font-bold uppercase tracking-wider'>Error Log</div>
+          <div className='text-slate-300 whitespace-pre-wrap'>{`${error}`}</div>
         </div>
         <button
           onClick={resetError}
-          className='mt-8 px-6 py-2 bg-brand hover:bg-brand/90 text-white font-bold rounded-stone transition-colors'
+          className='mt-8 px-6 py-2 bg-brand hover:brightness-110 text-surface-dark font-black uppercase text-[11px] tracking-widest rounded-md transition-all active:scale-95'
         >
           Try again
         </button>

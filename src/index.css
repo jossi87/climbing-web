@@ -36,7 +36,6 @@
     @apply text-slate-300 font-semibold;
   }
 
-  /* Kill the double border/outline globally */
   input,
   button,
   select,
@@ -44,14 +43,16 @@
     @apply outline-none;
   }
 
-  /* Focus rings: One single, clean Emerald stroke */
   :focus-visible {
     @apply ring-1 ring-brand border-brand/50;
   }
 }
 
 @layer components {
-  /* Specific fix for Search Input to prevent "Double Border" */
+  .app-card {
+    @apply bg-surface-card border-y border-surface-border sm:border-x sm:rounded-xl overflow-hidden -mx-4 sm:mx-0;
+  }
+
   .search-input {
     @apply bg-surface-dark border border-surface-border rounded-lg px-4 py-2 
            transition-all duration-200 text-slate-200 placeholder:text-slate-600;

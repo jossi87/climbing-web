@@ -26,7 +26,7 @@ const StatItem = ({ to, icon: Icon, label, value }: StatItemProps) => {
   const content = (
     <div
       className={cn(
-        'relative flex flex-col items-center justify-center transition-all duration-200 border-surface-border bg-surface-card group p-2.5 sm:p-4 h-full w-full sm:rounded-xl sm:border border-b border-r last:border-r-0 sm:last:border-r',
+        'relative flex flex-col items-center justify-center transition-all duration-200 border-surface-border bg-surface-card group p-2.5 sm:p-4 h-full w-full border-r border-b last:border-r-0 sm:border-0',
         isDonate && 'hover:shadow-brand/10 shadow-sm',
       )}
     >
@@ -76,10 +76,9 @@ export const FrontpageStats = ({
   numProblems,
   numTicks,
   isBouldering,
-  isClimbing,
 }: FrontpageStatsProps) => {
   return (
-    <div className='grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-px sm:gap-3 bg-surface-border sm:bg-transparent border-t border-l border-surface-border sm:border-0 mb-6'>
+    <div className='app-card grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-0 sm:gap-px mb-6 border-l border-t sm:border-0'>
       <StatItem
         to='/problems'
         icon={Database}
@@ -93,13 +92,9 @@ export const FrontpageStats = ({
         value={numberWithCommas(numTicks?.numTicks ?? 0)}
       />
       <StatItem
-        icon={isClimbing ? ImageIcon : MapPin}
-        label={isClimbing ? 'Topo' : 'Coords'}
-        value={numberWithCommas(
-          isClimbing
-            ? (numProblems?.numProblemsWithTopo ?? 0)
-            : (numProblems?.numProblemsWithCoordinates ?? 0),
-        )}
+        icon={ImageIcon}
+        label='Topo'
+        value={numberWithCommas(numProblems?.numProblemsWithTopo ?? 0)}
       />
       <StatItem icon={Camera} label='Images' value={numberWithCommas(numMedia?.numImages ?? 0)} />
       <StatItem icon={Film} label='Videos' value={numberWithCommas(numMedia?.numMovies ?? 0)} />

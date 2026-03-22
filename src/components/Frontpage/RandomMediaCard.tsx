@@ -13,13 +13,13 @@ type Props = {
 export const RandomMediaCard = ({ randomMedia }: Props) => {
   if (!randomMedia)
     return (
-      <div className='aspect-square sm:aspect-275/250 bg-surface-card sm:rounded-xl animate-pulse' />
+      <div className='app-card aspect-square sm:aspect-275/250 animate-pulse border-0 sm:border' />
     );
   const taggedUsers = randomMedia.tagged || [];
   const photographer = randomMedia.photographer;
 
   return (
-    <div className='bg-surface-card sm:border sm:border-surface-border sm:rounded-xl overflow-hidden group transition-all text-left mb-6 sm:mb-0'>
+    <div className='app-card group transition-all text-left mb-6 sm:mb-0'>
       <Link to={`/problem/${randomMedia.idProblem}`} className='block relative overflow-hidden'>
         <img
           className='w-full aspect-square sm:aspect-275/250 object-cover transition-transform duration-700 group-hover:scale-105'
@@ -121,3 +121,5 @@ export const RandomMediaCard = ({ randomMedia }: Props) => {
     </div>
   );
 };
+
+export default RandomMediaCard;
