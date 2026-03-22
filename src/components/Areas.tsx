@@ -37,7 +37,7 @@ const Areas = () => {
         label: a.name ?? '',
         url: '/area/' + (a.id ?? 0),
         html: (
-          <div className='flex flex-col gap-2 min-w-70 max-w-[320px] p-1'>
+          <div className='flex flex-col gap-2 min-w-footer-stack max-w-[320px] p-1'>
             <div className='flex items-start justify-between gap-4 border-b border-surface-border/50 pb-2'>
               <div className='flex items-center gap-2'>
                 <Link
