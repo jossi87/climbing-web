@@ -1,10 +1,11 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { Feed, Segment, Header, Table, Label, Icon } from 'semantic-ui-react';
-import Avatar from '../../common/avatar/avatar';
+import { ClickableAvatar } from '../../ui/Avatar';
 import { Stars } from '../../common/widgets/widgets';
 import Linkify from 'linkify-react';
 import type { components } from '../../../@types/buldreinfo/swagger';
+import { cn } from '../../../lib/utils';
+import { X } from 'lucide-react';
 
 type Props = {
   ticks: components['schemas']['ProblemTick'][];
@@ -12,85 +13,104 @@ type Props = {
 
 export const ProblemTicks = ({ ticks }: Props) => {
   const safeTicks = ticks ?? [];
+
+  if (safeTicks.length === 0) return null;
+
   return (
-    <Segment as={Feed} style={{ maxWidth: '100%' }}>
-      <Header as='h3' dividing>
-        Ticks
-        {safeTicks.length > 0 && <Label circular>{safeTicks.length}</Label>}
-      </Header>
-      {safeTicks.length ? (
-        safeTicks.map((t) => {
-          let dt = t.date;
-          let com: ReactNode | null | undefined;
+    <div className='bg-surface-card border border-surface-border rounded-xl overflow-hidden text-left'>
+      <div className='px-5 py-4 border-b border-surface-border flex items-center justify-between bg-surface-nav/30'>
+        <h3 className='text-sm font-bold text-white uppercase tracking-widest'>Ticks</h3>
+        <span className='px-2 py-0.5 rounded-full bg-surface-nav border border-surface-border text-[10px] font-black text-slate-400'>
+          {safeTicks.length}
+        </span>
+      </div>
+
+      <div className='divide-y divide-surface-border/50'>
+        {safeTicks.map((t) => {
           const repeats = t.repeats ?? [];
+          let displayDate = t.date || 'no-date';
+          let commentContent: ReactNode = null;
+
           if (repeats.length > 0) {
-            dt =
-              (dt ? dt : 'no-date') +
-              ', ' +
-              repeats.map((x) => (x.date ? x.date : 'no-date')).join(', ');
-            com = (
-              <Table collapsing compact unstackable size='small'>
-                <Table.Body>
-                  <Table.Row>
-                    <Table.Cell verticalAlign='top' singleLine className='metadata'>
-                      {t.date ? t.date : 'no-date'}
-                    </Table.Cell>
-                    <Table.Cell verticalAlign='top'>{t.comment}</Table.Cell>
-                  </Table.Row>
-                  {repeats.map((r) => (
-                    <Table.Row key={[r.date, r.comment].join('/')}>
-                      <Table.Cell verticalAlign='top' singleLine className='metadata'>
-                        {r.date ? r.date : 'no-date'}
-                      </Table.Cell>
-                      <Table.Cell>{r.comment}</Table.Cell>
-                    </Table.Row>
-                  ))}
-                </Table.Body>
-              </Table>
+            displayDate = [displayDate, ...repeats.map((r) => r.date || 'no-date')].join(', ');
+
+            commentContent = (
+              <div className='mt-3 overflow-x-auto'>
+                <table className='w-full text-[11px] border-collapse'>
+                  <tbody className='divide-y divide-surface-border/30'>
+                    <tr>
+                      <td className='py-1.5 pr-4 whitespace-nowrap font-mono text-slate-500 align-top'>
+                        {t.date || 'no-date'}
+                      </td>
+                      <td className='py-1.5 text-slate-300 align-top italic'>{t.comment}</td>
+                    </tr>
+                    {repeats.map((r, idx) => (
+                      <tr key={idx}>
+                        <td className='py-1.5 pr-4 whitespace-nowrap font-mono text-slate-500 align-top'>
+                          {r.date || 'no-date'}
+                        </td>
+                        <td className='py-1.5 text-slate-300 align-top italic'>{r.comment}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             );
-          } else {
-            com = t.comment;
+          } else if (t.comment) {
+            commentContent = (
+              <div className='mt-2 text-slate-400 text-sm italic border-l-2 border-surface-border/50 pl-3'>
+                <Linkify>{t.comment}</Linkify>
+              </div>
+            );
           }
+
           return (
-            <Feed.Event
-              key={[t.idUser, t.date].join('@')}
-              style={{
-                padding: 0,
-                backgroundColor: t.writable ? '#d2f8d2' : '#ffffff',
-              }}
+            <div
+              key={`${t.idUser}-${t.date}`}
+              className={cn(
+                'p-4 flex gap-4 items-start transition-colors',
+                t.writable ? 'bg-brand/5 shadow-[inset_4px_0_0_0_#f97316]' : 'bg-transparent',
+              )}
             >
-              <Feed.Label>
-                <Avatar name={t.name} mediaId={t.mediaId} mediaVersionStamp={t.mediaVersionStamp} />
-              </Feed.Label>
-              <Feed.Content>
-                <Feed.Summary>
-                  <Feed.User as={Link} to={`/user/${t.idUser}`}>
+              <div className='shrink-0 mt-1'>
+                <ClickableAvatar
+                  name={t.name}
+                  mediaId={t.mediaId}
+                  mediaVersionStamp={t.mediaVersionStamp}
+                  size='tiny'
+                />
+              </div>
+
+              <div className='flex-1 min-w-0'>
+                <div className='flex items-baseline justify-between gap-4'>
+                  <Link
+                    to={`/user/${t.idUser}`}
+                    className='text-sm font-bold text-white hover:text-brand transition-colors'
+                  >
                     {t.name}
-                  </Feed.User>
-                  <Feed.Date>{dt}</Feed.Date>
-                </Feed.Summary>
-                {t.noPersonalGrade ? (
-                  <Label basic size='mini'>
-                    <Icon name='x' />
-                    No personal grade
-                  </Label>
-                ) : (
-                  t.suggestedGrade
-                )}{' '}
-                <Stars numStars={t.stars ?? 0} includeStarOutlines={true} />
-                {com && (
-                  <Linkify>
-                    <br />
-                    {com}
-                  </Linkify>
-                )}
-              </Feed.Content>
-            </Feed.Event>
+                  </Link>
+                  <span className='text-[10px] text-slate-500 font-bold uppercase tracking-tight'>
+                    {displayDate}
+                  </span>
+                </div>
+
+                <div className='flex items-center gap-3 mt-1.5'>
+                  {t.noPersonalGrade ? (
+                    <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-surface-nav border border-surface-border text-[10px] font-bold text-slate-500 uppercase'>
+                      <X size={10} /> No personal grade
+                    </span>
+                  ) : (
+                    <span className='text-xs font-black text-slate-200'>{t.suggestedGrade}</span>
+                  )}
+                  <Stars numStars={t.stars ?? 0} includeStarOutlines={true} />
+                </div>
+
+                {commentContent}
+              </div>
+            </div>
           );
-        })
-      ) : (
-        <i>No ticks</i>
-      )}
-    </Segment>
+        })}
+      </div>
+    </div>
   );
 };

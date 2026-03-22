@@ -1,8 +1,8 @@
 import type { CSSProperties } from 'react';
 import RangeSlider from '../../RangeSlider';
 import 'react-range-slider-input/dist/style.css';
-import { Dropdown } from 'semantic-ui-react';
 import { useGrades } from '../../meta';
+import { ChevronDown } from 'lucide-react';
 
 export type DispatchUpdate =
   | { action: 'set-grades'; low: string; high: string }
@@ -29,8 +29,8 @@ export const GradeSelect = ({
   const high = filterGradeHigh || easyToHard[max];
 
   return (
-    <div style={style}>
-      <div style={{ marginBottom: 20 }}>
+    <div style={style} className='flex flex-col gap-4'>
+      <div className='px-1 mt-2'>
         <RangeSlider
           key={`${0}-${max}`}
           min={0}
@@ -46,45 +46,61 @@ export const GradeSelect = ({
           disabled={max === 0}
         />
       </div>
-      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start' }}>
-        <div style={{ display: 'flex', flex: 1, justifyContent: 'flex-start' }}>
-          <Dropdown
-            text={low}
+      <div className='flex items-center justify-between gap-4'>
+        <div className='relative flex-1'>
+          <select
+            className='w-full appearance-none bg-surface-nav border border-surface-border rounded-md px-3 py-1.5 text-sm text-white pr-8 focus:outline-none focus:border-brand disabled:opacity-50 disabled:cursor-not-allowed'
             value={low}
-            scrolling
-            pointing='top left'
-            options={easyToHard
+            onChange={(e) => {
+              dispatch({
+                action: 'set-grade',
+                low: e.target.value,
+              });
+            }}
+            disabled={max === 0}
+          >
+            {easyToHard
               .filter((label) => {
                 const rank = gradeIndexMapping[label];
                 return rank < (gradeIndexMapping[high] ?? max);
               })
-              .map((label) => ({ key: label, text: label, value: label }))}
-            onChange={(_, { value }) => {
-              dispatch({
-                action: 'set-grade',
-                low: String(value),
-              });
-            }}
+              .map((label) => (
+                <option key={label} value={label}>
+                  {label}
+                </option>
+              ))}
+          </select>
+          <ChevronDown
+            size={14}
+            className='absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none'
           />
         </div>
-        <div style={{ display: 'flex', flex: 1, justifyContent: 'flex-end' }}>
-          <Dropdown
-            text={high}
+        <div className='relative flex-1'>
+          <select
+            className='w-full appearance-none bg-surface-nav border border-surface-border rounded-md px-3 py-1.5 text-sm text-white pr-8 focus:outline-none focus:border-brand disabled:opacity-50 disabled:cursor-not-allowed'
             value={high}
-            scrolling
-            pointing='top right'
-            options={easyToHard
+            onChange={(e) => {
+              dispatch({
+                action: 'set-grade',
+                high: e.target.value,
+              });
+            }}
+            disabled={max === 0}
+          >
+            {easyToHard
               .filter((label) => {
                 const rank = gradeIndexMapping[label];
                 return rank > (gradeIndexMapping[low] ?? 0);
               })
-              .map((label) => ({ key: label, text: label, value: label }))}
-            onChange={(_, { value }) => {
-              dispatch({
-                action: 'set-grade',
-                high: String(value),
-              });
-            }}
+              .map((label) => (
+                <option key={label} value={label}>
+                  {label}
+                </option>
+              ))}
+          </select>
+          <ChevronDown
+            size={14}
+            className='absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none'
           />
         </div>
       </div>

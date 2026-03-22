@@ -1,1 +1,0 @@
-export { SunriseSunset } from './SunriseSunset';

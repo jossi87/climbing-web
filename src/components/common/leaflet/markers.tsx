@@ -2,10 +2,10 @@ import { useRef, useEffect, type ReactNode } from 'react';
 import { Marker, Tooltip, Popup, useMap } from 'react-leaflet';
 import { markerBlueIcon, markerRedIcon, parkingIcon, weatherIcon, rockIcon } from './icons';
 import { useNavigate } from 'react-router';
-import type { LatLngExpression } from 'leaflet';
+import type { Marker as LeafletMarker } from 'leaflet';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { captureException } from '@sentry/react';
-import { Button, Icon } from 'semantic-ui-react';
+import { Navigation, ExternalLink, CloudSun } from 'lucide-react';
 
 type ParkingMarker = {
   coordinates: components['schemas']['Coordinates'];
@@ -41,10 +41,6 @@ type GenericMarker = {
   coordinates: components['schemas']['Coordinates'];
   label?: string;
   url?: string;
-  // TODO: Sometimes we just set this to "true" just to be truthy. This isn't
-  //       great and will cause a bug at some point.
-  //       I wonder if a better design would be to have an explicit "type" field
-  //       instead of inspecting properties.
   rock?: boolean | string | number | null;
 };
 
@@ -81,9 +77,8 @@ export default function Markers({
 }: Props) {
   const navigate = useNavigate();
   const map = useMap();
-  const markerRefs = useRef<
-    Record<number, { getLatLng: () => LatLngExpression; openPopup: () => void } | null>
-  >({});
+  const markerRefs = useRef<Record<number, LeafletMarker | null>>({});
+
   useEffect(() => {
     if (map && flyToId && markerRefs.current[flyToId]) {
       const marker = markerRefs.current[flyToId];
@@ -98,78 +93,91 @@ export default function Markers({
     }
   }, [flyToId, map]);
 
-  if (!markers) {
-    return null;
-  }
+  if (!markers) return null;
 
   return markers.map((m) => {
+    const lat = m.coordinates.latitude ?? 0;
+    const lng = m.coordinates.longitude ?? 0;
+    const position: [number, number] = [lat, lng];
+
     if (isParkingMarker(m)) {
       return (
-        <Marker
-          icon={parkingIcon}
-          position={[m.coordinates.latitude ?? 0, m.coordinates.longitude ?? 0]}
-          key={['parking-multi', m.coordinates.latitude, m.coordinates.longitude].join('/')}
-        >
+        <Marker icon={parkingIcon} position={position} key={['parking', lat, lng].join('/')}>
           <Popup closeButton={false}>
-            <Button icon labelPosition='left' primary size='small'>
-              <Icon name='location arrow' />
-              <a
-                href={`https://www.google.com/maps/dir/?api=1&destination=${m.coordinates.latitude},${m.coordinates.longitude}`}
-                target='_blank'
-                rel='noopener noreferrer'
-                style={{ color: '#fff' }}
-              >
-                Navigate
-              </a>
-            </Button>
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`}
+              target='_blank'
+              rel='noopener noreferrer'
+              className='flex items-center gap-2 px-3 py-2 bg-brand hover:bg-brand/90 text-white rounded-md text-xs font-bold transition-colors no-underline shadow-sm'
+            >
+              <Navigation size={14} />
+              Navigate
+            </a>
           </Popup>
         </Marker>
       );
     }
 
-    let label = m.label;
+    let labelText = m.label;
     if (showElevation && m.coordinates.elevation) {
       const elevation = Math.round(m.coordinates.elevation);
-      label = label ? label + ' (' + elevation + 'm)' : elevation + 'm';
+      labelText = labelText ? `${labelText} (${elevation}m)` : `${elevation}m`;
     }
 
     if (isCameraMarker(m)) {
       return (
-        <Marker
-          icon={weatherIcon}
-          position={[m.coordinates.latitude ?? 0, m.coordinates.longitude ?? 0]}
-          key={['camera', m.coordinates.latitude, m.coordinates.longitude].join('/')}
-        >
+        <Marker icon={weatherIcon} position={position} key={['camera', lat, lng].join('/')}>
           <Popup closeButton={false}>
-            <b>{m.name}</b>
-            {m.lastUpdated && (
-              <>
-                {' '}
-                (<i>{m.lastUpdated}</i>)
-              </>
-            )}
-            <a rel='noreferrer noopener' target='_blank' href={m.urlStillImage}>
-              <img
-                style={{ maxWidth: '180px' }}
-                src={m.urlStillImage}
-                alt={m.name}
-                loading='lazy'
-              />
-            </a>
-            <br />
-            <i>Click on image to open in new tab</i>
-            <br />
-            <br />
-            {m.urlYr && (
-              <a rel='noreferrer noopener' target='_blank' href={m.urlYr}>
-                yr.no weather forecast
+            <div className='space-y-2 text-left min-w-45'>
+              <div className='flex flex-col'>
+                <span className='text-sm font-bold text-slate-800 leading-tight'>{m.name}</span>
+                {m.lastUpdated && (
+                  <span className='text-[10px] text-slate-500 italic'>
+                    Updated: {m.lastUpdated}
+                  </span>
+                )}
+              </div>
+
+              <a
+                href={m.urlStillImage}
+                target='_blank'
+                rel='noreferrer'
+                className='block overflow-hidden rounded border border-slate-200 hover:border-brand transition-colors'
+              >
+                <img
+                  src={m.urlStillImage}
+                  alt={m.name}
+                  className='w-full h-auto block'
+                  loading='lazy'
+                />
               </a>
-            )}
-            {m.urlOther && (
-              <a rel='noreferrer noopener' target='_blank' href={m.urlOther}>
-                {m.urlOther}
-              </a>
-            )}
+
+              <div className='flex flex-col gap-1.5 pt-1'>
+                {m.urlYr && (
+                  <a
+                    href={m.urlYr}
+                    target='_blank'
+                    rel='noreferrer'
+                    className='flex items-center gap-2 text-[11px] font-bold text-slate-600 hover:text-brand transition-colors no-underline'
+                  >
+                    <CloudSun size={14} className='text-brand' /> yr.no forecast
+                  </a>
+                )}
+                {m.urlOther && (
+                  <a
+                    href={m.urlOther}
+                    target='_blank'
+                    rel='noreferrer'
+                    className='flex items-center gap-2 text-[11px] font-bold text-slate-600 hover:text-brand transition-colors no-underline'
+                  >
+                    <ExternalLink size={14} className='text-brand' /> External Link
+                  </a>
+                )}
+              </div>
+              <p className='text-[9px] text-slate-400 text-center italic mt-1 border-t pt-2'>
+                Click image for full size
+              </p>
+            </div>
           </Popup>
         </Marker>
       );
@@ -179,16 +187,18 @@ export default function Markers({
       return (
         <Marker
           icon={m.rock ? rockIcon : markerBlueIcon}
-          position={[m.coordinates.latitude ?? 0, m.coordinates.longitude ?? 0]}
-          key={['html', m.coordinates.latitude, m.coordinates.longitude].join('/')}
+          position={position}
+          key={['html', lat, lng].join('/')}
           ref={(ref) => {
             markerRefs.current[m.id] = ref;
           }}
         >
           <Tooltip opacity={opacity} permanent className='buldreinfo-tooltip-compact'>
-            {label}
+            {labelText}
           </Tooltip>
-          <Popup closeButton={false}>{m.html}</Popup>
+          <Popup closeButton={false}>
+            <div className='text-left py-1'>{m.html}</div>
+          </Popup>
         </Marker>
       );
     }
@@ -197,19 +207,15 @@ export default function Markers({
       return (
         <Marker
           icon={markerBlueIcon}
-          position={[m.coordinates.latitude ?? 0, m.coordinates.longitude ?? 0]}
-          key={['label', m.label, m.coordinates.latitude, m.coordinates.longitude].join('/')}
+          position={position}
+          key={['label', m.label, lat, lng].join('/')}
           eventHandlers={{
-            click: () => {
-              if (addEventHandlers) {
-                navigate(m.url);
-              }
-            },
+            click: () => addEventHandlers && navigate(m.url),
           }}
           draggable={false}
         >
           <Tooltip opacity={opacity} permanent className='buldreinfo-tooltip-compact'>
-            {label}
+            {labelText}
           </Tooltip>
         </Marker>
       );
@@ -218,14 +224,10 @@ export default function Markers({
     return (
       <Marker
         icon={markerRedIcon}
-        position={[m.coordinates.latitude ?? 0, m.coordinates.longitude ?? 0]}
-        key={['red', m.coordinates.latitude, m.coordinates.longitude].join('/')}
+        position={position}
+        key={['red', lat, lng].join('/')}
         eventHandlers={{
-          click: () => {
-            if (addEventHandlers && m.url) {
-              navigate(m.url);
-            }
-          },
+          click: () => addEventHandlers && m.url && navigate(m.url),
         }}
         draggable={false}
       />

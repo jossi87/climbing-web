@@ -1,100 +1,152 @@
-import { Segment, List, Grid, Container, Divider, Button, Icon } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+import {
+  Facebook,
+  Mail,
+  Info,
+  ShieldCheck,
+  FileText,
+  Heart,
+  Server,
+  FileDown,
+  Code2,
+} from 'lucide-react';
+import { FooterLink } from './ui/FooterLink';
 
-const styleGitHubBrv = {
-  borderRadius: '8px',
-  paddingLeft: '10px',
-  paddingRight: '10px',
-  maxWidth: '170px',
-  width: '100%',
-  height: 'auto',
-  backgroundColor: '#FFFFFF',
-};
-const styleFacebook = {
-  width: '170px',
-  marginLeft: '5px',
-  marginBottom: '5px',
-};
-const currYear = new Date().getFullYear();
+const Footer = () => {
+  const currYear = new Date().getFullYear();
 
-function Footer() {
   return (
-    <Segment inverted vertical style={{ margin: '5em 0em 0em', padding: '5em 0em' }}>
-      <Container textAlign='center'>
-        <Grid columns={3} stackable>
-          <Grid.Row>
-            <Grid.Column>
-              <a
-                href={'https://github.com/jossi87/climbing-web'}
-                rel='noreferrer noopener'
-                target='_blank'
-                aria-label='GitHub Repository'
-              >
-                <img
-                  style={styleGitHubBrv}
-                  src={'/png/GitHub_Logo.png'}
-                  alt='GitHub'
-                  width='170'
-                  height='69'
-                  loading='lazy'
-                />
-              </a>
-            </Grid.Column>
-            <Grid.Column>
-              <a
-                href={'https://brv.no'}
-                rel='noreferrer noopener'
-                target='_blank'
-                aria-label='Bratte Rogalands Venner'
-              >
-                <img
-                  style={styleGitHubBrv}
-                  src={'/png/brv.png'}
-                  alt='Bratte Rogalands venner'
-                  width='170'
-                  height='102' // Use the real height of the file here
-                  loading='lazy'
-                />
-              </a>
-            </Grid.Column>
-            <Grid.Column>
-              <a
-                href={'https://www.facebook.com/groups/brattelinjer'}
-                rel='noreferrer noopener'
-                target='_blank'
-                aria-label='Facebook Group'
-              >
-                <Button style={styleFacebook} color='facebook'>
-                  <Icon name='facebook' /> Facebook
-                </Button>
-              </a>
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
+    <footer className='w-full bg-surface-nav border-t border-surface-border mt-20 py-16'>
+      <div className='max-w-container mx-auto px-4'>
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-12 mb-12'>
+          <div className='flex flex-col items-center md:items-start gap-4'>
+            <span className='text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]'>
+              The Stack (Open Source)
+            </span>
+            <div className='flex flex-col gap-3 w-full max-w-footer-stack'>
+              <FooterLink
+                href='https://github.com/jossi87/climbing-web'
+                icon={Code2}
+                title='Frontend'
+                subtitle='climbing-web'
+              />
+              <FooterLink
+                href='https://github.com/jossi87/climbing-ws'
+                icon={Server}
+                title='Backend API'
+                subtitle='climbing-ws'
+              />
+              <FooterLink
+                href='https://github.com/jossi87/climbing-leaflet-renderer'
+                icon={FileDown}
+                title='PDF Map Generator'
+                subtitle='climbing-leaflet-renderer'
+              />
+            </div>
+          </div>
 
-        <Divider inverted section />
-        <List horizontal inverted divided link>
-          <List.Item>
-            <Link to='/about'>About</Link>
-          </List.Item>
-          <List.Item>
-            <a href={`mailto:jostein.oygarden@gmail.com?subject=${window.location.href}`}>
-              Contact
+          <div className='flex flex-col items-center gap-4'>
+            <span className='text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]'>
+              Affiliation
+            </span>
+            <a
+              href='https://brv.no'
+              rel='noreferrer noopener'
+              target='_blank'
+              className='flex items-center gap-4 text-slate-300 hover:text-brand transition-colors group mt-2'
+            >
+              <div className='p-3 rounded-md bg-surface-card border border-surface-border group-hover:border-brand/50 transition-colors'>
+                <img
+                  src='/png/brv.png'
+                  alt='BRV'
+                  className='w-8 h-8 grayscale group-hover:grayscale-0 transition-all'
+                />
+              </div>
+              <div className='flex flex-col items-start text-left'>
+                <span className='text-sm font-bold leading-none text-white group-hover:text-brand'>
+                  Bratte Rogalands Venner
+                </span>
+                <span className='text-[10px] text-slate-500 max-w-35'>
+                  Supporting the local climbing community since 1980
+                </span>
+              </div>
             </a>
-          </List.Item>
-          <List.Item>
-            <a href='/gpl-3.0.txt' rel='noreferrer noopener' target='_blank'>
-              GNU Public License
+          </div>
+
+          <div className='flex flex-col items-center md:items-end gap-4'>
+            <span className='text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]'>
+              Community
+            </span>
+            <a
+              href='https://www.facebook.com/groups/brattelinjer'
+              rel='noreferrer noopener'
+              target='_blank'
+              className='flex items-center gap-3 text-slate-300 hover:text-facebook transition-colors group'
+            >
+              <div className='p-2 rounded-md bg-surface-card border border-surface-border group-hover:border-facebook/50 transition-colors'>
+                <Facebook size={20} />
+              </div>
+              <div className='flex flex-col items-start md:items-end text-left md:text-right'>
+                <span className='text-sm font-bold leading-none text-white group-hover:text-facebook'>
+                  Bratte Linjer
+                </span>
+                <span className='text-[10px] text-slate-500'>Facebook Discussion</span>
+              </div>
             </a>
-          </List.Item>
-          <List.Item>
-            <Link to='/privacy-policy'>Privacy Policy</Link>
-          </List.Item>
-        </List>
-        <p>Buldreinfo &amp; Bratte Linjer - 2003-{currYear}</p>
-      </Container>
-    </Segment>
+          </div>
+        </div>
+
+        <div className='h-px bg-surface-border w-full mb-8' />
+
+        <div className='flex flex-col md:flex-row items-center justify-between gap-8'>
+          <div className='flex flex-wrap justify-center md:justify-start gap-x-8 gap-y-4 text-[11px] font-bold uppercase tracking-wider text-slate-500'>
+            <Link
+              to='/about'
+              className='hover:text-white transition-colors flex items-center gap-2'
+            >
+              <Info size={14} className='text-slate-600' /> About
+            </Link>
+
+            <a
+              href={`mailto:jostein.oygarden@gmail.com?subject=${window.location.href}`}
+              className='hover:text-white transition-colors flex items-center gap-2'
+            >
+              <Mail size={14} className='text-slate-600' /> Contact
+            </a>
+
+            <Link
+              to='/donations'
+              className='hover:text-brand transition-colors flex items-center gap-2'
+            >
+              <Heart size={14} className='text-brand/60' /> Donate
+            </Link>
+
+            <a
+              href='/gpl-3.0.txt'
+              rel='noreferrer noopener'
+              target='_blank'
+              className='hover:text-white transition-colors flex items-center gap-2'
+            >
+              <FileText size={14} className='text-slate-600' /> License
+            </a>
+
+            <Link
+              to='/privacy-policy'
+              className='hover:text-white transition-colors flex items-center gap-2'
+            >
+              <ShieldCheck size={14} className='text-slate-600' /> Privacy
+            </Link>
+          </div>
+
+          <div className='text-center md:text-right'>
+            <p className='text-[10px] text-slate-600 uppercase tracking-[0.3em] font-bold'>
+              Buldreinfo &amp; Bratte Linjer &copy; 2003-{currYear}
+            </p>
+          </div>
+        </div>
+      </div>
+    </footer>
   );
-}
+};
 
 export default Footer;

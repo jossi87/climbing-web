@@ -1,1 +1,0 @@
-export { SunOnWall } from './SunOnWall';

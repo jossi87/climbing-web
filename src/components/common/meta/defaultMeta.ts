@@ -29,6 +29,8 @@ export type Metadata = {
   isAdmin: boolean;
   isSuperAdmin: boolean;
   authenticatedName: string;
+  mediaId: number;
+  mediaVersionStamp: number;
   title: string;
   grades: Grade[];
   faYears: number[];
@@ -46,6 +48,8 @@ export const DEFAULT_META: Metadata = {
   isAuthenticated: false,
   isAdmin: false,
   isSuperAdmin: false,
+  mediaId: 0,
+  mediaVersionStamp: 0,
   authenticatedName: '',
   title: '',
   grades: [

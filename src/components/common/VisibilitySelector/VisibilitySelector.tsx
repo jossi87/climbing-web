@@ -1,55 +1,88 @@
-import type { ComponentProps } from 'react';
-import { Dropdown, type DropdownProps, Form } from 'semantic-ui-react';
 import { useMeta } from '../meta';
+import { ChevronDown, Lock, Eye } from 'lucide-react';
+import { cn } from '../../../lib/utils';
+
+type VisibilityValue = { lockedSuperadmin: boolean; lockedAdmin: boolean };
 
 type CustomProps = {
-  value: { lockedSuperadmin: boolean; lockedAdmin: boolean };
-  onChange: (val: { lockedAdmin: boolean; lockedSuperadmin: boolean }) => void;
+  value: VisibilityValue;
+  onChange: (val: VisibilityValue) => void;
+  className?: string;
+  disabled?: boolean;
+  label?: string;
 };
 
-type Props = CustomProps & Omit<DropdownProps, 'value' | 'onChange' | 'options'>;
-
 const lockedOptions = [
-  { key: 0, value: 0, text: 'Visible for everyone' },
-  { key: 1, value: 1, text: 'Only visible for administrators' },
+  { value: 0, text: 'Visible for everyone' },
+  { value: 1, text: 'Only visible for administrators' },
 ] as const;
 
 const superAdminOptions = [
   ...lockedOptions,
   {
-    key: 2,
     value: 2,
     text: 'Only visible for super administrators',
   },
 ] as const;
 
-type Mutable<T> = { -readonly [P in keyof T]: Mutable<T[P]> };
-
-export const VisibilitySelector = ({ value: incomingValue, onChange, ...rest }: Props) => {
+export const VisibilitySelector = ({
+  value: incomingValue,
+  onChange,
+  className,
+  disabled,
+}: Omit<CustomProps, 'label'>) => {
   const meta = useMeta();
 
   const options = meta.isSuperAdmin ? superAdminOptions : meta.isAdmin ? lockedOptions : [];
+  const currentValue = incomingValue.lockedSuperadmin ? 2 : incomingValue.lockedAdmin ? 1 : 0;
 
-  const value = incomingValue.lockedSuperadmin ? 2 : incomingValue.lockedAdmin ? 1 : 0;
+  if (options.length === 0) return null;
 
   return (
-    <Dropdown
-      {...rest}
-      onChange={(_, { value }) =>
-        onChange({
-          lockedAdmin: value === 1,
-          lockedSuperadmin: value === 2,
-        })
-      }
-      value={value}
-      options={options as Mutable<typeof options>}
-    />
+    <div className={cn('relative group', className)}>
+      <select
+        disabled={disabled}
+        className={cn(
+          'w-full appearance-none bg-surface-nav border border-surface-border rounded-lg py-2.5 pl-10 pr-10 text-sm text-white focus:outline-none focus:border-brand transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed',
+        )}
+        value={currentValue}
+        onChange={(e) => {
+          const val = Number(e.target.value);
+          onChange({
+            lockedAdmin: val === 1,
+            lockedSuperadmin: val === 2,
+          });
+        }}
+      >
+        {options.map((opt) => (
+          <option key={opt.value} value={opt.value} className='bg-surface-card'>
+            {opt.text}
+          </option>
+        ))}
+      </select>
+
+      <div className='absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none'>
+        {currentValue === 0 ? (
+          <Eye size={16} />
+        ) : (
+          <Lock size={16} className={currentValue === 2 ? 'text-red-500' : 'text-amber-500'} />
+        )}
+      </div>
+
+      <div className='absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none group-hover:text-slate-300 transition-colors'>
+        <ChevronDown size={16} />
+      </div>
+    </div>
   );
 };
 
-export const VisibilitySelectorField = (
-  props: CustomProps &
-    Omit<ComponentProps<typeof Form.Field>, 'options' | 'value' | 'onChange' | 'control'>,
-) => {
-  return <Form.Field label='Visibility' selection {...props} control={VisibilitySelector} />;
+export const VisibilitySelectorField = ({ label, ...props }: CustomProps) => {
+  return (
+    <div className='space-y-2'>
+      <label className='text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1'>
+        {label || 'Visibility'}
+      </label>
+      <VisibilitySelector {...props} />
+    </div>
+  );
 };

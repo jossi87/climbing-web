@@ -1,13 +1,4 @@
-import {
-  useState,
-  useEffect,
-  useRef,
-  type FormEvent,
-  type MouseEvent,
-  type SyntheticEvent,
-  type JSX,
-} from 'react';
-import { Container, Button, Label, Icon, Segment, Dropdown } from 'semantic-ui-react';
+import { useState, useEffect, useRef, type FormEvent, type MouseEvent, type JSX } from 'react';
 import { getMediaFileUrl, useMediaSvg } from '../api';
 import { Rappel } from '../utils/svg-utils';
 import {
@@ -18,12 +9,23 @@ import {
   isCubicPoint,
   isQuadraticPoint,
   isArc,
-  isPoint,
 } from '../utils/svg-helpers';
 
 import { Loading } from './common/widgets/widgets';
 import { useNavigate, useParams } from 'react-router-dom';
 import type { Success } from '../@types/buldreinfo';
+import {
+  RotateCcw,
+  Save,
+  X,
+  Plus,
+  Anchor,
+  Trash2,
+  Info,
+  MinusCircle,
+  ChevronDown,
+} from 'lucide-react';
+import { cn } from '../lib/utils';
 
 type EditableSvg = SvgType & {
   points?: ParsedEntry[];
@@ -45,8 +47,7 @@ const MediaSvgEdit = () => {
   } = useMediaSvg(mediaIdNum) as ReturnType<typeof useMediaSvg>;
 
   const [modifiedData, setData] = useState<Success<'getMedia'> | undefined | null>(null);
-  const [forceUpdate, setForceUpdate] = useState(0);
-  const [saving, setSaving] = useState(false);
+  const [, setForceUpdate] = useState(0);
   const [activeElementIndex, setActiveElementIndex] = useState(-1);
   const shift = useRef<boolean>(false);
   const [activePoint, setActivePoint] = useState<number>(0);
@@ -69,15 +70,11 @@ const MediaSvgEdit = () => {
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      if (e.shiftKey) {
-        shift.current = true;
-      }
+      if (e.shiftKey) shift.current = true;
     }
 
     function handleKeyUp(e: KeyboardEvent) {
-      if (!e.shiftKey) {
-        shift.current = false;
-      }
+      if (!e.shiftKey) shift.current = false;
     }
 
     document.addEventListener('keydown', handleKeyDown);
@@ -96,7 +93,6 @@ const MediaSvgEdit = () => {
 
   function save(event: FormEvent) {
     event.preventDefault();
-    setSaving(true);
     newSave(modifiedData).then(() => navigate(-1));
   }
 
@@ -107,9 +103,7 @@ const MediaSvgEdit = () => {
 
   function getMouseCoords(e: MouseEvent) {
     const dim = imageRef.current?.getBoundingClientRect();
-    if (!dim) {
-      return { x: 0, y: 0 };
-    }
+    if (!dim) return { x: 0, y: 0 };
     const dx = data!.width! / dim.width;
     const dy = data!.height! / dim.height;
     const x = Math.round((e.clientX - dim.left) * dx);
@@ -120,43 +114,28 @@ const MediaSvgEdit = () => {
   function generatePath(points: ParsedEntry[]) {
     let d = '';
     points.forEach((p, i) => {
-      if (i === 0) {
-        d += 'M ';
-      } else if (isQuadraticPoint(p)) {
-        d += `Q ${p.q.x} ${p.q.y} `;
-      } else if (isCubicPoint(p)) {
-        d += `C ${p.c[0].x} ${p.c[0].y} ${p.c[1].x} ${p.c[1].y} `;
-      } else if (isArc(p)) {
-        d += `A ${p.a.rx} ${p.a.ry} ${p.a.rot} ${p.a.laf} ${p.a.sf} `;
-      } else if (isPoint(p)) {
-        d += 'L ';
-      } else {
-        d += 'L ';
-      }
+      if (i === 0) d += 'M ';
+      else if (isQuadraticPoint(p)) d += `Q ${p.q.x} ${p.q.y} `;
+      else if (isCubicPoint(p)) d += `C ${p.c[0].x} ${p.c[0].y} ${p.c[1].x} ${p.c[1].y} `;
+      else if (isArc(p)) d += `A ${p.a.rx} ${p.a.ry} ${p.a.rot} ${p.a.laf} ${p.a.sf} `;
+      else d += 'L ';
       d += `${p.x} ${p.y} `;
     });
     return d;
   }
 
   function handleOnClick(e: MouseEvent<SVGSVGElement>) {
-    if (
-      shift.current &&
-      activeElementIndex !== -1 &&
-      getMediaSvgs()[activeElementIndex] &&
-      getMediaSvgs()[activeElementIndex].points
-    ) {
+    if (shift.current && activeElementIndex !== -1 && getMediaSvgs()[activeElementIndex]?.points) {
       const coords = getMouseCoords(e);
       const svgs = getMediaSvgs();
       const cur = svgs[activeElementIndex];
       cur.points = cur.points ?? [];
       const points = cur.points as ParsedEntry[];
       points.push(coords);
-      const p = generatePath(points);
-      cur.path = p;
-      cur.points = points;
+      cur.path = generatePath(points);
       setData(data);
       setActivePoint(points.length - 1);
-      setForceUpdate(forceUpdate + 1);
+      setForceUpdate((v) => v + 1);
     } else if (
       activeElementIndex !== -1 &&
       getMediaSvgs()[activeElementIndex] &&
@@ -167,7 +146,7 @@ const MediaSvgEdit = () => {
       getMediaSvgs()[activeElementIndex].rappelX = coords.x;
       getMediaSvgs()[activeElementIndex].rappelY = coords.y;
       setData(data);
-      setForceUpdate(forceUpdate + 1);
+      setForceUpdate((v) => v + 1);
     }
   }
 
@@ -175,43 +154,32 @@ const MediaSvgEdit = () => {
     const active = activePoint;
     const svgs = getMediaSvgs();
     const cur = svgs[activeElementIndex];
-    cur.points = cur.points ?? [];
-    const points = cur.points as ParsedEntry[];
+    const points = (cur.points ?? []) as ParsedEntry[];
     points[active].x = coords.x;
     points[active].y = coords.y;
-    const p = generatePath(points);
-    cur.path = p;
-    cur.points = points;
+    cur.path = generatePath(points);
     setData(data);
-    setForceUpdate(forceUpdate + 1);
+    setForceUpdate((v) => v + 1);
   }
 
   function setCubicCoords(coords: { x: number; y: number }, anchor: number) {
     const active = activePoint;
     const svgs = getMediaSvgs();
     const cur = svgs[activeElementIndex];
-    cur.points = cur.points ?? [];
-    const points = cur.points as ParsedEntry[];
-    if (!isCubicPoint(points[active])) {
-      return;
-    }
+    const points = (cur.points ?? []) as ParsedEntry[];
+    if (!isCubicPoint(points[active])) return;
     points[active].c[anchor].x = coords.x;
     points[active].c[anchor].y = coords.y;
-    const p = generatePath(points);
-    cur.path = p;
-    cur.points = points;
+    cur.path = generatePath(points);
     setData(data);
-    setForceUpdate(forceUpdate + 1);
+    setForceUpdate((v) => v + 1);
   }
 
   function handleMouseMove(e: MouseEvent<SVGSVGElement>) {
     e.preventDefault();
     if (!shift.current) {
-      if (draggedPoint) {
-        setPointCoords(getMouseCoords(e));
-      } else if (draggedCubic !== false) {
-        setCubicCoords(getMouseCoords(e), draggedCubic);
-      }
+      if (draggedPoint) setPointCoords(getMouseCoords(e));
+      else if (draggedCubic !== false) setCubicCoords(getMouseCoords(e), draggedCubic);
     }
     return false;
   }
@@ -230,12 +198,11 @@ const MediaSvgEdit = () => {
     }
   }
 
-  function setPointType(e: SyntheticEvent, { value }: { value: string }) {
+  function setPointType(value: string) {
     const active = activePoint;
     const svgs = getMediaSvgs();
     const cur = svgs[activeElementIndex];
-    cur.points = cur.points ?? [];
-    const points = cur.points as ParsedEntry[];
+    const points = (cur.points ?? []) as ParsedEntry[];
     if (active !== 0) {
       switch (value) {
         case 'L':
@@ -258,11 +225,9 @@ const MediaSvgEdit = () => {
           };
           break;
       }
-      const p = generatePath(points);
-      cur.path = p;
-      cur.points = points;
+      cur.path = generatePath(points);
       setData(data);
-      setForceUpdate(forceUpdate + 1);
+      setForceUpdate((v) => v + 1);
     }
   }
 
@@ -270,15 +235,13 @@ const MediaSvgEdit = () => {
     const active = activePoint;
     const svgs = getMediaSvgs();
     const cur = svgs[activeElementIndex];
-    cur.points = cur.points ?? [];
-    const points = cur.points as ParsedEntry[];
+    const points = (cur.points ?? []) as ParsedEntry[];
     if (points.length > 1 && active !== 0) {
       points.splice(active, 1);
-      const p = generatePath(points);
-      cur.path = p;
-      cur.points = points;
-      setActivePoint(cur.points.length - 1);
+      cur.path = generatePath(points);
+      setActivePoint(cur.points!.length - 1);
       setData(data);
+      setForceUpdate((v) => v + 1);
     }
   }
 
@@ -292,7 +255,7 @@ const MediaSvgEdit = () => {
     setActivePoint(0);
     setDraggedPoint(false);
     setDraggedCubic(false);
-    setForceUpdate(forceUpdate + 1);
+    setForceUpdate((v) => v + 1);
   }
 
   const mediaSvgs = (data.mediaSvgs = data.mediaSvgs ?? []) as EditableSvg[];
@@ -313,9 +276,9 @@ const MediaSvgEdit = () => {
       const anchors: JSX.Element[] = [];
       if (isCubicPoint(p)) {
         anchors.push(
-          <g key={anchors.length} className='buldreinfo-svg-edit-opacity'>
+          <g key={'anchor-' + i} className='opacity-70'>
             <line
-              className={'buldreinfo-svg-pointer'}
+              className='cursor-pointer'
               style={{ fill: 'none', stroke: '#E2011A' }}
               x1={a[i - 1].x}
               y1={a[i - 1].y}
@@ -325,7 +288,7 @@ const MediaSvgEdit = () => {
               strokeDasharray={0.003 * (data.width ?? 1)}
             />
             <line
-              className={'buldreinfo-svg-pointer'}
+              className='cursor-pointer'
               style={{ fill: 'none', stroke: '#E2011A' }}
               x1={p.x}
               y1={p.y}
@@ -335,7 +298,7 @@ const MediaSvgEdit = () => {
               strokeDasharray={0.003 * (data.width ?? 1)}
             />
             <circle
-              className={'buldreinfo-svg-pointer'}
+              className='cursor-pointer'
               fill='#E2011A'
               cx={p.c[0].x}
               cy={p.c[0].y}
@@ -343,7 +306,7 @@ const MediaSvgEdit = () => {
               onMouseDown={() => setCurrDraggedCubic(i, 0)}
             />
             <circle
-              className={'buldreinfo-svg-pointer'}
+              className='cursor-pointer'
               fill='#E2011A'
               cx={p.c[1].x}
               cy={p.c[1].y}
@@ -355,10 +318,10 @@ const MediaSvgEdit = () => {
       }
       const fill = activePoint === i ? '#00FF00' : '#FF0000';
       return (
-        <g key={[p.x ?? 'x', p.y ?? 'y']?.join('x')}>
+        <g key={'point-' + i}>
           {anchors}
           <circle
-            className={'buldreinfo-svg-pointer'}
+            className='cursor-pointer'
             fill={fill}
             cx={p.x}
             cy={p.y}
@@ -395,212 +358,232 @@ const MediaSvgEdit = () => {
   }
 
   return (
-    <Container onMouseUp={cancelDragging} onMouseLeave={cancelDragging}>
-      <Segment style={{ minHeight: '130px' }}>
-        <Button.Group floated='right'>
-          <Button negative disabled={!mediaSvgs || mediaSvgs.length === 0} onClick={reset}>
-            Reset
-          </Button>
-          <Button.Or />
-          <Button onClick={() => navigate(-1)}>Cancel</Button>
-          <Button.Or />
-          <Button positive loading={saving} onClick={save}>
-            Save
-          </Button>
-        </Button.Group>
-        <Button.Group size='mini'>
-          <Button
-            size='mini'
-            onClick={() => {
-              const element: EditableSvg = {
-                t: 'PATH',
-                id: -1,
-                path: '',
-                anchors: [],
-                nr: -1,
-                pitch: 0,
-                hasAnchor: false,
-                points: [],
-              };
-              if (!data.mediaSvgs) {
-                data.mediaSvgs = [];
-              }
-              mediaSvgs.push(element);
-              setData(data);
-              setActiveElementIndex(mediaSvgs.length - 1);
-              setActivePoint(0);
-              setDraggedPoint(false);
-              setDraggedCubic(false);
-              setForceUpdate(forceUpdate + 1);
-            }}
-          >
-            Add descent
-          </Button>
-          <Button.Or />
-          <Button
-            size='mini'
-            onClick={() => {
-              const element: EditableSvg = {
-                t: 'RAPPEL_BOLTED',
-                id: -1,
-                path: '',
-                anchors: [],
-                nr: -1,
-                pitch: 0,
-                hasAnchor: false,
-                rappelX: (data.width ?? 0) / 2,
-                rappelY: (data.height ?? 0) / 2,
-              };
-              if (!data.mediaSvgs) {
-                data.mediaSvgs = [];
-              }
-              mediaSvgs.push(element);
-              setData(data);
-              setActiveElementIndex(mediaSvgs.length - 1);
-              setActivePoint(0);
-              setDraggedPoint(false);
-              setDraggedCubic(false);
-              setForceUpdate(forceUpdate + 1);
-            }}
-          >
-            Add rappel (bolted)
-          </Button>
-          <Button.Or />
-          <Button
-            size='mini'
-            onClick={() => {
-              const element: EditableSvg = {
-                t: 'RAPPEL_NOT_BOLTED',
-                id: -1,
-                path: '',
-                anchors: [],
-                nr: -1,
-                pitch: 0,
-                hasAnchor: false,
-                rappelX: (data.width ?? 0) / 2,
-                rappelY: (data.height ?? 0) / 2,
-              };
-              if (!data.mediaSvgs) {
-                data.mediaSvgs = [];
-              }
-              mediaSvgs.push(element);
-              setData(data);
-              setActiveElementIndex(mediaSvgs.length - 1);
-              setActivePoint(0);
-              setDraggedPoint(false);
-              setDraggedCubic(false);
-              setForceUpdate(forceUpdate + 1);
-            }}
-          >
-            Add rappel (not bolted)
-          </Button>
-        </Button.Group>
-        <Label.Group>
-          {mediaSvgs &&
-            mediaSvgs.map((svg, index) => (
-              <Label
-                as='a'
-                image
-                key={[svg.t, svg.id]?.join('x')}
-                color={activeElementIndex === index ? 'green' : 'grey'}
-                onClick={() => {
-                  if (svg.t === 'PATH' && mediaSvgs[index] && !mediaSvgs[index].points) {
-                    mediaSvgs[index].points = parsePath(mediaSvgs[index].path);
-                    setData(data);
-                  }
-                  setActiveElementIndex(index);
-                  setActivePoint(0);
-                  setDraggedPoint(false);
-                  setDraggedCubic(false);
-                }}
-              >
+    <div
+      className='max-w-container mx-auto px-4 py-6 space-y-4 select-none'
+      onMouseUp={cancelDragging}
+      onMouseLeave={cancelDragging}
+    >
+      <div className='bg-surface-card border border-surface-border rounded-xl p-6 shadow-sm space-y-6'>
+        <div className='flex flex-wrap items-center justify-between gap-4'>
+          <div className='flex flex-wrap gap-2'>
+            <button
+              onClick={() => {
+                const element: EditableSvg = {
+                  t: 'PATH',
+                  id: -1,
+                  path: '',
+                  anchors: [],
+                  nr: -1,
+                  pitch: 0,
+                  hasAnchor: false,
+                  points: [],
+                };
+                mediaSvgs.push(element);
+                setData(data);
+                setActiveElementIndex(mediaSvgs.length - 1);
+                setActivePoint(0);
+                setForceUpdate((v) => v + 1);
+              }}
+              className='flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-nav border border-surface-border text-[10px] font-black uppercase tracking-wider text-slate-300 hover:text-white transition-colors'
+            >
+              <Plus size={14} /> Add descent
+            </button>
+            <button
+              onClick={() => {
+                const element: EditableSvg = {
+                  t: 'RAPPEL_BOLTED',
+                  id: -1,
+                  path: '',
+                  anchors: [],
+                  nr: -1,
+                  pitch: 0,
+                  hasAnchor: false,
+                  rappelX: (data.width ?? 0) / 2,
+                  rappelY: (data.height ?? 0) / 2,
+                };
+                mediaSvgs.push(element);
+                setData(data);
+                setActiveElementIndex(mediaSvgs.length - 1);
+                setActivePoint(0);
+                setForceUpdate((v) => v + 1);
+              }}
+              className='flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-nav border border-surface-border text-[10px] font-black uppercase tracking-wider text-slate-300 hover:text-white transition-colors'
+            >
+              <Anchor size={14} /> Rappel (Bolted)
+            </button>
+            <button
+              onClick={() => {
+                const element: EditableSvg = {
+                  t: 'RAPPEL_NOT_BOLTED',
+                  id: -1,
+                  path: '',
+                  anchors: [],
+                  nr: -1,
+                  pitch: 0,
+                  hasAnchor: false,
+                  rappelX: (data.width ?? 0) / 2,
+                  rappelY: (data.height ?? 0) / 2,
+                };
+                mediaSvgs.push(element);
+                setData(data);
+                setActiveElementIndex(mediaSvgs.length - 1);
+                setActivePoint(0);
+                setForceUpdate((v) => v + 1);
+              }}
+              className='flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-nav border border-surface-border text-[10px] font-black uppercase tracking-wider text-slate-300 hover:text-white transition-colors'
+            >
+              <Anchor size={14} /> Rappel (No Bolt)
+            </button>
+          </div>
+
+          <div className='flex items-center gap-2'>
+            <button
+              onClick={reset}
+              disabled={!mediaSvgs?.length}
+              className='flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20 disabled:opacity-30 disabled:pointer-events-none text-[10px] font-black uppercase tracking-wider'
+            >
+              <RotateCcw size={14} /> Reset
+            </button>
+            <button
+              onClick={() => navigate(-1)}
+              className='flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-nav border border-surface-border text-slate-400 hover:text-white text-[10px] font-black uppercase tracking-wider'
+            >
+              <X size={14} /> Cancel
+            </button>
+            <button
+              onClick={save}
+              className='flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-brand text-white shadow-md shadow-brand/20 text-[10px] font-black uppercase tracking-wider'
+            >
+              <Save size={14} /> Save
+            </button>
+          </div>
+        </div>
+
+        <div className='flex flex-wrap gap-2'>
+          {mediaSvgs.map((svg, index) => (
+            <div
+              key={index}
+              className={cn(
+                'group flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-bold uppercase transition-all cursor-pointer',
+                activeElementIndex === index
+                  ? 'bg-brand/10 border-brand text-brand'
+                  : 'bg-surface-nav border-surface-border text-slate-400 hover:text-slate-200',
+              )}
+              onClick={() => {
+                if (svg.t === 'PATH' && !mediaSvgs[index].points) {
+                  mediaSvgs[index].points = parsePath(mediaSvgs[index].path);
+                }
+                setActiveElementIndex(index);
+                setActivePoint(0);
+              }}
+            >
+              <span>
                 {svg.t} #{index}
-                <Icon
-                  name='delete'
-                  onClick={() => {
-                    mediaSvgs.splice(index, 1);
-                    setData(data);
-                    setActiveElementIndex(-1);
-                    setActivePoint(0);
-                    setDraggedPoint(false);
-                    setDraggedCubic(false);
-                    setForceUpdate(forceUpdate + 1);
-                  }}
-                />
-              </Label>
-            ))}
-        </Label.Group>
-        <br />
-        {activeElementIndex >= 0 &&
-          mediaSvgs[activeElementIndex] &&
-          mediaSvgs[activeElementIndex].t === 'PATH' && (
-            <>
-              <strong>SHIFT + CLICK</strong> to add a point | <strong>CLICK</strong> to select a
-              point | <strong>CLICK AND DRAG</strong> to move a point
-              <br />
-              {activePoint !== 0 && (
-                <Dropdown
-                  selection
-                  value={
-                    mediaSvgs[activeElementIndex]?.points?.[activePoint] &&
-                    isCubicPoint(mediaSvgs[activeElementIndex].points[activePoint])
-                      ? 'C'
-                      : 'L'
-                  }
-                  onChange={(e, data) => setPointType(e, data as { value: string })}
-                  options={[
-                    { key: 1, value: 'L', text: 'Selected point: Line to' },
-                    { key: 2, value: 'C', text: 'Selected point: Curve to' },
-                  ]}
-                />
-              )}
-              {activePoint !== 0 && (
-                <Button disabled={activePoint === 0} onClick={removeActivePoint}>
-                  Remove this point
-                </Button>
-              )}
-            </>
-          )}
-        {activeElementIndex >= 0 &&
-          mediaSvgs[activeElementIndex] &&
-          (mediaSvgs[activeElementIndex].t === 'RAPPEL_BOLTED' ||
-            mediaSvgs[activeElementIndex].t === 'RAPPEL_NOT_BOLTED') && (
-            <>
-              <strong>CLICK</strong> to move anchor
-            </>
-          )}
-      </Segment>
-      <svg
-        viewBox={'0 0 ' + data.width + ' ' + data.height}
-        onClick={handleOnClick}
-        onMouseMove={handleMouseMove}
-        width='100%'
-        height='100%'
-      >
-        <image
-          ref={imageRef}
-          xlinkHref={getMediaFileUrl(data.id ?? 0, data.versionStamp ?? 0, false)}
-          width='100%'
-          height='100%'
-        />
-        {activeElementIndex >= 0 && mediaSvgs[activeElementIndex] && (
-          <path
-            style={{ fill: 'none', stroke: '#FF0000' }}
-            d={mediaSvgs[activeElementIndex].path}
-            strokeWidth={0.002 * (data.width ?? 0)}
-          />
+              </span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  mediaSvgs.splice(index, 1);
+                  setData(data);
+                  setActiveElementIndex(-1);
+                  setForceUpdate((v) => v + 1);
+                }}
+                className='hover:text-red-500'
+              >
+                <Trash2 size={12} />
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {activeElementIndex >= 0 && (
+          <div className='pt-4 border-t border-surface-border/50'>
+            <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4'>
+              <div className='flex items-start gap-3'>
+                <Info size={16} className='text-slate-500 shrink-0 mt-0.5' />
+                <div className='text-[10px] text-slate-400 leading-relaxed font-bold uppercase tracking-wide'>
+                  {mediaSvgs[activeElementIndex].t === 'PATH' ? (
+                    <>
+                      <span className='text-white'>Shift + Click</span> to add point |{' '}
+                      <span className='text-white'>Click</span> to select |{' '}
+                      <span className='text-white'>Drag</span> to move
+                    </>
+                  ) : (
+                    <>
+                      <span className='text-white'>Click</span> to move anchor
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {activeElementIndex >= 0 &&
+                mediaSvgs[activeElementIndex].t === 'PATH' &&
+                activePoint !== 0 && (
+                  <div className='flex items-center gap-3'>
+                    <div className='relative'>
+                      <select
+                        className='appearance-none bg-surface-nav border border-surface-border rounded-lg px-3 py-1.5 pr-8 text-[10px] font-black uppercase tracking-wider text-slate-300 focus:outline-none focus:border-brand'
+                        value={
+                          isCubicPoint(mediaSvgs[activeElementIndex].points![activePoint])
+                            ? 'C'
+                            : 'L'
+                        }
+                        onChange={(e) => setPointType(e.target.value)}
+                      >
+                        <option value='L'>Line to</option>
+                        <option value='C'>Curve to</option>
+                      </select>
+                      <ChevronDown
+                        size={12}
+                        className='absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none'
+                      />
+                    </div>
+                    <button
+                      onClick={removeActivePoint}
+                      className='flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20 text-[10px] font-black uppercase tracking-wider'
+                    >
+                      <MinusCircle size={14} /> Remove point
+                    </button>
+                  </div>
+                )}
+            </div>
+          </div>
         )}
-        {circles}
-        {activeRappel}
-        {mediaSvgs &&
-          parseReadOnlySvgs(
-            mediaSvgs.filter((svg, index) => index !== activeElementIndex) as SvgType[],
-            data.width ?? 0,
-            data.height ?? 0,
-            scale,
+      </div>
+
+      <div className='bg-black border border-surface-border rounded-xl overflow-hidden shadow-2xl relative cursor-crosshair'>
+        <svg
+          viewBox={'0 0 ' + data.width + ' ' + data.height}
+          onClick={handleOnClick}
+          onMouseMove={handleMouseMove}
+          className='w-full h-auto block'
+        >
+          <image
+            ref={imageRef}
+            xlinkHref={getMediaFileUrl(data.id ?? 0, data.versionStamp ?? 0, false)}
+            width='100%'
+            height='100%'
+          />
+          {activeElementIndex >= 0 && mediaSvgs[activeElementIndex] && (
+            <path
+              className='pointer-events-none'
+              style={{ fill: 'none', stroke: '#FF0000' }}
+              d={mediaSvgs[activeElementIndex].path}
+              strokeWidth={0.002 * (data.width ?? 0)}
+            />
           )}
-      </svg>
-    </Container>
+          {circles}
+          {activeRappel}
+          {mediaSvgs &&
+            parseReadOnlySvgs(
+              mediaSvgs.filter((_, index) => index !== activeElementIndex) as SvgType[],
+              data.width ?? 0,
+              data.height ?? 0,
+              scale,
+            )}
+        </svg>
+      </div>
+    </div>
   );
 };
 

@@ -2,7 +2,7 @@ import { getMediaFileUrl } from '../../api';
 import { SvgRoute } from './SvgRoute';
 import { Descent, Rappel } from '../../utils/svg-utils';
 import type { components } from '../../@types/buldreinfo/swagger';
-import type { CSSProperties, MouseEvent } from 'react';
+import { type CSSProperties, type MouseEvent, useMemo } from 'react';
 import {
   calculateMediaRegion,
   isPathVisible,
@@ -13,6 +13,7 @@ import {
 import './SvgViewer.css';
 
 type SvgProps = {
+  className?: string;
   style?: CSSProperties;
   close?: (() => void) | null;
   m: components['schemas']['Media'];
@@ -25,6 +26,7 @@ type SvgProps = {
 };
 
 export const SvgViewer = ({
+  className,
   style,
   close,
   m,
@@ -35,81 +37,79 @@ export const SvgViewer = ({
   problemIdHovered,
   setProblemIdHovered,
 }: SvgProps) => {
-  let imgW = m.width ?? 0;
-  let imgH = m.height ?? 0;
-  let mediaRegion: MediaRegion | null = null;
-  let svgs = m.svgs ?? [];
   const pitchNum = pitch ?? 0;
   const optProblemIdNum = optProblemId ?? 0;
-  if (
-    pitchNum > 0 &&
-    (m.svgs?.length ?? 0) > 0 &&
-    (m.svgs ?? []).some((x) => x.problemId == optProblemIdNum && x.pitch === pitchNum)
-  ) {
-    const pitchSvg = (m.svgs ?? []).filter(
-      (x) => x.problemId == optProblemIdNum && x.pitch === pitchNum,
-    )[0]!;
-    mediaRegion = calculateMediaRegion(pitchSvg.path ?? '', m.width ?? 0, m.height ?? 0);
-    const regionForScale: MediaRegion = mediaRegion ?? {
-      x: 0,
-      y: 0,
-      width: m.width ?? 0,
-      height: m.height ?? 0,
-    };
-    svgs = (m.svgs ?? [])
-      .filter(
-        (x) =>
-          x === pitchSvg || (mediaRegion ? isPathVisible(x.path ?? '', regionForScale) : false),
-      )
-      .map((x) => ({ ...x, path: scalePath(x.path ?? '', regionForScale) }));
-    if (mediaRegion) {
-      imgW = mediaRegion.width;
-      imgH = mediaRegion.height;
-    }
-  }
+  const problemIdHoveredNum = problemIdHovered ?? 0;
 
-  const scale = Math.max(imgW / 1920, imgH / 1440);
-  const regionForScaleAll: MediaRegion = mediaRegion ?? { x: 0, y: 0, width: imgW, height: imgH };
+  // Process dimensions and regions
+  const processed = useMemo(() => {
+    let imgW = m.width ?? 0;
+    let imgH = m.height ?? 0;
+    let mediaRegion: MediaRegion | null = null;
+    let svgs = m.svgs ?? [];
+
+    const hasSpecificPitch = svgs.some(
+      (x) => x.problemId === optProblemIdNum && x.pitch === pitchNum,
+    );
+
+    if (pitchNum > 0 && svgs.length > 0 && hasSpecificPitch) {
+      const pitchSvg = svgs.find((x) => x.problemId === optProblemIdNum && x.pitch === pitchNum)!;
+      mediaRegion = calculateMediaRegion(pitchSvg.path ?? '', m.width ?? 0, m.height ?? 0);
+
+      const regionForScale: MediaRegion = mediaRegion ?? {
+        x: 0,
+        y: 0,
+        width: m.width ?? 0,
+        height: m.height ?? 0,
+      };
+
+      svgs = svgs
+        .filter(
+          (x) =>
+            x === pitchSvg || (mediaRegion ? isPathVisible(x.path ?? '', regionForScale) : false),
+        )
+        .map((x) => ({ ...x, path: scalePath(x.path ?? '', regionForScale) }));
+
+      if (mediaRegion) {
+        imgW = mediaRegion.width;
+        imgH = mediaRegion.height;
+      }
+    }
+
+    const regionForScaleAll: MediaRegion = mediaRegion ?? { x: 0, y: 0, width: imgW, height: imgH };
+    const scale = Math.max(imgW / 1920, imgH / 1440);
+
+    return { imgW, imgH, mediaRegion, svgs, regionForScaleAll, scale };
+  }, [m, pitchNum, optProblemIdNum]);
+
+  const { imgW, imgH, mediaRegion, svgs, regionForScaleAll, scale } = processed;
+
   const mediaSvgs = (m.mediaSvgs ?? [])
     .filter(
       (svg) => !svg.path || (mediaRegion ? isPathVisible(svg.path ?? '', regionForScaleAll) : true),
     )
-    .map((svg) => {
+    .map((svg, idx) => {
+      const keyPrefix = `${m.id}-${thumb}-${idx}`;
       switch (svg.t) {
-        case 'PATH': {
+        case 'PATH':
           return (
             <Descent
-              key={[m.id ?? 0, thumb, svg.path].join('x')}
+              key={`${keyPrefix}-descent`}
               path={scalePath(svg.path ?? '', regionForScaleAll)}
               whiteNotBlack={true}
               scale={scale}
               thumb={thumb}
             />
           );
-        }
-        case 'RAPPEL_BOLTED': {
-          const { x, y } = scalePoint(svg.rappelX ?? 0, svg.rappelY ?? 0, regionForScaleAll);
-          return (
-            <Rappel
-              key={[m.id ?? 0, thumb, svg.rappelX ?? 0, svg.rappelY ?? 0].join('x')}
-              x={x}
-              y={y}
-              bolted={true}
-              scale={scale}
-              thumb={thumb}
-              backgroundColor='black'
-              color='white'
-            />
-          );
-        }
+        case 'RAPPEL_BOLTED':
         case 'RAPPEL_NOT_BOLTED': {
           const { x, y } = scalePoint(svg.rappelX ?? 0, svg.rappelY ?? 0, regionForScaleAll);
           return (
             <Rappel
-              key={[m.id ?? 0, thumb, svg.rappelX ?? 0, svg.rappelY ?? 0].join('x')}
+              key={`${keyPrefix}-rappel`}
               x={x}
               y={y}
-              bolted={false}
+              bolted={svg.t === 'RAPPEL_BOLTED'}
               scale={scale}
               thumb={thumb}
               backgroundColor='black'
@@ -117,35 +117,30 @@ export const SvgViewer = ({
             />
           );
         }
-        default: {
+        default:
           return null;
-        }
       }
     });
-  const problemIdHoveredNum = problemIdHovered ?? 0;
 
-  const routes =
-    svgs.length > 0 &&
-    svgs
+  const routes = useMemo(() => {
+    if (svgs.length === 0) return null;
+
+    return [...svgs]
       .sort((a, b) => {
-        if ((a.pitch ?? 0) < (b.pitch ?? 0)) {
-          return -1;
-        } else if ((a.pitch ?? 0) > (b.pitch ?? 0)) {
-          return 1;
-        } else if (problemIdHoveredNum > 0 && a.problemId === problemIdHoveredNum) {
-          return 1;
-        } else if (problemIdHoveredNum > 0 && b.problemId === problemIdHoveredNum) {
-          return -1;
-        } else if (optProblemIdNum > 0 && a.problemId === optProblemIdNum) {
-          return 1;
-        } else if (optProblemIdNum > 0 && b.problemId === optProblemIdNum) {
-          return -1;
+        if ((a.pitch ?? 0) !== (b.pitch ?? 0)) return (a.pitch ?? 0) - (b.pitch ?? 0);
+        if (problemIdHoveredNum > 0) {
+          if (a.problemId === problemIdHoveredNum) return 1;
+          if (b.problemId === problemIdHoveredNum) return -1;
+        }
+        if (optProblemIdNum > 0) {
+          if (a.problemId === optProblemIdNum) return 1;
+          if (b.problemId === optProblemIdNum) return -1;
         }
         return (b.nr ?? 0) - (a.nr ?? 0);
       })
       .map((svg) => (
         <SvgRoute
-          key={[m.id, svg.problemId, svg.pitch, thumb].join('-')}
+          key={`${m.id}-${svg.problemId}-${svg.pitch}-${thumb}`}
           thumbnail={thumb}
           showText={showText}
           scale={scale}
@@ -159,22 +154,37 @@ export const SvgViewer = ({
           pitch={pitchNum}
         />
       ));
+  }, [
+    svgs,
+    m.id,
+    thumb,
+    showText,
+    scale,
+    imgH,
+    imgW,
+    optProblemIdNum,
+    problemIdHoveredNum,
+    setProblemIdHovered,
+    pitchNum,
+  ]);
 
   return (
-    <>
-      <canvas className='buldreinfo-svg-canvas' width={imgW} height={imgH} style={style} />
+    <div className={`relative w-full h-full overflow-hidden ${className}`} style={style}>
+      <canvas
+        className='buldreinfo-svg-canvas absolute inset-0 w-full h-full pointer-events-none'
+        width={imgW}
+        height={imgH}
+      />
       <svg
         xmlns='http://www.w3.org/2000/svg'
         overflow='visible'
-        className='buldreinfo-svg'
-        viewBox={'0 0 ' + imgW + ' ' + imgH}
+        className='buldreinfo-svg absolute inset-0 w-full h-full touch-none select-none'
+        viewBox={`0 0 ${imgW} ${imgH}`}
         preserveAspectRatio='xMidYMid meet'
         onClick={(e: MouseEvent<SVGSVGElement>) => {
-          if (e.target instanceof SVGSVGElement && close) {
-            close();
-          }
+          if (e.target === e.currentTarget && close) close();
         }}
-        onMouseLeave={() => setProblemIdHovered && setProblemIdHovered(null)}
+        onMouseLeave={() => setProblemIdHovered?.(null)}
       >
         <image
           xlinkHref={getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, false, {
@@ -186,6 +196,6 @@ export const SvgViewer = ({
         {mediaSvgs}
         {routes && <g className={thumb ? undefined : 'buldreinfo-svg-sibling-fade'}>{routes}</g>}
       </svg>
-    </>
+    </div>
   );
 };

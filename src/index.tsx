@@ -1,5 +1,4 @@
-import 'semantic-ui-css/semantic.min.css';
-import './buldreinfo.css';
+import './index.css';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, useNavigate } from 'react-router-dom';
 import { Auth0Provider } from '@auth0/auth0-react';
@@ -17,7 +16,6 @@ const ReactQueryDevtoolsLazy = lazy(() =>
 
 const APP_ENV = import.meta.env.REACT_APP_ENV;
 
-// Defer Sentry initialization to improve initial load performance
 setTimeout(() => {
   init({
     dsn: 'https://32152968271f46afa0efa8608b252e42@o4505452714786816.ingest.sentry.io/4505452716556288',
@@ -36,59 +34,39 @@ function ErrorFallback({
   componentStack: string;
   resetError: () => void;
 }) {
-  const userAgent = navigator.userAgent;
   return (
-    <div role='alert'>
-      <h1>Something went wrong</h1>
-      <b>User Agent:</b>
-      <pre>{userAgent}</pre>
-      <b>Error message:</b>
-      <pre>{`${error}`}</pre>
-      <b>Stack trace:</b>
-      <pre>{componentStack}</pre>
-      <button onClick={resetError}>Try again</button>
-      <button
-        onClick={() => {
-          const body =
-            'URL: ' +
-            window.location.href +
-            '%0D%0A%0D%0A' +
-            'User Agent: ' +
-            userAgent +
-            '%0D%0A%0D%0A' +
-            'Error: ' +
-            error +
-            '%0D%0A%0D%0A' +
-            'Stack trace:%0D%0A' +
-            componentStack;
-          const link =
-            'mailto:jostein.oygarden@gmail.com' +
-            '?subject=Buldreinfo/Brattelinjer-error' +
-            '&body=' +
-            body;
-          window.location.href = link;
-        }}
-      >
-        Send error to administrator as email
-      </button>
+    <div
+      role='alert'
+      className='min-h-screen bg-stone-950 text-stone-600 p-6 flex flex-col items-center justify-center font-sans'
+    >
+      <div className='max-w-3xl w-full bg-stone-900 border border-stone-800 rounded-stone p-8 shadow-2xl'>
+        <h1 className='text-3xl font-bold text-white mb-2'>Something went wrong</h1>
+        <div className='space-y-4 text-xs font-mono bg-stone-950 p-4 rounded-stone border border-stone-800 overflow-auto max-h-96'>
+          <div>
+            <span className='text-brand font-bold'>Error:</span> {`${error}`}
+          </div>
+          <pre className='mt-2 opacity-80'>{componentStack}</pre>
+        </div>
+        <button
+          onClick={resetError}
+          className='mt-8 px-6 py-2 bg-brand hover:bg-brand/90 text-white font-bold rounded-stone transition-colors'
+        >
+          Try again
+        </button>
+      </div>
     </div>
   );
 }
 
 export const Auth0ProviderWithNavigate = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
-  const domain = 'climbing.eu.auth0.com';
-  const clientId = 'DNJNVzhxbF7PtaBFh7H6iBSNLh2UJWHt';
   const onRedirectCallback = (appState?: { returnTo?: string } | null) => {
     navigate(appState?.returnTo || window.location.pathname);
   };
-  if (!(domain && clientId)) {
-    return null;
-  }
   return (
     <Auth0Provider
-      domain={domain}
-      clientId={clientId}
+      domain='climbing.eu.auth0.com'
+      clientId='DNJNVzhxbF7PtaBFh7H6iBSNLh2UJWHt'
       authorizationParams={{
         redirect_uri: window.location.origin,
         audience: 'https://buldreinfo.com',
@@ -105,23 +83,21 @@ export const Auth0ProviderWithNavigate = ({ children }: { children: ReactNode })
 };
 
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 60 * 24, // 24 hours
-    },
-  },
+  defaultOptions: { queries: { staleTime: 1000 * 60 * 60 * 24 } },
 });
 
 const Index = () => (
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
-      <ErrorBoundary fallback={ErrorFallback} onReset={() => window.location.reload()}>
-        <DataReloader>
-          <Auth0ProviderWithNavigate>
-            <App />
-          </Auth0ProviderWithNavigate>
-        </DataReloader>
-      </ErrorBoundary>
+      <div className='dark min-h-screen bg-stone-950 text-stone-600 font-sans selection:bg-brand/30'>
+        <ErrorBoundary fallback={ErrorFallback} onReset={() => window.location.reload()}>
+          <DataReloader>
+            <Auth0ProviderWithNavigate>
+              <App />
+            </Auth0ProviderWithNavigate>
+          </DataReloader>
+        </ErrorBoundary>
+      </div>
     </BrowserRouter>
     {APP_ENV === 'development' && (
       <Suspense fallback={null}>

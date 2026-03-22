@@ -4,11 +4,9 @@ import {
   useRef,
   useCallback,
   type MouseEventHandler,
-  type ReactNode,
   useReducer,
 } from 'react';
-import { Container, Button, Segment, Dropdown, Input, Icon, Divider } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useMeta } from '../common/meta';
 import {
   type EditableSvg,
@@ -17,37 +15,42 @@ import {
   useAccessToken,
   useSvgEdit,
 } from '../../api';
-import { parseReadOnlySvgs, parsePath, isCubicPoint } from '../../utils/svg-helpers';
+import {
+  parseReadOnlySvgs,
+  parsePath,
+  isCubicPoint,
+  type ParsedEntry,
+} from '../../utils/svg-helpers';
 import { Loading } from '../common/widgets/widgets';
-import { useNavigate, useParams } from 'react-router-dom';
 import { captureException } from '@sentry/react';
 import { generatePath, reducer, type State } from './state';
 import { neverGuard } from '../../utils/neverGuard';
 import type { MediaRegion } from '../../utils/svg-scaler';
+import {
+  Video,
+  RotateCcw,
+  X,
+  Save,
+  Type,
+  Anchor,
+  Triangle,
+  Square,
+  CheckSquare,
+  RefreshCw,
+  Loader2,
+  Settings2,
+} from 'lucide-react';
+import { cn } from '../../lib/utils';
 
-const useIds = (): {
-  problemId: number;
-  pitch: number;
-  mediaId: number;
-} => {
+type Coords = { x: number; y: number };
+
+const useIds = (): { problemId: number; pitch: number; mediaId: number } => {
   const { problemId, pitch, mediaId } = useParams();
-  if (!problemId) {
-    throw new Error('Missing problemId param');
-  }
-  if (!pitch) {
-    throw new Error('Missing pitch param');
-  }
-  if (!mediaId) {
-    throw new Error('Missing mediaId param');
-  }
-  return {
-    problemId: +problemId,
-    pitch: +pitch,
-    mediaId: +mediaId,
-  };
+  if (!problemId || !pitch || !mediaId) throw new Error('Missing route parameters');
+  return { problemId: +problemId, pitch: +pitch, mediaId: +mediaId };
 };
 
-const SvgEditLoader = () => {
+export const SvgEditLoader = () => {
   const { problemId, pitch, mediaId } = useIds();
   const [customMediaRegion, setCustomMediaRegion] = useState<MediaRegion | null>(null);
   const data = useSvgEdit(problemId, pitch, mediaId, customMediaRegion);
@@ -55,11 +58,14 @@ const SvgEditLoader = () => {
   const [saving, setSaving] = useState(false);
   const navigate = useNavigate();
 
-  const save: Props['onSave'] = useCallback(
-    ({ path, hasAnchor, anchors, tradBelayStations, texts }) => {
+  const save = useCallback(
+    (
+      updated: Required<
+        Pick<EditableSvg, 'path' | 'hasAnchor' | 'anchors' | 'tradBelayStations' | 'texts'>
+      >,
+    ) => {
       setSaving(true);
-
-      const correctPoints = parsePath(path ?? '', data?.mediaRegion ?? undefined);
+      const correctPoints = parsePath(updated.path ?? '', data?.mediaRegion ?? undefined);
       const correctPathTxt = generatePath(correctPoints);
 
       return postProblemSvg(
@@ -70,14 +76,13 @@ const SvgEditLoader = () => {
         correctPoints.length < 2,
         data?.svgId ?? 0,
         correctPathTxt,
-        hasAnchor,
-        JSON.stringify(anchors),
-        JSON.stringify(tradBelayStations),
-        JSON.stringify(texts),
+        updated.hasAnchor,
+        JSON.stringify(updated.anchors),
+        JSON.stringify(updated.tradBelayStations),
+        JSON.stringify(updated.texts),
       )
         .then(() => {
           if (pitch > 0) {
-            // Drawing pitches on image
             navigate(0);
           } else {
             navigate(`/problem/${problemId}`);
@@ -85,30 +90,14 @@ const SvgEditLoader = () => {
         })
         .catch((error) => {
           console.warn(error);
-          captureException(error, {
-            extra: {
-              updated: { path, hasAnchor, anchors, tradBelayStations, texts },
-            },
-          });
+          captureException(error);
         })
-        .finally(() => {
-          setSaving(false);
-        });
+        .finally(() => setSaving(false));
     },
     [accessToken, problemId, pitch, mediaId, data?.svgId, data?.mediaRegion, navigate],
   );
 
-  const onCancel = useCallback(() => {
-    navigate(`/problem/${problemId}`);
-  }, [navigate, problemId]);
-
-  const onUpdateMediaRegion = (mediaRegion: MediaRegion | null) => {
-    setCustomMediaRegion(mediaRegion);
-  };
-
-  if (!data) {
-    return <Loading />;
-  }
+  if (!data) return <Loading />;
 
   return (
     <SvgEdit
@@ -118,31 +107,13 @@ const SvgEditLoader = () => {
       sections={data.sections ?? []}
       onSave={save}
       saving={saving}
-      onCancel={onCancel}
-      onUpdateMediaRegion={onUpdateMediaRegion}
+      onCancel={() => navigate(`/problem/${problemId}`)}
+      onUpdateMediaRegion={setCustomMediaRegion}
     />
   );
 };
 
-type Props = Pick<
-  EditableSvg,
-  | 'svgId'
-  | 'problemId'
-  | 'pitch'
-  | 'mediaId'
-  | 'mediaWidth'
-  | 'mediaHeight'
-  | 'mediaRegion'
-  | 'sections'
-  | 'versionStamp'
-  | 'anchors'
-  | 'hasAnchor'
-  | 'nr'
-  | 'path'
-  | 'texts'
-  | 'tradBelayStations'
-  | 'readOnlySvgs'
-> & {
+type Props = EditableSvg & {
   onSave: (
     updated: Required<
       Pick<EditableSvg, 'path' | 'hasAnchor' | 'anchors' | 'tradBelayStations' | 'texts'>
@@ -154,43 +125,21 @@ type Props = Pick<
 };
 
 const black = '#000000';
-const stroke = '#FFFFFF';
-
-type Coords = { x: number; y: number };
-
-const useMinWindowScale = () => {
-  const [minWindowScale, setMinWindowScale] = useState(
-    Math.min(window.outerWidth, window.outerHeight),
-  );
-
-  useEffect(() => {
-    const onResize = () => {
-      const min = Math.min(window.outerWidth, window.outerHeight);
-      setMinWindowScale(min);
-    };
-
-    window.addEventListener('resize', onResize);
-    return () => {
-      window.removeEventListener('resize', onResize);
-    };
-  }, []);
-
-  return minWindowScale;
-};
+const strokeColor = '#FFFFFF';
 
 export const SvgEdit = ({
   saving,
   onSave,
   onCancel,
   onUpdateMediaRegion,
-  problemId,
-  pitch,
+  problemId: _pId,
+  pitch: _pi,
   mediaId,
   versionStamp,
   mediaWidth,
   mediaHeight,
   mediaRegion,
-  sections,
+  sections: _s,
   path: initialPath,
   readOnlySvgs,
   tradBelayStations: initialTradBelayStations,
@@ -198,18 +147,12 @@ export const SvgEdit = ({
   texts: initialTexts,
   hasAnchor: initialHasAnchor,
 }: Props) => {
-  const [customMediaRegion, setCustomMediaRegion] = useState<MediaRegion | undefined>(
-    mediaRegion ?? undefined,
-  );
+  const [customMediaRegion, setCustomMediaRegion] = useState<MediaRegion | undefined>(mediaRegion);
   const w = (mediaRegion ?? customMediaRegion)?.width || mediaWidth;
   const h = (mediaRegion ?? customMediaRegion)?.height || mediaHeight;
-  const navigate = useNavigate();
+  const meta = useMeta();
+  const imageRef = useRef<SVGImageElement>(null);
   const shift = useRef(false);
-
-  const refresh = (problemId: number, pitch: number, mediaId: number) => {
-    onUpdateMediaRegion(null);
-    navigate(`/problem/svg-edit/${problemId}/${pitch}/${mediaId}`);
-  };
 
   const readOnlyPointsRef = useRef(
     (readOnlySvgs ?? [])
@@ -217,64 +160,48 @@ export const SvgEdit = ({
       .flat(),
   );
 
-  const [{ path, points, activePoint }, dispatch] = useReducer(
+  const [state, dispatch] = useReducer(
     reducer,
     {
       mode: 'idle' as State['mode'],
       activePoint: 0,
-      points: [],
+      points: [] as ParsedEntry[],
       path: initialPath,
       otherPoints: readOnlyPointsRef.current.reduce(
-        (acc, p) => ({ ...acc, [`${p.x}x${p.y}`]: p }),
+        (acc: Record<string, ParsedEntry & { ix: number }>, p: ParsedEntry & { ix: number }) => ({
+          ...acc,
+          [`${p.x}x${p.y}`]: p,
+        }),
         {},
       ),
     },
-    ({ path, ...rest }) => {
-      const points = parsePath(path);
+    (init): State => {
+      const pnts = parsePath(init.path);
       return {
-        ...rest,
-        path,
-        points,
-        activePoint: Math.max(0, points.length - 1),
+        ...init,
+        points: pnts,
+        activePoint: Math.max(0, pnts.length - 1),
+        mode: 'idle' as const,
       };
     },
   );
 
-  const [anchors, setAnchors] = useState<EditableSvg['anchors']>(initialAnchors ?? []);
-  const [tradBelayStations, setTradBelayStations] = useState<EditableSvg['tradBelayStations']>(
+  const { path, points, activePoint } = state;
+
+  const [anchors, setAnchors] = useState<Coords[]>(initialAnchors ?? []);
+  const [tradBelayStations, setTradBelayStations] = useState<Coords[]>(
     initialTradBelayStations ?? [],
   );
-  const [texts, setTexts] = useState<EditableSvg['texts']>(initialTexts ?? []);
-
+  const [texts, setTexts] = useState<{ txt: string; x: number; y: number }[]>(initialTexts ?? []);
   const [hasAnchor, setHasAnchor] = useState(!!initialHasAnchor);
   const [mode, setMode] = useState<'points' | 'add-anchor' | 'add-text' | 'add-trad-belay'>(
     'points',
-  );
-  const imageRef = useRef<SVGImageElement>(null);
-
-  const minWindowScale = useMinWindowScale();
-
-  const meta = useMeta();
-
-  const save: MouseEventHandler = useCallback(
-    (event) => {
-      event.preventDefault();
-      onSave({
-        anchors,
-        hasAnchor,
-        path,
-        tradBelayStations,
-        texts,
-      });
-    },
-    [anchors, hasAnchor, onSave, path, texts, tradBelayStations],
   );
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       shift.current = e.shiftKey;
     };
-
     document.addEventListener('keydown', handleKey);
     document.addEventListener('keyup', handleKey);
     return () => {
@@ -283,524 +210,309 @@ export const SvgEdit = ({
     };
   }, []);
 
-  const cancelDragging = useCallback(() => {
-    dispatch({ action: 'idle' });
-  }, []);
-
   const getMouseCoords = useCallback(
-    (e: Pick<MouseEvent, 'clientX' | 'clientY'>, snapToClosePoint: boolean): Coords => {
+    (e: React.MouseEvent, snap: boolean): Coords => {
       const dim = imageRef.current?.getBoundingClientRect();
-      if (!dim) {
-        return { x: 0, y: 0 };
-      }
-
-      const dx = w / dim.width;
-      const dy = h / dim.height;
-      const x = Math.round((e.clientX - dim.left) * dx);
-      const y = Math.round((e.clientY - dim.top) * dy);
+      if (!dim) return { x: 0, y: 0 };
+      const x = Math.round((e.clientX - dim.left) * (w / dim.width));
+      const y = Math.round((e.clientY - dim.top) * (h / dim.height));
       let p = { x, y };
-
-      const readOnlyPoints = readOnlyPointsRef.current;
-      if (snapToClosePoint) {
-        const foundPoint = readOnlyPoints?.find((p2) => Math.hypot(p.x - p2.x, p.y - p2.y) < 20);
-        if (foundPoint) {
-          p = { x: foundPoint.x, y: foundPoint.y };
-        }
+      if (snap) {
+        const found = readOnlyPointsRef.current.find(
+          (p2) => Math.hypot(p.x - p2.x, p.y - p2.y) < 20,
+        );
+        if (found) p = { x: found.x, y: found.y };
       }
-
       return p;
     },
     [w, h],
   );
 
-  const handleOnClick: MouseEventHandler = useCallback(
-    (e) => {
-      e.preventDefault();
-      switch (mode) {
-        case 'points': {
-          if (shift.current) {
-            const { x, y } = getMouseCoords(e, true);
-            dispatch({ action: 'add-point', x, y });
-          }
-          dispatch({ action: 'mouse-up' });
-          break;
-        }
-
-        case 'add-text': {
-          const coords = getMouseCoords(e, false);
-          const txt = prompt('Enter text', '');
-          if (txt) {
-            texts.push({ txt, x: coords.x, y: coords.y });
-            setTexts(texts);
-          }
-          setMode('points');
-          break;
-        }
-
-        case 'add-anchor': {
-          const coords = getMouseCoords(e, true);
-          anchors.push(coords);
-          setAnchors(anchors);
-          setMode('points');
-          break;
-        }
-
-        case 'add-trad-belay': {
-          const coords = getMouseCoords(e, true);
-          tradBelayStations.push(coords);
-          setTradBelayStations(tradBelayStations);
-          setMode('points');
-          break;
-        }
-
-        default: {
-          neverGuard(mode, null);
-          break;
-        }
+  const handleOnClick: MouseEventHandler = (e) => {
+    if (mode === 'points') {
+      if (shift.current) {
+        const coords = getMouseCoords(e, true);
+        dispatch({ action: 'add-point', ...coords });
       }
-    },
-    [anchors, getMouseCoords, mode, texts, tradBelayStations],
-  );
+      dispatch({ action: 'mouse-up' });
+    } else {
+      const coords = getMouseCoords(e, mode !== 'add-text');
+      if (mode === 'add-text') {
+        const txt = prompt('Enter text', '');
+        if (txt) setTexts([...texts, { txt, ...coords }]);
+        setMode('points');
+      } else if (mode === 'add-anchor') {
+        setAnchors([...anchors, coords]);
+        setMode('points');
+      } else if (mode === 'add-trad-belay') {
+        setTradBelayStations([...tradBelayStations, coords]);
+        setMode('points');
+      } else {
+        neverGuard(mode as never, null);
+      }
+    }
+  };
 
-  const handleMouseMove: MouseEventHandler = useCallback(
-    (e) => {
-      e.preventDefault();
-      const { x, y } = getMouseCoords(e, true);
-      dispatch({ action: 'mouse-move', x, y });
-    },
-    [getMouseCoords],
-  );
-
-  const handleMouseUp: MouseEventHandler = useCallback((e) => {
-    // Remove selection caused by shift-button used to create new points
-    document.getSelection()?.removeAllRanges();
-    e.preventDefault();
-    dispatch({ action: 'mouse-up' });
-    return false;
-  }, []);
-
-  const setPointType = useCallback((pointType: string) => {
-    dispatch({
-      action: 'set-type',
-      type: pointType === 'C' ? 'curve' : 'line',
-    });
-  }, []);
-
-  const removeActivePoint = useCallback(() => {
-    dispatch({ action: 'remove-point' });
-  }, []);
-
-  const reset = useCallback(() => {
-    shift.current = false;
-    dispatch({ action: 'reset' });
-    setMode('points');
-    setAnchors([]);
-    setTradBelayStations([]);
-    setTexts([]);
-    setHasAnchor(true);
-  }, []);
-
-  const circles = points.map((p, i, a) => {
-    const handle: ReactNode = isCubicPoint(p) ? (
-      <g className='buldreinfo-svg-edit-opacity'>
-        <line
-          className={'buldreinfo-svg-pointer'}
-          style={{ fill: 'none', stroke: black }}
-          x1={a[i - 1].x}
-          y1={a[i - 1].y}
-          x2={p.c[0].x}
-          y2={p.c[0].y}
-          strokeWidth={0.003 * w}
-          strokeDasharray={0.003 * w}
-        />
-        <line
-          className={'buldreinfo-svg-pointer'}
-          style={{ fill: 'none', stroke: black }}
-          x1={p.x}
-          y1={p.y}
-          x2={p.c[1].x}
-          y2={p.c[1].y}
-          strokeWidth={0.003 * w}
-          strokeDasharray={0.003 * w}
-        />
-        <circle
-          className={'buldreinfo-svg-pointer'}
-          fill={black}
-          cx={p.c[0].x}
-          cy={p.c[0].y}
-          r={0.003 * w}
-          onMouseDown={() => dispatch({ action: 'drag-cubic', index: i, c: 0 })}
-        />
-        <circle
-          className={'buldreinfo-svg-pointer'}
-          fill={black}
-          cx={p.c[1].x}
-          cy={p.c[1].y}
-          r={0.003 * w}
-          onMouseDown={() => dispatch({ action: 'drag-cubic', index: i, c: 1 })}
-        />
-
-        <line
-          className={'buldreinfo-svg-pointer'}
-          style={{ fill: 'none', stroke: stroke }}
-          x1={a[i - 1].x}
-          y1={a[i - 1].y}
-          x2={p.c[0].x}
-          y2={p.c[0].y}
-          strokeWidth={0.0015 * w}
-          strokeDasharray={0.003 * w}
-        />
-        <line
-          className={'buldreinfo-svg-pointer'}
-          style={{ fill: 'none', stroke: stroke }}
-          x1={p.x}
-          y1={p.y}
-          x2={p.c[1].x}
-          y2={p.c[1].y}
-          strokeWidth={0.0015 * w}
-          strokeDasharray={0.003 * w}
-        />
-        <circle
-          className={'buldreinfo-svg-pointer'}
-          fill={stroke}
-          cx={p.c[0].x}
-          cy={p.c[0].y}
-          r={0.002 * w}
-          onMouseDown={() => dispatch({ action: 'drag-cubic', index: i, c: 0 })}
-        />
-        <circle
-          className={'buldreinfo-svg-pointer'}
-          fill={stroke}
-          cx={p.c[1].x}
-          cy={p.c[1].y}
-          r={0.002 * w}
-          onMouseDown={() => dispatch({ action: 'drag-cubic', index: i, c: 1 })}
-        />
-      </g>
-    ) : null;
-
-    const fill = activePoint === i ? '#00FF00' : '#FF0000';
-    return (
-      <g key={[p.x, p.y, i].join('x')}>
-        {handle}
-        <circle
-          className={'buldreinfo-svg-pointer'}
-          fill={fill}
-          stroke={black}
-          strokeWidth={Math.min(1, 0.001 * w)}
-          cx={p.x}
-          cy={p.y}
-          r={0.005 * w}
-          onMouseDown={() => dispatch({ action: 'drag-point', index: i })}
-        />
-      </g>
-    );
-  });
+  const btnClass =
+    'flex items-center gap-2 px-3 py-1.5 rounded-md text-[10px] font-black uppercase tracking-widest transition-all border disabled:opacity-30';
+  const activeBtn = 'bg-brand border-brand text-white shadow-sm';
+  const inactiveBtn = 'bg-surface-nav border-surface-border text-slate-400 hover:text-white';
 
   return (
-    <Container onMouseUp={cancelDragging} onMouseLeave={cancelDragging}>
-      <Segment size='mini'>
-        <Button.Group size='mini' floated='right'>
-          <Button
-            primary
-            as={Link}
-            to='/mp4/20230718_SvgEditExample.mp4'
-            target='_blank'
-            rel='noopener noreferrer'
-          >
-            Example-video
-          </Button>
-          <Button.Or />
-          <Button
-            negative
-            disabled={
-              points.length === 0 &&
-              anchors.length === 0 &&
-              tradBelayStations.map((a) => {
-                const r = 0.006 * w;
-                return (
-                  <polygon
-                    points={`${a.x},${a.y - r}, ${a.x - r},${a.y + r}, ${a.x + r},${a.y + r}`}
-                    key={[a.x, a.y].join('x')}
-                    fill='#E2011A'
-                  />
-                );
-              }).length === 0 &&
-              texts.map((text) => (
-                <text
-                  key={[text.x, text.y].join('x')}
-                  x={text.x}
-                  y={text.y}
-                  fontSize='5em'
-                  fill={'red'}
-                >
-                  {text.txt}
-                </text>
-              )).length === 0
-            }
-            onClick={reset}
-          >
-            Reset
-          </Button>
-          <Button.Or />
-          <Button onClick={onCancel}>Cancel</Button>
-          <Button.Or />
-          <Button positive loading={saving} onClick={save}>
-            Save
-          </Button>
-        </Button.Group>
-        <Button.Group size='mini'>
-          <Button
-            onClick={() => setMode((val) => (val === 'add-text' ? 'points' : 'add-text'))}
-            toggle
-            active={mode === 'add-text'}
-            disabled={pitch !== 0}
-          >
-            Text
-          </Button>
-          <Button.Or />
-          <Button
-            icon='trash'
-            negative={
-              texts.map((text) => (
-                <text
-                  key={[text.x, text.y].join('x')}
-                  x={text.x}
-                  y={text.y}
-                  fontSize='5em'
-                  fill={'red'}
-                >
-                  {text.txt}
-                </text>
-              )).length !== 0
-            }
-            disabled={
-              texts.map((text) => (
-                <text
-                  key={[text.x, text.y].join('x')}
-                  x={text.x}
-                  y={text.y}
-                  fontSize='5em'
-                  fill={'red'}
-                >
-                  {text.txt}
-                </text>
-              )).length === 0
-            }
-            onClick={() => setTexts([])}
-          />
-        </Button.Group>
-        {meta.isClimbing && (
-          <>
-            {' '}
-            <Button.Group size='mini'>
-              <Button
-                onClick={() => setMode((val) => (val === 'add-anchor' ? 'points' : 'add-anchor'))}
-                toggle
-                active={mode === 'add-anchor'}
-                disabled={pitch !== 0}
-              >
-                Extra anchors
-              </Button>
-              <Button.Or />
-              <Button
-                icon='trash'
-                negative={anchors.length !== 0}
-                disabled={anchors.length === 0}
-                onClick={() => setAnchors([])}
-              />
-            </Button.Group>{' '}
-            <Button.Group size='mini'>
-              <Button
-                onClick={() =>
-                  setMode((val) => (val === 'add-trad-belay' ? 'points' : 'add-trad-belay'))
-                }
-                toggle
-                active={mode === 'add-trad-belay'}
-                disabled={pitch !== 0}
-              >
-                Trad belay stations
-              </Button>
-              <Button.Or />
-              <Button
-                icon='trash'
-                negative={tradBelayStations.length !== 0}
-                disabled={tradBelayStations.length === 0}
-                onClick={() => setTradBelayStations([])}
-              />
-            </Button.Group>{' '}
-            <Button
-              icon
-              labelPosition='left'
-              size='mini'
+    <div className='max-w-6xl mx-auto space-y-4 p-4' onMouseUp={() => dispatch({ action: 'idle' })}>
+      <div className='bg-surface-card border border-surface-border rounded-xl p-4 shadow-sm space-y-4'>
+        <title>{`SvgEdit | ${meta.title}`}</title>
+        <div className='flex flex-wrap items-center justify-between gap-4'>
+          <div className='flex flex-wrap gap-2'>
+            <button
+              type='button'
+              className={cn(btnClass, mode === 'add-text' ? activeBtn : inactiveBtn)}
+              onClick={() => setMode(mode === 'add-text' ? 'points' : 'add-text')}
+            >
+              <Type size={14} /> Text
+            </button>
+            <button
+              type='button'
+              className={cn(btnClass, mode === 'add-anchor' ? activeBtn : inactiveBtn)}
+              onClick={() => setMode(mode === 'add-anchor' ? 'points' : 'add-anchor')}
+            >
+              <Anchor size={14} /> Anchors
+            </button>
+            <button
+              type='button'
+              className={cn(btnClass, mode === 'add-trad-belay' ? activeBtn : inactiveBtn)}
+              onClick={() => setMode(mode === 'add-trad-belay' ? 'points' : 'add-trad-belay')}
+            >
+              <Triangle size={14} /> Trad Belay
+            </button>
+            <button
+              type='button'
+              className={cn(btnClass, inactiveBtn)}
               onClick={() => setHasAnchor(!hasAnchor)}
               disabled={points.length === 0}
             >
-              <Icon name={hasAnchor ? 'check square outline' : 'square outline'} />
+              {hasAnchor ? <CheckSquare size={14} className='text-brand' /> : <Square size={14} />}{' '}
               Anchor
-            </Button>
-            {meta.isClimbing && sections?.length > 1 && (
-              <Dropdown
-                selection
-                value={pitch}
-                onChange={(_, { value }) => {
-                  const v = value ? Number(value) : 0;
-                  refresh(problemId, v, mediaId);
-                }}
-                options={[
-                  { key: -1, value: 0, text: 'Entire route' },
-                  ...sections.map((s, i) => ({
-                    key: i,
-                    value: s.nr,
-                    text: 'Pitch ' + s.nr,
-                  })),
-                ]}
-              />
-            )}
-          </>
-        )}
-        <br />
-        <strong>SHIFT + CLICK</strong> to add a point | <strong>CLICK</strong> to select a point |{' '}
-        <strong>CLICK AND DRAG</strong> to move a point
-        <br />
-        {activePoint !== 0 && (
-          <Dropdown
-            selection
-            value={isCubicPoint(points[activePoint]) ? 'C' : 'L'}
-            onChange={(_, { value }) => setPointType(value ? String(value) : '')}
-            options={[
-              { key: 1, value: 'L', text: 'Selected point: Line to' },
-              { key: 2, value: 'C', text: 'Selected point: Curve to' },
-            ]}
-          />
-        )}
-        <Button size='mini' disabled={!points || points.length === 0} onClick={removeActivePoint}>
-          Remove this point
-        </Button>
-        {pitch != 0 && (
-          <>
-            <Divider horizontal>Image region</Divider>
-            <Input
-              size='mini'
-              label='x'
-              value={customMediaRegion?.x}
-              onChange={(_, { value }) =>
-                setCustomMediaRegion((prevState) => ({
-                  ...(prevState ?? { x: 0, y: 0, width: 1920, height: 1080 }),
-                  x: Math.min(+value || 0, mediaWidth - 1920),
-                }))
-              }
-            />
-            <Input
-              size='mini'
-              label='y'
-              value={customMediaRegion?.y}
-              onChange={(_, { value }) =>
-                setCustomMediaRegion((prevState) => ({
-                  ...(prevState ?? { x: 0, y: 0, width: 1920, height: 1080 }),
-                  y: Math.min(+value || 0, mediaHeight - 1080),
-                }))
-              }
-            />
-            <Input
-              size='mini'
-              label='width'
-              value={customMediaRegion?.width}
-              onChange={(_, { value }) =>
-                setCustomMediaRegion((prevState) => ({
-                  ...(prevState ?? { x: 0, y: 0, width: 1920, height: 1080 }),
-                  width: Math.min(
-                    +value || 1920,
-                    mediaWidth - ((prevState ?? { x: 0 }).x || 0),
-                    3000,
-                  ),
-                }))
-              }
-            />
-            <Input
-              size='mini'
-              label='height'
-              value={customMediaRegion?.height}
-              onChange={(_, { value }) =>
-                setCustomMediaRegion((prevState) => ({
-                  ...(prevState ?? { x: 0, y: 0, width: 1920, height: 1080 }),
-                  height: Math.min(
-                    +value || 1080,
-                    mediaHeight - ((prevState ?? { y: 0 }).y || 0),
-                    4000,
-                  ),
-                }))
-              }
-            />
-            {customMediaRegion &&
-              (mediaRegion
-                ? JSON.stringify(customMediaRegion) !== JSON.stringify(mediaRegion)
-                : true) && (
-                <>
-                  {' '}
-                  <Button
-                    size='mini'
-                    positive
-                    circular
-                    icon
-                    onClick={() => onUpdateMediaRegion(customMediaRegion ?? null)}
-                  >
-                    <Icon name='refresh' />
-                  </Button>
-                </>
+            </button>
+            <button
+              type='button'
+              className={cn(
+                btnClass,
+                'text-orange-500 border-orange-500/20 hover:bg-orange-500/10',
               )}
-          </>
-        )}
-      </Segment>
+              onClick={() => {
+                setTexts([]);
+                setAnchors([]);
+                setTradBelayStations([]);
+                dispatch({ action: 'reset' });
+              }}
+            >
+              <RotateCcw size={14} /> Reset
+            </button>
+          </div>
 
-      <svg
-        viewBox={'0 0 ' + w + ' ' + h}
-        onClick={handleOnClick}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        width='100%'
-        height='100%'
-      >
-        <image
-          ref={imageRef}
-          xlinkHref={getMediaFileUrl(mediaId, versionStamp, false, { mediaRegion })}
-          width='100%'
-          height='100%'
-        />
-        {parseReadOnlySvgs(readOnlySvgs, w, h, minWindowScale)}
-        <path style={{ fill: 'none', stroke: black }} d={path} strokeWidth={0.003 * w} />
-        <path style={{ fill: 'none', stroke: '#FF0000' }} d={path} strokeWidth={0.002 * w} />
-        {circles}
-        {anchors.map((a) => (
-          <circle key={[a.x, a.y].join('x')} fill='#E2011A' cx={a.x} cy={a.y} r={0.006 * w} />
-        ))}
-        {texts.map((text) => (
-          <text key={[text.x, text.y].join('x')} x={text.x} y={text.y} fontSize='5em' fill={'red'}>
-            {text.txt}
-          </text>
-        ))}
-        {tradBelayStations.map((a) => {
-          const r = 0.006 * w;
-          return (
-            <polygon
-              points={`${a.x},${a.y - r}, ${a.x - r},${a.y + r}, ${a.x + r},${a.y + r}`}
-              key={[a.x, a.y].join('x')}
-              fill='#E2011A'
+          <div className='flex gap-2'>
+            <Link
+              to='/mp4/20230718_SvgEditExample.mp4'
+              target='_blank'
+              className={cn(
+                btnClass,
+                'bg-blue-600/10 border-blue-600/20 text-blue-400 hover:bg-blue-600/20',
+              )}
+            >
+              <Video size={14} /> Video
+            </Link>
+            <button
+              type='button'
+              className={cn(btnClass, 'bg-brand border-brand text-white shadow-lg shadow-brand/20')}
+              disabled={saving}
+              onClick={() => onSave({ anchors, hasAnchor, path, tradBelayStations, texts })}
+            >
+              {saving ? <Loader2 size={14} className='animate-spin' /> : <Save size={14} />} Save
+            </button>
+            <button
+              type='button'
+              className={cn(btnClass, 'bg-red-600/10 border-red-600/20 text-red-400')}
+              onClick={onCancel}
+            >
+              <X size={14} />
+            </button>
+          </div>
+        </div>
+
+        <div className='flex flex-wrap items-center gap-4 py-2 border-t border-surface-border'>
+          {activePoint !== 0 && (
+            <div className='flex items-center gap-2'>
+              <span className='text-[10px] text-slate-500 font-black uppercase'>Segment Type:</span>
+              <select
+                className='bg-surface-nav border border-surface-border rounded px-2 py-1 text-[10px] text-white outline-none'
+                value={isCubicPoint(points[activePoint]) ? 'C' : 'L'}
+                onChange={(e) =>
+                  dispatch({ action: 'set-type', type: e.target.value === 'C' ? 'curve' : 'line' })
+                }
+              >
+                <option value='L'>Line</option>
+                <option value='C'>Curve</option>
+              </select>
+            </div>
+          )}
+          <button
+            type='button'
+            className={cn(btnClass, 'py-1 px-2')}
+            disabled={points.length === 0}
+            onClick={() => dispatch({ action: 'remove-point' })}
+          >
+            Remove Selected Point
+          </button>
+
+          <div className='ml-auto flex items-center gap-2'>
+            <Settings2 size={14} className='text-slate-500' />
+            <input
+              type='number'
+              className='w-16 bg-surface-nav border border-surface-border rounded px-2 py-1 text-[10px] text-white'
+              placeholder='X'
+              value={customMediaRegion?.x ?? 0}
+              onChange={(e) =>
+                setCustomMediaRegion((prev) => ({
+                  ...(prev ?? { y: 0, width: w, height: h, x: 0 }),
+                  x: +e.target.value,
+                }))
+              }
             />
-          );
-        })}
-      </svg>
-      <br />
-      <Input
-        label='SVG Path:'
-        fluid
-        placeholder='SVG Path'
-        value={path || ''}
-        onChange={(_, { value }) => {
-          dispatch({ action: 'update-path', path: value ?? '' });
-        }}
-      />
-    </Container>
+            <input
+              type='number'
+              className='w-16 bg-surface-nav border border-surface-border rounded px-2 py-1 text-[10px] text-white'
+              placeholder='Y'
+              value={customMediaRegion?.y ?? 0}
+              onChange={(e) =>
+                setCustomMediaRegion((prev) => ({
+                  ...(prev ?? { x: 0, width: w, height: h, y: 0 }),
+                  y: +e.target.value,
+                }))
+              }
+            />
+            <button
+              type='button'
+              className={cn(btnClass, 'py-1 px-2')}
+              onClick={() => onUpdateMediaRegion(customMediaRegion ?? null)}
+            >
+              <RefreshCw size={12} /> Crop
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className='relative rounded-xl overflow-hidden border border-surface-border bg-black select-none cursor-crosshair'>
+        <svg
+          viewBox={`0 0 ${w} ${h}`}
+          onClick={handleOnClick}
+          onMouseMove={(e) => dispatch({ action: 'mouse-move', ...getMouseCoords(e, true) })}
+          className='w-full h-auto block'
+        >
+          <image
+            ref={imageRef}
+            xlinkHref={getMediaFileUrl(mediaId, versionStamp, false, { mediaRegion })}
+            width='100%'
+            height='100%'
+          />
+          {parseReadOnlySvgs(readOnlySvgs, w, h, 1000)}
+          <path d={path} fill='none' stroke={black} strokeWidth={0.003 * w} />
+          <path d={path} fill='none' stroke='#FF0000' strokeWidth={0.002 * w} />
+
+          {points.map((p, i) => {
+            const handles = isCubicPoint(p) && (
+              <g className='opacity-50'>
+                <line
+                  x1={points[i - 1].x}
+                  y1={points[i - 1].y}
+                  x2={p.c[0].x}
+                  y2={p.c[0].y}
+                  stroke={strokeColor}
+                  strokeWidth={0.001 * w}
+                  strokeDasharray='5,5'
+                />
+                <line
+                  x1={p.x}
+                  y1={p.y}
+                  x2={p.c[1].x}
+                  y2={p.c[1].y}
+                  stroke={strokeColor}
+                  strokeWidth={0.001 * w}
+                  strokeDasharray='5,5'
+                />
+                <circle
+                  cx={p.c[0].x}
+                  cy={p.c[0].y}
+                  r={0.003 * w}
+                  fill={strokeColor}
+                  onMouseDown={(e) => {
+                    e.stopPropagation();
+                    dispatch({ action: 'drag-cubic', index: i, c: 0 });
+                  }}
+                />
+                <circle
+                  cx={p.c[1].x}
+                  cy={p.c[1].y}
+                  r={0.003 * w}
+                  fill={strokeColor}
+                  onMouseDown={(e) => {
+                    e.stopPropagation();
+                    dispatch({ action: 'drag-cubic', index: i, c: 1 });
+                  }}
+                />
+              </g>
+            );
+            return (
+              <g key={`${p.x}-${p.y}-${i}`}>
+                {handles}
+                <circle
+                  cx={p.x}
+                  cy={p.y}
+                  r={0.005 * w}
+                  fill={activePoint === i ? '#00FF00' : '#FF0000'}
+                  stroke={black}
+                  onMouseDown={(e) => {
+                    e.stopPropagation();
+                    dispatch({ action: 'drag-point', index: i });
+                  }}
+                />
+              </g>
+            );
+          })}
+
+          {anchors.map((a, i) => (
+            <circle key={`anchor-${i}`} cx={a.x} cy={a.y} r={0.006 * w} fill='#E2011A' />
+          ))}
+          {tradBelayStations.map((a, i) => (
+            <polygon
+              key={`trad-${i}`}
+              fill='#E2011A'
+              points={`${a.x},${a.y - 0.006 * w} ${a.x - 0.006 * w},${a.y + 0.006 * w} ${a.x + 0.006 * w},${a.y + 0.006 * w}`}
+            />
+          ))}
+          {texts.map((t, i) => (
+            <text
+              key={`text-${i}`}
+              x={t.x}
+              y={t.y}
+              fontSize={0.03 * w}
+              fill='red'
+              fontWeight='bold'
+            >
+              {t.txt}
+            </text>
+          ))}
+        </svg>
+      </div>
+
+      <div className='bg-surface-card border border-surface-border rounded-xl p-4'>
+        <input
+          className='w-full bg-surface-nav border border-surface-border rounded-lg py-2 px-3 text-sm text-white font-mono'
+          value={path || ''}
+          onChange={(e) => dispatch({ action: 'update-path', path: e.target.value })}
+        />
+      </div>
+    </div>
   );
 };
 

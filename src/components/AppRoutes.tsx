@@ -1,9 +1,9 @@
 import { Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { Loading } from './common/widgets/widgets';
+import { Loading } from './ui/StatusWidgets';
 import { lazy } from '../utils/lazyRetry';
 
-import Frontpage from './Frontpage';
+import Frontpage from './Frontpage/Frontpage';
 
 const AuthContainer = lazy(() => import('./AuthContainer'), 'auth');
 const About = lazy(() => import('./About'), 'about');

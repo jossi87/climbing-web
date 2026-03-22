@@ -1,5 +1,6 @@
-import { type ComponentProps, type ReactNode, useCallback, useState } from 'react';
-import { Accordion, Icon } from 'semantic-ui-react';
+import { type ReactNode, useCallback, useState } from 'react';
+import { ChevronDown } from 'lucide-react';
+import { cn } from '../../../lib/utils';
 
 type Props = {
   accordionRows: {
@@ -9,30 +10,54 @@ type Props = {
   }[];
 };
 
-type OnClickHandler = NonNullable<ComponentProps<typeof Accordion.Title>['onClick']>;
-
 const AccordionContainer = ({ accordionRows }: Props) => {
-  const [activeIndex, setActiveIndex] = useState<string | number>(-1);
+  const [activeIndex, setActiveIndex] = useState<number>(-1);
 
-  const handleOnClick: OnClickHandler = useCallback((_, { index }) => {
-    const idx = typeof index === 'number' ? index : -1;
-    setActiveIndex((oldValue) => (oldValue === idx ? -1 : idx));
+  const toggleAccordion = useCallback((index: number) => {
+    setActiveIndex((prev) => (prev === index ? -1 : index));
   }, []);
 
   return (
-    <Accordion fluid styled attached='bottom'>
-      {accordionRows.map((d, i) => (
-        <span key={d.label}>
-          <Accordion.Title active={activeIndex === i} index={i} onClick={handleOnClick}>
-            <Icon name='dropdown' />
-            {d.label}
-          </Accordion.Title>
-          <Accordion.Content active={activeIndex === i}>
-            {(d.length ?? 0) > 0 ? d.content : <i>No data</i>}
-          </Accordion.Content>
-        </span>
-      ))}
-    </Accordion>
+    <div className='border border-surface-border rounded-xl overflow-hidden bg-surface-card shadow-sm'>
+      {accordionRows.map((d, i) => {
+        const isActive = activeIndex === i;
+        const hasData = (d.length ?? 0) > 0;
+
+        return (
+          <div key={d.label} className={cn('border-b border-surface-border last:border-b-0')}>
+            <button
+              type='button'
+              onClick={() => toggleAccordion(i)}
+              className={cn(
+                'w-full flex items-center justify-between p-4 text-left transition-colors',
+                isActive ? 'bg-surface-nav/40' : 'hover:bg-surface-nav/20',
+              )}
+            >
+              <span className='text-sm font-black uppercase tracking-widest text-slate-200'>
+                {d.label}
+              </span>
+              <ChevronDown
+                size={18}
+                className={cn(
+                  'text-slate-500 transition-transform duration-200',
+                  isActive && 'rotate-180 text-brand',
+                )}
+              />
+            </button>
+            <div
+              className={cn(
+                'overflow-hidden transition-all duration-200 ease-in-out',
+                isActive ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0',
+              )}
+            >
+              <div className='p-4 bg-surface-nav/10 border-t border-surface-border/30'>
+                {hasData ? d.content : <i className='text-slate-500 text-sm'>No data</i>}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 };
 

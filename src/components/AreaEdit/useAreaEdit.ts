@@ -1,17 +1,12 @@
-import { useEffect, useReducer, useCallback, type ComponentProps } from 'react';
-import MediaUpload from '../common/media-upload/media-upload';
-import Leaflet from '../common/leaflet/leaflet';
+import { useEffect, useReducer, useCallback } from 'react';
 import { useArea, usePostData } from '../../api';
-import { VisibilitySelectorField } from '../common/VisibilitySelector';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { neverGuard } from '../../utils/neverGuard';
-import { Checkbox, Input } from 'semantic-ui-react';
 import type { UseMutateAsyncFunction } from '@tanstack/react-query';
-import ExternalLinks from '../common/external-links/external-links';
 
 type NewMedia = components['schemas']['NewMedia'] & { file?: File };
-
 type ExternalLink = components['schemas']['ExternalLink'];
+type Redirect = components['schemas']['Redirect'];
 
 type State = Required<
   Pick<
@@ -57,23 +52,21 @@ type Update =
   | {
       action: 'set-number';
       key: 'sunFromHour' | 'sunToHour';
-      value: number;
+      value: number | undefined;
     }
-  | { action: 'set-coord'; key: 'latitude' | 'longitude'; value: string }
+  | { action: 'set-coord'; key: 'latitude' | 'longitude'; value: string | number }
   | { action: 'set-lat-lng'; lat: number; lng: number }
   | { action: 'set-sort'; sectorId: number; sorting: number }
   | { action: 'set-media'; newMedia: NewMedia[] }
   | { action: 'set-external-links'; externalLinks: ExternalLink[] };
 
-const getCoord = (value: string | number) => {
+const getCoordValue = (value: string | number): number => {
   const str = String(value).replace(',', '.');
-  if (isNaN(+str)) {
-    return 0;
-  }
-  return +str;
+  const num = parseFloat(str);
+  return isNaN(num) ? 0 : num;
 };
 
-const DEFAULT_STATE: NonNullable<State> = {
+const DEFAULT_STATE: State = {
   accessClosed: '',
   accessInfo: '',
   comment: '',
@@ -94,97 +87,54 @@ const DEFAULT_STATE: NonNullable<State> = {
 };
 
 const reducer = (state: State, update: Update): State => {
-  const { action } = update;
-  switch (action) {
-    case 'set-data': {
-      const { data } = update;
+  switch (update.action) {
+    case 'set-data':
+      return { ...DEFAULT_STATE, ...update.data, newMedia: [] };
+    case 'set-string':
+      return { ...state, [update.key]: update.value };
+    case 'set-visibility':
       return {
-        ...DEFAULT_STATE,
-        ...data,
+        ...state,
+        lockedAdmin: update.lockedAdmin,
+        lockedSuperadmin: update.lockedSuperadmin,
       };
-    }
-    case 'set-string': {
-      return { ...state, [update.key]: update.value };
-    }
-    case 'set-visibility': {
-      const { lockedAdmin, lockedSuperadmin } = update;
-      return { ...state, lockedAdmin, lockedSuperadmin };
-    }
-    case 'set-number': {
-      return { ...state, [update.key]: update.value };
-    }
-    case 'set-coord': {
-      const { key, value } = update;
-      const coordinates = state.coordinates || { latitude: 0, longitude: 0 };
-      coordinates[key] = getCoord(value as string | number);
-      return { ...state, coordinates };
-    }
-    case 'set-lat-lng': {
-      const { lat: latitude, lng: longitude } = update;
+    case 'set-number':
+      return { ...state, [update.key]: update.value ?? 0 };
+    case 'set-coord':
       return {
         ...state,
         coordinates: {
-          latitude: getCoord(latitude),
-          longitude: getCoord(longitude),
+          ...state.coordinates,
+          [update.key]: getCoordValue(update.value),
         },
       };
-    }
-    case 'set-sort': {
-      const { sectorId, sorting } = update;
+    case 'set-lat-lng':
       return {
         ...state,
-        sectorOrder: state.sectorOrder.map((order) => {
-          if (order.id !== sectorId) {
-            return order;
-          }
-          return {
-            ...order,
-            sorting,
-          };
-        }),
+        coordinates: {
+          latitude: getCoordValue(update.lat),
+          longitude: getCoordValue(update.lng),
+        },
       };
-    }
-    case 'set-boolean': {
-      const { key, value } = update;
-      return { ...state, [key]: value };
-    }
-    case 'set-media': {
+    case 'set-sort':
+      return {
+        ...state,
+        sectorOrder: state.sectorOrder.map((order) =>
+          order.id === update.sectorId ? { ...order, sorting: update.sorting } : order,
+        ),
+      };
+    case 'set-boolean':
+      return { ...state, [update.key]: update.value };
+    case 'set-media':
       return { ...state, newMedia: update.newMedia };
-    }
-    case 'set-external-links': {
+    case 'set-external-links':
       return { ...state, externalLinks: update.externalLinks };
-    }
-    default: {
-      return neverGuard(action, state);
-    }
+    default:
+      return neverGuard(update, state);
   }
 };
 
-type SavedArea = NonNullable<State>;
-
-type UseAreaEdit = (_: { areaId: number }) => {
-  area: State;
-  isLoading: boolean;
-  isSaving: boolean;
-  save: UseMutateAsyncFunction<components['schemas']['Redirect'], unknown, SavedArea>;
-  setString: (
-    key: 'accessInfo' | 'accessClosed' | 'name' | 'comment',
-  ) => (event: React.ChangeEvent, data: { value?: string | number }) => void;
-  setVisibility: ComponentProps<typeof VisibilitySelectorField>['onChange'];
-  setNumber: (
-    key: 'sunFromHour' | 'sunToHour',
-  ) => (event: React.ChangeEvent, data: { value?: number }) => void;
-  setCoord: (key: 'latitude' | 'longitude') => ComponentProps<typeof Input>['onChange'];
-  setLatLng: ComponentProps<typeof Leaflet>['onMouseClick'];
-  setSectorSort: (sectorId: number) => ComponentProps<typeof Input>['onChange'];
-  setBoolean: (
-    key: 'trash' | 'forDevelopers' | 'noDogsAllowed',
-  ) => ComponentProps<typeof Checkbox>['onChange'];
-  setNewMedia: ComponentProps<typeof MediaUpload>['onMediaChanged'];
-  setExternalLinks: ComponentProps<typeof ExternalLinks>['onExternalLinksUpdated'];
-};
-
-export const useAreaEdit: UseAreaEdit = ({ areaId }) => {
+export const useAreaEdit = ({ areaId }: { areaId: number }) => {
   const [state, dispatch] = useReducer(reducer, DEFAULT_STATE);
   const { data, status, isLoading } = useArea(areaId);
 
@@ -194,134 +144,97 @@ export const useAreaEdit: UseAreaEdit = ({ areaId }) => {
     }
   }, [data, status]);
 
-  const save = usePostData<SavedArea, components['schemas']['Redirect']>(`/areas`, {
+  const saveMutation = usePostData<State, Redirect>(`/areas`, {
     mutationKey: [`/areas`, { id: areaId }],
-    createBody({
-      id,
-      trash,
-      lockedAdmin,
-      lockedSuperadmin,
-      forDevelopers,
-      accessInfo,
-      accessClosed,
-      noDogsAllowed,
-      sunFromHour,
-      sunToHour,
-      name,
-      comment,
-      coordinates,
-      newMedia: media,
-      externalLinks,
-      sectorOrder,
-    }) {
+    createBody(area) {
       const formData = new FormData();
-      const newMedia = media.map((m) => {
-        return {
-          name: m.file && m.file.name.replace(/[^-a-z0-9.]/gi, '_'),
-          photographer: m.photographer,
-          inPhoto: m.inPhoto,
-          description: m.description,
-          trivia: m.trivia,
-          embedVideoUrl: m.embedVideoUrl,
-          embedThumbnailUrl: m.embedThumbnailUrl,
-          embedMilliseconds: m.embedMilliseconds,
-        };
-      });
+      const sanitizedMedia = area.newMedia.map((m) => ({
+        name: m.file?.name.replace(/[^-a-z0-9.]/gi, '_'),
+        photographer: m.photographer,
+        inPhoto: m.inPhoto,
+        description: m.description,
+        trivia: m.trivia,
+        embedVideoUrl: m.embedVideoUrl,
+        embedThumbnailUrl: m.embedThumbnailUrl,
+        embedMilliseconds: m.embedMilliseconds,
+      }));
+
       formData.append(
         'json',
         JSON.stringify({
-          id,
-          trash,
-          lockedAdmin: !!lockedAdmin,
-          lockedSuperadmin: !!lockedSuperadmin,
-          forDevelopers,
-          accessInfo: accessInfo || '',
-          accessClosed: accessClosed || '',
-          noDogsAllowed,
-          sunFromHour,
-          sunToHour,
-          name,
-          comment,
-          coordinates,
-          newMedia,
-          externalLinks: externalLinks?.filter((l) => l.title && l.url),
-          sectorOrder,
+          ...area,
+          lockedAdmin: !!area.lockedAdmin,
+          lockedSuperadmin: !!area.lockedSuperadmin,
+          accessInfo: area.accessInfo || '',
+          accessClosed: area.accessClosed || '',
+          externalLinks: area.externalLinks?.filter((l) => l.title && l.url),
+          newMedia: sanitizedMedia,
         }),
       );
-      media.forEach(
-        (m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file),
-      );
+
+      area.newMedia.forEach((m) => {
+        if (m.file) {
+          formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file);
+        }
+      });
       return formData;
     },
     select: (res) => res.json(),
-    fetchOptions: {
-      headers: {
-        Accept: 'application/json',
-      },
-    },
+    fetchOptions: { headers: { Accept: 'application/json' } },
   });
 
   return {
     area: state,
     isLoading: areaId > 0 ? isLoading : false,
-    isSaving: save.isPending,
-    save: save.mutateAsync,
+    isSaving: saveMutation.isPending,
+    save: saveMutation.mutateAsync as UseMutateAsyncFunction<Redirect, unknown, State>,
     setString: useCallback(
-      (key) =>
-        (_, { value }) =>
-          dispatch({
-            action: 'set-string',
-            key,
-            value: value ? String(value) : '',
-          }),
+      (key: 'accessInfo' | 'accessClosed' | 'name' | 'comment') =>
+        (_: unknown, d: { value?: string | number }) =>
+          dispatch({ action: 'set-string', key, value: d.value ? String(d.value) : '' }),
       [],
     ),
     setVisibility: useCallback(
-      ({ lockedAdmin, lockedSuperadmin }) =>
+      ({ lockedAdmin, lockedSuperadmin }: { lockedAdmin: boolean; lockedSuperadmin: boolean }) =>
         dispatch({ action: 'set-visibility', lockedAdmin, lockedSuperadmin }),
       [],
     ),
     setNumber: useCallback(
-      (key) =>
-        (_, { value }) =>
-          dispatch({
-            action: 'set-number',
-            key,
-            value: value ? Number(value) : 0,
-          }),
+      (key: 'sunFromHour' | 'sunToHour') => (_: unknown, d: { value?: number }) =>
+        dispatch({ action: 'set-number', key, value: d.value ? Number(d.value) : undefined }),
       [],
     ),
     setCoord: useCallback(
-      (key) =>
-        (_, { value }) => {
-          dispatch({ action: 'set-coord', key, value });
-        },
+      (key: 'latitude' | 'longitude') => (_: unknown, d: { value?: string | number }) =>
+        dispatch({ action: 'set-coord', key, value: d.value ?? '' }),
       [],
     ),
     setLatLng: useCallback(
       (payload: { latlng: { lat: number; lng: number } }) =>
         dispatch({
           action: 'set-lat-lng',
-          lat: +(payload.latlng?.lat || 0),
-          lng: +(payload.latlng?.lng || 0),
+          lat: payload.latlng?.lat || 0,
+          lng: payload.latlng?.lng || 0,
         }),
       [],
     ),
     setSectorSort: useCallback(
-      (sectorId: number) =>
-        (_, { value }) =>
-          dispatch({ action: 'set-sort', sectorId, sorting: +value || 0 }),
+      (sectorId: number) => (_: unknown, d: { value?: string | number }) =>
+        dispatch({ action: 'set-sort', sectorId, sorting: Number(d.value) || 0 }),
       [],
     ),
     setBoolean: useCallback(
-      (key) =>
-        (_, { checked }) =>
-          dispatch({ action: 'set-boolean', key, value: !!checked }),
+      (key: 'trash' | 'forDevelopers' | 'noDogsAllowed') =>
+        (_: unknown, d: { checked?: boolean }) =>
+          dispatch({ action: 'set-boolean', key, value: !!d.checked }),
       [],
     ),
-    setNewMedia: useCallback((newMedia) => dispatch({ action: 'set-media', newMedia }), []),
+    setNewMedia: useCallback(
+      (newMedia: NewMedia[]) => dispatch({ action: 'set-media', newMedia }),
+      [],
+    ),
     setExternalLinks: useCallback(
-      (externalLinks) => dispatch({ action: 'set-external-links', externalLinks }),
+      (externalLinks: ExternalLink[]) => dispatch({ action: 'set-external-links', externalLinks }),
       [],
     ),
   };

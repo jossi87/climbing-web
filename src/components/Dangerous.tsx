@@ -1,10 +1,10 @@
 import { Loading } from './common/widgets/widgets';
-import { Segment, Icon, Header } from 'semantic-ui-react';
 import { useMeta } from './common/meta/context';
 import { useData } from '../api';
 import TableOfContents from './common/TableOfContents';
 import type { Success } from '../@types/buldreinfo';
 import type { components } from '../@types/buldreinfo/swagger';
+import { AlertTriangle, ChevronRight } from 'lucide-react';
 
 const Dangerous = () => {
   const meta = useMeta();
@@ -13,6 +13,7 @@ const Dangerous = () => {
   if (!data) {
     return <Loading />;
   }
+
   const safeData = data ?? [];
   const numAreas = safeData.length;
   const [numSectors, numProblems] = safeData.reduce(
@@ -23,9 +24,11 @@ const Dangerous = () => {
     ],
     [0, 0],
   );
+
   const description = `${numProblems} ${
     meta.isClimbing ? 'routes' : 'boulders'
   } flagged as dangerous (located in ${numAreas} areas, ${numSectors} sectors)`;
+
   const areas = safeData.map((area) => ({
     id: area.id ?? 0,
     lockedAdmin: !!area.lockedAdmin,
@@ -60,20 +63,26 @@ const Dangerous = () => {
   }));
 
   return (
-    <>
+    <div className='max-w-container mx-auto px-4 py-6 space-y-6 text-left'>
       <title>{`Dangerous | ${meta?.title}`}</title>
-      <meta name='description' content={description}></meta>
-      <Segment>
-        <Header as='h2'>
-          <Icon name='warning sign' />
-          <Header.Content>
-            Dangerous
-            <Header.Subheader>{description}</Header.Subheader>
-          </Header.Content>
-        </Header>
+      <meta name='description' content={description} />
+
+      <div className='flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-surface-border pb-4'>
+        <nav className='flex items-center gap-2 text-[10px] font-black tracking-widest text-slate-500'>
+          <span className='uppercase'>Navigation</span>
+          <ChevronRight size={12} className='opacity-20' />
+          <div className='flex items-center gap-1.5 text-white'>
+            <AlertTriangle size={14} className='text-red-500' />
+            <span className='uppercase'>Dangerous</span>
+            <span className='text-slate-500 font-mono normal-case'>({description})</span>
+          </div>
+        </nav>
+      </div>
+
+      <div className='bg-surface-card border border-surface-border rounded-2xl overflow-hidden shadow-sm p-6'>
         <TableOfContents areas={areas} />
-      </Segment>
-    </>
+      </div>
+    </div>
   );
 };
 

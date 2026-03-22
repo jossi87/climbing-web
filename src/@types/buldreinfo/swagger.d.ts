@@ -904,7 +904,6 @@ export type components = {
             problemName?: string;
             problemSubtype?: string;
             grade?: string;
-            noPersonalGrade?: boolean;
             /** Format: int32 */
             problemRandomMediaId?: number;
             /** Format: int64 */
@@ -1336,6 +1335,10 @@ export type components = {
             isAdmin?: boolean;
             isSuperAdmin?: boolean;
             authenticatedName?: string;
+            /** Format: int32 */
+            mediaId?: number;
+            /** Format: int64 */
+            mediaVersionStamp?: number;
             grades?: components["schemas"]["Grade"][];
             faYears?: number[];
             /** Format: int32 */
