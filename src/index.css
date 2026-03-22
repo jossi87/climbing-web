@@ -23,7 +23,7 @@
     letter-spacing: -0.01em;
   }
   body {
-    @apply bg-surface-dark leading-relaxed;
+    @apply bg-surface-dark leading-relaxed overflow-x-hidden;
   }
   h1,
   h2,
@@ -35,14 +35,12 @@
   strong {
     @apply text-slate-300 font-semibold;
   }
-
   input,
   button,
   select,
   textarea {
     @apply outline-none;
   }
-
   :focus-visible {
     @apply ring-1 ring-brand border-brand/50;
   }
@@ -50,7 +48,8 @@
 
 @layer components {
   .app-card {
-    @apply bg-surface-card border-y border-surface-border sm:border-x sm:rounded-xl overflow-hidden -mx-4 sm:mx-0;
+    @apply bg-surface-card border-y border-surface-border sm:border-x sm:rounded-xl overflow-hidden sm:mx-0;
+    /* Removed -mx-4 to prevent horizontal scroll overflow */
   }
 
   .search-input {
