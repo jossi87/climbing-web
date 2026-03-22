@@ -1,19 +1,17 @@
-import { Segment, Pagination, Feed, Placeholder } from 'semantic-ui-react';
 import { LockSymbol } from './common/widgets/widgets';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useMeta } from './common/meta';
 import { useTicks } from '../api';
 import { HeaderButtons } from './common/HeaderButtons';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const PlaceholderFeed = () => {
   return (
-    <Placeholder>
+    <div className='space-y-4 animate-pulse'>
       {Array.from({ length: 20 }, (_, i) => (
-        <Placeholder.Header key={i}>
-          <Placeholder.Line length='full' />
-        </Placeholder.Header>
+        <div key={i} className='h-12 bg-surface-nav/40 rounded-lg w-full' />
       ))}
-    </Placeholder>
+    </div>
   );
 };
 
@@ -24,60 +22,98 @@ const Ticks = () => {
   const { data, isLoading } = useTicks(pageNum);
   const navigate = useNavigate();
 
+  const handlePageChange = (newPage: number) => {
+    navigate('/ticks/' + newPage);
+  };
+
   return (
-    <>
+    <div className='space-y-6'>
       <title>{`Ticks | ${meta?.title}`}</title>
-      <Segment>
+
+      <div className='bg-surface-card border border-surface-border rounded-xl p-4 sm:p-6 shadow-sm'>
         <HeaderButtons header='Public ascents' icon='checkmark' />
-        <Feed>
+
+        <div className='mt-6 divide-y divide-surface-border'>
           {isLoading && <PlaceholderFeed />}
+
           {data &&
             data.ticks.map((t) => (
-              <Feed.Event
+              <Link
                 key={[t.date, t.name].join(' - ')}
-                as={Link}
                 to={`/problem/${t.problemId}`}
+                className='block group py-4 hover:bg-white/5 transition-colors px-2 -mx-2 rounded-lg'
               >
-                <Feed.Content>
-                  <Feed.Summary>
-                    <Feed.Date>{t.date}</Feed.Date> {t.areaName}{' '}
+                <div className='flex flex-col gap-1'>
+                  <div className='flex flex-wrap items-center gap-x-1.5 text-[10px] font-black text-slate-500 uppercase tracking-widest'>
+                    <span className='text-slate-400'>{t.date}</span>
+                    <span className='text-slate-600'>/</span>
+                    <span className='group-hover:text-slate-300 transition-colors'>
+                      {t.areaName}
+                    </span>
                     <LockSymbol
                       lockedAdmin={t.areaLockedAdmin}
                       lockedSuperadmin={t.areaLockedSuperadmin}
-                    />{' '}
-                    / {t.sectorName}{' '}
+                    />
+                    <span className='text-slate-600'>/</span>
+                    <span className='group-hover:text-slate-300 transition-colors'>
+                      {t.sectorName}
+                    </span>
                     <LockSymbol
                       lockedAdmin={t.sectorLockedAdmin}
                       lockedSuperadmin={t.sectorLockedSuperadmin}
-                    />{' '}
-                    / {t.problemName}{' '}
+                    />
+                    <span className='text-slate-600'>/</span>
+                    <span className='group-hover:text-slate-300 transition-colors'>
+                      {t.problemName}
+                    </span>
                     <LockSymbol
                       lockedAdmin={t.problemLockedAdmin}
                       lockedSuperadmin={t.problemLockedSuperadmin}
                     />
-                    <Feed.Meta>
-                      {t.name} {t.problemGrade}
-                    </Feed.Meta>
-                  </Feed.Summary>
-                </Feed.Content>
-              </Feed.Event>
+                  </div>
+
+                  <div className='flex items-center gap-2'>
+                    <span className='text-sm font-bold text-white group-hover:text-brand transition-colors'>
+                      {t.name}
+                    </span>
+                    <span className='text-xs font-mono text-slate-400'>{t.problemGrade}</span>
+                  </div>
+                </div>
+              </Link>
             ))}
-        </Feed>
-        {data && (
-          <Pagination
-            size='tiny'
-            siblingRange={0}
-            boundaryRange={0}
-            defaultActivePage={data.currPage}
-            totalPages={data.numPages}
-            onPageChange={(e, data) => {
-              const page = data.activePage;
-              navigate('/ticks/' + page);
-            }}
-          />
+        </div>
+
+        {data && data.numPages > 1 && (
+          <div className='mt-8 flex items-center justify-center gap-2'>
+            <button
+              disabled={Number(data.currPage) <= 1}
+              onClick={() => handlePageChange(Number(data.currPage) - 1)}
+              className='p-2 bg-surface-nav border border-surface-border rounded-lg text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all'
+            >
+              <ChevronLeft size={18} />
+            </button>
+
+            <div className='flex items-center gap-1'>
+              <span className='text-xs font-bold text-white px-3 py-1.5 bg-brand rounded-lg shadow-lg shadow-brand/20'>
+                {data.currPage}
+              </span>
+              <span className='text-xs font-bold text-slate-500 px-2'>of</span>
+              <span className='text-xs font-bold text-slate-300 px-3 py-1.5 bg-surface-nav border border-surface-border rounded-lg'>
+                {data.numPages}
+              </span>
+            </div>
+
+            <button
+              disabled={Number(data.currPage) >= data.numPages}
+              onClick={() => handlePageChange(Number(data.currPage) + 1)}
+              className='p-2 bg-surface-nav border border-surface-border rounded-lg text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all'
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
         )}
-      </Segment>
-    </>
+      </div>
+    </div>
   );
 };
 

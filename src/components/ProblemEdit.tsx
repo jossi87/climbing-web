@@ -3,18 +3,6 @@ import { UsersSelector } from './common/user-selector/user-selector';
 import RockSelector from './common/rock-selector/rock-selector';
 import ProblemSection from './common/problem-section/problem-section';
 import MediaUpload from './common/media-upload/media-upload';
-import {
-  Icon,
-  Form,
-  Button,
-  Input,
-  Dropdown,
-  TextArea,
-  Segment,
-  Message,
-  Container,
-  Checkbox,
-} from 'semantic-ui-react';
 import Leaflet from './common/leaflet/leaflet';
 import { useMeta } from './common/meta/context';
 import {
@@ -34,48 +22,38 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { components } from '../@types/buldreinfo/swagger';
 import { captureException, captureMessage } from '@sentry/react';
 import ExternalLinks from './common/external-links/external-links';
+import { Info, Calendar, Save, X, ChevronDown, AlertCircle } from 'lucide-react';
+import { cn } from '../lib/utils';
 
 type Problem = components['schemas']['Problem'];
 
 const useIds = (): { sectorId: number; problemId: number } => {
   const { sectorId, problemId } = useParams();
-  if (!sectorId) {
-    throw new Error('Missing sectorId param');
-  }
-
-  if (!problemId) {
-    throw new Error('Missing problemId param');
-  }
-
+  if (!sectorId) throw new Error('Missing sectorId param');
+  if (!problemId) throw new Error('Missing problemId param');
   return { sectorId: +sectorId, problemId: +problemId };
 };
 
-const ProblemEditLoader = () => {
+export const ProblemEditLoader = () => {
   const { sectorId, problemId } = useIds();
   const { data: sector } = useSector(sectorId);
   const { data: problem, status: problemStatus, error } = useProblem(problemId, true);
 
   if (error) {
     return (
-      <Message
-        size='huge'
-        style={{ backgroundColor: '#FFF' }}
-        icon='meh'
-        header='404'
-        content={
-          'Cannot find the specified problem because it does not exist or you do not have sufficient permissions.'
-        }
-      />
+      <div className='max-w-2xl mx-auto mt-12 p-8 bg-surface-card border border-surface-border rounded-2xl text-center space-y-4'>
+        <AlertCircle size={48} className='mx-auto text-red-500 opacity-50' />
+        <h2 className='text-2xl font-black text-white'>404</h2>
+        <p className='text-slate-400 font-medium'>
+          Cannot find the specified problem because it does not exist or you do not have sufficient
+          permissions.
+        </p>
+      </div>
     );
   }
 
-  if (!sector) {
-    return <Loading />;
-  }
-
-  if (problemStatus === 'pending' && problemId < 0) {
-    return <Loading />;
-  }
+  if (!sector) return <Loading />;
+  if (problemStatus === 'pending' && problemId < 0) return <Loading />;
 
   const prob =
     problem ??
@@ -110,8 +88,6 @@ type Props = {
   sector: components['schemas']['Sector'];
 };
 
-type OnChange<V> = (_: unknown, { value }: { value: V }) => void;
-
 type SectorProblem = NonNullable<components['schemas']['Sector']['problems']>[number];
 const isPlottableProblem = (
   problem: SectorProblem,
@@ -123,65 +99,11 @@ const ProblemEdit = ({ problem, sector }: Props) => {
   const client = useQueryClient();
   const accessToken = useAccessToken();
   const { sectorId, problemId } = useIds();
-
   const [data, setData] = useState<Problem>(problem);
-
   const [showSectorMarkers, setShowSectorMarkers] = useState(true);
   const [saving, setSaving] = useState(false);
   const navigate = useNavigate();
   const meta = useMeta();
-
-  const onNameChanged: OnChange<string> = useCallback((_, { value }) => {
-    setData((prevState) => ({ ...prevState, name: value }));
-  }, []);
-
-  const onNrChanged: OnChange<string> = useCallback((_, { value }) => {
-    setData((prevState) => ({ ...prevState, nr: +value }));
-  }, []);
-
-  const onLatChanged: OnChange<string> = useCallback((_, { value }) => {
-    let lat = parseFloat(value.replace(',', '.'));
-    if (isNaN(lat)) {
-      lat = 0;
-    }
-    setData((prevState) => ({
-      ...prevState,
-      coordinates: { longitude: 0, ...prevState.coordinates, latitude: lat },
-    }));
-  }, []);
-
-  const onLngChanged: OnChange<string> = useCallback((_, { value }) => {
-    let lng = parseFloat(value.replace(',', '.'));
-    if (isNaN(lng)) {
-      lng = 0;
-    }
-    setData((prevState) => ({
-      ...prevState,
-      coordinates: { latitude: 0, ...prevState.coordinates, longitude: lng },
-    }));
-  }, []);
-
-  const onLockedChanged = useCallback(
-    ({
-      lockedAdmin,
-      lockedSuperadmin,
-    }: Required<Pick<Problem, 'lockedAdmin' | 'lockedSuperadmin'>>) => {
-      setData((prevState) => ({
-        ...prevState,
-        lockedAdmin,
-        lockedSuperadmin,
-      }));
-    },
-    [],
-  );
-
-  const onRockChanged = useCallback((rock: NonNullable<Problem['rock']>) => {
-    setData((prevState) => ({ ...prevState, rock }));
-  }, []);
-
-  const onCommentChanged: OnChange<string> = useCallback((_, { value }) => {
-    setData((prevState) => ({ ...prevState, comment: value }));
-  }, []);
 
   const onFaDateChanged = useCallback((newFaDate: Date | undefined) => {
     if (!newFaDate) {
@@ -194,104 +116,9 @@ const ProblemEdit = ({ problem, sector }: Props) => {
       const dateString = convertFromDateToString(newFaDate);
       setData((prevState) => {
         if (prevState.faDate === dateString) return prevState;
-        return {
-          ...prevState,
-          faDate: dateString,
-        };
+        return { ...prevState, faDate: dateString };
       });
     }
-  }, []);
-
-  const onOriginalGradeChanged: OnChange<string> = useCallback((_, { value }) => {
-    setData((prevState) => ({ ...prevState, originalGrade: value }));
-  }, []);
-
-  const onTypeIdChanged: OnChange<string> = useCallback((_, { value }) => {
-    setData((prevState) => ({
-      ...prevState,
-      t: {
-        ...prevState.t,
-        id: +value,
-      },
-    }));
-  }, []);
-
-  const onExternalLinksUpdated = useCallback(
-    (externalLinks: components['schemas']['ExternalLink'][]) => {
-      setData((prevState) => ({ ...prevState, externalLinks: externalLinks }));
-    },
-    [],
-  );
-
-  const onNewMediaChanged: ComponentProps<typeof MediaUpload>['onMediaChanged'] = useCallback(
-    (newMedia) => {
-      setData((prevState) => ({ ...prevState, newMedia }));
-    },
-    [],
-  );
-
-  const onFaAidDateChanged = useCallback((newFaDate: Date | null) => {
-    setData((prevState) => ({
-      ...prevState,
-      faAid: {
-        ...prevState.faAid,
-        date: newFaDate ? convertFromDateToString(newFaDate) : undefined,
-      },
-    }));
-  }, []);
-
-  const onFaAidDescriptionChanged: NonNullable<ComponentProps<typeof TextArea>['onChange']> =
-    useCallback((_, { value }) => {
-      setData((prevState) => ({
-        ...prevState,
-        faAid: {
-          ...prevState.faAid,
-          description: String(value ?? ''),
-        },
-      }));
-    }, []);
-
-  const onFaAidUsersUpdated: ComponentProps<typeof UsersSelector>['onUsersUpdated'] = useCallback(
-    (newUsers) => {
-      const fa = newUsers.map((u) => {
-        return {
-          id: typeof u.value === 'string' ? -1 : u.value,
-          name: u.label,
-        };
-      });
-      setData((prevState) => ({
-        ...prevState,
-        faAid: {
-          ...prevState.faAid,
-          users: fa,
-        },
-      }));
-    },
-    [],
-  );
-
-  const onBrokenChanged: OnChange<string> = useCallback((_, { value }) => {
-    setData((prevState) => ({ ...prevState, broken: value }));
-  }, []);
-
-  const onTriviaChanged: OnChange<string> = useCallback((_, { value }) => {
-    setData((prevState) => ({ ...prevState, trivia: value }));
-  }, []);
-
-  const onStartingAltitudeChanged: OnChange<string> = useCallback((_, { value }) => {
-    setData((prevState) => ({ ...prevState, startingAltitude: value }));
-  }, []);
-
-  const onAspectChanged: OnChange<string> = useCallback((_, { value }) => {
-    setData((prevState) => ({ ...prevState, aspect: value }));
-  }, []);
-
-  const onRouteLengthChanged: OnChange<string> = useCallback((_, { value }) => {
-    setData((prevState) => ({ ...prevState, routeLength: value }));
-  }, []);
-
-  const onDescentChanged: OnChange<string> = useCallback((_, { value }) => {
-    setData((prevState) => ({ ...prevState, descent: value }));
   }, []);
 
   const save = useCallback(
@@ -301,22 +128,13 @@ const ProblemEdit = ({ problem, sector }: Props) => {
       if (trash) {
         if (!confirm('Are you sure you want to move this problem/route to trash?')) {
           captureMessage('Decided to not delete problem', {
-            extra: {
-              problemId,
-              sectorId,
-            },
+            extra: { problemId, sectorId },
           });
           return false;
         }
-
-        // Fall through here so that we continue saving.
       }
       setSaving(true);
 
-      // If the item is being moved to the trash, remove the query so that the
-      // mutation doesn't trigger an immediate fetch of the now-deleted item.
-      // This is handled fine by the client, but it's extra chatter for the
-      // service that we can easily avoid.
       if (data.trash) {
         client.removeQueries({
           queryKey: [`/problem`, { id: data.id }],
@@ -355,58 +173,20 @@ const ProblemEdit = ({ problem, sector }: Props) => {
       } catch (error) {
         console.warn(error);
         captureException(error);
+        setSaving(false);
         return false;
       }
     },
     [accessToken, client, meta.types, problemId, sectorId],
   );
 
-  const onMapClick: NonNullable<ComponentProps<typeof Leaflet>['onMouseClick']> = useCallback(
-    (event) => {
-      setData((prevState) => ({
-        ...prevState,
-        coordinates: {
-          latitude: event.latlng.lat,
-          longitude: event.latlng.lng,
-        },
-      }));
-    },
-    [],
-  );
-
-  const onUsersUpdated: ComponentProps<typeof UsersSelector>['onUsersUpdated'] = useCallback(
-    (newUsers) => {
-      const fa = newUsers.map((u) => {
-        return {
-          id: typeof u.value === 'string' ? -1 : u.value,
-          name: u.label,
-        };
-      });
-      setData((prevState) => ({ ...prevState, fa }));
-    },
-    [],
-  );
-
-  const onSectionsUpdated: ComponentProps<typeof ProblemSection>['onSectionsUpdated'] = useCallback(
-    (sections) => {
-      setData((prevState) => ({ ...prevState, sections }));
-    },
-    [],
-  );
-
   let defaultCenter: { lat: number; lng: number };
   let defaultZoom: number;
   if (data.coordinates?.latitude && data.coordinates?.longitude) {
-    defaultCenter = {
-      lat: data.coordinates.latitude,
-      lng: data.coordinates.longitude,
-    };
+    defaultCenter = { lat: data.coordinates.latitude, lng: data.coordinates.longitude };
     defaultZoom = 15;
   } else if (sector.parking?.latitude && sector.parking?.longitude) {
-    defaultCenter = {
-      lat: sector.parking.latitude,
-      lng: sector.parking.longitude,
-    };
+    defaultCenter = { lat: sector.parking.latitude, lng: sector.parking.longitude };
     defaultZoom = 15;
   } else {
     defaultCenter = meta.defaultCenter;
@@ -414,404 +194,399 @@ const ProblemEdit = ({ problem, sector }: Props) => {
   }
 
   const markers: NonNullable<ComponentProps<typeof Leaflet>['markers']> = [];
-  if (data.coordinates) {
-    markers.push({
-      coordinates: data.coordinates,
-    });
-  }
+  if (data.coordinates) markers.push({ coordinates: data.coordinates });
   if (showSectorMarkers && sector.problems?.length) {
     markers.push(
       ...sector.problems
         .filter((p) => p.id !== problemId)
         .filter(isPlottableProblem)
-        .map((p) => ({
-          coordinates: p.coordinates,
-          label: p.name ?? '',
-        })),
+        .map((p) => ({ coordinates: p.coordinates, label: p.name ?? '' })),
     );
   }
+
   const sectorRocks =
     sector.problems
-      ?.filter((p) => p.rock)
       ?.map((p) => p.rock)
-      ?.filter((value, index, self) => self.indexOf(value) === index)
-      ?.sort() ?? [];
+      .filter((v): v is string => !!v)
+      .filter((v, i, s) => s.indexOf(v) === i)
+      .sort() ?? [];
 
   return (
-    <>
+    <div className='max-w-container mx-auto px-4 py-8 space-y-8 pb-32 text-left'>
       <title>{`Edit ${data.name} | ${meta?.title}`}</title>
-      <Message
-        size='tiny'
-        content={
-          <>
-            <Icon name='info' />
-            Contact <a href='mailto:jostein.oygarden@gmail.com'>Jostein Øygarden</a> if you want to
-            move {meta.isBouldering ? 'problem' : 'route'} to an other sector.
-          </>
-        }
-      />
-      <Form>
-        <Segment>
-          <Form.Group widths='equal'>
-            <Form.Field
-              label='Name'
-              control={Input}
-              placeholder='Enter name'
-              value={data.name}
-              onChange={onNameChanged}
-              error={data.name ? false : 'Name required'}
-            />
+
+      <div className='flex items-start gap-4 p-4 bg-surface-card border border-surface-border rounded-xl'>
+        <Info className='text-brand shrink-0 mt-0.5' size={20} />
+        <p className='text-sm text-slate-400'>
+          Contact{' '}
+          <a
+            href='mailto:jostein.oygarden@gmail.com'
+            className='text-brand hover:underline font-bold'
+          >
+            Jostein Øygarden
+          </a>{' '}
+          if you want to move this {meta.isBouldering ? 'problem' : 'route'} to another sector.
+        </p>
+      </div>
+
+      <div className='space-y-6'>
+        <div className='bg-surface-card border border-surface-border rounded-2xl p-6 space-y-6 shadow-sm'>
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
+            <div className='space-y-1.5'>
+              <label className='text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1'>
+                Name
+              </label>
+              <input
+                className={cn(
+                  'w-full bg-surface-nav border rounded-lg px-4 py-2.5 text-white focus:outline-none transition-colors',
+                  !data.name ? 'border-red-500/50' : 'border-surface-border focus:border-brand',
+                )}
+                value={data.name}
+                onChange={(e) => setData((prev) => ({ ...prev, name: e.target.value }))}
+              />
+              {!data.name && (
+                <p className='text-[10px] text-red-500 font-bold ml-1'>Name required</p>
+              )}
+            </div>
+
             <VisibilitySelectorField
               label='Visibility'
-              selection
-              value={{
-                lockedAdmin: !!data.lockedAdmin,
-                lockedSuperadmin: !!data.lockedSuperadmin,
-              }}
-              onChange={onLockedChanged}
+              value={{ lockedAdmin: !!data.lockedAdmin, lockedSuperadmin: !!data.lockedSuperadmin }}
+              onChange={({ lockedAdmin, lockedSuperadmin }) =>
+                setData((prev) => ({ ...prev, lockedAdmin, lockedSuperadmin }))
+              }
             />
-            <Form.Field
-              label='Number'
-              control={Input}
-              placeholder='Enter number'
-              value={data.nr}
-              onChange={onNrChanged}
-            />
-            <Form.Field>
-              <label>Move to trash</label>
-              <Checkbox
-                disabled={!data.id || data.id <= 0}
-                toggle
-                checked={data.trash}
-                onChange={() =>
-                  setData((prevState) => ({
-                    ...prevState,
-                    trash: !data.trash,
+
+            <div className='space-y-1.5'>
+              <label className='text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1'>
+                Number
+              </label>
+              <input
+                type='number'
+                className='w-full bg-surface-nav border border-surface-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-brand'
+                value={data.nr}
+                onChange={(e) => setData((prev) => ({ ...prev, nr: +e.target.value }))}
+              />
+            </div>
+
+            <div className='space-y-1.5'>
+              <label className='text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1'>
+                Move to Trash
+              </label>
+              <div className='flex items-center h-10.5'>
+                <button
+                  type='button'
+                  disabled={!data.id || data.id <= 0}
+                  onClick={() => setData((prev) => ({ ...prev, trash: !prev.trash }))}
+                  className={cn(
+                    'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none disabled:opacity-30 p-0.5',
+                    data.trash ? 'bg-red-500' : 'bg-slate-700',
+                  )}
+                >
+                  <span
+                    className={cn(
+                      'inline-block h-4 w-4 transform rounded-full bg-white transition duration-200',
+                      data.trash ? 'translate-x-5' : 'translate-x-0',
+                    )}
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+            <div className='space-y-1.5'>
+              <label className='text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1'>
+                Grade
+              </label>
+              <div className='relative'>
+                <select
+                  className='w-full appearance-none bg-surface-nav border border-surface-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-brand cursor-pointer'
+                  value={data.originalGrade}
+                  onChange={(e) => setData((prev) => ({ ...prev, originalGrade: e.target.value }))}
+                >
+                  {meta.grades.map((g, i) => (
+                    <option key={i} value={g.grade}>
+                      {g.grade}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown
+                  size={16}
+                  className='absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none'
+                />
+              </div>
+            </div>
+
+            <div className='space-y-1.5'>
+              <label className='text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1'>
+                FA User(s)
+              </label>
+              <UsersSelector
+                placeholder='Select FA user(s)'
+                users={data.fa ?? []}
+                onUsersUpdated={(users) =>
+                  setData((prev) => ({
+                    ...prev,
+                    fa: users.map((u) => ({
+                      id: typeof u.value === 'string' ? -1 : u.value,
+                      name: u.label,
+                    })),
                   }))
                 }
               />
-            </Form.Field>
-          </Form.Group>
-          <Form.Group widths='equal'>
-            <Form.Field
-              label='Grade'
-              control={Dropdown}
-              selection
-              value={data.originalGrade}
-              onChange={onOriginalGradeChanged}
-              options={meta.grades.map((g, i) => ({
-                key: i,
-                value: g.grade,
-                text: g.grade,
-              }))}
-              error={data.originalGrade ? false : 'grade required'}
-            />
-            <Form.Field>
-              <label>FA User(s)</label>
-              <UsersSelector
-                placeholder='Select user(s)'
-                users={data.fa ?? []}
-                onUsersUpdated={onUsersUpdated}
-              />
-            </Form.Field>
-            <Form.Field>
-              <label>FA Date</label>
-              <DatePicker
-                placeholderText='Click to select a date'
-                dateFormat='dd-MM-yyyy'
-                isClearable
-                showMonthDropdown
-                showYearDropdown
-                dropdownMode='select'
-                selected={data.faDate ? convertFromStringToDate(data.faDate) : undefined}
-                onChange={(date: Date | null) => onFaDateChanged(date ?? undefined)}
-              />
-            </Form.Field>
-            {meta.isBouldering ? (
-              <Form.Field
-                label='Rock (this field is optional, use to group boulders by rock in sector)'
-                control={RockSelector}
-                placeholder='Add rock'
-                rock={data.rock}
-                onRockUpdated={onRockChanged}
+            </div>
+
+            <div className='space-y-1.5'>
+              <label className='text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1'>
+                FA Date
+              </label>
+              <div className='relative'>
+                <DatePicker
+                  className='w-full bg-surface-nav border border-surface-border rounded-lg px-4 py-2.5 pl-10 text-white focus:outline-none focus:border-brand'
+                  dateFormat='dd-MM-yyyy'
+                  selected={data.faDate ? convertFromStringToDate(data.faDate) : undefined}
+                  onChange={(date: Date | null) => onFaDateChanged(date ?? undefined)}
+                />
+                <Calendar
+                  size={16}
+                  className='absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none'
+                />
+              </div>
+            </div>
+          </div>
+
+          {meta.isBouldering && (
+            <div className='space-y-1.5'>
+              <label className='text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1'>
+                Rock (Grouping)
+              </label>
+              <RockSelector
+                rock={data.rock ?? null}
+                onRockUpdated={(rock) => setData((prev) => ({ ...prev, rock: rock ?? undefined }))}
                 rocks={sectorRocks}
-                identity={null}
+                placeholder='Search or select rock...'
               />
-            ) : (
-              <Form.Field />
-            )}
-          </Form.Group>
-          <Form.Field
-            label={
-              <label htmlFor='description'>
-                Description (supports&nbsp;
-                <a
-                  href='https://jonschlinkert.github.io/remarkable/demo/'
-                  target='_blank'
-                  rel='noopener noreferrer'
-                >
-                  markdown
-                </a>
-                &nbsp;formatting)
-              </label>
-            }
-            control={TextArea}
-            placeholder='Enter description'
-            style={{ minHeight: 100 }}
-            value={data.comment}
-            onChange={onCommentChanged}
-          />
-          <Form.Field
-            label={
-              <label htmlFor='description'>
-                Trivia (supports&nbsp;
-                <a
-                  href='https://jonschlinkert.github.io/remarkable/demo/'
-                  target='_blank'
-                  rel='noopener noreferrer'
-                >
-                  markdown
-                </a>
-                &nbsp;formatting)
-              </label>
-            }
-            control={TextArea}
-            placeholder='Enter trivia'
-            style={{ minHeight: 100 }}
-            value={data.trivia}
-            onChange={onTriviaChanged}
-          />
-          <Form.Field
-            label='Broken'
-            control={Input}
-            placeholder='Enter reason if problem is broken'
-            value={data.broken}
-            onChange={onBrokenChanged}
-          />
-          {meta.isIce && (
-            <>
-              <Form.Field
-                label='Starting altitude'
-                control={Input}
-                placeholder='Enter starting altitude'
-                value={data.startingAltitude}
-                onChange={onStartingAltitudeChanged}
-              />
-              <Form.Field
-                label='Aspect'
-                control={Input}
-                placeholder='Enter aspect'
-                value={data.aspect}
-                onChange={onAspectChanged}
-              />
-              <Form.Field
-                label='Route length'
-                control={Input}
-                placeholder='Enter route length'
-                value={data.routeLength}
-                onChange={onRouteLengthChanged}
-              />
-              <Form.Field
-                label='Descent'
-                control={Input}
-                placeholder='Enter descent'
-                value={data.descent}
-                onChange={onDescentChanged}
-              />
-            </>
+            </div>
           )}
-        </Segment>
+        </div>
+
+        <div className='bg-surface-card border border-surface-border rounded-2xl p-6 space-y-6'>
+          <div className='space-y-1.5'>
+            <label className='text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1'>
+              Description (supports markdown)
+            </label>
+            <textarea
+              className='w-full bg-surface-nav border border-surface-border rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand min-h-25'
+              value={data.comment}
+              onChange={(e) => setData((prev) => ({ ...prev, comment: e.target.value }))}
+            />
+          </div>
+
+          <div className='space-y-1.5'>
+            <label className='text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1'>
+              Trivia (supports markdown)
+            </label>
+            <textarea
+              className='w-full bg-surface-nav border border-surface-border rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand min-h-20'
+              value={data.trivia}
+              onChange={(e) => setData((prev) => ({ ...prev, trivia: e.target.value }))}
+            />
+          </div>
+
+          <div className='space-y-1.5'>
+            <label className='text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1'>
+              Broken Reason
+            </label>
+            <input
+              className='w-full bg-surface-nav border border-surface-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-brand'
+              value={data.broken}
+              placeholder='Leave empty if not broken'
+              onChange={(e) => setData((prev) => ({ ...prev, broken: e.target.value }))}
+            />
+          </div>
+        </div>
 
         <ExternalLinks
           externalLinks={data.externalLinks?.filter((l) => !l.inherited) || []}
-          onExternalLinksUpdated={onExternalLinksUpdated}
+          onExternalLinksUpdated={(links) => setData((p) => ({ ...p, externalLinks: links }))}
         />
 
-        <Segment>
-          <Form.Field>
-            <label>Add media</label>
-            <br />
-            <MediaUpload
-              onMediaChanged={onNewMediaChanged}
-              isMultiPitch={!!(data.sections && data.sections.length > 1)}
-            />
-          </Form.Field>
-        </Segment>
+        <div className='bg-surface-card border border-surface-border rounded-2xl p-6'>
+          <label className='text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1 block mb-3'>
+            Add Media
+          </label>
+          <MediaUpload
+            onMediaChanged={(media) => setData((p) => ({ ...p, newMedia: media }))}
+            isMultiPitch={!!(data.sections && data.sections.length > 1)}
+          />
+        </div>
 
         {meta.isClimbing && (
-          <Segment>
-            <Form.Field
-              label='Type'
-              control={Dropdown}
-              selection
-              value={data.t?.id}
-              onChange={onTypeIdChanged}
-              options={meta.types.map((t, i) => {
-                const text = t.type + (t.subType ? ' - ' + t.subType : '');
-                return { key: i, value: t.id, text: text };
-              })}
-              error={data.t?.id ? false : 'Type required'}
-            />
-            <Form.Field>
-              <label>First AID ascent?</label>
-              <Button.Group size='tiny'>
-                <Button
+          <div className='bg-surface-card border border-surface-border rounded-2xl p-6 space-y-6'>
+            <div className='space-y-1.5'>
+              <label className='text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1'>
+                Type
+              </label>
+              <div className='relative'>
+                <select
+                  className='w-full appearance-none bg-surface-nav border border-surface-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-brand'
+                  value={data.t?.id}
+                  onChange={(e) => setData((p) => ({ ...p, t: { ...p.t, id: +e.target.value } }))}
+                >
+                  {meta.types.map((t, i) => (
+                    <option key={i} value={t.id}>
+                      {t.type + (t.subType ? ' - ' + t.subType : '')}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown
+                  size={16}
+                  className='absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none'
+                />
+              </div>
+            </div>
+
+            <div className='space-y-3'>
+              <label className='text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1 block'>
+                First AID Ascent?
+              </label>
+              <div className='flex gap-2'>
+                <button
+                  type='button'
                   onClick={() =>
-                    setData((prevState) => ({
-                      ...prevState,
-                      faAid: {
-                        problemId: data.id,
-                        date: '',
-                        description: '',
-                      },
+                    setData((p) => ({
+                      ...p,
+                      faAid: { problemId: data.id, date: '', description: '' },
                     }))
                   }
-                  positive={!!data.faAid}
+                  className={cn(
+                    'px-4 py-1.5 rounded-lg text-xs font-black uppercase transition-all',
+                    data.faAid ? 'bg-brand text-white' : 'bg-surface-nav text-slate-500',
+                  )}
                 >
                   Yes
-                </Button>
-                <Button.Or />
-                <Button
-                  onClick={() => setData((prevState) => ({ ...prevState, faAid: undefined }))}
-                  positive={!data.faAid}
+                </button>
+                <button
+                  type='button'
+                  onClick={() => setData((p) => ({ ...p, faAid: undefined }))}
+                  className={cn(
+                    'px-4 py-1.5 rounded-lg text-xs font-black uppercase transition-all',
+                    !data.faAid ? 'bg-brand text-white' : 'bg-surface-nav text-slate-500',
+                  )}
                 >
                   No
-                </Button>
-              </Button.Group>
-              {data.faAid && (
-                <Container>
-                  <DatePicker
-                    placeholderText='Click to select a date'
-                    dateFormat='dd-MM-yyyy'
-                    isClearable
-                    withPortal
-                    portalId='root-portal'
-                    showMonthDropdown
-                    showYearDropdown
-                    dropdownMode='select'
-                    selected={
-                      data.faAid.date ? convertFromStringToDate(data.faAid.date) : undefined
-                    }
-                    onChange={(date: Date | null) => onFaAidDateChanged(date)}
-                  />
-                  <TextArea
-                    placeholder='Enter description'
-                    style={{ minHeight: 75 }}
-                    value={data.faAid.description}
-                    onChange={onFaAidDescriptionChanged}
-                  />
-                  <UsersSelector
-                    placeholder='Select user(s)'
-                    users={data.faAid.users ?? []}
-                    onUsersUpdated={onFaAidUsersUpdated}
-                  />
-                </Container>
-              )}
-            </Form.Field>
-            <Form.Field>
-              <label>Pitches</label>
+                </button>
+              </div>
+            </div>
+
+            <div className='space-y-1.5'>
+              <label className='text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1 block'>
+                Pitches
+              </label>
               <ProblemSection
                 sections={data.sections ?? []}
-                onSectionsUpdated={onSectionsUpdated}
+                onSectionsUpdated={(sections) => setData((p) => ({ ...p, sections }))}
               />
-            </Form.Field>
-          </Segment>
+            </div>
+          </div>
         )}
 
-        <Segment>
-          <Form.Field>
-            <label>Click to mark problem on map</label>
+        <div className='bg-surface-card border border-surface-border rounded-2xl p-6 space-y-4'>
+          <div className='flex flex-wrap items-center justify-between gap-4'>
+            <label className='text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1 block'>
+              Click Map to Mark Location
+            </label>
+            <label className='flex items-center gap-3 cursor-pointer group'>
+              <span className='text-[10px] font-black uppercase text-slate-500 group-hover:text-slate-300 transition-colors'>
+                Include Sector Markers
+              </span>
+              <button
+                type='button'
+                onClick={() => setShowSectorMarkers(!showSectorMarkers)}
+                className={cn(
+                  'relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full transition-colors p-0.5',
+                  showSectorMarkers ? 'bg-brand' : 'bg-slate-700',
+                )}
+              >
+                <span
+                  className={cn(
+                    'inline-block h-4 w-4 transform rounded-full bg-white transition duration-200',
+                    showSectorMarkers ? 'translate-x-4' : 'translate-x-0',
+                  )}
+                />
+              </button>
+            </label>
+          </div>
+
+          <div className='rounded-xl overflow-hidden border border-surface-border h-87.5'>
             <Leaflet
               autoZoom={true}
               markers={markers}
               defaultCenter={defaultCenter}
               defaultZoom={defaultZoom}
-              onMouseClick={onMapClick}
-              height={'300px'}
+              onMouseClick={(e) =>
+                setData((p) => ({
+                  ...p,
+                  coordinates: { latitude: e.latlng.lat, longitude: e.latlng.lng },
+                }))
+              }
+              height='100%'
               showSatelliteImage={true}
               clusterMarkers={false}
             />
-          </Form.Field>
-          <Form.Group widths='equal'>
-            <Form.Field>
-              <label>Latitude</label>
-              <Input
-                placeholder='Latitude'
-                value={data.coordinates?.latitude || ''}
-                onChange={onLatChanged}
-              />
-            </Form.Field>
-            <Form.Field>
-              <label>Longitude</label>
-              <Input
-                placeholder='Longitude'
-                value={data.coordinates?.longitude || ''}
-                onChange={onLngChanged}
-              />
-            </Form.Field>
-            <Form.Field>
-              <label>Include all markers in sector</label>
-              <Checkbox
-                toggle
-                checked={showSectorMarkers}
-                onChange={(_, { checked }) => setShowSectorMarkers(!!checked)}
-              />
-            </Form.Field>
-          </Form.Group>
-        </Segment>
+          </div>
+        </div>
+      </div>
 
-        <Button.Group>
-          <Button
-            negative
-            onClick={() => {
-              if (problemId) {
-                navigate(`/problem/${problemId}`);
-              } else {
-                navigate(`/sector/${sectorId}`);
-              }
-            }}
-          >
-            Cancel
-          </Button>
-          <Button.Or />
-          <Button
-            positive
-            loading={saving}
-            onClick={(event) =>
-              save(event, data).then((dest) => {
-                if (dest === false) {
-                  return;
-                }
-                navigate(dest);
-              })
+      <div className='fixed bottom-0 left-0 right-0 bg-surface-nav/80 backdrop-blur-md border-t border-surface-border py-4 z-1000'>
+        <div className='max-w-container mx-auto px-4 flex items-center justify-between gap-4'>
+          <button
+            type='button'
+            onClick={() =>
+              problemId && problemId > 0
+                ? navigate(`/problem/${problemId}`)
+                : navigate(`/sector/${sectorId}`)
             }
-            disabled={!data.name || (meta.types.length > 1 && !data.t?.id)}
+            className='flex items-center gap-2 px-6 py-2.5 rounded-xl border border-surface-border text-slate-300 hover:text-white font-bold'
           >
-            Save
-          </Button>
-          {!problemId && (
-            <>
-              <Button.Or />
-              <Button
-                positive
-                loading={saving}
-                onClick={(event) =>
-                  save(event, data).then((dest) => {
-                    if (dest === false) {
-                      return;
-                    }
-                    navigate(0);
-                  })
-                }
-                disabled={!data.name || (meta.types.length > 1 && !data.t?.id)}
+            <X size={18} /> Cancel
+          </button>
+
+          <div className='flex gap-2'>
+            <button
+              type='button'
+              onClick={(e) => save(e, data).then((dest) => dest && navigate(dest))}
+              disabled={!data.name || (meta.types.length > 1 && !data.t?.id) || saving}
+              className={cn(
+                'flex items-center gap-2 px-8 py-2.5 rounded-xl font-black uppercase tracking-widest transition-all',
+                saving
+                  ? 'bg-brand/50 cursor-not-allowed'
+                  : 'bg-brand text-white shadow-lg shadow-brand/20',
+              )}
+            >
+              {saving ? (
+                <div className='animate-spin h-4 w-4 border-2 border-white/30 border-t-white rounded-full' />
+              ) : (
+                <Save size={18} />
+              )}
+              Save
+            </button>
+
+            {problemId < 0 && (
+              <button
+                type='button'
+                onClick={(e) => save(e, data).then((dest) => dest && navigate(0))}
+                disabled={!data.name || (meta.types.length > 1 && !data.t?.id) || saving}
+                className='flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white/10 border border-white/20 text-white font-black uppercase tracking-widest'
               >
-                Save, and add new
-              </Button>
-            </>
-          )}
-        </Button.Group>
-      </Form>
-    </>
+                Save & Add New
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

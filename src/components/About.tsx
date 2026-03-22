@@ -1,379 +1,333 @@
 import { Link } from 'react-router-dom';
-import { Grid, Segment, Header, Icon, List, Label, Placeholder } from 'semantic-ui-react';
 import { useMeta } from './common/meta/context';
 import { useData } from '../api';
-import Avatar from './common/avatar/avatar';
+import { ClickableAvatar } from './ui/Avatar';
+import {
+  Info,
+  Users,
+  Pencil,
+  Book,
+  Mail,
+  Camera,
+  Code,
+  Globe,
+  Heart,
+  type LucideIcon,
+} from 'lucide-react';
 import type { Success } from '../@types/buldreinfo';
+import type { ReactNode } from 'react';
+
+type SectionProps = {
+  title: string;
+  icon: LucideIcon;
+  subheader?: string;
+  children: ReactNode;
+  className?: string;
+};
 
 const About = () => {
   const meta = useMeta();
   const { data } = useData<Success<'getAdministrators'>>(`/administrators`);
-  const administrators = (
-    <Grid.Column>
-      <Segment>
-        <Header as='h3'>
-          <Icon name='users' />
-          <Header.Content>
-            Administrators
-            {data && <Header.Subheader>{data.length} users</Header.Subheader>}
-          </Header.Content>
-        </Header>
-        <List>
-          {data ? (
-            data.map((u) => (
-              <List.Item key={u.userId}>
-                <Avatar name={u.name} mediaId={u.mediaId} mediaVersionStamp={u.mediaVersionStamp} />
-                <List.Content>
-                  <List.Header as={Link} to={`/user/${u.userId}`}>
-                    {u.name}
-                  </List.Header>
-                  <List.Description>Last seen {u.lastLogin}</List.Description>
-                  {u.emails?.map((email) => (
-                    <Label key={email} size='tiny' as='a' href={`mailto:${email}`}>
-                      <Icon name='mail outline'></Icon>
-                      {email}
-                    </Label>
-                  ))}
-                </List.Content>
-              </List.Item>
-            ))
-          ) : (
-            <Placeholder>
-              {[...Array(10)].map((_, i) => (
-                <Placeholder.Header image key={i}>
-                  <Placeholder.Line length='medium' />
-                  <Placeholder.Line length='short' />
-                </Placeholder.Header>
-              ))}
-            </Placeholder>
+
+  const Section = ({ title, icon: Icon, subheader, children, className = '' }: SectionProps) => (
+    <div
+      className={`bg-surface-card border border-surface-border rounded-xl p-6 shadow-sm overflow-hidden ${className}`}
+    >
+      <div className='flex items-start gap-4 mb-6'>
+        <div className='p-2.5 bg-surface-nav rounded-lg border border-surface-border text-slate-300 shadow-inner'>
+          <Icon size={20} />
+        </div>
+        <div>
+          <h3 className='text-xl font-bold text-white tracking-tight'>{title}</h3>
+          {subheader && (
+            <p className='text-[10px] text-slate-500 font-bold mt-1 uppercase tracking-widest italic'>
+              {subheader}
+            </p>
           )}
-        </List>
-      </Segment>
-    </Grid.Column>
+        </div>
+      </div>
+      <div className='text-sm text-slate-300 leading-relaxed'>{children}</div>
+    </div>
   );
 
   return (
-    <>
+    <div className='max-w-container mx-auto px-4 py-8'>
       <title>{`About | ${meta?.title}`}</title>
-      <meta name='description' content='History, information and administrators.'></meta>
-      <Grid columns={2} stackable>
-        <Grid.Column>
-          <Segment>
-            <Header as='h3'>
-              <Icon name='info' />
-              <Header.Content>
-                Statutes
-                <Header.Subheader>
-                  This is a nonprofit website created by climbers, for climbers.
-                </Header.Subheader>
-              </Header.Content>
-            </Header>
-            <List bulleted>
-              <List.Item>
-                The webpage is created and maintained by{' '}
-                <a href='mailto:jostein.oygarden@gmail.com'>Jostein Øygarden</a>.
-              </List.Item>
-              <List.Item>
-                The aim and purpose of the websites is to create a good solution that provides as
-                good information as possible about the climbing in the region where the solution is
-                used, also called a climbing guide.
-              </List.Item>
-              <List.Item>The site is non-profit and free to use for everyone.</List.Item>
-              <List.Item>
-                The editors are a variety of active climbers in the different regions.
-              </List.Item>
-              <List.Item>
-                The owner of the content is linked to the origin, whether it is a club or
-                individuals.
-              </List.Item>
-              <List.Item>
-                The editors themselves can choose how to cover the costs associated with running the
-                websites, with the aim of ensuring free use for the users.
-              </List.Item>
-            </List>
-          </Segment>
-          <Segment>
-            <Header as='h3'>
-              <Icon name='users' />
-              <Header.Content>
-                Collaboration
-                <Header.Subheader>
-                  Contact <a href='mailto:jostein.oygarden@gmail.com'>Jostein</a> if you or your
-                  organization wants to establish your own online guidebook.
-                </Header.Subheader>
-              </Header.Content>
-            </Header>
-            Design, upgrade and maintenance of the online guide is done on a voluntary basis. The
-            service is non-profit and a collective work of the community in the region.
-            <br />
-            The yearly cost for a page (as of 2023) is 409,- NOK per page and covers the fee of
-            hosting on the server. One page is defined as one topo/guide. E.g. Bouldering, Sport and
-            Ice Climbing would be three different pages and thus cost 1227,-. The cost is billed
-            annually.
-          </Segment>
-          <Segment>
-            <Header as='h3'>
-              <Icon name='pencil' />
-              <Header.Content>
-                Ethics
-                <Header.Subheader>
-                  If you&#39;re going out climbing, we ask you to please follow these guidelines for
-                  the best possible bouldering experience now, and for the future generations of
-                  climbers.
-                </Header.Subheader>
-              </Header.Content>
-            </Header>
-            <List bulleted>
-              <List.Item>Show respect for the landowners, issue care and be polite.</List.Item>
-              <List.Item>Follow paths where possible, and do not cross cultivated land.</List.Item>
-              <List.Item>Take your trash back with you.</List.Item>
-              <List.Item>
-                Park with reason, and think of others. Make room for potential tractors and such if
-                necessary.
-              </List.Item>
-              <List.Item>No chipping allowed.</List.Item>
-              <List.Item>
-                Remember climbing can be dangerous and always involves risk. Your safety is your own
-                responsibility.
-              </List.Item>
-              {meta.isBouldering ? (
-                <>
-                  <List.Item>
-                    Start where directed, and don&#39;t hesitate to ask if your unsure.
-                  </List.Item>
-                  <List.Item>
-                    Sit start means that the behind should be the last thing to leave the
-                    ground/crashpad.
-                  </List.Item>
-                </>
-              ) : (
-                <>
-                  <List.Item>
-                    Loose hangers are expected to be tightened by the climbers themselves, it is
-                    recommended to have a spanner (17mm) in the bag at all times.
-                  </List.Item>
-                  <List.Item>
-                    Quickdraws on a route usually means someone is projecting this route, leave them
-                    hanging.
-                  </List.Item>
-                  <List.Item>
-                    If there is a piece of rope or similar hanging from the first bolt, it means
-                    that the route has been closed by the developer and should not be climbed.
-                  </List.Item>
-                </>
-              )}
-            </List>
-          </Segment>
-          <Segment>
-            <Header as='h3'>
-              <Icon name='book' />
-              <Header.Content>
-                History
-                <Header.Subheader>
-                  The first version of this webpage was published in 2003.
-                </Header.Subheader>
-              </Header.Content>
-            </Header>
-            <List bulleted>
-              <List.Item>
-                2023:{' '}
-                <a
-                  href='https://github.com/jossi87/climbing-web'
-                  rel='noreferrer noopener'
-                  target='_blank'
-                >
-                  https://github.com/jossi87/climbing-web
-                </a>
-                {' (frontend) '}
-                <a
-                  href='https://github.com/jossi87/climbing-ws'
-                  rel='noreferrer noopener'
-                  target='_blank'
-                >
-                  https://github.com/jossi87/climbing-ws
-                </a>
-                {' (backend)'}
-                <List.Description>The project is now open source.</List.Description>
-              </List.Item>
-              <List.Item>
-                2021:{' '}
-                <a href='https://is.brattelinjer.no' rel='noreferrer noopener' target='_blank'>
-                  is.brattelinjer.no
-                </a>
-                <List.Description>
-                  Ice climbing guide, by Jostein Øygarden
-                  <br />
-                  <Label size='mini' basic>
-                    <Icon name='camera' />
+      <meta name='description' content='History, information and administrators.' />
+
+      <div className='grid grid-cols-1 gap-8 items-start'>
+        <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
+          <div className='space-y-8'>
+            <Section
+              title='Statutes'
+              icon={Info}
+              subheader='A nonprofit website created by climbers, for climbers.'
+            >
+              <ul className='space-y-4'>
+                {[
+                  <span key='author'>
+                    The webpage is created and maintained by{' '}
                     <a
-                      href='/png/archive/20211012_is_brattelinjer.png'
-                      rel='noreferrer noopener'
-                      target='_blank'
+                      href='mailto:jostein.oygarden@gmail.com'
+                      className='text-slate-200 hover:text-brand transition-colors font-bold'
                     >
-                      Screenshot (2021.10.12)
+                      Jostein Øygarden
                     </a>
-                  </Label>
-                </List.Description>
-              </List.Item>
-              <List.Item>
-                2018:{' '}
-                <a href='https://brattelinjer.no' rel='noreferrer noopener' target='_blank'>
-                  brattelinjer.no
-                </a>
-                <List.Description>
-                  Sport- and traditional climbing guide, by Jostein Øygarden
-                  <br />
-                  <Label size='mini' basic>
-                    <Icon name='camera' />
-                    <a
-                      href='/png/archive/20211012_brattelinjer.png'
-                      rel='noreferrer noopener'
-                      target='_blank'
-                    >
-                      Screenshot (2021.10.12)
-                    </a>
-                  </Label>
-                </List.Description>
-              </List.Item>
-              <List.Item>
-                2016:{' '}
-                <a href='https://buldreinfo.com' rel='noreferrer noopener' target='_blank'>
-                  buldreinfo.com
-                </a>
-                <List.Description>
-                  Bouldering guide, by Jostein Øygarden
-                  <br />
-                  <Label size='mini' basic>
-                    <Icon name='camera' />
-                    <a
-                      href='/png/archive/20211012_buldreinfo.png'
-                      rel='noreferrer noopener'
-                      target='_blank'
-                    >
-                      Screenshot (2021.10.12)
-                    </a>
-                  </Label>
-                </List.Description>
-              </List.Item>
-              <List.Item>
-                2012-2016:{' '}
-                <a href='https://buldreinfo.com' rel='noreferrer noopener' target='_blank'>
-                  buldreinfo.com
-                </a>
-                <List.Description>
-                  Bouldering guide, by Idar Ose
-                  <br />
-                  <Label size='mini' basic>
-                    <Icon name='camera' />
-                    <a
-                      href='/png/archive/20160205_buldreinfo.png'
-                      rel='noreferrer noopener'
-                      target='_blank'
-                    >
-                      Screenshot (2016.02.05)
-                    </a>
-                    <Label.Detail>
-                      <a
-                        href='https://web.archive.org/web/20160205060357/http://www.buldreinfo.com/'
-                        target='_blank'
-                        rel='noreferrer'
-                      >
-                        source: archive.net
-                      </a>
-                    </Label.Detail>
-                  </Label>
-                </List.Description>
-              </List.Item>
-              <List.Item>
-                2006-2012:{' '}
-                <a href='https://buldreinfo.com' rel='noreferrer noopener' target='_blank'>
-                  buldreinfo.com
-                </a>
-                <List.Description>
-                  Bouldering guide, by Vegard Aksnes
-                  <br />
-                  <Label.Group size='mini'>
-                    <Label size='mini' basic>
-                      <Icon name='camera' />
-                      <a
-                        href='/png/archive/20110923_buldreinfo.png'
-                        rel='noreferrer noopener'
-                        target='_blank'
-                      >
-                        Screenshot (2011.09.23)
-                      </a>
-                      <Label.Detail>
+                    .
+                  </span>,
+                  'The aim and purpose of the websites is to create a solution that provides as good information as possible about the climbing in the region, also called a climbing guide.',
+                  'The site is non-profit and free to use for everyone.',
+                  'The editors are a variety of active climbers in the different regions.',
+                  'The owner of the content is linked to the origin, whether it is a club or individuals.',
+                ].map((content, i) => (
+                  <li key={i} className='flex gap-3'>
+                    <div className='h-1.5 w-1.5 rounded-full bg-slate-600 mt-2 shrink-0' />
+                    <span>{content}</span>
+                  </li>
+                ))}
+              </ul>
+            </Section>
+
+            <Section
+              title='Collaboration'
+              icon={Heart}
+              subheader='Collective work of the community.'
+            >
+              <div className='space-y-4'>
+                <p>
+                  Contact{' '}
+                  <a
+                    href='mailto:jostein.oygarden@gmail.com'
+                    className='text-slate-200 hover:text-brand transition-colors font-bold'
+                  >
+                    Jostein
+                  </a>{' '}
+                  if you want to establish your own online guidebook.
+                </p>
+                <div className='bg-surface-nav border border-surface-border rounded-lg p-4 text-xs text-slate-400'>
+                  The yearly cost for a page (as of 2026) is 250,- NOK per page and covers the
+                  hosting fee. One page is defined as one topo/guide.
+                </div>
+              </div>
+            </Section>
+
+            <Section
+              title='Ethics'
+              icon={Pencil}
+              subheader='Guidelines for an excellent experience.'
+            >
+              <ul className='space-y-3'>
+                {[
+                  'Show respect for landowners.',
+                  'Follow paths.',
+                  'Take trash back.',
+                  'Park with reason.',
+                  'No chipping.',
+                  'Climbing involves risk.',
+                ].map((text, i) => (
+                  <li key={i} className='flex gap-3'>
+                    <div className='h-1.5 w-1.5 rounded-full bg-slate-600 mt-2 shrink-0' />
+                    <span>{text}</span>
+                  </li>
+                ))}
+                {meta.isBouldering ? (
+                  <li className='flex gap-3'>
+                    <div className='h-1.5 w-1.5 rounded-full bg-slate-600 mt-2 shrink-0' />
+                    <span>Sit start means behind leaves the ground last.</span>
+                  </li>
+                ) : (
+                  <li className='flex gap-3'>
+                    <div className='h-1.5 w-1.5 rounded-full bg-slate-600 mt-2 shrink-0' />
+                    <span>Tighten loose hangers (17mm spanner).</span>
+                  </li>
+                )}
+              </ul>
+            </Section>
+          </div>
+
+          <div className='space-y-8'>
+            <Section
+              title='History'
+              icon={Book}
+              subheader='The first version was published in 2003.'
+            >
+              <div className='space-y-6'>
+                {[
+                  {
+                    year: '2023',
+                    url: 'github.com/jossi87',
+                    desc: 'The project is now open source.',
+                    links: [
+                      {
+                        label: 'Frontend: climbing-web',
+                        href: 'https://github.com/jossi87/climbing-web',
+                        icon: Code,
+                      },
+                      {
+                        label: 'Backend: climbing-ws',
+                        href: 'https://github.com/jossi87/climbing-ws',
+                        icon: Code,
+                      },
+                    ],
+                  },
+                  {
+                    year: '2021',
+                    url: 'is.brattelinjer.no',
+                    desc: 'Ice climbing guide, by Jostein Øygarden',
+                    img: '20211012_is_brattelinjer.png',
+                  },
+                  {
+                    year: '2018',
+                    url: 'brattelinjer.no',
+                    desc: 'Sport- and traditional climbing guide, by Jostein Øygarden',
+                    img: '20211012_brattelinjer.png',
+                  },
+                  {
+                    year: '2016',
+                    url: 'buldreinfo.com',
+                    desc: 'Bouldering guide, by Jostein Øygarden',
+                    img: '20211012_buldreinfo.png',
+                  },
+                  {
+                    year: '2012-2016',
+                    url: 'buldreinfo.com',
+                    desc: 'Bouldering guide, by Idar Ose',
+                    img: '20160205_buldreinfo.png',
+                    archive:
+                      'https://web.archive.org/web/20160205060357/http://www.buldreinfo.com/',
+                  },
+                  {
+                    year: '2006-2012',
+                    url: 'buldreinfo.com',
+                    desc: 'Bouldering guide, by Vegard Aksnes',
+                    img: '20110923_buldreinfo.png',
+                    img2: '20071104_buldreinfo.png',
+                    archive:
+                      'https://web.archive.org/web/20110923004804/http://www.buldreinfo.com/',
+                  },
+                  {
+                    year: '2003-2006',
+                    url: 'brv.no',
+                    desc: 'Bouldering guide predecessor, by Vegard Aksnes',
+                    img: '20040812_brv_bouldering_guide.png',
+                    archive:
+                      'https://web.archive.org/web/20050308114436/http://www.brv.no/gammelt/buldring/oversikt.htm',
+                  },
+                ].map((item, idx) => (
+                  <div key={idx} className='border-l border-surface-border pl-4'>
+                    <div className='flex items-baseline gap-2'>
+                      <span className='font-bold text-white text-sm'>{item.year}:</span>
+                      {item.links ? (
+                        <span className='text-sm text-slate-300 font-bold'>Open Source</span>
+                      ) : (
                         <a
-                          href='https://web.archive.org/web/20110923004804/http://www.buldreinfo.com/'
+                          href={`https://${item.url}`}
                           target='_blank'
                           rel='noreferrer'
+                          className='text-sm text-slate-300 hover:text-white underline'
                         >
-                          source: archive.net
+                          {item.url}
                         </a>
-                      </Label.Detail>
-                    </Label>
-                    <Label size='mini' basic>
-                      <Icon name='camera' />
-                      <a
-                        href='/png/archive/20071104_buldreinfo.png'
-                        rel='noreferrer noopener'
-                        target='_blank'
-                      >
-                        Screenshot (2007.11.04)
-                      </a>
-                      <Label.Detail>
+                      )}
+                    </div>
+                    <p className='text-xs text-slate-500 mt-1'>{item.desc}</p>
+                    <div className='flex flex-wrap gap-2 mt-3'>
+                      {item.links?.map((link, lIdx) => (
                         <a
-                          href='https://web.archive.org/web/20071104020049/http://www.buldreinfo.com/'
+                          key={lIdx}
+                          href={link.href}
                           target='_blank'
                           rel='noreferrer'
+                          className='flex items-center gap-1.5 px-2 py-1 rounded bg-surface-nav border border-surface-border text-[10px] text-slate-400 hover:text-white transition-colors'
                         >
-                          source: archive.net
+                          <link.icon size={12} /> {link.label}
                         </a>
-                      </Label.Detail>
-                    </Label>
-                  </Label.Group>
-                </List.Description>
-              </List.Item>
-              <List.Item>
-                2003-2006: Predecessor to{' '}
-                <a href='https://buldreinfo.com' rel='noreferrer noopener' target='_blank'>
-                  buldreinfo.com
-                </a>{' '}
-                (a page located on the{' '}
-                <a href='https://brv.no' rel='noreferrer noopener' target='_blank'>
-                  brv.no
-                </a>
-                -site)
-                <List.Description>
-                  Bouldering guide, by Vegard Aksnes
-                  <br />
-                  <Label size='mini' basic>
-                    <Icon name='camera' />
-                    <a
-                      href='/png/archive/20040812_brv_bouldering_guide.png'
-                      rel='noreferrer noopener'
-                      target='_blank'
-                    >
-                      Screenshot (2004.08.12)
-                    </a>
-                    <Label.Detail>
+                      ))}
+                      {item.img && (
+                        <a
+                          href={`/png/archive/${item.img}`}
+                          target='_blank'
+                          rel='noreferrer'
+                          className='flex items-center gap-1.5 px-2 py-1 rounded bg-surface-nav border border-surface-border text-[10px] text-slate-400 hover:text-white transition-colors'
+                        >
+                          <Camera size={12} /> Screenshot{' '}
+                          {item.year === '2006-2012' ? '(2011.09.23)' : ''}
+                        </a>
+                      )}
+                      {item.img2 && (
+                        <a
+                          href={`/png/archive/${item.img2}`}
+                          target='_blank'
+                          rel='noreferrer'
+                          className='flex items-center gap-1.5 px-2 py-1 rounded bg-surface-nav border border-surface-border text-[10px] text-slate-400 hover:text-white transition-colors'
+                        >
+                          <Camera size={12} /> Screenshot (2007.11.04)
+                        </a>
+                      )}
+                      {item.archive && (
+                        <a
+                          href={item.archive}
+                          target='_blank'
+                          rel='noreferrer'
+                          className='flex items-center gap-1.5 px-2 py-1 rounded bg-surface-nav border border-surface-border text-[10px] text-slate-400 hover:text-white transition-colors'
+                        >
+                          <Globe size={12} /> source: archive.net
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          </div>
+        </div>
+
+        <Section
+          title='Administrators'
+          icon={Users}
+          subheader={data ? `${data.length} users` : 'Loading...'}
+        >
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6'>
+            {data?.map((u) => (
+              <div
+                key={u.userId}
+                className='flex gap-4 p-4 rounded-lg bg-surface-nav/30 border border-surface-border/50 group hover:border-brand/30 transition-colors'
+              >
+                <ClickableAvatar
+                  name={u.name}
+                  mediaId={u.mediaId}
+                  mediaVersionStamp={u.mediaVersionStamp}
+                  size='tiny'
+                />
+                <div className='min-w-0 flex-1'>
+                  <Link
+                    to={`/user/${u.userId}`}
+                    className='text-white font-bold hover:text-brand transition-colors text-sm truncate block'
+                  >
+                    {u.name}
+                  </Link>
+                  <div className='text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-0.5'>
+                    Last seen {u.lastLogin}
+                  </div>
+                  <div className='flex flex-col gap-2 mt-3'>
+                    {u.emails?.map((email) => (
                       <a
-                        href='https://web.archive.org/web/20050308114436/http://www.brv.no/gammelt/buldring/oversikt.htm'
-                        target='_blank'
-                        rel='noreferrer'
+                        key={email}
+                        href={`mailto:${email}`}
+                        className='flex items-center gap-2 text-xs text-slate-400 hover:text-brand transition-colors truncate'
                       >
-                        source: archive.net
+                        <Mail size={14} className='shrink-0' />
+                        {email}
                       </a>
-                    </Label.Detail>
-                  </Label>
-                </List.Description>
-              </List.Item>
-            </List>
-          </Segment>
-        </Grid.Column>
-        {administrators}
-      </Grid>
-    </>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Section>
+      </div>
+    </div>
   );
 };
 

@@ -1,17 +1,18 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 import { visualizer } from 'rollup-plugin-visualizer';
 import path from 'path';
 
 export default defineConfig(({ mode }) => ({
   envPrefix: 'REACT_APP_',
   resolve: {
-    tsconfigPaths: true,
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
   },
   plugins: [
+    tailwindcss(),
     react(),
     mode === 'analyze' &&
       visualizer({

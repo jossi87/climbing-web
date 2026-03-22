@@ -1,5 +1,4 @@
 import { Loading } from './../../common/widgets/widgets';
-import { Segment } from 'semantic-ui-react';
 import { useProfileMedia } from '../../../api';
 import Media from '../../common/media/media';
 import { useMeta } from '../meta';
@@ -19,18 +18,18 @@ const ProfileMedia = ({ userId, captured }: Props) => {
   }
 
   if (!data || data.length === 0) {
-    return <Segment>Empty list.</Segment>;
+    return (
+      <div className='p-8 text-center text-slate-500 italic bg-surface-nav/20 rounded-xl border border-surface-border'>
+        Empty list.
+      </div>
+    );
   }
 
   return (
-    <Segment>
+    <div className='bg-surface-card border border-surface-border rounded-xl p-4 sm:p-6'>
       <MetaContext.Provider
         value={{
           ...meta,
-          // Do a little hack to force the image to be read-only in this mode. We
-          // should remove this at some point and support a "readonly"-type mode on
-          // the Media component itself .. some day.
-          // <MetaContext.Provider
           isAdmin: false,
           isSuperAdmin: false,
         }}
@@ -44,7 +43,7 @@ const ProfileMedia = ({ userId, captured }: Props) => {
           showLocation={true}
         />
       </MetaContext.Provider>
-    </Segment>
+    </div>
   );
 };
 

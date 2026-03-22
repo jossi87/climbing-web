@@ -1,7 +1,7 @@
 import RangeSlider from '../../RangeSlider';
 import 'react-range-slider-input/dist/style.css';
 import { useFilter } from '../context';
-import { Dropdown } from 'semantic-ui-react';
+import { ChevronDown } from 'lucide-react';
 
 export const StartingAltitudeSelect = () => {
   const { filterStartingAltitudeLow, filterStartingAltitudeHigh, dispatch } = useFilter();
@@ -19,8 +19,8 @@ export const StartingAltitudeSelect = () => {
   );
 
   return (
-    <div>
-      <div style={{ marginBottom: 20 }}>
+    <div className='flex flex-col gap-4'>
+      <div className='px-1 mt-2'>
         <RangeSlider
           min={minAlt}
           max={maxAlt}
@@ -35,39 +35,53 @@ export const StartingAltitudeSelect = () => {
           }}
         />
       </div>
-      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start' }}>
-        <div style={{ display: 'flex', flex: 1, justifyContent: 'flex-start' }}>
-          <Dropdown
-            text={`${low}m`}
+      <div className='flex items-center justify-between gap-4'>
+        <div className='relative flex-1'>
+          <select
+            className='w-full appearance-none bg-surface-nav border border-surface-border rounded-md px-3 py-1.5 text-sm text-white pr-8 focus:outline-none focus:border-brand'
             value={low}
-            scrolling
-            pointing='top left'
-            options={altitudeRange
-              .filter((value) => value < high)
-              .map((alt) => ({ key: alt, text: `${alt}m`, value: alt }))}
-            onChange={(_, { value = 0 }) => {
+            onChange={(e) => {
               dispatch({
                 action: 'set-starting-altitude',
-                low: +value,
+                low: Number(e.target.value),
               });
             }}
+          >
+            {altitudeRange
+              .filter((value) => value < high)
+              .map((alt) => (
+                <option key={alt} value={alt}>
+                  {alt}m
+                </option>
+              ))}
+          </select>
+          <ChevronDown
+            size={14}
+            className='absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none'
           />
         </div>
-        <div style={{ display: 'flex', flex: 1, justifyContent: 'flex-end' }}>
-          <Dropdown
-            text={`${high}m`}
+        <div className='relative flex-1'>
+          <select
+            className='w-full appearance-none bg-surface-nav border border-surface-border rounded-md px-3 py-1.5 text-sm text-white pr-8 focus:outline-none focus:border-brand'
             value={high}
-            scrolling
-            pointing='top right'
-            options={altitudeRange
-              .filter((value) => value > low)
-              .map((alt) => ({ key: alt, text: `${alt}m`, value: alt }))}
-            onChange={(_, { value = 0 }) => {
+            onChange={(e) => {
               dispatch({
                 action: 'set-starting-altitude',
-                high: +value,
+                high: Number(e.target.value),
               });
             }}
+          >
+            {altitudeRange
+              .filter((value) => value > low)
+              .map((alt) => (
+                <option key={alt} value={alt}>
+                  {alt}m
+                </option>
+              ))}
+          </select>
+          <ChevronDown
+            size={14}
+            className='absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none'
           />
         </div>
       </div>

@@ -1,5 +1,5 @@
-import { Loading } from '../widgets/widgets';
-import { Popup, Table } from 'semantic-ui-react';
+import { useState } from 'react';
+import { Loading } from '../../ui/StatusWidgets';
 import { useGradeDistribution } from './../../../api';
 import type { components } from '../../../@types/buldreinfo/swagger';
 
@@ -12,127 +12,155 @@ type Props =
 
 const ChartGradeDistribution = ({ idArea = 0, idSector = 0, data = undefined }: Props) => {
   const { data: gradeDistribution } = useGradeDistribution(idArea, idSector, data || undefined);
+  const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
 
   if (!gradeDistribution) {
     return <Loading />;
   }
 
-  const maxValue = Math.max(
-    1,
-    ...gradeDistribution.map((d) => {
-      return d.num ?? 0;
-    }),
+  const maxValue = Math.max(1, ...gradeDistribution.map((d) => (d.prim ?? 0) + (d.sec ?? 0)));
+  const activeGrade = selectedIdx !== null ? gradeDistribution[selectedIdx] : null;
+
+  const categories = [
+    { key: 'numBoulder', label: 'Boulder' },
+    { key: 'numSport', label: 'Sport' },
+    { key: 'numTrad', label: 'Trad' },
+    { key: 'numMixed', label: 'Mixed' },
+    { key: 'numTopRope', label: 'Top Rope' },
+    { key: 'numAid', label: 'Aid' },
+    { key: 'numAidTrad', label: 'Aid/Trad' },
+    { key: 'numIce', label: 'Ice' },
+  ] as const;
+
+  const activeCategories = categories.filter((cat) =>
+    activeGrade?.rows?.some((row) => ((row[cat.key as keyof typeof row] as number) ?? 0) > 0),
   );
-  const cols = gradeDistribution.map((g) => {
-    const prim = g.prim ?? 0;
-    const sec = g.sec ?? 0;
-    const hPrim = (prim / maxValue) * 80 + '%';
-    const hSec = (sec / maxValue) * 80 + '%';
-    const col = (
-      <td
-        key={[g.grade, g.prim, g.sec, g.num, g.sec].join('/')}
-        style={{ height: '100%', verticalAlign: 'bottom', textAlign: 'center' }}
-      >
-        {(g.num ?? 0) > 0 && (g.num ?? 0)}
-        {(g.sec ?? 0) > 0 && (
-          <div
-            style={{
-              marginLeft: '3px',
-              marginRight: '3px',
-              height: hSec,
-              backgroundColor: '#BD313C',
-            }}
-          />
-        )}
-        {(g.prim ?? 0) > 0 && (
-          <div
-            style={{
-              marginLeft: '3px',
-              marginRight: '3px',
-              paddingBottom: hSec,
-              height: hPrim,
-              backgroundColor: '#3182bd',
-            }}
-          />
-        )}
-      </td>
-    );
-    if (g.rows && g.rows.length > 0) {
-      const hasBoulder = g.rows.filter((x) => (x.numBoulder ?? 0) > 0).length > 0;
-      const hasSport = g.rows.filter((x) => (x.numSport ?? 0) > 0).length > 0;
-      const hasTrad = g.rows.filter((x) => (x.numTrad ?? 0) > 0).length > 0;
-      const hasMixed = g.rows.filter((x) => (x.numMixed ?? 0) > 0).length > 0;
-      const hasTopRope = g.rows.filter((x) => (x.numTopRope ?? 0) > 0).length > 0;
-      const hasAid = g.rows.filter((x) => (x.numAid ?? 0) > 0).length > 0;
-      const hasAidTrad = g.rows.filter((x) => (x.numAidTrad ?? 0) > 0).length > 0;
-      const hasIce = g.rows.filter((x) => (x.numIce ?? 0) > 0).length > 0;
-      return (
-        <Popup
-          key={[g.grade, g.prim, g.sec, g.num, g.sec].join('/')}
-          inverted
-          position='bottom center'
-          offset={[0, 20]}
-          trigger={col}
-          content={
-            <Table compact inverted unstackable>
-              <Table.Header>
-                <Table.Row>
-                  <Table.HeaderCell>
-                    {idArea > 0 || idSector > 0 ? 'Sector' : 'Region'}
-                  </Table.HeaderCell>
-                  {hasBoulder && <Table.HeaderCell>Boulder</Table.HeaderCell>}
-                  {hasSport && <Table.HeaderCell>Sport</Table.HeaderCell>}
-                  {hasTrad && <Table.HeaderCell>Trad</Table.HeaderCell>}
-                  {hasMixed && <Table.HeaderCell>Mixed</Table.HeaderCell>}
-                  {hasTopRope && <Table.HeaderCell>Top rope</Table.HeaderCell>}
-                  {hasAid && <Table.HeaderCell>Aid</Table.HeaderCell>}
-                  {hasAidTrad && <Table.HeaderCell>Aid/Trad</Table.HeaderCell>}
-                  {hasIce && <Table.HeaderCell>Ice</Table.HeaderCell>}
-                </Table.Row>
-              </Table.Header>
-              <Table.Body>
-                {g.rows.map((s) => (
-                  <Table.Row key={s.name}>
-                    <Table.Cell>{s.name}</Table.Cell>
-                    {hasBoulder && <Table.Cell>{s.numBoulder ?? 0}</Table.Cell>}
-                    {hasSport && <Table.Cell>{s.numSport ?? 0}</Table.Cell>}
-                    {hasTrad && <Table.Cell>{s.numTrad ?? 0}</Table.Cell>}
-                    {hasMixed && <Table.Cell>{s.numMixed ?? 0}</Table.Cell>}
-                    {hasTopRope && <Table.Cell>{s.numTopRope ?? 0}</Table.Cell>}
-                    {hasAid && <Table.Cell>{s.numAid ?? 0}</Table.Cell>}
-                    {hasAidTrad && <Table.Cell>{s.numAidTrad ?? 0}</Table.Cell>}
-                    {hasIce && <Table.Cell>{s.numIce ?? 0}</Table.Cell>}
-                  </Table.Row>
-                ))}
-              </Table.Body>
-            </Table>
-          }
-          size='mini'
-        />
-      );
-    }
-    return col;
-  });
+
   return (
-    <table
-      style={{
-        height: '20vh',
-        tableLayout: 'fixed',
-        width: '100%',
-        maxWidth: '400px',
-      }}
-    >
-      <tbody>
-        <tr>{cols}</tr>
-        <tr>
-          {gradeDistribution.map((g) => (
-            <td style={{ width: '40px', textAlign: 'center' }} key={g.grade}>
-              <strong>{g.grade}</strong>
-            </td>
-          ))}
-        </tr>
-      </tbody>
-    </table>
+    <div className='w-full select-none'>
+      <div className='flex items-center justify-end mb-10 px-2'>
+        <div className='flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-nav/40 border border-surface-border'>
+          <span className='text-[10px] font-bold text-slate-500 uppercase tracking-widest'>
+            Click bar for details
+          </span>
+        </div>
+      </div>
+
+      <div className='flex items-end justify-between h-64 w-full px-1 gap-1 sm:gap-2'>
+        {gradeDistribution.map((g, i) => {
+          const hPrim = ((g.prim ?? 0) / maxValue) * 100;
+          const hSec = ((g.sec ?? 0) / maxValue) * 100;
+          const isActive = selectedIdx === i;
+
+          return (
+            <div
+              key={i}
+              onClick={() => setSelectedIdx(selectedIdx === i ? null : i)}
+              className='flex-1 flex flex-col justify-end h-full cursor-pointer group pt-6'
+            >
+              <div className='text-center mb-2 h-4'>
+                <span
+                  className={`text-[10px] font-mono font-black transition-all ${
+                    isActive ? 'text-white' : 'text-slate-500 group-hover:text-slate-400'
+                  }`}
+                >
+                  {g.num || ''}
+                </span>
+              </div>
+
+              <div
+                className={`w-full flex flex-col justify-end overflow-hidden rounded-t-md transition-all duration-300 ${
+                  isActive
+                    ? 'bg-surface-hover ring-1 ring-surface-border/50'
+                    : 'bg-surface-nav/20 group-hover:bg-surface-nav/60'
+                }`}
+                style={{ height: '100%' }}
+              >
+                <div
+                  style={{ height: `${hSec}%` }}
+                  className={`w-full transition-colors ${isActive ? 'bg-slate-500' : 'bg-slate-700/50'}`}
+                />
+                <div
+                  style={{ height: `${hPrim}%` }}
+                  className={`w-full transition-colors ${isActive ? 'bg-brand' : 'bg-slate-600 group-hover:bg-slate-500'}`}
+                />
+              </div>
+
+              <div className='mt-4 text-center border-t border-surface-border/50 pt-2'>
+                <span
+                  className={`text-[10px] sm:text-xs font-black uppercase tracking-tighter transition-colors ${
+                    isActive ? 'text-white' : 'text-slate-500 group-hover:text-slate-400'
+                  }`}
+                >
+                  {g.grade}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {activeGrade && (
+        <div className='mt-12 bg-surface-dark border border-surface-border rounded-xl overflow-hidden animate-in fade-in zoom-in-95 duration-300 shadow-2xl'>
+          <div className='px-5 py-4 bg-surface-nav/50 border-b border-surface-border flex justify-between items-center'>
+            <h3 className='text-xs font-bold text-white uppercase tracking-widest'>
+              Distribution <span className='text-slate-500 mx-2'>/</span> Grade {activeGrade.grade}
+            </h3>
+            <span className='text-[11px] font-mono text-slate-300 font-black bg-surface-card border border-surface-border px-2 py-1 rounded'>
+              {activeGrade.num} TOTAL
+            </span>
+          </div>
+          <div className='max-h-100 overflow-y-auto'>
+            <table className='w-full text-left border-collapse'>
+              <thead>
+                <tr className='bg-surface-dark/80 backdrop-blur sticky top-0 z-10'>
+                  <th className='px-5 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-surface-border'>
+                    {idArea > 0 || idSector > 0 ? 'Sector' : 'Region'}
+                  </th>
+                  {activeCategories.map((cat) => (
+                    <th
+                      key={cat.key}
+                      className='px-5 py-4 text-[10px] font-black text-slate-400 uppercase text-right border-b border-surface-border'
+                    >
+                      {cat.label}
+                    </th>
+                  ))}
+                  <th className='px-5 py-4 text-[10px] font-black text-slate-200 uppercase text-right border-b border-surface-border'>
+                    Total
+                  </th>
+                </tr>
+              </thead>
+              <tbody className='divide-y divide-surface-border/20'>
+                {activeGrade.rows?.map((row, idx) => {
+                  const total = categories.reduce(
+                    (acc, cat) => acc + ((row[cat.key as keyof typeof row] as number) ?? 0),
+                    0,
+                  );
+                  return (
+                    <tr key={idx} className='hover:bg-surface-hover/40 transition-colors group/row'>
+                      <td className='px-5 py-4 text-slate-200 font-bold uppercase text-[11px] tracking-tight'>
+                        {row.name}
+                      </td>
+                      {activeCategories.map((cat) => (
+                        <td
+                          key={cat.key}
+                          className='px-5 py-4 text-right font-mono text-slate-400 text-xs'
+                        >
+                          {(row[cat.key as keyof typeof row] as number) || '-'}
+                        </td>
+                      ))}
+                      <td className='px-5 py-4 text-right font-mono text-slate-200 font-black text-xs bg-surface-nav/30'>
+                        {total}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

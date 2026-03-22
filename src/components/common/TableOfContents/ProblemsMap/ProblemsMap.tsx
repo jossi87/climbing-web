@@ -9,13 +9,13 @@ import { useMap } from 'react-leaflet';
 import Polygons from '../../leaflet/polygons';
 import { LatLngBounds, type LeafletEventHandlerFn, latLngBounds } from 'leaflet';
 import { LockSymbol } from '../../../common/widgets/widgets';
-import { BreadcrumbSection, BreadcrumbDivider, Breadcrumb } from 'semantic-ui-react';
+import { ChevronRight } from 'lucide-react';
 
 type Props = Pick<TocProps, 'areas'>;
 
 const useMapZoom = () => {
   const map = useMap();
-  const [zoom, setZoom] = useState(0);
+  const [zoom, setZoom] = useState(map.getZoom());
 
   useEffect(() => {
     const onZoom: LeafletEventHandlerFn = () => {
@@ -53,9 +53,9 @@ const useMarkers = (areas: Props['areas']): MarkerDef[] => {
                 }
               }
               if (sectorBounds && sectorBounds.isValid()) {
-                const { lat: centerLat, lng: centerLng } = sectorBounds.getCenter();
-                lat = centerLat;
-                lng = centerLng;
+                const center = sectorBounds.getCenter();
+                lat = center.lat;
+                lng = center.lng;
               }
             } else if (
               sector.parking &&
@@ -65,44 +65,58 @@ const useMarkers = (areas: Props['areas']): MarkerDef[] => {
               lat = sector.parking.latitude;
               lng = sector.parking.longitude;
             }
+          } else if (
+            typeof problem.coordinates.latitude === 'number' &&
+            typeof problem.coordinates.longitude === 'number'
+          ) {
+            lat = problem.coordinates.latitude;
+            lng = problem.coordinates.longitude;
           }
 
-          if (!lat || !lng) {
-            continue;
-          }
+          if (!lat || !lng) continue;
 
           markers.push({
             coordinates: { latitude: lat, longitude: lng },
-            label: problem.name,
+            label: problem.name ?? '',
             url: `/problem/${problem.id}`,
             html: (
-              <>
-                <Breadcrumb>
-                  <BreadcrumbSection link>
-                    <Link to={`/area/${area.id}`}>{area.name}</Link>
-                    <LockSymbol
-                      lockedAdmin={area.lockedAdmin}
-                      lockedSuperadmin={area.lockedSuperadmin}
-                    />
-                  </BreadcrumbSection>
-                  <BreadcrumbDivider />
-                  <BreadcrumbSection link>
-                    <Link to={`/sector/${sector.id}`}>{sector.name}</Link>
-                    <LockSymbol
-                      lockedAdmin={sector.lockedAdmin}
-                      lockedSuperadmin={sector.lockedSuperadmin}
-                    />
-                  </BreadcrumbSection>
-                  <br />
-                  <BreadcrumbSection link>
-                    {`#${problem.nr} `}
-                    <Link to={`/problem/${problem.id}`}>
-                      <b>{problem.name}</b>
-                    </Link>{' '}
-                    {problem.grade}
-                  </BreadcrumbSection>
-                </Breadcrumb>
-              </>
+              <div className='flex flex-col gap-2 min-w-50 p-1'>
+                <nav className='flex flex-wrap items-center gap-1.5 text-[10px] font-black tracking-widest text-slate-500 uppercase'>
+                  <Link
+                    to={`/area/${area.id}`}
+                    className='hover:text-brand transition-colors text-slate-400'
+                  >
+                    {area.name}
+                  </Link>
+                  <LockSymbol
+                    lockedAdmin={area.lockedAdmin}
+                    lockedSuperadmin={area.lockedSuperadmin}
+                  />
+                  <ChevronRight size={10} className='opacity-40' />
+                  <Link
+                    to={`/sector/${sector.id}`}
+                    className='hover:text-brand transition-colors text-slate-400'
+                  >
+                    {sector.name}
+                  </Link>
+                  <LockSymbol
+                    lockedAdmin={sector.lockedAdmin}
+                    lockedSuperadmin={sector.lockedSuperadmin}
+                  />
+                </nav>
+                <div className='flex items-center gap-1.5 pt-1 border-t border-slate-700/50'>
+                  <span className='text-xs font-mono text-slate-500'>#{problem.nr}</span>
+                  <Link
+                    to={`/problem/${problem.id}`}
+                    className='text-sm font-bold text-white hover:text-brand transition-colors'
+                  >
+                    {problem.name}
+                  </Link>
+                  <span className='text-xs font-mono text-slate-400 normal-case'>
+                    [{problem.grade}]
+                  </span>
+                </div>
+              </div>
             ),
           });
         }
@@ -114,8 +128,7 @@ const useMarkers = (areas: Props['areas']): MarkerDef[] => {
 };
 
 const ProblemMarkers = ({ areas }: Props) => {
-  const markers: MarkerDef[] = useMarkers(areas);
-
+  const markers = useMarkers(areas);
   return (
     <MarkerClusterGroup key={markers.length}>
       <Markers opacity={0.6} markers={markers} addEventHandlers={false} flyToId={null} />
@@ -125,12 +138,9 @@ const ProblemMarkers = ({ areas }: Props) => {
 
 const ProblemClusters = ({ areas }: Props) => {
   const zoom = useMapZoom();
+  const markers = useMarkers(areas);
 
-  const markers: MarkerDef[] = useMarkers(areas);
-
-  if (zoom > 12) {
-    return null;
-  }
+  if (zoom > 12) return null;
 
   return (
     <MarkerClusterGroup key={markers.length}>
@@ -143,28 +153,26 @@ const SectorOutlines = ({ areas }: Props) => {
   const map = useMap();
   const zoom = useMapZoom();
 
-  const outlines: ComponentProps<typeof Leaflet>['outlines'] = useMemo(() => {
-    const out: ComponentProps<typeof Leaflet>['outlines'] = [];
+  const outlines = useMemo(() => {
+    const out: ComponentProps<typeof Polygons>['outlines'] = [];
     for (const area of areas) {
       for (const sector of area.sectors ?? []) {
-        if ((sector.outline ?? []).length == 0) {
-          continue;
+        if ((sector.outline ?? []).length > 0) {
+          out.push({
+            outline: sector.outline ?? [],
+            url: `/sector/${sector.id}`,
+            label: sector.name ?? '',
+          });
         }
-
-        out.push({
-          outline: sector.outline ?? [],
-          url: `/sector/${sector.id}`,
-          label: sector.name,
-        });
       }
     }
     return out;
   }, [areas]);
 
   useEffect(() => {
-    const bounds = new LatLngBounds([]);
+    const bounds = latLngBounds([]);
     for (const outline of outlines) {
-      for (const c of outline.outline ?? []) {
+      for (const c of outline.outline) {
         if (typeof c.latitude === 'number' && typeof c.longitude === 'number') {
           bounds.extend([c.latitude, c.longitude]);
         }
@@ -191,10 +199,12 @@ export const ProblemsMap = ({ areas }: Props) => {
   const { defaultCenter, defaultZoom, isBouldering } = useMeta();
 
   return (
-    <Leaflet defaultCenter={defaultCenter} defaultZoom={defaultZoom}>
-      <SectorOutlines areas={areas} />
-      {isBouldering && <ProblemMarkers areas={areas} />}
-      {!isBouldering && <ProblemClusters areas={areas} />}
-    </Leaflet>
+    <div className='h-[60vh] w-full relative z-0'>
+      <Leaflet defaultCenter={defaultCenter} defaultZoom={defaultZoom}>
+        <SectorOutlines areas={areas} />
+        {isBouldering && <ProblemMarkers areas={areas} />}
+        {!isBouldering && <ProblemClusters areas={areas} />}
+      </Leaflet>
+    </div>
   );
 };

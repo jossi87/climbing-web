@@ -1,25 +1,27 @@
-import { type SyntheticEvent, type ChangeEvent, useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import {
   convertFromDateToString,
   convertFromStringToDate,
   postTicks,
   useAccessToken,
 } from './../../../api';
-import {
-  Button,
-  Dropdown,
-  type DropdownProps,
-  Icon,
-  Modal,
-  Form,
-  TextArea,
-  type TextAreaProps,
-  Input,
-  type InputOnChangeData,
-} from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import type { components } from '../../../@types/buldreinfo/swagger';
+import {
+  X,
+  Check,
+  Trash2,
+  Plus,
+  Minus,
+  Star,
+  Calendar,
+  MessageSquare,
+  Award,
+  AlertCircle,
+  RefreshCw,
+} from 'lucide-react';
+import { cn } from '../../../lib/utils';
 
 type Repeat = { date?: string; comment?: string };
 
@@ -135,32 +137,49 @@ const TickModal = ({
     ],
   );
 
+  if (!open) return null;
+
   return (
-    <Modal open={open} onClose={onClose}>
-      <Modal.Header>Tick</Modal.Header>
-      <Modal.Content scrolling>
-        <Modal.Description>
-          <Form loading={isSaving}>
-            {apiError && (
-              <div
-                style={{
-                  color: 'white',
-                  backgroundColor: '#db2828',
-                  padding: '10px',
-                  borderRadius: '4px',
-                  marginBottom: '15px',
-                }}
-              >
-                <strong>Error:</strong> {apiError}
+    <div className='fixed inset-0 z-200 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200'>
+      <div className='bg-surface-card border border-surface-border rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]'>
+        <div className='px-6 py-4 border-b border-surface-border flex items-center justify-between bg-surface-nav/30'>
+          <h3 className='text-sm font-bold text-white uppercase tracking-widest flex items-center gap-2'>
+            <Check size={18} className='text-green-500' /> Tick Problem
+          </h3>
+          <button
+            type='button'
+            onClick={onClose}
+            className='text-slate-500 hover:text-white transition-colors'
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className='p-6 space-y-6 overflow-y-auto text-left'>
+          {apiError && (
+            <div className='bg-red-500/10 border border-red-500/20 rounded-xl p-4 flex items-start gap-3'>
+              <AlertCircle className='text-red-500 shrink-0' size={18} />
+              <div className='text-xs text-red-500 font-bold uppercase tracking-tight'>
+                <span className='opacity-70'>Error:</span> {apiError}
               </div>
-            )}
-            {validDate ? (
-              <label>Date</label>
-            ) : (
-              <label style={{ color: 'red' }}>Date (cannot be in the future)</label>
-            )}
-            <Form.Group>
-              <Form.Field error={!validDate}>
+            </div>
+          )}
+
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+            <div className='space-y-2'>
+              <label
+                className={cn(
+                  'text-[10px] font-black uppercase tracking-widest ml-1',
+                  !validDate ? 'text-red-500' : 'text-slate-500',
+                )}
+              >
+                Date {!validDate && '(cannot be in the future)'}
+              </label>
+              <div className='relative'>
+                <Calendar
+                  className='absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 z-10 pointer-events-none'
+                  size={16}
+                />
                 <DatePicker
                   placeholderText='Click to select a date'
                   dateFormat='dd-MM-yyyy'
@@ -172,187 +191,188 @@ const TickModal = ({
                   onChange={(newDate: Date | null) =>
                     setDate(newDate ? convertFromDateToString(newDate) : undefined)
                   }
+                  className={cn(
+                    'w-full bg-surface-nav border rounded-xl py-2.5 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-brand transition-colors',
+                    !validDate ? 'border-red-500/50' : 'border-surface-border',
+                  )}
                 />
-              </Form.Field>
-            </Form.Group>
-            <Form.Field>
-              <label>Grade</label>
-              <Dropdown
-                selection
-                value={grade}
-                onChange={(e: SyntheticEvent<HTMLElement>, data: DropdownProps) => {
-                  setGrade(String(data.value));
-                }}
-                options={[
-                  {
-                    key: -1,
-                    text: <i>I don&apos;t want to grade</i>,
-                    value: 'No personal grade',
-                  },
-                  ...grades.map((g, i) => ({
-                    key: i,
-                    text: g.grade,
-                    value: g.grade,
-                  })),
-                ]}
-              />
-              <small>
-                <i>
-                  FA grade: {gradeFa}, consensus grade: {gradeConsensus}
-                </i>
-              </small>
-            </Form.Field>
-            <Form.Field>
-              {stars === null ? (
-                <label style={{ color: 'red' }}>Rating (required)</label>
-              ) : (
-                <label>Rating</label>
+              </div>
+            </div>
+
+            <div className='space-y-2'>
+              <label className='text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1'>
+                Grade
+              </label>
+              <div className='relative'>
+                <Award
+                  className='absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none'
+                  size={16}
+                />
+                <select
+                  value={grade}
+                  onChange={(e) => setGrade(e.target.value)}
+                  className='w-full bg-surface-nav border border-surface-border rounded-xl py-2.5 pl-10 pr-4 text-sm text-white appearance-none focus:outline-none focus:border-brand transition-colors cursor-pointer'
+                >
+                  <option value='No personal grade'>I don't want to grade</option>
+                  {grades.map((g, i) => (
+                    <option key={i} value={g.grade}>
+                      {g.grade}
+                    </option>
+                  ))}
+                </select>
+                <div className='mt-1.5 px-1 text-[10px] text-slate-500 italic'>
+                  FA: {gradeFa} | Consensus: {gradeConsensus}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className='space-y-2'>
+            <label
+              className={cn(
+                'text-[10px] font-black uppercase tracking-widest ml-1',
+                stars === null ? 'text-red-500' : 'text-slate-500',
               )}
-              <Dropdown
-                selection
-                value={stars ?? undefined}
-                selectOnBlur={false}
-                onChange={(e: SyntheticEvent<HTMLElement>, data: DropdownProps) => {
-                  setStars(Number(data.value));
-                }}
-                options={[
-                  {
-                    key: -1,
-                    value: -1,
-                    text: <i>I don&apos;t want to rate</i>,
-                  },
-                  {
-                    key: 0,
-                    value: 0,
-                    text: (
-                      <>
-                        <Icon name='star outline' />
-                        <Icon name='star outline' />
-                        <Icon name='star outline' /> Zero stars
-                      </>
-                    ),
-                  },
-                  {
-                    key: 1,
-                    value: 1,
-                    text: (
-                      <>
-                        <Icon name='star' />
-                        <Icon name='star outline' />
-                        <Icon name='star outline' /> Nice
-                      </>
-                    ),
-                  },
-                  {
-                    key: 2,
-                    value: 2,
-                    text: (
-                      <>
-                        <Icon name='star' />
-                        <Icon name='star' />
-                        <Icon name='star outline' /> Very nice
-                      </>
-                    ),
-                  },
-                  {
-                    key: 3,
-                    value: 3,
-                    text: (
-                      <>
-                        <Icon name='star' />
-                        <Icon name='star' />
-                        <Icon name='star' /> Fantastic!
-                      </>
-                    ),
-                  },
-                ]}
-                error={stars === null}
+            >
+              Rating {stars === null && '(required)'}
+            </label>
+            <div className='grid grid-cols-2 sm:grid-cols-5 gap-2'>
+              <button
+                type='button'
+                onClick={() => setStars(-1)}
+                className={cn(
+                  'px-3 py-2 rounded-xl border text-[10px] font-bold uppercase transition-all',
+                  stars === -1
+                    ? 'bg-brand border-brand text-white'
+                    : 'bg-surface-nav border-surface-border text-slate-500 hover:border-slate-400',
+                )}
+              >
+                No rating
+              </button>
+              {[0, 1, 2, 3].map((s) => (
+                <button
+                  type='button'
+                  key={s}
+                  onClick={() => setStars(s)}
+                  className={cn(
+                    'px-3 py-2 rounded-xl border flex items-center justify-center gap-1 transition-all',
+                    stars === s
+                      ? 'bg-brand border-brand text-white shadow-lg shadow-brand/20'
+                      : 'bg-surface-nav border-surface-border text-slate-500',
+                  )}
+                >
+                  <div className='flex'>
+                    {[1, 2, 3].map((i) => (
+                      <Star
+                        key={i}
+                        size={12}
+                        className={cn(i <= s ? 'fill-current' : 'opacity-30')}
+                      />
+                    ))}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className='space-y-2'>
+            <label className='text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1'>
+              Comment
+            </label>
+            <div className='relative'>
+              <MessageSquare
+                className='absolute left-3 top-4 text-slate-500 pointer-events-none'
+                size={16}
               />
-            </Form.Field>
-            <Form.Field>
-              <label>Comment</label>
-              <TextArea
-                placeholder='Comment'
-                style={{ minHeight: 100 }}
-                value={comment ? comment : ''}
-                onChange={(e: SyntheticEvent<HTMLTextAreaElement>, data: TextAreaProps) => {
-                  setComment(String((data.value as string) || ''));
-                }}
+              <textarea
+                placeholder='How did it feel?'
+                className='w-full bg-surface-nav border border-surface-border rounded-xl py-3 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-brand transition-colors min-h-25 resize-none'
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
               />
-            </Form.Field>
-            {enableTickRepeats && (
-              <Form.Field>
-                <label>
-                  Repeats (enabled on ice climbing and multi pitches for logging additional ascents)
-                </label>
+            </div>
+          </div>
+
+          {enableTickRepeats && (
+            <div className='space-y-4 pt-4 border-t border-surface-border/50'>
+              <label className='text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 block'>
+                Repeats (Additional Ascents)
+              </label>
+              <div className='space-y-3'>
                 {repeats.map((r, index) => (
-                  <Form.Group key={r.date ?? 'undated'} inline unstackable>
-                    <Form.Field width={5}>
+                  <div
+                    key={index}
+                    className='flex gap-2 items-start animate-in slide-in-from-left-2 duration-200'
+                  >
+                    <div className='w-40 shrink-0'>
                       <DatePicker
-                        placeholderText='Click to select a date'
                         dateFormat='dd-MM-yyyy'
-                        showMonthDropdown
-                        showYearDropdown
-                        dropdownMode='select'
                         selected={r.date ? convertFromStringToDate(r.date) : undefined}
-                        onChange={(date: Date | null) => {
-                          handleUpdateRepeat(index, 'date', date);
-                        }}
+                        onChange={(date: Date | null) => handleUpdateRepeat(index, 'date', date)}
+                        className='w-full bg-surface-nav border border-surface-border rounded-lg py-2 px-3 text-xs text-white focus:outline-none focus:border-brand'
                       />
-                    </Form.Field>
-                    <Form.Field width={10}>
-                      <Input
-                        fluid
-                        placeholder='Comment'
-                        value={r.comment ? r.comment : ''}
-                        onChange={(e: ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => {
-                          handleUpdateRepeat(index, 'comment', data.value as string);
-                        }}
-                      />
-                    </Form.Field>
-                    <Form.Field width={1}>
-                      <Button
-                        size='mini'
-                        circular
-                        icon='minus'
-                        onClick={() => handleDeleteRepeat(r)}
-                      />
-                    </Form.Field>
-                  </Form.Group>
+                    </div>
+                    <input
+                      placeholder='Repeat comment'
+                      className='flex-1 bg-surface-nav border border-surface-border rounded-lg py-2 px-3 text-xs text-white focus:outline-none focus:border-brand'
+                      value={r.comment ?? ''}
+                      onChange={(e) => handleUpdateRepeat(index, 'comment', e.target.value)}
+                    />
+                    <button
+                      type='button'
+                      onClick={() => handleDeleteRepeat(r)}
+                      className='p-2 text-slate-500 hover:text-red-500 bg-surface-nav border border-surface-border rounded-lg transition-colors'
+                    >
+                      <Minus size={14} />
+                    </button>
+                  </div>
                 ))}
-                <Button size='mini' circular icon='plus' onClick={handleAddRepeat} />
-              </Form.Field>
-            )}
-          </Form>
-        </Modal.Description>
-      </Modal.Content>
-      <Modal.Actions>
-        <Button.Group compact size='tiny'>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button.Or />
-          {idTick > 1 && (
-            <>
-              <Button
-                negative
-                icon='trash'
-                labelPosition='right'
-                content='Delete tick'
-                onClick={() => saveTick(true)}
-              />
-              <Button.Or />
-            </>
+                <button
+                  type='button'
+                  onClick={handleAddRepeat}
+                  className='inline-flex items-center gap-2 px-4 py-2 bg-surface-nav border border-surface-border rounded-xl text-[10px] font-bold text-slate-400 hover:text-white hover:border-brand/50 transition-all'
+                >
+                  <Plus size={14} /> Add Repeat Ascent
+                </button>
+              </div>
+            </div>
           )}
-          <Button
-            positive
-            disabled={!!(stars === null || !validDate) || isSaving}
-            icon='checkmark'
-            labelPosition='right'
-            content='Save'
-            onClick={() => saveTick(false)}
-          />
-        </Button.Group>
-      </Modal.Actions>
-    </Modal>
+        </div>
+
+        <div className='p-4 bg-surface-nav/30 border-t border-surface-border flex justify-between items-center'>
+          <div>
+            {idTick > 1 && (
+              <button
+                type='button'
+                disabled={isSaving}
+                onClick={() => saveTick(true)}
+                className='flex items-center gap-2 px-4 py-2 text-red-500 hover:bg-red-500/10 rounded-xl text-xs font-bold transition-all disabled:opacity-50'
+              >
+                <Trash2 size={16} /> Delete Tick
+              </button>
+            )}
+          </div>
+          <div className='flex gap-3'>
+            <button
+              type='button'
+              onClick={onClose}
+              className='px-4 py-2 text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-white transition-colors'
+            >
+              Cancel
+            </button>
+            <button
+              type='button'
+              onClick={() => saveTick(false)}
+              disabled={stars === null || !validDate || isSaving}
+              className='flex items-center gap-2 px-6 py-2 bg-brand hover:bg-brand/90 disabled:bg-slate-700 disabled:text-slate-500 text-white text-xs font-black uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-brand/20'
+            >
+              {isSaving ? <RefreshCw size={14} className='animate-spin' /> : <Check size={14} />}
+              Save Tick
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
