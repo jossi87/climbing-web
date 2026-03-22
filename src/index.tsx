@@ -89,15 +89,13 @@ const queryClient = new QueryClient({
 const Index = () => (
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
-      <div className='dark min-h-screen bg-stone-950 text-stone-600 font-sans selection:bg-brand/30'>
-        <ErrorBoundary fallback={ErrorFallback} onReset={() => window.location.reload()}>
-          <DataReloader>
-            <Auth0ProviderWithNavigate>
-              <App />
-            </Auth0ProviderWithNavigate>
-          </DataReloader>
-        </ErrorBoundary>
-      </div>
+      <ErrorBoundary fallback={ErrorFallback} onReset={() => window.location.reload()}>
+        <DataReloader>
+          <Auth0ProviderWithNavigate>
+            <App />
+          </Auth0ProviderWithNavigate>
+        </DataReloader>
+      </ErrorBoundary>
     </BrowserRouter>
     {APP_ENV === 'development' && (
       <Suspense fallback={null}>

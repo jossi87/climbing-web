@@ -198,9 +198,9 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                           />
                         )}
                       </div>
-                      <div className='flex-1 min-w-0 pr-1'>
-                        <div className='flex items-baseline justify-between gap-3'>
-                          <div className='text-[13px] text-slate-300 wrap-break-word whitespace-normal leading-relaxed overflow-hidden'>
+                      <div className='flex-1 min-w-0 pr-2'>
+                        <div className='flex items-baseline justify-between gap-4'>
+                          <div className='text-[14px] text-slate-500 wrap-break-word whitespace-normal leading-relaxed overflow-hidden'>
                             {a.users ? (
                               <span>
                                 New {meta.isBouldering ? 'problem' : 'route'} in{' '}
@@ -210,7 +210,7 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                               <span>
                                 <Link
                                   to={`/user/${a.id}`}
-                                  className='font-bold text-slate-100 hover:text-brand transition-colors'
+                                  className='font-semibold text-slate-200 hover:text-brand transition-colors'
                                 >
                                   {a.name}
                                 </Link>{' '}
@@ -222,16 +222,16 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                                   <>
                                     <Link
                                       to={`/user/${a.id}`}
-                                      className='font-bold text-slate-100 hover:text-brand transition-colors'
+                                      className='font-semibold text-slate-200 hover:text-brand transition-colors'
                                     >
                                       {a.name}
                                     </Link>{' '}
-                                    <span className='text-slate-500 font-medium'>
+                                    <span className='text-slate-500 font-medium ml-1'>
                                       {a.repeat ? 'repeated' : 'ticked'}
                                     </span>{' '}
                                   </>
                                 ) : (
-                                  <span className='font-bold text-slate-200'>
+                                  <span className='font-semibold text-slate-200'>
                                     {numImg > 0 && (
                                       <>
                                         {numImg} new{' '}
@@ -242,7 +242,7 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                                     {numMov > 0 && (
                                       <>
                                         {numMov} new{' '}
-                                        <Film size={10} className='inline mb-0.5' />{' '}
+                                        <Film size={12} className='inline mb-0.5' />{' '}
                                       </>
                                     )}{' '}
                                     on{' '}
@@ -257,12 +257,12 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                           </span>
                         </div>
                         {a.description && (
-                          <div className='mt-1 text-slate-500 text-[11px] italic leading-snug pl-2 border-l border-surface-border wrap-break-word whitespace-normal'>
+                          <div className='mt-1 text-slate-400 text-[11px] italic leading-snug pl-2 border-l border-surface-border wrap-break-word whitespace-normal'>
                             {a.description}
                           </div>
                         )}
                         {a.message && (
-                          <div className='mt-1 text-slate-500 text-[11px] border-l border-brand/20 pl-2 italic leading-snug wrap-break-word whitespace-normal'>
+                          <div className='mt-1 text-slate-400 text-[11px] border-l border-brand/20 pl-2 italic leading-snug wrap-break-word whitespace-normal'>
                             <Linkify>{a.message}</Linkify>
                           </div>
                         )}

@@ -38,15 +38,15 @@ const StatItem = ({ to, icon: Icon, label, value }: StatItemProps) => {
       <div className='flex flex-col relative z-10 text-center'>
         {value !== undefined && value !== '' ? (
           <>
-            <span className='text-sm sm:text-lg font-black text-white leading-tight tabular-nums tracking-tight'>
+            <span className='text-sm sm:text-lg font-black text-slate-200 leading-tight tabular-nums tracking-tight'>
               {value}
             </span>
-            <span className='text-[8px] sm:text-[9px] uppercase tracking-widest text-slate-500 font-black mt-0.5'>
+            <span className='text-[8px] sm:text-[9px] uppercase tracking-widest text-slate-500 font-bold mt-0.5'>
               {label}
             </span>
           </>
         ) : (
-          <span className='text-[9px] uppercase tracking-widest text-slate-400 font-black'>
+          <span className='text-[9px] uppercase tracking-widest text-slate-500 font-bold'>
             {label}
           </span>
         )}

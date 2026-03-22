@@ -103,14 +103,14 @@ const Header = () => {
               <span className='text-[10px] font-black text-slate-500 uppercase tracking-widest block'>
                 Signed in as
               </span>
-              <div className='text-sm font-bold text-white truncate text-left'>
+              <div className='text-sm font-bold text-slate-200 truncate text-left'>
                 {authenticatedName}
               </div>
             </div>
             <Link
               to='/user'
               onClick={() => setIsAccountOpen(false)}
-              className='flex items-center gap-3 px-4 py-2 text-xs font-bold text-slate-300 hover:bg-surface-hover hover:text-white transition-colors'
+              className='flex items-center gap-3 px-4 py-2 text-xs font-bold text-slate-300 hover:bg-surface-hover hover:text-slate-200 transition-colors'
             >
               <User size={14} /> Profile
             </Link>
@@ -118,7 +118,7 @@ const Header = () => {
               <Link
                 to='/users'
                 onClick={() => setIsAccountOpen(false)}
-                className='flex items-center gap-3 px-4 py-2 text-xs font-bold text-slate-300 hover:bg-surface-hover hover:text-white transition-colors'
+                className='flex items-center gap-3 px-4 py-2 text-xs font-bold text-slate-300 hover:bg-surface-hover hover:text-slate-200 transition-colors'
               >
                 <Users size={14} /> Users
               </Link>
@@ -128,21 +128,21 @@ const Header = () => {
                 <Link
                   to='/permissions'
                   onClick={() => setIsAccountOpen(false)}
-                  className='flex items-center gap-3 px-4 py-2 text-xs font-bold text-slate-300 hover:bg-surface-hover hover:text-white transition-colors'
+                  className='flex items-center gap-3 px-4 py-2 text-xs font-bold text-slate-300 hover:bg-surface-hover hover:text-slate-200 transition-colors'
                 >
                   <Users size={14} /> Permissions
                 </Link>
                 <Link
                   to='/swagger'
                   onClick={() => setIsAccountOpen(false)}
-                  className='flex items-center gap-3 px-4 py-2 text-xs font-bold text-slate-300 hover:bg-surface-hover hover:text-white transition-colors'
+                  className='flex items-center gap-3 px-4 py-2 text-xs font-bold text-slate-300 hover:bg-surface-hover hover:text-slate-200 transition-colors'
                 >
                   <Code size={14} /> Swagger
                 </Link>
                 <Link
                   to='/trash'
                   onClick={() => setIsAccountOpen(false)}
-                  className='flex items-center gap-3 px-4 py-2 text-xs font-bold text-slate-300 hover:bg-surface-hover hover:text-white transition-colors'
+                  className='flex items-center gap-3 px-4 py-2 text-xs font-bold text-slate-300 hover:bg-surface-hover hover:text-slate-200 transition-colors'
                 >
                   <Trash2 size={14} /> Trash
                 </Link>
@@ -153,7 +153,7 @@ const Header = () => {
               href='/pdf/20230525_administrator_doc.pdf'
               target='_blank'
               rel='noopener noreferrer'
-              className='flex items-center gap-3 px-4 py-2 text-xs font-bold text-slate-300 hover:bg-surface-hover hover:text-white transition-colors'
+              className='flex items-center gap-3 px-4 py-2 text-xs font-bold text-slate-300 hover:bg-surface-hover hover:text-slate-200 transition-colors'
             >
               <HelpCircle size={14} /> Help
             </a>
@@ -169,7 +169,7 @@ const Header = () => {
     ) : (
       <button
         onClick={() => loginWithRedirect()}
-        className='flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-all'
+        className='flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-300 transition-all'
       >
         <LogIn size={16} className='text-brand' /> <span className='hidden sm:inline'>Sign in</span>
       </button>
@@ -216,7 +216,7 @@ const Header = () => {
                     'flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all border',
                     isRegionOpen
                       ? 'bg-brand text-white border-brand shadow-brand'
-                      : 'bg-surface-nav border-surface-border text-slate-400 hover:text-white hover:bg-surface-hover',
+                      : 'bg-surface-nav border-surface-border text-slate-500 hover:text-slate-300 hover:bg-surface-hover',
                   )}
                 >
                   <Globe size={13} />
@@ -242,7 +242,7 @@ const Header = () => {
                           'flex items-center justify-between px-4 py-2 text-xs font-bold transition-colors',
                           site.active
                             ? 'bg-brand/10 text-brand'
-                            : 'text-slate-300 hover:bg-surface-hover',
+                            : 'text-slate-400 hover:text-slate-200 hover:bg-surface-hover',
                         )}
                       >
                         {site.name} {site.active && <Check size={14} />}
@@ -258,7 +258,7 @@ const Header = () => {
                         key={group}
                         to={`/sites/${group.toLowerCase()}`}
                         onClick={() => setIsRegionOpen(false)}
-                        className='flex items-center justify-between px-4 py-2 text-xs font-bold text-slate-400 hover:bg-surface-hover transition-colors'
+                        className='flex items-center justify-between px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-300 hover:bg-surface-hover transition-colors'
                       >
                         {group} <ExternalLink size={12} className='opacity-30' />
                       </Link>

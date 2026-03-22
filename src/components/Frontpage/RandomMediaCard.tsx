@@ -41,10 +41,12 @@ export const RandomMediaCard = ({ randomMedia }: Props) => {
 
         <div className='absolute bottom-0 left-0 right-0 p-5 sm:hidden'>
           <div className='flex items-baseline gap-2'>
-            <h3 className='text-white font-bold text-2xl leading-none'>{randomMedia.problem}</h3>
-            <span className='text-slate-300 font-bold text-lg'>{randomMedia.grade}</span>
+            <h3 className='text-slate-200 font-bold text-2xl leading-none'>
+              {randomMedia.problem}
+            </h3>
+            <span className='text-slate-400 font-bold text-lg'>{randomMedia.grade}</span>
           </div>
-          <div className='text-slate-400 text-[10px] font-bold mt-2 uppercase tracking-[0.2em]'>
+          <div className='text-slate-500 text-[10px] font-bold mt-2 uppercase tracking-[0.2em]'>
             {randomMedia.area} <span className='mx-1 opacity-30'>/</span> {randomMedia.sector}
           </div>
         </div>
@@ -54,24 +56,24 @@ export const RandomMediaCard = ({ randomMedia }: Props) => {
         <div className='mb-3'>
           <Link
             to={`/problem/${randomMedia.idProblem}`}
-            className='text-slate-100 font-bold hover:text-brand transition-colors block text-base leading-tight'
+            className='text-slate-200 font-semibold hover:text-brand transition-colors block text-base leading-tight'
           >
             {randomMedia.problem}{' '}
-            <span className='font-medium text-slate-500 ml-1 tabular-nums'>
+            <span className='font-medium text-slate-400 ml-1 tabular-nums'>
               {randomMedia.grade}
             </span>
           </Link>
-          <div className='text-[10px] text-slate-500 mt-1.5 uppercase tracking-widest font-bold flex items-center gap-1.5'>
+          <div className='text-[10px] text-slate-500 mt-1.5 uppercase tracking-widest font-medium flex items-center gap-1.5'>
             <Link
               to={`/area/${randomMedia.idArea}`}
-              className='hover:text-slate-300 transition-colors'
+              className='hover:text-slate-400 transition-colors'
             >
               {randomMedia.area}
             </Link>
             <span className='text-slate-700'>/</span>
             <Link
               to={`/sector/${randomMedia.idSector}`}
-              className='hover:text-slate-300 transition-colors truncate'
+              className='hover:text-slate-400 transition-colors truncate'
             >
               {randomMedia.sector}
             </Link>
@@ -83,7 +85,7 @@ export const RandomMediaCard = ({ randomMedia }: Props) => {
               <Link
                 key={x.id}
                 to={`/user/${x.id}`}
-                className='inline-flex items-center gap-1.5 text-[11px] text-slate-400 hover:text-white transition-colors'
+                className='inline-flex items-center gap-1.5 text-[11px] text-slate-400 hover:text-slate-200 transition-colors'
               >
                 <ClickableAvatar
                   name={x.name}
@@ -97,7 +99,7 @@ export const RandomMediaCard = ({ randomMedia }: Props) => {
             {photographer && (
               <Link
                 to={`/user/${photographer.id}`}
-                className='inline-flex items-center gap-1.5 text-[11px] text-slate-400 hover:text-white transition-colors'
+                className='inline-flex items-center gap-1.5 text-[11px] text-slate-400 hover:text-slate-200 transition-colors'
               >
                 <ClickableAvatar
                   name={photographer.name}

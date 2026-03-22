@@ -8,7 +8,7 @@ export const LockSymbol = ({
   lockedSuperadmin?: boolean;
 }) => {
   if (lockedSuperadmin) return <UserRoundCheck size={14} className='inline text-brand/60' />;
-  if (lockedAdmin) return <Lock size={14} className='inline text-slate-500' />;
+  if (lockedAdmin) return <Lock size={14} className='inline text-slate-600' />;
   return null;
 };
 
@@ -26,10 +26,10 @@ export const Stars = ({
 
   for (let i = 0; i < 3; i++) {
     if (i < fullStars)
-      stars.push(<Star key={i} size={14} className='fill-slate-200 text-slate-200' />);
+      stars.push(<Star key={i} size={14} className='fill-slate-400 text-slate-400' />);
     else if (i === fullStars && hasHalfStar)
-      stars.push(<StarHalf key={i} size={14} className='fill-slate-200 text-slate-200' />);
-    else if (includeStarOutlines) stars.push(<Star key={i} size={14} className='text-slate-800' />);
+      stars.push(<StarHalf key={i} size={14} className='fill-slate-400 text-slate-400' />);
+    else if (includeStarOutlines) stars.push(<Star key={i} size={14} className='text-slate-700' />);
   }
   return <div className='inline-flex items-center gap-0.5'>{stars}</div>;
 };

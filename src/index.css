@@ -7,6 +7,7 @@
   --color-surface-card: #161b22;
   --color-surface-hover: #21262d;
   --color-surface-border: #30363d;
+  --color-white: #e2e8f0;
   --color-facebook: #1877f2;
   --shadow-brand: 0 0 8px rgba(247, 129, 102, 0.5);
   --spacing-container: 1400px;
@@ -17,8 +18,9 @@
 
 @layer base {
   html {
-    @apply text-slate-300 font-sans antialiased selection:bg-brand/30;
+    @apply text-slate-400 font-sans antialiased selection:bg-brand/30;
     font-size: 14px;
+    letter-spacing: -0.01em;
   }
   body {
     @apply bg-surface-dark leading-relaxed;
@@ -27,9 +29,11 @@
   h2,
   h3,
   h4,
+  h5,
+  h6,
   b,
   strong {
-    @apply text-slate-100 font-bold;
+    @apply text-slate-300 font-semibold;
   }
 }
 
@@ -44,7 +48,7 @@
     @apply translate-y-0 shadow-lg;
   }
   .mobile-bleed {
-    @apply -mx-4 sm:mx-0 w-[calc(100%+2rem)] sm:w-full;
+    @apply -mx-4 sm:mx-0;
   }
 
   .btn-glass {
@@ -58,7 +62,7 @@
     @apply border-slate-400 text-slate-300 bg-surface-nav;
   }
   .btn-glass-active {
-    @apply bg-white/10 border-white/30 text-white scale-[1.02] shadow-sm;
+    @apply bg-slate-300/10 border-slate-300/20 text-slate-200 scale-[1.02] shadow-sm;
   }
 }
 
