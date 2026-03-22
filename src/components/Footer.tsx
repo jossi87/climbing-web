@@ -63,7 +63,7 @@ const Footer = () => {
                 />
               </div>
               <div className='flex flex-col items-start text-left'>
-                <span className='text-sm font-bold leading-none text-slate-100 group-hover:text-brand'>
+                <span className='text-sm font-bold leading-none text-slate-100 group-hover:text-brand transition-colors'>
                   Bratte Rogalands Venner
                 </span>
                 <span className='text-[10px] text-slate-500 mt-1 leading-tight'>
@@ -87,7 +87,7 @@ const Footer = () => {
                 <Facebook size={18} />
               </div>
               <div className='flex flex-col items-start md:items-end text-left md:text-right'>
-                <span className='text-sm font-bold leading-none text-slate-100 group-hover:text-facebook'>
+                <span className='text-sm font-bold leading-none text-slate-100 group-hover:text-facebook transition-colors'>
                   Bratte Linjer
                 </span>
                 <span className='text-[10px] text-slate-500 mt-1'>Facebook Discussion</span>
@@ -102,13 +102,13 @@ const Footer = () => {
           <div className='flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-3 text-[10px] font-bold uppercase tracking-wider text-slate-500'>
             <Link
               to='/about'
-              className='hover:text-slate-200 transition-colors flex items-center gap-2'
+              className='hover:text-brand transition-colors flex items-center gap-2'
             >
               <Info size={13} /> About
             </Link>
             <a
               href={`mailto:jostein.oygarden@gmail.com`}
-              className='hover:text-slate-200 transition-colors flex items-center gap-2'
+              className='hover:text-brand transition-colors flex items-center gap-2'
             >
               <Mail size={13} /> Contact
             </a>
@@ -116,18 +116,18 @@ const Footer = () => {
               to='/donations'
               className='hover:text-brand transition-colors flex items-center gap-2'
             >
-              <Heart size={13} className='text-brand/60' /> Donate
+              <Heart size={13} className='text-brand/80' /> Donate
             </Link>
             <a
               href='/gpl-3.0.txt'
               target='_blank'
-              className='hover:text-slate-200 transition-colors flex items-center gap-2'
+              className='hover:text-brand transition-colors flex items-center gap-2'
             >
               <FileText size={13} /> License
             </a>
             <Link
               to='/privacy-policy'
-              className='hover:text-slate-200 transition-colors flex items-center gap-2'
+              className='hover:text-brand transition-colors flex items-center gap-2'
             >
               <ShieldCheck size={13} /> Privacy
             </Link>

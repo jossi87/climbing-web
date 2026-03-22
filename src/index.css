@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-brand: #f78166;
+  --color-brand: #10b981;
   --color-surface-dark: #0a0a0c;
   --color-surface-nav: #0d1117;
   --color-surface-card: #161b22;
@@ -9,7 +9,7 @@
   --color-surface-border: #30363d;
   --color-white: #e2e8f0;
   --color-facebook: #1877f2;
-  --shadow-brand: 0 0 8px rgba(247, 129, 102, 0.5);
+  --shadow-brand: 0 0 8px rgba(16, 185, 129, 0.5);
   --spacing-container: 1400px;
   --spacing-thumbnail-w: 85px;
   --spacing-thumbnail-h: 80px;
