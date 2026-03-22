@@ -62,11 +62,12 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
 
   return (
     <div className='w-full'>
-      <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 px-4 sm:px-0'>
-        <h2 className='text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] hidden sm:block'>
+      <div className='flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 px-4 sm:px-0'>
+        <h2 className='text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] hidden sm:block shrink-0'>
           Latest Activity
         </h2>
-        <div className='flex flex-wrap items-center gap-1.5 ml-auto'>
+
+        <div className='flex flex-wrap items-center justify-center sm:justify-end gap-1.5 w-full sm:w-auto'>
           <div className='relative' ref={filterRef}>
             <button
               onClick={() => setIsFilterOpen(!isFilterOpen)}
@@ -82,7 +83,7 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
               />
             </button>
             {isFilterOpen && (
-              <div className='absolute top-full right-0 mt-1 w-48 bg-surface-card border border-surface-border rounded-lg shadow-2xl py-1 z-50 max-h-60 overflow-y-auto'>
+              <div className='absolute top-full left-1/2 -translate-x-1/2 sm:left-auto sm:right-0 sm:translate-x-0 mt-1 w-48 bg-surface-card border border-surface-border rounded-lg shadow-2xl py-1 z-50 max-h-60 overflow-y-auto'>
                 <div className='px-4 py-1.5 text-[9px] font-bold text-slate-500 uppercase tracking-widest border-b border-surface-border/50 mb-1'>
                   Lowest Grade
                 </div>
@@ -210,7 +211,7 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                               <span>
                                 <Link
                                   to={`/user/${a.id}`}
-                                  className='font-semibold text-slate-200 hover:text-brand transition-colors'
+                                  className='font-semibold text-slate-300 hover:text-brand transition-colors'
                                 >
                                   {a.name}
                                 </Link>{' '}
@@ -222,7 +223,7 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                                   <>
                                     <Link
                                       to={`/user/${a.id}`}
-                                      className='font-semibold text-slate-200 hover:text-brand transition-colors'
+                                      className='font-semibold text-slate-300 hover:text-brand transition-colors'
                                     >
                                       {a.name}
                                     </Link>{' '}
@@ -231,7 +232,7 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                                     </span>{' '}
                                   </>
                                 ) : (
-                                  <span className='font-semibold text-slate-200'>
+                                  <span className='font-semibold text-slate-300'>
                                     {numImg > 0 && (
                                       <>
                                         {numImg} new{' '}

@@ -65,19 +65,19 @@ const SearchBox = () => {
   return (
     <div ref={containerRef} className='relative w-full'>
       <div className='relative group'>
-        <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
+        <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10'>
           {isPending ? (
             <Loader2 size={18} className='text-brand animate-spin' />
           ) : (
             <SearchIcon
               size={18}
-              className='text-slate-400 group-focus-within:text-brand transition-colors'
+              className='text-slate-500 group-focus-within:text-brand transition-colors'
             />
           )}
         </div>
         <input
           type='text'
-          className='block w-full bg-surface-nav border border-surface-border rounded-md py-1.5 pl-10 pr-3 text-sm text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-brand/40 focus:border-brand/40 transition-all'
+          className='block w-full bg-surface-dark border border-surface-border rounded-lg py-1.5 pl-10 pr-3 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand transition-all relative z-0'
           placeholder={placeholderText}
           value={value}
           onChange={(e) => setValue(e.target.value)}
@@ -86,7 +86,7 @@ const SearchBox = () => {
       </div>
 
       {isOpen && data && data.length > 0 && (
-        <div className='absolute z-100 mt-2 w-full bg-surface-card border border-surface-border rounded-md shadow-2xl py-2 overflow-hidden max-h-100 overflow-y-auto'>
+        <div className='absolute z-100 mt-2 w-full bg-surface-card border border-surface-border rounded-xl shadow-2xl py-2 overflow-hidden max-h-100 overflow-y-auto'>
           {(data as SearchResult[]).map((result) => {
             const mediaId = Number(result?.mediaId) || 0;
             const versionStamp = result?.mediaVersionStamp || 0;
@@ -98,15 +98,21 @@ const SearchBox = () => {
               <button
                 key={result.url || result.externalUrl || Math.random()}
                 onClick={() => handleSelect(result)}
-                className='w-full flex items-center gap-3 px-3 py-2 hover:bg-surface-hover transition-colors text-left group'
+                className='w-full flex items-center gap-3 px-3 py-2 hover:bg-brand/5 transition-colors text-left group'
               >
                 <div className='shrink-0 w-11 h-11 bg-surface-nav rounded-md overflow-hidden flex items-center justify-center border border-surface-border group-hover:border-brand/30 transition-colors'>
                   {result.externalUrl ? (
-                    <ExternalLink size={20} className='text-slate-500' />
+                    <ExternalLink
+                      size={20}
+                      className='text-slate-500 group-hover:text-brand transition-colors'
+                    />
                   ) : imageSrc ? (
                     <img src={imageSrc} className='w-full h-full object-cover' alt='' />
                   ) : (
-                    <SearchIcon size={20} className='text-slate-700' />
+                    <SearchIcon
+                      size={20}
+                      className='text-slate-700 group-hover:text-brand transition-colors'
+                    />
                   )}
                 </div>
 
@@ -115,7 +121,7 @@ const SearchBox = () => {
                     <div
                       className={cn(
                         'text-sm font-bold truncate transition-colors group-hover:text-brand',
-                        result.externalUrl ? 'italic text-slate-400' : 'text-white',
+                        result.externalUrl ? 'italic text-slate-500' : 'text-slate-200',
                       )}
                     >
                       {result.title}
@@ -125,13 +131,13 @@ const SearchBox = () => {
                       />
                     </div>
                     {result.pageViews && (
-                      <span className='text-[10px] font-mono text-slate-500'>
+                      <span className='text-[10px] font-mono text-slate-600'>
                         {result.pageViews}
                       </span>
                     )}
                   </div>
                   {result.description && (
-                    <div className='text-xs text-slate-500 truncate italic group-hover:text-slate-400 transition-colors'>
+                    <div className='text-[11px] text-slate-500 truncate italic group-hover:text-slate-400 transition-colors'>
                       {result.description}
                     </div>
                   )}

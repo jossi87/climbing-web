@@ -9,7 +9,7 @@
   --color-surface-border: #30363d;
   --color-white: #e2e8f0;
   --color-facebook: #1877f2;
-  --shadow-brand: 0 0 8px rgba(16, 185, 129, 0.5);
+  --shadow-brand: 0 0 12px rgba(16, 185, 129, 0.25);
   --spacing-container: 1400px;
   --spacing-thumbnail-w: 85px;
   --spacing-thumbnail-h: 80px;
@@ -35,25 +35,34 @@
   strong {
     @apply text-slate-300 font-semibold;
   }
+
+  /* Kill the double border/outline globally */
+  input,
+  button,
+  select,
+  textarea {
+    @apply outline-none;
+  }
+
+  /* Focus rings: One single, clean Emerald stroke */
+  :focus-visible {
+    @apply ring-1 ring-brand border-brand/50;
+  }
 }
 
 @layer components {
-  .header-sticky {
-    @apply fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ease-in-out;
+  /* Specific fix for Search Input to prevent "Double Border" */
+  .search-input {
+    @apply bg-surface-dark border border-surface-border rounded-lg px-4 py-2 
+           transition-all duration-200 text-slate-200 placeholder:text-slate-600;
   }
-  .header-hidden {
-    @apply -translate-y-full;
-  }
-  .header-visible {
-    @apply translate-y-0 shadow-lg;
-  }
-  .mobile-bleed {
-    @apply -mx-4 sm:mx-0;
+  .search-input:focus {
+    @apply border-brand ring-1 ring-brand/30 bg-surface-nav;
   }
 
   .btn-glass {
     @apply px-3 py-1.5 rounded-md border text-[10px] font-bold uppercase tracking-widest 
-           transition-all duration-200 flex items-center gap-2 h-8 outline-hidden;
+           transition-all duration-200 flex items-center gap-2 h-8 active:scale-95;
     background-color: color-mix(in srgb, var(--color-surface-nav), transparent 50%);
     border-color: var(--color-surface-border);
     color: var(--color-slate-500);
@@ -61,17 +70,12 @@
   .btn-glass:hover {
     @apply border-slate-500 text-slate-300 bg-surface-nav;
   }
-  .btn-glass:focus-visible {
-    @apply ring-2 ring-slate-500 ring-offset-2 ring-offset-surface-dark;
-  }
   .btn-glass-active {
-    @apply bg-surface-hover border-slate-500/50 text-slate-300 shadow-sm;
+    @apply bg-surface-hover border-slate-500/50 text-slate-200 shadow-sm;
   }
   .btn-glass-active svg {
-    color: var(--color-brand);
-  }
-  .btn-glass-active:focus-visible {
-    @apply ring-brand/50;
+    @apply text-brand;
+    filter: drop-shadow(0 0 3px rgba(16, 185, 129, 0.3));
   }
 }
 
