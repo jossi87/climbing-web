@@ -1,15 +1,28 @@
 import { Link } from 'react-router-dom';
 import { getMediaFileUrl, getMediaFileUrlSrcSet } from '../../api';
-import { ClickableAvatar } from '../ui/Avatar/Avatar';
+import { ClickableAvatar, AvatarGroup } from '../ui/Avatar/Avatar';
 import type { components } from '../../@types/buldreinfo/swagger';
 
 type RandomMedia = components['schemas']['FrontpageRandomMedia'];
-type User = components['schemas']['User'];
 
 export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) => {
   if (!randomMedia)
     return (
-      <div className='app-card w-full aspect-square sm:aspect-275/250 animate-pulse bg-surface-nav border-surface-border' />
+      <div className='app-card w-full border-0 sm:border overflow-hidden'>
+        <div className='w-full bg-surface-nav animate-pulse' style={{ aspectRatio: '275 / 250' }} />
+        <div className='hidden sm:block p-4 space-y-4'>
+          <div className='space-y-2'>
+            <div className='h-4 w-3/4 bg-surface-hover rounded-md animate-pulse' />
+            <div className='h-3 w-1/2 bg-surface-hover/50 rounded-md animate-pulse' />
+          </div>
+          <div className='pt-4 border-t border-surface-border/50'>
+            <div className='flex items-center gap-2'>
+              <div className='w-6 h-6 rounded-full bg-surface-hover animate-pulse' />
+              <div className='h-3 w-16 bg-surface-hover rounded-md animate-pulse ml-2' />
+            </div>
+          </div>
+        </div>
+      </div>
     );
 
   const taggedUsers = randomMedia.tagged || [];
@@ -20,7 +33,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
       <Link
         to={`/problem/${randomMedia.idProblem}`}
         className='block relative overflow-hidden bg-surface-nav'
-        style={{ aspectRatio: '275 / 250', minHeight: '300px' }}
+        style={{ aspectRatio: '275 / 250' }}
       >
         <img
           className='w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105'
@@ -55,23 +68,20 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
 
           {(taggedUsers.length > 0 || photographer) && (
             <div className='flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-white/10 pt-4'>
-              {taggedUsers.map((x: User) => (
-                <div key={x.id} className='flex items-center gap-2'>
-                  <ClickableAvatar
-                    name={x.name}
-                    mediaId={x.mediaId}
-                    mediaVersionStamp={x.mediaVersionStamp}
+              {taggedUsers.length > 0 && (
+                <div className='flex items-center gap-2'>
+                  <AvatarGroup
+                    items={taggedUsers.map((u) => ({ ...u, mediaId: u.mediaId ?? 0 }))}
                     size='mini'
-                    className='w-5! h-5! ring-1 ring-white/20'
+                    max={3}
                   />
-                  <Link
-                    to={`/user/${x.id}`}
-                    className='text-[11px] text-white font-bold tracking-tight'
-                  >
-                    {x.name}
-                  </Link>
+                  <span className='text-[11px] text-white font-bold tracking-tight'>
+                    {taggedUsers.length === 1
+                      ? taggedUsers[0].name
+                      : `${taggedUsers.length} in photo`}
+                  </span>
                 </div>
-              ))}
+              )}
               {photographer && (
                 <div className='flex items-center gap-2'>
                   <ClickableAvatar
@@ -82,7 +92,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
                     className='w-5! h-5! ring-1 ring-white/20'
                   />
                   <div className='flex items-center gap-1.5 text-[11px] text-white font-bold'>
-                    <span className='text-[8px] font-black uppercase tracking-widest text-white/50'>
+                    <span className='text-[8px] font-black uppercase tracking-widest opacity-50'>
                       BY
                     </span>
                     <Link to={`/user/${photographer.id}`} className='tracking-tight'>
@@ -123,23 +133,25 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
         </div>
 
         {(taggedUsers.length > 0 || photographer) && (
-          <div className='flex flex-col gap-y-2.5 pt-4 border-t border-surface-border/50'>
-            {taggedUsers.map((x: User) => (
-              <div key={x.id} className='flex items-center gap-2.5'>
-                <ClickableAvatar
-                  name={x.name}
-                  mediaId={x.mediaId}
-                  mediaVersionStamp={x.mediaVersionStamp}
+          <div className='flex flex-col gap-y-3 pt-4 border-t border-surface-border/50'>
+            {taggedUsers.length > 0 && (
+              <div className='flex items-center gap-3'>
+                <AvatarGroup
+                  items={taggedUsers.map((u) => ({ ...u, mediaId: u.mediaId ?? 0 }))}
                   size='mini'
+                  max={3}
                 />
-                <Link
-                  to={`/user/${x.id}`}
-                  className='text-[11px] text-slate-300 hover:text-brand transition-colors font-bold tracking-tight'
-                >
-                  {x.name}
-                </Link>
+                <div className='text-[11px] text-slate-300 font-bold tracking-tight'>
+                  {taggedUsers[0].name}
+                  {taggedUsers.length > 1 && (
+                    <span className='text-slate-500 font-medium ml-1'>
+                      and {taggedUsers.length - 1} more
+                    </span>
+                  )}
+                </div>
               </div>
-            ))}
+            )}
+
             {photographer && (
               <div className='flex items-center gap-2.5'>
                 <ClickableAvatar
@@ -148,7 +160,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
                   mediaVersionStamp={photographer.mediaVersionStamp}
                   size='mini'
                 />
-                <div className='flex items-center gap-1.5 text-[11px] text-slate-300 font-bold'>
+                <div className='flex items-center gap-1 text-[11px] text-slate-300 font-bold tracking-tight'>
                   <span className='text-[8px] font-black uppercase tracking-widest text-slate-500'>
                     BY
                   </span>
