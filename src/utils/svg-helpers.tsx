@@ -1,4 +1,4 @@
-import type { JSX, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { parseSVG, makeAbsolute } from 'svg-path-parser';
 import { neverGuard } from './neverGuard';
 import type { MediaRegion } from './svg-scaler';
@@ -172,11 +172,6 @@ export function generateSvgNrAndAnchor(
   if (x > w - r) x = w - r;
   if (y < r) y = r;
   if (y > h - r) y = h - r;
-  let anchor: JSX.Element | null = null;
-  if (hasAnchor === true) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    anchor = <circle fill='#E2011A' cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.006 * w} />;
-  }
   return (
     <g key={key} className='buldreinfo-svg-edit-opacity'>
       {nr && (

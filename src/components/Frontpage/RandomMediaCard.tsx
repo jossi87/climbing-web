@@ -6,14 +6,10 @@ import type { components } from '../../@types/buldreinfo/swagger';
 type RandomMedia = components['schemas']['FrontpageRandomMedia'];
 type User = components['schemas']['User'];
 
-type Props = {
-  randomMedia?: RandomMedia;
-};
-
-export const RandomMediaCard = ({ randomMedia }: Props) => {
+export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) => {
   if (!randomMedia)
     return (
-      <div className='app-card aspect-square sm:aspect-275/250 animate-pulse border-0 sm:border' />
+      <div className='app-card w-full aspect-square sm:aspect-275/250 animate-pulse bg-surface-nav border-surface-border' />
     );
 
   const taggedUsers = randomMedia.tagged || [];
@@ -21,9 +17,13 @@ export const RandomMediaCard = ({ randomMedia }: Props) => {
 
   return (
     <div className='app-card group transition-all text-left mb-6 sm:mb-0 overflow-hidden border-0 sm:border'>
-      <Link to={`/problem/${randomMedia.idProblem}`} className='block relative overflow-hidden'>
+      <Link
+        to={`/problem/${randomMedia.idProblem}`}
+        className='block relative overflow-hidden bg-surface-nav'
+        style={{ aspectRatio: '275 / 250', minHeight: '300px' }}
+      >
         <img
-          className='w-full aspect-square sm:aspect-275/250 object-cover transition-transform duration-1000 group-hover:scale-105'
+          className='w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105'
           src={getMediaFileUrl(
             Number(randomMedia.idMedia ?? 0),
             randomMedia.versionStamp || 0,
@@ -37,6 +37,8 @@ export const RandomMediaCard = ({ randomMedia }: Props) => {
           )}
           sizes='(max-width: 640px) 100vw, 400px'
           alt={randomMedia.problem}
+          width={400}
+          height={364}
           fetchPriority='high'
           loading='eager'
         />
@@ -70,7 +72,6 @@ export const RandomMediaCard = ({ randomMedia }: Props) => {
                   </Link>
                 </div>
               ))}
-
               {photographer && (
                 <div className='flex items-center gap-2'>
                   <ClickableAvatar
@@ -139,7 +140,6 @@ export const RandomMediaCard = ({ randomMedia }: Props) => {
                 </Link>
               </div>
             ))}
-
             {photographer && (
               <div className='flex items-center gap-2.5'>
                 <ClickableAvatar

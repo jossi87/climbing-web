@@ -10,13 +10,11 @@ export default defineConfig(({ mode }) => {
 
   return {
     envPrefix: 'REACT_APP_',
-
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
       },
     },
-
     plugins: [
       tailwindcss(),
       react(),
@@ -28,32 +26,23 @@ export default defineConfig(({ mode }) => {
           brotliSize: true,
         }),
     ].filter(Boolean),
-
     server: {
       port: 3001,
       open: true,
     },
-
     define: {
       'process.env': {},
       global: 'window',
     },
-
     build: {
       outDir: 'build',
       target: 'esnext',
       cssMinify: 'esbuild',
-      chunkSizeWarningLimit: 5000,
-
-      commonjsOptions: {
-        transformMixedEsModules: true,
-      },
-
+      cssCodeSplit: true,
+      chunkSizeWarningLimit: 1000,
       rollupOptions: {
         onwarn(warning, warn) {
-          if (warning.code === 'COMMONJS_VARIABLE_IN_ESM' && warning.id?.includes('dashjs')) {
-            return;
-          }
+          if (warning.code === 'COMMONJS_VARIABLE_IN_ESM' && warning.id?.includes('dashjs')) return;
           warn(warning);
         },
         output: {
@@ -64,9 +53,7 @@ export default defineConfig(({ mode }) => {
               if (id.includes('dashjs') || id.includes('hls.js')) return 'vendor-video';
               if (id.includes('leaflet')) return 'vendor-leaflet';
               if (id.includes('lucide-react')) return 'vendor-icons';
-              if (id.includes('linkifyjs') || id.includes('linkify-react')) return 'vendor-linkify';
-              if (id.includes('react-datepicker') || id.includes('date-fns'))
-                return 'vendor-datepicker';
+              if (id.includes('date-fns') || id.includes('react-datepicker')) return 'vendor-date';
               if (id.includes('@auth0')) return 'vendor-auth';
               if (id.includes('@sentry')) return 'vendor-sentry';
               if (
@@ -76,11 +63,11 @@ export default defineConfig(({ mode }) => {
               ) {
                 return 'vendor-react-core';
               }
+              return 'vendor-utils';
             }
           },
         },
       },
-
       esbuild: {
         drop: isProd ? ['console', 'debugger'] : [],
       },
