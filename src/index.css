@@ -14,6 +14,7 @@
   --spacing-thumbnail-w: 85px;
   --spacing-thumbnail-h: 80px;
   --spacing-footer-stack: 280px;
+  --z-index-9999: 9999;
 }
 
 @layer base {
@@ -78,6 +79,24 @@
   .btn-glass-active svg {
     @apply text-brand;
     filter: drop-shadow(0 0 3px rgba(16, 185, 129, 0.3));
+  }
+
+  .animate-in {
+    animation-duration: 200ms;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    animation-fill-mode: forwards;
+  }
+  .fade-in {
+    animation-name: fadeIn;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 

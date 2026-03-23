@@ -40,16 +40,58 @@ export const RandomMediaCard = ({ randomMedia }: Props) => {
           fetchPriority='high'
           loading='eager'
         />
-        <div className='absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity duration-500' />
+        <div className='absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity duration-500' />
 
         <div className='absolute bottom-0 left-0 right-0 p-5 sm:hidden'>
           <div className='flex items-baseline gap-2'>
             <h3 className='text-white font-bold text-2xl leading-none'>{randomMedia.problem}</h3>
             <span className='text-slate-300 font-bold text-lg'>{randomMedia.grade}</span>
           </div>
-          <div className='text-slate-400 text-[10px] font-bold mt-2 uppercase tracking-[0.2em]'>
+          <div className='text-slate-400 text-[10px] font-bold mt-2 uppercase tracking-[0.2em] mb-4'>
             {randomMedia.area} <span className='mx-1 opacity-30'>/</span> {randomMedia.sector}
           </div>
+
+          {(taggedUsers.length > 0 || photographer) && (
+            <div className='flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-white/10 pt-4'>
+              {taggedUsers.map((x: User) => (
+                <div key={x.id} className='flex items-center gap-2'>
+                  <ClickableAvatar
+                    name={x.name}
+                    mediaId={x.mediaId}
+                    mediaVersionStamp={x.mediaVersionStamp}
+                    size='mini'
+                    className='w-5! h-5! ring-1 ring-white/20'
+                  />
+                  <Link
+                    to={`/user/${x.id}`}
+                    className='text-[11px] text-white font-bold tracking-tight'
+                  >
+                    {x.name}
+                  </Link>
+                </div>
+              ))}
+
+              {photographer && (
+                <div className='flex items-center gap-2'>
+                  <ClickableAvatar
+                    name={photographer.name}
+                    mediaId={photographer.mediaId}
+                    mediaVersionStamp={photographer.mediaVersionStamp}
+                    size='mini'
+                    className='w-5! h-5! ring-1 ring-white/20'
+                  />
+                  <div className='flex items-center gap-1.5 text-[11px] text-white font-bold'>
+                    <span className='text-[8px] font-black uppercase tracking-widest text-white/50'>
+                      BY
+                    </span>
+                    <Link to={`/user/${photographer.id}`} className='tracking-tight'>
+                      {photographer.name}
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </Link>
 
@@ -80,45 +122,44 @@ export const RandomMediaCard = ({ randomMedia }: Props) => {
         </div>
 
         {(taggedUsers.length > 0 || photographer) && (
-          <div className='space-y-3 pt-4 border-t border-surface-border/50'>
+          <div className='flex flex-col gap-y-2.5 pt-4 border-t border-surface-border/50'>
             {taggedUsers.map((x: User) => (
-              <Link
-                key={x.id}
-                to={`/user/${x.id}`}
-                className='flex items-center gap-2.5 text-[11px] text-slate-400 hover:text-slate-200 transition-colors group/user'
-              >
+              <div key={x.id} className='flex items-center gap-2.5'>
                 <ClickableAvatar
                   name={x.name}
                   mediaId={x.mediaId}
                   mediaVersionStamp={x.mediaVersionStamp}
                   size='mini'
-                  className='ring-1 ring-surface-border group-hover/user:ring-brand/50'
                 />
-                <span className='font-bold tracking-tight'>{x.name}</span>
-              </Link>
+                <Link
+                  to={`/user/${x.id}`}
+                  className='text-[11px] text-slate-300 hover:text-brand transition-colors font-bold tracking-tight'
+                >
+                  {x.name}
+                </Link>
+              </div>
             ))}
 
             {photographer && (
-              <Link
-                to={`/user/${photographer.id}`}
-                className='flex items-center gap-2.5 text-[11px] text-slate-400 hover:text-slate-200 transition-colors group/photo'
-              >
+              <div className='flex items-center gap-2.5'>
                 <ClickableAvatar
                   name={photographer.name}
                   mediaId={photographer.mediaId}
                   mediaVersionStamp={photographer.mediaVersionStamp}
                   size='mini'
-                  className='ring-1 ring-surface-border group-hover/photo:ring-brand/50'
                 />
-                <div className='flex flex-col leading-none'>
-                  <span className='text-slate-600 text-[8px] font-black uppercase tracking-widest mb-0.5'>
-                    Captured By
+                <div className='flex items-center gap-1.5 text-[11px] text-slate-300 font-bold'>
+                  <span className='text-[8px] font-black uppercase tracking-widest text-slate-500'>
+                    BY
                   </span>
-                  <span className='font-bold tracking-tight text-slate-300'>
+                  <Link
+                    to={`/user/${photographer.id}`}
+                    className='hover:text-brand transition-colors tracking-tight'
+                  >
                     {photographer.name}
-                  </span>
+                  </Link>
                 </div>
-              </Link>
+              </div>
             )}
           </div>
         )}

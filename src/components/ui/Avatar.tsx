@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { getMediaFileUrl } from '../../api/utils';
 import { cn } from '../../lib/utils';
 
@@ -34,7 +35,6 @@ export function Avatar({
 }: AvatarProps) {
   const pixelSize = SIZE_MAP[size] || 24;
   const mid = mediaId ?? 0;
-
   const initials =
     name
       ?.split(' ')
@@ -46,7 +46,7 @@ export function Avatar({
   return (
     <div
       className={cn(
-        'shrink-0 rounded-full overflow-hidden border border-surface-border bg-surface-hover flex items-center justify-center transition-all',
+        'shrink-0 rounded-full overflow-hidden border border-surface-border bg-surface-hover flex items-center justify-center transition-all select-none',
         onClick && 'cursor-pointer hover:border-brand/50',
         className,
       )}
@@ -55,7 +55,7 @@ export function Avatar({
     >
       {mid === 0 ? (
         <span
-          className='font-bold text-slate-500 uppercase tracking-tighter select-none pointer-events-none'
+          className='font-bold text-slate-500 uppercase tracking-tighter pointer-events-none'
           style={{ fontSize: pixelSize * 0.4 }}
         >
           {initials}
@@ -91,7 +91,7 @@ export function AvatarGroup({
             key={item.mediaId || i}
             {...item}
             size={size}
-            className={cn('ring-2 ring-surface-card', item.className)}
+            className={cn('ring-2 ring-surface-card rounded-full', item.className)}
           />
         ))}
         {items.length > max && (
@@ -115,37 +115,63 @@ export function AvatarGroup({
 export function ClickableAvatar(props: AvatarProps) {
   const [open, setOpen] = useState(false);
   const mid = props.mediaId ?? 0;
+  const closeModal = useCallback(() => setOpen(false), []);
+
+  useEffect(() => {
+    if (!open) return;
+    const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+    document.body.style.overflow = 'hidden';
+    document.body.style.paddingRight = `${scrollBarWidth}px`;
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeModal();
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+      window.removeEventListener('keydown', handleEsc);
+    };
+  }, [open, closeModal]);
+
+  const modalContent =
+    open && mid !== 0 ? (
+      <div
+        className='fixed inset-0 w-screen h-screen z-9999 flex flex-col items-center justify-center p-4 bg-surface-dark/95 backdrop-blur-md transition-all animate-in fade-in duration-200'
+        onClick={closeModal}
+      >
+        <div
+          className='relative max-w-5xl max-h-[85vh] flex flex-col items-center'
+          onClick={(e) => e.stopPropagation()}
+        >
+          <img
+            src={getMediaFileUrl(mid, props.mediaVersionStamp ?? 0, false)}
+            alt={props.name ?? ''}
+            className='rounded-xl shadow-2xl border border-surface-border w-auto h-auto max-w-full max-h-full object-contain'
+          />
+          <button
+            className='mt-8 px-8 py-2.5 bg-surface-hover hover:bg-surface-border text-slate-200 rounded-full font-bold uppercase text-[10px] tracking-widest transition-all border border-surface-border'
+            onClick={closeModal}
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    ) : null;
 
   return (
     <>
       <Avatar
         {...props}
         onClick={(e) => {
-          if (mid !== 0) setOpen(true);
-          if (props.onClick) props.onClick(e);
+          if (mid !== 0) {
+            e.preventDefault();
+            e.stopPropagation();
+            setOpen(true);
+          }
+          props.onClick?.(e);
         }}
       />
-
-      {open && mid !== 0 && (
-        <div
-          className='fixed inset-0 z-100 flex items-center justify-center p-4 bg-surface-nav/90 backdrop-blur-sm'
-          onClick={() => setOpen(false)}
-        >
-          <div className='relative max-w-4xl max-h-full' onClick={(e) => e.stopPropagation()}>
-            <img
-              src={getMediaFileUrl(mid, props.mediaVersionStamp ?? 0, false)}
-              alt={props.name ?? ''}
-              className='rounded-lg shadow-2xl border border-surface-border max-h-[90vh] object-contain'
-            />
-            <button
-              className='absolute -top-10 right-0 text-slate-400 hover:text-white font-bold uppercase text-xs tracking-widest transition-colors'
-              onClick={() => setOpen(false)}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+      {modalContent && createPortal(modalContent, document.body)}
     </>
   );
 }
