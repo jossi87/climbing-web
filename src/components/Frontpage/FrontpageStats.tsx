@@ -6,6 +6,7 @@ import {
   Camera,
   Film,
   Heart,
+  MapPin,
   type LucideIcon,
 } from 'lucide-react';
 import { numberWithCommas } from '../../api';
@@ -84,6 +85,7 @@ type FrontpageStatsProps = {
   numProblems?: components['schemas']['FrontpageNumProblems'];
   numTicks?: components['schemas']['FrontpageNumTicks'];
   isBouldering?: boolean;
+  isClimbing?: boolean;
 };
 
 export const FrontpageStats = ({
@@ -91,6 +93,7 @@ export const FrontpageStats = ({
   numProblems,
   numTicks,
   isBouldering,
+  isClimbing,
 }: FrontpageStatsProps) => {
   return (
     <div className='app-card grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-px mb-6 bg-surface-border/30 overflow-hidden border-0 sm:border'>
@@ -101,18 +104,29 @@ export const FrontpageStats = ({
         value={numProblems ? numberWithCommas(numProblems.numProblems ?? 0) : undefined}
         loading={!numProblems}
       />
+      {isClimbing ? (
+        <StatItem
+          icon={ImageIcon}
+          label='With topo'
+          value={numProblems ? numberWithCommas(numProblems.numProblemsWithTopo ?? 0) : undefined}
+          loading={!numProblems}
+        />
+      ) : (
+        <StatItem
+          icon={MapPin}
+          label='Coordinates'
+          value={
+            numProblems ? numberWithCommas(numProblems.numProblemsWithCoordinates ?? 0) : undefined
+          }
+          loading={!numProblems}
+        />
+      )}
       <StatItem
         to='/ticks/1'
         icon={CheckCircle}
         label='Ticks'
         value={numTicks ? numberWithCommas(numTicks.numTicks ?? 0) : undefined}
         loading={!numTicks}
-      />
-      <StatItem
-        icon={ImageIcon}
-        label='Topo'
-        value={numProblems ? numberWithCommas(numProblems.numProblemsWithTopo ?? 0) : undefined}
-        loading={!numProblems}
       />
       <StatItem
         icon={Camera}

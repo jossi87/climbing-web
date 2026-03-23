@@ -1,13 +1,13 @@
-import { lazy as reactLazy } from 'react';
+import { lazy as reactLazy, type ComponentType } from 'react';
 import * as Sentry from '@sentry/react';
 
-const lazyRetry = function (
-  componentImport: Parameters<typeof reactLazy>[0],
+const lazyRetry = function <P>(
+  componentImport: () => Promise<{ default: ComponentType<P> }>,
   componentName: string,
 ) {
   const key = `retry-lazy-refreshed/${componentName}`;
 
-  return new Promise<Awaited<ReturnType<typeof componentImport>>>((resolve, reject) => {
+  return new Promise<{ default: ComponentType<P> }>((resolve, reject) => {
     const data = window.sessionStorage.getItem(key);
     const refreshTime = data ? +data : 0;
 
@@ -38,10 +38,17 @@ const lazyRetry = function (
   });
 };
 
-export const lazy = (componentImport: Parameters<typeof reactLazy>[0], componentName: string) => {
+export const lazy = <P>(
+  componentImport: () => Promise<{ default: ComponentType<P> }>,
+  componentName: string,
+) => {
   const Component = reactLazy(() => lazyRetry(componentImport, componentName));
 
-  (Component as any).preload = componentImport;
+  const PreloadableComponent = Component as typeof Component & {
+    preload: () => Promise<{ default: ComponentType<P> }>;
+  };
 
-  return Component as typeof Component & { preload: () => Promise<any> };
+  PreloadableComponent.preload = componentImport;
+
+  return PreloadableComponent;
 };

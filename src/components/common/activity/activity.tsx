@@ -12,15 +12,28 @@ import { ProblemLink } from './components/ProblemLink';
 import { LazyMedia } from './components/LazyMedia';
 
 const ActivitySkeleton = () => (
-  <div className='p-4 text-left border-b border-surface-border/30 last:border-0'>
+  <div className='p-4 text-left border-b border-surface-border/30 last:border-0 min-h-25'>
     <div className='flex gap-4 items-start animate-pulse'>
-      <div className='shrink-0 w-8 h-8 rounded-full bg-surface-nav' />
-      <div className='flex-1 space-y-3'>
-        <div className='flex justify-between items-start'>
+      <div className='shrink-0 pt-1.5'>
+        <div className='w-8 h-8 rounded-full bg-surface-nav' />
+      </div>
+      <div className='flex-1 space-y-3 pt-1'>
+        <div className='flex justify-between items-start gap-4'>
           <div className='h-4 bg-surface-nav rounded w-2/3' />
-          <div className='h-2 bg-surface-nav rounded w-12' />
+          <div className='h-2 bg-surface-nav rounded w-12 pt-1.5' />
         </div>
-        <div className='h-3 bg-surface-nav rounded w-1/2' />
+        <div className='h-3 bg-surface-nav rounded w-1/3' />
+
+        <div className='flex gap-2 mt-3'>
+          <div className='w-16 h-12 bg-surface-nav rounded-md opacity-40' />
+          <div className='w-16 h-12 bg-surface-nav rounded-md opacity-40' />
+        </div>
+
+        <div className='mt-2 flex items-center gap-1'>
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className='w-3 h-3 bg-surface-nav rounded-full opacity-30' />
+          ))}
+        </div>
       </div>
     </div>
   </div>
@@ -29,6 +42,7 @@ const ActivitySkeleton = () => (
 const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
+
   const [lowerGradeId, setLowerGradeId] = useLocalStorage('lower_grade_id', 0);
   const [lowerGradeText, setLowerGradeText] = useLocalStorage('lower_grade_text', 'n/a');
   const [activityTypeTicks, setActivityTypeTicks] = useLocalStorage('activity_type_ticks', true);
@@ -63,6 +77,24 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const handleFilterToggle = (type: string) => {
+    switch (type) {
+      case 'fa':
+        setActivityTypeFa(!activityTypeFa);
+        break;
+      case 'ticks':
+        setActivityTypeTicks(!activityTypeTicks);
+        break;
+      case 'media':
+        setActivityTypeMedia(!activityTypeMedia);
+        break;
+      case 'comments':
+        setActivityTypeComments(!activityTypeComments);
+        break;
+    }
+    setTimeout(refetch, 10);
+  };
+
   return (
     <div className='w-full'>
       <div className='flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 px-4 sm:px-0'>
@@ -85,6 +117,7 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                 className={cn('transition-transform', isFilterOpen && 'rotate-180')}
               />
             </button>
+
             {isFilterOpen && (
               <div className='absolute top-full left-1/2 -translate-x-1/2 sm:left-auto sm:right-0 sm:translate-x-0 mt-1 w-48 bg-surface-card border border-surface-border rounded-lg shadow-2xl py-1 z-50 max-h-60 overflow-y-auto'>
                 <div className='px-4 py-1.5 text-[9px] font-bold text-slate-500 uppercase tracking-widest border-b border-surface-border/50 mb-1'>
@@ -118,38 +151,27 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
               </div>
             )}
           </div>
+
           <button
-            onClick={() => {
-              setActivityTypeFa(!activityTypeFa);
-              setTimeout(refetch, 10);
-            }}
+            onClick={() => handleFilterToggle('fa')}
             className={cn('btn-glass h-7!', activityTypeFa && 'btn-glass-active')}
           >
             <Plus size={12} /> <span className='text-[10px] uppercase font-bold'>FA</span>
           </button>
           <button
-            onClick={() => {
-              setActivityTypeTicks(!activityTypeTicks);
-              setTimeout(refetch, 10);
-            }}
+            onClick={() => handleFilterToggle('ticks')}
             className={cn('btn-glass h-7!', activityTypeTicks && 'btn-glass-active')}
           >
             <Check size={12} /> <span className='text-[10px] uppercase font-bold'>Ticks</span>
           </button>
           <button
-            onClick={() => {
-              setActivityTypeMedia(!activityTypeMedia);
-              setTimeout(refetch, 10);
-            }}
+            onClick={() => handleFilterToggle('media')}
             className={cn('btn-glass h-7!', activityTypeMedia && 'btn-glass-active')}
           >
             <Camera size={12} /> <span className='text-[10px] uppercase font-bold'>Media</span>
           </button>
           <button
-            onClick={() => {
-              setActivityTypeComments(!activityTypeComments);
-              setTimeout(refetch, 10);
-            }}
+            onClick={() => handleFilterToggle('comments')}
             className={cn('btn-glass h-7!', activityTypeComments && 'btn-glass-active')}
           >
             <MessageSquare size={12} /> <span className='text-[10px] uppercase font-bold'>Com</span>
@@ -158,9 +180,9 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
       </div>
 
       <div className='app-card overflow-hidden'>
-        <div className='divide-y divide-surface-border/30'>
+        <div className='divide-y divide-surface-border/30 min-h-100'>
           {isPending
-            ? [...Array(6)].map((_, i) => <ActivitySkeleton key={i} />)
+            ? [...Array(8)].map((_, i) => <ActivitySkeleton key={i} />)
             : activity?.map((a) => {
                 const currentKey = a.activityIds?.join('+') ?? `activity-${a.id ?? 0}`;
                 const [numImg, numMov] = (a.media ?? []).reduce(
@@ -193,7 +215,7 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                 return (
                   <div
                     key={currentKey}
-                    className='p-4 hover:bg-white/1 transition-colors text-left group'
+                    className='p-4 hover:bg-white/1 transition-colors text-left group animate-in fade-in duration-300'
                   >
                     <div className='flex gap-4 items-start'>
                       <div className='shrink-0 pt-1.5'>
@@ -261,7 +283,7 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                               </>
                             )}
                           </div>
-                          <span className='shrink-0 text-[9px] font-bold text-slate-600 uppercase tracking-tighter whitespace-nowrap pt-1.5'>
+                          <span className='shrink-0 text-[9px] font-bold text-slate-600 uppercase tracking-tighter pt-1.5'>
                             {a.timeAgo}
                           </span>
                         </div>

@@ -10,15 +10,15 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
     return (
       <div className='app-card w-full border-0 sm:border overflow-hidden'>
         <div className='w-full bg-surface-nav animate-pulse' style={{ aspectRatio: '275 / 250' }} />
-        <div className='hidden sm:block p-4 space-y-4'>
-          <div className='space-y-2'>
-            <div className='h-4 w-3/4 bg-surface-hover rounded-md animate-pulse' />
-            <div className='h-3 w-1/2 bg-surface-hover/50 rounded-md animate-pulse' />
+        <div className='hidden sm:block p-4'>
+          <div className='mb-4 space-y-2'>
+            <div className='h-4 w-3/4 bg-surface-hover rounded animate-pulse' />
+            <div className='h-3 w-1/2 bg-surface-hover/50 rounded animate-pulse' />
           </div>
-          <div className='pt-4 border-t border-surface-border/50'>
-            <div className='flex items-center gap-2'>
+          <div className='flex flex-col gap-y-3 pt-4 border-t border-surface-border/50'>
+            <div className='flex items-center gap-3'>
               <div className='w-6 h-6 rounded-full bg-surface-hover animate-pulse' />
-              <div className='h-3 w-16 bg-surface-hover rounded-md animate-pulse ml-2' />
+              <div className='h-3 w-24 bg-surface-hover/50 rounded animate-pulse' />
             </div>
           </div>
         </div>

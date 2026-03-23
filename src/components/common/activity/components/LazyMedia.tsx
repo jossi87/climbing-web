@@ -19,7 +19,7 @@ export const LazyMedia = ({
   });
 
   return (
-    <div ref={ref} className='flex flex-wrap gap-2 mt-3 min-h-20'>
+    <div ref={ref} className='flex flex-wrap gap-2 mt-3 min-h-12'>
       {media.map((m) => (
         <Link
           key={m.id}
@@ -34,20 +34,24 @@ export const LazyMedia = ({
               width={85}
               height={80}
               className={cn(
-                'w-full h-full object-cover group-hover:scale-110 transition-all duration-500 ease-out animate-in fade-in',
+                'w-full h-full object-cover group-hover:scale-110 transition-all duration-500 ease-out animate-in fade-in fill-mode-both',
                 m.movie && 'brightness-90 group-hover:brightness-100',
               )}
               alt='Activity media'
               loading='lazy'
-              onError={(e) => (e.currentTarget.src = '/png/video_placeholder.png')}
+              decoding='async'
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = '/png/video_placeholder.png';
+              }}
             />
           ) : (
-            <div className='w-full h-full bg-surface-hover/50 animate-pulse' />
+            <div className='w-full h-full bg-surface-hover/40 animate-pulse' />
           )}
 
           {m.movie && (
             <div className='absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-transparent transition-colors duration-300'>
-              <div className='p-1.5 bg-black/40 backdrop-blur-sm rounded-full border border-white/10'>
+              <div className='p-1.5 bg-black/40 backdrop-blur-sm rounded-full border border-white/10 shadow-lg'>
                 <Film size={14} className='text-white' />
               </div>
             </div>
