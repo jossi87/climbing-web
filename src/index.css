@@ -50,7 +50,17 @@
 
 @layer components {
   .app-card {
-    @apply bg-surface-card border-y border-surface-border sm:border-x sm:rounded-xl overflow-hidden sm:mx-0;
+    @apply bg-surface-card border-surface-border sm:border sm:rounded-xl overflow-hidden sm:mx-0;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 0;
+    border-right-width: 0;
+
+    @media (min-width: 640px) {
+      border-left-width: 1px;
+      border-right-width: 1px;
+    }
+
     contain: content;
     content-visibility: auto;
   }
