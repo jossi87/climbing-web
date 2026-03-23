@@ -14,16 +14,17 @@ export const useMeta = (): Metadata => {
 export const useGrades = () => {
   const { grades } = useMeta();
   return useMemo(() => {
-    const easyToHard = grades.map(({ grade }) => grade);
-    const indexMapping = grades.reduce<Record<string, number>>(
-      (acc, { grade }, i) => ({ ...acc, [grade]: i }),
-      {},
-    );
-    const idToGrade = grades.reduce<Record<number, string>>(
-      (acc, { grade, id }) => ({ ...acc, [id]: grade }),
-      {},
-    );
-    return { easyToHard, mapping: indexMapping, idToGrade };
+    const easyToHard: string[] = [];
+    const mapping: Record<string, number> = {};
+    const idToGrade: Record<number, string> = {};
+    for (let i = 0; i < grades.length; i++) {
+      const { grade, id } = grades[i];
+      easyToHard.push(grade);
+      mapping[grade] = i;
+      idToGrade[id] = grade;
+    }
+
+    return { easyToHard, mapping, idToGrade };
   }, [grades]);
 };
 

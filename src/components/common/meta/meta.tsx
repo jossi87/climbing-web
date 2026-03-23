@@ -10,10 +10,13 @@ type Props = {
 export const MetaProvider = ({ children }: Props) => {
   const { data: meta } = useData<Metadata>(`/meta`, {
     select: (data) => {
-      data.faYears.sort((a, b) => a - b);
+      if (data.faYears) {
+        data.faYears.sort((a, b) => a - b);
+      }
       return data;
     },
+    staleTime: Infinity,
   });
-
-  return <MetaContext.Provider value={meta || DEFAULT_META}>{children}</MetaContext.Provider>;
+  const contextValue = meta ?? DEFAULT_META;
+  return <MetaContext.Provider value={contextValue}>{children}</MetaContext.Provider>;
 };

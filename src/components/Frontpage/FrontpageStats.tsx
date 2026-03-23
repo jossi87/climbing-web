@@ -17,9 +17,10 @@ type StatItemProps = {
   icon: LucideIcon | React.ElementType;
   label: string;
   value?: number | string;
+  loading?: boolean;
 };
 
-const StatItem = ({ to, icon: Icon, label, value }: StatItemProps) => {
+const StatItem = ({ to, icon: Icon, label, value, loading }: StatItemProps) => {
   const isDonate = label === 'Donate';
 
   const content = (
@@ -33,14 +34,22 @@ const StatItem = ({ to, icon: Icon, label, value }: StatItemProps) => {
         className={cn(
           'transition-colors duration-300 mb-1.5 text-slate-500',
           isDonate ? 'group-hover:text-brand' : 'group-hover:text-slate-300',
+          loading && 'animate-pulse',
         )}
       >
         <Icon size={isDonate ? 16 : 14} strokeWidth={isDonate ? 2.5 : 2} />
       </div>
-      <div className='flex flex-col relative z-10 text-center'>
-        {value !== undefined && value !== '' ? (
+      <div className='flex flex-col relative z-10 text-center items-center'>
+        {loading ? (
           <>
-            <span className='text-sm sm:text-lg font-black text-slate-200 leading-none tabular-nums tracking-tight'>
+            <div className='h-4 sm:h-5 w-12 bg-surface-hover rounded animate-pulse mb-1' />
+            <span className='text-[8px] sm:text-[9px] uppercase tracking-[0.15em] text-slate-600 font-bold mt-1'>
+              {label}
+            </span>
+          </>
+        ) : value !== undefined && value !== '' ? (
+          <>
+            <span className='text-sm sm:text-lg font-black text-slate-200 leading-none tabular-nums tracking-tight animate-in fade-in duration-300'>
               {value}
             </span>
             <span className='text-[8px] sm:text-[9px] uppercase tracking-[0.15em] text-slate-500 font-bold mt-1 group-hover:text-slate-400 transition-colors'>
@@ -70,20 +79,11 @@ const StatItem = ({ to, icon: Icon, label, value }: StatItemProps) => {
   );
 };
 
-export const StatsSkeleton = () => (
-  <div className='app-card grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-px mb-6 bg-surface-border/20 overflow-hidden animate-pulse'>
-    {[...Array(6)].map((_, i) => (
-      <div key={i} className='bg-surface-card h-16 sm:h-20' />
-    ))}
-  </div>
-);
-
 type FrontpageStatsProps = {
   numMedia?: components['schemas']['FrontpageNumMedia'];
   numProblems?: components['schemas']['FrontpageNumProblems'];
   numTicks?: components['schemas']['FrontpageNumTicks'];
   isBouldering?: boolean;
-  isClimbing?: boolean;
 };
 
 export const FrontpageStats = ({
@@ -92,31 +92,40 @@ export const FrontpageStats = ({
   numTicks,
   isBouldering,
 }: FrontpageStatsProps) => {
-  if (!numProblems || !numMedia || !numTicks) {
-    return <StatsSkeleton />;
-  }
-
   return (
     <div className='app-card grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-px mb-6 bg-surface-border/30 overflow-hidden border-0 sm:border'>
       <StatItem
         to='/problems'
         icon={Database}
         label={isBouldering ? 'Problems' : 'Routes'}
-        value={numberWithCommas(numProblems?.numProblems ?? 0)}
+        value={numProblems ? numberWithCommas(numProblems.numProblems ?? 0) : undefined}
+        loading={!numProblems}
       />
       <StatItem
         to='/ticks/1'
         icon={CheckCircle}
         label='Ticks'
-        value={numberWithCommas(numTicks?.numTicks ?? 0)}
+        value={numTicks ? numberWithCommas(numTicks.numTicks ?? 0) : undefined}
+        loading={!numTicks}
       />
       <StatItem
         icon={ImageIcon}
         label='Topo'
-        value={numberWithCommas(numProblems?.numProblemsWithTopo ?? 0)}
+        value={numProblems ? numberWithCommas(numProblems.numProblemsWithTopo ?? 0) : undefined}
+        loading={!numProblems}
       />
-      <StatItem icon={Camera} label='Images' value={numberWithCommas(numMedia?.numImages ?? 0)} />
-      <StatItem icon={Film} label='Videos' value={numberWithCommas(numMedia?.numMovies ?? 0)} />
+      <StatItem
+        icon={Camera}
+        label='Images'
+        value={numMedia ? numberWithCommas(numMedia.numImages ?? 0) : undefined}
+        loading={!numMedia}
+      />
+      <StatItem
+        icon={Film}
+        label='Videos'
+        value={numMedia ? numberWithCommas(numMedia.numMovies ?? 0) : undefined}
+        loading={!numMedia}
+      />
       <StatItem to='/donations' icon={Heart} label='Donate' />
     </div>
   );
