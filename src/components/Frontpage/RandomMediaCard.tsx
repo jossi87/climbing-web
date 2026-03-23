@@ -56,10 +56,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
         <div className='pointer-events-none absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity duration-500' />
 
         <div className='absolute bottom-0 left-0 right-0 p-5 sm:hidden'>
-          <Link
-            to={`/problem/${randomMedia.idProblem}`}
-            className='block flex items-baseline gap-2'
-          >
+          <Link to={`/problem/${randomMedia.idProblem}`} className='flex items-baseline gap-2'>
             <h3 className='text-white font-bold text-2xl leading-none'>{randomMedia.problem}</h3>
             <span className='text-slate-300 font-bold text-lg'>{randomMedia.grade}</span>
           </Link>
