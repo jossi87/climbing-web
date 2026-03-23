@@ -50,7 +50,8 @@
 
 @layer components {
   .app-card {
-    @apply bg-surface-card border-surface-border sm:border sm:rounded-xl overflow-hidden sm:mx-0;
+    /* -mx-4 pulls the card to the screen edge on mobile. sm:mx-0 resets it for desktop. */
+    @apply bg-surface-card border-surface-border -mx-4 sm:mx-0 sm:border sm:rounded-xl overflow-hidden;
     border-top-width: 1px;
     border-bottom-width: 1px;
     border-left-width: 0;

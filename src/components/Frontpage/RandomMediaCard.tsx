@@ -30,38 +30,39 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
 
   return (
     <div className='app-card group transition-all text-left mb-6 sm:mb-0 overflow-hidden border-0 sm:border'>
-      <Link
-        to={`/problem/${randomMedia.idProblem}`}
-        className='block relative overflow-hidden bg-surface-nav'
-        style={{ aspectRatio: '275 / 250' }}
-      >
-        <img
-          className='w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105'
-          src={getMediaFileUrl(
-            Number(randomMedia.idMedia ?? 0),
-            randomMedia.versionStamp || 0,
-            false,
-            { minDimension: 400 },
-          )}
-          srcSet={getMediaFileUrlSrcSet(
-            Number(randomMedia.idMedia ?? 0),
-            randomMedia.versionStamp || 0,
-            randomMedia.width ?? 2560,
-          )}
-          sizes='(max-width: 640px) 100vw, 400px'
-          alt={randomMedia.problem}
-          width={400}
-          height={364}
-          fetchPriority='high'
-          loading='eager'
-        />
-        <div className='absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity duration-500' />
+      <div className='relative overflow-hidden bg-surface-nav' style={{ aspectRatio: '275 / 250' }}>
+        <Link to={`/problem/${randomMedia.idProblem}`} className='block w-full h-full'>
+          <img
+            className='w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105'
+            src={getMediaFileUrl(
+              Number(randomMedia.idMedia ?? 0),
+              randomMedia.versionStamp || 0,
+              false,
+              { minDimension: 400 },
+            )}
+            srcSet={getMediaFileUrlSrcSet(
+              Number(randomMedia.idMedia ?? 0),
+              randomMedia.versionStamp || 0,
+              randomMedia.width ?? 2560,
+            )}
+            sizes='(max-width: 640px) 100vw, 400px'
+            alt={randomMedia.problem}
+            width={400}
+            height={364}
+            fetchPriority='high'
+            loading='eager'
+          />
+        </Link>
+        <div className='pointer-events-none absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity duration-500' />
 
         <div className='absolute bottom-0 left-0 right-0 p-5 sm:hidden'>
-          <div className='flex items-baseline gap-2'>
+          <Link
+            to={`/problem/${randomMedia.idProblem}`}
+            className='block flex items-baseline gap-2'
+          >
             <h3 className='text-white font-bold text-2xl leading-none'>{randomMedia.problem}</h3>
             <span className='text-slate-300 font-bold text-lg'>{randomMedia.grade}</span>
-          </div>
+          </Link>
           <div className='text-slate-400 text-[10px] font-bold mt-2 uppercase tracking-[0.2em] mb-4'>
             {randomMedia.area} <span className='mx-1 opacity-30'>/</span> {randomMedia.sector}
           </div>
@@ -76,9 +77,16 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
                     max={3}
                   />
                   <span className='text-[11px] text-white font-bold tracking-tight'>
-                    {taggedUsers.length === 1
-                      ? taggedUsers[0].name
-                      : `${taggedUsers.length} in photo`}
+                    {taggedUsers.length === 1 ? (
+                      <Link
+                        to={`/user/${taggedUsers[0].id}`}
+                        className='hover:text-brand transition-colors'
+                      >
+                        {taggedUsers[0].name}
+                      </Link>
+                    ) : (
+                      `${taggedUsers.length} in photo`
+                    )}
                   </span>
                 </div>
               )}
@@ -95,7 +103,10 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
                     <span className='text-[8px] font-black uppercase tracking-widest opacity-50'>
                       BY
                     </span>
-                    <Link to={`/user/${photographer.id}`} className='tracking-tight'>
+                    <Link
+                      to={`/user/${photographer.id}`}
+                      className='tracking-tight hover:text-brand transition-colors'
+                    >
                       {photographer.name}
                     </Link>
                   </div>
@@ -104,7 +115,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
             </div>
           )}
         </div>
-      </Link>
+      </div>
 
       <div className='hidden sm:block p-4'>
         <div className='mb-4'>
@@ -142,7 +153,12 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
                   max={3}
                 />
                 <div className='text-[11px] text-slate-300 font-bold tracking-tight'>
-                  {taggedUsers[0].name}
+                  <Link
+                    to={`/user/${taggedUsers[0].id}`}
+                    className='hover:text-brand transition-colors'
+                  >
+                    {taggedUsers[0].name}
+                  </Link>
                   {taggedUsers.length > 1 && (
                     <span className='text-slate-500 font-medium ml-1'>
                       and {taggedUsers.length - 1} more

@@ -22,7 +22,7 @@ const Frontpage = () => {
       <title>{meta?.title}</title>
       {numMedia && numProblems && numTicks && <meta name='description' content={description} />}
 
-      <div className='w-full py-0 sm:py-8 sm:px-4'>
+      <div className='w-full py-0 sm:py-8 px-4'>
         <div className='grid grid-cols-1 lg:grid-cols-12 gap-y-6 sm:gap-6 lg:gap-10'>
           <aside className='lg:col-span-4 xl:col-span-3 order-1'>
             <div className='lg:sticky lg:top-20 space-y-6 self-start'>

@@ -23,12 +23,10 @@ const ActivitySkeleton = () => (
           <div className='h-2 bg-surface-nav rounded w-12 pt-1.5' />
         </div>
         <div className='h-3 bg-surface-nav rounded w-1/3' />
-
         <div className='flex gap-2 mt-3'>
           <div className='w-16 h-12 bg-surface-nav rounded-md opacity-40' />
           <div className='w-16 h-12 bg-surface-nav rounded-md opacity-40' />
         </div>
-
         <div className='mt-2 flex items-center gap-1'>
           {[...Array(3)].map((_, i) => (
             <div key={i} className='w-3 h-3 bg-surface-nav rounded-full opacity-30' />
@@ -179,7 +177,7 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
         </div>
       </div>
 
-      <div className='app-card overflow-hidden'>
+      <div className='app-card'>
         <div className='divide-y divide-surface-border/30 min-h-100'>
           {isPending
             ? [...Array(8)].map((_, i) => <ActivitySkeleton key={i} />)
@@ -215,9 +213,9 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                 return (
                   <div
                     key={currentKey}
-                    className='p-4 hover:bg-white/1 transition-colors text-left group animate-in fade-in duration-300'
+                    className='py-4 sm:px-4 px-0 hover:bg-white/1 transition-colors text-left group animate-in fade-in duration-300'
                   >
-                    <div className='flex gap-4 items-start'>
+                    <div className='flex gap-4 items-start px-4 sm:px-0'>
                       <div className='shrink-0 pt-1.5'>
                         <AvatarGroup
                           items={avatarItems}
@@ -297,11 +295,6 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                             <Linkify>{a.message}</Linkify>
                           </div>
                         )}
-                        {a.media && (
-                          <div className='mt-3'>
-                            <LazyMedia media={a.media} problemId={a.problemId} />
-                          </div>
-                        )}
                         <div className='mt-2.5 flex items-center gap-3'>
                           {a.stars !== undefined && a.stars !== -1 && (
                             <Stars numStars={a.stars} includeStarOutlines={true} />
@@ -309,6 +302,11 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                         </div>
                       </div>
                     </div>
+                    {a.media && (
+                      <div className='mt-3'>
+                        <LazyMedia media={a.media} problemId={a.problemId} />
+                      </div>
+                    )}
                   </div>
                 );
               })}
