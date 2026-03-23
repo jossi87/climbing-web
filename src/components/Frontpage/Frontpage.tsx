@@ -22,19 +22,21 @@ const Frontpage = () => {
       <title>{meta?.title}</title>
       {numMedia && numProblems && numTicks && <meta name='description' content={description} />}
 
-      <div className='grid grid-cols-1 lg:grid-cols-12 gap-y-6 sm:gap-6 lg:gap-8 py-0 sm:py-8'>
-        <aside className='lg:col-span-3 space-y-6 lg:sticky lg:top-24 self-start'>
-          <FrontpageStats
-            numMedia={numMedia}
-            numProblems={numProblems}
-            numTicks={numTicks}
-            isBouldering={meta.isBouldering}
-            isClimbing={meta.isClimbing}
-          />
-          <RandomMediaCard randomMedia={randomMedia} />
+      <div className='grid grid-cols-1 lg:grid-cols-12 gap-y-6 sm:gap-6 lg:gap-8 py-0 sm:py-8 max-w-container mx-auto px-4'>
+        <aside className='lg:col-span-4 xl:col-span-3 order-1'>
+          <div className='lg:sticky lg:top-20 space-y-6 flex flex-col'>
+            <FrontpageStats
+              numMedia={numMedia}
+              numProblems={numProblems}
+              numTicks={numTicks}
+              isBouldering={meta.isBouldering}
+              isClimbing={meta.isClimbing}
+            />
+            <RandomMediaCard randomMedia={randomMedia} />
+          </div>
         </aside>
 
-        <main className='lg:col-span-9'>
+        <main className='lg:col-span-8 xl:col-span-9 order-2'>
           <Activity idArea={0} idSector={0} />
         </main>
       </div>

@@ -104,8 +104,8 @@
   filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
 }
 
-@media (min-width: 1024px) and (max-height: 900px) {
-  aside.lg\:sticky {
+@media (min-width: 1024px) and (max-height: 750px) {
+  .lg\:sticky {
     position: relative !important;
     top: 0 !important;
   }

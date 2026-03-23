@@ -2,12 +2,6 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   Globe,
-  List,
-  Database,
-  AlertTriangle,
-  BarChart3,
-  Camera,
-  Info,
   User,
   LogOut,
   ChevronDown,
@@ -22,20 +16,12 @@ import {
 import { useMeta } from './common/meta/context';
 import SearchBox from './common/search-box/search-box';
 import { Avatar } from './ui/Avatar/Avatar';
-import { NavItem } from './ui/NavItem';
 import { useState, useRef, useEffect } from 'react';
 import { cn } from '../lib/utils';
 
 const Header = () => {
-  const {
-    isSuperAdmin,
-    isAuthenticated,
-    authenticatedName,
-    mediaId,
-    mediaVersionStamp,
-    isBouldering,
-    sites,
-  } = useMeta();
+  const { isSuperAdmin, isAuthenticated, authenticatedName, mediaId, mediaVersionStamp, sites } =
+    useMeta();
   const { isLoading, loginWithRedirect, logout } = useAuth0();
   const location = useLocation();
 
@@ -45,25 +31,17 @@ const Header = () => {
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [isRegionOpen, setIsRegionOpen] = useState(false);
   const regionRef = useRef<HTMLDivElement>(null);
-
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-
-      if (currentScrollY < 10) {
-        setIsVisible(true);
-      } else if (currentScrollY > lastScrollY && currentScrollY > 80) {
-        setIsVisible(false);
-      } else if (currentScrollY < lastScrollY) {
-        setIsVisible(true);
-      }
-
+      if (currentScrollY < 10) setIsVisible(true);
+      else if (currentScrollY > lastScrollY && currentScrollY > 80) setIsVisible(false);
+      else if (currentScrollY < lastScrollY) setIsVisible(true);
       setLastScrollY(currentScrollY);
     };
-
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
@@ -84,7 +62,7 @@ const Header = () => {
   const renderUserMenu = () => {
     if (isLoading) return null;
     return isAuthenticated ? (
-      <div className='relative w-full'>
+      <div className='relative account-dropdown-container'>
         <Avatar
           name={authenticatedName}
           mediaId={mediaId}
@@ -102,9 +80,7 @@ const Header = () => {
               <span className='text-[10px] font-black text-slate-500 uppercase tracking-widest block'>
                 Signed in as
               </span>
-              <div className='text-sm font-bold text-slate-200 truncate text-left'>
-                {authenticatedName}
-              </div>
+              <div className='text-sm font-bold text-slate-200 truncate'>{authenticatedName}</div>
             </div>
             <Link
               to='/user'
@@ -169,56 +145,52 @@ const Header = () => {
   return (
     <nav
       className={cn(
-        'sticky top-0 z-50 w-full border-b border-surface-border bg-surface-nav/70 backdrop-blur-xl transition-transform duration-300 ease-in-out',
+        'sticky top-0 z-50 w-full border-b border-surface-border bg-surface-nav/80 backdrop-blur-xl transition-transform duration-300 ease-in-out',
         !isVisible && '-translate-y-full lg:translate-y-0',
       )}
     >
       <div className='max-w-container mx-auto px-4'>
-        <div className='flex flex-col lg:flex-row lg:items-center justify-between min-h-16 py-3 lg:py-0 gap-y-3 gap-x-6'>
-          <div className='flex items-center gap-3 sm:gap-4 w-full lg:w-auto lg:flex-1 min-w-0'>
+        <div className='flex items-center justify-between h-14 gap-x-4'>
+          <div className='flex items-center gap-4 flex-1 min-w-0'>
             <Link to='/' className='shrink-0 relative py-1'>
               <img
                 src='/png/logo_70x62.png'
                 alt='Logo'
                 className={cn(
-                  'w-8 h-auto transition-all duration-300',
+                  'w-7 h-auto transition-all duration-300',
                   isHome ? 'opacity-100' : 'opacity-40 hover:opacity-100',
                 )}
               />
               {isHome && (
-                <div className='absolute -bottom-3 lg:-bottom-5.25 left-0 right-0 h-[2.5px] bg-brand rounded-full shadow-brand' />
+                <div className='absolute -bottom-3.5 left-0 right-0 h-[2.5px] bg-brand rounded-full shadow-brand' />
               )}
             </Link>
-            <div className='flex-1 lg:max-w-md min-w-30'>
+            <div className='flex-1 max-w-xl min-w-35'>
               <SearchBox />
-            </div>
-            <div className='account-dropdown-container flex lg:hidden shrink-0 items-center'>
-              {renderUserMenu()}
             </div>
           </div>
 
-          <div className='flex flex-wrap items-center w-full lg:w-auto justify-start lg:justify-end gap-1 sm:gap-2'>
+          <div className='flex items-center gap-4'>
             {activeSite && (
               <div className='relative shrink-0' ref={regionRef}>
                 <button
                   onClick={() => setIsRegionOpen(!isRegionOpen)}
                   className={cn(
-                    'flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all border',
+                    'flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all',
                     isRegionOpen
-                      ? 'bg-brand text-white border-brand shadow-brand'
-                      : 'bg-surface-nav border-surface-border text-slate-500 hover:text-slate-300 hover:bg-surface-hover',
+                      ? 'bg-brand text-white shadow-brand'
+                      : 'text-slate-500 hover:text-slate-200 hover:bg-white/5',
                   )}
                 >
                   <Globe size={13} />
-                  <span className='whitespace-nowrap'>{activeSite.name}</span>
+                  <span className='hidden sm:inline whitespace-nowrap'>{activeSite.name}</span>
                   <ChevronDown
                     size={12}
                     className={cn('transition-transform opacity-40', isRegionOpen && 'rotate-180')}
                   />
                 </button>
-
                 {isRegionOpen && (
-                  <div className='absolute top-full left-0 mt-2 w-64 bg-surface-card border border-surface-border rounded-xl shadow-2xl py-2 z-70 overflow-hidden max-h-[80vh] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-200'>
+                  <div className='absolute top-full right-0 mt-2 w-64 bg-surface-card border border-surface-border rounded-xl shadow-2xl py-2 z-70 overflow-hidden max-h-[80vh] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-200'>
                     <div className='px-4 py-2 border-b border-surface-border mb-1'>
                       <span className='text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]'>
                         {activeSite.group} REGIONS
@@ -257,17 +229,7 @@ const Header = () => {
                 )}
               </div>
             )}
-
-            <NavItem to='/areas' icon={List} label='Areas' />
-            <NavItem to='/problems' icon={Database} label={isBouldering ? 'Problems' : 'Routes'} />
-            {!isBouldering && <NavItem to='/dangerous' icon={AlertTriangle} label='Dangerous' />}
-            <NavItem to='/graph' icon={BarChart3} label='Graph' />
-            <NavItem to='/webcams' icon={Camera} label='Webcams' />
-            <NavItem to='/about' icon={Info} label='About' />
-
-            <div className='account-dropdown-container hidden lg:flex shrink-0 items-center border-l border-surface-border pl-4 ml-1'>
-              {renderUserMenu()}
-            </div>
+            <div className='border-l border-surface-border pl-4 ml-1'>{renderUserMenu()}</div>
           </div>
         </div>
       </div>
