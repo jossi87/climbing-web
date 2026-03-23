@@ -1,7 +1,7 @@
 import { Loading } from '../widgets/widgets';
 import { Link } from 'react-router-dom';
 import { useTop } from '../../../api';
-import { ClickableAvatar } from '../../ui/Avatar';
+import { ClickableAvatar } from '../../ui/Avatar/Avatar';
 import { cn } from '../../../lib/utils';
 
 type TopProps = {

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Loading } from './common/widgets/widgets';
 import { usePermissions } from '../api';
-import { ClickableAvatar } from './ui/Avatar';
+import { ClickableAvatar } from './ui/Avatar/Avatar';
 import { useMeta } from './common/meta/context';
 import { Link } from 'react-router-dom';
 import { Users, Search, Shield, ShieldAlert, ShieldCheck, User, ChevronDown } from 'lucide-react';

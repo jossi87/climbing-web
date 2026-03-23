@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { getMediaFileUrl, getMediaFileUrlSrcSet } from '../../api';
-import { ClickableAvatar } from '../ui/Avatar';
+import { ClickableAvatar } from '../ui/Avatar/Avatar';
 import type { components } from '../../@types/buldreinfo/swagger';
 
 type RandomMedia = components['schemas']['FrontpageRandomMedia'];

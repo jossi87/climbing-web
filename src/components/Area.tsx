@@ -22,7 +22,7 @@ import { getMediaFileUrl, useArea } from '../api';
 import { Markdown } from './Markdown/Markdown';
 import ProblemList from './common/problem-list';
 import type { components } from '../@types/buldreinfo/swagger';
-import { DownloadButton } from './common/DownloadButton';
+import { DownloadButton } from '../components/ui/DownloadButton';
 import {
   ChevronRight,
   Plus,

@@ -13,8 +13,8 @@ import {
   Loader2,
 } from 'lucide-react';
 import VideoEmbedder from './video-embedder';
-import { UserSelector } from '../user-selector/user-selector';
-import { UsersSelector } from '../user-selector/user-selector';
+import { UserSelector } from '../../ui/UserSelector';
+import { UsersSelector } from '../../ui/UserSelector';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { useMeta } from '../meta/context';
 import { cn } from '../../../lib/utils';

@@ -2,7 +2,7 @@ import type { JSX } from 'react';
 import { Link } from 'react-router-dom';
 import { useAccessToken, useProblem, postComment } from '../../../api';
 import Media from '../../common/media/media';
-import { ClickableAvatar } from '../../ui/Avatar';
+import { ClickableAvatar } from '../../ui/Avatar/Avatar';
 import { useMeta } from '../../common/meta/context';
 import Linkify from 'linkify-react';
 import type { components } from '../../../@types/buldreinfo/swagger';

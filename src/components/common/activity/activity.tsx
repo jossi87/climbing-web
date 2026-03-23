@@ -5,7 +5,7 @@ import { Filter, ChevronDown, Plus, Check, MessageSquare, Camera } from 'lucide-
 import { useLocalStorage } from '../../../utils/use-local-storage';
 import { useMeta } from '../meta/context';
 import { useActivity } from '../../../api';
-import { AvatarGroup } from '../../ui/Avatar';
+import { AvatarGroup } from '../../ui/Avatar/Avatar';
 import { Stars } from '../widgets/widgets';
 import { cn } from '../../../lib/utils';
 import { ProblemLink } from './components/ProblemLink';

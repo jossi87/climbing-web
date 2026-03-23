@@ -22,7 +22,7 @@ import { useMeta } from './common/meta/context';
 import { useSector } from '../api';
 import type { Slope } from '../@types/buldreinfo';
 import type { components } from '../@types/buldreinfo/swagger';
-import { DownloadButton } from './common/DownloadButton';
+import { DownloadButton } from '../components/ui/DownloadButton';
 import type { MarkerDef } from './common/leaflet/markers';
 import { Markdown } from './Markdown/Markdown';
 import ExpandableText from './ExpandableText/ExpandableText';

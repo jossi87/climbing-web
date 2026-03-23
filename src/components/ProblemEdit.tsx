@@ -1,5 +1,5 @@
 import { useState, useCallback, type ComponentProps, type UIEvent } from 'react';
-import { UsersSelector } from './common/user-selector/user-selector';
+import { UsersSelector } from '../components/ui/UserSelector';
 import RockSelector from './common/rock-selector/rock-selector';
 import ProblemSection from './common/problem-section/problem-section';
 import MediaUpload from './common/media-upload/media-upload';
@@ -17,11 +17,11 @@ import { Loading } from './common/widgets/widgets';
 import { useNavigate, useParams } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { VisibilitySelectorField } from './common/VisibilitySelector';
+import { VisibilitySelectorField } from '../components/ui/VisibilitySelector';
 import { useQueryClient } from '@tanstack/react-query';
 import type { components } from '../@types/buldreinfo/swagger';
 import { captureException, captureMessage } from '@sentry/react';
-import ExternalLinks from './common/external-links/external-links';
+import ExternalLinks from '../components/ui/ExternalLinks';
 import { Info, Calendar, Save, X, ChevronDown, AlertCircle } from 'lucide-react';
 import { cn } from '../lib/utils';
 

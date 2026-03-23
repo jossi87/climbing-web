@@ -4,11 +4,11 @@ import Leaflet from '../common/leaflet/leaflet';
 import { useMeta } from '../common/meta/context';
 import { Loading } from '../common/widgets/widgets';
 import { useNavigate, useParams } from 'react-router-dom';
-import { VisibilitySelectorField } from '../common/VisibilitySelector';
+import { VisibilitySelectorField } from '../ui/VisibilitySelector';
 import { captureException } from '@sentry/react';
 import { useAreaEdit } from './useAreaEdit';
 import { hours } from '../../utils/hours';
-import ExternalLink from '../common/external-links/external-links';
+import ExternalLink from '../ui/ExternalLinks';
 import {
   Info,
   Trash2,

@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { useMeta } from './common/meta/context';
 import SearchBox from './common/search-box/search-box';
-import { Avatar } from './ui/Avatar';
+import { Avatar } from './ui/Avatar/Avatar';
 import { NavItem } from './ui/NavItem';
 import { useState, useRef, useEffect } from 'react';
 import { cn } from '../lib/utils';

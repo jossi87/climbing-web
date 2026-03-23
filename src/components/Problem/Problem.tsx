@@ -15,7 +15,7 @@ import { useMeta } from '../common/meta/context';
 import { useProblem } from '../../api';
 import type { components } from '../../@types/buldreinfo/swagger';
 import type { Slope } from '../../@types/buldreinfo';
-import { ClickableAvatar } from '../ui/Avatar';
+import { ClickableAvatar } from '../ui/Avatar/Avatar';
 import TickModal from '../common/tick-modal/tick-modal';
 import CommentModal from '../common/comment-modal/comment-modal';
 import { SlopeProfile } from '../common/SlopeProfile';
@@ -23,7 +23,7 @@ import Linkify from 'linkify-react';
 import { ProblemsOnRock } from './ProblemsOnRock';
 import { ProblemTicks } from './ProblemTicks';
 import { ProblemComments } from './ProblemComments';
-import { DownloadButton } from '../common/DownloadButton';
+import { DownloadButton } from '../ui/DownloadButton';
 import { Markdown } from '../Markdown/Markdown';
 import {
   Bookmark,

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useMeta } from './common/meta/context';
 import { useData } from '../api';
-import { ClickableAvatar } from './ui/Avatar';
+import { ClickableAvatar } from './ui/Avatar/Avatar';
 import {
   Info,
   Users,

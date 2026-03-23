@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { ClickableAvatar } from '../../ui/Avatar';
+import { ClickableAvatar } from '../../ui/Avatar/Avatar';
 import { Stars } from '../../common/widgets/widgets';
 import Linkify from 'linkify-react';
 import type { components } from '../../../@types/buldreinfo/swagger';

@@ -4,7 +4,7 @@ import { useMeta } from './common/meta/context';
 import { useProfile } from '../api';
 import { useAuth0 } from '@auth0/auth0-react';
 import ProfileStatistics from './common/profile/profile-statistics';
-import { ClickableAvatar } from './ui/Avatar';
+import { ClickableAvatar } from './ui/Avatar/Avatar';
 import ProfileTodo from './common/profile/profile-todo';
 import ProfileMedia from './common/profile/profile-media';
 import ProfileSettings from './common/profile/profile-settings';

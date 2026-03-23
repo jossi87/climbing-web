@@ -12,7 +12,7 @@ import { useMeta } from '../common/meta';
 import { postSector, useAccessToken, useArea, useElevation, useSector } from '../../api';
 import Leaflet from '../common/leaflet/leaflet';
 import { useNavigate, useParams } from 'react-router-dom';
-import { VisibilitySelectorField } from '../common/VisibilitySelector';
+import { VisibilitySelectorField } from '../ui/VisibilitySelector';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { ProblemOrder } from './ProblemOrder';
 import { PolylineEditor } from './PolylineEditor';
@@ -20,7 +20,7 @@ import { ZoomLogic } from './ZoomLogic';
 import { PolylineMarkers } from './PolylineMarkers';
 import { captureMessage } from '@sentry/react';
 import { hours } from '../../utils/hours';
-import ExternalLinks from '../common/external-links/external-links';
+import ExternalLinks from '../ui/ExternalLinks';
 import {
   Info,
   MapPin,
