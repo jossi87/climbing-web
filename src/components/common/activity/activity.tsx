@@ -321,22 +321,11 @@ const Activity = ({ idArea, idSector }: Props) => {
               return (
                 <Feed.Event key={currentKey}>
                   <Feed.Label>
-                    {(a.problemRandomMediaId ?? 0) > 0 && (
-                      <img
-                        style={{ height: '35px', width: '35px', objectFit: 'cover' }}
-                        width='35'
-                        height='35'
-                        alt={a.problemName ?? 'Problem thumbnail'}
-                        loading='lazy'
-                        src={getMediaFileUrl(
-                          Number(a.problemRandomMediaId ?? 0),
-                          Number(a.problemRandomMediaVersionStamp ?? 0),
-                          false,
-                          { minDimension: 35 },
-                        )}
-                        onError={(e: SyntheticEvent<HTMLImageElement>) =>
-                          ((e.target as HTMLImageElement).src = '/png/video_placeholder.png')
-                        }
+                    {a.activityThumbnails?.[0] && (
+                      <Avatar
+                        name={a.problemName}
+                        mediaId={a.activityThumbnails[0].id}
+                        mediaVersionStamp={a.activityThumbnails[0].versionStamp}
                       />
                     )}
                   </Feed.Label>
@@ -377,11 +366,13 @@ const Activity = ({ idArea, idSector }: Props) => {
               return (
                 <Feed.Event key={currentKey}>
                   <Feed.Label>
-                    <Avatar
-                      name={a.name}
-                      mediaId={a.mediaId}
-                      mediaVersionStamp={a.mediaVersionStamp}
-                    />
+                    {a.activityThumbnails?.[0] && (
+                      <Avatar
+                        name={a.name}
+                        mediaId={a.activityThumbnails[0].id}
+                        mediaVersionStamp={a.activityThumbnails[0].versionStamp}
+                      />
+                    )}
                   </Feed.Label>
                   <Feed.Content>
                     <Feed.Summary>
@@ -434,22 +425,11 @@ const Activity = ({ idArea, idSector }: Props) => {
               return (
                 <Feed.Event key={currentKey}>
                   <Feed.Label>
-                    {(a.problemRandomMediaId ?? 0) > 0 && (
-                      <img
-                        style={{ height: '35px', width: '35px', objectFit: 'cover' }}
-                        width='35'
-                        height='35'
-                        alt={a.problemName ?? 'Problem thumbnail'}
-                        loading='lazy'
-                        src={getMediaFileUrl(
-                          Number(a.problemRandomMediaId ?? 0),
-                          Number(a.problemRandomMediaVersionStamp ?? 0),
-                          false,
-                          { minDimension: 35 },
-                        )}
-                        onError={(e: SyntheticEvent<HTMLImageElement>) =>
-                          ((e.target as HTMLImageElement).src = '/png/video_placeholder.png')
-                        }
+                    {a.activityThumbnails?.[0] && (
+                      <Avatar
+                        name={a.problemName}
+                        mediaId={a.activityThumbnails[0].id}
+                        mediaVersionStamp={a.activityThumbnails[0].versionStamp}
                       />
                     )}
                   </Feed.Label>
@@ -473,11 +453,13 @@ const Activity = ({ idArea, idSector }: Props) => {
               return (
                 <Feed.Event key={currentKey}>
                   <Feed.Label>
-                    <Avatar
-                      name={a.name}
-                      mediaId={a.mediaId}
-                      mediaVersionStamp={a.mediaVersionStamp}
-                    />
+                    {a.activityThumbnails?.[0] && (
+                      <Avatar
+                        name={a.name}
+                        mediaId={a.activityThumbnails[0].id}
+                        mediaVersionStamp={a.activityThumbnails[0].versionStamp}
+                      />
+                    )}
                   </Feed.Label>
                   <Feed.Content>
                     <Feed.Summary>
@@ -488,14 +470,9 @@ const Activity = ({ idArea, idSector }: Props) => {
                       <Feed.Date>{a.timeAgo}</Feed.Date>
                     </Feed.Summary>
                     {a.description && <Feed.Extra text>{a.description}</Feed.Extra>}
-                    {(a.noPersonalGrade || a.stars !== 0) && (
+                    {a.stars !== -1 && (
                       <Feed.Meta>
-                        {a.noPersonalGrade && (
-                          <Label basic size='mini'>
-                            <Icon name='x' /> No personal grade
-                          </Label>
-                        )}
-                        {a.stars !== 0 && <Stars numStars={a.stars} includeStarOutlines={true} />}
+                        <Stars numStars={a.stars} includeStarOutlines={true} />
                       </Feed.Meta>
                     )}
                   </Feed.Content>
