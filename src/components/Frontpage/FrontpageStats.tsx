@@ -2,11 +2,11 @@ import { Link } from 'react-router-dom';
 import {
   Database,
   CheckCircle,
-  Image as ImageIcon,
   Camera,
   Film,
   Heart,
   MapPin,
+  Spline,
   type LucideIcon,
 } from 'lucide-react';
 import { numberWithCommas } from '../../api';
@@ -106,7 +106,7 @@ export const FrontpageStats = ({
       />
       {isClimbing ? (
         <StatItem
-          icon={ImageIcon}
+          icon={Spline}
           label='With topo'
           value={numProblems ? numberWithCommas(numProblems.numProblemsWithTopo ?? 0) : undefined}
           loading={!numProblems}
