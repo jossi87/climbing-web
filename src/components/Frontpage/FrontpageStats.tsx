@@ -3,7 +3,6 @@ import {
   Database,
   CheckCircle,
   Image as ImageIcon,
-  MapPin,
   Camera,
   Film,
   Heart,
@@ -26,27 +25,35 @@ const StatItem = ({ to, icon: Icon, label, value }: StatItemProps) => {
   const content = (
     <div
       className={cn(
-        'relative flex flex-col items-center justify-center transition-all duration-200 border-surface-border bg-surface-card group p-2.5 sm:p-4 h-full w-full border-r border-b last:border-r-0 sm:border-0',
-        isDonate && 'hover:shadow-brand/10 shadow-sm',
+        'relative flex flex-col items-center justify-center transition-all duration-300 bg-surface-card group p-2.5 sm:p-4 h-full w-full hover:bg-white/3',
+        isDonate && 'hover:bg-brand/4',
       )}
     >
       <div
-        className={cn('transition-colors duration-200 text-slate-500 group-hover:text-brand mb-1')}
+        className={cn(
+          'transition-colors duration-300 mb-1.5 text-slate-500',
+          isDonate ? 'group-hover:text-brand' : 'group-hover:text-slate-300',
+        )}
       >
-        <Icon size={isDonate ? 18 : 14} />
+        <Icon size={isDonate ? 16 : 14} strokeWidth={isDonate ? 2.5 : 2} />
       </div>
       <div className='flex flex-col relative z-10 text-center'>
         {value !== undefined && value !== '' ? (
           <>
-            <span className='text-sm sm:text-lg font-black text-slate-200 leading-tight tabular-nums tracking-tight'>
+            <span className='text-sm sm:text-lg font-black text-slate-200 leading-none tabular-nums tracking-tight'>
               {value}
             </span>
-            <span className='text-[8px] sm:text-[9px] uppercase tracking-widest text-slate-500 font-bold mt-0.5'>
+            <span className='text-[8px] sm:text-[9px] uppercase tracking-[0.15em] text-slate-500 font-bold mt-1 group-hover:text-slate-400 transition-colors'>
               {label}
             </span>
           </>
         ) : (
-          <span className='text-[9px] uppercase tracking-widest text-slate-500 font-bold'>
+          <span
+            className={cn(
+              'text-[9px] uppercase tracking-[0.15em] font-black transition-colors duration-300',
+              isDonate ? 'text-slate-500 group-hover:text-brand' : 'text-slate-500',
+            )}
+          >
             {label}
           </span>
         )}
@@ -64,12 +71,9 @@ const StatItem = ({ to, icon: Icon, label, value }: StatItemProps) => {
 };
 
 export const StatsSkeleton = () => (
-  <div className='app-card grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-0 sm:gap-px mb-6 border-l border-t sm:border-0 animate-pulse bg-surface-border/20'>
+  <div className='app-card grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-px mb-6 bg-surface-border/20 overflow-hidden animate-pulse'>
     {[...Array(6)].map((_, i) => (
-      <div
-        key={i}
-        className='bg-surface-card h-17 sm:h-23.5 border-r border-b border-surface-border/30 last:border-r-0 sm:border-0'
-      />
+      <div key={i} className='bg-surface-card h-16 sm:h-20' />
     ))}
   </div>
 );
@@ -93,7 +97,7 @@ export const FrontpageStats = ({
   }
 
   return (
-    <div className='app-card grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-0 sm:gap-px mb-6 border-l border-t sm:border-0'>
+    <div className='app-card grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-px mb-6 bg-surface-border/30 overflow-hidden border-0 sm:border'>
       <StatItem
         to='/problems'
         icon={Database}

@@ -4,20 +4,17 @@ import Linkify from 'linkify-react';
 import { Filter, ChevronDown, Plus, Check, MessageSquare, Camera } from 'lucide-react';
 import { useLocalStorage } from '../../../utils/use-local-storage';
 import { useMeta } from '../meta/context';
-import { getMediaFileUrl, useActivity } from '../../../api';
-import { ClickableAvatar } from '../../ui/Avatar';
+import { useActivity } from '../../../api';
+import { AvatarGroup } from '../../ui/Avatar';
 import { Stars } from '../widgets/widgets';
 import { cn } from '../../../lib/utils';
 import { ProblemLink } from './components/ProblemLink';
 import { LazyMedia } from './components/LazyMedia';
-import type { components } from '../../../@types/buldreinfo/swagger';
-
-type ActivityUser = components['schemas']['User'];
 
 const ActivitySkeleton = () => (
   <div className='p-4 text-left border-b border-surface-border/30 last:border-0'>
     <div className='flex gap-4 items-start animate-pulse'>
-      <div className='shrink-0 w-9 h-9 rounded-md bg-surface-nav' />
+      <div className='shrink-0 w-8 h-8 rounded-full bg-surface-nav' />
       <div className='flex-1 space-y-3'>
         <div className='flex justify-between items-start'>
           <div className='h-4 bg-surface-nav rounded w-2/3' />
@@ -79,7 +76,7 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
               onClick={() => setIsFilterOpen(!isFilterOpen)}
               className='btn-glass btn-glass-active h-7!'
             >
-              <Filter size={12} />{' '}
+              <Filter size={12} />
               <span className='text-[10px] uppercase font-bold'>
                 {lowerGradeText === 'n/a' ? 'ALL' : lowerGradeText}
               </span>
@@ -107,9 +104,9 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                       setLowerGradeText(
                         g.id === 0
                           ? 'ALL'
-                          : g.grade.includes('(')
+                          : g.grade?.includes('(')
                             ? g.grade.split('(')[1].replace(')', '')
-                            : g.grade,
+                            : (g.grade ?? ''),
                       );
                       setIsFilterOpen(false);
                       setTimeout(refetch, 10);
@@ -160,7 +157,7 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
         </div>
       </div>
 
-      <div className='app-card'>
+      <div className='app-card overflow-hidden'>
         <div className='divide-y divide-surface-border/30'>
           {isPending
             ? [...Array(6)].map((_, i) => <ActivitySkeleton key={i} />)
@@ -173,11 +170,25 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                 );
 
                 const getStatusIcon = () => {
-                  if (a.users) return <Plus size={10} className='text-brand' />;
-                  if (a.message) return <MessageSquare size={10} className='text-blue-400' />;
-                  if (a.media && !a.name) return <Camera size={10} className='text-amber-400' />;
-                  return <Check size={10} className='text-emerald-400' />;
+                  if (a.users) return <Plus size={8} className='text-brand' />;
+                  if (a.message) return <MessageSquare size={8} className='text-blue-400' />;
+                  if (a.media && !a.name) return <Camera size={8} className='text-amber-400' />;
+                  return <Check size={8} className='text-emerald-400' />;
                 };
+
+                const avatarItems =
+                  a.activityThumbnails && a.activityThumbnails.length > 0
+                    ? a.activityThumbnails.map((m) => ({
+                        mediaId: m.id,
+                        mediaVersionStamp: m.versionStamp,
+                      }))
+                    : a.users && a.users.length > 0
+                      ? a.users.map((u) => ({
+                          name: u.name,
+                          mediaId: u.mediaId,
+                          mediaVersionStamp: u.mediaVersionStamp,
+                        }))
+                      : [{ name: a.name, mediaId: undefined, mediaVersionStamp: undefined }];
 
                 return (
                   <div
@@ -185,89 +196,72 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                     className='p-4 hover:bg-white/1 transition-colors text-left group'
                   >
                     <div className='flex gap-4 items-start'>
-                      <div className='shrink-0 mt-0.5 relative'>
-                        {a.users ? (
-                          (a.problemRandomMediaId ?? 0) > 0 ? (
-                            <img
-                              src={getMediaFileUrl(
-                                Number(a.problemRandomMediaId),
-                                Number(a.problemRandomMediaVersionStamp),
-                                false,
-                                { minDimension: 40 },
-                              )}
-                              className='w-9 h-9 rounded-md object-cover border border-surface-border'
-                              alt=''
-                            />
-                          ) : (
-                            <div className='w-9 h-9 rounded-md bg-surface-nav border border-surface-border flex items-center justify-center text-slate-700'>
-                              <Plus size={16} />
-                            </div>
-                          )
-                        ) : (
-                          <ClickableAvatar
-                            name={a.name}
-                            mediaId={a.mediaId}
-                            mediaVersionStamp={a.mediaVersionStamp}
-                            size='tiny'
-                          />
-                        )}
-                        <div className='absolute -bottom-1 -right-1 bg-surface-card rounded-full p-[1.5px] border border-surface-border shadow-sm flex items-center justify-center'>
-                          {getStatusIcon()}
-                        </div>
+                      <div className='shrink-0 pt-1.5'>
+                        <AvatarGroup
+                          items={avatarItems}
+                          size='tiny'
+                          statusIcon={getStatusIcon()}
+                          max={2}
+                        />
                       </div>
 
-                      <div className='flex-1 min-w-0 pr-2'>
+                      <div className='flex-1 min-w-0 pt-1'>
                         <div className='flex items-baseline justify-between gap-4'>
-                          <div className='text-[14px] text-slate-500 leading-relaxed overflow-hidden'>
+                          <div className='text-[14px] text-slate-500 leading-tight flex flex-wrap items-center gap-x-1.5'>
                             {a.users ? (
-                              <span>
-                                New {meta.isBouldering ? 'problem' : 'route'} in{' '}
+                              <>
+                                <span className='font-bold text-slate-200'>
+                                  New {meta.isBouldering ? 'problem' : 'route'}
+                                </span>
+                                <span className='text-slate-500 font-medium'>in</span>
                                 <ProblemLink a={a} />
-                              </span>
+                              </>
                             ) : a.message ? (
-                              <span>
+                              <>
                                 <Link
                                   to={`/user/${a.id}`}
-                                  className='font-semibold text-slate-300 hover:text-brand transition-colors'
+                                  className='font-bold text-slate-200 hover:text-brand transition-colors'
                                 >
                                   {a.name}
                                 </Link>
-                                <span className='mx-1'>commented on</span>
+                                <span className='text-slate-500 font-medium'>commented on</span>
                                 <ProblemLink a={a} />
-                              </span>
+                              </>
                             ) : (
-                              <span>
+                              <>
                                 {a.name ? (
                                   <>
                                     <Link
                                       to={`/user/${a.id}`}
-                                      className='font-semibold text-slate-300 hover:text-brand transition-colors'
+                                      className='font-bold text-slate-200 hover:text-brand transition-colors'
                                     >
                                       {a.name}
                                     </Link>
-                                    <span className='ml-1'>{a.repeat ? 'repeated' : 'ticked'}</span>
+                                    <span className='text-slate-500 font-medium'>
+                                      {a.repeat ? 'repeated' : 'ticked'}
+                                    </span>
                                   </>
                                 ) : (
-                                  <span className='font-semibold text-slate-300'>
+                                  <span className='font-bold text-slate-200 flex items-center gap-1.5'>
                                     {numImg > 0 && (
                                       <>
-                                        {numImg} {numImg === 1 ? 'image' : 'images'}{' '}
+                                        {numImg} {numImg === 1 ? 'image' : 'images'}
                                       </>
                                     )}
-                                    {numImg > 0 && numMov > 0 && '& '}
+                                    {numImg > 0 && numMov > 0 && <span>&</span>}
                                     {numMov > 0 && (
                                       <>
-                                        {numMov} {numMov === 1 ? 'video' : 'videos'}{' '}
+                                        {numMov} {numMov === 1 ? 'video' : 'videos'}
                                       </>
                                     )}
-                                    <span className='font-normal text-slate-500 ml-1'>on</span>
+                                    <span className='font-medium text-slate-500'>on</span>
                                   </span>
-                                )}{' '}
+                                )}
                                 <ProblemLink a={a} />
-                              </span>
+                              </>
                             )}
                           </div>
-                          <span className='shrink-0 text-[9px] font-bold text-slate-600 uppercase tracking-tighter mt-1'>
+                          <span className='shrink-0 text-[9px] font-bold text-slate-600 uppercase tracking-tighter whitespace-nowrap pt-1.5'>
                             {a.timeAgo}
                           </span>
                         </div>
@@ -286,21 +280,7 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                             <LazyMedia media={a.media} problemId={a.problemId} />
                           </div>
                         )}
-                        <div className='mt-3 flex items-center gap-3'>
-                          {a.users && (
-                            <div className='flex -space-x-1.5'>
-                              {a.users.map((u: ActivityUser) => (
-                                <ClickableAvatar
-                                  key={u.id}
-                                  name={u.name}
-                                  mediaId={u.mediaId}
-                                  mediaVersionStamp={u.mediaVersionStamp}
-                                  size='mini'
-                                  className='ring-1 ring-surface-card'
-                                />
-                              ))}
-                            </div>
-                          )}
+                        <div className='mt-2.5 flex items-center gap-3'>
                           {a.stars !== undefined && a.stars !== -1 && (
                             <Stars numStars={a.stars} includeStarOutlines={true} />
                           )}

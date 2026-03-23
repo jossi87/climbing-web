@@ -886,6 +886,7 @@ export type components = {
     schemas: {
         Activity: {
             activityIds?: number[];
+            activityThumbnails?: components["schemas"]["ActivityMedia"][];
             timeAgo?: string;
             /** Format: int32 */
             areaId?: number;
@@ -904,10 +905,6 @@ export type components = {
             problemName?: string;
             problemSubtype?: string;
             grade?: string;
-            /** Format: int32 */
-            problemRandomMediaId?: number;
-            /** Format: int64 */
-            problemRandomMediaVersionStamp?: number;
             media?: components["schemas"]["ActivityMedia"][];
             /** Format: int32 */
             stars?: number;
@@ -915,10 +912,6 @@ export type components = {
             /** Format: int32 */
             id?: number;
             name?: string;
-            /** Format: int32 */
-            mediaId?: number;
-            /** Format: int64 */
-            mediaVersionStamp?: number;
             description?: string;
             message?: string;
             users?: components["schemas"]["User"][];

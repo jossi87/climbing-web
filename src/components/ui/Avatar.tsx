@@ -15,8 +15,8 @@ type AvatarProps = {
 
 const SIZE_MAP: Record<AvatarSize, number> = {
   mini: 24,
-  tiny: 40,
-  small: 80,
+  tiny: 32,
+  small: 40,
   medium: 150,
   large: 300,
   big: 450,
@@ -67,6 +67,46 @@ export function Avatar({
           loading='lazy'
           className='w-full h-full object-cover pointer-events-none'
         />
+      )}
+    </div>
+  );
+}
+
+export function AvatarGroup({
+  items,
+  size = 'mini',
+  statusIcon,
+  max = 3,
+}: {
+  items: AvatarProps[];
+  size?: AvatarSize;
+  statusIcon?: React.ReactNode;
+  max?: number;
+}) {
+  return (
+    <div className='relative flex items-center'>
+      <div className={cn('flex', size === 'mini' || size === 'tiny' ? '-space-x-3' : '-space-x-4')}>
+        {items.slice(0, max).map((item, i) => (
+          <ClickableAvatar
+            key={item.mediaId || i}
+            {...item}
+            size={size}
+            className={cn('ring-2 ring-surface-card', item.className)}
+          />
+        ))}
+        {items.length > max && (
+          <div
+            className='bg-surface-nav text-slate-500 font-bold text-[8px] flex items-center justify-center rounded-full ring-2 ring-surface-card'
+            style={{ width: SIZE_MAP[size], height: SIZE_MAP[size] }}
+          >
+            +{items.length - max}
+          </div>
+        )}
+      </div>
+      {statusIcon && (
+        <div className='absolute -bottom-1 -right-1 bg-surface-card rounded-full p-px border border-surface-border shadow-sm flex items-center justify-center z-10'>
+          {statusIcon}
+        </div>
       )}
     </div>
   );

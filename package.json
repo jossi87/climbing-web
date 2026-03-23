@@ -19,7 +19,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@tailwindcss/vite": "^4.2.2",
-    "@tanstack/react-query-devtools": "^5.94.5",
+    "@tanstack/react-query-devtools": "^5.95.0",
     "@types/leaflet": "^1.9.21",
     "@types/node": "^25.5.0",
     "@types/react": "^19.2.14",
@@ -52,7 +52,7 @@
     "@auth0/auth0-react": "^2.15.1",
     "@react-leaflet/core": "^3.0.0",
     "@sentry/react": "^10.45.0",
-    "@tanstack/react-query": "^5.94.5",
+    "@tanstack/react-query": "^5.95.0",
     "clsx": "^2.1.1",
     "flat": "^6.0.1",
     "heic2any": "^0.0.4",
