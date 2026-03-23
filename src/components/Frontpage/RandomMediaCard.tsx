@@ -36,6 +36,8 @@ export const RandomMediaCard = ({ randomMedia }: Props) => {
           )}
           sizes='(max-width: 640px) 100vw, 400px'
           alt={randomMedia.problem}
+          fetchPriority='high'
+          loading='eager'
         />
         <div className='absolute inset-0 bg-linear-to-t from-surface-dark via-surface-dark/20 to-transparent sm:opacity-0 group-hover:opacity-100 transition-opacity duration-500' />
 

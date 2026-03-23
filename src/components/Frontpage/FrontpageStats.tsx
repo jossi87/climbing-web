@@ -63,6 +63,17 @@ const StatItem = ({ to, icon: Icon, label, value }: StatItemProps) => {
   );
 };
 
+export const StatsSkeleton = () => (
+  <div className='app-card grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-0 sm:gap-px mb-6 border-l border-t sm:border-0 animate-pulse bg-surface-border/20'>
+    {[...Array(6)].map((_, i) => (
+      <div
+        key={i}
+        className='bg-surface-card h-17 sm:h-23.5 border-r border-b border-surface-border/30 last:border-r-0 sm:border-0'
+      />
+    ))}
+  </div>
+);
+
 type FrontpageStatsProps = {
   numMedia?: components['schemas']['FrontpageNumMedia'];
   numProblems?: components['schemas']['FrontpageNumProblems'];
@@ -77,6 +88,10 @@ export const FrontpageStats = ({
   numTicks,
   isBouldering,
 }: FrontpageStatsProps) => {
+  if (!numProblems || !numMedia || !numTicks) {
+    return <StatsSkeleton />;
+  }
+
   return (
     <div className='app-card grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-0 sm:gap-px mb-6 border-l border-t sm:border-0'>
       <StatItem

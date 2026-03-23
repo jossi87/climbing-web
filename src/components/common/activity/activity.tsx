@@ -1,16 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Linkify from 'linkify-react';
-import {
-  Filter,
-  ChevronDown,
-  Plus,
-  Check,
-  ImageIcon,
-  MessageSquare,
-  Film,
-  Camera,
-} from 'lucide-react';
+import { Filter, ChevronDown, Plus, Check, MessageSquare, Camera } from 'lucide-react';
 import { useLocalStorage } from '../../../utils/use-local-storage';
 import { useMeta } from '../meta/context';
 import { getMediaFileUrl, useActivity } from '../../../api';
@@ -22,6 +13,21 @@ import { LazyMedia } from './components/LazyMedia';
 import type { components } from '../../../@types/buldreinfo/swagger';
 
 type ActivityUser = components['schemas']['User'];
+
+const ActivitySkeleton = () => (
+  <div className='p-4 text-left border-b border-surface-border/30 last:border-0'>
+    <div className='flex gap-4 items-start animate-pulse'>
+      <div className='shrink-0 w-9 h-9 rounded-md bg-surface-nav' />
+      <div className='flex-1 space-y-3'>
+        <div className='flex justify-between items-start'>
+          <div className='h-4 bg-surface-nav rounded w-2/3' />
+          <div className='h-2 bg-surface-nav rounded w-12' />
+        </div>
+        <div className='h-3 bg-surface-nav rounded w-1/2' />
+      </div>
+    </div>
+  </div>
+);
 
 const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -76,7 +82,7 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
               <Filter size={12} />{' '}
               <span className='text-[10px] uppercase font-bold'>
                 {lowerGradeText === 'n/a' ? 'ALL' : lowerGradeText}
-              </span>{' '}
+              </span>
               <ChevronDown
                 size={10}
                 className={cn('transition-transform', isFilterOpen && 'rotate-180')}
@@ -157,7 +163,7 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
       <div className='app-card'>
         <div className='divide-y divide-surface-border/30'>
           {isPending
-            ? [...Array(6)].map((_, i) => <div key={i} className='h-20 animate-pulse' />)
+            ? [...Array(6)].map((_, i) => <ActivitySkeleton key={i} />)
             : activity?.map((a) => {
                 const currentKey = a.activityIds?.join('+') ?? `activity-${a.id ?? 0}`;
                 const [numImg, numMov] = (a.media ?? []).reduce(
@@ -166,13 +172,20 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                   [0, 0],
                 );
 
+                const getStatusIcon = () => {
+                  if (a.users) return <Plus size={10} className='text-brand' />;
+                  if (a.message) return <MessageSquare size={10} className='text-blue-400' />;
+                  if (a.media && !a.name) return <Camera size={10} className='text-amber-400' />;
+                  return <Check size={10} className='text-emerald-400' />;
+                };
+
                 return (
                   <div
                     key={currentKey}
-                    className='p-4 hover:bg-white/1 transition-colors text-left'
+                    className='p-4 hover:bg-white/1 transition-colors text-left group'
                   >
                     <div className='flex gap-4 items-start'>
-                      <div className='shrink-0 mt-0.5'>
+                      <div className='shrink-0 mt-0.5 relative'>
                         {a.users ? (
                           (a.problemRandomMediaId ?? 0) > 0 ? (
                             <img
@@ -198,10 +211,14 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                             size='tiny'
                           />
                         )}
+                        <div className='absolute -bottom-1 -right-1 bg-surface-card rounded-full p-[1.5px] border border-surface-border shadow-sm flex items-center justify-center'>
+                          {getStatusIcon()}
+                        </div>
                       </div>
+
                       <div className='flex-1 min-w-0 pr-2'>
                         <div className='flex items-baseline justify-between gap-4'>
-                          <div className='text-[14px] text-slate-500 wrap-break-word whitespace-normal leading-relaxed overflow-hidden'>
+                          <div className='text-[14px] text-slate-500 leading-relaxed overflow-hidden'>
                             {a.users ? (
                               <span>
                                 New {meta.isBouldering ? 'problem' : 'route'} in{' '}
@@ -214,8 +231,9 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                                   className='font-semibold text-slate-300 hover:text-brand transition-colors'
                                 >
                                   {a.name}
-                                </Link>{' '}
-                                posted a comment on <ProblemLink a={a} />
+                                </Link>
+                                <span className='mx-1'>commented on</span>
+                                <ProblemLink a={a} />
                               </span>
                             ) : (
                               <span>
@@ -226,29 +244,25 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                                       className='font-semibold text-slate-300 hover:text-brand transition-colors'
                                     >
                                       {a.name}
-                                    </Link>{' '}
-                                    <span className='text-slate-500 font-medium ml-1'>
-                                      {a.repeat ? 'repeated' : 'ticked'}
-                                    </span>{' '}
+                                    </Link>
+                                    <span className='ml-1'>{a.repeat ? 'repeated' : 'ticked'}</span>
                                   </>
                                 ) : (
                                   <span className='font-semibold text-slate-300'>
                                     {numImg > 0 && (
                                       <>
-                                        {numImg} new{' '}
-                                        <ImageIcon size={10} className='inline mb-0.5' />{' '}
+                                        {numImg} {numImg === 1 ? 'image' : 'images'}{' '}
                                       </>
                                     )}
-                                    {numImg > 0 && numMov > 0 && 'and '}
+                                    {numImg > 0 && numMov > 0 && '& '}
                                     {numMov > 0 && (
                                       <>
-                                        {numMov} new{' '}
-                                        <Film size={12} className='inline mb-0.5' />{' '}
+                                        {numMov} {numMov === 1 ? 'video' : 'videos'}{' '}
                                       </>
-                                    )}{' '}
-                                    on{' '}
+                                    )}
+                                    <span className='font-normal text-slate-500 ml-1'>on</span>
                                   </span>
-                                )}
+                                )}{' '}
                                 <ProblemLink a={a} />
                               </span>
                             )}
@@ -258,12 +272,12 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                           </span>
                         </div>
                         {a.description && (
-                          <div className='mt-1 text-slate-400 text-[11px] italic leading-snug pl-2 border-l border-surface-border wrap-break-word whitespace-normal'>
+                          <div className='mt-1 text-slate-400 text-[11px] italic leading-snug pl-2 border-l border-surface-border'>
                             {a.description}
                           </div>
                         )}
                         {a.message && (
-                          <div className='mt-1 text-slate-400 text-[11px] border-l border-brand/20 pl-2 italic leading-snug wrap-break-word whitespace-normal'>
+                          <div className='mt-1 text-slate-400 text-[11px] border-l border-brand/20 pl-2 italic leading-snug'>
                             <Linkify>{a.message}</Linkify>
                           </div>
                         )}

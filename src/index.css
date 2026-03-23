@@ -21,6 +21,7 @@
     @apply text-slate-400 font-sans antialiased selection:bg-brand/30;
     font-size: 14px;
     letter-spacing: -0.01em;
+    font-display: swap;
   }
   body {
     @apply bg-surface-dark leading-relaxed overflow-x-hidden;
@@ -49,7 +50,8 @@
 @layer components {
   .app-card {
     @apply bg-surface-card border-y border-surface-border sm:border-x sm:rounded-xl overflow-hidden sm:mx-0;
-    /* Removed -mx-4 to prevent horizontal scroll overflow */
+    contain: content;
+    content-visibility: auto;
   }
 
   .search-input {
