@@ -87,7 +87,7 @@ const SearchBox = () => {
         </div>
         <input
           type='text'
-          className='block w-full bg-surface-dark border border-surface-border rounded-lg py-1.5 pl-10 pr-3 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand transition-all relative z-0'
+          className='block w-full bg-surface-dark border border-surface-border rounded-lg py-1.5 pl-10 pr-3 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand transition-all relative z-0'
           placeholder={placeholderText}
           value={value}
           onChange={(e) => setValue(e.target.value)}
