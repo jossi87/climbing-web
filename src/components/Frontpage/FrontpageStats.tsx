@@ -12,6 +12,7 @@ import {
 import { numberWithCommas } from '../../api';
 import { cn } from '../../lib/utils';
 import type { components } from '../../@types/buldreinfo/swagger';
+import { Card, SectionLabel } from '../ui';
 
 type StatItemProps = {
   to?: string;
@@ -44,28 +45,26 @@ const StatItem = ({ to, icon: Icon, label, value, loading }: StatItemProps) => {
         {loading ? (
           <>
             <div className='h-3 w-10 sm:h-4 sm:w-12 bg-surface-hover rounded animate-pulse mb-1' />
-            <span className='text-[7px] sm:text-[9px] uppercase tracking-widest text-slate-600 font-bold'>
-              {label}
-            </span>
+            <SectionLabel className='text-slate-600 text-[7px] sm:text-[9px]'>{label}</SectionLabel>
           </>
         ) : value !== undefined && value !== '' ? (
           <>
             <span className='text-sm sm:text-xl font-black text-slate-100 leading-none tabular-nums tracking-tight group-hover:text-white transition-colors'>
               {value}
             </span>
-            <span className='text-[7px] sm:text-[9px] uppercase tracking-widest text-slate-500 font-bold mt-1 group-hover:text-slate-400 transition-colors'>
+            <SectionLabel className='mt-1 group-hover:text-slate-400 transition-colors text-[7px] sm:text-[9px]'>
               {label}
-            </span>
+            </SectionLabel>
           </>
         ) : (
-          <span
+          <SectionLabel
             className={cn(
-              'text-[8px] sm:text-[10px] uppercase tracking-widest font-black transition-colors duration-300',
+              'transition-colors duration-300 text-[8px] sm:text-[10px]',
               isDonate ? 'text-slate-400 group-hover:text-brand' : 'text-slate-500',
             )}
           >
             {label}
-          </span>
+          </SectionLabel>
         )}
       </div>
     </div>
@@ -96,51 +95,55 @@ export const FrontpageStats = ({
   isClimbing,
 }: FrontpageStatsProps) => {
   return (
-    <div className='app-card grid grid-cols-3 lg:grid-cols-1 xl:grid-cols-2 gap-px bg-surface-border/50 overflow-hidden border-0 sm:border shadow-xl'>
-      <StatItem
-        to='/problems'
-        icon={Database}
-        label={isBouldering ? 'Problems' : 'Routes'}
-        value={numProblems ? numberWithCommas(numProblems.numProblems ?? 0) : undefined}
-        loading={!numProblems}
-      />
-      {isClimbing ? (
+    <Card flush className='border-0 sm:border'>
+      <div className='grid grid-cols-3 lg:grid-cols-1 xl:grid-cols-2 gap-px bg-surface-border/50 overflow-hidden'>
         <StatItem
-          icon={Spline}
-          label='With topo'
-          value={numProblems ? numberWithCommas(numProblems.numProblemsWithTopo ?? 0) : undefined}
+          to='/problems'
+          icon={Database}
+          label={isBouldering ? 'Problems' : 'Routes'}
+          value={numProblems ? numberWithCommas(numProblems.numProblems ?? 0) : undefined}
           loading={!numProblems}
         />
-      ) : (
+        {isClimbing ? (
+          <StatItem
+            icon={Spline}
+            label='With topo'
+            value={numProblems ? numberWithCommas(numProblems.numProblemsWithTopo ?? 0) : undefined}
+            loading={!numProblems}
+          />
+        ) : (
+          <StatItem
+            icon={MapPin}
+            label='Coordinates'
+            value={
+              numProblems
+                ? numberWithCommas(numProblems.numProblemsWithCoordinates ?? 0)
+                : undefined
+            }
+            loading={!numProblems}
+          />
+        )}
         <StatItem
-          icon={MapPin}
-          label='Coordinates'
-          value={
-            numProblems ? numberWithCommas(numProblems.numProblemsWithCoordinates ?? 0) : undefined
-          }
-          loading={!numProblems}
+          to='/ticks/1'
+          icon={CheckCircle}
+          label='Ticks'
+          value={numTicks ? numberWithCommas(numTicks.numTicks ?? 0) : undefined}
+          loading={!numTicks}
         />
-      )}
-      <StatItem
-        to='/ticks/1'
-        icon={CheckCircle}
-        label='Ticks'
-        value={numTicks ? numberWithCommas(numTicks.numTicks ?? 0) : undefined}
-        loading={!numTicks}
-      />
-      <StatItem
-        icon={Camera}
-        label='Images'
-        value={numMedia ? numberWithCommas(numMedia.numImages ?? 0) : undefined}
-        loading={!numMedia}
-      />
-      <StatItem
-        icon={Film}
-        label='Videos'
-        value={numMedia ? numberWithCommas(numMedia.numMovies ?? 0) : undefined}
-        loading={!numMedia}
-      />
-      <StatItem to='/donations' icon={Heart} label='Donate' />
-    </div>
+        <StatItem
+          icon={Camera}
+          label='Images'
+          value={numMedia ? numberWithCommas(numMedia.numImages ?? 0) : undefined}
+          loading={!numMedia}
+        />
+        <StatItem
+          icon={Film}
+          label='Videos'
+          value={numMedia ? numberWithCommas(numMedia.numMovies ?? 0) : undefined}
+          loading={!numMedia}
+        />
+        <StatItem to='/donations' icon={Heart} label='Donate' />
+      </div>
+    </Card>
   );
 };

@@ -1,37 +1,26 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, type ElementType } from 'react';
 import { Link } from 'react-router-dom';
 import Linkify from 'linkify-react';
 import { Filter, ChevronDown, Plus, Check, MessageSquare, Camera } from 'lucide-react';
 import { useLocalStorage } from '../../../utils/use-local-storage';
 import { useMeta } from '../meta/context';
 import { useActivity } from '../../../api';
-import { AvatarGroup } from '../../ui/Avatar/Avatar';
+import { Avatar, AvatarGroup, Card, SectionLabel } from '../../ui';
 import { Stars } from '../widgets/widgets';
 import { cn } from '../../../lib/utils';
 import { ProblemLink } from './components/ProblemLink';
 import { LazyMedia } from './components/LazyMedia';
+import type { components } from '../../../@types/buldreinfo/swagger';
+
+type ActivitySchema = components['schemas']['Activity'];
 
 const ActivitySkeleton = () => (
-  <div className='p-4 text-left border-b border-surface-border/30 last:border-0 min-h-25'>
-    <div className='flex gap-4 items-start animate-pulse'>
-      <div className='shrink-0 pt-1.5'>
-        <div className='w-8 h-8 rounded-full bg-surface-nav' />
-      </div>
-      <div className='flex-1 space-y-3 pt-1'>
-        <div className='flex justify-between items-start gap-4'>
-          <div className='h-4 bg-surface-nav rounded w-2/3' />
-          <div className='h-2 bg-surface-nav rounded w-12 pt-1.5' />
-        </div>
-        <div className='h-3 bg-surface-nav rounded w-1/3' />
-        <div className='flex gap-2 mt-3'>
-          <div className='w-16 h-12 bg-surface-nav rounded-md opacity-40' />
-          <div className='w-16 h-12 bg-surface-nav rounded-md opacity-40' />
-        </div>
-        <div className='mt-2 flex items-center gap-1'>
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className='w-3 h-3 bg-surface-nav rounded-full opacity-30' />
-          ))}
-        </div>
+  <div className='p-3 border-b border-white/5 last:border-0 min-h-16 animate-pulse'>
+    <div className='flex gap-4 items-start'>
+      <div className='w-8 h-8 rounded-full bg-surface-nav' />
+      <div className='flex-1 space-y-1.5'>
+        <div className='h-3 bg-surface-nav rounded w-2/3' />
+        <div className='h-2 bg-surface-nav rounded w-1/3' />
       </div>
     </div>
   </div>
@@ -76,29 +65,19 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
   }, []);
 
   const handleFilterToggle = (type: string) => {
-    switch (type) {
-      case 'fa':
-        setActivityTypeFa(!activityTypeFa);
-        break;
-      case 'ticks':
-        setActivityTypeTicks(!activityTypeTicks);
-        break;
-      case 'media':
-        setActivityTypeMedia(!activityTypeMedia);
-        break;
-      case 'comments':
-        setActivityTypeComments(!activityTypeComments);
-        break;
-    }
+    if (type === 'fa') setActivityTypeFa(!activityTypeFa);
+    if (type === 'ticks') setActivityTypeTicks(!activityTypeTicks);
+    if (type === 'media') setActivityTypeMedia(!activityTypeMedia);
+    if (type === 'comments') setActivityTypeComments(!activityTypeComments);
     setTimeout(refetch, 10);
   };
 
   return (
     <div className='w-full'>
-      <div className='flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 px-4 sm:px-0'>
-        <h2 className='text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] hidden sm:block shrink-0'>
+      <div className='flex flex-col sm:flex-row items-center justify-between gap-4 mb-4 px-4 sm:px-0'>
+        <SectionLabel className='hidden sm:block text-slate-400 font-bold uppercase tracking-widest text-[10px]'>
           Latest Activity
-        </h2>
+        </SectionLabel>
 
         <div className='flex flex-wrap items-center justify-center sm:justify-end gap-1.5 w-full sm:w-auto'>
           <div className='relative' ref={filterRef}>
@@ -118,8 +97,8 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
 
             {isFilterOpen && (
               <div className='absolute top-full left-1/2 -translate-x-1/2 sm:left-auto sm:right-0 sm:translate-x-0 mt-1 w-48 bg-surface-card border border-surface-border rounded-lg shadow-2xl py-1 z-50 max-h-60 overflow-y-auto'>
-                <div className='px-4 py-1.5 text-[9px] font-bold text-slate-500 uppercase tracking-widest border-b border-surface-border/50 mb-1'>
-                  Lowest Grade
+                <div className='px-4 py-1.5 border-b border-surface-border/50 mb-1'>
+                  <SectionLabel className='text-[9px]'>Lowest Grade</SectionLabel>
                 </div>
                 {meta.grades.map((g) => (
                   <button
@@ -150,166 +129,187 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
             )}
           </div>
 
-          <button
+          <FilterButton
+            active={activityTypeFa}
             onClick={() => handleFilterToggle('fa')}
-            className={cn('btn-glass', activityTypeFa && 'btn-glass-active')}
-          >
-            <Plus size={12} /> <span className='text-[10px] uppercase font-bold'>FA</span>
-          </button>
-          <button
+            icon={Plus}
+            label='FA'
+          />
+          <FilterButton
+            active={activityTypeTicks}
             onClick={() => handleFilterToggle('ticks')}
-            className={cn('btn-glass', activityTypeTicks && 'btn-glass-active')}
-          >
-            <Check size={12} /> <span className='text-[10px] uppercase font-bold'>Ticks</span>
-          </button>
-          <button
+            icon={Check}
+            label='Ticks'
+          />
+          <FilterButton
+            active={activityTypeMedia}
             onClick={() => handleFilterToggle('media')}
-            className={cn('btn-glass', activityTypeMedia && 'btn-glass-active')}
-          >
-            <Camera size={12} /> <span className='text-[10px] uppercase font-bold'>Media</span>
-          </button>
-          <button
+            icon={Camera}
+            label='Media'
+          />
+          <FilterButton
+            active={activityTypeComments}
             onClick={() => handleFilterToggle('comments')}
-            className={cn('btn-glass', activityTypeComments && 'btn-glass-active')}
-          >
-            <MessageSquare size={12} /> <span className='text-[10px] uppercase font-bold'>Com</span>
-          </button>
+            icon={MessageSquare}
+            label='Com'
+          />
         </div>
       </div>
 
-      <div className='app-card'>
-        <div className='divide-y divide-surface-border/30 min-h-100'>
-          {isPending
-            ? [...Array(8)].map((_, i) => <ActivitySkeleton key={i} />)
-            : activity?.map((a) => {
-                const currentKey = a.activityIds?.join('+') ?? `activity-${a.id ?? 0}`;
-                const avatarItems =
-                  a.activityThumbnails && a.activityThumbnails.length > 0
-                    ? a.activityThumbnails.map((m) => ({
-                        mediaId: m.id,
-                        mediaVersionStamp: m.versionStamp,
-                      }))
-                    : a.users && a.users.length > 0
-                      ? a.users.map((u) => ({
-                          name: u.name,
-                          mediaId: u.mediaId,
-                          mediaVersionStamp: u.mediaVersionStamp,
-                        }))
-                      : [{ name: a.name, mediaId: undefined, mediaVersionStamp: undefined }];
+      <Card flush className='divide-y divide-white/5'>
+        {isPending
+          ? [...Array(10)].map((_, i) => <ActivitySkeleton key={i} />)
+          : activity?.map((a) => (
+              <ActivityItem
+                key={a.activityIds?.join('+') ?? `activity-${a.id}`}
+                a={a}
+                isBouldering={meta.isBouldering}
+              />
+            ))}
+      </Card>
+    </div>
+  );
+};
 
-                const getStatusIcon = () => {
-                  if (a.users) return <Plus size={8} className='text-brand' />;
-                  if (a.message) return <MessageSquare size={8} className='text-blue-400' />;
-                  if (a.media && !a.name) return <Camera size={8} className='text-emerald-400' />;
-                  return <Check size={8} className='text-emerald-400' />;
-                };
+type FilterButtonProps = {
+  active: boolean;
+  onClick: () => void;
+  icon: ElementType;
+  label: string;
+};
 
-                const [numImg, numMov] = (a.media ?? []).reduce(
-                  (acc: number[], { movie }) =>
-                    movie ? [acc[0], acc[1] + 1] : [acc[0] + 1, acc[1]],
-                  [0, 0],
-                );
+const FilterButton = ({ active, onClick, icon: Icon, label }: FilterButtonProps) => (
+  <button onClick={onClick} className={cn('btn-glass', active && 'btn-glass-active')}>
+    <Icon size={12} /> <span className='text-[10px] uppercase font-bold'>{label}</span>
+  </button>
+);
 
-                return (
-                  <div
-                    key={currentKey}
-                    className='py-4 sm:px-4 px-0 hover:bg-white/1 transition-colors'
-                  >
-                    <div className='flex gap-3 sm:gap-4 items-start px-4 sm:px-0'>
-                      <div className='shrink-0 pt-0.5'>
-                        <AvatarGroup
-                          items={avatarItems}
-                          size='tiny'
-                          statusIcon={getStatusIcon()}
-                          max={2}
-                        />
-                      </div>
+type ActivityItemProps = {
+  a: ActivitySchema;
+  isBouldering: boolean;
+};
 
-                      <div className='flex-1 min-w-0'>
-                        <div className='relative pr-16'>
-                          <div className='text-slate-100 text-[14px] leading-snug'>
-                            {a.users ? (
-                              <>
-                                <span className='font-bold text-slate-200'>
-                                  New {meta.isBouldering ? 'problem' : 'route'}
-                                </span>{' '}
-                                <span className='text-slate-500 font-medium'>in</span>{' '}
-                                <ProblemLink a={a} />
-                              </>
-                            ) : a.message ? (
-                              <>
-                                <Link
-                                  to={`/user/${a.id}`}
-                                  className='font-bold hover:text-brand transition-colors'
-                                >
-                                  {a.name}
-                                </Link>{' '}
-                                <span className='text-slate-500 lowercase font-medium'>
-                                  commented on
-                                </span>{' '}
-                                <ProblemLink a={a} />
-                              </>
-                            ) : (
-                              <>
-                                {a.name ? (
-                                  <>
-                                    <Link
-                                      to={`/user/${a.id}`}
-                                      className='font-bold hover:text-brand transition-colors'
-                                    >
-                                      {a.name}
-                                    </Link>{' '}
-                                    <span className='text-slate-500 lowercase font-medium'>
-                                      {a.repeat ? 'repeated' : 'ticked'}
-                                    </span>{' '}
-                                  </>
-                                ) : numImg > 0 || numMov > 0 ? (
-                                  <>
-                                    <span className='font-bold text-slate-200'>
-                                      {numImg > 0 &&
-                                        `${numImg} ${numImg === 1 ? 'image' : 'images'}`}
-                                      {numImg > 0 && numMov > 0 && ' & '}
-                                      {numMov > 0 &&
-                                        `${numMov} ${numMov === 1 ? 'video' : 'videos'}`}
-                                    </span>{' '}
-                                    <span className='text-slate-500 font-medium'>on</span>{' '}
-                                  </>
-                                ) : null}
-                                <ProblemLink a={a} />
-                              </>
-                            )}
-                          </div>
-                          <span className='absolute top-0 right-0 text-[9px] font-bold text-slate-600 uppercase tracking-tighter pt-1'>
-                            {a.timeAgo}
-                          </span>
-                        </div>
+const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
+  const avatarItems =
+    (a.activityThumbnails ?? []).length > 0
+      ? a.activityThumbnails!.map((m) => ({ mediaId: m.id, mediaVersionStamp: m.versionStamp }))
+      : (a.users ?? []).length > 0
+        ? a.users!.map((u) => ({
+            name: u.name,
+            mediaId: u.mediaId,
+            mediaVersionStamp: u.mediaVersionStamp,
+          }))
+        : [{ name: a.name, mediaId: undefined, mediaVersionStamp: undefined }];
 
-                        {a.description && (
-                          <div className='mt-1 text-slate-400 text-[11px] italic leading-snug pl-2 border-l border-surface-border'>
-                            {a.description}
-                          </div>
-                        )}
-                        {a.message && (
-                          <div className='mt-1 text-slate-400 text-[11px] border-l border-brand/20 pl-2 italic leading-snug'>
-                            <Linkify>{a.message}</Linkify>
-                          </div>
-                        )}
-                        <div className='mt-2'>
-                          {a.stars !== undefined && a.stars !== -1 && (
-                            <Stars numStars={a.stars} includeStarOutlines={true} />
-                          )}
-                        </div>
+  const statusIcon = (() => {
+    if (a.users) return <Plus size={8} className='text-brand' />;
+    if (a.message) return <MessageSquare size={8} className='text-blue-400' />;
+    if (a.media && !a.name) return <Camera size={8} className='text-emerald-400' />;
+    return <Check size={8} className='text-emerald-400' />;
+  })();
 
-                        {a.media && (
-                          <div className='mt-3'>
-                            <LazyMedia media={a.media} problemId={a.problemId} />
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+  const [numImg, numMov] = (a.media ?? []).reduce(
+    (acc: number[], item) => (item.movie ? [acc[0], acc[1] + 1] : [acc[0] + 1, acc[1]]),
+    [0, 0],
+  );
+
+  return (
+    <div className='py-3 px-4 hover:bg-white/1.5 transition-colors group'>
+      <div className='flex gap-3 sm:gap-4 items-start'>
+        <div className='shrink-0 pt-0.5'>
+          <AvatarGroup items={avatarItems} size='tiny' statusIcon={statusIcon} max={2} />
+        </div>
+
+        <div className='flex-1 min-w-0'>
+          <div className='text-slate-400 text-[14px] leading-relaxed'>
+            <span className='float-right ml-4 text-[9px] font-bold text-slate-500 uppercase tracking-tight group-hover:text-slate-400 transition-colors pt-0.5 select-none'>
+              {a.timeAgo}
+            </span>
+
+            {a.users && a.users.length > 0 && a.repeat === undefined ? (
+              <>
+                <span className='font-bold text-slate-200'>
+                  New {isBouldering ? 'problem' : 'route'}
+                </span>{' '}
+                <span>in</span> <ProblemLink a={a} />
+              </>
+            ) : a.message ? (
+              <>
+                <Link
+                  to={`/user/${a.id}`}
+                  className='font-bold text-slate-200 hover:text-brand transition-colors'
+                >
+                  {a.name}
+                </Link>{' '}
+                <span>commented on</span> <ProblemLink a={a} />
+              </>
+            ) : (
+              <>
+                {a.name ? (
+                  <>
+                    <Link
+                      to={`/user/${a.id}`}
+                      className='font-bold text-slate-200 hover:text-brand transition-colors'
+                    >
+                      {a.name}
+                    </Link>{' '}
+                    <span>{a.repeat ? 'repeated' : 'ticked'}</span>{' '}
+                  </>
+                ) : numImg > 0 || numMov > 0 ? (
+                  <>
+                    <span className='font-bold text-slate-200'>
+                      {numImg > 0 && `${numImg} ${numImg === 1 ? 'image' : 'images'}`}
+                      {numImg > 0 && numMov > 0 && ' & '}
+                      {numMov > 0 && `${numMov} ${numMov === 1 ? 'video' : 'videos'}`}
+                    </span>{' '}
+                    <span>on</span>{' '}
+                  </>
+                ) : null}
+                <ProblemLink a={a} />
+              </>
+            )}
+          </div>
+
+          {(a.description || a.message) && (
+            <div className='mt-1 text-slate-400 text-[12.5px] italic leading-relaxed pl-3 border-l border-white/10'>
+              {a.message ? <Linkify>{a.message}</Linkify> : a.description}
+            </div>
+          )}
+
+          {a.stars !== undefined && a.stars !== -1 && (
+            <div className='mt-1 opacity-50 scale-90 origin-left grayscale'>
+              <Stars numStars={a.stars} includeStarOutlines={true} />
+            </div>
+          )}
+
+          {a.media && (
+            <div className='mt-2'>
+              <LazyMedia media={a.media} problemId={a.problemId} />
+            </div>
+          )}
+
+          {a.users && a.users.length > 0 && (
+            <div className='mt-2 flex flex-wrap gap-3'>
+              {a.users.map((u) => (
+                <Link
+                  key={u.id}
+                  to={`/user/${u.id}`}
+                  className='flex items-center gap-1.5 group/user'
+                >
+                  <Avatar
+                    name={u.name}
+                    mediaId={u.mediaId}
+                    mediaVersionStamp={u.mediaVersionStamp}
+                    size='tiny'
+                    className='ring-1 ring-white/10 group-hover/user:ring-brand/50 transition-all'
+                  />
+                  <span className='text-[11px] font-bold text-slate-400 group-hover/user:text-slate-200 transition-colors'>
+                    {u.name}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

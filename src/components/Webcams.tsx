@@ -4,76 +4,100 @@ import { Loading } from './common/widgets/widgets';
 import { useMeta } from './common/meta';
 import { useData } from '../api';
 import type { Success } from '../@types/buldreinfo';
-import type { ComponentProps } from 'react';
-import { Camera, ChevronRight } from 'lucide-react';
+import { type ComponentProps } from 'react';
+import { Camera } from 'lucide-react';
+import { PageHeader, Card } from './ui';
+
+type WebcamGroup = {
+  coordinates: { latitude: number; longitude: number };
+  isCamera: boolean;
+  name: string;
+  urlYr?: string;
+  urlOther?: string;
+  feeds: {
+    id: string;
+    urlStillImage: string;
+    lastUpdated: string;
+  }[];
+};
 
 const Webcams = () => {
   const meta = useMeta();
   const { data } = useData<Success<'getCameras'>>(`/webcams`);
   const { json } = useParams();
 
-  if (!data) {
-    return <Loading />;
-  }
+  if (!data) return <Loading />;
 
-  const markers: ComponentProps<typeof Leaflet>['markers'] = data
-    .filter((c) => c.lat !== 0 && c.lng !== 0)
-    .map((c) => {
-      return {
-        coordinates: { latitude: c.lat, longitude: c.lng },
-        isCamera: true,
-        name: c.name,
-        lastUpdated: c.lastUpdated,
-        urlStillImage: c.urlStillImage,
-        urlYr: c.urlYr,
-        urlOther: c.urlOther,
-      };
-    });
+  const grouped = data
+    .filter((c) => c.lat && c.lng && c.name) // Ensure we have the basics
+    .reduce(
+      (acc, c) => {
+        const key = `${c.lat}_${c.lng}`;
+        if (!acc[key]) {
+          acc[key] = {
+            coordinates: {
+              latitude: c.lat ?? 0,
+              longitude: c.lng ?? 0,
+            },
+            isCamera: true,
+            name: c.name ?? 'Unknown Camera',
+            urlYr: c.urlYr,
+            urlOther: c.urlOther,
+            feeds: [],
+          };
+        }
+        acc[key].feeds.push({
+          id: c.id ?? '',
+          urlStillImage: c.urlStillImage ?? '',
+          lastUpdated: c.lastUpdated ?? '',
+        });
+        return acc;
+      },
+      {} as Record<string, WebcamGroup>,
+    );
+
+  const markers: ComponentProps<typeof Leaflet>['markers'] = Object.values(grouped);
 
   let defaultCenter = meta.defaultCenter;
   let defaultZoom = meta.defaultZoom;
 
   if (json) {
-    const { lat, lng, label } = JSON.parse(json);
-    defaultCenter = { lat, lng };
-    defaultZoom = 10;
-    markers.push({ coordinates: { latitude: lat, longitude: lng }, label });
+    try {
+      const { lat, lng, label } = JSON.parse(json);
+      defaultCenter = { lat, lng };
+      defaultZoom = 10;
+      markers.push({ coordinates: { latitude: lat, longitude: lng }, label });
+    } catch (e) {
+      console.error(e);
+    }
   }
 
-  const description = `${markers.length} cameras`;
-
   return (
-    <div className='max-w-container mx-auto px-4 py-6 space-y-6 text-left'>
+    <>
       <title>{`Webcams | ${meta?.title}`}</title>
-      <meta name='description' content={description} />
 
-      <div className='flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-surface-border pb-4'>
-        <nav className='flex items-center gap-2 text-[10px] font-black tracking-widest text-slate-500 uppercase'>
-          <span className='text-slate-500'>Navigation</span>
-          <ChevronRight size={12} className='opacity-20' />
-          <div className='flex items-center gap-1.5 text-white'>
-            <Camera size={14} className='text-brand' />
-            <span>Webcams</span>
-            <span className='text-slate-500 font-mono normal-case'>({description})</span>
-          </div>
-        </nav>
-      </div>
+      <PageHeader
+        title='Webcams'
+        icon={Camera}
+        stats={[
+          { label: `${data.length} Active Feeds`, highlight: true },
+          { label: `${markers.length} Locations`, highlight: false },
+        ]}
+      />
 
-      <div className='bg-surface-card border border-surface-border rounded-2xl overflow-hidden shadow-sm p-1'>
-        <div className='h-[75vh] w-full rounded-xl overflow-hidden'>
-          <Leaflet
-            height='100%'
-            autoZoom={false}
-            defaultCenter={defaultCenter}
-            defaultZoom={defaultZoom}
-            markers={markers}
-            showSatelliteImage={false}
-            clusterMarkers={false}
-            flyToId={null}
-          />
-        </div>
-      </div>
-    </div>
+      <Card flush className='h-[70vh] sm:h-[75vh]'>
+        <Leaflet
+          height='100%'
+          autoZoom={false}
+          defaultCenter={defaultCenter}
+          defaultZoom={defaultZoom}
+          markers={markers}
+          showSatelliteImage={false}
+          clusterMarkers={false}
+          flyToId={null}
+        />
+      </Card>
+    </>
   );
 };
 

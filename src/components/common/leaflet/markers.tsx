@@ -12,13 +12,18 @@ type ParkingMarker = {
   isParking: true;
 };
 
+type CameraFeed = {
+  id: string;
+  urlStillImage: string;
+  lastUpdated: string;
+};
+
 type CameraMarker = {
   coordinates: components['schemas']['Coordinates'];
   label: string;
   isCamera: true;
   name: string;
-  lastUpdated: string;
-  urlStillImage: string;
+  feeds: CameraFeed[];
   urlYr?: string;
   urlOther?: string;
 };
@@ -105,10 +110,10 @@ export default function Markers({
         <Marker icon={parkingIcon} position={position} key={['parking', lat, lng].join('/')}>
           <Popup closeButton={false}>
             <a
-              href={`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`}
+              href={`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`}
               target='_blank'
               rel='noopener noreferrer'
-              className='flex items-center gap-2 px-3 py-2 bg-brand hover:bg-brand/90 text-white rounded-md text-xs font-bold transition-colors no-underline shadow-sm'
+              className='flex items-center gap-2 px-3 py-2 bg-brand hover:brightness-110 text-surface-dark rounded-md text-xs font-black uppercase transition-all no-underline shadow-sm'
             >
               <Navigation size={14} />
               Navigate
@@ -127,40 +132,72 @@ export default function Markers({
     if (isCameraMarker(m)) {
       return (
         <Marker icon={weatherIcon} position={position} key={['camera', lat, lng].join('/')}>
-          <Popup closeButton={false}>
-            <div className='space-y-2 text-left min-w-45'>
-              <div className='flex flex-col'>
-                <span className='text-sm font-bold text-slate-800 leading-tight'>{m.name}</span>
-                {m.lastUpdated && (
-                  <span className='text-[10px] text-slate-500 italic'>
-                    Updated: {m.lastUpdated}
-                  </span>
-                )}
+          <Popup closeButton={false} className='buldreinfo-dark-popup'>
+            <div className='space-y-4 text-left min-w-64 max-h-[60vh] overflow-y-auto scrollbar-hide'>
+              <style>{`
+                .buldreinfo-dark-popup .leaflet-popup-content-wrapper {
+                  background: var(--color-surface-card) !important;
+                  color: var(--color-white) !important;
+                  border: 1px solid var(--color-surface-border) !important;
+                  border-radius: 12px !important;
+                }
+                .buldreinfo-dark-popup .leaflet-popup-tip {
+                  background: var(--color-surface-card) !important;
+                  border: 1px solid var(--color-surface-border) !important;
+                }
+                .buldreinfo-dark-popup .leaflet-popup-content {
+                  margin: 16px !important;
+                }
+              `}</style>
+              <div className='flex flex-col sticky top-0 bg-surface-card z-10 pb-2 border-b border-surface-border'>
+                <span className='text-sm font-bold text-slate-100 leading-tight'>{m.name}</span>
               </div>
 
-              <a
-                href={m.urlStillImage}
-                target='_blank'
-                rel='noreferrer'
-                className='block overflow-hidden rounded border border-slate-200 hover:border-brand transition-colors'
-              >
-                <img
-                  src={m.urlStillImage}
-                  alt={m.name}
-                  className='w-full h-auto block'
-                  loading='lazy'
-                />
-              </a>
+              <div className='space-y-4 pt-2'>
+                {m.feeds.map((feed) => (
+                  <div key={feed.id} className='space-y-1.5'>
+                    <a
+                      href={feed.urlStillImage}
+                      target='_blank'
+                      rel='noreferrer'
+                      className='block overflow-hidden rounded-lg border border-surface-border hover:border-brand/50 transition-colors bg-surface-dark'
+                    >
+                      <img
+                        src={feed.urlStillImage}
+                        alt={m.name}
+                        className='w-full h-auto block'
+                        loading='lazy'
+                      />
+                    </a>
+                    <div className='flex justify-end items-center'>
+                      <span className='text-[9px] text-slate-600 font-medium'>
+                        {feed.lastUpdated}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
 
-              <div className='flex flex-col gap-1.5 pt-1'>
+              <div className='flex flex-col gap-2 pt-2 border-t border-surface-border'>
                 {m.urlYr && (
                   <a
                     href={m.urlYr}
                     target='_blank'
                     rel='noreferrer'
-                    className='flex items-center gap-2 text-[11px] font-bold text-slate-600 hover:text-brand transition-colors no-underline'
+                    className='flex items-center justify-between px-3 py-2 rounded-lg bg-surface-dark border border-surface-border hover:border-brand/50 transition-all no-underline group'
                   >
-                    <CloudSun size={14} className='text-brand' /> yr.no forecast
+                    <div className='flex items-center gap-2'>
+                      <CloudSun
+                        size={14}
+                        className='text-slate-500 group-hover:text-brand transition-colors'
+                      />
+                      <span className='text-[11px] font-bold text-slate-400 group-hover:text-slate-200'>
+                        Weather Forecast
+                      </span>
+                    </div>
+                    <span className='text-[9px] font-black text-slate-600 uppercase tracking-tighter'>
+                      yr.no
+                    </span>
                   </a>
                 )}
                 {m.urlOther && (
@@ -168,15 +205,16 @@ export default function Markers({
                     href={m.urlOther}
                     target='_blank'
                     rel='noreferrer'
-                    className='flex items-center gap-2 text-[11px] font-bold text-slate-600 hover:text-brand transition-colors no-underline'
+                    className='flex items-center gap-2.5 px-3 py-1.5 text-[11px] font-bold text-slate-500 hover:text-brand transition-colors no-underline group'
                   >
-                    <ExternalLink size={14} className='text-brand' /> External Link
+                    <ExternalLink
+                      size={14}
+                      className='text-slate-600 group-hover:text-brand transition-colors'
+                    />
+                    Official Source
                   </a>
                 )}
               </div>
-              <p className='text-[9px] text-slate-400 text-center italic mt-1 border-t pt-2'>
-                Click image for full size
-              </p>
             </div>
           </Popup>
         </Marker>
@@ -197,7 +235,7 @@ export default function Markers({
             {labelText}
           </Tooltip>
           <Popup closeButton={false}>
-            <div className='text-left py-1'>{m.html}</div>
+            <div className='text-left py-1 text-slate-200'>{m.html}</div>
           </Popup>
         </Marker>
       );

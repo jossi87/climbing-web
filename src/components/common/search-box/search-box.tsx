@@ -5,6 +5,7 @@ import { getMediaFileUrl, useSearch } from './../../../api';
 import { useMeta } from '../meta/context';
 import { LockSymbol } from '../widgets/widgets';
 import { cn } from './../../../lib/utils';
+import { SectionLabel } from '../../ui';
 
 type SearchResult = {
   title: string;
@@ -96,7 +97,7 @@ const SearchBox = () => {
       </div>
 
       {isOpen && data && data.length > 0 && (
-        <div className='absolute z-100 mt-2 w-full bg-surface-card border border-surface-border rounded-xl shadow-2xl py-2 overflow-hidden max-h-100 overflow-y-auto'>
+        <div className='absolute z-100 mt-2 w-full bg-surface-card border border-surface-border rounded-xl shadow-2xl py-2 overflow-hidden max-h-[75vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200'>
           {(data as SearchResult[]).map((result) => {
             const mediaId = Number(result?.mediaId) || 0;
             const versionStamp = result?.mediaVersionStamp || 0;
@@ -130,8 +131,8 @@ const SearchBox = () => {
                   <div className='flex items-center justify-between gap-2'>
                     <div
                       className={cn(
-                        'text-sm font-bold truncate transition-colors group-hover:text-brand',
-                        result.externalUrl ? 'italic text-slate-500' : 'text-slate-200',
+                        'text-sm font-bold truncate transition-colors group-hover:text-white',
+                        result.externalUrl ? 'italic text-slate-400' : 'text-slate-100',
                       )}
                     >
                       {result.title}
@@ -141,13 +142,13 @@ const SearchBox = () => {
                       />
                     </div>
                     {result.pageViews && (
-                      <span className='text-[10px] font-mono text-slate-600'>
+                      <SectionLabel className='text-[9px] text-slate-400 tabular-nums'>
                         {result.pageViews}
-                      </span>
+                      </SectionLabel>
                     )}
                   </div>
                   {result.description && (
-                    <div className='text-[11px] text-slate-500 truncate italic group-hover:text-slate-400 transition-colors'>
+                    <div className='text-[11px] text-slate-400 truncate italic group-hover:text-slate-200 transition-colors'>
                       {result.description}
                     </div>
                   )}

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { getMediaFileUrl, getMediaFileUrlSrcSet } from '../../api';
-import { ClickableAvatar, AvatarGroup } from '../ui/Avatar/Avatar';
+import { ClickableAvatar, AvatarGroup, Card, SectionLabel } from '../ui';
 import type { components } from '../../@types/buldreinfo/swagger';
 
 type RandomMedia = components['schemas']['FrontpageRandomMedia'];
@@ -8,7 +8,7 @@ type RandomMedia = components['schemas']['FrontpageRandomMedia'];
 export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) => {
   if (!randomMedia)
     return (
-      <div className='app-card w-full border-0 sm:border overflow-hidden'>
+      <Card flush className='w-full border-0 sm:border overflow-hidden'>
         <div className='w-full bg-surface-nav animate-pulse' style={{ aspectRatio: '275 / 250' }} />
         <div className='hidden sm:block p-4'>
           <div className='mb-4 space-y-2'>
@@ -22,14 +22,17 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
             </div>
           </div>
         </div>
-      </div>
+      </Card>
     );
 
   const taggedUsers = randomMedia.tagged || [];
   const photographer = randomMedia.photographer;
 
   return (
-    <div className='app-card group transition-all text-left mb-6 sm:mb-0 overflow-hidden border-0 sm:border'>
+    <Card
+      flush
+      className='group transition-all text-left mb-6 sm:mb-0 overflow-hidden border-0 sm:border'
+    >
       <div className='relative overflow-hidden bg-surface-nav' style={{ aspectRatio: '275 / 250' }}>
         <Link to={`/problem/${randomMedia.idProblem}`} className='block w-full h-full'>
           <img
@@ -60,9 +63,9 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
             <h3 className='text-white font-bold text-2xl leading-none'>{randomMedia.problem}</h3>
             <span className='text-slate-300 font-bold text-lg'>{randomMedia.grade}</span>
           </Link>
-          <div className='text-slate-400 text-[10px] font-bold mt-2 uppercase tracking-[0.2em] mb-4'>
+          <SectionLabel className='mt-2 mb-4 text-slate-300'>
             {randomMedia.area} <span className='mx-1 opacity-30'>/</span> {randomMedia.sector}
-          </div>
+          </SectionLabel>
 
           {(taggedUsers.length > 0 || photographer) && (
             <div className='flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-white/10 pt-4'>
@@ -97,9 +100,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
                     className='w-5! h-5! ring-1 ring-white/20'
                   />
                   <div className='flex items-center gap-1.5 text-[11px] text-white font-bold'>
-                    <span className='text-[8px] font-black uppercase tracking-widest opacity-50'>
-                      BY
-                    </span>
+                    <SectionLabel className='text-slate-400 opacity-80 text-[8px]'>BY</SectionLabel>
                     <Link
                       to={`/user/${photographer.id}`}
                       className='tracking-tight hover:text-brand transition-colors'
@@ -123,19 +124,23 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
             {randomMedia.problem}{' '}
             <span className='font-bold text-slate-500 ml-1 tabular-nums'>{randomMedia.grade}</span>
           </Link>
-          <div className='text-[10px] text-slate-500 mt-2 uppercase tracking-[0.15em] font-bold flex items-center gap-1.5'>
+          <div className='mt-2 flex items-center gap-1.5'>
             <Link
               to={`/area/${randomMedia.idArea}`}
               className='hover:text-slate-300 transition-colors'
             >
-              {randomMedia.area}
+              <SectionLabel className='text-[10px] tracking-[0.15em] text-slate-400'>
+                {randomMedia.area}
+              </SectionLabel>
             </Link>
             <span className='text-slate-700 font-black'>/</span>
             <Link
               to={`/sector/${randomMedia.idSector}`}
               className='hover:text-slate-300 transition-colors truncate'
             >
-              {randomMedia.sector}
+              <SectionLabel className='text-[10px] tracking-[0.15em] text-slate-400'>
+                {randomMedia.sector}
+              </SectionLabel>
             </Link>
           </div>
         </div>
@@ -164,7 +169,6 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
                 </div>
               </div>
             )}
-
             {photographer && (
               <div className='flex items-center gap-2.5'>
                 <ClickableAvatar
@@ -174,9 +178,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
                   size='mini'
                 />
                 <div className='flex items-center gap-1 text-[11px] text-slate-300 font-bold tracking-tight'>
-                  <span className='text-[8px] font-black uppercase tracking-widest text-slate-500'>
-                    BY
-                  </span>
+                  <SectionLabel className='text-slate-400 text-[8px]'>BY</SectionLabel>
                   <Link
                     to={`/user/${photographer.id}`}
                     className='hover:text-brand transition-colors tracking-tight'
@@ -189,6 +191,6 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
           </div>
         )}
       </div>
-    </div>
+    </Card>
   );
 };

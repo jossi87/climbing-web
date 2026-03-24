@@ -121,16 +121,16 @@ const UpdateBounds = ({
     );
   slopes
     ?.filter(({ slope }) => !!slope)
-    ?.forEach(({ slope }) =>
-      slope.coordinates?.forEach((c) =>
-        bounds.extend({ lat: (c.latitude ?? 0) as number, lng: (c.longitude ?? 0) as number }),
-      ),
-    );
+    ?.forEach(({ slope }) => {
+      slope.coordinates?.forEach((c: components['schemas']['Coordinates']) => {
+        bounds.extend({ lat: (c.latitude ?? 0) as number, lng: (c.longitude ?? 0) as number });
+      });
+    });
 
   if (
     bounds.isValid() &&
-    bounds.getNorthWest().lat != bounds.getSouthEast().lat &&
-    bounds.getNorthWest().lng != bounds.getSouthEast().lng
+    bounds.getNorthWest().lat !== bounds.getSouthEast().lat &&
+    bounds.getNorthWest().lng !== bounds.getSouthEast().lng
   ) {
     map.fitBounds(bounds);
   }
@@ -146,13 +146,13 @@ const Leaflet = ({
   flyToId,
   height,
   markers = null,
-  onMouseClick = undefined,
-  onMouseMove = undefined,
   outlines,
   slopes = null,
   rocks = [],
   showSatelliteImage,
   children,
+  onMouseClick = undefined,
+  onMouseMove = undefined,
 }: Props) => {
   const [groupByRock, setGroupByRock] = useState(!!rocks?.length);
   const [showElevation, setShowElevation] = useState(false);
@@ -177,18 +177,23 @@ const Leaflet = ({
           ];
           const html = (
             <>
-              <b>{r}:</b>
-              <br />
-              {markersOnRock
-                .filter((m): m is MarkerDef & { url: string } => 'url' in m && !!m.url)
-                .map((m) => (
-                  <Fragment key={m.url}>
-                    <a rel='noreferrer noopener' target='_blank' href={m.url}>
-                      {'label' in m ? m.label : ''}
-                    </a>
-                    <br />
-                  </Fragment>
-                ))}
+              <b className='text-white'>{r}:</b>
+              <div className='mt-1 flex flex-col gap-1'>
+                {markersOnRock
+                  .filter((m): m is MarkerDef & { url: string } => 'url' in m && !!m.url)
+                  .map((m) => (
+                    <Fragment key={m.url}>
+                      <a
+                        rel='noreferrer noopener'
+                        target='_blank'
+                        href={m.url}
+                        className='text-brand font-bold hover:underline underline-offset-2'
+                      >
+                        {'label' in m ? m.label : ''}
+                      </a>
+                    </Fragment>
+                  ))}
+              </div>
             </>
           );
           return {
@@ -237,11 +242,104 @@ const Leaflet = ({
   return (
     <>
       <style>{`
+        .leaflet-container {
+          background-color: var(--color-surface-dark) !important;
+          font-family: inherit !important;
+        }
+
         .dark-tiles {
           filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%) !important;
         }
-        .leaflet-container {
-          background: #0d1117 !important;
+
+        .leaflet-bar, .leaflet-control-layers {
+          border: none !important;
+          box-shadow: none !important;
+          margin: 12px !important;
+        }
+
+        .leaflet-bar a, .leaflet-control-layers-toggle, .leaflet-control-locate a {
+          background-color: var(--color-surface-nav) !important;
+          border: 1px solid var(--color-surface-border) !important;
+          border-radius: 8px !important;
+          width: 34px !important;
+          height: 34px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important;
+          background-repeat: no-repeat;
+          background-position: center;
+          color: transparent !important;
+          transition: all 0.2s ease;
+        }
+
+        .leaflet-control-zoom-in { 
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='12' y1='5' x2='12' y2='19'/%3E%3Cline x1='5' y1='12' x2='19' y2='12'/%3E%3C/svg%3E") !important; 
+          background-size: 18px 18px !important;
+        }
+
+        .leaflet-control-zoom-out { 
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='5' y1='12' x2='19' y2='12'/%3E%3C/svg%3E") !important; 
+          background-size: 18px 18px !important;
+        }
+
+        .leaflet-control-locate a { 
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3Cpath d='M12 2v2M12 20v2M2 12h2m16 0h2'/%3E%3C/svg%3E") !important; 
+          background-size: 18px 18px !important;
+        }
+
+        .leaflet-control-layers-toggle { 
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolygon points='12 2 2 7 12 12 22 7 12 2'/%3E%3Cpolyline points='2 17 12 22 22 17'/%3E%3Cpolyline points='2 12 12 17 22 12'/%3E%3C/svg%3E") !important; 
+          background-size: 20px 20px !important;
+        }
+
+        .leaflet-control-layers-expanded {
+          background: var(--color-surface-nav) !important;
+          color: white !important;
+          border: 1px solid var(--color-surface-border) !important;
+          padding: 16px !important;
+          border-radius: 12px !important;
+          font-size: 11px !important;
+          font-weight: 700 !important;
+          text-transform: uppercase;
+          box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.5) !important;
+          min-width: 180px;
+        }
+
+        .leaflet-control-layers-expanded .leaflet-control-layers-toggle {
+          display: none !important;
+        }
+
+        .leaflet-bottom .bg-surface-card {
+          background: rgba(13, 17, 23, 0.7) !important;
+          backdrop-filter: blur(8px);
+          border: 1px solid var(--color-surface-border) !important;
+          border-radius: 10px !important;
+          padding: 8px 12px !important;
+          margin: 12px !important;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
+        }
+
+        .leaflet-control-scale {
+          margin: 12px !important;
+        }
+
+        .leaflet-control-scale-line {
+          background: rgba(13, 17, 23, 0.5) !important;
+          border: 1px solid var(--color-surface-border) !important;
+          border-top: none !important;
+          color: white !important;
+          font-size: 9px !important;
+          font-weight: bold;
+          backdrop-filter: blur(4px);
+          padding: 2px 5px !important;
+          text-shadow: 0 1px 2px black;
+        }
+
+        .leaflet-control-attribution {
+          background: transparent !important;
+          color: rgba(255,255,255,0.2) !important;
+          font-size: 8px !important;
         }
       `}</style>
       <MapContainer
@@ -255,9 +353,9 @@ const Leaflet = ({
         <FullscreenControl />
         <Locate />
         <ScaleControl maxWidth={100} metric={true} imperial={false} />
-        <UseControlWrapper position='bottomleft'>
-          {rocks != null && rocks.length > 0 && (
-            <div className='bg-surface-card border border-surface-border p-2 rounded shadow-xl mb-2 ml-2'>
+        {rocks && rocks.length > 0 && (
+          <UseControlWrapper position='bottomleft'>
+            <div className='bg-surface-card'>
               <label className='flex items-center gap-2 cursor-pointer'>
                 <input
                   type='checkbox'
@@ -270,11 +368,11 @@ const Leaflet = ({
                 </span>
               </label>
             </div>
-          )}
-        </UseControlWrapper>
+          </UseControlWrapper>
+        )}
         {((outlines?.length ?? 0) > 0 || (markers?.length ?? 0) > 0) && (
           <UseControlWrapper position='bottomright'>
-            <div className='bg-surface-card border border-surface-border p-2 rounded shadow-xl mb-2 mr-2'>
+            <div className='bg-surface-card'>
               <label className='flex items-center gap-2 cursor-pointer'>
                 <input
                   type='checkbox'
