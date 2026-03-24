@@ -69,7 +69,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className='w-full bg-surface-nav border-t border-surface-border mt-12 sm:mt-20 py-10 sm:py-16'>
+    <footer className='w-full bg-surface-nav border-t border-surface-border mt-4 sm:mt-8 py-10 sm:py-16'>
       <div className='max-w-container mx-auto px-6'>
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12 sm:mb-16'>
           <div className='space-y-4'>
@@ -162,8 +162,8 @@ const Footer = () => {
               </span>
             </TextLink>
           </div>
-          <p className='text-[9px] text-slate-700 uppercase tracking-[0.3em] font-black text-center select-none'>
-            Buldreinfo &copy; 2003-{currYear}
+          <p className='text-[9px] text-slate-500 uppercase tracking-[0.2em] font-black text-center select-none'>
+            Buldreinfo / Bratte Linjer &copy; 2003-{currYear}
           </p>
         </div>
       </div>
