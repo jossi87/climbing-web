@@ -12,7 +12,6 @@ import {
   FileText,
   Coffee,
 } from 'lucide-react';
-import { FooterLink } from './ui/FooterLink';
 import { useMeta } from './common/meta/context';
 
 const Footer = () => {
@@ -20,44 +19,36 @@ const Footer = () => {
   const currYear = new Date().getFullYear();
 
   return (
-    <footer className='w-full bg-surface-nav border-t border-surface-border mt-20 py-12 sm:py-20'>
+    <footer className='w-full bg-surface-nav border-t border-surface-border mt-12 sm:mt-20 py-10 sm:py-20'>
       <div className='max-w-container mx-auto px-6'>
-        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-16'>
+        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 mb-12 sm:mb-16'>
           <div className='space-y-4'>
             <span className='text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]'>
               Navigation
             </span>
-            <div className='flex flex-col gap-3'>
-              <Link
-                to='/about'
-                onClick={() => window.scrollTo(0, 0)}
-                className='flex items-center gap-2.5 text-xs font-bold text-slate-400 hover:text-brand transition-colors'
-              >
-                <Info size={14} /> About
-              </Link>
-              {!isBouldering && (
+            <div className='flex flex-col gap-2'>
+              {[
+                { to: '/about', icon: Info, label: 'About' },
+                ...(!isBouldering
+                  ? [{ to: '/dangerous', icon: AlertTriangle, label: 'Dangerous' }]
+                  : []),
+                { to: '/graph', icon: BarChart3, label: 'Graph' },
+                { to: '/webcams', icon: Camera, label: 'Webcams' },
+              ].map((item) => (
                 <Link
-                  to='/dangerous'
+                  key={item.to}
+                  to={item.to}
                   onClick={() => window.scrollTo(0, 0)}
-                  className='flex items-center gap-2.5 text-xs font-bold text-slate-400 hover:text-brand transition-colors'
+                  className='flex items-center gap-4 text-slate-300 hover:text-brand transition-colors group'
                 >
-                  <AlertTriangle size={14} /> Dangerous
+                  <div className='rounded-lg bg-surface-card border border-surface-border group-hover:border-brand/50 transition-colors shrink-0 flex items-center justify-center w-10.5 h-10.5'>
+                    <item.icon size={18} />
+                  </div>
+                  <span className='text-sm font-bold block text-slate-100 group-hover:text-brand transition-colors'>
+                    {item.label}
+                  </span>
                 </Link>
-              )}
-              <Link
-                to='/graph'
-                onClick={() => window.scrollTo(0, 0)}
-                className='flex items-center gap-2.5 text-xs font-bold text-slate-400 hover:text-brand transition-colors'
-              >
-                <BarChart3 size={14} /> Graph
-              </Link>
-              <Link
-                to='/webcams'
-                onClick={() => window.scrollTo(0, 0)}
-                className='flex items-center gap-2.5 text-xs font-bold text-slate-400 hover:text-brand transition-colors'
-              >
-                <Camera size={14} /> Webcams
-              </Link>
+              ))}
             </div>
           </div>
 
@@ -65,25 +56,47 @@ const Footer = () => {
             <span className='text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]'>
               Open Source Stack
             </span>
-            <div className='flex flex-col gap-2 w-full'>
-              <FooterLink
-                href='https://github.com/jossi87/climbing-web'
-                icon={Code2}
-                title='Frontend'
-                subtitle='React / TS'
-              />
-              <FooterLink
-                href='https://github.com/jossi87/climbing-ws'
-                icon={Coffee}
-                title='Backend API'
-                subtitle='Java REST'
-              />
-              <FooterLink
-                href='https://github.com/jossi87/climbing-leaflet-renderer'
-                icon={FileDown}
-                title='PDF Maps'
-                subtitle='Leaflet'
-              />
+            <div className='flex flex-col gap-2'>
+              {[
+                {
+                  href: 'https://github.com/jossi87/climbing-web',
+                  icon: Code2,
+                  title: 'Frontend',
+                  sub: 'React / TS',
+                },
+                {
+                  href: 'https://github.com/jossi87/climbing-ws',
+                  icon: Coffee,
+                  title: 'Backend API',
+                  sub: 'Java REST',
+                },
+                {
+                  href: 'https://github.com/jossi87/climbing-leaflet-renderer',
+                  icon: FileDown,
+                  title: 'PDF Maps',
+                  sub: 'Leaflet',
+                },
+              ].map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  target='_blank'
+                  rel='noreferrer noopener'
+                  className='flex items-center gap-4 text-slate-300 hover:text-brand transition-colors group'
+                >
+                  <div className='rounded-lg bg-surface-card border border-surface-border group-hover:border-brand/50 transition-colors shrink-0 flex items-center justify-center w-10.5 h-10.5'>
+                    <item.icon size={18} />
+                  </div>
+                  <div className='flex flex-col text-left'>
+                    <span className='text-sm font-bold block text-slate-100 group-hover:text-brand transition-colors'>
+                      {item.title}
+                    </span>
+                    <span className='text-[9px] text-slate-500 block leading-tight'>
+                      {item.sub}
+                    </span>
+                  </div>
+                </a>
+              ))}
             </div>
           </div>
 
@@ -97,11 +110,11 @@ const Footer = () => {
               target='_blank'
               className='flex items-center gap-4 text-slate-300 hover:text-brand transition-colors group'
             >
-              <div className='p-2 rounded-lg bg-surface-card border border-surface-border group-hover:border-brand/50 transition-colors shrink-0'>
+              <div className='rounded-lg bg-surface-card border border-surface-border group-hover:border-brand/50 transition-colors shrink-0 flex items-center justify-center w-10.5 h-10.5'>
                 <img
                   src='/png/brv.png'
                   alt='BRV'
-                  className='w-6 h-6 grayscale group-hover:grayscale-0 transition-all'
+                  className='w-6 h-6 object-contain brightness-0 invert opacity-70 group-hover:opacity-100 transition-all'
                 />
               </div>
               <div className='flex flex-col items-start text-left'>
@@ -125,7 +138,7 @@ const Footer = () => {
               target='_blank'
               className='flex items-center gap-4 text-slate-300 hover:text-facebook transition-colors group'
             >
-              <div className='p-2 rounded-lg bg-surface-card border border-surface-border group-hover:border-facebook/50 transition-colors shrink-0 flex items-center justify-center w-10.5 h-10.5'>
+              <div className='rounded-lg bg-surface-card border border-surface-border group-hover:border-facebook/50 transition-colors shrink-0 flex items-center justify-center w-10.5 h-10.5'>
                 <Facebook size={18} />
               </div>
               <div className='flex flex-col items-start text-left'>
@@ -163,7 +176,7 @@ const Footer = () => {
               <ShieldCheck size={13} /> Privacy Policy
             </Link>
           </div>
-          <p className='text-[9px] text-slate-700 uppercase tracking-[0.2em] font-black'>
+          <p className='text-[9px] text-slate-700 uppercase tracking-[0.2em] font-black text-center'>
             Buldreinfo &copy; 2003-{currYear}
           </p>
         </div>
