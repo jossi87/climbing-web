@@ -18,7 +18,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@tanstack/react-query-devtools": "^5.95.1",
+    "@tanstack/react-query-devtools": "^5.95.2",
     "@types/leaflet": "^1.9.21",
     "@types/node": "^25.5.0",
     "@types/react": "^19.2.14",
@@ -39,8 +39,8 @@
     "openapi-typescript": "7.13.0",
     "prettier": "^3.8.1",
     "rollup-plugin-visualizer": "^7.0.1",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.57.1",
+    "typescript": "^6.0.2",
+    "typescript-eslint": "^8.57.2",
     "vite": "^8.0.2",
     "vite-tsconfig-paths": "^6.1.1"
   },
@@ -48,7 +48,7 @@
     "@auth0/auth0-react": "^2.15.1",
     "@react-leaflet/core": "^3.0.0",
     "@sentry/react": "^10.45.0",
-    "@tanstack/react-query": "^5.95.1",
+    "@tanstack/react-query": "^5.95.2",
     "flat": "^6.0.1",
     "heic2any": "^0.0.4",
     "json-url": "^4.0.0",
