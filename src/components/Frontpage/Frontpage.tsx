@@ -22,17 +22,32 @@ const Frontpage = () => {
       <title>{meta?.title}</title>
       {numMedia && numProblems && numTicks && <meta name='description' content={description} />}
 
-      <div className='w-full py-0 sm:py-8 px-4'>
-        <div className='grid grid-cols-1 lg:grid-cols-12 gap-y-6 sm:gap-6 lg:gap-10'>
+      <div className='w-full pt-0 pb-6 sm:py-8 px-4'>
+        {/* Removed the mb-6 entirely to keep it flush */}
+        <div className='lg:hidden'>
+          <FrontpageStats
+            numMedia={numMedia}
+            numProblems={numProblems}
+            numTicks={numTicks}
+            isBouldering={meta.isBouldering}
+            isClimbing={meta.isClimbing}
+          />
+        </div>
+
+        {/* Changed gap-y-6 back to gap-y-0 on mobile */}
+        <div className='grid grid-cols-1 lg:grid-cols-12 gap-y-0 sm:gap-6 lg:gap-10'>
           <aside className='lg:col-span-4 xl:col-span-3 order-1'>
-            <div className='lg:sticky lg:top-20 space-y-6 self-start'>
-              <FrontpageStats
-                numMedia={numMedia}
-                numProblems={numProblems}
-                numTicks={numTicks}
-                isBouldering={meta.isBouldering}
-                isClimbing={meta.isClimbing}
-              />
+            {/* Added space-y-0 on mobile so the image doesn't get pushed down */}
+            <div className='space-y-0 sm:space-y-6 self-start max-lg:relative lg:[@media(min-height:900px)]:sticky lg:[@media(min-height:900px)]:top-20'>
+              <div className='hidden lg:block'>
+                <FrontpageStats
+                  numMedia={numMedia}
+                  numProblems={numProblems}
+                  numTicks={numTicks}
+                  isBouldering={meta.isBouldering}
+                  isClimbing={meta.isClimbing}
+                />
+              </div>
               <RandomMediaCard randomMedia={randomMedia} />
             </div>
           </aside>

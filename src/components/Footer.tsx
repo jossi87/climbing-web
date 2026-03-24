@@ -30,6 +30,7 @@ const Footer = () => {
             <div className='flex flex-col gap-3'>
               <Link
                 to='/about'
+                onClick={() => window.scrollTo(0, 0)}
                 className='flex items-center gap-2.5 text-xs font-bold text-slate-400 hover:text-brand transition-colors'
               >
                 <Info size={14} /> About
@@ -37,22 +38,25 @@ const Footer = () => {
               {!isBouldering && (
                 <Link
                   to='/dangerous'
+                  onClick={() => window.scrollTo(0, 0)}
                   className='flex items-center gap-2.5 text-xs font-bold text-slate-400 hover:text-brand transition-colors'
                 >
-                  <AlertTriangle size={14} /> Access & Hazards
+                  <AlertTriangle size={14} /> Dangerous
                 </Link>
               )}
               <Link
                 to='/graph'
+                onClick={() => window.scrollTo(0, 0)}
                 className='flex items-center gap-2.5 text-xs font-bold text-slate-400 hover:text-brand transition-colors'
               >
-                <BarChart3 size={14} /> Statistics & Graphs
+                <BarChart3 size={14} /> Graph
               </Link>
               <Link
                 to='/webcams'
+                onClick={() => window.scrollTo(0, 0)}
                 className='flex items-center gap-2.5 text-xs font-bold text-slate-400 hover:text-brand transition-colors'
               >
-                <Camera size={14} /> Live Webcams
+                <Camera size={14} /> Webcams
               </Link>
             </div>
           </div>
@@ -151,7 +155,11 @@ const Footer = () => {
             >
               <FileText size={13} /> License
             </a>
-            <Link to='/privacy-policy' className='hover:text-brand flex items-center gap-1.5'>
+            <Link
+              to='/privacy-policy'
+              onClick={() => window.scrollTo(0, 0)}
+              className='hover:text-brand flex items-center gap-1.5'
+            >
               <ShieldCheck size={13} /> Privacy Policy
             </Link>
           </div>

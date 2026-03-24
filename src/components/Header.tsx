@@ -76,8 +76,8 @@ const Header = () => {
         />
         {isAccountOpen && (
           <div className='absolute top-full right-0 mt-3 w-64 bg-surface-card border border-surface-border rounded-xl shadow-2xl py-2 z-70 animate-in fade-in zoom-in-95 duration-200'>
-            <div className='px-4 py-3 border-b border-surface-border text-left'>
-              <span className='text-[10px] font-black text-slate-500 uppercase tracking-widest block'>
+            <div className='px-4 py-3 border-b border-surface-border text-left mb-1'>
+              <span className='text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-0.5'>
                 Signed in as
               </span>
               <div className='text-sm font-bold text-slate-200 truncate'>{authenticatedName}</div>
@@ -135,9 +135,9 @@ const Header = () => {
     ) : (
       <button
         onClick={() => loginWithRedirect()}
-        className='flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-300 transition-all'
+        className='flex items-center gap-2 px-4 py-2 bg-brand hover:brightness-110 text-surface-dark text-[11px] font-black uppercase tracking-widest rounded-lg transition-all active:scale-95 shadow-brand'
       >
-        <LogIn size={16} className='text-brand' /> <span className='hidden sm:inline'>Sign in</span>
+        <LogIn size={15} /> <span>Sign in</span>
       </button>
     );
   };
@@ -149,10 +149,10 @@ const Header = () => {
         !isVisible && '-translate-y-full lg:translate-y-0',
       )}
     >
-      <div className='max-w-container mx-auto px-4'>
-        <div className='flex items-center justify-between h-14 gap-x-4'>
-          <div className='flex items-center gap-4 flex-1 min-w-0'>
-            <Link to='/' className='shrink-0 relative py-1'>
+      <div className='max-w-container mx-auto px-4 h-14'>
+        <div className='flex items-center justify-between h-full gap-x-4'>
+          <div className='flex items-center gap-4 flex-1 min-w-0 h-full'>
+            <Link to='/' className='shrink-0 relative flex items-center h-full'>
               <img
                 src='/png/logo_70x62.png'
                 alt='Logo'
@@ -162,7 +162,7 @@ const Header = () => {
                 )}
               />
               {isHome && (
-                <div className='absolute -bottom-3.5 left-0 right-0 h-[2.5px] bg-brand rounded-full shadow-brand' />
+                <div className='absolute bottom-0 left-0 right-0 h-[2.5px] bg-brand rounded-t-md shadow-brand' />
               )}
             </Link>
             <div className='flex-1 max-w-xl min-w-35'>
@@ -170,15 +170,15 @@ const Header = () => {
             </div>
           </div>
 
-          <div className='flex items-center gap-4'>
+          <div className='flex items-center gap-4 h-full'>
             {activeSite && (
-              <div className='relative shrink-0' ref={regionRef}>
+              <div className='relative shrink-0 flex items-center h-full' ref={regionRef}>
                 <button
                   onClick={() => setIsRegionOpen(!isRegionOpen)}
                   className={cn(
                     'flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all',
                     isRegionOpen
-                      ? 'bg-brand text-white shadow-brand'
+                      ? 'bg-surface-hover text-white'
                       : 'text-slate-500 hover:text-slate-200 hover:bg-white/5',
                   )}
                 >
@@ -229,7 +229,9 @@ const Header = () => {
                 )}
               </div>
             )}
-            <div className='border-l border-surface-border pl-4 ml-1'>{renderUserMenu()}</div>
+            <div className='border-l border-surface-border pl-4 ml-1 flex items-center h-8 my-auto'>
+              {renderUserMenu()}
+            </div>
           </div>
         </div>
       </div>

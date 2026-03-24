@@ -24,7 +24,15 @@ const SearchBox = () => {
   const { search, isPending, data } = useSearch();
   const [value, setValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -58,9 +66,11 @@ const SearchBox = () => {
     }
   };
 
-  const placeholderText = isBouldering
-    ? 'Search for areas, sectors, problems or users...'
-    : 'Search for areas, sectors, routes or users...';
+  const placeholderText = isMobile
+    ? 'Search...'
+    : isBouldering
+      ? 'Search for areas, sectors, problems or users...'
+      : 'Search for areas, sectors, routes or users...';
 
   return (
     <div ref={containerRef} className='relative w-full'>

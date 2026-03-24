@@ -104,7 +104,7 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
           <div className='relative' ref={filterRef}>
             <button
               onClick={() => setIsFilterOpen(!isFilterOpen)}
-              className='btn-glass btn-glass-active h-7!'
+              className='btn-glass btn-glass-active'
             >
               <Filter size={12} />
               <span className='text-[10px] uppercase font-bold'>
@@ -152,25 +152,25 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
 
           <button
             onClick={() => handleFilterToggle('fa')}
-            className={cn('btn-glass h-7!', activityTypeFa && 'btn-glass-active')}
+            className={cn('btn-glass', activityTypeFa && 'btn-glass-active')}
           >
             <Plus size={12} /> <span className='text-[10px] uppercase font-bold'>FA</span>
           </button>
           <button
             onClick={() => handleFilterToggle('ticks')}
-            className={cn('btn-glass h-7!', activityTypeTicks && 'btn-glass-active')}
+            className={cn('btn-glass', activityTypeTicks && 'btn-glass-active')}
           >
             <Check size={12} /> <span className='text-[10px] uppercase font-bold'>Ticks</span>
           </button>
           <button
             onClick={() => handleFilterToggle('media')}
-            className={cn('btn-glass h-7!', activityTypeMedia && 'btn-glass-active')}
+            className={cn('btn-glass', activityTypeMedia && 'btn-glass-active')}
           >
             <Camera size={12} /> <span className='text-[10px] uppercase font-bold'>Media</span>
           </button>
           <button
             onClick={() => handleFilterToggle('comments')}
-            className={cn('btn-glass h-7!', activityTypeComments && 'btn-glass-active')}
+            className={cn('btn-glass', activityTypeComments && 'btn-glass-active')}
           >
             <MessageSquare size={12} /> <span className='text-[10px] uppercase font-bold'>Com</span>
           </button>
@@ -183,19 +183,6 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
             ? [...Array(8)].map((_, i) => <ActivitySkeleton key={i} />)
             : activity?.map((a) => {
                 const currentKey = a.activityIds?.join('+') ?? `activity-${a.id ?? 0}`;
-                const [numImg, numMov] = (a.media ?? []).reduce(
-                  (acc: number[], { movie }) =>
-                    movie ? [acc[0], acc[1] + 1] : [acc[0] + 1, acc[1]],
-                  [0, 0],
-                );
-
-                const getStatusIcon = () => {
-                  if (a.users) return <Plus size={8} className='text-brand' />;
-                  if (a.message) return <MessageSquare size={8} className='text-blue-400' />;
-                  if (a.media && !a.name) return <Camera size={8} className='text-amber-400' />;
-                  return <Check size={8} className='text-emerald-400' />;
-                };
-
                 const avatarItems =
                   a.activityThumbnails && a.activityThumbnails.length > 0
                     ? a.activityThumbnails.map((m) => ({
@@ -210,13 +197,26 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                         }))
                       : [{ name: a.name, mediaId: undefined, mediaVersionStamp: undefined }];
 
+                const getStatusIcon = () => {
+                  if (a.users) return <Plus size={8} className='text-brand' />;
+                  if (a.message) return <MessageSquare size={8} className='text-blue-400' />;
+                  if (a.media && !a.name) return <Camera size={8} className='text-emerald-400' />;
+                  return <Check size={8} className='text-emerald-400' />;
+                };
+
+                const [numImg, numMov] = (a.media ?? []).reduce(
+                  (acc: number[], { movie }) =>
+                    movie ? [acc[0], acc[1] + 1] : [acc[0] + 1, acc[1]],
+                  [0, 0],
+                );
+
                 return (
                   <div
                     key={currentKey}
-                    className='py-4 sm:px-4 px-0 hover:bg-white/1 transition-colors text-left group animate-in fade-in duration-300'
+                    className='py-4 sm:px-4 px-0 hover:bg-white/1 transition-colors'
                   >
-                    <div className='flex gap-4 items-start px-4 sm:px-0'>
-                      <div className='shrink-0 pt-1.5'>
+                    <div className='flex gap-3 sm:gap-4 items-start px-4 sm:px-0'>
+                      <div className='shrink-0 pt-0.5'>
                         <AvatarGroup
                           items={avatarItems}
                           size='tiny'
@@ -225,26 +225,28 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                         />
                       </div>
 
-                      <div className='flex-1 min-w-0 pt-1'>
-                        <div className='flex items-baseline justify-between gap-4'>
-                          <div className='text-[14px] text-slate-500 leading-tight flex flex-wrap items-center gap-x-1.5'>
+                      <div className='flex-1 min-w-0'>
+                        <div className='relative pr-16'>
+                          <div className='text-slate-100 text-[14px] leading-snug'>
                             {a.users ? (
                               <>
                                 <span className='font-bold text-slate-200'>
                                   New {meta.isBouldering ? 'problem' : 'route'}
-                                </span>
-                                <span className='text-slate-500 font-medium'>in</span>
+                                </span>{' '}
+                                <span className='text-slate-500 font-medium'>in</span>{' '}
                                 <ProblemLink a={a} />
                               </>
                             ) : a.message ? (
                               <>
                                 <Link
                                   to={`/user/${a.id}`}
-                                  className='font-bold text-slate-200 hover:text-brand transition-colors'
+                                  className='font-bold hover:text-brand transition-colors'
                                 >
                                   {a.name}
-                                </Link>
-                                <span className='text-slate-500 font-medium'>commented on</span>
+                                </Link>{' '}
+                                <span className='text-slate-500 lowercase font-medium'>
+                                  commented on
+                                </span>{' '}
                                 <ProblemLink a={a} />
                               </>
                             ) : (
@@ -253,38 +255,35 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                                   <>
                                     <Link
                                       to={`/user/${a.id}`}
-                                      className='font-bold text-slate-200 hover:text-brand transition-colors'
+                                      className='font-bold hover:text-brand transition-colors'
                                     >
                                       {a.name}
-                                    </Link>
-                                    <span className='text-slate-500 font-medium'>
+                                    </Link>{' '}
+                                    <span className='text-slate-500 lowercase font-medium'>
                                       {a.repeat ? 'repeated' : 'ticked'}
-                                    </span>
+                                    </span>{' '}
                                   </>
-                                ) : (
-                                  <span className='font-bold text-slate-200 flex items-center gap-1.5'>
-                                    {numImg > 0 && (
-                                      <>
-                                        {numImg} {numImg === 1 ? 'image' : 'images'}
-                                      </>
-                                    )}
-                                    {numImg > 0 && numMov > 0 && <span>&</span>}
-                                    {numMov > 0 && (
-                                      <>
-                                        {numMov} {numMov === 1 ? 'video' : 'videos'}
-                                      </>
-                                    )}
-                                    <span className='font-medium text-slate-500'>on</span>
-                                  </span>
-                                )}
+                                ) : numImg > 0 || numMov > 0 ? (
+                                  <>
+                                    <span className='font-bold text-slate-200'>
+                                      {numImg > 0 &&
+                                        `${numImg} ${numImg === 1 ? 'image' : 'images'}`}
+                                      {numImg > 0 && numMov > 0 && ' & '}
+                                      {numMov > 0 &&
+                                        `${numMov} ${numMov === 1 ? 'video' : 'videos'}`}
+                                    </span>{' '}
+                                    <span className='text-slate-500 font-medium'>on</span>{' '}
+                                  </>
+                                ) : null}
                                 <ProblemLink a={a} />
                               </>
                             )}
                           </div>
-                          <span className='shrink-0 text-[9px] font-bold text-slate-600 uppercase tracking-tighter pt-1.5'>
+                          <span className='absolute top-0 right-0 text-[9px] font-bold text-slate-600 uppercase tracking-tighter pt-1'>
                             {a.timeAgo}
                           </span>
                         </div>
+
                         {a.description && (
                           <div className='mt-1 text-slate-400 text-[11px] italic leading-snug pl-2 border-l border-surface-border'>
                             {a.description}
@@ -295,18 +294,19 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                             <Linkify>{a.message}</Linkify>
                           </div>
                         )}
-                        <div className='mt-2.5 flex items-center gap-3'>
+                        <div className='mt-2'>
                           {a.stars !== undefined && a.stars !== -1 && (
                             <Stars numStars={a.stars} includeStarOutlines={true} />
                           )}
                         </div>
+
+                        {a.media && (
+                          <div className='mt-3'>
+                            <LazyMedia media={a.media} problemId={a.problemId} />
+                          </div>
+                        )}
                       </div>
                     </div>
-                    {a.media && (
-                      <div className='mt-3'>
-                        <LazyMedia media={a.media} problemId={a.problemId} />
-                      </div>
-                    )}
                   </div>
                 );
               })}

@@ -1,15 +1,15 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-brand: #10b981;
-  --color-surface-dark: #0a0a0c;
+  --color-brand: #059669;
+  --color-surface-dark: #08090a;
   --color-surface-nav: #0d1117;
-  --color-surface-card: #161b22;
-  --color-surface-hover: #21262d;
-  --color-surface-border: #30363d;
+  --color-surface-card: #121519;
+  --color-surface-hover: #1c2128;
+  --color-surface-border: #2d333b;
   --color-white: #e2e8f0;
   --color-facebook: #1877f2;
-  --shadow-brand: 0 0 12px rgba(16, 185, 129, 0.25);
+  --shadow-brand: 0 0 15px rgba(5, 150, 105, 0.2);
   --spacing-container: 1400px;
   --spacing-thumbnail-w: 85px;
   --spacing-thumbnail-h: 80px;
@@ -35,13 +35,16 @@
   h6,
   b,
   strong {
-    @apply text-slate-300 font-semibold;
+    @apply text-slate-200 font-semibold;
   }
   input,
   button,
   select,
   textarea {
     @apply outline-none;
+  }
+  button {
+    @apply cursor-pointer disabled:cursor-not-allowed disabled:opacity-50;
   }
   :focus-visible {
     @apply ring-1 ring-brand border-brand/50;
@@ -50,8 +53,7 @@
 
 @layer components {
   .app-card {
-    /* -mx-4 pulls the card to the screen edge on mobile. sm:mx-0 resets it for desktop. */
-    @apply bg-surface-card border-surface-border -mx-4 sm:mx-0 sm:border sm:rounded-xl overflow-hidden;
+    @apply bg-surface-card border-surface-border -mx-4 sm:mx-0 sm:border sm:rounded-xl overflow-hidden shadow-sm;
     border-top-width: 1px;
     border-bottom-width: 1px;
     border-left-width: 0;
@@ -67,29 +69,27 @@
   }
 
   .search-input {
-    @apply bg-surface-dark border border-surface-border rounded-lg px-4 py-2 
-           transition-all duration-200 text-slate-200 placeholder:text-slate-600;
+    @apply bg-surface-dark border border-surface-border rounded-lg px-4 py-2 transition-all duration-200 text-slate-200 placeholder:text-slate-600;
   }
   .search-input:focus {
     @apply border-brand ring-1 ring-brand/30 bg-surface-nav;
   }
 
   .btn-glass {
-    @apply px-3 py-1.5 rounded-md border text-[10px] font-bold uppercase tracking-widest 
-           transition-all duration-200 flex items-center gap-2 h-8 active:scale-95;
+    @apply px-2 sm:px-3 py-1.5 rounded-md border text-[10px] font-bold uppercase tracking-widest transition-all duration-200 flex items-center gap-1 sm:gap-2 h-7 active:scale-95;
     background-color: color-mix(in srgb, var(--color-surface-nav), transparent 50%);
     border-color: var(--color-surface-border);
-    color: var(--color-slate-500);
+    color: var(--color-slate-400);
   }
   .btn-glass:hover {
-    @apply border-slate-500 text-slate-300 bg-surface-nav;
+    @apply border-slate-400 text-slate-200 bg-surface-nav;
   }
   .btn-glass-active {
-    @apply bg-surface-hover border-slate-500/50 text-slate-200 shadow-sm;
+    @apply bg-surface-hover border-slate-400/50 text-slate-200 shadow-sm;
   }
   .btn-glass-active svg {
     @apply text-brand;
-    filter: drop-shadow(0 0 3px rgba(16, 185, 129, 0.3));
+    filter: drop-shadow(0 0 3px rgba(5, 150, 105, 0.4));
   }
 
   .animate-in {
@@ -113,11 +113,4 @@
 
 .dark-tiles {
   filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
-}
-
-@media (min-width: 1024px) and (max-height: 750px) {
-  .lg\:sticky {
-    position: relative !important;
-    top: 0 !important;
-  }
 }

@@ -19,10 +19,7 @@ export const LazyMedia = ({
   });
 
   return (
-    <div
-      ref={ref}
-      className='grid grid-cols-4 sm:flex sm:flex-wrap gap-1 sm:gap-2 mt-3 min-h-12 px-4 sm:px-0'
-    >
+    <div ref={ref} className='grid grid-cols-4 sm:flex sm:flex-wrap gap-1 sm:gap-2 min-h-12'>
       {media.map((m) => (
         <Link
           key={m.id}
@@ -35,7 +32,7 @@ export const LazyMedia = ({
                 minDimension: 200,
               })}
               className={cn(
-                'w-full h-full object-cover group-hover:scale-110 transition-all duration-500 ease-out animate-in fade-in fill-mode-both',
+                'w-full h-full max-h-[60vh] object-cover group-hover:scale-110 transition-all duration-500 ease-out animate-in fade-in fill-mode-both',
                 m.movie && 'brightness-90 group-hover:brightness-100',
               )}
               alt='Activity media'
