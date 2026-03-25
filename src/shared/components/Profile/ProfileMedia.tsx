@@ -1,4 +1,4 @@
-import { Loading } from '../Widgets/Widgets';
+import { Loading } from '../../ui/StatusWidgets';
 import { useProfileMedia } from '../../../api';
 import Media from '../Media/Media';
 import { useMeta } from '../Meta';
@@ -18,32 +18,26 @@ const ProfileMedia = ({ userId, captured }: Props) => {
   }
 
   if (!data || data.length === 0) {
-    return (
-      <div className='bg-surface-nav/20 border-surface-border rounded-xl border p-8 text-center text-slate-500 italic'>
-        Empty list.
-      </div>
-    );
+    return <div className='py-10 text-center text-slate-500'>Empty list.</div>;
   }
 
   return (
-    <div className='bg-surface-card border-surface-border rounded-xl border p-4 sm:p-6'>
-      <MetaContext.Provider
-        value={{
-          ...meta,
-          isAdmin: false,
-          isSuperAdmin: false,
-        }}
-      >
-        <Media
-          pitches={null}
-          media={data}
-          orderableMedia={null}
-          carouselMedia={data}
-          optProblemId={null}
-          showLocation={true}
-        />
-      </MetaContext.Provider>
-    </div>
+    <MetaContext.Provider
+      value={{
+        ...meta,
+        isAdmin: false,
+        isSuperAdmin: false,
+      }}
+    >
+      <Media
+        pitches={null}
+        media={data}
+        orderableMedia={null}
+        carouselMedia={data}
+        optProblemId={null}
+        showLocation={true}
+      />
+    </MetaContext.Provider>
   );
 };
 

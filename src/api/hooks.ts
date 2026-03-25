@@ -338,6 +338,7 @@ export function useProfileMedia({ userId, captured }: { userId: number; captured
 export function useProfileStatistics(id: number) {
   return useData<components['schemas']['ProfileStatistics']>(`/profile/statistics?id=${id}`, {
     queryKey: [`/profile/statistics`, { id }],
+    enabled: id > 0,
   });
 }
 

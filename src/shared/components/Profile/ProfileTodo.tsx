@@ -1,9 +1,10 @@
 import { type ComponentProps, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import Leaflet from '../Leaflet/Leaflet';
-import { Loading, LockSymbol } from '../Widgets/Widgets';
+import { LockSymbol } from '../Widgets/Widgets';
 import { useProfileTodo } from '../../../api';
 import { MapPin, ChevronRight } from 'lucide-react';
+import { Loading } from '../../ui/StatusWidgets';
 
 type ProfileTodoProps = {
   userId: number;
@@ -34,15 +35,11 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
   });
 
   if ((data.areas ?? []).length === 0) {
-    return (
-      <div className='bg-surface-nav/20 border-surface-border rounded-xl border p-8 text-center text-slate-500 italic'>
-        Empty list.
-      </div>
-    );
+    return <div className='py-10 text-center text-slate-500'>Empty list.</div>;
   }
 
   return (
-    <div className='bg-surface-card border-surface-border overflow-hidden rounded-xl border shadow-sm'>
+    <div className='overflow-hidden'>
       <div className='border-surface-border border-b'>
         <Leaflet
           key={'todo=' + userId}

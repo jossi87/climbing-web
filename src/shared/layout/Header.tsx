@@ -4,6 +4,8 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   Globe,
   User,
+  Settings,
+  Download,
   LogOut,
   ChevronDown,
   Trash2,
@@ -13,11 +15,13 @@ import {
   LogIn,
   Check,
   ExternalLink,
+  Loader2,
 } from 'lucide-react';
 import { useMeta } from '../components/Meta/context';
 import SearchBox from '../components/SearchBox/SearchBox';
 import { Avatar, SectionLabel } from '../ui';
 import { cn } from '../../lib/utils';
+import { downloadUsersTicks, useAccessToken } from '../../api';
 
 type DropdownItemProps = {
   to: string;
@@ -30,6 +34,7 @@ type DropdownItemProps = {
 const Header = () => {
   const { isSuperAdmin, isAuthenticated, authenticatedName, mediaId, mediaVersionStamp, sites } = useMeta();
   const { isLoading, loginWithRedirect, logout } = useAuth0();
+  const accessToken = useAccessToken();
   const location = useLocation();
 
   const activeSite = sites?.find((s) => s.active);
@@ -37,6 +42,7 @@ const Header = () => {
 
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [isRegionOpen, setIsRegionOpen] = useState(false);
+  const [isDownloadingTicks, setIsDownloadingTicks] = useState(false);
   const regionRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -95,15 +101,17 @@ const Header = () => {
         />
         {isAccountOpen && (
           <div className='bg-surface-card border-surface-border animate-in fade-in zoom-in-95 absolute top-full right-0 z-70 mt-3 w-56 rounded border py-1 shadow-2xl duration-150'>
-            <div className='mb-1 border-b border-white/5 px-4 py-3 text-left'>
-              <SectionLabel className='mb-0.5 text-slate-500'>Account</SectionLabel>
-              <div className='truncate text-xs font-semibold text-slate-200'>{authenticatedName}</div>
+            <div className='px-4 py-1'>
+              <SectionLabel className='text-slate-600'>ADMIN</SectionLabel>
             </div>
-
-            <DropdownItem to='/user' icon={User} onClick={() => setIsAccountOpen(false)}>
-              Profile
-            </DropdownItem>
-
+            <a
+              href='/pdf/20230525_administrator_doc.pdf'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='flex items-center gap-3 px-4 py-2 text-xs font-semibold text-slate-400 transition-colors hover:bg-white/5 hover:text-slate-200'
+            >
+              <HelpCircle size={14} /> Help
+            </a>
             {isSuperAdmin && (
               <>
                 <DropdownItem to='/permissions' icon={Users} onClick={() => setIsAccountOpen(false)}>
@@ -119,16 +127,26 @@ const Header = () => {
             )}
 
             <div className='my-1 h-px bg-white/5' />
-
-            <a
-              href='/pdf/20230525_administrator_doc.pdf'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='flex items-center gap-3 px-4 py-2 text-xs font-semibold text-slate-400 transition-colors hover:bg-white/5 hover:text-slate-200'
+            <div className='px-4 py-1'>
+              <SectionLabel className='text-slate-600'>ACCOUNT</SectionLabel>
+            </div>
+            <DropdownItem to='/user' icon={User} onClick={() => setIsAccountOpen(false)}>
+              {authenticatedName || 'Profile'}
+            </DropdownItem>
+            <DropdownItem to='/settings' icon={Settings} onClick={() => setIsAccountOpen(false)}>
+              Settings
+            </DropdownItem>
+            <button
+              onClick={() => {
+                setIsDownloadingTicks(true);
+                downloadUsersTicks(accessToken).finally(() => setIsDownloadingTicks(false));
+                setIsAccountOpen(false);
+              }}
+              className='flex w-full items-center gap-3 px-4 py-2 text-left text-xs font-semibold text-slate-400 transition-colors hover:bg-white/5 hover:text-slate-200'
             >
-              <HelpCircle size={14} /> Help
-            </a>
-
+              {isDownloadingTicks ? <Loader2 size={14} className='animate-spin' /> : <Download size={14} />}
+              Export ascents to Excel
+            </button>
             <button
               onClick={() => logout({ logoutParams: { returnTo: window.origin } })}
               className='flex w-full items-center gap-3 px-4 py-2 text-left text-xs font-semibold text-red-500 transition-colors hover:bg-red-500/10'

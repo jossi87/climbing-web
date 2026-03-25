@@ -34,52 +34,66 @@ function Chart({ ticks: data }: Props) {
       return d.fa + d.tick;
     }),
   );
-  const rows = grades.map((g) => {
-    const faWidth = (g.fa / maxValue) * 100 + '%';
-    const tickWidth = (g.tick / maxValue) * 100 + '%';
-    return (
-      <tr key={[g.grade, g.fa, g.tick].join('/')}>
-        <td style={{ padding: 0, textAlign: 'center', whiteSpace: 'nowrap' }}>{g.grade}</td>
-        <td style={{ padding: 0, textAlign: 'center' }}>{g.fa}</td>
-        <td style={{ padding: 0, textAlign: 'center' }}>{g.tick}</td>
-        <td style={{ padding: 0, textAlign: 'center' }}>
-          <strong>{g.fa + g.tick}</strong>
-        </td>
-        <td style={{ width: '100%', verticalAlign: 'middle' }}>
-          <div
-            style={{
-              width: faWidth,
-              height: '10px',
-              backgroundColor: '#3182bd',
-              float: 'left',
-            }}
-          ></div>
-          <div
-            style={{
-              width: tickWidth,
-              height: '10px',
-              backgroundColor: '#6baed6',
-              marginLeft: faWidth,
-            }}
-          ></div>
-        </td>
-      </tr>
-    );
-  });
 
   return (
-    <table style={{ overflowWrap: 'normal', wordBreak: 'normal' }}>
-      <thead>
-        <tr>
-          <th>Grade</th>
-          <th>FA</th>
-          <th>Tick</th>
-          <th>Total</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>{rows}</tbody>
-    </table>
+    <div className='overflow-hidden'>
+      <table className='w-full table-fixed border-separate border-spacing-0 text-left'>
+        <thead>
+          <tr>
+            <th className='w-[56px] px-1 py-2 text-[10px] font-semibold whitespace-nowrap text-slate-300 sm:w-[70px] sm:px-2'>
+              Grade
+            </th>
+            <th className='w-[34px] px-1 py-2 text-left text-[10px] font-semibold whitespace-nowrap text-slate-300 sm:w-[44px] sm:px-2'>
+              FA
+            </th>
+            <th className='w-[34px] px-1 py-2 text-left text-[10px] font-semibold whitespace-nowrap text-slate-300 sm:w-[44px] sm:px-2'>
+              Tick
+            </th>
+            <th className='w-[42px] px-1 py-2 text-left text-[10px] font-semibold whitespace-nowrap text-slate-300 sm:w-[56px] sm:px-2'>
+              Total
+            </th>
+            <th
+              className='px-1 py-2 text-right text-[10px] font-semibold whitespace-nowrap text-slate-300 sm:px-2'
+              aria-hidden='true'
+            >
+              &nbsp;
+            </th>
+          </tr>
+        </thead>
+        <tbody className='divide-surface-border/15 divide-y'>
+          {grades.map((g) => {
+            const faPct = (g.fa / maxValue) * 100;
+            const tickPct = (g.tick / maxValue) * 100;
+            const total = g.fa + g.tick;
+
+            return (
+              <tr key={[g.grade, g.fa, g.tick].join('/')} className='hover:bg-surface-hover/20 transition-colors'>
+                <td className='px-1 py-1.5 text-[10px] font-semibold whitespace-nowrap text-slate-200 sm:px-2 sm:text-[11px]'>
+                  {g.grade}
+                </td>
+                <td className='overflow-hidden px-1 py-1.5 text-left font-mono text-[11px] whitespace-nowrap text-slate-200 sm:px-2'>
+                  {g.fa}
+                </td>
+                <td className='overflow-hidden px-1 py-1.5 text-left font-mono text-[11px] whitespace-nowrap text-slate-200 sm:px-2'>
+                  {g.tick}
+                </td>
+                <td className='overflow-hidden px-1 py-1.5 text-left font-mono text-[11px] font-semibold whitespace-nowrap text-slate-100 sm:px-2'>
+                  {total}
+                </td>
+                <td className='px-1 py-1.5 text-right sm:px-2'>
+                  <div className='mx-0 h-2.5 w-full overflow-hidden rounded-full'>
+                    <div className='flex h-full w-full'>
+                      <div style={{ width: `${faPct}%` }} className='h-full rounded-l-full bg-red-400' />
+                      <div style={{ width: `${tickPct}%` }} className='h-full rounded-r-full bg-blue-400' />
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 }
 

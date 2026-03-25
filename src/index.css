@@ -76,15 +76,23 @@
   }
 
   .app-card {
-    @apply bg-surface-card border-surface-border -mx-4 overflow-hidden shadow-sm sm:mx-0 sm:rounded-xl sm:border;
+    @apply bg-surface-card border-surface-border overflow-hidden shadow-sm sm:rounded-xl sm:border;
     border-top-width: 1px;
     border-bottom-width: 1px;
     border-left-width: 0;
     border-right-width: 0;
 
+    box-sizing: border-box;
+    margin-left: -1rem;
+    margin-right: -1rem;
+    width: calc(100% + 2rem);
+
     @media (min-width: 640px) {
       border-left-width: 1px;
       border-right-width: 1px;
+      margin-left: 0;
+      margin-right: 0;
+      width: 100%;
     }
   }
 

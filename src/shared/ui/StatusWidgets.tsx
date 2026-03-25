@@ -3,19 +3,30 @@ import { Lock, LogIn, AlertTriangle, RefreshCw } from 'lucide-react';
 import { designContract } from '../../design/contract';
 import { Card } from './Card';
 
-export const Loading = () => (
-  <Card flush className='overflow-hidden border-0 text-left sm:border'>
-    <div className='flex min-h-[160px] w-full min-w-0 flex-1 flex-col items-center justify-center gap-4 sm:min-h-[220px]'>
-      <div className='bg-surface-nav border-surface-border/60 rounded-full border p-3'>
-        <RefreshCw className='text-brand h-7 w-7 animate-spin' />
-      </div>
-      <div className='text-center'>
-        <h3 className={designContract.typography.label}>Loading</h3>
-        <p className='type-small mt-1 opacity-70'>Fetching data...</p>
-      </div>
+type LoadingProps = {
+  inline?: boolean;
+};
+
+const LoadingContent = () => (
+  <div className='flex min-h-[160px] w-full min-w-0 flex-1 flex-col items-center justify-center gap-4 sm:min-h-[220px]'>
+    <div className='bg-surface-nav border-surface-border/60 rounded-full border p-3'>
+      <RefreshCw className='text-brand h-7 w-7 animate-spin' />
     </div>
-  </Card>
+    <div className='text-center'>
+      <h3 className={designContract.typography.label}>Loading</h3>
+      <p className='type-small mt-1 opacity-70'>Fetching data...</p>
+    </div>
+  </div>
 );
+
+export const Loading = ({ inline = false }: LoadingProps) =>
+  inline ? (
+    <LoadingContent />
+  ) : (
+    <Card flush className='overflow-hidden border-0 text-left sm:border'>
+      <LoadingContent />
+    </Card>
+  );
 
 export const NotLoggedIn = () => {
   const { loginWithRedirect } = useAuth0();

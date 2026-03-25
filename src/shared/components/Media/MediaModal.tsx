@@ -480,8 +480,14 @@ const MediaModal = ({
                 alt=''
               />
               <div className='absolute inset-0 flex items-center justify-center'>
-                <div className='type-body flex h-24 w-24 items-center justify-center rounded-full bg-red-600 shadow-2xl transition-transform duration-300 group-hover:scale-110'>
-                  <Play size={48} fill='currentColor' className='ml-1' />
+                <div className='bg-brand relative flex h-24 w-24 items-center justify-center rounded-full border-2 border-slate-950/90 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.88)] transition-transform duration-300 group-hover:scale-110'>
+                  <span className='pointer-events-none absolute inset-[6px] rounded-full border border-white/35 opacity-70' />
+                  <Play
+                    size={44}
+                    fill='currentColor'
+                    className='ml-1'
+                    style={{ color: '#ffffff', stroke: '#0b0f14', strokeWidth: 1.6 }}
+                  />
                 </div>
               </div>
             </div>

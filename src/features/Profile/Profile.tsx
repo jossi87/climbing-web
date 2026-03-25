@@ -1,42 +1,75 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { Loading } from '../../shared/components/Widgets/Widgets';
+import { Loading } from '../../shared/ui/StatusWidgets';
 import { useMeta } from '../../shared/components/Meta/context';
-import { useProfile } from '../../api';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useProfile, useProfileStatistics } from '../../api';
 import ProfileStatistics from '../../shared/components/Profile/ProfileStatistics';
 import { ClickableAvatar } from '../../shared/ui/Avatar/Avatar';
 import ProfileTodo from '../../shared/components/Profile/ProfileTodo';
 import ProfileMedia from '../../shared/components/Profile/ProfileMedia';
-import ProfileSettings from '../../shared/components/Profile/ProfileSettings';
-import { User, Bookmark, Images, Camera, Settings, AlertTriangle } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Map as MapIcon,
+  List,
+  Bookmark,
+  Images,
+  Camera,
+  AlertTriangle,
+  Globe,
+  Mail,
+  Clock,
+} from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
+import { Card } from '../../shared/ui';
 
 enum Page {
-  user = 'user',
+  overview = 'overview',
+  map = 'map',
+  ascents = 'ascents',
   todo = 'todo',
   media = 'media',
   captured = 'captured',
-  settings = 'settings',
 }
 
 const Profile = () => {
   const { userId, page } = useParams();
   const navigate = useNavigate();
   const { data: profile, isLoading, error } = useProfile(userId ? +userId : -1);
-  const { isAuthenticated } = useAuth0();
-  const activePage = (page as Page) ?? Page.user;
+  const { data: profileStats } = useProfileStatistics(profile?.id ?? -1);
+  const validPages = Object.values(Page);
+  const activePage = validPages.includes(page as Page) ? (page as Page) : Page.overview;
   const meta = useMeta();
 
   function onPageChanged(newPage: Page) {
     navigate(`/user/${profile?.id ?? -1}/${newPage}`);
   }
 
-  if (isLoading) return <Loading />;
+  if (isLoading) {
+    return (
+      <div className='w-full min-w-0'>
+        <Card flush className='min-w-0 border-0 sm:border'>
+          <div className='space-y-3 p-4 sm:p-5'>
+            <div className='flex items-center gap-3'>
+              <div className='bg-surface-nav h-9 w-9 animate-pulse rounded-full' />
+              <div className='bg-surface-nav h-5 w-40 animate-pulse rounded' />
+            </div>
+            <div className='flex gap-1 overflow-hidden'>
+              {Array.from({ length: 5 }).map((_, idx) => (
+                <div key={idx} className='bg-surface-nav h-8 w-20 animate-pulse rounded-lg' />
+              ))}
+            </div>
+          </div>
+        </Card>
+        <div className='-mt-px'>
+          <Loading />
+        </div>
+      </div>
+    );
+  }
 
   if (error || !profile) {
     return (
-      <div className='max-w-container mx-auto px-4 py-20'>
+      <div className='w-full py-16 sm:py-20'>
         <div className={cn(designContract.surfaces.card, 'space-y-4 p-12 text-center')}>
           <AlertTriangle size={48} className='mx-auto text-red-500/50' />
           <h2 className='type-h1'>{error ? '404' : 'Not Found'}</h2>
@@ -46,72 +79,110 @@ const Profile = () => {
     );
   }
 
-  const loggedInProfile = !!(profile.userRegions && profile.userRegions.length > 0);
   const fullName = [profile.firstname ?? '', profile.lastname ?? ''].filter(Boolean).join(' ');
+  const regions = Array.from(new Set((profileStats?.ticks ?? []).map((t) => t.regionName).filter(Boolean))).sort();
 
   const navItems = [
-    { id: Page.user, label: 'User', icon: User },
+    { id: Page.overview, label: 'Overview', icon: LayoutDashboard },
+    { id: Page.ascents, label: 'Ascents', icon: List },
+    { id: Page.map, label: 'Map', icon: MapIcon },
     { id: Page.todo, label: 'Todo', icon: Bookmark },
     { id: Page.media, label: 'Media', icon: Images },
     { id: Page.captured, label: 'Captured', icon: Camera },
-    ...(isAuthenticated && loggedInProfile ? [{ id: Page.settings, label: 'Settings', icon: Settings }] : []),
   ];
 
   return (
-    <div className='max-w-container mx-auto space-y-8 px-4 py-6'>
+    <div className='w-full min-w-0 space-y-0'>
       <title>{`${fullName} | ${meta?.title}`}</title>
       <meta name='description' content='Profile with public ascents, media, and other statistics.' />
 
-      <div className='flex flex-col items-center gap-4 pb-2'>
-        <ClickableAvatar
-          name={fullName}
-          mediaId={profile.mediaId}
-          mediaVersionStamp={profile.mediaVersionStamp}
-          size='large'
-        />
-        <div className='text-center'>
-          <h1 className='type-h1'>
-            {profile.firstname} {profile.lastname}
-          </h1>
-          <p className={cn('mt-1', designContract.typography.label)}>Climber Profile</p>
+      <Card flush className='min-w-0 border-0 sm:border'>
+        <div className='p-4 sm:p-5'>
+          <div className='flex min-w-0 items-start gap-3'>
+            <ClickableAvatar
+              name={fullName}
+              mediaId={profile.mediaId}
+              mediaVersionStamp={profile.mediaVersionStamp}
+              size='small'
+            />
+            <div className='min-w-0'>
+              <h1 className='type-h1 truncate'>
+                {profile.firstname} {profile.lastname}
+              </h1>
+              <div className='mt-2 grid min-w-0 grid-cols-1 gap-y-1 text-xs text-slate-300 sm:flex sm:flex-wrap sm:items-center sm:gap-x-3 sm:gap-y-1'>
+                {regions.length > 0 && (
+                  <span className='text-brand/90 inline-flex max-w-full min-w-0 items-center gap-1.5'>
+                    <Globe size={12} className='text-brand/80' />
+                    <span className='min-w-0 break-all'>{regions.join(', ')}</span>
+                  </span>
+                )}
+                {(profile.emails ?? []).map((email) => (
+                  <a
+                    key={email}
+                    href={`mailto:${email}`}
+                    className='inline-flex max-w-full min-w-0 items-center gap-1.5 text-sky-200 transition-colors hover:text-sky-100'
+                  >
+                    <Mail size={12} className='text-sky-300/80' />
+                    <span className='min-w-0 break-all'>{email}</span>
+                  </a>
+                ))}
+                {profile.lastActivity && (
+                  <span className='inline-flex max-w-full min-w-0 items-center gap-1.5 text-emerald-200'>
+                    <Clock size={12} className='text-emerald-300/80' />
+                    <span className='min-w-0 break-words'>Active {profile.lastActivity}</span>
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </Card>
 
-      <div className='bg-surface-nav/30 border-surface-border flex flex-wrap justify-center rounded-xl border p-1'>
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = activePage === item.id;
-          return (
-            <button
-              key={item.id}
-              onClick={() => onPageChanged(item.id)}
-              className={cn(
-                designContract.controls.navPill,
-                isActive ? 'bg-brand shadow-brand/20 shadow-lg' : 'hover:bg-surface-hover opacity-70 hover:opacity-100',
-              )}
-            >
-              <Icon size={16} strokeWidth={isActive ? 2.5 : 2} />
-              <span>{item.label}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      <div className='animate-in fade-in slide-in-from-bottom-2 duration-500'>
-        {activePage === Page.user && (
-          <ProfileStatistics
-            userId={profile.id ?? 0}
-            emails={profile.emails ?? []}
-            lastActivity={profile.lastActivity ?? ''}
-            canDownload={loggedInProfile}
-          />
-        )}
-        {activePage === Page.todo && (
-          <ProfileTodo userId={profile.id ?? 0} defaultCenter={meta.defaultCenter} defaultZoom={meta.defaultZoom} />
-        )}
-        {activePage === Page.media && <ProfileMedia userId={profile.id ?? 0} captured={false} />}
-        {activePage === Page.captured && <ProfileMedia userId={profile.id ?? 0} captured={true} />}
-        {activePage === Page.settings && <ProfileSettings />}
+      <div className='animate-in fade-in slide-in-from-bottom-2 mt-4 w-full min-w-0 duration-500'>
+        <Card flush className='min-w-0 border-0 sm:border'>
+          <div className='border-surface-border border-b px-3 py-2 sm:px-4'>
+            <div className='grid w-full min-w-0 grid-cols-6 gap-1 overflow-hidden'>
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = activePage === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => onPageChanged(item.id)}
+                    className={cn(
+                      'flex w-full min-w-0 flex-col items-center justify-center gap-0.5 rounded-md px-0 py-2 text-[8px] font-semibold transition-colors sm:flex-row sm:gap-1.5 sm:px-3 sm:text-[11px]',
+                      isActive
+                        ? 'bg-brand/12 text-brand ring-brand/25 ring-1'
+                        : 'hover:bg-surface-hover/50 text-slate-300 hover:text-slate-100',
+                    )}
+                  >
+                    <Icon
+                      size={12}
+                      strokeWidth={isActive ? 2.3 : 2}
+                      className={cn('opacity-90', isActive ? 'opacity-100' : '')}
+                    />
+                    <span className='block min-w-0 truncate leading-none'>{item.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          <div
+            className={cn(
+              'border-surface-border w-full min-w-0 overflow-x-hidden border-t',
+              activePage === Page.map ? 'p-0' : 'p-4 sm:p-6',
+            )}
+          >
+            {activePage === Page.overview && <ProfileStatistics userId={profile.id ?? 0} view='overview' />}
+            {activePage === Page.map && <ProfileStatistics userId={profile.id ?? 0} view='map' />}
+            {activePage === Page.ascents && <ProfileStatistics userId={profile.id ?? 0} view='ascents' />}
+            {activePage === Page.todo && (
+              <ProfileTodo userId={profile.id ?? 0} defaultCenter={meta.defaultCenter} defaultZoom={meta.defaultZoom} />
+            )}
+            {activePage === Page.media && <ProfileMedia userId={profile.id ?? 0} captured={false} />}
+            {activePage === Page.captured && <ProfileMedia userId={profile.id ?? 0} captured={true} />}
+          </div>
+        </Card>
       </div>
     </div>
   );

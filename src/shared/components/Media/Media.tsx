@@ -150,11 +150,15 @@ const Media = ({ pitches, media, orderableMedia, carouselMedia, optProblemId, sh
                 />{' '}
                 {x.idType === 2 && (
                   <div className='absolute inset-0 flex items-center justify-center bg-black/20 transition-colors group-hover:bg-black/40'>
-                    {' '}
-                    <div className='bg-brand type-body flex h-10 w-10 items-center justify-center rounded-full shadow-lg'>
-                      {' '}
-                      <Play size={20} fill='currentColor' />{' '}
-                    </div>{' '}
+                    <div className='bg-brand relative flex h-10 w-10 items-center justify-center rounded-full border-2 border-slate-950/90 shadow-[0_12px_28px_-12px_rgba(0,0,0,0.8)] transition-transform duration-300 group-hover:scale-105'>
+                      <span className='pointer-events-none absolute inset-[3px] rounded-full border border-white/35 opacity-70' />
+                      <Play
+                        size={18}
+                        fill='currentColor'
+                        className='ml-0.5'
+                        style={{ color: '#ffffff', stroke: '#0b0f14', strokeWidth: 1.6 }}
+                      />
+                    </div>
                   </div>
                 )}{' '}
               </>

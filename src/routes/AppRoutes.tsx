@@ -20,6 +20,7 @@ const ProblemEdit = lazy(() => import('../features/ProblemEdit/ProblemEdit'), 'p
 const ProblemEditMedia = lazy(() => import('../features/ProblemEditMedia/ProblemEditMedia'), 'problem-edit-media');
 const Problems = lazy(() => import('../features/Problems'), 'problems');
 const Profile = lazy(() => import('../features/Profile/Profile'), 'profile');
+const Settings = lazy(() => import('../features/Settings/Settings'), 'settings');
 const Sector = lazy(() => import('../features/Sector/Sector'), 'sector');
 const SectorEdit = lazy(() => import('../features/SectorEdit'), 'sector-edit');
 const Sites = lazy(() => import('../features/Sites/Sites'), 'sites');
@@ -109,6 +110,14 @@ function AppRoutes() {
               />
               <Route path='/ticks/:page' element={<Ticks />} />
               <Route path='/swagger' element={<Swagger />} />
+              <Route
+                path='/settings'
+                element={
+                  <AuthContainer level='logged-in'>
+                    <Settings />
+                  </AuthContainer>
+                }
+              />
               <Route
                 path='/trash'
                 element={
