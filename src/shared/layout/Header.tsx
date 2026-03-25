@@ -101,9 +101,27 @@ const Header = () => {
         />
         {isAccountOpen && (
           <div className='bg-surface-card border-surface-border animate-in fade-in zoom-in-95 absolute top-full right-0 z-70 mt-3 w-56 rounded border py-1 shadow-2xl duration-150'>
-            <div className='px-4 py-1'>
-              <SectionLabel className='text-slate-600'>ADMIN</SectionLabel>
-            </div>
+            <DropdownItem to='/user' icon={User} onClick={() => setIsAccountOpen(false)}>
+              {authenticatedName || 'Profile'}
+            </DropdownItem>
+            <DropdownItem to='/settings' icon={Settings} onClick={() => setIsAccountOpen(false)}>
+              Settings
+            </DropdownItem>
+
+            <button
+              onClick={() => {
+                setIsDownloadingTicks(true);
+                downloadUsersTicks(accessToken).finally(() => setIsDownloadingTicks(false));
+                setIsAccountOpen(false);
+              }}
+              className='flex w-full items-center gap-3 px-4 py-2 text-left text-xs font-semibold text-slate-400 transition-colors hover:bg-white/5 hover:text-slate-200'
+            >
+              {isDownloadingTicks ? <Loader2 size={14} className='animate-spin' /> : <Download size={14} />}
+              Export ascents to Excel
+            </button>
+
+            <div className='my-1 h-px bg-white/5' />
+
             <a
               href='/pdf/20230525_administrator_doc.pdf'
               target='_blank'
@@ -112,6 +130,7 @@ const Header = () => {
             >
               <HelpCircle size={14} /> Help
             </a>
+
             {isSuperAdmin && (
               <>
                 <DropdownItem to='/permissions' icon={Users} onClick={() => setIsAccountOpen(false)}>
@@ -127,26 +146,6 @@ const Header = () => {
             )}
 
             <div className='my-1 h-px bg-white/5' />
-            <div className='px-4 py-1'>
-              <SectionLabel className='text-slate-600'>ACCOUNT</SectionLabel>
-            </div>
-            <DropdownItem to='/user' icon={User} onClick={() => setIsAccountOpen(false)}>
-              {authenticatedName || 'Profile'}
-            </DropdownItem>
-            <DropdownItem to='/settings' icon={Settings} onClick={() => setIsAccountOpen(false)}>
-              Settings
-            </DropdownItem>
-            <button
-              onClick={() => {
-                setIsDownloadingTicks(true);
-                downloadUsersTicks(accessToken).finally(() => setIsDownloadingTicks(false));
-                setIsAccountOpen(false);
-              }}
-              className='flex w-full items-center gap-3 px-4 py-2 text-left text-xs font-semibold text-slate-400 transition-colors hover:bg-white/5 hover:text-slate-200'
-            >
-              {isDownloadingTicks ? <Loader2 size={14} className='animate-spin' /> : <Download size={14} />}
-              Export ascents to Excel
-            </button>
             <button
               onClick={() => logout({ logoutParams: { returnTo: window.origin } })}
               className='flex w-full items-center gap-3 px-4 py-2 text-left text-xs font-semibold text-red-500 transition-colors hover:bg-red-500/10'
