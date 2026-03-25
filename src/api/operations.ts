@@ -18,10 +18,7 @@ export function downloadTocXlsx(accessToken: string | null) {
   return downloadFileWithProgress(accessToken, '/toc/xlsx');
 }
 
-export function deleteMedia(
-  accessToken: string | null,
-  id: number,
-): Promise<Success<'deleteMedia'>> {
+export function deleteMedia(accessToken: string | null, id: number): Promise<Success<'deleteMedia'>> {
   return makeAuthenticatedRequest(accessToken, `/media?id=${id}`, {
     method: 'DELETE',
   });
@@ -44,10 +41,7 @@ export function moveMedia(
   );
 }
 
-export function setMediaAsAvatar(
-  accessToken: string | null,
-  id: number,
-): Promise<Success<'putMediaAvatar'>> {
+export function setMediaAsAvatar(accessToken: string | null, id: number): Promise<Success<'putMediaAvatar'>> {
   return makeAuthenticatedRequest(accessToken, `/media/avatar?id=${id}`, {
     method: 'PUT',
   });
@@ -93,9 +87,7 @@ export function postComment(
       newMedia,
     }),
   );
-  media.forEach(
-    (m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file),
-  );
+  media.forEach((m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file));
 
   return makeAuthenticatedRequest(accessToken, `/comments`, {
     method: 'POST',
@@ -199,9 +191,7 @@ export function postProblem(
       descent,
     }),
   );
-  media.forEach(
-    (m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file),
-  );
+  media.forEach((m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file));
   return makeAuthenticatedRequest(accessToken, `/problems`, {
     method: 'POST',
     body: formData,
@@ -236,9 +226,7 @@ export function postProblemMedia(
     };
   });
   formData.append('json', JSON.stringify({ id, newMedia }));
-  media.forEach(
-    (m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file),
-  );
+  media.forEach((m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file));
   return makeAuthenticatedRequest(accessToken, `/problems/media`, {
     method: 'POST',
     body: formData,
@@ -347,9 +335,7 @@ export function postSector(
       problemOrder,
     }),
   );
-  media.forEach(
-    (m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file),
-  );
+  media.forEach((m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file));
   return makeAuthenticatedRequest(accessToken, `/sectors`, {
     method: 'POST',
     body: formData,
@@ -419,16 +405,8 @@ export function putMediaInfo(
   });
 }
 
-export function putMediaJpegRotate(
-  accessToken: string | null,
-  idMedia: number,
-  degrees: number,
-): Promise<unknown> {
-  return makeAuthenticatedRequest(
-    accessToken,
-    `/media/jpeg/rotate?idMedia=${idMedia}&degrees=${degrees}`,
-    {
-      method: 'PUT',
-    },
-  );
+export function putMediaJpegRotate(accessToken: string | null, idMedia: number, degrees: number): Promise<unknown> {
+  return makeAuthenticatedRequest(accessToken, `/media/jpeg/rotate?idMedia=${idMedia}&degrees=${degrees}`, {
+    method: 'PUT',
+  });
 }

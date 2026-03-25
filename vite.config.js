@@ -56,11 +56,7 @@ export default defineConfig(({ mode }) => {
               if (id.includes('date-fns') || id.includes('react-datepicker')) return 'vendor-date';
               if (id.includes('@auth0')) return 'vendor-auth';
               if (id.includes('@sentry')) return 'vendor-sentry';
-              if (
-                id.includes('react') ||
-                id.includes('react-dom') ||
-                id.includes('react-router-dom')
-              ) {
+              if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
                 return 'vendor-react-core';
               }
               return 'vendor-utils';

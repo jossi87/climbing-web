@@ -4,7 +4,7 @@ import { BrowserRouter, useNavigate } from 'react-router-dom';
 import { Auth0Provider } from '@auth0/auth0-react';
 import App from './App';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { DataReloader } from './components/DataReloader';
+import { DataReloader } from './shared/providers/DataReloader';
 import { init, browserTracingIntegration, ErrorBoundary } from '@sentry/react';
 import { type ReactNode, lazy, Suspense } from 'react';
 
@@ -25,31 +25,22 @@ setTimeout(() => {
   });
 }, 100);
 
-function ErrorFallback({
-  error,
-  resetError,
-}: {
-  error: unknown;
-  componentStack: string;
-  resetError: () => void;
-}) {
+function ErrorFallback({ error, resetError }: { error: unknown; componentStack: string; resetError: () => void }) {
   return (
     <div
       role='alert'
-      className='min-h-screen bg-surface-dark text-slate-400 p-6 flex flex-col items-center justify-center font-sans'
+      className='bg-surface-dark flex min-h-screen flex-col items-center justify-center p-6 font-sans text-slate-300'
     >
-      <div className='max-w-2xl w-full bg-surface-card border border-surface-border rounded-xl p-8 shadow-2xl'>
-        <h1 className='text-2xl font-bold text-slate-100 mb-2'>Something went wrong</h1>
-        <p className='text-sm text-slate-500 mb-6'>
-          The application encountered an unexpected error.
-        </p>
-        <div className='space-y-4 text-[11px] font-mono bg-surface-dark p-4 rounded-lg border border-surface-border overflow-auto max-h-64'>
-          <div className='text-brand font-bold uppercase tracking-wider'>Error Log</div>
-          <div className='text-slate-300 whitespace-pre-wrap'>{`${error}`}</div>
+      <div className='bg-surface-card border-surface-border w-full max-w-2xl rounded-xl border p-8 shadow-2xl'>
+        <h1 className='mb-2 text-2xl font-semibold text-slate-100'>Something went wrong</h1>
+        <p className='mb-6 text-sm text-slate-400'>The application encountered an unexpected error.</p>
+        <div className='bg-surface-dark border-surface-border max-h-64 space-y-4 overflow-auto rounded-lg border p-4 font-mono text-[11px]'>
+          <div className='text-brand font-semibold tracking-wide uppercase'>Error Log</div>
+          <div className='whitespace-pre-wrap text-slate-300'>{`${error}`}</div>
         </div>
         <button
           onClick={resetError}
-          className='mt-8 px-6 py-2 bg-brand hover:brightness-110 text-surface-dark font-black uppercase text-[11px] tracking-widest rounded-md transition-all active:scale-95'
+          className='bg-brand text-surface-dark mt-8 rounded-md px-6 py-2 text-[11px] font-semibold tracking-wide uppercase transition hover:brightness-110 active:scale-95'
         >
           Try again
         </button>

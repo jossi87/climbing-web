@@ -1,13 +1,9 @@
 import type { ReactNode } from 'react';
 import type { components } from '../@types/buldreinfo/swagger';
-import { Redirecting } from '../components/common/Redirecting';
+import { Redirecting } from '../shared/components/Redirecting';
 
 const isRedirect = (v: unknown): v is components['schemas']['Redirect'] => {
-  return (
-    !!v &&
-    typeof v === 'object' &&
-    typeof (v as components['schemas']['Redirect']).redirectUrl === 'string'
-  );
+  return !!v && typeof v === 'object' && typeof (v as components['schemas']['Redirect']).redirectUrl === 'string';
 };
 
 export const useRedirect = (data: unknown): ReactNode | null => {

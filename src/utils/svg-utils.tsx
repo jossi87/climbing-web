@@ -74,15 +74,7 @@ function Anchor({ strokeWidth, r, x, y, bolted, stroke }: AnchorProps) {
   return (
     <g opacity={0.9}>
       {bolted ? (
-        <circle
-          strokeLinecap='round'
-          cx={x}
-          cy={y}
-          r={r}
-          fill='none'
-          strokeWidth={strokeWidth}
-          stroke={stroke}
-        />
+        <circle strokeLinecap='round' cx={x} cy={y} r={r} fill='none' strokeWidth={strokeWidth} stroke={stroke} />
       ) : (
         <>
           <line

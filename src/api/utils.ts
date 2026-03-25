@@ -1,6 +1,6 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { useState, useEffect } from 'react';
-import { DATA_MUTATION_EVENT } from '../components/DataReloader';
+import { DATA_MUTATION_EVENT } from '../shared/providers/DataReloader';
 import type { FetchOptions } from './types';
 import type { MediaRegion } from '../utils/svg-scaler';
 
@@ -55,15 +55,11 @@ export function getMediaFileUrl(
   return getUrl(url);
 }
 
-export function getMediaFileUrlSrcSet(
-  id: number,
-  versionStamp: number,
-  originalWidth: number,
-): string {
+export function getMediaFileUrlSrcSet(id: number, versionStamp: number, originalWidth: number): string {
   const SIZES = [300, 400, 480, 600, 800, 1280, 1920, 2560, 3840, 5120];
-  const finalSizes = Array.from(
-    new Set([...SIZES.filter((s) => s <= originalWidth), originalWidth]),
-  ).sort((a, b) => a - b);
+  const finalSizes = Array.from(new Set([...SIZES.filter((s) => s <= originalWidth), originalWidth])).sort(
+    (a, b) => a - b,
+  );
 
   return finalSizes
     .map((size) => `${getMediaFileUrl(id, versionStamp, false, { targetWidth: size })} ${size}w`)
@@ -96,11 +92,7 @@ export function convertFromStringToDate(yyyy_MM_dd: string): Date | null {
 
 const ABSOLUTE_PATTERN = /^https?:\/\//;
 
-export function makeAuthenticatedRequest(
-  accessToken: string | null,
-  incomingUrl: string,
-  extraOptions?: FetchOptions,
-) {
+export function makeAuthenticatedRequest(accessToken: string | null, incomingUrl: string, extraOptions?: FetchOptions) {
   const url = ABSOLUTE_PATTERN.test(incomingUrl)
     ? // If we already have an absolute URL (eg: https://...), then we don't
       // need to do anything.

@@ -2,13 +2,12 @@
 
 @theme {
   --color-brand: #059669;
-  --color-surface-dark: #08090a;
-  --color-surface-nav: #0d1117;
-  --color-surface-card: #121519;
-  --color-surface-hover: #1c2128;
-  --color-surface-border: #2d333b;
+  --color-surface-dark: #0b0e10;
+  --color-surface-nav: #101720;
+  --color-surface-card: #141b22;
+  --color-surface-hover: #1f2733;
+  --color-surface-border: #3a424b;
   --color-white: #e2e8f0;
-  --color-facebook: #1877f2;
   --shadow-brand: 0 0 15px rgba(5, 150, 105, 0.2);
   --spacing-container: 1400px;
   --spacing-thumbnail-w: 85px;
@@ -19,13 +18,17 @@
 
 @layer base {
   html {
-    @apply text-slate-400 font-sans antialiased selection:bg-brand/30;
+    @apply selection:bg-brand/30 font-sans text-slate-300 antialiased;
     font-size: 14px;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.005em;
     font-display: swap;
   }
   body {
-    @apply bg-surface-dark leading-relaxed overflow-x-hidden;
+    @apply bg-surface-dark overflow-x-hidden leading-relaxed;
+    background-image:
+      radial-gradient(1000px circle at 10% 0%, rgba(5, 150, 105, 0.16), transparent 45%),
+      radial-gradient(900px circle at 90% 20%, rgba(59, 130, 246, 0.1), transparent 50%);
+    background-attachment: fixed;
   }
   h1,
   h2,
@@ -35,7 +38,7 @@
   h6,
   b,
   strong {
-    @apply text-slate-200 font-semibold;
+    @apply font-semibold text-slate-200;
   }
   input,
   button,
@@ -47,13 +50,33 @@
     @apply cursor-pointer disabled:cursor-not-allowed disabled:opacity-50;
   }
   :focus-visible {
-    @apply ring-1 ring-brand border-brand/50;
+    @apply ring-brand border-brand/50 ring-1;
   }
 }
 
 @layer components {
+  .type-h1 {
+    @apply text-2xl font-semibold tracking-tight text-slate-100;
+  }
+
+  .type-h2 {
+    @apply text-lg font-semibold tracking-tight text-slate-100;
+  }
+
+  .type-body {
+    @apply text-sm leading-relaxed font-normal text-slate-200 sm:text-base;
+  }
+
+  .type-small {
+    @apply text-sm leading-snug font-medium text-slate-300;
+  }
+
+  .type-label {
+    @apply text-[11px] font-semibold tracking-[0.16em] text-slate-400 uppercase;
+  }
+
   .app-card {
-    @apply bg-surface-card border-surface-border -mx-4 sm:mx-0 sm:border sm:rounded-xl overflow-hidden shadow-sm;
+    @apply bg-surface-card border-surface-border -mx-4 overflow-hidden shadow-sm sm:mx-0 sm:rounded-xl sm:border;
     border-top-width: 1px;
     border-bottom-width: 1px;
     border-left-width: 0;
@@ -69,20 +92,20 @@
   }
 
   .search-input {
-    @apply bg-surface-dark border border-surface-border rounded-lg px-4 py-2 transition-all duration-200 text-slate-200 placeholder:text-slate-600;
+    @apply bg-surface-dark/70 border-surface-border h-10 rounded-lg border px-4 text-sm font-medium text-slate-100 backdrop-blur-sm transition-colors duration-200 placeholder:text-slate-500;
   }
   .search-input:focus {
-    @apply border-brand ring-1 ring-brand/30 bg-surface-nav;
+    @apply border-brand/70 ring-brand/20 bg-surface-nav/80 ring-2 backdrop-blur-sm;
   }
 
   .btn-glass {
-    @apply px-2 sm:px-3 py-1.5 rounded-md border text-[10px] font-bold uppercase tracking-widest transition-all duration-200 flex items-center gap-1 sm:gap-2 h-7 active:scale-95;
+    @apply flex h-8 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[11px] font-semibold tracking-wide uppercase transition-colors duration-200 active:scale-95 sm:px-3;
     background-color: color-mix(in srgb, var(--color-surface-nav), transparent 50%);
     border-color: var(--color-surface-border);
-    color: var(--color-slate-400);
+    color: rgb(148 163 184);
   }
   .btn-glass:hover {
-    @apply border-slate-400 text-slate-200 bg-surface-nav;
+    @apply bg-surface-nav border-slate-400 text-slate-200;
   }
   .btn-glass-active {
     @apply bg-surface-hover border-slate-400/50 text-slate-200 shadow-sm;

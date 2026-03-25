@@ -1,16 +1,16 @@
-import AppRoutes from './components/AppRoutes';
-import { MetaProvider } from './components/common/meta';
-import Header from './components/Header';
-import Footer from './components/Footer';
+import AppRoutes from './routes/AppRoutes';
+import { MetaProvider } from './shared/components/Meta';
+import Header from './shared/layout/Header';
+import Footer from './shared/layout/Footer';
 import { Suspense } from 'react';
-import { Loading } from './components/ui/StatusWidgets';
+import { Loading } from './shared/ui/StatusWidgets';
 
 const App = () => {
   return (
     <MetaProvider>
-      <div className='flex flex-col min-h-screen bg-surface-dark text-slate-400 antialiased font-sans'>
+      <div className='bg-surface-dark flex min-h-screen flex-col font-sans text-slate-300 antialiased'>
         <Header />
-        <main className='grow w-full max-w-container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10'>
+        <main className='max-w-container mx-auto w-full grow px-4 py-6 sm:px-6 sm:py-8 lg:px-8'>
           <Suspense fallback={<Loading />}>
             <AppRoutes />
           </Suspense>
