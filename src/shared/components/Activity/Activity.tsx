@@ -37,6 +37,7 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
   const [activityTypeFa, setActivityTypeFa] = useLocalStorage('activity_type_fa', true);
   const [activityTypeComments, setActivityTypeComments] = useLocalStorage('activity_type_comments', true);
   const [activityTypeMedia, setActivityTypeMedia] = useLocalStorage('activity_type_media', true);
+  const normalizedLowerGradeText = lowerGradeText === 'ALL' ? 'All' : lowerGradeText;
 
   const meta = useMeta();
   const {
@@ -79,7 +80,7 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
             <button onClick={() => setIsFilterOpen(!isFilterOpen)} className='btn-glass btn-glass-active'>
               <Filter size={12} />
               <span className='text-[10px] font-semibold normal-case opacity-80'>
-                {lowerGradeText === 'n/a' ? 'ALL' : lowerGradeText}
+                {normalizedLowerGradeText === 'n/a' ? 'All' : normalizedLowerGradeText}
               </span>
               <ChevronDown size={10} className={cn('transition-transform', isFilterOpen && 'rotate-180')} />
             </button>
@@ -109,7 +110,7 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                         setLowerGradeId(g.id);
                         setLowerGradeText(
                           g.id === 0
-                            ? 'ALL'
+                            ? 'All'
                             : g.grade?.includes('(')
                               ? g.grade.split('(')[1].replace(')', '')
                               : (g.grade ?? ''),
@@ -118,7 +119,7 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                         setTimeout(refetch, 10);
                       }}
                     >
-                      {g.id === 0 ? 'ALL' : g.grade} {g.id === lowerGradeId && <Check size={14} />}
+                      {g.id === 0 ? 'All' : g.grade} {g.id === lowerGradeId && <Check size={14} />}
                     </button>
                   ))}
               </div>

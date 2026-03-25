@@ -7,9 +7,9 @@ export const designContract = {
     label: 'type-label',
   },
   layout: {
-    pageSection: 'w-full pb-4 sm:pb-6',
+    pageSection: 'w-full pb-0',
     frontpageGrid: 'grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-12 lg:gap-8',
-    asideStack: 'space-y-4 self-start sm:space-y-6 lg:sticky lg:top-20',
+    asideStack: 'w-full space-y-4 self-start sm:space-y-6 lg:sticky lg:top-20',
     toolbar: 'mb-4 flex flex-col items-center justify-between gap-3 px-4 sm:flex-row sm:px-0',
     toolbarActions: 'flex w-full flex-wrap items-center justify-center gap-1.5 sm:w-auto sm:justify-end',
     pageShell: 'max-w-container mx-auto space-y-6 px-4 py-6 text-left',

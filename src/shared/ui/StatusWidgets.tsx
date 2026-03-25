@@ -1,17 +1,20 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { Lock, LogIn, AlertTriangle, RefreshCw } from 'lucide-react';
 import { designContract } from '../../design/contract';
+import { Card } from './Card';
 
 export const Loading = () => (
-  <div className='animate-in fade-in bg-surface-dark/20 border-surface-border/50 flex min-h-100 w-full flex-col items-center justify-center rounded-xl border duration-500'>
-    <div className='relative'>
-      <RefreshCw className='text-brand h-10 w-10 animate-spin' />
+  <Card flush className='overflow-hidden border-0 text-left sm:border'>
+    <div className='flex min-h-[160px] w-full min-w-0 flex-1 flex-col items-center justify-center gap-4 sm:min-h-[220px]'>
+      <div className='bg-surface-nav border-surface-border/60 rounded-full border p-3'>
+        <RefreshCw className='text-brand h-7 w-7 animate-spin' />
+      </div>
+      <div className='text-center'>
+        <h3 className={designContract.typography.label}>Loading</h3>
+        <p className='type-small mt-1 opacity-70'>Fetching data...</p>
+      </div>
     </div>
-    <div className='mt-6 text-center'>
-      <h3 className={designContract.typography.label}>Fetching Data</h3>
-      <p className='mt-1 text-[10px] font-medium text-slate-600 italic'>Just a moment...</p>
-    </div>
-  </div>
+  </Card>
 );
 
 export const NotLoggedIn = () => {

@@ -71,7 +71,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className='bg-surface-nav border-surface-border mt-4 w-full border-t py-10 sm:mt-8 sm:py-16'>
+    <footer className='bg-surface-nav border-surface-border mt-0 w-full border-t py-10 sm:py-16'>
       <div className='max-w-container mx-auto px-6'>
         <div className='mb-10 grid grid-cols-2 gap-6 sm:mb-16 sm:gap-8 lg:grid-cols-4'>
           <div className='space-y-3 sm:space-y-4'>

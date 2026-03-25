@@ -9,7 +9,6 @@ export * from './Indicators';
 export * from './List';
 export * from './NavItem';
 export * from './PageHeader';
-export * from './PriceDisplay';
 export * from './ResponsiveGrid';
 export * from './SearchInput';
 export * from './Section';

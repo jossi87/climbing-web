@@ -3,7 +3,6 @@ import { useData } from '../../api';
 import { Info, Users, Pencil, Book, Code, Globe, Heart, Camera } from 'lucide-react';
 import type { Success } from '../../@types/buldreinfo';
 import {
-  PageHeader,
   Card,
   Badge,
   SectionHeader,
@@ -12,7 +11,6 @@ import {
   UserCard,
   Timeline,
   TimelineItem,
-  PriceDisplay,
   ResponsiveGrid,
   TextLink,
 } from '../../shared/ui';
@@ -21,22 +19,22 @@ const About = () => {
   const meta = useMeta();
   const { data } = useData<Success<'getAdministrators'>>(`/administrators`);
 
+  const adminCount = data?.length;
+  const adminSubheader = adminCount !== undefined ? `${adminCount} Regional Admins` : 'Regional Admins';
+
   return (
     <>
       <title>{`About | ${meta?.title}`}</title>
       <meta name='description' content='History, information and administrators' />
 
-      <PageHeader
-        title='About'
-        icon={Info}
-        subheader='A nonprofit website created by climbers, for climbers'
-        stats={data ? [{ label: `${data.length} Regional Admins`, highlight: true }] : []}
-      />
-
       <div className='grid grid-cols-1 items-start gap-8 lg:grid-cols-2'>
         <div className='space-y-8'>
           <Card>
-            <SectionHeader title='Statutes' icon={Info} subheader='Regional information solution' />
+            <SectionHeader
+              title='Statutes'
+              icon={Info}
+              subheader='A nonprofit website created by climbers, for climbers'
+            />
             <List>
               <ListItem>
                 The webpage is created and maintained by{' '}
@@ -56,7 +54,9 @@ const About = () => {
                 Contact <TextLink href='mailto:jostein.oygarden@gmail.com'>Jostein</TextLink> if you want to establish
                 your own online guidebook for your region
               </p>
-              <PriceDisplay currency='NOK' amount='250,- NOK' label='The yearly hosting fee (as of 2026) is' />
+              <div className='text-sm text-slate-300'>
+                The yearly hosting fee (as of 2026) is <span className='font-semibold text-slate-200'>250,- NOK</span>
+              </div>
             </div>
           </Card>
 
@@ -144,7 +144,7 @@ const About = () => {
         </Card>
 
         <Card className='lg:col-span-2'>
-          <SectionHeader title='Administrators' icon={Users} subheader='Regional editors' />
+          <SectionHeader title='Administrators' icon={Users} subheader={adminSubheader} />
           <ResponsiveGrid>
             {data?.map((u) => (
               <UserCard key={u.userId} user={u} />

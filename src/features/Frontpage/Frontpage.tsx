@@ -32,7 +32,7 @@ const Frontpage = () => {
       <title>{meta?.title}</title>
       {numMedia && numProblems && numTicks && <meta name='description' content={description} />}
 
-      <div className={`${designContract.layout.pageSection} -mt-6 sm:mt-0`}>
+      <div className={designContract.layout.pageSection}>
         <div className='lg:hidden'>
           <FrontpageStats
             numMedia={numMedia}
@@ -44,8 +44,10 @@ const Frontpage = () => {
         </div>
 
         <div className={designContract.layout.frontpageGrid}>
-          <aside className='order-1 lg:col-span-4 xl:col-span-3'>
-            <div className={isTallEnough ? designContract.layout.asideStack : 'space-y-4 self-start sm:space-y-6'}>
+          <aside className='order-1 w-full lg:col-span-4 xl:col-span-3'>
+            <div
+              className={isTallEnough ? designContract.layout.asideStack : 'w-full space-y-4 self-start sm:space-y-6'}
+            >
               <div className='hidden lg:block'>
                 <FrontpageStats
                   numMedia={numMedia}

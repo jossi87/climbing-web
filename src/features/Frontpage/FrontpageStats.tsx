@@ -26,25 +26,37 @@ const StatItem = ({ to, icon: Icon, label, value, loading }: StatItemProps) => {
       >
         <Icon size={16} strokeWidth={2} />
       </div>
-      <div className='flex min-w-0 flex-col items-center'>
+      <div className='flex min-w-0 flex-col items-center justify-center'>
         {loading ? (
           <>
-            <div className='bg-surface-hover mb-1 h-3 w-10 animate-pulse rounded sm:w-12' />
-            <SectionLabel className='text-slate-400'>{label}</SectionLabel>
+            <div className='mb-1 flex h-6 items-center justify-center'>
+              <div className='bg-surface-hover h-3 w-10 animate-pulse rounded sm:w-12' />
+            </div>
+            <div className='flex h-3 items-center justify-center'>
+              <SectionLabel className='!text-[9px] !tracking-[0.06em] text-slate-400 sm:!text-[10px] sm:!tracking-[0.1em]'>
+                {label}
+              </SectionLabel>
+            </div>
           </>
         ) : value !== undefined && value !== '' ? (
           <>
-            <span className={cn(designContract.typography.subtitle, 'leading-none tabular-nums transition-opacity')}>
-              {value}
-            </span>
-            <SectionLabel className='mt-0.5 !text-[9px] !tracking-[0.06em] text-slate-300 transition-colors group-hover:text-slate-200 sm:mt-1 sm:!text-[10px] sm:!tracking-[0.1em]'>
-              {label}
-            </SectionLabel>
+            <div className='mb-1 flex h-6 items-center justify-center'>
+              <span className={cn(designContract.typography.subtitle, 'leading-none tabular-nums transition-opacity')}>
+                {value}
+              </span>
+            </div>
+            <div className='flex h-3 items-center justify-center'>
+              <SectionLabel className='!text-[9px] !tracking-[0.06em] text-slate-300 transition-colors group-hover:text-slate-200 sm:!text-[10px] sm:!tracking-[0.1em]'>
+                {label}
+              </SectionLabel>
+            </div>
           </>
         ) : (
-          <SectionLabel className='group-hover:text-brand !text-[9px] !tracking-[0.06em] text-slate-300 transition-colors sm:!text-[10px] sm:!tracking-[0.1em]'>
-            {label}
-          </SectionLabel>
+          <div className='flex h-10 items-center justify-center'>
+            <SectionLabel className='group-hover:text-brand !text-[9px] !tracking-[0.06em] text-slate-300 transition-colors sm:!text-[10px] sm:!tracking-[0.1em]'>
+              {label}
+            </SectionLabel>
+          </div>
         )}
       </div>
     </div>

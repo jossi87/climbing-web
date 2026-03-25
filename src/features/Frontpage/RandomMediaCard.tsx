@@ -7,9 +7,11 @@ import { designContract } from '../../design/contract';
 type RandomMedia = components['schemas']['FrontpageRandomMedia'];
 
 export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) => {
+  const cardShellClass = 'group overflow-hidden border-0 text-left sm:border';
+
   if (!randomMedia)
     return (
-      <Card flush className='w-full overflow-hidden border-0 sm:border'>
+      <Card flush className={cardShellClass}>
         <div className='bg-surface-nav w-full animate-pulse' style={{ aspectRatio: '275 / 250' }} />
         <div className='hidden p-4 sm:block'>
           <div className='mb-4 space-y-2'>
@@ -28,9 +30,11 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
 
   const taggedUsers = randomMedia.tagged || [];
   const photographer = randomMedia.photographer;
+  const metaTextClass = 'text-sm text-slate-300';
+  const metaLinkClass = 'hover:text-brand transition-colors';
 
   return (
-    <Card flush className='group overflow-hidden border-0 text-left sm:border'>
+    <Card flush className={cardShellClass}>
       <div className='bg-surface-nav relative overflow-hidden' style={{ aspectRatio: '275 / 250' }}>
         <Link to={`/problem/${randomMedia.idProblem}`} className='block h-full w-full'>
           <img
@@ -71,9 +75,9 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
                     size='mini'
                     max={3}
                   />
-                  <span className='type-small'>
+                  <span className={metaTextClass}>
                     {taggedUsers.length === 1 ? (
-                      <Link to={`/user/${taggedUsers[0].id}`} className='hover:text-brand transition-colors'>
+                      <Link to={`/user/${taggedUsers[0].id}`} className={metaLinkClass}>
                         {taggedUsers[0].name}
                       </Link>
                     ) : (
@@ -91,9 +95,9 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
                     size='mini'
                     className='h-5! w-5! ring-1 ring-white/20'
                   />
-                  <div className='flex items-center gap-1.5'>
-                    <SectionLabel className='opacity-80'>BY</SectionLabel>
-                    <Link to={`/user/${photographer.id}`} className='hover:text-brand tracking-tight transition-colors'>
+                  <div className={metaTextClass}>
+                    <span className='mr-1 text-slate-400'>By</span>
+                    <Link to={`/user/${photographer.id}`} className={metaLinkClass}>
                       {photographer.name}
                     </Link>
                   </div>
@@ -124,12 +128,12 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
         </div>
 
         {(taggedUsers.length > 0 || photographer) && (
-          <div className='border-surface-border/50 flex flex-col gap-y-3 border-t pt-4'>
+          <div className='border-surface-border/50 flex flex-wrap items-center gap-x-4 gap-y-3 border-t pt-4'>
             {taggedUsers.length > 0 && (
               <div className='flex items-center gap-3'>
                 <AvatarGroup items={taggedUsers.map((u) => ({ ...u, mediaId: u.mediaId ?? 0 }))} size='mini' max={3} />
-                <div className='type-small'>
-                  <Link to={`/user/${taggedUsers[0].id}`} className='hover:text-brand transition-colors'>
+                <div className={metaTextClass}>
+                  <Link to={`/user/${taggedUsers[0].id}`} className={metaLinkClass}>
                     {taggedUsers[0].name}
                   </Link>
                   {taggedUsers.length > 1 && (
@@ -146,9 +150,9 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
                   mediaVersionStamp={photographer.mediaVersionStamp}
                   size='mini'
                 />
-                <div className='flex items-center gap-1 text-xs font-semibold tracking-tight text-slate-300'>
-                  <SectionLabel className='text-slate-400'>BY</SectionLabel>
-                  <Link to={`/user/${photographer.id}`} className='hover:text-brand tracking-tight transition-colors'>
+                <div className={metaTextClass}>
+                  <span className='mr-1 text-slate-500'>By</span>
+                  <Link to={`/user/${photographer.id}`} className={metaLinkClass}>
                     {photographer.name}
                   </Link>
                 </div>
