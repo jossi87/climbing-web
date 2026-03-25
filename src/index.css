@@ -1,14 +1,14 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-brand: #059669;
-  --color-surface-dark: #0b0e10;
-  --color-surface-nav: #101720;
-  --color-surface-card: #141b22;
-  --color-surface-hover: #1f2733;
-  --color-surface-border: #3a424b;
+  --color-brand: #c6a15b;
+  --color-surface-dark: #050507;
+  --color-surface-nav: #08090b;
+  --color-surface-card: #0c0d10;
+  --color-surface-hover: #111318;
+  --color-surface-border: #191c23;
   --color-white: #e2e8f0;
-  --shadow-brand: 0 0 15px rgba(5, 150, 105, 0.2);
+  --shadow-brand: 0 0 8px rgba(198, 161, 91, 0.12);
   --spacing-container: 1400px;
   --spacing-thumbnail-w: 85px;
   --spacing-thumbnail-h: 80px;
@@ -26,8 +26,8 @@
   body {
     @apply bg-surface-dark overflow-x-hidden leading-relaxed;
     background-image:
-      radial-gradient(1000px circle at 10% 0%, rgba(5, 150, 105, 0.16), transparent 45%),
-      radial-gradient(900px circle at 90% 20%, rgba(59, 130, 246, 0.1), transparent 50%);
+      radial-gradient(1000px circle at 10% 0%, rgba(198, 161, 91, 0.025), transparent 45%),
+      radial-gradient(900px circle at 90% 20%, rgba(120, 86, 45, 0.006), transparent 52%);
     background-attachment: fixed;
   }
   h1,
@@ -50,7 +50,7 @@
     @apply cursor-pointer disabled:cursor-not-allowed disabled:opacity-50;
   }
   :focus-visible {
-    @apply ring-brand border-brand/50 ring-1;
+    @apply ring-brand/15 border-brand/40 ring-1;
   }
 }
 
@@ -72,7 +72,7 @@
   }
 
   .type-label {
-    @apply text-[11px] font-semibold tracking-[0.16em] text-slate-400 uppercase;
+    @apply text-[11px] font-semibold tracking-[0.12em] text-slate-400 uppercase;
   }
 
   .app-card {
@@ -92,27 +92,27 @@
   }
 
   .search-input {
-    @apply bg-surface-dark/70 border-surface-border h-10 rounded-lg border px-4 text-sm font-medium text-slate-100 backdrop-blur-sm transition-colors duration-200 placeholder:text-slate-500;
+    @apply bg-surface-dark/70 border-surface-border h-10 rounded-lg border px-4 text-sm font-medium text-slate-100 backdrop-blur-sm transition-colors duration-200 placeholder:text-[10px] placeholder:font-semibold placeholder:tracking-[0.08em] placeholder:text-slate-400 placeholder:normal-case;
   }
   .search-input:focus {
-    @apply border-brand/70 ring-brand/20 bg-surface-nav/80 ring-2 backdrop-blur-sm;
+    @apply border-brand/55 ring-brand/15 bg-surface-nav/80 ring-2 backdrop-blur-sm;
   }
 
   .btn-glass {
     @apply flex h-8 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[11px] font-semibold tracking-wide uppercase transition-colors duration-200 active:scale-95 sm:px-3;
     background-color: color-mix(in srgb, var(--color-surface-nav), transparent 50%);
     border-color: var(--color-surface-border);
-    color: rgb(148 163 184);
+    color: rgb(168 177 193);
   }
   .btn-glass:hover {
-    @apply bg-surface-nav border-slate-400 text-slate-200;
+    @apply bg-surface-nav border-slate-500/50 text-slate-200;
   }
   .btn-glass-active {
-    @apply bg-surface-hover border-slate-400/50 text-slate-200 shadow-sm;
+    @apply bg-surface-hover border-slate-500/35 text-slate-200 shadow-sm;
   }
   .btn-glass-active svg {
     @apply text-brand;
-    filter: drop-shadow(0 0 3px rgba(5, 150, 105, 0.4));
+    filter: drop-shadow(0 0 2px rgba(198, 161, 91, 0.16));
   }
 
   .animate-in {

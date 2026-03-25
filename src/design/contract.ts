@@ -35,4 +35,18 @@ export const designContract = {
     navPill:
       'flex flex-col items-center gap-2 rounded-lg px-5 py-3 text-[10px] font-semibold tracking-[0.16em] uppercase transition-colors sm:flex-row',
   },
+  activityColors: {
+    filter: {
+      fa: 'text-sky-300/85',
+      ticks: 'text-emerald-300/85',
+      media: 'text-fuchsia-300/90',
+      comments: 'text-red-300/85',
+    },
+    status: {
+      fa: 'text-sky-300/80',
+      ticks: 'text-emerald-300/80',
+      media: 'text-fuchsia-300/90',
+      comments: 'text-red-300/85',
+    },
+  },
 } as const;

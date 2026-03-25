@@ -15,43 +15,30 @@ type StatItemProps = {
 };
 
 const StatItem = ({ to, icon: Icon, label, value, loading }: StatItemProps) => {
-  const isDonate = label === 'Donate';
-
   const content = (
-    <div
-      className={cn(
-        'bg-surface-card group relative flex h-full w-full flex-col items-center justify-center p-4 text-center transition-colors hover:bg-white/3',
-        isDonate && 'hover:bg-brand/5',
-      )}
-    >
+    <div className='bg-surface-card/90 group hover:bg-brand/10 hover:border-brand/25 relative flex h-full w-full flex-col items-center justify-center border border-transparent p-4 text-center transition-all duration-300'>
       <div
-        className={cn(
-          'mb-2 text-slate-500 transition-colors',
-          isDonate ? 'group-hover:text-brand' : 'group-hover:text-brand/80',
-          loading && 'animate-pulse',
-        )}
+        className={cn('mb-2 text-slate-400 transition-colors', 'group-hover:text-brand', loading && 'animate-pulse')}
       >
-        <Icon size={isDonate ? 16 : 18} strokeWidth={isDonate ? 2.5 : 2} />
+        <Icon size={18} strokeWidth={2} />
       </div>
       <div className='flex min-w-0 flex-col items-center'>
         {loading ? (
           <>
             <div className='bg-surface-hover mb-1 h-3 w-10 animate-pulse rounded sm:w-12' />
-            <SectionLabel className='text-slate-600'>{label}</SectionLabel>
+            <SectionLabel className='text-slate-400'>{label}</SectionLabel>
           </>
         ) : value !== undefined && value !== '' ? (
           <>
-            <span className={cn(designContract.typography.subtitle, 'leading-none tabular-nums transition-colors')}>
+            <span className={cn(designContract.typography.subtitle, 'leading-none tabular-nums transition-opacity')}>
               {value}
             </span>
-            <SectionLabel className='mt-1 transition-colors group-hover:text-slate-400'>{label}</SectionLabel>
+            <SectionLabel className='mt-1 text-slate-300 transition-colors group-hover:text-slate-200'>
+              {label}
+            </SectionLabel>
           </>
         ) : (
-          <SectionLabel
-            className={cn('transition-colors', isDonate ? 'group-hover:text-brand text-slate-400' : 'text-slate-500')}
-          >
-            {label}
-          </SectionLabel>
+          <SectionLabel className='group-hover:text-brand text-slate-300 transition-colors'>{label}</SectionLabel>
         )}
       </div>
     </div>

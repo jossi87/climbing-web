@@ -32,9 +32,11 @@ export const PageHeader = ({ title, icon: Icon, subheader, stats }: Props) => (
             {stats?.map((stat, i) => (
               <div key={i} className='flex items-center gap-2'>
                 <span
-                  className={`text-[10px] font-bold tracking-widest uppercase ${
-                    stat.highlight ? 'text-brand' : 'text-slate-500'
-                  }`}
+                  className={cn(
+                    designContract.typography.label,
+                    'transition-colors',
+                    stat.highlight ? 'text-brand' : 'text-slate-500',
+                  )}
                 >
                   {stat.label}
                 </span>

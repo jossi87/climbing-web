@@ -8,6 +8,7 @@ import { useActivity } from '../../../api';
 import { Avatar, AvatarGroup, Card, SectionLabel } from '../../ui';
 import { Stars } from '../Widgets/Widgets';
 import { cn } from '../../../lib/utils';
+import { designContract } from '../../../design/contract';
 import { ProblemLink } from './components/ProblemLink';
 import { LazyMedia } from './components/LazyMedia';
 import type { components } from '../../../@types/buldreinfo/swagger';
@@ -71,15 +72,13 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
   return (
     <div className='w-full'>
       <div className='mb-4 flex flex-col items-center justify-between gap-4 px-4 sm:flex-row sm:px-0'>
-        <SectionLabel className='hidden text-[10px] font-bold tracking-widest text-slate-400 uppercase sm:block'>
-          Latest Activity
-        </SectionLabel>
+        <SectionLabel className='hidden text-slate-400 opacity-70 sm:block'>Latest Activity</SectionLabel>
 
         <div className='flex w-full flex-wrap items-center justify-center gap-1.5 sm:w-auto sm:justify-end'>
           <div className='relative' ref={filterRef}>
             <button onClick={() => setIsFilterOpen(!isFilterOpen)} className='btn-glass btn-glass-active'>
               <Filter size={12} />
-              <span className='text-[10px] font-bold normal-case'>
+              <span className='text-[10px] font-semibold normal-case opacity-80'>
                 {lowerGradeText === 'n/a' ? 'ALL' : lowerGradeText}
               </span>
               <ChevronDown size={10} className={cn('transition-transform', isFilterOpen && 'rotate-180')} />
@@ -103,7 +102,7 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                       className={cn(
                         'flex w-full items-center justify-between px-4 py-2 text-left text-xs transition-colors',
                         g.id === lowerGradeId
-                          ? 'bg-brand/10 text-brand font-bold'
+                          ? 'bg-brand/10 text-brand font-semibold'
                           : 'hover:bg-surface-hover text-slate-400',
                       )}
                       onClick={() => {
@@ -172,7 +171,16 @@ type FilterButtonProps = {
 
 const FilterButton = ({ active, onClick, icon: Icon, label }: FilterButtonProps) => (
   <button onClick={onClick} className={cn('btn-glass', active && 'btn-glass-active')}>
-    <Icon size={12} /> <span className='text-[10px] font-bold uppercase'>{label}</span>
+    <Icon
+      size={12}
+      className={cn(
+        active && label === 'FA' && designContract.activityColors.filter.fa,
+        active && label === 'Ticks' && designContract.activityColors.filter.ticks,
+        active && label === 'Media' && designContract.activityColors.filter.media,
+        active && label === 'Com' && designContract.activityColors.filter.comments,
+      )}
+    />{' '}
+    <span className='text-[10px] font-semibold normal-case opacity-80'>{label}</span>
   </button>
 );
 
@@ -194,10 +202,10 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
         : [{ name: a.name, mediaId: undefined, mediaVersionStamp: undefined }];
 
   const statusIcon = (() => {
-    if (a.users) return <Plus size={8} className='text-brand' />;
-    if (a.message) return <MessageSquare size={8} className='text-blue-400' />;
-    if (a.media && !a.name) return <Camera size={8} className='text-emerald-400' />;
-    return <Check size={8} className='text-emerald-400' />;
+    if (a.users) return <Plus size={8} className={designContract.activityColors.status.fa} />;
+    if (a.message) return <MessageSquare size={8} className={designContract.activityColors.status.comments} />;
+    if (a.media && !a.name) return <Camera size={8} className={designContract.activityColors.status.media} />;
+    return <Check size={8} className={designContract.activityColors.status.ticks} />;
   })();
 
   const [numImg, numMov] = (a.media ?? []).reduce(
@@ -213,55 +221,63 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
         </div>
 
         <div className='min-w-0 flex-1'>
-          <div className='text-[14px] leading-relaxed text-slate-400'>
-            <span className='float-right ml-4 pt-0.5 text-[9px] font-bold tracking-tight text-slate-500 uppercase transition-colors select-none group-hover:text-slate-400'>
+          <div className='flex items-start justify-between gap-3'>
+            <div className='text-sm leading-relaxed text-slate-300'>
+              {a.users && a.users.length > 0 && a.repeat === undefined ? (
+                <>
+                  <span className='font-semibold text-slate-200'>New {isBouldering ? 'problem' : 'route'}</span>{' '}
+                  <span>in</span> <ProblemLink a={a} />
+                </>
+              ) : a.message ? (
+                <>
+                  <Link
+                    to={`/user/${a.id}`}
+                    className='hover:text-brand font-semibold text-slate-200 transition-colors'
+                  >
+                    {a.name}
+                  </Link>{' '}
+                  <span>commented on</span> <ProblemLink a={a} />
+                </>
+              ) : (
+                <>
+                  {a.name ? (
+                    <>
+                      <Link
+                        to={`/user/${a.id}`}
+                        className='hover:text-brand font-semibold text-slate-200 transition-colors'
+                      >
+                        {a.name}
+                      </Link>{' '}
+                      <span>{a.repeat ? 'repeated' : 'ticked'}</span>{' '}
+                    </>
+                  ) : numImg > 0 || numMov > 0 ? (
+                    <>
+                      <span className='font-semibold text-slate-200'>
+                        {numImg > 0 && `${numImg} ${numImg === 1 ? 'image' : 'images'}`}
+                        {numImg > 0 && numMov > 0 && ' & '}
+                        {numMov > 0 && `${numMov} ${numMov === 1 ? 'video' : 'videos'}`}
+                      </span>{' '}
+                      <span>on</span>{' '}
+                    </>
+                  ) : null}
+                  <ProblemLink a={a} />
+                </>
+              )}
+            </div>
+
+            <span className='shrink-0 pt-0.5 text-[10px] font-semibold text-slate-400 opacity-70 transition-colors select-none group-hover:text-slate-300'>
               {a.timeAgo}
             </span>
-
-            {a.users && a.users.length > 0 && a.repeat === undefined ? (
-              <>
-                <span className='font-bold text-slate-200'>New {isBouldering ? 'problem' : 'route'}</span>{' '}
-                <span>in</span> <ProblemLink a={a} />
-              </>
-            ) : a.message ? (
-              <>
-                <Link to={`/user/${a.id}`} className='hover:text-brand font-bold text-slate-200 transition-colors'>
-                  {a.name}
-                </Link>{' '}
-                <span>commented on</span> <ProblemLink a={a} />
-              </>
-            ) : (
-              <>
-                {a.name ? (
-                  <>
-                    <Link to={`/user/${a.id}`} className='hover:text-brand font-bold text-slate-200 transition-colors'>
-                      {a.name}
-                    </Link>{' '}
-                    <span>{a.repeat ? 'repeated' : 'ticked'}</span>{' '}
-                  </>
-                ) : numImg > 0 || numMov > 0 ? (
-                  <>
-                    <span className='font-bold text-slate-200'>
-                      {numImg > 0 && `${numImg} ${numImg === 1 ? 'image' : 'images'}`}
-                      {numImg > 0 && numMov > 0 && ' & '}
-                      {numMov > 0 && `${numMov} ${numMov === 1 ? 'video' : 'videos'}`}
-                    </span>{' '}
-                    <span>on</span>{' '}
-                  </>
-                ) : null}
-                <ProblemLink a={a} />
-              </>
-            )}
           </div>
 
           {(a.description || a.message) && (
-            <div className='mt-1 border-l border-white/10 pl-3 text-[12.5px] leading-relaxed text-slate-400 italic'>
+            <div className='mt-1 border-l border-white/10 pl-3 text-xs leading-relaxed text-slate-300'>
               {a.message ? <Linkify>{a.message}</Linkify> : a.description}
             </div>
           )}
 
           {a.stars !== undefined && a.stars !== -1 && (
-            <div className='mt-1 origin-left scale-90 opacity-50 grayscale'>
+            <div className='mt-1 origin-left opacity-70'>
               <Stars numStars={a.stars} includeStarOutlines={true} />
             </div>
           )}
@@ -283,7 +299,7 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
                     size='tiny'
                     className='group-hover/user:ring-brand/50 ring-1 ring-white/10 transition-all'
                   />
-                  <span className='text-[11px] font-bold text-slate-400 transition-colors group-hover/user:text-slate-200'>
+                  <span className='text-[11px] font-medium text-slate-300 transition-colors group-hover/user:text-slate-200'>
                     {u.name}
                   </span>
                 </Link>

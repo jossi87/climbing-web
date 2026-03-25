@@ -70,7 +70,7 @@ const Header = () => {
       to={to}
       onClick={onClick}
       className={cn(
-        'flex items-center gap-3 px-4 py-2 text-xs font-bold text-slate-400 transition-colors hover:bg-white/5 hover:text-slate-200',
+        'flex items-center gap-3 px-4 py-2 text-xs font-semibold text-slate-400 transition-colors hover:bg-white/5 hover:text-slate-200',
         className,
       )}
     >
@@ -97,7 +97,7 @@ const Header = () => {
           <div className='bg-surface-card border-surface-border animate-in fade-in zoom-in-95 absolute top-full right-0 z-70 mt-3 w-56 rounded border py-1 shadow-2xl duration-150'>
             <div className='mb-1 border-b border-white/5 px-4 py-3 text-left'>
               <SectionLabel className='mb-0.5 text-slate-500'>Account</SectionLabel>
-              <div className='truncate text-xs font-bold text-slate-200'>{authenticatedName}</div>
+              <div className='truncate text-xs font-semibold text-slate-200'>{authenticatedName}</div>
             </div>
 
             <DropdownItem to='/user' icon={User} onClick={() => setIsAccountOpen(false)}>
@@ -124,14 +124,14 @@ const Header = () => {
               href='/pdf/20230525_administrator_doc.pdf'
               target='_blank'
               rel='noopener noreferrer'
-              className='flex items-center gap-3 px-4 py-2 text-xs font-bold text-slate-400 transition-colors hover:bg-white/5 hover:text-slate-200'
+              className='flex items-center gap-3 px-4 py-2 text-xs font-semibold text-slate-400 transition-colors hover:bg-white/5 hover:text-slate-200'
             >
               <HelpCircle size={14} /> Help
             </a>
 
             <button
               onClick={() => logout({ logoutParams: { returnTo: window.origin } })}
-              className='flex w-full items-center gap-3 px-4 py-2 text-left text-xs font-bold text-red-500 transition-colors hover:bg-red-500/10'
+              className='flex w-full items-center gap-3 px-4 py-2 text-left text-xs font-semibold text-red-500 transition-colors hover:bg-red-500/10'
             >
               <LogOut size={14} /> Sign out
             </button>
@@ -141,7 +141,7 @@ const Header = () => {
     ) : (
       <button
         onClick={() => loginWithRedirect()}
-        className='bg-brand text-surface-dark shadow-brand flex items-center gap-2 rounded px-3 py-1.5 text-[10px] font-black tracking-widest uppercase transition-all hover:brightness-110 active:scale-95'
+        className='bg-brand text-surface-dark shadow-brand flex items-center gap-2 rounded px-3 py-1.5 text-[10px] font-semibold tracking-[0.08em] normal-case transition-all hover:brightness-110 active:scale-95'
       >
         <LogIn size={14} /> <span>Sign in</span>
       </button>
@@ -177,8 +177,8 @@ const Header = () => {
                 <button
                   onClick={() => setIsRegionOpen(!isRegionOpen)}
                   className={cn(
-                    'flex items-center gap-2 rounded px-2 py-1.5 text-[9px] font-black tracking-widest uppercase transition-colors',
-                    isRegionOpen ? 'bg-white/5 text-slate-100' : 'text-slate-500 hover:bg-white/5 hover:text-slate-200',
+                    'flex items-center gap-2 rounded px-2.5 py-1.5 text-[10px] font-semibold tracking-[0.08em] normal-case transition-colors',
+                    isRegionOpen ? 'bg-white/5 text-slate-200' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200',
                   )}
                 >
                   <Globe size={12} />
@@ -198,7 +198,7 @@ const Header = () => {
                         key={site.url}
                         href={site.url}
                         className={cn(
-                          'flex items-center justify-between px-4 py-2 text-xs font-bold transition-colors',
+                          'flex items-center justify-between px-4 py-2 text-xs font-semibold transition-colors',
                           site.active
                             ? 'bg-brand/10 text-brand'
                             : 'text-slate-400 hover:bg-white/5 hover:text-slate-200',
@@ -215,7 +215,7 @@ const Header = () => {
                         key={group}
                         to={`/sites/${group.toLowerCase()}`}
                         onClick={() => setIsRegionOpen(false)}
-                        className='flex items-center justify-between px-4 py-2 text-xs font-bold text-slate-500 transition-colors hover:bg-white/5 hover:text-slate-300'
+                        className='flex items-center justify-between px-4 py-2 text-xs font-semibold text-slate-500 transition-colors hover:bg-white/5 hover:text-slate-300'
                       >
                         {group} <ExternalLink size={10} className='opacity-30' />
                       </Link>

@@ -25,10 +25,10 @@ export const Stars = ({
   const stars = [];
 
   for (let i = 0; i < 3; i++) {
-    if (i < fullStars) stars.push(<Star key={i} size={14} className='fill-slate-400 text-slate-400' />);
+    if (i < fullStars) stars.push(<Star key={i} size={14} className='fill-slate-100 text-slate-100' />);
     else if (i === fullStars && hasHalfStar)
-      stars.push(<StarHalf key={i} size={14} className='fill-slate-400 text-slate-400' />);
-    else if (includeStarOutlines) stars.push(<Star key={i} size={14} className='opacity-40' />);
+      stars.push(<StarHalf key={i} size={14} className='fill-slate-100 text-slate-100' />);
+    else if (includeStarOutlines) stars.push(<Star key={i} size={14} className='text-slate-500/85 opacity-90' />);
   }
   return <div className='inline-flex items-center gap-0.5'>{stars}</div>;
 };
