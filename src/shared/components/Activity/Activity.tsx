@@ -90,31 +90,38 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                 <div className='border-surface-border/50 mb-1 border-b px-4 py-1.5'>
                   <SectionLabel className='text-[9px]'>Lowest Grade</SectionLabel>
                 </div>
-                {meta.grades.map((g) => (
-                  <button
-                    key={g.id}
-                    className={cn(
-                      'flex w-full items-center justify-between px-4 py-2 text-left text-xs transition-colors',
-                      g.id === lowerGradeId
-                        ? 'bg-brand/10 text-brand font-bold'
-                        : 'hover:bg-surface-hover text-slate-400',
-                    )}
-                    onClick={() => {
-                      setLowerGradeId(g.id);
-                      setLowerGradeText(
-                        g.id === 0
-                          ? 'ALL'
-                          : g.grade?.includes('(')
-                            ? g.grade.split('(')[1].replace(')', '')
-                            : (g.grade ?? ''),
-                      );
-                      setIsFilterOpen(false);
-                      setTimeout(refetch, 10);
-                    }}
-                  >
-                    {g.id === 0 ? 'ALL' : g.grade} {g.id === lowerGradeId && <Check size={14} />}
-                  </button>
-                ))}
+                {meta.grades
+                  .slice()
+                  .sort((a, b) => {
+                    if (a.id === 0) return -1;
+                    if (b.id === 0) return 1;
+                    return b.id - a.id;
+                  })
+                  .map((g) => (
+                    <button
+                      key={g.id}
+                      className={cn(
+                        'flex w-full items-center justify-between px-4 py-2 text-left text-xs transition-colors',
+                        g.id === lowerGradeId
+                          ? 'bg-brand/10 text-brand font-bold'
+                          : 'hover:bg-surface-hover text-slate-400',
+                      )}
+                      onClick={() => {
+                        setLowerGradeId(g.id);
+                        setLowerGradeText(
+                          g.id === 0
+                            ? 'ALL'
+                            : g.grade?.includes('(')
+                              ? g.grade.split('(')[1].replace(')', '')
+                              : (g.grade ?? ''),
+                        );
+                        setIsFilterOpen(false);
+                        setTimeout(refetch, 10);
+                      }}
+                    >
+                      {g.id === 0 ? 'ALL' : g.grade} {g.id === lowerGradeId && <Check size={14} />}
+                    </button>
+                  ))}
               </div>
             )}
           </div>

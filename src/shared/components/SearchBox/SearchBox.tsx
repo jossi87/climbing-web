@@ -27,7 +27,9 @@ const SearchBox = () => {
   const [value, setValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
+  const results = (data ?? []) as SearchResult[];
 
   useEffect(() => {
     const updateIsMobile = () => {
@@ -43,8 +45,10 @@ const SearchBox = () => {
       if (value.trim().length > 0) {
         search({ value });
         setIsOpen(true);
+        setActiveIndex(0);
       } else {
         setIsOpen(false);
+        setActiveIndex(-1);
       }
     }, 300);
     return () => clearTimeout(timer);
@@ -54,6 +58,7 @@ const SearchBox = () => {
     const handleClickOutside = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setIsOpen(false);
+        setActiveIndex(-1);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -62,6 +67,7 @@ const SearchBox = () => {
 
   const handleSelect = (result: SearchResult) => {
     setIsOpen(false);
+    setActiveIndex(-1);
     setValue('');
     if (result.externalUrl) window.open(result.externalUrl, '_blank');
     else navigate(result.url);
@@ -79,14 +85,45 @@ const SearchBox = () => {
         }
         value={value}
         isPending={isPending}
-        onChange={(e) => setValue(e.target.value)}
-        onFocus={() => value.length > 0 && setIsOpen(true)}
+        onChange={(e) => {
+          setValue(e.target.value);
+          setActiveIndex(-1);
+        }}
+        onFocus={() => {
+          if (value.length > 0) {
+            setIsOpen(true);
+            setActiveIndex(0);
+          }
+        }}
+        onKeyDown={(e) => {
+          if (!isOpen || results.length === 0) {
+            if (e.key === 'Escape') setIsOpen(false);
+            return;
+          }
+
+          if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            setActiveIndex((i) => Math.min((i === -1 ? 0 : i) + 1, results.length - 1));
+          } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            setActiveIndex((i) => Math.max((i === -1 ? results.length - 1 : i) - 1, 0));
+          } else if (e.key === 'Enter') {
+            e.preventDefault();
+            const chosenIndex = Math.min(Math.max(activeIndex === -1 ? 0 : activeIndex, 0), results.length - 1);
+            const chosen = results[chosenIndex];
+            if (chosen) handleSelect(chosen);
+          } else if (e.key === 'Escape') {
+            e.preventDefault();
+            setIsOpen(false);
+            setActiveIndex(-1);
+          }
+        }}
       />
 
-      {isOpen && data && data.length > 0 && (
+      {isOpen && results.length > 0 && (
         <div className='absolute z-100 mt-2 w-full min-w-[320px]'>
           <Card flush className='animate-in fade-in max-h-[70vh] overflow-y-auto p-1 shadow-2xl'>
-            {(data as SearchResult[]).map((result) => {
+            {results.map((result, idx) => {
               const mediaId = Number(result?.mediaId) || 0;
               const versionStamp = result?.mediaVersionStamp || 0;
               const imageSrc = mediaId > 0 ? getMediaFileUrl(mediaId, versionStamp, false, { minDimension: 48 }) : null;
@@ -95,7 +132,10 @@ const SearchBox = () => {
                 <button
                   key={result.url || result.externalUrl}
                   onClick={() => handleSelect(result)}
-                  className={designContract.controls.listRow}
+                  className={cn(
+                    designContract.controls.listRow,
+                    idx === activeIndex && 'bg-brand/10 border-brand/30 border',
+                  )}
                 >
                   <div className='bg-surface-nav group-hover:border-brand/30 flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-md border border-white/5 transition-colors'>
                     {result.externalUrl ? (

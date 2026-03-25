@@ -104,7 +104,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
         </div>
       </div>
 
-      <div className='hidden p-4 sm:block'>
+      <div className='bg-surface-nav/10 hidden p-4 sm:block'>
         <div className='mb-4'>
           <Link
             to={`/problem/${randomMedia.idProblem}`}
@@ -112,13 +112,13 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
           >
             {randomMedia.problem} <span className='ml-1 tabular-nums'>{randomMedia.grade}</span>
           </Link>
-          <div className='mt-2 flex items-center gap-1.5'>
+          <div className='mt-2 leading-tight'>
             <Link to={`/area/${randomMedia.idArea}`} className='transition-colors hover:text-slate-300'>
-              <SectionLabel className='text-slate-400'>{randomMedia.area}</SectionLabel>
+              <SectionLabel className='inline text-slate-300'>{randomMedia.area}</SectionLabel>
             </Link>
-            <span className='type-small opacity-50'>/</span>
-            <Link to={`/sector/${randomMedia.idSector}`} className='truncate transition-colors hover:text-slate-300'>
-              <SectionLabel className='text-slate-400'>{randomMedia.sector}</SectionLabel>
+            <span className='type-small mx-1 opacity-50'>/</span>
+            <Link to={`/sector/${randomMedia.idSector}`} className='transition-colors hover:text-slate-300'>
+              <SectionLabel className='inline text-slate-300'>{randomMedia.sector}</SectionLabel>
             </Link>
           </div>
         </div>
