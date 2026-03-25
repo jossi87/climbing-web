@@ -141,7 +141,7 @@ const Header = () => {
     ) : (
       <button
         onClick={() => loginWithRedirect()}
-        className='bg-brand text-surface-dark shadow-brand flex items-center gap-2 rounded px-3 py-1.5 text-[10px] font-semibold tracking-[0.08em] normal-case transition-all hover:brightness-110 active:scale-95'
+        className='bg-surface-nav border-brand/45 text-brand/90 hover:border-brand/65 hover:text-brand flex items-center gap-2 rounded border px-3 py-1.5 text-[10px] font-semibold tracking-[0.08em] normal-case transition-colors active:scale-95'
       >
         <LogIn size={14} /> <span>Sign in</span>
       </button>

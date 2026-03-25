@@ -73,10 +73,10 @@ const Footer = () => {
   return (
     <footer className='bg-surface-nav border-surface-border mt-4 w-full border-t py-10 sm:mt-8 sm:py-16'>
       <div className='max-w-container mx-auto px-6'>
-        <div className='mb-12 grid grid-cols-1 gap-8 sm:mb-16 sm:grid-cols-2 lg:grid-cols-4'>
-          <div className='space-y-4'>
+        <div className='mb-10 grid grid-cols-2 gap-6 sm:mb-16 sm:gap-8 lg:grid-cols-4'>
+          <div className='space-y-3 sm:space-y-4'>
             <SectionLabel className='text-slate-500'>Navigation</SectionLabel>
-            <div className='flex flex-col gap-3'>
+            <div className='flex flex-col gap-2.5 sm:gap-3'>
               <NavCard to='/about' icon={Info} title='About' />
               {!isBouldering && <NavCard to='/dangerous' icon={AlertTriangle} title='Dangerous' />}
               <NavCard to='/graph' icon={BarChart3} title='Graph' />
@@ -84,9 +84,9 @@ const Footer = () => {
             </div>
           </div>
 
-          <div className='space-y-4'>
+          <div className='space-y-3 sm:space-y-4'>
             <SectionLabel className='text-slate-500'>Open Source Stack</SectionLabel>
-            <div className='flex flex-col gap-3'>
+            <div className='flex flex-col gap-2.5 sm:gap-3'>
               <NavCard
                 href='https://github.com/jossi87/climbing-web'
                 icon={Code2}
@@ -108,7 +108,7 @@ const Footer = () => {
             </div>
           </div>
 
-          <div className='space-y-4'>
+          <div className='space-y-3 sm:space-y-4'>
             <SectionLabel className='text-slate-500'>Affiliation</SectionLabel>
             <a
               href='https://brv.no'
@@ -134,7 +134,7 @@ const Footer = () => {
             </a>
           </div>
 
-          <div className='space-y-4'>
+          <div className='space-y-3 sm:space-y-4'>
             <SectionLabel className='text-slate-500'>Community</SectionLabel>
             <NavCard
               href='https://www.facebook.com/groups/brattelinjer'

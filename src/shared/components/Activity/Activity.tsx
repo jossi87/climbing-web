@@ -223,9 +223,9 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
         <div className='min-w-0 flex-1'>
           <div className='flex items-start justify-between gap-3'>
             <div className='text-sm leading-relaxed text-slate-300'>
-              {a.users && a.users.length > 0 && a.repeat === undefined ? (
+              {a.users && a.users.length > 0 && !a.repeat ? (
                 <>
-                  <span className='font-semibold text-slate-200'>New {isBouldering ? 'problem' : 'route'}</span>{' '}
+                  <span className='font-semibold text-slate-200'>New {isBouldering ? 'boulder' : 'route'}</span>{' '}
                   <span>in</span> <ProblemLink a={a} />
                 </>
               ) : a.message ? (
@@ -296,7 +296,7 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
                     name={u.name}
                     mediaId={u.mediaId}
                     mediaVersionStamp={u.mediaVersionStamp}
-                    size='tiny'
+                    size='mini'
                     className='group-hover/user:ring-brand/50 ring-1 ring-white/10 transition-all'
                   />
                   <span className='text-[11px] font-medium text-slate-300 transition-colors group-hover/user:text-slate-200'>

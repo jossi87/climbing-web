@@ -16,11 +16,15 @@ type StatItemProps = {
 
 const StatItem = ({ to, icon: Icon, label, value, loading }: StatItemProps) => {
   const content = (
-    <div className='bg-surface-card/90 group hover:bg-brand/10 hover:border-brand/25 relative flex h-full w-full flex-col items-center justify-center border border-transparent p-4 text-center transition-all duration-300'>
+    <div className='bg-surface-card/90 group hover:bg-brand/8 hover:border-brand/20 relative flex h-full w-full flex-col items-center justify-center border border-transparent p-2 text-center transition-all duration-300 sm:p-4'>
       <div
-        className={cn('mb-2 text-slate-400 transition-colors', 'group-hover:text-brand', loading && 'animate-pulse')}
+        className={cn(
+          'mb-1 text-slate-400 transition-colors sm:mb-2',
+          'group-hover:text-brand',
+          loading && 'animate-pulse',
+        )}
       >
-        <Icon size={18} strokeWidth={2} />
+        <Icon size={16} strokeWidth={2} />
       </div>
       <div className='flex min-w-0 flex-col items-center'>
         {loading ? (
@@ -33,12 +37,14 @@ const StatItem = ({ to, icon: Icon, label, value, loading }: StatItemProps) => {
             <span className={cn(designContract.typography.subtitle, 'leading-none tabular-nums transition-opacity')}>
               {value}
             </span>
-            <SectionLabel className='mt-1 text-slate-300 transition-colors group-hover:text-slate-200'>
+            <SectionLabel className='mt-0.5 !text-[9px] !tracking-[0.06em] text-slate-300 transition-colors group-hover:text-slate-200 sm:mt-1 sm:!text-[10px] sm:!tracking-[0.1em]'>
               {label}
             </SectionLabel>
           </>
         ) : (
-          <SectionLabel className='group-hover:text-brand text-slate-300 transition-colors'>{label}</SectionLabel>
+          <SectionLabel className='group-hover:text-brand !text-[9px] !tracking-[0.06em] text-slate-300 transition-colors sm:!text-[10px] sm:!tracking-[0.1em]'>
+            {label}
+          </SectionLabel>
         )}
       </div>
     </div>
@@ -66,7 +72,7 @@ export const FrontpageStats = ({ numMedia, numProblems, numTicks, isBouldering, 
     <Card flush className='border-0 sm:border'>
       <div
         className={cn(
-          'grid grid-cols-3 overflow-hidden lg:grid-cols-1 xl:grid-cols-2',
+          'grid grid-cols-6 overflow-hidden lg:grid-cols-1 xl:grid-cols-2',
           designContract.surfaces.gridDivider,
         )}
       >
@@ -80,7 +86,7 @@ export const FrontpageStats = ({ numMedia, numProblems, numTicks, isBouldering, 
         {isClimbing ? (
           <StatItem
             icon={Spline}
-            label='With topo'
+            label='Topos'
             value={numProblems ? numberWithCommas(numProblems.numProblemsWithTopo ?? 0) : undefined}
             loading={!numProblems}
           />

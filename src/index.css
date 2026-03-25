@@ -2,13 +2,13 @@
 
 @theme {
   --color-brand: #c6a15b;
-  --color-surface-dark: #050507;
-  --color-surface-nav: #08090b;
-  --color-surface-card: #0c0d10;
-  --color-surface-hover: #111318;
-  --color-surface-border: #191c23;
+  --color-surface-dark: #0d1014;
+  --color-surface-nav: #16181e;
+  --color-surface-card: #1d2026;
+  --color-surface-hover: #292d35;
+  --color-surface-border: #363d4a;
   --color-white: #e2e8f0;
-  --shadow-brand: 0 0 8px rgba(198, 161, 91, 0.12);
+  --shadow-brand: 0 0 10px rgba(198, 161, 91, 0.14);
   --spacing-container: 1400px;
   --spacing-thumbnail-w: 85px;
   --spacing-thumbnail-h: 80px;
@@ -26,8 +26,8 @@
   body {
     @apply bg-surface-dark overflow-x-hidden leading-relaxed;
     background-image:
-      radial-gradient(1000px circle at 10% 0%, rgba(198, 161, 91, 0.025), transparent 45%),
-      radial-gradient(900px circle at 90% 20%, rgba(120, 86, 45, 0.006), transparent 52%);
+      radial-gradient(1000px circle at 10% 0%, rgba(198, 161, 91, 0.08), transparent 45%),
+      radial-gradient(900px circle at 90% 20%, rgba(140, 109, 67, 0.035), transparent 52%);
     background-attachment: fixed;
   }
   h1,
@@ -72,7 +72,7 @@
   }
 
   .type-label {
-    @apply text-[11px] font-semibold tracking-[0.12em] text-slate-400 uppercase;
+    @apply text-[11px] font-semibold tracking-[0.1em] text-slate-400 uppercase;
   }
 
   .app-card {
@@ -92,7 +92,7 @@
   }
 
   .search-input {
-    @apply bg-surface-dark/70 border-surface-border h-10 rounded-lg border px-4 text-sm font-medium text-slate-100 backdrop-blur-sm transition-colors duration-200 placeholder:text-[10px] placeholder:font-semibold placeholder:tracking-[0.08em] placeholder:text-slate-400 placeholder:normal-case;
+    @apply bg-surface-dark/70 border-surface-border h-10 rounded-lg border px-4 text-sm font-medium text-slate-100 backdrop-blur-sm transition-colors duration-200 placeholder:text-[10px] placeholder:font-semibold placeholder:tracking-[0.06em] placeholder:text-slate-400 placeholder:normal-case;
   }
   .search-input:focus {
     @apply border-brand/55 ring-brand/15 bg-surface-nav/80 ring-2 backdrop-blur-sm;
@@ -112,7 +112,7 @@
   }
   .btn-glass-active svg {
     @apply text-brand;
-    filter: drop-shadow(0 0 2px rgba(198, 161, 91, 0.16));
+    filter: drop-shadow(0 0 2px rgba(198, 161, 91, 0.12));
   }
 
   .animate-in {
@@ -136,4 +136,13 @@
 
 .dark-tiles {
   filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
