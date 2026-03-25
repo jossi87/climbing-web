@@ -45,7 +45,7 @@
     "vite-tsconfig-paths": "^6.1.1"
   },
   "dependencies": {
-    "@auth0/auth0-react": "^2.15.1",
+    "@auth0/auth0-react": "^2.16.0",
     "@react-leaflet/core": "^3.0.0",
     "@sentry/react": "^10.45.0",
     "@tanstack/react-query": "^5.95.2",
@@ -53,7 +53,7 @@
     "heic2any": "^0.0.4",
     "json-url": "^4.0.0",
     "leaflet": "^1.9.4",
-    "leaflet.fullscreen": "^5.3.0",
+    "leaflet.fullscreen": "^5.3.1",
     "leaflet.locatecontrol": "^0.89.0",
     "leaflet.markercluster": "^1.5.3",
     "linkify-react": "^4.3.2",
@@ -70,7 +70,7 @@
     "react-router-dom": "^7.13.2",
     "react-select": "^5.10.2",
     "react-swipeable": "^7.0.2",
-    "recharts": "^3.8.0",
+    "recharts": "^3.8.1",
     "remarkable": "^2.0.1",
     "semantic-ui-css": "^2.5.0",
     "semantic-ui-react": "^3.0.0-beta.2",
