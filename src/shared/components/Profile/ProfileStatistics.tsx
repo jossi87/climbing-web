@@ -20,9 +20,8 @@ type TickListItemProps = {
 const TickListItem = ({ tick }: TickListItemProps) => <TickListItemInner tick={tick} />;
 
 const TickListItemInner = ({ tick }: TickListItemProps) => {
-  const maybe = tick as typeof tick & { idArea?: number; idSector?: number };
-  const areaId = maybe.idArea;
-  const sectorId = maybe.idSector;
+  const areaId = tick.areaId;
+  const sectorId = tick.sectorId;
 
   return (
     <div className='py-1 text-xs leading-relaxed break-words text-slate-300'>

@@ -21,10 +21,8 @@ const PlaceholderFeed = () => {
 type PublicAscent = components['schemas']['PublicAscent'];
 
 const TickRow = ({ t }: { t: PublicAscent }) => {
-  const maybe = t as PublicAscent & { idArea?: number; idSector?: number; idUser?: number };
-  const areaId = maybe.idArea;
-  const sectorId = maybe.idSector;
-  const userId = maybe.idUser;
+  const areaId = t.areaId;
+  const sectorId = t.sectorId;
 
   return (
     <div className='block py-1 text-xs leading-relaxed break-words text-slate-300'>
@@ -53,13 +51,7 @@ const TickRow = ({ t }: { t: PublicAscent }) => {
       <span className='ml-1 text-slate-300'>{t.problemGrade}</span>
       <LockSymbol lockedAdmin={t.problemLockedAdmin} lockedSuperadmin={t.problemLockedSuperadmin} />
       <span className='text-slate-500'> · </span>
-      {userId ? (
-        <Link to={`/user/${userId}`} className='hover:text-brand text-slate-400 transition-colors'>
-          {t.name}
-        </Link>
-      ) : (
-        <span className='text-slate-400'>{t.name}</span>
-      )}
+      <span className='text-slate-400'>{t.name}</span>
     </div>
   );
 };

@@ -1546,9 +1546,13 @@ export type components = {
         };
         ProfileStatisticsTick: {
             regionName?: string;
+            /** Format: int32 */
+            areaId?: number;
             areaName?: string;
             areaLockedAdmin?: boolean;
             areaLockedSuperadmin?: boolean;
+            /** Format: int32 */
+            sectorId?: number;
             sectorName?: string;
             sectorLockedAdmin?: boolean;
             sectorLockedSuperadmin?: boolean;
@@ -1677,9 +1681,13 @@ export type components = {
             nr?: number;
         };
         PublicAscent: {
+            /** Format: int32 */
+            areaId?: number;
             areaName?: string;
             areaLockedAdmin?: boolean;
             areaLockedSuperadmin?: boolean;
+            /** Format: int32 */
+            sectorId?: number;
             sectorName?: string;
             sectorLockedAdmin?: boolean;
             sectorLockedSuperadmin?: boolean;
