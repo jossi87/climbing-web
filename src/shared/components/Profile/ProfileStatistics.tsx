@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom';
 import Chart from '../Chart/Chart';
 import ProblemList from '../ProblemList';
 import Leaflet from '../Leaflet/Leaflet';
-import { LockSymbol, Stars } from '../Widgets/Widgets';
+import { LockSymbol, Stars } from '../../ui/Indicators';
 import { Loading } from '../../ui/StatusWidgets';
 import { numberWithCommas, useProfileStatistics } from '../../../api';
 import { useMeta } from '../Meta';
 import * as Sentry from '@sentry/react';
 import type { components } from '../../../@types/buldreinfo/swagger';
-import { AlertCircle, Check, Camera, Video, Flag, Repeat, X, type LucideIcon } from 'lucide-react';
+import { AlertCircle, Check, Camera, Video, Plus, Repeat, X, type LucideIcon } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 
 type TickListItemProps = {
@@ -190,8 +190,8 @@ const ProfileStatistics = ({ userId, view }: ProfileStatisticsProps) => {
           value={stats.numTicks + stats.numFas}
           className='text-emerald-300'
         />
-        <OverviewStatItem icon={Flag} label='FAs' value={stats.numFas} className='text-amber-300' />
-        <OverviewStatItem icon={Repeat} label='Repeats' value={stats.numTickRepeats} className='text-blue-300' />
+        <OverviewStatItem icon={Plus} label='FAs' value={stats.numFas} className='text-sky-300/85' />
+        <OverviewStatItem icon={Repeat} label='Repeats' value={stats.numTickRepeats} className='text-amber-200/70' />
         <OverviewStatItem icon={Camera} label='Tags' value={data.numImageTags ?? 0} className='text-red-300/85' />
         <OverviewStatItem
           icon={Camera}

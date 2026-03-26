@@ -13,7 +13,7 @@ import {
   useSector,
   useProblem,
 } from '../../api';
-import { Loading } from '../../shared/components/Widgets/Widgets';
+import { Loading } from '../../shared/ui/StatusWidgets';
 import { useNavigate, useParams } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';

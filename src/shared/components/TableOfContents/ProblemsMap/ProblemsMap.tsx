@@ -8,7 +8,7 @@ import MarkerClusterGroup from '../../Leaflet/ReactLeafletMarkerCluster';
 import { useMap } from 'react-leaflet';
 import Polygons from '../../Leaflet/polygons';
 import { LatLngBounds, type LeafletEventHandlerFn, latLngBounds } from 'leaflet';
-import { LockSymbol } from '../../Widgets/Widgets';
+import { LockSymbol } from '../../../ui/Indicators';
 import { ChevronRight } from 'lucide-react';
 import { cn } from '../../../../lib/utils';
 import { designContract } from '../../../../design/contract';

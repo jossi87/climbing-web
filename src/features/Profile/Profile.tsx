@@ -136,54 +136,51 @@ const Profile = () => {
             </div>
           </div>
         </div>
-      </Card>
 
-      <div className='animate-in fade-in slide-in-from-bottom-2 mt-4 w-full min-w-0 duration-500'>
-        <Card flush className='min-w-0 border-0 sm:border'>
-          <div className='border-surface-border border-b px-3 py-2 sm:px-4'>
-            <div className='grid w-full min-w-0 grid-cols-6 gap-1 overflow-hidden'>
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = activePage === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => onPageChanged(item.id)}
-                    className={cn(
-                      'flex w-full min-w-0 flex-col items-center justify-center gap-0.5 rounded-md px-0 py-2 text-[8px] font-semibold transition-colors sm:flex-row sm:gap-1.5 sm:px-3 sm:text-[11px]',
-                      isActive
-                        ? 'bg-brand/12 text-brand ring-brand/25 ring-1'
-                        : 'hover:bg-surface-hover/50 text-slate-300 hover:text-slate-100',
-                    )}
-                  >
-                    <Icon
-                      size={12}
-                      strokeWidth={isActive ? 2.3 : 2}
-                      className={cn('opacity-90', isActive ? 'opacity-100' : '')}
-                    />
-                    <span className='block min-w-0 truncate leading-none'>{item.label}</span>
-                  </button>
-                );
-              })}
-            </div>
+        <div className='border-surface-border border-t border-b'>
+          <div className='bg-surface-border/35 grid w-full min-w-0 grid-cols-6 gap-px overflow-hidden'>
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = activePage === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => onPageChanged(item.id)}
+                  className={cn(
+                    'bg-surface-card flex w-full min-w-0 flex-col items-center justify-center gap-0.5 px-0 py-2 text-[8px] font-semibold transition-colors sm:flex-row sm:gap-1.5 sm:px-3 sm:text-[11px]',
+                    isActive
+                      ? 'bg-surface-hover/75 text-slate-100'
+                      : 'hover:bg-surface-hover/50 text-slate-300 hover:text-slate-100',
+                  )}
+                >
+                  <Icon
+                    size={12}
+                    strokeWidth={isActive ? 2.3 : 2}
+                    className={cn('opacity-90', isActive && 'text-brand opacity-100')}
+                  />
+                  <span className='block min-w-0 truncate leading-none'>{item.label}</span>
+                </button>
+              );
+            })}
           </div>
-          <div
-            className={cn(
-              'border-surface-border w-full min-w-0 overflow-x-hidden border-t',
-              activePage === Page.map ? 'p-0' : 'p-4 sm:p-6',
-            )}
-          >
-            {activePage === Page.overview && <ProfileStatistics userId={profile.id ?? 0} view='overview' />}
-            {activePage === Page.map && <ProfileStatistics userId={profile.id ?? 0} view='map' />}
-            {activePage === Page.ascents && <ProfileStatistics userId={profile.id ?? 0} view='ascents' />}
-            {activePage === Page.todo && (
-              <ProfileTodo userId={profile.id ?? 0} defaultCenter={meta.defaultCenter} defaultZoom={meta.defaultZoom} />
-            )}
-            {activePage === Page.media && <ProfileMedia userId={profile.id ?? 0} captured={false} />}
-            {activePage === Page.captured && <ProfileMedia userId={profile.id ?? 0} captured={true} />}
-          </div>
-        </Card>
-      </div>
+        </div>
+
+        <div
+          className={cn(
+            'animate-in fade-in slide-in-from-bottom-2 w-full min-w-0 overflow-x-hidden duration-500',
+            activePage === Page.map ? 'p-0' : 'p-4 sm:p-6',
+          )}
+        >
+          {activePage === Page.overview && <ProfileStatistics userId={profile.id ?? 0} view='overview' />}
+          {activePage === Page.map && <ProfileStatistics userId={profile.id ?? 0} view='map' />}
+          {activePage === Page.ascents && <ProfileStatistics userId={profile.id ?? 0} view='ascents' />}
+          {activePage === Page.todo && (
+            <ProfileTodo userId={profile.id ?? 0} defaultCenter={meta.defaultCenter} defaultZoom={meta.defaultZoom} />
+          )}
+          {activePage === Page.media && <ProfileMedia userId={profile.id ?? 0} captured={false} />}
+          {activePage === Page.captured && <ProfileMedia userId={profile.id ?? 0} captured={true} />}
+        </div>
+      </Card>
     </div>
   );
 };

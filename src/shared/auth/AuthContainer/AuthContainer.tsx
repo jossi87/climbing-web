@@ -1,7 +1,7 @@
 import { type ReactNode } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { InsufficientPrivileges, NotLoggedIn } from '../../ui/StatusWidgets';
-import { Loading } from '../../components/Widgets/Widgets';
+import { Loading } from '../../ui/StatusWidgets';
 import { useMeta } from '../../components/Meta/context';
 
 type Props = {

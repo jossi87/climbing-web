@@ -7,16 +7,12 @@ import Leaflet from '../../shared/components/Leaflet/Leaflet';
 import { getDistanceWithUnit } from '../../shared/components/Leaflet/geo-utils';
 import Media from '../../shared/components/Media/Media';
 import Todo from '../../shared/components/Todo/Todo';
-import {
-  Stars,
-  LockSymbol,
-  Loading,
-  ConditionLabels,
-  WallDirection,
-  SunOnWall,
-  ExternalLinkLabels,
-  NoDogsAllowed,
-} from '../../shared/components/Widgets/Widgets';
+import { Loading } from '../../shared/ui/StatusWidgets';
+import { Stars, LockSymbol } from '../../shared/ui/Indicators';
+import { WallDirection, SunOnWall } from '../../shared/components/Widgets/ClimbingWidgets';
+import { ConditionLabels } from '../../shared/components/Widgets/ConditionLabels';
+import { ExternalLinkLabels } from '../../shared/components/Widgets/ExternalLinkLabels';
+import { NoDogsAllowed } from '../../shared/components/Widgets/NoDogsAllowed';
 import { useMeta } from '../../shared/components/Meta/context';
 import { getMediaFileUrl, useArea } from '../../api';
 import { Markdown } from '../../shared/components/Markdown/Markdown';

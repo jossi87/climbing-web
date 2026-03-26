@@ -1,6 +1,6 @@
 import { useState, useCallback, type ComponentProps, type UIEvent, type FormEvent, type ChangeEvent } from 'react';
 import MediaUpload from '../../shared/components/MediaUpload/MediaUpload';
-import { Loading } from '../../shared/components/Widgets/Widgets';
+import { Loading } from '../../shared/ui/StatusWidgets';
 import { useMeta } from '../../shared/components/Meta';
 import { postSector, useAccessToken, useArea, useElevation, useSector } from '../../api';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';

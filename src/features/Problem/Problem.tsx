@@ -4,13 +4,11 @@ import Leaflet from '../../shared/components/Leaflet/Leaflet';
 import { getDistanceWithUnit } from '../../shared/components/Leaflet/geo-utils';
 import GetCenterFromDegrees from '../../utils/map-utils';
 import Media from '../../shared/components/Media/Media';
-import {
-  Loading,
-  LockSymbol,
-  ConditionLabels,
-  ExternalLinkLabels,
-  NoDogsAllowed,
-} from '../../shared/components/Widgets/Widgets';
+import { Loading } from '../../shared/ui/StatusWidgets';
+import { LockSymbol } from '../../shared/ui/Indicators';
+import { ConditionLabels } from '../../shared/components/Widgets/ConditionLabels';
+import { ExternalLinkLabels } from '../../shared/components/Widgets/ExternalLinkLabels';
+import { NoDogsAllowed } from '../../shared/components/Widgets/NoDogsAllowed';
 import { useMeta } from '../../shared/components/Meta/context';
 import { useProblem } from '../../api';
 import type { components } from '../../@types/buldreinfo/swagger';

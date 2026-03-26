@@ -10,14 +10,11 @@ import { getDistanceWithUnit } from '../../shared/components/Leaflet/geo-utils';
 import Media from '../../shared/components/Media/Media';
 import Todo from '../../shared/components/Todo/Todo';
 import GetCenterFromDegrees from '../../utils/map-utils';
-import {
-  Stars,
-  LockSymbol,
-  Loading,
-  ConditionLabels,
-  ExternalLinkLabels,
-  NoDogsAllowed,
-} from '../../shared/components/Widgets/Widgets';
+import { Loading } from '../../shared/ui/StatusWidgets';
+import { Stars, LockSymbol } from '../../shared/ui/Indicators';
+import { ConditionLabels } from '../../shared/components/Widgets/ConditionLabels';
+import { ExternalLinkLabels } from '../../shared/components/Widgets/ExternalLinkLabels';
+import { NoDogsAllowed } from '../../shared/components/Widgets/NoDogsAllowed';
 import { useMeta } from '../../shared/components/Meta/context';
 import { useSector } from '../../api';
 import type { Slope } from '../../@types/buldreinfo';

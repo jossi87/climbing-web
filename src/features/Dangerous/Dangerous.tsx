@@ -1,4 +1,4 @@
-import { Loading } from '../../shared/components/Widgets/Widgets';
+import { Loading } from '../../shared/ui/StatusWidgets';
 import { useMeta } from '../../shared/components/Meta/context';
 import { useData } from '../../api';
 import TableOfContents from '../../shared/components/TableOfContents';

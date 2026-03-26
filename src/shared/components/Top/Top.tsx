@@ -1,4 +1,4 @@
-import { Loading } from '../Widgets/Widgets';
+import { Loading } from '../../ui/StatusWidgets';
 import { Link } from 'react-router-dom';
 import { useTop } from '../../../api';
 import { ClickableAvatar } from '../../ui/Avatar/Avatar';

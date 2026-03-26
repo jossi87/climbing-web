@@ -35,6 +35,10 @@ function Chart({ ticks: data }: Props) {
     }),
   );
 
+  if (!grades.length) {
+    return <div className='py-4 text-center text-xs text-slate-500'>No grade distribution yet.</div>;
+  }
+
   return (
     <div className='overflow-hidden'>
       <table className='w-full table-fixed border-separate border-spacing-0 text-left'>

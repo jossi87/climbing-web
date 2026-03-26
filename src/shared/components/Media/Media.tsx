@@ -14,7 +14,7 @@ import { Play } from 'lucide-react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { cn } from '../../../lib/utils';
 import SvgViewer from '../SvgViewer';
-import { Loading } from '../Widgets/Widgets';
+import { Loading } from '../../ui/StatusWidgets';
 import MediaEditModal from './MediaEditModal';
 import MediaModal from './MediaModal';
 type MediaItem = components['schemas']['Media'];

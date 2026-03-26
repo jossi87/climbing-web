@@ -36,7 +36,7 @@ const Footer = () => {
       <>
         <div
           className={cn(
-            'group-hover:border-brand/40 group-hover:text-brand flex h-9 w-9 shrink-0 items-center justify-center rounded border border-white/10 bg-white/5 text-slate-400 transition-colors',
+            'group-hover:border-brand/40 group-hover:text-brand flex h-8 w-8 shrink-0 items-center justify-center rounded border border-white/10 bg-white/5 text-slate-400 transition-colors sm:h-9 sm:w-9',
             className,
           )}
         >
@@ -47,7 +47,7 @@ const Footer = () => {
           )}
         </div>
         <div className='flex flex-col text-left'>
-          <span className='group-hover:text-brand block text-[13px] font-bold text-slate-200 transition-colors'>
+          <span className='group-hover:text-brand block text-[12px] font-semibold text-slate-200 transition-colors sm:text-[13px]'>
             {title}
           </span>
           {subtitle && (
@@ -71,12 +71,12 @@ const Footer = () => {
   };
 
   return (
-    <footer className='bg-surface-nav border-surface-border mt-0 w-full border-t py-10 sm:py-16'>
-      <div className='max-w-container mx-auto px-6'>
-        <div className='mb-10 grid grid-cols-2 gap-6 sm:mb-16 sm:gap-8 lg:grid-cols-4'>
-          <div className='space-y-3 sm:space-y-4'>
+    <footer className='bg-surface-nav border-surface-border mt-0 w-full border-t py-7 sm:py-12'>
+      <div className='max-w-container mx-auto px-4 sm:px-6'>
+        <div className='mb-7 grid grid-cols-2 gap-4 sm:mb-12 sm:gap-8 lg:grid-cols-4'>
+          <div className='space-y-2.5 sm:space-y-4'>
             <SectionLabel className='text-slate-500'>Navigation</SectionLabel>
-            <div className='flex flex-col gap-2.5 sm:gap-3'>
+            <div className='flex flex-col gap-2 sm:gap-3'>
               <NavCard to='/about' icon={Info} title='About' />
               {!isBouldering && <NavCard to='/dangerous' icon={AlertTriangle} title='Dangerous' />}
               <NavCard to='/graph' icon={BarChart3} title='Graph' />
@@ -84,9 +84,9 @@ const Footer = () => {
             </div>
           </div>
 
-          <div className='space-y-3 sm:space-y-4'>
+          <div className='space-y-2.5 sm:space-y-4'>
             <SectionLabel className='text-slate-500'>Open Source Stack</SectionLabel>
-            <div className='flex flex-col gap-2.5 sm:gap-3'>
+            <div className='flex flex-col gap-2 sm:gap-3'>
               <NavCard
                 href='https://github.com/jossi87/climbing-web'
                 icon={Code2}
@@ -108,7 +108,7 @@ const Footer = () => {
             </div>
           </div>
 
-          <div className='space-y-3 sm:space-y-4'>
+          <div className='space-y-2.5 sm:space-y-4'>
             <SectionLabel className='text-slate-500'>Affiliation</SectionLabel>
             <a
               href='https://brv.no'
@@ -116,7 +116,7 @@ const Footer = () => {
               target='_blank'
               className='group flex items-center gap-3 text-slate-400 transition-colors hover:text-slate-200'
             >
-              <div className='group-hover:border-brand/40 flex h-9 w-9 shrink-0 items-center justify-center rounded border border-white/10 bg-white/5 transition-colors'>
+              <div className='group-hover:border-brand/40 flex h-8 w-8 shrink-0 items-center justify-center rounded border border-white/10 bg-white/5 transition-colors sm:h-9 sm:w-9'>
                 <img
                   src='/png/brv.png'
                   alt='BRV'
@@ -124,7 +124,7 @@ const Footer = () => {
                 />
               </div>
               <div className='flex flex-col items-start text-left'>
-                <span className='group-hover:text-brand block text-[13px] font-bold text-slate-200 transition-colors'>
+                <span className='group-hover:text-brand block text-[12px] font-semibold text-slate-200 transition-colors sm:text-[13px]'>
                   BRV
                 </span>
                 <span className={cn('block text-[9px] leading-tight', designContract.typography.label)}>
@@ -134,7 +134,7 @@ const Footer = () => {
             </a>
           </div>
 
-          <div className='space-y-3 sm:space-y-4'>
+          <div className='space-y-2.5 sm:space-y-4'>
             <SectionLabel className='text-slate-500'>Community</SectionLabel>
             <NavCard
               href='https://www.facebook.com/groups/brattelinjer'
@@ -145,7 +145,7 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className='flex flex-col items-center justify-between gap-6 border-t border-white/5 pt-8 md:flex-row'>
+        <div className='flex flex-col items-center justify-between gap-4 border-t border-white/5 pt-6 sm:gap-6 sm:pt-8 md:flex-row'>
           <div className={cn('flex flex-wrap justify-center gap-x-6 gap-y-3', designContract.typography.label)}>
             <TextLink href='mailto:jostein.oygarden@gmail.com' external={false}>
               <span className='flex items-center gap-1.5'>

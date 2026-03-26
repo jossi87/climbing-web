@@ -6,7 +6,7 @@ import { useLocalStorage } from '../../../utils/use-local-storage';
 import { useMeta } from '../Meta/context';
 import { useActivity } from '../../../api';
 import { Avatar, AvatarGroup, Card, SectionLabel } from '../../ui';
-import { Stars } from '../Widgets/Widgets';
+import { Stars } from '../../ui/Indicators';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
 import { ProblemLink } from './components/ProblemLink';

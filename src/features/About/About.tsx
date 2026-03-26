@@ -11,7 +11,6 @@ import {
   UserCard,
   Timeline,
   TimelineItem,
-  ResponsiveGrid,
   TextLink,
 } from '../../shared/ui';
 
@@ -145,11 +144,11 @@ const About = () => {
 
         <Card className='lg:col-span-2'>
           <SectionHeader title='Administrators' icon={Users} subheader={adminSubheader} />
-          <ResponsiveGrid>
+          <div className='grid grid-cols-2 gap-1.5 sm:gap-2 lg:grid-cols-3 xl:grid-cols-4'>
             {data?.map((u) => (
-              <UserCard key={u.userId} user={u} />
+              <UserCard key={u.userId} user={u} variant='minimal' />
             ))}
-          </ResponsiveGrid>
+          </div>
         </Card>
       </div>
     </>

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ExternalLink, Search as SearchIcon } from 'lucide-react';
 import { getMediaFileUrl, useSearch } from '../../../api';
 import { useMeta } from '../Meta/context';
-import { LockSymbol } from '../Widgets/Widgets';
+import { LockSymbol } from '../../ui/Indicators';
 import { cn } from '../../../lib/utils';
 import { SearchInput, Card } from '../../ui';
 import { designContract } from '../../../design/contract';

@@ -21,7 +21,11 @@ const Frontpage = () => {
     const update = () => setIsTallEnough(window.innerHeight >= 900);
     update();
     window.addEventListener('resize', update);
-    return () => window.removeEventListener('resize', update);
+    window.addEventListener('orientationchange', update);
+    return () => {
+      window.removeEventListener('resize', update);
+      window.removeEventListener('orientationchange', update);
+    };
   }, []);
 
   const type = meta.isBouldering ? 'bouldering problems' : 'climbing routes';
@@ -46,7 +50,11 @@ const Frontpage = () => {
         <div className={designContract.layout.frontpageGrid}>
           <aside className='order-1 w-full lg:col-span-4 xl:col-span-3'>
             <div
-              className={isTallEnough ? designContract.layout.asideStack : 'w-full space-y-4 self-start sm:space-y-6'}
+              className={
+                isTallEnough
+                  ? designContract.layout.asideStack
+                  : 'w-full space-y-4 self-start sm:space-y-6 lg:static lg:top-auto'
+              }
             >
               <div className='hidden lg:block'>
                 <FrontpageStats

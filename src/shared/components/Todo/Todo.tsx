@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
 import { Link } from 'react-router-dom';
-import { Loading, LockSymbol } from '../Widgets/Widgets';
+import { Loading } from '../../ui/StatusWidgets';
+import { LockSymbol } from '../../ui/Indicators';
 import { useTodo } from '../../../api';
 import { Bookmark } from 'lucide-react';
 

@@ -1,4 +1,4 @@
-import { LockSymbol } from '../../shared/components/Widgets/Widgets';
+import { LockSymbol } from '../../shared/ui/Indicators';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useMeta } from '../../shared/components/Meta';
 import { useTicks } from '../../api';

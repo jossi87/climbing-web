@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Loading } from '../../shared/components/Widgets/Widgets';
+import { Loading } from '../../shared/ui/StatusWidgets';
 import { useMeta } from '../../shared/components/Meta/context';
 import { downloadTocXlsx, useAccessToken, useToc } from '../../api';
 import TableOfContents from '../../shared/components/TableOfContents';

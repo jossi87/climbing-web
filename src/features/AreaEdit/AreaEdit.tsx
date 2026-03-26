@@ -2,7 +2,7 @@ import { useState, useCallback, type FormEvent, type ChangeEvent, type ElementTy
 import MediaUpload from '../../shared/components/MediaUpload/MediaUpload';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
 import { useMeta } from '../../shared/components/Meta/context';
-import { Loading } from '../../shared/components/Widgets/Widgets';
+import { Loading } from '../../shared/ui/StatusWidgets';
 import { useNavigate, useParams } from 'react-router-dom';
 import { VisibilitySelectorField } from '../../shared/ui/VisibilitySelector';
 import { captureException } from '@sentry/react';

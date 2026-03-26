@@ -45,19 +45,51 @@ const Header = () => {
   const [isDownloadingTicks, setIsDownloadingTicks] = useState(false);
   const regionRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const [viewport, setViewport] = useState(() => ({
+    width: typeof window !== 'undefined' ? window.innerWidth : 1280,
+    height: typeof window !== 'undefined' ? window.innerHeight : 900,
+  }));
+  const lastScrollYRef = useRef(0);
+
+  const isDesktop = viewport.width >= 1024;
+  const isTallEnough = viewport.height >= 900;
+  const shouldStickHeader = !isDesktop || isTallEnough;
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      if (currentScrollY < 10) setIsVisible(true);
-      else if (currentScrollY > lastScrollY && currentScrollY > 80) setIsVisible(false);
-      else if (currentScrollY < lastScrollY) setIsVisible(true);
-      setLastScrollY(currentScrollY);
+      const lastScrollY = lastScrollYRef.current;
+
+      if (currentScrollY < 10) {
+        setIsVisible(true);
+      } else if (currentScrollY > lastScrollY && currentScrollY > 64) {
+        setIsVisible(false);
+      } else if (currentScrollY < lastScrollY) {
+        setIsVisible(true);
+      }
+
+      lastScrollYRef.current = currentScrollY;
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
+  }, []);
+
+  useEffect(() => {
+    const updateViewport = () =>
+      setViewport({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+
+    updateViewport();
+    window.addEventListener('resize', updateViewport);
+    window.addEventListener('orientationchange', updateViewport);
+
+    return () => {
+      window.removeEventListener('resize', updateViewport);
+      window.removeEventListener('orientationchange', updateViewport);
+    };
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -168,7 +200,8 @@ const Header = () => {
   return (
     <nav
       className={cn(
-        'border-surface-border bg-surface-nav/75 sticky top-0 z-50 w-full border-b backdrop-blur-xl transition-transform duration-300',
+        'border-surface-border bg-surface-nav/75 z-50 w-full border-b backdrop-blur-xl transition-transform duration-300',
+        shouldStickHeader ? 'sticky top-0' : 'relative',
         !isVisible && '-translate-y-full lg:translate-y-0',
       )}
     >

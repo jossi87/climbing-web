@@ -1,5 +1,5 @@
 import { useSector } from '../../../api';
-import { LockSymbol, Stars } from '../../../shared/components/Widgets/Widgets';
+import { LockSymbol, Stars } from '../../../shared/ui/Indicators';
 import { Link } from 'react-router-dom';
 import { MapPin, Pencil, Camera, Film, Check, Bookmark } from 'lucide-react';
 import { cn } from '../../../lib/utils';

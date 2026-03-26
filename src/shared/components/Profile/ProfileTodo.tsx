@@ -1,7 +1,7 @@
 import { type ComponentProps, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import Leaflet from '../Leaflet/Leaflet';
-import { LockSymbol } from '../Widgets/Widgets';
+import { LockSymbol } from '../../ui/Indicators';
 import { useProfileTodo } from '../../../api';
 import { MapPin, ChevronRight } from 'lucide-react';
 import { Loading } from '../../ui/StatusWidgets';

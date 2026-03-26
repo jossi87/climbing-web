@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useMeta } from '../../shared/components/Meta';
 import { type EditableSvg, getMediaFileUrl, postProblemSvg, useAccessToken, useSvgEdit } from '../../api';
 import { parseReadOnlySvgs, parsePath, isCubicPoint, type ParsedEntry } from '../../utils/svg-helpers';
-import { Loading } from '../../shared/components/Widgets/Widgets';
+import { Loading } from '../../shared/ui/StatusWidgets';
 import { captureException } from '@sentry/react';
 import { generatePath, reducer, type State } from './state';
 import { neverGuard } from '../../utils/neverGuard';

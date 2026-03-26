@@ -1,6 +1,7 @@
 import { useRef, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { LockSymbol, Stars, SunOnWall, WallDirection } from '../Widgets/Widgets';
+import { LockSymbol, Stars } from '../../ui/Indicators';
+import { SunOnWall, WallDirection } from '../Widgets/ClimbingWidgets';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { ArrowUpCircle } from 'lucide-react';
 import { cn } from '../../../lib/utils';

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import type { components } from '../../../../@types/buldreinfo/swagger';
-import { LockSymbol } from '../../Widgets/Widgets';
+import { LockSymbol } from '../../../ui/Indicators';
 
 type Props = {
   a: components['schemas']['Activity'];

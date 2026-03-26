@@ -1,14 +1,19 @@
 import { Star, StarHalf, Lock, UserRoundCheck } from 'lucide-react';
+import { cn } from '../../lib/utils';
 
 export const LockSymbol = ({
   lockedAdmin = false,
   lockedSuperadmin = false,
+  adminClassName,
+  superadminClassName,
 }: {
   lockedAdmin?: boolean;
   lockedSuperadmin?: boolean;
+  adminClassName?: string;
+  superadminClassName?: string;
 }) => {
-  if (lockedSuperadmin) return <UserRoundCheck size={14} className='text-brand/60 inline' />;
-  if (lockedAdmin) return <Lock size={14} className='inline text-slate-600' />;
+  if (lockedSuperadmin) return <UserRoundCheck size={14} className={cn('text-brand/60 inline', superadminClassName)} />;
+  if (lockedAdmin) return <Lock size={14} className={cn('inline text-slate-600', adminClassName)} />;
   return null;
 };
 

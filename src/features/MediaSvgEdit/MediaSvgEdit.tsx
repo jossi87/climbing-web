@@ -11,7 +11,7 @@ import {
   isArc,
 } from '../../utils/svg-helpers';
 
-import { Loading } from '../../shared/components/Widgets/Widgets';
+import { Loading } from '../../shared/ui/StatusWidgets';
 import { useNavigate, useParams } from 'react-router-dom';
 import type { Success } from '../../@types/buldreinfo';
 import { RotateCcw, Save, X, Plus, Anchor, Trash2, Info, MinusCircle, ChevronDown } from 'lucide-react';

@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react';
 import MediaUpload, { type UploadedMedia } from '../../shared/components/MediaUpload/MediaUpload';
 import { useAuth0 } from '@auth0/auth0-react';
 import { postProblemMedia, useProblem } from '../../api';
-import { Loading } from '../../shared/components/Widgets/Widgets';
+import { Loading } from '../../shared/ui/StatusWidgets';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Save, Loader2, ImagePlus } from 'lucide-react';
 import { cn } from '../../lib/utils';
