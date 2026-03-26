@@ -35,13 +35,12 @@ const TickListItem = ({ tick }: TickListItemProps) => (
       <Stars numStars={tick.stars ?? 0} includeStarOutlines={true} size={12} />
     </span>
     {tick.fa ? (
-      <span className='ml-1 inline-flex h-[14px] items-center rounded border border-white/16 px-1 text-[10px] leading-none text-slate-300'>
+      <span className='border-brand/40 bg-brand/10 text-brand ml-1 inline-flex h-[14px] items-center rounded border px-1 text-[10px] leading-none'>
         FA
       </span>
     ) : null}
     {tick.idTickRepeat ? (
-      <span className='ml-1 inline-flex items-center gap-0.5 text-[10px] text-amber-200/70'>
-        <Repeat size={8} />
+      <span className='ml-1 inline-flex h-[14px] items-center rounded border border-white/16 px-1 text-[10px] leading-none text-slate-300'>
         Repeat
       </span>
     ) : null}
