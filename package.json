@@ -41,13 +41,13 @@
     "rollup-plugin-visualizer": "^7.0.1",
     "typescript": "^6.0.2",
     "typescript-eslint": "^8.57.2",
-    "vite": "^8.0.2",
+    "vite": "^8.0.3",
     "vite-tsconfig-paths": "^6.1.1"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.16.0",
     "@react-leaflet/core": "^3.0.0",
-    "@sentry/react": "^10.45.0",
+    "@sentry/react": "^10.46.0",
     "@tanstack/react-query": "^5.95.2",
     "flat": "^6.0.1",
     "heic2any": "^0.0.4",
