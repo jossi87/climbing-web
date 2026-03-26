@@ -1,4 +1,5 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import Chart from '../Chart/Chart';
 import ProblemList from '../ProblemList';
@@ -9,7 +10,7 @@ import { numberWithCommas, useProfileStatistics } from '../../../api';
 import { useMeta } from '../Meta';
 import * as Sentry from '@sentry/react';
 import type { components } from '../../../@types/buldreinfo/swagger';
-import { AlertCircle, Check, Camera, Video, Plus, Repeat, X, type LucideIcon } from 'lucide-react';
+import { AlertCircle, Check, Camera, Video, Plus, Repeat, X, Map as MapIcon, type LucideIcon } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 
 type TickListItemProps = {
@@ -17,49 +18,46 @@ type TickListItemProps = {
 };
 
 const TickListItem = ({ tick }: TickListItemProps) => (
-  <div className='bg-surface-nav/18 border-surface-border/45 mb-2 rounded-lg border px-3 py-2.5 last:mb-0'>
-    <div className='flex flex-wrap items-center gap-x-2 gap-y-1'>
-      <span className='font-mono text-[10px] tracking-tight text-slate-500'>{tick.dateHr}</span>
-      <span className='flex items-center gap-1 text-[10px] text-slate-400'>
-        {tick.areaName}
-        <LockSymbol lockedAdmin={!!tick.areaLockedAdmin} lockedSuperadmin={!!tick.areaLockedSuperadmin} />
-        <span className='mx-0.5'>/</span>
-        {tick.sectorName}
-        <LockSymbol lockedAdmin={!!tick.sectorLockedAdmin} lockedSuperadmin={!!tick.sectorLockedSuperadmin} />
+  <div className='py-1 text-xs leading-relaxed break-words text-slate-300'>
+    {tick.dateHr ? <span className='text-slate-400'>{tick.dateHr} </span> : null}
+    <span>{tick.areaName}</span>
+    <LockSymbol lockedAdmin={!!tick.areaLockedAdmin} lockedSuperadmin={!!tick.areaLockedSuperadmin} />
+    <span className='text-slate-500'> · </span>
+    <span>{tick.sectorName}</span>
+    <LockSymbol lockedAdmin={!!tick.sectorLockedAdmin} lockedSuperadmin={!!tick.sectorLockedSuperadmin} />
+    <span className='text-slate-500'> · </span>
+    <Link to={`/problem/${tick.idProblem}`} className='hover:text-brand text-slate-100'>
+      {tick.name}
+    </Link>
+    <span className='ml-1 text-slate-300'>{tick.grade}</span>
+    <LockSymbol lockedAdmin={!!tick.lockedAdmin} lockedSuperadmin={!!tick.lockedSuperadmin} />
+    <span className='ml-1 inline-flex align-middle opacity-65'>
+      <Stars numStars={tick.stars ?? 0} includeStarOutlines={true} size={12} />
+    </span>
+    {tick.fa ? (
+      <span className='ml-1 inline-flex h-[14px] items-center rounded border border-white/16 px-1 text-[10px] leading-none text-slate-300'>
+        FA
       </span>
-    </div>
-    <div className='mt-1 flex flex-wrap items-center gap-2'>
-      <Link to={`/problem/${tick.idProblem}`} className='type-body hover:text-brand font-semibold transition-colors'>
-        {tick.name}
-      </Link>
-      <span className='font-mono text-xs text-slate-400'>[{tick.grade}]</span>
-
-      {tick.noPersonalGrade && (
-        <span className='bg-surface-nav border-surface-border inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[9px] font-bold text-slate-400 uppercase'>
-          <X size={10} /> No personal grade
-        </span>
-      )}
-
-      <LockSymbol lockedAdmin={!!tick.lockedAdmin} lockedSuperadmin={!!tick.lockedSuperadmin} />
-      <Stars numStars={tick.stars ?? 0} includeStarOutlines={true} />
-
-      {tick.fa && (
-        <span className='rounded bg-red-400 px-1.5 py-0.5 text-[9px] font-black text-slate-950 uppercase'>FA</span>
-      )}
-      {tick.idTickRepeat ? (
-        <span className='border-surface-border rounded border px-1.5 py-0.5 text-[9px] font-bold text-slate-400 uppercase'>
-          Repeat
-        </span>
-      ) : null}
-
-      {tick.subType && (
-        <span className='bg-surface-nav border-surface-border rounded border px-1.5 py-0.5 text-[9px] font-bold text-slate-400 uppercase'>
-          {tick.subType}
-          {(tick.numPitches ?? 0) > 1 && <span className='ml-1 text-slate-500'>({tick.numPitches} pitches)</span>}
-        </span>
-      )}
-    </div>
-    {tick.comment && <p className='mt-1 text-xs leading-relaxed text-slate-500 italic'>"{tick.comment}"</p>}
+    ) : null}
+    {tick.idTickRepeat ? (
+      <span className='ml-1 inline-flex items-center gap-0.5 text-[10px] text-amber-200/70'>
+        <Repeat size={8} />
+        Repeat
+      </span>
+    ) : null}
+    {tick.noPersonalGrade ? (
+      <span className='ml-1 inline-flex items-center gap-0.5 text-[10px] text-slate-400'>
+        <X size={8} />
+        No grade
+      </span>
+    ) : null}
+    {tick.subType ? (
+      <span className='ml-1 inline-flex h-[14px] items-center rounded border border-white/16 px-1 text-[10px] leading-none text-slate-300'>
+        {tick.subType}
+        {(tick.numPitches ?? 0) > 1 ? ` (${tick.numPitches}p)` : ''}
+      </span>
+    ) : null}
+    {tick.comment ? <span className='text-slate-400'> {tick.comment}</span> : null}
   </div>
 );
 
@@ -92,6 +90,7 @@ const OverviewStatItem = ({ icon: Icon, label, value, className }: OverviewStatI
 const ProfileStatistics = ({ userId, view }: ProfileStatisticsProps) => {
   const { defaultCenter, defaultZoom } = useMeta();
   const { data, isLoading, error } = useProfileStatistics(userId);
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
 
   const stats = useMemo(() => {
     if (!data?.ticks) return null;
@@ -152,32 +151,72 @@ const ProfileStatistics = ({ userId, view }: ProfileStatisticsProps) => {
     }
 
     return (
-      <ProblemList
-        storageKey={`user/${userId}`}
-        mode='user'
-        defaultOrder='date'
-        rows={data.ticks.map((t) => ({
-          element: (
-            <TickListItem
-              key={[t.areaName, t.sectorName, t.name, t.idProblem, t.idTickRepeat].join('/')}
-              tick={t as components['schemas']['ProfileStatisticsTick']}
-            />
-          ),
-          areaName: t.areaName ?? '',
-          sectorName: t.sectorName ?? '',
-          name: t.name ?? '',
-          nr: null,
-          gradeNumber: t.gradeNumber ?? 0,
-          stars: t.stars ?? 0,
-          numTicks: 0,
-          ticked: false,
-          rock: '',
-          subType: t.subType ?? '',
-          num: t.num ?? 0,
-          fa: t.fa ?? false,
-          faDate: null,
-        }))}
-      />
+      <>
+        <ProblemList
+          storageKey={`user/${userId}`}
+          mode='user'
+          defaultOrder='date'
+          toolbarAction={
+            <button
+              type='button'
+              onClick={() => setIsMapModalOpen(true)}
+              className='bg-surface-nav/25 hover:bg-surface-nav/40 inline-flex h-8 shrink-0 items-center justify-center gap-1 rounded-full border border-white/10 px-2.5 text-xs font-medium text-slate-300 transition-colors hover:text-slate-200'
+            >
+              <MapIcon size={11} />
+              Map
+            </button>
+          }
+          rows={data.ticks.map((t) => ({
+            element: (
+              <TickListItem
+                key={[t.areaName, t.sectorName, t.name, t.idProblem, t.idTickRepeat].join('/')}
+                tick={t as components['schemas']['ProfileStatisticsTick']}
+              />
+            ),
+            areaName: t.areaName ?? '',
+            sectorName: t.sectorName ?? '',
+            name: t.name ?? '',
+            nr: null,
+            gradeNumber: t.gradeNumber ?? 0,
+            stars: t.stars ?? 0,
+            numTicks: 0,
+            ticked: false,
+            rock: '',
+            subType: t.subType ?? '',
+            num: t.num ?? 0,
+            fa: t.fa ?? false,
+            faDate: null,
+          }))}
+        />
+
+        {isMapModalOpen &&
+          createPortal(
+            <div className='fixed inset-0 z-[120]'>
+              <div className='bg-surface-dark/95 absolute inset-0' onClick={() => setIsMapModalOpen(false)} />
+              <div className='absolute inset-0'>
+                <Leaflet
+                  key={'ticked-modal=' + userId}
+                  autoZoom={true}
+                  height='100%'
+                  markers={stats.markers}
+                  defaultCenter={defaultCenter}
+                  defaultZoom={defaultZoom}
+                  showSatelliteImage={false}
+                  clusterMarkers={true}
+                  flyToId={null}
+                />
+              </div>
+              <button
+                type='button'
+                onClick={() => setIsMapModalOpen(false)}
+                className='bg-brand/95 hover:bg-brand absolute top-0 right-0 z-[130] rounded-bl-md px-2.5 py-1.5 text-base leading-none font-semibold text-slate-950 shadow-lg transition-colors'
+              >
+                ✕
+              </button>
+            </div>,
+            document.body,
+          )}
+      </>
     );
   }
 

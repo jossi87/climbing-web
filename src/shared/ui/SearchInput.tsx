@@ -8,8 +8,8 @@ type SearchInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
 export const SearchInput = ({ isPending, className, ...props }: SearchInputProps) => (
   <div className='group relative w-full'>
     <div className='group-focus-within:text-brand pointer-events-none absolute inset-y-0 left-0 z-10 flex items-center pl-3 text-slate-500 transition-colors'>
-      {isPending ? <Loader2 size={18} className='text-brand animate-spin' /> : <SearchIcon size={18} />}
+      {isPending ? <Loader2 size={15} className='text-brand animate-spin' /> : <SearchIcon size={15} />}
     </div>
-    <input {...props} className={cn('search-input type-small w-full pl-10', className)} />
+    <input {...props} className={cn('search-input type-small w-full pl-9', className)} />
   </div>
 );

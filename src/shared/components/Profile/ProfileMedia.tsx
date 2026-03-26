@@ -14,7 +14,7 @@ const ProfileMedia = ({ userId, captured }: Props) => {
   const meta = useMeta();
 
   if (isLoading) {
-    return <Loading />;
+    return <Loading inline />;
   }
 
   if (!data || data.length === 0) {
@@ -36,6 +36,7 @@ const ProfileMedia = ({ userId, captured }: Props) => {
         carouselMedia={data}
         optProblemId={null}
         showLocation={true}
+        compactTiles
       />
     </MetaContext.Provider>
   );

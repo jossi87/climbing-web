@@ -103,18 +103,25 @@ const Header = () => {
   const groupRegions = sites?.filter((s) => s.group === activeSite?.group) || [];
   const allGroups = Array.from(new Set(sites?.map((s) => s.group) || []));
 
-  const DropdownItem = ({ to, icon: Icon, children, onClick, className }: DropdownItemProps) => (
-    <Link
-      to={to}
-      onClick={onClick}
-      className={cn(
-        'flex items-center gap-3 px-4 py-2 text-xs font-semibold text-slate-400 transition-colors hover:bg-white/5 hover:text-slate-200',
-        className,
-      )}
-    >
-      <Icon size={14} /> {children}
-    </Link>
-  );
+  const DropdownItem = ({ to, icon: Icon, children, onClick, className }: DropdownItemProps) => {
+    const isActive =
+      to === '/user'
+        ? location.pathname === '/user' || location.pathname === '/user/'
+        : location.pathname === to || location.pathname.startsWith(`${to}/`);
+    return (
+      <Link
+        to={to}
+        onClick={onClick}
+        className={cn(
+          'flex items-center gap-3 px-4 py-2 text-xs font-semibold transition-colors',
+          isActive ? 'bg-brand/10 text-brand' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200',
+          className,
+        )}
+      >
+        <Icon size={14} /> {children}
+      </Link>
+    );
+  };
 
   const renderUserMenu = () => {
     if (isLoading) return null;

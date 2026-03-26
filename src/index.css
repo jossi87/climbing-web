@@ -22,13 +22,19 @@
     font-size: 14px;
     letter-spacing: -0.005em;
     font-display: swap;
-  }
-  body {
-    @apply bg-surface-dark leading-relaxed;
+    background-color: var(--color-surface-dark);
     background-image:
       radial-gradient(1000px circle at 10% 0%, rgba(198, 161, 91, 0.08), transparent 45%),
       radial-gradient(900px circle at 90% 20%, rgba(140, 109, 67, 0.035), transparent 52%);
     background-attachment: fixed;
+  }
+  @media (min-width: 768px) {
+    html {
+      overflow-y: scroll;
+    }
+  }
+  body {
+    @apply bg-surface-dark leading-relaxed;
   }
   h1,
   h2,
@@ -97,10 +103,10 @@
   }
 
   .search-input {
-    @apply bg-surface-dark/45 h-10 rounded-lg border border-white/8 px-4 text-sm font-medium text-slate-100 backdrop-blur-sm transition-colors duration-200 placeholder:text-[10px] placeholder:font-medium placeholder:tracking-[0.04em] placeholder:text-slate-500 placeholder:normal-case;
+    @apply h-10 rounded-md border border-transparent bg-transparent px-3 text-sm font-medium text-slate-100 transition-colors duration-200 placeholder:text-[10px] placeholder:font-medium placeholder:tracking-[0.04em] placeholder:text-slate-500 placeholder:normal-case;
   }
   .search-input:focus {
-    @apply border-brand/45 ring-brand/12 bg-surface-nav/65 ring-1;
+    @apply bg-surface-nav/40 border-white/10 ring-0;
   }
 
   .btn-glass {

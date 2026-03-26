@@ -6,18 +6,7 @@ import ProfileStatistics from '../../shared/components/Profile/ProfileStatistics
 import { ClickableAvatar } from '../../shared/ui/Avatar/Avatar';
 import ProfileTodo from '../../shared/components/Profile/ProfileTodo';
 import ProfileMedia from '../../shared/components/Profile/ProfileMedia';
-import {
-  LayoutDashboard,
-  Map as MapIcon,
-  List,
-  Bookmark,
-  Images,
-  Camera,
-  AlertTriangle,
-  Globe,
-  Mail,
-  Clock,
-} from 'lucide-react';
+import { LayoutDashboard, List, Bookmark, Images, Camera, AlertTriangle, Globe, Mail, Clock } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 import { Card } from '../../shared/ui';
@@ -37,7 +26,8 @@ const Profile = () => {
   const { data: profile, isLoading, error } = useProfile(userId ? +userId : -1);
   const { data: profileStats } = useProfileStatistics(profile?.id ?? -1);
   const validPages = Object.values(Page);
-  const activePage = validPages.includes(page as Page) ? (page as Page) : Page.overview;
+  const rawPage = validPages.includes(page as Page) ? (page as Page) : Page.overview;
+  const activePage = rawPage === Page.map ? Page.ascents : rawPage;
   const meta = useMeta();
 
   function onPageChanged(newPage: Page) {
@@ -85,7 +75,6 @@ const Profile = () => {
   const navItems = [
     { id: Page.overview, label: 'Overview', icon: LayoutDashboard },
     { id: Page.ascents, label: 'Ascents', icon: List },
-    { id: Page.map, label: 'Map', icon: MapIcon },
     { id: Page.todo, label: 'Todo', icon: Bookmark },
     { id: Page.media, label: 'Media', icon: Images },
     { id: Page.captured, label: 'Captured', icon: Camera },
@@ -138,7 +127,7 @@ const Profile = () => {
         </div>
 
         <div className='border-surface-border border-t border-b'>
-          <div className='bg-surface-border/35 grid w-full min-w-0 grid-cols-6 gap-px overflow-hidden'>
+          <div className='bg-surface-border/35 grid w-full min-w-0 grid-cols-5 gap-px overflow-hidden'>
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activePage === item.id;
@@ -167,12 +156,10 @@ const Profile = () => {
 
         <div
           className={cn(
-            'animate-in fade-in slide-in-from-bottom-2 w-full min-w-0 overflow-x-hidden duration-500',
-            activePage === Page.map ? 'p-0' : 'p-4 sm:p-6',
+            'animate-in fade-in slide-in-from-bottom-2 w-full min-w-0 overflow-x-hidden p-4 duration-500 sm:p-6',
           )}
         >
           {activePage === Page.overview && <ProfileStatistics userId={profile.id ?? 0} view='overview' />}
-          {activePage === Page.map && <ProfileStatistics userId={profile.id ?? 0} view='map' />}
           {activePage === Page.ascents && <ProfileStatistics userId={profile.id ?? 0} view='ascents' />}
           {activePage === Page.todo && (
             <ProfileTodo userId={profile.id ?? 0} defaultCenter={meta.defaultCenter} defaultZoom={meta.defaultZoom} />

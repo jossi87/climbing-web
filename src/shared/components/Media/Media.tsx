@@ -25,13 +25,14 @@ type Props = Pick<ComponentProps<typeof MediaModal>, 'optProblemId'> & {
   orderableMedia?: MediaItem[] | null;
   carouselMedia?: MediaItem[] | null;
   showLocation: boolean;
+  compactTiles?: boolean;
 };
 const useIds = () => {
   const { mediaId, pitch } = useParams();
   return { mediaId: mediaId ? +mediaId : 0, pitch: pitch ? +pitch : 0 };
 };
 type MediaAction = (token: string) => Promise<unknown>;
-const Media = ({ pitches, media, orderableMedia, carouselMedia, optProblemId, showLocation }: Props) => {
+const Media = ({ pitches, media, orderableMedia, carouselMedia, optProblemId, showLocation, compactTiles }: Props) => {
   const { mediaId, pitch } = useIds();
   const location = useLocation();
   const navigate = useNavigate();
@@ -120,7 +121,8 @@ const Media = ({ pitches, media, orderableMedia, carouselMedia, optProblemId, sh
         ref={ref}
         onClick={() => openModal(x)}
         className={cn(
-          'group relative cursor-pointer overflow-hidden rounded-xl border transition-all duration-300',
+          'group relative cursor-pointer overflow-hidden border transition-all duration-300',
+          compactTiles ? 'rounded-lg' : 'rounded-xl',
           'bg-surface-nav border-surface-border hover:border-brand/50 hover:shadow-lg',
           x.inherited && 'border-slate-700',
         )}
@@ -149,14 +151,13 @@ const Media = ({ pitches, media, orderableMedia, carouselMedia, optProblemId, sh
                   }}
                 />{' '}
                 {x.idType === 2 && (
-                  <div className='absolute inset-0 flex items-center justify-center bg-black/20 transition-colors group-hover:bg-black/40'>
-                    <div className='bg-brand relative flex h-10 w-10 items-center justify-center rounded-full border-2 border-slate-950/90 shadow-[0_12px_28px_-12px_rgba(0,0,0,0.8)] transition-transform duration-300 group-hover:scale-105'>
-                      <span className='pointer-events-none absolute inset-[3px] rounded-full border border-white/35 opacity-70' />
+                  <div className='absolute inset-0 flex items-center justify-center bg-black/10 transition-colors group-hover:bg-black/20'>
+                    <div className='relative flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/5 shadow-[0_4px_12px_rgba(0,0,0,0.5)] backdrop-blur-[4px] transition-transform duration-300 group-hover:scale-105'>
                       <Play
-                        size={18}
+                        size={17}
                         fill='currentColor'
                         className='ml-0.5'
-                        style={{ color: '#ffffff', stroke: '#0b0f14', strokeWidth: 1.6 }}
+                        style={{ color: '#e2e8f0', stroke: '#0f172a', strokeWidth: 1.4 }}
                       />
                     </div>
                   </div>
@@ -171,7 +172,7 @@ const Media = ({ pitches, media, orderableMedia, carouselMedia, optProblemId, sh
     );
   };
   return (
-    <div className='space-y-6'>
+    <div className={cn(compactTiles ? 'space-y-3' : 'space-y-6')}>
       {' '}
       {confirmation && (
         <div className='animate-in fade-in fixed inset-0 z-100 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm duration-200'>
@@ -256,7 +257,13 @@ const Media = ({ pitches, media, orderableMedia, carouselMedia, optProblemId, sh
           optProblemId={optProblemId}
         />
       )}{' '}
-      <div className='grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5'>
+      <div
+        className={cn(
+          compactTiles
+            ? 'grid grid-cols-3 gap-1.5 sm:grid-cols-4 sm:gap-2 md:grid-cols-5 md:gap-2.5 lg:grid-cols-6'
+            : 'grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5',
+        )}
+      >
         {' '}
         {media?.map((x) => (
           <LazyMediaCard x={x} key={x.id ?? 0} />

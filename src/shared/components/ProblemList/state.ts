@@ -47,6 +47,7 @@ type Update =
   | { action: 'group-by'; groupBy: UiState['groupBy'] }
   | { action: 'hide-ticked'; hideTicked?: UiState['hideTicked'] }
   | { action: 'only-fa'; onlyFa?: UiState['onlyFa'] }
+  | { action: 'init-types'; typeNames: string[] }
   | { action: 'type'; type: string; enabled: boolean };
 
 const uiStateReducer = (state: UiState, update: Update): UiState => {
@@ -111,6 +112,17 @@ const uiStateReducer = (state: UiState, update: Update): UiState => {
       };
     }
 
+    case 'init-types': {
+      const nextTypes: Record<string, boolean> = {};
+      for (const typeName of update.typeNames) {
+        nextTypes[typeName] = state.types[typeName] ?? true;
+      }
+      return {
+        ...state,
+        types: nextTypes,
+      };
+    }
+
     default: {
       return neverGuard(action, state);
     }
@@ -136,13 +148,14 @@ const SORTS: Record<State['order'], (a: Row, b: Row) => number> = {
     return (a.faDate ?? '').localeCompare(b.faDate ?? '', getLocales()) || a.name.localeCompare(b.name, getLocales());
   },
 
-  'grade-desc': (a, b) => b.gradeNumber - a.gradeNumber || a.name.localeCompare(b.name, getLocales()),
+  'grade-desc': (a, b) => b.gradeNumber - a.gradeNumber || a.num - b.num || a.name.localeCompare(b.name, getLocales()),
 
-  'grade-asc': (a, b) => a.gradeNumber - b.gradeNumber || a.name.localeCompare(b.name, getLocales()),
+  'grade-asc': (a, b) => a.gradeNumber - b.gradeNumber || a.num - b.num || a.name.localeCompare(b.name, getLocales()),
 
   number: (a, b) => (a?.nr ?? 0) - (b?.nr ?? 0) || a.name.localeCompare(b.name, getLocales()),
 
-  rating: (a, b) => b.stars - a.stars || b.gradeNumber - a.gradeNumber || a.name.localeCompare(b.name, getLocales()),
+  rating: (a, b) =>
+    b.stars - a.stars || b.gradeNumber - a.gradeNumber || a.num - b.num || a.name.localeCompare(b.name, getLocales()),
 } as const;
 
 const CLEANED_GROUP_BY: Record<GroupOption, GroupOption> = {
@@ -179,6 +192,7 @@ export const useProblemListState = ({
   const [storedOrderBy, setStoredOrderBy] = useSessionStorage(`problemList/${key}/sectorOrderBy`, defaultOrder);
 
   const { mapping, easyToHard, idToGrade } = useGrades();
+  const typeNames = useMemo(() => [...new Set(rows.map(({ subType }) => subType))].sort(), [rows]);
   const [{ gradeLow, gradeHigh, hideTicked, onlyFa, order, groupBy, types }, dispatch] = useReducer(uiStateReducer, {
     gradeHigh: undefined,
     gradeLow: undefined,
@@ -186,13 +200,14 @@ export const useProblemListState = ({
     groupBy: CLEANED_GROUP_BY[storedGroupBy as GroupOption] ?? 'none',
     hideTicked: storedHideTicked,
     onlyFa: storedOnlyFa,
-    types: rows.reduce((acc, { subType }) => ({ ...acc, [subType]: false }), {}),
+    types: rows.reduce((acc, { subType }) => ({ ...acc, [subType]: true }), {}),
   });
 
   useEffect(() => setStoredHideTicked(hideTicked), [hideTicked, setStoredHideTicked]);
   useEffect(() => setStoredOnlyFa(onlyFa), [onlyFa, setStoredOnlyFa]);
   useEffect(() => setStoredGroupBy(groupBy), [groupBy, setStoredGroupBy]);
   useEffect(() => setStoredOrderBy(order), [order, setStoredOrderBy]);
+  useEffect(() => dispatch({ action: 'init-types', typeNames }), [typeNames]);
 
   const [filtered, uniqueAreas, uniqueRocks, uniqueSectors, uniqueTypes] = useMemo(() => {
     const areas = new Set<string>();

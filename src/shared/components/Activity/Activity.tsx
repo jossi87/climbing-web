@@ -222,51 +222,45 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
         </div>
 
         <div className='min-w-0 flex-1'>
-          <div className='flex items-start justify-between gap-3'>
-            <div className='text-sm leading-relaxed text-slate-300'>
-              {a.users && a.users.length > 0 && !a.repeat ? (
-                <>
-                  <span className='font-semibold text-slate-200'>New {isBouldering ? 'boulder' : 'route'}</span>{' '}
-                  <span>in</span> <ProblemLink a={a} />
-                </>
-              ) : a.message ? (
-                <>
-                  <Link
-                    to={`/user/${a.id}`}
-                    className='hover:text-brand font-semibold text-slate-200 transition-colors'
-                  >
-                    {a.name}
-                  </Link>{' '}
-                  <span>commented on</span> <ProblemLink a={a} />
-                </>
-              ) : (
-                <>
-                  {a.name ? (
-                    <>
-                      <Link
-                        to={`/user/${a.id}`}
-                        className='hover:text-brand font-semibold text-slate-200 transition-colors'
-                      >
-                        {a.name}
-                      </Link>{' '}
-                      <span>{a.repeat ? 'repeated' : 'ticked'}</span>{' '}
-                    </>
-                  ) : numImg > 0 || numMov > 0 ? (
-                    <>
-                      <span className='font-semibold text-slate-200'>
-                        {numImg > 0 && `${numImg} ${numImg === 1 ? 'image' : 'images'}`}
-                        {numImg > 0 && numMov > 0 && ' & '}
-                        {numMov > 0 && `${numMov} ${numMov === 1 ? 'video' : 'videos'}`}
-                      </span>{' '}
-                      <span>on</span>{' '}
-                    </>
-                  ) : null}
-                  <ProblemLink a={a} />
-                </>
-              )}
-            </div>
-
-            <span className='shrink-0 pt-0.5 text-[10px] font-semibold text-slate-400 opacity-70 transition-colors select-none group-hover:text-slate-300'>
+          <div className='text-sm leading-relaxed text-slate-300'>
+            {a.users && a.users.length > 0 && !a.repeat ? (
+              <>
+                <span className='font-semibold text-slate-200'>New {isBouldering ? 'boulder' : 'route'}</span>{' '}
+                <span>in</span> <ProblemLink a={a} />
+              </>
+            ) : a.message ? (
+              <>
+                <Link to={`/user/${a.id}`} className='hover:text-brand font-semibold text-slate-200 transition-colors'>
+                  {a.name}
+                </Link>{' '}
+                <span>commented on</span> <ProblemLink a={a} />
+              </>
+            ) : (
+              <>
+                {a.name ? (
+                  <>
+                    <Link
+                      to={`/user/${a.id}`}
+                      className='hover:text-brand font-semibold text-slate-200 transition-colors'
+                    >
+                      {a.name}
+                    </Link>{' '}
+                    <span>{a.repeat ? 'repeated' : 'ticked'}</span>{' '}
+                  </>
+                ) : numImg > 0 || numMov > 0 ? (
+                  <>
+                    <span className='font-semibold text-slate-200'>
+                      {numImg > 0 && `${numImg} ${numImg === 1 ? 'image' : 'images'}`}
+                      {numImg > 0 && numMov > 0 && ' & '}
+                      {numMov > 0 && `${numMov} ${numMov === 1 ? 'video' : 'videos'}`}
+                    </span>{' '}
+                    <span>on</span>{' '}
+                  </>
+                ) : null}
+                <ProblemLink a={a} />
+              </>
+            )}
+            <span className='ml-1 text-[10px] font-semibold text-slate-400/80 transition-colors select-none group-hover:text-slate-300'>
               {a.timeAgo}
             </span>
           </div>
