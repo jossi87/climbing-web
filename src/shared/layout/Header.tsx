@@ -234,12 +234,12 @@ const Header = () => {
                 <button
                   onClick={() => setIsRegionOpen(!isRegionOpen)}
                   className={cn(
-                    'flex items-center gap-2 rounded px-2.5 py-1.5 text-[10px] font-semibold tracking-[0.08em] normal-case transition-colors',
+                    'flex items-center gap-2 rounded px-2.5 py-1.5 transition-colors',
                     isRegionOpen ? 'bg-white/5 text-slate-200' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200',
                   )}
                 >
                   <Globe size={12} />
-                  <span className='hidden whitespace-nowrap sm:inline'>{activeSite.name}</span>
+                  <span className='header-meta-text hidden whitespace-nowrap sm:inline'>{activeSite.name}</span>
                   <ChevronDown
                     size={11}
                     className={cn('opacity-40 transition-transform', isRegionOpen && 'rotate-180')}

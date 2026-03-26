@@ -103,10 +103,14 @@
   }
 
   .search-input {
-    @apply h-10 rounded-md border border-transparent bg-transparent px-3 text-sm font-medium text-slate-100 transition-colors duration-200 placeholder:text-[10px] placeholder:font-medium placeholder:tracking-[0.04em] placeholder:text-slate-500 placeholder:normal-case;
+    @apply h-10 rounded-md border border-transparent bg-transparent px-3 text-sm font-medium text-slate-100 transition-colors duration-200;
   }
   .search-input:focus {
     @apply bg-surface-nav/40 border-white/10 ring-0;
+  }
+
+  .header-meta-text {
+    @apply text-[10px] leading-none font-semibold tracking-[0.08em] normal-case;
   }
 
   .btn-glass {
