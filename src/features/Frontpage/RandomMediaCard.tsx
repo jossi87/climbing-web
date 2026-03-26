@@ -63,7 +63,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
             <span className={designContract.typography.subtitle}>{randomMedia.grade}</span>
           </Link>
           <SectionLabel className='mt-2 mb-4 text-slate-300'>
-            {randomMedia.area} <span className='mx-1 opacity-30'>/</span> {randomMedia.sector}
+            {randomMedia.area} <span className='mx-1 text-slate-500'>·</span> {randomMedia.sector}
           </SectionLabel>
 
           {(taggedUsers.length > 0 || photographer) && (
@@ -120,7 +120,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
             <Link to={`/area/${randomMedia.idArea}`} className='transition-colors hover:text-slate-300'>
               <SectionLabel className='inline text-slate-300'>{randomMedia.area}</SectionLabel>
             </Link>
-            <span className='type-small mx-1 opacity-50'>/</span>
+            <span className='mx-1 text-slate-500'>·</span>
             <Link to={`/sector/${randomMedia.idSector}`} className='transition-colors hover:text-slate-300'>
               <SectionLabel className='inline text-slate-300'>{randomMedia.sector}</SectionLabel>
             </Link>
