@@ -2,10 +2,11 @@ import { LockSymbol } from '../../shared/ui/Indicators';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useMeta } from '../../shared/components/Meta';
 import { useTicks } from '../../api';
-import { HeaderButtons } from '../../shared/components/HeaderButtons';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { SectionHeader } from '../../shared/ui';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
+import type { components } from '../../@types/buldreinfo/swagger';
 
 const PlaceholderFeed = () => {
   return (
@@ -17,15 +18,64 @@ const PlaceholderFeed = () => {
   );
 };
 
+type PublicAscent = components['schemas']['PublicAscent'];
+
+const TickRow = ({ t }: { t: PublicAscent }) => {
+  const maybe = t as PublicAscent & { idArea?: number; idSector?: number; idUser?: number };
+  const areaId = maybe.idArea;
+  const sectorId = maybe.idSector;
+  const userId = maybe.idUser;
+
+  return (
+    <div className='block py-1 text-xs leading-relaxed break-words text-slate-300'>
+      {t.date ? <span className='text-slate-400'>{t.date} </span> : null}
+      {areaId ? (
+        <Link to={`/area/${areaId}`} className='hover:text-brand transition-colors'>
+          {t.areaName}
+        </Link>
+      ) : (
+        <span>{t.areaName}</span>
+      )}
+      <LockSymbol lockedAdmin={t.areaLockedAdmin} lockedSuperadmin={t.areaLockedSuperadmin} />
+      <span className='text-slate-500'> · </span>
+      {sectorId ? (
+        <Link to={`/sector/${sectorId}`} className='hover:text-brand transition-colors'>
+          {t.sectorName}
+        </Link>
+      ) : (
+        <span>{t.sectorName}</span>
+      )}
+      <LockSymbol lockedAdmin={t.sectorLockedAdmin} lockedSuperadmin={t.sectorLockedSuperadmin} />
+      <span className='text-slate-500'> · </span>
+      <Link to={`/problem/${t.problemId}`} className='hover:text-brand text-slate-100 transition-colors'>
+        {t.problemName}
+      </Link>
+      <span className='ml-1 text-slate-300'>{t.problemGrade}</span>
+      <LockSymbol lockedAdmin={t.problemLockedAdmin} lockedSuperadmin={t.problemLockedSuperadmin} />
+      <span className='text-slate-500'> · </span>
+      {userId ? (
+        <Link to={`/user/${userId}`} className='hover:text-brand text-slate-400 transition-colors'>
+          {t.name}
+        </Link>
+      ) : (
+        <span className='text-slate-400'>{t.name}</span>
+      )}
+    </div>
+  );
+};
+
 const Ticks = () => {
   const { page } = useParams();
   const meta = useMeta();
   const pageNum = Number(page ?? 0);
   const { data, isLoading } = useTicks(pageNum);
   const navigate = useNavigate();
+  const currPage = Number(data?.currPage ?? 1);
+  const numPages = Number(data?.numPages ?? 1);
 
   const handlePageChange = (newPage: number) => {
-    navigate('/ticks/' + newPage);
+    const target = Math.max(1, Math.min(numPages, newPage));
+    navigate('/ticks/' + target);
   };
 
   return (
@@ -33,66 +83,63 @@ const Ticks = () => {
       <title>{`Ticks | ${meta?.title}`}</title>
 
       <div className={cn(designContract.surfaces.card, 'p-4 sm:p-6')}>
-        <HeaderButtons header='Public ascents' icon='checkmark' />
+        <SectionHeader
+          title='Public ascents'
+          icon={CheckCircle}
+          subheader={data ? `Page ${currPage} of ${numPages}` : undefined}
+        />
 
-        <div className='divide-surface-border mt-6 divide-y'>
+        <div>
           {isLoading && <PlaceholderFeed />}
 
-          {data &&
-            data.ticks.map((t) => (
-              <Link
-                key={[t.date, t.name].join(' - ')}
-                to={`/problem/${t.problemId}`}
-                className='group -mx-2 block rounded-lg px-2 py-4 transition-colors hover:bg-white/5'
-              >
-                <div className='flex flex-col gap-1'>
-                  <div className='flex flex-wrap items-center gap-x-1.5 text-[10px] font-semibold tracking-[0.16em] text-slate-500 uppercase'>
-                    <span className='text-slate-400'>{t.date}</span>
-                    <span className='text-slate-600'>/</span>
-                    <span className='transition-colors group-hover:text-slate-300'>{t.areaName}</span>
-                    <LockSymbol lockedAdmin={t.areaLockedAdmin} lockedSuperadmin={t.areaLockedSuperadmin} />
-                    <span className='text-slate-600'>/</span>
-                    <span className='transition-colors group-hover:text-slate-300'>{t.sectorName}</span>
-                    <LockSymbol lockedAdmin={t.sectorLockedAdmin} lockedSuperadmin={t.sectorLockedSuperadmin} />
-                    <span className='text-slate-600'>/</span>
-                    <span className='transition-colors group-hover:text-slate-300'>{t.problemName}</span>
-                    <LockSymbol lockedAdmin={t.problemLockedAdmin} lockedSuperadmin={t.problemLockedSuperadmin} />
-                  </div>
+          {data && data.ticks.map((t) => <TickRow key={[t.date, t.name, t.problemId].join(' - ')} t={t} />)}
 
-                  <div className='flex items-center gap-2'>
-                    <span className={cn('type-body group-hover:text-brand font-semibold transition-colors')}>
-                      {t.name}
-                    </span>
-                    <span className='font-mono text-xs text-slate-400'>{t.problemGrade}</span>
-                  </div>
-                </div>
-              </Link>
-            ))}
+          {data && data.ticks.length === 0 ? <div className='py-6 text-sm text-slate-500'>Empty list.</div> : null}
         </div>
 
-        {data && data.numPages > 1 && (
+        {data && numPages > 1 && (
           <div className='mt-8 flex items-center justify-center gap-2'>
             <button
-              disabled={Number(data.currPage) <= 1}
-              onClick={() => handlePageChange(Number(data.currPage) - 1)}
+              disabled={currPage <= 1}
+              onClick={() => handlePageChange(currPage - 1)}
               className='bg-surface-nav border-surface-border rounded-lg border p-2 opacity-70 transition-all hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-30'
             >
               <ChevronLeft size={18} />
             </button>
 
             <div className='flex items-center gap-1'>
-              <span className='bg-brand shadow-brand/20 rounded-lg px-3 py-1.5 text-xs font-bold shadow-lg'>
-                {data.currPage}
-              </span>
-              <span className='px-2 text-xs font-bold text-slate-500'>of</span>
-              <span className='bg-surface-nav border-surface-border rounded-lg border px-3 py-1.5 text-xs font-bold opacity-85'>
-                {data.numPages}
-              </span>
+              {currPage > 1 && (
+                <button
+                  type='button'
+                  onClick={() => handlePageChange(1)}
+                  className='bg-surface-nav border-surface-border hover:border-brand/35 hover:text-brand rounded-lg border px-3 py-1.5 text-xs font-bold opacity-85 transition-colors'
+                >
+                  1
+                </button>
+              )}
+              {currPage > 2 && <span className='px-1 text-xs text-slate-600'>…</span>}
+              <button
+                type='button'
+                onClick={() => handlePageChange(currPage)}
+                className='bg-brand shadow-brand/20 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-950 shadow-lg'
+              >
+                {currPage}
+              </button>
+              {currPage < numPages - 1 && <span className='px-1 text-xs text-slate-600'>…</span>}
+              {currPage < numPages && (
+                <button
+                  type='button'
+                  onClick={() => handlePageChange(numPages)}
+                  className='bg-surface-nav border-surface-border hover:border-brand/35 hover:text-brand rounded-lg border px-3 py-1.5 text-xs font-bold opacity-85 transition-colors'
+                >
+                  {numPages}
+                </button>
+              )}
             </div>
 
             <button
-              disabled={Number(data.currPage) >= data.numPages}
-              onClick={() => handlePageChange(Number(data.currPage) + 1)}
+              disabled={currPage >= numPages}
+              onClick={() => handlePageChange(currPage + 1)}
               className='bg-surface-nav border-surface-border rounded-lg border p-2 opacity-70 transition-all hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-30'
             >
               <ChevronRight size={18} />

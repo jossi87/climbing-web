@@ -17,48 +17,68 @@ type TickListItemProps = {
   tick: NonNullable<components['schemas']['ProfileStatistics']['ticks']>[number];
 };
 
-const TickListItem = ({ tick }: TickListItemProps) => (
-  <div className='py-1 text-xs leading-relaxed break-words text-slate-300'>
-    {tick.dateHr ? <span className='text-slate-400'>{tick.dateHr} </span> : null}
-    <span>{tick.areaName}</span>
-    <LockSymbol lockedAdmin={!!tick.areaLockedAdmin} lockedSuperadmin={!!tick.areaLockedSuperadmin} />
-    <span className='text-slate-500'> · </span>
-    <span>{tick.sectorName}</span>
-    <LockSymbol lockedAdmin={!!tick.sectorLockedAdmin} lockedSuperadmin={!!tick.sectorLockedSuperadmin} />
-    <span className='text-slate-500'> · </span>
-    <Link to={`/problem/${tick.idProblem}`} className='hover:text-brand text-slate-100'>
-      {tick.name}
-    </Link>
-    <span className='ml-1 text-slate-300'>{tick.grade}</span>
-    <LockSymbol lockedAdmin={!!tick.lockedAdmin} lockedSuperadmin={!!tick.lockedSuperadmin} />
-    <span className='ml-1 inline-flex align-middle opacity-65'>
-      <Stars numStars={tick.stars ?? 0} includeStarOutlines={true} size={12} />
-    </span>
-    {tick.fa ? (
-      <span className='border-brand/40 bg-brand/10 text-brand ml-1 inline-flex h-[14px] items-center rounded border px-1 text-[10px] leading-none'>
-        FA
+const TickListItem = ({ tick }: TickListItemProps) => <TickListItemInner tick={tick} />;
+
+const TickListItemInner = ({ tick }: TickListItemProps) => {
+  const maybe = tick as typeof tick & { idArea?: number; idSector?: number };
+  const areaId = maybe.idArea;
+  const sectorId = maybe.idSector;
+
+  return (
+    <div className='py-1 text-xs leading-relaxed break-words text-slate-300'>
+      {tick.dateHr ? <span className='text-slate-400'>{tick.dateHr} </span> : null}
+      {areaId ? (
+        <Link to={`/area/${areaId}`} className='hover:text-brand transition-colors'>
+          {tick.areaName}
+        </Link>
+      ) : (
+        <span>{tick.areaName}</span>
+      )}
+      <LockSymbol lockedAdmin={!!tick.areaLockedAdmin} lockedSuperadmin={!!tick.areaLockedSuperadmin} />
+      <span className='text-slate-500'> · </span>
+      {sectorId ? (
+        <Link to={`/sector/${sectorId}`} className='hover:text-brand transition-colors'>
+          {tick.sectorName}
+        </Link>
+      ) : (
+        <span>{tick.sectorName}</span>
+      )}
+      <LockSymbol lockedAdmin={!!tick.sectorLockedAdmin} lockedSuperadmin={!!tick.sectorLockedSuperadmin} />
+      <span className='text-slate-500'> · </span>
+      <Link to={`/problem/${tick.idProblem}`} className='hover:text-brand text-slate-100'>
+        {tick.name}
+      </Link>
+      <span className='ml-1 text-slate-300'>{tick.grade}</span>
+      <LockSymbol lockedAdmin={!!tick.lockedAdmin} lockedSuperadmin={!!tick.lockedSuperadmin} />
+      <span className='ml-1 inline-flex align-middle opacity-65'>
+        <Stars numStars={tick.stars ?? 0} includeStarOutlines={true} size={12} />
       </span>
-    ) : null}
-    {tick.idTickRepeat ? (
-      <span className='ml-1 inline-flex h-[14px] items-center rounded border border-white/16 px-1 text-[10px] leading-none text-slate-300'>
-        Repeat
-      </span>
-    ) : null}
-    {tick.noPersonalGrade ? (
-      <span className='ml-1 inline-flex items-center gap-0.5 text-[10px] text-slate-400'>
-        <X size={8} />
-        No grade
-      </span>
-    ) : null}
-    {tick.subType ? (
-      <span className='ml-1 inline-flex h-[14px] items-center rounded border border-white/16 px-1 text-[10px] leading-none text-slate-300'>
-        {tick.subType}
-        {(tick.numPitches ?? 0) > 1 ? ` (${tick.numPitches}p)` : ''}
-      </span>
-    ) : null}
-    {tick.comment ? <span className='text-slate-400'> {tick.comment}</span> : null}
-  </div>
-);
+      {tick.fa ? (
+        <span className='border-brand/40 bg-brand/10 text-brand ml-1 inline-flex h-[14px] items-center rounded border px-1 text-[10px] leading-none'>
+          FA
+        </span>
+      ) : null}
+      {tick.idTickRepeat ? (
+        <span className='ml-1 inline-flex h-[14px] items-center rounded border border-white/16 px-1 text-[10px] leading-none text-slate-300'>
+          Repeat
+        </span>
+      ) : null}
+      {tick.noPersonalGrade ? (
+        <span className='ml-1 inline-flex items-center gap-0.5 text-[10px] text-slate-400'>
+          <X size={8} />
+          No grade
+        </span>
+      ) : null}
+      {tick.subType ? (
+        <span className='ml-1 inline-flex h-[14px] items-center rounded border border-white/16 px-1 text-[10px] leading-none text-slate-300'>
+          {tick.subType}
+          {(tick.numPitches ?? 0) > 1 ? ` (${tick.numPitches}p)` : ''}
+        </span>
+      ) : null}
+      {tick.comment ? <span className='text-slate-400'> {tick.comment}</span> : null}
+    </div>
+  );
+};
 
 type ProfileStatisticsProps = {
   userId: number;
