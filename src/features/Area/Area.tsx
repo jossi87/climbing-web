@@ -277,7 +277,7 @@ const Area = () => {
     .sort((a, b) => b.gradeNumber - a.gradeNumber);
 
   return (
-    <div className='max-w-container mx-auto space-y-8 px-4 py-6 text-left'>
+    <div className='max-w-container mx-auto space-y-6 px-4 py-6 text-left'>
       <title>{`${data.name} | ${meta?.title}`}</title>
       <meta name='description' content={data.comment} />
 
@@ -295,18 +295,22 @@ const Area = () => {
         </nav>
 
         {meta.isAdmin && (
-          <div className='flex items-center gap-2'>
-            <Link
-              to={`/sector/edit/${data.id}/0`}
-              className='flex items-center gap-1.5 rounded-lg border border-green-500/20 bg-green-500/10 px-3 py-1.5 text-[10px] font-black tracking-wider text-green-500 uppercase transition-colors hover:bg-green-500/20'
-            >
-              <Plus size={14} /> Add Sector
-            </Link>
+          <div className='inline-flex items-center gap-1.5'>
             <Link
               to={`/area/edit/${data.id}`}
-              className='bg-surface-nav border-surface-border hover:bg-surface-hover type-label flex items-center gap-1.5 rounded-lg border px-3 py-1.5 opacity-85 transition-colors hover:opacity-100'
+              title='Edit area'
+              aria-label='Edit area'
+              className='inline-flex h-8 w-8 items-center justify-center rounded-full border border-amber-300/45 bg-amber-400/18 text-amber-100 transition-colors hover:bg-amber-400/28'
             >
-              <Edit size={14} /> Edit Area
+              <Edit size={12} />
+            </Link>
+            <Link
+              to={`/sector/edit/${data.id}/0`}
+              title='Add sector'
+              aria-label='Add sector'
+              className='inline-flex h-8 w-8 items-center justify-center rounded-full border border-green-400/40 bg-green-500/20 text-green-300 transition-colors hover:bg-green-500/30 hover:text-green-200'
+            >
+              <Plus size={12} />
             </Link>
           </div>
         )}
@@ -324,7 +328,7 @@ const Area = () => {
 
       {tabs.length > 0 && (
         <div className='space-y-4'>
-          <div className='scrollbar-hide border-surface-border flex gap-2 overflow-x-auto border-b pb-2'>
+          <div className='scrollbar-hide flex gap-1.5 overflow-x-auto pb-1'>
             {tabs.map((t) => {
               const IconComp = t.icon;
               return (
@@ -332,13 +336,13 @@ const Area = () => {
                   key={t.id}
                   onClick={() => setActiveTab(t.id)}
                   className={cn(
-                    'flex items-center gap-2 rounded-lg px-4 py-2 text-[10px] font-semibold tracking-[0.16em] whitespace-nowrap uppercase transition-all',
+                    'inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-[11px] leading-none font-medium whitespace-nowrap transition-colors sm:text-[12px]',
                     activeTab === t.id
-                      ? 'bg-brand shadow-brand/20 shadow-md'
-                      : 'hover:bg-surface-nav opacity-70 hover:opacity-100',
+                      ? 'bg-surface-hover/55 border-white/18 text-slate-100'
+                      : 'bg-surface-nav/25 hover:bg-surface-nav/40 border-white/10 text-slate-300 hover:text-slate-200',
                   )}
                 >
-                  <IconComp size={16} /> {t.label}
+                  <IconComp size={11} /> {t.label}
                 </button>
               );
             })}
@@ -400,7 +404,7 @@ const Area = () => {
         </div>
       )}
 
-      <div className='space-y-4'>
+      <div className='space-y-3'>
         <div className='space-y-3 rounded-xl border border-orange-500/20 bg-orange-500/10 p-4'>
           <div className='flex items-center gap-2 text-xs font-black tracking-widest text-orange-500 uppercase'>
             <Info size={14} /> Restrictions
@@ -411,7 +415,7 @@ const Area = () => {
           </div>
         </div>
 
-        <div className='bg-surface-card border-surface-border space-y-4 rounded-2xl border p-6 shadow-sm'>
+        <div className='bg-surface-card border-surface-border space-y-4 rounded-xl border p-5'>
           <div className='flex flex-wrap gap-2'>
             <div className='bg-surface-nav border-surface-border rounded border px-3 py-1 text-xs text-slate-300'>
               Sectors: <span className='ml-1 font-bold'>{data.sectors?.length ?? 0}</span>
@@ -448,7 +452,7 @@ const Area = () => {
             <Markdown content={data.comment} />
           </div>
           {(data.triviaMedia?.length ?? 0) > 0 && (
-            <div className='border-surface-border/50 border-t pt-4'>
+            <div className='pt-2'>
               <Media
                 pitches={null}
                 media={data.triviaMedia ?? []}
@@ -462,13 +466,15 @@ const Area = () => {
         </div>
       </div>
 
-      <div className='space-y-4'>
-        <div className='border-surface-border flex gap-2 border-b'>
+      <div className='space-y-3'>
+        <div className='flex gap-1.5 overflow-x-auto pb-1'>
           <button
             onClick={() => setActiveSectorTab('sectors')}
             className={cn(
-              'border-b-2 px-6 py-2 text-[10px] font-semibold tracking-[0.16em] uppercase transition-all',
-              activeSectorTab === 'sectors' ? 'border-brand' : 'border-transparent opacity-70 hover:opacity-100',
+              'inline-flex h-8 items-center rounded-full border px-3 text-[11px] leading-none font-medium whitespace-nowrap transition-colors sm:text-[12px]',
+              activeSectorTab === 'sectors'
+                ? 'bg-surface-hover/55 border-white/18 text-slate-100'
+                : 'bg-surface-nav/25 hover:bg-surface-nav/40 border-white/10 text-slate-300 hover:text-slate-200',
             )}
           >
             Sectors ({data.sectors?.length ?? 0})
@@ -476,8 +482,10 @@ const Area = () => {
           <button
             onClick={() => setActiveSectorTab('problems')}
             className={cn(
-              'border-b-2 px-6 py-2 text-[10px] font-semibold tracking-[0.16em] uppercase transition-all',
-              activeSectorTab === 'problems' ? 'border-brand' : 'border-transparent opacity-70 hover:opacity-100',
+              'inline-flex h-8 items-center rounded-full border px-3 text-[11px] leading-none font-medium whitespace-nowrap transition-colors sm:text-[12px]',
+              activeSectorTab === 'problems'
+                ? 'bg-surface-hover/55 border-white/18 text-slate-100'
+                : 'bg-surface-nav/25 hover:bg-surface-nav/40 border-white/10 text-slate-300 hover:text-slate-200',
             )}
           >
             {meta.isBouldering ? 'Problems' : 'Routes'} ({problemRows.length})

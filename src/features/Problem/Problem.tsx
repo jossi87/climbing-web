@@ -264,7 +264,7 @@ export const Problem = () => {
         </div>
       </div>
 
-      <div className='space-y-4'>
+      <div className='space-y-3'>
         {data.broken && (
           <div className='flex items-start gap-4 rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-500'>
             <AlertTriangle className='mt-0.5 shrink-0' size={18} />
@@ -290,25 +290,29 @@ export const Problem = () => {
       </div>
 
       <div className={cn(designContract.surfaces.card, 'overflow-hidden')}>
-        <div className='border-surface-border bg-surface-nav/30 flex border-b'>
+        <div className='bg-surface-nav/20 flex gap-1.5 p-2'>
           <button
             onClick={() => setActiveTab('media')}
             className={cn(
-              designContract.controls.tabButton,
-              activeTab === 'media' ? 'border-brand bg-brand/5' : 'border-transparent opacity-70 hover:opacity-100',
+              'inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-[11px] leading-none font-medium transition-colors sm:text-[12px]',
+              activeTab === 'media'
+                ? 'bg-surface-hover/55 border-white/18 text-slate-100'
+                : 'bg-surface-nav/25 hover:bg-surface-nav/40 border-white/10 text-slate-300 hover:text-slate-200',
             )}
           >
-            <Eye size={14} /> Media
+            <Eye size={11} /> Media
           </button>
           {markers.length > 0 && (
             <button
               onClick={() => setActiveTab('map')}
               className={cn(
-                designContract.controls.tabButton,
-                activeTab === 'map' ? 'border-brand bg-brand/5' : 'border-transparent opacity-70 hover:opacity-100',
+                'inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-[11px] leading-none font-medium transition-colors sm:text-[12px]',
+                activeTab === 'map'
+                  ? 'bg-surface-hover/55 border-white/18 text-slate-100'
+                  : 'bg-surface-nav/25 hover:bg-surface-nav/40 border-white/10 text-slate-300 hover:text-slate-200',
               )}
             >
-              <MapIcon size={14} /> Map
+              <MapIcon size={11} /> Map
             </button>
           )}
         </div>
@@ -368,7 +372,7 @@ export const Problem = () => {
         </div>
       )}
 
-      <div className={cn(designContract.surfaces.card, 'space-y-8 p-6')}>
+      <div className={cn(designContract.surfaces.card, 'space-y-6 p-5')}>
         <div className='grid grid-cols-1 gap-x-8 gap-y-6 lg:grid-cols-[180px_1fr]'>
           {(data.neighbourPrev || data.neighbourNext) && (
             <>
@@ -619,12 +623,10 @@ export const Problem = () => {
         </div>
       </div>
 
-      <div
-        className={cn('grid grid-cols-1 gap-12 pt-8', hasTicks && hasComments ? 'lg:grid-cols-2' : 'lg:grid-cols-1')}
-      >
+      <div className={cn('grid grid-cols-1 gap-8 pt-4', hasTicks && hasComments ? 'lg:grid-cols-2' : 'lg:grid-cols-1')}>
         {hasTicks && (
-          <div className='space-y-6'>
-            <div className='border-surface-border flex items-center gap-3 border-b px-1 pb-4'>
+          <div className='space-y-4'>
+            <div className='flex items-center gap-2 px-1'>
               <Check size={20} className='text-brand' />
               <h3 className='type-label'>Latest Ticks</h3>
             </div>
@@ -632,8 +634,8 @@ export const Problem = () => {
           </div>
         )}
         {hasComments && (
-          <div className='space-y-6'>
-            <div className='border-surface-border flex items-center gap-3 border-b px-1 pb-4'>
+          <div className='space-y-4'>
+            <div className='flex items-center gap-2 px-1'>
               <MessageSquare size={20} className='text-brand' />
               <h3 className='type-label'>Comments</h3>
             </div>

@@ -948,6 +948,7 @@ export type components = {
             redirectUrl?: string;
             /** Format: int32 */
             regionId?: number;
+            regionName?: string;
             canonical?: string;
             /** Format: int32 */
             id?: number;

@@ -1,7 +1,6 @@
 import { useMeta } from '../components/Meta';
-import { ChevronDown, Lock, Eye } from 'lucide-react';
+import { ChevronDown, Lock, LockKeyhole, Eye } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import { designContract } from '../../design/contract';
 
 type VisibilityValue = { lockedSuperadmin: boolean; lockedAdmin: boolean };
 
@@ -9,8 +8,10 @@ type CustomProps = {
   value: VisibilityValue;
   onChange: (val: VisibilityValue) => void;
   className?: string;
+  selectClassName?: string;
   disabled?: boolean;
   label?: string;
+  labelClassName?: string;
 };
 
 const lockedOptions = [
@@ -30,6 +31,7 @@ export const VisibilitySelector = ({
   value: incomingValue,
   onChange,
   className,
+  selectClassName,
   disabled,
 }: Omit<CustomProps, 'label'>) => {
   const meta = useMeta();
@@ -44,7 +46,8 @@ export const VisibilitySelector = ({
       <select
         disabled={disabled}
         className={cn(
-          'bg-surface-nav border-surface-border focus:border-brand type-body w-full cursor-pointer appearance-none rounded-lg border py-2.5 pr-10 pl-10 transition-all focus:outline-none disabled:cursor-not-allowed disabled:opacity-50',
+          'bg-surface-nav border-surface-border focus:border-brand h-10 w-full cursor-pointer appearance-none rounded-lg border px-10 text-sm transition-all focus:outline-none disabled:cursor-not-allowed disabled:opacity-50',
+          selectClassName,
         )}
         value={currentValue}
         onChange={(e) => {
@@ -63,11 +66,9 @@ export const VisibilitySelector = ({
       </select>
 
       <div className='pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-slate-500'>
-        {currentValue === 0 ? (
-          <Eye size={16} />
-        ) : (
-          <Lock size={16} className={currentValue === 2 ? 'text-red-500' : 'text-amber-500'} />
-        )}
+        {currentValue === 0 ? <Eye size={16} /> : null}
+        {currentValue === 1 ? <Lock size={16} className='text-amber-400' /> : null}
+        {currentValue === 2 ? <LockKeyhole size={16} className='text-red-400' /> : null}
       </div>
 
       <div className='pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-slate-500 transition-colors group-hover:text-slate-300'>
@@ -77,10 +78,12 @@ export const VisibilitySelector = ({
   );
 };
 
-export const VisibilitySelectorField = ({ label, ...props }: CustomProps) => {
+export const VisibilitySelectorField = ({ label, labelClassName, ...props }: CustomProps) => {
   return (
     <div className='space-y-2'>
-      <label className={cn('ml-1', designContract.typography.label)}>{label || 'Visibility'}</label>
+      <label className={cn('mb-1 ml-1 block text-[11px] font-medium text-slate-400 sm:text-[12px]', labelClassName)}>
+        {label || 'Visibility'}
+      </label>
       <VisibilitySelector {...props} />
     </div>
   );

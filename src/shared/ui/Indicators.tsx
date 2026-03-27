@@ -16,7 +16,7 @@ export const LockSymbol = ({
     return (
       <span
         className={cn(
-          'border-brand/45 bg-brand/8 text-brand/80 ml-0.5 inline-flex h-[14px] items-center rounded border px-1 leading-none',
+          'ml-0.5 inline-flex h-[14px] items-center rounded border border-red-400/45 bg-red-500/18 px-1 leading-none text-red-200',
           superadminClassName,
         )}
       >
@@ -27,7 +27,7 @@ export const LockSymbol = ({
     return (
       <span
         className={cn(
-          'bg-surface-nav/40 ml-0.5 inline-flex h-[14px] items-center rounded border border-white/15 px-1 leading-none text-slate-400',
+          'ml-0.5 inline-flex h-[14px] items-center rounded border border-amber-300/45 bg-amber-400/18 px-1 leading-none text-amber-100',
           adminClassName,
         )}
       >

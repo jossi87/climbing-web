@@ -10,7 +10,7 @@ type Props = {
 export const Card = ({ children, className = '', flush = false }: Props) => (
   <div
     className={cn(
-      'app-card relative overflow-hidden rounded-none border-x-0 shadow-xl sm:rounded-xl sm:border',
+      'app-card relative overflow-hidden rounded-none border-0 shadow-xl sm:rounded-xl sm:border',
       className,
     )}
   >

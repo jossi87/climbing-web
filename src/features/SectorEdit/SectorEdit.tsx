@@ -16,6 +16,7 @@ import { hours } from '../../utils/hours';
 import ExternalLinks from '../../shared/ui/ExternalLinks';
 import {
   Info,
+  Edit,
   MapPin,
   AlertTriangle,
   ChevronDown,
@@ -28,6 +29,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { Card, SectionHeader } from '../../shared/ui';
 
 type Area = components['schemas']['Area'];
 type Sector = components['schemas']['Sector'];
@@ -359,24 +361,28 @@ export const SectorEdit = ({ sector, area }: Props) => {
 
   const inputClasses =
     'w-full bg-surface-nav border border-surface-border rounded-lg py-2 px-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-brand transition-colors';
-  const labelClasses = 'text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 mb-1 block';
+  const labelClasses = 'ml-1 mb-1 block text-[11px] font-medium text-slate-400 sm:text-[12px]';
 
   return (
-    <div className='mx-auto max-w-4xl space-y-6 px-4 pb-20'>
+    <div className='w-full min-w-0 pb-20'>
       <title>{`Edit ${data.name} | ${meta?.title}`}</title>
+      <Card flush className='min-w-0 border-0 sm:border'>
+        <div className='p-4 sm:p-5'>
+          <SectionHeader title='Edit Sector' icon={Edit} subheader={`${area.name ?? ''} / ${data.name ?? ''}`} />
+          <div className='bg-surface-nav/20 border-surface-border flex items-center gap-3 rounded-xl border p-3 text-[11px] text-slate-400 sm:text-[12px]'>
+            <Info size={14} className='text-brand shrink-0' />
+            <p>
+              Contact{' '}
+              <a href='mailto:jostein.oygarden@gmail.com' className='hover:text-brand font-semibold text-slate-200'>
+                Jostein Øygarden
+              </a>{' '}
+              if you want to move or split sector.
+            </p>
+          </div>
+        </div>
+      </Card>
 
-      <div className='bg-surface-nav/20 border-surface-border flex items-center gap-3 rounded-xl border p-4 text-xs text-slate-400'>
-        <Info size={16} className='text-brand shrink-0' />
-        <p>
-          Contact{' '}
-          <a href='mailto:jostein.oygarden@gmail.com' className='hover:text-brand font-bold text-slate-200'>
-            Jostein Øygarden
-          </a>{' '}
-          if you want to move or split sector.
-        </p>
-      </div>
-
-      <form onSubmit={save} className='space-y-6'>
+      <form onSubmit={save} className='mt-4 space-y-4'>
         <div className='bg-surface-card border-surface-border space-y-6 rounded-xl border p-6 shadow-sm'>
           <div className='grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4'>
             <div className='space-y-2 md:col-span-2 lg:col-span-1'>
@@ -443,28 +449,34 @@ export const SectorEdit = ({ sector, area }: Props) => {
                 <label className={labelClasses}>Sun from hour</label>
                 <select
                   className={inputClasses}
-                  value={data.sunFromHour ?? 0}
+                  value={data.sunFromHour || ''}
                   onChange={(e) => onSunFromHourChanged(dummyEvent, { value: e.target.value })}
                 >
-                  {hours.map((h) => (
-                    <option key={h.key} value={h.value}>
-                      {h.text}
-                    </option>
-                  ))}
+                  <option value=''>Empty</option>
+                  {hours
+                    .filter((h) => h.value > 0)
+                    .map((h) => (
+                      <option key={h.key} value={h.value}>
+                        {h.text}
+                      </option>
+                    ))}
                 </select>
               </div>
               <div className='space-y-2'>
                 <label className={labelClasses}>Sun to hour</label>
                 <select
                   className={inputClasses}
-                  value={data.sunToHour ?? 0}
+                  value={data.sunToHour || ''}
                   onChange={(e) => onSunToHourChanged(dummyEvent, { value: e.target.value })}
                 >
-                  {hours.map((h) => (
-                    <option key={h.key} value={h.value}>
-                      {h.text}
-                    </option>
-                  ))}
+                  <option value=''>Empty</option>
+                  {hours
+                    .filter((h) => h.value > 0)
+                    .map((h) => (
+                      <option key={h.key} value={h.value}>
+                        {h.text}
+                      </option>
+                    ))}
                 </select>
               </div>
             </div>
@@ -686,7 +698,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
           <button
             type='submit'
             disabled={saving || !data.name || !!data.sunFromHour !== !!data.sunToHour}
-            className='bg-brand hover:bg-brand/90 shadow-brand/20 type-label flex items-center gap-2 rounded-lg px-8 py-2.5 shadow-lg transition-all disabled:opacity-50'
+            className='type-label flex items-center gap-2 rounded-lg bg-emerald-400 px-8 py-2.5 text-slate-950 shadow-lg shadow-emerald-900/30 transition-all hover:bg-emerald-300 disabled:opacity-50'
           >
             {saving ? <Loader2 className='animate-spin' size={16} /> : <Save size={16} />}
             Save Sector

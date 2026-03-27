@@ -538,8 +538,10 @@ const ProblemEdit = ({ problem, sector }: Props) => {
               onClick={(e) => save(e, data).then((dest) => dest && navigate(dest))}
               disabled={!data.name || (meta.types.length > 1 && !data.t?.id) || saving}
               className={cn(
-                'flex items-center gap-2 rounded-xl px-8 py-2.5 font-black tracking-widest uppercase transition-all',
-                saving ? 'bg-brand/50 cursor-not-allowed' : 'bg-brand shadow-brand/20 shadow-lg',
+                'type-label flex items-center gap-2 rounded-xl px-8 py-2.5 transition-all',
+                saving
+                  ? 'cursor-not-allowed bg-emerald-300/60'
+                  : 'bg-emerald-400 shadow-lg shadow-emerald-900/30 hover:bg-emerald-300',
               )}
             >
               {saving ? (

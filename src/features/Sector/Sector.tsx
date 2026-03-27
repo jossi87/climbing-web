@@ -285,7 +285,7 @@ const Sector = () => {
   ).sort();
 
   return (
-    <div className='max-w-container mx-auto space-y-8 px-4 py-6 text-left'>
+    <div className='max-w-container mx-auto space-y-6 px-4 py-6 text-left'>
       <title>{`${data.name} (${data.areaName}) | ${meta?.title}`}</title>
       <meta name='description' content={data.comment} />
 
@@ -307,18 +307,22 @@ const Sector = () => {
         </nav>
 
         {meta.isAdmin && (
-          <div className='flex items-center gap-2'>
-            <Link
-              to={`/problem/edit/${data.id}/0`}
-              className='type-label flex items-center gap-1.5 rounded-lg border border-green-500/20 bg-green-500/10 px-3 py-1.5 text-green-500 transition-colors hover:bg-green-500/20'
-            >
-              <Plus size={14} /> Add
-            </Link>
+          <div className='inline-flex items-center gap-1.5'>
             <Link
               to={`/sector/edit/${data.areaId}/${data.id}`}
-              className='bg-surface-nav border-surface-border hover:bg-surface-hover type-label flex items-center gap-1.5 rounded-lg border px-3 py-1.5 opacity-85 transition-colors hover:opacity-100'
+              title='Edit sector'
+              aria-label='Edit sector'
+              className='inline-flex h-8 w-8 items-center justify-center rounded-full border border-amber-300/45 bg-amber-400/18 text-amber-100 transition-colors hover:bg-amber-400/28'
             >
-              <Edit size={14} /> Edit
+              <Edit size={12} />
+            </Link>
+            <Link
+              to={`/problem/edit/${data.id}/0`}
+              title='Add problem'
+              aria-label='Add problem'
+              className='inline-flex h-8 w-8 items-center justify-center rounded-full border border-green-400/40 bg-green-500/20 text-green-300 transition-colors hover:bg-green-500/30 hover:text-green-200'
+            >
+              <Plus size={12} />
             </Link>
           </div>
         )}
@@ -338,7 +342,7 @@ const Sector = () => {
 
       {tabs.length > 0 && (
         <div className='space-y-4'>
-          <div className='scrollbar-hide border-surface-border flex gap-2 overflow-x-auto border-b pb-2'>
+          <div className='scrollbar-hide flex gap-1.5 overflow-x-auto pb-1'>
             {tabs.map((t) => {
               const IconComponent = t.icon;
               const isActive = activeTab === t.id;
@@ -347,13 +351,13 @@ const Sector = () => {
                   key={t.id}
                   onClick={() => setActiveTab(t.id)}
                   className={cn(
-                    'flex items-center gap-2 rounded-lg px-4 py-2 text-[10px] font-semibold tracking-[0.16em] whitespace-nowrap uppercase transition-all',
+                    'inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-[11px] leading-none font-medium whitespace-nowrap transition-colors sm:text-[12px]',
                     isActive
-                      ? 'bg-brand shadow-brand/20 shadow-md'
-                      : 'hover:bg-surface-nav opacity-70 hover:opacity-100',
+                      ? 'bg-surface-hover/55 border-white/18 text-slate-100'
+                      : 'bg-surface-nav/25 hover:bg-surface-nav/40 border-white/10 text-slate-300 hover:text-slate-200',
                   )}
                 >
-                  <IconComponent size={16} /> {t.label}
+                  <IconComponent size={11} /> {t.label}
                 </button>
               );
             })}
@@ -427,8 +431,8 @@ const Sector = () => {
         </div>
       )}
 
-      <div className='bg-surface-card border-surface-border overflow-hidden rounded-2xl border shadow-sm'>
-        <div className='border-surface-border/50 grid grid-cols-1 gap-4 border-b px-6 py-5 md:grid-cols-[140px_1fr]'>
+      <div className='bg-surface-card border-surface-border overflow-hidden rounded-xl border'>
+        <div className='grid grid-cols-1 gap-4 px-5 py-4 md:grid-cols-[140px_1fr]'>
           <div className={cn('md:pt-1', designContract.typography.label)}>Sector</div>
           <div className='space-y-3'>
             <div className='flex flex-wrap gap-2'>
@@ -465,7 +469,7 @@ const Sector = () => {
         </div>
 
         {((data.sectors ?? []).length > 1 || data.areaComment) && (
-          <div className='border-surface-border/50 grid grid-cols-1 gap-4 border-b px-6 py-5 md:grid-cols-[140px_1fr]'>
+          <div className='grid grid-cols-1 gap-4 px-5 py-4 md:grid-cols-[140px_1fr]'>
             <div className={cn('md:pt-1', designContract.typography.label)}>Area</div>
             <div className='space-y-4'>
               {(data.sectors ?? []).length > 1 && (
@@ -497,7 +501,7 @@ const Sector = () => {
         )}
 
         {(data.approach?.coordinates ?? []).length > 0 && (
-          <div className='border-surface-border/50 grid grid-cols-1 gap-4 border-b px-6 py-5 md:grid-cols-[140px_1fr]'>
+          <div className='grid grid-cols-1 gap-4 px-5 py-4 md:grid-cols-[140px_1fr]'>
             <div className={cn('md:pt-1', designContract.typography.label)}>Approach</div>
             <div>
               <SlopeProfile
@@ -510,7 +514,7 @@ const Sector = () => {
         )}
 
         {(data.descent?.coordinates ?? []).length > 0 && (
-          <div className='border-surface-border/50 grid grid-cols-1 gap-4 border-b px-6 py-5 md:grid-cols-[140px_1fr]'>
+          <div className='grid grid-cols-1 gap-4 px-5 py-4 md:grid-cols-[140px_1fr]'>
             <div className={cn('md:pt-1', designContract.typography.label)}>Descent</div>
             <div>
               <SlopeProfile areaName={data.areaName ?? ''} sectorName={data.name ?? ''} slope={data.descent as Slope} />
@@ -519,7 +523,7 @@ const Sector = () => {
         )}
 
         {(data.triviaMedia ?? []).length > 0 && (
-          <div className='border-surface-border/50 grid grid-cols-1 gap-4 border-b px-6 py-5 md:grid-cols-[140px_1fr]'>
+          <div className='grid grid-cols-1 gap-4 px-5 py-4 md:grid-cols-[140px_1fr]'>
             <div className={cn('md:pt-1', designContract.typography.label)}>Trivia</div>
             <div>
               <Media
@@ -535,7 +539,7 @@ const Sector = () => {
         )}
 
         {conditionLat > 0 && conditionLng > 0 && (data.wallDirectionCalculated || data.wallDirectionManual) && (
-          <div className='border-surface-border/50 grid grid-cols-1 gap-4 border-b px-6 py-5 md:grid-cols-[140px_1fr]'>
+          <div className='grid grid-cols-1 gap-4 px-5 py-4 md:grid-cols-[140px_1fr]'>
             <div className={cn('md:pt-1', designContract.typography.label)}>Conditions</div>
             <div>
               <ConditionLabels
@@ -551,7 +555,7 @@ const Sector = () => {
           </div>
         )}
 
-        <div className='grid grid-cols-1 gap-4 px-6 py-5 md:grid-cols-[140px_1fr]'>
+        <div className='grid grid-cols-1 gap-4 px-5 py-4 md:grid-cols-[140px_1fr]'>
           <div className={cn('md:pt-1', designContract.typography.label)}>Misc</div>
           <div className='flex flex-wrap items-center gap-2'>
             <DownloadButton href={`/sectors/pdf?id=${data.id}`}>sector.pdf</DownloadButton>

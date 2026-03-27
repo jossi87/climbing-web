@@ -6,7 +6,7 @@ import { Loading } from '../../shared/ui/StatusWidgets';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Save, Loader2, ImagePlus } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import { designContract } from '../../design/contract';
+import { Card, SectionHeader } from '../../shared/ui';
 
 const ProblemEditMedia = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -39,19 +39,15 @@ const ProblemEditMedia = () => {
   }
 
   return (
-    <div className='mx-auto max-w-2xl space-y-6'>
-      <div className='bg-surface-card border-surface-border space-y-4 rounded-xl border p-6 shadow-sm'>
-        <div className='border-surface-border mb-4 flex items-center gap-3 border-b pb-4'>
-          <div className='bg-brand/10 text-brand rounded-lg p-2'>
-            <ImagePlus size={20} />
-          </div>
-          <h3 className={designContract.typography.subtitle}>Add Media</h3>
+    <div className='w-full min-w-0 space-y-4'>
+      <Card flush className='min-w-0 border-0 sm:border'>
+        <div className='p-4 sm:p-5'>
+          <SectionHeader title='Add Media' icon={ImagePlus} subheader={problem?.name ?? undefined} />
+          <form id='media-form' onSubmit={save}>
+            <MediaUpload onMediaChanged={setMedia} isMultiPitch={(problem?.sections ?? []).length > 0} />
+          </form>
         </div>
-
-        <form id='media-form' onSubmit={save}>
-          <MediaUpload onMediaChanged={setMedia} isMultiPitch={(problem?.sections ?? []).length > 0} />
-        </form>
-      </div>
+      </Card>
 
       <div className='flex items-center justify-end gap-3'>
         <button

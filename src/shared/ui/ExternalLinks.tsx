@@ -2,6 +2,7 @@ import { useCallback, useMemo, type ChangeEvent } from 'react';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { Link, Type, ChevronDown } from 'lucide-react';
 import { designContract } from '../../design/contract';
+import { cn } from '../../lib/utils';
 
 type ExternalLink = components['schemas']['ExternalLink'];
 type ExternalLinksArray = ExternalLink[];
@@ -9,9 +10,11 @@ type ExternalLinksArray = ExternalLink[];
 type Props = {
   externalLinks: ExternalLinksArray;
   onExternalLinksUpdated: (externalLinks: ExternalLinksArray) => void;
+  hideLabel?: boolean;
+  mobileFlat?: boolean;
 };
 
-const ExternalLinks = ({ externalLinks, onExternalLinksUpdated }: Props) => {
+const ExternalLinks = ({ externalLinks, onExternalLinksUpdated, hideLabel = false, mobileFlat = false }: Props) => {
   const links = useMemo(() => externalLinks || [], [externalLinks]);
 
   const handleLinkChange = (index: number, field: keyof ExternalLink, value: string | undefined) => {
@@ -51,9 +54,14 @@ const ExternalLinks = ({ externalLinks, onExternalLinksUpdated }: Props) => {
   const labelClasses = 'ml-1 mb-1 block';
 
   return (
-    <div className='bg-surface-card border-surface-border space-y-4 rounded-xl border p-4 shadow-sm'>
+    <div
+      className={cn(
+        'bg-surface-card border-surface-border space-y-4 rounded-xl border p-4 shadow-sm',
+        mobileFlat && 'rounded-none border-0 p-0 shadow-none sm:rounded-xl sm:border sm:p-4 sm:shadow-sm',
+      )}
+    >
       <div className='flex items-center gap-2'>
-        <label className={`${labelClasses} ${designContract.typography.label}`}>External Links</label>
+        {!hideLabel && <label className={`${labelClasses} ${designContract.typography.label}`}>External Links</label>}
         <div className='relative mb-1 inline-block'>
           <select
             value={links.length}
