@@ -233,8 +233,9 @@ const Leaflet = ({
     <>
       <style>{`
         .leaflet-container {
-          background-color: var(--color-surface-dark) !important;
+          background-color: var(--color-surface-card) !important;
           font-family: inherit !important;
+          border: 1px solid var(--color-surface-border) !important;
         }
 
         .leaflet-bar, .leaflet-control-layers {

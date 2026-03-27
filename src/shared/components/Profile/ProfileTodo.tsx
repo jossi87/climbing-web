@@ -157,7 +157,7 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
             const filteredMarkers = filteredRows.flatMap((row) => (row.marker ? [row.marker] : []));
             if (filteredMarkers.length === 0) return null;
             return (
-              <div className='-mx-4 mb-3 h-[35vh] w-[calc(100%+2rem)] min-w-0 overflow-hidden sm:-mx-5 sm:w-[calc(100%+2.5rem)]'>
+              <div className='-mx-4 mb-3 h-[35vh] w-[calc(100%+2rem)] min-w-0 overflow-hidden sm:-mx-6 sm:w-[calc(100%+3rem)]'>
                 <Leaflet
                   key={'todo-inline=' + userId}
                   autoZoom={true}

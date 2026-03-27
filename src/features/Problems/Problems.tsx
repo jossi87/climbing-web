@@ -249,11 +249,11 @@ export const Problems = ({ filterOpen }: Props) => {
             </div>
           )}
 
-          <div className='mb-2'>
+          <div className='relative z-0 -mx-px mb-2 w-[calc(100%+2px)] overflow-hidden sm:mx-0 sm:w-full'>
             <ProblemsMap areas={areas} />
           </div>
 
-          <div className='p-4 pt-3 sm:p-5 sm:pt-4'>
+          <div className='relative z-10 p-4 pt-3 sm:p-5 sm:pt-4'>
             <TableOfContents areas={areas} compact />
           </div>
         </Card>

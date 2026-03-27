@@ -212,14 +212,14 @@ const Header = () => {
         !isVisible && '-translate-y-full lg:translate-y-0',
       )}
     >
-      <div className='max-w-container mx-auto h-12 px-4'>
+      <div className='max-w-container mx-auto h-13 px-4'>
         <div className='flex h-full items-center justify-between gap-x-4'>
           <div className='flex h-full min-w-0 flex-1 items-center gap-4'>
             <Link to='/' className='relative flex h-full shrink-0 items-center'>
               <img
                 src='/png/logo_70x62.png'
                 alt='Logo'
-                className={cn('h-auto w-6 transition-all', isHome ? 'opacity-100' : 'opacity-40 hover:opacity-100')}
+                className={cn('h-auto w-7 transition-all', isHome ? 'opacity-100' : 'opacity-40 hover:opacity-100')}
               />
               {isHome && <div className='bg-brand shadow-brand absolute right-0 bottom-0 left-0 h-0.5 rounded-t' />}
             </Link>

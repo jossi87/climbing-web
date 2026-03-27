@@ -165,6 +165,7 @@ const ToolbarDropdown = <T extends string>({
   options,
   onSelect,
   compact,
+  fullWidth,
 }: {
   label: string;
   icon?: React.ComponentType<{ size?: number; className?: string }>;
@@ -172,6 +173,7 @@ const ToolbarDropdown = <T extends string>({
   options: ToolbarDropdownOption<T>[];
   onSelect: (v: T) => void;
   compact?: boolean;
+  fullWidth?: boolean;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -244,15 +246,17 @@ const ToolbarDropdown = <T extends string>({
         className={cn(
           compact
             ? 'inline-flex h-7 min-w-[96px] items-center justify-between gap-1 rounded-md px-2 text-[11px] leading-none font-medium transition-colors sm:text-[12px]'
-            : 'inline-flex h-8 items-center justify-between gap-1 rounded-full border px-2.5 text-[11px] leading-none font-medium whitespace-nowrap transition-colors sm:text-[12px]',
+            : 'inline-flex h-9 items-center justify-between gap-1.5 rounded-md px-3 text-[11px] leading-none font-medium whitespace-nowrap transition-colors sm:text-[12px]',
+          fullWidth && !compact ? 'w-full' : '',
           isOpen
-            ? 'bg-surface-hover/55 border-white/18 text-slate-100'
-            : 'bg-surface-nav/25 hover:bg-surface-nav/40 border-white/10 text-slate-300 hover:text-slate-200',
+            ? 'bg-surface-hover/65 text-slate-100'
+            : 'bg-surface-nav/28 hover:bg-surface-nav/42 text-slate-300 hover:text-slate-200',
         )}
       >
         {Icon ? (
           <Icon size={11} className={cn('transition-colors', isOpen ? 'text-slate-300' : 'text-slate-500')} />
         ) : null}
+        {!compact && <span className='text-slate-500'>{label}:</span>}
         <span className='text-slate-200'>{selected?.text ?? ''}</span>
         <ChevronDown size={11} className={cn('text-slate-500 transition-transform', isOpen && 'rotate-180')} />
       </button>
@@ -438,45 +442,84 @@ export const ProblemList = ({
     ...orderByOptions.filter((opt) => opt.value !== defaultOrder),
   ];
 
+  const hasPrimaryToolbar = groupByOptions.length > 1 && !toolbarAction;
+
   return (
-    <div className='space-y-4'>
-      <div className='flex min-w-0 flex-wrap items-center gap-1.5 pb-1'>
-        {groupByOptions.length > 1 && (
+    <div className='space-y-0'>
+      {hasPrimaryToolbar ? (
+        <div className='grid w-full grid-cols-3 gap-1'>
           <ToolbarDropdown
             label='Group'
             icon={FolderTree}
             value={groupBy}
             options={orderedGroupByOptions}
             onSelect={(next) => dispatch({ action: 'group-by', groupBy: next })}
+            fullWidth
           />
-        )}
-
-        <ToolbarDropdown
-          label='Sort'
-          icon={ArrowDownWideNarrow}
-          value={order}
-          options={orderedSortOptions}
-          onSelect={(next) => dispatch({ action: 'order-by', order: next })}
-        />
-
-        <button
-          type='button'
-          onClick={() => setFilterShowing((v) => !v)}
-          className={cn(
-            'inline-flex h-8 items-center justify-center gap-1 rounded-full border px-2.5 text-[11px] leading-none font-medium whitespace-nowrap transition-colors sm:text-[12px]',
-            showFilter
-              ? 'bg-surface-hover/55 border-white/18 text-slate-100'
-              : 'bg-surface-nav/25 hover:bg-surface-nav/40 border-white/10 text-slate-300 hover:text-slate-200',
+          <ToolbarDropdown
+            label='Sort'
+            icon={ArrowDownWideNarrow}
+            value={order}
+            options={orderedSortOptions}
+            onSelect={(next) => dispatch({ action: 'order-by', order: next })}
+            fullWidth
+          />
+          <button
+            type='button'
+            onClick={() => setFilterShowing((v) => !v)}
+            className={cn(
+              'inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-md px-3 text-[11px] leading-none font-medium whitespace-nowrap transition-colors sm:text-[12px]',
+              showFilter
+                ? 'bg-surface-hover/65 text-slate-100'
+                : 'bg-surface-nav/28 hover:bg-surface-nav/42 text-slate-300',
+            )}
+          >
+            <Filter size={11} />
+            <span className='text-slate-500'>Show:</span>
+            <span className='text-slate-200'>Filters</span>
+          </button>
+        </div>
+      ) : (
+        <div className='flex min-w-0 flex-wrap items-center gap-2 pb-1'>
+          {groupByOptions.length > 1 && (
+            <ToolbarDropdown
+              label='Group'
+              icon={FolderTree}
+              value={groupBy}
+              options={orderedGroupByOptions}
+              onSelect={(next) => dispatch({ action: 'group-by', groupBy: next })}
+            />
           )}
-        >
-          <Filter size={11} /> Filter
-        </button>
 
-        {toolbarAction}
-      </div>
+          <ToolbarDropdown
+            label='Sort'
+            icon={ArrowDownWideNarrow}
+            value={order}
+            options={orderedSortOptions}
+            onSelect={(next) => dispatch({ action: 'order-by', order: next })}
+          />
+
+          <button
+            type='button'
+            onClick={() => setFilterShowing((v) => !v)}
+            className={cn(
+              'inline-flex h-9 items-center justify-center gap-1.5 rounded-md px-3 text-[11px] leading-none font-medium whitespace-nowrap transition-colors sm:text-[12px]',
+              showFilter
+                ? 'bg-surface-hover/65 text-slate-100'
+                : 'bg-surface-nav/28 hover:bg-surface-nav/42 text-slate-300',
+            )}
+          >
+            <Filter size={11} />
+            <span className='text-slate-500'>Show:</span>
+            <span className='text-slate-200'>Filters</span>
+          </button>
+
+          {toolbarAction}
+        </div>
+      )}
 
       {showFilter && (
-        <div className='bg-surface-nav/14 space-y-4 rounded-lg p-4'>
+        <div className='bg-surface-nav/14 mt-2 space-y-4 rounded-lg p-4'>
           <div className='flex flex-wrap items-center gap-3 md:gap-4'>
             <GradeRangeControl
               low={currentLow}
@@ -541,6 +584,7 @@ export const ProblemList = ({
         </div>
       )}
 
+      {showFilter && contentBeforeList ? <div className='mt-2' /> : null}
       {typeof contentBeforeList === 'function' ? contentBeforeList(filtered) : contentBeforeList}
 
       {list}

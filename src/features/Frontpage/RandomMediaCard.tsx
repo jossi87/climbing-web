@@ -1,8 +1,7 @@
 import { Link } from 'react-router-dom';
 import { getMediaFileUrl, getMediaFileUrlSrcSet } from '../../api';
-import { ClickableAvatar, AvatarGroup, Card, SectionLabel } from '../../shared/ui';
+import { ClickableAvatar, AvatarGroup, Card } from '../../shared/ui';
 import type { components } from '../../@types/buldreinfo/swagger';
-import { designContract } from '../../design/contract';
 
 type RandomMedia = components['schemas']['FrontpageRandomMedia'];
 
@@ -30,7 +29,10 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
 
   const taggedUsers = randomMedia.tagged || [];
   const photographer = randomMedia.photographer;
-  const metaTextClass = 'text-sm text-slate-300';
+  const problemTitleClass = 'text-[15px] leading-tight font-semibold text-slate-100 sm:text-[16px]';
+  const gradeClass = 'text-[13px] leading-none font-normal text-slate-300 tabular-nums sm:text-[14px]';
+  const locationClass = 'text-[11px] leading-tight font-medium text-slate-300 sm:text-[12px]';
+  const metaTextClass = 'text-[11px] text-slate-300 sm:text-[12px]';
   const metaLinkClass = 'hover:text-brand transition-colors';
 
   return (
@@ -59,12 +61,14 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
 
         <div className='absolute right-0 bottom-0 left-0 p-4 sm:hidden'>
           <Link to={`/problem/${randomMedia.idProblem}`} className='flex items-baseline gap-2'>
-            <h3 className={designContract.typography.subtitle + ' leading-none'}>{randomMedia.problem}</h3>
-            <span className={designContract.typography.subtitle}>{randomMedia.grade}</span>
+            <h3 className={problemTitleClass}>{randomMedia.problem}</h3>
+            <span className={gradeClass}>{randomMedia.grade}</span>
           </Link>
-          <SectionLabel className='mt-2 mb-4 text-slate-300'>
-            {randomMedia.area} <span className='mx-1 text-slate-500'>·</span> {randomMedia.sector}
-          </SectionLabel>
+          <div className='mt-2 mb-4'>
+            <span className={locationClass}>
+              {randomMedia.area} <span className='mx-1 text-slate-500'>·</span> {randomMedia.sector}
+            </span>
+          </div>
 
           {(taggedUsers.length > 0 || photographer) && (
             <div className='flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-white/10 pt-4'>
@@ -110,19 +114,17 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
 
       <div className='bg-surface-nav/10 hidden p-4 sm:block'>
         <div className='mb-4'>
-          <Link
-            to={`/problem/${randomMedia.idProblem}`}
-            className='hover:text-brand block leading-tight transition-colors'
-          >
-            {randomMedia.problem} <span className='ml-1 tabular-nums'>{randomMedia.grade}</span>
+          <Link to={`/problem/${randomMedia.idProblem}`} className='hover:text-brand block transition-colors'>
+            <span className={problemTitleClass}>{randomMedia.problem}</span>
+            <span className={'ml-1 ' + gradeClass}>{randomMedia.grade}</span>
           </Link>
           <div className='mt-2 leading-tight'>
             <Link to={`/area/${randomMedia.idArea}`} className='transition-colors hover:text-slate-300'>
-              <SectionLabel className='inline text-slate-300'>{randomMedia.area}</SectionLabel>
+              <span className={locationClass}>{randomMedia.area}</span>
             </Link>
             <span className='mx-1 text-slate-500'>·</span>
             <Link to={`/sector/${randomMedia.idSector}`} className='transition-colors hover:text-slate-300'>
-              <SectionLabel className='inline text-slate-300'>{randomMedia.sector}</SectionLabel>
+              <span className={locationClass}>{randomMedia.sector}</span>
             </Link>
           </div>
         </div>

@@ -45,14 +45,21 @@ const Profile = () => {
             </div>
             <div className='flex gap-1 overflow-hidden'>
               {Array.from({ length: 5 }).map((_, idx) => (
-                <div key={idx} className='bg-surface-nav h-8 w-20 animate-pulse rounded-lg' />
+                <div key={idx} className='bg-surface-nav h-8 w-20 animate-pulse' />
               ))}
             </div>
           </div>
+          <div className='border-surface-border border-t border-b'>
+            <div className='bg-surface-border/35 grid w-full min-w-0 grid-cols-5 gap-px overflow-hidden'>
+              {Array.from({ length: 5 }).map((_, idx) => (
+                <div key={idx} className='bg-surface-card h-11 animate-pulse' />
+              ))}
+            </div>
+          </div>
+          <div className='p-4 sm:p-6'>
+            <Loading inline />
+          </div>
         </Card>
-        <div className='-mt-px'>
-          <Loading />
-        </div>
       </div>
     );
   }
@@ -156,7 +163,8 @@ const Profile = () => {
 
         <div
           className={cn(
-            'animate-in fade-in slide-in-from-bottom-2 w-full min-w-0 overflow-x-hidden p-4 duration-500 sm:p-6',
+            'animate-in fade-in slide-in-from-bottom-2 w-full min-w-0 overflow-x-hidden duration-500',
+            'p-4 sm:p-6',
           )}
         >
           {activePage === Page.overview && <ProfileStatistics userId={profile.id ?? 0} view='overview' />}

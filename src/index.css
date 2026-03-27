@@ -120,14 +120,14 @@
   }
 
   .search-input {
-    @apply h-10 rounded-md border border-transparent bg-transparent px-3 text-sm font-medium text-slate-100 transition-colors duration-200;
+    @apply h-10 rounded-md border border-transparent bg-transparent px-3 text-[12px] font-medium text-slate-100 transition-colors duration-200 sm:text-sm;
   }
   .search-input:focus {
     @apply bg-surface-nav/40 border-white/10 ring-0;
   }
 
   .header-meta-text {
-    @apply text-[10px] leading-none font-semibold tracking-[0.08em] normal-case;
+    @apply text-[11px] leading-none font-medium tracking-[0.04em] normal-case sm:text-[12px];
   }
 
   .btn-glass {

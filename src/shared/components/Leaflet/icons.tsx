@@ -13,10 +13,10 @@ const createLucideIcon = (icon: ReactNode, color = '#ffffff') => {
           alignItems: 'center',
           width: '28px',
           height: '28px',
-          backgroundColor: 'rgba(255, 255, 255, 0.05)',
+          backgroundColor: 'rgba(255, 255, 255, 0.04)',
           color: color,
           borderRadius: '50%',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
+          border: '1px solid rgba(255, 255, 255, 0.12)',
           backdropFilter: 'blur(4px)',
           boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
         }}
@@ -57,20 +57,22 @@ const createParkingIcon = () =>
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          width: '22px',
-          height: '22px',
-          backgroundColor: 'rgba(12, 18, 28, 0.9)',
+          width: '24px',
+          height: '24px',
+          backgroundColor: 'rgba(255, 255, 255, 0.05)',
           borderRadius: '50%',
-          border: '1px solid rgba(59, 130, 246, 0.45)',
-          boxShadow: '0 3px 8px rgba(0,0,0,0.45)',
+          border: '1px solid rgba(255, 255, 255, 0.14)',
+          backdropFilter: 'blur(4px)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
         }}
       >
         <span
           style={{
-            fontSize: '12px',
-            fontWeight: 700,
+            fontSize: '14px',
+            fontWeight: 800,
             lineHeight: 1,
             color: '#3b82f6',
+            textShadow: '0 1px 2px rgba(0,0,0,0.95), 0 0 0.5px rgba(0,0,0,0.95)',
           }}
         >
           P
@@ -78,8 +80,8 @@ const createParkingIcon = () =>
       </div>,
     ),
     className: '',
-    iconSize: [22, 22],
-    iconAnchor: [11, 11],
+    iconSize: [24, 24],
+    iconAnchor: [12, 12],
   });
 
 const createRockIcon = () =>
@@ -118,6 +120,6 @@ const markerBlueIcon = createDotIcon('#3b82f6');
 const markerRedIcon = createDotIcon('#ef4444');
 const parkingIcon = createParkingIcon();
 const rockIcon = createRockIcon();
-const weatherIcon = createLucideIcon(<Camera size={14} />, '#cbd5e1');
+const weatherIcon = createLucideIcon(<Camera size={16} strokeWidth={2.4} />, '#0f172a');
 
 export { markerBlueIcon, markerRedIcon, parkingIcon, weatherIcon, rockIcon };
