@@ -30,6 +30,7 @@ const ActivitySkeleton = () => (
 const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
+  const selectedGradeRef = useRef<HTMLButtonElement>(null);
 
   const [lowerGradeId, setLowerGradeId] = useLocalStorage('lower_grade_id', 0);
   const [lowerGradeText, setLowerGradeText] = useLocalStorage('lower_grade_text', 'n/a');
@@ -62,6 +63,14 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (!isFilterOpen || !selectedGradeRef.current) return;
+    const frame = window.requestAnimationFrame(() => {
+      selectedGradeRef.current?.scrollIntoView({ block: 'center' });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [isFilterOpen, lowerGradeId]);
+
   const handleFilterToggle = (type: string) => {
     if (type === 'fa') setActivityTypeFa(!activityTypeFa);
     if (type === 'ticks') setActivityTypeTicks(!activityTypeTicks);
@@ -77,18 +86,26 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
 
         <div className='flex w-full flex-wrap items-center justify-center gap-1.5 sm:w-auto sm:justify-end'>
           <div className='relative' ref={filterRef}>
-            <button onClick={() => setIsFilterOpen(!isFilterOpen)} className='btn-glass btn-glass-active'>
-              <Filter size={12} />
-              <span className='text-[10px] font-semibold normal-case opacity-80'>
+            <button
+              onClick={() => setIsFilterOpen(!isFilterOpen)}
+              className={cn(activityChipBase, activityChipActive)}
+              aria-expanded={isFilterOpen}
+              type='button'
+            >
+              <Filter size={12} className='text-brand/90' />
+              <span className='type-micro leading-none font-semibold normal-case opacity-90'>
                 {normalizedLowerGradeText === 'n/a' ? 'All' : normalizedLowerGradeText}
               </span>
-              <ChevronDown size={10} className={cn('transition-transform', isFilterOpen && 'rotate-180')} />
+              <ChevronDown
+                size={10}
+                className={cn('text-slate-400 transition-transform', isFilterOpen && 'rotate-180')}
+              />
             </button>
 
             {isFilterOpen && (
-              <div className='bg-surface-card border-surface-border absolute top-full left-1/2 z-50 mt-1 max-h-60 w-48 -translate-x-1/2 overflow-y-auto rounded-lg border py-1 shadow-2xl sm:right-0 sm:left-auto sm:translate-x-0'>
+              <div className='bg-surface-card border-surface-border absolute top-full left-0 z-50 mt-1 max-h-60 w-[min(16rem,calc(100vw-1rem))] max-w-[calc(100vw-1rem)] overflow-y-auto rounded-lg border py-1 shadow-2xl sm:right-0 sm:left-auto sm:w-52'>
                 <div className='border-surface-border/50 mb-1 border-b px-4 py-1.5'>
-                  <SectionLabel className='text-[9px]'>Lowest Grade</SectionLabel>
+                  <SectionLabel className='text-[11px]'>Lowest Grade</SectionLabel>
                 </div>
                 {meta.grades
                   .slice()
@@ -99,9 +116,10 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                   })
                   .map((g) => (
                     <button
+                      ref={g.id === lowerGradeId ? selectedGradeRef : null}
                       key={g.id}
                       className={cn(
-                        'flex w-full items-center justify-between px-4 py-2 text-left text-xs transition-colors',
+                        'flex w-full items-center justify-between px-4 py-2 text-left text-[11px] leading-none transition-colors',
                         g.id === lowerGradeId
                           ? 'bg-brand/10 text-brand font-semibold'
                           : 'hover:bg-surface-hover text-slate-400',
@@ -170,8 +188,19 @@ type FilterButtonProps = {
   label: string;
 };
 
+const activityChipBase =
+  'inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-[11px] leading-none font-semibold normal-case transition-colors duration-200 active:scale-95';
+const activityChipIdle =
+  'bg-surface-nav/45 border-surface-border text-slate-300 hover:bg-surface-nav hover:text-slate-100';
+const activityChipActive = 'bg-surface-hover/85 border-white/18 text-slate-100 shadow-sm';
+
 const FilterButton = ({ active, onClick, icon: Icon, label }: FilterButtonProps) => (
-  <button onClick={onClick} className={cn('btn-glass', active && 'btn-glass-active')}>
+  <button
+    onClick={onClick}
+    className={cn(activityChipBase, active ? activityChipActive : activityChipIdle)}
+    aria-pressed={active}
+    type='button'
+  >
     <Icon
       size={12}
       className={cn(
@@ -180,8 +209,8 @@ const FilterButton = ({ active, onClick, icon: Icon, label }: FilterButtonProps)
         active && label === 'Media' && designContract.activityColors.filter.media,
         active && label === 'Com' && designContract.activityColors.filter.comments,
       )}
-    />{' '}
-    <span className='text-[10px] font-semibold normal-case opacity-80'>{label}</span>
+    />
+    <span className='type-micro leading-none font-semibold normal-case opacity-90'>{label}</span>
   </button>
 );
 
@@ -222,7 +251,7 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
         </div>
 
         <div className='min-w-0 flex-1'>
-          <div className='text-sm leading-relaxed text-slate-300'>
+          <div className='text-[11px] leading-relaxed text-slate-300'>
             {a.users && a.users.length > 0 && !a.repeat ? (
               <>
                 <span className='font-semibold text-slate-200'>New {isBouldering ? 'boulder' : 'route'}</span>{' '}
@@ -260,13 +289,13 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
                 <ProblemLink a={a} />
               </>
             )}
-            <span className='ml-1 text-[10px] font-semibold text-slate-400/80 transition-colors select-none group-hover:text-slate-300'>
+            <span className='type-micro ml-1 leading-none font-semibold text-slate-400/80 transition-colors select-none group-hover:text-slate-300'>
               {a.timeAgo}
             </span>
           </div>
 
           {(a.description || a.message) && (
-            <div className='mt-1 border-l border-white/10 pl-3 text-xs leading-relaxed text-slate-300'>
+            <div className='mt-1 border-l border-white/10 pl-3 text-[11px] leading-relaxed text-slate-300'>
               {a.message ? <Linkify>{a.message}</Linkify> : a.description}
             </div>
           )}

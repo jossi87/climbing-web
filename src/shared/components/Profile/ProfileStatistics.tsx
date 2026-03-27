@@ -24,7 +24,7 @@ const TickListItemInner = ({ tick }: TickListItemProps) => {
   const sectorId = tick.sectorId;
 
   return (
-    <div className='py-1 text-xs leading-relaxed break-words text-slate-300'>
+    <div className='py-1.5 text-[11px] leading-relaxed break-words text-slate-300'>
       {tick.dateHr ? <span className='text-slate-400'>{tick.dateHr} </span> : null}
       {areaId ? (
         <Link to={`/area/${areaId}`} className='hover:text-brand transition-colors'>
@@ -44,7 +44,7 @@ const TickListItemInner = ({ tick }: TickListItemProps) => {
       )}
       <LockSymbol lockedAdmin={!!tick.sectorLockedAdmin} lockedSuperadmin={!!tick.sectorLockedSuperadmin} />
       <span className='text-slate-500'> · </span>
-      <Link to={`/problem/${tick.idProblem}`} className='hover:text-brand text-slate-100'>
+      <Link to={`/problem/${tick.idProblem}`} className='hover:text-brand font-medium text-slate-100'>
         {tick.name}
       </Link>
       <span className='ml-1 text-slate-300'>{tick.grade}</span>
@@ -52,29 +52,21 @@ const TickListItemInner = ({ tick }: TickListItemProps) => {
       <span className='ml-1 inline-flex align-middle opacity-65'>
         <Stars numStars={tick.stars ?? 0} includeStarOutlines={true} size={12} />
       </span>
-      {tick.fa ? (
-        <span className='border-brand/40 bg-brand/10 text-brand ml-1 inline-flex h-[14px] items-center rounded border px-1 text-[10px] leading-none'>
-          FA
-        </span>
-      ) : null}
-      {tick.idTickRepeat ? (
-        <span className='ml-1 inline-flex h-[14px] items-center rounded border border-white/16 px-1 text-[10px] leading-none text-slate-300'>
-          Repeat
-        </span>
-      ) : null}
+      {tick.fa ? <span className='badge-micro border-brand/40 bg-brand/10 text-brand ml-1'>FA</span> : null}
+      {tick.idTickRepeat ? <span className='badge-micro ml-1'>Repeat</span> : null}
       {tick.noPersonalGrade ? (
-        <span className='ml-1 inline-flex items-center gap-0.5 text-[10px] text-slate-400'>
+        <span className='type-micro ml-1 inline-flex items-center gap-0.5 text-slate-400'>
           <X size={8} />
           No grade
         </span>
       ) : null}
       {tick.subType ? (
-        <span className='ml-1 inline-flex h-[14px] items-center rounded border border-white/16 px-1 text-[10px] leading-none text-slate-300'>
+        <span className='badge-micro ml-1'>
           {tick.subType}
           {(tick.numPitches ?? 0) > 1 ? ` (${tick.numPitches}p)` : ''}
         </span>
       ) : null}
-      {tick.comment ? <span className='text-slate-400'> {tick.comment}</span> : null}
+      {tick.comment ? <div className='mt-0.5 text-[10px] leading-snug text-slate-400/90'>{tick.comment}</div> : null}
     </div>
   );
 };
@@ -178,7 +170,7 @@ const ProfileStatistics = ({ userId, view }: ProfileStatisticsProps) => {
             <button
               type='button'
               onClick={() => setIsMapModalOpen(true)}
-              className='bg-surface-nav/25 hover:bg-surface-nav/40 inline-flex h-8 shrink-0 items-center justify-center gap-1 rounded-full border border-white/10 px-2.5 text-xs font-medium text-slate-300 transition-colors hover:text-slate-200'
+              className='bg-surface-nav/25 hover:bg-surface-nav/40 inline-flex h-8 shrink-0 items-center justify-center gap-1 rounded-full border border-white/10 px-2.5 text-[11px] leading-none font-semibold text-slate-300 transition-colors hover:text-slate-200'
             >
               <MapIcon size={11} />
               Map
@@ -240,7 +232,7 @@ const ProfileStatistics = ({ userId, view }: ProfileStatisticsProps) => {
 
   return (
     <div className='space-y-4'>
-      <div className='-mx-4 -mt-4 grid grid-cols-7 gap-px overflow-hidden border-y border-white/5 bg-white/5 sm:-mx-6 sm:-mt-6'>
+      <div className='bg-surface-nav/20 grid grid-cols-7 gap-px overflow-hidden rounded-xl'>
         <OverviewStatItem
           icon={Check}
           label='Ascents'
@@ -264,7 +256,7 @@ const ProfileStatistics = ({ userId, view }: ProfileStatisticsProps) => {
           className='text-fuchsia-300/90'
         />
       </div>
-      <div className='-mx-4 overflow-hidden sm:mx-0'>
+      <div className='overflow-hidden rounded-xl'>
         <Chart ticks={data.ticks as components['schemas']['ProfileStatisticsTick'][]} />
       </div>
     </div>

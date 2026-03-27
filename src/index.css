@@ -81,6 +81,14 @@
     @apply text-[11px] font-semibold tracking-[0.1em] text-slate-400 uppercase;
   }
 
+  .type-micro {
+    @apply text-[11px] leading-[1.35] font-medium text-slate-300;
+  }
+
+  .badge-micro {
+    @apply inline-flex h-4 items-center rounded border border-white/16 px-1.5 text-[11px] leading-none font-medium text-slate-300;
+  }
+
   .app-card {
     @apply bg-surface-card border-surface-border overflow-hidden shadow-sm sm:rounded-xl sm:border;
     border-top-width: 1px;

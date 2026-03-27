@@ -2,8 +2,8 @@ import { type ComponentProps, Fragment, useCallback, useMemo, useState } from 'r
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import Leaflet from '../Leaflet/Leaflet';
-import { LockSymbol, Stars } from '../../ui/Indicators';
-import { useProblem, useProfileTodo } from '../../../api';
+import { LockSymbol } from '../../ui/Indicators';
+import { useProfileTodo } from '../../../api';
 import { ChevronRight, Map as MapIcon } from 'lucide-react';
 import { Loading } from '../../ui/StatusWidgets';
 import ProblemList from '../ProblemList';
@@ -35,27 +35,8 @@ type TodoItem = {
   partners: Array<{ id: number; name: string }>;
 };
 
-const ProblemMeta = ({ problemId }: { problemId: number }) => {
-  const { data } = useProblem(problemId, false);
-  const subType = data?.t?.subType ?? data?.t?.type ?? '';
-  const stars = data?.stars ?? 0;
-  if (!subType && stars <= 0) return null;
-  return (
-    <>
-      {stars > 0 ? (
-        <span className='ml-1 inline-flex align-middle opacity-65'>
-          <Stars numStars={stars} includeStarOutlines={true} size={12} />
-        </span>
-      ) : null}
-      <span className='ml-1 inline-flex h-[14px] items-center rounded border border-white/16 px-1 text-[10px] leading-none text-slate-300'>
-        {subType}
-      </span>
-    </>
-  );
-};
-
 const TodoListItem = ({ item }: { item: TodoItem }) => (
-  <div className='py-1 text-xs leading-relaxed break-words text-slate-300'>
+  <div className='py-1.5 text-[11px] leading-relaxed break-words text-slate-300'>
     <Link to={`/area/${item.areaId}`} className='hover:text-brand text-slate-300 transition-colors'>
       {item.areaName}
     </Link>
@@ -72,9 +53,8 @@ const TodoListItem = ({ item }: { item: TodoItem }) => (
     </Link>
     <span className='ml-1 text-slate-300'>{item.grade}</span>
     <LockSymbol lockedAdmin={item.problemLockedAdmin} lockedSuperadmin={item.problemLockedSuperadmin} />
-    <ProblemMeta problemId={item.id} />
     {item.partners.length > 0 && (
-      <span className='text-slate-500'>
+      <div className='mt-0.5 text-[10px] leading-snug text-slate-500'>
         <ChevronRight size={10} className='mr-0.5 inline-block opacity-25' />
         Other users:{' '}
         {item.partners.map((u, i) => (
@@ -85,7 +65,7 @@ const TodoListItem = ({ item }: { item: TodoItem }) => (
             {i < item.partners.length - 1 ? <span className='opacity-30'>, </span> : null}
           </Fragment>
         ))}
-      </span>
+      </div>
     )}
   </div>
 );
@@ -191,7 +171,7 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
             <button
               type='button'
               onClick={() => setIsMapModalOpen(true)}
-              className='bg-surface-nav/25 hover:bg-surface-nav/40 inline-flex h-8 shrink-0 items-center justify-center gap-1 rounded-full border border-white/10 px-2.5 text-xs font-medium text-slate-300 transition-colors hover:text-slate-200'
+              className='bg-surface-nav/25 hover:bg-surface-nav/40 inline-flex h-8 shrink-0 items-center justify-center gap-1 rounded-full border border-white/10 px-2.5 text-[11px] leading-none font-semibold text-slate-300 transition-colors hover:text-slate-200'
             >
               <MapIcon size={11} />
               Map

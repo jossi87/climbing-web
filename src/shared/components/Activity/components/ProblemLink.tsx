@@ -30,9 +30,7 @@ export const ProblemLink = ({ a, type }: Props) => (
     {a.grade && a.grade !== '.' && <span className='ml-1 text-slate-300'>{a.grade}</span>}
 
     {a.problemSubtype && a.problemSubtype !== '.' && (
-      <span className='ml-1.5 inline-flex rounded border border-white/16 px-1 py-0.5 text-[10px] text-slate-300'>
-        {a.problemSubtype}
-      </span>
+      <span className='badge-micro ml-1.5 py-0.5'>{a.problemSubtype}</span>
     )}
 
     <span className='ml-1.5 inline-block align-middle opacity-50'>

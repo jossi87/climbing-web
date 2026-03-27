@@ -144,7 +144,7 @@ const ToggleLabel = ({ label, checked, onChange }: { label: string; checked: boo
         )}
       />
     </div>
-    <span className='text-sm font-medium opacity-85 group-hover:opacity-100'>{label}</span>
+    <span className='text-[11px] leading-none font-medium opacity-85 group-hover:opacity-100'>{label}</span>
     <input type='checkbox' className='hidden' checked={checked} onChange={onChange} />
   </label>
 );
@@ -240,8 +240,8 @@ const ToolbarDropdown = <T extends string>({
         aria-label={label}
         className={cn(
           compact
-            ? 'inline-flex h-7 min-w-[96px] items-center justify-between gap-1 rounded-md px-2 text-xs font-medium transition-colors'
-            : 'inline-flex h-8 items-center justify-between gap-1 rounded-full border px-2.5 text-xs font-medium whitespace-nowrap transition-colors',
+            ? 'inline-flex h-7 min-w-[96px] items-center justify-between gap-1 rounded-md px-2 text-[11px] leading-none font-medium transition-colors'
+            : 'inline-flex h-8 items-center justify-between gap-1 rounded-full border px-2.5 text-[11px] leading-none font-medium whitespace-nowrap transition-colors',
           isOpen
             ? 'bg-surface-hover/55 border-white/18 text-slate-100'
             : 'bg-surface-nav/25 hover:bg-surface-nav/40 border-white/10 text-slate-300 hover:text-slate-200',
@@ -275,7 +275,7 @@ const ToolbarDropdown = <T extends string>({
                     setIsOpen(false);
                   }}
                   className={cn(
-                    'w-full px-3 py-1.5 text-left text-xs transition-colors',
+                    'w-full px-3 py-1.5 text-left text-[11px] leading-none transition-colors',
                     opt.value === value
                       ? 'bg-surface-hover/70 text-slate-100'
                       : 'hover:bg-surface-hover/40 text-slate-300 hover:text-slate-100',
@@ -308,7 +308,7 @@ const GradeRangeControl = ({
   onHighSelect: (next: string) => void;
 }) => (
   <div className='bg-surface-nav/25 inline-flex h-9 items-center gap-1 rounded-lg border border-white/10 pr-1 pl-2'>
-    <span className='px-2 text-[10px] tracking-[0.08em] text-slate-500 uppercase'>Grade</span>
+    <span className='px-2 text-[11px] leading-none tracking-[0.08em] text-slate-500 uppercase'>Grade</span>
     <ToolbarDropdown compact label='Lowest grade' value={low} options={lowOptions} onSelect={onLowSelect} />
     <span className='px-1 text-[11px] text-slate-500'>to</span>
     <ToolbarDropdown compact label='Highest grade' value={high} options={highOptions} onSelect={onHighSelect} />
@@ -386,7 +386,7 @@ export const ProblemList = ({
 
   const list = (() => {
     if (filtered.length === 0) {
-      return <div className='py-6 text-sm text-slate-500'>Empty list.</div>;
+      return <div className='py-6 text-[11px] text-slate-500'>Empty list.</div>;
     }
 
     if (groupBy && groupBy !== 'none') {
@@ -407,7 +407,7 @@ export const ProblemList = ({
     }
 
     return (
-      <div className={cn('mt-4 flex flex-col', mode === 'user' ? 'gap-0' : 'gap-2')}>
+      <div className={cn('mt-4 flex flex-col', mode === 'user' ? 'gap-0.5' : 'gap-2')}>
         {filtered.map(({ element }) => element)}
       </div>
     );
@@ -457,7 +457,7 @@ export const ProblemList = ({
           type='button'
           onClick={() => setFilterShowing((v) => !v)}
           className={cn(
-            'inline-flex h-8 items-center justify-center gap-1 rounded-full border px-2.5 text-xs font-medium whitespace-nowrap transition-colors',
+            'inline-flex h-8 items-center justify-center gap-1 rounded-full border px-2.5 text-[11px] leading-none font-medium whitespace-nowrap transition-colors',
             showFilter
               ? 'bg-surface-hover/55 border-white/18 text-slate-100'
               : 'bg-surface-nav/25 hover:bg-surface-nav/40 border-white/10 text-slate-300 hover:text-slate-200',
@@ -486,7 +486,7 @@ export const ProblemList = ({
                   type='button'
                   onClick={() => setIsTypesMenuOpen((v) => !v)}
                   className={cn(
-                    'inline-flex h-9 min-w-[176px] items-center justify-between gap-1 rounded-lg border px-3 text-xs font-medium transition-colors',
+                    'inline-flex h-9 min-w-[176px] items-center justify-between gap-1 rounded-lg border px-3 text-[11px] leading-none font-medium transition-colors',
                     isTypesMenuOpen
                       ? 'bg-surface-hover/55 border-white/18 text-slate-100'
                       : 'bg-surface-nav/25 hover:bg-surface-nav/40 border-white/10 text-slate-300 hover:text-slate-200',

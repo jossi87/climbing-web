@@ -98,7 +98,7 @@ const Profile = () => {
               <h1 className='type-h1 truncate'>
                 {profile.firstname} {profile.lastname}
               </h1>
-              <div className='mt-2 grid min-w-0 grid-cols-1 gap-y-1 text-xs text-slate-300 sm:flex sm:flex-wrap sm:items-center sm:gap-x-3 sm:gap-y-1'>
+              <div className='type-micro mt-2 grid min-w-0 grid-cols-1 gap-y-1.5 sm:flex sm:flex-wrap sm:items-center sm:gap-x-3 sm:gap-y-1.5'>
                 {regions.length > 0 && (
                   <span className='text-brand/90 inline-flex max-w-full min-w-0 items-center gap-1.5'>
                     <Globe size={12} className='text-brand/80' />
@@ -136,7 +136,7 @@ const Profile = () => {
                   key={item.id}
                   onClick={() => onPageChanged(item.id)}
                   className={cn(
-                    'bg-surface-card flex w-full min-w-0 flex-col items-center justify-center gap-0.5 px-0 py-2 text-[8px] font-semibold transition-colors sm:flex-row sm:gap-1.5 sm:px-3 sm:text-[11px]',
+                    'bg-surface-card flex w-full min-w-0 flex-col items-center justify-center gap-0.5 px-1 py-2.5 text-[11px] leading-none font-semibold transition-colors sm:flex-row sm:gap-1.5 sm:px-3',
                     isActive
                       ? 'bg-surface-hover/75 text-slate-100'
                       : 'hover:bg-surface-hover/50 text-slate-300 hover:text-slate-100',
