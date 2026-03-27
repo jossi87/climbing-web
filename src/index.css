@@ -17,8 +17,14 @@
 }
 
 @layer base {
+  :root {
+    --font-ui:
+      'Inter', 'Segoe UI', 'Avenir Next', 'Helvetica Neue', 'Noto Sans', Arial, ui-sans-serif, system-ui, sans-serif;
+  }
+
   html {
     @apply selection:bg-brand/30 font-sans text-slate-300 antialiased;
+    font-family: var(--font-ui);
     font-size: 14px;
     letter-spacing: -0.005em;
     font-display: swap;
@@ -63,10 +69,12 @@
 @layer components {
   .type-h1 {
     @apply text-2xl font-semibold tracking-tight text-slate-100;
+    font-family: var(--font-ui);
   }
 
   .type-h2 {
     @apply text-lg font-semibold tracking-tight text-slate-100;
+    font-family: var(--font-ui);
   }
 
   .type-body {
@@ -79,14 +87,15 @@
 
   .type-label {
     @apply text-[11px] font-semibold tracking-[0.1em] text-slate-400 uppercase;
+    font-family: var(--font-ui);
   }
 
   .type-micro {
-    @apply text-[11px] leading-[1.35] font-medium text-slate-300;
+    @apply text-[11px] leading-[1.35] font-medium text-slate-300 sm:text-[12px];
   }
 
   .badge-micro {
-    @apply inline-flex h-4 items-center rounded border border-white/16 px-1.5 text-[11px] leading-none font-medium text-slate-300;
+    @apply inline-flex h-4 items-center rounded border border-white/16 px-1.5 text-[11px] leading-none font-medium text-slate-300 sm:text-[12px];
   }
 
   .app-card {
@@ -145,6 +154,25 @@
   }
   .fade-in {
     animation-name: fadeIn;
+  }
+}
+
+@layer utilities {
+  /* Global micro-typography normalization for legacy utility usage */
+  .text-xs,
+  .text-\[10px\],
+  .text-\[11px\] {
+    font-size: 11px;
+    line-height: 1.35;
+  }
+
+  @media (min-width: 640px) {
+    .text-xs,
+    .text-\[10px\],
+    .text-\[11px\] {
+      font-size: 12px;
+      line-height: 1.4;
+    }
   }
 }
 

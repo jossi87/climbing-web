@@ -119,7 +119,7 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                       ref={g.id === lowerGradeId ? selectedGradeRef : null}
                       key={g.id}
                       className={cn(
-                        'flex w-full items-center justify-between px-4 py-2 text-left text-[11px] leading-none transition-colors',
+                        'flex w-full items-center justify-between px-4 py-2 text-left text-[11px] leading-none transition-colors sm:text-[12px]',
                         g.id === lowerGradeId
                           ? 'bg-brand/10 text-brand font-semibold'
                           : 'hover:bg-surface-hover text-slate-400',
@@ -251,7 +251,7 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
         </div>
 
         <div className='min-w-0 flex-1'>
-          <div className='text-[11px] leading-relaxed text-slate-300'>
+          <div className='text-[11px] leading-relaxed text-slate-300 sm:text-[12px]'>
             {a.users && a.users.length > 0 && !a.repeat ? (
               <>
                 <span className='font-semibold text-slate-200'>New {isBouldering ? 'boulder' : 'route'}</span>{' '}
@@ -295,7 +295,7 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
           </div>
 
           {(a.description || a.message) && (
-            <div className='mt-1 border-l border-white/10 pl-3 text-[11px] leading-relaxed text-slate-300'>
+            <div className='mt-1 border-l border-white/10 pl-3 text-[11px] leading-relaxed text-slate-300 sm:text-[12px]'>
               {a.message ? <Linkify>{a.message}</Linkify> : a.description}
             </div>
           )}
@@ -323,7 +323,7 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
                     size='mini'
                     className='group-hover/user:ring-brand/50 ring-1 ring-white/10 transition-all'
                   />
-                  <span className='text-[11px] font-medium text-slate-300 transition-colors group-hover/user:text-slate-200'>
+                  <span className='text-[11px] font-medium text-slate-300 transition-colors group-hover/user:text-slate-200 sm:text-[12px]'>
                     {u.name}
                   </span>
                 </Link>

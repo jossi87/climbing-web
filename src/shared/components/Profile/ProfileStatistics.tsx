@@ -24,7 +24,7 @@ const TickListItemInner = ({ tick }: TickListItemProps) => {
   const sectorId = tick.sectorId;
 
   return (
-    <div className='py-1.5 text-[11px] leading-relaxed break-words text-slate-300'>
+    <div className='py-1.5 text-[11px] leading-relaxed break-words text-slate-300 sm:text-[12px]'>
       {tick.dateHr ? <span className='text-slate-400'>{tick.dateHr} </span> : null}
       {areaId ? (
         <Link to={`/area/${areaId}`} className='hover:text-brand transition-colors'>
@@ -66,7 +66,9 @@ const TickListItemInner = ({ tick }: TickListItemProps) => {
           {(tick.numPitches ?? 0) > 1 ? ` (${tick.numPitches}p)` : ''}
         </span>
       ) : null}
-      {tick.comment ? <div className='mt-0.5 text-[10px] leading-snug text-slate-400/90'>{tick.comment}</div> : null}
+      {tick.comment ? (
+        <span className='ml-1 text-[10px] leading-snug text-slate-400/90 sm:text-[11px]'>{tick.comment}</span>
+      ) : null}
     </div>
   );
 };
@@ -170,7 +172,7 @@ const ProfileStatistics = ({ userId, view }: ProfileStatisticsProps) => {
             <button
               type='button'
               onClick={() => setIsMapModalOpen(true)}
-              className='bg-surface-nav/25 hover:bg-surface-nav/40 inline-flex h-8 shrink-0 items-center justify-center gap-1 rounded-full border border-white/10 px-2.5 text-[11px] leading-none font-semibold text-slate-300 transition-colors hover:text-slate-200'
+              className='bg-surface-nav/25 hover:bg-surface-nav/40 inline-flex h-8 shrink-0 items-center justify-center gap-1 rounded-full border border-white/10 px-2.5 text-[11px] leading-none font-semibold text-slate-300 transition-colors hover:text-slate-200 sm:text-[12px]'
             >
               <MapIcon size={11} />
               Map

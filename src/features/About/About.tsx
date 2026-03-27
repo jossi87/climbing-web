@@ -26,8 +26,8 @@ const About = () => {
       <title>{`About | ${meta?.title}`}</title>
       <meta name='description' content='History, information and administrators' />
 
-      <div className='grid grid-cols-1 items-start gap-8 lg:grid-cols-2'>
-        <div className='space-y-8'>
+      <div className='grid grid-cols-1 items-start gap-6 lg:grid-cols-2'>
+        <div className='space-y-6'>
           <Card>
             <SectionHeader
               title='Statutes'

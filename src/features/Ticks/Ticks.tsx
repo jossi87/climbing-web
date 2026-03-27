@@ -33,7 +33,7 @@ const TickRow = ({ t }: { t: PublicAscent }) => {
   const sectorId = t.sectorId;
 
   return (
-    <div className='block py-1 text-[11px] leading-relaxed break-words text-slate-300'>
+    <div className='block py-1.5 text-[11px] leading-relaxed break-words text-slate-300 sm:text-[12px]'>
       {t.date ? <span className='text-slate-400'>{t.date} </span> : null}
       {areaId ? (
         <Link to={`/area/${areaId}`} className='hover:text-brand transition-colors'>
@@ -100,12 +100,12 @@ const Ticks = () => {
               data.ticks.map((t) => <TickRow key={[t.date, t.name, t.problemId].join(' - ')} t={t} />)}
 
             {!isLoading && data && data.ticks.length === 0 ? (
-              <div className='py-6 text-[11px] text-slate-500'>Empty list.</div>
+              <div className='py-6 text-[11px] text-slate-500 sm:text-[12px]'>Empty list.</div>
             ) : null}
           </div>
 
           {data && numPages > 1 && (
-            <div className='mt-8 flex items-center justify-center gap-2'>
+            <div className='mt-6 flex items-center justify-center gap-2'>
               <button
                 disabled={currPage <= 1}
                 onClick={() => handlePageChange(currPage - 1)}
@@ -119,25 +119,25 @@ const Ticks = () => {
                   <button
                     type='button'
                     onClick={() => handlePageChange(1)}
-                    className='bg-surface-nav border-surface-border hover:border-brand/35 hover:text-brand rounded-lg border px-3 py-1.5 text-[11px] leading-none font-semibold opacity-85 transition-colors'
+                    className='bg-surface-nav border-surface-border hover:border-brand/35 hover:text-brand rounded-lg border px-3 py-1.5 text-[11px] leading-none font-semibold opacity-85 transition-colors sm:text-[12px]'
                   >
                     1
                   </button>
                 )}
-                {currPage > 2 && <span className='px-1 text-[11px] text-slate-600'>…</span>}
+                {currPage > 2 && <span className='px-1 text-[11px] text-slate-600 sm:text-[12px]'>…</span>}
                 <button
                   type='button'
                   onClick={() => handlePageChange(currPage)}
-                  className='bg-brand shadow-brand/20 rounded-lg px-3 py-1.5 text-[11px] leading-none font-semibold text-slate-950 shadow-lg'
+                  className='bg-brand shadow-brand/20 rounded-lg px-3 py-1.5 text-[11px] leading-none font-semibold text-slate-950 shadow-lg sm:text-[12px]'
                 >
                   {currPage}
                 </button>
-                {currPage < numPages - 1 && <span className='px-1 text-[11px] text-slate-600'>…</span>}
+                {currPage < numPages - 1 && <span className='px-1 text-[11px] text-slate-600 sm:text-[12px]'>…</span>}
                 {currPage < numPages && (
                   <button
                     type='button'
                     onClick={() => handlePageChange(numPages)}
-                    className='bg-surface-nav border-surface-border hover:border-brand/35 hover:text-brand rounded-lg border px-3 py-1.5 text-[11px] leading-none font-semibold opacity-85 transition-colors'
+                    className='bg-surface-nav border-surface-border hover:border-brand/35 hover:text-brand rounded-lg border px-3 py-1.5 text-[11px] leading-none font-semibold opacity-85 transition-colors sm:text-[12px]'
                   >
                     {numPages}
                   </button>

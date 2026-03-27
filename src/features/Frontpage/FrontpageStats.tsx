@@ -52,11 +52,14 @@ const StatItem = ({ to, icon: Icon, label, value, loading }: StatItemProps) => {
             </div>
           </>
         ) : (
-          <div className='flex h-10 items-center justify-center'>
-            <SectionLabel className='group-hover:text-brand !text-[9px] !tracking-[0.06em] text-slate-300 transition-colors sm:!text-[10px] sm:!tracking-[0.1em]'>
-              {label}
-            </SectionLabel>
-          </div>
+          <>
+            <div className='mb-1 flex h-6 items-center justify-center' />
+            <div className='flex h-3 items-center justify-center'>
+              <SectionLabel className='group-hover:text-brand !text-[9px] !tracking-[0.06em] text-slate-300 transition-colors sm:!text-[10px] sm:!tracking-[0.1em]'>
+                {label}
+              </SectionLabel>
+            </div>
+          </>
         )}
       </div>
     </div>

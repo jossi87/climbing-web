@@ -3,8 +3,6 @@ import { useState } from 'react';
 import { Loading } from '../../ui/StatusWidgets';
 import { useGradeDistribution } from '../../../api';
 import type { components } from '../../../@types/buldreinfo/swagger';
-import { cn } from '../../../lib/utils';
-import { designContract } from '../../../design/contract';
 import { Card } from '../../ui';
 
 type Data = components['schemas']['GradeDistribution'][];
@@ -50,7 +48,7 @@ const ChartGradeDistribution = ({ idArea = 0, idSector = 0, data = undefined, he
       <Card>
         {header}
         <div className='mb-2 flex h-56 w-full gap-2 sm:h-64 sm:gap-3'>
-          <div className='flex h-full w-9 shrink-0 flex-col justify-between pb-9 text-right font-mono text-[10px] text-slate-400'>
+          <div className='flex h-full w-9 shrink-0 flex-col justify-between pb-9 text-right text-[10px] text-slate-400'>
             <span>{axisTop}</span>
             <span>{axisMid}</span>
             <span>0</span>
@@ -69,7 +67,7 @@ const ChartGradeDistribution = ({ idArea = 0, idSector = 0, data = undefined, he
                 >
                   {isActive && (
                     <div className='pointer-events-none absolute top-0 left-1/2 z-10 -translate-x-1/2'>
-                      <span className='bg-surface-dark border-brand/25 text-brand rounded-md border px-2 py-0.5 font-mono text-[10px] font-semibold shadow-sm'>
+                      <span className='bg-surface-dark border-brand/25 text-brand rounded-md border px-2 py-0.5 text-[10px] font-semibold shadow-sm'>
                         {g.num}
                       </span>
                     </div>
@@ -110,78 +108,63 @@ const ChartGradeDistribution = ({ idArea = 0, idSector = 0, data = undefined, he
             })}
           </div>
         </div>
-      </Card>
 
-      {activeGrade && (
-        <Card flush className='mt-4 border-0 sm:border'>
-          <div className='overflow-x-auto'>
-            <table className='w-full table-auto text-left'>
-              <thead>
-                <tr className='bg-surface-dark/80'>
-                  <th
-                    className={cn(
-                      'text-brand px-3 py-2 text-[10px] whitespace-nowrap',
-                      designContract.typography.label,
-                    )}
-                  >
-                    {idArea > 0 || idSector > 0 ? 'Sector' : 'Region'}
-                  </th>
-                  <th
-                    className={cn(
-                      'text-brand px-3 py-2 text-right text-[10px] whitespace-nowrap',
-                      designContract.typography.label,
-                    )}
-                  >
-                    Total
-                  </th>
-                  {activeCategories.map((cat) => (
-                    <th
-                      key={cat.key}
-                      className={cn(
-                        'px-3 py-2 text-right text-[10px] whitespace-nowrap',
-                        designContract.typography.label,
-                      )}
-                    >
-                      {cat.label}
+        {activeGrade && (
+          <div className='border-surface-border/35 mt-2 border-t pt-2'>
+            <div className='overflow-x-auto'>
+              <table className='w-full table-auto text-left'>
+                <thead>
+                  <tr>
+                    <th className='px-2 py-0.5 text-[11px] leading-none font-medium whitespace-nowrap text-slate-300 sm:text-[12px]'>
+                      {idArea > 0 || idSector > 0 ? 'Sector' : 'Region'}
                     </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className='divide-surface-border/15 divide-y'>
-                {activeGrade.rows?.map((row, idx) => {
-                  const total = categories.reduce(
-                    (acc, cat) => acc + ((row[cat.key as keyof typeof row] as number) ?? 0),
-                    0,
-                  );
-                  return (
-                    <tr key={idx} className='hover:bg-surface-hover/25 transition-colors'>
-                      <td className='px-3 py-2 text-[11px] font-semibold tracking-tight whitespace-nowrap text-slate-200'>
-                        {row.name}
-                      </td>
-                      <td className='px-3 py-2 text-right font-mono text-[11px] font-semibold whitespace-nowrap tabular-nums'>
-                        <span className='text-brand'>{total}</span>
-                      </td>
-                      {activeCategories.map((cat) => {
-                        const value = ((row[cat.key as keyof typeof row] as number) ?? 0) || 0;
-                        return (
-                          <td
-                            key={cat.key}
-                            className='px-3 py-2 text-right font-mono text-[11px] whitespace-nowrap tabular-nums'
-                          >
-                            <span className={value > 0 ? 'text-blue-200' : 'text-slate-500'}>
+                    <th className='px-2 py-0.5 text-left text-[11px] leading-none font-medium whitespace-nowrap text-slate-300 sm:text-[12px]'>
+                      Total
+                    </th>
+                    {activeCategories.map((cat) => (
+                      <th
+                        key={cat.key}
+                        className='px-2 py-0.5 text-left text-[11px] leading-none font-medium whitespace-nowrap text-slate-300 sm:text-[12px]'
+                      >
+                        {cat.label}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className='divide-surface-border/15 divide-y'>
+                  {activeGrade.rows?.map((row, idx) => {
+                    const total = categories.reduce(
+                      (acc, cat) => acc + ((row[cat.key as keyof typeof row] as number) ?? 0),
+                      0,
+                    );
+                    return (
+                      <tr key={idx} className='transition-colors'>
+                        <td className='px-2 py-1 text-[11px] leading-none whitespace-nowrap text-slate-400 sm:text-[12px]'>
+                          {row.name}
+                        </td>
+                        <td className='px-2 py-1 text-left text-[11px] leading-none whitespace-nowrap text-slate-400 tabular-nums sm:text-[12px]'>
+                          {total}
+                        </td>
+                        {activeCategories.map((cat) => {
+                          const value = ((row[cat.key as keyof typeof row] as number) ?? 0) || 0;
+                          return (
+                            <td
+                              key={cat.key}
+                              className='px-2 py-1 text-left text-[11px] leading-none whitespace-nowrap text-slate-400 tabular-nums sm:text-[12px]'
+                            >
                               {value > 0 ? value : '-'}
-                            </span>
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </Card>
-      )}
+        )}
+      </Card>
     </div>
   );
 };

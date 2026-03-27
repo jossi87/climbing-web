@@ -33,7 +33,9 @@ const AccordionContainer = ({ accordionRows }: Props) => {
                 isActive ? 'bg-surface-nav/28' : 'hover:bg-surface-nav/16',
               )}
             >
-              <span className='text-xs font-medium tracking-normal text-slate-300'>{d.label}</span>
+              <span className='text-[11px] leading-none font-medium tracking-normal text-slate-300 sm:text-[12px]'>
+                {d.label}
+              </span>
               <ChevronDown
                 size={14}
                 className={cn(
@@ -49,7 +51,7 @@ const AccordionContainer = ({ accordionRows }: Props) => {
               )}
             >
               <div className='px-2.5 pt-1 pb-2 sm:px-3 sm:pb-2.5'>
-                {hasData ? d.content : <i className='text-sm text-slate-500'>No data</i>}
+                {hasData ? d.content : <i className='text-[11px] text-slate-500 sm:text-[12px]'>No data</i>}
               </div>
             </div>
           </div>
