@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { useMeta } from '../../shared/components/Meta/context';
 import { downloadTocXlsx, useAccessToken, useToc } from '../../api';
@@ -7,9 +8,8 @@ import { useFilterState } from './reducer';
 import { FilterContext, FilterForm } from '../../shared/components/FilterForm';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { ProblemsMap } from '../../shared/components/TableOfContents/ProblemsMap';
-import { Filter, Download, Map as MapIcon, Edit, Trash2, Database, ChevronRight } from 'lucide-react';
-import { cn } from '../../lib/utils';
-import { designContract } from '../../design/contract';
+import { Filter, Download, Edit, Trash2, Database, Map as MapIcon } from 'lucide-react';
+import { Card, SectionHeader } from '../../shared/ui';
 
 type Props = { filterOpen?: boolean };
 
@@ -75,7 +75,7 @@ export const Problems = ({ filterOpen }: Props) => {
   const accessToken = useAccessToken();
   const { data: loadedData, status } = useToc();
   const [isSaving, setIsSaving] = useState(false);
-  const [showMap, setShowMap] = useState(!!(matchMedia && matchMedia('(pointer:fine)')?.matches));
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
 
   useEffect(() => {
     if (status === 'success' && loadedData) {
@@ -188,107 +188,99 @@ export const Problems = ({ filterOpen }: Props) => {
       <title>{`${title} | ${meta?.title}`}</title>
       <meta name='description' content={totalDescription} />
 
-      <div className={designContract.layout.pageShell}>
-        <div className={designContract.layout.pageHeaderRow}>
-          <nav className={designContract.layout.breadcrumb}>
-            <span className='uppercase'>Navigation</span>
-            <ChevronRight size={12} className='opacity-20' />
-            <div className='type-small flex items-center gap-1.5'>
-              <Database size={14} className='text-brand' />
-              <span className='uppercase'>{title}</span>
-              <span className='font-mono text-slate-500 normal-case'>({totalDescription})</span>
+      <div className='w-full min-w-0'>
+        <Card flush className='min-w-0 border-0 sm:border'>
+          <div className='flex flex-wrap items-start justify-between gap-3 p-4 sm:p-5'>
+            <SectionHeader title={title} icon={Database} subheader={totalDescription} />
+            <div className='flex items-center gap-2'>
+              <button
+                onClick={() => dispatch({ action: 'toggle-filter' })}
+                className={
+                  visible
+                    ? 'bg-surface-hover/55 inline-flex h-8 items-center gap-1.5 rounded-full border border-white/18 px-2.5 text-[11px] leading-none font-medium text-slate-100 transition-colors sm:text-[12px]'
+                    : 'bg-surface-nav/25 hover:bg-surface-nav/40 inline-flex h-8 items-center gap-1.5 rounded-full border border-white/10 px-2.5 text-[11px] leading-none font-medium text-slate-300 transition-colors hover:text-slate-200 sm:text-[12px]'
+                }
+              >
+                <Filter size={11} /> Filter
+              </button>
+              <button
+                type='button'
+                onClick={() => setIsMapModalOpen(true)}
+                className='bg-surface-nav/25 hover:bg-surface-nav/40 inline-flex h-8 items-center gap-1.5 rounded-full border border-white/10 px-2.5 text-[11px] leading-none font-medium text-slate-300 transition-colors hover:text-slate-200 sm:text-[12px]'
+              >
+                <MapIcon size={11} />
+                Map
+              </button>
+              <button
+                onClick={() => {
+                  setIsSaving(true);
+                  downloadTocXlsx(accessToken).finally(() => {
+                    setIsSaving(false);
+                  });
+                }}
+                disabled={isSaving}
+                className='bg-surface-nav/25 hover:bg-surface-nav/40 inline-flex h-8 items-center gap-1.5 rounded-full border border-white/10 px-2.5 text-[11px] leading-none font-medium text-slate-300 transition-colors hover:text-slate-200 disabled:cursor-wait disabled:opacity-50 sm:text-[12px]'
+              >
+                <Download size={11} /> {isSaving ? 'Downloading...' : 'Download'}
+              </button>
             </div>
-          </nav>
-
-          <div className='flex items-center gap-2'>
-            <button
-              onClick={() => dispatch({ action: 'toggle-filter' })}
-              className={cn(
-                'flex items-center gap-2 rounded-lg border px-3 py-1.5 text-[10px] font-black tracking-widest uppercase transition-all',
-                visible
-                  ? 'bg-brand border-brand shadow-brand'
-                  : 'bg-surface-nav border-surface-border hover:bg-surface-hover opacity-70 hover:opacity-100',
-              )}
-            >
-              <Filter size={14} /> Filter {things}
-            </button>
-            <button
-              onClick={() => {
-                setIsSaving(true);
-                downloadTocXlsx(accessToken).finally(() => {
-                  setIsSaving(false);
-                });
-              }}
-              disabled={isSaving}
-              className='bg-surface-nav border-surface-border hover:border-brand/50 type-label flex items-center gap-2 rounded-lg border px-3 py-1.5 opacity-70 transition-all hover:opacity-100 disabled:cursor-wait disabled:opacity-50'
-            >
-              <Download size={14} /> {isSaving ? 'Downloading...' : 'Download'}
-            </button>
           </div>
-        </div>
 
-        <div className='space-y-6'>
           {visible && (
-            <div className='bg-surface-card border-surface-border rounded-xl border p-4'>
-              <FilterForm />
+            <div className='px-4 pb-2 sm:px-5'>
+              <div className='bg-surface-nav/14 rounded-lg p-4'>
+                <FilterForm />
+              </div>
             </div>
           )}
 
           {!visible && filteredProblems > 0 && (
-            <div className='flex flex-col justify-between gap-4 rounded-xl border border-orange-500/20 bg-orange-500/10 p-4 sm:flex-row sm:items-center'>
-              <div className='text-sm text-orange-400'>
-                There is an active filter which is hiding{' '}
-                <strong className='font-bold text-orange-500'>
-                  {description(filteredRegions, filteredAreas, filteredSectors, filteredProblems, things)}
-                </strong>
-                .
-              </div>
-              <div className='flex shrink-0 flex-wrap items-center gap-2'>
-                <button
-                  onClick={() => dispatch({ action: 'open-filter' })}
-                  className='flex items-center gap-1.5 rounded-lg bg-orange-500/20 px-3 py-1.5 text-[11px] font-bold tracking-wider text-orange-500 uppercase transition-colors hover:bg-orange-500/30'
-                >
-                  <Edit size={14} /> Edit filter
-                </button>
-                <button
-                  onClick={() => dispatch({ action: 'reset', section: 'all' })}
-                  className='bg-surface-nav hover:bg-surface-hover border-surface-border type-label flex items-center gap-1.5 rounded-lg border px-3 py-1.5 opacity-85 transition-colors hover:opacity-100'
-                >
-                  <Trash2 size={14} /> Clear filter
-                </button>
+            <div className='px-4 pb-2 sm:px-5'>
+              <div className='flex flex-col justify-between gap-3 rounded-lg border border-orange-500/20 bg-orange-500/10 p-3 sm:flex-row sm:items-center'>
+                <div className='text-[11px] text-orange-300 sm:text-[12px]'>
+                  Active filter hides{' '}
+                  {description(filteredRegions, filteredAreas, filteredSectors, filteredProblems, things)}.
+                </div>
+                <div className='flex shrink-0 flex-wrap items-center gap-2'>
+                  <button
+                    onClick={() => dispatch({ action: 'open-filter' })}
+                    className='inline-flex h-8 items-center gap-1.5 rounded-full border border-orange-400/35 bg-orange-500/15 px-2.5 text-[11px] leading-none font-medium text-orange-300 transition-colors hover:bg-orange-500/25 sm:text-[12px]'
+                  >
+                    <Edit size={11} /> Edit filter
+                  </button>
+                  <button
+                    onClick={() => dispatch({ action: 'reset', section: 'all' })}
+                    className='bg-surface-nav/25 hover:bg-surface-nav/40 inline-flex h-8 items-center gap-1.5 rounded-full border border-white/10 px-2.5 text-[11px] leading-none font-medium text-slate-300 transition-colors hover:text-slate-200 sm:text-[12px]'
+                  >
+                    <Trash2 size={11} /> Clear
+                  </button>
+                </div>
               </div>
             </div>
           )}
 
-          <div className={cn(designContract.surfaces.card, 'overflow-hidden p-6')}>
-            <TableOfContents
-              header={
-                <div className='mb-4 flex justify-end'>
-                  <button
-                    onClick={() => setShowMap((v) => !v)}
-                    className={cn(
-                      'flex items-center gap-2 rounded-lg border px-3 py-1.5 text-[10px] font-black tracking-widest uppercase transition-all',
-                      showMap
-                        ? 'bg-brand/10 text-brand border-brand/30'
-                        : 'bg-surface-nav border-surface-border hover:bg-surface-hover opacity-70 hover:opacity-100',
-                    )}
-                  >
-                    <MapIcon size={14} /> Map
-                  </button>
-                </div>
-              }
-              subHeader={
-                showMap && (
-                  <div className='border-surface-border mb-8 overflow-hidden rounded-xl border'>
-                    <ProblemsMap areas={areas} />
-                  </div>
-                )
-              }
-              areas={areas}
-            />
+          <div className='p-4 pt-3 sm:p-5 sm:pt-4'>
+            <TableOfContents areas={areas} compact />
           </div>
-        </div>
+        </Card>
       </div>
+      {isMapModalOpen &&
+        createPortal(
+          <div className='fixed inset-0 z-[120]'>
+            <div className='bg-surface-dark/95 absolute inset-0' onClick={() => setIsMapModalOpen(false)} />
+            <div className='absolute inset-0'>
+              <ProblemsMap areas={areas} fullHeight />
+            </div>
+            <button
+              type='button'
+              onClick={() => setIsMapModalOpen(false)}
+              className='bg-brand/95 hover:bg-brand absolute top-0 right-0 z-[130] rounded-bl-md px-2.5 py-1.5 text-base leading-none font-semibold text-slate-950 shadow-lg transition-colors'
+            >
+              ✕
+            </button>
+          </div>,
+          document.body,
+        )}
     </FilterContext.Provider>
   );
 };

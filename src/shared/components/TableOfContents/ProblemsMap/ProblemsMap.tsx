@@ -13,7 +13,9 @@ import { ChevronRight } from 'lucide-react';
 import { cn } from '../../../../lib/utils';
 import { designContract } from '../../../../design/contract';
 
-type Props = Pick<TocProps, 'areas'>;
+type Props = Pick<TocProps, 'areas'> & {
+  fullHeight?: boolean;
+};
 
 const useMapZoom = () => {
   const map = useMap();
@@ -115,16 +117,16 @@ const useMarkers = (areas: Props['areas']): MarkerDef[] => {
   }, [areas]);
 };
 
-const ProblemMarkers = ({ areas }: Props) => {
+const ProblemMarkers = ({ areas, showElevation }: Props & { showElevation: boolean }) => {
   const markers = useMarkers(areas);
   return (
     <MarkerClusterGroup key={markers.length}>
-      <Markers opacity={0.6} markers={markers} addEventHandlers={false} flyToId={null} />
+      <Markers opacity={0.6} markers={markers} addEventHandlers={false} flyToId={null} showElevation={showElevation} />
     </MarkerClusterGroup>
   );
 };
 
-const ProblemClusters = ({ areas }: Props) => {
+const ProblemClusters = ({ areas, showElevation }: Props & { showElevation: boolean }) => {
   const zoom = useMapZoom();
   const markers = useMarkers(areas);
 
@@ -132,12 +134,12 @@ const ProblemClusters = ({ areas }: Props) => {
 
   return (
     <MarkerClusterGroup key={markers.length}>
-      <Markers opacity={0.6} markers={markers} addEventHandlers={false} flyToId={null} />
+      <Markers opacity={0.6} markers={markers} addEventHandlers={false} flyToId={null} showElevation={showElevation} />
     </MarkerClusterGroup>
   );
 };
 
-const SectorOutlines = ({ areas }: Props) => {
+const SectorOutlines = ({ areas, showElevation }: Props & { showElevation: boolean }) => {
   const map = useMap();
   const zoom = useMapZoom();
 
@@ -179,19 +181,24 @@ const SectorOutlines = ({ areas }: Props) => {
         label: zoom > 12 ? label : undefined,
       }))}
       addEventHandlers={true}
+      showElevation={showElevation}
     />
   );
 };
 
-export const ProblemsMap = ({ areas }: Props) => {
+export const ProblemsMap = ({ areas, fullHeight = false }: Props) => {
   const { defaultCenter, defaultZoom, isBouldering } = useMeta();
 
   return (
-    <div className='relative z-0 h-[60vh] w-full'>
-      <Leaflet defaultCenter={defaultCenter} defaultZoom={defaultZoom}>
-        <SectorOutlines areas={areas} />
-        {isBouldering && <ProblemMarkers areas={areas} />}
-        {!isBouldering && <ProblemClusters areas={areas} />}
+    <div className={cn('relative z-0 w-full', fullHeight ? 'h-full' : 'h-[60vh]')}>
+      <Leaflet defaultCenter={defaultCenter} defaultZoom={defaultZoom} height={fullHeight ? '100%' : undefined}>
+        {({ showElevation }) => (
+          <>
+            <SectorOutlines areas={areas} showElevation={showElevation} />
+            {isBouldering && <ProblemMarkers areas={areas} showElevation={showElevation} />}
+            {!isBouldering && <ProblemClusters areas={areas} showElevation={showElevation} />}
+          </>
+        )}
       </Leaflet>
     </div>
   );

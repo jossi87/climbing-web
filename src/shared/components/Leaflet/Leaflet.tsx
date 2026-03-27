@@ -11,6 +11,7 @@ import {
   useMap,
 } from 'react-leaflet';
 import { type LeafletMouseEventHandlerFn, latLngBounds } from 'leaflet';
+import { Mountain } from 'lucide-react';
 import Locate from './locate';
 import FullscreenControl from './fullscreencontrol';
 import Markers, { type MarkerDef } from './markers';
@@ -88,7 +89,7 @@ type Props = {
     | null;
   rocks?: string[];
   showSatelliteImage?: boolean;
-  children?: ReactNode | ReactNode[];
+  children?: ReactNode | ((state: { showElevation: boolean }) => ReactNode);
 };
 
 const UpdateBounds = ({
@@ -330,6 +331,45 @@ const Leaflet = ({
           color: rgba(255,255,255,0.2) !important;
           font-size: 8px !important;
         }
+
+        .buldreinfo-tooltip-compact {
+          font-size: 9px !important;
+          line-height: 1.15 !important;
+          padding: 1px 5px !important;
+          border-radius: 6px !important;
+          max-width: 150px !important;
+          white-space: nowrap !important;
+          overflow: hidden !important;
+          text-overflow: ellipsis !important;
+          opacity: 0.9 !important;
+        }
+
+        .marker-cluster-small,
+        .marker-cluster-medium,
+        .marker-cluster-large {
+          background: rgba(43, 50, 63, 0.55) !important;
+          border: 1px solid rgba(255, 255, 255, 0.14) !important;
+          border-radius: 9999px !important;
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45) !important;
+        }
+
+        .marker-cluster-small div,
+        .marker-cluster-medium div,
+        .marker-cluster-large div {
+          background: rgba(255, 181, 57, 0.92) !important;
+          color: rgb(15, 23, 42) !important;
+          border: none !important;
+          border-radius: 9999px !important;
+          width: 30px !important;
+          height: 30px !important;
+          margin: 4px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          font-size: 11px !important;
+          font-weight: 700 !important;
+          text-shadow: none !important;
+        }
       `}</style>
       <MapContainer
         style={{ height: height ? height : '500px', width: '100%', zIndex: 0 }}
@@ -359,17 +399,20 @@ const Leaflet = ({
         )}
         {((outlines?.length ?? 0) > 0 || (markers?.length ?? 0) > 0) && (
           <UseControlWrapper position='bottomright'>
-            <div className='bg-surface-card'>
-              <label className='flex cursor-pointer items-center gap-2'>
-                <input
-                  type='checkbox'
-                  checked={showElevation}
-                  onChange={(e) => setShowElevation(e.target.checked)}
-                  className='accent-brand'
-                />
-                <span className={cn('text-slate-300', designContract.typography.label)}>Elevation</span>
-              </label>
-            </div>
+            <button
+              type='button'
+              onClick={() => setShowElevation((v) => !v)}
+              className={cn(
+                'inline-flex h-8 w-8 items-center justify-center rounded-md border p-0 leading-none shadow-md transition-colors',
+                showElevation
+                  ? 'bg-brand/12 border-brand/45 text-slate-100'
+                  : 'bg-surface-nav/90 border-white/14 text-slate-400 hover:text-slate-200',
+              )}
+              aria-label={showElevation ? 'Hide elevation labels' : 'Show elevation labels'}
+              title={showElevation ? 'Hide elevation labels' : 'Show elevation labels'}
+            >
+              <Mountain size={13} strokeWidth={2.2} className='pointer-events-none block' />
+            </button>
           </UseControlWrapper>
         )}
         <LayersControl>
@@ -435,7 +478,7 @@ const Leaflet = ({
           />
           <Polylines opacity={opacity} slopes={slopes ?? []} />
         </FeatureGroup>
-        {children}
+        {typeof children === 'function' ? children({ showElevation }) : children}
       </MapContainer>
     </>
   );

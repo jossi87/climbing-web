@@ -1,6 +1,4 @@
 import type { CSSProperties } from 'react';
-import RangeSlider from '../../RangeSlider';
-import 'react-range-slider-input/dist/style.css';
 import { useGrades } from '../../Meta';
 import { ChevronDown } from 'lucide-react';
 
@@ -25,22 +23,6 @@ export const GradeSelect = ({ low: filterGradeLow, high: filterGradeHigh, dispat
 
   return (
     <div style={style} className='flex flex-col gap-4'>
-      <div className='mt-2 px-1'>
-        <RangeSlider
-          key={`${0}-${max}`}
-          min={0}
-          max={max}
-          value={[gradeIndexMapping[low] ?? 0, gradeIndexMapping[high] ?? max]}
-          onInput={([l, h]) => {
-            dispatch({
-              action: 'set-grades',
-              low: easyToHard[l] ?? easyToHard[0],
-              high: easyToHard[h] ?? easyToHard[max],
-            });
-          }}
-          disabled={max === 0}
-        />
-      </div>
       <div className='flex items-center justify-between gap-4'>
         <div className='relative flex-1'>
           <select

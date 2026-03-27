@@ -1,5 +1,3 @@
-import RangeSlider from '../../RangeSlider';
-import 'react-range-slider-input/dist/style.css';
 import { useFilter } from '../context';
 import { useFaYears } from '../../Meta';
 import { ChevronDown } from 'lucide-react';
@@ -14,22 +12,6 @@ export const YearSelect = () => {
 
   return (
     <div className='flex flex-col gap-4'>
-      <div className='mt-2 px-1'>
-        <RangeSlider
-          key={`${0}-${max}`}
-          min={faYears[0]}
-          max={faYears[max]}
-          value={[low, high]}
-          onInput={([l, h]) => {
-            dispatch({
-              action: 'set-fa-years',
-              low: l ?? faYears[0],
-              high: h ?? faYears[max],
-            });
-          }}
-          disabled={max === 0}
-        />
-      </div>
       <div className='flex items-center justify-between gap-4'>
         <div className='relative flex-1'>
           <select

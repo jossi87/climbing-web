@@ -1,5 +1,3 @@
-import RangeSlider from '../../RangeSlider';
-import 'react-range-slider-input/dist/style.css';
 import { useFilter } from '../context';
 import { ChevronDown } from 'lucide-react';
 
@@ -17,21 +15,6 @@ export const StartingAltitudeSelect = () => {
 
   return (
     <div className='flex flex-col gap-4'>
-      <div className='mt-2 px-1'>
-        <RangeSlider
-          min={minAlt}
-          max={maxAlt}
-          step={step}
-          value={[low, high]}
-          onInput={([l, h]) => {
-            dispatch({
-              action: 'set-starting-altitudes',
-              low: l ?? minAlt,
-              high: h ?? maxAlt,
-            });
-          }}
-        />
-      </div>
       <div className='flex items-center justify-between gap-4'>
         <div className='relative flex-1'>
           <select

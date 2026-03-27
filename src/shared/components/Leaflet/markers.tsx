@@ -99,14 +99,29 @@ export default function Markers({ opacity, markers, addEventHandlers, flyToId, s
     if (isParkingMarker(m)) {
       return (
         <Marker icon={parkingIcon} position={position} key={['parking', lat, lng].join('/')}>
-          <Popup closeButton={false}>
+          <Popup closeButton={false} className='buldreinfo-dark-popup'>
+            <style>{`
+              .buldreinfo-dark-popup .leaflet-popup-content-wrapper {
+                background: var(--color-surface-card) !important;
+                color: var(--color-white) !important;
+                border: 1px solid var(--color-surface-border) !important;
+                border-radius: 10px !important;
+              }
+              .buldreinfo-dark-popup .leaflet-popup-tip {
+                background: var(--color-surface-card) !important;
+                border: 1px solid var(--color-surface-border) !important;
+              }
+              .buldreinfo-dark-popup .leaflet-popup-content {
+                margin: 10px !important;
+              }
+            `}</style>
             <a
               href={`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`}
               target='_blank'
               rel='noopener noreferrer'
-              className='bg-brand text-surface-dark flex items-center gap-2 rounded-md px-3 py-2 text-xs font-black uppercase no-underline shadow-sm transition-all hover:brightness-110'
+              className='bg-surface-nav border-surface-border hover:border-brand/35 hover:text-brand inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[11px] leading-none font-semibold text-slate-200 no-underline transition-colors'
             >
-              <Navigation size={14} />
+              <Navigation size={12} />
               Navigate
             </a>
           </Popup>

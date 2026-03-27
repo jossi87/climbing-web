@@ -206,21 +206,21 @@ export const FilterForm = () => {
       <div className='grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3'>
         <div className='space-y-6'>
           <div>
-            <GroupHeader title='Grades' reset='grades' />
+            <GroupHeader title='Grade between' reset='grades' />
             <div className='px-1'>
               <GradeSelect low={filterGradeLow} high={filterGradeHigh} dispatch={dispatch} />
             </div>
           </div>
 
           <div>
-            <GroupHeader title='First Ascent Year' reset='fa-year' />
+            <GroupHeader title='First ascent year between' reset='fa-year' />
             <div className='px-1'>
               <YearSelect />
             </div>
           </div>
 
           <div>
-            <GroupHeader title='Starting altitude' reset='starting-altitude' />
+            <GroupHeader title='Starting altitude between' reset='starting-altitude' />
             <div className='px-1'>
               <StartingAltitudeSelect />
             </div>
