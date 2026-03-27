@@ -237,10 +237,6 @@ const Leaflet = ({
           font-family: inherit !important;
         }
 
-        .dark-tiles {
-          filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%) !important;
-        }
-
         .leaflet-bar, .leaflet-control-layers {
           border: none !important;
           box-shadow: none !important;
@@ -287,13 +283,25 @@ const Leaflet = ({
           background: var(--color-surface-nav) !important;
           color: white !important;
           border: 1px solid var(--color-surface-border) !important;
-          padding: 16px !important;
-          border-radius: 12px !important;
-          font-size: 11px !important;
-          font-weight: 700 !important;
-          text-transform: uppercase;
+          padding: 10px !important;
+          border-radius: 10px !important;
+          font-size: 10px !important;
+          font-weight: 500 !important;
           box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.5) !important;
-          min-width: 180px;
+          min-width: 156px;
+          line-height: 1.25 !important;
+        }
+
+        .leaflet-control-layers-expanded .leaflet-control-layers-list {
+          margin: 0 !important;
+        }
+
+        .leaflet-control-layers-expanded label {
+          display: flex !important;
+          align-items: center !important;
+          gap: 6px !important;
+          margin: 0 !important;
+          padding: 2px 0 !important;
         }
 
         .leaflet-control-layers-expanded .leaflet-control-layers-toggle {
@@ -426,7 +434,6 @@ const Leaflet = ({
 
           <LayersControl.BaseLayer name='OpenStreetMap'>
             <TileLayer
-              className={!showSatelliteImage ? 'dark-tiles' : ''}
               maxZoom={19}
               attribution='&copy; OpenStreetMap'
               url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
@@ -435,7 +442,6 @@ const Leaflet = ({
 
           <LayersControl.BaseLayer checked={!showSatelliteImage} name='Kartverket N50 topo'>
             <TileLayer
-              className={!showSatelliteImage ? 'dark-tiles' : ''}
               maxZoom={18}
               attribution='&copy; Kartverket'
               url='https://cache.kartverket.no/v1/wmts/1.0.0/topo/default/webmercator/{z}/{y}/{x}.png'
@@ -444,7 +450,6 @@ const Leaflet = ({
 
           <LayersControl.Overlay checked={true} name='Stedsnavn'>
             <WMSTileLayer
-              className={!showSatelliteImage ? 'dark-tiles' : ''}
               params={{
                 transparent: true,
                 format: 'image/png',
@@ -457,7 +462,6 @@ const Leaflet = ({
 
           <LayersControl.Overlay checked={true} name='Vegnett'>
             <WMSTileLayer
-              className={!showSatelliteImage ? 'dark-tiles' : ''}
               params={{
                 transparent: true,
                 format: 'image/png',

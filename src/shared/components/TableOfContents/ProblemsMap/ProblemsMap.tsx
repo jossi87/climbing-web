@@ -13,9 +13,7 @@ import { ChevronRight } from 'lucide-react';
 import { cn } from '../../../../lib/utils';
 import { designContract } from '../../../../design/contract';
 
-type Props = Pick<TocProps, 'areas'> & {
-  fullHeight?: boolean;
-};
+type Props = Pick<TocProps, 'areas'>;
 
 const useMapZoom = () => {
   const map = useMap();
@@ -186,12 +184,12 @@ const SectorOutlines = ({ areas, showElevation }: Props & { showElevation: boole
   );
 };
 
-export const ProblemsMap = ({ areas, fullHeight = false }: Props) => {
+export const ProblemsMap = ({ areas }: Props) => {
   const { defaultCenter, defaultZoom, isBouldering } = useMeta();
 
   return (
-    <div className={cn('relative z-0 w-full', fullHeight ? 'h-full' : 'h-[60vh]')}>
-      <Leaflet defaultCenter={defaultCenter} defaultZoom={defaultZoom} height={fullHeight ? '100%' : undefined}>
+    <div className='relative z-0 h-[35vh] w-full'>
+      <Leaflet defaultCenter={defaultCenter} defaultZoom={defaultZoom}>
         {({ showElevation }) => (
           <>
             <SectorOutlines areas={areas} showElevation={showElevation} />

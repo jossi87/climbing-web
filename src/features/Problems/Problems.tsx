@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { useMeta } from '../../shared/components/Meta/context';
 import { downloadTocXlsx, useAccessToken, useToc } from '../../api';
@@ -8,7 +7,7 @@ import { useFilterState } from './reducer';
 import { FilterContext, FilterForm } from '../../shared/components/FilterForm';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { ProblemsMap } from '../../shared/components/TableOfContents/ProblemsMap';
-import { Filter, Download, Edit, Trash2, Database, Map as MapIcon } from 'lucide-react';
+import { Filter, Download, Edit, Trash2, Database } from 'lucide-react';
 import { Card, SectionHeader } from '../../shared/ui';
 
 type Props = { filterOpen?: boolean };
@@ -75,7 +74,6 @@ export const Problems = ({ filterOpen }: Props) => {
   const accessToken = useAccessToken();
   const { data: loadedData, status } = useToc();
   const [isSaving, setIsSaving] = useState(false);
-  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
 
   useEffect(() => {
     if (status === 'success' && loadedData) {
@@ -204,14 +202,6 @@ export const Problems = ({ filterOpen }: Props) => {
                 <Filter size={11} /> Filter
               </button>
               <button
-                type='button'
-                onClick={() => setIsMapModalOpen(true)}
-                className='bg-surface-nav/25 hover:bg-surface-nav/40 inline-flex h-8 items-center gap-1.5 rounded-full border border-white/10 px-2.5 text-[11px] leading-none font-medium text-slate-300 transition-colors hover:text-slate-200 sm:text-[12px]'
-              >
-                <MapIcon size={11} />
-                Map
-              </button>
-              <button
                 onClick={() => {
                   setIsSaving(true);
                   downloadTocXlsx(accessToken).finally(() => {
@@ -259,28 +249,15 @@ export const Problems = ({ filterOpen }: Props) => {
             </div>
           )}
 
+          <div className='mb-2'>
+            <ProblemsMap areas={areas} />
+          </div>
+
           <div className='p-4 pt-3 sm:p-5 sm:pt-4'>
             <TableOfContents areas={areas} compact />
           </div>
         </Card>
       </div>
-      {isMapModalOpen &&
-        createPortal(
-          <div className='fixed inset-0 z-[120]'>
-            <div className='bg-surface-dark/95 absolute inset-0' onClick={() => setIsMapModalOpen(false)} />
-            <div className='absolute inset-0'>
-              <ProblemsMap areas={areas} fullHeight />
-            </div>
-            <button
-              type='button'
-              onClick={() => setIsMapModalOpen(false)}
-              className='bg-brand/95 hover:bg-brand absolute top-0 right-0 z-[130] rounded-bl-md px-2.5 py-1.5 text-base leading-none font-semibold text-slate-950 shadow-lg transition-colors'
-            >
-              ✕
-            </button>
-          </div>,
-          document.body,
-        )}
     </FilterContext.Provider>
   );
 };

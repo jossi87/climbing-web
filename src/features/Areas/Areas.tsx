@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { LockSymbol } from '../../shared/ui/Indicators';
 import { useAreas } from '../../api';
 import { useMeta } from '../../shared/components/Meta/context';
-import { Layers, Plus, Sun, Map as MapIcon } from 'lucide-react';
+import { Layers, Plus, Sun } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { Card, SectionHeader } from '../../shared/ui';
 
@@ -19,7 +18,6 @@ const Areas = () => {
   const { data } = useAreas();
   const meta = useMeta();
   const [showForDevelopers, setShowForDevelopers] = useState(false);
-  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
   const [sunFilter, setSunFilter] = useState<'all' | 'sun' | 'no-sun'>('all');
   const areas = data ?? [];
 
@@ -85,15 +83,6 @@ const Areas = () => {
       <Card flush className='min-w-0 border-0 sm:border'>
         <div className='relative p-4 pb-3 sm:p-5 sm:pb-4'>
           <div className='absolute top-4 right-4 z-10 inline-flex items-center gap-1.5 sm:top-5 sm:right-5'>
-            <button
-              type='button'
-              onClick={() => setIsMapModalOpen(true)}
-              title='Map'
-              aria-label='Open map'
-              className='bg-brand/85 hover:bg-brand border-brand/70 inline-flex h-8 w-8 items-center justify-center rounded-full border text-slate-950 transition-colors'
-            >
-              <MapIcon size={12} />
-            </button>
             {meta.isAdmin && (
               <Link
                 to={`/area/edit/-1`}
@@ -167,6 +156,19 @@ const Areas = () => {
             </div>
           </div>
 
+          <div className='-mx-4 mb-3 w-[calc(100%+2rem)] sm:-mx-5 sm:w-[calc(100%+2.5rem)]'>
+            <Leaflet
+              autoZoom={true}
+              height='35vh'
+              markers={markers}
+              defaultCenter={meta.defaultCenter}
+              defaultZoom={meta.defaultZoom}
+              showSatelliteImage={false}
+              clusterMarkers={!showForDevelopers}
+              flyToId={null}
+            />
+          </div>
+
           {showRegionGrouping ? (
             <div className='space-y-4'>
               {groupedRegions.map(([regionName, areasInRegion]) => (
@@ -217,32 +219,6 @@ const Areas = () => {
           )}
         </div>
       </Card>
-      {isMapModalOpen &&
-        createPortal(
-          <div className='fixed inset-0 z-[120]'>
-            <div className='bg-surface-dark/95 absolute inset-0' onClick={() => setIsMapModalOpen(false)} />
-            <div className='absolute inset-0'>
-              <Leaflet
-                autoZoom={true}
-                height='100%'
-                markers={markers}
-                defaultCenter={meta.defaultCenter}
-                defaultZoom={meta.defaultZoom}
-                showSatelliteImage={false}
-                clusterMarkers={!showForDevelopers}
-                flyToId={null}
-              />
-            </div>
-            <button
-              type='button'
-              onClick={() => setIsMapModalOpen(false)}
-              className='bg-brand/95 hover:bg-brand absolute top-0 right-0 z-[130] rounded-bl-md px-2.5 py-1.5 text-base leading-none font-semibold text-slate-950 shadow-lg transition-colors'
-            >
-              ✕
-            </button>
-          </div>,
-          document.body,
-        )}
     </div>
   );
 };

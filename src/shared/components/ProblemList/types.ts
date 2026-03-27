@@ -13,4 +13,9 @@ export type Row = {
   num: number;
   fa: boolean;
   faDate: string | null;
+  marker?: {
+    coordinates: { latitude: number; longitude: number };
+    label: string;
+    url: string;
+  };
 };

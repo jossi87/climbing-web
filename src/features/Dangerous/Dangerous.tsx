@@ -1,12 +1,11 @@
-import { useMemo, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { useMemo } from 'react';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { useMeta } from '../../shared/components/Meta/context';
 import { useData, useToc } from '../../api';
 import TableOfContents from '../../shared/components/TableOfContents';
 import type { Success } from '../../@types/buldreinfo';
 import type { components } from '../../@types/buldreinfo/swagger';
-import { AlertTriangle, Map as MapIcon } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import { Card, SectionHeader } from '../../shared/ui';
 import { ProblemsMap } from '../../shared/components/TableOfContents/ProblemsMap';
 
@@ -14,7 +13,6 @@ const Dangerous = () => {
   const meta = useMeta();
   const { data } = useData<Success<'getDangerous'>>(`/dangerous`);
   const { data: tocData } = useToc();
-  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
   const safeData = useMemo(() => data ?? [], [data]);
   const numAreas = safeData.length;
   const [numSectors, numProblems] = safeData.reduce(
@@ -140,38 +138,16 @@ const Dangerous = () => {
       <meta name='description' content={description} />
 
       <Card flush className='min-w-0 border-0 sm:border'>
-        <div className='flex flex-wrap items-start justify-between gap-2 p-4 sm:p-5'>
+        <div className='p-4 pb-3 sm:p-5 sm:pb-4'>
           <SectionHeader title='Dangerous' icon={AlertTriangle} subheader={description} />
-          <button
-            type='button'
-            onClick={() => setIsMapModalOpen(true)}
-            className='bg-surface-nav/25 hover:bg-surface-nav/40 inline-flex h-8 items-center gap-1.5 rounded-full border border-white/10 px-2.5 text-[11px] leading-none font-medium text-slate-300 transition-colors hover:text-slate-200 sm:text-[12px]'
-          >
-            <MapIcon size={11} />
-            Map
-          </button>
+        </div>
+        <div className='mb-2'>
+          <ProblemsMap areas={mapAreas} />
         </div>
         <div className='p-4 sm:p-5'>
           <TableOfContents areas={areas} compact />
         </div>
       </Card>
-      {isMapModalOpen &&
-        createPortal(
-          <div className='fixed inset-0 z-[120]'>
-            <div className='bg-surface-dark/95 absolute inset-0' onClick={() => setIsMapModalOpen(false)} />
-            <div className='absolute inset-0'>
-              <ProblemsMap areas={mapAreas} fullHeight />
-            </div>
-            <button
-              type='button'
-              onClick={() => setIsMapModalOpen(false)}
-              className='bg-brand/95 hover:bg-brand absolute top-0 right-0 z-[130] rounded-bl-md px-2.5 py-1.5 text-base leading-none font-semibold text-slate-950 shadow-lg transition-colors'
-            >
-              ✕
-            </button>
-          </div>,
-          document.body,
-        )}
     </div>
   );
 };

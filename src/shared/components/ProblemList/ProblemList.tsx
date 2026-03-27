@@ -13,6 +13,7 @@ type Props = {
   defaultOrder: OrderOption;
   storageKey: string;
   toolbarAction?: React.ReactNode;
+  contentBeforeList?: React.ReactNode | ((filteredRows: Row[]) => React.ReactNode);
   excludedSortOptions?: OrderOption[];
 };
 
@@ -325,6 +326,7 @@ export const ProblemList = ({
   defaultOrder,
   storageKey,
   toolbarAction,
+  contentBeforeList,
   excludedSortOptions,
 }: Props) => {
   const [showFilter, setFilterShowing] = useState(false);
@@ -538,6 +540,8 @@ export const ProblemList = ({
           </div>
         </div>
       )}
+
+      {typeof contentBeforeList === 'function' ? contentBeforeList(filtered) : contentBeforeList}
 
       {list}
     </div>

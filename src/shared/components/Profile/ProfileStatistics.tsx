@@ -1,5 +1,4 @@
-import { useMemo, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import Chart from '../Chart/Chart';
 import ProblemList from '../ProblemList';
@@ -10,7 +9,7 @@ import { numberWithCommas, useProfileStatistics } from '../../../api';
 import { useMeta } from '../Meta';
 import * as Sentry from '@sentry/react';
 import type { components } from '../../../@types/buldreinfo/swagger';
-import { AlertCircle, Check, Camera, Video, Plus, Repeat, X, Map as MapIcon, type LucideIcon } from 'lucide-react';
+import { AlertCircle, Check, Camera, Video, Plus, Repeat, X, type LucideIcon } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 
 type TickListItemProps = {
@@ -102,7 +101,6 @@ const OverviewStatItem = ({ icon: Icon, label, value, className }: OverviewStatI
 const ProfileStatistics = ({ userId, view }: ProfileStatisticsProps) => {
   const { defaultCenter, defaultZoom } = useMeta();
   const { data, isLoading, error } = useProfileStatistics(userId);
-  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
 
   const stats = useMemo(() => {
     if (!data?.ticks) return null;
@@ -141,7 +139,7 @@ const ProfileStatistics = ({ userId, view }: ProfileStatisticsProps) => {
     }
 
     return (
-      <div className='h-[56vh] min-h-[320px] w-full min-w-0 overflow-hidden'>
+      <div className='h-[35vh] w-full min-w-0 overflow-hidden'>
         <Leaflet
           key={'ticked=' + userId}
           autoZoom={true}
@@ -168,16 +166,25 @@ const ProfileStatistics = ({ userId, view }: ProfileStatisticsProps) => {
           storageKey={`user/${userId}`}
           mode='user'
           defaultOrder='date'
-          toolbarAction={
-            <button
-              type='button'
-              onClick={() => setIsMapModalOpen(true)}
-              className='bg-surface-nav/25 hover:bg-surface-nav/40 inline-flex h-8 shrink-0 items-center justify-center gap-1 rounded-full border border-white/10 px-2.5 text-[11px] leading-none font-semibold text-slate-300 transition-colors hover:text-slate-200 sm:text-[12px]'
-            >
-              <MapIcon size={11} />
-              Map
-            </button>
-          }
+          contentBeforeList={(filteredRows) => {
+            const filteredMarkers = filteredRows.flatMap((row) => (row.marker ? [row.marker] : []));
+            if (filteredMarkers.length === 0) return null;
+            return (
+              <div className='-mx-4 mb-3 h-[35vh] w-[calc(100%+2rem)] min-w-0 overflow-hidden sm:-mx-5 sm:w-[calc(100%+2.5rem)]'>
+                <Leaflet
+                  key={'ticked-inline=' + userId}
+                  autoZoom={true}
+                  height='100%'
+                  markers={filteredMarkers}
+                  defaultCenter={defaultCenter}
+                  defaultZoom={defaultZoom}
+                  showSatelliteImage={false}
+                  clusterMarkers={true}
+                  flyToId={null}
+                />
+              </div>
+            );
+          }}
           rows={data.ticks.map((t) => ({
             element: (
               <TickListItem
@@ -198,36 +205,19 @@ const ProfileStatistics = ({ userId, view }: ProfileStatisticsProps) => {
             num: t.num ?? 0,
             fa: t.fa ?? false,
             faDate: null,
+            marker:
+              t.coordinates?.latitude != null && t.coordinates?.longitude != null
+                ? {
+                    coordinates: {
+                      latitude: t.coordinates.latitude,
+                      longitude: t.coordinates.longitude,
+                    },
+                    label: t.name ?? '',
+                    url: '/problem/' + t.idProblem,
+                  }
+                : undefined,
           }))}
         />
-
-        {isMapModalOpen &&
-          createPortal(
-            <div className='fixed inset-0 z-[120]'>
-              <div className='bg-surface-dark/95 absolute inset-0' onClick={() => setIsMapModalOpen(false)} />
-              <div className='absolute inset-0'>
-                <Leaflet
-                  key={'ticked-modal=' + userId}
-                  autoZoom={true}
-                  height='100%'
-                  markers={stats.markers}
-                  defaultCenter={defaultCenter}
-                  defaultZoom={defaultZoom}
-                  showSatelliteImage={false}
-                  clusterMarkers={true}
-                  flyToId={null}
-                />
-              </div>
-              <button
-                type='button'
-                onClick={() => setIsMapModalOpen(false)}
-                className='bg-brand/95 hover:bg-brand absolute top-0 right-0 z-[130] rounded-bl-md px-2.5 py-1.5 text-base leading-none font-semibold text-slate-950 shadow-lg transition-colors'
-              >
-                ✕
-              </button>
-            </div>,
-            document.body,
-          )}
       </>
     );
   }

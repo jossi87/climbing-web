@@ -1,10 +1,9 @@
-import { type ComponentProps, Fragment, useCallback, useMemo, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { Fragment, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import Leaflet from '../Leaflet/Leaflet';
 import { LockSymbol } from '../../ui/Indicators';
 import { useProfileTodo } from '../../../api';
-import { ChevronRight, Map as MapIcon } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { Loading } from '../../ui/StatusWidgets';
 import ProblemList from '../ProblemList';
 import { useMeta } from '../Meta';
@@ -30,6 +29,7 @@ type TodoItem = {
   problemName: string;
   grade: string;
   gradeNumber: number;
+  coordinates?: { latitude: number; longitude: number };
   problemLockedAdmin: boolean;
   problemLockedSuperadmin: boolean;
   partners: Array<{ id: number; name: string }>;
@@ -72,7 +72,6 @@ const TodoListItem = ({ item }: { item: TodoItem }) => (
 
 const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) => {
   const { data } = useProfileTodo(userId);
-  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
   const { grades } = useMeta();
 
   const gradeToId = useMemo(() => {
@@ -103,26 +102,6 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
 
   const areas = useMemo(() => data?.areas ?? [], [data?.areas]);
 
-  const markers = useMemo<NonNullable<ComponentProps<typeof Leaflet>['markers']>>(
-    () =>
-      areas.flatMap((a) =>
-        (a.sectors ?? []).flatMap((s) =>
-          (s.problems ?? []).flatMap((p) =>
-            p.coordinates
-              ? [
-                  {
-                    coordinates: p.coordinates,
-                    label: p.name ?? '',
-                    url: '/problem/' + p.id,
-                  },
-                ]
-              : [],
-          ),
-        ),
-      ),
-    [areas],
-  );
-
   const items = useMemo<TodoItem[]>(
     () =>
       areas.flatMap((area) =>
@@ -142,6 +121,13 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
             problemName: problem.name ?? '',
             grade: problem.grade ?? '',
             gradeNumber: resolveGradeId(problem.grade ?? 'n/a'),
+            coordinates:
+              problem.coordinates?.latitude != null && problem.coordinates?.longitude != null
+                ? {
+                    latitude: problem.coordinates.latitude,
+                    longitude: problem.coordinates.longitude,
+                  }
+                : undefined,
             problemLockedAdmin: !!problem.lockedAdmin,
             problemLockedSuperadmin: !!problem.lockedSuperadmin,
             partners: (problem.partners ?? []).map((p) => ({ id: p.id ?? 0, name: p.name ?? '' })),
@@ -167,16 +153,25 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
           mode='user'
           defaultOrder='name'
           excludedSortOptions={['date']}
-          toolbarAction={
-            <button
-              type='button'
-              onClick={() => setIsMapModalOpen(true)}
-              className='bg-surface-nav/25 hover:bg-surface-nav/40 inline-flex h-8 shrink-0 items-center justify-center gap-1 rounded-full border border-white/10 px-2.5 text-[11px] leading-none font-semibold text-slate-300 transition-colors hover:text-slate-200 sm:text-[12px]'
-            >
-              <MapIcon size={11} />
-              Map
-            </button>
-          }
+          contentBeforeList={(filteredRows) => {
+            const filteredMarkers = filteredRows.flatMap((row) => (row.marker ? [row.marker] : []));
+            if (filteredMarkers.length === 0) return null;
+            return (
+              <div className='-mx-4 mb-3 h-[35vh] w-[calc(100%+2rem)] min-w-0 overflow-hidden sm:-mx-5 sm:w-[calc(100%+2.5rem)]'>
+                <Leaflet
+                  key={'todo-inline=' + userId}
+                  autoZoom={true}
+                  height='100%'
+                  markers={filteredMarkers}
+                  defaultCenter={defaultCenter}
+                  defaultZoom={defaultZoom}
+                  showSatelliteImage={false}
+                  clusterMarkers={true}
+                  flyToId={null}
+                />
+              </div>
+            );
+          }}
           rows={items.map((item) => ({
             element: <TodoListItem key={`todo-${item.id}-${item.nr ?? 'n'}`} item={item} />,
             areaName: item.areaName,
@@ -192,36 +187,16 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
             num: item.todoId,
             fa: false,
             faDate: null,
+            marker: item.coordinates
+              ? {
+                  coordinates: item.coordinates,
+                  label: item.problemName,
+                  url: '/problem/' + item.id,
+                }
+              : undefined,
           }))}
         />
       </div>
-      {isMapModalOpen &&
-        createPortal(
-          <div className='fixed inset-0 z-[120]'>
-            <div className='bg-surface-dark/95 absolute inset-0' onClick={() => setIsMapModalOpen(false)} />
-            <div className='absolute inset-0'>
-              <Leaflet
-                key={'todo-modal=' + userId}
-                autoZoom={true}
-                height='100%'
-                markers={markers}
-                defaultCenter={defaultCenter}
-                defaultZoom={defaultZoom}
-                showSatelliteImage={false}
-                clusterMarkers={true}
-                flyToId={null}
-              />
-            </div>
-            <button
-              type='button'
-              onClick={() => setIsMapModalOpen(false)}
-              className='bg-brand/95 hover:bg-brand absolute top-0 right-0 z-[130] rounded-bl-md px-2.5 py-1.5 text-base leading-none font-semibold text-slate-950 shadow-lg transition-colors'
-            >
-              ✕
-            </button>
-          </div>,
-          document.body,
-        )}
     </>
   );
 };
