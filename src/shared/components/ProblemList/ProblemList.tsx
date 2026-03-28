@@ -256,7 +256,7 @@ const ToolbarDropdown = <T extends string>({
           compact
             ? 'inline-flex h-7 min-w-[96px] items-center justify-between gap-1 rounded-md border px-2 text-[11px] leading-none font-medium transition-colors sm:text-[12px] md:h-7 md:px-1.5'
             : 'inline-flex h-9 items-center justify-between gap-1.5 rounded-md border px-3 text-[11px] leading-none font-medium whitespace-nowrap transition-colors sm:text-[12px] md:h-8 md:gap-1 md:px-2.5',
-          fullWidth && !compact ? 'w-full md:w-auto md:max-w-none' : '',
+          fullWidth && !compact ? 'w-full md:w-auto' : '',
           isOpen
             ? 'bg-surface-hover/55 border-white/18 text-slate-100'
             : 'bg-surface-nav/28 hover:bg-surface-nav/42 border-white/10 text-slate-300 hover:border-white/12 hover:text-slate-200',
