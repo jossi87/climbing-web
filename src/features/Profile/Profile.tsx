@@ -9,6 +9,7 @@ import ProfileMedia from '../../shared/components/Profile/ProfileMedia';
 import { LayoutDashboard, List, Bookmark, Images, Camera, AlertTriangle, Globe, Mail, Clock } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
+import { tabBarButtonClassName, tabBarIconClassName } from '../../design/tabBar';
 import { Card } from '../../shared/ui';
 
 enum Page {
@@ -49,10 +50,10 @@ const Profile = () => {
               ))}
             </div>
           </div>
-          <div className='border-surface-border border-t border-b'>
-            <div className='bg-surface-border/35 grid w-full min-w-0 grid-cols-5 gap-px overflow-hidden'>
+          <div className='border-surface-border border-t'>
+            <div className={cn(designContract.controls.tabBarRow, 'gap-px')}>
               {Array.from({ length: 5 }).map((_, idx) => (
-                <div key={idx} className='bg-surface-card h-11 animate-pulse' />
+                <div key={idx} className='bg-surface-nav/40 h-11 min-w-0 flex-1 animate-pulse' />
               ))}
             </div>
           </div>
@@ -133,27 +134,21 @@ const Profile = () => {
           </div>
         </div>
 
-        <div className='border-surface-border border-t border-b'>
-          <div className='bg-surface-border/35 grid w-full min-w-0 grid-cols-5 gap-px overflow-hidden'>
+        <div className='border-surface-border border-t'>
+          <div className={designContract.controls.tabBarRow} role='tablist' aria-label='Profile sections'>
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activePage === item.id;
               return (
                 <button
                   key={item.id}
+                  type='button'
+                  role='tab'
+                  aria-selected={isActive}
                   onClick={() => onPageChanged(item.id)}
-                  className={cn(
-                    'bg-surface-card flex w-full min-w-0 flex-col items-center justify-center gap-0.5 px-1 py-2.5 text-[11px] leading-none font-semibold transition-colors sm:flex-row sm:gap-1.5 sm:px-3 sm:text-[12px]',
-                    isActive
-                      ? 'bg-surface-hover/75 text-slate-100'
-                      : 'hover:bg-surface-hover/50 text-slate-300 hover:text-slate-100',
-                  )}
+                  className={tabBarButtonClassName(isActive)}
                 >
-                  <Icon
-                    size={12}
-                    strokeWidth={isActive ? 2.3 : 2}
-                    className={cn('opacity-90', isActive && 'text-brand opacity-100')}
-                  />
+                  <Icon size={12} strokeWidth={isActive ? 2.3 : 2} className={tabBarIconClassName(isActive)} />
                   <span className='block min-w-0 truncate leading-none'>{item.label}</span>
                 </button>
               );

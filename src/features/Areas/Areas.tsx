@@ -5,7 +5,7 @@ import { Loading } from '../../shared/ui/StatusWidgets';
 import { LockSymbol } from '../../shared/ui/Indicators';
 import { useAreas } from '../../api';
 import { useMeta } from '../../shared/components/Meta/context';
-import { Layers, Plus, Sun } from 'lucide-react';
+import { MapPin, Plus, Sun } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { Card, SectionHeader } from '../../shared/ui';
 
@@ -95,7 +95,7 @@ const Areas = () => {
             )}
           </div>
 
-          <SectionHeader title='Areas' icon={Layers} subheader={`${filteredData.length} areas`} />
+          <SectionHeader title='Areas' icon={MapPin} subheader={`${filteredData.length} areas`} />
 
           <div className='mb-3 flex flex-wrap items-center gap-2'>
             <div className='bg-surface-nav/20 inline-flex h-8 items-center gap-1 rounded-full border border-white/25 p-0.5 pl-2 shadow-sm'>

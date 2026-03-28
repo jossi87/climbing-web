@@ -57,33 +57,35 @@ export const YrLink = ({ lat, lng }: { lat: number; lng: number }) => {
 
   return (
     <div className='relative inline-block' onMouseEnter={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)}>
-      <a href={`https://www.yr.no/en/forecast/daily-table/${lat},${lng}`} target='_blank' rel='noreferrer'>
-        <Badge className='hover:bg-surface-border transition-colors'>
-          <WeatherIcon symbol={isLoading ? 'loading' : next1Hours} />
-          Yr.no
+      <a
+        href={`https://www.yr.no/en/forecast/daily-table/${lat},${lng}`}
+        target='_blank'
+        rel='noreferrer'
+        className='inline-block'
+      >
+        <Badge icon={CloudRain} className='hover:bg-white/[0.08] hover:text-slate-300 hover:ring-white/[0.1]'>
+          yr.no
         </Badge>
       </a>
       {isOpen && !isLoading && next1Hours && next6Hours && next12Hours && (
-        <div className='bg-surface-card border-surface-border absolute bottom-full left-0 z-50 mb-2 min-w-45 rounded-md border p-3 shadow-2xl'>
+        <div className='bg-surface-card/98 border-surface-border absolute bottom-full left-0 z-50 mb-2 min-w-[13rem] rounded-lg border p-3 shadow-2xl backdrop-blur-sm'>
           <div className='mb-2 grid grid-cols-3 gap-2'>
             {[
-              { sym: next1Hours, label: '1 hr' },
-              { sym: next6Hours, label: '6 hr' },
-              { sym: next12Hours, label: '12 hr' },
+              { sym: next1Hours, label: '1h' },
+              { sym: next6Hours, label: '6h' },
+              { sym: next12Hours, label: '12h' },
             ].map((item, i) => (
               <div key={i} className='text-center'>
                 <img
                   src={`/svg/yr/${weatherSymbolKeys[item.sym as TWeatherSymbolKey]}.svg`}
-                  className='mx-auto h-10 w-10'
+                  className='mx-auto h-9 w-9'
                   alt=''
                 />
-                <span className='text-[10px] font-bold text-slate-500 uppercase'>{item.label}</span>
+                <span className='mt-1 block text-[10px] font-medium text-slate-500'>{item.label}</span>
               </div>
             ))}
           </div>
-          <p className='border-surface-border border-t pt-2 text-center text-[9px] tracking-widest text-slate-600 uppercase'>
-            yr.no
-          </p>
+          <p className='border-surface-border border-t pt-2 text-center text-[10px] text-slate-500'>Forecast · yr.no</p>
         </div>
       )}
     </div>

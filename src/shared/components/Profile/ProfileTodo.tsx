@@ -1,12 +1,13 @@
-import { Fragment, useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import Leaflet from '../Leaflet/Leaflet';
 import { LockSymbol } from '../../ui/Indicators';
 import { useProfileTodo } from '../../../api';
-import { ChevronRight } from 'lucide-react';
 import { Loading } from '../../ui/StatusWidgets';
 import ProblemList from '../ProblemList';
 import { useMeta } from '../Meta';
+import { designContract } from '../../../design/contract';
+import { cn } from '../../../lib/utils';
 
 type ProfileTodoProps = {
   userId: number;
@@ -36,38 +37,55 @@ type TodoItem = {
 };
 
 const TodoListItem = ({ item }: { item: TodoItem }) => (
-  <div className='py-1.5 text-[11px] leading-relaxed break-words text-slate-300 sm:text-[12px]'>
-    <Link to={`/area/${item.areaId}`} className='hover:text-brand text-slate-300 transition-colors'>
+  <p
+    className={cn(
+      designContract.typography.body,
+      'py-1.5 leading-relaxed text-pretty [overflow-wrap:anywhere] text-slate-300',
+    )}
+  >
+    <Link to={`/area/${item.areaId}`} className={designContract.typography.listLink}>
       {item.areaName}
     </Link>
     <LockSymbol lockedAdmin={item.areaLockedAdmin} lockedSuperadmin={item.areaLockedSuperadmin} />
-    <span className='text-slate-500'> · </span>
-    <Link to={`/sector/${item.sectorId}`} className='hover:text-brand text-slate-300 transition-colors'>
+    <span className='text-slate-600'> · </span>
+    <Link to={`/sector/${item.sectorId}`} className={designContract.typography.listLink}>
       {item.sectorName}
     </Link>
     <LockSymbol lockedAdmin={item.sectorLockedAdmin} lockedSuperadmin={item.sectorLockedSuperadmin} />
-    <span className='text-slate-500'> · </span>
-    {item.nr !== null ? <span>#{item.nr} </span> : null}
-    <Link to={`/problem/${item.id}`} className='hover:text-brand text-slate-100 transition-colors'>
+    <span className='text-slate-600'> · </span>
+    {item.nr !== null ? (
+      <span className={cn(designContract.typography.meta, 'font-mono text-slate-500 tabular-nums')}>#{item.nr} </span>
+    ) : null}
+    <Link
+      to={`/problem/${item.id}`}
+      className={cn(designContract.typography.listLink, designContract.typography.listEmphasis)}
+    >
       {item.problemName}
     </Link>
-    <span className='ml-1 text-slate-300'>{item.grade}</span>
+    {item.grade ? (
+      <>
+        {' '}
+        <span className={cn(designContract.typography.meta, 'font-mono text-slate-500 tabular-nums')}>
+          {item.grade}
+        </span>
+      </>
+    ) : null}
     <LockSymbol lockedAdmin={item.problemLockedAdmin} lockedSuperadmin={item.problemLockedSuperadmin} />
-    {item.partners.length > 0 && (
-      <div className='mt-0.5 text-[10px] leading-snug text-slate-500 sm:text-[11px]'>
-        <ChevronRight size={10} className='mr-0.5 inline-block opacity-25' />
-        Other users:{' '}
+    {item.partners.length > 0 ? (
+      <>
+        {' '}
+        <span className='text-slate-600'>·</span>{' '}
         {item.partners.map((u, i) => (
-          <Fragment key={u.id}>
-            <Link to={`/user/${u.id}/todo`} className='hover:text-brand text-slate-500 transition-colors'>
+          <span key={u.id}>
+            {i > 0 ? ', ' : ''}
+            <Link to={`/user/${u.id}/todo`} className={designContract.typography.listLinkMuted}>
               {u.name}
             </Link>
-            {i < item.partners.length - 1 ? <span className='opacity-30'>, </span> : null}
-          </Fragment>
+          </span>
         ))}
-      </div>
-    )}
-  </div>
+      </>
+    ) : null}
+  </p>
 );
 
 const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) => {

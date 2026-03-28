@@ -8,6 +8,8 @@ import { cn } from '../../../lib/utils';
 import { SearchInput, Card } from '../../ui';
 import { designContract } from '../../../design/contract';
 
+const SEARCH_QUERY_KEY = 'climbing-web-search-query';
+
 type SearchResult = {
   title: string;
   description?: string;
@@ -24,7 +26,9 @@ const SearchBox = () => {
   const navigate = useNavigate();
   const { isBouldering } = useMeta();
   const { search, isPending, data } = useSearch();
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState(() =>
+    typeof window !== 'undefined' ? (sessionStorage.getItem(SEARCH_QUERY_KEY) ?? '') : '',
+  );
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -39,6 +43,10 @@ const SearchBox = () => {
     window.addEventListener('resize', updateIsMobile);
     return () => window.removeEventListener('resize', updateIsMobile);
   }, []);
+
+  useEffect(() => {
+    sessionStorage.setItem(SEARCH_QUERY_KEY, value);
+  }, [value]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -68,7 +76,6 @@ const SearchBox = () => {
   const handleSelect = (result: SearchResult) => {
     setIsOpen(false);
     setActiveIndex(-1);
-    setValue('');
     if (result.externalUrl) window.open(result.externalUrl, '_blank');
     else navigate(result.url);
   };

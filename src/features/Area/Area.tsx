@@ -9,36 +9,38 @@ import Media from '../../shared/components/Media/Media';
 import Todo from '../../shared/components/Todo/Todo';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { Stars, LockSymbol } from '../../shared/ui/Indicators';
-import { WallDirection, SunOnWall } from '../../shared/components/Widgets/ClimbingWidgets';
+import { SunOnWall } from '../../shared/components/Widgets/ClimbingWidgets';
 import { ConditionLabels } from '../../shared/components/Widgets/ConditionLabels';
 import { ExternalLinkLabels } from '../../shared/components/Widgets/ExternalLinkLabels';
-import { NoDogsAllowed } from '../../shared/components/Widgets/NoDogsAllowed';
 import { useMeta } from '../../shared/components/Meta/context';
 import { getMediaFileUrl, useArea } from '../../api';
 import { Markdown } from '../../shared/components/Markdown/Markdown';
 import ProblemList from '../../shared/components/ProblemList';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { DownloadButton } from '../../shared/ui/DownloadButton';
+import { Card, SectionHeader } from '../../shared/ui';
 import {
   ChevronRight,
   Plus,
   Edit,
   AlertTriangle,
-  Info,
   Image as ImageIcon,
   Map as MapIcon,
   BarChart2,
   Trophy,
-  Clock,
   Bookmark,
   MapPin,
   Brush,
   Film,
   CheckCircle2,
-  Layers,
+  LayoutGrid,
+  LayoutDashboard,
+  List,
+  Clock,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
+import { tabBarButtonClassName, tabBarButtonClassNameInline, tabBarIconClassName } from '../../design/tabBar';
 
 type Props = {
   sectorName: string;
@@ -64,78 +66,106 @@ const SectorListItem = ({ sectorName, problem }: Props) => {
     faTypeAscents = (faTypeAscents != null ? faTypeAscents + ' (' : '(') + ascents + ')';
   }
 
+  const hasTrailIcons =
+    !!problem.coordinates ||
+    !!problem.hasTopo ||
+    !!problem.hasImages ||
+    !!problem.hasMovies ||
+    !!problem.ticked ||
+    !!problem.todo;
+
   return (
     <div
       className={cn(
-        'flex flex-col gap-x-4 gap-y-2 rounded-xl border p-3 transition-colors xl:flex-row xl:items-start',
-        problem.ticked
-          ? 'border-green-500/20 bg-green-500/5'
-          : problem.todo
-            ? 'border-blue-500/20 bg-blue-500/5'
-            : 'bg-surface-card border-surface-border hover:border-brand/50 hover:bg-surface-nav/30',
+        'rounded-md px-0 py-2 transition-colors sm:px-0.5',
+        problem.ticked && 'bg-green-500/[0.04]',
+        problem.todo && !problem.ticked && 'bg-blue-500/[0.04]',
       )}
     >
-      <div className='flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:items-center'>
-        <div className='flex flex-wrap items-center gap-2'>
-          {problem.danger && <AlertTriangle size={14} className='shrink-0 text-red-500' />}
-          <Link to={`/problem/${problem.id}`} className='type-h2 hover:text-brand transition-colors'>
-            {problem.name}
-          </Link>
-          <span className='font-mono text-[12px] text-slate-400 normal-case'>[{problem.grade}]</span>
-          {problem.stars ? (
-            <div className='flex shrink-0 origin-left scale-75 items-center'>
-              <Stars numStars={problem.stars} includeStarOutlines={false} />
-            </div>
-          ) : null}
-          <div className='text-[10px] whitespace-nowrap text-slate-500 italic'>
-            {sectorName} #{problem.nr}
-          </div>
-          <LockSymbol lockedAdmin={!!problem.lockedAdmin} lockedSuperadmin={!!problem.lockedSuperadmin} />
-        </div>
-
-        <div className='flex shrink-0 flex-wrap items-center gap-2 text-slate-400'>
-          {problem.coordinates && (
-            <span title='Coordinates'>
-              <MapPin size={12} />
-            </span>
-          )}
-          {problem.hasTopo && (
-            <span title='Topo'>
-              <Brush size={12} />
-            </span>
-          )}
-          {problem.hasImages && (
-            <span title='Images'>
-              <ImageIcon size={12} />
-            </span>
-          )}
-          {problem.hasMovies && (
-            <span title='Movies'>
-              <Film size={12} />
-            </span>
-          )}
-          {problem.ticked && (
-            <span title='Ticked'>
-              <CheckCircle2 size={12} className='text-green-500' />
-            </span>
-          )}
-          {problem.todo && (
-            <span title='To-Do'>
-              <Bookmark size={12} className='text-blue-500' />
-            </span>
-          )}
-        </div>
-      </div>
-
-      <div className='flex shrink-0 flex-col gap-0.5 xl:max-w-[40%] xl:text-right'>
-        {faTypeAscents && <span className='text-[11px] font-medium text-slate-400'>{faTypeAscents}</span>}
-        {(problem.rock || problem.comment) && (
-          <span className='text-[11px] leading-relaxed text-slate-500 italic'>
-            {problem.rock && <span className='mr-1 font-medium text-slate-400'>Rock: {problem.rock}.</span>}
-            {problem.comment}
-          </span>
+      <p
+        className={cn(
+          designContract.typography.body,
+          'min-w-0 leading-snug text-pretty [overflow-wrap:anywhere] text-slate-300 sm:leading-relaxed',
         )}
-      </div>
+      >
+        {problem.danger && <AlertTriangle size={13} className='mr-1 inline-block shrink-0 text-red-500' />}
+        <span className={cn(designContract.typography.meta, 'font-mono text-slate-500 tabular-nums')}>
+          #{problem.nr}
+        </span>{' '}
+        <Link
+          to={`/problem/${problem.id}`}
+          className={cn(designContract.typography.listLink, designContract.typography.listEmphasis)}
+        >
+          {problem.name}
+        </Link>
+        {problem.grade ? (
+          <>
+            {' '}
+            <span className={cn(designContract.typography.meta, 'font-mono text-slate-500 tabular-nums')}>
+              {problem.grade}
+            </span>
+          </>
+        ) : null}
+        {problem.stars ? (
+          <span className='ml-1 inline-flex origin-left scale-90 align-middle'>
+            <Stars numStars={problem.stars} includeStarOutlines={false} />
+          </span>
+        ) : null}
+        <span className='text-slate-600'> · </span>
+        <span className={designContract.typography.meta}>{sectorName}</span>
+        <LockSymbol lockedAdmin={!!problem.lockedAdmin} lockedSuperadmin={!!problem.lockedSuperadmin} />
+        {hasTrailIcons ? (
+          <>
+            <span className='text-slate-600'> · </span>
+            <span className='inline-flex flex-wrap items-center gap-x-1.5 gap-y-0.5 align-middle text-slate-500'>
+              {problem.coordinates && (
+                <span title='Coordinates'>
+                  <MapPin size={12} />
+                </span>
+              )}
+              {problem.hasTopo && (
+                <span title='Topo'>
+                  <Brush size={12} />
+                </span>
+              )}
+              {problem.hasImages && (
+                <span title='Images'>
+                  <ImageIcon size={12} />
+                </span>
+              )}
+              {problem.hasMovies && (
+                <span title='Movies'>
+                  <Film size={12} />
+                </span>
+              )}
+              {problem.ticked && (
+                <span title='Ticked'>
+                  <CheckCircle2 size={12} className='text-green-500' />
+                </span>
+              )}
+              {problem.todo && (
+                <span title='To-Do'>
+                  <Bookmark size={12} className='text-blue-500' />
+                </span>
+              )}
+            </span>
+          </>
+        ) : null}
+        {(faTypeAscents || problem.rock || problem.comment) && (
+          <>
+            <span className='text-slate-600'> · </span>
+            <span className={cn(designContract.typography.meta, 'text-slate-500')}>
+              {faTypeAscents ? <span className='text-slate-400'>{faTypeAscents}</span> : null}
+              {faTypeAscents && (problem.rock || problem.comment) ? <span className='text-slate-600'> · </span> : null}
+              {problem.rock ? (
+                <span className='font-medium text-slate-400 not-italic'>Rock: {problem.rock}.</span>
+              ) : null}
+              {problem.rock && problem.comment ? <span className='text-slate-600'> · </span> : null}
+              {problem.comment ? <span className='text-slate-500 italic'>{problem.comment}</span> : null}
+            </span>
+          </>
+        )}
+      </p>
     </div>
   );
 };
@@ -148,6 +178,45 @@ type SectorWithParking = AreaSectorType &
 
 const isSectorWithParking = (s: AreaSectorType): s is SectorWithParking => {
   return !!(s.parking && s.parking.latitude && s.parking.longitude);
+};
+
+/** Rough line estimate for plain text / markdown (no DOM measurement). */
+const commentLikelyExceedsLines = (comment: string, maxLines: number, charsPerLine = 76): boolean => {
+  const lines = comment.trim().split(/\r?\n/);
+  let total = 0;
+  for (const line of lines) {
+    total += Math.max(1, Math.ceil(line.length / charsPerLine));
+  }
+  return total > maxLines;
+};
+
+type AreaDescriptionProps = { comment: string };
+
+const AreaDescription = ({ comment }: AreaDescriptionProps) => {
+  const [expanded, setExpanded] = useState(false);
+  const needsToggle = commentLikelyExceedsLines(comment, 6);
+
+  return (
+    <div className='space-y-2'>
+      <div
+        className={cn(
+          'text-[13px] leading-relaxed text-slate-300 sm:text-sm',
+          !expanded && needsToggle && 'max-h-[8.75rem] overflow-hidden',
+        )}
+      >
+        <Markdown content={comment} />
+      </div>
+      {needsToggle && (
+        <button
+          type='button'
+          onClick={() => setExpanded((x) => !x)}
+          className='text-[12px] font-medium text-slate-400 transition-colors hover:text-slate-200 sm:text-[13px]'
+        >
+          {expanded ? 'Show less' : 'Show more'}
+        </button>
+      )}
+    </div>
+  );
 };
 
 const Area = () => {
@@ -191,6 +260,82 @@ const Area = () => {
     }));
   }, [data?.sectors]);
 
+  const { outlines, slopes } = useMemo(() => {
+    const nextOutlines: NonNullable<ComponentProps<typeof Leaflet>['outlines']> = [];
+    const nextSlopes: NonNullable<ComponentProps<typeof Leaflet>['slopes']> = [];
+    if (!data?.sectors) return { outlines: nextOutlines, slopes: nextSlopes };
+
+    const showSlopeLengthOnOutline = (data.sectors.filter((s) => s.approach && s.outline).length ?? 0) > 1;
+
+    for (const s of data.sectors) {
+      let distance: string | null = null;
+      const approach = s.approach;
+      if (approach?.coordinates?.length) {
+        distance = getDistanceWithUnit(approach);
+        const label = (!s.outline || !showSlopeLengthOnOutline) && distance ? distance : '';
+        nextSlopes.push({ backgroundColor: 'lime', slope: approach, label: label ?? '' });
+      }
+      if (s.descent?.coordinates?.length) {
+        distance = getDistanceWithUnit(s.descent);
+        const label = (!s.outline || !showSlopeLengthOnOutline) && distance ? distance : '';
+        nextSlopes.push({ backgroundColor: 'purple', slope: s.descent, label: label ?? '' });
+      }
+      if (s.outline?.length) {
+        const label = (s.name ?? '') + (showSlopeLengthOnOutline && distance ? ' (' + distance + ')' : '');
+        nextOutlines.push({ url: '/sector/' + s.id, label, outline: s.outline });
+      }
+    }
+    return { outlines: nextOutlines, slopes: nextSlopes };
+  }, [data]);
+
+  const tabs = useMemo(() => {
+    const t: { id: string; label: string; icon: typeof LayoutDashboard }[] = [];
+    if (!data) return t;
+    t.push({ id: 'overview', label: 'Overview', icon: LayoutDashboard });
+    if (markers.length || outlines.length || data.coordinates) t.push({ id: 'map', label: 'Map', icon: MapIcon });
+    if (data.sectors?.length) {
+      t.push({ id: 'distribution', label: 'Distribution', icon: BarChart2 });
+      t.push({ id: 'top', label: 'Top', icon: Trophy });
+      t.push({ id: 'todo', label: 'Todo', icon: Bookmark });
+      t.push({ id: 'activity', label: 'Activity', icon: Clock });
+    }
+    return t;
+  }, [data, markers.length, outlines.length]);
+
+  const normalizedActiveTab = activeTab === 'image' ? 'overview' : activeTab;
+  const effectiveTab =
+    tabs.length === 0
+      ? null
+      : normalizedActiveTab !== null && tabs.some((x) => x.id === normalizedActiveTab)
+        ? normalizedActiveTab
+        : tabs[0].id;
+
+  const problemRows = useMemo(() => {
+    if (!data?.sectors) return [];
+    return (data.sectors ?? [])
+      .flatMap((sector) => {
+        const name = sector.name ?? '';
+        const problems = sector.problems ?? [];
+        return problems.map((p) => ({
+          element: <SectorListItem key={p.id} sectorName={name} problem={p} />,
+          name: p.name ?? '',
+          areaName: data.name ?? '',
+          sectorName: name,
+          nr: p.nr ?? 0,
+          gradeNumber: p.gradeNumber ?? 0,
+          stars: p.stars ?? 0,
+          numTicks: p.numTicks ?? 0,
+          ticked: p.ticked ?? false,
+          rock: p.rock ?? '',
+          subType: p.t?.subType ?? '',
+          num: p.nr ?? 0,
+          fa: !!p.fa,
+          faDate: p.faDate ?? null,
+        }));
+      })
+      .sort((a, b) => b.gradeNumber - a.gradeNumber);
+  }, [data]);
+
   if (redirectUi) return redirectUi;
 
   if (error) {
@@ -218,351 +363,338 @@ const Area = () => {
     if (data.triviaMedia.length > 1) orderableMedia.push(...data.triviaMedia);
   }
 
-  const outlines: ComponentProps<typeof Leaflet>['outlines'] = [];
-  const slopes: ComponentProps<typeof Leaflet>['slopes'] = [];
-  const showSlopeLengthOnOutline = (data.sectors?.filter((s) => s.approach && s.outline).length ?? 0) > 1;
-
-  for (const s of data.sectors ?? []) {
-    let distance: string | null = null;
-    const approach = s.approach;
-    if (approach?.coordinates?.length) {
-      distance = getDistanceWithUnit(approach);
-      const label = (!s.outline || !showSlopeLengthOnOutline) && distance ? distance : '';
-      slopes.push({ backgroundColor: 'lime', slope: approach, label: label ?? '' });
-    }
-    if (s.descent?.coordinates?.length) {
-      distance = getDistanceWithUnit(s.descent);
-      const label = (!s.outline || !showSlopeLengthOnOutline) && distance ? distance : '';
-      slopes.push({ backgroundColor: 'purple', slope: s.descent, label: label ?? '' });
-    }
-    if (s.outline?.length) {
-      const label = (s.name ?? '') + (showSlopeLengthOnOutline && distance ? ' (' + distance + ')' : '');
-      outlines.push({ url: '/sector/' + s.id, label, outline: s.outline });
-    }
-  }
-
-  const tabs = [];
-  if (data.media && data.media.length) tabs.push({ id: 'image', label: 'Media', icon: ImageIcon });
-  if (markers.length || outlines.length || data.coordinates) tabs.push({ id: 'map', label: 'Map', icon: MapIcon });
-  if (data.sectors?.length) {
-    tabs.push({ id: 'distribution', label: 'Distribution', icon: BarChart2 });
-    tabs.push({ id: 'top', label: 'Top', icon: Trophy });
-    tabs.push({ id: 'activity', label: 'Activity', icon: Clock });
-    tabs.push({ id: 'todo', label: 'Todo', icon: Bookmark });
-  }
-
-  if (activeTab === null && tabs.length > 0) setActiveTab(tabs[0].id);
-
-  const problemRows = (data.sectors ?? [])
-    .flatMap((sector) => {
-      const name = sector.name ?? '';
-      const problems = sector.problems ?? [];
-      return problems.map((p) => ({
-        element: <SectorListItem key={p.id} sectorName={name} problem={p} />,
-        name: p.name ?? '',
-        areaName: data.name ?? '',
-        sectorName: name,
-        nr: p.nr ?? 0,
-        gradeNumber: p.gradeNumber ?? 0,
-        stars: p.stars ?? 0,
-        numTicks: p.numTicks ?? 0,
-        ticked: p.ticked ?? false,
-        rock: p.rock ?? '',
-        subType: p.t?.subType ?? '',
-        num: p.nr ?? 0,
-        fa: !!p.fa,
-        faDate: p.faDate ?? null,
-      }));
-    })
-    .sort((a, b) => b.gradeNumber - a.gradeNumber);
+  const things = meta.isBouldering ? 'problems' : 'routes';
+  const areaSubheader = [
+    `${data.sectors?.length ?? 0} sectors`,
+    `${problemRows.length} ${things}`,
+    data.pageViews != null && String(data.pageViews).length > 0 ? `${data.pageViews} views` : null,
+    data.forDevelopers ? 'Under development' : null,
+  ]
+    .filter(Boolean)
+    .join(' · ');
 
   return (
-    <div className='max-w-container mx-auto space-y-6 px-4 py-6 text-left'>
+    <div className='w-full min-w-0'>
       <title>{`${data.name} | ${meta?.title}`}</title>
       <meta name='description' content={data.comment} />
 
-      <div className={designContract.layout.pageHeaderRow}>
-        <nav className={designContract.layout.breadcrumb}>
-          <Link to='/areas' className='transition-colors'>
-            Areas
-          </Link>
-          <ChevronRight size={12} className='opacity-20' />
-          <div className='type-small flex items-center gap-1.5'>
-            <span>{data.name}</span>
-            {data.forDevelopers && <span className='font-mono text-slate-500 normal-case'> (under development)</span>}
-            <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
-          </div>
-        </nav>
-
-        {meta.isAdmin && (
-          <div className='inline-flex items-center gap-1.5'>
-            <Link
-              to={`/area/edit/${data.id}`}
-              title='Edit area'
-              aria-label='Edit area'
-              className='inline-flex h-8 w-8 items-center justify-center rounded-full border border-amber-300/45 bg-amber-400/18 text-amber-100 transition-colors hover:bg-amber-400/28'
-            >
-              <Edit size={12} />
-            </Link>
-            <Link
-              to={`/sector/edit/${data.id}/0`}
-              title='Add sector'
-              aria-label='Add sector'
-              className='inline-flex h-8 w-8 items-center justify-center rounded-full border border-green-400/40 bg-green-500/20 text-green-300 transition-colors hover:bg-green-500/30 hover:text-green-200'
-            >
-              <Plus size={12} />
-            </Link>
-          </div>
-        )}
-      </div>
-
-      {data.accessClosed && (
-        <div className='flex items-start gap-4 rounded-xl border border-red-500/20 bg-red-500/10 p-4'>
-          <AlertTriangle className='mt-0.5 shrink-0 text-red-500' />
-          <div>
-            <h3 className='mb-1 text-lg font-bold text-red-500'>Area closed!</h3>
-            <p className='text-sm text-red-400'>{data.accessClosed}</p>
-          </div>
-        </div>
-      )}
-
-      {tabs.length > 0 && (
-        <div className='space-y-4'>
-          <div className='scrollbar-hide flex gap-1.5 overflow-x-auto pb-1'>
-            {tabs.map((t) => {
-              const IconComp = t.icon;
-              return (
-                <button
-                  key={t.id}
-                  onClick={() => setActiveTab(t.id)}
-                  className={cn(
-                    'inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-[11px] leading-none font-medium whitespace-nowrap transition-colors sm:text-[12px]',
-                    activeTab === t.id
-                      ? 'bg-surface-hover/55 border-white/18 text-slate-100'
-                      : 'bg-surface-nav/25 hover:bg-surface-nav/40 border-white/10 text-slate-300 hover:text-slate-200',
-                  )}
-                >
-                  <IconComp size={11} /> {t.label}
-                </button>
-              );
-            })}
-          </div>
-
-          <div className='bg-surface-card border-surface-border min-h-75 overflow-hidden rounded-xl border'>
-            {activeTab === 'image' && (
-              <div className='p-4'>
-                <Media
-                  pitches={null}
-                  media={data.media ?? []}
-                  orderableMedia={orderableMedia}
-                  carouselMedia={carouselMedia}
-                  optProblemId={null}
-                  showLocation={false}
-                />
-              </div>
-            )}
-            {activeTab === 'map' && (
-              <Leaflet
-                key={'area=' + data.id}
-                autoZoom={true}
-                height='50vh'
-                markers={markers}
-                outlines={outlines}
-                slopes={slopes}
-                defaultCenter={
-                  data.coordinates?.latitude && data.coordinates?.longitude
-                    ? { lat: data.coordinates.latitude, lng: data.coordinates.longitude }
-                    : meta.defaultCenter
-                }
-                defaultZoom={data.coordinates ? 14 : meta.defaultZoom}
-                showSatelliteImage={false}
-                clusterMarkers={false}
-                flyToId={null}
-              />
-            )}
-            {activeTab === 'distribution' && (
-              <div className='p-6'>
-                <ChartGradeDistribution idArea={data.id ?? 0} />
-              </div>
-            )}
-            {activeTab === 'top' && (
-              <div className='p-4'>
-                <Top idArea={data.id ?? 0} idSector={0} />
-              </div>
-            )}
-            {activeTab === 'activity' && (
-              <div className='p-4'>
-                <Activity idArea={data.id ?? 0} idSector={0} />
-              </div>
-            )}
-            {activeTab === 'todo' && (
-              <div className='p-4'>
-                <Todo idArea={data.id ?? 0} idSector={0} />
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      <div className='space-y-3'>
-        <div className='space-y-3 rounded-xl border border-orange-500/20 bg-orange-500/10 p-4'>
-          <div className='flex items-center gap-2 text-xs font-black tracking-widest text-orange-500 uppercase'>
-            <Info size={14} /> Restrictions
-          </div>
-          <div className='ml-6 text-sm text-orange-400'>
-            {data.noDogsAllowed && <NoDogsAllowed />}
-            {data.accessInfo && <p>{data.accessInfo}</p>}
-          </div>
-        </div>
-
-        <div className='bg-surface-card border-surface-border space-y-4 rounded-xl border p-5'>
-          <div className='flex flex-wrap gap-2'>
-            <div className='bg-surface-nav border-surface-border rounded border px-3 py-1 text-xs text-slate-300'>
-              Sectors: <span className='ml-1 font-bold'>{data.sectors?.length ?? 0}</span>
-            </div>
-            {data.typeNumTickedTodo?.map((t) => (
-              <div
-                key={t.type}
-                className='bg-surface-nav border-surface-border rounded border px-3 py-1 text-xs text-slate-300'
+      <Card flush className='min-w-0 border-0 sm:border'>
+        <div className='relative p-4 sm:p-5'>
+          {meta.isAdmin && (
+            <div className='absolute top-4 right-4 z-10 inline-flex items-center gap-1.5 sm:top-5 sm:right-5'>
+              <Link
+                to={`/area/edit/${data.id}`}
+                title='Edit area'
+                aria-label='Edit area'
+                className='inline-flex h-8 w-8 items-center justify-center rounded-full border border-amber-300/45 bg-amber-400/18 text-amber-100 transition-colors hover:bg-amber-400/28'
               >
-                {t.type}:{' '}
-                <span className='ml-1 font-bold'>
-                  {t.num} {t.ticked ? `(${t.ticked} ticked)` : ''}
-                </span>
-              </div>
-            ))}
-            <div className='bg-surface-nav border-surface-border rounded border px-3 py-1 text-xs text-slate-300'>
-              Page views: <span className='ml-1 font-bold'>{data.pageViews}</span>
-            </div>
-            <DownloadButton href={`/areas/pdf?id=${data.id}`}>area.pdf</DownloadButton>
-            {data.coordinates && data.coordinates.latitude && data.coordinates.longitude && (
-              <ConditionLabels
-                lat={data.coordinates.latitude}
-                lng={data.coordinates.longitude}
-                label={data.name ?? ''}
-                wallDirectionCalculated={undefined}
-                wallDirectionManual={undefined}
-                sunFromHour={data.sunFromHour ?? 0}
-                sunToHour={data.sunToHour ?? 0}
-              />
-            )}
-            <ExternalLinkLabels externalLinks={data.externalLinks} />
-          </div>
-          <div className='text-sm leading-relaxed text-slate-300'>
-            <Markdown content={data.comment} />
-          </div>
-          {(data.triviaMedia?.length ?? 0) > 0 && (
-            <div className='pt-2'>
-              <Media
-                pitches={null}
-                media={data.triviaMedia ?? []}
-                orderableMedia={orderableMedia}
-                carouselMedia={carouselMedia}
-                optProblemId={null}
-                showLocation={false}
-              />
+                <Edit size={12} />
+              </Link>
+              <Link
+                to={`/sector/edit/${data.id}/0`}
+                title='Add sector'
+                aria-label='Add sector'
+                className='inline-flex h-8 w-8 items-center justify-center rounded-full border border-green-400/40 bg-green-500/20 text-green-300 transition-colors hover:bg-green-500/30 hover:text-green-200'
+              >
+                <Plus size={12} />
+              </Link>
             </div>
           )}
-        </div>
-      </div>
 
-      <div className='space-y-3'>
-        <div className='flex gap-1.5 overflow-x-auto pb-1'>
-          <button
-            onClick={() => setActiveSectorTab('sectors')}
-            className={cn(
-              'inline-flex h-8 items-center rounded-full border px-3 text-[11px] leading-none font-medium whitespace-nowrap transition-colors sm:text-[12px]',
-              activeSectorTab === 'sectors'
-                ? 'bg-surface-hover/55 border-white/18 text-slate-100'
-                : 'bg-surface-nav/25 hover:bg-surface-nav/40 border-white/10 text-slate-300 hover:text-slate-200',
-            )}
-          >
-            Sectors ({data.sectors?.length ?? 0})
-          </button>
-          <button
-            onClick={() => setActiveSectorTab('problems')}
-            className={cn(
-              'inline-flex h-8 items-center rounded-full border px-3 text-[11px] leading-none font-medium whitespace-nowrap transition-colors sm:text-[12px]',
-              activeSectorTab === 'problems'
-                ? 'bg-surface-hover/55 border-white/18 text-slate-100'
-                : 'bg-surface-nav/25 hover:bg-surface-nav/40 border-white/10 text-slate-300 hover:text-slate-200',
-            )}
-          >
-            {meta.isBouldering ? 'Problems' : 'Routes'} ({problemRows.length})
-          </button>
+          <nav className='mb-4 flex flex-wrap items-center gap-1.5 text-[11px] text-slate-500 sm:text-[12px]'>
+            <Link to='/areas' className='transition-colors hover:text-slate-300'>
+              Areas
+            </Link>
+            <ChevronRight size={12} className='shrink-0 opacity-30' />
+            <span className='flex items-center gap-1.5 text-slate-400'>
+              {data.name}
+              <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
+            </span>
+          </nav>
+
+          <SectionHeader
+            title={data.name ?? 'Area'}
+            icon={MapPin}
+            subheader={areaSubheader}
+            detail={
+              data.accessClosed || data.noDogsAllowed || data.accessInfo ? (
+                <>
+                  {data.accessClosed && <p className='text-pretty text-red-300/90'>{data.accessClosed}</p>}
+                  {(data.noDogsAllowed || data.accessInfo) && (
+                    <div className='space-y-1.5 text-orange-300/90'>
+                      {data.noDogsAllowed && <p className='text-pretty'>No dogs allowed (landowner request).</p>}
+                      {data.accessInfo && <p className='text-pretty'>{data.accessInfo}</p>}
+                    </div>
+                  )}
+                </>
+              ) : undefined
+            }
+          />
         </div>
 
-        {activeSectorTab === 'sectors' ? (
-          <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-            {data.sectors?.map((sector) => (
-              <Link
-                key={sector.id}
-                to={`/sector/${sector.id}`}
-                className='group bg-surface-card border-surface-border hover:border-brand/50 flex overflow-hidden rounded-xl border transition-all'
+        {tabs.length > 0 && (
+          <>
+            <div className='border-surface-border border-t'>
+              <div
+                className={designContract.controls.tabBarRow}
+                style={{ display: 'grid', gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
+                role='tablist'
+                aria-label='Area sections'
               >
-                <div className='bg-surface-nav min-h-30 w-1/3 shrink-0 overflow-hidden'>
-                  <img
-                    className='h-full w-full object-cover transition-transform duration-500 group-hover:scale-105'
-                    src={
-                      sector.randomMediaId
-                        ? getMediaFileUrl(sector.randomMediaId, sector.randomMediaVersionStamp ?? 0, false, {
-                            minDimension: 150,
-                          })
-                        : '/png/image.png'
-                    }
-                    alt={sector.name ?? ''}
+                {tabs.map((t) => {
+                  const IconComp = t.icon;
+                  const isActive = effectiveTab === t.id;
+                  return (
+                    <button
+                      key={t.id}
+                      type='button'
+                      role='tab'
+                      aria-selected={isActive}
+                      onClick={() => setActiveTab(t.id)}
+                      className={tabBarButtonClassName(isActive)}
+                    >
+                      <IconComp size={12} strokeWidth={isActive ? 2.3 : 2} className={tabBarIconClassName(isActive)} />
+                      <span className='block min-w-0 truncate leading-none'>{t.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {effectiveTab !== 'activity' && (
+              <div className='border-surface-border/40 border-t'>
+                {effectiveTab === 'overview' && (
+                  <div className='space-y-4 p-4 sm:p-5'>
+                    {(data.media?.length ?? 0) > 0 && (
+                      <Media
+                        pitches={null}
+                        media={data.media ?? []}
+                        orderableMedia={orderableMedia}
+                        carouselMedia={carouselMedia}
+                        optProblemId={null}
+                        showLocation={false}
+                      />
+                    )}
+
+                    <div className='flex w-full min-w-0 flex-wrap items-center gap-x-2 gap-y-2'>
+                      {data.coordinates && data.coordinates.latitude && data.coordinates.longitude && (
+                        <ConditionLabels
+                          lat={data.coordinates.latitude}
+                          lng={data.coordinates.longitude}
+                          label={data.name ?? ''}
+                          wallDirectionCalculated={undefined}
+                          wallDirectionManual={undefined}
+                          sunFromHour={data.sunFromHour ?? 0}
+                          sunToHour={data.sunToHour ?? 0}
+                        />
+                      )}
+                      <DownloadButton href={`/areas/pdf?id=${data.id}`}>PDF</DownloadButton>
+                      <ExternalLinkLabels externalLinks={data.externalLinks} />
+                    </div>
+
+                    {(data.comment ?? '').trim().length > 0 && (
+                      <AreaDescription key={data.id} comment={data.comment ?? ''} />
+                    )}
+
+                    {(data.triviaMedia?.length ?? 0) > 0 && (
+                      <div className='pt-1'>
+                        <Media
+                          pitches={null}
+                          media={data.triviaMedia ?? []}
+                          orderableMedia={orderableMedia}
+                          carouselMedia={carouselMedia}
+                          optProblemId={null}
+                          showLocation={false}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+                {effectiveTab === 'map' && (
+                  <div className='relative z-0 -mx-px h-[35vh] min-h-[220px] w-[calc(100%+2px)] overflow-hidden sm:mx-0 sm:h-[40vh] sm:w-full'>
+                    <Leaflet
+                      key={'area=' + data.id}
+                      autoZoom={true}
+                      height='100%'
+                      markers={markers}
+                      outlines={outlines}
+                      slopes={slopes}
+                      defaultCenter={
+                        data.coordinates?.latitude && data.coordinates?.longitude
+                          ? { lat: data.coordinates.latitude, lng: data.coordinates.longitude }
+                          : meta.defaultCenter
+                      }
+                      defaultZoom={data.coordinates ? 14 : meta.defaultZoom}
+                      showSatelliteImage={false}
+                      clusterMarkers={false}
+                      flyToId={null}
+                    />
+                  </div>
+                )}
+                {effectiveTab === 'distribution' && (
+                  <div className='p-4 sm:p-5'>
+                    <ChartGradeDistribution idArea={data.id ?? 0} embedded />
+                  </div>
+                )}
+                {effectiveTab === 'top' && (
+                  <div className='p-4 sm:p-5'>
+                    <Top idArea={data.id ?? 0} idSector={0} />
+                  </div>
+                )}
+                {effectiveTab === 'todo' && (
+                  <div className='p-4 sm:p-5'>
+                    <Todo idArea={data.id ?? 0} idSector={0} />
+                  </div>
+                )}
+              </div>
+            )}
+          </>
+        )}
+      </Card>
+
+      {effectiveTab === 'overview' && (data.sectors?.length ?? 0) > 0 && (
+        <div className='mt-6 min-w-0 space-y-4'>
+          <div
+            role='tablist'
+            aria-label='Choose sector grid or full problem list'
+            className={cn(designContract.controls.tabBarRow, 'gap-x-6 gap-y-1 sm:gap-x-10')}
+          >
+            <button
+              type='button'
+              role='tab'
+              aria-selected={activeSectorTab === 'sectors'}
+              onClick={() => setActiveSectorTab('sectors')}
+              className={cn(tabBarButtonClassNameInline(activeSectorTab === 'sectors'), 'flex-row gap-2')}
+            >
+              <LayoutGrid
+                size={14}
+                strokeWidth={activeSectorTab === 'sectors' ? 2.3 : 2}
+                className={tabBarIconClassName(activeSectorTab === 'sectors')}
+              />
+              <span className='whitespace-nowrap'>
+                Sectors <span className='font-normal text-slate-500'>({data.sectors?.length ?? 0})</span>
+              </span>
+            </button>
+            <button
+              type='button'
+              role='tab'
+              aria-selected={activeSectorTab === 'problems'}
+              onClick={() => setActiveSectorTab('problems')}
+              className={cn(tabBarButtonClassNameInline(activeSectorTab === 'problems'), 'flex-row gap-2')}
+            >
+              <List
+                size={14}
+                strokeWidth={activeSectorTab === 'problems' ? 2.3 : 2}
+                className={tabBarIconClassName(activeSectorTab === 'problems')}
+              />
+              <span className='whitespace-nowrap'>
+                {meta.isBouldering ? 'Problems' : 'Routes'}{' '}
+                <span className='font-normal text-slate-500'>({problemRows.length})</span>
+              </span>
+            </button>
+          </div>
+          <div className='min-w-0'>
+            {activeSectorTab === 'sectors' ? (
+              <div className='grid min-w-0 grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4 xl:grid-cols-5'>
+                {data.sectors?.map((sector) => (
+                  <Card
+                    key={sector.id}
+                    flush
+                    className='h-full max-w-full min-w-0 overflow-hidden rounded-xl border border-white/10 shadow-lg ring-1 ring-white/10 max-sm:!mx-0 max-sm:!w-full sm:border sm:shadow-xl sm:ring-0'
+                  >
+                    <Link
+                      to={`/sector/${sector.id}`}
+                      className='group relative block min-h-[12rem] overflow-hidden rounded-xl sm:min-h-[14rem] md:min-h-[15rem]'
+                    >
+                      <img
+                        className='absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105'
+                        src={
+                          sector.randomMediaId
+                            ? getMediaFileUrl(sector.randomMediaId, sector.randomMediaVersionStamp ?? 0, false, {
+                                minDimension: 400,
+                              })
+                            : '/png/image.png'
+                        }
+                        alt=''
+                      />
+                      <div className='absolute inset-0 bg-linear-to-t from-black/95 via-black/55 to-black/20' />
+                      <div className='absolute inset-0 bg-black/25 opacity-0 transition-opacity duration-300 group-hover:opacity-100' />
+                      <div className='relative flex min-h-[12rem] flex-col justify-end p-2.5 sm:min-h-[14rem] sm:p-3 md:min-h-[15rem] md:p-4'>
+                        <div className='flex items-start justify-between gap-2'>
+                          <h4 className='type-h2 line-clamp-2 min-w-0 flex-1 text-[0.95rem] leading-tight drop-shadow-md sm:text-[1.1rem] md:text-[1.25rem]'>
+                            {sector.name}
+                          </h4>
+                          <span className='shrink-0 drop-shadow'>
+                            <LockSymbol
+                              lockedAdmin={!!sector.lockedAdmin}
+                              lockedSuperadmin={!!sector.lockedSuperadmin}
+                            />
+                          </span>
+                        </div>
+                        <div className='type-micro mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 font-normal text-slate-500 sm:mt-2 [&_span]:font-normal [&_span]:text-slate-400'>
+                          <SunOnWall
+                            variant='inline'
+                            className='text-slate-500 [&_span]:text-slate-400 [&_span]:tabular-nums'
+                            sunFromHour={sector.sunFromHour ?? 0}
+                            sunToHour={sector.sunToHour ?? 0}
+                          />
+                        </div>
+                        {sector.typeNumTickedTodo && sector.typeNumTickedTodo.length > 0 && (
+                          <div className='mt-1.5 flex flex-wrap items-center gap-1 sm:mt-2'>
+                            {sector.typeNumTickedTodo.map((x) => {
+                              const tickTodo = [x.ticked && `${x.ticked} ticked`, x.todo && `${x.todo} todo`]
+                                .filter(Boolean)
+                                .join(', ');
+                              return (
+                                <div
+                                  key={x.type}
+                                  title={[x.type, `${x.num}`, tickTodo].filter(Boolean).join(' · ')}
+                                  className='inline-flex max-w-[min(100%,11rem)] min-w-0 items-center gap-x-0.5 rounded-full border border-white/15 bg-white/[0.08] px-1.5 py-px text-[7px] leading-tight text-slate-200 shadow-sm backdrop-blur-md sm:text-[8px]'
+                                >
+                                  <span className='min-w-0 truncate font-medium text-slate-300'>{x.type}</span>
+                                  <span className='shrink-0 font-semibold text-slate-50 tabular-nums'>{x.num}</span>
+                                  {tickTodo ? (
+                                    <span className='min-w-0 truncate text-slate-400'>· {tickTodo}</span>
+                                  ) : null}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                        {sector.accessClosed && (
+                          <p className='type-micro mt-1 font-semibold text-red-300/95 drop-shadow'>
+                            {sector.accessClosed}
+                          </p>
+                        )}
+                      </div>
+                    </Link>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card
+                flush
+                className='border-surface-border/35 bg-surface-card/90 min-w-0 overflow-hidden rounded-xl shadow-sm ring-1 ring-white/5 sm:border'
+              >
+                <div className='p-3 sm:p-4'>
+                  <ProblemList
+                    storageKey={`area/${areaId}`}
+                    mode='sector'
+                    defaultOrder='grade-desc'
+                    rows={problemRows}
                   />
                 </div>
-                <div className='flex-1 space-y-2 p-4'>
-                  <div className='flex items-start justify-between gap-2'>
-                    <div className='flex items-center gap-2'>
-                      <h4 className='type-h2 group-hover:text-brand truncate transition-colors'>{sector.name}</h4>
-                      <LockSymbol lockedAdmin={!!sector.lockedAdmin} lockedSuperadmin={!!sector.lockedSuperadmin} />
-                    </div>
-                    <div className='flex shrink-0'>
-                      <WallDirection
-                        wallDirectionCalculated={sector.wallDirectionCalculated}
-                        wallDirectionManual={sector.wallDirectionManual}
-                      />
-                      <SunOnWall sunFromHour={sector.sunFromHour ?? 0} sunToHour={sector.sunToHour ?? 0} />
-                    </div>
-                  </div>
-                  <div className='space-y-1'>
-                    {sector.typeNumTickedTodo?.map((x) => (
-                      <div key={x.type} className='flex items-center gap-2 text-[11px] text-slate-400'>
-                        <Layers
-                          size={12}
-                          className={cn(
-                            x.type === 'Projects'
-                              ? 'text-blue-500'
-                              : x.type === 'Broken'
-                                ? 'text-red-500'
-                                : 'text-slate-600',
-                          )}
-                        />
-                        <span>
-                          {x.type}: {x.num}{' '}
-                          {x.ticked || x.todo
-                            ? `(${[x.ticked && `${x.ticked} ticked`, x.todo && `${x.todo} todo`].filter(Boolean).join(', ')})`
-                            : ''}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                  {sector.accessClosed && (
-                    <div className='text-[10px] font-bold text-red-500 uppercase'>{sector.accessClosed}</div>
-                  )}
-                  <div className='line-clamp-2 text-xs text-slate-500 italic'>
-                    <Markdown content={sector.comment} />
-                  </div>
-                </div>
-              </Link>
-            ))}
+              </Card>
+            )}
           </div>
-        ) : (
-          <ProblemList storageKey={`area/${areaId}`} mode='sector' defaultOrder='grade-desc' rows={problemRows} />
-        )}
-      </div>
+        </div>
+      )}
+
+      {effectiveTab === 'activity' && (
+        <div className='mt-4 min-w-0'>
+          <Activity idArea={data.id ?? 0} idSector={0} />
+        </div>
+      )}
     </div>
   );
 };

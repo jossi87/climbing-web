@@ -33,12 +33,16 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
   const gradeClass = 'text-[13px] leading-none font-normal text-slate-300 tabular-nums sm:text-[14px]';
   const locationClass = 'text-[11px] leading-tight font-medium text-slate-300 sm:text-[12px]';
   const metaTextClass = 'text-[11px] text-slate-300 sm:text-[12px]';
-  const metaLinkClass = 'hover:text-brand transition-colors';
+  const interactiveLinkClass =
+    'rounded-sm transition-colors duration-150 hover:text-brand hover:underline hover:decoration-brand/60 underline-offset-[3px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/35';
 
   return (
     <Card flush className={cardShellClass}>
       <div className='bg-surface-nav relative overflow-hidden' style={{ aspectRatio: '275 / 250' }}>
-        <Link to={`/problem/${randomMedia.idProblem}`} className='block h-full w-full'>
+        <Link
+          to={`/problem/${randomMedia.idProblem}`}
+          className='focus-visible:ring-brand/45 block h-full w-full transition-[filter,transform] duration-300 outline-none hover:brightness-110 focus-visible:ring-2 focus-visible:ring-inset'
+        >
           <img
             className='h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105'
             src={getMediaFileUrl(Number(randomMedia.idMedia ?? 0), randomMedia.versionStamp || 0, false, {
@@ -60,14 +64,21 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
         <div className='pointer-events-none absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent opacity-100 transition-opacity duration-500 group-hover:opacity-100 sm:opacity-0' />
 
         <div className='absolute right-0 bottom-0 left-0 p-4 sm:hidden'>
-          <Link to={`/problem/${randomMedia.idProblem}`} className='flex items-baseline gap-2'>
+          <Link
+            to={`/problem/${randomMedia.idProblem}`}
+            className={`${interactiveLinkClass} flex items-baseline gap-2`}
+          >
             <h3 className={problemTitleClass}>{randomMedia.problem}</h3>
             <span className={gradeClass}>{randomMedia.grade}</span>
           </Link>
-          <div className='mt-2 mb-4'>
-            <span className={locationClass}>
-              {randomMedia.area} <span className='mx-1 text-slate-500'>·</span> {randomMedia.sector}
-            </span>
+          <div className='mt-2 mb-4 leading-tight'>
+            <Link to={`/area/${randomMedia.idArea}`} className={interactiveLinkClass}>
+              <span className={locationClass}>{randomMedia.area}</span>
+            </Link>
+            <span className='mx-1 text-slate-500'>·</span>
+            <Link to={`/sector/${randomMedia.idSector}`} className={interactiveLinkClass}>
+              <span className={locationClass}>{randomMedia.sector}</span>
+            </Link>
           </div>
 
           {(taggedUsers.length > 0 || photographer) && (
@@ -81,7 +92,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
                   />
                   <span className={metaTextClass}>
                     {taggedUsers.length === 1 ? (
-                      <Link to={`/user/${taggedUsers[0].id}`} className={metaLinkClass}>
+                      <Link to={`/user/${taggedUsers[0].id}`} className={interactiveLinkClass}>
                         {taggedUsers[0].name}
                       </Link>
                     ) : (
@@ -101,7 +112,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
                   />
                   <div className={metaTextClass}>
                     <span className='mr-1 text-slate-400'>By</span>
-                    <Link to={`/user/${photographer.id}`} className={metaLinkClass}>
+                    <Link to={`/user/${photographer.id}`} className={interactiveLinkClass}>
                       {photographer.name}
                     </Link>
                   </div>
@@ -114,16 +125,16 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
 
       <div className='bg-surface-nav/10 hidden p-4 sm:block'>
         <div className='mb-4'>
-          <Link to={`/problem/${randomMedia.idProblem}`} className='hover:text-brand block transition-colors'>
+          <Link to={`/problem/${randomMedia.idProblem}`} className={`${interactiveLinkClass} inline-block`}>
             <span className={problemTitleClass}>{randomMedia.problem}</span>
             <span className={'ml-1 ' + gradeClass}>{randomMedia.grade}</span>
           </Link>
           <div className='mt-2 leading-tight'>
-            <Link to={`/area/${randomMedia.idArea}`} className='transition-colors hover:text-slate-300'>
+            <Link to={`/area/${randomMedia.idArea}`} className={interactiveLinkClass}>
               <span className={locationClass}>{randomMedia.area}</span>
             </Link>
             <span className='mx-1 text-slate-500'>·</span>
-            <Link to={`/sector/${randomMedia.idSector}`} className='transition-colors hover:text-slate-300'>
+            <Link to={`/sector/${randomMedia.idSector}`} className={interactiveLinkClass}>
               <span className={locationClass}>{randomMedia.sector}</span>
             </Link>
           </div>
@@ -135,7 +146,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
               <div className='flex items-center gap-3'>
                 <AvatarGroup items={taggedUsers.map((u) => ({ ...u, mediaId: u.mediaId ?? 0 }))} size='mini' max={3} />
                 <div className={metaTextClass}>
-                  <Link to={`/user/${taggedUsers[0].id}`} className={metaLinkClass}>
+                  <Link to={`/user/${taggedUsers[0].id}`} className={interactiveLinkClass}>
                     {taggedUsers[0].name}
                   </Link>
                   {taggedUsers.length > 1 && (
@@ -154,7 +165,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
                 />
                 <div className={metaTextClass}>
                   <span className='mr-1 text-slate-500'>By</span>
-                  <Link to={`/user/${photographer.id}`} className={metaLinkClass}>
+                  <Link to={`/user/${photographer.id}`} className={interactiveLinkClass}>
                     {photographer.name}
                   </Link>
                 </div>

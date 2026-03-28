@@ -1,6 +1,0 @@
-.problem-list-filter-container {
-  display: grid;
-  grid-template-columns: max-content 1fr;
-
-  gap: 16px;
-}

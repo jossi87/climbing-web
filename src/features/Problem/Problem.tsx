@@ -22,18 +22,22 @@ import { ProblemsOnRock } from './ProblemsOnRock';
 import { ProblemTicks } from './ProblemTicks';
 import { ProblemComments } from './ProblemComments';
 import { DownloadButton } from '../../shared/ui/DownloadButton';
+import { Card, SectionHeader } from '../../shared/ui';
 import { Markdown } from '../../shared/components/Markdown/Markdown';
+import { tabBarButtonClassName, tabBarIconClassName } from '../../design/tabBar';
 import {
   Bookmark,
   Check,
   MessageSquare,
   Eye,
+  Image as ImageIcon,
   Edit,
   Plus,
   Map as MapIcon,
   Calendar,
   ChevronRight,
   AlertTriangle,
+  MapPin,
   Tag,
   Activity,
 } from 'lucide-react';
@@ -188,136 +192,205 @@ export const Problem = () => {
         />
       )}
 
-      <div className={designContract.layout.pageHeaderRow}>
-        <nav className={designContract.layout.breadcrumb}>
-          <Link to='/areas' className='uppercase transition-colors'>
-            Areas
-          </Link>
-          <ChevronRight size={12} className='opacity-20' />
-          <Link to={`/area/${data.areaId}`} className='uppercase transition-colors'>
-            {data.areaName}
-          </Link>
-          <LockSymbol lockedAdmin={!!data.areaLockedAdmin} lockedSuperadmin={!!data.areaLockedSuperadmin} />
-          <ChevronRight size={12} className='opacity-20' />
-          <Link to={`/sector/${data.sectorId}`} className='uppercase transition-colors'>
-            {data.sectorName}
-          </Link>
-          <LockSymbol lockedAdmin={!!data.sectorLockedAdmin} lockedSuperadmin={!!data.sectorLockedSuperadmin} />
-          <ChevronRight size={12} className='opacity-20' />
-          <div className='type-small flex items-center gap-1.5'>
-            <span className='font-medium text-slate-500'>#{data.nr}</span>
-            <span className='uppercase'>{data.name}</span>
-            <span className='font-mono text-slate-400 normal-case'>[{data.grade}]</span>
-            <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
-          </div>
-        </nav>
-
-        <div className='flex items-center gap-1'>
+      <Card flush className='min-w-0 border-0 sm:border'>
+        <div className='relative p-4 sm:p-5'>
           {meta.isAuthenticated && (
-            <div className='bg-surface-nav border-surface-border flex rounded-lg border p-1'>
-              {!isTicked && (
-                <button
-                  onClick={handleToggleTodo}
-                  disabled={isPending}
-                  className={cn(
-                    'rounded-md p-2 transition-all',
-                    optimisticTodo ? 'text-brand bg-brand/10' : 'opacity-70 hover:opacity-100',
-                  )}
-                >
-                  <Bookmark size={18} fill={optimisticTodo ? 'currentColor' : 'none'} />
-                </button>
-              )}
-              <button
-                onClick={() => setShowTickModal(true)}
-                className={cn(
-                  'rounded-md p-2 transition-all',
-                  isTicked ? 'bg-green-500/10 text-green-500' : 'opacity-70 hover:opacity-100',
+            <div className='absolute top-4 right-4 z-10 sm:top-5 sm:right-5'>
+              <div className='bg-surface-nav border-surface-border flex rounded-lg border p-1'>
+                {!isTicked && (
+                  <button
+                    onClick={handleToggleTodo}
+                    disabled={isPending}
+                    className={cn(
+                      'rounded-md p-2 transition-all',
+                      optimisticTodo ? 'bg-white/10 text-slate-100' : 'opacity-70 hover:opacity-100',
+                    )}
+                  >
+                    <Bookmark size={18} fill={optimisticTodo ? 'currentColor' : 'none'} />
+                  </button>
                 )}
-              >
-                <Check size={18} />
-              </button>
-              <button
-                onClick={() => setShowCommentModal({ id: -1, danger: false, resolved: false })}
-                className='p-2 opacity-70 transition-all hover:opacity-100'
-              >
-                <MessageSquare size={18} />
-              </button>
-              {meta.isAdmin && (
                 <button
-                  onClick={() => setShowHiddenMedia(!showHiddenMedia)}
+                  onClick={() => setShowTickModal(true)}
                   className={cn(
                     'rounded-md p-2 transition-all',
-                    showHiddenMedia ? 'bg-blue-400/10 text-blue-400' : 'opacity-70 hover:opacity-100',
+                    isTicked ? 'bg-green-500/10 text-green-500' : 'opacity-70 hover:opacity-100',
                   )}
                 >
-                  <Eye size={18} />
+                  <Check size={18} />
                 </button>
-              )}
-              <Link
-                to={meta.isAdmin ? `/problem/edit/${data.sectorId}/${data.id}` : `/problem/edit/media/${data.id}`}
-                className='p-2 opacity-70 transition-all hover:opacity-100'
+                <button
+                  onClick={() => setShowCommentModal({ id: -1, danger: false, resolved: false })}
+                  className='p-2 opacity-70 transition-all hover:opacity-100'
+                >
+                  <MessageSquare size={18} />
+                </button>
+                {meta.isAdmin && (
+                  <button
+                    onClick={() => setShowHiddenMedia(!showHiddenMedia)}
+                    className={cn(
+                      'rounded-md p-2 transition-all',
+                      showHiddenMedia ? 'bg-blue-400/10 text-blue-400' : 'opacity-70 hover:opacity-100',
+                    )}
+                  >
+                    <Eye size={18} />
+                  </button>
+                )}
+                <Link
+                  to={meta.isAdmin ? `/problem/edit/${data.sectorId}/${data.id}` : `/problem/edit/media/${data.id}`}
+                  className='p-2 opacity-70 transition-all hover:opacity-100'
+                >
+                  {meta.isAdmin ? <Edit size={18} /> : <Plus size={18} />}
+                </Link>
+              </div>
+            </div>
+          )}
+
+          <nav className='mb-4 flex flex-wrap items-center gap-1.5 text-[11px] text-slate-500 sm:text-[12px]'>
+            <Link to='/areas' className='transition-colors hover:text-slate-300'>
+              Areas
+            </Link>
+            <ChevronRight size={12} className='shrink-0 opacity-30' />
+            <Link to={`/area/${data.areaId}`} className='transition-colors hover:text-slate-300'>
+              {data.areaName}
+            </Link>
+            <LockSymbol lockedAdmin={!!data.areaLockedAdmin} lockedSuperadmin={!!data.areaLockedSuperadmin} />
+            <ChevronRight size={12} className='shrink-0 opacity-30' />
+            <Link to={`/sector/${data.sectorId}`} className='transition-colors hover:text-slate-300'>
+              {data.sectorName}
+            </Link>
+            <LockSymbol lockedAdmin={!!data.sectorLockedAdmin} lockedSuperadmin={!!data.sectorLockedSuperadmin} />
+            <ChevronRight size={12} className='shrink-0 opacity-30' />
+            <span className='flex flex-wrap items-center gap-1.5 text-slate-400'>
+              <span className='font-mono text-slate-500 tabular-nums'>#{data.nr}</span>
+              <span className='font-medium text-slate-300'>{data.name}</span>
+              <span className='font-mono text-slate-500 tabular-nums'>[{data.grade}]</span>
+              <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
+            </span>
+          </nav>
+
+          <SectionHeader
+            title={data.name ?? ''}
+            icon={MapPin}
+            subheader={[data.grade ? `[${data.grade}]` : null, data.areaName ?? '', data.sectorName ?? '']
+              .filter(Boolean)
+              .join(' · ')}
+            detail={
+              data.broken ||
+              data.areaAccessClosed ||
+              data.sectorAccessClosed ||
+              data.areaNoDogsAllowed ||
+              data.areaAccessInfo ||
+              data.sectorAccessInfo ? (
+                <>
+                  {data.broken && (
+                    <p className='text-pretty text-red-300/90'>
+                      <span className='font-medium'>{meta.isBouldering ? 'Problem' : 'Route'} broken:</span>{' '}
+                      {data.broken}
+                    </p>
+                  )}
+                  {(data.areaAccessClosed || data.sectorAccessClosed) && (
+                    <p className='text-pretty text-red-300/90'>
+                      {(data.areaAccessClosed ? 'Area' : 'Sector') + ' closed: '}
+                      {(data.areaAccessClosed || '') + (data.sectorAccessClosed || '')}
+                    </p>
+                  )}
+                  {(data.areaNoDogsAllowed || data.areaAccessInfo || data.sectorAccessInfo) && (
+                    <div className='space-y-1.5 text-orange-300/90'>
+                      {data.areaNoDogsAllowed && <NoDogsAllowed />}
+                      <Linkify>
+                        {data.areaAccessInfo && <p className='text-pretty'>{data.areaAccessInfo}</p>}
+                        {data.sectorAccessInfo && <p className='text-pretty'>{data.sectorAccessInfo}</p>}
+                      </Linkify>
+                    </div>
+                  )}
+                </>
+              ) : undefined
+            }
+          />
+        </div>
+      </Card>
+
+      <Card flush className='min-w-0 overflow-hidden border-0 sm:border'>
+        {markers.length > 0 ? (
+          <>
+            <div className='border-surface-border border-t'>
+              <div
+                className={designContract.controls.tabBarRow}
+                style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }}
+                role='tablist'
+                aria-label='Media or map'
               >
-                {meta.isAdmin ? <Edit size={18} /> : <Plus size={18} />}
-              </Link>
+                <button
+                  type='button'
+                  role='tab'
+                  aria-selected={activeTab === 'media'}
+                  onClick={() => setActiveTab('media')}
+                  className={tabBarButtonClassName(activeTab === 'media')}
+                >
+                  <ImageIcon
+                    size={12}
+                    strokeWidth={activeTab === 'media' ? 2.3 : 2}
+                    className={tabBarIconClassName(activeTab === 'media')}
+                  />
+                  <span className='block min-w-0 truncate leading-none'>Media</span>
+                </button>
+                <button
+                  type='button'
+                  role='tab'
+                  aria-selected={activeTab === 'map'}
+                  onClick={() => setActiveTab('map')}
+                  className={tabBarButtonClassName(activeTab === 'map')}
+                >
+                  <MapIcon
+                    size={12}
+                    strokeWidth={activeTab === 'map' ? 2.3 : 2}
+                    className={tabBarIconClassName(activeTab === 'map')}
+                  />
+                  <span className='block min-w-0 truncate leading-none'>Map</span>
+                </button>
+              </div>
             </div>
-          )}
-        </div>
-      </div>
-
-      <div className='space-y-3'>
-        {data.broken && (
-          <div className='flex items-start gap-4 rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-500'>
-            <AlertTriangle className='mt-0.5 shrink-0' size={18} />
-            <div>
-              <p className='mb-1 text-[10px] font-black tracking-tight uppercase'>
-                {meta.isBouldering ? 'Problem' : 'Route'} broken
-              </p>
-              <p>{data.broken}</p>
-            </div>
-          </div>
-        )}
-        {(data.areaAccessClosed || data.sectorAccessClosed) && (
-          <div className='flex items-start gap-4 rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-500'>
-            <AlertTriangle className='mt-0.5 shrink-0' size={18} />
-            <div>
-              <p className='mb-1 text-[10px] font-black tracking-tight uppercase'>
-                {data.areaAccessClosed ? 'Area' : 'Sector'} closed!
-              </p>
-              <p>{(data.areaAccessClosed || '') + (data.sectorAccessClosed || '')}</p>
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div className={cn(designContract.surfaces.card, 'overflow-hidden')}>
-        <div className='bg-surface-nav/20 flex gap-1.5 p-2'>
-          <button
-            onClick={() => setActiveTab('media')}
-            className={cn(
-              'inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-[11px] leading-none font-medium transition-colors sm:text-[12px]',
-              activeTab === 'media'
-                ? 'bg-surface-hover/55 border-white/18 text-slate-100'
-                : 'bg-surface-nav/25 hover:bg-surface-nav/40 border-white/10 text-slate-300 hover:text-slate-200',
-            )}
-          >
-            <Eye size={11} /> Media
-          </button>
-          {markers.length > 0 && (
-            <button
-              onClick={() => setActiveTab('map')}
-              className={cn(
-                'inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-[11px] leading-none font-medium transition-colors sm:text-[12px]',
-                activeTab === 'map'
-                  ? 'bg-surface-hover/55 border-white/18 text-slate-100'
-                  : 'bg-surface-nav/25 hover:bg-surface-nav/40 border-white/10 text-slate-300 hover:text-slate-200',
+            <div className='border-surface-border/40 border-t p-1 sm:p-2'>
+              {activeTab === 'media' ? (
+                <Media
+                  pitches={data.sections}
+                  media={data.media || []}
+                  orderableMedia={orderableMedia}
+                  carouselMedia={carouselMedia}
+                  optProblemId={data.id ?? 0}
+                  showLocation={false}
+                />
+              ) : (
+                <div className='relative z-0 h-[40vh] min-h-[220px] w-full overflow-hidden rounded-lg'>
+                  <Leaflet
+                    key={'map-' + data.id}
+                    autoZoom
+                    height='100%'
+                    markers={markers}
+                    outlines={
+                      data.sectorOutline?.length && !data.coordinates
+                        ? [
+                            {
+                              url: '/sector/' + data.sectorId,
+                              label: data.sectorName!,
+                              outline: data.sectorOutline,
+                            },
+                          ]
+                        : undefined
+                    }
+                    slopes={slopes}
+                    defaultCenter={{ lat: conditionLat, lng: conditionLng }}
+                    defaultZoom={16}
+                    showSatelliteImage
+                    clusterMarkers={false}
+                    flyToId={null}
+                  />
+                </div>
               )}
-            >
-              <MapIcon size={11} /> Map
-            </button>
-          )}
-        </div>
-        <div className='p-1'>
-          {activeTab === 'media' ? (
+            </div>
+          </>
+        ) : (
+          <div className='p-1 sm:p-2'>
             <Media
               pitches={data.sections}
               media={data.media || []}
@@ -326,51 +399,9 @@ export const Problem = () => {
               optProblemId={data.id ?? 0}
               showLocation={false}
             />
-          ) : (
-            <div className='h-[40vh] w-full overflow-hidden rounded-xl'>
-              <Leaflet
-                key={'map-' + data.id}
-                autoZoom
-                height='100%'
-                markers={markers}
-                outlines={
-                  data.sectorOutline?.length && !data.coordinates
-                    ? [
-                        {
-                          url: '/sector/' + data.sectorId,
-                          label: data.sectorName!,
-                          outline: data.sectorOutline,
-                        },
-                      ]
-                    : undefined
-                }
-                slopes={slopes}
-                defaultCenter={{ lat: conditionLat, lng: conditionLng }}
-                defaultZoom={16}
-                showSatelliteImage
-                clusterMarkers={false}
-                flyToId={null}
-              />
-            </div>
-          )}
-        </div>
-      </div>
-
-      {(data.areaAccessInfo || data.sectorAccessInfo || data.areaNoDogsAllowed) && (
-        <div className='rounded-xl border border-orange-500/20 bg-orange-500/5 p-5'>
-          <div className='mb-3 flex items-center gap-2 text-orange-500'>
-            <AlertTriangle size={18} />
-            <h4 className='type-label text-orange-500'>Restrictions</h4>
           </div>
-          <div className='ml-7 space-y-2 text-sm leading-relaxed text-slate-300'>
-            {data.areaNoDogsAllowed && <NoDogsAllowed />}
-            <Linkify>
-              {data.areaAccessInfo && <p>{data.areaAccessInfo}</p>}
-              {data.sectorAccessInfo && <p>{data.sectorAccessInfo}</p>}
-            </Linkify>
-          </div>
-        </div>
-      )}
+        )}
+      </Card>
 
       <div className={cn(designContract.surfaces.card, 'space-y-6 p-5')}>
         <div className='grid grid-cols-1 gap-x-8 gap-y-6 lg:grid-cols-[180px_1fr]'>
@@ -382,10 +413,17 @@ export const Problem = () => {
                   <Link
                     key={n!.id}
                     to={`/problem/${n!.id}`}
-                    className='bg-surface-nav border-surface-border hover:border-brand/50 type-small rounded-lg border px-3 py-1.5 opacity-85 transition-all hover:opacity-100'
+                    className='bg-surface-nav border-surface-border type-small rounded-lg border px-3 py-1.5 opacity-90 transition-colors hover:border-white/15 hover:opacity-100'
                   >
-                    <span className='mr-1 text-slate-500'>#{n!.nr}</span> {n!.name}{' '}
-                    <span className='ml-1 font-normal text-slate-500'>{n!.grade}</span>
+                    <span className={cn(designContract.typography.meta, 'mr-1 font-mono text-slate-500 tabular-nums')}>
+                      #{n!.nr}
+                    </span>{' '}
+                    <span className={cn(designContract.typography.listLink, designContract.typography.listEmphasis)}>
+                      {n!.name}
+                    </span>{' '}
+                    <span className={cn(designContract.typography.meta, 'ml-1 font-mono text-slate-500 tabular-nums')}>
+                      {n!.grade}
+                    </span>
                   </Link>
                 ))}
               </div>
@@ -414,7 +452,7 @@ export const Problem = () => {
                 <Link
                   key={u.id}
                   to={`/user/${u.id}`}
-                  className='bg-surface-nav border-surface-border hover:border-brand inline-flex items-center gap-2 rounded border px-2 py-1 text-[11px] font-bold text-slate-300 transition-all'
+                  className='bg-surface-nav border-surface-border inline-flex items-center gap-2 rounded border px-2 py-1 text-[11px] font-semibold text-slate-300 transition-colors hover:border-white/15'
                 >
                   <ClickableAvatar
                     name={u.name}
@@ -606,7 +644,7 @@ export const Problem = () => {
                   <Link
                     key={u.idUser}
                     to={`/user/${u.idUser}`}
-                    className='bg-surface-nav border-surface-border hover:border-brand inline-flex items-center gap-2 rounded-md border px-2 py-1 text-[10px] font-bold text-slate-400 transition-all'
+                    className='bg-surface-nav border-surface-border inline-flex items-center gap-2 rounded-md border px-2 py-1 text-[10px] font-semibold text-slate-400 transition-colors hover:border-white/15'
                   >
                     <ClickableAvatar
                       name={u.name}
@@ -627,7 +665,7 @@ export const Problem = () => {
         {hasTicks && (
           <div className='space-y-4'>
             <div className='flex items-center gap-2 px-1'>
-              <Check size={20} className='text-brand' />
+              <Check size={20} className='text-slate-400' strokeWidth={2.25} />
               <h3 className='type-label'>Latest Ticks</h3>
             </div>
             <ProblemTicks ticks={data.ticks || []} />
@@ -636,7 +674,7 @@ export const Problem = () => {
         {hasComments && (
           <div className='space-y-4'>
             <div className='flex items-center gap-2 px-1'>
-              <MessageSquare size={20} className='text-brand' />
+              <MessageSquare size={20} className='text-slate-400' strokeWidth={2.25} />
               <h3 className='type-label'>Comments</h3>
             </div>
             <ProblemComments

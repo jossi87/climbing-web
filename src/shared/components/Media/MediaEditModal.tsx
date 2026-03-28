@@ -19,7 +19,7 @@ const MediaEditModal = ({ save, onCloseWithoutReload, m, numPitches }: Props) =>
   const [saving, setSaving] = useState(false);
 
   return (
-    <div className='animate-in fade-in fixed inset-0 z-200 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm duration-200'>
+    <div className='animate-in fade-in fixed inset-0 z-200 flex h-[100dvh] min-h-[100dvh] w-full max-w-[100vw] items-center justify-center bg-black/80 p-4 backdrop-blur-sm duration-200'>
       <div className='bg-surface-card border-surface-border flex w-full max-w-md flex-col overflow-hidden rounded-2xl border shadow-2xl'>
         <div className='border-surface-border bg-surface-nav/30 flex items-center justify-between border-b px-6 py-4'>
           <h3 className='type-label'>Edit media</h3>

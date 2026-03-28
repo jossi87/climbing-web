@@ -1,4 +1,5 @@
 import { useState, useEffect, type ComponentProps, type SyntheticEvent, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useInView } from 'react-intersection-observer';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
@@ -206,57 +207,61 @@ const Media = ({ pitches, media, orderableMedia, carouselMedia, optProblemId, sh
           </div>{' '}
         </div>
       )}{' '}
-      {editM && (
-        <MediaEditModal
-          numPitches={pitches?.length || 0}
-          m={editM}
-          save={(id, description, pitchNr, trivia) => {
-            getAccessTokenSilently().then((token) => {
-              putMediaInfo(token, id, description, pitchNr, trivia).then(() => setEditM(null));
-            });
-          }}
-          onCloseWithoutReload={() => setEditM(null)}
-        />
-      )}{' '}
-      {m && (
-        <MediaModal
-          key={m.id ?? 0}
-          isSaving={isSaving}
-          onClose={closeModal}
-          m={m}
-          pitch={pitch ?? 0}
-          pitches={pitches ?? []}
-          autoPlayVideo={autoPlayVideo}
-          onEdit={() => setEditM(m)}
-          onDelete={onDeleteMedia}
-          onRotate={(deg) => executeMediaAction((token) => putMediaJpegRotate(token, m.id ?? 0, deg))}
-          onMoveImageLeft={() => executeMediaAction((token) => moveMedia(token, m.id ?? 0, true, 0, 0, 0))}
-          onMoveImageRight={() => executeMediaAction((token) => moveMedia(token, m.id ?? 0, false, 0, 0, 0))}
-          onMoveImageToArea={() =>
-            executeMediaAction((token) => moveMedia(token, m.id ?? 0, false, m.enableMoveToIdArea ?? 0, 0, 0))
-          }
-          onMoveImageToSector={() =>
-            executeMediaAction((token) => moveMedia(token, m.id ?? 0, false, 0, m.enableMoveToIdSector ?? 0, 0))
-          }
-          onMoveImageToProblem={() =>
-            executeMediaAction((token) => moveMedia(token, m.id ?? 0, false, 0, 0, m.enableMoveToIdProblem ?? 0))
-          }
-          onSetMediaAsAvatar={() =>
-            setConfirmation({
-              message: 'Change your avatar to this image?',
-              action: () => executeMediaAction((token) => setMediaAsAvatar(token, m.id ?? 0)),
-            })
-          }
-          orderableMedia={orderableMedia ?? []}
-          carouselIndex={(carouselMedia?.findIndex((x) => x.id === (m.id ?? 0)) ?? -1) + 1}
-          carouselSize={carouselMedia?.length ?? 0}
-          showLocation={showLocation}
-          gotoPrev={gotoPrev}
-          gotoNext={gotoNext}
-          playVideo={() => setAutoPlayVideo(true)}
-          optProblemId={optProblemId}
-        />
-      )}{' '}
+      {editM &&
+        createPortal(
+          <MediaEditModal
+            numPitches={pitches?.length || 0}
+            m={editM}
+            save={(id, description, pitchNr, trivia) => {
+              getAccessTokenSilently().then((token) => {
+                putMediaInfo(token, id, description, pitchNr, trivia).then(() => setEditM(null));
+              });
+            }}
+            onCloseWithoutReload={() => setEditM(null)}
+          />,
+          document.body,
+        )}{' '}
+      {m &&
+        createPortal(
+          <MediaModal
+            key={m.id ?? 0}
+            isSaving={isSaving}
+            onClose={closeModal}
+            m={m}
+            pitch={pitch ?? 0}
+            pitches={pitches ?? []}
+            autoPlayVideo={autoPlayVideo}
+            onEdit={() => setEditM(m)}
+            onDelete={onDeleteMedia}
+            onRotate={(deg) => executeMediaAction((token) => putMediaJpegRotate(token, m.id ?? 0, deg))}
+            onMoveImageLeft={() => executeMediaAction((token) => moveMedia(token, m.id ?? 0, true, 0, 0, 0))}
+            onMoveImageRight={() => executeMediaAction((token) => moveMedia(token, m.id ?? 0, false, 0, 0, 0))}
+            onMoveImageToArea={() =>
+              executeMediaAction((token) => moveMedia(token, m.id ?? 0, false, m.enableMoveToIdArea ?? 0, 0, 0))
+            }
+            onMoveImageToSector={() =>
+              executeMediaAction((token) => moveMedia(token, m.id ?? 0, false, 0, m.enableMoveToIdSector ?? 0, 0))
+            }
+            onMoveImageToProblem={() =>
+              executeMediaAction((token) => moveMedia(token, m.id ?? 0, false, 0, 0, m.enableMoveToIdProblem ?? 0))
+            }
+            onSetMediaAsAvatar={() =>
+              setConfirmation({
+                message: 'Change your avatar to this image?',
+                action: () => executeMediaAction((token) => setMediaAsAvatar(token, m.id ?? 0)),
+              })
+            }
+            orderableMedia={orderableMedia ?? []}
+            carouselIndex={(carouselMedia?.findIndex((x) => x.id === (m.id ?? 0)) ?? -1) + 1}
+            carouselSize={carouselMedia?.length ?? 0}
+            showLocation={showLocation}
+            gotoPrev={gotoPrev}
+            gotoNext={gotoNext}
+            playVideo={() => setAutoPlayVideo(true)}
+            optProblemId={optProblemId}
+          />,
+          document.body,
+        )}{' '}
       <div
         className={cn(
           compactTiles

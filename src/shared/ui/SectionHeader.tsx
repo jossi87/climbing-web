@@ -1,4 +1,4 @@
-import { type ElementType } from 'react';
+import { type ElementType, type ReactNode } from 'react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 
@@ -6,16 +6,19 @@ type Props = {
   title: string;
   icon: ElementType;
   subheader?: string;
+  /** Extra lines under the subheader (e.g. access / restrictions) */
+  detail?: ReactNode;
 };
 
-export const SectionHeader = ({ title, icon: Icon, subheader }: Props) => (
+export const SectionHeader = ({ title, icon: Icon, subheader, detail }: Props) => (
   <div className='mb-6 flex items-start gap-4'>
-    <div className='bg-brand/10 border-brand/20 text-brand rounded-lg border p-2.5'>
-      <Icon size={20} />
+    <div className='shrink-0 pt-0.5 text-slate-100' aria-hidden>
+      <Icon size={22} strokeWidth={2} className='text-slate-100' />
     </div>
-    <div>
+    <div className='min-w-0 flex-1'>
       <h3 className={cn(designContract.typography.title, 'leading-none')}>{title}</h3>
       {subheader && <p className={cn('mt-2 leading-none', designContract.typography.label)}>{subheader}</p>}
+      {detail && <div className='mt-3 min-w-0 space-y-2 text-[12px] leading-relaxed sm:text-[13px]'>{detail}</div>}
     </div>
   </div>
 );

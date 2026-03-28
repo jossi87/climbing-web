@@ -27,7 +27,7 @@ const ActivitySkeleton = () => (
   </div>
 );
 
-const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) => {
+const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSector: number; embedded?: boolean }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
   const selectedGradeRef = useRef<HTMLButtonElement>(null);
@@ -81,10 +81,10 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
 
   return (
     <div className='w-full'>
-      <div className='mb-4 flex flex-col items-center justify-between gap-4 px-4 sm:flex-row sm:px-0'>
-        <SectionLabel className='hidden text-slate-400 opacity-70 sm:block'>Latest Activity</SectionLabel>
+      <div className={cn(designContract.layout.toolbar, 'mb-0')}>
+        <SectionLabel className='hidden text-slate-500 sm:block'>Latest activity</SectionLabel>
 
-        <div className='flex w-full flex-wrap items-center justify-center gap-1.5 sm:w-auto sm:justify-end'>
+        <div className={designContract.layout.toolbarActions}>
           <div className='relative' ref={filterRef}>
             <button
               onClick={() => setIsFilterOpen(!isFilterOpen)}
@@ -92,8 +92,8 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
               aria-expanded={isFilterOpen}
               type='button'
             >
-              <Filter size={12} className='text-brand/90' />
-              <span className='type-micro leading-none font-semibold normal-case opacity-90'>
+              <Filter size={12} className='text-slate-400' strokeWidth={2} />
+              <span className={cn(designContract.typography.uiCompact, 'text-slate-200')}>
                 {normalizedLowerGradeText === 'n/a' ? 'All' : normalizedLowerGradeText}
               </span>
               <ChevronDown
@@ -105,7 +105,7 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
             {isFilterOpen && (
               <div className='bg-surface-card border-surface-border absolute top-full left-0 z-50 mt-1 max-h-60 w-[min(16rem,calc(100vw-1rem))] max-w-[calc(100vw-1rem)] overflow-y-auto rounded-lg border py-1 shadow-2xl sm:right-0 sm:left-auto sm:w-52'>
                 <div className='border-surface-border/50 mb-1 border-b px-4 py-1.5'>
-                  <SectionLabel className='text-[11px]'>Lowest Grade</SectionLabel>
+                  <SectionLabel>Lowest grade</SectionLabel>
                 </div>
                 {meta.grades
                   .slice()
@@ -119,10 +119,11 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
                       ref={g.id === lowerGradeId ? selectedGradeRef : null}
                       key={g.id}
                       className={cn(
-                        'flex w-full items-center justify-between px-4 py-2 text-left text-[11px] leading-none transition-colors sm:text-[12px]',
+                        designContract.typography.menuItem,
+                        'flex w-full items-center justify-between px-4 py-2 text-left transition-colors',
                         g.id === lowerGradeId
-                          ? 'bg-brand/10 text-brand font-semibold'
-                          : 'hover:bg-surface-hover text-slate-400',
+                          ? 'bg-white/10 font-semibold text-slate-100'
+                          : 'hover:bg-surface-hover text-slate-400 hover:text-slate-200',
                       )}
                       onClick={() => {
                         setLowerGradeId(g.id);
@@ -166,17 +167,31 @@ const Activity = ({ idArea, idSector }: { idArea: number; idSector: number }) =>
         </div>
       </div>
 
-      <Card flush className='divide-y divide-white/5'>
-        {isPending
-          ? [...Array(10)].map((_, i) => <ActivitySkeleton key={i} />)
-          : activity?.map((a) => (
-              <ActivityItem
-                key={a.activityIds?.join('+') ?? `activity-${a.id}`}
-                a={a}
-                isBouldering={meta.isBouldering}
-              />
-            ))}
-      </Card>
+      {embedded ? (
+        <div className='border-surface-border/45 bg-surface-nav/20 divide-y divide-white/5 overflow-hidden rounded-xl border'>
+          {isPending
+            ? [...Array(10)].map((_, i) => <ActivitySkeleton key={i} />)
+            : activity?.map((a) => (
+                <ActivityItem
+                  key={a.activityIds?.join('+') ?? `activity-${a.id}`}
+                  a={a}
+                  isBouldering={meta.isBouldering}
+                />
+              ))}
+        </div>
+      ) : (
+        <Card flush className='divide-y divide-white/5'>
+          {isPending
+            ? [...Array(10)].map((_, i) => <ActivitySkeleton key={i} />)
+            : activity?.map((a) => (
+                <ActivityItem
+                  key={a.activityIds?.join('+') ?? `activity-${a.id}`}
+                  a={a}
+                  isBouldering={meta.isBouldering}
+                />
+              ))}
+        </Card>
+      )}
     </div>
   );
 };
@@ -189,7 +204,7 @@ type FilterButtonProps = {
 };
 
 const activityChipBase =
-  'inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-[11px] leading-none font-semibold normal-case transition-colors duration-200 active:scale-95';
+  'inline-flex h-8 items-center gap-1.5 rounded-full border px-3 transition-colors duration-200 active:scale-95';
 const activityChipIdle =
   'bg-surface-nav/45 border-surface-border text-slate-300 hover:bg-surface-nav hover:text-slate-100';
 const activityChipActive = 'bg-surface-hover/85 border-white/18 text-slate-100 shadow-sm';
@@ -203,14 +218,18 @@ const FilterButton = ({ active, onClick, icon: Icon, label }: FilterButtonProps)
   >
     <Icon
       size={12}
+      strokeWidth={2}
       className={cn(
         active && label === 'FA' && designContract.activityColors.filter.fa,
         active && label === 'Ticks' && designContract.activityColors.filter.ticks,
         active && label === 'Media' && designContract.activityColors.filter.media,
         active && label === 'Com' && designContract.activityColors.filter.comments,
+        !active && 'text-slate-500',
       )}
     />
-    <span className='type-micro leading-none font-semibold normal-case opacity-90'>{label}</span>
+    <span className={cn(designContract.typography.uiCompact, active ? 'text-slate-100' : 'text-slate-400')}>
+      {label}
+    </span>
   </button>
 );
 
@@ -251,18 +270,28 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
         </div>
 
         <div className='min-w-0 flex-1'>
-          <div className='text-[11px] leading-relaxed text-slate-300 sm:text-[12px]'>
+          <div
+            className={cn(
+              designContract.typography.body,
+              'min-w-0 leading-relaxed text-pretty [overflow-wrap:anywhere] text-slate-300',
+            )}
+          >
             {a.users && a.users.length > 0 && !a.repeat ? (
               <>
-                <span className='font-semibold text-slate-200'>New {isBouldering ? 'boulder' : 'route'}</span>{' '}
-                <span>in</span> <ProblemLink a={a} />
+                <span className={cn(designContract.typography.listEmphasis, 'text-slate-100')}>
+                  New {isBouldering ? 'boulder' : 'route'}
+                </span>{' '}
+                <span className='text-slate-400'>in</span> <ProblemLink a={a} />
               </>
             ) : a.message ? (
               <>
-                <Link to={`/user/${a.id}`} className='hover:text-brand font-semibold text-slate-200 transition-colors'>
+                <Link
+                  to={`/user/${a.id}`}
+                  className={cn(designContract.typography.listLink, designContract.typography.listEmphasis)}
+                >
                   {a.name}
                 </Link>{' '}
-                <span>commented on</span> <ProblemLink a={a} />
+                <span className='text-slate-400'>commented on</span> <ProblemLink a={a} />
               </>
             ) : (
               <>
@@ -270,32 +299,42 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
                   <>
                     <Link
                       to={`/user/${a.id}`}
-                      className='hover:text-brand font-semibold text-slate-200 transition-colors'
+                      className={cn(designContract.typography.listLink, designContract.typography.listEmphasis)}
                     >
                       {a.name}
                     </Link>{' '}
-                    <span>{a.repeat ? 'repeated' : 'ticked'}</span>{' '}
+                    <span className='text-slate-400'>{a.repeat ? 'repeated' : 'ticked'}</span>{' '}
                   </>
                 ) : numImg > 0 || numMov > 0 ? (
                   <>
-                    <span className='font-semibold text-slate-200'>
+                    <span className={cn(designContract.typography.listEmphasis, 'text-slate-100')}>
                       {numImg > 0 && `${numImg} ${numImg === 1 ? 'image' : 'images'}`}
                       {numImg > 0 && numMov > 0 && ' & '}
                       {numMov > 0 && `${numMov} ${numMov === 1 ? 'video' : 'videos'}`}
                     </span>{' '}
-                    <span>on</span>{' '}
+                    <span className='text-slate-400'>on</span>{' '}
                   </>
                 ) : null}
                 <ProblemLink a={a} />
               </>
             )}
-            <span className='type-micro ml-1 leading-none font-semibold text-slate-400/80 transition-colors select-none group-hover:text-slate-300'>
+            <span
+              className={cn(
+                designContract.typography.meta,
+                'ml-1.5 inline-block font-normal text-slate-500 tabular-nums transition-colors select-none group-hover:text-slate-400',
+              )}
+            >
               {a.timeAgo}
             </span>
           </div>
 
           {(a.description || a.message) && (
-            <div className='mt-1 border-l border-white/10 pl-3 text-[11px] leading-relaxed text-slate-300 sm:text-[12px]'>
+            <div
+              className={cn(
+                designContract.typography.meta,
+                'mt-1.5 border-l border-white/10 pl-3 leading-relaxed text-slate-400',
+              )}
+            >
               {a.message ? <Linkify>{a.message}</Linkify> : a.description}
             </div>
           )}
@@ -323,7 +362,12 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
                     size='mini'
                     className='group-hover/user:ring-brand/50 ring-1 ring-white/10 transition-all'
                   />
-                  <span className='text-[11px] font-medium text-slate-300 transition-colors group-hover/user:text-slate-200 sm:text-[12px]'>
+                  <span
+                    className={cn(
+                      designContract.typography.meta,
+                      'font-medium text-slate-300 transition-colors group-hover/user:text-slate-200',
+                    )}
+                  >
                     {u.name}
                   </span>
                 </Link>

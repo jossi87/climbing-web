@@ -5,6 +5,7 @@ import type { Row } from './types';
 import { type GroupOption, type OrderOption, type State, useProblemListState } from './state';
 import { ChevronDown, Filter, FolderTree, ArrowDownWideNarrow } from 'lucide-react';
 import { cn } from '../../../lib/utils';
+import { designContract } from '../../../design/contract';
 import { useGrades } from '../Meta';
 
 type Props = {
@@ -130,22 +131,30 @@ const GROUP_BY_OPTIONS: Record<GroupOption, GroupByOption> = {
 };
 
 const ToggleLabel = ({ label, checked, onChange }: { label: string; checked: boolean; onChange: () => void }) => (
-  <label className='group flex cursor-pointer items-center gap-3'>
+  <label className='group flex cursor-pointer items-center gap-2.5'>
     <div
       className={cn(
-        'relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full p-0.5 transition-colors duration-200 ease-in-out focus:outline-none',
-        checked ? 'bg-brand' : 'bg-surface-border group-hover:bg-slate-600',
+        'relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border p-0.5 transition-colors duration-200 ease-in-out focus:outline-none',
+        checked
+          ? 'border-white/25 bg-white/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]'
+          : 'bg-surface-nav/50 group-hover:bg-surface-nav/70 border-white/10 group-hover:border-white/15',
       )}
     >
       <span
         aria-hidden='true'
         className={cn(
-          'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+          'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white/95 shadow-sm ring-0 transition duration-200 ease-in-out',
           checked ? 'translate-x-4' : 'translate-x-0',
         )}
       />
     </div>
-    <span className='text-[11px] leading-none font-medium opacity-85 group-hover:opacity-100 sm:text-[12px]'>
+    <span
+      className={cn(
+        designContract.typography.meta,
+        'font-medium text-slate-400 transition-colors group-hover:text-slate-300',
+        checked && 'text-slate-200',
+      )}
+    >
       {label}
     </span>
     <input type='checkbox' className='hidden' checked={checked} onChange={onChange} />
@@ -245,12 +254,12 @@ const ToolbarDropdown = <T extends string>({
         aria-label={label}
         className={cn(
           compact
-            ? 'inline-flex h-7 min-w-[96px] items-center justify-between gap-1 rounded-md px-2 text-[11px] leading-none font-medium transition-colors sm:text-[12px]'
-            : 'inline-flex h-9 items-center justify-between gap-1.5 rounded-md px-3 text-[11px] leading-none font-medium whitespace-nowrap transition-colors sm:text-[12px]',
-          fullWidth && !compact ? 'w-full' : '',
+            ? 'inline-flex h-7 min-w-[96px] items-center justify-between gap-1 rounded-md border px-2 text-[11px] leading-none font-medium transition-colors sm:text-[12px] md:h-7 md:px-1.5'
+            : 'inline-flex h-9 items-center justify-between gap-1.5 rounded-md border px-3 text-[11px] leading-none font-medium whitespace-nowrap transition-colors sm:text-[12px] md:h-8 md:gap-1 md:px-2.5',
+          fullWidth && !compact ? 'w-full md:w-auto md:max-w-none' : '',
           isOpen
-            ? 'bg-surface-hover/65 text-slate-100'
-            : 'bg-surface-nav/28 hover:bg-surface-nav/42 text-slate-300 hover:text-slate-200',
+            ? 'bg-surface-hover/55 border-white/18 text-slate-100'
+            : 'bg-surface-nav/28 hover:bg-surface-nav/42 border-white/10 text-slate-300 hover:border-white/12 hover:text-slate-200',
         )}
       >
         {Icon ? (
@@ -314,12 +323,12 @@ const GradeRangeControl = ({
   onLowSelect: (next: string) => void;
   onHighSelect: (next: string) => void;
 }) => (
-  <div className='bg-surface-nav/25 inline-flex h-9 items-center gap-1 rounded-lg border border-white/10 pr-1 pl-2'>
-    <span className='px-2 text-[11px] leading-none tracking-[0.08em] text-slate-500 uppercase sm:text-[12px]'>
+  <div className='bg-surface-nav/25 inline-flex h-9 flex-wrap items-center gap-1 rounded-md border border-white/10 py-0.5 pr-1 pl-2 md:h-8 md:gap-0.5 md:pr-0.5 md:pl-1.5'>
+    <span className='px-2 text-[11px] leading-none tracking-wide text-slate-500 uppercase sm:text-[12px] md:px-1.5 md:text-[10px]'>
       Grade
     </span>
     <ToolbarDropdown compact label='Lowest grade' value={low} options={lowOptions} onSelect={onLowSelect} />
-    <span className='px-1 text-[11px] text-slate-500 sm:text-[12px]'>to</span>
+    <span className={cn(designContract.typography.meta, 'px-0.5 text-slate-500')}>to</span>
     <ToolbarDropdown compact label='Highest grade' value={high} options={highOptions} onSelect={onHighSelect} />
   </div>
 );
@@ -402,7 +411,7 @@ export const ProblemList = ({
     if (groupBy && groupBy !== 'none') {
       const mapper = GROUP_BY[groupBy];
       return (
-        <div className='mt-4'>
+        <div className='mt-4 md:mt-3'>
           <AccordionContainer
             accordionRows={mapper({
               uniqueAreas,
@@ -417,7 +426,7 @@ export const ProblemList = ({
     }
 
     return (
-      <div className={cn('mt-4 flex flex-col', mode === 'user' ? 'gap-0.5' : 'gap-2')}>
+      <div className={cn('mt-4 flex flex-col', mode === 'user' ? 'gap-0.5' : 'gap-2 md:mt-3 md:gap-1.5')}>
         {filtered.map(({ element }) => element)}
       </div>
     );
@@ -447,7 +456,7 @@ export const ProblemList = ({
   return (
     <div className='space-y-0'>
       {hasPrimaryToolbar ? (
-        <div className='grid w-full grid-cols-3 gap-1'>
+        <div className='grid w-full grid-cols-3 gap-1.5 md:flex md:w-fit md:max-w-full md:flex-wrap md:items-stretch md:gap-2'>
           <ToolbarDropdown
             label='Group'
             icon={FolderTree}
@@ -466,12 +475,13 @@ export const ProblemList = ({
           />
           <button
             type='button'
+            aria-expanded={showFilter}
             onClick={() => setFilterShowing((v) => !v)}
             className={cn(
-              'inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-md px-3 text-[11px] leading-none font-medium whitespace-nowrap transition-colors sm:text-[12px]',
+              'inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-md border px-3 text-[11px] leading-none font-medium whitespace-nowrap transition-colors sm:text-[12px] md:h-8 md:w-auto md:gap-1 md:px-2.5',
               showFilter
-                ? 'bg-surface-hover/65 text-slate-100'
-                : 'bg-surface-nav/28 hover:bg-surface-nav/42 text-slate-300',
+                ? 'bg-surface-hover/65 border-white/18 text-slate-100'
+                : 'bg-surface-nav/28 hover:bg-surface-nav/42 border-white/10 text-slate-300 hover:text-slate-200',
             )}
           >
             <Filter size={11} />
@@ -480,7 +490,7 @@ export const ProblemList = ({
           </button>
         </div>
       ) : (
-        <div className='flex min-w-0 flex-wrap items-center gap-2 pb-1'>
+        <div className='flex min-w-0 flex-wrap items-center gap-2 pb-1 md:gap-1.5'>
           {groupByOptions.length > 1 && (
             <ToolbarDropdown
               label='Group'
@@ -490,7 +500,6 @@ export const ProblemList = ({
               onSelect={(next) => dispatch({ action: 'group-by', groupBy: next })}
             />
           )}
-
           <ToolbarDropdown
             label='Sort'
             icon={ArrowDownWideNarrow}
@@ -498,29 +507,28 @@ export const ProblemList = ({
             options={orderedSortOptions}
             onSelect={(next) => dispatch({ action: 'order-by', order: next })}
           />
-
           <button
             type='button'
+            aria-expanded={showFilter}
             onClick={() => setFilterShowing((v) => !v)}
             className={cn(
-              'inline-flex h-9 items-center justify-center gap-1.5 rounded-md px-3 text-[11px] leading-none font-medium whitespace-nowrap transition-colors sm:text-[12px]',
+              'inline-flex h-9 items-center justify-center gap-1.5 rounded-md border px-3 text-[11px] leading-none font-medium whitespace-nowrap transition-colors sm:text-[12px] md:h-8 md:gap-1 md:px-2',
               showFilter
-                ? 'bg-surface-hover/65 text-slate-100'
-                : 'bg-surface-nav/28 hover:bg-surface-nav/42 text-slate-300',
+                ? 'bg-surface-hover/65 border-white/18 text-slate-100'
+                : 'bg-surface-nav/28 hover:bg-surface-nav/42 border-white/10 text-slate-300 hover:text-slate-200',
             )}
           >
             <Filter size={11} />
             <span className='text-slate-500'>Show:</span>
             <span className='text-slate-200'>Filters</span>
           </button>
-
           {toolbarAction}
         </div>
       )}
 
       {showFilter && (
-        <div className='bg-surface-nav/14 mt-2 space-y-4 rounded-lg p-4'>
-          <div className='flex flex-wrap items-center gap-3 md:gap-4'>
+        <div className='bg-surface-nav/14 mt-2 space-y-3 rounded-lg border border-white/5 p-3 sm:p-4 md:mt-1.5 md:space-y-3 md:p-3'>
+          <div className='flex flex-wrap items-center gap-3 md:gap-3'>
             <GradeRangeControl
               low={currentLow}
               high={currentHigh}
@@ -535,13 +543,16 @@ export const ProblemList = ({
                   type='button'
                   onClick={() => setIsTypesMenuOpen((v) => !v)}
                   className={cn(
-                    'inline-flex h-9 min-w-[176px] items-center justify-between gap-1 rounded-lg border px-3 text-[11px] leading-none font-medium transition-colors sm:text-[12px]',
+                    'inline-flex h-9 min-w-[176px] items-center justify-between gap-1 rounded-md border px-3 text-[11px] leading-none font-medium transition-colors sm:text-[12px] md:h-8 md:min-w-[160px] md:px-2.5',
                     isTypesMenuOpen
                       ? 'bg-surface-hover/55 border-white/18 text-slate-100'
                       : 'bg-surface-nav/25 hover:bg-surface-nav/40 border-white/10 text-slate-300 hover:text-slate-200',
                   )}
                 >
-                  <span>Types{selectedTypeCount > 0 ? ` (${selectedTypeCount})` : ''}</span>
+                  <span>
+                    Types
+                    {allTypes.length > 1 ? ` (${selectedTypeCount}/${allTypes.length})` : ''}
+                  </span>
                   <ChevronDown
                     size={11}
                     className={cn('text-slate-500 transition-transform', isTypesMenuOpen && 'rotate-180')}

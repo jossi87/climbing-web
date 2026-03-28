@@ -30,21 +30,21 @@ export function ConditionLabels({
   const time = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
 
   return (
-    <div className='flex flex-wrap items-center gap-2'>
+    <>
       <WallDirection wallDirectionCalculated={wallDirectionCalculated} wallDirectionManual={wallDirectionManual} />
       <SunOnWall sunFromHour={sunFromHour} sunToHour={sunToHour} />
       <SunriseSunset lat={lat} lng={lng} />
       <YrLink lat={lat} lng={lng} />
       <a href={`/webcams/${JSON.stringify({ lat, lng, label })}`} target='_blank' rel='noreferrer'>
-        <Badge icon={Video} className='hover:bg-surface-border transition-colors'>
+        <Badge icon={Video} className='hover:bg-white/[0.08] hover:text-slate-300 hover:ring-white/[0.1]'>
           Webcams
         </Badge>
       </a>
       <a href={`https://www.suncalc.org/#/${lat},${lng},17/${date}/${time}/1/0`} target='_blank' rel='noreferrer'>
-        <Badge icon={ExternalLink} className='hover:bg-surface-border transition-colors'>
-          SunCalc <span className='ml-1 font-medium text-slate-600'>{date + '-' + time}</span>
+        <Badge icon={ExternalLink} className='hover:bg-white/[0.08] hover:text-slate-300 hover:ring-white/[0.1]'>
+          SunCalc <span className='ml-1 text-slate-500 tabular-nums'>{date + ' · ' + time}</span>
         </Badge>
       </a>
-    </div>
+    </>
   );
 }

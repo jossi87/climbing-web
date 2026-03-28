@@ -3,6 +3,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   Globe,
+  MapPin,
   User,
   Settings,
   Download,
@@ -39,6 +40,7 @@ const Header = () => {
 
   const activeSite = sites?.find((s) => s.active);
   const isHome = location.pathname === '/';
+  const isAreasRoute = location.pathname === '/areas' || location.pathname.startsWith('/areas/');
 
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [isRegionOpen, setIsRegionOpen] = useState(false);
@@ -229,9 +231,23 @@ const Header = () => {
           </div>
 
           <div className='flex h-full items-center gap-3'>
+            <Link
+              to='/areas'
+              className={cn(
+                'relative flex h-full shrink-0 items-center gap-2 px-2.5 py-1.5 transition-colors',
+                isAreasRoute ? 'text-slate-100' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200',
+              )}
+            >
+              <MapPin size={12} className='shrink-0' />
+              <span className='header-meta-text hidden whitespace-nowrap sm:inline'>Areas</span>
+              {isAreasRoute && (
+                <div className='bg-brand shadow-brand absolute right-0 bottom-0 left-0 h-0.5 rounded-t' />
+              )}
+            </Link>
             {activeSite && (
               <div className='relative flex h-full shrink-0 items-center' ref={regionRef}>
                 <button
+                  type='button'
                   onClick={() => setIsRegionOpen(!isRegionOpen)}
                   className={cn(
                     'flex items-center gap-2 rounded px-2.5 py-1.5 transition-colors',

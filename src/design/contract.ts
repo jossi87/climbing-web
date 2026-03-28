@@ -1,10 +1,31 @@
 export const designContract = {
   typography: {
+    /** Page / card titles */
     title: 'type-h1',
+    /** Section titles, sector names in panels */
     subtitle: 'type-h2',
+    /**
+     * Primary copy & list rows (Area/Sector problem lines, Todo, Activity feed, Top table).
+     * Global: `type-body` → text-sm, sm:text-base.
+     */
     body: 'type-body',
+    /**
+     * Secondary line: #, grades, timestamps, table de-emphasis. `type-small` → text-sm.
+     */
     meta: 'type-small',
     label: 'type-label',
+    /** Extra-dense captions (badges, time-ago inline); prefer `meta` for new UI */
+    micro: 'type-micro',
+    /**
+     * Toolbar chips, filter pills, compact controls (matches tab strip ~11–12px).
+     */
+    uiCompact: 'text-[11px] font-semibold leading-none tracking-normal sm:text-[12px]',
+    /** Dropdown / menu rows */
+    menuItem: 'text-[11px] font-medium leading-snug sm:text-[12px]',
+    /** Inline links in list/table content (Top, Todo, etc.) */
+    listLink: 'text-slate-200 transition-colors hover:text-slate-100',
+    listLinkMuted: 'text-slate-400 transition-colors hover:text-slate-200',
+    listEmphasis: 'font-semibold text-slate-100',
   },
   layout: {
     pageSection: 'w-full pb-0',
@@ -30,6 +51,12 @@ export const designContract = {
     chipButton: 'btn-glass',
     chipButtonActive: 'btn-glass-active',
     listRow: 'group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-white/5',
+    /** Full-width tab row (Profile, Area, etc.): underline indicates active — no filled “pill” background */
+    tabBarRow: 'border-surface-border/50 flex w-full min-w-0 flex-wrap border-b',
+    tabBarButton:
+      '-mb-px flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 border-b-2 px-1 py-2.5 text-[11px] leading-none font-semibold transition-colors sm:flex-row sm:gap-1.5 sm:px-3 sm:text-[12px]',
+    tabBarButtonActive: 'border-slate-200/80 text-slate-100',
+    tabBarButtonInactive: 'border-transparent text-slate-500 hover:text-slate-300',
     tabButton:
       'flex items-center gap-2 border-b-2 px-6 py-3 text-[10px] font-semibold tracking-[0.16em] uppercase transition-colors',
     navPill:

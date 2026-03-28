@@ -154,9 +154,16 @@ const MediaModal = ({
     }
   };
 
+  /** Letterboxed area around media: clicks hit this layer, not the full-screen root. */
+  const handleBackdropClick = (e: MouseEvent<HTMLDivElement>) => {
+    if (e.target !== e.currentTarget) return;
+    if (wasSwiping.current || offsetX !== 0) return;
+    onClose();
+  };
+
   if (isSaving) {
     return (
-      <div className='fixed inset-0 z-250 flex items-center justify-center bg-black/90 backdrop-blur-xl'>
+      <div className='fixed inset-0 z-250 flex h-[100dvh] min-h-[100dvh] w-full max-w-[100vw] items-center justify-center bg-black/90 backdrop-blur-xl'>
         <div className='text-center'>
           <RefreshCw className='text-brand mx-auto mb-4 animate-spin' size={48} />
           <p className='type-label'>Saving Changes...</p>
@@ -178,7 +185,10 @@ const MediaModal = ({
   const canMove = isAdmin && isImage;
 
   return (
-    <div className='fixed inset-0 z-150 flex overflow-hidden bg-black select-none' onClick={handleDimmerClick}>
+    <div
+      className='fixed inset-0 z-150 flex h-[100dvh] min-h-[100dvh] w-full max-w-[100vw] overflow-hidden bg-black select-none'
+      onClick={handleDimmerClick}
+    >
       {canShowSidebar && showSidebar && (
         <div className='bg-surface-dark border-surface-border animate-in slide-in-from-left z-160 flex h-full w-80 flex-col border-r shadow-2xl duration-300'>
           <div className='border-surface-border bg-surface-nav/20 flex items-center justify-between border-b p-5'>
@@ -221,7 +231,10 @@ const MediaModal = ({
         </div>
       )}
 
-      <div className='relative flex h-full w-full flex-1 items-center justify-center overflow-hidden' {...handlers}>
+      <div
+        className='relative flex h-full min-h-0 w-full min-w-0 flex-1 items-center justify-center overflow-hidden'
+        {...handlers}
+      >
         <div className='absolute top-4 right-4 z-170 flex gap-2'>
           <div className='flex rounded-xl border border-white/10 bg-black/60 p-1 shadow-2xl backdrop-blur-md'>
             {m.url && (
@@ -427,6 +440,7 @@ const MediaModal = ({
         <div
           className='flex h-full w-full items-center justify-center transition-transform duration-300 ease-out'
           style={{ transform: `translateX(${offsetX}px)` }}
+          onClick={handleBackdropClick}
         >
           {isImage ? (
             svgs.length > 0 ? (
@@ -543,7 +557,7 @@ const MediaModal = ({
 
       {showInfo && (
         <div
-          className='animate-in fade-in fixed inset-0 z-300 flex items-center justify-center bg-black/90 p-6 backdrop-blur-xl duration-300'
+          className='animate-in fade-in fixed inset-0 z-300 flex h-[100dvh] min-h-[100dvh] w-full max-w-[100vw] items-center justify-center bg-black/90 p-6 backdrop-blur-xl duration-300'
           onClick={() => setShowInfo(false)}
         >
           <div
@@ -622,7 +636,7 @@ const MediaModal = ({
 
       {showHelp && (
         <div
-          className='animate-in fade-in fixed inset-0 z-300 flex items-center justify-center bg-black/90 p-6 backdrop-blur-xl duration-300'
+          className='animate-in fade-in fixed inset-0 z-300 flex h-[100dvh] min-h-[100dvh] w-full max-w-[100vw] items-center justify-center bg-black/90 p-6 backdrop-blur-xl duration-300'
           onClick={() => setShowHelp(false)}
         >
           <div
