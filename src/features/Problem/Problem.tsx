@@ -22,24 +22,22 @@ import { ProblemsOnRock } from './ProblemsOnRock';
 import { ProblemTicks } from './ProblemTicks';
 import { ProblemComments } from './ProblemComments';
 import { DownloadButton } from '../../shared/ui/DownloadButton';
-import { Card, SectionHeader } from '../../shared/ui';
-import { Markdown } from '../../shared/components/Markdown/Markdown';
+import { Card } from '../../shared/ui';
+import { ExpandableMarkdown } from '../../shared/components/ExpandableMarkdown';
 import { tabBarButtonClassName, tabBarIconClassName } from '../../design/tabBar';
 import {
   Bookmark,
   Check,
   MessageSquare,
   Eye,
-  Image as ImageIcon,
+  LayoutDashboard,
   Edit,
   Plus,
   Map as MapIcon,
   Calendar,
   ChevronRight,
   AlertTriangle,
-  MapPin,
   Tag,
-  Activity,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
@@ -55,7 +53,7 @@ const useIds = () => {
 export const Problem = () => {
   const { problemId } = useIds();
   const [showHiddenMedia, setShowHiddenMedia] = useState(false);
-  const [activeTab, setActiveTab] = useState<'media' | 'map'>('media');
+  const [activeTab, setActiveTab] = useState<'overview' | 'map'>('overview');
   const meta = useMeta();
   const { data, error, toggleTodo, redirectUi } = useProblem(+problemId, showHiddenMedia);
   const [isPending, startTransition] = useTransition();
@@ -114,7 +112,7 @@ export const Problem = () => {
   if (data.coordinates) {
     markers.push({
       coordinates: data.coordinates,
-      label: `${data.name} [${data.grade}]`,
+      label: `${data.name} · ${data.grade}`,
       url: `/problem/${data.id}`,
     });
   }
@@ -159,9 +157,11 @@ export const Problem = () => {
   const hasApproach = (data.sectorApproach?.coordinates?.length ?? 0) > 1;
   const hasDescent = (data.sectorDescent?.coordinates?.length ?? 0) > 1;
 
+  const mainDescription = (data.comment || data.faAid?.description || '').trim();
+
   return (
-    <div className={designContract.layout.pageShell}>
-      <title>{`${data.name} [${data.grade}] (${data.areaName} / ${data.sectorName}) | ${meta?.title}`}</title>
+    <div className='w-full min-w-0 space-y-4 sm:space-y-6'>
+      <title>{`${data.name} · ${data.grade} · ${data.areaName} / ${data.sectorName} | ${meta?.title}`}</title>
       <meta name='description' content={data.comment} />
 
       {showTickModal && (
@@ -195,53 +195,72 @@ export const Problem = () => {
       <Card flush className='min-w-0 border-0 sm:border'>
         <div className='relative p-4 sm:p-5'>
           {meta.isAuthenticated && (
-            <div className='absolute top-4 right-4 z-10 sm:top-5 sm:right-5'>
-              <div className='bg-surface-nav border-surface-border flex rounded-lg border p-1'>
-                {!isTicked && (
-                  <button
-                    onClick={handleToggleTodo}
-                    disabled={isPending}
-                    className={cn(
-                      'rounded-md p-2 transition-all',
-                      optimisticTodo ? 'bg-white/10 text-slate-100' : 'opacity-70 hover:opacity-100',
-                    )}
-                  >
-                    <Bookmark size={18} fill={optimisticTodo ? 'currentColor' : 'none'} />
-                  </button>
-                )}
+            <div className='absolute top-4 right-4 z-10 inline-flex items-center gap-1.5 sm:top-5 sm:right-5'>
+              {!isTicked && (
                 <button
-                  onClick={() => setShowTickModal(true)}
+                  type='button'
+                  title='To-do'
+                  onClick={handleToggleTodo}
+                  disabled={isPending}
                   className={cn(
-                    'rounded-md p-2 transition-all',
-                    isTicked ? 'bg-green-500/10 text-green-500' : 'opacity-70 hover:opacity-100',
+                    'inline-flex h-8 w-8 items-center justify-center rounded-full border transition-colors',
+                    optimisticTodo
+                      ? 'border-blue-400/50 bg-blue-500/22 text-blue-200 hover:bg-blue-500/32'
+                      : 'border-white/12 bg-white/[0.06] text-slate-300 hover:border-white/18 hover:bg-white/[0.1]',
                   )}
                 >
-                  <Check size={18} />
+                  <Bookmark size={12} fill={optimisticTodo ? 'currentColor' : 'none'} strokeWidth={2.25} />
                 </button>
-                <button
-                  onClick={() => setShowCommentModal({ id: -1, danger: false, resolved: false })}
-                  className='p-2 opacity-70 transition-all hover:opacity-100'
-                >
-                  <MessageSquare size={18} />
-                </button>
-                {meta.isAdmin && (
-                  <button
-                    onClick={() => setShowHiddenMedia(!showHiddenMedia)}
-                    className={cn(
-                      'rounded-md p-2 transition-all',
-                      showHiddenMedia ? 'bg-blue-400/10 text-blue-400' : 'opacity-70 hover:opacity-100',
-                    )}
-                  >
-                    <Eye size={18} />
-                  </button>
+              )}
+              <button
+                type='button'
+                title={isTicked ? 'Edit tick' : 'Tick'}
+                onClick={() => setShowTickModal(true)}
+                className={cn(
+                  'inline-flex h-8 w-8 items-center justify-center rounded-full border transition-colors',
+                  isTicked
+                    ? 'border-green-400/45 bg-green-500/20 text-green-300 hover:bg-green-500/28'
+                    : 'border-white/12 bg-white/[0.06] text-slate-300 hover:border-white/18 hover:bg-white/[0.1]',
                 )}
-                <Link
-                  to={meta.isAdmin ? `/problem/edit/${data.sectorId}/${data.id}` : `/problem/edit/media/${data.id}`}
-                  className='p-2 opacity-70 transition-all hover:opacity-100'
+              >
+                <Check size={12} strokeWidth={2.5} />
+              </button>
+              <button
+                type='button'
+                title='Comment'
+                onClick={() => setShowCommentModal({ id: -1, danger: false, resolved: false })}
+                className='inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/12 bg-white/[0.06] text-slate-300 transition-colors hover:border-white/18 hover:bg-white/[0.1]'
+              >
+                <MessageSquare size={12} strokeWidth={2.25} />
+              </button>
+              {meta.isAdmin && (
+                <button
+                  type='button'
+                  title={showHiddenMedia ? 'Showing hidden media' : 'Show hidden media'}
+                  onClick={() => setShowHiddenMedia(!showHiddenMedia)}
+                  className={cn(
+                    'inline-flex h-8 w-8 items-center justify-center rounded-full border transition-colors',
+                    showHiddenMedia
+                      ? 'border-sky-400/45 bg-sky-500/20 text-sky-200 hover:bg-sky-500/28'
+                      : 'border-white/12 bg-white/[0.06] text-slate-300 hover:border-white/18 hover:bg-white/[0.1]',
+                  )}
                 >
-                  {meta.isAdmin ? <Edit size={18} /> : <Plus size={18} />}
-                </Link>
-              </div>
+                  <Eye size={12} strokeWidth={2.25} />
+                </button>
+              )}
+              <Link
+                to={meta.isAdmin ? `/problem/edit/${data.sectorId}/${data.id}` : `/problem/edit/media/${data.id}`}
+                title={meta.isAdmin ? 'Edit problem' : 'Add media'}
+                aria-label={meta.isAdmin ? 'Edit problem' : 'Add media'}
+                className={cn(
+                  'inline-flex h-8 w-8 items-center justify-center rounded-full border transition-colors',
+                  meta.isAdmin
+                    ? 'border-amber-300/45 bg-amber-400/18 text-amber-100 hover:bg-amber-400/28'
+                    : 'border-green-400/40 bg-green-500/20 text-green-300 hover:bg-green-500/30 hover:text-green-200',
+                )}
+              >
+                {meta.isAdmin ? <Edit size={12} /> : <Plus size={12} />}
+              </Link>
             </div>
           )}
 
@@ -260,53 +279,47 @@ export const Problem = () => {
             </Link>
             <LockSymbol lockedAdmin={!!data.sectorLockedAdmin} lockedSuperadmin={!!data.sectorLockedSuperadmin} />
             <ChevronRight size={12} className='shrink-0 opacity-30' />
-            <span className='flex flex-wrap items-center gap-1.5 text-slate-400'>
-              <span className='font-mono text-slate-500 tabular-nums'>#{data.nr}</span>
+            <span className='flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-slate-400'>
+              <span className={cn(designContract.typography.meta, 'font-mono text-slate-500 tabular-nums')}>
+                #{data.nr}
+              </span>
+              <span className='text-slate-600'>·</span>
               <span className='font-medium text-slate-300'>{data.name}</span>
-              <span className='font-mono text-slate-500 tabular-nums'>[{data.grade}]</span>
+              <span className='text-slate-600'>·</span>
+              <span className={designContract.typography.grade}>{data.grade}</span>
               <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
             </span>
           </nav>
 
-          <SectionHeader
-            title={data.name ?? ''}
-            icon={MapPin}
-            subheader={[data.grade ? `[${data.grade}]` : null, data.areaName ?? '', data.sectorName ?? '']
-              .filter(Boolean)
-              .join(' · ')}
-            detail={
-              data.broken ||
-              data.areaAccessClosed ||
-              data.sectorAccessClosed ||
-              data.areaNoDogsAllowed ||
-              data.areaAccessInfo ||
-              data.sectorAccessInfo ? (
-                <>
-                  {data.broken && (
-                    <p className='text-pretty text-red-300/90'>
-                      <span className='font-medium'>{meta.isBouldering ? 'Problem' : 'Route'} broken:</span>{' '}
-                      {data.broken}
-                    </p>
-                  )}
-                  {(data.areaAccessClosed || data.sectorAccessClosed) && (
-                    <p className='text-pretty text-red-300/90'>
-                      {(data.areaAccessClosed ? 'Area' : 'Sector') + ' closed: '}
-                      {(data.areaAccessClosed || '') + (data.sectorAccessClosed || '')}
-                    </p>
-                  )}
-                  {(data.areaNoDogsAllowed || data.areaAccessInfo || data.sectorAccessInfo) && (
-                    <div className='space-y-1.5 text-orange-300/90'>
-                      {data.areaNoDogsAllowed && <NoDogsAllowed />}
-                      <Linkify>
-                        {data.areaAccessInfo && <p className='text-pretty'>{data.areaAccessInfo}</p>}
-                        {data.sectorAccessInfo && <p className='text-pretty'>{data.sectorAccessInfo}</p>}
-                      </Linkify>
-                    </div>
-                  )}
-                </>
-              ) : undefined
-            }
-          />
+          {data.broken ||
+          data.areaAccessClosed ||
+          data.sectorAccessClosed ||
+          data.areaNoDogsAllowed ||
+          data.areaAccessInfo ||
+          data.sectorAccessInfo ? (
+            <div className='mt-1 min-w-0 space-y-2 text-[12px] leading-relaxed sm:text-[13px]'>
+              {data.broken && (
+                <p className='text-pretty text-red-300/90'>
+                  <span className='font-medium'>{meta.isBouldering ? 'Problem' : 'Route'} broken:</span> {data.broken}
+                </p>
+              )}
+              {(data.areaAccessClosed || data.sectorAccessClosed) && (
+                <p className='text-pretty text-red-300/90'>
+                  {(data.areaAccessClosed ? 'Area' : 'Sector') + ' closed: '}
+                  {(data.areaAccessClosed || '') + (data.sectorAccessClosed || '')}
+                </p>
+              )}
+              {(data.areaNoDogsAllowed || data.areaAccessInfo || data.sectorAccessInfo) && (
+                <div className='space-y-1.5 text-orange-300/90'>
+                  {data.areaNoDogsAllowed && <NoDogsAllowed />}
+                  <Linkify>
+                    {data.areaAccessInfo && <p className='text-pretty'>{data.areaAccessInfo}</p>}
+                    {data.sectorAccessInfo && <p className='text-pretty'>{data.sectorAccessInfo}</p>}
+                  </Linkify>
+                </div>
+              )}
+            </div>
+          ) : null}
         </div>
       </Card>
 
@@ -318,21 +331,21 @@ export const Problem = () => {
                 className={designContract.controls.tabBarRow}
                 style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }}
                 role='tablist'
-                aria-label='Media or map'
+                aria-label='Overview or map'
               >
                 <button
                   type='button'
                   role='tab'
-                  aria-selected={activeTab === 'media'}
-                  onClick={() => setActiveTab('media')}
-                  className={tabBarButtonClassName(activeTab === 'media')}
+                  aria-selected={activeTab === 'overview'}
+                  onClick={() => setActiveTab('overview')}
+                  className={tabBarButtonClassName(activeTab === 'overview')}
                 >
-                  <ImageIcon
+                  <LayoutDashboard
                     size={12}
-                    strokeWidth={activeTab === 'media' ? 2.3 : 2}
-                    className={tabBarIconClassName(activeTab === 'media')}
+                    strokeWidth={activeTab === 'overview' ? 2.3 : 2}
+                    className={tabBarIconClassName(activeTab === 'overview')}
                   />
-                  <span className='block min-w-0 truncate leading-none'>Media</span>
+                  <span className='block min-w-0 truncate leading-none'>Overview</span>
                 </button>
                 <button
                   type='button'
@@ -351,15 +364,22 @@ export const Problem = () => {
               </div>
             </div>
             <div className='border-surface-border/40 border-t p-1 sm:p-2'>
-              {activeTab === 'media' ? (
-                <Media
-                  pitches={data.sections}
-                  media={data.media || []}
-                  orderableMedia={orderableMedia}
-                  carouselMedia={carouselMedia}
-                  optProblemId={data.id ?? 0}
-                  showLocation={false}
-                />
+              {activeTab === 'overview' ? (
+                <div className='space-y-4 p-4 sm:p-5'>
+                  {(data.media?.length ?? 0) > 0 && (
+                    <Media
+                      pitches={data.sections}
+                      media={data.media || []}
+                      orderableMedia={orderableMedia}
+                      carouselMedia={carouselMedia}
+                      optProblemId={data.id ?? 0}
+                      showLocation={false}
+                    />
+                  )}
+                  {mainDescription.length > 0 && (
+                    <ExpandableMarkdown key={data.id} content={data.comment || data.faAid?.description || ''} />
+                  )}
+                </div>
               ) : (
                 <div className='relative z-0 h-[40vh] min-h-[220px] w-full overflow-hidden rounded-lg'>
                   <Leaflet
@@ -390,21 +410,26 @@ export const Problem = () => {
             </div>
           </>
         ) : (
-          <div className='p-1 sm:p-2'>
-            <Media
-              pitches={data.sections}
-              media={data.media || []}
-              orderableMedia={orderableMedia}
-              carouselMedia={carouselMedia}
-              optProblemId={data.id ?? 0}
-              showLocation={false}
-            />
+          <div className='space-y-4 p-4 sm:p-5'>
+            {(data.media?.length ?? 0) > 0 && (
+              <Media
+                pitches={data.sections}
+                media={data.media || []}
+                orderableMedia={orderableMedia}
+                carouselMedia={carouselMedia}
+                optProblemId={data.id ?? 0}
+                showLocation={false}
+              />
+            )}
+            {mainDescription.length > 0 && (
+              <ExpandableMarkdown key={data.id} content={data.comment || data.faAid?.description || ''} />
+            )}
           </div>
         )}
       </Card>
 
-      <div className={cn(designContract.surfaces.card, 'space-y-6 p-5')}>
-        <div className='grid grid-cols-1 gap-x-8 gap-y-6 lg:grid-cols-[180px_1fr]'>
+      <Card flush className='min-w-0 overflow-hidden border-0 sm:border'>
+        <div className='grid grid-cols-1 gap-x-6 gap-y-5 p-4 sm:p-5 lg:grid-cols-[min(11rem,30%)_1fr] lg:gap-x-8 lg:gap-y-6'>
           {(data.neighbourPrev || data.neighbourNext) && (
             <>
               <div className={cn('pt-1', designContract.typography.label)}>Neighbours</div>
@@ -413,17 +438,15 @@ export const Problem = () => {
                   <Link
                     key={n!.id}
                     to={`/problem/${n!.id}`}
-                    className='bg-surface-nav border-surface-border type-small rounded-lg border px-3 py-1.5 opacity-90 transition-colors hover:border-white/15 hover:opacity-100'
+                    className={cn(designContract.surfaces.inlineChipInteractive, 'opacity-90 hover:opacity-100')}
                   >
-                    <span className={cn(designContract.typography.meta, 'mr-1 font-mono text-slate-500 tabular-nums')}>
+                    <span className={cn(designContract.typography.meta, 'font-mono text-slate-500 tabular-nums')}>
                       #{n!.nr}
-                    </span>{' '}
+                    </span>
                     <span className={cn(designContract.typography.listLink, designContract.typography.listEmphasis)}>
                       {n!.name}
-                    </span>{' '}
-                    <span className={cn(designContract.typography.meta, 'ml-1 font-mono text-slate-500 tabular-nums')}>
-                      {n!.grade}
                     </span>
+                    <span className={designContract.typography.grade}>{n!.grade}</span>
                   </Link>
                 ))}
               </div>
@@ -435,24 +458,27 @@ export const Problem = () => {
           </div>
           <div className='space-y-4'>
             <div className='flex flex-wrap gap-2'>
-              <span className='bg-surface-nav border-surface-border rounded border px-2 py-1 text-[11px] font-bold text-slate-300'>
-                Grade: {data.originalGrade}
+              <span className={designContract.surfaces.inlineChip}>
+                <span className='font-medium text-slate-400'>Grade:</span>{' '}
+                <span className={cn(designContract.typography.grade, 'text-slate-200')}>{data.originalGrade}</span>
               </span>
               {meta.isClimbing && data.t?.subType && (
-                <span className='bg-surface-nav border-surface-border inline-flex items-center gap-1.5 rounded border px-2 py-1 text-[11px] font-bold text-slate-300'>
-                  <Tag size={12} /> {data.t.subType}
+                <span className={cn(designContract.surfaces.inlineChip, 'gap-1.5')}>
+                  <Tag size={12} className='shrink-0 text-slate-500' />
+                  <span className='font-medium'>{data.t.subType}</span>
                 </span>
               )}
               {(data.faDateHr || data.faAid?.dateHr) && (
-                <span className='bg-surface-nav border-surface-border inline-flex items-center gap-1.5 rounded border px-2 py-1 text-[11px] font-bold text-slate-300'>
-                  <Calendar size={12} /> {data.faDateHr || data.faAid?.dateHr}
+                <span className={cn(designContract.surfaces.inlineChip, 'gap-1.5')}>
+                  <Calendar size={12} className='shrink-0 text-slate-500' />
+                  <span>{data.faDateHr || data.faAid?.dateHr}</span>
                 </span>
               )}
               {(data.fa || data.faAid?.users)?.map((u) => (
                 <Link
                   key={u.id}
                   to={`/user/${u.id}`}
-                  className='bg-surface-nav border-surface-border inline-flex items-center gap-2 rounded border px-2 py-1 text-[11px] font-semibold text-slate-300 transition-colors hover:border-white/15'
+                  className={cn(designContract.surfaces.inlineChipInteractive, 'gap-2 font-semibold')}
                 >
                   <ClickableAvatar
                     name={u.name}
@@ -464,24 +490,19 @@ export const Problem = () => {
                 </Link>
               ))}
             </div>
-            <div className='w-full text-[15px] leading-relaxed text-slate-300'>
-              <Linkify>
-                <Markdown content={data.comment || data.faAid?.description || ''} />
-              </Linkify>
-            </div>
             {meta.isIce && (
-              <div className='bg-surface-nav/30 border-surface-border/50 flex flex-wrap gap-4 rounded-lg border p-3 text-[11px] font-bold tracking-tighter text-slate-500 uppercase'>
-                <span>
-                  <b>Alt:</b> {data.startingAltitude}
+              <div className='flex flex-wrap gap-2'>
+                <span className={designContract.surfaces.inlineChip}>
+                  <span className='font-medium text-slate-400'>Alt:</span> {data.startingAltitude}
                 </span>
-                <span>
-                  <b>Aspect:</b> {data.aspect}
+                <span className={designContract.surfaces.inlineChip}>
+                  <span className='font-medium text-slate-400'>Aspect:</span> {data.aspect}
                 </span>
-                <span>
-                  <b>Len:</b> {data.routeLength}
+                <span className={designContract.surfaces.inlineChip}>
+                  <span className='font-medium text-slate-400'>Len:</span> {data.routeLength}
                 </span>
-                <span>
-                  <b>Descent:</b> {data.descent}
+                <span className={designContract.surfaces.inlineChip}>
+                  <span className='font-medium text-slate-400'>Descent:</span> {data.descent}
                 </span>
               </div>
             )}
@@ -492,10 +513,8 @@ export const Problem = () => {
               <div className={cn('pt-1', designContract.typography.label)}>Trivia</div>
               <div className='space-y-4'>
                 {data.trivia && (
-                  <div className='bg-surface-nav/20 border-surface-border/50 rounded-xl border p-4 text-sm text-slate-400 italic'>
-                    <Linkify>
-                      <Markdown content={data.trivia} />
-                    </Linkify>
+                  <div className='bg-surface-nav/20 border-surface-border/50 rounded-xl border p-4 text-slate-400 italic'>
+                    <ExpandableMarkdown content={data.trivia} className='italic' />
                   </div>
                 )}
                 {data.triviaMedia && (
@@ -531,9 +550,9 @@ export const Problem = () => {
                       {s.nr}
                     </div>
                     <div className='flex-1 space-y-2'>
-                      <div className='flex items-center gap-2'>
-                        <div className='bg-surface-nav border-surface-border flex min-w-fit items-center gap-1.5 rounded border px-2 py-1 whitespace-nowrap'>
-                          <span className='type-label'>{s.grade}</span>
+                      <div className='flex flex-wrap items-center gap-2'>
+                        <div className={cn(designContract.surfaces.inlineChip, 'min-w-0 shrink-0 whitespace-nowrap')}>
+                          <span className={cn(designContract.typography.grade, 'text-slate-200')}>{s.grade}</span>
                         </div>
                         <div className='text-sm text-slate-300'>
                           <Linkify>{s.description}</Linkify>
@@ -558,14 +577,20 @@ export const Problem = () => {
 
           {(hasApproach || hasDescent) && (
             <>
-              <div className={cn('pt-1', designContract.typography.label)}>Terrain</div>
-              <div className='grid w-full grid-cols-1 gap-x-12 gap-y-8 md:grid-cols-2'>
+              <div className={cn('md:pt-0.5', designContract.typography.label)}>Terrain</div>
+              <div className='grid w-full grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2 md:gap-y-4'>
                 {hasApproach && (
-                  <div className='flex min-w-0 flex-col gap-2'>
-                    <div className='text-[9px] font-black tracking-[0.2em] text-slate-600 uppercase'>
-                      Approach Profile
+                  <div className='flex min-w-0 flex-col gap-1'>
+                    <div
+                      className={cn(
+                        designContract.typography.meta,
+                        'text-[10px] font-semibold tracking-wide text-slate-500 uppercase',
+                      )}
+                    >
+                      Approach
                     </div>
                     <SlopeProfile
+                      compact
                       areaName={data.areaName!}
                       sectorName={data.sectorName!}
                       slope={data.sectorApproach as Slope}
@@ -573,11 +598,17 @@ export const Problem = () => {
                   </div>
                 )}
                 {hasDescent && (
-                  <div className='flex min-w-0 flex-col gap-2'>
-                    <div className='text-[9px] font-black tracking-[0.2em] text-slate-600 uppercase'>
-                      Descent Profile
+                  <div className='flex min-w-0 flex-col gap-1'>
+                    <div
+                      className={cn(
+                        designContract.typography.meta,
+                        'text-[10px] font-semibold tracking-wide text-slate-500 uppercase',
+                      )}
+                    >
+                      Descent
                     </div>
                     <SlopeProfile
+                      compact
                       areaName={data.areaName!}
                       sectorName={data.sectorName!}
                       slope={data.sectorDescent as Slope}
@@ -589,18 +620,17 @@ export const Problem = () => {
           )}
 
           <div className={cn('pt-1', designContract.typography.label)}>Conditions</div>
-          <div>
-            {conditionLat > 0 && (
-              <ConditionLabels
-                lat={conditionLat}
-                lng={conditionLng}
-                label={data.name ?? ''}
-                wallDirectionCalculated={data.sectorWallDirectionCalculated}
-                wallDirectionManual={data.sectorWallDirectionManual}
-                sunFromHour={data.sectorSunFromHour ?? data.areaSunFromHour ?? 0}
-                sunToHour={data.sectorSunToHour ?? data.areaSunToHour ?? 0}
-              />
-            )}
+          <div className='flex flex-wrap items-center gap-x-2 gap-y-2'>
+            <ConditionLabels
+              lat={conditionLat > 0 ? conditionLat : undefined}
+              lng={conditionLng > 0 ? conditionLng : undefined}
+              label={data.name ?? ''}
+              wallDirectionCalculated={data.sectorWallDirectionCalculated}
+              wallDirectionManual={data.sectorWallDirectionManual}
+              sunFromHour={data.sectorSunFromHour ?? data.areaSunFromHour ?? 0}
+              sunToHour={data.sectorSunToHour ?? data.areaSunToHour ?? 0}
+              pageViews={data.pageViews}
+            />
           </div>
 
           <div className={cn('pt-1', designContract.typography.label)}>Misc</div>
@@ -615,9 +645,13 @@ export const Problem = () => {
                 href={`https://www.google.com/maps/search/?api=1&query=${data.sectorParking.latitude},${data.sectorParking.longitude}`}
                 target='_blank'
                 rel='noreferrer'
-                className='bg-surface-nav border-surface-border type-label rounded-md border px-2 py-1 opacity-75 transition-all hover:opacity-100'
+                title='Parking in Google Maps'
+                className={cn(
+                  designContract.surfaces.inlineChipInteractive,
+                  'gap-1 px-2 py-0.5 text-[11px] font-medium',
+                )}
               >
-                <MapIcon size={12} className='mr-1 inline' /> Parking
+                <MapIcon size={11} className='shrink-0 text-slate-500' strokeWidth={2.25} /> Parking
               </a>
             )}
             {data.coordinates && (
@@ -625,14 +659,16 @@ export const Problem = () => {
                 href={`https://www.google.com/maps/search/?api=1&query=${data.coordinates.latitude},${data.coordinates.longitude}`}
                 target='_blank'
                 rel='noreferrer'
-                className='bg-surface-nav border-surface-border type-label rounded-md border px-2 py-1 opacity-75 transition-all hover:opacity-100'
+                title={meta.isBouldering ? 'Boulder in Google Maps' : 'Route in Google Maps'}
+                className={cn(
+                  designContract.surfaces.inlineChipInteractive,
+                  'gap-1 px-2 py-0.5 text-[11px] font-medium',
+                )}
               >
-                <MapIcon size={12} className='mr-1 inline' /> {meta.isBouldering ? 'Boulder' : 'Route'}
+                <MapIcon size={11} className='shrink-0 text-slate-500' strokeWidth={2.25} />{' '}
+                {meta.isBouldering ? 'Boulder' : 'Route'}
               </a>
             )}
-            <span className='bg-surface-nav border-surface-border flex items-center gap-1 rounded-md border px-2 py-1 text-[10px] font-bold text-slate-500 uppercase'>
-              <Activity size={12} /> {data.pageViews}
-            </span>
             <ExternalLinkLabels externalLinks={data.externalLinks} />
           </div>
 
@@ -644,7 +680,10 @@ export const Problem = () => {
                   <Link
                     key={u.idUser}
                     to={`/user/${u.idUser}`}
-                    className='bg-surface-nav border-surface-border inline-flex items-center gap-2 rounded-md border px-2 py-1 text-[10px] font-semibold text-slate-400 transition-colors hover:border-white/15'
+                    className={cn(
+                      designContract.surfaces.inlineChipInteractive,
+                      'text-[10px] font-semibold text-slate-400',
+                    )}
                   >
                     <ClickableAvatar
                       name={u.name}
@@ -659,32 +698,48 @@ export const Problem = () => {
             </>
           )}
         </div>
-      </div>
+      </Card>
 
-      <div className={cn('grid grid-cols-1 gap-8 pt-4', hasTicks && hasComments ? 'lg:grid-cols-2' : 'lg:grid-cols-1')}>
+      <div
+        className={cn('grid grid-cols-1 gap-6', hasTicks && hasComments ? 'lg:grid-cols-2 lg:gap-6' : 'lg:grid-cols-1')}
+      >
         {hasTicks && (
-          <div className='space-y-4'>
-            <div className='flex items-center gap-2 px-1'>
-              <Check size={20} className='text-slate-400' strokeWidth={2.25} />
-              <h3 className='type-label'>Latest Ticks</h3>
+          <Card flush className='min-w-0 overflow-hidden border-0 sm:border'>
+            <div className='border-surface-border/40 flex items-center justify-between gap-3 border-b px-4 py-2.5 sm:px-5'>
+              <div className='flex items-center gap-2'>
+                <Check size={12} className='text-slate-500' strokeWidth={2.25} />
+                <span className='type-label'>Ticks</span>
+              </div>
+              <span className={cn(designContract.typography.meta, 'text-slate-500 tabular-nums')}>
+                {data.ticks?.length ?? 0}
+              </span>
             </div>
-            <ProblemTicks ticks={data.ticks || []} />
-          </div>
+            <div className='px-4 pt-3 pb-4 sm:px-5'>
+              <ProblemTicks ticks={data.ticks || []} />
+            </div>
+          </Card>
         )}
         {hasComments && (
-          <div className='space-y-4'>
-            <div className='flex items-center gap-2 px-1'>
-              <MessageSquare size={20} className='text-slate-400' strokeWidth={2.25} />
-              <h3 className='type-label'>Comments</h3>
+          <Card flush className='min-w-0 overflow-hidden border-0 sm:border'>
+            <div className='border-surface-border/40 flex items-center justify-between gap-3 border-b px-4 py-2.5 sm:px-5'>
+              <div className='flex items-center gap-2'>
+                <MessageSquare size={12} className='text-slate-500' strokeWidth={2.25} />
+                <span className='type-label'>Comments</span>
+              </div>
+              <span className={cn(designContract.typography.meta, 'text-slate-500 tabular-nums')}>
+                {data.comments?.length ?? 0}
+              </span>
             </div>
-            <ProblemComments
-              onShowCommentModal={setShowCommentModal}
-              problemId={+problemId}
-              showHiddenMedia={showHiddenMedia}
-              orderableMedia={orderableMedia}
-              carouselMedia={carouselMedia}
-            />
-          </div>
+            <div className='px-4 pt-3 pb-4 sm:px-5'>
+              <ProblemComments
+                onShowCommentModal={setShowCommentModal}
+                problemId={+problemId}
+                showHiddenMedia={showHiddenMedia}
+                orderableMedia={orderableMedia}
+                carouselMedia={carouselMedia}
+              />
+            </div>
+          </Card>
         )}
       </div>
     </div>

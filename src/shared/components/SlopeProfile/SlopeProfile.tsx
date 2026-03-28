@@ -4,11 +4,14 @@ import { AreaChart, Area, Tooltip, XAxis, YAxis } from 'recharts';
 import { getDistanceWithUnit } from '../Leaflet/geo-utils';
 import { Download, Clock, Activity, Map, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { useState, useLayoutEffect, useRef } from 'react';
+import { cn } from '../../../lib/utils';
 
 type Props = {
   areaName?: string | null;
   sectorName?: string | null;
   slope: Slope;
+  /** Smaller chart + badges (e.g. problem page terrain strip). */
+  compact?: boolean;
 };
 
 const createXmlString = (
@@ -44,7 +47,7 @@ const downloadGpxFile = (areaName: string, sectorName: string, coordinates: comp
   document.body.removeChild(link);
 };
 
-export const SlopeProfile = ({ areaName = '', sectorName = '', slope }: Props) => {
+export const SlopeProfile = ({ areaName = '', sectorName = '', slope, compact = false }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dims, setDims] = useState<{ width: number; height: number } | null>(null);
   const sources = Array.from(new Set((slope.coordinates ?? []).map((a) => a.elevationSource))).join(', ');
@@ -64,10 +67,13 @@ export const SlopeProfile = ({ areaName = '', sectorName = '', slope }: Props) =
   }, []);
 
   return (
-    <div className='flex w-full max-w-2xl flex-col gap-2'>
+    <div className={cn('flex w-full flex-col gap-2', compact ? 'max-w-xl gap-1.5' : 'max-w-2xl')}>
       <div
         ref={containerRef}
-        className='bg-surface-nav/10 border-surface-border/30 relative aspect-4/1 min-h-20 w-full overflow-hidden rounded-lg border p-1'
+        className={cn(
+          'bg-surface-nav/10 border-surface-border/30 relative w-full overflow-hidden rounded-lg border',
+          compact ? 'aspect-5/1 min-h-14 p-0.5' : 'aspect-4/1 min-h-20 p-1',
+        )}
       >
         {dims && (
           <AreaChart
@@ -109,32 +115,52 @@ export const SlopeProfile = ({ areaName = '', sectorName = '', slope }: Props) =
         )}
       </div>
 
-      <div className='flex flex-wrap gap-1.5'>
-        <div className='bg-surface-nav border-surface-border inline-flex items-center gap-2 rounded-lg border px-2.5 py-1 text-[10px] font-bold text-slate-300'>
-          <Activity size={12} className='text-brand' />
+      <div className={cn('flex flex-wrap', compact ? 'gap-1' : 'gap-1.5')}>
+        <div
+          className={cn(
+            'bg-surface-nav border-surface-border inline-flex items-center gap-1.5 rounded-md border font-bold text-slate-300',
+            compact ? 'px-1.5 py-0.5 text-[9px]' : 'gap-2 rounded-lg px-2.5 py-1 text-[10px]',
+          )}
+        >
+          <Activity size={compact ? 10 : 12} className='text-brand' />
           <span>{getDistanceWithUnit(slope)}</span>
         </div>
 
-        <div className='bg-surface-nav border-surface-border inline-flex items-center gap-2 rounded-lg border px-2.5 py-1 text-[10px] font-bold text-slate-300'>
-          <div className='flex items-center gap-1'>
-            <ArrowUpRight size={12} className='text-green-500' />
+        <div
+          className={cn(
+            'bg-surface-nav border-surface-border inline-flex items-center gap-2 rounded-md border font-bold text-slate-300',
+            compact ? 'px-1.5 py-0.5 text-[9px]' : 'rounded-lg px-2.5 py-1 text-[10px]',
+          )}
+        >
+          <div className='flex items-center gap-0.5'>
+            <ArrowUpRight size={compact ? 10 : 12} className='text-green-500' />
             <span>{slope.elevationGain ?? 0}m</span>
           </div>
-          <div className='bg-surface-border mx-1 h-3 w-px' />
-          <div className='flex items-center gap-1'>
-            <ArrowDownRight size={12} className='text-red-500' />
+          <div className={cn('bg-surface-border w-px', compact ? 'mx-0.5 h-2.5' : 'mx-1 h-3')} />
+          <div className='flex items-center gap-0.5'>
+            <ArrowDownRight size={compact ? 10 : 12} className='text-red-500' />
             <span>{slope.elevationLoss ?? 0}m</span>
           </div>
         </div>
 
-        <div className='bg-surface-nav border-surface-border inline-flex items-center gap-2 rounded-lg border px-2.5 py-1 text-[10px] font-bold text-slate-300'>
-          <Clock size={12} className='text-blue-400' />
+        <div
+          className={cn(
+            'bg-surface-nav border-surface-border inline-flex items-center gap-1.5 rounded-md border font-bold text-slate-300',
+            compact ? 'px-1.5 py-0.5 text-[9px]' : 'gap-2 rounded-lg px-2.5 py-1 text-[10px]',
+          )}
+        >
+          <Clock size={compact ? 10 : 12} className='text-blue-400' />
           <span>{slope.calculatedDurationInMinutes ?? 0} min</span>
         </div>
 
         {sources && (
-          <div className='bg-surface-nav border-surface-border inline-flex items-center gap-2 rounded-lg border px-2.5 py-1 text-[10px] font-bold text-slate-300'>
-            <Map size={12} className='text-slate-500' />
+          <div
+            className={cn(
+              'bg-surface-nav border-surface-border inline-flex items-center gap-1.5 rounded-md border font-bold text-slate-300',
+              compact ? 'px-1.5 py-0.5 text-[9px]' : 'gap-2 rounded-lg px-2.5 py-1 text-[10px]',
+            )}
+          >
+            <Map size={compact ? 10 : 12} className='text-slate-500' />
             <span>{sources}</span>
           </div>
         )}
@@ -142,9 +168,14 @@ export const SlopeProfile = ({ areaName = '', sectorName = '', slope }: Props) =
         <button
           type='button'
           onClick={() => downloadGpxFile(areaName ?? '', sectorName ?? '', slope.coordinates ?? [])}
-          className='bg-surface-nav border-surface-border hover:border-brand/50 inline-flex items-center gap-2 rounded-lg border px-2.5 py-1 text-[10px] font-black uppercase opacity-80 transition-all hover:opacity-100'
+          className={cn(
+            'bg-surface-nav border-surface-border hover:border-brand/50 inline-flex items-center font-black uppercase opacity-80 transition-all hover:opacity-100',
+            compact
+              ? 'gap-1 rounded-md border px-1.5 py-0.5 text-[8px]'
+              : 'gap-2 rounded-lg border px-2.5 py-1 text-[10px]',
+          )}
         >
-          <Download size={12} /> GPX
+          <Download size={compact ? 10 : 12} /> GPX
         </button>
       </div>
     </div>

@@ -173,7 +173,7 @@ export const SvgViewer = ({
         overflow='visible'
         className='buldreinfo-svg absolute inset-0 h-full w-full touch-none select-none'
         viewBox={`0 0 ${imgW} ${imgH}`}
-        preserveAspectRatio='xMidYMid meet'
+        preserveAspectRatio={thumb ? 'xMidYMid slice' : 'xMidYMid meet'}
         onClick={(e: MouseEvent<SVGSVGElement>) => {
           if (e.target === e.currentTarget && close) close();
         }}

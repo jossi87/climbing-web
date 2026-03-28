@@ -26,6 +26,8 @@ export const designContract = {
     listLink: 'text-slate-200 transition-colors hover:text-slate-100',
     listLinkMuted: 'text-slate-400 transition-colors hover:text-slate-200',
     listEmphasis: 'font-semibold text-slate-100',
+    /** Grade tokens (no brackets): mono + muted */
+    grade: 'type-small font-mono tabular-nums text-slate-400',
   },
   layout: {
     pageSection: 'w-full pb-0',
@@ -46,6 +48,14 @@ export const designContract = {
     gridDivider: 'bg-surface-border/60 gap-px',
     card: 'bg-surface-card border-surface-border rounded-2xl border shadow-sm',
     subtle: 'bg-surface-nav border-surface-border border',
+    /**
+     * Inline stat/meta chips — same language as Area sector pills & Sector type rows.
+     * Use `inlineChipInteractive` for links/buttons (hover border).
+     */
+    inlineChip:
+      'bg-surface-nav border-surface-border inline-flex max-w-full min-w-0 items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs text-slate-300',
+    inlineChipInteractive:
+      'bg-surface-nav border-surface-border inline-flex max-w-full min-w-0 items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs text-slate-300 transition-colors hover:border-white/15',
   },
   controls: {
     chipButton: 'btn-glass',
@@ -61,6 +71,8 @@ export const designContract = {
       'flex items-center gap-2 border-b-2 px-6 py-3 text-[10px] font-semibold tracking-[0.16em] uppercase transition-colors',
     navPill:
       'flex flex-col items-center gap-2 rounded-lg px-5 py-3 text-[10px] font-semibold tracking-[0.16em] uppercase transition-colors sm:flex-row',
+    /** Show more / Show less under ExpandableMarkdown (Area overview) */
+    expandableToggle: 'text-[12px] font-medium text-slate-400 transition-colors hover:text-slate-200 sm:text-[13px]',
   },
   activityColors: {
     filter: {

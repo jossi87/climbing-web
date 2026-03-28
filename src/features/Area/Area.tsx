@@ -14,11 +14,11 @@ import { ConditionLabels } from '../../shared/components/Widgets/ConditionLabels
 import { ExternalLinkLabels } from '../../shared/components/Widgets/ExternalLinkLabels';
 import { useMeta } from '../../shared/components/Meta/context';
 import { getMediaFileUrl, useArea } from '../../api';
-import { Markdown } from '../../shared/components/Markdown/Markdown';
+import { ExpandableMarkdown } from '../../shared/components/ExpandableMarkdown';
 import ProblemList from '../../shared/components/ProblemList';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { DownloadButton } from '../../shared/ui/DownloadButton';
-import { Card, SectionHeader } from '../../shared/ui';
+import { Card } from '../../shared/ui';
 import {
   ChevronRight,
   Plus,
@@ -180,45 +180,6 @@ const isSectorWithParking = (s: AreaSectorType): s is SectorWithParking => {
   return !!(s.parking && s.parking.latitude && s.parking.longitude);
 };
 
-/** Rough line estimate for plain text / markdown (no DOM measurement). */
-const commentLikelyExceedsLines = (comment: string, maxLines: number, charsPerLine = 76): boolean => {
-  const lines = comment.trim().split(/\r?\n/);
-  let total = 0;
-  for (const line of lines) {
-    total += Math.max(1, Math.ceil(line.length / charsPerLine));
-  }
-  return total > maxLines;
-};
-
-type AreaDescriptionProps = { comment: string };
-
-const AreaDescription = ({ comment }: AreaDescriptionProps) => {
-  const [expanded, setExpanded] = useState(false);
-  const needsToggle = commentLikelyExceedsLines(comment, 6);
-
-  return (
-    <div className='space-y-2'>
-      <div
-        className={cn(
-          'text-[13px] leading-relaxed text-slate-300 sm:text-sm',
-          !expanded && needsToggle && 'max-h-[8.75rem] overflow-hidden',
-        )}
-      >
-        <Markdown content={comment} />
-      </div>
-      {needsToggle && (
-        <button
-          type='button'
-          onClick={() => setExpanded((x) => !x)}
-          className='text-[12px] font-medium text-slate-400 transition-colors hover:text-slate-200 sm:text-[13px]'
-        >
-          {expanded ? 'Show less' : 'Show more'}
-        </button>
-      )}
-    </div>
-  );
-};
-
 const Area = () => {
   const meta = useMeta();
   const { areaId } = useParams();
@@ -363,16 +324,6 @@ const Area = () => {
     if (data.triviaMedia.length > 1) orderableMedia.push(...data.triviaMedia);
   }
 
-  const things = meta.isBouldering ? 'problems' : 'routes';
-  const areaSubheader = [
-    `${data.sectors?.length ?? 0} sectors`,
-    `${problemRows.length} ${things}`,
-    data.pageViews != null && String(data.pageViews).length > 0 ? `${data.pageViews} views` : null,
-    data.forDevelopers ? 'Under development' : null,
-  ]
-    .filter(Boolean)
-    .join(' · ');
-
   return (
     <div className='w-full min-w-0'>
       <title>{`${data.name} | ${meta?.title}`}</title>
@@ -412,24 +363,17 @@ const Area = () => {
             </span>
           </nav>
 
-          <SectionHeader
-            title={data.name ?? 'Area'}
-            icon={MapPin}
-            subheader={areaSubheader}
-            detail={
-              data.accessClosed || data.noDogsAllowed || data.accessInfo ? (
-                <>
-                  {data.accessClosed && <p className='text-pretty text-red-300/90'>{data.accessClosed}</p>}
-                  {(data.noDogsAllowed || data.accessInfo) && (
-                    <div className='space-y-1.5 text-orange-300/90'>
-                      {data.noDogsAllowed && <p className='text-pretty'>No dogs allowed (landowner request).</p>}
-                      {data.accessInfo && <p className='text-pretty'>{data.accessInfo}</p>}
-                    </div>
-                  )}
-                </>
-              ) : undefined
-            }
-          />
+          {data.accessClosed || data.noDogsAllowed || data.accessInfo ? (
+            <div className='mt-1 min-w-0 space-y-2 text-[12px] leading-relaxed sm:text-[13px]'>
+              {data.accessClosed && <p className='text-pretty text-red-300/90'>{data.accessClosed}</p>}
+              {(data.noDogsAllowed || data.accessInfo) && (
+                <div className='space-y-1.5 text-orange-300/90'>
+                  {data.noDogsAllowed && <p className='text-pretty'>No dogs allowed (landowner request).</p>}
+                  {data.accessInfo && <p className='text-pretty'>{data.accessInfo}</p>}
+                </div>
+              )}
+            </div>
+          ) : null}
         </div>
 
         {tabs.length > 0 && (
@@ -477,23 +421,32 @@ const Area = () => {
                     )}
 
                     <div className='flex w-full min-w-0 flex-wrap items-center gap-x-2 gap-y-2'>
-                      {data.coordinates && data.coordinates.latitude && data.coordinates.longitude && (
-                        <ConditionLabels
-                          lat={data.coordinates.latitude}
-                          lng={data.coordinates.longitude}
-                          label={data.name ?? ''}
-                          wallDirectionCalculated={undefined}
-                          wallDirectionManual={undefined}
-                          sunFromHour={data.sunFromHour ?? 0}
-                          sunToHour={data.sunToHour ?? 0}
-                        />
+                      <ConditionLabels
+                        lat={data.coordinates?.latitude}
+                        lng={data.coordinates?.longitude}
+                        label={data.name ?? ''}
+                        wallDirectionCalculated={undefined}
+                        wallDirectionManual={undefined}
+                        sunFromHour={data.sunFromHour ?? 0}
+                        sunToHour={data.sunToHour ?? 0}
+                        pageViews={data.pageViews}
+                      />
+                      {data.forDevelopers && (
+                        <span
+                          className={cn(
+                            designContract.surfaces.inlineChip,
+                            'text-[10px] font-semibold tracking-wide text-amber-400/90 uppercase',
+                          )}
+                        >
+                          Under development
+                        </span>
                       )}
                       <DownloadButton href={`/areas/pdf?id=${data.id}`}>PDF</DownloadButton>
                       <ExternalLinkLabels externalLinks={data.externalLinks} />
                     </div>
 
                     {(data.comment ?? '').trim().length > 0 && (
-                      <AreaDescription key={data.id} comment={data.comment ?? ''} />
+                      <ExpandableMarkdown key={data.id} content={data.comment ?? ''} />
                     )}
 
                     {(data.triviaMedia?.length ?? 0) > 0 && (
