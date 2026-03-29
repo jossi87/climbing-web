@@ -21,21 +21,28 @@ type Props = {
 
 const rowClass = cn(
   designContract.typography.body,
-  'flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[13px] leading-normal text-pretty text-slate-300 sm:text-sm',
+  'flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1 text-[13px] leading-normal text-slate-300 sm:text-sm',
 );
 
-const leadClass = cn(designContract.typography.meta, 'inline-flex shrink-0 items-center text-slate-500');
+/** Row label (First ascent, etc.) — slightly quieter than the facts. */
+const leadClass = cn(designContract.typography.meta, 'inline-flex shrink-0 items-baseline text-slate-500');
 
-const dot = (
-  <span className='inline-flex items-center text-slate-600 select-none' aria-hidden>
+/** One style for every fact in the row (grade, type, date, names) — same size, weight, color. */
+const factClass = 'text-[13px] font-normal leading-normal text-slate-300 sm:text-sm';
+
+/** Lucide icons next to text: nudge so cap height lines up with the fact line. */
+const factIconClass = 'shrink-0 text-slate-500 relative top-[0.12em]';
+
+const todoNameSep = (
+  <span className='inline-flex items-baseline px-1 text-slate-600 select-none' aria-hidden>
     ·
   </span>
 );
 
 function dateWithCalendar(date: string) {
   return (
-    <span className='inline-flex items-center gap-1 text-slate-300 tabular-nums'>
-      <Calendar size={12} className='shrink-0 text-slate-500' strokeWidth={2.25} />
+    <span className={cn('inline-flex items-baseline gap-1 tabular-nums', factClass)}>
+      <Calendar size={12} className={factIconClass} strokeWidth={2.25} />
       {date}
     </span>
   );
@@ -44,24 +51,25 @@ function dateWithCalendar(date: string) {
 function climberList(users: User[]) {
   if (users.length === 0) return null;
   return (
-    <span className='inline-flex flex-wrap items-center gap-x-0 gap-y-0.5'>
+    <span className='inline-flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1'>
       {users.map((u, i) => (
-        <span key={u.id ?? i} className='inline-flex items-center'>
-          {i > 0 ? (
-            <span className='inline-flex items-center px-1 text-slate-600 select-none' aria-hidden>
-              ·
-            </span>
-          ) : null}
-          <Link
-            to={`/user/${u.id}`}
-            className='font-medium text-slate-200 underline decoration-white/15 underline-offset-2 transition-colors hover:text-slate-50 hover:decoration-white/30'
-          >
-            <span className='inline-flex items-center gap-1.5'>
-              <ClickableAvatar name={u.name} mediaId={u.mediaId} mediaVersionStamp={u.mediaVersionStamp} size='mini' />
-              {u.name}
-            </span>
-          </Link>
-        </span>
+        <Link
+          key={u.id ?? i}
+          to={`/user/${u.id}`}
+          className={cn(
+            factClass,
+            'inline-flex max-w-full min-w-0 items-baseline gap-1.5 transition-colors hover:text-slate-100',
+          )}
+        >
+          <ClickableAvatar
+            name={u.name}
+            mediaId={u.mediaId}
+            mediaVersionStamp={u.mediaVersionStamp}
+            size='mini'
+            className='shrink-0 translate-y-px'
+          />
+          <span className='min-w-0'>{u.name}</span>
+        </Link>
       ))}
     </span>
   );
@@ -71,22 +79,12 @@ function todoUserList(todos: ProblemTodo[]) {
   const withUser = todos.filter((t) => t.idUser != null);
   if (withUser.length === 0) return null;
   return (
-    <span className='inline-flex flex-wrap items-center gap-x-0 gap-y-0.5'>
+    <span className='inline-flex flex-wrap items-baseline gap-x-0 gap-y-0.5'>
       {withUser.map((u, i) => (
-        <span key={u.idUser ?? i} className='inline-flex items-center'>
-          {i > 0 ? (
-            <span className='inline-flex items-center px-1 text-slate-600 select-none' aria-hidden>
-              ·
-            </span>
-          ) : null}
-          <Link
-            to={`/user/${u.idUser}`}
-            className='font-medium text-slate-200 underline decoration-white/15 underline-offset-2 transition-colors hover:text-slate-50 hover:decoration-white/30'
-          >
-            <span className='inline-flex items-center gap-1.5'>
-              <ClickableAvatar name={u.name} mediaId={u.mediaId} mediaVersionStamp={u.mediaVersionStamp} size='mini' />
-              {u.name}
-            </span>
+        <span key={u.idUser ?? i} className='inline-flex items-baseline'>
+          {i > 0 ? todoNameSep : null}
+          <Link to={`/user/${u.idUser}`} className={cn(factClass, 'transition-colors hover:text-slate-100')}>
+            {u.name}
           </Link>
         </span>
       ))}
@@ -127,49 +125,50 @@ export function ProblemAscentOverview({ data, meta, showTodoUsers }: Props) {
 
   const freeLead = faAid ? 'First free ascent' : 'First ascent';
 
+  /** Keeps grade / type / date / climbers in one wrapping band so they share a line before breaking. */
+  function factsBand(children: ReactNode[]) {
+    if (children.length === 0) return null;
+    return <span className='inline-flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 gap-y-1'>{children}</span>;
+  }
+
   const aidRowBody: ReactNode[] = [];
   if (aidDate) {
-    aidRowBody.push(dot, dateWithCalendar(aidDate));
+    aidRowBody.push(dateWithCalendar(aidDate));
   }
   if (aidUsers.length > 0) {
-    aidRowBody.push(dot, climberList(aidUsers));
+    aidRowBody.push(climberList(aidUsers));
   }
 
   const freeRowBody: ReactNode[] = [];
   if (data.originalGrade) {
     freeRowBody.push(
-      dot,
-      <span
-        key='g'
-        className={cn(designContract.typography.grade, 'inline-flex items-center font-semibold text-slate-100')}
-      >
+      <span key='g' className={cn('tabular-nums', factClass)}>
         {data.originalGrade}
       </span>,
     );
   }
   if (meta.isClimbing && data.t?.subType) {
     freeRowBody.push(
-      dot,
-      <span key='t' className='inline-flex items-center gap-1 text-slate-300'>
-        <Tag size={12} className='shrink-0 text-slate-500' strokeWidth={2.25} />
+      <span key='t' className={cn('inline-flex items-baseline gap-1', factClass)}>
+        <Tag size={12} className={factIconClass} strokeWidth={2.25} />
         {data.t.subType}
       </span>,
     );
   }
   if (freeDate) {
-    freeRowBody.push(dot, dateWithCalendar(freeDate));
+    freeRowBody.push(dateWithCalendar(freeDate));
   }
   if (mergedForFree.length > 0) {
-    freeRowBody.push(dot, climberList(mergedForFree));
+    freeRowBody.push(climberList(mergedForFree));
   }
 
   return (
-    <div className='min-w-0 space-y-3 text-pretty [overflow-wrap:anywhere] sm:space-y-3.5'>
+    <div className='min-w-0 space-y-3 sm:space-y-3.5'>
       {showAidBlock && (
         <div className='space-y-2'>
           <p className={rowClass}>
             <span className={leadClass}>First aid ascent</span>
-            {aidRowBody}
+            {factsBand(aidRowBody)}
           </p>
           {aidDesc.length > 0 ? (
             <ExpandableMarkdown
@@ -183,17 +182,20 @@ export function ProblemAscentOverview({ data, meta, showTodoUsers }: Props) {
       {showFreeBlock && (
         <p className={rowClass}>
           <span className={leadClass}>{freeLead}</span>
-          {freeRowBody}
+          {factsBand(freeRowBody)}
         </p>
       )}
 
-      {showIce ? <p className={cn(designContract.typography.meta, 'text-slate-400')}>{iceParts.join(' · ')}</p> : null}
+      {showIce ? (
+        <p className={cn(designContract.typography.body, 'text-[13px] leading-normal sm:text-sm', factClass)}>
+          {iceParts.join(' · ')}
+        </p>
+      ) : null}
 
       {showTodoRow ? (
         <p className={rowClass}>
           <span className={leadClass}>Todo</span>
-          {dot}
-          {todoNames}
+          {factsBand([todoNames])}
         </p>
       ) : null}
     </div>

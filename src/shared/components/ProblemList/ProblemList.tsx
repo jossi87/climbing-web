@@ -14,6 +14,7 @@ type Props = {
   defaultOrder: OrderOption;
   storageKey: string;
   toolbarAction?: React.ReactNode;
+  /** Renders above the toolbar (e.g. map) so group/sort/filter stay between map and list. */
   contentBeforeList?: React.ReactNode | ((filteredRows: Row[]) => React.ReactNode);
   excludedSortOptions?: OrderOption[];
 };
@@ -453,8 +454,12 @@ export const ProblemList = ({
 
   const hasPrimaryToolbar = groupByOptions.length > 1 && !toolbarAction;
 
+  const leading = typeof contentBeforeList === 'function' ? contentBeforeList(filtered) : contentBeforeList;
+
   return (
     <div className='space-y-0'>
+      {leading}
+
       {hasPrimaryToolbar ? (
         <div className='grid w-full grid-cols-3 gap-1.5 md:flex md:w-fit md:max-w-full md:flex-wrap md:items-stretch md:gap-2'>
           <ToolbarDropdown
@@ -594,9 +599,6 @@ export const ProblemList = ({
           </div>
         </div>
       )}
-
-      {showFilter && contentBeforeList ? <div className='mt-2' /> : null}
-      {typeof contentBeforeList === 'function' ? contentBeforeList(filtered) : contentBeforeList}
 
       {list}
     </div>

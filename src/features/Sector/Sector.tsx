@@ -92,75 +92,68 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
     ) : null;
 
   const mediaTrailBlock = hasMediaTrail ? (
-    <span className='inline-flex flex-wrap items-center gap-x-1.5 gap-y-0.5 align-middle text-slate-500'>
-      {problem.coordinates && (
-        <span title='Coordinates'>
-          <MapPin size={12} strokeWidth={2} />
+    <span className='inline text-slate-500'>
+      {problem.coordinates ? (
+        <span className='inline' title='Coordinates'>
+          <MapPin size={12} strokeWidth={2} className='inline-block align-[-0.125em]' />
         </span>
-      )}
-      {problem.hasTopo && (
-        <span title='Topo'>
-          <Brush size={12} strokeWidth={2} />
+      ) : null}
+      {problem.hasTopo ? (
+        <span className='inline pl-1' title='Topo'>
+          <Brush size={12} strokeWidth={2} className='inline-block align-[-0.125em]' />
         </span>
-      )}
-      {problem.hasImages && (
-        <span title='Images'>
-          <ImageIcon size={12} strokeWidth={2} />
+      ) : null}
+      {problem.hasImages ? (
+        <span className='inline pl-1' title='Images'>
+          <ImageIcon size={12} strokeWidth={2} className='inline-block align-[-0.125em]' />
         </span>
-      )}
-      {problem.hasMovies && (
-        <span title='Movies'>
-          <Film size={12} strokeWidth={2} />
+      ) : null}
+      {problem.hasMovies ? (
+        <span className='inline pl-1' title='Movies'>
+          <Film size={12} strokeWidth={2} className='inline-block align-[-0.125em]' />
         </span>
-      )}
+      ) : null}
     </span>
   ) : null;
 
-  const metaPieces: ReactNode[] = [];
+  type TailPart = { key: string; node: ReactNode };
+  const tailParts: TailPart[] = [];
+  if (lockBrokenBlock) tailParts.push({ key: 'lb', node: lockBrokenBlock });
+  if (mediaTrailBlock) tailParts.push({ key: 'media', node: mediaTrailBlock });
   if (faTypeAscents)
-    metaPieces.push(
-      <span key='fa' className='text-slate-400'>
-        {faTypeAscents}
-      </span>,
-    );
+    tailParts.push({
+      key: 'fa',
+      node: <span className={cn(designContract.typography.meta, 'font-normal text-slate-500')}>{faTypeAscents}</span>,
+    });
   if (problem.rock)
-    metaPieces.push(
-      <span key='rock' className='text-slate-400 not-italic'>
-        Rock: {problem.rock}.
-      </span>,
-    );
+    tailParts.push({
+      key: 'rock',
+      node: (
+        <span className={cn(designContract.typography.meta, 'font-normal text-slate-500 not-italic')}>
+          Rock: {problem.rock}
+        </span>
+      ),
+    });
   if (problem.comment)
-    metaPieces.push(
-      <span key='c' className='text-slate-400/95 italic'>
-        {problem.comment}
-      </span>,
-    );
+    tailParts.push({
+      key: 'comment',
+      node: (
+        <span className={cn(designContract.typography.micro, 'font-normal text-slate-600/90')}>{problem.comment}</span>
+      ),
+    });
 
-  const metaBlock =
-    metaPieces.length > 0 ? (
-      <span className={cn(designContract.typography.meta, 'font-normal text-slate-400')}>
-        {metaPieces.map((node, i) => (
-          <Fragment key={i}>
-            {i > 0 ? <span className='text-slate-500/90'> · </span> : null}
-            {node}
-          </Fragment>
-        ))}
-      </span>
-    ) : null;
-
-  const tailBlocks = [lockBrokenBlock, mediaTrailBlock, metaBlock].filter(Boolean);
+  const sep = <span className='text-slate-600/70 select-none'> · </span>;
 
   return (
     <div className='min-w-0 py-1 sm:py-0.5'>
-      <p
-        className={cn(
-          designContract.typography.body,
-          'min-w-0 leading-relaxed text-pretty [overflow-wrap:anywhere] text-slate-400',
-        )}
-      >
-        {problem.danger && (
-          <AlertTriangle size={14} className='mr-1 inline-block shrink-0 text-red-400' strokeWidth={2.25} />
-        )}
+      <p className={cn(designContract.typography.body, 'min-w-0 text-[13px] leading-normal text-slate-500 sm:text-sm')}>
+        {problem.danger ? (
+          <AlertTriangle
+            size={14}
+            className='mr-1 inline-block shrink-0 align-[-0.125em] text-red-400'
+            strokeWidth={2.25}
+          />
+        ) : null}
         <span
           className={cn(
             designContract.typography.grade,
@@ -175,9 +168,8 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
         <Link
           to={`/problem/${problem.id}`}
           className={cn(
-            designContract.typography.listLink,
-            'font-medium text-slate-200 hover:text-slate-100',
-            problem.broken ? 'line-through opacity-65' : undefined,
+            'font-normal text-slate-300 underline decoration-white/[0.08] underline-offset-2 transition-colors hover:text-slate-100 hover:decoration-white/20',
+            problem.broken ? 'line-through opacity-60' : undefined,
           )}
         >
           {problem.name}
@@ -185,21 +177,20 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
         {problem.grade ? (
           <>
             {' '}
-            <span className={cn(designContract.typography.grade, 'text-slate-300')}>{problem.grade}</span>
+            <span className={cn(designContract.typography.grade, 'text-slate-400')}>{problem.grade}</span>
           </>
         ) : null}
         {problem.stars ? (
-          <span className='ml-1 inline-flex origin-left scale-90 align-middle opacity-90'>
-            <Stars numStars={problem.stars} includeStarOutlines={false} />
+          <span className='ml-1 inline-block align-[-0.15em] opacity-95'>
+            <Stars numStars={problem.stars} includeStarOutlines={false} muted />
           </span>
         ) : null}
-        {tailBlocks.length > 0 ? (
-          <span className='ml-2 inline-flex flex-wrap items-center gap-x-2 gap-y-0.5 align-middle'>
-            {tailBlocks.map((block, i) => (
-              <Fragment key={i}>{block}</Fragment>
-            ))}
-          </span>
-        ) : null}
+        {tailParts.map(({ key, node }) => (
+          <Fragment key={key}>
+            {sep}
+            {node}
+          </Fragment>
+        ))}
       </p>
     </div>
   );

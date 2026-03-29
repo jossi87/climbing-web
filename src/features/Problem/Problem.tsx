@@ -21,6 +21,7 @@ import { ProblemsOnRock } from './ProblemsOnRock';
 import { ProblemTicks } from './ProblemTicks';
 import { ProblemComments } from './ProblemComments';
 import { ProblemAscentOverview } from './ProblemAscentOverview';
+import { ProblemNeighboursRow } from './ProblemNeighboursRow';
 import { DownloadButton } from '../../shared/ui/DownloadButton';
 import { Card, PageCardBreadcrumbRow } from '../../shared/ui';
 import { ExpandableMarkdown } from '../../shared/components/ExpandableMarkdown';
@@ -34,7 +35,6 @@ import {
   Edit,
   Plus,
   Map as MapIcon,
-  ChevronLeft,
   ChevronRight,
   AlertTriangle,
 } from 'lucide-react';
@@ -236,11 +236,14 @@ export const Problem = () => {
           showLocation={false}
         />
       )}
-      <ProblemAscentOverview
-        data={data}
-        meta={{ isClimbing: meta.isClimbing, isIce: meta.isIce }}
-        showTodoUsers={optimisticTodo}
-      />
+      <div className='space-y-3 sm:space-y-3.5'>
+        <ProblemAscentOverview
+          data={data}
+          meta={{ isClimbing: meta.isClimbing, isIce: meta.isIce }}
+          showTodoUsers={optimisticTodo}
+        />
+        <ProblemNeighboursRow neighbourPrev={data.neighbourPrev} neighbourNext={data.neighbourNext} />
+      </div>
       {commentText.length > 0 && (
         <ExpandableMarkdown key={data.id} content={data.comment ?? ''} contentClassName='max-w-none' />
       )}
@@ -282,10 +285,14 @@ export const Problem = () => {
       )}
 
       <Card flush className='min-w-0 border-0 shadow-sm sm:border'>
-        <div className='relative p-4 sm:p-5'>
+        <div className={cn('relative px-4 pt-4 sm:px-5 sm:pt-5', showMapTab ? 'pb-2 sm:pb-2.5' : 'pb-4 sm:pb-5')}>
           <PageCardBreadcrumbRow
+            className='mb-2 sm:mb-2.5'
             breadcrumb={
-              <nav className='block min-w-0 text-[11px] leading-relaxed text-pretty break-words text-slate-500 sm:text-[12px] [&>*+*]:ml-1.5'>
+              <nav
+                aria-label='Breadcrumb'
+                className='block min-w-0 text-[11px] leading-relaxed break-words text-slate-500 sm:text-[12px] [&>*+*]:ml-1.5'
+              >
                 <Link
                   to='/areas'
                   className='inline align-middle tracking-tight text-slate-600 transition-colors hover:text-slate-400'
@@ -309,39 +316,10 @@ export const Problem = () => {
                 </Link>
                 <LockSymbol lockedAdmin={!!data.sectorLockedAdmin} lockedSuperadmin={!!data.sectorLockedSuperadmin} />
                 <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
-                {data.neighbourPrev && (
-                  <Link
-                    to={`/problem/${data.neighbourPrev.id}`}
-                    title={`Previous: #${data.neighbourPrev.nr ?? ''} ${data.neighbourPrev.name ?? ''} · ${data.neighbourPrev.grade ?? ''}`}
-                    aria-label={`Previous problem: number ${data.neighbourPrev.nr}, ${data.neighbourPrev.name}, grade ${data.neighbourPrev.grade}`}
-                    className={cn(
-                      'group inline-flex max-w-full min-w-0 items-center gap-x-1 align-middle tracking-tight transition-colors sm:gap-x-1.5',
-                      'text-slate-600 hover:text-slate-400',
-                    )}
-                  >
-                    <ChevronLeft size={14} strokeWidth={2} className='shrink-0 opacity-50 group-hover:opacity-80' />
-                    <span
-                      className={cn(
-                        designContract.typography.meta,
-                        'shrink-0 font-mono text-slate-600 tabular-nums group-hover:text-slate-500',
-                      )}
-                    >
-                      #{data.neighbourPrev.nr}
-                    </span>
-                    <span className='max-w-[10rem] min-w-0 truncate font-medium text-slate-500 sm:max-w-[14rem]'>
-                      {data.neighbourPrev.name}
-                    </span>
-                    <span
-                      className={cn(
-                        designContract.typography.grade,
-                        'shrink-0 text-slate-600 group-hover:text-slate-500',
-                      )}
-                    >
-                      {data.neighbourPrev.grade}
-                    </span>
-                  </Link>
-                )}
-                <span className='inline-flex max-w-full min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5 align-middle'>
+                <span
+                  className='inline-flex max-w-full min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5 align-middle'
+                  aria-current='page'
+                >
                   {hasDanger ? (
                     <span
                       className='inline-flex'
@@ -372,38 +350,6 @@ export const Problem = () => {
                   </span>
                   <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
                 </span>
-                {data.neighbourNext && (
-                  <Link
-                    to={`/problem/${data.neighbourNext.id}`}
-                    title={`Next: #${data.neighbourNext.nr ?? ''} ${data.neighbourNext.name ?? ''} · ${data.neighbourNext.grade ?? ''}`}
-                    aria-label={`Next problem: number ${data.neighbourNext.nr}, ${data.neighbourNext.name}, grade ${data.neighbourNext.grade}`}
-                    className={cn(
-                      'group inline-flex max-w-full min-w-0 items-center gap-x-1 align-middle tracking-tight transition-colors sm:gap-x-1.5',
-                      'text-slate-600 hover:text-slate-400',
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        designContract.typography.meta,
-                        'shrink-0 font-mono text-slate-600 tabular-nums group-hover:text-slate-500',
-                      )}
-                    >
-                      #{data.neighbourNext.nr}
-                    </span>
-                    <span className='max-w-[10rem] min-w-0 truncate font-medium text-slate-500 sm:max-w-[14rem]'>
-                      {data.neighbourNext.name}
-                    </span>
-                    <span
-                      className={cn(
-                        designContract.typography.grade,
-                        'shrink-0 text-slate-600 group-hover:text-slate-500',
-                      )}
-                    >
-                      {data.neighbourNext.grade}
-                    </span>
-                    <ChevronRight size={14} strokeWidth={2} className='shrink-0 opacity-50 group-hover:opacity-80' />
-                  </Link>
-                )}
               </nav>
             }
             actions={
@@ -577,25 +523,18 @@ export const Problem = () => {
                   />
                 </div>
                 {(hasApproach || hasDescent) && (
-                  <div
-                    className={cn(
-                      'border-surface-border/40 border-t px-3 py-3 sm:px-4 sm:py-4',
-                      hasApproach && hasDescent ? 'grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-5' : 'space-y-0',
-                    )}
-                  >
+                  <div className='border-surface-border/40 space-y-4 border-t p-4 sm:p-5'>
                     {hasApproach && (
                       <div className='min-w-0'>
                         <div
                           className={cn(
-                            designContract.typography.meta,
-                            'mb-1.5 font-semibold tracking-wide text-slate-500',
+                            designContract.typography.micro,
+                            'mb-2 font-semibold tracking-wide text-slate-500 uppercase',
                           )}
                         >
                           Approach
                         </div>
                         <SlopeProfile
-                          compact
-                          className='min-w-0'
                           areaName={data.areaName ?? ''}
                           sectorName={data.sectorName ?? ''}
                           slope={data.sectorApproach as Slope}
@@ -606,15 +545,13 @@ export const Problem = () => {
                       <div className='min-w-0'>
                         <div
                           className={cn(
-                            designContract.typography.meta,
-                            'mb-1.5 font-semibold tracking-wide text-slate-500',
+                            designContract.typography.micro,
+                            'mb-2 font-semibold tracking-wide text-slate-500 uppercase',
                           )}
                         >
                           Descent
                         </div>
                         <SlopeProfile
-                          compact
-                          className='min-w-0'
                           areaName={data.areaName ?? ''}
                           sectorName={data.sectorName ?? ''}
                           slope={data.sectorDescent as Slope}
