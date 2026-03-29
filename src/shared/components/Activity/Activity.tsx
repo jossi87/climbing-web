@@ -92,7 +92,7 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
               aria-expanded={isFilterOpen}
               type='button'
             >
-              <Filter size={12} className='text-slate-400' strokeWidth={2} />
+              <Filter size={12} className='text-brand' strokeWidth={2} />
               <span className={cn(designContract.typography.uiCompact, 'text-slate-200')}>
                 {normalizedLowerGradeText === 'n/a' ? 'All' : normalizedLowerGradeText}
               </span>
