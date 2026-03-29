@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, type FormEvent, type MouseEvent, type JSX } from 'react';
+import { useState, useEffect, useRef, type MouseEvent, type JSX } from 'react';
 import { getMediaFileUrl, useMediaSvg } from '../../api';
 import { Rappel } from '../../utils/svg-utils';
 import {
@@ -11,11 +11,14 @@ import {
   isArc,
 } from '../../utils/svg-helpers';
 
-import { Loading } from '../../shared/ui/StatusWidgets';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Loading } from '../../shared/ui/StatusWidgets';
+import { Card } from '../../shared/ui';
+import { useMeta } from '../../shared/components/Meta';
 import type { Success } from '../../@types/buldreinfo';
-import { RotateCcw, Save, X, Plus, Anchor, Trash2, Info, MinusCircle, ChevronDown } from 'lucide-react';
+import { RotateCcw, Save, X, Spline, Anchor, Triangle, Trash2, Info } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { designContract } from '../../design/contract';
 
 type EditableSvg = SvgType & {
   points?: ParsedEntry[];
@@ -24,7 +27,14 @@ type EditableSvg = SvgType & {
   rappelY?: number;
 };
 
+/** Same roundels as Problem / SvgEdit (`h-8 w-8`). */
+const pageActionIconBtn =
+  'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-colors disabled:pointer-events-none disabled:opacity-40';
+const pageActionIconBtnGreen = 'border-green-400/45 bg-green-500/20 text-green-300 hover:bg-green-500/28';
+const pageActionIconBtnBrand = 'border-brand/55 bg-brand text-slate-950 shadow-sm hover:border-brand hover:bg-brand/90';
+
 const MediaSvgEdit = () => {
+  const meta = useMeta();
   const navigate = useNavigate();
   const { mediaId } = useParams();
   const { outerWidth, outerHeight } = window;
@@ -76,8 +86,7 @@ const MediaSvgEdit = () => {
 
   const getMediaSvgs = () => (data.mediaSvgs = data.mediaSvgs ?? []) as EditableSvg[];
 
-  function save(event: FormEvent) {
-    event.preventDefault();
+  function handleSave() {
     newSave(modifiedData).then(() => navigate(-1));
   }
 
@@ -245,6 +254,19 @@ const MediaSvgEdit = () => {
 
   const mediaSvgs = (data.mediaSvgs = data.mediaSvgs ?? []) as EditableSvg[];
 
+  const toolBtn = cn(
+    'inline-flex items-center gap-1.5 rounded-md px-2 py-1.5 transition-colors disabled:pointer-events-none disabled:opacity-35',
+    designContract.typography.uiCompact,
+  );
+  const toolBtnOff = 'text-slate-500 hover:bg-white/[0.05] hover:text-slate-200';
+  const toolBtnReset = 'text-red-400/90 hover:bg-red-500/10 hover:text-red-200';
+
+  const fieldClass = cn(
+    'bg-surface-nav border-surface-border rounded-md border px-2 py-1.5 outline-none focus-visible:ring-2 focus-visible:ring-brand/35',
+    designContract.typography.meta,
+    'text-slate-200',
+  );
+
   let scale = 1;
   if ((data.width ?? 0) > outerWidth || (data.height ?? 0) > outerHeight) {
     scale = Math.max(
@@ -342,223 +364,253 @@ const MediaSvgEdit = () => {
   }
 
   return (
-    <div
-      className='max-w-container mx-auto space-y-4 px-4 py-6 select-none'
-      onMouseUp={cancelDragging}
-      onMouseLeave={cancelDragging}
-    >
-      <div className='bg-surface-card border-surface-border space-y-6 rounded-xl border p-6 shadow-sm'>
-        <div className='flex flex-wrap items-center justify-between gap-4'>
-          <div className='flex flex-wrap gap-2'>
-            <button
-              onClick={() => {
-                const element: EditableSvg = {
-                  t: 'PATH',
-                  id: -1,
-                  path: '',
-                  anchors: [],
-                  nr: -1,
-                  pitch: 0,
-                  hasAnchor: false,
-                  points: [],
-                };
-                mediaSvgs.push(element);
-                setData(data);
-                setActiveElementIndex(mediaSvgs.length - 1);
-                setActivePoint(0);
-                setForceUpdate((v) => v + 1);
-              }}
-              className='bg-surface-nav border-surface-border flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-[10px] font-black tracking-wider uppercase opacity-85 transition-colors hover:opacity-100'
-            >
-              <Plus size={14} /> Add descent
-            </button>
-            <button
-              onClick={() => {
-                const element: EditableSvg = {
-                  t: 'RAPPEL_BOLTED',
-                  id: -1,
-                  path: '',
-                  anchors: [],
-                  nr: -1,
-                  pitch: 0,
-                  hasAnchor: false,
-                  rappelX: (data.width ?? 0) / 2,
-                  rappelY: (data.height ?? 0) / 2,
-                };
-                mediaSvgs.push(element);
-                setData(data);
-                setActiveElementIndex(mediaSvgs.length - 1);
-                setActivePoint(0);
-                setForceUpdate((v) => v + 1);
-              }}
-              className='bg-surface-nav border-surface-border flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-[10px] font-black tracking-wider uppercase opacity-85 transition-colors hover:opacity-100'
-            >
-              <Anchor size={14} /> Rappel (Bolted)
-            </button>
-            <button
-              onClick={() => {
-                const element: EditableSvg = {
-                  t: 'RAPPEL_NOT_BOLTED',
-                  id: -1,
-                  path: '',
-                  anchors: [],
-                  nr: -1,
-                  pitch: 0,
-                  hasAnchor: false,
-                  rappelX: (data.width ?? 0) / 2,
-                  rappelY: (data.height ?? 0) / 2,
-                };
-                mediaSvgs.push(element);
-                setData(data);
-                setActiveElementIndex(mediaSvgs.length - 1);
-                setActivePoint(0);
-                setForceUpdate((v) => v + 1);
-              }}
-              className='bg-surface-nav border-surface-border flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-[10px] font-black tracking-wider uppercase opacity-85 transition-colors hover:opacity-100'
-            >
-              <Anchor size={14} /> Rappel (No Bolt)
-            </button>
-          </div>
-
-          <div className='flex items-center gap-2'>
-            <button
-              onClick={reset}
-              disabled={!mediaSvgs?.length}
-              className='flex items-center gap-1.5 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-1.5 text-[10px] font-black tracking-wider text-red-500 uppercase hover:bg-red-500/20 disabled:pointer-events-none disabled:opacity-30'
-            >
-              <RotateCcw size={14} /> Reset
-            </button>
-            <button
-              onClick={() => navigate(-1)}
-              className='bg-surface-nav border-surface-border flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-[10px] font-black tracking-wider uppercase opacity-75 hover:opacity-100'
-            >
-              <X size={14} /> Cancel
-            </button>
-            <button
-              onClick={save}
-              className='bg-brand shadow-brand/20 flex items-center gap-1.5 rounded-lg px-4 py-1.5 text-[10px] font-black tracking-wider uppercase shadow-md'
-            >
-              <Save size={14} /> Save
-            </button>
-          </div>
-        </div>
-
-        <div className='flex flex-wrap gap-2'>
-          {mediaSvgs.map((svg, index) => (
-            <div
-              key={index}
-              className={cn(
-                'group flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1 text-[10px] font-bold uppercase transition-all',
-                activeElementIndex === index
-                  ? 'bg-brand/10 border-brand text-brand'
-                  : 'bg-surface-nav border-surface-border text-slate-400 hover:text-slate-200',
-              )}
-              onClick={() => {
-                if (svg.t === 'PATH' && !mediaSvgs[index].points) {
-                  mediaSvgs[index].points = parsePath(mediaSvgs[index].path);
-                }
-                setActiveElementIndex(index);
-                setActivePoint(0);
-              }}
-            >
-              <span>
-                {svg.t} #{index}
-              </span>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  mediaSvgs.splice(index, 1);
-                  setData(data);
-                  setActiveElementIndex(-1);
-                  setForceUpdate((v) => v + 1);
-                }}
-                className='hover:text-red-500'
-              >
-                <Trash2 size={12} />
-              </button>
+    <div className='w-full min-w-0 select-none' onMouseUp={cancelDragging} onMouseLeave={cancelDragging}>
+      <title>{`Media topo · #${mediaIdNum} | ${meta.title}`}</title>
+      <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm sm:border'>
+        <div className='divide-y divide-white/6'>
+          <div className='p-3 sm:p-5'>
+            <div className='mb-4 flex min-w-0 flex-nowrap items-start gap-x-2'>
+              <span className='sr-only'>Media topo editor</span>
+              <div className='mr-auto flex min-w-0 flex-1 flex-wrap items-center gap-x-1 gap-y-1 sm:gap-x-1.5'>
+                <button
+                  type='button'
+                  title='Add descent path'
+                  onClick={() => {
+                    const element: EditableSvg = {
+                      t: 'PATH',
+                      id: -1,
+                      path: '',
+                      anchors: [],
+                      nr: -1,
+                      pitch: 0,
+                      hasAnchor: false,
+                      points: [],
+                    };
+                    mediaSvgs.push(element);
+                    setData(data);
+                    setActiveElementIndex(mediaSvgs.length - 1);
+                    setActivePoint(0);
+                    setForceUpdate((v) => v + 1);
+                  }}
+                  className={cn(toolBtn, toolBtnOff, 'border border-transparent hover:border-white/[0.08]')}
+                >
+                  <Spline size={14} strokeWidth={2} className='text-sky-400' /> Descent
+                </button>
+                <button
+                  type='button'
+                  title='Add bolted rappel'
+                  onClick={() => {
+                    const element: EditableSvg = {
+                      t: 'RAPPEL_BOLTED',
+                      id: -1,
+                      path: '',
+                      anchors: [],
+                      nr: -1,
+                      pitch: 0,
+                      hasAnchor: false,
+                      rappelX: (data.width ?? 0) / 2,
+                      rappelY: (data.height ?? 0) / 2,
+                    };
+                    mediaSvgs.push(element);
+                    setData(data);
+                    setActiveElementIndex(mediaSvgs.length - 1);
+                    setActivePoint(0);
+                    setForceUpdate((v) => v + 1);
+                  }}
+                  className={cn(toolBtn, toolBtnOff, 'border border-transparent hover:border-white/[0.08]')}
+                >
+                  <Anchor size={14} strokeWidth={2} className='text-amber-400' /> Bolted
+                </button>
+                <button
+                  type='button'
+                  title='Add trad rappel'
+                  onClick={() => {
+                    const element: EditableSvg = {
+                      t: 'RAPPEL_NOT_BOLTED',
+                      id: -1,
+                      path: '',
+                      anchors: [],
+                      nr: -1,
+                      pitch: 0,
+                      hasAnchor: false,
+                      rappelX: (data.width ?? 0) / 2,
+                      rappelY: (data.height ?? 0) / 2,
+                    };
+                    mediaSvgs.push(element);
+                    setData(data);
+                    setActiveElementIndex(mediaSvgs.length - 1);
+                    setActivePoint(0);
+                    setForceUpdate((v) => v + 1);
+                  }}
+                  className={cn(toolBtn, toolBtnOff, 'border border-transparent hover:border-white/[0.08]')}
+                >
+                  <Triangle size={14} strokeWidth={2} className='text-orange-400' /> Trad
+                </button>
+                <button
+                  type='button'
+                  title='Clear all overlays'
+                  onClick={reset}
+                  disabled={!mediaSvgs?.length}
+                  className={cn(toolBtn, toolBtnReset, 'border border-transparent hover:border-red-500/15')}
+                >
+                  <RotateCcw size={14} strokeWidth={2} /> Reset
+                </button>
+              </div>
+              <div className='flex shrink-0 flex-nowrap items-center gap-1.5 self-start pt-0.5'>
+                <button
+                  type='button'
+                  title='Save'
+                  aria-label='Save'
+                  className={cn(pageActionIconBtn, pageActionIconBtnGreen)}
+                  onClick={handleSave}
+                >
+                  <Save size={14} strokeWidth={2.25} />
+                </button>
+                <button
+                  type='button'
+                  title='Cancel'
+                  aria-label='Cancel and go back'
+                  className={cn(pageActionIconBtn, pageActionIconBtnBrand)}
+                  onClick={() => navigate(-1)}
+                >
+                  <X size={14} strokeWidth={2.5} />
+                </button>
+              </div>
             </div>
-          ))}
-        </div>
 
-        {activeElementIndex >= 0 && (
-          <div className='border-surface-border/50 border-t pt-4'>
-            <div className='flex flex-col justify-between gap-4 sm:flex-row sm:items-center'>
-              <div className='flex items-start gap-3'>
-                <Info size={16} className='mt-0.5 shrink-0 text-slate-500' />
-                <div className='text-[10px] leading-relaxed font-bold tracking-wide text-slate-400 uppercase'>
-                  {mediaSvgs[activeElementIndex].t === 'PATH' ? (
-                    <>
-                      <span>Shift + Click</span> to add point | <span>Click</span> to select | <span>Drag</span> to move
-                    </>
-                  ) : (
-                    <>
-                      <span>Click</span> to move anchor
-                    </>
+            <p className={cn(designContract.typography.meta, 'mb-3 text-slate-500')}>
+              Shift+click adds a point on the path.
+            </p>
+
+            {mediaSvgs.length > 0 && (
+              <div className='mb-3 flex min-w-0 flex-wrap gap-1.5'>
+                {mediaSvgs.map((svg, index) => (
+                  <div
+                    key={index}
+                    className={cn(
+                      'inline-flex max-w-full min-w-0 items-stretch overflow-hidden rounded-lg transition-colors',
+                      designContract.typography.uiCompact,
+                      activeElementIndex === index
+                        ? 'bg-brand/15 ring-brand/35 text-slate-100 ring-1 ring-inset'
+                        : 'bg-white/[0.04] text-slate-500 ring-1 ring-white/[0.06] ring-inset hover:bg-white/[0.07] hover:text-slate-300',
+                    )}
+                  >
+                    <button
+                      type='button'
+                      onClick={() => {
+                        if (svg.t === 'PATH' && !mediaSvgs[index].points) {
+                          mediaSvgs[index].points = parsePath(mediaSvgs[index].path);
+                        }
+                        setActiveElementIndex(index);
+                        setActivePoint(0);
+                      }}
+                      className='min-w-0 flex-1 truncate px-2.5 py-1 text-left'
+                    >
+                      {svg.t === 'PATH' ? 'Descent' : svg.t === 'RAPPEL_BOLTED' ? 'Bolted' : 'Trad'}{' '}
+                      <span className='tabular-nums opacity-70'>#{index}</span>
+                    </button>
+                    <button
+                      type='button'
+                      title='Remove layer'
+                      aria-label='Remove layer'
+                      onClick={() => {
+                        mediaSvgs.splice(index, 1);
+                        setData(data);
+                        setActiveElementIndex(-1);
+                        setForceUpdate((v) => v + 1);
+                      }}
+                      className='shrink-0 border-l border-white/[0.08] px-1.5 text-slate-500 hover:bg-red-500/15 hover:text-red-300'
+                    >
+                      <Trash2 size={12} strokeWidth={2} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {activeElementIndex >= 0 && (
+              <div className='border-t border-white/6 pt-3'>
+                <div className='flex min-w-0 flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between'>
+                  <div className='flex min-w-0 items-start gap-2'>
+                    <Info size={14} className='mt-0.5 shrink-0 text-slate-500' strokeWidth={2} />
+                    <p className={cn(designContract.typography.meta, 'min-w-0 leading-relaxed text-slate-400')}>
+                      {mediaSvgs[activeElementIndex].t === 'PATH' ? (
+                        <>
+                          <span className='text-slate-300'>Shift+click</span> add point ·{' '}
+                          <span className='text-slate-300'>Drag</span> move · Select layer above
+                        </>
+                      ) : (
+                        <>
+                          <span className='text-slate-300'>Click</span> image to place rappel
+                        </>
+                      )}
+                    </p>
+                  </div>
+                  {mediaSvgs[activeElementIndex].t === 'PATH' && activePoint !== 0 && (
+                    <div className='flex min-w-0 flex-wrap items-center gap-2'>
+                      <span className={cn(designContract.typography.label, 'shrink-0 text-slate-500')}>Segment</span>
+                      <select
+                        className={cn(fieldClass, 'min-w-0')}
+                        value={isCubicPoint(mediaSvgs[activeElementIndex].points![activePoint]) ? 'C' : 'L'}
+                        onChange={(e) => setPointType(e.target.value)}
+                      >
+                        <option value='L'>Line</option>
+                        <option value='C'>Curve</option>
+                      </select>
+                      <button
+                        type='button'
+                        title='Remove selected point'
+                        aria-label='Remove selected point'
+                        className={cn(
+                          toolBtn,
+                          'bg-surface-nav w-auto shrink-0 border border-white/10 text-slate-400 hover:border-red-500/25 hover:bg-red-500/10 hover:text-red-200',
+                        )}
+                        onClick={removeActivePoint}
+                      >
+                        <Trash2 size={14} strokeWidth={2} />
+                        <span className='whitespace-nowrap'>Remove</span>
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
-
-              {activeElementIndex >= 0 && mediaSvgs[activeElementIndex].t === 'PATH' && activePoint !== 0 && (
-                <div className='flex items-center gap-3'>
-                  <div className='relative'>
-                    <select
-                      className='bg-surface-nav border-surface-border focus:border-brand appearance-none rounded-lg border px-3 py-1.5 pr-8 text-[10px] font-black tracking-wider uppercase opacity-85 focus:outline-none'
-                      value={isCubicPoint(mediaSvgs[activeElementIndex].points![activePoint]) ? 'C' : 'L'}
-                      onChange={(e) => setPointType(e.target.value)}
-                    >
-                      <option value='L'>Line to</option>
-                      <option value='C'>Curve to</option>
-                    </select>
-                    <ChevronDown
-                      size={12}
-                      className='pointer-events-none absolute top-1/2 right-2 -translate-y-1/2 text-slate-500'
-                    />
-                  </div>
-                  <button
-                    onClick={removeActivePoint}
-                    className='flex items-center gap-1.5 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-1.5 text-[10px] font-black tracking-wider text-red-500 uppercase hover:bg-red-500/20'
-                  >
-                    <MinusCircle size={14} /> Remove point
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div className='border-surface-border relative cursor-crosshair overflow-hidden rounded-xl border bg-black shadow-2xl'>
-        <svg
-          viewBox={'0 0 ' + data.width + ' ' + data.height}
-          onClick={handleOnClick}
-          onMouseMove={handleMouseMove}
-          className='block h-auto w-full'
-        >
-          <image
-            ref={imageRef}
-            xlinkHref={getMediaFileUrl(data.id ?? 0, data.versionStamp ?? 0, false)}
-            width='100%'
-            height='100%'
-          />
-          {activeElementIndex >= 0 && mediaSvgs[activeElementIndex] && (
-            <path
-              className='pointer-events-none'
-              style={{ fill: 'none', stroke: '#FF0000' }}
-              d={mediaSvgs[activeElementIndex].path}
-              strokeWidth={0.002 * (data.width ?? 0)}
-            />
-          )}
-          {circles}
-          {activeRappel}
-          {mediaSvgs &&
-            parseReadOnlySvgs(
-              mediaSvgs.filter((_, index) => index !== activeElementIndex) as SvgType[],
-              data.width ?? 0,
-              data.height ?? 0,
-              scale,
             )}
-        </svg>
-      </div>
+          </div>
+
+          <div className='border-surface-border relative w-full min-w-0 cursor-crosshair overflow-hidden bg-black'>
+            <svg
+              viewBox={'0 0 ' + data.width + ' ' + data.height}
+              onClick={handleOnClick}
+              onMouseMove={handleMouseMove}
+              className='block h-auto w-full'
+            >
+              <image
+                ref={imageRef}
+                xlinkHref={getMediaFileUrl(data.id ?? 0, data.versionStamp ?? 0, false)}
+                width='100%'
+                height='100%'
+              />
+              {activeElementIndex >= 0 && mediaSvgs[activeElementIndex] && (
+                <path
+                  className='pointer-events-none'
+                  style={{ fill: 'none', stroke: '#FF0000' }}
+                  d={mediaSvgs[activeElementIndex].path}
+                  strokeWidth={0.002 * (data.width ?? 0)}
+                />
+              )}
+              {circles}
+              {activeRappel}
+              {mediaSvgs &&
+                parseReadOnlySvgs(
+                  mediaSvgs.filter((_, index) => index !== activeElementIndex) as SvgType[],
+                  data.width ?? 0,
+                  data.height ?? 0,
+                  scale,
+                )}
+            </svg>
+          </div>
+        </div>
+      </Card>
     </div>
   );
 };

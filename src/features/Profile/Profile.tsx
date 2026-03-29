@@ -50,12 +50,10 @@ const Profile = () => {
               ))}
             </div>
           </div>
-          <div className='border-surface-border border-t'>
-            <div className={cn(designContract.controls.tabBarRow, 'gap-px')}>
-              {Array.from({ length: 5 }).map((_, idx) => (
-                <div key={idx} className='bg-surface-nav/40 h-11 min-w-0 flex-1 animate-pulse' />
-              ))}
-            </div>
+          <div className={cn(designContract.controls.tabBarRow, 'gap-px')}>
+            {Array.from({ length: 5 }).map((_, idx) => (
+              <div key={idx} className='bg-surface-nav/40 h-11 min-w-0 flex-1 animate-pulse' />
+            ))}
           </div>
           <div className='p-4 sm:p-6'>
             <Loading inline />
@@ -134,26 +132,24 @@ const Profile = () => {
           </div>
         </div>
 
-        <div className='border-surface-border border-t'>
-          <div className={designContract.controls.tabBarRow} role='tablist' aria-label='Profile sections'>
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = activePage === item.id;
-              return (
-                <button
-                  key={item.id}
-                  type='button'
-                  role='tab'
-                  aria-selected={isActive}
-                  onClick={() => onPageChanged(item.id)}
-                  className={tabBarButtonClassName(isActive)}
-                >
-                  <Icon size={12} strokeWidth={isActive ? 2.3 : 2} className={tabBarIconClassName(isActive)} />
-                  <span className='block min-w-0 truncate leading-none'>{item.label}</span>
-                </button>
-              );
-            })}
-          </div>
+        <div className={designContract.controls.tabBarRow} role='tablist' aria-label='Profile sections'>
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activePage === item.id;
+            return (
+              <button
+                key={item.id}
+                type='button'
+                role='tab'
+                aria-selected={isActive}
+                onClick={() => onPageChanged(item.id)}
+                className={tabBarButtonClassName(isActive)}
+              >
+                <Icon size={12} strokeWidth={isActive ? 2.3 : 2} className={tabBarIconClassName(isActive)} />
+                <span className='block min-w-0 truncate leading-none'>{item.label}</span>
+              </button>
+            );
+          })}
         </div>
 
         <div

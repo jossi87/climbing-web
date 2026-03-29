@@ -13,7 +13,6 @@ import { useMeta } from '../../shared/components/Meta/context';
 import { useProblem } from '../../api';
 import type { components } from '../../@types/buldreinfo/swagger';
 import type { Slope } from '../../@types/buldreinfo';
-import { ClickableAvatar } from '../../shared/ui/Avatar/Avatar';
 import TickModal from '../../shared/components/TickModal/TickModal';
 import CommentModal from '../../shared/components/CommentModal/CommentModal';
 import { SlopeProfile } from '../../shared/components/SlopeProfile';
@@ -21,8 +20,9 @@ import Linkify from 'linkify-react';
 import { ProblemsOnRock } from './ProblemsOnRock';
 import { ProblemTicks } from './ProblemTicks';
 import { ProblemComments } from './ProblemComments';
+import { ProblemAscentOverview } from './ProblemAscentOverview';
 import { DownloadButton } from '../../shared/ui/DownloadButton';
-import { Card } from '../../shared/ui';
+import { Card, PageCardBreadcrumbRow } from '../../shared/ui';
 import { ExpandableMarkdown } from '../../shared/components/ExpandableMarkdown';
 import { tabBarButtonClassName, tabBarIconClassName } from '../../design/tabBar';
 import {
@@ -34,15 +34,28 @@ import {
   Edit,
   Plus,
   Map as MapIcon,
-  Calendar,
+  ChevronLeft,
   ChevronRight,
   AlertTriangle,
-  Tag,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 
 type MediaItem = components['schemas']['Media'];
+type ProblemComment = components['schemas']['ProblemComment'];
+
+/** Latest HSE-relevant comment wins: only comments with danger or resolved (safe); plain comments ignored. */
+function hseShowsDangerFromComments(comments: ProblemComment[] | undefined): boolean {
+  const marked = (comments ?? []).filter((c) => c.danger === true || c.resolved === true);
+  if (marked.length === 0) return false;
+  const byNewest = [...marked].sort((a, b) => {
+    const da = a.date ? Date.parse(a.date) : NaN;
+    const db = b.date ? Date.parse(b.date) : NaN;
+    if (Number.isFinite(da) && Number.isFinite(db) && da !== db) return db - da;
+    return (b.id ?? 0) - (a.id ?? 0);
+  });
+  return byNewest[0]?.danger === true;
+}
 
 const useIds = () => {
   const { problemId } = useParams();
@@ -150,19 +163,95 @@ export const Problem = () => {
 
   const isTicked = data.ticks?.some((t) => t.writable);
   const userTick = data.ticks?.find((t) => t.writable);
+  const hasDanger = hseShowsDangerFromComments(data.comments);
 
   const hasTicks = data.ticks && data.ticks.length > 0;
   const hasComments = data.comments && data.comments.length > 0;
+  const hasPitches = (data.sections?.length ?? 0) > 0;
+  const hasTriviaBlock = !!(data.trivia || data.triviaMedia?.length);
+  const hasRockBlock = !!data.rock;
+  const hasMetaCard = hasTriviaBlock || hasRockBlock;
 
   const hasApproach = (data.sectorApproach?.coordinates?.length ?? 0) > 1;
   const hasDescent = (data.sectorDescent?.coordinates?.length ?? 0) > 1;
+  const hasSectorOutline = (data.sectorOutline?.length ?? 0) > 0;
+  const showMapTab = markers.length > 0 || hasApproach || hasDescent || (hasSectorOutline && !data.coordinates);
+  const showOverviewContent = !showMapTab || activeTab === 'overview';
 
-  const mainDescription = (data.comment || data.faAid?.description || '').trim();
+  const overviewChipsRow = (
+    <div className='flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1.5 text-[11px] leading-snug [overflow-wrap:anywhere] sm:gap-x-2 sm:gap-y-2 sm:text-[12px]'>
+      <ConditionLabels
+        lat={conditionLat > 0 ? conditionLat : undefined}
+        lng={conditionLng > 0 ? conditionLng : undefined}
+        label={data.name ?? ''}
+        wallDirectionCalculated={data.sectorWallDirectionCalculated}
+        wallDirectionManual={data.sectorWallDirectionManual}
+        sunFromHour={data.sectorSunFromHour ?? data.areaSunFromHour ?? 0}
+        sunToHour={data.sectorSunToHour ?? data.areaSunToHour ?? 0}
+        pageViews={data.pageViews}
+      />
+      <DownloadButton href={`/problem/pdf?id=${data.id}`}>
+        {meta.isBouldering ? 'boulder.pdf' : 'route.pdf'}
+      </DownloadButton>
+      <DownloadButton href={`/sectors/pdf?id=${data.sectorId}`}>sector.pdf</DownloadButton>
+      <DownloadButton href={`/areas/pdf?id=${data.areaId}`}>area.pdf</DownloadButton>
+      {data.sectorParking && (
+        <a
+          href={`https://www.google.com/maps/search/?api=1&query=${data.sectorParking.latitude},${data.sectorParking.longitude}`}
+          target='_blank'
+          rel='noreferrer'
+          title='Parking in Google Maps'
+          className={designContract.surfaces.metaChipInteractive}
+        >
+          <MapIcon size={11} className='shrink-0 text-slate-500' strokeWidth={2.25} />
+          Parking
+        </a>
+      )}
+      {data.coordinates && (
+        <a
+          href={`https://www.google.com/maps/search/?api=1&query=${data.coordinates.latitude},${data.coordinates.longitude}`}
+          target='_blank'
+          rel='noreferrer'
+          title={meta.isBouldering ? 'Boulder in Google Maps' : 'Route in Google Maps'}
+          className={designContract.surfaces.metaChipInteractive}
+        >
+          <MapIcon size={11} className='shrink-0 text-slate-500' strokeWidth={2.25} />{' '}
+          {meta.isBouldering ? 'Boulder' : 'Route'}
+        </a>
+      )}
+      <ExternalLinkLabels externalLinks={data.externalLinks} />
+    </div>
+  );
+
+  const commentText = (data.comment ?? '').trim();
+  const overviewPanel = (
+    <div className='space-y-4 p-4 sm:p-5'>
+      {(data.media?.length ?? 0) > 0 && (
+        <Media
+          pitches={data.sections}
+          media={data.media || []}
+          orderableMedia={orderableMedia}
+          carouselMedia={carouselMedia}
+          optProblemId={data.id ?? 0}
+          showLocation={false}
+        />
+      )}
+      <ProblemAscentOverview
+        data={data}
+        meta={{ isClimbing: meta.isClimbing, isIce: meta.isIce }}
+        showTodoUsers={optimisticTodo}
+      />
+      {commentText.length > 0 && (
+        <ExpandableMarkdown key={data.id} content={data.comment ?? ''} contentClassName='max-w-none' />
+      )}
+      {overviewChipsRow}
+    </div>
+  );
 
   return (
     <div className='w-full min-w-0 space-y-4 sm:space-y-6'>
       <title>{`${data.name} · ${data.grade} · ${data.areaName} / ${data.sectorName} | ${meta?.title}`}</title>
-      <meta name='description' content={data.comment} />
+      <meta name='description' content={data.comment || data.faAid?.description} />
 
       {showTickModal && (
         <TickModal
@@ -192,104 +281,203 @@ export const Problem = () => {
         />
       )}
 
-      <Card flush className='min-w-0 border-0 sm:border'>
+      <Card flush className='min-w-0 border-0 shadow-sm sm:border'>
         <div className='relative p-4 sm:p-5'>
-          {meta.isAuthenticated && (
-            <div className='absolute top-4 right-4 z-10 inline-flex items-center gap-1.5 sm:top-5 sm:right-5'>
-              {!isTicked && (
-                <button
-                  type='button'
-                  title='To-do'
-                  onClick={handleToggleTodo}
-                  disabled={isPending}
-                  className={cn(
-                    'inline-flex h-8 w-8 items-center justify-center rounded-full border transition-colors',
-                    optimisticTodo
-                      ? 'border-blue-400/50 bg-blue-500/22 text-blue-200 hover:bg-blue-500/32'
-                      : 'border-white/12 bg-white/[0.06] text-slate-300 hover:border-white/18 hover:bg-white/[0.1]',
-                  )}
+          <PageCardBreadcrumbRow
+            breadcrumb={
+              <nav className='block min-w-0 text-[11px] leading-relaxed text-pretty break-words text-slate-500 sm:text-[12px] [&>*+*]:ml-1.5'>
+                <Link
+                  to='/areas'
+                  className='inline align-middle tracking-tight text-slate-600 transition-colors hover:text-slate-400'
                 >
-                  <Bookmark size={12} fill={optimisticTodo ? 'currentColor' : 'none'} strokeWidth={2.25} />
-                </button>
-              )}
-              <button
-                type='button'
-                title={isTicked ? 'Edit tick' : 'Tick'}
-                onClick={() => setShowTickModal(true)}
-                className={cn(
-                  'inline-flex h-8 w-8 items-center justify-center rounded-full border transition-colors',
-                  isTicked
-                    ? 'border-green-400/45 bg-green-500/20 text-green-300 hover:bg-green-500/28'
-                    : 'border-white/12 bg-white/[0.06] text-slate-300 hover:border-white/18 hover:bg-white/[0.1]',
-                )}
-              >
-                <Check size={12} strokeWidth={2.5} />
-              </button>
-              <button
-                type='button'
-                title='Comment'
-                onClick={() => setShowCommentModal({ id: -1, danger: false, resolved: false })}
-                className='inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/12 bg-white/[0.06] text-slate-300 transition-colors hover:border-white/18 hover:bg-white/[0.1]'
-              >
-                <MessageSquare size={12} strokeWidth={2.25} />
-              </button>
-              {meta.isAdmin && (
-                <button
-                  type='button'
-                  title={showHiddenMedia ? 'Showing hidden media' : 'Show hidden media'}
-                  onClick={() => setShowHiddenMedia(!showHiddenMedia)}
-                  className={cn(
-                    'inline-flex h-8 w-8 items-center justify-center rounded-full border transition-colors',
-                    showHiddenMedia
-                      ? 'border-sky-400/45 bg-sky-500/20 text-sky-200 hover:bg-sky-500/28'
-                      : 'border-white/12 bg-white/[0.06] text-slate-300 hover:border-white/18 hover:bg-white/[0.1]',
-                  )}
+                  Areas
+                </Link>
+                <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
+                <Link
+                  to={`/area/${data.areaId}`}
+                  className='inline min-w-0 align-middle tracking-tight text-slate-600 transition-colors hover:text-slate-400'
                 >
-                  <Eye size={12} strokeWidth={2.25} />
-                </button>
-              )}
-              <Link
-                to={meta.isAdmin ? `/problem/edit/${data.sectorId}/${data.id}` : `/problem/edit/media/${data.id}`}
-                title={meta.isAdmin ? 'Edit problem' : 'Add media'}
-                aria-label={meta.isAdmin ? 'Edit problem' : 'Add media'}
-                className={cn(
-                  'inline-flex h-8 w-8 items-center justify-center rounded-full border transition-colors',
-                  meta.isAdmin
-                    ? 'border-amber-300/45 bg-amber-400/18 text-amber-100 hover:bg-amber-400/28'
-                    : 'border-green-400/40 bg-green-500/20 text-green-300 hover:bg-green-500/30 hover:text-green-200',
+                  {data.areaName}
+                </Link>
+                <LockSymbol lockedAdmin={!!data.areaLockedAdmin} lockedSuperadmin={!!data.areaLockedSuperadmin} />
+                <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
+                <Link
+                  to={`/sector/${data.sectorId}`}
+                  className='inline min-w-0 align-middle tracking-tight text-slate-600 transition-colors hover:text-slate-400'
+                >
+                  {data.sectorName}
+                </Link>
+                <LockSymbol lockedAdmin={!!data.sectorLockedAdmin} lockedSuperadmin={!!data.sectorLockedSuperadmin} />
+                <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
+                {data.neighbourPrev && (
+                  <Link
+                    to={`/problem/${data.neighbourPrev.id}`}
+                    title={`Previous: #${data.neighbourPrev.nr ?? ''} ${data.neighbourPrev.name ?? ''} · ${data.neighbourPrev.grade ?? ''}`}
+                    aria-label={`Previous problem: number ${data.neighbourPrev.nr}, ${data.neighbourPrev.name}, grade ${data.neighbourPrev.grade}`}
+                    className={cn(
+                      'group inline-flex max-w-full min-w-0 items-center gap-x-1 align-middle tracking-tight transition-colors sm:gap-x-1.5',
+                      'text-slate-600 hover:text-slate-400',
+                    )}
+                  >
+                    <ChevronLeft size={14} strokeWidth={2} className='shrink-0 opacity-50 group-hover:opacity-80' />
+                    <span
+                      className={cn(
+                        designContract.typography.meta,
+                        'shrink-0 font-mono text-slate-600 tabular-nums group-hover:text-slate-500',
+                      )}
+                    >
+                      #{data.neighbourPrev.nr}
+                    </span>
+                    <span className='max-w-[10rem] min-w-0 truncate font-medium text-slate-500 sm:max-w-[14rem]'>
+                      {data.neighbourPrev.name}
+                    </span>
+                    <span
+                      className={cn(
+                        designContract.typography.grade,
+                        'shrink-0 text-slate-600 group-hover:text-slate-500',
+                      )}
+                    >
+                      {data.neighbourPrev.grade}
+                    </span>
+                  </Link>
                 )}
-              >
-                {meta.isAdmin ? <Edit size={12} /> : <Plus size={12} />}
-              </Link>
-            </div>
-          )}
-
-          <nav className='mb-4 flex flex-wrap items-center gap-1.5 text-[11px] text-slate-500 sm:text-[12px]'>
-            <Link to='/areas' className='transition-colors hover:text-slate-300'>
-              Areas
-            </Link>
-            <ChevronRight size={12} className='shrink-0 opacity-30' />
-            <Link to={`/area/${data.areaId}`} className='transition-colors hover:text-slate-300'>
-              {data.areaName}
-            </Link>
-            <LockSymbol lockedAdmin={!!data.areaLockedAdmin} lockedSuperadmin={!!data.areaLockedSuperadmin} />
-            <ChevronRight size={12} className='shrink-0 opacity-30' />
-            <Link to={`/sector/${data.sectorId}`} className='transition-colors hover:text-slate-300'>
-              {data.sectorName}
-            </Link>
-            <LockSymbol lockedAdmin={!!data.sectorLockedAdmin} lockedSuperadmin={!!data.sectorLockedSuperadmin} />
-            <ChevronRight size={12} className='shrink-0 opacity-30' />
-            <span className='flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-slate-400'>
-              <span className={cn(designContract.typography.meta, 'font-mono text-slate-500 tabular-nums')}>
-                #{data.nr}
-              </span>
-              <span className='text-slate-600'>·</span>
-              <span className='font-medium text-slate-300'>{data.name}</span>
-              <span className='text-slate-600'>·</span>
-              <span className={designContract.typography.grade}>{data.grade}</span>
-              <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
-            </span>
-          </nav>
+                <span className='inline-flex max-w-full min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5 align-middle'>
+                  {hasDanger ? (
+                    <span
+                      className='inline-flex'
+                      role='img'
+                      aria-label='Danger reported for this route'
+                      title='Danger reported for this route'
+                    >
+                      <AlertTriangle
+                        size={14}
+                        className='inline-block shrink-0 text-red-400'
+                        strokeWidth={2.25}
+                        aria-hidden
+                      />
+                    </span>
+                  ) : null}
+                  <span
+                    className={cn(
+                      designContract.typography.meta,
+                      'font-mono tabular-nums',
+                      isTicked ? 'text-emerald-400' : optimisticTodo ? 'text-blue-300' : 'text-slate-300',
+                    )}
+                  >
+                    #{data.nr}
+                  </span>
+                  <span className='min-w-0 font-semibold tracking-tight text-slate-50'>{data.name}</span>
+                  <span className={cn(designContract.typography.grade, 'shrink-0 font-medium text-slate-200')}>
+                    {data.grade}
+                  </span>
+                  <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
+                </span>
+                {data.neighbourNext && (
+                  <Link
+                    to={`/problem/${data.neighbourNext.id}`}
+                    title={`Next: #${data.neighbourNext.nr ?? ''} ${data.neighbourNext.name ?? ''} · ${data.neighbourNext.grade ?? ''}`}
+                    aria-label={`Next problem: number ${data.neighbourNext.nr}, ${data.neighbourNext.name}, grade ${data.neighbourNext.grade}`}
+                    className={cn(
+                      'group inline-flex max-w-full min-w-0 items-center gap-x-1 align-middle tracking-tight transition-colors sm:gap-x-1.5',
+                      'text-slate-600 hover:text-slate-400',
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        designContract.typography.meta,
+                        'shrink-0 font-mono text-slate-600 tabular-nums group-hover:text-slate-500',
+                      )}
+                    >
+                      #{data.neighbourNext.nr}
+                    </span>
+                    <span className='max-w-[10rem] min-w-0 truncate font-medium text-slate-500 sm:max-w-[14rem]'>
+                      {data.neighbourNext.name}
+                    </span>
+                    <span
+                      className={cn(
+                        designContract.typography.grade,
+                        'shrink-0 text-slate-600 group-hover:text-slate-500',
+                      )}
+                    >
+                      {data.neighbourNext.grade}
+                    </span>
+                    <ChevronRight size={14} strokeWidth={2} className='shrink-0 opacity-50 group-hover:opacity-80' />
+                  </Link>
+                )}
+              </nav>
+            }
+            actions={
+              meta.isAuthenticated ? (
+                <>
+                  {!isTicked && (
+                    <button
+                      type='button'
+                      title='Todo'
+                      onClick={handleToggleTodo}
+                      disabled={isPending}
+                      className={cn(
+                        'inline-flex h-7 w-7 items-center justify-center rounded-full border transition-colors sm:h-8 sm:w-8',
+                        optimisticTodo
+                          ? 'border-blue-400/50 bg-blue-500/22 text-blue-200 hover:bg-blue-500/32'
+                          : 'border-white/12 bg-white/[0.06] text-slate-300 hover:border-white/18 hover:bg-white/[0.1]',
+                      )}
+                    >
+                      <Bookmark size={12} fill={optimisticTodo ? 'currentColor' : 'none'} strokeWidth={2.25} />
+                    </button>
+                  )}
+                  <button
+                    type='button'
+                    title={isTicked ? 'Edit tick' : 'Tick'}
+                    onClick={() => setShowTickModal(true)}
+                    className={cn(
+                      'inline-flex h-7 w-7 items-center justify-center rounded-full border transition-colors sm:h-8 sm:w-8',
+                      isTicked
+                        ? 'border-green-400/45 bg-green-500/20 text-green-300 hover:bg-green-500/28'
+                        : 'border-white/12 bg-white/[0.06] text-slate-300 hover:border-white/18 hover:bg-white/[0.1]',
+                    )}
+                  >
+                    <Check size={12} strokeWidth={2.5} />
+                  </button>
+                  <button
+                    type='button'
+                    title='Comment'
+                    onClick={() => setShowCommentModal({ id: -1, danger: false, resolved: false })}
+                    className='inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/12 bg-white/[0.06] text-slate-300 transition-colors hover:border-white/18 hover:bg-white/[0.1] sm:h-8 sm:w-8'
+                  >
+                    <MessageSquare size={12} strokeWidth={2.25} />
+                  </button>
+                  {meta.isAdmin && (
+                    <button
+                      type='button'
+                      title={showHiddenMedia ? 'Showing hidden media' : 'Show hidden media'}
+                      onClick={() => setShowHiddenMedia(!showHiddenMedia)}
+                      className={cn(
+                        'inline-flex h-7 w-7 items-center justify-center rounded-full border transition-colors sm:h-8 sm:w-8',
+                        showHiddenMedia
+                          ? 'border-sky-400/45 bg-sky-500/20 text-sky-200 hover:bg-sky-500/28'
+                          : 'border-white/12 bg-white/[0.06] text-slate-300 hover:border-white/18 hover:bg-white/[0.1]',
+                      )}
+                    >
+                      <Eye size={12} strokeWidth={2.25} />
+                    </button>
+                  )}
+                  <Link
+                    to={meta.isAdmin ? `/problem/edit/${data.sectorId}/${data.id}` : `/problem/edit/media/${data.id}`}
+                    title={meta.isAdmin ? 'Edit problem' : 'Add media'}
+                    aria-label={meta.isAdmin ? 'Edit problem' : 'Add media'}
+                    className={cn(
+                      'inline-flex h-7 w-7 items-center justify-center rounded-full border transition-colors sm:h-8 sm:w-8',
+                      meta.isAdmin
+                        ? 'border-amber-300/45 bg-amber-400/18 text-amber-100 hover:bg-amber-400/28'
+                        : 'border-green-400/40 bg-green-500/20 text-green-300 hover:bg-green-500/30 hover:text-green-200',
+                    )}
+                  >
+                    {meta.isAdmin ? <Edit size={12} /> : <Plus size={12} />}
+                  </Link>
+                </>
+              ) : null
+            }
+          />
 
           {data.broken ||
           data.areaAccessClosed ||
@@ -321,67 +509,49 @@ export const Problem = () => {
             </div>
           ) : null}
         </div>
-      </Card>
 
-      <Card flush className='min-w-0 overflow-hidden border-0 sm:border'>
-        {markers.length > 0 ? (
+        {showMapTab ? (
           <>
-            <div className='border-surface-border border-t'>
-              <div
-                className={designContract.controls.tabBarRow}
-                style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }}
-                role='tablist'
-                aria-label='Overview or map'
+            <div
+              className={designContract.controls.tabBarRow}
+              style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }}
+              role='tablist'
+              aria-label='Problem sections'
+            >
+              <button
+                type='button'
+                role='tab'
+                aria-selected={activeTab === 'overview'}
+                onClick={() => setActiveTab('overview')}
+                className={tabBarButtonClassName(activeTab === 'overview')}
               >
-                <button
-                  type='button'
-                  role='tab'
-                  aria-selected={activeTab === 'overview'}
-                  onClick={() => setActiveTab('overview')}
-                  className={tabBarButtonClassName(activeTab === 'overview')}
-                >
-                  <LayoutDashboard
-                    size={12}
-                    strokeWidth={activeTab === 'overview' ? 2.3 : 2}
-                    className={tabBarIconClassName(activeTab === 'overview')}
-                  />
-                  <span className='block min-w-0 truncate leading-none'>Overview</span>
-                </button>
-                <button
-                  type='button'
-                  role='tab'
-                  aria-selected={activeTab === 'map'}
-                  onClick={() => setActiveTab('map')}
-                  className={tabBarButtonClassName(activeTab === 'map')}
-                >
-                  <MapIcon
-                    size={12}
-                    strokeWidth={activeTab === 'map' ? 2.3 : 2}
-                    className={tabBarIconClassName(activeTab === 'map')}
-                  />
-                  <span className='block min-w-0 truncate leading-none'>Map</span>
-                </button>
-              </div>
+                <LayoutDashboard
+                  size={12}
+                  strokeWidth={activeTab === 'overview' ? 2.3 : 2}
+                  className={tabBarIconClassName(activeTab === 'overview')}
+                />
+                <span className='block min-w-0 truncate leading-none'>Overview</span>
+              </button>
+              <button
+                type='button'
+                role='tab'
+                aria-selected={activeTab === 'map'}
+                onClick={() => setActiveTab('map')}
+                className={tabBarButtonClassName(activeTab === 'map')}
+              >
+                <MapIcon
+                  size={12}
+                  strokeWidth={activeTab === 'map' ? 2.3 : 2}
+                  className={tabBarIconClassName(activeTab === 'map')}
+                />
+                <span className='block min-w-0 truncate leading-none'>Map</span>
+              </button>
             </div>
-            <div className='border-surface-border/40 border-t p-1 sm:p-2'>
-              {activeTab === 'overview' ? (
-                <div className='space-y-4 p-4 sm:p-5'>
-                  {(data.media?.length ?? 0) > 0 && (
-                    <Media
-                      pitches={data.sections}
-                      media={data.media || []}
-                      orderableMedia={orderableMedia}
-                      carouselMedia={carouselMedia}
-                      optProblemId={data.id ?? 0}
-                      showLocation={false}
-                    />
-                  )}
-                  {mainDescription.length > 0 && (
-                    <ExpandableMarkdown key={data.id} content={data.comment || data.faAid?.description || ''} />
-                  )}
-                </div>
-              ) : (
-                <div className='relative z-0 h-[40vh] min-h-[220px] w-full overflow-hidden rounded-lg'>
+            {activeTab === 'overview' ? (
+              overviewPanel
+            ) : (
+              <>
+                <div className='relative z-0 -mx-px h-[35vh] min-h-[220px] w-[calc(100%+2px)] overflow-hidden sm:mx-0 sm:h-[50vh] sm:w-full'>
                   <Leaflet
                     key={'map-' + data.id}
                     autoZoom
@@ -401,347 +571,197 @@ export const Problem = () => {
                     slopes={slopes}
                     defaultCenter={{ lat: conditionLat, lng: conditionLng }}
                     defaultZoom={16}
-                    showSatelliteImage
+                    showSatelliteImage={meta.isBouldering}
                     clusterMarkers={false}
                     flyToId={null}
                   />
                 </div>
-              )}
-            </div>
-          </>
-        ) : (
-          <div className='space-y-4 p-4 sm:p-5'>
-            {(data.media?.length ?? 0) > 0 && (
-              <Media
-                pitches={data.sections}
-                media={data.media || []}
-                orderableMedia={orderableMedia}
-                carouselMedia={carouselMedia}
-                optProblemId={data.id ?? 0}
-                showLocation={false}
-              />
-            )}
-            {mainDescription.length > 0 && (
-              <ExpandableMarkdown key={data.id} content={data.comment || data.faAid?.description || ''} />
-            )}
-          </div>
-        )}
-      </Card>
-
-      <Card flush className='min-w-0 overflow-hidden border-0 sm:border'>
-        <div className='grid grid-cols-1 gap-x-6 gap-y-5 p-4 sm:p-5 lg:grid-cols-[min(11rem,30%)_1fr] lg:gap-x-8 lg:gap-y-6'>
-          {(data.neighbourPrev || data.neighbourNext) && (
-            <>
-              <div className={cn('pt-1', designContract.typography.label)}>Neighbours</div>
-              <div className='flex flex-wrap gap-2'>
-                {[data.neighbourPrev, data.neighbourNext].filter(Boolean).map((n) => (
-                  <Link
-                    key={n!.id}
-                    to={`/problem/${n!.id}`}
-                    className={cn(designContract.surfaces.inlineChipInteractive, 'opacity-90 hover:opacity-100')}
-                  >
-                    <span className={cn(designContract.typography.meta, 'font-mono text-slate-500 tabular-nums')}>
-                      #{n!.nr}
-                    </span>
-                    <span className={cn(designContract.typography.listLink, designContract.typography.listEmphasis)}>
-                      {n!.name}
-                    </span>
-                    <span className={designContract.typography.grade}>{n!.grade}</span>
-                  </Link>
-                ))}
-              </div>
-            </>
-          )}
-
-          <div className={cn('pt-1', designContract.typography.label)}>
-            {data.faAid ? 'First Free Ascent' : 'First Ascent'}
-          </div>
-          <div className='space-y-4'>
-            <div className='flex flex-wrap gap-2'>
-              <span className={designContract.surfaces.inlineChip}>
-                <span className='font-medium text-slate-400'>Grade:</span>{' '}
-                <span className={cn(designContract.typography.grade, 'text-slate-200')}>{data.originalGrade}</span>
-              </span>
-              {meta.isClimbing && data.t?.subType && (
-                <span className={cn(designContract.surfaces.inlineChip, 'gap-1.5')}>
-                  <Tag size={12} className='shrink-0 text-slate-500' />
-                  <span className='font-medium'>{data.t.subType}</span>
-                </span>
-              )}
-              {(data.faDateHr || data.faAid?.dateHr) && (
-                <span className={cn(designContract.surfaces.inlineChip, 'gap-1.5')}>
-                  <Calendar size={12} className='shrink-0 text-slate-500' />
-                  <span>{data.faDateHr || data.faAid?.dateHr}</span>
-                </span>
-              )}
-              {(data.fa || data.faAid?.users)?.map((u) => (
-                <Link
-                  key={u.id}
-                  to={`/user/${u.id}`}
-                  className={cn(designContract.surfaces.inlineChipInteractive, 'gap-2 font-semibold')}
-                >
-                  <ClickableAvatar
-                    name={u.name}
-                    mediaId={u.mediaId}
-                    mediaVersionStamp={u.mediaVersionStamp}
-                    size='mini'
-                  />{' '}
-                  {u.name}
-                </Link>
-              ))}
-            </div>
-            {meta.isIce && (
-              <div className='flex flex-wrap gap-2'>
-                <span className={designContract.surfaces.inlineChip}>
-                  <span className='font-medium text-slate-400'>Alt:</span> {data.startingAltitude}
-                </span>
-                <span className={designContract.surfaces.inlineChip}>
-                  <span className='font-medium text-slate-400'>Aspect:</span> {data.aspect}
-                </span>
-                <span className={designContract.surfaces.inlineChip}>
-                  <span className='font-medium text-slate-400'>Len:</span> {data.routeLength}
-                </span>
-                <span className={designContract.surfaces.inlineChip}>
-                  <span className='font-medium text-slate-400'>Descent:</span> {data.descent}
-                </span>
-              </div>
-            )}
-          </div>
-
-          {(data.trivia || data.triviaMedia?.length) && (
-            <>
-              <div className={cn('pt-1', designContract.typography.label)}>Trivia</div>
-              <div className='space-y-4'>
-                {data.trivia && (
-                  <div className='bg-surface-nav/20 border-surface-border/50 rounded-xl border p-4 text-slate-400 italic'>
-                    <ExpandableMarkdown content={data.trivia} className='italic' />
-                  </div>
-                )}
-                {data.triviaMedia && (
-                  <Media
-                    pitches={data.sections}
-                    media={data.triviaMedia}
-                    orderableMedia={orderableMedia}
-                    carouselMedia={carouselMedia}
-                    optProblemId={null}
-                    showLocation={false}
-                  />
-                )}
-              </div>
-            </>
-          )}
-
-          {data.rock && (
-            <>
-              <div className={cn('pt-1', designContract.typography.label)}>Rock «{data.rock}»</div>
-              <div>
-                <ProblemsOnRock sectorId={data.sectorId!} problemId={+problemId} rock={data.rock} />
-              </div>
-            </>
-          )}
-
-          {data.sections && (
-            <>
-              <div className={cn('pt-1', designContract.typography.label)}>Pitches</div>
-              <div className='space-y-4'>
-                {data.sections.map((s) => (
-                  <div key={s.nr} className='flex gap-4'>
-                    <div className='bg-surface-nav border-surface-border flex h-6 w-6 shrink-0 items-center justify-center rounded border text-[10px] font-black text-slate-500'>
-                      {s.nr}
-                    </div>
-                    <div className='flex-1 space-y-2'>
-                      <div className='flex flex-wrap items-center gap-2'>
-                        <div className={cn(designContract.surfaces.inlineChip, 'min-w-0 shrink-0 whitespace-nowrap')}>
-                          <span className={cn(designContract.typography.grade, 'text-slate-200')}>{s.grade}</span>
-                        </div>
-                        <div className='text-sm text-slate-300'>
-                          <Linkify>{s.description}</Linkify>
-                        </div>
-                      </div>
-                      {s.media && (
-                        <Media
-                          pitches={data.sections}
-                          media={s.media}
-                          orderableMedia={orderableMedia}
-                          carouselMedia={carouselMedia}
-                          optProblemId={null}
-                          showLocation={false}
-                        />
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
-
-          {(hasApproach || hasDescent) && (
-            <>
-              <div className={cn('md:pt-0.5', designContract.typography.label)}>Terrain</div>
-              <div className='grid w-full grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2 md:gap-y-4'>
-                {hasApproach && (
-                  <div className='flex min-w-0 flex-col gap-1'>
-                    <div
-                      className={cn(
-                        designContract.typography.meta,
-                        'text-[10px] font-semibold tracking-wide text-slate-500 uppercase',
-                      )}
-                    >
-                      Approach
-                    </div>
-                    <SlopeProfile
-                      compact
-                      areaName={data.areaName!}
-                      sectorName={data.sectorName!}
-                      slope={data.sectorApproach as Slope}
-                    />
-                  </div>
-                )}
-                {hasDescent && (
-                  <div className='flex min-w-0 flex-col gap-1'>
-                    <div
-                      className={cn(
-                        designContract.typography.meta,
-                        'text-[10px] font-semibold tracking-wide text-slate-500 uppercase',
-                      )}
-                    >
-                      Descent
-                    </div>
-                    <SlopeProfile
-                      compact
-                      areaName={data.areaName!}
-                      sectorName={data.sectorName!}
-                      slope={data.sectorDescent as Slope}
-                    />
-                  </div>
-                )}
-              </div>
-            </>
-          )}
-
-          <div className={cn('pt-1', designContract.typography.label)}>Conditions</div>
-          <div className='flex flex-wrap items-center gap-x-2 gap-y-2'>
-            <ConditionLabels
-              lat={conditionLat > 0 ? conditionLat : undefined}
-              lng={conditionLng > 0 ? conditionLng : undefined}
-              label={data.name ?? ''}
-              wallDirectionCalculated={data.sectorWallDirectionCalculated}
-              wallDirectionManual={data.sectorWallDirectionManual}
-              sunFromHour={data.sectorSunFromHour ?? data.areaSunFromHour ?? 0}
-              sunToHour={data.sectorSunToHour ?? data.areaSunToHour ?? 0}
-              pageViews={data.pageViews}
-            />
-          </div>
-
-          <div className={cn('pt-1', designContract.typography.label)}>Misc</div>
-          <div className='flex flex-wrap items-center gap-2'>
-            <DownloadButton href={`/problem/pdf?id=${data.id}`}>
-              {meta.isBouldering ? 'boulder.pdf' : 'route.pdf'}
-            </DownloadButton>
-            <DownloadButton href={`/sectors/pdf?id=${data.sectorId}`}>sector.pdf</DownloadButton>
-            <DownloadButton href={`/areas/pdf?id=${data.areaId}`}>area.pdf</DownloadButton>
-            {data.sectorParking && (
-              <a
-                href={`https://www.google.com/maps/search/?api=1&query=${data.sectorParking.latitude},${data.sectorParking.longitude}`}
-                target='_blank'
-                rel='noreferrer'
-                title='Parking in Google Maps'
-                className={cn(
-                  designContract.surfaces.inlineChipInteractive,
-                  'gap-1 px-2 py-0.5 text-[11px] font-medium',
-                )}
-              >
-                <MapIcon size={11} className='shrink-0 text-slate-500' strokeWidth={2.25} /> Parking
-              </a>
-            )}
-            {data.coordinates && (
-              <a
-                href={`https://www.google.com/maps/search/?api=1&query=${data.coordinates.latitude},${data.coordinates.longitude}`}
-                target='_blank'
-                rel='noreferrer'
-                title={meta.isBouldering ? 'Boulder in Google Maps' : 'Route in Google Maps'}
-                className={cn(
-                  designContract.surfaces.inlineChipInteractive,
-                  'gap-1 px-2 py-0.5 text-[11px] font-medium',
-                )}
-              >
-                <MapIcon size={11} className='shrink-0 text-slate-500' strokeWidth={2.25} />{' '}
-                {meta.isBouldering ? 'Boulder' : 'Route'}
-              </a>
-            )}
-            <ExternalLinkLabels externalLinks={data.externalLinks} />
-          </div>
-
-          {optimisticTodo && data.todos && (
-            <>
-              <div className={cn('pt-1', designContract.typography.label)}>To-do</div>
-              <div className='flex flex-wrap gap-2'>
-                {data.todos.map((u) => (
-                  <Link
-                    key={u.idUser}
-                    to={`/user/${u.idUser}`}
+                {(hasApproach || hasDescent) && (
+                  <div
                     className={cn(
-                      designContract.surfaces.inlineChipInteractive,
-                      'text-[10px] font-semibold text-slate-400',
+                      'border-surface-border/40 border-t px-3 py-3 sm:px-4 sm:py-4',
+                      hasApproach && hasDescent ? 'grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-5' : 'space-y-0',
                     )}
                   >
-                    <ClickableAvatar
-                      name={u.name}
-                      mediaId={u.mediaId}
-                      mediaVersionStamp={u.mediaVersionStamp}
-                      size='mini'
-                    />{' '}
-                    {u.name}
-                  </Link>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
+                    {hasApproach && (
+                      <div className='min-w-0'>
+                        <div
+                          className={cn(
+                            designContract.typography.meta,
+                            'mb-1.5 font-semibold tracking-wide text-slate-500',
+                          )}
+                        >
+                          Approach
+                        </div>
+                        <SlopeProfile
+                          compact
+                          className='min-w-0'
+                          areaName={data.areaName ?? ''}
+                          sectorName={data.sectorName ?? ''}
+                          slope={data.sectorApproach as Slope}
+                        />
+                      </div>
+                    )}
+                    {hasDescent && (
+                      <div className='min-w-0'>
+                        <div
+                          className={cn(
+                            designContract.typography.meta,
+                            'mb-1.5 font-semibold tracking-wide text-slate-500',
+                          )}
+                        >
+                          Descent
+                        </div>
+                        <SlopeProfile
+                          compact
+                          className='min-w-0'
+                          areaName={data.areaName ?? ''}
+                          sectorName={data.sectorName ?? ''}
+                          slope={data.sectorDescent as Slope}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+              </>
+            )}
+          </>
+        ) : (
+          overviewPanel
+        )}
       </Card>
 
-      <div
-        className={cn('grid grid-cols-1 gap-6', hasTicks && hasComments ? 'lg:grid-cols-2 lg:gap-6' : 'lg:grid-cols-1')}
-      >
-        {hasTicks && (
-          <Card flush className='min-w-0 overflow-hidden border-0 sm:border'>
-            <div className='border-surface-border/40 flex items-center justify-between gap-3 border-b px-4 py-2.5 sm:px-5'>
-              <div className='flex items-center gap-2'>
-                <Check size={12} className='text-slate-500' strokeWidth={2.25} />
+      {showOverviewContent && hasPitches && data.sections && (
+        <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm sm:border'>
+          <div className='p-4 sm:p-5'>
+            <div className='flex flex-col gap-6'>
+              {data.sections.map((s) => (
+                <article key={s.nr} className='min-w-0 space-y-2.5' aria-label={`Pitch ${s.nr}`}>
+                  <div className='leading-snug text-pretty text-slate-300'>
+                    <span
+                      className={cn(
+                        designContract.typography.meta,
+                        'font-mono font-semibold text-slate-400 tabular-nums',
+                      )}
+                    >
+                      Pitch {s.nr}
+                    </span>
+                    <span className='text-slate-600'> · </span>
+                    <span className={cn(designContract.typography.grade, 'font-semibold text-slate-100')}>
+                      {s.grade}
+                    </span>
+                    {s.description ? (
+                      <>
+                        <span className='text-slate-600'> · </span>
+                        <div
+                          className={cn(
+                            designContract.typography.meta,
+                            'inline-block max-w-full align-baseline text-slate-400 [&_a]:text-slate-300 [&_a]:underline [&_a]:decoration-white/15 [&_a]:underline-offset-2 [&_a]:transition-colors hover:[&_a]:text-slate-200',
+                          )}
+                        >
+                          <Linkify>{s.description}</Linkify>
+                        </div>
+                      </>
+                    ) : null}
+                  </div>
+                  {s.media && s.media.length > 0 && (
+                    <Media
+                      pitches={data.sections}
+                      media={s.media}
+                      orderableMedia={orderableMedia}
+                      carouselMedia={carouselMedia}
+                      optProblemId={null}
+                      showLocation={false}
+                    />
+                  )}
+                </article>
+              ))}
+            </div>
+          </div>
+        </Card>
+      )}
+
+      {showOverviewContent && (hasTicks || hasComments) ? (
+        <div
+          className={cn(
+            'grid grid-cols-1 gap-4',
+            hasTicks && hasComments ? 'md:grid-cols-2 md:items-start md:gap-5 lg:gap-6' : '',
+          )}
+        >
+          {hasTicks && (
+            <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm sm:border'>
+              <div className='border-surface-border/40 flex flex-wrap items-center gap-x-2 gap-y-1 border-b px-4 py-2.5 sm:px-5'>
+                <Check size={12} className='shrink-0 text-slate-500' strokeWidth={2.25} />
                 <span className='type-label'>Ticks</span>
+                <span className={cn(designContract.typography.meta, 'text-slate-500 tabular-nums')}>
+                  {data.ticks?.length ?? 0}
+                </span>
               </div>
-              <span className={cn(designContract.typography.meta, 'text-slate-500 tabular-nums')}>
-                {data.ticks?.length ?? 0}
-              </span>
-            </div>
-            <div className='px-4 pt-3 pb-4 sm:px-5'>
-              <ProblemTicks ticks={data.ticks || []} />
-            </div>
-          </Card>
-        )}
-        {hasComments && (
-          <Card flush className='min-w-0 overflow-hidden border-0 sm:border'>
-            <div className='border-surface-border/40 flex items-center justify-between gap-3 border-b px-4 py-2.5 sm:px-5'>
-              <div className='flex items-center gap-2'>
-                <MessageSquare size={12} className='text-slate-500' strokeWidth={2.25} />
+              <div className='pb-4 sm:pb-5'>
+                <ProblemTicks ticks={data.ticks || []} />
+              </div>
+            </Card>
+          )}
+          {hasComments && (
+            <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm sm:border'>
+              <div className='border-surface-border/40 flex flex-wrap items-center gap-x-2 gap-y-1 border-b px-4 py-2.5 sm:px-5'>
+                <MessageSquare size={12} className='shrink-0 text-slate-500' strokeWidth={2.25} />
                 <span className='type-label'>Comments</span>
+                <span className={cn(designContract.typography.meta, 'text-slate-500 tabular-nums')}>
+                  {data.comments?.length ?? 0}
+                </span>
               </div>
-              <span className={cn(designContract.typography.meta, 'text-slate-500 tabular-nums')}>
-                {data.comments?.length ?? 0}
-              </span>
-            </div>
-            <div className='px-4 pt-3 pb-4 sm:px-5'>
-              <ProblemComments
-                onShowCommentModal={setShowCommentModal}
-                problemId={+problemId}
-                showHiddenMedia={showHiddenMedia}
-                orderableMedia={orderableMedia}
-                carouselMedia={carouselMedia}
-              />
-            </div>
-          </Card>
-        )}
-      </div>
+              <div className='pb-4 sm:pb-5'>
+                <ProblemComments
+                  onShowCommentModal={setShowCommentModal}
+                  problemId={+problemId}
+                  showHiddenMedia={showHiddenMedia}
+                  orderableMedia={orderableMedia}
+                  carouselMedia={carouselMedia}
+                />
+              </div>
+            </Card>
+          )}
+        </div>
+      ) : null}
+
+      {hasMetaCard ? (
+        <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm sm:border'>
+          <div className='grid grid-cols-1 gap-x-6 gap-y-5 p-4 sm:p-5 lg:grid-cols-[min(11rem,30%)_1fr] lg:gap-x-8 lg:gap-y-6'>
+            {hasTriviaBlock && (
+              <>
+                <div className={cn('pt-1', designContract.typography.label)}>Trivia</div>
+                <div className='space-y-4'>
+                  {data.trivia && (
+                    <div className='bg-surface-nav/20 border-surface-border/50 rounded-xl border p-4 text-slate-400'>
+                      <ExpandableMarkdown content={data.trivia} contentClassName='italic' />
+                    </div>
+                  )}
+                  {data.triviaMedia && (
+                    <Media
+                      pitches={data.sections}
+                      media={data.triviaMedia}
+                      orderableMedia={orderableMedia}
+                      carouselMedia={carouselMedia}
+                      optProblemId={null}
+                      showLocation={false}
+                    />
+                  )}
+                </div>
+              </>
+            )}
+
+            {hasRockBlock && (
+              <>
+                <div className={cn('pt-1', designContract.typography.label)}>Rock «{data.rock}»</div>
+                <div>
+                  <ProblemsOnRock sectorId={data.sectorId!} problemId={+problemId} rock={data.rock} />
+                </div>
+              </>
+            )}
+          </div>
+        </Card>
+      ) : null}
     </div>
   );
 };

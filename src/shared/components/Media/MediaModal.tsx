@@ -4,6 +4,7 @@ import { useSwipeable } from 'react-swipeable';
 import {
   X,
   Info,
+  HelpCircle,
   List as ListIcon,
   ChevronLeft,
   ChevronRight,
@@ -22,7 +23,6 @@ import {
   Play,
   Check,
   Bookmark,
-  HelpCircle,
   MapPin,
   Calendar,
   User as UserIcon,
@@ -147,6 +147,7 @@ const MediaModal = ({
       .filter((value, index, self) => self.indexOf(value) === index).length > 1;
 
   const isImage = m?.idType === 1;
+  const isVideoFile = m?.idType === 2 && !m.embedUrl;
 
   const handleDimmerClick = (e: MouseEvent) => {
     if (e.target === e.currentTarget && !wasSwiping.current && offsetX === 0) {
@@ -235,205 +236,217 @@ const MediaModal = ({
         className='relative flex h-full min-h-0 w-full min-w-0 flex-1 items-center justify-center overflow-hidden'
         {...handlers}
       >
-        <div className='absolute top-4 right-4 z-170 flex gap-2'>
-          <div className='flex rounded-xl border border-white/10 bg-black/60 p-1 shadow-2xl backdrop-blur-md'>
-            {m.url && (
-              <button
-                type='button'
-                onClick={() => window.open(m.url ?? '', '_blank')}
-                className='rounded-lg p-2.5 opacity-70 transition-all hover:bg-white/10 hover:opacity-100'
-              >
-                <ExternalLink size={18} />
-              </button>
-            )}
-
-            {canShowSidebar && (
-              <button
-                type='button'
-                onClick={() => setShowSidebar(!showSidebar)}
-                className={cn(
-                  'rounded-lg p-2.5 transition-all',
-                  showSidebar ? 'bg-brand type-body' : 'opacity-70 hover:opacity-100',
-                )}
-              >
-                <ListIcon size={18} />
-              </button>
-            )}
-
+        <div className='absolute top-3 right-3 z-170 flex max-w-[calc(100vw-1.5rem)] flex-wrap items-center justify-end gap-1.5 sm:top-4 sm:right-4 sm:gap-2'>
+          {m.url && (
             <button
               type='button'
-              onClick={() => setShowInfo(true)}
-              className='rounded-lg p-2.5 opacity-70 hover:bg-white/10 hover:opacity-100'
+              onClick={() => window.open(m.url ?? '', '_blank')}
+              title='Open original'
+              className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black/50 text-slate-200 shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 ring-white/[0.1] backdrop-blur-md transition-all hover:bg-black/65 hover:text-slate-100 hover:ring-white/[0.18] active:scale-95 sm:h-11 sm:w-11'
             >
-              <Info size={18} />
+              <ExternalLink size={17} strokeWidth={2} />
             </button>
+          )}
 
-            {!isBouldering && svgs.length > 0 && (
-              <button
-                type='button'
-                onClick={() => setShowHelp(true)}
-                className='rounded-lg p-2.5 opacity-70 hover:bg-white/10 hover:opacity-100'
-              >
-                <HelpCircle size={18} />
-              </button>
-            )}
-
-            <div className='relative'>
-              <button
-                type='button'
-                onClick={() => setShowMenu(!showMenu)}
-                className={cn(
-                  'rounded-lg p-2.5 transition-all',
-                  showMenu ? 'type-body bg-white/20' : 'opacity-70 hover:opacity-100',
-                )}
-              >
-                <MoreVertical size={18} />
-              </button>
-              {showMenu && (
-                <div className='bg-surface-card border-surface-border animate-in fade-in zoom-in-95 absolute top-full right-0 z-180 mt-3 w-64 rounded-2xl border py-2 shadow-2xl duration-200'>
-                  <div className='type-label border-surface-border/50 mb-1 border-b px-4 py-2'>Actions</div>
-                  {canDrawTopo && (
-                    <button
-                      type='button'
-                      onClick={() => navigate(`/problem/svg-edit/${optProblemId}/${pitch || 0}/${m.id}`)}
-                      className='type-small hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 opacity-85 transition-colors hover:opacity-100'
-                    >
-                      <Paintbrush size={14} className='text-brand' /> Draw topo line
-                    </button>
-                  )}
-                  {canDrawMedia && (
-                    <button
-                      type='button'
-                      onClick={() => navigate(`/media/svg-edit/${m.id}`)}
-                      className='type-small hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 opacity-85 transition-colors hover:opacity-100'
-                    >
-                      <Paintbrush size={14} className='text-brand' /> Draw on image
-                    </button>
-                  )}
-                  {canOrder && (
-                    <button
-                      type='button'
-                      onClick={onMoveImageLeft}
-                      className='type-small hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 opacity-85 transition-colors hover:opacity-100'
-                    >
-                      <ArrowLeft size={14} /> Move image left
-                    </button>
-                  )}
-                  {canOrder && (
-                    <button
-                      type='button'
-                      onClick={onMoveImageRight}
-                      className='type-small hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 opacity-85 transition-colors hover:opacity-100'
-                    >
-                      <ArrowRight size={14} /> Move image right
-                    </button>
-                  )}
-                  {canMove && (m.enableMoveToIdArea ?? 0) > 0 && (
-                    <button
-                      type='button'
-                      onClick={onMoveImageToArea}
-                      className='hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
-                    >
-                      <Move size={14} /> Move image to area
-                    </button>
-                  )}
-                  {canMove && (m.enableMoveToIdSector ?? 0) > 0 && (
-                    <button
-                      type='button'
-                      onClick={onMoveImageToSector}
-                      className='hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
-                    >
-                      <Move size={14} /> Move image to sector
-                    </button>
-                  )}
-                  {canMove && (m.enableMoveToIdProblem ?? 0) > 0 && (
-                    <button
-                      type='button'
-                      onClick={onMoveImageToProblem}
-                      className='hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
-                    >
-                      <Move size={14} /> Move image to {isBouldering ? 'problem' : 'route'}
-                    </button>
-                  )}
-                  {canSetMediaAsAvatar && (
-                    <button
-                      type='button'
-                      onClick={onSetMediaAsAvatar}
-                      className='hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
-                    >
-                      <UserIcon size={14} /> Set as avatar
-                    </button>
-                  )}
-
-                  <div className='bg-surface-border/50 my-2 h-px' />
-
-                  {!m.embedUrl && (
-                    <button
-                      type='button'
-                      onClick={() =>
-                        downloadFileWithProgress(
-                          accessToken,
-                          getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, m.idType !== 1, { original: true }),
-                        )
-                      }
-                      className='hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
-                    >
-                      <Download size={14} /> Download Original
-                    </button>
-                  )}
-                  {canRotate && (
-                    <>
-                      <button
-                        type='button'
-                        onClick={() => onRotate(90)}
-                        className='hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
-                      >
-                        <RotateCw size={14} /> Rotate 90° CW
-                      </button>
-                      <button
-                        type='button'
-                        onClick={() => onRotate(270)}
-                        className='hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
-                      >
-                        <RotateCcw size={14} /> Rotate 90° CCW
-                      </button>
-                      <button
-                        type='button'
-                        onClick={() => onRotate(180)}
-                        className='hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
-                      >
-                        <RefreshCw size={14} /> Rotate 180°
-                      </button>
-                    </>
-                  )}
-                  {canEdit && (
-                    <button
-                      type='button'
-                      onClick={onEdit}
-                      className='hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
-                    >
-                      <Edit size={14} /> Edit Information
-                    </button>
-                  )}
-                  {canDelete && (
-                    <button
-                      type='button'
-                      onClick={onDelete}
-                      className='flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-red-400 transition-colors hover:bg-red-500/10'
-                    >
-                      <Trash2 size={14} /> Delete {isImage ? 'Image' : 'Video'}
-                    </button>
-                  )}
-                </div>
+          {canShowSidebar && (
+            <button
+              type='button'
+              onClick={() => setShowSidebar(!showSidebar)}
+              title={showSidebar ? 'Hide problem list' : 'Show problem list'}
+              className={cn(
+                'flex h-10 w-10 shrink-0 items-center justify-center rounded-full shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 backdrop-blur-md transition-all active:scale-95 sm:h-11 sm:w-11',
+                showSidebar
+                  ? 'bg-brand/35 text-brand ring-brand/35 hover:bg-brand/45 hover:ring-brand/45'
+                  : 'bg-black/50 text-slate-200 ring-white/[0.1] hover:bg-black/65 hover:text-slate-100 hover:ring-white/[0.18]',
               )}
-            </div>
+            >
+              <ListIcon size={17} strokeWidth={2} />
+            </button>
+          )}
+
+          <button
+            type='button'
+            onClick={() => setShowInfo(true)}
+            title='Information'
+            aria-label='Information'
+            className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black/50 text-slate-200 shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 ring-white/[0.1] backdrop-blur-md transition-all hover:bg-black/65 hover:text-slate-100 hover:ring-white/[0.18] active:scale-95 sm:h-11 sm:w-11'
+          >
+            <Info size={17} strokeWidth={2} />
+          </button>
+
+          {!isBouldering && svgs.length > 0 && (
+            <button
+              type='button'
+              onClick={() => setShowHelp(true)}
+              title='Topo legend'
+              aria-label='Topo legend'
+              className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black/50 text-slate-200 shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 ring-white/[0.1] backdrop-blur-md transition-all hover:bg-black/65 hover:text-slate-100 hover:ring-white/[0.18] active:scale-95 sm:h-11 sm:w-11'
+            >
+              <HelpCircle size={17} strokeWidth={2} />
+            </button>
+          )}
+
+          <div className='relative inline-flex shrink-0'>
+            <button
+              type='button'
+              onClick={() => setShowMenu(!showMenu)}
+              title='More actions'
+              className={cn(
+                'flex h-10 w-10 items-center justify-center rounded-full shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 backdrop-blur-md transition-all active:scale-95 sm:h-11 sm:w-11',
+                showMenu
+                  ? 'bg-white/20 text-slate-100 ring-white/25'
+                  : 'bg-black/50 text-slate-200 ring-white/[0.1] hover:bg-black/65 hover:text-slate-100 hover:ring-white/[0.18]',
+              )}
+            >
+              <MoreVertical size={17} strokeWidth={2} />
+            </button>
+            {showMenu && (
+              <div className='bg-surface-card border-surface-border animate-in fade-in zoom-in-95 absolute top-full right-0 z-180 mt-2 w-64 rounded-2xl border py-2 shadow-2xl duration-200'>
+                <div className='type-label border-surface-border/50 mb-1 border-b px-4 py-2'>Actions</div>
+                {canDrawTopo && (
+                  <button
+                    type='button'
+                    onClick={() => navigate(`/problem/svg-edit/${optProblemId}/${pitch || 0}/${m.id}`)}
+                    className='type-small hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 opacity-85 transition-colors hover:opacity-100'
+                  >
+                    <Paintbrush size={14} className='text-brand' /> Draw topo line
+                  </button>
+                )}
+                {canDrawMedia && (
+                  <button
+                    type='button'
+                    onClick={() => navigate(`/media/svg-edit/${m.id}`)}
+                    className='type-small hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 opacity-85 transition-colors hover:opacity-100'
+                  >
+                    <Paintbrush size={14} className='text-brand' /> Draw on image
+                  </button>
+                )}
+                {canOrder && (
+                  <button
+                    type='button'
+                    onClick={onMoveImageLeft}
+                    className='type-small hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 opacity-85 transition-colors hover:opacity-100'
+                  >
+                    <ArrowLeft size={14} /> Move image left
+                  </button>
+                )}
+                {canOrder && (
+                  <button
+                    type='button'
+                    onClick={onMoveImageRight}
+                    className='type-small hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 opacity-85 transition-colors hover:opacity-100'
+                  >
+                    <ArrowRight size={14} /> Move image right
+                  </button>
+                )}
+                {canMove && (m.enableMoveToIdArea ?? 0) > 0 && (
+                  <button
+                    type='button'
+                    onClick={onMoveImageToArea}
+                    className='hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
+                  >
+                    <Move size={14} /> Move image to area
+                  </button>
+                )}
+                {canMove && (m.enableMoveToIdSector ?? 0) > 0 && (
+                  <button
+                    type='button'
+                    onClick={onMoveImageToSector}
+                    className='hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
+                  >
+                    <Move size={14} /> Move image to sector
+                  </button>
+                )}
+                {canMove && (m.enableMoveToIdProblem ?? 0) > 0 && (
+                  <button
+                    type='button'
+                    onClick={onMoveImageToProblem}
+                    className='hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
+                  >
+                    <Move size={14} /> Move image to {isBouldering ? 'problem' : 'route'}
+                  </button>
+                )}
+                {canSetMediaAsAvatar && (
+                  <button
+                    type='button'
+                    onClick={onSetMediaAsAvatar}
+                    className='hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
+                  >
+                    <UserIcon size={14} /> Set as avatar
+                  </button>
+                )}
+
+                <div className='bg-surface-border/50 my-2 h-px' />
+
+                {!m.embedUrl && (
+                  <button
+                    type='button'
+                    onClick={() =>
+                      downloadFileWithProgress(
+                        accessToken,
+                        getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, m.idType !== 1, { original: true }),
+                      )
+                    }
+                    className='hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
+                  >
+                    <Download size={14} /> Download Original
+                  </button>
+                )}
+                {canRotate && (
+                  <>
+                    <button
+                      type='button'
+                      onClick={() => onRotate(90)}
+                      className='hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
+                    >
+                      <RotateCw size={14} /> Rotate 90° CW
+                    </button>
+                    <button
+                      type='button'
+                      onClick={() => onRotate(270)}
+                      className='hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
+                    >
+                      <RotateCcw size={14} /> Rotate 90° CCW
+                    </button>
+                    <button
+                      type='button'
+                      onClick={() => onRotate(180)}
+                      className='hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
+                    >
+                      <RefreshCw size={14} /> Rotate 180°
+                    </button>
+                  </>
+                )}
+                {canEdit && (
+                  <button
+                    type='button'
+                    onClick={onEdit}
+                    className='hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
+                  >
+                    <Edit size={14} /> Edit Information
+                  </button>
+                )}
+                {canDelete && (
+                  <button
+                    type='button'
+                    onClick={onDelete}
+                    className='flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-red-400 transition-colors hover:bg-red-500/10'
+                  >
+                    <Trash2 size={14} /> Delete {isImage ? 'Image' : 'Video'}
+                  </button>
+                )}
+              </div>
+            )}
           </div>
+
           <button
             type='button'
             onClick={onClose}
-            className='type-body rounded-xl border border-white/10 bg-black/60 p-3 shadow-2xl backdrop-blur-md transition-all hover:bg-red-500'
+            title='Close'
+            aria-label='Close'
+            className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black/50 text-slate-200 shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 ring-white/[0.1] backdrop-blur-md transition-all hover:bg-red-600/88 hover:text-slate-100 hover:ring-red-500/35 active:scale-95 sm:h-11 sm:w-11'
           >
-            <X size={20} />
+            <X size={19} strokeWidth={2} />
           </button>
         </div>
 
@@ -490,7 +503,7 @@ const MediaModal = ({
             >
               <img
                 className='max-h-screen max-w-full object-contain opacity-50 transition-opacity group-hover:opacity-70'
-                src={getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, false, { targetWidth: 1080 })}
+                src={getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, isVideoFile, { targetWidth: 1080 })}
                 alt=''
               />
               <div className='absolute inset-0 flex items-center justify-center'>
@@ -526,31 +539,38 @@ const MediaModal = ({
           </>
         )}
 
-        <div className='pointer-events-none absolute right-8 bottom-8 left-8 z-170 flex items-end justify-between'>
-          <div className='max-w-xl space-y-3'>
+        <div className='pointer-events-none absolute right-4 bottom-4 left-4 z-170 flex items-end justify-between gap-3 sm:right-8 sm:bottom-8 sm:left-8'>
+          <div className='max-w-xl space-y-2.5'>
             {showLocation && m.mediaMetadata?.location && (
-              <div className='type-label pointer-events-auto inline-flex items-center gap-2 rounded-lg border border-white/10 bg-black/60 px-3 py-1.5 backdrop-blur-md'>
+              <div className='type-label pointer-events-auto inline-flex items-center gap-2 rounded-full bg-black/50 px-3 py-1.5 text-slate-100 shadow-[0_4px_24px_rgba(0,0,0,0.45)] ring-1 ring-white/[0.08] backdrop-blur-md'>
                 <MapPin size={12} className='text-brand' /> {m.mediaMetadata.location}
               </div>
             )}
             {m.mediaMetadata?.description && (
-              <div className='type-body pointer-events-auto rounded-2xl border border-white/5 bg-black/40 p-4 leading-relaxed font-medium opacity-90 shadow-2xl backdrop-blur-md'>
+              <div className='type-body pointer-events-auto max-w-xl rounded-2xl bg-black/45 p-3.5 leading-relaxed font-medium text-slate-100/95 shadow-[0_8px_32px_rgba(0,0,0,0.5)] ring-1 ring-white/[0.06] backdrop-blur-md sm:p-4'>
                 {m.mediaMetadata.description}
               </div>
             )}
           </div>
-          <div className='type-label flex gap-4 rounded-xl border border-white/10 bg-black/60 px-4 py-2 shadow-2xl backdrop-blur-md'>
+          <div className='type-label pointer-events-auto flex max-w-[min(100%,14rem)] flex-col items-end gap-1.5 text-right text-slate-100/95 sm:max-w-xs sm:gap-2'>
             {activePitch && (
-              <span className='text-brand'>
-                {activePitch.grade} | {activePitch.description}
+              <span className='rounded-full bg-black/50 px-3 py-1.5 shadow-[0_4px_24px_rgba(0,0,0,0.45)] ring-1 ring-white/[0.08] backdrop-blur-md'>
+                <span className='text-brand'>{activePitch.grade}</span>
+                {activePitch.description ? <span className='text-slate-200'> · {activePitch.description}</span> : null}
               </span>
             )}
-            {(m.pitch ?? 0) > 0 && <span>Pitch {m.pitch}</span>}
-            {carouselSize > 1 && (
-              <span className='opacity-70'>
-                {carouselIndex} / {carouselSize}
-              </span>
-            )}
+            <div className='flex flex-wrap items-center justify-end gap-2'>
+              {(m.pitch ?? 0) > 0 && (
+                <span className='rounded-full bg-black/45 px-2.5 py-1 text-slate-200/95 shadow-md ring-1 ring-white/[0.06] backdrop-blur-sm'>
+                  Pitch {m.pitch}
+                </span>
+              )}
+              {carouselSize > 1 && (
+                <span className='rounded-full bg-black/45 px-2.5 py-1 text-slate-300 tabular-nums shadow-md ring-1 ring-white/[0.06] backdrop-blur-sm'>
+                  {carouselIndex} / {carouselSize}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -567,13 +587,14 @@ const MediaModal = ({
             <div className='border-surface-border flex items-center justify-between border-b pb-6'>
               <div className='flex items-center gap-3'>
                 <div className='bg-brand/10 text-brand rounded-2xl p-3'>
-                  <Info size={24} />
+                  <Info size={24} strokeWidth={2} />
                 </div>
                 <h3 className='type-h2'>Information</h3>
               </div>
               <button
                 type='button'
                 onClick={() => setShowInfo(false)}
+                aria-label='Close'
                 className='hover:bg-surface-nav rounded-xl p-2 transition-colors'
               >
                 <X size={24} />
@@ -643,12 +664,12 @@ const MediaModal = ({
             className='bg-surface-card border-surface-border custom-scrollbar max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-3xl border p-8 text-left shadow-2xl'
             onClick={(e) => e.stopPropagation()}
           >
-            <div className='border-surface-border mb-8 flex items-center justify-between border-b pb-6'>
-              <h3 className='type-h2'>Topo Legend</h3>
+            <div className='mb-6 flex justify-end'>
               <button
                 type='button'
                 onClick={() => setShowHelp(false)}
-                className='hover:bg-surface-nav rounded-xl p-2 transition-colors'
+                aria-label='Close'
+                className='hover:bg-surface-nav -mr-1 rounded-xl p-2 transition-colors'
               >
                 <X size={24} />
               </button>
@@ -730,10 +751,10 @@ const MediaModal = ({
                       <span className='text-xs font-bold text-slate-300'>Red: Dangerous</span>
                     </li>
                     <li className='flex items-center gap-3'>
-                      <div className='type-body border-surface-border flex h-4 w-4 items-center justify-center rounded border text-[8px] font-black'>
+                      <div className='flex h-4 w-4 items-center justify-center rounded border border-slate-200/90 text-[8px] font-black text-slate-200'>
                         1
                       </div>
-                      <span className='type-small text-xs font-semibold opacity-80'>White: Default color</span>
+                      <span className='text-xs font-bold text-slate-300'>White: Default color</span>
                     </li>
                   </ul>
                 </div>
@@ -747,31 +768,43 @@ const MediaModal = ({
                       <span className='text-xs font-bold text-slate-300'>Descent Line</span>
                     </li>
                     <li className='flex items-center gap-4'>
-                      <div className='bg-surface-nav flex h-6 w-6 items-center justify-center rounded'>
+                      <svg
+                        width={40}
+                        height={40}
+                        viewBox='0 0 40 40'
+                        className='bg-surface-nav shrink-0 overflow-visible rounded-md'
+                        aria-hidden
+                      >
                         <Rappel
-                          x={12}
-                          y={12}
+                          x={20}
+                          y={17}
                           bolted={true}
-                          scale={0.6}
+                          scale={0.72}
                           thumb={false}
-                          backgroundColor='black'
-                          color='white'
+                          backgroundColor='#334155'
+                          color='#f8fafc'
                         />
-                      </div>
+                      </svg>
                       <span className='text-xs font-bold text-slate-300'>Bolted Anchor</span>
                     </li>
                     <li className='flex items-center gap-4'>
-                      <div className='bg-surface-nav flex h-6 w-6 items-center justify-center rounded'>
+                      <svg
+                        width={40}
+                        height={40}
+                        viewBox='0 0 40 40'
+                        className='bg-surface-nav shrink-0 overflow-visible rounded-md'
+                        aria-hidden
+                      >
                         <Rappel
-                          x={12}
-                          y={12}
+                          x={20}
+                          y={17}
                           bolted={false}
-                          scale={0.6}
+                          scale={0.72}
                           thumb={false}
-                          backgroundColor='black'
-                          color='white'
+                          backgroundColor='#334155'
+                          color='#f8fafc'
                         />
-                      </div>
+                      </svg>
                       <span className='text-xs font-bold text-slate-300'>Traditional Anchor</span>
                     </li>
                   </ul>

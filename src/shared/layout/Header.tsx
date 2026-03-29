@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { useMeta } from '../components/Meta/context';
 import SearchBox from '../components/SearchBox/SearchBox';
-import { Avatar, SectionLabel } from '../ui';
+import { Avatar } from '../ui';
 import { cn } from '../../lib/utils';
 import { downloadUsersTicks, useAccessToken } from '../../api';
 
@@ -115,12 +115,13 @@ const Header = () => {
         to={to}
         onClick={onClick}
         className={cn(
-          'flex items-center gap-3 px-4 py-2 text-xs font-semibold transition-colors',
-          isActive ? 'bg-brand/10 text-brand' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200',
+          'mx-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[12px] leading-snug font-medium transition-colors sm:text-[13px]',
+          isActive ? 'bg-brand/14 text-brand' : 'text-slate-300 hover:bg-white/[0.09] hover:text-slate-50',
           className,
         )}
       >
-        <Icon size={14} /> {children}
+        <Icon size={16} strokeWidth={2} className={cn('shrink-0', isActive ? 'text-brand' : 'text-slate-400')} />{' '}
+        {children}
       </Link>
     );
   };
@@ -141,58 +142,71 @@ const Header = () => {
           )}
         />
         {isAccountOpen && (
-          <div className='bg-surface-card border-surface-border animate-in fade-in zoom-in-95 absolute top-full right-0 z-70 mt-3 w-56 rounded border py-1 shadow-2xl duration-150'>
-            <DropdownItem to='/user' icon={User} onClick={() => setIsAccountOpen(false)}>
-              {authenticatedName || 'Profile'}
-            </DropdownItem>
-            <DropdownItem to='/settings' icon={Settings} onClick={() => setIsAccountOpen(false)}>
-              Settings
-            </DropdownItem>
+          <div className='bg-surface-card border-surface-border animate-in fade-in zoom-in-95 absolute top-full right-0 z-70 mt-3 w-[min(18rem,calc(100vw-1.25rem))] overflow-hidden rounded-xl border py-2 shadow-2xl ring-1 ring-white/10 duration-150 sm:w-64'>
+            <div className='border-surface-border/50 px-3 pt-1 pb-2.5'>
+              <p className='truncate text-[13px] font-semibold text-slate-100 sm:text-sm'>
+                {authenticatedName || 'Profile'}
+              </p>
+            </div>
+            <div className='border-surface-border/40 border-t pt-1'>
+              <DropdownItem to='/user' icon={User} onClick={() => setIsAccountOpen(false)}>
+                Profile
+              </DropdownItem>
+              <DropdownItem to='/settings' icon={Settings} onClick={() => setIsAccountOpen(false)}>
+                Settings
+              </DropdownItem>
 
-            <button
-              onClick={() => {
-                setIsDownloadingTicks(true);
-                downloadUsersTicks(accessToken).finally(() => setIsDownloadingTicks(false));
-                setIsAccountOpen(false);
-              }}
-              className='flex w-full items-center gap-3 px-4 py-2 text-left text-xs font-semibold text-slate-400 transition-colors hover:bg-white/5 hover:text-slate-200'
-            >
-              {isDownloadingTicks ? <Loader2 size={14} className='animate-spin' /> : <Download size={14} />}
-              Export ascents to Excel
-            </button>
+              <button
+                type='button'
+                onClick={() => {
+                  setIsDownloadingTicks(true);
+                  downloadUsersTicks(accessToken).finally(() => setIsDownloadingTicks(false));
+                  setIsAccountOpen(false);
+                }}
+                className='mx-1 flex w-[calc(100%-0.5rem)] items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[12px] leading-snug font-medium text-slate-300 transition-colors hover:bg-white/[0.09] hover:text-slate-50 sm:text-[13px]'
+              >
+                {isDownloadingTicks ? (
+                  <Loader2 size={16} className='shrink-0 animate-spin text-slate-400' />
+                ) : (
+                  <Download size={16} strokeWidth={2} className='shrink-0 text-slate-400' />
+                )}
+                Export ascents to Excel
+              </button>
 
-            <div className='my-1 h-px bg-white/5' />
+              <div className='border-surface-border/35 mx-2 my-1 border-t' />
 
-            <a
-              href='/pdf/20230525_administrator_doc.pdf'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='flex items-center gap-3 px-4 py-2 text-xs font-semibold text-slate-400 transition-colors hover:bg-white/5 hover:text-slate-200'
-            >
-              <HelpCircle size={14} /> Help
-            </a>
+              <a
+                href='/pdf/20230525_administrator_doc.pdf'
+                target='_blank'
+                rel='noopener noreferrer'
+                className='mx-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[12px] leading-snug font-medium text-slate-300 transition-colors hover:bg-white/[0.09] hover:text-slate-50 sm:text-[13px]'
+              >
+                <HelpCircle size={16} strokeWidth={2} className='shrink-0 text-slate-400' /> Help
+              </a>
 
-            {isSuperAdmin && (
-              <>
-                <DropdownItem to='/permissions' icon={Users} onClick={() => setIsAccountOpen(false)}>
-                  Permissions
-                </DropdownItem>
-                <DropdownItem to='/swagger' icon={Code} onClick={() => setIsAccountOpen(false)}>
-                  Swagger
-                </DropdownItem>
-                <DropdownItem to='/trash' icon={Trash2} onClick={() => setIsAccountOpen(false)}>
-                  Trash
-                </DropdownItem>
-              </>
-            )}
+              {isSuperAdmin && (
+                <>
+                  <DropdownItem to='/permissions' icon={Users} onClick={() => setIsAccountOpen(false)}>
+                    Permissions
+                  </DropdownItem>
+                  <DropdownItem to='/swagger' icon={Code} onClick={() => setIsAccountOpen(false)}>
+                    Swagger
+                  </DropdownItem>
+                  <DropdownItem to='/trash' icon={Trash2} onClick={() => setIsAccountOpen(false)}>
+                    Trash
+                  </DropdownItem>
+                </>
+              )}
 
-            <div className='my-1 h-px bg-white/5' />
-            <button
-              onClick={() => logout({ logoutParams: { returnTo: window.origin } })}
-              className='flex w-full items-center gap-3 px-4 py-2 text-left text-xs font-semibold text-red-500 transition-colors hover:bg-red-500/10'
-            >
-              <LogOut size={14} /> Sign out
-            </button>
+              <div className='border-surface-border/35 mx-2 my-1 border-t' />
+              <button
+                type='button'
+                onClick={() => logout({ logoutParams: { returnTo: window.origin } })}
+                className='mx-1 flex w-[calc(100%-0.5rem)] items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[12px] leading-snug font-medium text-red-400 transition-colors hover:bg-red-500/12 hover:text-red-300 sm:text-[13px]'
+              >
+                <LogOut size={16} strokeWidth={2} className='shrink-0' /> Sign out
+              </button>
+            </div>
           </div>
         )}
       </div>
@@ -262,35 +276,44 @@ const Header = () => {
                   />
                 </button>
                 {isRegionOpen && (
-                  <div className='bg-surface-card border-surface-border animate-in fade-in slide-in-from-top-1 absolute top-full right-0 z-70 mt-2 max-h-[70vh] w-56 overflow-y-auto rounded border py-1 shadow-2xl duration-150'>
-                    <div className='mb-1 border-b border-white/5 px-4 py-2'>
-                      <SectionLabel className='text-slate-500'>{activeSite.group} REGIONS</SectionLabel>
+                  <div className='bg-surface-card border-surface-border animate-in fade-in slide-in-from-top-1 absolute top-full right-0 z-70 mt-2 max-h-[70vh] w-[min(17rem,calc(100vw-1.25rem))] overflow-y-auto rounded-xl border py-2 shadow-2xl duration-150 sm:w-60'>
+                    <div className='border-surface-border/40 px-3 pb-2'>
+                      <span className='text-[10px] font-semibold tracking-[0.14em] text-slate-500 uppercase'>
+                        {activeSite.group} regions
+                      </span>
                     </div>
+                    <div className='border-surface-border/35 mb-1 border-b' />
                     {groupRegions.map((site) => (
                       <a
                         key={site.url}
                         href={site.url}
                         className={cn(
-                          'flex items-center justify-between px-4 py-2 text-xs font-semibold transition-colors',
+                          'mx-1 flex items-center justify-between gap-2 rounded-md px-2.5 py-2.5 text-[11px] leading-snug font-medium transition-colors sm:text-[12px]',
                           site.active
-                            ? 'bg-brand/10 text-brand'
-                            : 'text-slate-400 hover:bg-white/5 hover:text-slate-200',
+                            ? 'bg-brand/12 text-slate-100'
+                            : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-200',
                         )}
                       >
-                        {site.name} {site.active && <Check size={14} />}
+                        <span className='min-w-0 flex-1 text-pretty'>{site.name}</span>
+                        {site.active && <Check size={14} className='text-brand shrink-0' strokeWidth={2.25} />}
                       </a>
                     ))}
-                    <div className='my-1 border-y border-white/5 bg-white/2 px-4 py-2'>
-                      <SectionLabel className='text-slate-600'>ALL SITES</SectionLabel>
+                    <div className='border-surface-border/35 mt-2 border-t pt-2'>
+                      <div className='px-3 pb-1'>
+                        <span className='text-[10px] font-semibold tracking-[0.14em] text-slate-600 uppercase'>
+                          All sites
+                        </span>
+                      </div>
                     </div>
                     {allGroups.map((group) => (
                       <Link
                         key={group}
                         to={`/sites/${group.toLowerCase()}`}
                         onClick={() => setIsRegionOpen(false)}
-                        className='flex items-center justify-between px-4 py-2 text-xs font-semibold text-slate-500 transition-colors hover:bg-white/5 hover:text-slate-300'
+                        className='mx-1 flex items-center justify-between gap-2 rounded-md px-2.5 py-2 text-[11px] leading-snug font-medium text-slate-500 transition-colors hover:bg-white/[0.06] hover:text-slate-300 sm:py-2.5 sm:text-[12px]'
                       >
-                        {group} <ExternalLink size={10} className='opacity-30' />
+                        <span className='min-w-0 flex-1 text-pretty'>{group}</span>
+                        <ExternalLink size={11} className='shrink-0 opacity-35' strokeWidth={2.25} />
                       </Link>
                     ))}
                   </div>

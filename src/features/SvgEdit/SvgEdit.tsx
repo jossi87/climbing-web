@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef, useCallback, type MouseEventHandler, useReducer } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useMeta } from '../../shared/components/Meta';
-import { type EditableSvg, getMediaFileUrl, postProblemSvg, useAccessToken, useSvgEdit } from '../../api';
+import { type EditableSvg, getMediaFileUrl, postProblemSvg, useAccessToken, useProblem, useSvgEdit } from '../../api';
 import { parseReadOnlySvgs, parsePath, isCubicPoint, type ParsedEntry } from '../../utils/svg-helpers';
 import { Loading } from '../../shared/ui/StatusWidgets';
+import { Card } from '../../shared/ui';
 import { captureException } from '@sentry/react';
 import { generatePath, reducer, type State } from './state';
 import { neverGuard } from '../../utils/neverGuard';
@@ -11,7 +12,6 @@ import type { MediaRegion } from '../../utils/svg-scaler';
 import {
   Video,
   RotateCcw,
-  X,
   Save,
   Type,
   Anchor,
@@ -21,10 +21,21 @@ import {
   RefreshCw,
   Loader2,
   Settings2,
+  X,
+  Trash2,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { designContract } from '../../design/contract';
 
 type Coords = { x: number; y: number };
+
+/** Matches Problem / header action icon buttons (`h-8 w-8` roundels). */
+const pageActionIconBtn =
+  'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-colors disabled:pointer-events-none disabled:opacity-40';
+const pageActionIconBtnGlass =
+  'border-white/12 bg-white/[0.06] text-slate-300 hover:border-white/18 hover:bg-white/[0.1]';
+const pageActionIconBtnGreen = 'border-green-400/45 bg-green-500/20 text-green-300 hover:bg-green-500/28';
+const pageActionIconBtnBrand = 'border-brand/55 bg-brand text-slate-950 shadow-sm hover:border-brand hover:bg-brand/90';
 
 const useIds = (): { problemId: number; pitch: number; mediaId: number } => {
   const { problemId, pitch, mediaId } = useParams();
@@ -34,7 +45,9 @@ const useIds = (): { problemId: number; pitch: number; mediaId: number } => {
 
 export const SvgEditLoader = () => {
   const { problemId, pitch, mediaId } = useIds();
+  const meta = useMeta();
   const [customMediaRegion, setCustomMediaRegion] = useState<MediaRegion | null>(null);
+  const { data: problem } = useProblem(problemId, true);
   const data = useSvgEdit(problemId, pitch, mediaId, customMediaRegion);
   const accessToken = useAccessToken();
   const [saving, setSaving] = useState(false);
@@ -75,19 +88,22 @@ export const SvgEditLoader = () => {
     [accessToken, problemId, pitch, mediaId, data?.svgId, data?.mediaRegion, navigate],
   );
 
-  if (!data) return <Loading />;
+  if (!problem || !data) return <Loading />;
 
   return (
-    <SvgEdit
-      key={JSON.stringify(data)}
-      {...data}
-      mediaRegion={data.mediaRegion ?? undefined}
-      sections={data.sections ?? []}
-      onSave={save}
-      saving={saving}
-      onCancel={() => navigate(`/problem/${problemId}`)}
-      onUpdateMediaRegion={setCustomMediaRegion}
-    />
+    <div className='w-full min-w-0'>
+      <title>{`${pitch > 0 ? `Pitch ${pitch} · ` : ''}Topo editor | ${meta.title}`}</title>
+      <SvgEdit
+        key={JSON.stringify(data)}
+        {...data}
+        mediaRegion={data.mediaRegion ?? undefined}
+        sections={data.sections ?? []}
+        onSave={save}
+        saving={saving}
+        onCancel={() => navigate(`/problem/${problemId}`)}
+        onUpdateMediaRegion={setCustomMediaRegion}
+      />
+    </div>
   );
 };
 
@@ -126,7 +142,8 @@ export const SvgEdit = ({
   const [customMediaRegion, setCustomMediaRegion] = useState<MediaRegion | undefined>(mediaRegion);
   const w = (mediaRegion ?? customMediaRegion)?.width || mediaWidth;
   const h = (mediaRegion ?? customMediaRegion)?.height || mediaHeight;
-  const meta = useMeta();
+  /** Crop / region offsets are for multi-pitch strips on tall photos — not for normal single-pitch images */
+  const showMultiPitchCropUi = _pi > 0;
   const imageRef = useRef<SVGImageElement>(null);
   const shift = useRef(false);
 
@@ -221,249 +238,315 @@ export const SvgEdit = ({
     }
   };
 
-  const btnClass =
-    'flex items-center gap-2 px-3 py-1.5 rounded-md text-[10px] font-black uppercase tracking-widest transition-all border disabled:opacity-30';
-  const activeBtn = 'bg-brand border-brand text-white shadow-sm';
-  const inactiveBtn = 'bg-surface-nav border-surface-border text-slate-400 hover:text-white';
+  const toolBtn = cn(
+    'inline-flex items-center gap-1.5 rounded-md px-2 py-1.5 transition-colors disabled:pointer-events-none disabled:opacity-35',
+    designContract.typography.uiCompact,
+  );
+  /** Active modes — cool / warm cues: text (sky), anchors (amber), trad (orange), path anchor (brand). */
+  const toolBtnOnText = 'bg-sky-500/15 text-sky-200 ring-1 ring-inset ring-sky-400/25';
+  const toolBtnOnAnchor = 'bg-amber-500/12 text-amber-100 ring-1 ring-inset ring-amber-400/25';
+  const toolBtnOnTrad = 'bg-orange-500/12 text-orange-100 ring-1 ring-inset ring-orange-400/25';
+  const toolBtnOnPathAnchor = 'bg-brand/15 text-slate-100 ring-1 ring-inset ring-brand/35';
+  const toolBtnOff = 'text-slate-500 hover:bg-white/[0.05] hover:text-slate-200';
+  const toolBtnReset = 'text-red-400/90 hover:bg-red-500/10 hover:text-red-200';
+
+  const fieldClass = cn(
+    'bg-surface-nav border-surface-border rounded-md border px-2 py-1.5 outline-none focus-visible:ring-2 focus-visible:ring-brand/35',
+    designContract.typography.meta,
+    'text-slate-200',
+  );
 
   return (
-    <div className='mx-auto max-w-6xl space-y-4 p-4' onMouseUp={() => dispatch({ action: 'idle' })}>
-      <div className='bg-surface-card border-surface-border space-y-4 rounded-xl border p-4 shadow-sm'>
-        <title>{`SvgEdit | ${meta.title}`}</title>
-        <div className='flex flex-wrap items-center justify-between gap-4'>
-          <div className='flex flex-wrap gap-2'>
-            <button
-              type='button'
-              className={cn(btnClass, mode === 'add-text' ? activeBtn : inactiveBtn)}
-              onClick={() => setMode(mode === 'add-text' ? 'points' : 'add-text')}
-            >
-              <Type size={14} /> Text
-            </button>
-            <button
-              type='button'
-              className={cn(btnClass, mode === 'add-anchor' ? activeBtn : inactiveBtn)}
-              onClick={() => setMode(mode === 'add-anchor' ? 'points' : 'add-anchor')}
-            >
-              <Anchor size={14} /> Anchors
-            </button>
-            <button
-              type='button'
-              className={cn(btnClass, mode === 'add-trad-belay' ? activeBtn : inactiveBtn)}
-              onClick={() => setMode(mode === 'add-trad-belay' ? 'points' : 'add-trad-belay')}
-            >
-              <Triangle size={14} /> Trad Belay
-            </button>
-            <button
-              type='button'
-              className={cn(btnClass, inactiveBtn)}
-              onClick={() => setHasAnchor(!hasAnchor)}
-              disabled={points.length === 0}
-            >
-              {hasAnchor ? <CheckSquare size={14} className='text-brand' /> : <Square size={14} />} Anchor
-            </button>
-            <button
-              type='button'
-              className={cn(btnClass, 'border-orange-500/20 text-orange-500 hover:bg-orange-500/10')}
-              onClick={() => {
-                setTexts([]);
-                setAnchors([]);
-                setTradBelayStations([]);
-                dispatch({ action: 'reset' });
-              }}
-            >
-              <RotateCcw size={14} /> Reset
-            </button>
-          </div>
-
-          <div className='flex gap-2'>
-            <Link
-              to='/mp4/20230718_SvgEditExample.mp4'
-              target='_blank'
-              className={cn(btnClass, 'border-blue-600/20 bg-blue-600/10 text-blue-400 hover:bg-blue-600/20')}
-            >
-              <Video size={14} /> Video
-            </Link>
-            <button
-              type='button'
-              className={cn(btnClass, 'bg-brand border-brand shadow-brand/20 shadow-lg')}
-              disabled={saving}
-              onClick={() => onSave({ anchors, hasAnchor, path, tradBelayStations, texts })}
-            >
-              {saving ? <Loader2 size={14} className='animate-spin' /> : <Save size={14} />} Save
-            </button>
-            <button
-              type='button'
-              className={cn(btnClass, 'border-red-600/20 bg-red-600/10 text-red-400')}
-              onClick={onCancel}
-            >
-              <X size={14} />
-            </button>
-          </div>
-        </div>
-
-        <div className='border-surface-border flex flex-wrap items-center gap-4 border-t py-2'>
-          {activePoint !== 0 && (
-            <div className='flex items-center gap-2'>
-              <span className='text-[10px] font-black text-slate-500 uppercase'>Segment Type:</span>
-              <select
-                className='bg-surface-nav border-surface-border rounded border px-2 py-1 text-[10px] outline-none'
-                value={isCubicPoint(points[activePoint]) ? 'C' : 'L'}
-                onChange={(e) => dispatch({ action: 'set-type', type: e.target.value === 'C' ? 'curve' : 'line' })}
-              >
-                <option value='L'>Line</option>
-                <option value='C'>Curve</option>
-              </select>
+    <div className='w-full min-w-0' onMouseUp={() => dispatch({ action: 'idle' })}>
+      <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm sm:border'>
+        <div className='divide-y divide-white/6'>
+          <div className='p-3 sm:p-5'>
+            <div className='mb-4 flex min-w-0 flex-nowrap items-start gap-x-2'>
+              <span className='sr-only'>Topo editor</span>
+              <div className='mr-auto flex min-w-0 flex-1 flex-wrap items-center gap-x-1 gap-y-1 sm:gap-x-1.5'>
+                <button
+                  type='button'
+                  className={cn(toolBtn, mode === 'add-text' ? toolBtnOnText : toolBtnOff)}
+                  onClick={() => setMode(mode === 'add-text' ? 'points' : 'add-text')}
+                >
+                  <Type size={14} strokeWidth={2} className={mode === 'add-text' ? 'text-sky-300' : undefined} /> Text
+                </button>
+                <button
+                  type='button'
+                  className={cn(toolBtn, mode === 'add-anchor' ? toolBtnOnAnchor : toolBtnOff)}
+                  onClick={() => setMode(mode === 'add-anchor' ? 'points' : 'add-anchor')}
+                >
+                  <Anchor size={14} strokeWidth={2} className={mode === 'add-anchor' ? 'text-amber-300' : undefined} />{' '}
+                  Anchors
+                </button>
+                <button
+                  type='button'
+                  className={cn(toolBtn, mode === 'add-trad-belay' ? toolBtnOnTrad : toolBtnOff)}
+                  onClick={() => setMode(mode === 'add-trad-belay' ? 'points' : 'add-trad-belay')}
+                >
+                  <Triangle
+                    size={14}
+                    strokeWidth={2}
+                    className={mode === 'add-trad-belay' ? 'text-orange-300' : undefined}
+                  />{' '}
+                  Trad
+                </button>
+                <button
+                  type='button'
+                  className={cn(
+                    toolBtn,
+                    points.length === 0 ? toolBtnOff : hasAnchor ? toolBtnOnPathAnchor : toolBtnOff,
+                  )}
+                  onClick={() => setHasAnchor(!hasAnchor)}
+                  disabled={points.length === 0}
+                >
+                  {hasAnchor ? (
+                    <CheckSquare size={14} className='text-brand' strokeWidth={2} />
+                  ) : (
+                    <Square size={14} strokeWidth={2} />
+                  )}{' '}
+                  Anchor
+                </button>
+                <button
+                  type='button'
+                  className={cn(toolBtn, toolBtnReset)}
+                  onClick={() => {
+                    setTexts([]);
+                    setAnchors([]);
+                    setTradBelayStations([]);
+                    dispatch({ action: 'reset' });
+                  }}
+                >
+                  <RotateCcw size={14} strokeWidth={2} /> Reset
+                </button>
+              </div>
+              <div className='flex shrink-0 flex-nowrap items-center gap-1.5 self-start pt-0.5'>
+                <Link
+                  to='/mp4/20230718_SvgEditExample.mp4'
+                  target='_blank'
+                  rel='noreferrer'
+                  title='How-to video'
+                  aria-label='How-to video'
+                  className={cn(pageActionIconBtn, pageActionIconBtnGlass, 'no-underline')}
+                >
+                  <Video size={14} strokeWidth={2.25} />
+                </Link>
+                <button
+                  type='button'
+                  title='Save'
+                  aria-label='Save'
+                  className={cn(pageActionIconBtn, pageActionIconBtnGreen)}
+                  disabled={saving}
+                  onClick={() => onSave({ anchors, hasAnchor, path, tradBelayStations, texts })}
+                >
+                  {saving ? (
+                    <Loader2 size={14} className='animate-spin' strokeWidth={2.25} />
+                  ) : (
+                    <Save size={14} strokeWidth={2.25} />
+                  )}
+                </button>
+                <button
+                  type='button'
+                  title='Cancel'
+                  aria-label='Cancel and go back to problem'
+                  className={cn(pageActionIconBtn, pageActionIconBtnBrand)}
+                  onClick={onCancel}
+                >
+                  <X size={14} strokeWidth={2.5} />
+                </button>
+              </div>
             </div>
-          )}
-          <button
-            type='button'
-            className={cn(btnClass, 'px-2 py-1')}
-            disabled={points.length === 0}
-            onClick={() => dispatch({ action: 'remove-point' })}
-          >
-            Remove Selected Point
-          </button>
 
-          <div className='ml-auto flex items-center gap-2'>
-            <Settings2 size={14} className='text-slate-500' />
-            <input
-              type='number'
-              className='bg-surface-nav border-surface-border w-16 rounded border px-2 py-1 text-[10px]'
-              placeholder='X'
-              value={customMediaRegion?.x ?? 0}
-              onChange={(e) =>
-                setCustomMediaRegion((prev) => ({
-                  ...(prev ?? { y: 0, width: w, height: h, x: 0 }),
-                  x: +e.target.value,
-                }))
-              }
-            />
-            <input
-              type='number'
-              className='bg-surface-nav border-surface-border w-16 rounded border px-2 py-1 text-[10px]'
-              placeholder='Y'
-              value={customMediaRegion?.y ?? 0}
-              onChange={(e) =>
-                setCustomMediaRegion((prev) => ({
-                  ...(prev ?? { x: 0, width: w, height: h, y: 0 }),
-                  y: +e.target.value,
-                }))
-              }
-            />
-            <button
-              type='button'
-              className={cn(btnClass, 'px-2 py-1')}
-              onClick={() => onUpdateMediaRegion(customMediaRegion ?? null)}
+            <p className={cn(designContract.typography.meta, 'mb-3 text-slate-500')}>
+              Shift+click adds a point on the path.
+            </p>
+
+            <div className='flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2'>
+              {activePoint !== 0 && (
+                <div className='flex min-w-0 items-center gap-2'>
+                  <span className={cn(designContract.typography.label, 'shrink-0 text-slate-500')}>Segment</span>
+                  <select
+                    className={cn(fieldClass, 'min-w-0')}
+                    value={isCubicPoint(points[activePoint]) ? 'C' : 'L'}
+                    onChange={(e) => dispatch({ action: 'set-type', type: e.target.value === 'C' ? 'curve' : 'line' })}
+                  >
+                    <option value='L'>Line</option>
+                    <option value='C'>Curve</option>
+                  </select>
+                </div>
+              )}
+              <button
+                type='button'
+                title='Remove selected point'
+                aria-label='Remove selected point'
+                className={cn(
+                  toolBtn,
+                  'bg-surface-nav border-white/10 text-slate-400 hover:border-red-500/25 hover:bg-red-500/10 hover:text-red-200',
+                  'w-auto shrink-0',
+                )}
+                disabled={points.length === 0}
+                onClick={() => dispatch({ action: 'remove-point' })}
+              >
+                <Trash2 size={14} strokeWidth={2} />
+                <span className='whitespace-nowrap'>Remove</span>
+              </button>
+
+              {showMultiPitchCropUi && (
+                <div className='flex w-full min-w-0 flex-wrap items-center gap-2 border-t border-white/6 pt-3 sm:ml-auto sm:w-auto sm:border-t-0 sm:pt-0'>
+                  <div className='flex items-center gap-1.5 text-slate-500'>
+                    <Settings2 size={14} strokeWidth={2} />
+                    <span className={cn(designContract.typography.label, 'text-slate-500')}>Crop</span>
+                  </div>
+                  <input
+                    type='number'
+                    className={cn(fieldClass, 'w-14 shrink-0 sm:w-16')}
+                    placeholder='X'
+                    value={customMediaRegion?.x ?? 0}
+                    onChange={(e) =>
+                      setCustomMediaRegion((prev) => ({
+                        ...(prev ?? { y: 0, width: w, height: h, x: 0 }),
+                        x: +e.target.value,
+                      }))
+                    }
+                  />
+                  <input
+                    type='number'
+                    className={cn(fieldClass, 'w-14 shrink-0 sm:w-16')}
+                    placeholder='Y'
+                    value={customMediaRegion?.y ?? 0}
+                    onChange={(e) =>
+                      setCustomMediaRegion((prev) => ({
+                        ...(prev ?? { x: 0, width: w, height: h, y: 0 }),
+                        y: +e.target.value,
+                      }))
+                    }
+                  />
+                  <button
+                    type='button'
+                    className={cn(toolBtn, toolBtnOff, 'border-white/10 bg-white/[0.04]')}
+                    onClick={() => onUpdateMediaRegion(customMediaRegion ?? null)}
+                  >
+                    <RefreshCw size={12} strokeWidth={2} /> Apply
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className='border-surface-border relative w-full min-w-0 cursor-crosshair overflow-hidden bg-black select-none'>
+            <svg
+              viewBox={`0 0 ${w} ${h}`}
+              onClick={handleOnClick}
+              onMouseMove={(e) => dispatch({ action: 'mouse-move', ...getMouseCoords(e, true) })}
+              className='block h-auto w-full'
             >
-              <RefreshCw size={12} /> Crop
-            </button>
+              <image
+                ref={imageRef}
+                xlinkHref={getMediaFileUrl(mediaId, versionStamp, false, { mediaRegion })}
+                width='100%'
+                height='100%'
+              />
+              {parseReadOnlySvgs(readOnlySvgs, w, h, 1000)}
+              <path d={path} fill='none' stroke={black} strokeWidth={0.003 * w} />
+              <path d={path} fill='none' stroke='#FF0000' strokeWidth={0.002 * w} />
+
+              {points.map((p, i) => {
+                const handles = isCubicPoint(p) && (
+                  <g className='opacity-50'>
+                    <line
+                      x1={points[i - 1].x}
+                      y1={points[i - 1].y}
+                      x2={p.c[0].x}
+                      y2={p.c[0].y}
+                      stroke={strokeColor}
+                      strokeWidth={0.001 * w}
+                      strokeDasharray='5,5'
+                    />
+                    <line
+                      x1={p.x}
+                      y1={p.y}
+                      x2={p.c[1].x}
+                      y2={p.c[1].y}
+                      stroke={strokeColor}
+                      strokeWidth={0.001 * w}
+                      strokeDasharray='5,5'
+                    />
+                    <circle
+                      cx={p.c[0].x}
+                      cy={p.c[0].y}
+                      r={0.003 * w}
+                      fill={strokeColor}
+                      onMouseDown={(e) => {
+                        e.stopPropagation();
+                        dispatch({ action: 'drag-cubic', index: i, c: 0 });
+                      }}
+                    />
+                    <circle
+                      cx={p.c[1].x}
+                      cy={p.c[1].y}
+                      r={0.003 * w}
+                      fill={strokeColor}
+                      onMouseDown={(e) => {
+                        e.stopPropagation();
+                        dispatch({ action: 'drag-cubic', index: i, c: 1 });
+                      }}
+                    />
+                  </g>
+                );
+                return (
+                  <g key={`${p.x}-${p.y}-${i}`}>
+                    {handles}
+                    <circle
+                      cx={p.x}
+                      cy={p.y}
+                      r={0.005 * w}
+                      fill={activePoint === i ? '#00FF00' : '#FF0000'}
+                      stroke={black}
+                      onMouseDown={(e) => {
+                        e.stopPropagation();
+                        dispatch({ action: 'drag-point', index: i });
+                      }}
+                    />
+                  </g>
+                );
+              })}
+
+              {anchors.map((a, i) => (
+                <circle key={`anchor-${i}`} cx={a.x} cy={a.y} r={0.006 * w} fill='#E2011A' />
+              ))}
+              {tradBelayStations.map((a, i) => (
+                <polygon
+                  key={`trad-${i}`}
+                  fill='#E2011A'
+                  points={`${a.x},${a.y - 0.006 * w} ${a.x - 0.006 * w},${a.y + 0.006 * w} ${a.x + 0.006 * w},${a.y + 0.006 * w}`}
+                />
+              ))}
+              {texts.map((t, i) => (
+                <text key={`text-${i}`} x={t.x} y={t.y} fontSize={0.03 * w} fill='red' fontWeight='bold'>
+                  {t.txt}
+                </text>
+              ))}
+            </svg>
+          </div>
+
+          <div className='p-3 sm:p-4'>
+            <label
+              htmlFor='svg-edit-path'
+              className={cn(designContract.typography.label, 'mb-1.5 block text-slate-500')}
+            >
+              Path
+            </label>
+            <input
+              id='svg-edit-path'
+              className={cn(
+                'border-surface-border bg-surface-nav focus-visible:ring-brand/35 w-full min-w-0 rounded-lg border px-3 py-2 font-mono text-sm text-slate-200 outline-none focus-visible:ring-2',
+              )}
+              value={path || ''}
+              onChange={(e) => dispatch({ action: 'update-path', path: e.target.value })}
+            />
           </div>
         </div>
-      </div>
-
-      <div className='border-surface-border relative cursor-crosshair overflow-hidden rounded-xl border bg-black select-none'>
-        <svg
-          viewBox={`0 0 ${w} ${h}`}
-          onClick={handleOnClick}
-          onMouseMove={(e) => dispatch({ action: 'mouse-move', ...getMouseCoords(e, true) })}
-          className='block h-auto w-full'
-        >
-          <image
-            ref={imageRef}
-            xlinkHref={getMediaFileUrl(mediaId, versionStamp, false, { mediaRegion })}
-            width='100%'
-            height='100%'
-          />
-          {parseReadOnlySvgs(readOnlySvgs, w, h, 1000)}
-          <path d={path} fill='none' stroke={black} strokeWidth={0.003 * w} />
-          <path d={path} fill='none' stroke='#FF0000' strokeWidth={0.002 * w} />
-
-          {points.map((p, i) => {
-            const handles = isCubicPoint(p) && (
-              <g className='opacity-50'>
-                <line
-                  x1={points[i - 1].x}
-                  y1={points[i - 1].y}
-                  x2={p.c[0].x}
-                  y2={p.c[0].y}
-                  stroke={strokeColor}
-                  strokeWidth={0.001 * w}
-                  strokeDasharray='5,5'
-                />
-                <line
-                  x1={p.x}
-                  y1={p.y}
-                  x2={p.c[1].x}
-                  y2={p.c[1].y}
-                  stroke={strokeColor}
-                  strokeWidth={0.001 * w}
-                  strokeDasharray='5,5'
-                />
-                <circle
-                  cx={p.c[0].x}
-                  cy={p.c[0].y}
-                  r={0.003 * w}
-                  fill={strokeColor}
-                  onMouseDown={(e) => {
-                    e.stopPropagation();
-                    dispatch({ action: 'drag-cubic', index: i, c: 0 });
-                  }}
-                />
-                <circle
-                  cx={p.c[1].x}
-                  cy={p.c[1].y}
-                  r={0.003 * w}
-                  fill={strokeColor}
-                  onMouseDown={(e) => {
-                    e.stopPropagation();
-                    dispatch({ action: 'drag-cubic', index: i, c: 1 });
-                  }}
-                />
-              </g>
-            );
-            return (
-              <g key={`${p.x}-${p.y}-${i}`}>
-                {handles}
-                <circle
-                  cx={p.x}
-                  cy={p.y}
-                  r={0.005 * w}
-                  fill={activePoint === i ? '#00FF00' : '#FF0000'}
-                  stroke={black}
-                  onMouseDown={(e) => {
-                    e.stopPropagation();
-                    dispatch({ action: 'drag-point', index: i });
-                  }}
-                />
-              </g>
-            );
-          })}
-
-          {anchors.map((a, i) => (
-            <circle key={`anchor-${i}`} cx={a.x} cy={a.y} r={0.006 * w} fill='#E2011A' />
-          ))}
-          {tradBelayStations.map((a, i) => (
-            <polygon
-              key={`trad-${i}`}
-              fill='#E2011A'
-              points={`${a.x},${a.y - 0.006 * w} ${a.x - 0.006 * w},${a.y + 0.006 * w} ${a.x + 0.006 * w},${a.y + 0.006 * w}`}
-            />
-          ))}
-          {texts.map((t, i) => (
-            <text key={`text-${i}`} x={t.x} y={t.y} fontSize={0.03 * w} fill='red' fontWeight='bold'>
-              {t.txt}
-            </text>
-          ))}
-        </svg>
-      </div>
-
-      <div className='bg-surface-card border-surface-border rounded-xl border p-4'>
-        <input
-          className='bg-surface-nav border-surface-border w-full rounded-lg border px-3 py-2 font-mono text-sm'
-          value={path || ''}
-          onChange={(e) => dispatch({ action: 'update-path', path: e.target.value })}
-        />
-      </div>
+      </Card>
     </div>
   );
 };

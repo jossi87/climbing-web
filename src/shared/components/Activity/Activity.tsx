@@ -81,7 +81,7 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
 
   return (
     <div className='w-full'>
-      <div className={cn(designContract.layout.toolbar, 'mb-0')}>
+      <div className={cn(designContract.layout.toolbar, 'mb-3 sm:mb-5')}>
         <SectionLabel className='hidden text-slate-500 sm:block'>Latest activity</SectionLabel>
 
         <div className={designContract.layout.toolbarActions}>
@@ -103,10 +103,11 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
             </button>
 
             {isFilterOpen && (
-              <div className='bg-surface-card border-surface-border absolute top-full left-0 z-50 mt-1 max-h-60 w-[min(16rem,calc(100vw-1rem))] max-w-[calc(100vw-1rem)] overflow-y-auto rounded-lg border py-1 shadow-2xl sm:right-0 sm:left-auto sm:w-52'>
-                <div className='border-surface-border/50 mb-1 border-b px-4 py-1.5'>
-                  <SectionLabel>Lowest grade</SectionLabel>
+              <div className='bg-surface-card border-surface-border absolute top-full left-0 z-50 mt-1.5 max-h-[min(18rem,70vh)] w-[min(17.5rem,calc(100vw-1.25rem))] overflow-y-auto rounded-xl border py-1.5 shadow-2xl sm:right-0 sm:left-auto sm:w-56'>
+                <div className='border-surface-border/40 px-3 py-2'>
+                  <span className={cn(designContract.typography.label, 'text-slate-500')}>Lowest grade</span>
                 </div>
+                <div className='border-surface-border/35 mb-1 border-t' />
                 {meta.grades
                   .slice()
                   .sort((a, b) => {
@@ -118,12 +119,13 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
                     <button
                       ref={g.id === lowerGradeId ? selectedGradeRef : null}
                       key={g.id}
+                      type='button'
                       className={cn(
                         designContract.typography.menuItem,
-                        'flex w-full items-center justify-between px-4 py-2 text-left transition-colors',
+                        'flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left transition-colors',
                         g.id === lowerGradeId
-                          ? 'bg-white/10 font-semibold text-slate-100'
-                          : 'hover:bg-surface-hover text-slate-400 hover:text-slate-200',
+                          ? 'bg-brand/12 font-semibold text-slate-100'
+                          : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-200',
                       )}
                       onClick={() => {
                         setLowerGradeId(g.id);

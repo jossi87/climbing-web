@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { cn } from '../../../lib/utils';
+import { designContract } from '../../../design/contract';
 import { MessageSquare, X, Check, RefreshCw } from 'lucide-react';
 
 type Media = components['schemas']['Media'];
@@ -110,7 +111,7 @@ const MediaEditModal = ({ save, onCloseWithoutReload, m, numPitches }: Props) =>
               save(m.id ?? 0, description, pitch, trivia);
             }}
             disabled={saving}
-            className='bg-brand hover:bg-brand/90 disabled:bg-brand/50 shadow-brand/20 type-label flex items-center gap-2 rounded-lg px-6 py-2 shadow-lg transition-all'
+            className={cn(designContract.controls.savePrimaryModal, 'rounded-lg disabled:bg-slate-700/60')}
           >
             {saving ? <RefreshCw className='animate-spin' size={14} /> : <Check size={14} />}
             Save

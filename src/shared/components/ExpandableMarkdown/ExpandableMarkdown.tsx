@@ -16,13 +16,16 @@ function contentLikelyExceedsLines(content: string, maxLines: number, charsPerLi
 type Props = {
   /** Markdown source */
   content: string;
+  /** Root wrapper (spacing). */
   className?: string;
+  /** Markdown body only; does not affect the Show more / Show less control. */
+  contentClassName?: string;
 };
 
 /**
  * Collapsible long markdown (Area overview description pattern).
  */
-export const ExpandableMarkdown = ({ content, className }: Props) => {
+export const ExpandableMarkdown = ({ content, className, contentClassName }: Props) => {
   const [expanded, setExpanded] = useState(false);
   const trimmed = content.trim();
   if (!trimmed) return null;
@@ -34,6 +37,7 @@ export const ExpandableMarkdown = ({ content, className }: Props) => {
       <div
         className={cn(
           'text-[13px] leading-relaxed text-slate-300 sm:text-sm [&_p:first-child]:mt-0 [&_p:last-child]:mb-0',
+          contentClassName,
           !expanded && needsToggle && 'max-h-[8.75rem] overflow-hidden',
         )}
       >
@@ -43,7 +47,10 @@ export const ExpandableMarkdown = ({ content, className }: Props) => {
         <button
           type='button'
           onClick={() => setExpanded((x) => !x)}
-          className={designContract.controls.expandableToggle}
+          className={cn(
+            designContract.controls.expandableToggle,
+            'inline-flex min-w-[7.25rem] justify-center tabular-nums',
+          )}
         >
           {expanded ? 'Show less' : 'Show more'}
         </button>

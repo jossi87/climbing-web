@@ -42,7 +42,7 @@ export const SunOnWall = ({ sunFromHour, sunToHour, variant = 'chip', className 
         className={cn(designContract.typography.menuItem, 'inline-flex items-center gap-1 text-slate-300', className)}
         title='Sun on wall'
       >
-        <Sun size={11} strokeWidth={2} className='shrink-0 text-amber-400/85' />
+        <Sun size={11} strokeWidth={2} className='shrink-0 text-slate-500' />
         <span className='font-medium tabular-nums'>{label}</span>
       </span>
     );
@@ -54,13 +54,37 @@ export const SunOnWall = ({ sunFromHour, sunToHour, variant = 'chip', className 
   );
 };
 
-export const SunriseSunset = ({ lat, lng, date }: { lat: number; lng: number; date?: Date }) => {
+type SunriseSunsetProps = {
+  lat: number;
+  lng: number;
+  date?: Date;
+  variant?: 'chip' | 'inline';
+  className?: string;
+};
+
+export const SunriseSunset = ({ lat, lng, date, variant = 'chip', className }: SunriseSunsetProps) => {
   const { sunrise, sunset } = SunCalc.getTimes(date ?? new Date(), lat, lng);
   if (isNaN(sunrise.getTime()) || isNaN(sunset.getTime())) return null;
   const format = (d: Date) => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  const label = `${format(sunrise)}–${format(sunset)}`;
+  if (variant === 'inline') {
+    return (
+      <span
+        className={cn(
+          designContract.typography.menuItem,
+          'inline-flex max-w-full items-center gap-1 text-slate-300',
+          className,
+        )}
+        title='Sunrise and sunset'
+      >
+        <Eye size={11} strokeWidth={2} className='shrink-0 text-slate-500' />
+        <span className='min-w-0 font-medium tabular-nums'>{label}</span>
+      </span>
+    );
+  }
   return (
     <Badge icon={Eye} title='Sunrise and sunset'>
-      {`${format(sunrise)} - ${format(sunset)}`}
+      {label}
     </Badge>
   );
 };

@@ -12,36 +12,55 @@ type Props = {
   ticks: components['schemas']['ProblemTick'][];
 };
 
+function nonEmptyDate(d: string | undefined | null): d is string {
+  return typeof d === 'string' && d.trim().length > 0;
+}
+
+function joinDates(dates: (string | undefined | null)[]) {
+  return dates.filter(nonEmptyDate).join(' · ');
+}
+
+/** Compact list rows for long tick histories. */
+const rowShell = 'group px-3 py-1.5 transition-colors hover:bg-white/[0.015] sm:px-4 sm:py-2';
+
+const quoteBlock = cn(
+  designContract.typography.meta,
+  'mt-1 border-l border-white/10 pl-2.5 leading-snug text-pretty text-slate-400 break-words',
+);
+
 export const ProblemTicks = ({ ticks }: Props) => {
   const safeTicks = ticks ?? [];
 
   if (safeTicks.length === 0) return null;
 
   return (
-    <div className='divide-surface-border/35 divide-y'>
-      {safeTicks.map((t) => {
+    <div className='flex flex-col gap-0.5'>
+      {safeTicks.map((t, index) => {
         const repeats = t.repeats ?? [];
-        let displayDate = t.date || '—';
+        const isSelf = !!t.writable;
+        const displayDate = joinDates([t.date, ...repeats.map((r) => r.date)]);
         let commentContent: ReactNode = null;
 
         if (repeats.length > 0) {
-          displayDate = [displayDate, ...repeats.map((r) => r.date || '—')].join(' · ');
-
           commentContent = (
-            <div className='mt-2 space-y-1.5 border-l border-white/10 pl-3'>
-              <div className={cn(designContract.typography.meta, 'flex gap-2 text-slate-500')}>
-                <span className='font-mono tabular-nums'>{t.date || '—'}</span>
+            <div className={cn(quoteBlock, 'space-y-1')}>
+              <div className='flex flex-wrap gap-x-2 gap-y-0.5'>
+                {nonEmptyDate(t.date) ? (
+                  <span className='font-mono text-[11px] text-slate-500 tabular-nums sm:text-[12px]'>{t.date}</span>
+                ) : null}
                 {t.comment ? (
-                  <span className='min-w-0 flex-1 text-slate-400 italic'>
+                  <span className='min-w-0 flex-1 text-slate-400'>
                     <Linkify>{t.comment}</Linkify>
                   </span>
                 ) : null}
               </div>
               {repeats.map((r, idx) => (
-                <div key={idx} className={cn(designContract.typography.meta, 'flex gap-2 text-slate-500')}>
-                  <span className='font-mono tabular-nums'>{r.date || '—'}</span>
+                <div key={idx} className='flex flex-wrap gap-x-2 gap-y-0.5'>
+                  {nonEmptyDate(r.date) ? (
+                    <span className='font-mono text-[11px] text-slate-500 tabular-nums sm:text-[12px]'>{r.date}</span>
+                  ) : null}
                   {r.comment ? (
-                    <span className='min-w-0 flex-1 text-slate-400 italic'>
+                    <span className='min-w-0 flex-1 text-slate-400'>
                       <Linkify>{r.comment}</Linkify>
                     </span>
                   ) : null}
@@ -51,62 +70,72 @@ export const ProblemTicks = ({ ticks }: Props) => {
           );
         } else if (t.comment) {
           commentContent = (
-            <p
-              className={cn(
-                designContract.typography.meta,
-                'mt-1.5 border-l border-white/10 pl-3 text-slate-400 italic',
-              )}
-            >
+            <div className={quoteBlock}>
               <Linkify>{t.comment}</Linkify>
-            </p>
+            </div>
           );
         }
 
         return (
-          <div
-            key={`${t.idUser}-${t.date}`}
-            className={cn(
-              'py-3 first:pt-0 last:pb-0',
-              t.writable && 'rounded-md bg-orange-500/[0.06] ring-1 ring-orange-500/25',
-            )}
-          >
-            <div className='flex items-start gap-3'>
-              <div className='mt-0.5 shrink-0'>
+          <div key={t.id != null ? `tick-${t.id}` : `tick-${t.idUser}-${index}`} className={rowShell}>
+            <div className='flex items-start gap-2 sm:gap-2.5'>
+              <div className='shrink-0'>
                 <ClickableAvatar
                   name={t.name}
                   mediaId={t.mediaId}
                   mediaVersionStamp={t.mediaVersionStamp}
-                  size='tiny'
+                  size='mini'
+                  className={cn(isSelf && 'border-emerald-400/30 ring-1 ring-emerald-400/20')}
                 />
               </div>
 
               <div className='min-w-0 flex-1'>
-                <div className='flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5'>
+                <div
+                  className={cn(
+                    designContract.typography.body,
+                    'min-w-0 text-[13px] leading-snug text-pretty text-slate-300 sm:text-sm',
+                  )}
+                >
                   <Link
                     to={`/user/${t.idUser}`}
-                    className={cn(designContract.typography.body, 'font-semibold text-slate-200 hover:text-slate-100')}
+                    className={cn(
+                      designContract.typography.listLink,
+                      isSelf
+                        ? 'font-semibold text-emerald-400 hover:text-emerald-300'
+                        : designContract.typography.listEmphasis,
+                    )}
                   >
                     {t.name}
                   </Link>
-                  <span className={cn(designContract.typography.meta, 'shrink-0 text-slate-500 tabular-nums')}>
-                    {displayDate}
-                  </span>
-                </div>
-
-                <div className='mt-1 flex flex-wrap items-center gap-x-2 gap-y-1'>
                   {t.noPersonalGrade ? (
+                    <>
+                      {' '}
+                      <span
+                        className={cn(designContract.typography.meta, 'inline-flex items-center gap-1 text-slate-500')}
+                      >
+                        <X size={10} className='inline shrink-0 opacity-70' strokeWidth={2.5} />
+                        No personal grade
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      {' '}
+                      <span className={cn(designContract.typography.grade, 'text-slate-400')}>{t.suggestedGrade}</span>
+                    </>
+                  )}
+                  <span className='ml-1 inline-flex origin-left align-middle opacity-80'>
+                    <Stars numStars={t.stars ?? 0} includeStarOutlines size={11} />
+                  </span>
+                  {displayDate ? (
                     <span
                       className={cn(
-                        designContract.surfaces.inlineChip,
-                        'py-0.5 text-[10px] font-medium text-slate-500',
+                        designContract.typography.meta,
+                        'ml-1.5 inline text-slate-500 tabular-nums transition-colors group-hover:text-slate-400',
                       )}
                     >
-                      <X size={10} className='inline shrink-0' /> No personal grade
+                      {displayDate}
                     </span>
-                  ) : (
-                    <span className={cn(designContract.typography.grade, 'text-slate-300')}>{t.suggestedGrade}</span>
-                  )}
-                  <Stars numStars={t.stars ?? 0} includeStarOutlines />
+                  ) : null}
                 </div>
 
                 {commentContent}

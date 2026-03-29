@@ -1,6 +1,14 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ExternalLink, Search as SearchIcon } from 'lucide-react';
+import {
+  ExternalLink,
+  MapPin,
+  Mountain,
+  Search as SearchIcon,
+  Spline,
+  UserCircle,
+  type LucideIcon,
+} from 'lucide-react';
 import { getMediaFileUrl, useSearch } from '../../../api';
 import { useMeta } from '../Meta/context';
 import { LockSymbol } from '../../ui/Indicators';
@@ -22,9 +30,60 @@ type SearchResult = {
   pageViews?: number;
 };
 
+type SearchEntityKind = 'area' | 'sector' | 'problem' | 'user' | 'unknown';
+
+/**
+ * Search API often returns problem titles as `Name (grade)`. Match problem lists elsewhere
+ * by showing the grade with {@link designContract.typography.grade} instead of parentheses.
+ */
+function splitSearchProblemTitle(title: string): { name: string; grade: string | null } {
+  const t = title.trim();
+  const m = t.match(/^(.*)\s+\(([^)]+)\)\s*$/);
+  if (!m) return { name: t, grade: null };
+  const inner = m[2].trim();
+  if (inner.length === 0 || inner.length > 18) return { name: t, grade: null };
+  if (/,/.test(inner)) return { name: t, grade: null };
+  return { name: m[1].trim(), grade: inner };
+}
+
+function getSearchEntityKind(result: SearchResult): SearchEntityKind {
+  if (result.externalUrl) return 'unknown';
+  const u = result.url ?? '';
+  if (u.startsWith('/area/')) return 'area';
+  if (u.startsWith('/sector/')) return 'sector';
+  if (u.startsWith('/problem/')) return 'problem';
+  if (u.startsWith('/user/')) return 'user';
+  return 'unknown';
+}
+
+/** Icons align with header Areas (MapPin), FrontpageStats topos (Spline) / coordinates (MapPin). */
+function getSearchFallbackMeta(
+  kind: SearchEntityKind,
+  site: { isBouldering: boolean; isClimbing: boolean },
+): { Icon: LucideIcon; label: string } {
+  switch (kind) {
+    case 'area':
+      return { Icon: MapPin, label: 'Area' };
+    case 'sector':
+      return { Icon: Mountain, label: 'Sector' };
+    case 'problem':
+      return {
+        Icon: site.isClimbing ? Spline : MapPin,
+        label: site.isBouldering ? 'Boulder' : 'Route',
+      };
+    case 'user':
+      return { Icon: UserCircle, label: 'User' };
+    default:
+      return { Icon: SearchIcon, label: 'Result' };
+  }
+}
+
+const FALLBACK_THUMB_CLASS = 'border-white/5 bg-surface-nav group-hover:border-brand/30 transition-colors';
+const FALLBACK_ICON_CLASS = 'shrink-0 text-slate-500 group-hover:text-slate-400';
+
 const SearchBox = () => {
   const navigate = useNavigate();
-  const { isBouldering } = useMeta();
+  const { isBouldering, isClimbing } = useMeta();
   const { search, isPending, data } = useSearch();
   const [value, setValue] = useState(() =>
     typeof window !== 'undefined' ? (sessionStorage.getItem(SEARCH_QUERY_KEY) ?? '') : '',
@@ -134,6 +193,13 @@ const SearchBox = () => {
               const mediaId = Number(result?.mediaId) || 0;
               const versionStamp = result?.mediaVersionStamp || 0;
               const imageSrc = mediaId > 0 ? getMediaFileUrl(mediaId, versionStamp, false, { minDimension: 48 }) : null;
+              const entityKind = getSearchEntityKind(result);
+              const fallback = getSearchFallbackMeta(entityKind, { isBouldering, isClimbing });
+              const FallbackIcon = fallback.Icon;
+              const problemTitle =
+                entityKind === 'problem' && !result.externalUrl
+                  ? splitSearchProblemTitle(result.title ?? '')
+                  : { name: result.title ?? '', grade: null as string | null };
 
               return (
                 <button
@@ -144,22 +210,45 @@ const SearchBox = () => {
                     idx === activeIndex && 'bg-brand/10 border-brand/30 border',
                   )}
                 >
-                  <div className='bg-surface-nav group-hover:border-brand/30 flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-md border border-white/5 transition-colors'>
+                  <div
+                    title={result.externalUrl ? 'External link' : imageSrc ? undefined : `${fallback.label} (no photo)`}
+                    className={cn(
+                      'flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg border',
+                      FALLBACK_THUMB_CLASS,
+                    )}
+                  >
                     {result.externalUrl ? (
                       <ExternalLink size={18} className='group-hover:text-brand text-slate-500' />
                     ) : imageSrc ? (
                       <img src={imageSrc} className='h-full w-full object-cover' alt='' />
                     ) : (
-                      <SearchIcon size={18} className='group-hover:text-brand text-slate-600' />
+                      <FallbackIcon size={20} strokeWidth={2} className={FALLBACK_ICON_CLASS} />
                     )}
                   </div>
 
                   <div className='min-w-0 flex-1'>
                     <div className='flex items-baseline justify-between gap-2'>
                       <div
-                        className={cn('type-body truncate font-semibold', result.externalUrl && 'italic opacity-80')}
+                        className={cn(
+                          'type-body min-w-0 truncate',
+                          result.externalUrl ? 'font-semibold italic opacity-80' : 'font-semibold',
+                        )}
                       >
-                        {result.title}
+                        {result.externalUrl ? (
+                          result.title
+                        ) : (
+                          <>
+                            {problemTitle.name}
+                            {problemTitle.grade ? (
+                              <>
+                                {' '}
+                                <span className={cn(designContract.typography.grade, 'font-normal text-slate-500')}>
+                                  {problemTitle.grade}
+                                </span>
+                              </>
+                            ) : null}
+                          </>
+                        )}
                         <LockSymbol lockedAdmin={!!result.lockedAdmin} lockedSuperadmin={!!result.lockedSuperadmin} />
                       </div>
                       {result.pageViews && (

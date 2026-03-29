@@ -426,7 +426,7 @@ export const ProblemList = ({
     }
 
     return (
-      <div className={cn('mt-4 flex flex-col', mode === 'user' ? 'gap-0.5' : 'gap-2 md:mt-3 md:gap-1.5')}>
+      <div className={cn('mt-4 flex flex-col', mode === 'user' ? 'gap-0.5' : 'gap-0 md:mt-3')}>
         {filtered.map(({ element }) => element)}
       </div>
     );

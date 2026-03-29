@@ -1,4 +1,4 @@
-import { type ComponentProps, useMemo, useState } from 'react';
+import { Fragment, type ComponentProps, type ReactNode, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import ChartGradeDistribution from '../../shared/components/ChartGradeDistribution/ChartGradeDistribution';
 import Top from '../../shared/components/Top/Top';
@@ -9,7 +9,6 @@ import Media from '../../shared/components/Media/Media';
 import Todo from '../../shared/components/Todo/Todo';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { Stars, LockSymbol } from '../../shared/ui/Indicators';
-import { SunOnWall } from '../../shared/components/Widgets/ClimbingWidgets';
 import { ConditionLabels } from '../../shared/components/Widgets/ConditionLabels';
 import { ExternalLinkLabels } from '../../shared/components/Widgets/ExternalLinkLabels';
 import { useMeta } from '../../shared/components/Meta/context';
@@ -18,7 +17,7 @@ import { ExpandableMarkdown } from '../../shared/components/ExpandableMarkdown';
 import ProblemList from '../../shared/components/ProblemList';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { DownloadButton } from '../../shared/ui/DownloadButton';
-import { Card } from '../../shared/ui';
+import { Card, PageCardBreadcrumbRow } from '../../shared/ui';
 import {
   ChevronRight,
   Plus,
@@ -30,6 +29,7 @@ import {
   Trophy,
   Bookmark,
   MapPin,
+  Mountain,
   Brush,
   Film,
   CheckCircle2,
@@ -54,16 +54,17 @@ const SectorListItem = ({ sectorName, problem }: Props) => {
     : null;
   const ascents = problem.numTicks && problem.numTicks === 1 ? '1 ascent' : (problem.numTicks ?? 0) + ' ascents';
 
-  let faTypeAscents = problem.fa;
+  let faTypeAscents = (problem.fa ?? '').trim();
   if (problem.faDate) {
-    faTypeAscents += ' ' + problem.faDate.substring(0, 4);
+    const y = problem.faDate.substring(0, 4);
+    faTypeAscents = faTypeAscents ? `${faTypeAscents} ${y}` : y;
   }
   if (type && ascents) {
-    faTypeAscents = (faTypeAscents != null ? faTypeAscents + ' (' : '(') + type + ', ' + ascents + ')';
+    faTypeAscents = (faTypeAscents ? `${faTypeAscents} (` : '(') + type + ', ' + ascents + ')';
   } else if (type) {
-    faTypeAscents = (faTypeAscents != null ? faTypeAscents + ' (' : '(') + type + ')';
+    faTypeAscents = (faTypeAscents ? `${faTypeAscents} (` : '(') + type + ')';
   } else if (ascents) {
-    faTypeAscents = (faTypeAscents != null ? faTypeAscents + ' (' : '(') + ascents + ')';
+    faTypeAscents = (faTypeAscents ? `${faTypeAscents} (` : '(') + ascents + ')';
   }
 
   const hasTrailIcons =
@@ -73,6 +74,82 @@ const SectorListItem = ({ sectorName, problem }: Props) => {
     !!problem.hasMovies ||
     !!problem.ticked ||
     !!problem.todo;
+
+  const trailBlock = hasTrailIcons ? (
+    <span className='inline-flex flex-wrap items-center gap-x-1.5 gap-y-0.5 align-middle text-slate-500'>
+      {problem.coordinates && (
+        <span title='Coordinates'>
+          <MapPin size={12} />
+        </span>
+      )}
+      {problem.hasTopo && (
+        <span title='Topo'>
+          <Brush size={12} />
+        </span>
+      )}
+      {problem.hasImages && (
+        <span title='Images'>
+          <ImageIcon size={12} />
+        </span>
+      )}
+      {problem.hasMovies && (
+        <span title='Movies'>
+          <Film size={12} />
+        </span>
+      )}
+      {problem.ticked && (
+        <span title='Ticked'>
+          <CheckCircle2 size={12} className='text-green-500' />
+        </span>
+      )}
+      {problem.todo && (
+        <span title='To-Do'>
+          <Bookmark size={12} className='text-blue-500' />
+        </span>
+      )}
+    </span>
+  ) : null;
+
+  const metaPieces: ReactNode[] = [];
+  if (faTypeAscents)
+    metaPieces.push(
+      <span key='fa' className='text-slate-400'>
+        {faTypeAscents}
+      </span>,
+    );
+  if (problem.rock)
+    metaPieces.push(
+      <span key='rock' className='font-medium text-slate-400 not-italic'>
+        Rock: {problem.rock}.
+      </span>,
+    );
+  if (problem.comment)
+    metaPieces.push(
+      <span key='c' className='text-slate-500 italic'>
+        {problem.comment}
+      </span>,
+    );
+
+  const metaBlock =
+    metaPieces.length > 0 ? (
+      <span className={cn(designContract.typography.meta, 'text-slate-500')}>
+        {metaPieces.map((node, i) => (
+          <Fragment key={i}>
+            {i > 0 ? <span className='text-slate-600'> · </span> : null}
+            {node}
+          </Fragment>
+        ))}
+      </span>
+    ) : null;
+
+  const sectorBlock = (
+    <>
+      <span className={designContract.typography.meta}>{sectorName}</span>
+      <LockSymbol lockedAdmin={!!problem.lockedAdmin} lockedSuperadmin={!!problem.lockedSuperadmin} />
+    </>
+  );
+
+  const tailBlocks = [trailBlock, metaBlock].filter(Boolean);
 
   return (
     <div
@@ -112,59 +189,13 @@ const SectorListItem = ({ sectorName, problem }: Props) => {
           </span>
         ) : null}
         <span className='text-slate-600'> · </span>
-        <span className={designContract.typography.meta}>{sectorName}</span>
-        <LockSymbol lockedAdmin={!!problem.lockedAdmin} lockedSuperadmin={!!problem.lockedSuperadmin} />
-        {hasTrailIcons ? (
-          <>
+        {sectorBlock}
+        {tailBlocks.map((block, i) => (
+          <Fragment key={i}>
             <span className='text-slate-600'> · </span>
-            <span className='inline-flex flex-wrap items-center gap-x-1.5 gap-y-0.5 align-middle text-slate-500'>
-              {problem.coordinates && (
-                <span title='Coordinates'>
-                  <MapPin size={12} />
-                </span>
-              )}
-              {problem.hasTopo && (
-                <span title='Topo'>
-                  <Brush size={12} />
-                </span>
-              )}
-              {problem.hasImages && (
-                <span title='Images'>
-                  <ImageIcon size={12} />
-                </span>
-              )}
-              {problem.hasMovies && (
-                <span title='Movies'>
-                  <Film size={12} />
-                </span>
-              )}
-              {problem.ticked && (
-                <span title='Ticked'>
-                  <CheckCircle2 size={12} className='text-green-500' />
-                </span>
-              )}
-              {problem.todo && (
-                <span title='To-Do'>
-                  <Bookmark size={12} className='text-blue-500' />
-                </span>
-              )}
-            </span>
-          </>
-        ) : null}
-        {(faTypeAscents || problem.rock || problem.comment) && (
-          <>
-            <span className='text-slate-600'> · </span>
-            <span className={cn(designContract.typography.meta, 'text-slate-500')}>
-              {faTypeAscents ? <span className='text-slate-400'>{faTypeAscents}</span> : null}
-              {faTypeAscents && (problem.rock || problem.comment) ? <span className='text-slate-600'> · </span> : null}
-              {problem.rock ? (
-                <span className='font-medium text-slate-400 not-italic'>Rock: {problem.rock}.</span>
-              ) : null}
-              {problem.rock && problem.comment ? <span className='text-slate-600'> · </span> : null}
-              {problem.comment ? <span className='text-slate-500 italic'>{problem.comment}</span> : null}
-            </span>
-          </>
-        )}
+            {block}
+          </Fragment>
+        ))}
       </p>
     </div>
   );
@@ -331,37 +362,42 @@ const Area = () => {
 
       <Card flush className='min-w-0 border-0 sm:border'>
         <div className='relative p-4 sm:p-5'>
-          {meta.isAdmin && (
-            <div className='absolute top-4 right-4 z-10 inline-flex items-center gap-1.5 sm:top-5 sm:right-5'>
-              <Link
-                to={`/area/edit/${data.id}`}
-                title='Edit area'
-                aria-label='Edit area'
-                className='inline-flex h-8 w-8 items-center justify-center rounded-full border border-amber-300/45 bg-amber-400/18 text-amber-100 transition-colors hover:bg-amber-400/28'
-              >
-                <Edit size={12} />
-              </Link>
-              <Link
-                to={`/sector/edit/${data.id}/0`}
-                title='Add sector'
-                aria-label='Add sector'
-                className='inline-flex h-8 w-8 items-center justify-center rounded-full border border-green-400/40 bg-green-500/20 text-green-300 transition-colors hover:bg-green-500/30 hover:text-green-200'
-              >
-                <Plus size={12} />
-              </Link>
-            </div>
-          )}
-
-          <nav className='mb-4 flex flex-wrap items-center gap-1.5 text-[11px] text-slate-500 sm:text-[12px]'>
-            <Link to='/areas' className='transition-colors hover:text-slate-300'>
-              Areas
-            </Link>
-            <ChevronRight size={12} className='shrink-0 opacity-30' />
-            <span className='flex items-center gap-1.5 text-slate-400'>
-              {data.name}
-              <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
-            </span>
-          </nav>
+          <PageCardBreadcrumbRow
+            breadcrumb={
+              <nav className='block min-w-0 text-[11px] leading-relaxed text-pretty break-words text-slate-500 sm:text-[12px] [&>*+*]:ml-1.5'>
+                <Link to='/areas' className='inline align-middle transition-colors hover:text-slate-300'>
+                  Areas
+                </Link>
+                <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
+                <span className='inline-flex max-w-full min-w-0 items-center gap-1.5 align-middle text-slate-400'>
+                  <span className='min-w-0 font-medium'>{data.name}</span>
+                  <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
+                </span>
+              </nav>
+            }
+            actions={
+              meta.isAdmin ? (
+                <>
+                  <Link
+                    to={`/area/edit/${data.id}`}
+                    title='Edit area'
+                    aria-label='Edit area'
+                    className='inline-flex h-8 w-8 items-center justify-center rounded-full border border-amber-300/45 bg-amber-400/18 text-amber-100 transition-colors hover:bg-amber-400/28'
+                  >
+                    <Edit size={12} />
+                  </Link>
+                  <Link
+                    to={`/sector/edit/${data.id}/0`}
+                    title='Add sector'
+                    aria-label='Add sector'
+                    className='inline-flex h-8 w-8 items-center justify-center rounded-full border border-green-400/40 bg-green-500/20 text-green-300 transition-colors hover:bg-green-500/30 hover:text-green-200'
+                  >
+                    <Plus size={12} />
+                  </Link>
+                </>
+              ) : null
+            }
+          />
 
           {data.accessClosed || data.noDogsAllowed || data.accessInfo ? (
             <div className='mt-1 min-w-0 space-y-2 text-[12px] leading-relaxed sm:text-[13px]'>
@@ -378,35 +414,33 @@ const Area = () => {
 
         {tabs.length > 0 && (
           <>
-            <div className='border-surface-border border-t'>
-              <div
-                className={designContract.controls.tabBarRow}
-                style={{ display: 'grid', gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
-                role='tablist'
-                aria-label='Area sections'
-              >
-                {tabs.map((t) => {
-                  const IconComp = t.icon;
-                  const isActive = effectiveTab === t.id;
-                  return (
-                    <button
-                      key={t.id}
-                      type='button'
-                      role='tab'
-                      aria-selected={isActive}
-                      onClick={() => setActiveTab(t.id)}
-                      className={tabBarButtonClassName(isActive)}
-                    >
-                      <IconComp size={12} strokeWidth={isActive ? 2.3 : 2} className={tabBarIconClassName(isActive)} />
-                      <span className='block min-w-0 truncate leading-none'>{t.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
+            <div
+              className={designContract.controls.tabBarRow}
+              style={{ display: 'grid', gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
+              role='tablist'
+              aria-label='Area sections'
+            >
+              {tabs.map((t) => {
+                const IconComp = t.icon;
+                const isActive = effectiveTab === t.id;
+                return (
+                  <button
+                    key={t.id}
+                    type='button'
+                    role='tab'
+                    aria-selected={isActive}
+                    onClick={() => setActiveTab(t.id)}
+                    className={tabBarButtonClassName(isActive)}
+                  >
+                    <IconComp size={12} strokeWidth={isActive ? 2.3 : 2} className={tabBarIconClassName(isActive)} />
+                    <span className='block min-w-0 truncate leading-none'>{t.label}</span>
+                  </button>
+                );
+              })}
             </div>
 
             {effectiveTab !== 'activity' && (
-              <div className='border-surface-border/40 border-t'>
+              <div>
                 {effectiveTab === 'overview' && (
                   <div className='space-y-4 p-4 sm:p-5'>
                     {(data.media?.length ?? 0) > 0 && (
@@ -446,7 +480,7 @@ const Area = () => {
                     </div>
 
                     {(data.comment ?? '').trim().length > 0 && (
-                      <ExpandableMarkdown key={data.id} content={data.comment ?? ''} />
+                      <ExpandableMarkdown key={data.id} content={data.comment ?? ''} contentClassName='max-w-none' />
                     )}
 
                     {(data.triviaMedia?.length ?? 0) > 0 && (
@@ -549,80 +583,96 @@ const Area = () => {
           <div className='min-w-0'>
             {activeSectorTab === 'sectors' ? (
               <div className='grid min-w-0 grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4 xl:grid-cols-5'>
-                {data.sectors?.map((sector) => (
-                  <Card
-                    key={sector.id}
-                    flush
-                    className='h-full max-w-full min-w-0 overflow-hidden rounded-xl border border-white/10 shadow-lg ring-1 ring-white/10 max-sm:!mx-0 max-sm:!w-full sm:border sm:shadow-xl sm:ring-0'
-                  >
-                    <Link
-                      to={`/sector/${sector.id}`}
-                      className='group relative block min-h-[12rem] overflow-hidden rounded-xl sm:min-h-[14rem] md:min-h-[15rem]'
+                {data.sectors?.map((sector) => {
+                  const sectorHasThumb = !!sector.randomMediaId;
+                  return (
+                    <Card
+                      key={sector.id}
+                      flush
+                      className='h-full max-w-full min-w-0 overflow-hidden rounded-xl border border-white/10 shadow-lg ring-1 ring-white/10 max-sm:!mx-0 max-sm:!w-full sm:border sm:shadow-xl sm:ring-0'
                     >
-                      <img
-                        className='absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105'
-                        src={
-                          sector.randomMediaId
-                            ? getMediaFileUrl(sector.randomMediaId, sector.randomMediaVersionStamp ?? 0, false, {
-                                minDimension: 400,
-                              })
-                            : '/png/image.png'
-                        }
-                        alt=''
-                      />
-                      <div className='absolute inset-0 bg-linear-to-t from-black/95 via-black/55 to-black/20' />
-                      <div className='absolute inset-0 bg-black/25 opacity-0 transition-opacity duration-300 group-hover:opacity-100' />
-                      <div className='relative flex min-h-[12rem] flex-col justify-end p-2.5 sm:min-h-[14rem] sm:p-3 md:min-h-[15rem] md:p-4'>
-                        <div className='flex items-start justify-between gap-2'>
-                          <h4 className='type-h2 line-clamp-2 min-w-0 flex-1 text-[0.95rem] leading-tight drop-shadow-md sm:text-[1.1rem] md:text-[1.25rem]'>
-                            {sector.name}
-                          </h4>
-                          <span className='shrink-0 drop-shadow'>
-                            <LockSymbol
-                              lockedAdmin={!!sector.lockedAdmin}
-                              lockedSuperadmin={!!sector.lockedSuperadmin}
-                            />
-                          </span>
-                        </div>
-                        <div className='type-micro mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 font-normal text-slate-500 sm:mt-2 [&_span]:font-normal [&_span]:text-slate-400'>
-                          <SunOnWall
-                            variant='inline'
-                            className='text-slate-500 [&_span]:text-slate-400 [&_span]:tabular-nums'
-                            sunFromHour={sector.sunFromHour ?? 0}
-                            sunToHour={sector.sunToHour ?? 0}
+                      <Link
+                        to={`/sector/${sector.id}`}
+                        className='group relative block min-h-[12rem] overflow-hidden rounded-xl sm:min-h-[14rem] md:min-h-[15rem]'
+                      >
+                        <div
+                          className='absolute inset-0 bg-gradient-to-br from-slate-600 via-slate-800 to-slate-950'
+                          aria-hidden
+                        />
+                        <div
+                          className='pointer-events-none absolute inset-0 z-[1] flex items-center justify-center bg-[radial-gradient(ellipse_85%_70%_at_50%_42%,rgba(148,163,184,0.22),transparent_65%)]'
+                          aria-hidden
+                        >
+                          <Mountain
+                            className='h-[4.5rem] w-[4.5rem] text-slate-300/55 sm:h-[5.25rem] sm:w-[5.25rem] md:h-24 md:w-24'
+                            strokeWidth={1.15}
                           />
                         </div>
-                        {sector.typeNumTickedTodo && sector.typeNumTickedTodo.length > 0 && (
-                          <div className='mt-1.5 flex flex-wrap items-center gap-1 sm:mt-2'>
-                            {sector.typeNumTickedTodo.map((x) => {
-                              const tickTodo = [x.ticked && `${x.ticked} ticked`, x.todo && `${x.todo} todo`]
-                                .filter(Boolean)
-                                .join(', ');
-                              return (
-                                <div
-                                  key={x.type}
-                                  title={[x.type, `${x.num}`, tickTodo].filter(Boolean).join(' · ')}
-                                  className='inline-flex max-w-[min(100%,11rem)] min-w-0 items-center gap-x-0.5 rounded-full border border-white/15 bg-white/[0.08] px-1.5 py-px text-[7px] leading-tight text-slate-200 shadow-sm backdrop-blur-md sm:text-[8px]'
-                                >
-                                  <span className='min-w-0 truncate font-medium text-slate-300'>{x.type}</span>
-                                  <span className='shrink-0 font-semibold text-slate-50 tabular-nums'>{x.num}</span>
-                                  {tickTodo ? (
-                                    <span className='min-w-0 truncate text-slate-400'>· {tickTodo}</span>
-                                  ) : null}
-                                </div>
-                              );
+                        {sectorHasThumb ? (
+                          <img
+                            className='absolute inset-0 z-[2] h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105'
+                            src={getMediaFileUrl(sector.randomMediaId!, sector.randomMediaVersionStamp ?? 0, false, {
+                              minDimension: 400,
                             })}
+                            alt=''
+                            onError={(e) => {
+                              (e.currentTarget as HTMLImageElement).style.display = 'none';
+                            }}
+                          />
+                        ) : null}
+                        <div
+                          className={cn(
+                            'absolute inset-0 z-[3]',
+                            sectorHasThumb
+                              ? 'bg-linear-to-t from-black/95 via-black/55 to-black/20'
+                              : 'bg-linear-to-t from-black/90 via-black/40 to-slate-800/25',
+                          )}
+                        />
+                        <div className='absolute inset-0 z-[3] bg-black/25 opacity-0 transition-opacity duration-300 group-hover:opacity-100' />
+                        <div className='relative z-[4] flex min-h-[12rem] flex-col justify-end p-2.5 sm:min-h-[14rem] sm:p-3 md:min-h-[15rem] md:p-4'>
+                          <div className='flex items-start justify-between gap-2'>
+                            <h4 className='type-h2 line-clamp-2 min-w-0 flex-1 text-[0.95rem] leading-tight drop-shadow-md sm:text-[1.1rem] md:text-[1.25rem]'>
+                              {sector.name}
+                            </h4>
+                            <span className='shrink-0 drop-shadow'>
+                              <LockSymbol
+                                lockedAdmin={!!sector.lockedAdmin}
+                                lockedSuperadmin={!!sector.lockedSuperadmin}
+                              />
+                            </span>
                           </div>
-                        )}
-                        {sector.accessClosed && (
-                          <p className='type-micro mt-1 font-semibold text-red-300/95 drop-shadow'>
-                            {sector.accessClosed}
-                          </p>
-                        )}
-                      </div>
-                    </Link>
-                  </Card>
-                ))}
+                          {sector.typeNumTickedTodo && sector.typeNumTickedTodo.length > 0 && (
+                            <div className='mt-1.5 flex flex-wrap items-center gap-1 sm:mt-2'>
+                              {sector.typeNumTickedTodo.map((x) => {
+                                const tickTodo = [x.ticked && `${x.ticked} ticked`, x.todo && `${x.todo} todo`]
+                                  .filter(Boolean)
+                                  .join(', ');
+                                return (
+                                  <div
+                                    key={x.type}
+                                    title={[x.type, `${x.num}`, tickTodo].filter(Boolean).join(' · ')}
+                                    className='inline-flex max-w-[min(100%,11rem)] min-w-0 items-center gap-x-0.5 rounded-full border border-white/15 bg-white/[0.08] px-1.5 py-px text-[7px] leading-tight text-slate-200 shadow-sm backdrop-blur-md sm:text-[8px]'
+                                  >
+                                    <span className='min-w-0 truncate font-medium text-slate-300'>{x.type}</span>
+                                    <span className='shrink-0 font-semibold text-slate-50 tabular-nums'>{x.num}</span>
+                                    {tickTodo ? (
+                                      <span className='min-w-0 truncate text-slate-400'>· {tickTodo}</span>
+                                    ) : null}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                          {sector.accessClosed && (
+                            <p className='type-micro mt-1 font-semibold text-red-300/95 drop-shadow'>
+                              {sector.accessClosed}
+                            </p>
+                          )}
+                        </div>
+                      </Link>
+                    </Card>
+                  );
+                })}
               </div>
             ) : (
               <Card
@@ -644,7 +694,7 @@ const Area = () => {
       )}
 
       {effectiveTab === 'activity' && (
-        <div className='mt-4 min-w-0'>
+        <div className='mt-6 min-w-0 sm:mt-8'>
           <Activity idArea={data.id ?? 0} idSector={0} />
         </div>
       )}

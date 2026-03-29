@@ -24,23 +24,20 @@ export const LazyMedia = ({
         <Link
           key={m.id}
           to={`/problem/${problemId ?? 0}/${m.id ?? 0}`}
-          className='sm:h-thumbnail-h sm:w-thumbnail-w group border-surface-border bg-surface-card relative block aspect-square shrink-0 overflow-hidden rounded-md border transition-all active:scale-95 sm:rounded-lg'
+          className='sm:h-thumbnail-h sm:w-thumbnail-w group border-surface-border bg-surface-card relative block aspect-square min-w-0 shrink-0 overflow-hidden rounded-md border transition-all active:scale-95 sm:rounded-lg'
         >
           {inView ? (
-            <img
-              src={getMediaFileUrl(Number(m.id ?? 0), Number(m.versionStamp ?? 0), false, {
-                minDimension: 200,
-              })}
+            <div
+              role='img'
+              aria-label='Activity media'
               className={cn(
-                'animate-in fade-in fill-mode-both h-full max-h-[60vh] w-full object-cover transition-all duration-500 ease-out group-hover:scale-110',
+                'animate-in fade-in fill-mode-both absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-500 ease-out group-hover:scale-110',
                 m.movie && 'brightness-90 group-hover:brightness-100',
               )}
-              alt='Activity media'
-              loading='lazy'
-              decoding='async'
-              onError={(e) => {
-                e.currentTarget.onerror = null;
-                e.currentTarget.src = '/png/video_placeholder.png';
+              style={{
+                backgroundImage: `url(${JSON.stringify(
+                  getMediaFileUrl(Number(m.id ?? 0), Number(m.versionStamp ?? 0), false, { minDimension: 200 }),
+                )})`,
               }}
             />
           ) : (

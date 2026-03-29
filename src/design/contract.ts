@@ -56,23 +56,36 @@ export const designContract = {
       'bg-surface-nav border-surface-border inline-flex max-w-full min-w-0 items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs text-slate-300',
     inlineChipInteractive:
       'bg-surface-nav border-surface-border inline-flex max-w-full min-w-0 items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs text-slate-300 transition-colors hover:border-white/15',
+    /**
+     * Ring chip for downloads, map links, and other meta actions — matches {@link DownloadButton}.
+     */
+    metaChipInteractive:
+      'inline-flex max-w-full cursor-pointer items-center gap-1 rounded-md bg-white/[0.04] px-2 py-0.5 text-[11px] font-medium text-slate-400 ring-1 ring-white/[0.06] transition-colors duration-150 hover:bg-white/[0.08] hover:text-slate-300 hover:ring-white/[0.1] sm:text-[12px]',
   },
   controls: {
     chipButton: 'btn-glass',
     chipButtonActive: 'btn-glass-active',
     listRow: 'group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-white/5',
-    /** Full-width tab row (Profile, Area, etc.): underline indicates active — no filled “pill” background */
-    tabBarRow: 'border-surface-border/50 flex w-full min-w-0 flex-wrap border-b',
+    /** Full-width tab row (Profile, Area, etc.): active state via short bar — no full-width rules above/below */
+    tabBarRow: 'flex w-full min-w-0 flex-wrap',
     tabBarButton:
-      '-mb-px flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 border-b-2 px-1 py-2.5 text-[11px] leading-none font-semibold transition-colors sm:flex-row sm:gap-1.5 sm:px-3 sm:text-[12px]',
-    tabBarButtonActive: 'border-slate-200/80 text-slate-100',
-    tabBarButtonInactive: 'border-transparent text-slate-500 hover:text-slate-300',
+      'relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 border-b-2 border-transparent px-1 py-2.5 text-[11px] leading-none font-semibold transition-colors sm:flex-row sm:gap-1.5 sm:px-3 sm:text-[12px]',
+    /** Capped-width bar reads better on 2-tab rows than a full-cell underline */
+    tabBarButtonActive:
+      'text-slate-100 after:pointer-events-none after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-[min(5.75rem,calc(100%-0.75rem))] after:max-w-[11rem] after:-translate-x-1/2 after:rounded-full after:bg-slate-200/90',
+    tabBarButtonInactive: 'text-slate-500 hover:text-slate-300',
     tabButton:
       'flex items-center gap-2 border-b-2 px-6 py-3 text-[10px] font-semibold tracking-[0.16em] uppercase transition-colors',
     navPill:
       'flex flex-col items-center gap-2 rounded-lg px-5 py-3 text-[10px] font-semibold tracking-[0.16em] uppercase transition-colors sm:flex-row',
     /** Show more / Show less under ExpandableMarkdown (Area overview) */
     expandableToggle: 'text-[12px] font-medium text-slate-400 transition-colors hover:text-slate-200 sm:text-[13px]',
+    /** Save / submit — always green (avoid brand yellow on primary actions) */
+    savePrimary:
+      'inline-flex items-center justify-center gap-2 rounded-lg border border-emerald-500/45 bg-emerald-600 px-4 py-2 text-[11px] font-semibold text-slate-100 shadow-sm transition-colors hover:border-emerald-400/55 hover:bg-emerald-500 disabled:pointer-events-none disabled:opacity-45 sm:text-[12px]',
+    /** Modal footers — matches type-label weight with green fill */
+    savePrimaryModal:
+      'inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-500/45 bg-emerald-600 px-6 py-2.5 text-[10px] font-bold tracking-widest text-slate-100 uppercase transition-colors hover:border-emerald-400/55 hover:bg-emerald-500 disabled:pointer-events-none disabled:opacity-45',
   },
   activityColors: {
     filter: {

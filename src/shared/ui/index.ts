@@ -8,6 +8,7 @@ export * from './FooterLink';
 export * from './Indicators';
 export * from './List';
 export * from './NavItem';
+export * from './PageCardBreadcrumbRow';
 export * from './PageHeader';
 export * from './ResponsiveGrid';
 export * from './SearchInput';

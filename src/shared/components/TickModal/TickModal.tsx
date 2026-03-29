@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
+import { useMeta } from '../Meta/context';
 
 type Repeat = { date?: string; comment?: string };
 
@@ -52,6 +53,7 @@ const TickModal = ({
   date: initialDate,
   enableTickRepeats,
 }: TickModalProps) => {
+  const { isClimbing } = useMeta();
   const accessToken = useAccessToken();
   const [comment, setComment] = useState(initialComment ?? '');
   const [grade, setGrade] = useState(initialGrade);
@@ -127,8 +129,9 @@ const TickModal = ({
     <div className='animate-in fade-in fixed inset-0 z-200 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm duration-200'>
       <div className='bg-surface-card border-surface-border flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border shadow-2xl'>
         <div className='border-surface-border bg-surface-nav/30 flex items-center justify-between border-b px-6 py-4'>
-          <h3 className='type-label flex items-center gap-2'>
-            <Check size={18} className='text-green-500' /> Tick Problem
+          <h3 className='type-label flex items-center gap-2 text-slate-200'>
+            <Check size={18} className='text-emerald-400' />
+            {isClimbing ? 'Tick route' : 'Tick problem'}
           </h3>
           <button type='button' onClick={onClose} className='opacity-70 transition-colors hover:opacity-100'>
             <X size={20} />
@@ -170,7 +173,7 @@ const TickModal = ({
                   selected={date ? convertFromStringToDate(date) : undefined}
                   onChange={(newDate: Date | null) => setDate(newDate ? convertFromDateToString(newDate) : undefined)}
                   className={cn(
-                    'bg-surface-nav focus:border-brand type-body w-full rounded-xl border py-2.5 pr-4 pl-10 transition-colors focus:outline-none',
+                    'bg-surface-nav type-body w-full rounded-xl border py-2.5 pr-4 pl-10 transition-colors focus:border-white/20 focus:outline-none',
                     !validDate ? 'border-red-500/50' : 'border-surface-border',
                   )}
                 />
@@ -187,7 +190,7 @@ const TickModal = ({
                 <select
                   value={grade}
                   onChange={(e) => setGrade(e.target.value)}
-                  className='bg-surface-nav border-surface-border focus:border-brand type-body w-full cursor-pointer appearance-none rounded-xl border py-2.5 pr-4 pl-10 transition-colors focus:outline-none'
+                  className='bg-surface-nav border-surface-border type-body w-full cursor-pointer appearance-none rounded-xl border py-2.5 pr-4 pl-10 transition-colors focus:border-white/20 focus:outline-none'
                 >
                   <option value='No personal grade'>I don't want to grade</option>
                   {grades.map((g, i) => (
@@ -219,8 +222,8 @@ const TickModal = ({
                 className={cn(
                   'rounded-xl border px-3 py-2 text-[10px] font-bold uppercase transition-all',
                   stars === -1
-                    ? 'bg-brand border-brand'
-                    : 'bg-surface-nav border-surface-border text-slate-500 hover:border-slate-400',
+                    ? 'border-emerald-500/45 bg-emerald-600/25 text-slate-100 ring-1 ring-emerald-500/25'
+                    : 'border-surface-border bg-surface-nav text-slate-500 hover:border-white/15 hover:text-slate-300',
                 )}
               >
                 No rating
@@ -233,13 +236,17 @@ const TickModal = ({
                   className={cn(
                     'flex items-center justify-center gap-1 rounded-xl border px-3 py-2 transition-all',
                     stars === s
-                      ? 'bg-brand border-brand shadow-brand/20 shadow-lg'
-                      : 'bg-surface-nav border-surface-border text-slate-500',
+                      ? 'border-emerald-500/45 bg-emerald-600/20 text-amber-300 ring-1 ring-emerald-500/25'
+                      : 'border-surface-border bg-surface-nav text-slate-500 hover:border-white/15',
                   )}
                 >
                   <div className='flex'>
                     {[1, 2, 3].map((i) => (
-                      <Star key={i} size={12} className={cn(i <= s ? 'fill-current' : 'opacity-30')} />
+                      <Star
+                        key={i}
+                        size={12}
+                        className={cn(i <= s ? 'fill-amber-400 text-amber-400' : 'text-slate-600 opacity-40')}
+                      />
                     ))}
                   </div>
                 </button>
@@ -253,7 +260,7 @@ const TickModal = ({
               <MessageSquare className='pointer-events-none absolute top-4 left-3 text-slate-500' size={16} />
               <textarea
                 placeholder='How did it feel?'
-                className='bg-surface-nav border-surface-border focus:border-brand type-body min-h-25 w-full resize-none rounded-xl border py-3 pr-4 pl-10 transition-colors focus:outline-none'
+                className='bg-surface-nav border-surface-border type-body min-h-25 w-full resize-none rounded-xl border py-3 pr-4 pl-10 transition-colors focus:border-white/20 focus:outline-none'
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
               />
@@ -271,12 +278,12 @@ const TickModal = ({
                         dateFormat='dd-MM-yyyy'
                         selected={r.date ? convertFromStringToDate(r.date) : undefined}
                         onChange={(date: Date | null) => handleUpdateRepeat(index, 'date', date)}
-                        className='bg-surface-nav border-surface-border focus:border-brand type-small w-full rounded-lg border px-3 py-2 focus:outline-none'
+                        className='bg-surface-nav border-surface-border type-small w-full rounded-lg border px-3 py-2 focus:border-white/20 focus:outline-none'
                       />
                     </div>
                     <input
                       placeholder='Repeat comment'
-                      className='bg-surface-nav border-surface-border focus:border-brand type-small flex-1 rounded-lg border px-3 py-2 focus:outline-none'
+                      className='bg-surface-nav border-surface-border type-small flex-1 rounded-lg border px-3 py-2 focus:border-white/20 focus:outline-none'
                       value={r.comment ?? ''}
                       onChange={(e) => handleUpdateRepeat(index, 'comment', e.target.value)}
                     />
@@ -292,7 +299,7 @@ const TickModal = ({
                 <button
                   type='button'
                   onClick={handleAddRepeat}
-                  className='bg-surface-nav border-surface-border hover:border-brand/50 type-label inline-flex items-center gap-2 rounded-xl border px-4 py-2 opacity-80 transition-all hover:opacity-100'
+                  className='bg-surface-nav border-surface-border type-label inline-flex items-center gap-2 rounded-xl border px-4 py-2 opacity-80 transition-all hover:border-white/15 hover:opacity-100'
                 >
                   <Plus size={14} /> Add Repeat Ascent
                 </button>
@@ -326,7 +333,10 @@ const TickModal = ({
               type='button'
               onClick={() => saveTick(false)}
               disabled={stars === null || !validDate || isSaving}
-              className='bg-brand hover:bg-brand/90 shadow-brand/20 type-label flex items-center gap-2 rounded-xl px-6 py-2 shadow-lg transition-all disabled:bg-slate-700 disabled:opacity-60'
+              className={cn(
+                designContract.controls.savePrimaryModal,
+                'shadow-sm disabled:bg-slate-700/80 disabled:opacity-50',
+              )}
             >
               {isSaving ? <RefreshCw size={14} className='animate-spin' /> : <Check size={14} />}
               Save Tick

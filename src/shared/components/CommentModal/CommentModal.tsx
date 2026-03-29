@@ -44,8 +44,8 @@ const CommentModal = ({
     <div className='animate-in fade-in fixed inset-0 z-200 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm duration-200'>
       <div className='bg-surface-card border-surface-border flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border shadow-2xl'>
         <div className='border-surface-border bg-surface-nav/30 flex items-center justify-between border-b px-6 py-4'>
-          <h3 className='type-label flex items-center gap-2'>
-            <MessageSquare size={18} className='text-brand' />
+          <h3 className='type-label flex items-center gap-2 text-slate-200'>
+            <MessageSquare size={18} className='text-slate-400' />
             Add comment
           </h3>
           <button onClick={onClose} className='opacity-70 transition-colors hover:opacity-100'>
@@ -58,7 +58,7 @@ const CommentModal = ({
             <label className={cn('ml-1', designContract.typography.label)}>Comment</label>
             <textarea
               placeholder='Comment'
-              className='bg-surface-nav border-surface-border focus:border-brand type-body min-h-30 w-full resize-none rounded-xl border p-4 transition-colors placeholder:text-slate-600 focus:outline-none'
+              className='bg-surface-nav border-surface-border type-body min-h-30 w-full resize-none rounded-xl border p-4 transition-colors placeholder:text-slate-600 focus:border-white/20 focus:outline-none'
               value={message}
               onChange={(e) => setMessage(e.target.value)}
             />
@@ -95,7 +95,7 @@ const CommentModal = ({
                   className={cn(
                     'flex items-center gap-2 rounded-lg px-4 py-2 text-[10px] font-black tracking-widest uppercase transition-all',
                     danger && !resolved
-                      ? 'bg-red-500 shadow-lg shadow-red-500/20'
+                      ? 'type-label bg-red-600 text-slate-100 shadow-md shadow-red-900/25'
                       : 'text-slate-500 hover:text-red-400',
                   )}
                 >
@@ -110,8 +110,8 @@ const CommentModal = ({
                   className={cn(
                     'flex items-center gap-2 rounded-lg px-4 py-2 text-[10px] font-black tracking-widest uppercase transition-all',
                     !danger && resolved
-                      ? 'bg-green-600 shadow-lg shadow-green-600/20'
-                      : 'text-slate-500 hover:text-green-400',
+                      ? 'type-label bg-emerald-600 text-slate-100 shadow-md shadow-emerald-900/25'
+                      : 'text-slate-500 hover:text-emerald-400',
                   )}
                 >
                   <ShieldCheck size={14} /> Safe
@@ -145,7 +145,10 @@ const CommentModal = ({
             type='button'
             onClick={handleSave}
             disabled={saving || !message.trim()}
-            className='bg-brand hover:bg-brand/90 shadow-brand/20 type-label flex items-center gap-2 rounded-lg px-6 py-2 shadow-lg transition-all disabled:bg-slate-700 disabled:opacity-60'
+            className={cn(
+              designContract.controls.savePrimaryModal,
+              'rounded-lg disabled:bg-slate-700/80 disabled:opacity-50',
+            )}
           >
             {saving ? (
               <span className='h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white' />

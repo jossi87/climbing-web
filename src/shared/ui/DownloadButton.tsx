@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Download, Loader2, type LucideIcon } from 'lucide-react';
 import { getUrl, downloadFileWithProgress, useAccessToken } from '../../api';
 import { cn } from '../../lib/utils';
+import { designContract } from '../../design/contract';
 
 type Props = {
   href: string;
@@ -43,8 +44,7 @@ export const DownloadButton = ({ href, icon: Icon = Download, children }: Props)
       href={getUrl(href)}
       onClick={onClick}
       className={cn(
-        'inline-flex max-w-full cursor-pointer items-center gap-1 rounded-md bg-white/[0.04] px-2 py-0.5 text-[11px] font-medium text-slate-400 ring-1 ring-white/[0.06] transition-colors duration-150 sm:text-[12px]',
-        'hover:bg-white/[0.08] hover:text-slate-300 hover:ring-white/[0.1]',
+        designContract.surfaces.metaChipInteractive,
         loading ? 'pointer-events-none cursor-wait opacity-60' : '',
       )}
     >

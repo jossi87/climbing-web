@@ -1,4 +1,4 @@
-import { useState, useEffect, type ComponentProps, type SyntheticEvent, useCallback } from 'react';
+import { useState, useEffect, type ComponentProps, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useInView } from 'react-intersection-observer';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -33,6 +33,7 @@ const useIds = () => {
   return { mediaId: mediaId ? +mediaId : 0, pitch: pitch ? +pitch : 0 };
 };
 type MediaAction = (token: string) => Promise<unknown>;
+
 const Media = ({ pitches, media, orderableMedia, carouselMedia, optProblemId, showLocation, compactTiles }: Props) => {
   const { mediaId, pitch } = useIds();
   const location = useLocation();
@@ -122,14 +123,14 @@ const Media = ({ pitches, media, orderableMedia, carouselMedia, optProblemId, sh
         ref={ref}
         onClick={() => openModal(x)}
         className={cn(
-          'group relative cursor-pointer overflow-hidden border transition-all duration-300',
+          'group relative w-full min-w-0 cursor-pointer overflow-hidden border transition-all duration-300',
           compactTiles ? 'rounded-lg' : 'rounded-xl',
           'bg-surface-nav border-surface-border hover:border-brand/50 hover:shadow-lg',
           x.inherited && 'border-slate-700',
         )}
       >
         {' '}
-        <div className='relative aspect-4/3'>
+        <div className='relative aspect-4/3 w-full overflow-hidden'>
           {' '}
           {inView ? (
             hasSvgs ? (
@@ -138,21 +139,22 @@ const Media = ({ pitches, media, orderableMedia, carouselMedia, optProblemId, sh
                 m={x}
                 optProblemId={optProblemId}
                 showText={false}
-                className='absolute inset-0 h-full w-full object-cover'
+                className='absolute inset-0 h-full min-h-full w-full min-w-full object-cover'
               />
             ) : (
               <>
-                {' '}
-                <img
-                  alt={x.mediaMetadata?.description ?? ''}
-                  src={getMediaFileUrl(Number(x.id ?? 0), Number(x.versionStamp ?? 0), false, { minDimension: 205 })}
-                  className='absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105'
-                  onError={(e: SyntheticEvent<HTMLImageElement>) => {
-                    e.currentTarget.src = '/png/video_placeholder.png';
+                <div
+                  role='img'
+                  aria-label={x.mediaMetadata?.description ?? 'Media thumbnail'}
+                  className='absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-105'
+                  style={{
+                    backgroundImage: `url(${JSON.stringify(
+                      getMediaFileUrl(Number(x.id ?? 0), Number(x.versionStamp ?? 0), false, { minDimension: 205 }),
+                    )})`,
                   }}
-                />{' '}
+                />
                 {x.idType === 2 && (
-                  <div className='absolute inset-0 flex items-center justify-center bg-black/10 transition-colors group-hover:bg-black/20'>
+                  <div className='pointer-events-none absolute inset-0 flex items-center justify-center bg-black/10 transition-colors group-hover:bg-black/20'>
                     <div className='relative flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/5 shadow-[0_4px_12px_rgba(0,0,0,0.5)] backdrop-blur-[4px] transition-transform duration-300 group-hover:scale-105'>
                       <Play
                         size={17}
@@ -162,7 +164,7 @@ const Media = ({ pitches, media, orderableMedia, carouselMedia, optProblemId, sh
                       />
                     </div>
                   </div>
-                )}{' '}
+                )}
               </>
             )
           ) : (

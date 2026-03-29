@@ -12,6 +12,7 @@ type Props = {
   slope: Slope;
   /** Smaller chart + badges (e.g. problem page terrain strip). */
   compact?: boolean;
+  className?: string;
 };
 
 const createXmlString = (
@@ -47,7 +48,7 @@ const downloadGpxFile = (areaName: string, sectorName: string, coordinates: comp
   document.body.removeChild(link);
 };
 
-export const SlopeProfile = ({ areaName = '', sectorName = '', slope, compact = false }: Props) => {
+export const SlopeProfile = ({ areaName = '', sectorName = '', slope, compact = false, className }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dims, setDims] = useState<{ width: number; height: number } | null>(null);
   const sources = Array.from(new Set((slope.coordinates ?? []).map((a) => a.elevationSource))).join(', ');
@@ -67,12 +68,12 @@ export const SlopeProfile = ({ areaName = '', sectorName = '', slope, compact = 
   }, []);
 
   return (
-    <div className={cn('flex w-full flex-col gap-2', compact ? 'max-w-xl gap-1.5' : 'max-w-2xl')}>
+    <div className={cn('flex w-full min-w-0 flex-col gap-2', compact ? 'gap-1.5' : 'max-w-2xl', className)}>
       <div
         ref={containerRef}
         className={cn(
           'bg-surface-nav/10 border-surface-border/30 relative w-full overflow-hidden rounded-lg border',
-          compact ? 'aspect-5/1 min-h-14 p-0.5' : 'aspect-4/1 min-h-20 p-1',
+          compact ? 'aspect-6/1 min-h-11 p-0.5 sm:min-h-12' : 'aspect-4/1 min-h-20 p-1',
         )}
       >
         {dims && (
@@ -91,7 +92,7 @@ export const SlopeProfile = ({ areaName = '', sectorName = '', slope, compact = 
             <Area
               dataKey='elevation'
               stroke='#3b82f6'
-              strokeWidth={1.5}
+              strokeWidth={compact ? 1.25 : 1.5}
               fill='url(#colorSlope)'
               isAnimationActive={false}
               dot={false}
