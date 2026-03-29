@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ExternalLink,
+  Map,
   MapPin,
   Mountain,
   Search as SearchIcon,
@@ -56,14 +57,14 @@ function getSearchEntityKind(result: SearchResult): SearchEntityKind {
   return 'unknown';
 }
 
-/** Icons align with header Areas (MapPin), FrontpageStats topos (Spline) / coordinates (MapPin). */
+/** Area uses map icon (Areas page + frontpage stats); routes use Spline (climbing) or MapPin (boulder). */
 function getSearchFallbackMeta(
   kind: SearchEntityKind,
   site: { isBouldering: boolean; isClimbing: boolean },
 ): { Icon: LucideIcon; label: string } {
   switch (kind) {
     case 'area':
-      return { Icon: MapPin, label: 'Area' };
+      return { Icon: Map, label: 'Area' };
     case 'sector':
       return { Icon: Mountain, label: 'Sector' };
     case 'problem':

@@ -29,7 +29,7 @@ const Frontpage = () => {
   }, []);
 
   const type = meta.isBouldering ? 'bouldering problems' : 'climbing routes';
-  const description = `${numProblems?.numProblems ?? 0} ${type}, ${numTicks?.numTicks ?? 0} public ascents, ${numMedia?.numImages ?? 0} images, ${numMedia?.numMovies ?? 0} videos.`;
+  const description = `${numProblems?.numAreas ?? 0} areas, ${numProblems?.numProblems ?? 0} ${type}, ${numTicks?.numTicks ?? 0} public ascents, ${numMedia?.numImages ?? 0} images, ${numMedia?.numMovies ?? 0} videos.`;
 
   return (
     <>
@@ -43,7 +43,6 @@ const Frontpage = () => {
             numProblems={numProblems}
             numTicks={numTicks}
             isBouldering={meta.isBouldering}
-            isClimbing={meta.isClimbing}
           />
         </div>
 
@@ -62,7 +61,6 @@ const Frontpage = () => {
                   numProblems={numProblems}
                   numTicks={numTicks}
                   isBouldering={meta.isBouldering}
-                  isClimbing={meta.isClimbing}
                 />
               </div>
               <RandomMediaCard randomMedia={randomMedia} />

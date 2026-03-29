@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Database, CheckCircle, Camera, Film, Heart, MapPin, Spline, type LucideIcon } from 'lucide-react';
+import { Database, CheckCircle, Camera, Film, Heart, Map, type LucideIcon } from 'lucide-react';
 import { numberWithCommas } from '../../api';
 import { cn } from '../../lib/utils';
 import type { components } from '../../@types/buldreinfo/swagger';
@@ -79,10 +79,9 @@ type FrontpageStatsProps = {
   numProblems?: components['schemas']['FrontpageNumProblems'];
   numTicks?: components['schemas']['FrontpageNumTicks'];
   isBouldering?: boolean;
-  isClimbing?: boolean;
 };
 
-export const FrontpageStats = ({ numMedia, numProblems, numTicks, isBouldering, isClimbing }: FrontpageStatsProps) => {
+export const FrontpageStats = ({ numMedia, numProblems, numTicks, isBouldering }: FrontpageStatsProps) => {
   return (
     <Card flush className='border-0 sm:border'>
       <div
@@ -92,33 +91,18 @@ export const FrontpageStats = ({ numMedia, numProblems, numTicks, isBouldering, 
         )}
       >
         <StatItem
+          to='/areas'
+          icon={Map}
+          label='Areas'
+          value={numProblems ? numberWithCommas(numProblems.numAreas ?? 0) : undefined}
+          loading={!numProblems}
+        />
+        <StatItem
           to='/problems'
           icon={Database}
           label={isBouldering ? 'Problems' : 'Routes'}
           value={numProblems ? numberWithCommas(numProblems.numProblems ?? 0) : undefined}
           loading={!numProblems}
-        />
-        {isClimbing ? (
-          <StatItem
-            icon={Spline}
-            label='Topos'
-            value={numProblems ? numberWithCommas(numProblems.numProblemsWithTopo ?? 0) : undefined}
-            loading={!numProblems}
-          />
-        ) : (
-          <StatItem
-            icon={MapPin}
-            label='Coordinates'
-            value={numProblems ? numberWithCommas(numProblems.numProblemsWithCoordinates ?? 0) : undefined}
-            loading={!numProblems}
-          />
-        )}
-        <StatItem
-          to='/ticks/1'
-          icon={CheckCircle}
-          label='Ticks'
-          value={numTicks ? numberWithCommas(numTicks.numTicks ?? 0) : undefined}
-          loading={!numTicks}
         />
         <StatItem
           icon={Camera}
@@ -131,6 +115,13 @@ export const FrontpageStats = ({ numMedia, numProblems, numTicks, isBouldering, 
           label='Videos'
           value={numMedia ? numberWithCommas(numMedia.numMovies ?? 0) : undefined}
           loading={!numMedia}
+        />
+        <StatItem
+          to='/ticks/1'
+          icon={CheckCircle}
+          label='Ticks'
+          value={numTicks ? numberWithCommas(numTicks.numTicks ?? 0) : undefined}
+          loading={!numTicks}
         />
         <StatItem to='/donations' icon={Heart} label='Donate' />
       </div>

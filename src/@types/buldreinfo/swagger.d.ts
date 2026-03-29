@@ -1251,6 +1251,8 @@ export type components = {
         };
         FrontpageNumProblems: {
             /** Format: int32 */
+            numAreas?: number;
+            /** Format: int32 */
             numProblems?: number;
             /** Format: int32 */
             numProblemsWithCoordinates?: number;
@@ -1952,8 +1954,8 @@ export type components = {
             parameters?: {
                 [key: string]: string;
             };
-            wildcardType?: boolean;
             wildcardSubtype?: boolean;
+            wildcardType?: boolean;
         };
         MessageBodyWorkers: Record<string, never>;
         MultiPart: {
