@@ -118,6 +118,8 @@ type Props = EditableSvg & {
 
 const black = '#000000';
 const strokeColor = '#FFFFFF';
+/** Dashed guide lines only — handles use hollow circles + bold black stroke (no group opacity). */
+const curveGuideOpacity = 0.92;
 
 export const SvgEdit = ({
   saving,
@@ -333,6 +335,15 @@ export const SvgEdit = ({
                 </Link>
                 <button
                   type='button'
+                  title='Cancel'
+                  aria-label='Cancel and go back to problem'
+                  className={cn(pageActionIconBtn, pageActionIconBtnBrand)}
+                  onClick={onCancel}
+                >
+                  <X size={14} strokeWidth={2.5} />
+                </button>
+                <button
+                  type='button'
                   title='Save'
                   aria-label='Save'
                   className={cn(pageActionIconBtn, pageActionIconBtnGreen)}
@@ -344,15 +355,6 @@ export const SvgEdit = ({
                   ) : (
                     <Save size={14} strokeWidth={2.25} />
                   )}
-                </button>
-                <button
-                  type='button'
-                  title='Cancel'
-                  aria-label='Cancel and go back to problem'
-                  className={cn(pageActionIconBtn, pageActionIconBtnBrand)}
-                  onClick={onCancel}
-                >
-                  <X size={14} strokeWidth={2.5} />
                 </button>
               </div>
             </div>
@@ -450,66 +452,90 @@ export const SvgEdit = ({
               <path d={path} fill='none' stroke={black} strokeWidth={0.003 * w} />
               <path d={path} fill='none' stroke='#FF0000' strokeWidth={0.002 * w} />
 
-              {points.map((p, i) => {
-                const handles = isCubicPoint(p) && (
-                  <g className='opacity-50'>
-                    <line
-                      x1={points[i - 1].x}
-                      y1={points[i - 1].y}
-                      x2={p.c[0].x}
-                      y2={p.c[0].y}
-                      stroke={strokeColor}
-                      strokeWidth={0.001 * w}
-                      strokeDasharray='5,5'
-                    />
-                    <line
-                      x1={p.x}
-                      y1={p.y}
-                      x2={p.c[1].x}
-                      y2={p.c[1].y}
-                      stroke={strokeColor}
-                      strokeWidth={0.001 * w}
-                      strokeDasharray='5,5'
-                    />
-                    <circle
-                      cx={p.c[0].x}
-                      cy={p.c[0].y}
-                      r={0.003 * w}
-                      fill={strokeColor}
-                      onMouseDown={(e) => {
-                        e.stopPropagation();
-                        dispatch({ action: 'drag-cubic', index: i, c: 0 });
-                      }}
-                    />
-                    <circle
-                      cx={p.c[1].x}
-                      cy={p.c[1].y}
-                      r={0.003 * w}
-                      fill={strokeColor}
-                      onMouseDown={(e) => {
-                        e.stopPropagation();
-                        dispatch({ action: 'drag-cubic', index: i, c: 1 });
-                      }}
-                    />
-                  </g>
-                );
-                return (
-                  <g key={`${p.x}-${p.y}-${i}`}>
-                    {handles}
-                    <circle
-                      cx={p.x}
-                      cy={p.y}
-                      r={0.005 * w}
-                      fill={activePoint === i ? '#00FF00' : '#FF0000'}
-                      stroke={black}
-                      onMouseDown={(e) => {
-                        e.stopPropagation();
-                        dispatch({ action: 'drag-point', index: i });
-                      }}
-                    />
-                  </g>
-                );
-              })}
+              {(() => {
+                /** Large enough to grab easily; hollow + stroke keeps the photo visible inside. */
+                const cubicHandleR = 0.004 * w;
+                const cubicHandleStrokeW = 0.00155 * w;
+                const cubicGuideStrokeW = 0.0014 * w;
+                const cubicDash = Math.max(4, 0.004 * w);
+
+                return points.map((p, i) => {
+                  const handles = isCubicPoint(p) && (
+                    <g>
+                      <line
+                        x1={points[i - 1].x}
+                        y1={points[i - 1].y}
+                        x2={p.c[0].x}
+                        y2={p.c[0].y}
+                        stroke={strokeColor}
+                        strokeOpacity={curveGuideOpacity}
+                        strokeWidth={cubicGuideStrokeW}
+                        strokeDasharray={`${cubicDash},${cubicDash}`}
+                        strokeLinecap='round'
+                      />
+                      <line
+                        x1={p.x}
+                        y1={p.y}
+                        x2={p.c[1].x}
+                        y2={p.c[1].y}
+                        stroke={strokeColor}
+                        strokeOpacity={curveGuideOpacity}
+                        strokeWidth={cubicGuideStrokeW}
+                        strokeDasharray={`${cubicDash},${cubicDash}`}
+                        strokeLinecap='round'
+                      />
+                      {/*
+                        fill=transparent (not none): SVG only hit-tests stroke on fill=none — too hard to grab.
+                        Vertex circle is drawn *below* this group so handles stay on top for picking.
+                      */}
+                      <circle
+                        cx={p.c[0].x}
+                        cy={p.c[0].y}
+                        r={cubicHandleR}
+                        fill='transparent'
+                        stroke={black}
+                        strokeWidth={cubicHandleStrokeW}
+                        strokeLinejoin='round'
+                        className='cursor-grab'
+                        onMouseDown={(e) => {
+                          e.stopPropagation();
+                          dispatch({ action: 'drag-cubic', index: i, c: 0 });
+                        }}
+                      />
+                      <circle
+                        cx={p.c[1].x}
+                        cy={p.c[1].y}
+                        r={cubicHandleR}
+                        fill='transparent'
+                        stroke={black}
+                        strokeWidth={cubicHandleStrokeW}
+                        strokeLinejoin='round'
+                        className='cursor-grab'
+                        onMouseDown={(e) => {
+                          e.stopPropagation();
+                          dispatch({ action: 'drag-cubic', index: i, c: 1 });
+                        }}
+                      />
+                    </g>
+                  );
+                  return (
+                    <g key={`${p.x}-${p.y}-${i}`}>
+                      <circle
+                        cx={p.x}
+                        cy={p.y}
+                        r={0.005 * w}
+                        fill={activePoint === i ? '#00FF00' : '#FF0000'}
+                        stroke={black}
+                        onMouseDown={(e) => {
+                          e.stopPropagation();
+                          dispatch({ action: 'drag-point', index: i });
+                        }}
+                      />
+                      {handles}
+                    </g>
+                  );
+                });
+              })()}
 
               {anchors.map((a, i) => (
                 <circle key={`anchor-${i}`} cx={a.x} cy={a.y} r={0.006 * w} fill='#E2011A' />

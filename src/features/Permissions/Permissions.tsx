@@ -81,7 +81,7 @@ const Permissions = () => {
     <div className='w-full min-w-0'>
       <title>{`Permissions | ${meta?.title}`}</title>
       <meta name='description' content='Manage user roles and access' />
-      <Card flush className='min-w-0 border-0 sm:border'>
+      <Card flush className='min-w-0 overflow-visible border-0 sm:border'>
         <div className='p-4 pb-3 sm:p-5 sm:pb-4'>
           <div className='flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between'>
             <SectionHeader className='mb-0 min-w-0 lg:flex-1' title='Permissions' icon={Users} subheader={subheader} />
@@ -140,7 +140,7 @@ const Permissions = () => {
                                   <ChevronDown size={12} className='ml-2 shrink-0 text-slate-500' />
                                 </button>
                                 {openRoleMenuUserId === (u.userId ?? -1) && (
-                                  <div className='bg-surface-card border-surface-border absolute z-20 mt-1 w-full overflow-hidden rounded-md border shadow-xl'>
+                                  <div className='bg-surface-card border-surface-border absolute z-50 mt-1 w-full overflow-hidden rounded-md border shadow-xl'>
                                     {ROLE_CONFIG.map((opt) => (
                                       <button
                                         key={opt.value}

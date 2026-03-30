@@ -326,7 +326,6 @@ const MediaSvgEdit = () => {
       const fill = activePoint === i ? '#00FF00' : '#FF0000';
       return (
         <g key={'point-' + i}>
-          {anchors}
           <circle
             className='cursor-pointer'
             fill={fill}
@@ -335,6 +334,7 @@ const MediaSvgEdit = () => {
             r={0.003 * (data.width ?? 1)}
             onMouseDown={() => setCurrDraggedPoint(i)}
           />
+          {anchors}
         </g>
       );
     });
@@ -459,21 +459,21 @@ const MediaSvgEdit = () => {
               <div className='flex shrink-0 flex-nowrap items-center gap-1.5 self-start pt-0.5'>
                 <button
                   type='button'
-                  title='Save'
-                  aria-label='Save'
-                  className={cn(pageActionIconBtn, pageActionIconBtnGreen)}
-                  onClick={handleSave}
-                >
-                  <Save size={14} strokeWidth={2.25} />
-                </button>
-                <button
-                  type='button'
                   title='Cancel'
                   aria-label='Cancel and go back'
                   className={cn(pageActionIconBtn, pageActionIconBtnBrand)}
                   onClick={() => navigate(-1)}
                 >
                   <X size={14} strokeWidth={2.5} />
+                </button>
+                <button
+                  type='button'
+                  title='Save'
+                  aria-label='Save'
+                  className={cn(pageActionIconBtn, pageActionIconBtnGreen)}
+                  onClick={handleSave}
+                >
+                  <Save size={14} strokeWidth={2.25} />
                 </button>
               </div>
             </div>
