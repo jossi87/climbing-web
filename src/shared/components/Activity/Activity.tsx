@@ -331,6 +331,16 @@ const ActivityItem = ({ a, isBouldering, layoutDensity = 'default' }: ActivityIt
   const mediaMt = layoutDensity === 'frontpage' ? 'mt-1.5 md:mt-2' : 'mt-1.5 sm:mt-2';
   const faRowMt = layoutDensity === 'frontpage' ? 'mt-1.5 md:mt-2' : 'mt-1.5 sm:mt-2';
 
+  const isFrontpage = layoutDensity === 'frontpage';
+  /** Slightly duller than the default feed so the home hero feels less stark white-on-dark. */
+  const actionClass = cn(activityActionClass, isFrontpage && 'text-slate-300');
+  const commentClass = cn(activityCommentBlock, isFrontpage && 'text-slate-100');
+  const cragLeadClass = cn(tickCrag, 'font-medium', isFrontpage && 'text-slate-200');
+  const userLinkClass = cn(tickProblemLink, isFrontpage && 'text-slate-100');
+  const problemLinkTone = isFrontpage ? 'soft' : 'default';
+  const timeHoverClass = isFrontpage ? 'group-hover:text-slate-400' : 'group-hover:text-slate-300';
+  const faNameHoverClass = isFrontpage ? 'group-hover/user:text-slate-200' : 'group-hover/user:text-slate-100';
+
   return (
     <div className={cn('group transition-colors hover:bg-white/1.5', pad)}>
       <div className={cn('flex items-start', gap)}>
@@ -342,44 +352,45 @@ const ActivityItem = ({ a, isBouldering, layoutDensity = 'default' }: ActivityIt
           <div className={cn(profileRowRootClass, 'min-w-0 text-pretty [overflow-wrap:anywhere]')}>
             {a.users && a.users.length > 0 && !a.repeat ? (
               <>
-                <span className={cn(tickCrag, 'font-medium')}>New {isBouldering ? 'boulder' : 'route'}</span>{' '}
-                <span className={activityActionClass}>in</span>{' '}
-                <ProblemLink a={a} flagsClassName={activityActionClass} />
+                <span className={cragLeadClass}>New {isBouldering ? 'boulder' : 'route'}</span>{' '}
+                <span className={actionClass}>in</span>{' '}
+                <ProblemLink a={a} flagsClassName={actionClass} tone={problemLinkTone} />
               </>
             ) : a.message ? (
               <>
-                <Link to={`/user/${a.id}`} className={tickProblemLink}>
+                <Link to={`/user/${a.id}`} className={userLinkClass}>
                   {a.name}
                 </Link>{' '}
-                <span className={activityActionClass}>commented on</span>{' '}
-                <ProblemLink a={a} flagsClassName={activityActionClass} />
+                <span className={actionClass}>commented on</span>{' '}
+                <ProblemLink a={a} flagsClassName={actionClass} tone={problemLinkTone} />
               </>
             ) : (
               <>
                 {a.name ? (
                   <>
-                    <Link to={`/user/${a.id}`} className={tickProblemLink}>
+                    <Link to={`/user/${a.id}`} className={userLinkClass}>
                       {a.name}
                     </Link>{' '}
-                    <span className={activityActionClass}>{a.repeat ? 'repeated' : 'ticked'}</span>{' '}
+                    <span className={actionClass}>{a.repeat ? 'repeated' : 'ticked'}</span>{' '}
                   </>
                 ) : numImg > 0 || numMov > 0 ? (
                   <>
-                    <span className={cn(tickCrag, 'font-medium')}>
+                    <span className={cragLeadClass}>
                       {numImg > 0 && `${numImg} ${numImg === 1 ? 'image' : 'images'}`}
                       {numImg > 0 && numMov > 0 && ' & '}
                       {numMov > 0 && `${numMov} ${numMov === 1 ? 'video' : 'videos'}`}
                     </span>{' '}
-                    <span className={activityActionClass}>on</span>{' '}
+                    <span className={actionClass}>on</span>{' '}
                   </>
                 ) : null}
-                <ProblemLink a={a} flagsClassName={activityActionClass} />
+                <ProblemLink a={a} flagsClassName={actionClass} tone={problemLinkTone} />
               </>
             )}
             <span
               className={cn(
                 tickFlags,
-                'ml-1.5 inline-block tabular-nums transition-colors select-none group-hover:text-slate-300',
+                'ml-1.5 inline-block tabular-nums transition-colors select-none',
+                timeHoverClass,
               )}
             >
               {a.timeAgo}
@@ -387,11 +398,11 @@ const ActivityItem = ({ a, isBouldering, layoutDensity = 'default' }: ActivityIt
           </div>
 
           {a.message ? (
-            <div className={activityCommentBlock}>
+            <div className={commentClass}>
               <Linkify>{a.message}</Linkify>
             </div>
           ) : a.description ? (
-            <div className={cn(activityCommentBlock, 'mt-1.5')}>{a.description}</div>
+            <div className={cn(commentClass, 'mt-1.5')}>{a.description}</div>
           ) : null}
 
           {a.stars !== undefined && a.stars !== -1 && (
@@ -413,7 +424,7 @@ const ActivityItem = ({ a, isBouldering, layoutDensity = 'default' }: ActivityIt
                   key={u.id}
                   to={`/user/${u.id}`}
                   className={cn(
-                    activityActionClass,
+                    actionClass,
                     'group/user hover:text-brand inline-flex max-w-full min-w-0 items-center gap-1.5 leading-snug transition-colors',
                   )}
                 >
@@ -424,7 +435,7 @@ const ActivityItem = ({ a, isBouldering, layoutDensity = 'default' }: ActivityIt
                     size='micro'
                     className='group-hover/user:ring-brand/45 shrink-0 ring-1 ring-white/10 transition-all'
                   />
-                  <span className='min-w-0 group-hover/user:text-slate-100'>{u.name}</span>
+                  <span className={cn('min-w-0', faNameHoverClass)}>{u.name}</span>
                 </Link>
               ))}
             </div>

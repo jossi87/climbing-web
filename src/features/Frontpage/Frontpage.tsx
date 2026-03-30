@@ -38,7 +38,7 @@ const Frontpage = () => {
         </div>
 
         <div className={designContract.layout.frontpageGrid}>
-          <aside className='order-1 w-full md:col-span-4'>
+          <aside className='order-1 w-full md:col-span-3'>
             <div className={designContract.layout.asideStack}>
               <div className='hidden md:block'>
                 <FrontpageStats
@@ -55,7 +55,7 @@ const Frontpage = () => {
             </div>
           </aside>
 
-          <main className='order-2 md:col-span-8 md:pl-1'>
+          <main className='order-2 md:col-span-9 md:pl-1'>
             <Activity idArea={0} idSector={0} layoutDensity='frontpage' />
           </main>
         </div>
