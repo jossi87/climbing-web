@@ -6,9 +6,9 @@ import { useProfileTodo } from '../../../api';
 import { Loading } from '../../ui/StatusWidgets';
 import ProblemList from '../ProblemList';
 import { useMeta } from '../Meta';
-import { ProfileRowAsterisk } from './ProfileRowAsterisk';
 import { profileRowRootClass, tickCragLink, tickFlags, tickProblemLink, tickWhenGrade } from './profileRowTypography';
 import { cn } from '../../../lib/utils';
+import { ProfileRowTextSep } from './ProfileRowTextSep';
 
 type ProfileTodoProps = {
   userId: number;
@@ -48,12 +48,12 @@ const TodoListItem = ({ item }: { item: TodoItem }) => (
       {item.areaName}
     </Link>
     <LockSymbol lockedAdmin={item.areaLockedAdmin} lockedSuperadmin={item.areaLockedSuperadmin} />
-    <ProfileRowAsterisk />
+    {item.areaLockedAdmin || item.areaLockedSuperadmin ? ' ' : <ProfileRowTextSep />}
     <Link to={`/sector/${item.sectorId}`} className={tickCragLink}>
       {item.sectorName}
     </Link>
     <LockSymbol lockedAdmin={item.sectorLockedAdmin} lockedSuperadmin={item.sectorLockedSuperadmin} />
-    <ProfileRowAsterisk />
+    {item.sectorLockedAdmin || item.sectorLockedSuperadmin ? ' ' : <ProfileRowTextSep />}
     <Link to={`/problem/${item.id}`} className={tickProblemLink}>
       {item.problemName}
     </Link>
@@ -66,7 +66,7 @@ const TodoListItem = ({ item }: { item: TodoItem }) => (
     <LockSymbol lockedAdmin={item.problemLockedAdmin} lockedSuperadmin={item.problemLockedSuperadmin} />
     {item.partners.length > 0 ? (
       <>
-        {' '}
+        {item.problemLockedAdmin || item.problemLockedSuperadmin ? ' ' : <ProfileRowTextSep />}
         <span className='inline-flex min-w-0 flex-wrap content-start items-center gap-x-2 gap-y-1'>
           {item.partners.map((p) => (
             <Link key={p.id} to={`/user/${p.id}/todo`} className={cn(tickFlags, 'hover:text-brand transition-colors')}>

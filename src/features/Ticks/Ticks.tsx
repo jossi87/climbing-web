@@ -1,10 +1,10 @@
 import { LockSymbol } from '../../shared/ui/Indicators';
+import { ProfileRowTextSep } from '../../shared/components/Profile/ProfileRowTextSep';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useMeta } from '../../shared/components/Meta';
 import { useTicks } from '../../api';
 import { CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card, SectionHeader } from '../../shared/ui';
-import { ProfileRowAsterisk } from '../../shared/components/Profile/ProfileRowAsterisk';
 import {
   profileRowRootClass,
   tickCrag,
@@ -51,7 +51,7 @@ const TickRow = ({ t }: { t: PublicAscent }) => {
       <span className={lockInlineClass}>
         <LockSymbol lockedAdmin={t.areaLockedAdmin} lockedSuperadmin={t.areaLockedSuperadmin} />
       </span>
-      <ProfileRowAsterisk />
+      {t.areaLockedAdmin || t.areaLockedSuperadmin ? ' ' : <ProfileRowTextSep />}
       {sectorId ? (
         <Link to={`/sector/${sectorId}`} className={tickCragLink}>
           {t.sectorName}
@@ -61,8 +61,7 @@ const TickRow = ({ t }: { t: PublicAscent }) => {
       )}
       <span className={lockInlineClass}>
         <LockSymbol lockedAdmin={t.sectorLockedAdmin} lockedSuperadmin={t.sectorLockedSuperadmin} />
-      </span>
-      <ProfileRowAsterisk />
+      </span>{' '}
       <Link to={`/problem/${t.problemId}`} className={tickProblemLink}>
         {t.problemName}
       </Link>
@@ -72,7 +71,7 @@ const TickRow = ({ t }: { t: PublicAscent }) => {
       <span className={lockInlineClass}>
         <LockSymbol lockedAdmin={t.problemLockedAdmin} lockedSuperadmin={t.problemLockedSuperadmin} />
       </span>
-      <ProfileRowAsterisk />
+      {t.problemLockedAdmin || t.problemLockedSuperadmin ? ' ' : <ProfileRowTextSep />}
       <span className={tickFlags}>{t.name}</span>
     </div>
   );

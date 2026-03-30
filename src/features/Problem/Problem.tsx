@@ -286,178 +286,178 @@ export const Problem = () => {
         />
       )}
 
-      <Card flush className='min-w-0 border-0 shadow-sm sm:border'>
-        <div className={cn('relative px-4 pt-4 sm:px-5 sm:pt-5', showMapTab ? 'pb-2 sm:pb-2.5' : 'pb-4 sm:pb-5')}>
-          <PageCardBreadcrumbRow
-            className='mb-2 sm:mb-2.5'
-            breadcrumb={
-              <nav
-                aria-label='Breadcrumb'
-                className='block min-w-0 text-[11px] leading-relaxed break-words text-slate-500 sm:text-[12px] [&>*+*]:ml-1.5'
+      <div className='mb-4 min-w-0 space-y-3 pt-3 sm:mb-5 sm:space-y-2 sm:pt-2'>
+        <PageCardBreadcrumbRow
+          className='mb-0'
+          breadcrumb={
+            <nav
+              aria-label='Breadcrumb'
+              className='block min-w-0 text-[12px] leading-relaxed break-words text-slate-500 sm:text-[13px] [&>*+*]:ml-1.5'
+            >
+              <Link
+                to='/areas'
+                className='inline align-middle tracking-tight text-slate-600 transition-colors hover:text-slate-400'
               >
-                <Link
-                  to='/areas'
-                  className='inline align-middle tracking-tight text-slate-600 transition-colors hover:text-slate-400'
-                >
-                  Areas
-                </Link>
-                <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
-                <Link
-                  to={`/area/${data.areaId}`}
-                  className='inline min-w-0 align-middle tracking-tight text-slate-600 transition-colors hover:text-slate-400'
-                >
-                  {data.areaName}
-                </Link>
-                <LockSymbol lockedAdmin={!!data.areaLockedAdmin} lockedSuperadmin={!!data.areaLockedSuperadmin} />
-                <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
-                <Link
-                  to={`/sector/${data.sectorId}`}
-                  className='inline min-w-0 align-middle tracking-tight text-slate-600 transition-colors hover:text-slate-400'
-                >
-                  {data.sectorName}
-                </Link>
-                <LockSymbol lockedAdmin={!!data.sectorLockedAdmin} lockedSuperadmin={!!data.sectorLockedSuperadmin} />
-                <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
-                <span
-                  className='inline-flex max-w-full min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5 align-middle'
-                  aria-current='page'
-                >
-                  {hasDanger ? (
-                    <span
-                      className='inline-flex'
-                      role='img'
-                      aria-label='Danger reported for this route'
-                      title='Danger reported for this route'
-                    >
-                      <AlertTriangle
-                        size={14}
-                        className='inline-block shrink-0 text-red-400'
-                        strokeWidth={2.25}
-                        aria-hidden
-                      />
-                    </span>
-                  ) : null}
+                Areas
+              </Link>
+              <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
+              <Link
+                to={`/area/${data.areaId}`}
+                className='inline min-w-0 align-middle tracking-tight text-slate-600 transition-colors hover:text-slate-400'
+              >
+                {data.areaName}
+              </Link>
+              <LockSymbol lockedAdmin={!!data.areaLockedAdmin} lockedSuperadmin={!!data.areaLockedSuperadmin} />
+              <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
+              <Link
+                to={`/sector/${data.sectorId}`}
+                className='inline min-w-0 align-middle tracking-tight text-slate-600 transition-colors hover:text-slate-400'
+              >
+                {data.sectorName}
+              </Link>
+              <LockSymbol lockedAdmin={!!data.sectorLockedAdmin} lockedSuperadmin={!!data.sectorLockedSuperadmin} />
+              <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
+              <span
+                className='inline-flex max-w-full min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5 align-middle'
+                aria-current='page'
+              >
+                {hasDanger ? (
                   <span
-                    className={cn(
-                      designContract.typography.meta,
-                      'font-mono tabular-nums',
-                      isTicked ? 'text-emerald-400' : optimisticTodo ? 'text-blue-300' : 'text-slate-300',
-                    )}
+                    className='inline-flex'
+                    role='img'
+                    aria-label='Danger reported for this route'
+                    title='Danger reported for this route'
                   >
-                    #{data.nr}
+                    <AlertTriangle
+                      size={14}
+                      className='inline-block shrink-0 text-red-400'
+                      strokeWidth={2.25}
+                      aria-hidden
+                    />
                   </span>
-                  <span className='min-w-0 font-semibold tracking-tight text-slate-50'>{data.name}</span>
-                  <span className={cn(designContract.typography.grade, 'shrink-0 font-medium text-slate-200')}>
-                    {data.grade}
-                  </span>
-                  <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
-                </span>
-              </nav>
-            }
-            actions={
-              meta.isAuthenticated ? (
-                <>
-                  {!isTicked && (
-                    <button
-                      type='button'
-                      title='Todo'
-                      onClick={handleToggleTodo}
-                      disabled={isPending}
-                      className={cn(
-                        'inline-flex h-7 w-7 items-center justify-center rounded-full border transition-colors sm:h-8 sm:w-8',
-                        optimisticTodo
-                          ? 'border-blue-400/50 bg-blue-500/22 text-blue-200 hover:bg-blue-500/32'
-                          : 'border-white/12 bg-white/[0.06] text-slate-300 hover:border-white/18 hover:bg-white/[0.1]',
-                      )}
-                    >
-                      <Bookmark size={12} fill={optimisticTodo ? 'currentColor' : 'none'} strokeWidth={2.25} />
-                    </button>
+                ) : null}
+                <span
+                  className={cn(
+                    designContract.typography.meta,
+                    'font-mono tabular-nums',
+                    isTicked ? 'text-emerald-400' : optimisticTodo ? 'text-blue-300' : 'text-slate-300',
                   )}
+                >
+                  #{data.nr}
+                </span>
+                <span className='min-w-0 font-semibold tracking-tight text-slate-50'>{data.name}</span>
+                <span className={cn(designContract.typography.grade, 'shrink-0 font-medium text-slate-200')}>
+                  {data.grade}
+                </span>
+                <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
+              </span>
+            </nav>
+          }
+          actions={
+            meta.isAuthenticated ? (
+              <>
+                {!isTicked && (
                   <button
                     type='button'
-                    title={isTicked ? 'Edit tick' : 'Tick'}
-                    onClick={() => setShowTickModal(true)}
+                    title='Todo'
+                    onClick={handleToggleTodo}
+                    disabled={isPending}
                     className={cn(
                       'inline-flex h-7 w-7 items-center justify-center rounded-full border transition-colors sm:h-8 sm:w-8',
-                      isTicked
-                        ? 'border-green-400/45 bg-green-500/20 text-green-300 hover:bg-green-500/28'
+                      optimisticTodo
+                        ? 'border-blue-400/50 bg-blue-500/22 text-blue-200 hover:bg-blue-500/32'
                         : 'border-white/12 bg-white/[0.06] text-slate-300 hover:border-white/18 hover:bg-white/[0.1]',
                     )}
                   >
-                    <Check size={12} strokeWidth={2.5} />
+                    <Bookmark size={12} fill={optimisticTodo ? 'currentColor' : 'none'} strokeWidth={2.25} />
                   </button>
+                )}
+                <button
+                  type='button'
+                  title={isTicked ? 'Edit tick' : 'Tick'}
+                  onClick={() => setShowTickModal(true)}
+                  className={cn(
+                    'inline-flex h-7 w-7 items-center justify-center rounded-full border transition-colors sm:h-8 sm:w-8',
+                    isTicked
+                      ? 'border-green-400/45 bg-green-500/20 text-green-300 hover:bg-green-500/28'
+                      : 'border-white/12 bg-white/[0.06] text-slate-300 hover:border-white/18 hover:bg-white/[0.1]',
+                  )}
+                >
+                  <Check size={12} strokeWidth={2.5} />
+                </button>
+                <button
+                  type='button'
+                  title='Comment'
+                  onClick={() => setShowCommentModal({ id: -1, danger: false, resolved: false })}
+                  className='inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/12 bg-white/[0.06] text-slate-300 transition-colors hover:border-white/18 hover:bg-white/[0.1] sm:h-8 sm:w-8'
+                >
+                  <MessageSquare size={12} strokeWidth={2.25} />
+                </button>
+                {meta.isAdmin && (
                   <button
                     type='button'
-                    title='Comment'
-                    onClick={() => setShowCommentModal({ id: -1, danger: false, resolved: false })}
-                    className='inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/12 bg-white/[0.06] text-slate-300 transition-colors hover:border-white/18 hover:bg-white/[0.1] sm:h-8 sm:w-8'
-                  >
-                    <MessageSquare size={12} strokeWidth={2.25} />
-                  </button>
-                  {meta.isAdmin && (
-                    <button
-                      type='button'
-                      title={showHiddenMedia ? 'Showing hidden media' : 'Show hidden media'}
-                      onClick={() => setShowHiddenMedia(!showHiddenMedia)}
-                      className={cn(
-                        'inline-flex h-7 w-7 items-center justify-center rounded-full border transition-colors sm:h-8 sm:w-8',
-                        showHiddenMedia
-                          ? 'border-sky-400/45 bg-sky-500/20 text-sky-200 hover:bg-sky-500/28'
-                          : 'border-white/12 bg-white/[0.06] text-slate-300 hover:border-white/18 hover:bg-white/[0.1]',
-                      )}
-                    >
-                      <Eye size={12} strokeWidth={2.25} />
-                    </button>
-                  )}
-                  <Link
-                    to={meta.isAdmin ? `/problem/edit/${data.sectorId}/${data.id}` : `/problem/edit/media/${data.id}`}
-                    title={meta.isAdmin ? 'Edit problem' : 'Add media'}
-                    aria-label={meta.isAdmin ? 'Edit problem' : 'Add media'}
+                    title={showHiddenMedia ? 'Showing hidden media' : 'Show hidden media'}
+                    onClick={() => setShowHiddenMedia(!showHiddenMedia)}
                     className={cn(
                       'inline-flex h-7 w-7 items-center justify-center rounded-full border transition-colors sm:h-8 sm:w-8',
-                      meta.isAdmin
-                        ? 'border-amber-300/45 bg-amber-400/18 text-amber-100 hover:bg-amber-400/28'
-                        : 'border-green-400/40 bg-green-500/20 text-green-300 hover:bg-green-500/30 hover:text-green-200',
+                      showHiddenMedia
+                        ? 'border-sky-400/45 bg-sky-500/20 text-sky-200 hover:bg-sky-500/28'
+                        : 'border-white/12 bg-white/[0.06] text-slate-300 hover:border-white/18 hover:bg-white/[0.1]',
                     )}
                   >
-                    {meta.isAdmin ? <Edit size={12} /> : <Plus size={12} />}
-                  </Link>
-                </>
-              ) : null
-            }
-          />
+                    <Eye size={12} strokeWidth={2.25} />
+                  </button>
+                )}
+                <Link
+                  to={meta.isAdmin ? `/problem/edit/${data.sectorId}/${data.id}` : `/problem/edit/media/${data.id}`}
+                  title={meta.isAdmin ? 'Edit problem' : 'Add media'}
+                  aria-label={meta.isAdmin ? 'Edit problem' : 'Add media'}
+                  className={cn(
+                    'inline-flex h-7 w-7 items-center justify-center rounded-full border transition-colors sm:h-8 sm:w-8',
+                    meta.isAdmin
+                      ? 'border-amber-300/45 bg-amber-400/18 text-amber-100 hover:bg-amber-400/28'
+                      : 'border-green-400/40 bg-green-500/20 text-green-300 hover:bg-green-500/30 hover:text-green-200',
+                  )}
+                >
+                  {meta.isAdmin ? <Edit size={12} /> : <Plus size={12} />}
+                </Link>
+              </>
+            ) : null
+          }
+        />
 
-          {data.broken ||
-          data.areaAccessClosed ||
-          data.sectorAccessClosed ||
-          data.areaNoDogsAllowed ||
-          data.areaAccessInfo ||
-          data.sectorAccessInfo ? (
-            <div className='mt-1 min-w-0 space-y-2 text-[12px] leading-relaxed sm:text-[13px]'>
-              {data.broken && (
-                <p className='text-pretty text-red-300/90'>
-                  <span className='font-medium'>{meta.isBouldering ? 'Problem' : 'Route'} broken:</span> {data.broken}
-                </p>
-              )}
-              {(data.areaAccessClosed || data.sectorAccessClosed) && (
-                <p className='text-pretty text-red-300/90'>
-                  {(data.areaAccessClosed ? 'Area' : 'Sector') + ' closed: '}
-                  {(data.areaAccessClosed || '') + (data.sectorAccessClosed || '')}
-                </p>
-              )}
-              {(data.areaNoDogsAllowed || data.areaAccessInfo || data.sectorAccessInfo) && (
-                <div className='space-y-1.5 text-orange-300/90'>
-                  {data.areaNoDogsAllowed && <NoDogsAllowed />}
-                  <Linkify>
-                    {data.areaAccessInfo && <p className='text-pretty'>{data.areaAccessInfo}</p>}
-                    {data.sectorAccessInfo && <p className='text-pretty'>{data.sectorAccessInfo}</p>}
-                  </Linkify>
-                </div>
-              )}
-            </div>
-          ) : null}
-        </div>
+        {data.broken ||
+        data.areaAccessClosed ||
+        data.sectorAccessClosed ||
+        data.areaNoDogsAllowed ||
+        data.areaAccessInfo ||
+        data.sectorAccessInfo ? (
+          <div className='min-w-0 space-y-2 text-[12px] leading-relaxed sm:text-[13px]'>
+            {data.broken && (
+              <p className='text-pretty text-red-300/90'>
+                <span className='font-medium'>{meta.isBouldering ? 'Problem' : 'Route'} broken:</span> {data.broken}
+              </p>
+            )}
+            {(data.areaAccessClosed || data.sectorAccessClosed) && (
+              <p className='text-pretty text-red-300/90'>
+                {(data.areaAccessClosed ? 'Area' : 'Sector') + ' closed: '}
+                {(data.areaAccessClosed || '') + (data.sectorAccessClosed || '')}
+              </p>
+            )}
+            {(data.areaNoDogsAllowed || data.areaAccessInfo || data.sectorAccessInfo) && (
+              <div className='space-y-1.5 text-orange-300/90'>
+                {data.areaNoDogsAllowed && <NoDogsAllowed />}
+                <Linkify>
+                  {data.areaAccessInfo && <p className='text-pretty'>{data.areaAccessInfo}</p>}
+                  {data.sectorAccessInfo && <p className='text-pretty'>{data.sectorAccessInfo}</p>}
+                </Linkify>
+              </div>
+            )}
+          </div>
+        ) : null}
+      </div>
 
+      <Card flush className='min-w-0 border-0 shadow-sm sm:border'>
         {showMapTab ? (
           <>
             <div
@@ -498,63 +498,62 @@ export const Problem = () => {
             {activeTab === 'overview' ? (
               overviewPanel
             ) : (
-              <>
-                <div className='relative z-0 -mx-px h-[35vh] min-h-[220px] w-[calc(100%+2px)] overflow-hidden sm:mx-0 sm:h-[50vh] sm:w-full'>
-                  <Leaflet
-                    key={'map-' + data.id}
-                    autoZoom
-                    height='100%'
-                    markers={markers}
-                    outlines={
-                      data.sectorOutline?.length && !data.coordinates
-                        ? [
-                            {
-                              url: '/sector/' + data.sectorId,
-                              label: data.sectorName!,
-                              outline: data.sectorOutline,
-                            },
-                          ]
-                        : undefined
-                    }
-                    slopes={slopes}
-                    defaultCenter={{ lat: conditionLat, lng: conditionLng }}
-                    defaultZoom={16}
-                    showSatelliteImage={meta.isBouldering}
-                    clusterMarkers={false}
-                    flyToId={null}
-                  />
-                </div>
-                {(hasApproach || hasDescent) && (
-                  <div className='border-surface-border/40 border-t px-4 pt-3 pb-4 sm:px-5 sm:pt-4 sm:pb-5'>
-                    <div className='grid min-w-0 gap-4 md:grid-cols-2 md:items-start md:gap-5'>
-                      {hasApproach && (
-                        <SlopeProfile
-                          compact
-                          title='Approach'
-                          areaName={data.areaName ?? ''}
-                          sectorName={data.sectorName ?? ''}
-                          slope={data.sectorApproach as Slope}
-                        />
-                      )}
-                      {hasDescent && (
-                        <SlopeProfile
-                          compact
-                          title='Descent'
-                          areaName={data.areaName ?? ''}
-                          sectorName={data.sectorName ?? ''}
-                          slope={data.sectorDescent as Slope}
-                        />
-                      )}
-                    </div>
-                  </div>
-                )}
-              </>
+              <div className='relative z-0 -mx-px h-[35vh] min-h-[220px] w-[calc(100%+2px)] overflow-hidden sm:mx-0 sm:h-[50vh] sm:w-full'>
+                <Leaflet
+                  key={'map-' + data.id}
+                  autoZoom
+                  height='100%'
+                  markers={markers}
+                  outlines={
+                    data.sectorOutline?.length && !data.coordinates
+                      ? [
+                          {
+                            url: '/sector/' + data.sectorId,
+                            label: data.sectorName!,
+                            outline: data.sectorOutline,
+                          },
+                        ]
+                      : undefined
+                  }
+                  slopes={slopes}
+                  defaultCenter={{ lat: conditionLat, lng: conditionLng }}
+                  defaultZoom={16}
+                  showSatelliteImage={meta.isBouldering}
+                  clusterMarkers={false}
+                  flyToId={null}
+                />
+              </div>
             )}
           </>
         ) : (
           overviewPanel
         )}
       </Card>
+
+      {showMapTab && activeTab === 'map' && (hasApproach || hasDescent) && (
+        <div className='mt-4 min-w-0 sm:mt-5'>
+          <div className='grid min-w-0 gap-4 md:grid-cols-2 md:items-start md:gap-5'>
+            {hasApproach && (
+              <SlopeProfile
+                compact
+                title='Approach'
+                areaName={data.areaName ?? ''}
+                sectorName={data.sectorName ?? ''}
+                slope={data.sectorApproach as Slope}
+              />
+            )}
+            {hasDescent && (
+              <SlopeProfile
+                compact
+                title='Descent'
+                areaName={data.areaName ?? ''}
+                sectorName={data.sectorName ?? ''}
+                slope={data.sectorDescent as Slope}
+              />
+            )}
+          </div>
+        </div>
+      )}
 
       {showOverviewContent && hasPitches && data.sections && (
         <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm sm:border'>

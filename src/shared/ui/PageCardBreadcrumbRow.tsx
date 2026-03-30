@@ -2,10 +2,8 @@ import type { ReactNode } from 'react';
 import { cn } from '../../lib/utils';
 
 /**
- * Breadcrumb trail + optional actions.
- * Actions are **floated right** (`flex-nowrap`, one row). The trail should live in a **`display: block` `<nav>`**
- * whose segments are **inline-level** (`inline`, `inline-flex`, `inline-block` icons) so line boxes wrap beside the
- * float, then use **full width** below it. A single `flex` breadcrumb row does **not** get that behavior.
+ * Breadcrumb trail (left, grows) + actions (right, top-aligned). Single row at all breakpoints
+ * so actions stay in the upper-right; trail wraps inside the left column when space is tight.
  */
 export function PageCardBreadcrumbRow({
   breadcrumb,
@@ -18,13 +16,13 @@ export function PageCardBreadcrumbRow({
 }) {
   const hasActions = actions != null && actions !== false;
   return (
-    <div className={cn('mb-4 flow-root min-w-0', className)}>
+    <div className={cn('mb-4 flex min-w-0 flex-row items-start gap-x-3 gap-y-2 sm:gap-x-4', className)}>
+      <div className='min-w-0 flex-1 pt-0.5 pr-1 sm:pr-2'>{breadcrumb}</div>
       {hasActions ? (
-        <div className='float-right ml-3 flex shrink-0 flex-nowrap items-center justify-end gap-1 sm:gap-1.5'>
+        <div className='flex shrink-0 flex-wrap items-start justify-end gap-x-1.5 gap-y-1.5 sm:gap-x-2 sm:pt-0.5'>
           {actions}
         </div>
       ) : null}
-      <div className='min-w-0'>{breadcrumb}</div>
     </div>
   );
 }

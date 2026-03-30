@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import type { components } from '../../../../@types/buldreinfo/swagger';
 import { LockSymbol } from '../../../ui/Indicators';
-import { ProfileRowAsterisk } from '../../Profile/ProfileRowAsterisk';
+import { ProfileRowTextSep } from '../../Profile/ProfileRowTextSep';
 import { tickCragLink, tickFlags, tickProblemLink, tickWhenGrade } from '../../Profile/profileRowTypography';
 import { cn } from '../../../../lib/utils';
 
@@ -19,13 +19,13 @@ export const ProblemLink = ({ a, type }: Props) => (
       {a.areaName}
     </Link>
 
-    <ProfileRowAsterisk />
+    <ProfileRowTextSep />
 
     <Link to={`/sector/${a.sectorId}`} className={tickCragLink}>
       {a.sectorName}
     </Link>
 
-    <ProfileRowAsterisk />
+    <ProfileRowTextSep />
 
     <Link to={`/problem/${a.problemId}`} className={tickProblemLink}>
       {a.problemName}

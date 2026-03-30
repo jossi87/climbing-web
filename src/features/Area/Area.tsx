@@ -374,58 +374,59 @@ const Area = () => {
       <title>{`${data.name} | ${meta?.title}`}</title>
       <meta name='description' content={data.comment} />
 
-      <Card flush className='min-w-0 border-0 sm:border'>
-        <div className='relative p-4 sm:p-5'>
-          <PageCardBreadcrumbRow
-            breadcrumb={
-              <nav className='block min-w-0 text-[11px] leading-relaxed text-pretty break-words text-slate-500 sm:text-[12px] [&>*+*]:ml-1.5'>
-                <Link to='/areas' className='inline align-middle transition-colors hover:text-slate-300'>
-                  Areas
+      <div className='mb-4 min-w-0 space-y-3 pt-3 sm:mb-5 sm:space-y-2 sm:pt-2'>
+        <PageCardBreadcrumbRow
+          className='mb-0'
+          breadcrumb={
+            <nav className='block min-w-0 text-[12px] leading-relaxed text-pretty break-words text-slate-500 sm:text-[13px] [&>*+*]:ml-1.5'>
+              <Link to='/areas' className='inline align-middle transition-colors hover:text-slate-300'>
+                Areas
+              </Link>
+              <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
+              <span className='inline-flex max-w-full min-w-0 items-center gap-1.5 align-middle text-slate-400'>
+                <span className='min-w-0 font-medium'>{data.name}</span>
+                <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
+              </span>
+            </nav>
+          }
+          actions={
+            meta.isAdmin ? (
+              <>
+                <Link
+                  to={`/area/edit/${data.id}`}
+                  title='Edit area'
+                  aria-label='Edit area'
+                  className='inline-flex h-8 w-8 items-center justify-center rounded-full border border-amber-300/45 bg-amber-400/18 text-amber-100 transition-colors hover:bg-amber-400/28'
+                >
+                  <Edit size={12} />
                 </Link>
-                <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
-                <span className='inline-flex max-w-full min-w-0 items-center gap-1.5 align-middle text-slate-400'>
-                  <span className='min-w-0 font-medium'>{data.name}</span>
-                  <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
-                </span>
-              </nav>
-            }
-            actions={
-              meta.isAdmin ? (
-                <>
-                  <Link
-                    to={`/area/edit/${data.id}`}
-                    title='Edit area'
-                    aria-label='Edit area'
-                    className='inline-flex h-8 w-8 items-center justify-center rounded-full border border-amber-300/45 bg-amber-400/18 text-amber-100 transition-colors hover:bg-amber-400/28'
-                  >
-                    <Edit size={12} />
-                  </Link>
-                  <Link
-                    to={`/sector/edit/${data.id}/0`}
-                    title='Add sector'
-                    aria-label='Add sector'
-                    className='inline-flex h-8 w-8 items-center justify-center rounded-full border border-green-400/40 bg-green-500/20 text-green-300 transition-colors hover:bg-green-500/30 hover:text-green-200'
-                  >
-                    <Plus size={12} />
-                  </Link>
-                </>
-              ) : null
-            }
-          />
+                <Link
+                  to={`/sector/edit/${data.id}/0`}
+                  title='Add sector'
+                  aria-label='Add sector'
+                  className='inline-flex h-8 w-8 items-center justify-center rounded-full border border-green-400/40 bg-green-500/20 text-green-300 transition-colors hover:bg-green-500/30 hover:text-green-200'
+                >
+                  <Plus size={12} />
+                </Link>
+              </>
+            ) : null
+          }
+        />
 
-          {data.accessClosed || data.noDogsAllowed || data.accessInfo ? (
-            <div className='mt-1 min-w-0 space-y-2 text-[12px] leading-relaxed sm:text-[13px]'>
-              {data.accessClosed && <p className='text-pretty text-red-300/90'>{data.accessClosed}</p>}
-              {(data.noDogsAllowed || data.accessInfo) && (
-                <div className='space-y-1.5 text-orange-300/90'>
-                  {data.noDogsAllowed && <p className='text-pretty'>No dogs allowed (landowner request).</p>}
-                  {data.accessInfo && <p className='text-pretty'>{data.accessInfo}</p>}
-                </div>
-              )}
-            </div>
-          ) : null}
-        </div>
+        {data.accessClosed || data.noDogsAllowed || data.accessInfo ? (
+          <div className='min-w-0 space-y-2 text-[12px] leading-relaxed sm:text-[13px]'>
+            {data.accessClosed && <p className='text-pretty text-red-300/90'>{data.accessClosed}</p>}
+            {(data.noDogsAllowed || data.accessInfo) && (
+              <div className='space-y-1.5 text-orange-300/90'>
+                {data.noDogsAllowed && <p className='text-pretty'>No dogs allowed (landowner request).</p>}
+                {data.accessInfo && <p className='text-pretty'>{data.accessInfo}</p>}
+              </div>
+            )}
+          </div>
+        ) : null}
+      </div>
 
+      <Card flush className='min-w-0 border-0 sm:border'>
         {tabs.length > 0 && (
           <>
             <div

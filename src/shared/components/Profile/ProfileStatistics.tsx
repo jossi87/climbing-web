@@ -11,7 +11,7 @@ import * as Sentry from '@sentry/react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { AlertCircle, Check, Camera, Video, Plus, Repeat, X, type LucideIcon } from 'lucide-react';
 import { cn } from '../../../lib/utils';
-import { ProfileRowAsterisk } from './ProfileRowAsterisk';
+import { ProfileRowTextSep } from './ProfileRowTextSep';
 import {
   profileRowRootClass,
   tickCommentSmall,
@@ -49,8 +49,7 @@ const TickListItemInner = ({ tick }: TickListItemProps) => {
       ) : (
         <span className={tickCrag}>{tick.areaName}</span>
       )}
-      <LockSymbol lockedAdmin={!!tick.areaLockedAdmin} lockedSuperadmin={!!tick.areaLockedSuperadmin} />
-      <ProfileRowAsterisk />
+      <LockSymbol lockedAdmin={!!tick.areaLockedAdmin} lockedSuperadmin={!!tick.areaLockedSuperadmin} />{' '}
       {sectorId ? (
         <Link to={`/sector/${sectorId}`} className={tickCragLink}>
           {tick.sectorName}
@@ -59,7 +58,7 @@ const TickListItemInner = ({ tick }: TickListItemProps) => {
         <span className={tickCrag}>{tick.sectorName}</span>
       )}
       <LockSymbol lockedAdmin={!!tick.sectorLockedAdmin} lockedSuperadmin={!!tick.sectorLockedSuperadmin} />
-      <ProfileRowAsterisk />
+      {tick.sectorLockedAdmin || tick.sectorLockedSuperadmin ? ' ' : <ProfileRowTextSep />}
       <Link to={`/problem/${tick.idProblem}`} className={tickProblemLink}>
         {tick.name}
       </Link>{' '}
