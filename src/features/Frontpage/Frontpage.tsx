@@ -12,9 +12,7 @@ const Frontpage = () => {
   const [isTallEnough, setIsTallEnough] = useState(() =>
     typeof window !== 'undefined' ? window.innerHeight >= 900 : true,
   );
-  const { data: numMedia } = useData<Success<'getFrontpageNumMedia'>>(`/frontpage/num_media`);
-  const { data: numProblems } = useData<Success<'getFrontpageNumProblems'>>(`/frontpage/num_problems`);
-  const { data: numTicks } = useData<Success<'getFrontpageNumTicks'>>(`/frontpage/num_ticks`);
+  const { data: stats, isPending: statsPending } = useData<Success<'getFrontpageStats'>>(`/frontpage/stats`);
   const { data: randomMedia } = useData<Success<'getFrontpageRandomMedia'>>(`/frontpage/random_media`);
 
   useEffect(() => {
@@ -29,19 +27,26 @@ const Frontpage = () => {
   }, []);
 
   const type = meta.isBouldering ? 'bouldering problems' : 'climbing routes';
-  const description = `${numProblems?.numAreas ?? 0} areas, ${numProblems?.numProblems ?? 0} ${type}, ${numTicks?.numTicks ?? 0} public ascents, ${numMedia?.numImages ?? 0} images, ${numMedia?.numMovies ?? 0} videos.`;
+  /** Entries in meta.sites for the active site’s group (header region list scope). */
+  const activeSite = meta.sites?.find((s) => s.active);
+  const numRegions = activeSite ? (meta.sites?.filter((s) => s.group === activeSite.group).length ?? 0) : 0;
+  /** Matches `/regions/:type` tabs in Regions.tsx (bouldering | climbing | ice). */
+  const regionsTo = `/regions/${meta.isIce ? 'ice' : meta.isBouldering ? 'bouldering' : 'climbing'}`;
+  const description = `${numRegions} regions, ${stats?.areas ?? 0} areas, ${stats?.problems ?? 0} ${type}, ${stats?.ticks ?? 0} public ascents.`;
 
   return (
     <>
       <title>{meta?.title}</title>
-      {numMedia && numProblems && numTicks && <meta name='description' content={description} />}
+      {stats && <meta name='description' content={description} />}
 
       <div className={designContract.layout.pageSection}>
         <div className='lg:hidden'>
           <FrontpageStats
-            numMedia={numMedia}
-            numProblems={numProblems}
-            numTicks={numTicks}
+            stats={stats}
+            regionsTo={regionsTo}
+            numRegions={numRegions}
+            regionsLoading={!meta.title}
+            statsLoading={statsPending}
             isBouldering={meta.isBouldering}
           />
         </div>
@@ -57,9 +62,11 @@ const Frontpage = () => {
             >
               <div className='hidden lg:block'>
                 <FrontpageStats
-                  numMedia={numMedia}
-                  numProblems={numProblems}
-                  numTicks={numTicks}
+                  stats={stats}
+                  regionsTo={regionsTo}
+                  numRegions={numRegions}
+                  regionsLoading={!meta.title}
+                  statsLoading={statsPending}
                   isBouldering={meta.isBouldering}
                 />
               </div>

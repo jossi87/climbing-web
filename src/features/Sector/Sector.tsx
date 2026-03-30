@@ -11,6 +11,7 @@ import { getDistanceWithUnit } from '../../shared/components/Leaflet/geo-utils';
 import Media from '../../shared/components/Media/Media';
 import Todo from '../../shared/components/Todo/Todo';
 import GetCenterFromDegrees from '../../utils/map-utils';
+import { googleMapsSearchUrl } from '../../utils/googleMaps';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { Stars, LockSymbol } from '../../shared/ui/Indicators';
 import { ConditionLabels } from '../../shared/components/Widgets/ConditionLabels';
@@ -43,6 +44,14 @@ import {
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
+import { ProfileRowAsterisk } from '../../shared/components/Profile/ProfileRowAsterisk';
+import {
+  profileRowRootClass,
+  tickCommentSmall,
+  tickFlags,
+  tickProblemLink,
+  tickWhenGrade,
+} from '../../shared/components/Profile/profileRowTypography';
 
 type SectorProblemRow = NonNullable<components['schemas']['Sector']['problems']>[number];
 
@@ -50,25 +59,55 @@ type SectorListItemProps = {
   problem: SectorProblemRow;
 };
 
+const lockInlineClass = 'ml-0.5 inline-block align-middle';
+
 export const SectorListItem = ({ problem }: SectorListItemProps) => {
   const { isClimbing, isBouldering } = useMeta();
-  const type = isClimbing
-    ? (problem.t?.subType ?? '') + ((problem.numPitches ?? 1) > 1 ? ', ' + problem.numPitches + ' pitches' : '')
-    : null;
-  const ascents = problem.numTicks && problem.numTicks === 1 ? '1 ascent' : (problem.numTicks ?? 0) + ' ascents';
 
-  let faTypeAscents = (problem.fa ?? '').trim();
-  if (problem.faDate) {
-    const y = problem.faDate.substring(0, 4);
-    faTypeAscents = faTypeAscents ? `${faTypeAscents} ${y}` : y;
-  }
-  if (type && ascents) {
-    faTypeAscents = (faTypeAscents ? `${faTypeAscents} (` : '(') + type + ', ' + ascents + ')';
-  } else if (type) {
-    faTypeAscents = (faTypeAscents ? `${faTypeAscents} (` : '(') + type + ')';
-  } else if (ascents) {
-    faTypeAscents = (faTypeAscents ? `${faTypeAscents} (` : '(') + ascents + ')';
-  }
+  /** FA · route type · pitch count · ascent count — same separators as the rest of the row (no parentheses). */
+  const faMetaBlock = (() => {
+    const segments: { key: string; node: ReactNode }[] = [];
+    const faText = (problem.fa ?? '').trim();
+    const faYear = problem.faDate ? problem.faDate.substring(0, 4) : '';
+    const faLine = [faText, faYear].filter(Boolean).join(' ');
+    if (faLine) {
+      segments.push({ key: 'fa', node: faLine });
+    }
+    if (isClimbing && problem.t?.subType) {
+      segments.push({ key: 'subtype', node: problem.t.subType });
+      if ((problem.numPitches ?? 1) > 1) {
+        segments.push({
+          key: 'pitches',
+          node: (
+            <>
+              <span className='tabular-nums'>{problem.numPitches}</span> pitches
+            </>
+          ),
+        });
+      }
+    }
+    const n = problem.numTicks ?? 0;
+    segments.push({
+      key: 'ascents',
+      node: (
+        <>
+          <span className='tabular-nums'>{n}</span>
+          {n === 1 ? ' ascent' : ' ascents'}
+        </>
+      ),
+    });
+
+    return (
+      <span className={tickFlags}>
+        {segments.map((seg, i) => (
+          <Fragment key={seg.key}>
+            {i > 0 ? <ProfileRowAsterisk /> : null}
+            {seg.node}
+          </Fragment>
+        ))}
+      </span>
+    );
+  })();
 
   const hasMediaTrail = !!problem.coordinates || !!problem.hasTopo || !!problem.hasImages || !!problem.hasMovies;
 
@@ -78,7 +117,9 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
     hasLock || hasBroken ? (
       <>
         {hasLock ? (
-          <LockSymbol lockedAdmin={!!problem.lockedAdmin} lockedSuperadmin={!!problem.lockedSuperadmin} />
+          <span className={lockInlineClass}>
+            <LockSymbol lockedAdmin={!!problem.lockedAdmin} lockedSuperadmin={!!problem.lockedSuperadmin} />
+          </span>
         ) : null}
         {hasBroken ? (
           <>
@@ -116,47 +157,28 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
     </span>
   ) : null;
 
-  type TailPart = { key: string; node: ReactNode };
-  const tailParts: TailPart[] = [];
-  if (lockBrokenBlock) tailParts.push({ key: 'lb', node: lockBrokenBlock });
-  if (mediaTrailBlock) tailParts.push({ key: 'media', node: mediaTrailBlock });
-  if (faTypeAscents)
-    tailParts.push({
-      key: 'fa',
-      node: <span className={cn(designContract.typography.meta, 'font-normal text-slate-500')}>{faTypeAscents}</span>,
-    });
-  if (problem.rock)
-    tailParts.push({
-      key: 'rock',
-      node: (
-        <span className={cn(designContract.typography.meta, 'font-normal text-slate-500 not-italic')}>
-          Rock: {problem.rock}
-        </span>
-      ),
-    });
-  if (problem.comment)
-    tailParts.push({
-      key: 'comment',
-      node: (
-        <span className={cn(designContract.typography.micro, 'font-normal text-slate-600/90')}>{problem.comment}</span>
-      ),
-    });
-
-  const sep = <span className='text-slate-600/70 select-none'> · </span>;
+  const lockAndMedia =
+    lockBrokenBlock || mediaTrailBlock ? (
+      <>
+        {lockBrokenBlock}
+        {lockBrokenBlock && mediaTrailBlock ? ' ' : null}
+        {mediaTrailBlock}
+      </>
+    ) : null;
 
   return (
-    <div className='min-w-0 py-1 sm:py-0.5'>
-      <p className={cn(designContract.typography.body, 'min-w-0 text-[13px] leading-normal text-slate-500 sm:text-sm')}>
+    <div className={cn(profileRowRootClass, 'min-w-0 py-1 text-pretty [overflow-wrap:anywhere] sm:py-1.5')}>
+      <div className='min-w-0 leading-snug'>
         {problem.danger ? (
           <AlertTriangle
-            size={14}
+            size={12}
             className='mr-1 inline-block shrink-0 align-[-0.125em] text-red-400'
             strokeWidth={2.25}
           />
         ) : null}
         <span
           className={cn(
-            designContract.typography.grade,
+            'font-mono tabular-nums',
             problem.ticked ? 'text-emerald-400' : problem.todo ? 'text-blue-400' : 'text-slate-500',
           )}
           title={
@@ -167,31 +189,43 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
         </span>{' '}
         <Link
           to={`/problem/${problem.id}`}
-          className={cn(
-            'font-normal text-slate-300 underline decoration-white/[0.08] underline-offset-2 transition-colors hover:text-slate-100 hover:decoration-white/20',
-            problem.broken ? 'line-through opacity-60' : undefined,
-          )}
+          className={cn(tickProblemLink, problem.broken ? 'line-through opacity-60' : undefined)}
         >
           {problem.name}
         </Link>
         {problem.grade ? (
-          <>
-            {' '}
-            <span className={cn(designContract.typography.grade, 'text-slate-400')}>{problem.grade}</span>
-          </>
+          <span className={cn(tickWhenGrade, 'ml-1 whitespace-nowrap tabular-nums')}>{problem.grade}</span>
         ) : null}
         {problem.stars ? (
-          <span className='ml-1 inline-block align-[-0.15em] opacity-95'>
-            <Stars numStars={problem.stars} includeStarOutlines={false} muted />
+          <span className='ml-1 inline-block align-[-0.15em] opacity-90'>
+            <Stars numStars={problem.stars} includeStarOutlines={false} size={11} />
           </span>
         ) : null}
-        {tailParts.map(({ key, node }) => (
-          <Fragment key={key}>
-            {sep}
-            {node}
-          </Fragment>
-        ))}
-      </p>
+        {lockAndMedia ? (
+          <>
+            <ProfileRowAsterisk />
+            {lockAndMedia}
+          </>
+        ) : null}
+        {faMetaBlock ? (
+          <>
+            {lockAndMedia ? ' ' : <ProfileRowAsterisk />}
+            {faMetaBlock}
+          </>
+        ) : null}
+        {problem.rock ? (
+          <>
+            <ProfileRowAsterisk />
+            <span className={cn(tickFlags, 'not-italic')}>Rock: {problem.rock}</span>
+          </>
+        ) : null}
+        {problem.comment ? (
+          <>
+            <ProfileRowAsterisk />
+            <span className={tickCommentSmall}>{problem.comment}</span>
+          </>
+        ) : null}
+      </div>
     </div>
   );
 };
@@ -402,96 +436,105 @@ const Sector = () => {
         <div className='relative p-4 sm:p-5'>
           <PageCardBreadcrumbRow
             breadcrumb={
-              <nav className='block min-w-0 text-[11px] leading-relaxed text-pretty break-words text-slate-500 sm:text-[12px] [&>*+*]:ml-1.5'>
-                <Link to='/areas' className='inline align-middle transition-colors hover:text-slate-300'>
-                  Areas
-                </Link>
-                <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
-                <Link
-                  to={`/area/${data.areaId}`}
-                  className='inline min-w-0 align-middle transition-colors hover:text-slate-300'
-                >
-                  {data.areaName}
-                </Link>
-                <LockSymbol lockedAdmin={!!data.areaLockedAdmin} lockedSuperadmin={!!data.areaLockedSuperadmin} />
-                <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
-                {(data.sectors ?? []).length > 1 ? (
-                  <div className='relative inline-flex max-w-full min-w-0 align-middle' ref={sectorPickerRef}>
-                    <button
-                      type='button'
-                      aria-expanded={sectorPickerOpen}
-                      aria-haspopup='listbox'
-                      onClick={() => setSectorPickerOpen((o) => !o)}
-                      className={cn(
-                        'inline-flex max-w-full min-w-0 items-center gap-1.5 rounded-full border border-white/14 bg-white/[0.08] py-1.5 pr-2 pl-3 text-left text-sm font-semibold text-slate-100 shadow-sm transition-colors hover:border-white/22 hover:bg-white/[0.11] sm:text-[15px]',
+              <>
+                <nav className='flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-2 text-[11px] leading-relaxed text-pretty break-words text-slate-500 sm:text-[12px]'>
+                  <Link to='/areas' className='inline align-middle transition-colors hover:text-slate-300'>
+                    Areas
+                  </Link>
+                  <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
+                  <Link
+                    to={`/area/${data.areaId}`}
+                    className='inline min-w-0 align-middle transition-colors hover:text-slate-300'
+                  >
+                    {data.areaName}
+                  </Link>
+                  <LockSymbol lockedAdmin={!!data.areaLockedAdmin} lockedSuperadmin={!!data.areaLockedSuperadmin} />
+                  <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
+                  {(data.sectors ?? []).length > 1 ? (
+                    <div className='relative inline-flex max-w-full min-w-0 align-middle' ref={sectorPickerRef}>
+                      <button
+                        type='button'
+                        aria-expanded={sectorPickerOpen}
+                        aria-haspopup='listbox'
+                        onClick={() => setSectorPickerOpen((o) => !o)}
+                        className={cn(
+                          'inline-flex max-w-full min-w-0 items-center gap-1.5 rounded-full border border-white/14 bg-white/[0.08] py-1.5 pr-2 pl-3 text-left text-sm font-semibold text-slate-100 shadow-sm transition-colors hover:border-white/22 hover:bg-white/[0.11] sm:text-[15px]',
+                        )}
+                      >
+                        <span className='min-w-0 truncate'>{data.name}</span>
+                        <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
+                        <ChevronDown
+                          size={14}
+                          className={cn(
+                            'shrink-0 text-slate-400 transition-transform',
+                            sectorPickerOpen && 'rotate-180',
+                          )}
+                          aria-hidden
+                        />
+                      </button>
+                      {sectorPickerOpen && (
+                        <ul
+                          className='border-surface-border bg-surface-card/98 absolute top-[calc(100%+0.35rem)] left-0 z-50 max-h-64 min-w-[min(100vw-2rem,18rem)] overflow-auto rounded-2xl border py-1 shadow-2xl ring-1 ring-white/10 backdrop-blur-md'
+                          role='listbox'
+                        >
+                          {(data.sectors ?? []).map((s) => {
+                            const current = data.id === s.id;
+                            return (
+                              <li key={s.id} role='option' aria-selected={current}>
+                                <Link
+                                  to={`/sector/${s.id}`}
+                                  className={cn(
+                                    'flex min-w-0 items-center gap-2 px-3 py-2 text-sm transition-colors',
+                                    current
+                                      ? 'bg-white/[0.08] font-medium text-slate-100'
+                                      : 'text-slate-400 hover:bg-white/[0.05] hover:text-slate-200',
+                                  )}
+                                  onClick={() => setSectorPickerOpen(false)}
+                                >
+                                  <LockSymbol lockedAdmin={!!s.lockedAdmin} lockedSuperadmin={!!s.lockedSuperadmin} />
+                                  <span className='min-w-0 truncate'>{s.name}</span>
+                                </Link>
+                              </li>
+                            );
+                          })}
+                        </ul>
                       )}
-                    >
+                    </div>
+                  ) : (
+                    <span className='inline-flex max-w-full min-w-0 items-center gap-1.5 align-middle text-sm font-semibold text-slate-100 sm:text-[15px]'>
                       <span className='min-w-0 truncate'>{data.name}</span>
                       <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
-                      <ChevronDown
-                        size={14}
-                        className={cn('shrink-0 text-slate-400 transition-transform', sectorPickerOpen && 'rotate-180')}
-                        aria-hidden
-                      />
-                    </button>
-                    {sectorPickerOpen && (
-                      <ul
-                        className='border-surface-border bg-surface-card/98 absolute top-[calc(100%+0.35rem)] left-0 z-50 max-h-64 min-w-[min(100vw-2rem,18rem)] overflow-auto rounded-2xl border py-1 shadow-2xl ring-1 ring-white/10 backdrop-blur-md'
-                        role='listbox'
-                      >
-                        {(data.sectors ?? []).map((s) => {
-                          const current = data.id === s.id;
-                          return (
-                            <li key={s.id} role='option' aria-selected={current}>
-                              <Link
-                                to={`/sector/${s.id}`}
-                                className={cn(
-                                  'flex min-w-0 items-center gap-2 px-3 py-2 text-sm transition-colors',
-                                  current
-                                    ? 'bg-white/[0.08] font-medium text-slate-100'
-                                    : 'text-slate-400 hover:bg-white/[0.05] hover:text-slate-200',
-                                )}
-                                onClick={() => setSectorPickerOpen(false)}
-                              >
-                                <LockSymbol lockedAdmin={!!s.lockedAdmin} lockedSuperadmin={!!s.lockedSuperadmin} />
-                                <span className='min-w-0 truncate'>{s.name}</span>
-                              </Link>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    )}
-                  </div>
-                ) : (
-                  <span className='inline-flex max-w-full min-w-0 items-center gap-1.5 align-middle text-sm font-semibold text-slate-100 sm:text-[15px]'>
-                    <span className='min-w-0 truncate'>{data.name}</span>
-                    <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
-                  </span>
-                )}
-                {sectorTypeSummaries.length > 0 ? (
-                  <>
-                    <span className='text-slate-600/80' aria-hidden>
-                      {' '}
-                      ·{' '}
                     </span>
+                  )}
+                  {sectorTypeSummaries.length > 0 ? (
                     <span
-                      className={cn(
-                        designContract.typography.meta,
-                        'inline min-w-0 text-pretty [overflow-wrap:anywhere] text-slate-500',
-                      )}
+                      className='inline-flex min-w-0 flex-wrap items-center gap-x-1 gap-y-0.5'
+                      role='group'
+                      aria-label='Route counts by type in this sector'
                     >
+                      <span className='text-slate-600/80' aria-hidden>
+                        ·
+                      </span>
                       {sectorTypeSummaries.map((s, i) => (
-                        <Fragment key={s.key}>
-                          {i > 0 ? <span className='text-slate-600/80'> · </span> : null}
-                          <span title={`${s.header}: ${s.txt}`}>
-                            {s.header} <span className='text-slate-500/90 tabular-nums'>{s.txt}</span>
+                        <span key={s.key} className='inline-flex min-w-0 items-baseline gap-0.5'>
+                          {i > 0 ? (
+                            <span className='pr-1 text-slate-600/70' aria-hidden>
+                              ·
+                            </span>
+                          ) : null}
+                          <span
+                            title={`${s.header}: ${s.txt}`}
+                            className='inline-flex max-w-[min(100%,10rem)] min-w-0 items-baseline gap-0.5 text-[11px] leading-snug text-slate-500 sm:max-w-[12rem] sm:text-[12px]'
+                          >
+                            <span className='min-w-0 truncate'>{s.header}</span>
+                            <span className='shrink-0 font-mono tabular-nums opacity-95'>{s.txt}</span>
                           </span>
-                        </Fragment>
+                        </span>
                       ))}
                     </span>
-                  </>
-                ) : null}
-              </nav>
+                  ) : null}
+                </nav>
+              </>
             }
             actions={
               meta.isAdmin ? (
@@ -579,6 +622,7 @@ const Sector = () => {
                         carouselMedia={carouselMedia}
                         optProblemId={null}
                         showLocation={false}
+                        compactTiles
                       />
                     )}
 
@@ -597,7 +641,7 @@ const Sector = () => {
                       <DownloadButton href={`/areas/pdf?id=${data.areaId}`}>area.pdf</DownloadButton>
                       {data.parking && (
                         <a
-                          href={`http://googleusercontent.com/maps.google.com/maps?q=${data.parking.latitude},${data.parking.longitude}`}
+                          href={googleMapsSearchUrl(data.parking.latitude, data.parking.longitude)}
                           rel='noreferrer noopener'
                           target='_blank'
                           title='Open parking in Google Maps'
@@ -609,7 +653,10 @@ const Sector = () => {
                       )}
                       {meta.isClimbing && (data.outline ?? []).length > 0 && (
                         <a
-                          href={`http://googleusercontent.com/maps.google.com/maps?q=${(data.outline ?? [])[0]?.latitude},${(data.outline ?? [])[0]?.longitude}`}
+                          href={googleMapsSearchUrl(
+                            (data.outline ?? [])[0]?.latitude,
+                            (data.outline ?? [])[0]?.longitude,
+                          )}
                           rel='noreferrer noopener'
                           target='_blank'
                           title='Sector location in Google Maps'
@@ -635,6 +682,7 @@ const Sector = () => {
                           carouselMedia={carouselMedia}
                           optProblemId={null}
                           showLocation={false}
+                          compactTiles
                         />
                       </div>
                     )}
@@ -662,41 +710,27 @@ const Sector = () => {
                     </div>
                     {((data.approach?.coordinates ?? []).length > 0 ||
                       (data.descent?.coordinates ?? []).length > 0) && (
-                      <div className='border-surface-border/40 space-y-4 border-t p-4 sm:p-5'>
-                        {(data.approach?.coordinates ?? []).length > 0 && (
-                          <div className='min-w-0'>
-                            <div
-                              className={cn(
-                                designContract.typography.micro,
-                                'mb-2 font-semibold tracking-wide text-slate-500 uppercase',
-                              )}
-                            >
-                              Approach
-                            </div>
+                      <div className='border-surface-border/40 border-t px-4 pt-3 pb-4 sm:px-5 sm:pt-4 sm:pb-5'>
+                        <div className='grid min-w-0 gap-4 md:grid-cols-2 md:items-start md:gap-5'>
+                          {(data.approach?.coordinates ?? []).length > 0 && (
                             <SlopeProfile
+                              compact
+                              title='Approach'
                               areaName={data.areaName ?? ''}
                               sectorName={data.name ?? ''}
                               slope={data.approach as Slope}
                             />
-                          </div>
-                        )}
-                        {(data.descent?.coordinates ?? []).length > 0 && (
-                          <div className='min-w-0'>
-                            <div
-                              className={cn(
-                                designContract.typography.micro,
-                                'mb-2 font-semibold tracking-wide text-slate-500 uppercase',
-                              )}
-                            >
-                              Descent
-                            </div>
+                          )}
+                          {(data.descent?.coordinates ?? []).length > 0 && (
                             <SlopeProfile
+                              compact
+                              title='Descent'
                               areaName={data.areaName ?? ''}
                               sectorName={data.name ?? ''}
                               slope={data.descent as Slope}
                             />
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </div>
                     )}
                   </>

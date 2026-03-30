@@ -1,6 +1,8 @@
 import { Star, StarHalf, Lock, LockKeyhole } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
+const lockIconStroke = 2.35;
+
 export const LockSymbol = ({
   lockedAdmin = false,
   lockedSuperadmin = false,
@@ -15,23 +17,25 @@ export const LockSymbol = ({
   if (lockedSuperadmin)
     return (
       <span
+        title='Super-admin lock'
         className={cn(
-          'ml-0.5 inline-flex h-[14px] items-center rounded border border-red-400/45 bg-red-500/18 px-1 leading-none text-red-200',
+          'ml-0.5 inline-flex h-4 min-w-[1.25rem] shrink-0 items-center justify-center rounded border border-red-400/65 bg-red-950/55 px-[3px] leading-none text-red-200 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.07)]',
           superadminClassName,
         )}
       >
-        <LockKeyhole size={8} />
+        <LockKeyhole size={11} strokeWidth={lockIconStroke} className='shrink-0 text-red-200' aria-hidden />
       </span>
     );
   if (lockedAdmin)
     return (
       <span
+        title='Admin lock'
         className={cn(
-          'ml-0.5 inline-flex h-[14px] items-center rounded border border-amber-300/45 bg-amber-400/18 px-1 leading-none text-amber-100',
+          'ml-0.5 inline-flex h-4 min-w-[1.25rem] shrink-0 items-center justify-center rounded border border-amber-400/60 bg-amber-950/45 px-[3px] leading-none text-amber-200 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]',
           adminClassName,
         )}
       >
-        <Lock size={8} />
+        <Lock size={11} strokeWidth={lockIconStroke} className='shrink-0 text-amber-200' aria-hidden />
       </span>
     );
   return null;

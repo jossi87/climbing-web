@@ -2,8 +2,16 @@ import { Link } from 'react-router-dom';
 import { Loading } from '../../ui/StatusWidgets';
 import { LockSymbol } from '../../ui/Indicators';
 import { useTodo } from '../../../api';
-import { designContract } from '../../../design/contract';
 import { cn } from '../../../lib/utils';
+import {
+  profileRowRootClass,
+  tickCragLink,
+  tickFlags,
+  tickProblemLink,
+  tickWhenGrade,
+} from '../Profile/profileRowTypography';
+
+const lockInlineClass = 'ml-1 inline-block align-middle';
 
 const Todo = ({ idArea, idSector }: { idArea: number; idSector: number }) => {
   const { data } = useTodo({ idArea, idSector });
@@ -13,70 +21,54 @@ const Todo = ({ idArea, idSector }: { idArea: number; idSector: number }) => {
   }
 
   if ((data.sectors ?? []).length === 0) {
-    return <p className={cn(designContract.typography.meta, 'text-center text-slate-500 italic')}>Empty list.</p>;
+    return <p className={cn(profileRowRootClass, tickFlags, 'text-center text-slate-500 italic')}>Empty list.</p>;
   }
 
   return (
-    <div className='space-y-8'>
+    <div className='space-y-6'>
       {(data.sectors ?? []).map((sector) => (
-        <div key={sector.id} className='space-y-3'>
+        <div key={sector.id} className='space-y-2.5'>
           {idArea > 0 && (
-            <div className='border-surface-border flex items-center gap-2 border-b pb-2'>
-              <Link
-                to={`/sector/${sector.id}`}
-                className={cn(
-                  designContract.typography.subtitle,
-                  'text-slate-100 transition-colors hover:text-slate-50',
-                )}
-              >
+            <div className='border-surface-border flex flex-wrap items-center gap-x-2 gap-y-1 border-b pb-2'>
+              <Link to={`/sector/${sector.id}`} className={cn(tickCragLink, 'font-medium')}>
                 {sector.name}
               </Link>
-              <LockSymbol lockedAdmin={sector.lockedAdmin} lockedSuperadmin={sector.lockedSuperadmin} />
+              <span className={lockInlineClass}>
+                <LockSymbol lockedAdmin={sector.lockedAdmin} lockedSuperadmin={sector.lockedSuperadmin} />
+              </span>
             </div>
           )}
 
-          <div className='flex flex-col gap-y-3'>
+          <div className='flex flex-col gap-y-2'>
             {(sector.problems ?? []).map((problem) => (
-              <p
-                key={problem.id}
-                className={cn(
-                  designContract.typography.body,
-                  'min-w-0 leading-relaxed [overflow-wrap:anywhere] text-slate-300',
-                )}
-              >
-                <span className={cn(designContract.typography.meta, 'font-mono text-slate-500 tabular-nums')}>
-                  #{problem.nr}
-                </span>{' '}
-                <Link
-                  to={`/problem/${problem.id}`}
-                  className={cn(designContract.typography.listLink, designContract.typography.listEmphasis)}
-                >
+              <div key={problem.id} className={cn(profileRowRootClass, 'min-w-0 text-pretty [overflow-wrap:anywhere]')}>
+                <span className={cn(tickFlags, 'font-mono tabular-nums')}>#{problem.nr}</span>{' '}
+                <Link to={`/problem/${problem.id}`} className={tickProblemLink}>
                   {problem.name}
                 </Link>
                 {problem.grade ? (
-                  <>
-                    {' '}
-                    <span className={cn(designContract.typography.meta, 'font-mono text-slate-500 tabular-nums')}>
-                      {problem.grade}
-                    </span>
-                  </>
+                  <span className={cn(tickWhenGrade, 'ml-1 whitespace-nowrap tabular-nums')}>{problem.grade}</span>
                 ) : null}
-                <LockSymbol lockedAdmin={problem.lockedAdmin} lockedSuperadmin={problem.lockedSuperadmin} />
+                <span className={lockInlineClass}>
+                  <LockSymbol lockedAdmin={problem.lockedAdmin} lockedSuperadmin={problem.lockedSuperadmin} />
+                </span>
                 {problem.partners && problem.partners.length > 0 ? (
                   <>
                     {' '}
-                    <span className='text-slate-600'>·</span>{' '}
-                    {problem.partners.map((u, i) => (
-                      <span key={u.id}>
-                        {i > 0 ? ', ' : ''}
-                        <Link to={`/user/${u.id}/todo`} className={designContract.typography.listLinkMuted}>
+                    <span className='inline-flex min-w-0 flex-wrap content-start items-center gap-x-2 gap-y-1'>
+                      {problem.partners.map((u) => (
+                        <Link
+                          key={u.id}
+                          to={`/user/${u.id}/todo`}
+                          className={cn(tickFlags, 'hover:text-brand transition-colors')}
+                        >
                           {u.name}
                         </Link>
-                      </span>
-                    ))}
+                      ))}
+                    </span>
                   </>
                 ) : null}
-              </p>
+              </div>
             ))}
           </div>
         </div>

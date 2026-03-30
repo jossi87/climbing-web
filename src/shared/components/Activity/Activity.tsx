@@ -9,6 +9,13 @@ import { Avatar, AvatarGroup, Card, SectionLabel } from '../../ui';
 import { Stars } from '../../ui/Indicators';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
+import {
+  profileRowRootClass,
+  tickCommentSmall,
+  tickCrag,
+  tickFlags,
+  tickProblemLink,
+} from '../Profile/profileRowTypography';
 import { ProblemLink } from './components/ProblemLink';
 import { LazyMedia } from './components/LazyMedia';
 import type { components } from '../../../@types/buldreinfo/swagger';
@@ -16,8 +23,8 @@ import type { components } from '../../../@types/buldreinfo/swagger';
 type ActivitySchema = components['schemas']['Activity'];
 
 const ActivitySkeleton = () => (
-  <div className='min-h-16 animate-pulse border-b border-white/5 p-3 last:border-0'>
-    <div className='flex items-start gap-4'>
+  <div className='min-h-14 animate-pulse border-b border-white/5 px-3 py-2 last:border-0 sm:min-h-[3.25rem] sm:px-4 sm:py-2.5'>
+    <div className='flex items-start gap-2.5 sm:gap-3'>
       <div className='bg-surface-nav h-8 w-8 rounded-full' />
       <div className='flex-1 space-y-1.5'>
         <div className='bg-surface-nav h-3 w-2/3 rounded' />
@@ -265,56 +272,43 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
   );
 
   return (
-    <div className='group px-4 py-3 transition-colors hover:bg-white/1.5'>
-      <div className='flex items-start gap-3 sm:gap-4'>
+    <div className='group px-3 py-2 transition-colors hover:bg-white/1.5 sm:px-4 sm:py-2.5'>
+      <div className='flex items-start gap-2.5 sm:gap-3'>
         <div className='shrink-0 pt-0.5'>
           <AvatarGroup items={avatarItems} size='tiny' statusIcon={statusIcon} max={2} />
         </div>
 
         <div className='min-w-0 flex-1'>
-          <div
-            className={cn(
-              designContract.typography.body,
-              'min-w-0 leading-relaxed text-pretty [overflow-wrap:anywhere] text-slate-300',
-            )}
-          >
+          <div className={cn(profileRowRootClass, 'min-w-0 text-pretty [overflow-wrap:anywhere]')}>
             {a.users && a.users.length > 0 && !a.repeat ? (
               <>
-                <span className={cn(designContract.typography.listEmphasis, 'text-slate-100')}>
-                  New {isBouldering ? 'boulder' : 'route'}
-                </span>{' '}
-                <span className='text-slate-400'>in</span> <ProblemLink a={a} />
+                <span className={cn(tickCrag, 'font-medium')}>New {isBouldering ? 'boulder' : 'route'}</span>{' '}
+                <span className={tickFlags}>in</span> <ProblemLink a={a} />
               </>
             ) : a.message ? (
               <>
-                <Link
-                  to={`/user/${a.id}`}
-                  className={cn(designContract.typography.listLink, designContract.typography.listEmphasis)}
-                >
+                <Link to={`/user/${a.id}`} className={tickProblemLink}>
                   {a.name}
                 </Link>{' '}
-                <span className='text-slate-400'>commented on</span> <ProblemLink a={a} />
+                <span className={tickFlags}>commented on</span> <ProblemLink a={a} />
               </>
             ) : (
               <>
                 {a.name ? (
                   <>
-                    <Link
-                      to={`/user/${a.id}`}
-                      className={cn(designContract.typography.listLink, designContract.typography.listEmphasis)}
-                    >
+                    <Link to={`/user/${a.id}`} className={tickProblemLink}>
                       {a.name}
                     </Link>{' '}
-                    <span className='text-slate-400'>{a.repeat ? 'repeated' : 'ticked'}</span>{' '}
+                    <span className={tickFlags}>{a.repeat ? 'repeated' : 'ticked'}</span>{' '}
                   </>
                 ) : numImg > 0 || numMov > 0 ? (
                   <>
-                    <span className={cn(designContract.typography.listEmphasis, 'text-slate-100')}>
+                    <span className={cn(tickCrag, 'font-medium')}>
                       {numImg > 0 && `${numImg} ${numImg === 1 ? 'image' : 'images'}`}
                       {numImg > 0 && numMov > 0 && ' & '}
                       {numMov > 0 && `${numMov} ${numMov === 1 ? 'video' : 'videos'}`}
                     </span>{' '}
-                    <span className='text-slate-400'>on</span>{' '}
+                    <span className={tickFlags}>on</span>{' '}
                   </>
                 ) : null}
                 <ProblemLink a={a} />
@@ -322,56 +316,60 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
             )}
             <span
               className={cn(
-                designContract.typography.meta,
-                'ml-1.5 inline-block font-normal text-slate-500 tabular-nums transition-colors select-none group-hover:text-slate-400',
+                tickFlags,
+                'ml-1.5 inline-block tabular-nums transition-colors select-none group-hover:text-slate-300',
               )}
             >
               {a.timeAgo}
             </span>
           </div>
 
-          {(a.description || a.message) && (
+          {a.message ? (
+            <div className={cn('mt-1.5 border-l border-white/10 pl-3 leading-relaxed', tickCommentSmall)}>
+              <Linkify>{a.message}</Linkify>
+            </div>
+          ) : a.description ? (
             <div
               className={cn(
-                designContract.typography.meta,
-                'mt-1.5 border-l border-white/10 pl-3 leading-relaxed text-slate-400',
+                tickFlags,
+                'mt-1.5 border-l border-white/10 pl-3 text-[10px] leading-relaxed sm:text-[11px]',
               )}
             >
-              {a.message ? <Linkify>{a.message}</Linkify> : a.description}
+              {a.description}
             </div>
-          )}
+          ) : null}
 
           {a.stars !== undefined && a.stars !== -1 && (
-            <div className='mt-1 origin-left opacity-70'>
-              <Stars numStars={a.stars} includeStarOutlines={true} />
+            <div className='mt-1 origin-left'>
+              <Stars numStars={a.stars} includeStarOutlines={true} size={12} />
             </div>
           )}
 
           {a.media && (
-            <div className='mt-2'>
+            <div className='mt-1.5 sm:mt-2'>
               <LazyMedia media={a.media} problemId={a.problemId} />
             </div>
           )}
 
           {a.users && a.users.length > 0 && (
-            <div className='mt-2 flex flex-wrap gap-3'>
+            <div className={cn(profileRowRootClass, 'mt-1.5 flex flex-wrap gap-x-2 gap-y-1 sm:mt-2')}>
               {a.users.map((u) => (
-                <Link key={u.id} to={`/user/${u.id}`} className='group/user flex items-center gap-1.5'>
+                <Link
+                  key={u.id}
+                  to={`/user/${u.id}`}
+                  className={cn(
+                    tickFlags,
+                    'group/user hover:text-brand inline-flex max-w-full min-w-0 items-center gap-1.5 leading-snug transition-colors',
+                  )}
+                >
                   <Avatar
                     name={u.name}
                     mediaId={u.mediaId}
                     mediaVersionStamp={u.mediaVersionStamp}
-                    size='mini'
-                    className='group-hover/user:ring-brand/50 ring-1 ring-white/10 transition-all'
+                    size='micro'
+                    className='group-hover/user:ring-brand/45 shrink-0 ring-1 ring-white/10 transition-all'
                   />
-                  <span
-                    className={cn(
-                      designContract.typography.meta,
-                      'font-medium text-slate-300 transition-colors group-hover/user:text-slate-200',
-                    )}
-                  >
-                    {u.name}
-                  </span>
+                  <span className='min-w-0 group-hover/user:text-slate-300'>{u.name}</span>
                 </Link>
               ))}
             </div>

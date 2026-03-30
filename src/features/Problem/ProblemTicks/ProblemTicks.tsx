@@ -6,7 +6,13 @@ import Linkify from 'linkify-react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { cn } from '../../../lib/utils';
 import { X } from 'lucide-react';
-import { designContract } from '../../../design/contract';
+import {
+  profileRowRootClass,
+  tickCommentSmall,
+  tickFlags,
+  tickProblemLink,
+  tickWhenGrade,
+} from '../../../shared/components/Profile/profileRowTypography';
 
 type Props = {
   ticks: components['schemas']['ProblemTick'][];
@@ -21,12 +27,9 @@ function joinDates(dates: (string | undefined | null)[]) {
 }
 
 /** Compact list rows for long tick histories. */
-const rowShell = 'group px-3 py-1.5 transition-colors hover:bg-white/[0.015] sm:px-4 sm:py-2';
+const rowShell = 'group px-3 py-2 transition-colors hover:bg-white/[0.015] sm:px-4 sm:py-2.5';
 
-const quoteBlock = cn(
-  designContract.typography.meta,
-  'mt-1 border-l border-white/10 pl-2.5 leading-snug text-pretty text-slate-400 break-words',
-);
+const quoteBlock = cn(tickCommentSmall, 'mt-1 border-l border-white/10 pl-3 leading-relaxed text-pretty break-words');
 
 export const ProblemTicks = ({ ticks }: Props) => {
   const safeTicks = ticks ?? [];
@@ -46,10 +49,10 @@ export const ProblemTicks = ({ ticks }: Props) => {
             <div className={cn(quoteBlock, 'space-y-1')}>
               <div className='flex flex-wrap gap-x-2 gap-y-0.5'>
                 {nonEmptyDate(t.date) ? (
-                  <span className='font-mono text-[11px] text-slate-500 tabular-nums sm:text-[12px]'>{t.date}</span>
+                  <span className={cn(tickFlags, 'font-mono tabular-nums')}>{t.date}</span>
                 ) : null}
                 {t.comment ? (
-                  <span className='min-w-0 flex-1 text-slate-400'>
+                  <span className={cn(tickCommentSmall, 'min-w-0 flex-1')}>
                     <Linkify>{t.comment}</Linkify>
                   </span>
                 ) : null}
@@ -57,10 +60,10 @@ export const ProblemTicks = ({ ticks }: Props) => {
               {repeats.map((r, idx) => (
                 <div key={idx} className='flex flex-wrap gap-x-2 gap-y-0.5'>
                   {nonEmptyDate(r.date) ? (
-                    <span className='font-mono text-[11px] text-slate-500 tabular-nums sm:text-[12px]'>{r.date}</span>
+                    <span className={cn(tickFlags, 'font-mono tabular-nums')}>{r.date}</span>
                   ) : null}
                   {r.comment ? (
-                    <span className='min-w-0 flex-1 text-slate-400'>
+                    <span className={cn(tickCommentSmall, 'min-w-0 flex-1')}>
                       <Linkify>{r.comment}</Linkify>
                     </span>
                   ) : null}
@@ -78,41 +81,29 @@ export const ProblemTicks = ({ ticks }: Props) => {
 
         return (
           <div key={t.id != null ? `tick-${t.id}` : `tick-${t.idUser}-${index}`} className={rowShell}>
-            <div className='flex items-start gap-2 sm:gap-2.5'>
+            <div className='flex items-start gap-2.5 sm:gap-3'>
               <div className='shrink-0'>
                 <ClickableAvatar
                   name={t.name}
                   mediaId={t.mediaId}
                   mediaVersionStamp={t.mediaVersionStamp}
-                  size='mini'
+                  size='tiny'
                   className={cn(isSelf && 'border-emerald-400/30 ring-1 ring-emerald-400/20')}
                 />
               </div>
 
               <div className='min-w-0 flex-1'>
-                <div
-                  className={cn(
-                    designContract.typography.body,
-                    'min-w-0 text-[13px] leading-snug text-pretty text-slate-300 sm:text-sm',
-                  )}
-                >
+                <div className={cn(profileRowRootClass, 'min-w-0 leading-snug text-pretty [overflow-wrap:anywhere]')}>
                   <Link
                     to={`/user/${t.idUser}`}
-                    className={cn(
-                      designContract.typography.listLink,
-                      isSelf
-                        ? 'font-semibold text-emerald-400 hover:text-emerald-300'
-                        : designContract.typography.listEmphasis,
-                    )}
+                    className={cn(tickProblemLink, isSelf && 'text-emerald-400 hover:text-emerald-300')}
                   >
                     {t.name}
                   </Link>
                   {t.noPersonalGrade ? (
                     <>
                       {' '}
-                      <span
-                        className={cn(designContract.typography.meta, 'inline-flex items-center gap-1 text-slate-500')}
-                      >
+                      <span className={cn(tickFlags, 'inline-flex items-center gap-1')}>
                         <X size={10} className='inline shrink-0 opacity-70' strokeWidth={2.5} />
                         No personal grade
                       </span>
@@ -120,17 +111,17 @@ export const ProblemTicks = ({ ticks }: Props) => {
                   ) : (
                     <>
                       {' '}
-                      <span className={cn(designContract.typography.grade, 'text-slate-400')}>{t.suggestedGrade}</span>
+                      <span className={cn(tickWhenGrade, 'tabular-nums')}>{t.suggestedGrade}</span>
                     </>
                   )}
-                  <span className='ml-1 inline-flex origin-left align-middle opacity-80'>
+                  <span className='ml-1 inline-flex origin-left align-middle opacity-90'>
                     <Stars numStars={t.stars ?? 0} includeStarOutlines size={11} />
                   </span>
                   {displayDate ? (
                     <span
                       className={cn(
-                        designContract.typography.meta,
-                        'ml-1.5 inline text-slate-500 tabular-nums transition-colors group-hover:text-slate-400',
+                        tickFlags,
+                        'ml-1.5 inline tabular-nums transition-colors group-hover:text-slate-300',
                       )}
                     >
                       {displayDate}

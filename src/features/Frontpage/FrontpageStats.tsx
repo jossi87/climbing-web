@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Database, CheckCircle, Camera, Film, Heart, Map, type LucideIcon } from 'lucide-react';
+import { Database, CheckCircle, Globe, Map, type LucideIcon } from 'lucide-react';
 import { numberWithCommas } from '../../api';
 import { cn } from '../../lib/utils';
 import type { components } from '../../@types/buldreinfo/swagger';
@@ -75,55 +75,60 @@ const StatItem = ({ to, icon: Icon, label, value, loading }: StatItemProps) => {
 };
 
 type FrontpageStatsProps = {
-  numMedia?: components['schemas']['FrontpageNumMedia'];
-  numProblems?: components['schemas']['FrontpageNumProblems'];
-  numTicks?: components['schemas']['FrontpageNumTicks'];
+  stats?: components['schemas']['FrontpageStats'];
+  /** e.g. `/regions/bouldering` — must match `Regions` tab slugs. */
+  regionsTo: string;
+  /** From meta.sites (count of sites in the active group), not from stats API. */
+  numRegions: number;
+  regionsLoading: boolean;
+  statsLoading: boolean;
   isBouldering?: boolean;
 };
 
-export const FrontpageStats = ({ numMedia, numProblems, numTicks, isBouldering }: FrontpageStatsProps) => {
+export const FrontpageStats = ({
+  stats,
+  regionsTo,
+  numRegions,
+  regionsLoading,
+  statsLoading,
+  isBouldering,
+}: FrontpageStatsProps) => {
   return (
     <Card flush className='border-0 sm:border'>
       <div
         className={cn(
-          'grid grid-cols-6 overflow-hidden lg:grid-cols-1 xl:grid-cols-2',
+          'grid grid-cols-4 overflow-hidden lg:grid-cols-1 xl:grid-cols-2',
           designContract.surfaces.gridDivider,
         )}
       >
         <StatItem
+          to={regionsTo}
+          icon={Globe}
+          label='Regions'
+          value={regionsLoading ? undefined : numberWithCommas(numRegions)}
+          loading={regionsLoading}
+        />
+        <StatItem
           to='/areas'
           icon={Map}
           label='Areas'
-          value={numProblems ? numberWithCommas(numProblems.numAreas ?? 0) : undefined}
-          loading={!numProblems}
+          value={stats ? numberWithCommas(stats.areas ?? 0) : undefined}
+          loading={statsLoading}
         />
         <StatItem
           to='/problems'
           icon={Database}
           label={isBouldering ? 'Problems' : 'Routes'}
-          value={numProblems ? numberWithCommas(numProblems.numProblems ?? 0) : undefined}
-          loading={!numProblems}
-        />
-        <StatItem
-          icon={Camera}
-          label='Images'
-          value={numMedia ? numberWithCommas(numMedia.numImages ?? 0) : undefined}
-          loading={!numMedia}
-        />
-        <StatItem
-          icon={Film}
-          label='Videos'
-          value={numMedia ? numberWithCommas(numMedia.numMovies ?? 0) : undefined}
-          loading={!numMedia}
+          value={stats ? numberWithCommas(stats.problems ?? 0) : undefined}
+          loading={statsLoading}
         />
         <StatItem
           to='/ticks/1'
           icon={CheckCircle}
           label='Ticks'
-          value={numTicks ? numberWithCommas(numTicks.numTicks ?? 0) : undefined}
-          loading={!numTicks}
+          value={stats ? numberWithCommas(stats.ticks ?? 0) : undefined}
+          loading={statsLoading}
         />
-        <StatItem to='/donations' icon={Heart} label='Donate' />
       </div>
     </Card>
   );

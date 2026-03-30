@@ -6,13 +6,19 @@ import { useProfileTodo } from '../../../api';
 import { Loading } from '../../ui/StatusWidgets';
 import ProblemList from '../ProblemList';
 import { useMeta } from '../Meta';
-import { designContract } from '../../../design/contract';
+import { ProfileRowAsterisk } from './ProfileRowAsterisk';
+import { profileRowRootClass, tickCragLink, tickFlags, tickProblemLink, tickWhenGrade } from './profileRowTypography';
 import { cn } from '../../../lib/utils';
 
 type ProfileTodoProps = {
   userId: number;
   defaultCenter: { lat: number; lng: number };
   defaultZoom: number;
+};
+
+type TodoPartner = {
+  id: number;
+  name?: string;
 };
 
 type TodoItem = {
@@ -33,59 +39,44 @@ type TodoItem = {
   coordinates?: { latitude: number; longitude: number };
   problemLockedAdmin: boolean;
   problemLockedSuperadmin: boolean;
-  partners: Array<{ id: number; name: string }>;
+  partners: TodoPartner[];
 };
 
 const TodoListItem = ({ item }: { item: TodoItem }) => (
-  <p
-    className={cn(
-      designContract.typography.body,
-      'py-1.5 leading-relaxed text-pretty [overflow-wrap:anywhere] text-slate-300',
-    )}
-  >
-    <Link to={`/area/${item.areaId}`} className={designContract.typography.listLink}>
+  <div className={cn(profileRowRootClass, 'text-pretty [overflow-wrap:anywhere]')}>
+    <Link to={`/area/${item.areaId}`} className={tickCragLink}>
       {item.areaName}
     </Link>
     <LockSymbol lockedAdmin={item.areaLockedAdmin} lockedSuperadmin={item.areaLockedSuperadmin} />
-    <span className='text-slate-600'> · </span>
-    <Link to={`/sector/${item.sectorId}`} className={designContract.typography.listLink}>
+    <ProfileRowAsterisk />
+    <Link to={`/sector/${item.sectorId}`} className={tickCragLink}>
       {item.sectorName}
     </Link>
     <LockSymbol lockedAdmin={item.sectorLockedAdmin} lockedSuperadmin={item.sectorLockedSuperadmin} />
-    <span className='text-slate-600'> · </span>
-    {item.nr !== null ? (
-      <span className={cn(designContract.typography.meta, 'font-mono text-slate-500 tabular-nums')}>#{item.nr} </span>
-    ) : null}
-    <Link
-      to={`/problem/${item.id}`}
-      className={cn(designContract.typography.listLink, designContract.typography.listEmphasis)}
-    >
+    <ProfileRowAsterisk />
+    <Link to={`/problem/${item.id}`} className={tickProblemLink}>
       {item.problemName}
     </Link>
     {item.grade ? (
       <>
         {' '}
-        <span className={cn(designContract.typography.meta, 'font-mono text-slate-500 tabular-nums')}>
-          {item.grade}
-        </span>
+        <span className={cn(tickWhenGrade, 'whitespace-nowrap tabular-nums')}>{item.grade}</span>
       </>
     ) : null}
     <LockSymbol lockedAdmin={item.problemLockedAdmin} lockedSuperadmin={item.problemLockedSuperadmin} />
     {item.partners.length > 0 ? (
       <>
         {' '}
-        <span className='text-slate-600'>·</span>{' '}
-        {item.partners.map((u, i) => (
-          <span key={u.id}>
-            {i > 0 ? ', ' : ''}
-            <Link to={`/user/${u.id}/todo`} className={designContract.typography.listLinkMuted}>
-              {u.name}
+        <span className='inline-flex min-w-0 flex-wrap content-start items-center gap-x-2 gap-y-1'>
+          {item.partners.map((p) => (
+            <Link key={p.id} to={`/user/${p.id}/todo`} className={cn(tickFlags, 'hover:text-brand transition-colors')}>
+              {p.name}
             </Link>
-          </span>
-        ))}
+          ))}
+        </span>
       </>
     ) : null}
-  </p>
+  </div>
 );
 
 const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) => {
@@ -148,7 +139,10 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
                 : undefined,
             problemLockedAdmin: !!problem.lockedAdmin,
             problemLockedSuperadmin: !!problem.lockedSuperadmin,
-            partners: (problem.partners ?? []).map((p) => ({ id: p.id ?? 0, name: p.name ?? '' })),
+            partners: (problem.partners ?? []).map((p) => ({
+              id: p.id ?? 0,
+              name: p.name,
+            })),
           })),
         ),
       ),

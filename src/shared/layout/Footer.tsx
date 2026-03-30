@@ -11,6 +11,7 @@ import {
   Camera,
   FileText,
   Coffee,
+  Heart,
 } from 'lucide-react';
 import { useMeta } from '../components/Meta/context';
 import { SectionLabel, TextLink } from '../ui';
@@ -160,6 +161,11 @@ const Footer = () => {
             <TextLink href='/privacy-policy' external={false}>
               <span className='flex items-center gap-1.5'>
                 <ShieldCheck size={12} /> Privacy
+              </span>
+            </TextLink>
+            <TextLink href='/donate' external={false}>
+              <span className='flex items-center gap-1.5'>
+                <Heart size={12} /> Donate
               </span>
             </TextLink>
           </div>

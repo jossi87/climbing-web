@@ -1,4 +1,3 @@
-import type { JSX } from 'react';
 import { Link } from 'react-router-dom';
 import { useAccessToken, useProblem, postComment } from '../../../api';
 import Media from '../../../shared/components/Media/Media';
@@ -8,11 +7,19 @@ import Linkify from 'linkify-react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { AlertTriangle, CheckCircle, Edit2, Trash2, Flag } from 'lucide-react';
 import { cn } from '../../../lib/utils';
-import { designContract } from '../../../design/contract';
+import {
+  profileRowRootClass,
+  tickCommentSmall,
+  tickFlags,
+  tickProblemLink,
+} from '../../../shared/components/Profile/profileRowTypography';
 
-const rowShell = 'group px-4 py-3 transition-colors hover:bg-white/[0.015] sm:px-5';
+const rowShell = 'group px-3 py-2 transition-colors hover:bg-white/[0.015] sm:px-4 sm:py-2.5';
 
 const actionIconBtn = 'rounded-md p-1.5 text-slate-600 transition-colors hover:bg-white/[0.06] hover:text-slate-300';
+
+const hseIconBtn =
+  'ml-1 inline-flex shrink-0 items-center rounded p-0.5 text-slate-500 transition-colors hover:bg-white/[0.06] hover:text-red-400/90';
 
 export const ProblemComments = ({
   problemId,
@@ -62,38 +69,15 @@ export const ProblemComments = ({
   if (comments.length === 0) return null;
 
   return (
-    <div className='flex flex-col gap-2 text-left'>
+    <div className='flex flex-col gap-0.5 text-left'>
       {comments.map((c) => {
         const isOwn = !!c.editable;
-        let statusBadge: JSX.Element | null = null;
-        if (c.danger) {
-          statusBadge = (
-            <div className='mt-2.5 inline-flex items-center gap-1.5 text-[10px] font-semibold tracking-wide text-red-400/90 uppercase'>
-              <AlertTriangle size={11} strokeWidth={2.25} /> Flagged as dangerous
-            </div>
-          );
-        } else if (c.resolved) {
-          statusBadge = (
-            <div className='mt-2.5 inline-flex items-center gap-1.5 text-[10px] font-semibold tracking-wide text-emerald-400/90 uppercase'>
-              <CheckCircle size={11} strokeWidth={2.25} /> Flagged as safe
-            </div>
-          );
-        } else if (meta.isAuthenticated && meta.isClimbing) {
-          statusBadge = (
-            <button
-              type='button'
-              onClick={() => flagAsDangerous(c)}
-              className='mt-2.5 inline-flex items-center gap-1.5 text-[10px] font-semibold tracking-wide text-slate-500 uppercase transition-colors hover:text-red-400/90'
-            >
-              <Flag size={11} strokeWidth={2.25} /> Flag as dangerous
-            </button>
-          );
-        }
+        const showFlagAction = !c.danger && !c.resolved && meta.isAuthenticated && meta.isClimbing;
 
         return (
           <div key={c.id} className={rowShell}>
-            <div className='flex items-start gap-3 sm:gap-4'>
-              <div className='shrink-0 pt-0.5'>
+            <div className='flex items-start gap-2.5 sm:gap-3'>
+              <div className='shrink-0'>
                 <ClickableAvatar
                   name={c.name}
                   mediaId={c.mediaId}
@@ -104,32 +88,54 @@ export const ProblemComments = ({
               </div>
 
               <div className='min-w-0 flex-1'>
-                <div className='flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1'>
+                <div className='flex min-w-0 flex-wrap items-start gap-x-2 gap-y-1'>
                   <div
                     className={cn(
-                      designContract.typography.body,
-                      'min-w-0 flex-1 leading-relaxed text-pretty text-slate-300',
+                      profileRowRootClass,
+                      'min-w-0 flex-1 leading-snug text-pretty [overflow-wrap:anywhere]',
                     )}
                   >
                     <Link
                       to={`/user/${c.idUser}`}
-                      className={cn(
-                        designContract.typography.listLink,
-                        isOwn
-                          ? 'font-semibold text-emerald-400 hover:text-emerald-300'
-                          : designContract.typography.listEmphasis,
-                      )}
+                      className={cn(tickProblemLink, isOwn && 'text-emerald-400 hover:text-emerald-300')}
                     >
                       {c.name}
                     </Link>
                     <span
                       className={cn(
-                        designContract.typography.meta,
-                        'ml-1.5 inline text-slate-500 tabular-nums transition-colors group-hover:text-slate-400',
+                        tickFlags,
+                        'ml-1.5 inline tabular-nums transition-colors group-hover:text-slate-300',
                       )}
                     >
                       {c.date}
                     </span>
+                    {c.danger ? (
+                      <span
+                        className='ml-1.5 inline-flex shrink-0 translate-y-px items-center text-red-400/90'
+                        title='Flagged as dangerous'
+                        aria-label='Comment flagged as dangerous'
+                      >
+                        <AlertTriangle size={12} strokeWidth={2.25} aria-hidden />
+                      </span>
+                    ) : c.resolved ? (
+                      <span
+                        className='ml-1.5 inline-flex shrink-0 translate-y-px items-center text-emerald-400/90'
+                        title='Flagged as safe'
+                        aria-label='Comment flagged as safe'
+                      >
+                        <CheckCircle size={12} strokeWidth={2.25} aria-hidden />
+                      </span>
+                    ) : showFlagAction ? (
+                      <button
+                        type='button'
+                        title='Flag as dangerous'
+                        aria-label='Flag this comment as dangerous'
+                        onClick={() => flagAsDangerous(c)}
+                        className={hseIconBtn}
+                      >
+                        <Flag size={12} strokeWidth={2.25} />
+                      </button>
+                    ) : null}
                   </div>
 
                   {c.editable && (
@@ -158,8 +164,8 @@ export const ProblemComments = ({
 
                 <div
                   className={cn(
-                    designContract.typography.body,
-                    'mt-1.5 leading-relaxed text-pretty break-words text-slate-300',
+                    tickCommentSmall,
+                    'mt-1.5 border-l border-white/10 pl-3 leading-relaxed text-pretty break-words',
                   )}
                 >
                   <Linkify>{c.message}</Linkify>
@@ -174,11 +180,10 @@ export const ProblemComments = ({
                       carouselMedia={carouselMedia}
                       optProblemId={null}
                       showLocation={false}
+                      compactTiles
                     />
                   </div>
                 )}
-
-                {statusBadge}
               </div>
             </div>
           </div>

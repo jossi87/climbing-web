@@ -128,10 +128,14 @@
   }
 
   .search-input {
-    @apply h-10 rounded-md border border-transparent bg-transparent px-3 text-[12px] font-medium text-slate-100 transition-colors duration-200 sm:text-sm;
+    @apply h-10 rounded-md border border-white/[0.08] bg-transparent px-3 text-[12px] font-medium text-slate-100 transition-[color,background-color,border-color,box-shadow] duration-200 sm:text-sm;
   }
-  .search-input:focus {
-    @apply bg-surface-nav/40 border-white/10 ring-0;
+  .search-input:focus,
+  .search-input:focus-visible {
+    @apply border-brand/55 bg-surface-nav/45 ring-0;
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--color-brand) 40%, transparent),
+      0 0 22px rgba(198, 161, 91, 0.22);
   }
 
   .header-meta-text {

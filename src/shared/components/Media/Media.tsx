@@ -14,6 +14,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { Play } from 'lucide-react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { cn } from '../../../lib/utils';
+import { designContract } from '../../../design/contract';
 import SvgViewer from '../SvgViewer';
 import { Loading } from '../../ui/StatusWidgets';
 import MediaEditModal from './MediaEditModal';
@@ -267,7 +268,7 @@ const Media = ({ pitches, media, orderableMedia, carouselMedia, optProblemId, sh
       <div
         className={cn(
           compactTiles
-            ? 'grid grid-cols-3 gap-1.5 sm:grid-cols-4 sm:gap-2 md:grid-cols-5 md:gap-2.5 lg:grid-cols-6'
+            ? designContract.layout.mediaTileGridCompact
             : 'grid grid-cols-3 gap-2.5 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5',
         )}
       >

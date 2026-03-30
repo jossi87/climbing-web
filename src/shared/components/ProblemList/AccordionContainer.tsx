@@ -18,7 +18,7 @@ const AccordionContainer = ({ accordionRows }: Props) => {
   }, []);
 
   return (
-    <div className='bg-surface-card/45 overflow-hidden rounded-xl'>
+    <div className='divide-y divide-white/[0.06] overflow-hidden rounded-lg border border-white/[0.06]'>
       {accordionRows.map((d, i) => {
         const isActive = activeIndex === i;
         const hasData = (d.length ?? 0) > 0;
@@ -29,18 +29,17 @@ const AccordionContainer = ({ accordionRows }: Props) => {
               type='button'
               onClick={() => toggleAccordion(i)}
               className={cn(
-                'flex w-full items-center justify-between px-2 py-1.5 text-left transition-colors sm:px-2.5 sm:py-2',
-                isActive ? 'bg-surface-nav/28' : 'hover:bg-surface-nav/16',
+                'flex w-full items-center justify-between px-2.5 py-2 text-left transition-colors sm:px-3 sm:py-2.5',
+                isActive ? 'bg-white/[0.03]' : 'hover:bg-white/[0.02]',
               )}
             >
-              <span className='text-[11px] leading-none font-medium tracking-normal text-slate-300 sm:text-[12px]'>
-                {d.label}
-              </span>
+              <span className='text-[11px] font-medium tracking-tight text-slate-400 sm:text-[12px]'>{d.label}</span>
               <ChevronDown
                 size={14}
+                strokeWidth={2}
                 className={cn(
-                  'text-slate-600 transition-transform duration-200',
-                  isActive && 'rotate-180 text-slate-400',
+                  'shrink-0 text-slate-600 transition-transform duration-200',
+                  isActive && 'rotate-180 text-slate-500',
                 )}
               />
             </button>
@@ -50,7 +49,7 @@ const AccordionContainer = ({ accordionRows }: Props) => {
                 isActive ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0',
               )}
             >
-              <div className='px-2.5 pt-1 pb-2 sm:px-3 sm:pb-2.5'>
+              <div className='px-2.5 pb-2.5 pl-3 sm:px-3 sm:pb-3'>
                 {hasData ? d.content : <i className='text-[11px] text-slate-500 sm:text-[12px]'>No data</i>}
               </div>
             </div>

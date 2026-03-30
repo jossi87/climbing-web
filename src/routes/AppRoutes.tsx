@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate, useParams } from 'react-router-dom';
 import { lazy } from '../utils/lazyRetry';
 import { Loading } from '../shared/ui/StatusWidgets';
 import Frontpage from '../features/Frontpage/Frontpage';
@@ -23,12 +23,18 @@ const Profile = lazy(() => import('../features/Profile/Profile'), 'profile');
 const Settings = lazy(() => import('../features/Settings/Settings'), 'settings');
 const Sector = lazy(() => import('../features/Sector/Sector'), 'sector');
 const SectorEdit = lazy(() => import('../features/SectorEdit'), 'sector-edit');
-const Sites = lazy(() => import('../features/Sites/Sites'), 'sites');
+const Regions = lazy(() => import('../features/Regions/Regions'), 'regions');
 const SvgEdit = lazy(() => import('../features/SvgEdit'), 'svg-edit');
 const Swagger = lazy(() => import('../features/Swagger/Swagger'), 'swagger');
 const Ticks = lazy(() => import('../features/Ticks/Ticks'), 'ticks');
 const Trash = lazy(() => import('../features/Trash/Trash'), 'trash');
 const Webcams = lazy(() => import('../features/Webcams/Webcams'), 'webcams');
+
+/** Old `/sites/:type` URLs → `/regions/:type`. */
+function RedirectSitesUrlToRegions() {
+  const { type } = useParams();
+  return <Navigate to={`/regions/${type ?? 'bouldering'}`} replace />;
+}
 
 function AppRoutes() {
   return (
@@ -53,6 +59,7 @@ function AppRoutes() {
               <Route path='/areas' element={<Areas />} />
               <Route path='/dangerous' element={<Dangerous />} />
               <Route path='/donations' element={<Donations />} />
+              <Route path='/donate' element={<Donations />} />
               <Route path='/filter' element={<Problems filterOpen />} />
               <Route path='/graph' element={<Graph />} />
               <Route
@@ -98,7 +105,8 @@ function AppRoutes() {
                 }
               />
               <Route path='/problems' element={<Problems />} />
-              <Route path='/sites/:type' element={<Sites />} />
+              <Route path='/regions/:type' element={<Regions />} />
+              <Route path='/sites/:type' element={<RedirectSitesUrlToRegions />} />
               <Route path='/sector/:sectorId/:mediaId?' element={<Sector />} />
               <Route
                 path='/sector/edit/:areaId/:sectorId'

@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, Tag } from 'lucide-react';
-import { ClickableAvatar } from '../../shared/ui/Avatar/Avatar';
+import { Avatar } from '../../shared/ui/Avatar/Avatar';
+import Media from '../../shared/components/Media/Media';
 import { ExpandableMarkdown } from '../../shared/components/ExpandableMarkdown';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
@@ -10,67 +11,89 @@ import type { components } from '../../@types/buldreinfo/swagger';
 type Problem = components['schemas']['Problem'];
 type User = components['schemas']['User'];
 type ProblemTodo = components['schemas']['ProblemTodo'];
+type MediaItem = components['schemas']['Media'];
 type Meta = { isClimbing: boolean; isIce: boolean };
 
 type Props = {
   data: Problem;
   meta: Meta;
-  /** When true and `data.todos` is non-empty, show who has this on their todo (same visibility as before). */
-  showTodoUsers?: boolean;
+  orderableMedia: MediaItem[];
+  carouselMedia: MediaItem[];
 };
 
 const rowClass = cn(
   designContract.typography.body,
-  'flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1 text-[13px] leading-normal text-slate-300 sm:text-sm',
+  'flex min-w-0 flex-wrap items-start gap-x-2 gap-y-1 text-[13px] leading-normal text-slate-300 sm:text-sm',
 );
 
-/** Row label (First ascent, etc.) — slightly quieter than the facts. */
-const leadClass = cn(designContract.typography.meta, 'inline-flex shrink-0 items-baseline text-slate-500');
+/** Row label (First ascent, etc.) — top-aligned with facts when the row wraps. */
+const leadClass = cn(designContract.typography.meta, 'inline-flex shrink-0 self-start text-slate-500');
 
 /** One style for every fact in the row (grade, type, date, names) — same size, weight, color. */
 const factClass = 'text-[13px] font-normal leading-normal text-slate-300 sm:text-sm';
 
-/** Lucide icons next to text: nudge so cap height lines up with the fact line. */
-const factIconClass = 'shrink-0 text-slate-500 relative top-[0.12em]';
+/**
+ * Shared row box for every fact segment so grade, date, icons, and avatar+name share one vertical center
+ * (min-h matches micro avatar + one line of body text).
+ */
+const factSegmentClass = cn(factClass, 'inline-flex min-h-5 items-center');
 
-const todoNameSep = (
-  <span className='inline-flex items-baseline px-1 text-slate-600 select-none' aria-hidden>
-    ·
-  </span>
-);
+/** Lucide icons: same box as row text line (12px). */
+const factIconClass = 'shrink-0 text-slate-500';
 
 function dateWithCalendar(date: string) {
   return (
-    <span className={cn('inline-flex items-baseline gap-1 tabular-nums', factClass)}>
-      <Calendar size={12} className={factIconClass} strokeWidth={2.25} />
+    <span className={cn(factSegmentClass, 'gap-1 tabular-nums')}>
+      <Calendar size={12} className={factIconClass} strokeWidth={2.25} aria-hidden />
       {date}
     </span>
+  );
+}
+
+/** Tiny avatar + name; whole control links to profile (no separate avatar interaction). */
+function UserFactLink({
+  userId,
+  name,
+  mediaId,
+  mediaVersionStamp,
+}: {
+  userId: number;
+  name?: string;
+  mediaId?: number;
+  mediaVersionStamp?: number;
+}) {
+  return (
+    <Link
+      to={`/user/${userId}`}
+      className={cn(factSegmentClass, 'max-w-full min-w-0 gap-1 transition-colors hover:text-slate-100')}
+    >
+      <Avatar
+        name={name}
+        mediaId={mediaId}
+        mediaVersionStamp={mediaVersionStamp}
+        size='micro'
+        className='shrink-0 ring-1 ring-white/10'
+      />
+      <span className='min-w-0'>{name}</span>
+    </Link>
   );
 }
 
 function climberList(users: User[]) {
   if (users.length === 0) return null;
   return (
-    <span className='inline-flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1'>
-      {users.map((u, i) => (
-        <Link
-          key={u.id ?? i}
-          to={`/user/${u.id}`}
-          className={cn(
-            factClass,
-            'inline-flex max-w-full min-w-0 items-baseline gap-1.5 transition-colors hover:text-slate-100',
-          )}
-        >
-          <ClickableAvatar
+    <span className='inline-flex min-w-0 flex-wrap content-start items-start gap-x-2 gap-y-1'>
+      {users.map((u, i) =>
+        u.id != null ? (
+          <UserFactLink
+            key={u.id ?? i}
+            userId={u.id}
             name={u.name}
             mediaId={u.mediaId}
             mediaVersionStamp={u.mediaVersionStamp}
-            size='mini'
-            className='shrink-0 translate-y-px'
           />
-          <span className='min-w-0'>{u.name}</span>
-        </Link>
-      ))}
+        ) : null,
+      )}
     </span>
   );
 }
@@ -79,21 +102,22 @@ function todoUserList(todos: ProblemTodo[]) {
   const withUser = todos.filter((t) => t.idUser != null);
   if (withUser.length === 0) return null;
   return (
-    <span className='inline-flex flex-wrap items-baseline gap-x-0 gap-y-0.5'>
-      {withUser.map((u, i) => (
-        <span key={u.idUser ?? i} className='inline-flex items-baseline'>
-          {i > 0 ? todoNameSep : null}
-          <Link to={`/user/${u.idUser}`} className={cn(factClass, 'transition-colors hover:text-slate-100')}>
-            {u.name}
-          </Link>
-        </span>
+    <span className='inline-flex min-w-0 flex-wrap content-start items-start gap-x-2 gap-y-1'>
+      {withUser.map((u, idx) => (
+        <UserFactLink
+          key={u.idUser ?? idx}
+          userId={u.idUser!}
+          name={u.name}
+          mediaId={u.mediaId}
+          mediaVersionStamp={u.mediaVersionStamp}
+        />
       ))}
     </span>
   );
 }
 
 /** Inline ascent rows — no nested panels; dates use the calendar icon. */
-export function ProblemAscentOverview({ data, meta, showTodoUsers }: Props) {
+export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedia }: Props) {
   const faAid = data.faAid;
   const aidDesc = (faAid?.description ?? '').trim();
   const aidUsers = faAid?.users ?? [];
@@ -119,16 +143,21 @@ export function ProblemAscentOverview({ data, meta, showTodoUsers }: Props) {
   const showIce = meta.isIce && iceParts.length > 0;
 
   const todoNames = todoUserList(data.todos ?? []);
-  const showTodoRow = !!showTodoUsers && todoNames != null;
+  const showTodoRow = todoNames != null;
 
-  if (!showAidBlock && !showFreeBlock && !showIce && !showTodoRow) return null;
+  const triviaText = (data.trivia ?? '').trim();
+  const showTriviaBlock = triviaText.length > 0 || (data.triviaMedia?.length ?? 0) > 0;
+
+  if (!showAidBlock && !showFreeBlock && !showIce && !showTodoRow && !showTriviaBlock) return null;
 
   const freeLead = faAid ? 'First free ascent' : 'First ascent';
 
   /** Keeps grade / type / date / climbers in one wrapping band so they share a line before breaking. */
   function factsBand(children: ReactNode[]) {
     if (children.length === 0) return null;
-    return <span className='inline-flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 gap-y-1'>{children}</span>;
+    return (
+      <span className='inline-flex min-w-0 flex-1 flex-wrap content-start items-start gap-x-2 gap-y-1'>{children}</span>
+    );
   }
 
   const aidRowBody: ReactNode[] = [];
@@ -142,15 +171,15 @@ export function ProblemAscentOverview({ data, meta, showTodoUsers }: Props) {
   const freeRowBody: ReactNode[] = [];
   if (data.originalGrade) {
     freeRowBody.push(
-      <span key='g' className={cn('tabular-nums', factClass)}>
+      <span key='g' className={cn(factSegmentClass, 'tabular-nums')}>
         {data.originalGrade}
       </span>,
     );
   }
   if (meta.isClimbing && data.t?.subType) {
     freeRowBody.push(
-      <span key='t' className={cn('inline-flex items-baseline gap-1', factClass)}>
-        <Tag size={12} className={factIconClass} strokeWidth={2.25} />
+      <span key='t' className={cn(factSegmentClass, 'gap-1')}>
+        <Tag size={12} className={factIconClass} strokeWidth={2.25} aria-hidden />
         {data.t.subType}
       </span>,
     );
@@ -191,6 +220,39 @@ export function ProblemAscentOverview({ data, meta, showTodoUsers }: Props) {
           {iceParts.join(' · ')}
         </p>
       ) : null}
+
+      {showTriviaBlock && (
+        <p className={rowClass}>
+          <span className={leadClass}>Trivia</span>
+          {factsBand([
+            <div key='trivia-inline' className='flex min-w-0 flex-1 flex-col gap-2 sm:gap-2.5'>
+              {triviaText.length > 0 ? (
+                <ExpandableMarkdown
+                  content={data.trivia!}
+                  className='min-w-0'
+                  contentClassName={cn(
+                    factClass,
+                    'max-w-none leading-relaxed [&_p:first-child]:mt-0 [&_p:last-child]:mb-0',
+                  )}
+                />
+              ) : null}
+              {data.triviaMedia && data.triviaMedia.length > 0 ? (
+                <div className='w-full min-w-0'>
+                  <Media
+                    pitches={data.sections}
+                    media={data.triviaMedia}
+                    orderableMedia={orderableMedia}
+                    carouselMedia={carouselMedia}
+                    optProblemId={null}
+                    showLocation={false}
+                    compactTiles
+                  />
+                </div>
+              ) : null}
+            </div>,
+          ])}
+        </p>
+      )}
 
       {showTodoRow ? (
         <p className={rowClass}>

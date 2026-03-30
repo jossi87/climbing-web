@@ -4,22 +4,26 @@ import { useMeta } from '../../shared/components/Meta';
 import { useTicks } from '../../api';
 import { CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card, SectionHeader } from '../../shared/ui';
+import { ProfileRowAsterisk } from '../../shared/components/Profile/ProfileRowAsterisk';
+import {
+  profileRowRootClass,
+  tickCrag,
+  tickCragLink,
+  tickFlags,
+  tickProblemLink,
+  tickWhenGrade,
+} from '../../shared/components/Profile/profileRowTypography';
+import { cn } from '../../lib/utils';
+import { designContract } from '../../design/contract';
 import type { components } from '../../@types/buldreinfo/swagger';
 
 const PlaceholderFeed = () => {
   return (
-    <div className='animate-pulse space-y-4'>
-      <div className='mb-6 flex items-start gap-4'>
-        <div className='bg-surface-nav/50 h-11 w-11 rounded-lg' />
-        <div className='space-y-2 pt-0.5'>
-          <div className='bg-surface-nav/45 h-5 w-40 rounded-md' />
-          <div className='bg-surface-nav/35 h-3 w-24 rounded-md' />
-        </div>
-      </div>
-      {Array.from({ length: 12 }, (_, i) => (
-        <div key={i} className='space-y-1 rounded-lg py-1'>
-          <div className='bg-surface-nav/40 h-3 w-[92%] rounded' />
-          <div className='bg-surface-nav/30 h-3 w-[74%] rounded' />
+    <div className='animate-pulse space-y-3'>
+      {Array.from({ length: 14 }, (_, i) => (
+        <div key={i}>
+          <div className='bg-surface-nav/40 h-3 w-[94%] rounded sm:h-3.5' />
+          <div className='bg-surface-nav/28 mt-1.5 h-2.5 w-[52%] rounded' />
         </div>
       ))}
     </div>
@@ -28,38 +32,48 @@ const PlaceholderFeed = () => {
 
 type PublicAscent = components['schemas']['PublicAscent'];
 
+const lockInlineClass = 'ml-1 inline-block align-middle';
+
 const TickRow = ({ t }: { t: PublicAscent }) => {
   const areaId = t.areaId;
   const sectorId = t.sectorId;
 
   return (
-    <div className='block py-1.5 text-[11px] leading-relaxed break-words text-slate-300 sm:text-[12px]'>
-      {t.date ? <span className='text-slate-400'>{t.date} </span> : null}
+    <div className={cn(profileRowRootClass, 'block min-w-0 py-2 text-pretty [overflow-wrap:anywhere] sm:py-2.5')}>
+      {t.date ? <span className={cn(tickFlags, 'tabular-nums')}>{t.date} </span> : null}
       {areaId ? (
-        <Link to={`/area/${areaId}`} className='hover:text-brand transition-colors'>
+        <Link to={`/area/${areaId}`} className={tickCragLink}>
           {t.areaName}
         </Link>
       ) : (
-        <span>{t.areaName}</span>
+        <span className={tickCrag}>{t.areaName}</span>
       )}
-      <LockSymbol lockedAdmin={t.areaLockedAdmin} lockedSuperadmin={t.areaLockedSuperadmin} />
-      <span className='text-slate-500'> · </span>
+      <span className={lockInlineClass}>
+        <LockSymbol lockedAdmin={t.areaLockedAdmin} lockedSuperadmin={t.areaLockedSuperadmin} />
+      </span>
+      <ProfileRowAsterisk />
       {sectorId ? (
-        <Link to={`/sector/${sectorId}`} className='hover:text-brand transition-colors'>
+        <Link to={`/sector/${sectorId}`} className={tickCragLink}>
           {t.sectorName}
         </Link>
       ) : (
-        <span>{t.sectorName}</span>
+        <span className={tickCrag}>{t.sectorName}</span>
       )}
-      <LockSymbol lockedAdmin={t.sectorLockedAdmin} lockedSuperadmin={t.sectorLockedSuperadmin} />
-      <span className='text-slate-500'> · </span>
-      <Link to={`/problem/${t.problemId}`} className='hover:text-brand text-slate-100 transition-colors'>
+      <span className={lockInlineClass}>
+        <LockSymbol lockedAdmin={t.sectorLockedAdmin} lockedSuperadmin={t.sectorLockedSuperadmin} />
+      </span>
+      <ProfileRowAsterisk />
+      <Link to={`/problem/${t.problemId}`} className={tickProblemLink}>
         {t.problemName}
       </Link>
-      <span className='ml-1 text-slate-300'>{t.problemGrade}</span>
-      <LockSymbol lockedAdmin={t.problemLockedAdmin} lockedSuperadmin={t.problemLockedSuperadmin} />
-      <span className='text-slate-500'> · </span>
-      <span className='text-slate-400'>{t.name}</span>
+      {t.problemGrade ? (
+        <span className={cn(tickWhenGrade, 'ml-1 whitespace-nowrap tabular-nums')}>{t.problemGrade}</span>
+      ) : null}
+      <span className={lockInlineClass}>
+        <LockSymbol lockedAdmin={t.problemLockedAdmin} lockedSuperadmin={t.problemLockedSuperadmin} />
+      </span>
+      <ProfileRowAsterisk />
+      <span className={tickFlags}>{t.name}</span>
     </div>
   );
 };
@@ -86,7 +100,7 @@ const Ticks = () => {
         <div className='p-4 sm:p-6'>
           {!isLoading && (
             <SectionHeader
-              title='Public ascents'
+              title='Ticks'
               icon={CheckCircle}
               subheader={data ? `Page ${currPage} of ${numPages}` : undefined}
             />
@@ -95,12 +109,12 @@ const Ticks = () => {
           <div>
             {isLoading ? <PlaceholderFeed /> : null}
 
-            {!isLoading &&
-              data &&
-              data.ticks.map((t) => <TickRow key={[t.date, t.name, t.problemId].join(' - ')} t={t} />)}
+            {!isLoading && data
+              ? data.ticks.map((t) => <TickRow key={[t.date, t.name, t.problemId].join(' - ')} t={t} />)
+              : null}
 
             {!isLoading && data && data.ticks.length === 0 ? (
-              <div className='py-6 text-[11px] text-slate-500 sm:text-[12px]'>Empty list.</div>
+              <div className={cn(profileRowRootClass, tickFlags, 'py-6')}>Empty list.</div>
             ) : null}
           </div>
 
@@ -119,25 +133,38 @@ const Ticks = () => {
                   <button
                     type='button'
                     onClick={() => handlePageChange(1)}
-                    className='bg-surface-nav border-surface-border hover:border-brand/35 hover:text-brand rounded-lg border px-3 py-1.5 text-[11px] leading-none font-semibold opacity-85 transition-colors sm:text-[12px]'
+                    className={cn(
+                      designContract.typography.uiCompact,
+                      'bg-surface-nav border-surface-border hover:border-brand/35 hover:text-brand rounded-lg border px-3 py-1.5 font-semibold opacity-85 transition-colors',
+                    )}
                   >
                     1
                   </button>
                 )}
-                {currPage > 2 && <span className='px-1 text-[11px] text-slate-600 sm:text-[12px]'>…</span>}
+                {currPage > 2 && (
+                  <span className={cn(designContract.typography.uiCompact, 'px-1 text-slate-600')}>…</span>
+                )}
                 <button
                   type='button'
                   onClick={() => handlePageChange(currPage)}
-                  className='bg-brand shadow-brand/20 rounded-lg px-3 py-1.5 text-[11px] leading-none font-semibold text-slate-950 shadow-lg sm:text-[12px]'
+                  className={cn(
+                    designContract.typography.uiCompact,
+                    'bg-brand shadow-brand/20 rounded-lg px-3 py-1.5 font-semibold text-slate-950 shadow-lg',
+                  )}
                 >
                   {currPage}
                 </button>
-                {currPage < numPages - 1 && <span className='px-1 text-[11px] text-slate-600 sm:text-[12px]'>…</span>}
+                {currPage < numPages - 1 && (
+                  <span className={cn(designContract.typography.uiCompact, 'px-1 text-slate-600')}>…</span>
+                )}
                 {currPage < numPages && (
                   <button
                     type='button'
                     onClick={() => handlePageChange(numPages)}
-                    className='bg-surface-nav border-surface-border hover:border-brand/35 hover:text-brand rounded-lg border px-3 py-1.5 text-[11px] leading-none font-semibold opacity-85 transition-colors sm:text-[12px]'
+                    className={cn(
+                      designContract.typography.uiCompact,
+                      'bg-surface-nav border-surface-border hover:border-brand/35 hover:text-brand rounded-lg border px-3 py-1.5 font-semibold opacity-85 transition-colors',
+                    )}
                   >
                     {numPages}
                   </button>

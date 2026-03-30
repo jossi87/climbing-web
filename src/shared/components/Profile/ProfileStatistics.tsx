@@ -11,6 +11,17 @@ import * as Sentry from '@sentry/react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { AlertCircle, Check, Camera, Video, Plus, Repeat, X, type LucideIcon } from 'lucide-react';
 import { cn } from '../../../lib/utils';
+import { ProfileRowAsterisk } from './ProfileRowAsterisk';
+import {
+  profileRowRootClass,
+  tickCommentSmall,
+  tickCrag,
+  tickCragLink,
+  tickFa,
+  tickFlags,
+  tickProblemLink,
+  tickWhenGrade,
+} from './profileRowTypography';
 
 type TickListItemProps = {
   tick: NonNullable<components['schemas']['ProfileStatistics']['ticks']>[number];
@@ -21,52 +32,74 @@ const TickListItem = ({ tick }: TickListItemProps) => <TickListItemInner tick={t
 const TickListItemInner = ({ tick }: TickListItemProps) => {
   const areaId = tick.areaId;
   const sectorId = tick.sectorId;
+  const pitchPart = (tick.numPitches ?? 0) > 1 ? ` ${tick.numPitches}p` : '';
+  const typePart = tick.subType != null && tick.subType !== '' ? `${tick.subType}${pitchPart}` : null;
 
   return (
-    <div className='py-1.5 text-[11px] leading-relaxed break-words text-slate-300 sm:text-[12px]'>
-      {tick.dateHr ? <span className='text-slate-400'>{tick.dateHr} </span> : null}
+    <div className={profileRowRootClass}>
+      {tick.dateHr ? (
+        <>
+          <span className={cn(tickFlags, 'tabular-nums')}>{tick.dateHr}</span>{' '}
+        </>
+      ) : null}
       {areaId ? (
-        <Link to={`/area/${areaId}`} className='hover:text-brand transition-colors'>
+        <Link to={`/area/${areaId}`} className={tickCragLink}>
           {tick.areaName}
         </Link>
       ) : (
-        <span>{tick.areaName}</span>
+        <span className={tickCrag}>{tick.areaName}</span>
       )}
       <LockSymbol lockedAdmin={!!tick.areaLockedAdmin} lockedSuperadmin={!!tick.areaLockedSuperadmin} />
-      <span className='text-slate-500'> · </span>
+      <ProfileRowAsterisk />
       {sectorId ? (
-        <Link to={`/sector/${sectorId}`} className='hover:text-brand transition-colors'>
+        <Link to={`/sector/${sectorId}`} className={tickCragLink}>
           {tick.sectorName}
         </Link>
       ) : (
-        <span>{tick.sectorName}</span>
+        <span className={tickCrag}>{tick.sectorName}</span>
       )}
       <LockSymbol lockedAdmin={!!tick.sectorLockedAdmin} lockedSuperadmin={!!tick.sectorLockedSuperadmin} />
-      <span className='text-slate-500'> · </span>
-      <Link to={`/problem/${tick.idProblem}`} className='hover:text-brand font-medium text-slate-100'>
+      <ProfileRowAsterisk />
+      <Link to={`/problem/${tick.idProblem}`} className={tickProblemLink}>
         {tick.name}
-      </Link>
-      <span className='ml-1 text-slate-300'>{tick.grade}</span>
-      <LockSymbol lockedAdmin={!!tick.lockedAdmin} lockedSuperadmin={!!tick.lockedSuperadmin} />
-      <span className='ml-1 inline-flex align-middle opacity-65'>
-        <Stars numStars={tick.stars ?? 0} includeStarOutlines={true} size={12} />
+      </Link>{' '}
+      <span className={cn(tickWhenGrade, 'whitespace-nowrap tabular-nums')}>{tick.grade}</span>
+      <LockSymbol lockedAdmin={!!tick.lockedAdmin} lockedSuperadmin={!!tick.lockedSuperadmin} />{' '}
+      <span className='inline-flex align-middle opacity-75'>
+        <Stars numStars={tick.stars ?? 0} includeStarOutlines={true} size={11} muted />
       </span>
-      {tick.fa ? <span className='badge-micro border-brand/40 bg-brand/10 text-brand ml-1'>FA</span> : null}
-      {tick.idTickRepeat ? <span className='badge-micro ml-1'>Repeat</span> : null}
-      {tick.noPersonalGrade ? (
-        <span className='type-micro ml-1 inline-flex items-center gap-0.5 text-slate-400'>
-          <X size={8} />
-          No grade
-        </span>
+      {tick.fa ? (
+        <>
+          {' '}
+          <span className={tickFa}>FA</span>
+        </>
       ) : null}
-      {tick.subType ? (
-        <span className='badge-micro ml-1'>
-          {tick.subType}
-          {(tick.numPitches ?? 0) > 1 ? ` (${tick.numPitches}p)` : ''}
-        </span>
+      {tick.idTickRepeat ? (
+        <>
+          {' '}
+          <span className={tickFlags}>repeat</span>
+        </>
+      ) : null}
+      {tick.noPersonalGrade ? (
+        <>
+          {' '}
+          <span className={cn(tickFlags, 'inline-flex items-center gap-0.5')} title='No personal grade'>
+            <X size={8} strokeWidth={2.5} aria-hidden />
+            no grade
+          </span>
+        </>
+      ) : null}
+      {typePart ? (
+        <>
+          {' '}
+          <span className={tickFlags}>{typePart}</span>
+        </>
       ) : null}
       {tick.comment ? (
-        <span className='ml-1 text-[10px] leading-snug text-slate-400/90 sm:text-[11px]'>{tick.comment}</span>
+        <>
+          {' '}
+          <span className={tickCommentSmall}>{tick.comment}</span>
+        </>
       ) : null}
     </div>
   );
@@ -188,7 +221,7 @@ const ProfileStatistics = ({ userId, view }: ProfileStatisticsProps) => {
           rows={data.ticks.map((t) => ({
             element: (
               <TickListItem
-                key={[t.areaName, t.sectorName, t.name, t.idProblem, t.idTickRepeat].join('/')}
+                key={`${t.idProblem}-${t.idTickRepeat ?? '0'}-${t.dateHr ?? ''}`}
                 tick={t as components['schemas']['ProfileStatisticsTick']}
               />
             ),

@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
 import { getDistanceWithUnit } from '../../shared/components/Leaflet/geo-utils';
 import GetCenterFromDegrees from '../../utils/map-utils';
+import { googleMapsSearchUrl } from '../../utils/googleMaps';
 import Media from '../../shared/components/Media/Media';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { LockSymbol } from '../../shared/ui/Indicators';
@@ -168,9 +169,8 @@ export const Problem = () => {
   const hasTicks = data.ticks && data.ticks.length > 0;
   const hasComments = data.comments && data.comments.length > 0;
   const hasPitches = (data.sections?.length ?? 0) > 0;
-  const hasTriviaBlock = !!(data.trivia || data.triviaMedia?.length);
   const hasRockBlock = !!data.rock;
-  const hasMetaCard = hasTriviaBlock || hasRockBlock;
+  const hasMetaCard = hasRockBlock;
 
   const hasApproach = (data.sectorApproach?.coordinates?.length ?? 0) > 1;
   const hasDescent = (data.sectorDescent?.coordinates?.length ?? 0) > 1;
@@ -197,7 +197,7 @@ export const Problem = () => {
       <DownloadButton href={`/areas/pdf?id=${data.areaId}`}>area.pdf</DownloadButton>
       {data.sectorParking && (
         <a
-          href={`https://www.google.com/maps/search/?api=1&query=${data.sectorParking.latitude},${data.sectorParking.longitude}`}
+          href={googleMapsSearchUrl(data.sectorParking.latitude, data.sectorParking.longitude)}
           target='_blank'
           rel='noreferrer'
           title='Parking in Google Maps'
@@ -209,7 +209,7 @@ export const Problem = () => {
       )}
       {data.coordinates && (
         <a
-          href={`https://www.google.com/maps/search/?api=1&query=${data.coordinates.latitude},${data.coordinates.longitude}`}
+          href={googleMapsSearchUrl(data.coordinates.latitude, data.coordinates.longitude)}
           target='_blank'
           rel='noreferrer'
           title={meta.isBouldering ? 'Boulder in Google Maps' : 'Route in Google Maps'}
@@ -234,13 +234,15 @@ export const Problem = () => {
           carouselMedia={carouselMedia}
           optProblemId={data.id ?? 0}
           showLocation={false}
+          compactTiles
         />
       )}
       <div className='space-y-3 sm:space-y-3.5'>
         <ProblemAscentOverview
           data={data}
           meta={{ isClimbing: meta.isClimbing, isIce: meta.isIce }}
-          showTodoUsers={optimisticTodo}
+          orderableMedia={orderableMedia}
+          carouselMedia={carouselMedia}
         />
         <ProblemNeighboursRow neighbourPrev={data.neighbourPrev} neighbourNext={data.neighbourNext} />
       </div>
@@ -523,41 +525,27 @@ export const Problem = () => {
                   />
                 </div>
                 {(hasApproach || hasDescent) && (
-                  <div className='border-surface-border/40 space-y-4 border-t p-4 sm:p-5'>
-                    {hasApproach && (
-                      <div className='min-w-0'>
-                        <div
-                          className={cn(
-                            designContract.typography.micro,
-                            'mb-2 font-semibold tracking-wide text-slate-500 uppercase',
-                          )}
-                        >
-                          Approach
-                        </div>
+                  <div className='border-surface-border/40 border-t px-4 pt-3 pb-4 sm:px-5 sm:pt-4 sm:pb-5'>
+                    <div className='grid min-w-0 gap-4 md:grid-cols-2 md:items-start md:gap-5'>
+                      {hasApproach && (
                         <SlopeProfile
+                          compact
+                          title='Approach'
                           areaName={data.areaName ?? ''}
                           sectorName={data.sectorName ?? ''}
                           slope={data.sectorApproach as Slope}
                         />
-                      </div>
-                    )}
-                    {hasDescent && (
-                      <div className='min-w-0'>
-                        <div
-                          className={cn(
-                            designContract.typography.micro,
-                            'mb-2 font-semibold tracking-wide text-slate-500 uppercase',
-                          )}
-                        >
-                          Descent
-                        </div>
+                      )}
+                      {hasDescent && (
                         <SlopeProfile
+                          compact
+                          title='Descent'
                           areaName={data.areaName ?? ''}
                           sectorName={data.sectorName ?? ''}
                           slope={data.sectorDescent as Slope}
                         />
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 )}
               </>
@@ -609,6 +597,7 @@ export const Problem = () => {
                       carouselMedia={carouselMedia}
                       optProblemId={null}
                       showLocation={false}
+                      compactTiles
                     />
                   )}
                 </article>
@@ -665,29 +654,6 @@ export const Problem = () => {
       {hasMetaCard ? (
         <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm sm:border'>
           <div className='grid grid-cols-1 gap-x-6 gap-y-5 p-4 sm:p-5 lg:grid-cols-[min(11rem,30%)_1fr] lg:gap-x-8 lg:gap-y-6'>
-            {hasTriviaBlock && (
-              <>
-                <div className={cn('pt-1', designContract.typography.label)}>Trivia</div>
-                <div className='space-y-4'>
-                  {data.trivia && (
-                    <div className='bg-surface-nav/20 border-surface-border/50 rounded-xl border p-4 text-slate-400'>
-                      <ExpandableMarkdown content={data.trivia} contentClassName='italic' />
-                    </div>
-                  )}
-                  {data.triviaMedia && (
-                    <Media
-                      pitches={data.sections}
-                      media={data.triviaMedia}
-                      orderableMedia={orderableMedia}
-                      carouselMedia={carouselMedia}
-                      optProblemId={null}
-                      showLocation={false}
-                    />
-                  )}
-                </div>
-              </>
-            )}
-
             {hasRockBlock && (
               <>
                 <div className={cn('pt-1', designContract.typography.label)}>Rock «{data.rock}»</div>

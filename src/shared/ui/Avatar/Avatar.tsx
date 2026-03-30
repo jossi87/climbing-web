@@ -5,7 +5,7 @@ import { cn } from '../../../lib/utils';
 
 const AvatarModal = lazy(() => import('./AvatarModal'));
 
-type AvatarSize = 'mini' | 'tiny' | 'small' | 'medium' | 'large' | 'big' | 'huge' | 'massive';
+type AvatarSize = 'micro' | 'mini' | 'tiny' | 'small' | 'medium' | 'large' | 'big' | 'huge' | 'massive';
 
 type AvatarProps = {
   name?: string;
@@ -17,6 +17,7 @@ type AvatarProps = {
 };
 
 const SIZE_MAP: Record<AvatarSize, number> = {
+  micro: 18,
   mini: 24,
   tiny: 32,
   small: 40,
@@ -50,7 +51,7 @@ export function Avatar({ name, mediaId, mediaVersionStamp, size = 'mini', classN
     >
       {mid === 0 ? (
         <span
-          className='pointer-events-none font-bold tracking-tighter text-slate-500 uppercase'
+          className='pointer-events-none flex h-full w-full items-center justify-center leading-none font-bold tracking-tighter text-slate-500 uppercase'
           style={{ fontSize: pixelSize * 0.4 }}
         >
           {initials}
@@ -82,7 +83,7 @@ export function AvatarGroup({
 }) {
   return (
     <div className='relative flex items-center'>
-      <div className={cn('flex', size === 'mini' || size === 'tiny' ? '-space-x-3' : '-space-x-4')}>
+      <div className={cn('flex', size === 'micro' || size === 'mini' || size === 'tiny' ? '-space-x-3' : '-space-x-4')}>
         {items.slice(0, max).map((item, i) => (
           <ClickableAvatar
             key={item.mediaId || i}

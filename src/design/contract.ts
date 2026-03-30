@@ -40,6 +40,16 @@ export const designContract = {
       'border-surface-border flex flex-col justify-between gap-4 border-b pb-4 lg:flex-row lg:items-center',
     breadcrumb:
       'flex flex-wrap items-center gap-2 text-[10px] font-semibold tracking-[0.16em] text-slate-500 uppercase',
+    /**
+     * Profile captured/media + area/sector/problem Media when `compactTiles` is set:
+     * 3 columns on small screens, stepping up to 6 on `lg` (matches profile gallery).
+     */
+    mediaTileGridCompact: 'grid grid-cols-3 gap-1.5 sm:grid-cols-4 sm:gap-2 md:grid-cols-5 md:gap-2.5 lg:grid-cols-6',
+    /**
+     * Area overview sector cards: wider tiles on phone (2 cols), up to 6 on large screens.
+     */
+    areaSectorCardGrid:
+      'grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-2.5 md:grid-cols-4 md:gap-3 lg:grid-cols-6 lg:gap-2.5',
   },
   surfaces: {
     panel: 'bg-surface-card border-surface-border border',

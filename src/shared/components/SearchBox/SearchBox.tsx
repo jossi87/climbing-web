@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   ExternalLink,
   Map,
@@ -16,8 +16,6 @@ import { LockSymbol } from '../../ui/Indicators';
 import { cn } from '../../../lib/utils';
 import { SearchInput, Card } from '../../ui';
 import { designContract } from '../../../design/contract';
-
-const SEARCH_QUERY_KEY = 'climbing-web-search-query';
 
 type SearchResult = {
   title: string;
@@ -84,15 +82,16 @@ const FALLBACK_ICON_CLASS = 'shrink-0 text-slate-500 group-hover:text-slate-400'
 
 const SearchBox = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { isBouldering, isClimbing } = useMeta();
   const { search, isPending, data } = useSearch();
-  const [value, setValue] = useState(() =>
-    typeof window !== 'undefined' ? (sessionStorage.getItem(SEARCH_QUERY_KEY) ?? '') : '',
-  );
+  const [value, setValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
+  /** When true, the next `pathname` change came from picking a search result — keep the query for more picks. */
+  const skipClearOnNextPathnameRef = useRef(false);
   const results = (data ?? []) as SearchResult[];
 
   useEffect(() => {
@@ -105,8 +104,17 @@ const SearchBox = () => {
   }, []);
 
   useEffect(() => {
-    sessionStorage.setItem(SEARCH_QUERY_KEY, value);
-  }, [value]);
+    if (skipClearOnNextPathnameRef.current) {
+      skipClearOnNextPathnameRef.current = false;
+      return;
+    }
+    const id = window.setTimeout(() => {
+      setValue('');
+      setIsOpen(false);
+      setActiveIndex(-1);
+    }, 0);
+    return () => window.clearTimeout(id);
+  }, [location.pathname]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -136,8 +144,12 @@ const SearchBox = () => {
   const handleSelect = (result: SearchResult) => {
     setIsOpen(false);
     setActiveIndex(-1);
-    if (result.externalUrl) window.open(result.externalUrl, '_blank');
-    else navigate(result.url);
+    if (result.externalUrl) {
+      window.open(result.externalUrl, '_blank');
+      return;
+    }
+    skipClearOnNextPathnameRef.current = true;
+    navigate(result.url);
   };
 
   return (

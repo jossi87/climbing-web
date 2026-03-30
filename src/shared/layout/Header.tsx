@@ -1,22 +1,7 @@
-import { useState, useRef, useEffect, type ElementType, type ReactNode } from 'react';
+import { useState, useEffect, useRef, type ElementType, type ReactNode } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Link, useLocation } from 'react-router-dom';
-import {
-  Globe,
-  User,
-  Settings,
-  Download,
-  LogOut,
-  ChevronDown,
-  Trash2,
-  Users,
-  Code,
-  HelpCircle,
-  LogIn,
-  Check,
-  ExternalLink,
-  Loader2,
-} from 'lucide-react';
+import { User, Settings, Download, LogOut, Trash2, Users, Code, HelpCircle, LogIn, Loader2 } from 'lucide-react';
 import { useMeta } from '../components/Meta/context';
 import SearchBox from '../components/SearchBox/SearchBox';
 import { Avatar } from '../ui';
@@ -32,18 +17,15 @@ type DropdownItemProps = {
 };
 
 const Header = () => {
-  const { isSuperAdmin, isAuthenticated, authenticatedName, mediaId, mediaVersionStamp, sites } = useMeta();
+  const { isSuperAdmin, isAuthenticated, authenticatedName, mediaId, mediaVersionStamp } = useMeta();
   const { isLoading, loginWithRedirect, logout } = useAuth0();
   const accessToken = useAccessToken();
   const location = useLocation();
 
-  const activeSite = sites?.find((s) => s.active);
   const isHome = location.pathname === '/';
 
   const [isAccountOpen, setIsAccountOpen] = useState(false);
-  const [isRegionOpen, setIsRegionOpen] = useState(false);
   const [isDownloadingTicks, setIsDownloadingTicks] = useState(false);
-  const regionRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(true);
   const [viewport, setViewport] = useState(() => ({
     width: typeof window !== 'undefined' ? window.innerWidth : 1280,
@@ -93,15 +75,11 @@ const Header = () => {
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (regionRef.current && !regionRef.current.contains(e.target as Node)) setIsRegionOpen(false);
       if (!(e.target as Element).closest('.account-dropdown-container')) setIsAccountOpen(false);
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  const groupRegions = sites?.filter((s) => s.group === activeSite?.group) || [];
-  const allGroups = Array.from(new Set(sites?.map((s) => s.group) || []));
 
   const DropdownItem = ({ to, icon: Icon, children, onClick, className }: DropdownItemProps) => {
     const isActive =
@@ -237,75 +215,13 @@ const Header = () => {
               />
               {isHome && <div className='bg-brand shadow-brand absolute right-0 bottom-0 left-0 h-0.5 rounded-t' />}
             </Link>
-            <div className='max-w-xl min-w-32 flex-1'>
+            <div className='min-w-0 flex-1'>
               <SearchBox />
             </div>
           </div>
 
           <div className='flex h-full items-center gap-3'>
-            {activeSite && (
-              <div className='relative flex h-full shrink-0 items-center' ref={regionRef}>
-                <button
-                  type='button'
-                  onClick={() => setIsRegionOpen(!isRegionOpen)}
-                  className={cn(
-                    'flex items-center gap-2 rounded px-2.5 py-1.5 transition-colors',
-                    isRegionOpen ? 'bg-white/5 text-slate-200' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200',
-                  )}
-                >
-                  <Globe size={12} />
-                  <span className='header-meta-text hidden whitespace-nowrap sm:inline'>{activeSite.name}</span>
-                  <ChevronDown
-                    size={11}
-                    className={cn('opacity-40 transition-transform', isRegionOpen && 'rotate-180')}
-                  />
-                </button>
-                {isRegionOpen && (
-                  <div className='bg-surface-card border-surface-border animate-in fade-in slide-in-from-top-1 absolute top-full right-0 z-70 mt-2 max-h-[70vh] w-[min(17rem,calc(100vw-1.25rem))] overflow-y-auto rounded-xl border py-2 shadow-2xl duration-150 sm:w-60'>
-                    <div className='border-surface-border/40 px-3 pb-2'>
-                      <span className='text-[10px] font-semibold tracking-[0.14em] text-slate-500 uppercase'>
-                        {activeSite.group} regions
-                      </span>
-                    </div>
-                    <div className='border-surface-border/35 mb-1 border-b' />
-                    {groupRegions.map((site) => (
-                      <a
-                        key={site.url}
-                        href={site.url}
-                        className={cn(
-                          'mx-1 flex items-center justify-between gap-2 rounded-md px-2.5 py-2.5 text-[11px] leading-snug font-medium transition-colors sm:text-[12px]',
-                          site.active
-                            ? 'bg-brand/12 text-slate-100'
-                            : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-200',
-                        )}
-                      >
-                        <span className='min-w-0 flex-1 text-pretty'>{site.name}</span>
-                        {site.active && <Check size={14} className='text-brand shrink-0' strokeWidth={2.25} />}
-                      </a>
-                    ))}
-                    <div className='border-surface-border/35 mt-2 border-t pt-2'>
-                      <div className='px-3 pb-1'>
-                        <span className='text-[10px] font-semibold tracking-[0.14em] text-slate-600 uppercase'>
-                          All sites
-                        </span>
-                      </div>
-                    </div>
-                    {allGroups.map((group) => (
-                      <Link
-                        key={group}
-                        to={`/sites/${group.toLowerCase()}`}
-                        onClick={() => setIsRegionOpen(false)}
-                        className='mx-1 flex items-center justify-between gap-2 rounded-md px-2.5 py-2 text-[11px] leading-snug font-medium text-slate-500 transition-colors hover:bg-white/[0.06] hover:text-slate-300 sm:py-2.5 sm:text-[12px]'
-                      >
-                        <span className='min-w-0 flex-1 text-pretty'>{group}</span>
-                        <ExternalLink size={11} className='shrink-0 opacity-35' strokeWidth={2.25} />
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-            <div className='my-auto flex h-6 items-center border-l border-white/10 pl-3'>{renderUserMenu()}</div>
+            <div className='my-auto flex h-6 items-center'>{renderUserMenu()}</div>
           </div>
         </div>
       </div>

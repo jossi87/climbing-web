@@ -6,7 +6,7 @@ import { useMeta } from '../../shared/components/Meta/context';
 import { cn } from '../../lib/utils';
 import { Card, SectionHeader } from '../../shared/ui';
 
-const Sites = () => {
+const Regions = () => {
   const meta = useMeta();
   const { type } = useParams();
   const selectedType = type ?? 'bouldering';
@@ -17,25 +17,25 @@ const Sites = () => {
     .filter((s) => s.group.toLowerCase() === selectedType)
     .map((s) => ({ url: s.url, label: s.name, outline: s.outline }));
 
-  const siteCount = meta.sites.filter((s) => s.group.toLowerCase() === selectedType).length;
-  const description = `${siteCount} ${
+  const regionCount = meta.sites.filter((s) => s.group.toLowerCase() === selectedType).length;
+  const description = `${regionCount} ${
     selectedType === 'bouldering' ? 'bouldering' : selectedType === 'climbing' ? 'rock climbing' : 'ice climbing'
-  } sites`;
+  } regions`;
 
   return (
     <div className='w-full min-w-0'>
-      <title>{`Sites | ${meta?.title}`}</title>
+      <title>{`Regions | ${meta?.title}`}</title>
       <meta name='description' content={description} />
 
       <Card flush className='min-w-0 border-0 sm:border'>
         <div className='p-4 pb-3 sm:p-5 sm:pb-4'>
-          <SectionHeader title='Sites' icon={Globe} subheader={description} />
+          <SectionHeader title='Regions' icon={Globe} subheader={description} />
 
           <div className='flex items-center gap-1.5 overflow-x-auto pb-1'>
             {['bouldering', 'climbing', 'ice'].map((id) => (
               <Link
                 key={id}
-                to={`/sites/${id}`}
+                to={`/regions/${id}`}
                 className={cn(
                   'inline-flex h-8 shrink-0 items-center justify-center rounded-full border px-3 text-[11px] leading-none font-medium transition-colors sm:text-[12px]',
                   selectedType === id
@@ -64,4 +64,4 @@ const Sites = () => {
   );
 };
 
-export default Sites;
+export default Regions;

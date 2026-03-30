@@ -42,6 +42,20 @@ import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 import { tabBarButtonClassName, tabBarButtonClassNameInline, tabBarIconClassName } from '../../design/tabBar';
 
+/** Project / Projects subtype chips — no green “complete” border (not ticked like graded lines). */
+function isProjectSubtypeChip(typeLabel: string | undefined): boolean {
+  const t = (typeLabel ?? '').trim().toLowerCase();
+  return t === 'project' || t === 'projects';
+}
+
+/** Per-type completion for area sector stat chips: user has ticked every line of this subtype in the sector. */
+function isTypeChipFullyTicked(x: components['schemas']['TypeNumTickedTodo']): boolean {
+  if (isProjectSubtypeChip(x.type)) return false;
+  const n = x.num ?? 0;
+  const t = x.ticked ?? 0;
+  return n > 0 && t === n;
+}
+
 type Props = {
   sectorName: string;
   problem: NonNullable<NonNullable<components['schemas']['Area']['sectors']>[number]['problems']>[number];
@@ -451,6 +465,7 @@ const Area = () => {
                         carouselMedia={carouselMedia}
                         optProblemId={null}
                         showLocation={false}
+                        compactTiles
                       />
                     )}
 
@@ -492,6 +507,7 @@ const Area = () => {
                           carouselMedia={carouselMedia}
                           optProblemId={null}
                           showLocation={false}
+                          compactTiles
                         />
                       </div>
                     )}
@@ -582,7 +598,7 @@ const Area = () => {
           </div>
           <div className='min-w-0'>
             {activeSectorTab === 'sectors' ? (
-              <div className='grid min-w-0 grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4 xl:grid-cols-5'>
+              <div className={cn('min-w-0', designContract.layout.areaSectorCardGrid)}>
                 {data.sectors?.map((sector) => {
                   const sectorHasThumb = !!sector.randomMediaId;
                   return (
@@ -631,7 +647,7 @@ const Area = () => {
                         <div className='absolute inset-0 z-[3] bg-black/25 opacity-0 transition-opacity duration-300 group-hover:opacity-100' />
                         <div className='relative z-[4] flex min-h-[12rem] flex-col justify-end p-2.5 sm:min-h-[14rem] sm:p-3 md:min-h-[15rem] md:p-4'>
                           <div className='flex items-start justify-between gap-2'>
-                            <h4 className='type-h2 line-clamp-2 min-w-0 flex-1 text-[0.95rem] leading-tight drop-shadow-md sm:text-[1.1rem] md:text-[1.25rem]'>
+                            <h4 className='type-h2 line-clamp-2 min-w-0 flex-1 text-[0.95rem] leading-tight text-slate-100 drop-shadow-md sm:text-[1.1rem] md:text-[1.25rem]'>
                               {sector.name}
                             </h4>
                             <span className='shrink-0 drop-shadow'>
@@ -647,11 +663,15 @@ const Area = () => {
                                 const tickTodo = [x.ticked && `${x.ticked} ticked`, x.todo && `${x.todo} todo`]
                                   .filter(Boolean)
                                   .join(', ');
+                                const greenBorderOnly = isTypeChipFullyTicked(x);
                                 return (
                                   <div
                                     key={x.type}
                                     title={[x.type, `${x.num}`, tickTodo].filter(Boolean).join(' · ')}
-                                    className='inline-flex max-w-[min(100%,11rem)] min-w-0 items-center gap-x-0.5 rounded-full border border-white/15 bg-white/[0.08] px-1.5 py-px text-[7px] leading-tight text-slate-200 shadow-sm backdrop-blur-md sm:text-[8px]'
+                                    className={cn(
+                                      'inline-flex max-w-[min(100%,11rem)] min-w-0 items-center gap-x-0.5 rounded-full border border-white/15 bg-white/[0.08] px-1.5 py-px text-[7px] leading-tight text-slate-200 shadow-sm backdrop-blur-md sm:text-[8px]',
+                                      greenBorderOnly && 'border-emerald-500/50',
+                                    )}
                                   >
                                     <span className='min-w-0 truncate font-medium text-slate-300'>{x.type}</span>
                                     <span className='shrink-0 font-semibold text-slate-50 tabular-nums'>{x.num}</span>
