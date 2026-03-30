@@ -12,10 +12,11 @@ type Props = {
 
 const rowClass = cn(
   designContract.typography.body,
-  'flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1 text-[13px] leading-normal text-slate-300 sm:text-sm',
+  'flex min-w-0 flex-col gap-1 text-[13px] leading-normal text-slate-300 sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-x-2 sm:gap-y-1 sm:text-sm',
 );
 
-const leadClass = cn(designContract.typography.meta, 'inline-flex shrink-0 items-baseline text-slate-500');
+const leadClass =
+  'block text-[14px] font-medium leading-snug tracking-tight text-slate-50 sm:inline-flex sm:shrink-0 sm:items-baseline sm:text-sm';
 
 const factClass = 'text-[13px] font-normal leading-normal text-slate-300 sm:text-sm';
 
@@ -57,8 +58,8 @@ export function ProblemNeighboursRow({ neighbourPrev, neighbourNext }: Props) {
 
   return (
     <p className={rowClass}>
-      <span className={leadClass}>Neighbours</span>
-      <span className='inline-flex min-w-0 flex-1 flex-wrap items-baseline gap-x-4 gap-y-1'>
+      <span className={leadClass}>Neighbours:</span>
+      <span className='inline-flex w-full min-w-0 flex-wrap items-baseline gap-x-4 gap-y-1 sm:flex-1'>
         {neighbourPrev?.id != null ? <NeighbourLink direction='prev' problem={neighbourPrev} /> : null}
         {neighbourNext?.id != null ? <NeighbourLink direction='next' problem={neighbourNext} /> : null}
       </span>

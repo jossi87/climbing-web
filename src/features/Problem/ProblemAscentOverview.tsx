@@ -23,11 +23,12 @@ type Props = {
 
 const rowClass = cn(
   designContract.typography.body,
-  'flex min-w-0 flex-wrap items-start gap-x-2 gap-y-1 text-[13px] leading-normal text-slate-300 sm:text-sm',
+  'flex min-w-0 flex-col gap-1 text-[13px] leading-normal text-slate-300 sm:flex-row sm:flex-wrap sm:items-start sm:gap-x-2 sm:gap-y-1 sm:text-sm',
 );
 
-/** Row label (First ascent, etc.) — top-aligned with facts when the row wraps. */
-const leadClass = cn(designContract.typography.meta, 'inline-flex shrink-0 self-start text-slate-500');
+/** Row label (First ascent, etc.) — full width above facts on mobile; inline from sm up. */
+const leadClass =
+  'block text-[14px] font-medium leading-snug tracking-tight text-slate-50 sm:inline-flex sm:shrink-0 sm:self-start sm:text-sm';
 
 /** One style for every fact in the row (grade, type, date, names) — same size, weight, color. */
 const factClass = 'text-[13px] font-normal leading-normal text-slate-300 sm:text-sm';
@@ -150,13 +151,15 @@ export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedi
 
   if (!showAidBlock && !showFreeBlock && !showIce && !showTodoRow && !showTriviaBlock) return null;
 
-  const freeLead = faAid ? 'First free ascent' : 'First ascent';
+  const freeLead = faAid ? 'First free ascent:' : 'First ascent:';
 
   /** Keeps grade / type / date / climbers in one wrapping band so they share a line before breaking. */
   function factsBand(children: ReactNode[]) {
     if (children.length === 0) return null;
     return (
-      <span className='inline-flex min-w-0 flex-1 flex-wrap content-start items-start gap-x-2 gap-y-1'>{children}</span>
+      <span className='inline-flex w-full min-w-0 flex-wrap content-start items-start gap-x-2 gap-y-1 sm:flex-1'>
+        {children}
+      </span>
     );
   }
 
@@ -196,7 +199,7 @@ export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedi
       {showAidBlock && (
         <div className='space-y-2'>
           <p className={rowClass}>
-            <span className={leadClass}>First aid ascent</span>
+            <span className={leadClass}>First aid ascent:</span>
             {factsBand(aidRowBody)}
           </p>
           {aidDesc.length > 0 ? (
@@ -223,7 +226,7 @@ export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedi
 
       {showTriviaBlock && (
         <p className={rowClass}>
-          <span className={leadClass}>Trivia</span>
+          <span className={leadClass}>Trivia:</span>
           {factsBand([
             <div key='trivia-inline' className='flex min-w-0 flex-1 flex-col gap-2 sm:gap-2.5'>
               {triviaText.length > 0 ? (
@@ -256,7 +259,7 @@ export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedi
 
       {showTodoRow ? (
         <p className={rowClass}>
-          <span className={leadClass}>Todo</span>
+          <span className={leadClass}>Todo:</span>
           {factsBand([todoNames])}
         </p>
       ) : null}

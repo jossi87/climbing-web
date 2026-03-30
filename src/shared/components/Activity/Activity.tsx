@@ -218,6 +218,14 @@ const activityChipIdle =
   'bg-surface-nav/45 border-surface-border text-slate-300 hover:bg-surface-nav hover:text-slate-100';
 const activityChipActive = 'bg-surface-hover/85 border-white/18 text-slate-100 shadow-sm';
 
+/** Brighter than {@link tickFlags} for verbs (ticked, on, in, …) so they read with primary copy. */
+const activityActionClass = 'font-normal text-slate-200 antialiased';
+
+const activityCommentBlock = cn(
+  tickCommentSmall,
+  'mt-1 leading-relaxed text-pretty break-words text-slate-50 not-italic',
+);
+
 const FilterButton = ({ active, onClick, icon: Icon, label }: FilterButtonProps) => (
   <button
     onClick={onClick}
@@ -283,14 +291,16 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
             {a.users && a.users.length > 0 && !a.repeat ? (
               <>
                 <span className={cn(tickCrag, 'font-medium')}>New {isBouldering ? 'boulder' : 'route'}</span>{' '}
-                <span className={tickFlags}>in</span> <ProblemLink a={a} />
+                <span className={activityActionClass}>in</span>{' '}
+                <ProblemLink a={a} flagsClassName={activityActionClass} />
               </>
             ) : a.message ? (
               <>
                 <Link to={`/user/${a.id}`} className={tickProblemLink}>
                   {a.name}
                 </Link>{' '}
-                <span className={tickFlags}>commented on</span> <ProblemLink a={a} />
+                <span className={activityActionClass}>commented on</span>{' '}
+                <ProblemLink a={a} flagsClassName={activityActionClass} />
               </>
             ) : (
               <>
@@ -299,7 +309,7 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
                     <Link to={`/user/${a.id}`} className={tickProblemLink}>
                       {a.name}
                     </Link>{' '}
-                    <span className={tickFlags}>{a.repeat ? 'repeated' : 'ticked'}</span>{' '}
+                    <span className={activityActionClass}>{a.repeat ? 'repeated' : 'ticked'}</span>{' '}
                   </>
                 ) : numImg > 0 || numMov > 0 ? (
                   <>
@@ -308,10 +318,10 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
                       {numImg > 0 && numMov > 0 && ' & '}
                       {numMov > 0 && `${numMov} ${numMov === 1 ? 'video' : 'videos'}`}
                     </span>{' '}
-                    <span className={tickFlags}>on</span>{' '}
+                    <span className={activityActionClass}>on</span>{' '}
                   </>
                 ) : null}
-                <ProblemLink a={a} />
+                <ProblemLink a={a} flagsClassName={activityActionClass} />
               </>
             )}
             <span
@@ -325,18 +335,11 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
           </div>
 
           {a.message ? (
-            <div className={cn('mt-1.5 border-l border-white/10 pl-3 leading-relaxed', tickCommentSmall)}>
+            <div className={activityCommentBlock}>
               <Linkify>{a.message}</Linkify>
             </div>
           ) : a.description ? (
-            <div
-              className={cn(
-                tickFlags,
-                'mt-1.5 border-l border-white/10 pl-3 text-[10px] leading-relaxed sm:text-[11px]',
-              )}
-            >
-              {a.description}
-            </div>
+            <div className={cn(activityCommentBlock, 'mt-1.5')}>{a.description}</div>
           ) : null}
 
           {a.stars !== undefined && a.stars !== -1 && (
@@ -358,7 +361,7 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
                   key={u.id}
                   to={`/user/${u.id}`}
                   className={cn(
-                    tickFlags,
+                    activityActionClass,
                     'group/user hover:text-brand inline-flex max-w-full min-w-0 items-center gap-1.5 leading-snug transition-colors',
                   )}
                 >
@@ -369,7 +372,7 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
                     size='micro'
                     className='group-hover/user:ring-brand/45 shrink-0 ring-1 ring-white/10 transition-all'
                   />
-                  <span className='min-w-0 group-hover/user:text-slate-300'>{u.name}</span>
+                  <span className='min-w-0 group-hover/user:text-slate-100'>{u.name}</span>
                 </Link>
               ))}
             </div>

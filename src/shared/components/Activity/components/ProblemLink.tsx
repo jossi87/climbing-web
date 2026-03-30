@@ -8,12 +8,14 @@ import { cn } from '../../../../lib/utils';
 type Props = {
   a: components['schemas']['Activity'];
   type?: string;
+  /** Merges with {@link tickFlags} for type + subtype (e.g. Activity feed: brighter muted text). */
+  flagsClassName?: string;
 };
 
 /** Same hierarchy as profile ascents / todo: crag → problem + grade + type (no badge box). */
-export const ProblemLink = ({ a, type }: Props) => (
+export const ProblemLink = ({ a, type, flagsClassName }: Props) => (
   <>
-    {type ? <span className={cn(tickFlags, 'mr-1.5')}>{type}</span> : null}
+    {type ? <span className={cn(tickFlags, 'mr-1.5', flagsClassName)}>{type}</span> : null}
 
     <Link to={`/area/${a.areaId}`} className={tickCragLink}>
       {a.areaName}
@@ -36,7 +38,7 @@ export const ProblemLink = ({ a, type }: Props) => (
     ) : null}
 
     {a.problemSubtype && a.problemSubtype !== '.' ? (
-      <span className={cn(tickFlags, 'ml-1')}>{a.problemSubtype}</span>
+      <span className={cn(tickFlags, 'ml-1', flagsClassName)}>{a.problemSubtype}</span>
     ) : null}
 
     <span className='ml-1.5 inline-block align-middle'>
