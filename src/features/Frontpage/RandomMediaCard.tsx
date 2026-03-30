@@ -13,7 +13,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
   if (!randomMedia)
     return (
       <Card flush className={cardShellClass}>
-        <div className='bg-surface-nav w-full animate-pulse' style={{ aspectRatio: '275 / 250' }} />
+        <div className='bg-surface-card w-full animate-pulse' style={{ aspectRatio: '275 / 250' }} />
         <div className='hidden p-4 md:block'>
           <div className='mb-4 space-y-2'>
             <div className='bg-surface-hover h-4 w-3/4 animate-pulse rounded' />
@@ -40,7 +40,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
 
   return (
     <Card flush className={cardShellClass}>
-      <div className='bg-surface-nav relative overflow-hidden' style={{ aspectRatio: '275 / 250' }}>
+      <div className='bg-surface-card relative overflow-hidden' style={{ aspectRatio: '275 / 250' }}>
         <Link
           to={`/problem/${randomMedia.idProblem}`}
           className='focus-visible:ring-brand/45 block h-full w-full transition-[filter,transform] duration-300 outline-none hover:brightness-110 focus-visible:ring-2 focus-visible:ring-inset'
@@ -125,7 +125,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
         </div>
       </div>
 
-      <div className='bg-surface-nav/10 hidden p-4 md:block'>
+      <div className='hidden p-4 md:block'>
         <div className='mb-4'>
           <Link to={`/problem/${randomMedia.idProblem}`} className={`${interactiveLinkClass} inline-block`}>
             <span className={problemTitleClass}>{randomMedia.problem}</span>

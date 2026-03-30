@@ -16,7 +16,7 @@ type StatItemProps = {
 
 const StatItem = ({ to, icon: Icon, label, value, loading }: StatItemProps) => {
   const content = (
-    <div className='bg-surface-card/90 group hover:bg-brand/8 hover:border-brand/20 relative flex h-full w-full flex-col items-center justify-center border border-transparent p-2 text-center transition-all duration-300 sm:p-4'>
+    <div className='bg-surface-card group hover:bg-brand/8 hover:border-brand/20 relative flex h-full w-full flex-col items-center justify-center border border-transparent p-2 text-center transition-all duration-300 sm:p-4'>
       <div
         className={cn(
           'mb-1 text-slate-400 transition-colors sm:mb-2',
@@ -103,9 +103,8 @@ export const FrontpageStats = ({
     <Card flush className='border-0 sm:border'>
       <div
         className={cn(
-          'grid overflow-hidden',
+          'bg-surface-card grid gap-px overflow-hidden',
           placement === 'top' ? 'grid-cols-4' : 'grid-cols-2',
-          designContract.surfaces.gridDivider,
         )}
       >
         <StatItem
