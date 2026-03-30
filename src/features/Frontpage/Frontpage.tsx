@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useMeta } from '../../shared/components/Meta/context';
 import { useData } from '../../api';
 import Activity from '../../shared/components/Activity/Activity';
@@ -9,22 +8,8 @@ import { designContract } from '../../design/contract';
 
 const Frontpage = () => {
   const meta = useMeta();
-  const [isTallEnough, setIsTallEnough] = useState(() =>
-    typeof window !== 'undefined' ? window.innerHeight >= 900 : true,
-  );
   const { data: stats, isPending: statsPending } = useData<Success<'getFrontpageStats'>>(`/frontpage/stats`);
   const { data: randomMedia } = useData<Success<'getFrontpageRandomMedia'>>(`/frontpage/random_media`);
-
-  useEffect(() => {
-    const update = () => setIsTallEnough(window.innerHeight >= 900);
-    update();
-    window.addEventListener('resize', update);
-    window.addEventListener('orientationchange', update);
-    return () => {
-      window.removeEventListener('resize', update);
-      window.removeEventListener('orientationchange', update);
-    };
-  }, []);
 
   const type = meta.isBouldering ? 'bouldering problems' : 'climbing routes';
   /** Entries in meta.sites for the active site’s group (header region list scope). */
@@ -40,8 +25,9 @@ const Frontpage = () => {
       {stats && <meta name='description' content={description} />}
 
       <div className={designContract.layout.pageSection}>
-        <div className='lg:hidden'>
+        <div className='md:hidden'>
           <FrontpageStats
+            placement='top'
             stats={stats}
             regionsTo={regionsTo}
             numRegions={numRegions}
@@ -52,16 +38,11 @@ const Frontpage = () => {
         </div>
 
         <div className={designContract.layout.frontpageGrid}>
-          <aside className='order-1 w-full lg:col-span-4 xl:col-span-3'>
-            <div
-              className={
-                isTallEnough
-                  ? designContract.layout.asideStack
-                  : 'w-full space-y-4 self-start sm:space-y-6 lg:static lg:top-auto'
-              }
-            >
-              <div className='hidden lg:block'>
+          <aside className='order-1 w-full md:col-span-4'>
+            <div className={designContract.layout.asideStack}>
+              <div className='hidden md:block'>
                 <FrontpageStats
+                  placement='sidebar'
                   stats={stats}
                   regionsTo={regionsTo}
                   numRegions={numRegions}
@@ -74,8 +55,8 @@ const Frontpage = () => {
             </div>
           </aside>
 
-          <main className='order-2 lg:col-span-8 lg:pl-1 xl:col-span-9 xl:pl-2'>
-            <Activity idArea={0} idSector={0} />
+          <main className='order-2 md:col-span-8 md:pl-1'>
+            <Activity idArea={0} idSector={0} layoutDensity='frontpage' />
           </main>
         </div>
       </div>

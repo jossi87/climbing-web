@@ -1,18 +1,20 @@
 import { Link } from 'react-router-dom';
 import { getMediaFileUrl, getMediaFileUrlSrcSet } from '../../api';
 import { ClickableAvatar, AvatarGroup, Card } from '../../shared/ui';
+import { profileRowMiddleDotClass } from '../../shared/components/Profile/ProfileRowTextSep';
+import { cn } from '../../lib/utils';
 import type { components } from '../../@types/buldreinfo/swagger';
 
 type RandomMedia = components['schemas']['FrontpageRandomMedia'];
 
 export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) => {
-  const cardShellClass = 'group overflow-hidden border-0 text-left sm:border';
+  const cardShellClass = 'group overflow-hidden border-0 text-left md:border';
 
   if (!randomMedia)
     return (
       <Card flush className={cardShellClass}>
         <div className='bg-surface-nav w-full animate-pulse' style={{ aspectRatio: '275 / 250' }} />
-        <div className='hidden p-4 sm:block'>
+        <div className='hidden p-4 md:block'>
           <div className='mb-4 space-y-2'>
             <div className='bg-surface-hover h-4 w-3/4 animate-pulse rounded' />
             <div className='bg-surface-hover/50 h-3 w-1/2 animate-pulse rounded' />
@@ -29,10 +31,10 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
 
   const taggedUsers = randomMedia.tagged || [];
   const photographer = randomMedia.photographer;
-  const problemTitleClass = 'text-[15px] leading-tight font-semibold text-slate-100 sm:text-[16px]';
-  const gradeClass = 'text-[13px] leading-none font-normal text-slate-300 tabular-nums sm:text-[14px]';
-  const locationClass = 'text-[11px] leading-tight font-medium text-slate-300 sm:text-[12px]';
-  const metaTextClass = 'text-[11px] text-slate-300 sm:text-[12px]';
+  const problemTitleClass = 'text-[15px] leading-tight font-semibold text-slate-100 md:text-[16px]';
+  const gradeClass = 'text-[13px] leading-none font-normal text-slate-300 tabular-nums md:text-[14px]';
+  const locationClass = 'text-[11px] leading-tight font-medium text-slate-300 md:text-[12px]';
+  const metaTextClass = 'text-[11px] text-slate-300 md:text-[12px]';
   const interactiveLinkClass =
     'rounded-sm transition-colors duration-150 hover:text-brand hover:underline hover:decoration-brand/60 underline-offset-[3px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/35';
 
@@ -53,7 +55,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
               randomMedia.versionStamp || 0,
               randomMedia.width ?? 2560,
             )}
-            sizes='(max-width: 640px) 100vw, 400px'
+            sizes='(max-width: 767px) 100vw, 400px'
             alt={randomMedia.problem}
             width={400}
             height={364}
@@ -61,9 +63,9 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
             loading='eager'
           />
         </Link>
-        <div className='pointer-events-none absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent opacity-100 transition-opacity duration-500 group-hover:opacity-100 sm:opacity-0' />
+        <div className='pointer-events-none absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent opacity-100 transition-opacity duration-500 group-hover:opacity-100 md:opacity-0' />
 
-        <div className='absolute right-0 bottom-0 left-0 p-4 sm:hidden'>
+        <div className='absolute right-0 bottom-0 left-0 p-4 md:hidden'>
           <Link
             to={`/problem/${randomMedia.idProblem}`}
             className={`${interactiveLinkClass} flex items-baseline gap-2`}
@@ -75,7 +77,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
             <Link to={`/area/${randomMedia.idArea}`} className={interactiveLinkClass}>
               <span className={locationClass}>{randomMedia.area}</span>
             </Link>
-            <span className='mx-1 text-slate-500'>·</span>
+            <span className={cn('mx-1', profileRowMiddleDotClass)}>·</span>
             <Link to={`/sector/${randomMedia.idSector}`} className={interactiveLinkClass}>
               <span className={locationClass}>{randomMedia.sector}</span>
             </Link>
@@ -123,7 +125,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
         </div>
       </div>
 
-      <div className='bg-surface-nav/10 hidden p-4 sm:block'>
+      <div className='bg-surface-nav/10 hidden p-4 md:block'>
         <div className='mb-4'>
           <Link to={`/problem/${randomMedia.idProblem}`} className={`${interactiveLinkClass} inline-block`}>
             <span className={problemTitleClass}>{randomMedia.problem}</span>
@@ -133,7 +135,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
             <Link to={`/area/${randomMedia.idArea}`} className={interactiveLinkClass}>
               <span className={locationClass}>{randomMedia.area}</span>
             </Link>
-            <span className='mx-1 text-slate-500'>·</span>
+            <span className={cn('mx-1', profileRowMiddleDotClass)}>·</span>
             <Link to={`/sector/${randomMedia.idSector}`} className={interactiveLinkClass}>
               <span className={locationClass}>{randomMedia.sector}</span>
             </Link>

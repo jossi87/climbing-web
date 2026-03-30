@@ -49,7 +49,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
-import { ProfileRowTextSep } from '../../shared/components/Profile/ProfileRowTextSep';
+import { ProfileRowTextSep, profileRowMiddleDotClass } from '../../shared/components/Profile/ProfileRowTextSep';
 import {
   profileRowRootClass,
   tickCommentSmall,
@@ -769,7 +769,7 @@ const Sector = () => {
                     >
                       {sectorTypeSummaries.map((s, i) => (
                         <Fragment key={s.key}>
-                          {i > 0 ? <span className='text-slate-500'> · </span> : null}
+                          {i > 0 ? <span className={profileRowMiddleDotClass}> · </span> : null}
                           <span title={`${s.header}: ${s.txt}`}>
                             <span className='font-semibold text-slate-200'>{s.header}:</span>{' '}
                             <span className='font-normal text-slate-300'>{s.txt}</span>

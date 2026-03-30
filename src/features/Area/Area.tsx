@@ -186,7 +186,9 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
       </>
     ) : null;
 
-  const hasIconRunBeforeFa = !!(lockAndMedia || (problem.stars && problem.stars > 0) || sectorName);
+  const iconRunBeforeSector = !!((problem.stars && problem.stars > 0) || lockAndMedia);
+  /** Middle dot only between text segments; plain space after star / lock / media icons. */
+  const faMetaLead = sectorName || !iconRunBeforeSector ? <ProfileRowTextSep /> : ' ';
 
   return (
     <div className={cn(profileRowRootClass, 'min-w-0 py-1 text-pretty [overflow-wrap:anywhere] sm:py-1.5')}>
@@ -226,7 +228,7 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
         {lockAndMedia ? <> {lockAndMedia}</> : null}
         {sectorName ? (
           <>
-            <ProfileRowTextSep />
+            {iconRunBeforeSector ? ' ' : <ProfileRowTextSep />}
             {sectorId > 0 ? (
               <Link
                 to={`/sector/${sectorId}`}
@@ -241,7 +243,7 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
         ) : null}
         {faMetaBlock ? (
           <>
-            {hasIconRunBeforeFa ? ' ' : <ProfileRowTextSep />}
+            {faMetaLead}
             {faMetaBlock}
           </>
         ) : null}

@@ -6,6 +6,7 @@ import type { components } from '../../../@types/buldreinfo/swagger';
 import { ArrowUpCircle, Compass, Sun } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
+import { profileRowMiddleDotClass } from '../Profile/ProfileRowTextSep';
 
 const JumpToTop = ({ compact = false }: { compact?: boolean }) => (
   <button
@@ -80,7 +81,7 @@ export const TableOfContents = ({ areas, header, subHeader, compact = false }: P
         <div className='type-micro text-slate-400'>
           {areas.map((area, index) => (
             <span key={area.id}>
-              {index > 0 && <span className='mx-2 opacity-40'>·</span>}
+              {index > 0 && <span className={cn('mx-2', profileRowMiddleDotClass)}>·</span>}
               <button
                 onClick={() => areaRefs.current[area.id]?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
                 className='hover:text-brand transition-colors'

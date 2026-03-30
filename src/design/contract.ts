@@ -31,10 +31,16 @@ export const designContract = {
   },
   layout: {
     pageSection: 'w-full pb-0',
-    frontpageGrid: 'grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-12 lg:gap-8',
-    asideStack: 'w-full space-y-4 self-start sm:space-y-6 lg:sticky lg:top-20',
+    /** Home: fluid column only below `md` (phones); tablet / iPad / desktop share 12-col sidebar layout. */
+    frontpageGrid: 'grid grid-cols-1 gap-4 md:grid-cols-12 md:gap-8',
+    asideStack: 'w-full space-y-4 self-start md:space-y-6 md:sticky md:top-20',
     toolbar: 'mb-4 flex flex-col items-center justify-between gap-3 px-4 sm:flex-row sm:px-0',
-    toolbarActions: 'flex w-full flex-wrap items-center justify-center gap-1.5 sm:w-auto sm:justify-end',
+    /** Activity on frontpage: same `md` switch as stats/sidebar (no `sm` density step on home). */
+    activityToolbarFrontpage: 'mb-4 flex flex-col items-center justify-between gap-3 px-4 md:flex-row md:px-0',
+    activityToolbarActionsFrontpage:
+      'flex w-full flex-nowrap items-center justify-center gap-0.5 sm:gap-1.5 md:w-auto md:justify-end',
+    /** Activity filters: one row; compact chips; labels always visible (tight gap on narrow screens). */
+    toolbarActions: 'flex w-full flex-nowrap items-center justify-center gap-0.5 sm:gap-1.5 sm:w-auto sm:justify-end',
     pageShell: 'max-w-container mx-auto space-y-6 px-4 py-6 text-left',
     pageHeaderRow:
       'border-surface-border flex flex-col justify-between gap-4 border-b pb-4 lg:flex-row lg:items-center',

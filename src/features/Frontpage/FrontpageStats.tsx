@@ -83,6 +83,11 @@ type FrontpageStatsProps = {
   regionsLoading: boolean;
   statsLoading: boolean;
   isBouldering?: boolean;
+  /**
+   * `top` — full-width strip (`lg:hidden`): one row of four through tablet/iPad.
+   * `sidebar` — aside column (`lg+`): 2×2 so cells stay readable.
+   */
+  placement: 'top' | 'sidebar';
 };
 
 export const FrontpageStats = ({
@@ -92,12 +97,14 @@ export const FrontpageStats = ({
   regionsLoading,
   statsLoading,
   isBouldering,
+  placement,
 }: FrontpageStatsProps) => {
   return (
     <Card flush className='border-0 sm:border'>
       <div
         className={cn(
-          'grid grid-cols-4 overflow-hidden lg:grid-cols-1 xl:grid-cols-2',
+          'grid overflow-hidden',
+          placement === 'top' ? 'grid-cols-4' : 'grid-cols-2',
           designContract.surfaces.gridDivider,
         )}
       >

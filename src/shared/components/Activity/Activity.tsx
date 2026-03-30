@@ -22,9 +22,17 @@ import type { components } from '../../../@types/buldreinfo/swagger';
 
 type ActivitySchema = components['schemas']['Activity'];
 
-const ActivitySkeleton = () => (
-  <div className='min-h-14 animate-pulse border-b border-white/5 px-3 py-2 last:border-0 sm:min-h-[3.25rem] sm:px-4 sm:py-2.5'>
-    <div className='flex items-start gap-2.5 sm:gap-3'>
+/** `frontpage` — match home layout: phone-fluid below `md`; tablet+ uses `md:` density (no `sm` step). */
+type ActivityLayoutDensity = 'default' | 'frontpage';
+
+const ActivitySkeleton = ({ density = 'default' }: { density?: ActivityLayoutDensity }) => (
+  <div
+    className={cn(
+      'min-h-14 animate-pulse border-b border-white/5 px-3 py-2 last:border-0',
+      density === 'frontpage' ? 'md:min-h-[3.25rem] md:px-4 md:py-2.5' : 'sm:min-h-[3.25rem] sm:px-4 sm:py-2.5',
+    )}
+  >
+    <div className={cn('flex items-start', density === 'frontpage' ? 'gap-2.5 md:gap-3' : 'gap-2.5 sm:gap-3')}>
       <div className='bg-surface-nav h-8 w-8 rounded-full' />
       <div className='flex-1 space-y-1.5'>
         <div className='bg-surface-nav h-3 w-2/3 rounded' />
@@ -34,7 +42,17 @@ const ActivitySkeleton = () => (
   </div>
 );
 
-const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSector: number; embedded?: boolean }) => {
+const Activity = ({
+  idArea,
+  idSector,
+  embedded = false,
+  layoutDensity = 'default',
+}: {
+  idArea: number;
+  idSector: number;
+  embedded?: boolean;
+  layoutDensity?: ActivityLayoutDensity;
+}) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
   const selectedGradeRef = useRef<HTMLButtonElement>(null);
@@ -86,31 +104,55 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
     setTimeout(refetch, 10);
   };
 
+  const toolbarClass =
+    layoutDensity === 'frontpage'
+      ? cn(designContract.layout.activityToolbarFrontpage, 'mb-3 md:mb-5')
+      : cn(designContract.layout.toolbar, 'mb-3 sm:mb-5');
+
   return (
     <div className='w-full'>
-      <div className={cn(designContract.layout.toolbar, 'mb-3 sm:mb-5')}>
-        <SectionLabel className='hidden text-slate-500 sm:block'>Latest activity</SectionLabel>
+      <div className={toolbarClass}>
+        <SectionLabel className={cn('hidden text-slate-500', layoutDensity === 'frontpage' ? 'md:block' : 'sm:block')}>
+          Latest activity
+        </SectionLabel>
 
-        <div className={designContract.layout.toolbarActions}>
-          <div className='relative' ref={filterRef}>
+        <div
+          className={
+            layoutDensity === 'frontpage'
+              ? designContract.layout.activityToolbarActionsFrontpage
+              : designContract.layout.toolbarActions
+          }
+        >
+          <div className='relative shrink-0' ref={filterRef}>
             <button
               onClick={() => setIsFilterOpen(!isFilterOpen)}
-              className={cn(activityChipBase, activityChipActive)}
+              className={cn(activityChipBase, activityChipActive, 'min-w-0 max-sm:max-w-[min(100%,8.5rem)]')}
               aria-expanded={isFilterOpen}
               type='button'
             >
-              <Filter size={12} className='text-brand' strokeWidth={2} />
-              <span className={cn(designContract.typography.uiCompact, 'text-slate-200')}>
+              <Filter size={12} className='text-brand shrink-0' strokeWidth={2} />
+              <span
+                className={cn(
+                  designContract.typography.uiCompact,
+                  'min-w-0 truncate text-slate-200 max-sm:text-[10px]',
+                )}
+              >
                 {normalizedLowerGradeText === 'n/a' ? 'All' : normalizedLowerGradeText}
               </span>
               <ChevronDown
                 size={10}
-                className={cn('text-slate-400 transition-transform', isFilterOpen && 'rotate-180')}
+                className={cn('shrink-0 text-slate-400 transition-transform', isFilterOpen && 'rotate-180')}
+                strokeWidth={2}
               />
             </button>
 
             {isFilterOpen && (
-              <div className='bg-surface-card border-surface-border absolute top-full left-0 z-50 mt-1.5 max-h-[min(18rem,70vh)] w-[min(17.5rem,calc(100vw-1.25rem))] overflow-y-auto rounded-xl border py-1.5 shadow-2xl sm:right-0 sm:left-auto sm:w-56'>
+              <div
+                className={cn(
+                  'bg-surface-card border-surface-border absolute top-full left-0 z-50 mt-1.5 max-h-[min(18rem,70vh)] w-[min(17.5rem,calc(100vw-1.25rem))] overflow-y-auto rounded-xl border py-1.5 shadow-2xl',
+                  layoutDensity === 'frontpage' ? 'md:right-0 md:left-auto md:w-56' : 'sm:right-0 sm:left-auto sm:w-56',
+                )}
+              >
                 <div className='border-surface-border/40 px-3 py-2'>
                   <span className={cn(designContract.typography.label, 'text-slate-500')}>Lowest grade</span>
                 </div>
@@ -179,24 +221,26 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
       {embedded ? (
         <div className='border-surface-border/45 bg-surface-nav/20 divide-y divide-white/5 overflow-hidden rounded-xl border'>
           {isPending
-            ? [...Array(10)].map((_, i) => <ActivitySkeleton key={i} />)
+            ? [...Array(10)].map((_, i) => <ActivitySkeleton key={i} density={layoutDensity} />)
             : activity?.map((a) => (
                 <ActivityItem
                   key={a.activityIds?.join('+') ?? `activity-${a.id}`}
                   a={a}
                   isBouldering={meta.isBouldering}
+                  layoutDensity={layoutDensity}
                 />
               ))}
         </div>
       ) : (
         <Card flush className='divide-y divide-white/5'>
           {isPending
-            ? [...Array(10)].map((_, i) => <ActivitySkeleton key={i} />)
+            ? [...Array(10)].map((_, i) => <ActivitySkeleton key={i} density={layoutDensity} />)
             : activity?.map((a) => (
                 <ActivityItem
                   key={a.activityIds?.join('+') ?? `activity-${a.id}`}
                   a={a}
                   isBouldering={meta.isBouldering}
+                  layoutDensity={layoutDensity}
                 />
               ))}
         </Card>
@@ -212,8 +256,9 @@ type FilterButtonProps = {
   label: string;
 };
 
+/** Tighter on small screens so the whole strip fits one row without scrolling. */
 const activityChipBase =
-  'inline-flex h-8 items-center gap-1.5 rounded-full border px-3 transition-colors duration-200 active:scale-95';
+  'inline-flex h-7 shrink-0 items-center gap-1 rounded-full border px-2 text-[10px] font-semibold leading-none transition-colors duration-200 active:scale-95 sm:h-8 sm:gap-1.5 sm:px-3 sm:text-[11px]';
 const activityChipIdle =
   'bg-surface-nav/45 border-surface-border text-slate-300 hover:bg-surface-nav hover:text-slate-100';
 const activityChipActive = 'bg-surface-hover/85 border-white/18 text-slate-100 shadow-sm';
@@ -237,6 +282,7 @@ const FilterButton = ({ active, onClick, icon: Icon, label }: FilterButtonProps)
       size={12}
       strokeWidth={2}
       className={cn(
+        'shrink-0',
         active && label === 'FA' && designContract.activityColors.filter.fa,
         active && label === 'Ticks' && designContract.activityColors.filter.ticks,
         active && label === 'Media' && designContract.activityColors.filter.media,
@@ -253,9 +299,10 @@ const FilterButton = ({ active, onClick, icon: Icon, label }: FilterButtonProps)
 type ActivityItemProps = {
   a: ActivitySchema;
   isBouldering: boolean;
+  layoutDensity?: ActivityLayoutDensity;
 };
 
-const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
+const ActivityItem = ({ a, isBouldering, layoutDensity = 'default' }: ActivityItemProps) => {
   const avatarItems =
     (a.activityThumbnails ?? []).length > 0
       ? a.activityThumbnails!.map((m) => ({ mediaId: m.id, mediaVersionStamp: m.versionStamp }))
@@ -279,9 +326,14 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
     [0, 0],
   );
 
+  const pad = layoutDensity === 'frontpage' ? 'px-3 py-2 md:px-4 md:py-2.5' : 'px-3 py-2 sm:px-4 sm:py-2.5';
+  const gap = layoutDensity === 'frontpage' ? 'gap-2.5 md:gap-3' : 'gap-2.5 sm:gap-3';
+  const mediaMt = layoutDensity === 'frontpage' ? 'mt-1.5 md:mt-2' : 'mt-1.5 sm:mt-2';
+  const faRowMt = layoutDensity === 'frontpage' ? 'mt-1.5 md:mt-2' : 'mt-1.5 sm:mt-2';
+
   return (
-    <div className='group px-3 py-2 transition-colors hover:bg-white/1.5 sm:px-4 sm:py-2.5'>
-      <div className='flex items-start gap-2.5 sm:gap-3'>
+    <div className={cn('group transition-colors hover:bg-white/1.5', pad)}>
+      <div className={cn('flex items-start', gap)}>
         <div className='shrink-0 pt-0.5'>
           <AvatarGroup items={avatarItems} size='tiny' statusIcon={statusIcon} max={2} />
         </div>
@@ -349,13 +401,13 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
           )}
 
           {a.media && (
-            <div className='mt-1.5 sm:mt-2'>
+            <div className={mediaMt}>
               <LazyMedia media={a.media} problemId={a.problemId} />
             </div>
           )}
 
           {a.users && a.users.length > 0 && (
-            <div className={cn(profileRowRootClass, 'mt-1.5 flex flex-wrap gap-x-2 gap-y-1 sm:mt-2')}>
+            <div className={cn(profileRowRootClass, 'flex flex-wrap gap-x-2 gap-y-1', faRowMt)}>
               {a.users.map((u) => (
                 <Link
                   key={u.id}

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
 import { Loading } from '../../shared/ui/StatusWidgets';
+import { profileRowMiddleDotClass } from '../../shared/components/Profile/ProfileRowTextSep';
 import { LockSymbol } from '../../shared/ui/Indicators';
 import { useAreas } from '../../api';
 import { useMeta } from '../../shared/components/Meta/context';
@@ -181,7 +182,7 @@ const Areas = () => {
                   <div className='type-micro text-slate-400'>
                     {areasInRegion.map((area, index) => (
                       <span key={area.id}>
-                        {index > 0 && <span className='mx-2 opacity-40'>·</span>}
+                        {index > 0 && <span className={cn('mx-2', profileRowMiddleDotClass)}>·</span>}
                         <span className='hover:text-brand inline-flex items-center gap-1 transition-colors'>
                           <Link to={`/area/${area.id}`} className='inline-flex items-center gap-1'>
                             <span className='text-slate-300'>{area.name}</span>
@@ -204,7 +205,7 @@ const Areas = () => {
             <div className='type-micro text-slate-400'>
               {filteredData.map((area, index) => (
                 <span key={area.id}>
-                  {index > 0 && <span className='mx-2 opacity-40'>·</span>}
+                  {index > 0 && <span className={cn('mx-2', profileRowMiddleDotClass)}>·</span>}
                   <span className='hover:text-brand inline-flex items-center gap-1 transition-colors'>
                     <Link to={`/area/${area.id}`} className='inline-flex items-center gap-1'>
                       <span className='text-slate-300'>{area.name}</span>
