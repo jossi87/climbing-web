@@ -29,10 +29,7 @@ function joinDates(dates: (string | undefined | null)[]) {
 /** Compact list rows for long tick histories. */
 const rowShell = 'group px-3 py-2 transition-colors hover:bg-white/[0.015] sm:px-4 sm:py-2.5';
 
-const quoteBlock = cn(
-  tickCommentSmall,
-  'mt-1 border-l border-white/10 pl-3 leading-relaxed text-pretty break-words text-slate-50 not-italic',
-);
+const quoteBlock = cn(tickCommentSmall, 'mt-1 leading-relaxed text-pretty break-words text-slate-50 not-italic');
 
 export const ProblemTicks = ({ ticks }: Props) => {
   const safeTicks = ticks ?? [];

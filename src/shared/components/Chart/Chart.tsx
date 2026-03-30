@@ -5,6 +5,29 @@ type Props = {
   ticks: NonNullable<components['schemas']['ProfileStatistics']['ticks']>;
 };
 
+/**
+ * Bar length = (fa + tick) / maxValue of the column (distribution vs busiest grade).
+ * Inside that pill: FA (red) and tick (blue) share width by count. `rounded-full` + `overflow-hidden`
+ * keeps both ends round for one or two segments.
+ */
+function FaTickBar({ fa, tick, totalWidthPct }: { fa: number; tick: number; totalWidthPct: number }) {
+  if (fa <= 0 && tick <= 0) {
+    return <div className='mx-0 h-1.5 w-full sm:h-2' />;
+  }
+
+  return (
+    <div className='mx-0 w-full'>
+      <div
+        className='flex h-1.5 min-h-[6px] overflow-hidden rounded-full sm:h-2'
+        style={{ width: `${totalWidthPct}%` }}
+      >
+        {fa > 0 ? <div className='h-full min-w-0 bg-red-400' style={{ flex: fa }} /> : null}
+        {tick > 0 ? <div className='h-full min-w-0 bg-blue-400' style={{ flex: tick }} /> : null}
+      </div>
+    </div>
+  );
+}
+
 function Chart({ ticks: data }: Props) {
   type LocalGrade = { gradeNumber: number; grade: string; fa: number; tick: number };
   const grades: LocalGrade[] = [];
@@ -65,6 +88,7 @@ function Chart({ ticks: data }: Props) {
           {grades.map((g) => {
             const faPct = (g.fa / maxValue) * 100;
             const tickPct = (g.tick / maxValue) * 100;
+            const totalWidthPct = faPct + tickPct;
             const total = g.fa + g.tick;
 
             return (
@@ -82,12 +106,7 @@ function Chart({ ticks: data }: Props) {
                   {total}
                 </td>
                 <td className='w-full px-1 py-0.5 text-right sm:px-1.5 sm:py-0.5'>
-                  <div className='mx-0 h-1.5 w-full overflow-hidden rounded-full sm:h-2'>
-                    <div className='flex h-full w-full'>
-                      <div style={{ width: `${faPct}%` }} className='h-full rounded-l-full bg-red-400' />
-                      <div style={{ width: `${tickPct}%` }} className='h-full rounded-r-full bg-blue-400' />
-                    </div>
-                  </div>
+                  <FaTickBar fa={g.fa} tick={g.tick} totalWidthPct={totalWidthPct} />
                 </td>
               </tr>
             );

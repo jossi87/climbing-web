@@ -5,7 +5,7 @@ import { ClickableAvatar } from '../../../shared/ui/Avatar/Avatar';
 import { useMeta } from '../../../shared/components/Meta/context';
 import Linkify from 'linkify-react';
 import type { components } from '../../../@types/buldreinfo/swagger';
-import { AlertTriangle, CheckCircle, Edit2, Trash2, Flag } from 'lucide-react';
+import { AlertTriangle, ShieldCheck, Edit2, Trash2, Flag } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import {
   profileRowRootClass,
@@ -123,7 +123,7 @@ export const ProblemComments = ({
                         title='Flagged as safe'
                         aria-label='Comment flagged as safe'
                       >
-                        <CheckCircle size={12} strokeWidth={2.25} aria-hidden />
+                        <ShieldCheck size={12} strokeWidth={2.25} aria-hidden />
                       </span>
                     ) : showFlagAction ? (
                       <button
@@ -165,7 +165,7 @@ export const ProblemComments = ({
                 <div
                   className={cn(
                     tickCommentSmall,
-                    'mt-1.5 border-l border-white/10 pl-3 leading-relaxed text-pretty break-words text-slate-50 not-italic',
+                    'mt-1.5 leading-relaxed text-pretty break-words text-slate-50 not-italic',
                   )}
                 >
                   <Linkify>{c.message}</Linkify>

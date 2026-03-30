@@ -37,7 +37,7 @@ import {
   Edit,
   Plus,
   MapPin,
-  Waypoints,
+  Spline,
   Film,
   Image as ImageIcon,
   LayoutDashboard,
@@ -150,7 +150,7 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
       ) : null}
       {problem.hasTopo ? (
         <span className='inline pl-1' title='Topo line'>
-          <Waypoints size={12} strokeWidth={2} className='inline-block align-[-0.125em]' />
+          <Spline size={12} strokeWidth={2} className='inline-block align-[-0.125em]' />
         </span>
       ) : null}
       {problem.hasImages ? (
@@ -426,6 +426,7 @@ const Sector = () => {
       ticked: p.ticked ?? false,
       rock: p.rock ?? '',
       subType: p.t?.subType ?? '',
+      broken: !!p.broken,
       num: 0,
       fa: !!p.fa,
       faDate: p.faDate ?? null,
@@ -457,7 +458,7 @@ const Sector = () => {
       <title>{`${data.name} (${data.areaName}) | ${meta?.title}`}</title>
       <meta name='description' content={data.comment} />
 
-      <div className='mb-4 min-w-0 space-y-3 pt-3 sm:mb-5 sm:space-y-2 sm:pt-2'>
+      <div className='mb-3 min-w-0 space-y-3 pt-1 sm:mb-4 sm:space-y-2 sm:pt-1 lg:pt-0'>
         <PageCardBreadcrumbRow
           className='mb-0'
           breadcrumb={

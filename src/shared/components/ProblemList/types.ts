@@ -10,6 +10,8 @@ export type Row = {
   ticked: boolean;
   rock: string;
   subType: string;
+  /** Sector/area lists: used with {@link rowListTypeKey} for Broken grouping. */
+  broken?: boolean;
   num: number;
   fa: boolean;
   faDate: string | null;
@@ -19,3 +21,10 @@ export type Row = {
     url: string;
   };
 };
+
+/** Matches sector type summaries: Projects (grade 0), Broken, else subtype or «Boulders». */
+export function rowListTypeKey(row: Row): string {
+  if (row.broken) return 'Broken';
+  if (row.gradeNumber === 0) return 'Projects';
+  return row.subType || 'Boulders';
+}

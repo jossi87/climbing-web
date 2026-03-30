@@ -1,7 +1,7 @@
 import { useSector } from '../../../api';
 import { LockSymbol, Stars } from '../../../shared/ui/Indicators';
 import { Link } from 'react-router-dom';
-import { MapPin, Waypoints, Camera, Film, Check, Bookmark } from 'lucide-react';
+import { MapPin, Spline, Camera, Film, Check, Bookmark } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
 
@@ -63,7 +63,7 @@ export const ProblemsOnRock = ({
             {p.coordinates && <MapPin size={10} className={problemId === p.id ? '' : 'opacity-70'} />}
             {p.hasTopo && (
               <span title='Topo line' className='inline-flex'>
-                <Waypoints size={10} className={problemId === p.id ? '' : 'opacity-70'} aria-hidden />
+                <Spline size={10} className={problemId === p.id ? '' : 'opacity-70'} aria-hidden />
               </span>
             )}
             {p.hasImages && <Camera size={10} className={problemId === p.id ? '' : 'opacity-70'} />}

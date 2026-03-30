@@ -11,7 +11,7 @@ import {
   useMap,
 } from 'react-leaflet';
 import { type LeafletMouseEventHandlerFn, latLngBounds } from 'leaflet';
-import { Mountain } from 'lucide-react';
+import { Activity } from 'lucide-react';
 import Locate from './locate';
 import FullscreenControl from './fullscreencontrol';
 import Markers, { type MarkerDef } from './markers';
@@ -420,7 +420,7 @@ const Leaflet = ({
               aria-label={showElevation ? 'Hide elevation labels' : 'Show elevation labels'}
               title={showElevation ? 'Hide elevation labels' : 'Show elevation labels'}
             >
-              <Mountain size={13} strokeWidth={2.2} className='pointer-events-none block' />
+              <Activity size={13} strokeWidth={2.2} className='pointer-events-none block' />
             </button>
           </UseControlWrapper>
         )}

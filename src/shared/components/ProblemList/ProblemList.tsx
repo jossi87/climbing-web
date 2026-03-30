@@ -1,7 +1,7 @@
 import { type ComponentProps, useMemo, useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import AccordionContainer from './AccordionContainer';
-import type { Row } from './types';
+import { rowListTypeKey, type Row } from './types';
 import { type GroupOption, type OrderOption, type State, useProblemListState } from './state';
 import { ChevronDown, Filter, FolderTree, ArrowDownWideNarrow } from 'lucide-react';
 import { cn } from '../../../lib/utils';
@@ -81,10 +81,10 @@ const GROUP_BY: Record<
     }),
 
   type: ({ uniqueTypes, filtered }) =>
-    uniqueTypes.map((subType) => {
-      const list = filtered.filter((p) => p.subType === subType).map((p) => p.element);
+    uniqueTypes.map((typeKey) => {
+      const list = filtered.filter((p) => rowListTypeKey(p) === typeKey).map((p) => p.element);
       return {
-        label: `${subType || '<No type>'} (${list.length})`,
+        label: `${typeKey || '<No type>'} (${list.length})`,
         length: list.length,
         content: <div className='flex flex-col gap-2'>{list}</div>,
       };
@@ -139,10 +139,10 @@ const GROUP_BY_OPTIONS: Record<GroupOption, GroupByOption> = {
 };
 
 const ToggleLabel = ({ label, checked, onChange }: { label: string; checked: boolean; onChange: () => void }) => (
-  <label className='group flex cursor-pointer items-center gap-2.5'>
+  <label className='group inline-flex cursor-pointer items-center gap-2'>
     <div
       className={cn(
-        'relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border p-0.5 transition-colors duration-200 ease-in-out focus:outline-none',
+        'relative inline-flex h-4 w-8 shrink-0 cursor-pointer items-center rounded-full border p-0.5 transition-colors duration-200 ease-in-out focus:outline-none',
         checked
           ? 'border-white/25 bg-white/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]'
           : 'bg-surface-nav/50 group-hover:bg-surface-nav/70 border-white/10 group-hover:border-white/15',
@@ -151,8 +151,8 @@ const ToggleLabel = ({ label, checked, onChange }: { label: string; checked: boo
       <span
         aria-hidden='true'
         className={cn(
-          'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white/95 shadow-sm ring-0 transition duration-200 ease-in-out',
-          checked ? 'translate-x-4' : 'translate-x-0',
+          'pointer-events-none inline-block h-3 w-3 transform rounded-full bg-white/95 shadow-sm ring-0 transition duration-200 ease-in-out',
+          checked ? 'translate-x-3.5' : 'translate-x-0',
         )}
       />
     </div>
@@ -359,8 +359,8 @@ const GradeRangeControl = ({
   onLowSelect: (next: string) => void;
   onHighSelect: (next: string) => void;
 }) => (
-  <div className='inline-flex flex-wrap items-center gap-2 md:gap-2.5'>
-    <span className='text-[11px] font-medium tracking-wide text-slate-400 uppercase sm:text-[12px]'>Grade</span>
+  <div className='inline-flex flex-wrap items-center gap-1.5 sm:gap-2'>
+    <span className={cn(designContract.typography.meta, 'shrink-0 text-slate-500')}>Grade</span>
     <ToolbarDropdown
       compact
       variant='ghost'
@@ -391,16 +391,15 @@ export const ProblemList = ({
   excludedSortOptions,
 }: Props) => {
   const [showFilter, setFilterShowing] = useState(false);
-  const [isTypesMenuOpen, setIsTypesMenuOpen] = useState(false);
   const { easyToHard, mapping } = useGrades();
-  const typesMenuRef = useRef<HTMLDivElement>(null);
 
   const [allTypes, lookup] = useMemo(() => {
     const types = new Set<string>();
     const lookup: Record<string, number> = {};
     for (const row of allRows) {
-      types.add(row.subType);
-      lookup[row.subType] = (lookup[row.subType] ?? 0) + 1;
+      const key = rowListTypeKey(row);
+      types.add(key);
+      lookup[key] = (lookup[key] ?? 0) + 1;
     }
     return [[...types].sort(), lookup];
   }, [allRows]);
@@ -437,16 +436,6 @@ export const ProblemList = ({
   const highestGradeOptions = easyToHard
     .filter((label) => (mapping[label] ?? maxGradeIndex) > (mapping[currentLow] ?? 0))
     .map((label) => ({ key: `high-${label}`, text: label, shortText: label, value: label }));
-  const selectedTypeCount = allTypes.filter((type) => !!types[type]).length;
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (typesMenuRef.current && !typesMenuRef.current.contains(e.target as Node)) setIsTypesMenuOpen(false);
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
   const showListControls = filtered.length > MIN_ROWS_FOR_LIST_CONTROLS;
 
   if (!allRows?.length) {
@@ -520,7 +509,11 @@ export const ProblemList = ({
                 />
               )}
               <ToolbarDropdown
-                className='min-w-0 flex-1 basis-0 md:max-w-[22rem] md:flex-none md:basis-auto'
+                className={
+                  groupByOptions.length > 1
+                    ? 'min-w-0 flex-1 basis-0 md:max-w-[22rem] md:flex-none md:basis-auto'
+                    : 'min-w-0 shrink-0 md:max-w-[22rem]'
+                }
                 label='Sort'
                 icon={ArrowDownWideNarrow}
                 value={order}
@@ -549,83 +542,50 @@ export const ProblemList = ({
       )}
 
       {showListControls && showFilter && (
-        <div className='mt-3 overflow-hidden rounded-xl border border-white/[0.09] bg-white/[0.03] ring-1 ring-white/[0.06]'>
-          <div className='flex items-center gap-2 border-b border-white/[0.08] bg-white/[0.02] px-3 py-2 sm:px-4'>
-            <Filter size={13} className='shrink-0 text-slate-100' strokeWidth={2.25} />
-            <span className='text-[10px] font-semibold tracking-[0.14em] text-slate-400 uppercase'>Filters</span>
+        <div className='border-surface-border/40 mt-2 flex flex-col gap-2.5 border-t pt-3 sm:gap-2'>
+          <div className='flex flex-wrap items-center gap-x-3 gap-y-2'>
+            <GradeRangeControl
+              low={currentLow}
+              high={currentHigh}
+              lowOptions={lowestGradeOptions}
+              highOptions={highestGradeOptions}
+              onLowSelect={(next) => dispatch({ action: 'set-grade', low: next })}
+              onHighSelect={(next) => dispatch({ action: 'set-grade', high: next })}
+            />
           </div>
-          <div className='space-y-4 px-3 py-3.5 sm:px-4 sm:py-4'>
-            <div className='flex flex-wrap items-center gap-x-4 gap-y-3'>
-              <GradeRangeControl
-                low={currentLow}
-                high={currentHigh}
-                lowOptions={lowestGradeOptions}
-                highOptions={highestGradeOptions}
-                onLowSelect={(next) => dispatch({ action: 'set-grade', low: next })}
-                onHighSelect={(next) => dispatch({ action: 'set-grade', high: next })}
-              />
+          {allTypes.length > 1 && (
+            <div className='flex flex-wrap items-center gap-x-4 gap-y-1.5'>
+              {allTypes.map((type) => (
+                <ToggleLabel
+                  key={type}
+                  label={`${type} (${lookup[type]})`}
+                  checked={types[type] !== false}
+                  onChange={() =>
+                    dispatch({
+                      action: 'type',
+                      type,
+                      enabled: !(types[type] ?? true),
+                    })
+                  }
+                />
+              ))}
             </div>
-            {allTypes.length > 1 && (
-              <div
-                className='relative rounded-lg border border-white/[0.08] bg-white/[0.02] p-3 sm:p-3.5'
-                ref={typesMenuRef}
-              >
-                <p className='mb-2.5 text-[10px] font-medium tracking-wide text-slate-500 uppercase'>Route types</p>
-                <button
-                  type='button'
-                  onClick={() => setIsTypesMenuOpen((v) => !v)}
-                  className={cn(
-                    'inline-flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-md border px-3 text-[11px] font-medium transition-colors sm:h-8 sm:text-[12px]',
-                    isTypesMenuOpen
-                      ? 'border-white/16 bg-white/[0.07] text-slate-100'
-                      : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/14 hover:bg-white/[0.05] hover:text-slate-100',
-                  )}
-                >
-                  <span className='min-w-0 truncate text-left'>
-                    Types ({selectedTypeCount}/{allTypes.length})
-                  </span>
-                  <ChevronDown
-                    size={11}
-                    className={cn('shrink-0 text-slate-400 transition-transform', isTypesMenuOpen && 'rotate-180')}
-                  />
-                </button>
-                {isTypesMenuOpen && (
-                  <div className='bg-surface-card/90 mt-2 space-y-0 rounded-lg border border-white/[0.08] py-1 shadow-inner ring-1 ring-white/[0.06]'>
-                    {allTypes.map((type) => (
-                      <div key={type} className='border-b border-white/[0.06] px-2 py-2 last:border-b-0 sm:px-3'>
-                        <ToggleLabel
-                          label={`${type} (${lookup[type]})`}
-                          checked={types[type]}
-                          onChange={() =>
-                            dispatch({
-                              action: 'type',
-                              type,
-                              enabled: !types[type],
-                            })
-                          }
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+          )}
 
-            {(mode === 'sector' && containsTicked) || (mode === 'user' && containsFa) ? (
-              <div className='flex flex-wrap gap-x-6 gap-y-3 border-t border-white/[0.08] pt-3'>
-                {mode === 'sector' && containsTicked && (
-                  <ToggleLabel
-                    label='Hide ticked'
-                    checked={hideTicked}
-                    onChange={() => dispatch({ action: 'hide-ticked' })}
-                  />
-                )}
-                {mode === 'user' && containsFa && (
-                  <ToggleLabel label='Only show FA' checked={onlyFa} onChange={() => dispatch({ action: 'only-fa' })} />
-                )}
-              </div>
-            ) : null}
-          </div>
+          {(mode === 'sector' && containsTicked) || (mode === 'user' && containsFa) ? (
+            <div className='flex flex-wrap gap-x-4 gap-y-1.5'>
+              {mode === 'sector' && containsTicked && (
+                <ToggleLabel
+                  label='Hide ticked'
+                  checked={hideTicked}
+                  onChange={() => dispatch({ action: 'hide-ticked' })}
+                />
+              )}
+              {mode === 'user' && containsFa && (
+                <ToggleLabel label='Only FA' checked={onlyFa} onChange={() => dispatch({ action: 'only-fa' })} />
+              )}
+            </div>
+          ) : null}
         </div>
       )}
 

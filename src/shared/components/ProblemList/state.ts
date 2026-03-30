@@ -1,7 +1,7 @@
 import { type Dispatch, useEffect, useMemo, useReducer } from 'react';
 import { neverGuard } from '../../../utils/neverGuard';
 import type { DispatchUpdate } from '../FilterForm/GradeSelect/GradeSelect';
-import type { Row } from './types';
+import { rowListTypeKey, type Row } from './types';
 import { useGrades } from '../Meta';
 import { getLocales } from '../../../api';
 import { useSessionStorage } from '../../../utils/use-local-storage';
@@ -192,7 +192,7 @@ export const useProblemListState = ({
   const [storedOrderBy, setStoredOrderBy] = useSessionStorage(`problemList/${key}/sectorOrderBy`, defaultOrder);
 
   const { mapping, easyToHard, idToGrade } = useGrades();
-  const typeNames = useMemo(() => [...new Set(rows.map(({ subType }) => subType))].sort(), [rows]);
+  const typeNames = useMemo(() => [...new Set(rows.map(rowListTypeKey))].sort(), [rows]);
   const [{ gradeLow, gradeHigh, hideTicked, onlyFa, order, groupBy, types }, dispatch] = useReducer(uiStateReducer, {
     gradeHigh: undefined,
     gradeLow: undefined,
@@ -200,7 +200,7 @@ export const useProblemListState = ({
     groupBy: CLEANED_GROUP_BY[storedGroupBy as GroupOption] ?? 'none',
     hideTicked: storedHideTicked,
     onlyFa: storedOnlyFa,
-    types: rows.reduce((acc, { subType }) => ({ ...acc, [subType]: true }), {}),
+    types: rows.reduce((acc, row) => ({ ...acc, [rowListTypeKey(row)]: true }), {} as Record<string, boolean>),
   });
 
   useEffect(() => setStoredHideTicked(hideTicked), [hideTicked, setStoredHideTicked]);
@@ -227,7 +227,8 @@ export const useProblemListState = ({
         areas.add(problem.areaName);
         rocks.add(problem.rock);
         sectors.add(problem.sectorName);
-        typeNames.add(problem.subType);
+        const tKey = rowListTypeKey(problem);
+        typeNames.add(tKey);
 
         const index = mapping[idToGrade[problem.gradeNumber] ?? 'n/a'] ?? 0;
 
@@ -236,7 +237,7 @@ export const useProblemListState = ({
           index <= indexHigh &&
           (hideTicked ? !problem.ticked : true) &&
           (onlyFa ? problem.fa : true) &&
-          (filterByType ? !!types[problem.subType] : true)
+          (filterByType ? !!types[tKey] : true)
         );
       })
       .sort(SORTS[order]);

@@ -1,17 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import {
-  ExternalLink,
-  Map,
-  MapPin,
-  Mountain,
-  Search as SearchIcon,
-  Spline,
-  UserCircle,
-  type LucideIcon,
-} from 'lucide-react';
+import { ExternalLink, Map, MapPin, MapPinned, Search as SearchIcon, User, type LucideIcon } from 'lucide-react';
 import { getMediaFileUrl, useSearch } from '../../../api';
-import { useMeta } from '../Meta/context';
 import { LockSymbol } from '../../ui/Indicators';
 import { cn } from '../../../lib/utils';
 import { SearchInput, Card } from '../../ui';
@@ -55,23 +45,17 @@ function getSearchEntityKind(result: SearchResult): SearchEntityKind {
   return 'unknown';
 }
 
-/** Area uses map icon (Areas page + frontpage stats); routes use Spline (climbing) or MapPin (boulder). */
-function getSearchFallbackMeta(
-  kind: SearchEntityKind,
-  site: { isBouldering: boolean; isClimbing: boolean },
-): { Icon: LucideIcon; label: string } {
+/** Thumbnail fallbacks: area → Map, sector → MapPinned, problem → MapPin. */
+function getSearchFallbackMeta(kind: SearchEntityKind): { Icon: LucideIcon; label: string } {
   switch (kind) {
     case 'area':
       return { Icon: Map, label: 'Area' };
     case 'sector':
-      return { Icon: Mountain, label: 'Sector' };
+      return { Icon: MapPinned, label: 'Sector' };
     case 'problem':
-      return {
-        Icon: site.isClimbing ? Spline : MapPin,
-        label: site.isBouldering ? 'Boulder' : 'Route',
-      };
+      return { Icon: MapPin, label: 'Problem' };
     case 'user':
-      return { Icon: UserCircle, label: 'User' };
+      return { Icon: User, label: 'User' };
     default:
       return { Icon: SearchIcon, label: 'Result' };
   }
@@ -83,7 +67,6 @@ const FALLBACK_ICON_CLASS = 'shrink-0 text-slate-500 group-hover:text-slate-400'
 const SearchBox = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isBouldering, isClimbing } = useMeta();
   const { search, isPending, data } = useSearch();
   const [value, setValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -155,13 +138,7 @@ const SearchBox = () => {
   return (
     <div ref={containerRef} className='relative w-full'>
       <SearchInput
-        placeholder={
-          isMobile
-            ? 'Search...'
-            : isBouldering
-              ? 'Search areas, sectors, problems or users...'
-              : 'Search areas, sectors, routes or users...'
-        }
+        placeholder={isMobile ? 'Search...' : 'Search areas, sectors, problems or users...'}
         value={value}
         isPending={isPending}
         onChange={(e) => {
@@ -207,7 +184,7 @@ const SearchBox = () => {
               const versionStamp = result?.mediaVersionStamp || 0;
               const imageSrc = mediaId > 0 ? getMediaFileUrl(mediaId, versionStamp, false, { minDimension: 48 }) : null;
               const entityKind = getSearchEntityKind(result);
-              const fallback = getSearchFallbackMeta(entityKind, { isBouldering, isClimbing });
+              const fallback = getSearchFallbackMeta(entityKind);
               const FallbackIcon = fallback.Icon;
               const problemTitle =
                 entityKind === 'problem' && !result.externalUrl

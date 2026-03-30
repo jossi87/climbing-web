@@ -25,12 +25,12 @@ import {
   AlertTriangle,
   Image as ImageIcon,
   Map as MapIcon,
+  MapPinned,
   BarChart2,
   Trophy,
   Bookmark,
   MapPin,
-  Mountain,
-  Waypoints,
+  Spline,
   Film,
   LayoutGrid,
   LayoutDashboard,
@@ -161,7 +161,7 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
       ) : null}
       {problem.hasTopo ? (
         <span className='inline pl-1' title='Topo line'>
-          <Waypoints size={12} strokeWidth={2} className='inline-block align-[-0.125em]' />
+          <Spline size={12} strokeWidth={2} className='inline-block align-[-0.125em]' />
         </span>
       ) : null}
       {problem.hasImages ? (
@@ -381,6 +381,7 @@ const Area = () => {
           ticked: p.ticked ?? false,
           rock: p.rock ?? '',
           subType: p.t?.subType ?? '',
+          broken: !!p.broken,
           num: p.nr ?? 0,
           fa: !!p.fa,
           faDate: p.faDate ?? null,
@@ -434,7 +435,7 @@ const Area = () => {
       <title>{`${data.name} | ${meta?.title}`}</title>
       <meta name='description' content={data.comment} />
 
-      <div className='mb-4 min-w-0 space-y-3 pt-3 sm:mb-5 sm:space-y-2 sm:pt-2'>
+      <div className='mb-3 min-w-0 space-y-3 pt-1 sm:mb-4 sm:space-y-2 sm:pt-1 lg:pt-0'>
         <PageCardBreadcrumbRow
           className='mb-0'
           breadcrumb={
@@ -683,7 +684,7 @@ const Area = () => {
                           className='pointer-events-none absolute inset-0 z-[1] flex items-center justify-center bg-[radial-gradient(ellipse_85%_70%_at_50%_42%,rgba(148,163,184,0.22),transparent_65%)]'
                           aria-hidden
                         >
-                          <Mountain
+                          <MapPinned
                             className='h-[4.5rem] w-[4.5rem] text-slate-300/55 sm:h-[5.25rem] sm:w-[5.25rem] md:h-24 md:w-24'
                             strokeWidth={1.15}
                           />

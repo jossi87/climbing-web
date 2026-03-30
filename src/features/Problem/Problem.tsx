@@ -324,13 +324,13 @@ export const Problem = () => {
         />
       )}
 
-      <div className='mb-4 min-w-0 space-y-3 pt-3 sm:mb-5 sm:space-y-2 sm:pt-2'>
+      <div className='mb-3 min-w-0 space-y-3 pt-1 sm:mb-4 sm:space-y-2 sm:pt-1 lg:pt-0'>
         <PageCardBreadcrumbRow
           className='mb-0'
           breadcrumb={
             <nav
               aria-label='Breadcrumb'
-              className='block min-w-0 text-[11px] leading-snug break-words sm:text-[13px] sm:leading-relaxed [&>*+*]:ml-1 sm:[&>*+*]:ml-1.5'
+              className='block min-w-0 text-[11px] leading-snug break-normal sm:text-[13px] sm:leading-relaxed [&>*+*]:ml-1 sm:[&>*+*]:ml-1.5'
             >
               <Link
                 to='/areas'
@@ -356,12 +356,12 @@ export const Problem = () => {
               <LockSymbol lockedAdmin={!!data.sectorLockedAdmin} lockedSuperadmin={!!data.sectorLockedSuperadmin} />
               <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
               <span
-                className='inline-flex max-w-full min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5 align-middle'
+                className='inline-flex max-w-full min-w-0 flex-nowrap items-baseline gap-x-1.5 align-middle'
                 aria-current='page'
               >
                 {hasDanger ? (
                   <span
-                    className='inline-flex'
+                    className='inline-flex shrink-0'
                     role='img'
                     aria-label='Danger reported for this route'
                     title='Danger reported for this route'
@@ -377,17 +377,28 @@ export const Problem = () => {
                 <span
                   className={cn(
                     designContract.typography.meta,
-                    'font-mono tabular-nums',
+                    'shrink-0 font-mono tabular-nums',
                     isTicked ? 'text-emerald-400' : optimisticTodo ? 'text-blue-300' : 'text-slate-300',
                   )}
                 >
                   #{data.nr}
                 </span>
-                <span className='min-w-0 font-semibold tracking-tight text-slate-50'>{data.name}</span>
-                <span className={cn(designContract.typography.grade, 'shrink-0 font-medium text-slate-200')}>
-                  {data.grade}
+                <span className='inline-flex max-w-[min(100%,24rem)] min-w-0 items-baseline gap-x-1.5 sm:max-w-[min(100%,36rem)]'>
+                  <span className='min-w-0 truncate font-semibold tracking-tight text-slate-50' title={data.name}>
+                    {data.name}
+                  </span>
+                  <span
+                    className={cn(
+                      designContract.typography.grade,
+                      'shrink-0 font-medium whitespace-nowrap text-slate-200',
+                    )}
+                  >
+                    {data.grade}
+                  </span>
                 </span>
-                <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
+                <span className='inline-flex shrink-0 items-center'>
+                  <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
+                </span>
               </span>
             </nav>
           }

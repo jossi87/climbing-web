@@ -95,7 +95,7 @@ const ChartGradeDistribution = ({
                 )}
                 <div
                   className={cn(
-                    'flex w-full flex-col justify-end overflow-hidden rounded-t-md transition-all duration-300',
+                    'flex w-full flex-col justify-end overflow-hidden rounded-md transition-all duration-300',
                     embedded
                       ? isActive
                         ? 'ring-1 ring-white/15'
