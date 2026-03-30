@@ -219,7 +219,7 @@ const Header = () => {
               <span className='sr-only'>Home</span>
               {isHome && <div className='bg-brand shadow-brand absolute right-0 bottom-0 left-0 h-0.5 rounded-t' />}
             </Link>
-            <div className='min-w-0 flex-1'>
+            <div className='w-full min-w-0 flex-1 lg:max-w-sm xl:max-w-md'>
               <SearchBox />
             </div>
           </div>

@@ -92,6 +92,8 @@ export const designContract = {
      */
     pageHeaderIconButton:
       'inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-colors sm:h-8 sm:w-8',
+    /** Add (+) — create entity; blue to distinguish from amber edit actions. */
+    pageHeaderIconButtonAdd: 'border-sky-400/45 bg-sky-500/20 text-sky-300 hover:bg-sky-500/30 hover:text-sky-200',
     pageHeaderIconGlyph: 'pointer-events-none h-3 w-3 sm:h-[14px] sm:w-[14px]',
     /** Full-width tab row (Profile, Area, etc.): active state via short bar — no full-width rules above/below */
     tabBarRow: 'flex w-full min-w-0 flex-wrap',

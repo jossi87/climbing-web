@@ -276,13 +276,13 @@ export const Problem = () => {
         />
       )}
       <div className='space-y-3 sm:space-y-3.5'>
+        <ProblemNeighboursRow neighbourPrev={data.neighbourPrev} neighbourNext={data.neighbourNext} />
         <ProblemAscentOverview
           data={data}
           meta={{ isClimbing: meta.isClimbing, isIce: meta.isIce }}
           orderableMedia={orderableMedia}
           carouselMedia={carouselMedia}
         />
-        <ProblemNeighboursRow neighbourPrev={data.neighbourPrev} neighbourNext={data.neighbourNext} />
       </div>
       {commentText.length > 0 && (
         <ExpandableMarkdown key={data.id} content={data.comment ?? ''} contentClassName='max-w-none' />
@@ -438,7 +438,7 @@ export const Problem = () => {
                 >
                   <MessageSquare className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.25} />
                 </button>
-                {meta.isAdmin && (
+                {(meta.isAdmin || meta.isSuperAdmin) && (
                   <button
                     type='button'
                     title={showHiddenMedia ? 'Showing hidden media' : 'Show hidden media'}
@@ -453,39 +453,27 @@ export const Problem = () => {
                     <Eye className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.25} />
                   </button>
                 )}
-                {meta.isAdmin ? (
-                  <>
-                    <Link
-                      to={`/problem/edit/media/${data.id}`}
-                      title='Add media'
-                      aria-label='Add media'
-                      className={cn(
-                        designContract.controls.pageHeaderIconButton,
-                        'border-green-400/40 bg-green-500/20 text-green-300 hover:bg-green-500/30 hover:text-green-200',
-                      )}
-                    >
-                      <Plus className={designContract.controls.pageHeaderIconGlyph} />
-                    </Link>
-                    <Link
-                      to={`/problem/edit/${data.sectorId}/${data.id}`}
-                      title='Edit problem'
-                      aria-label='Edit problem'
-                      className={cn(
-                        designContract.controls.pageHeaderIconButton,
-                        'border-amber-300/45 bg-amber-400/18 text-amber-100 hover:bg-amber-400/28',
-                      )}
-                    >
-                      <Edit className={designContract.controls.pageHeaderIconGlyph} />
-                    </Link>
-                  </>
-                ) : (
+                {(meta.isAdmin || meta.isSuperAdmin) && (
+                  <Link
+                    to={`/problem/edit/${data.sectorId}/${data.id}`}
+                    title='Edit problem'
+                    aria-label='Edit problem'
+                    className={cn(
+                      designContract.controls.pageHeaderIconButton,
+                      'border-amber-300/45 bg-amber-400/18 text-amber-100 hover:bg-amber-400/28',
+                    )}
+                  >
+                    <Edit className={designContract.controls.pageHeaderIconGlyph} />
+                  </Link>
+                )}
+                {!meta.isAdmin && !meta.isSuperAdmin && (
                   <Link
                     to={`/problem/edit/media/${data.id}`}
                     title='Add media'
                     aria-label='Add media'
                     className={cn(
                       designContract.controls.pageHeaderIconButton,
-                      'border-green-400/40 bg-green-500/20 text-green-300 hover:bg-green-500/30 hover:text-green-200',
+                      designContract.controls.pageHeaderIconButtonAdd,
                     )}
                   >
                     <Plus className={designContract.controls.pageHeaderIconGlyph} />
@@ -666,11 +654,13 @@ export const Problem = () => {
         >
           {hasTicks && (
             <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm sm:border'>
-              <div className='border-surface-border/40 flex flex-wrap items-center gap-x-2 gap-y-1 border-b px-4 py-2.5 sm:px-5'>
-                <Check size={12} className='shrink-0 text-slate-500' strokeWidth={2.25} />
-                <span className='type-label'>Ticks</span>
-                <span className={cn(designContract.typography.meta, 'text-slate-500 tabular-nums')}>
-                  {data.ticks?.length ?? 0}
+              <div className='border-surface-border/40 flex flex-nowrap items-center gap-x-2 border-b px-4 py-2.5 sm:px-5'>
+                <Check size={12} className='shrink-0 text-emerald-400' strokeWidth={2.25} />
+                <span className='inline-flex min-w-0 flex-nowrap items-center gap-x-1.5'>
+                  <span className='type-label'>Ticks</span>
+                  <span className={cn(designContract.typography.meta, 'shrink-0 text-slate-500 tabular-nums')}>
+                    {data.ticks?.length ?? 0}
+                  </span>
                 </span>
               </div>
               <div className='pb-4 sm:pb-5'>
@@ -680,11 +670,13 @@ export const Problem = () => {
           )}
           {hasComments && (
             <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm sm:border'>
-              <div className='border-surface-border/40 flex flex-wrap items-center gap-x-2 gap-y-1 border-b px-4 py-2.5 sm:px-5'>
-                <MessageSquare size={12} className='shrink-0 text-slate-500' strokeWidth={2.25} />
-                <span className='type-label'>Comments</span>
-                <span className={cn(designContract.typography.meta, 'text-slate-500 tabular-nums')}>
-                  {data.comments?.length ?? 0}
+              <div className='border-surface-border/40 flex flex-nowrap items-center gap-x-2 border-b px-4 py-2.5 sm:px-5'>
+                <MessageSquare size={12} className='shrink-0 text-sky-400' strokeWidth={2.25} />
+                <span className='inline-flex min-w-0 flex-nowrap items-center gap-x-1.5'>
+                  <span className='type-label'>Comments</span>
+                  <span className={cn(designContract.typography.meta, 'shrink-0 text-slate-500 tabular-nums')}>
+                    {data.comments?.length ?? 0}
+                  </span>
                 </span>
               </div>
               <div className='pb-4 sm:pb-5'>

@@ -7,6 +7,7 @@ import { useAreas } from '../../api';
 import { useMeta } from '../../shared/components/Meta/context';
 import { Map as MapIcon, Plus, Sun } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { designContract } from '../../design/contract';
 import { Card, SectionHeader } from '../../shared/ui';
 
 const getSunLabel = (fromHour?: number, toHour?: number) => {
@@ -88,7 +89,10 @@ const Areas = () => {
                 to={`/area/edit/-1`}
                 title='Add area'
                 aria-label='Add area'
-                className='inline-flex h-8 w-8 items-center justify-center rounded-full border border-green-400/40 bg-green-500/20 text-green-300 transition-colors hover:bg-green-500/30 hover:text-green-200'
+                className={cn(
+                  designContract.controls.pageHeaderIconButton,
+                  designContract.controls.pageHeaderIconButtonAdd,
+                )}
               >
                 <Plus size={12} />
               </Link>

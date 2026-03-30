@@ -458,7 +458,7 @@ const Area = () => {
                   aria-label='Add sector'
                   className={cn(
                     designContract.controls.pageHeaderIconButton,
-                    'border-green-400/40 bg-green-500/20 text-green-300 hover:bg-green-500/30 hover:text-green-200',
+                    designContract.controls.pageHeaderIconButtonAdd,
                   )}
                 >
                   <Plus className={designContract.controls.pageHeaderIconGlyph} />

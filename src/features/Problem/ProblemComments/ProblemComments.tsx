@@ -165,7 +165,7 @@ export const ProblemComments = ({
                 <div
                   className={cn(
                     tickCommentSmall,
-                    'mt-1.5 border-l border-white/10 pl-3 leading-relaxed text-pretty break-words',
+                    'mt-1.5 border-l border-white/10 pl-3 leading-relaxed text-pretty break-words text-slate-50 not-italic',
                   )}
                 >
                   <Linkify>{c.message}</Linkify>
