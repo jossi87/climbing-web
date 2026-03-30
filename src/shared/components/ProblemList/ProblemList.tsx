@@ -19,24 +19,24 @@ type Props = {
   excludedSortOptions?: OrderOption[];
 };
 
-type OrderByOption = { key: string; text: string; value: OrderOption };
+type OrderByOption = { key: string; text: string; shortText: string; value: OrderOption };
 
 const ORDER_BY_OPTIONS: Record<'sector' | 'user', OrderByOption[]> = {
   sector: [
-    { key: 'name', text: 'Name', value: 'name' },
-    { key: 'ascents', text: 'Ascents', value: 'ascents' },
-    { key: 'first-ascent', text: 'First ascent', value: 'first-ascent' },
-    { key: 'grade-asc', text: 'Grade (easy -> hard)', value: 'grade-asc' },
-    { key: 'grade-desc', text: 'Grade (hard -> easy)', value: 'grade-desc' },
-    { key: 'number', text: 'Number', value: 'number' },
-    { key: 'rating', text: 'Rating', value: 'rating' },
+    { key: 'name', text: 'Name', shortText: 'Name', value: 'name' },
+    { key: 'ascents', text: 'Ascents', shortText: 'Ascents', value: 'ascents' },
+    { key: 'first-ascent', text: 'First ascent', shortText: '1st asc.', value: 'first-ascent' },
+    { key: 'grade-asc', text: 'Grade (easy -> hard)', shortText: 'Easy→hard', value: 'grade-asc' },
+    { key: 'grade-desc', text: 'Grade (hard -> easy)', shortText: 'Hard→easy', value: 'grade-desc' },
+    { key: 'number', text: 'Number', shortText: '#', value: 'number' },
+    { key: 'rating', text: 'Rating', shortText: 'Stars', value: 'rating' },
   ],
   user: [
-    { key: 'name', text: 'Name', value: 'name' },
-    { key: 'date', text: 'Date', value: 'date' },
-    { key: 'grade-asc', text: 'Grade (easy -> hard)', value: 'grade-asc' },
-    { key: 'grade-desc', text: 'Grade (hard -> easy)', value: 'grade-desc' },
-    { key: 'rating', text: 'Rating', value: 'rating' },
+    { key: 'name', text: 'Name', shortText: 'Name', value: 'name' },
+    { key: 'date', text: 'Date', shortText: 'Date', value: 'date' },
+    { key: 'grade-asc', text: 'Grade (easy -> hard)', shortText: 'Easy→hard', value: 'grade-asc' },
+    { key: 'grade-desc', text: 'Grade (hard -> easy)', shortText: 'Hard→easy', value: 'grade-desc' },
+    { key: 'rating', text: 'Rating', shortText: 'Stars', value: 'rating' },
   ],
 } as const;
 
@@ -94,6 +94,8 @@ const GROUP_BY: Record<
 type GroupByOption = {
   key: string;
   text: string;
+  /** Short label for dense toolbars (defaults to `text`). */
+  shortText?: string;
   value: GroupOption;
   isApplicable: (state: Pick<State, 'uniqueAreas' | 'uniqueRocks' | 'uniqueSectors' | 'uniqueTypes'>) => boolean;
 };
@@ -102,30 +104,35 @@ const GROUP_BY_OPTIONS: Record<GroupOption, GroupByOption> = {
   area: {
     key: 'area',
     text: 'Area',
+    shortText: 'Area',
     value: 'area',
     isApplicable: ({ uniqueAreas }) => uniqueAreas.length > 1,
   },
   none: {
     key: 'none',
     text: 'None',
+    shortText: 'None',
     value: 'none',
     isApplicable: () => true,
   },
   rock: {
     key: 'rock',
     text: 'Rock',
+    shortText: 'Rock',
     value: 'rock',
     isApplicable: ({ uniqueRocks }) => uniqueRocks.length > 1,
   },
   sector: {
     key: 'sector',
     text: 'Sector',
+    shortText: 'Sector',
     value: 'sector',
     isApplicable: ({ uniqueSectors }) => uniqueSectors.length > 1,
   },
   type: {
     key: 'type',
     text: 'Type',
+    shortText: 'Type',
     value: 'type',
     isApplicable: ({ uniqueTypes }) => uniqueTypes.length > 1,
   },
@@ -165,6 +172,7 @@ const ToggleLabel = ({ label, checked, onChange }: { label: string; checked: boo
 type ToolbarDropdownOption<T extends string> = {
   key: string;
   text: string;
+  shortText?: string;
   value: T;
 };
 
@@ -176,6 +184,8 @@ const ToolbarDropdown = <T extends string>({
   onSelect,
   compact,
   fullWidth,
+  className: wrapperClassName,
+  variant = 'default',
 }: {
   label: string;
   icon?: React.ComponentType<{ size?: number; className?: string }>;
@@ -184,6 +194,9 @@ const ToolbarDropdown = <T extends string>({
   onSelect: (v: T) => void;
   compact?: boolean;
   fullWidth?: boolean;
+  className?: string;
+  /** Borderless controls for the dense group/sort/filter row. */
+  variant?: 'default' | 'ghost';
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -197,6 +210,9 @@ const ToolbarDropdown = <T extends string>({
     maxHeight: number;
   } | null>(null);
   const selected = options.find((opt) => opt.value === value);
+  const shortLabel = selected?.shortText ?? selected?.text ?? '';
+  const fullLabel = selected?.text ?? '';
+  const displayLabel = compact || fullWidth ? shortLabel : fullLabel;
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -219,7 +235,7 @@ const ToolbarDropdown = <T extends string>({
       const spaceBelow = window.innerHeight - rect.bottom - viewportPadding;
       const shouldOpenAbove = spaceBelow < Math.min(estimatedMenuHeight, 160);
       const top = shouldOpenAbove ? Math.max(viewportPadding, rect.top - estimatedMenuHeight - 4) : rect.bottom + 4;
-      const width = Math.min(Math.max(rect.width, 140), 240);
+      const width = Math.min(Math.max(rect.width, 160), 320);
       const maxLeft = Math.max(viewportPadding, window.innerWidth - width - viewportPadding);
       const left = Math.min(rect.left, maxLeft);
       setMenuPosition({
@@ -247,60 +263,76 @@ const ToolbarDropdown = <T extends string>({
   }, [isOpen, value]);
 
   return (
-    <div className='relative shrink-0' ref={ref}>
+    <div className={cn('relative', fullWidth ? 'min-w-0 flex-1' : 'shrink-0', wrapperClassName)} ref={ref}>
       <button
         ref={buttonRef}
         type='button'
         onClick={() => setIsOpen((v) => !v)}
-        aria-label={label}
+        aria-label={`${label}: ${selected?.text ?? ''}`}
+        title={selected?.text ? `${label}: ${selected.text}` : label}
         className={cn(
-          compact
-            ? 'inline-flex h-7 min-w-[96px] items-center justify-between gap-1 rounded-md border px-2 text-[11px] leading-none font-medium transition-colors sm:text-[12px] md:h-7 md:px-1.5'
-            : 'inline-flex h-9 items-center justify-between gap-1.5 rounded-md border px-3 text-[11px] leading-none font-medium whitespace-nowrap transition-colors sm:text-[12px] md:h-8 md:gap-1 md:px-2.5',
-          fullWidth && !compact ? 'w-full md:w-auto' : '',
-          isOpen
-            ? 'bg-surface-hover/55 border-white/18 text-slate-100'
-            : 'bg-surface-nav/28 hover:bg-surface-nav/42 border-white/10 text-slate-300 hover:border-white/12 hover:text-slate-200',
+          variant === 'ghost'
+            ? 'inline-flex h-8 w-full min-w-0 items-center justify-between gap-1 rounded-lg px-2 text-[11px] leading-none font-medium transition-colors sm:px-2.5 sm:text-[12px]'
+            : compact
+              ? 'inline-flex h-7 w-full min-w-0 items-center justify-between gap-0.5 rounded-md border px-1.5 text-[10px] leading-none font-medium transition-colors sm:gap-1 sm:px-2 sm:text-[11px] md:h-7'
+              : 'inline-flex h-9 w-full max-w-full min-w-0 items-center justify-between gap-1.5 rounded-md border px-3 text-[11px] leading-none font-medium whitespace-nowrap transition-colors sm:text-[12px] md:h-8 md:w-auto md:max-w-[22rem] md:gap-1 md:px-2.5',
+          fullWidth && !compact ? 'w-full md:w-auto' : fullWidth && compact ? 'w-full' : '',
+          variant === 'ghost'
+            ? isOpen
+              ? 'bg-white/[0.08] text-slate-100'
+              : 'border-0 bg-transparent text-slate-300 hover:bg-white/[0.06] hover:text-slate-100'
+            : isOpen
+              ? 'bg-surface-hover/55 border-white/18 text-slate-100'
+              : 'bg-surface-nav/28 hover:bg-surface-nav/42 border-white/10 text-slate-300 hover:border-white/12 hover:text-slate-200',
         )}
       >
         {Icon ? (
-          <Icon size={11} className={cn('transition-colors', isOpen ? 'text-slate-300' : 'text-slate-500')} />
+          <Icon size={11} className={cn('shrink-0 transition-colors', isOpen ? 'text-slate-300' : 'text-slate-500')} />
         ) : null}
-        {!compact && <span className='text-slate-500'>{label}:</span>}
-        <span className='text-slate-200'>{selected?.text ?? ''}</span>
-        <ChevronDown size={11} className={cn('text-slate-500 transition-transform', isOpen && 'rotate-180')} />
+        {!compact && <span className='shrink-0 text-slate-500'>{label}:</span>}
+        {variant === 'ghost' && compact && fullWidth ? (
+          <span className='min-w-0 flex-1 text-left text-slate-100'>
+            <span className='block truncate md:hidden'>{shortLabel}</span>
+            <span className='hidden md:block md:whitespace-nowrap'>{fullLabel}</span>
+          </span>
+        ) : (
+          <span className='min-w-0 flex-1 truncate text-left text-slate-200'>{displayLabel}</span>
+        )}
+        <ChevronDown size={11} className={cn('shrink-0 text-slate-500 transition-transform', isOpen && 'rotate-180')} />
       </button>
       {isOpen && menuPosition
         ? createPortal(
             <div
               ref={menuRef}
-              className='bg-surface-card/96 border-surface-border fixed z-[220] overflow-y-auto rounded-xl border py-1 shadow-2xl backdrop-blur-sm'
+              className='bg-surface-card/98 fixed z-[220] overflow-hidden overflow-y-auto rounded-xl py-1 shadow-[0_16px_48px_-12px_rgba(0,0,0,0.65)] ring-1 ring-white/[0.12] backdrop-blur-md'
               style={{
                 top: menuPosition.top,
                 left: menuPosition.left,
-                width: menuPosition.width,
+                width: Math.max(menuPosition.width, 176),
                 maxHeight: menuPosition.maxHeight,
               }}
             >
-              {options.map((opt) => (
-                <button
-                  ref={opt.value === value ? selectedOptionRef : null}
-                  key={opt.key}
-                  type='button'
-                  onClick={() => {
-                    onSelect(opt.value);
-                    setIsOpen(false);
-                  }}
-                  className={cn(
-                    'w-full px-3 py-1.5 text-left text-[11px] leading-none transition-colors sm:text-[12px]',
-                    opt.value === value
-                      ? 'bg-surface-hover/70 text-slate-100'
-                      : 'hover:bg-surface-hover/40 text-slate-300 hover:text-slate-100',
-                  )}
-                >
-                  {opt.text}
-                </button>
-              ))}
+              <div className='divide-y divide-white/[0.07]'>
+                {options.map((opt) => (
+                  <button
+                    ref={opt.value === value ? selectedOptionRef : null}
+                    key={opt.key}
+                    type='button'
+                    onClick={() => {
+                      onSelect(opt.value);
+                      setIsOpen(false);
+                    }}
+                    className={cn(
+                      'w-full px-3 py-2.5 text-left text-[11px] leading-snug transition-colors sm:px-3.5 sm:text-[12px]',
+                      opt.value === value
+                        ? 'bg-white/[0.09] font-medium text-slate-50'
+                        : 'text-slate-300 hover:bg-white/[0.06] hover:text-slate-50',
+                    )}
+                  >
+                    {opt.text}
+                  </button>
+                ))}
+              </div>
             </div>,
             document.body,
           )
@@ -308,6 +340,9 @@ const ToolbarDropdown = <T extends string>({
     </div>
   );
 };
+
+/** Hide group/sort/filter when the list is tiny — sorting or filtering a handful of rows adds noise. */
+const MIN_ROWS_FOR_LIST_CONTROLS = 4;
 
 const GradeRangeControl = ({
   low,
@@ -324,13 +359,25 @@ const GradeRangeControl = ({
   onLowSelect: (next: string) => void;
   onHighSelect: (next: string) => void;
 }) => (
-  <div className='bg-surface-nav/25 inline-flex h-9 flex-wrap items-center gap-1 rounded-md border border-white/10 py-0.5 pr-1 pl-2 md:h-8 md:gap-0.5 md:pr-0.5 md:pl-1.5'>
-    <span className='px-2 text-[11px] leading-none tracking-wide text-slate-500 uppercase sm:text-[12px] md:px-1.5 md:text-[10px]'>
-      Grade
-    </span>
-    <ToolbarDropdown compact label='Lowest grade' value={low} options={lowOptions} onSelect={onLowSelect} />
-    <span className={cn(designContract.typography.meta, 'px-0.5 text-slate-500')}>to</span>
-    <ToolbarDropdown compact label='Highest grade' value={high} options={highOptions} onSelect={onHighSelect} />
+  <div className='inline-flex flex-wrap items-center gap-2 md:gap-2.5'>
+    <span className='text-[11px] font-medium tracking-wide text-slate-400 uppercase sm:text-[12px]'>Grade</span>
+    <ToolbarDropdown
+      compact
+      variant='ghost'
+      label='Lowest grade'
+      value={low}
+      options={lowOptions}
+      onSelect={onLowSelect}
+    />
+    <span className={cn(designContract.typography.meta, 'text-slate-500')}>to</span>
+    <ToolbarDropdown
+      compact
+      variant='ghost'
+      label='Highest grade'
+      value={high}
+      options={highOptions}
+      onSelect={onHighSelect}
+    />
   </div>
 );
 
@@ -386,10 +433,10 @@ export const ProblemList = ({
   const currentHigh = gradeHigh ?? easyToHard[maxGradeIndex];
   const lowestGradeOptions = easyToHard
     .filter((label) => (mapping[label] ?? 0) < (mapping[currentHigh] ?? maxGradeIndex))
-    .map((label) => ({ key: `low-${label}`, text: label, value: label }));
+    .map((label) => ({ key: `low-${label}`, text: label, shortText: label, value: label }));
   const highestGradeOptions = easyToHard
     .filter((label) => (mapping[label] ?? maxGradeIndex) > (mapping[currentLow] ?? 0))
-    .map((label) => ({ key: `high-${label}`, text: label, value: label }));
+    .map((label) => ({ key: `high-${label}`, text: label, shortText: label, value: label }));
   const selectedTypeCount = allTypes.filter((type) => !!types[type]).length;
 
   useEffect(() => {
@@ -399,6 +446,8 @@ export const ProblemList = ({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const showListControls = filtered.length > MIN_ROWS_FOR_LIST_CONTROLS;
 
   if (!allRows?.length) {
     return null;
@@ -412,22 +461,20 @@ export const ProblemList = ({
     if (groupBy && groupBy !== 'none') {
       const mapper = GROUP_BY[groupBy];
       return (
-        <div className='mt-4 md:mt-3'>
-          <AccordionContainer
-            accordionRows={mapper({
-              uniqueAreas,
-              uniqueRocks,
-              uniqueSectors,
-              uniqueTypes,
-              filtered,
-            }).filter(({ length }) => length)}
-          />
-        </div>
+        <AccordionContainer
+          accordionRows={mapper({
+            uniqueAreas,
+            uniqueRocks,
+            uniqueSectors,
+            uniqueTypes,
+            filtered,
+          }).filter(({ length }) => length)}
+        />
       );
     }
 
     return (
-      <div className={cn('mt-4 flex flex-col', mode === 'user' ? 'gap-3 sm:gap-4' : 'gap-0 md:mt-3')}>
+      <div className={cn('flex flex-col', mode === 'user' ? 'gap-3 sm:gap-4' : 'gap-0')}>
         {filtered.map(({ element }) => element)}
       </div>
     );
@@ -452,123 +499,101 @@ export const ProblemList = ({
     ...orderByOptions.filter((opt) => opt.value !== defaultOrder),
   ];
 
-  const hasPrimaryToolbar = groupByOptions.length > 1 && !toolbarAction;
-
   const leading = typeof contentBeforeList === 'function' ? contentBeforeList(filtered) : contentBeforeList;
 
   return (
-    <div className='space-y-0'>
+    <div className='flex flex-col gap-4'>
       {leading}
 
-      {hasPrimaryToolbar ? (
-        <div className='grid w-full grid-cols-3 gap-1.5 md:flex md:w-fit md:max-w-full md:flex-wrap md:items-stretch md:gap-2'>
-          <ToolbarDropdown
-            label='Group'
-            icon={FolderTree}
-            value={groupBy}
-            options={orderedGroupByOptions}
-            onSelect={(next) => dispatch({ action: 'group-by', groupBy: next })}
-            fullWidth
-          />
-          <ToolbarDropdown
-            label='Sort'
-            icon={ArrowDownWideNarrow}
-            value={order}
-            options={orderedSortOptions}
-            onSelect={(next) => dispatch({ action: 'order-by', order: next })}
-            fullWidth
-          />
-          <button
-            type='button'
-            aria-expanded={showFilter}
-            onClick={() => setFilterShowing((v) => !v)}
-            className={cn(
-              'inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-md border px-3 text-[11px] leading-none font-medium whitespace-nowrap transition-colors sm:text-[12px] md:h-8 md:w-auto md:gap-1 md:px-2.5',
-              showFilter
-                ? 'bg-surface-hover/65 border-white/18 text-slate-100'
-                : 'bg-surface-nav/28 hover:bg-surface-nav/42 border-white/10 text-slate-300 hover:text-slate-200',
-            )}
-          >
-            <Filter size={11} />
-            <span className='text-slate-500'>Show:</span>
-            <span className='text-slate-200'>Filters</span>
-          </button>
-        </div>
-      ) : (
-        <div className='flex min-w-0 flex-wrap items-center gap-2 pb-1 md:gap-1.5'>
-          {groupByOptions.length > 1 && (
-            <ToolbarDropdown
-              label='Group'
-              icon={FolderTree}
-              value={groupBy}
-              options={orderedGroupByOptions}
-              onSelect={(next) => dispatch({ action: 'group-by', groupBy: next })}
-            />
+      {(showListControls || toolbarAction) && (
+        <div className='flex min-w-0 flex-nowrap items-center justify-start gap-2 overflow-hidden md:gap-2'>
+          {showListControls && (
+            <>
+              {groupByOptions.length > 1 && (
+                <ToolbarDropdown
+                  className='min-w-0 flex-1 basis-0 md:max-w-[12rem] md:flex-none md:basis-auto'
+                  label='Group'
+                  icon={FolderTree}
+                  value={groupBy}
+                  options={orderedGroupByOptions}
+                  onSelect={(next) => dispatch({ action: 'group-by', groupBy: next })}
+                />
+              )}
+              <ToolbarDropdown
+                className='min-w-0 flex-1 basis-0 md:max-w-[22rem] md:flex-none md:basis-auto'
+                label='Sort'
+                icon={ArrowDownWideNarrow}
+                value={order}
+                options={orderedSortOptions}
+                onSelect={(next) => dispatch({ action: 'order-by', order: next })}
+              />
+              <button
+                type='button'
+                aria-expanded={showFilter}
+                aria-label={showFilter ? 'Hide filters' : 'Show filters'}
+                onClick={() => setFilterShowing((v) => !v)}
+                className={cn(
+                  'inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg border px-3 text-[11px] font-medium whitespace-nowrap transition-colors sm:text-[12px] md:h-8 md:gap-1.5 md:px-3',
+                  showFilter
+                    ? 'border-white/18 bg-white/[0.07] text-slate-100 ring-1 ring-white/10'
+                    : 'border-white/10 bg-transparent text-slate-400 hover:border-white/14 hover:bg-white/[0.04] hover:text-slate-100',
+                )}
+              >
+                <Filter size={11} className='shrink-0 opacity-90' />
+                <span>Filters</span>
+              </button>
+            </>
           )}
-          <ToolbarDropdown
-            label='Sort'
-            icon={ArrowDownWideNarrow}
-            value={order}
-            options={orderedSortOptions}
-            onSelect={(next) => dispatch({ action: 'order-by', order: next })}
-          />
-          <button
-            type='button'
-            aria-expanded={showFilter}
-            onClick={() => setFilterShowing((v) => !v)}
-            className={cn(
-              'inline-flex h-9 items-center justify-center gap-1.5 rounded-md border px-3 text-[11px] leading-none font-medium whitespace-nowrap transition-colors sm:text-[12px] md:h-8 md:gap-1 md:px-2',
-              showFilter
-                ? 'bg-surface-hover/65 border-white/18 text-slate-100'
-                : 'bg-surface-nav/28 hover:bg-surface-nav/42 border-white/10 text-slate-300 hover:text-slate-200',
-            )}
-          >
-            <Filter size={11} />
-            <span className='text-slate-500'>Show:</span>
-            <span className='text-slate-200'>Filters</span>
-          </button>
           {toolbarAction}
         </div>
       )}
 
-      {showFilter && (
-        <div className='bg-surface-nav/14 mt-2 space-y-3 rounded-lg border border-white/5 p-3 sm:p-4 md:mt-1.5 md:space-y-3 md:p-3'>
-          <div className='flex flex-wrap items-center gap-3 md:gap-3'>
-            <GradeRangeControl
-              low={currentLow}
-              high={currentHigh}
-              lowOptions={lowestGradeOptions}
-              highOptions={highestGradeOptions}
-              onLowSelect={(next) => dispatch({ action: 'set-grade', low: next })}
-              onHighSelect={(next) => dispatch({ action: 'set-grade', high: next })}
-            />
+      {showListControls && showFilter && (
+        <div className='mt-3 overflow-hidden rounded-xl border border-white/[0.09] bg-white/[0.03] ring-1 ring-white/[0.06]'>
+          <div className='flex items-center gap-2 border-b border-white/[0.08] bg-white/[0.02] px-3 py-2 sm:px-4'>
+            <Filter size={13} className='shrink-0 text-slate-100' strokeWidth={2.25} />
+            <span className='text-[10px] font-semibold tracking-[0.14em] text-slate-400 uppercase'>Filters</span>
+          </div>
+          <div className='space-y-4 px-3 py-3.5 sm:px-4 sm:py-4'>
+            <div className='flex flex-wrap items-center gap-x-4 gap-y-3'>
+              <GradeRangeControl
+                low={currentLow}
+                high={currentHigh}
+                lowOptions={lowestGradeOptions}
+                highOptions={highestGradeOptions}
+                onLowSelect={(next) => dispatch({ action: 'set-grade', low: next })}
+                onHighSelect={(next) => dispatch({ action: 'set-grade', high: next })}
+              />
+            </div>
             {allTypes.length > 1 && (
-              <div className='relative' ref={typesMenuRef}>
+              <div
+                className='relative rounded-lg border border-white/[0.08] bg-white/[0.02] p-3 sm:p-3.5'
+                ref={typesMenuRef}
+              >
+                <p className='mb-2.5 text-[10px] font-medium tracking-wide text-slate-500 uppercase'>Route types</p>
                 <button
                   type='button'
                   onClick={() => setIsTypesMenuOpen((v) => !v)}
                   className={cn(
-                    'inline-flex h-9 min-w-[176px] items-center justify-between gap-1 rounded-md border px-3 text-[11px] leading-none font-medium transition-colors sm:text-[12px] md:h-8 md:min-w-[160px] md:px-2.5',
+                    'inline-flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-md border px-3 text-[11px] font-medium transition-colors sm:h-8 sm:text-[12px]',
                     isTypesMenuOpen
-                      ? 'bg-surface-hover/55 border-white/18 text-slate-100'
-                      : 'bg-surface-nav/25 hover:bg-surface-nav/40 border-white/10 text-slate-300 hover:text-slate-200',
+                      ? 'border-white/16 bg-white/[0.07] text-slate-100'
+                      : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/14 hover:bg-white/[0.05] hover:text-slate-100',
                   )}
                 >
-                  <span>
-                    Types
-                    {allTypes.length > 1 ? ` (${selectedTypeCount}/${allTypes.length})` : ''}
+                  <span className='min-w-0 truncate text-left'>
+                    Types ({selectedTypeCount}/{allTypes.length})
                   </span>
                   <ChevronDown
                     size={11}
-                    className={cn('text-slate-500 transition-transform', isTypesMenuOpen && 'rotate-180')}
+                    className={cn('shrink-0 text-slate-400 transition-transform', isTypesMenuOpen && 'rotate-180')}
                   />
                 </button>
                 {isTypesMenuOpen && (
-                  <div className='bg-surface-card/96 border-surface-border absolute top-full left-0 z-50 mt-1 min-w-60 rounded-xl border p-3 shadow-2xl backdrop-blur-sm'>
-                    <div className='space-y-2'>
-                      {allTypes.map((type) => (
+                  <div className='bg-surface-card/90 mt-2 space-y-0 rounded-lg border border-white/[0.08] py-1 shadow-inner ring-1 ring-white/[0.06]'>
+                    {allTypes.map((type) => (
+                      <div key={type} className='border-b border-white/[0.06] px-2 py-2 last:border-b-0 sm:px-3'>
                         <ToggleLabel
-                          key={type}
                           label={`${type} (${lookup[type]})`}
                           checked={types[type]}
                           onChange={() =>
@@ -579,23 +604,27 @@ export const ProblemList = ({
                             })
                           }
                         />
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
             )}
 
-            {mode === 'sector' && containsTicked && (
-              <ToggleLabel
-                label='Hide ticked'
-                checked={hideTicked}
-                onChange={() => dispatch({ action: 'hide-ticked' })}
-              />
-            )}
-            {mode === 'user' && containsFa && (
-              <ToggleLabel label='Only show FA' checked={onlyFa} onChange={() => dispatch({ action: 'only-fa' })} />
-            )}
+            {(mode === 'sector' && containsTicked) || (mode === 'user' && containsFa) ? (
+              <div className='flex flex-wrap gap-x-6 gap-y-3 border-t border-white/[0.08] pt-3'>
+                {mode === 'sector' && containsTicked && (
+                  <ToggleLabel
+                    label='Hide ticked'
+                    checked={hideTicked}
+                    onChange={() => dispatch({ action: 'hide-ticked' })}
+                  />
+                )}
+                {mode === 'user' && containsFa && (
+                  <ToggleLabel label='Only show FA' checked={onlyFa} onChange={() => dispatch({ action: 'only-fa' })} />
+                )}
+              </div>
+            ) : null}
           </div>
         </div>
       )}

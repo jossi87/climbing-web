@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { CloudRain, Loader2 } from 'lucide-react';
 import { type TWeatherSymbolKey, weatherSymbolKeys } from '../../../yr';
 import { Badge } from './ClimbingWidgets';
+import { designContract } from '../../../design/contract';
 
 type WeatherIconProps = {
   symbol: TWeatherSymbolKey | 'loading' | undefined;
@@ -41,6 +42,9 @@ type YrData = {
 
 export const YrLink = ({ lat, lng }: { lat: number; lng: number }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
+
   const { data, isLoading } = useQuery({
     queryKey: ['yr/weather', lat, lng],
     enabled: !!lat && !!lng,
@@ -55,20 +59,53 @@ export const YrLink = ({ lat, lng }: { lat: number; lng: number }) => {
   const next6Hours = data?.next_6_hours?.summary?.symbol_code;
   const next12Hours = data?.next_12_hours?.summary?.symbol_code;
 
+  useLayoutEffect(() => {
+    if (!isOpen) return;
+    const sync = () => {
+      const el = wrapRef.current;
+      if (el) setAnchorRect(el.getBoundingClientRect());
+    };
+    sync();
+    window.addEventListener('scroll', sync, true);
+    window.addEventListener('resize', sync);
+    return () => {
+      window.removeEventListener('scroll', sync, true);
+      window.removeEventListener('resize', sync);
+    };
+  }, [isOpen]);
+
   return (
-    <div className='relative inline-block' onMouseEnter={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)}>
+    <div
+      ref={wrapRef}
+      className='relative inline-block'
+      onMouseEnter={() => {
+        if (wrapRef.current) setAnchorRect(wrapRef.current.getBoundingClientRect());
+        setIsOpen(true);
+      }}
+      onMouseLeave={() => setIsOpen(false)}
+    >
       <a
         href={`https://www.yr.no/en/forecast/daily-table/${lat},${lng}`}
         target='_blank'
         rel='noreferrer'
         className='inline-block'
       >
-        <Badge icon={CloudRain} className='hover:bg-white/[0.08] hover:text-slate-300 hover:ring-white/[0.1]'>
+        <Badge icon={CloudRain} className={designContract.surfaces.badgeLinkHover}>
           yr.no
         </Badge>
       </a>
-      {isOpen && !isLoading && next1Hours && next6Hours && next12Hours && (
-        <div className='bg-surface-card/98 border-surface-border absolute bottom-full left-0 z-50 mb-2 min-w-[13rem] rounded-lg border p-3 shadow-2xl backdrop-blur-sm'>
+      {isOpen && !isLoading && next1Hours && next6Hours && next12Hours && anchorRect && (
+        <div
+          className='bg-surface-card/98 border-surface-border fixed z-[9999] min-w-[13rem] rounded-lg border p-3 shadow-2xl backdrop-blur-sm'
+          style={{
+            left: Math.max(
+              8,
+              Math.min(anchorRect.left, typeof window !== 'undefined' ? window.innerWidth - 220 : anchorRect.left),
+            ),
+            top: anchorRect.top,
+            transform: 'translateY(calc(-100% - 0.5rem))',
+          }}
+        >
           <div className='mb-2 grid grid-cols-3 gap-2'>
             {[
               { sym: next1Hours, label: '1h' },

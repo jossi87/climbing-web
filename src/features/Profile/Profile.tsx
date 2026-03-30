@@ -9,7 +9,12 @@ import ProfileMedia from '../../shared/components/Profile/ProfileMedia';
 import { LayoutDashboard, List, Bookmark, Images, Camera, AlertTriangle, Globe, Mail, Clock } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
-import { tabBarButtonClassName, tabBarIconClassName } from '../../design/tabBar';
+import {
+  tabBarButtonClassName,
+  tabBarIconClassName,
+  tabBarStripContainerClassName,
+  TAB_BAR_ICON_SIZE,
+} from '../../design/tabBar';
 import { Card } from '../../shared/ui';
 
 enum Page {
@@ -50,7 +55,7 @@ const Profile = () => {
               ))}
             </div>
           </div>
-          <div className={cn(designContract.controls.tabBarRow, 'gap-px')}>
+          <div className={tabBarStripContainerClassName('equal')}>
             {Array.from({ length: 5 }).map((_, idx) => (
               <div key={idx} className='bg-surface-nav/40 h-11 min-w-0 flex-1 animate-pulse' />
             ))}
@@ -132,7 +137,7 @@ const Profile = () => {
           </div>
         </div>
 
-        <div className={designContract.controls.tabBarRow} role='tablist' aria-label='Profile sections'>
+        <div className={tabBarStripContainerClassName('equal')} role='tablist' aria-label='Profile sections'>
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = activePage === item.id;
@@ -145,8 +150,12 @@ const Profile = () => {
                 onClick={() => onPageChanged(item.id)}
                 className={tabBarButtonClassName(isActive)}
               >
-                <Icon size={12} strokeWidth={isActive ? 2.3 : 2} className={tabBarIconClassName(isActive)} />
-                <span className='block min-w-0 truncate leading-none'>{item.label}</span>
+                <Icon
+                  size={TAB_BAR_ICON_SIZE}
+                  strokeWidth={isActive ? 2.3 : 2}
+                  className={tabBarIconClassName(isActive)}
+                />
+                <span className='type-small block min-w-0 truncate leading-none sm:text-[12px]'>{item.label}</span>
               </button>
             );
           })}

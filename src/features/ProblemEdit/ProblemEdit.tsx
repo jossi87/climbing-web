@@ -22,9 +22,10 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { captureException, captureMessage } from '@sentry/react';
 import ExternalLinks from '../../shared/ui/ExternalLinks';
-import { Info, Calendar, Save, X, ChevronDown, AlertCircle } from 'lucide-react';
+import { Calendar, Save, X, ChevronDown, AlertCircle, AlertTriangle, Edit } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
+import { Card, SectionHeader } from '../../shared/ui';
 
 type Problem = components['schemas']['Problem'];
 
@@ -215,16 +216,24 @@ const ProblemEdit = ({ problem, sector }: Props) => {
     <div className='max-w-container mx-auto space-y-8 px-4 py-8 pb-32 text-left'>
       <title>{`Edit ${data.name} | ${meta?.title}`}</title>
 
-      <div className='bg-surface-card border-surface-border flex items-start gap-4 rounded-xl border p-4'>
-        <Info className='text-brand mt-0.5 shrink-0' size={20} />
-        <p className='text-sm text-slate-400'>
-          Contact{' '}
-          <a href='mailto:jostein.oygarden@gmail.com' className='text-brand font-bold hover:underline'>
-            Jostein Øygarden
-          </a>{' '}
-          if you want to move this {meta.isBouldering ? 'problem' : 'route'} to another sector.
-        </p>
-      </div>
+      <Card flush className='border-0 sm:border'>
+        <div className='p-4 sm:p-5'>
+          <SectionHeader
+            title={meta.isBouldering ? 'Edit problem' : 'Edit route'}
+            icon={Edit}
+            className='mb-0'
+            description={
+              <>
+                Contact{' '}
+                <a href='mailto:jostein.oygarden@gmail.com' className='hover:text-brand font-semibold text-slate-200'>
+                  Jostein Øygarden
+                </a>{' '}
+                if you want to move this {meta.isBouldering ? 'problem' : 'route'} to another sector.
+              </>
+            }
+          />
+        </div>
+      </Card>
 
       <div className='space-y-6'>
         <div className='bg-surface-card border-surface-border space-y-6 rounded-2xl border p-6 shadow-sm'>
@@ -379,14 +388,22 @@ const ProblemEdit = ({ problem, sector }: Props) => {
             />
           </div>
 
-          <div className='space-y-1.5'>
-            <label className='ml-1 text-[11px] font-bold tracking-widest text-slate-500 uppercase'>Broken Reason</label>
+          <div className='relative'>
             <input
-              className='bg-surface-nav border-surface-border focus:border-brand type-body w-full rounded-lg border px-4 py-2.5 focus:outline-none'
+              className={cn(
+                'bg-surface-nav type-body w-full rounded-lg border border-red-500/25 py-2.5 pr-4 pl-10 transition-colors placeholder:text-slate-600 focus:border-red-400/45 focus:ring-1 focus:ring-red-400/15 focus:outline-none',
+              )}
               value={data.broken}
               placeholder='Leave empty if not broken'
               onChange={(e) => setData((prev) => ({ ...prev, broken: e.target.value }))}
             />
+            <AlertTriangle
+              className='pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-red-400/90'
+              size={14}
+            />
+            <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[9px] font-black tracking-tighter text-red-300/90 uppercase'>
+              {meta.isBouldering ? 'Problem broken' : 'Route broken'}
+            </span>
           </div>
         </div>
 
@@ -443,7 +460,9 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                   }
                   className={cn(
                     'rounded-lg px-4 py-1.5 text-xs font-black uppercase transition-all',
-                    data.faAid ? 'bg-brand' : 'bg-surface-nav opacity-70',
+                    data.faAid
+                      ? 'bg-brand text-slate-950 shadow-sm ring-1 ring-black/10'
+                      : 'bg-surface-nav hover:bg-surface-card text-slate-500 opacity-90 hover:text-slate-200',
                   )}
                 >
                   Yes
@@ -453,7 +472,9 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                   onClick={() => setData((p) => ({ ...p, faAid: undefined }))}
                   className={cn(
                     'rounded-lg px-4 py-1.5 text-xs font-black uppercase transition-all',
-                    !data.faAid ? 'bg-brand' : 'bg-surface-nav opacity-70',
+                    !data.faAid
+                      ? 'bg-brand text-slate-950 shadow-sm ring-1 ring-black/10'
+                      : 'bg-surface-nav hover:bg-surface-card text-slate-500 opacity-90 hover:text-slate-200',
                   )}
                 >
                   No

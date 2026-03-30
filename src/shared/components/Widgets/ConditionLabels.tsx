@@ -57,25 +57,28 @@ export function ConditionLabels({
   const date = `${d.getFullYear()}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getDate().toString().padStart(2, '0')}`;
   const time = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
 
-  const viewsChip =
-    pageViews != null && String(pageViews).length > 0 ? (
-      <Badge icon={MousePointerClick} title='Approximate page views (visits)'>
-        Views <span className='ml-1 text-slate-500 tabular-nums'>{pageViews}</span>
-      </Badge>
-    ) : null;
+  const viewsText =
+    pageViews != null && String(pageViews).length > 0
+      ? typeof pageViews === 'number'
+        ? `${pageViews.toLocaleString()} ${pageViews === 1 ? 'view' : 'views'}`
+        : `${pageViews} views`
+      : null;
 
-  const viewsInline =
-    pageViews != null && String(pageViews).length > 0 ? (
-      <span
-        className={cn(designContract.typography.menuItem, 'inline-flex max-w-full items-center gap-1 text-slate-300')}
-        title='Approximate page views (visits)'
-      >
-        <MousePointerClick size={11} strokeWidth={2} className='shrink-0 text-slate-500' />
-        <span>
-          Views <span className='text-slate-500 tabular-nums'>{pageViews}</span>
-        </span>
-      </span>
-    ) : null;
+  const viewsChip = viewsText ? (
+    <Badge icon={MousePointerClick} title='Approximate page views (visits)'>
+      {viewsText}
+    </Badge>
+  ) : null;
+
+  const viewsInline = viewsText ? (
+    <span
+      className={cn(designContract.typography.menuItem, 'inline-flex max-w-full items-center gap-1 text-slate-300')}
+      title='Approximate page views (visits)'
+    >
+      <MousePointerClick size={11} strokeWidth={2} className='shrink-0 text-slate-100' />
+      <span className='font-medium'>{viewsText}</span>
+    </span>
+  ) : null;
 
   if (layout === 'flow') {
     const flowNodes: ReactNode[] = [];
@@ -97,10 +100,11 @@ export function ConditionLabels({
           <span
             className={cn(
               designContract.typography.menuItem,
-              'inline-flex max-w-full items-center gap-1 text-slate-300 transition-colors hover:text-slate-100',
+              'inline-flex max-w-full items-center gap-1 rounded-md px-1.5 py-0.5 text-slate-300 ring-1 ring-transparent',
+              designContract.surfaces.badgeLinkHover,
             )}
           >
-            <Video size={11} strokeWidth={2} className='shrink-0 text-slate-500' />
+            <Video size={11} strokeWidth={2} className='shrink-0 text-slate-100' />
             Webcams
           </span>
         </a>,
@@ -111,19 +115,17 @@ export function ConditionLabels({
           href={`https://www.suncalc.org/#/${lat},${lng},17/${date}/${time}/1/0`}
           target='_blank'
           rel='noreferrer'
-          title={`SunCalc · ${date} · ${time}`}
+          title='SunCalc'
         >
           <span
             className={cn(
               designContract.typography.menuItem,
-              'inline-flex max-w-full flex-wrap items-center gap-x-1 gap-y-0.5 text-slate-300 transition-colors hover:text-slate-100',
+              'inline-flex max-w-full items-center gap-1 rounded-md px-1.5 py-0.5 text-slate-300 ring-1 ring-transparent',
+              designContract.surfaces.badgeLinkHover,
             )}
           >
-            <ExternalLink size={11} strokeWidth={2} className='shrink-0 text-slate-500' />
-            <span>SunCalc</span>
-            <span className='hidden text-slate-500 tabular-nums sm:inline'>
-              {date} · {time}
-            </span>
+            <ExternalLink size={11} strokeWidth={2} className='shrink-0 text-slate-100' />
+            SunCalc
           </span>
         </a>,
       );
@@ -149,13 +151,18 @@ export function ConditionLabels({
       <SunriseSunset lat={lat} lng={lng} />
       <YrLink lat={lat} lng={lng} />
       <a href={`/webcams/${JSON.stringify({ lat, lng, label })}`} target='_blank' rel='noreferrer'>
-        <Badge icon={Video} className='hover:bg-white/[0.08] hover:text-slate-300 hover:ring-white/[0.1]'>
+        <Badge icon={Video} className={designContract.surfaces.badgeLinkHover}>
           Webcams
         </Badge>
       </a>
-      <a href={`https://www.suncalc.org/#/${lat},${lng},17/${date}/${time}/1/0`} target='_blank' rel='noreferrer'>
-        <Badge icon={ExternalLink} className='hover:bg-white/[0.08] hover:text-slate-300 hover:ring-white/[0.1]'>
-          SunCalc <span className='ml-1 text-slate-500 tabular-nums'>{date + ' · ' + time}</span>
+      <a
+        href={`https://www.suncalc.org/#/${lat},${lng},17/${date}/${time}/1/0`}
+        target='_blank'
+        rel='noreferrer'
+        title='SunCalc'
+      >
+        <Badge icon={ExternalLink} className={designContract.surfaces.badgeLinkHover}>
+          SunCalc
         </Badge>
       </a>
     </>

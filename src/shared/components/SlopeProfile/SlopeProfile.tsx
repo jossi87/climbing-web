@@ -2,7 +2,7 @@ import type { Slope } from '../../../@types/buldreinfo';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { AreaChart, Area, Tooltip, XAxis, YAxis } from 'recharts';
 import { getDistanceWithUnit } from '../Leaflet/geo-utils';
-import { Download, Clock, Activity, Map, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { Download, Clock, Database, ArrowUpRight, ArrowDownRight, Ruler } from 'lucide-react';
 import { useState, useLayoutEffect, useRef, useId } from 'react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
@@ -11,7 +11,7 @@ type Props = {
   areaName?: string | null;
   sectorName?: string | null;
   slope: Slope;
-  /** Smaller chart + stats strip (problem / sector map). */
+  /** Smaller chart + stats strip (problem / sector map); on small screens matches the flush map card (no inset corners). */
   compact?: boolean;
   /** Shown inside the widget header (e.g. Approach / Descent). */
   title?: string;
@@ -73,6 +73,10 @@ export const SlopeProfile = ({ areaName = '', sectorName = '', slope, compact = 
 
   const icon = compact ? 10 : 12;
   const statText = compact ? 'text-[11px] leading-snug' : 'text-[12px] leading-snug';
+  /** Brand gold — stroke strong enough to read on light + dark chart backgrounds. */
+  const chartStroke = '#c6a15b';
+  const chartFillTop = '#c6a15b';
+  const chartFillBot = '#c6a15b';
 
   const sep = (
     <span className='text-slate-600 select-none' aria-hidden>
@@ -82,33 +86,33 @@ export const SlopeProfile = ({ areaName = '', sectorName = '', slope, compact = 
 
   const statsInner = (
     <>
-      <span className='inline-flex items-center gap-1 font-medium text-slate-200'>
-        <Activity size={icon} className='shrink-0 text-sky-400/90' />
+      <span className='inline-flex items-center gap-1 font-medium text-slate-100'>
+        <Ruler size={icon} className='text-brand/90 shrink-0' aria-hidden />
         <span>{getDistanceWithUnit(slope)}</span>
       </span>
       {sep}
-      <span className='inline-flex items-center gap-1.5 font-medium text-slate-200'>
-        <span className='inline-flex items-center gap-0.5'>
-          <ArrowUpRight size={icon} className='shrink-0 text-emerald-400/90' />
-          <span className='tabular-nums'>{slope.elevationGain ?? 0}m</span>
-        </span>
-        <span className='text-slate-600'>/</span>
-        <span className='inline-flex items-center gap-0.5'>
-          <ArrowDownRight size={icon} className='shrink-0 text-rose-400/85' />
-          <span className='tabular-nums'>{slope.elevationLoss ?? 0}m</span>
-        </span>
+      <span className='inline-flex items-center gap-1 font-medium text-slate-100'>
+        <ArrowUpRight size={icon} className='shrink-0 text-emerald-400/90' aria-hidden />
+        <span className='tabular-nums'>{slope.elevationGain ?? 0}m</span>
       </span>
       {sep}
-      <span className='inline-flex items-center gap-1 font-medium text-slate-200'>
-        <Clock size={icon} className='shrink-0 text-sky-400/80' />
+      <span className='inline-flex items-center gap-1 font-medium text-slate-100'>
+        <ArrowDownRight size={icon} className='shrink-0 text-rose-400/85' aria-hidden />
+        <span className='tabular-nums'>{slope.elevationLoss ?? 0}m</span>
+      </span>
+      {sep}
+      <span className='inline-flex items-center gap-1 font-medium text-slate-100'>
+        <Clock size={icon} className='shrink-0 text-sky-400/80' aria-hidden />
         <span className='tabular-nums'>{slope.calculatedDurationInMinutes ?? 0} min</span>
       </span>
       {sources ? (
         <>
           {sep}
-          <span className='inline-flex max-w-full min-w-0 items-center gap-1 text-slate-400'>
-            <Map size={icon} className='shrink-0 text-slate-500' />
-            <span className='min-w-0 truncate'>{sources}</span>
+          <span className='inline-flex max-w-full min-w-0 items-center gap-1 font-medium text-slate-500'>
+            <Database size={icon} className='shrink-0 text-slate-500' aria-hidden />
+            <span className='min-w-0 truncate' title={sources}>
+              {sources}
+            </span>
           </span>
         </>
       ) : null}
@@ -116,9 +120,10 @@ export const SlopeProfile = ({ areaName = '', sectorName = '', slope, compact = 
       <button
         type='button'
         onClick={() => downloadGpxFile(areaName ?? '', sectorName ?? '', slope.coordinates ?? [])}
-        className='inline-flex items-center gap-1 font-medium text-slate-500 transition-colors hover:text-slate-200'
+        className='group text-brand/95 hover:bg-brand/12 hover:text-brand hover:ring-brand/35 focus-visible:ring-brand/50 -mx-0.5 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 font-semibold transition-colors hover:ring-1 focus-visible:ring-2 focus-visible:outline-none'
       >
-        <Download size={icon} className='shrink-0' /> GPX
+        <Download size={icon} className='text-brand/95 group-hover:text-brand shrink-0 transition-colors' aria-hidden />
+        GPX
       </button>
     </>
   );
@@ -126,15 +131,23 @@ export const SlopeProfile = ({ areaName = '', sectorName = '', slope, compact = 
   return (
     <div
       className={cn(
-        'overflow-hidden rounded-xl border border-white/[0.09] bg-slate-950/50 shadow-sm ring-1 ring-white/[0.04]',
+        'bg-surface-card overflow-hidden',
+        compact
+          ? 'max-sm:border-surface-border/70 max-sm:rounded-none max-sm:border-x-0 max-sm:border-t max-sm:border-b-0 max-sm:shadow-none sm:rounded-xl sm:border sm:border-white/[0.09] sm:shadow-sm sm:ring-1 sm:ring-white/[0.04]'
+          : 'rounded-xl border border-white/[0.09] shadow-sm ring-1 ring-white/[0.04]',
         !compact && 'max-w-2xl',
         className,
       )}
     >
       {title ? (
-        <div className='border-b border-white/[0.07] bg-white/[0.03] px-3 py-1.5 sm:px-3.5'>
+        <div
+          className={cn(
+            'bg-surface-nav/40 border-b border-white/[0.07] py-1.5',
+            compact ? 'px-2.5 sm:px-3.5' : 'px-3 sm:px-3.5',
+          )}
+        >
           <span
-            className={cn(designContract.typography.micro, 'font-semibold tracking-[0.12em] text-slate-500 uppercase')}
+            className={cn(designContract.typography.micro, 'font-semibold tracking-[0.12em] text-slate-100 uppercase')}
           >
             {title}
           </span>
@@ -144,7 +157,7 @@ export const SlopeProfile = ({ areaName = '', sectorName = '', slope, compact = 
       <div
         ref={containerRef}
         className={cn(
-          'relative w-full overflow-hidden bg-gradient-to-b from-slate-800/30 via-slate-900/25 to-slate-950/60',
+          'from-surface-nav/70 via-surface-card to-surface-nav/90 relative w-full overflow-hidden bg-gradient-to-b',
           compact ? 'aspect-[8/1] min-h-[2.75rem] sm:min-h-[3rem]' : 'aspect-[4/1] min-h-20 p-0.5',
         )}
       >
@@ -157,14 +170,14 @@ export const SlopeProfile = ({ areaName = '', sectorName = '', slope, compact = 
           >
             <defs>
               <linearGradient id={`slopeFill-${gradientId}`} x1='0' y1='0' x2='0' y2='1'>
-                <stop offset='0%' stopColor='#38bdf8' stopOpacity={0.2} />
-                <stop offset='100%' stopColor='#38bdf8' stopOpacity={0.02} />
+                <stop offset='0%' stopColor={chartFillTop} stopOpacity={0.2} />
+                <stop offset='100%' stopColor={chartFillBot} stopOpacity={0.04} />
               </linearGradient>
             </defs>
             <Area
               dataKey='elevation'
-              stroke='#38bdf8'
-              strokeWidth={compact ? 1.15 : 1.45}
+              stroke={chartStroke}
+              strokeWidth={compact ? 2 : 2.35}
               strokeOpacity={0.92}
               fill={`url(#slopeFill-${gradientId})`}
               isAnimationActive={false}
@@ -183,8 +196,8 @@ export const SlopeProfile = ({ areaName = '', sectorName = '', slope, compact = 
               content={({ active, payload, label }) => {
                 if (!active || !payload?.length) return null;
                 return (
-                  <div className='rounded border border-white/10 bg-black/90 px-2 py-1 shadow-xl backdrop-blur-sm'>
-                    <div className='flex gap-3 font-mono text-[10px]'>
+                  <div className='bg-surface-card/95 rounded-lg px-2.5 py-1.5 shadow-lg ring-1 ring-white/10 backdrop-blur-sm'>
+                    <div className='flex gap-3 font-mono text-[10px] text-slate-300'>
                       <span>D: {parseInt(String(label ?? '0'))}m</span>
                       <span>E: {parseInt(String(payload[0].value ?? '0'))}m</span>
                     </div>
@@ -196,7 +209,13 @@ export const SlopeProfile = ({ areaName = '', sectorName = '', slope, compact = 
         )}
       </div>
 
-      <div className={cn('border-t border-white/[0.07] bg-white/[0.02] px-2.5 py-2 text-slate-400 sm:px-3', statText)}>
+      <div
+        className={cn(
+          'border-surface-border/80 bg-surface-nav/35 border-t py-2 text-slate-200',
+          compact ? 'px-2.5 sm:px-3' : 'px-2.5 sm:px-3',
+          statText,
+        )}
+      >
         <div className='flex flex-wrap items-center gap-x-1.5 gap-y-1'>{statsInner}</div>
       </div>
     </div>

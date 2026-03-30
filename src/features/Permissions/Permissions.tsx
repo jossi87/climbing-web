@@ -5,7 +5,7 @@ import { useMeta } from '../../shared/components/Meta/context';
 import { Users, ChevronDown } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
-import { Card, SearchInput, UserCard } from '../../shared/ui';
+import { Card, SearchInput, SectionHeader, UserCard } from '../../shared/ui';
 
 const ROLE_CONFIG = [
   {
@@ -75,22 +75,17 @@ const Permissions = () => {
     }))
     .filter((group) => group.users.length > 0);
 
+  const subheader = query ? `${filteredData.length}/${data.length} users` : `${data.length} users total`;
+
   return (
     <div className='w-full min-w-0'>
       <title>{`Permissions | ${meta?.title}`}</title>
+      <meta name='description' content='Manage user roles and access' />
       <Card flush className='min-w-0 border-0 sm:border'>
-        <div className='border-surface-border border-b p-4 sm:p-5'>
-          <div className='flex min-w-0 flex-nowrap items-center justify-between gap-3'>
-            <div className='min-w-0'>
-              <div className='flex items-center gap-2.5'>
-                <Users size={18} className='text-brand/80' />
-                <h1 className='type-h1 leading-none'>Permissions</h1>
-              </div>
-              <p className={cn(designContract.typography.label, 'mt-1')}>
-                {query ? `${filteredData.length}/${data.length} users` : `${data.length} users total`}
-              </p>
-            </div>
-            <div className='ml-auto w-44 max-w-[48vw] shrink-0 sm:w-64'>
+        <div className='p-4 pb-3 sm:p-5 sm:pb-4'>
+          <div className='flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between'>
+            <SectionHeader className='mb-0 min-w-0 lg:flex-1' title='Permissions' icon={Users} subheader={subheader} />
+            <div className='w-full shrink-0 lg:w-64 lg:max-w-[48vw]'>
               <SearchInput
                 type='text'
                 placeholder='Search users...'
@@ -102,78 +97,82 @@ const Permissions = () => {
           </div>
         </div>
 
-        {filteredData.length === 0 ? (
-          <div className='px-4 py-16 text-center sm:px-5 sm:py-20'>
-            <p className={designContract.typography.label}>No users found</p>
-          </div>
-        ) : (
-          <div className='divide-surface-border/25 divide-y'>
-            {groups.map((group) => (
-              <section key={group.value} className='py-2'>
-                <div className='px-3 pb-2 sm:px-5'>
-                  <span className={cn(designContract.typography.label, 'text-slate-500')}>{group.title}</span>
-                </div>
-                <div className='bg-surface-card grid grid-cols-2 gap-px lg:grid-cols-3 xl:grid-cols-4'>
-                  {group.users.map((u) => {
-                    const currentLevel = getLevel(u);
+        <div className='border-surface-border/60 border-t'>
+          {filteredData.length === 0 ? (
+            <div className='px-4 py-16 text-center sm:px-5 sm:py-20'>
+              <p className={designContract.typography.label}>No users found</p>
+            </div>
+          ) : (
+            <div className='divide-surface-border/25 divide-y'>
+              {groups.map((group) => (
+                <section key={group.value} className='py-2'>
+                  <div className='px-3 pb-2 sm:px-5'>
+                    <span className={cn(designContract.typography.label, 'text-slate-500')}>{group.title}</span>
+                  </div>
+                  <div className='bg-surface-card grid grid-cols-2 gap-px lg:grid-cols-3 xl:grid-cols-4'>
+                    {group.users.map((u) => {
+                      const currentLevel = getLevel(u);
 
-                    return (
-                      <div key={u.userId} className='bg-surface-card min-w-0 px-2.5 py-2.5 sm:px-3 sm:py-3'>
-                        <UserCard
-                          variant='minimal'
-                          user={{
-                            userId: u.userId,
-                            name: u.name,
-                            mediaId: u.mediaId,
-                            mediaVersionStamp: u.mediaVersionStamp,
-                            lastLogin: u.lastLogin,
-                          }}
-                          metaAction={
-                            <div className='relative min-w-0' data-role-menu>
-                              <button
-                                type='button'
-                                disabled={u.readOnly}
-                                onClick={() =>
-                                  setOpenRoleMenuUserId((prev) => (prev === (u.userId ?? -1) ? null : (u.userId ?? -1)))
-                                }
-                                className='bg-surface-nav/65 hover:bg-surface-nav/75 inline-flex w-full min-w-0 items-center justify-between rounded-md border border-white/10 px-2 py-1 text-left text-[10px] font-semibold text-slate-100 transition-colors hover:border-white/20 focus:border-white/25 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-[11px]'
-                              >
-                                <span className='truncate'>{ROLE_CONFIG[currentLevel]?.label ?? 'Default user'}</span>
-                                <ChevronDown size={12} className='ml-2 shrink-0 text-slate-500' />
-                              </button>
-                              {openRoleMenuUserId === (u.userId ?? -1) && (
-                                <div className='bg-surface-card border-surface-border absolute z-20 mt-1 w-full overflow-hidden rounded-md border shadow-xl'>
-                                  {ROLE_CONFIG.map((opt) => (
-                                    <button
-                                      key={opt.value}
-                                      type='button'
-                                      onClick={() => {
-                                        handlePermissionChange(u.userId ?? 0, opt.value);
-                                        setOpenRoleMenuUserId(null);
-                                      }}
-                                      className={cn(
-                                        'w-full px-2 py-1.5 text-left text-[10px] font-semibold transition-colors sm:text-[11px]',
-                                        opt.value === currentLevel
-                                          ? 'bg-surface-hover text-slate-100'
-                                          : 'hover:bg-surface-hover/60 text-slate-300',
-                                      )}
-                                    >
-                                      {opt.label}
-                                    </button>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                          }
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
-            ))}
-          </div>
-        )}
+                      return (
+                        <div key={u.userId} className='bg-surface-card min-w-0 px-2.5 py-2.5 sm:px-3 sm:py-3'>
+                          <UserCard
+                            variant='minimal'
+                            user={{
+                              userId: u.userId,
+                              name: u.name,
+                              mediaId: u.mediaId,
+                              mediaVersionStamp: u.mediaVersionStamp,
+                              lastLogin: u.lastLogin,
+                            }}
+                            metaAction={
+                              <div className='relative min-w-0' data-role-menu>
+                                <button
+                                  type='button'
+                                  disabled={u.readOnly}
+                                  onClick={() =>
+                                    setOpenRoleMenuUserId((prev) =>
+                                      prev === (u.userId ?? -1) ? null : (u.userId ?? -1),
+                                    )
+                                  }
+                                  className='bg-surface-nav/65 hover:bg-surface-nav/75 inline-flex w-full min-w-0 items-center justify-between rounded-md border border-white/10 px-2 py-1 text-left text-[10px] font-semibold text-slate-100 transition-colors hover:border-white/20 focus:border-white/25 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-[11px]'
+                                >
+                                  <span className='truncate'>{ROLE_CONFIG[currentLevel]?.label ?? 'Default user'}</span>
+                                  <ChevronDown size={12} className='ml-2 shrink-0 text-slate-500' />
+                                </button>
+                                {openRoleMenuUserId === (u.userId ?? -1) && (
+                                  <div className='bg-surface-card border-surface-border absolute z-20 mt-1 w-full overflow-hidden rounded-md border shadow-xl'>
+                                    {ROLE_CONFIG.map((opt) => (
+                                      <button
+                                        key={opt.value}
+                                        type='button'
+                                        onClick={() => {
+                                          handlePermissionChange(u.userId ?? 0, opt.value);
+                                          setOpenRoleMenuUserId(null);
+                                        }}
+                                        className={cn(
+                                          'w-full px-2 py-1.5 text-left text-[10px] font-semibold transition-colors sm:text-[11px]',
+                                          opt.value === currentLevel
+                                            ? 'bg-surface-hover text-slate-100'
+                                            : 'hover:bg-surface-hover/60 text-slate-300',
+                                        )}
+                                      >
+                                        {opt.label}
+                                      </button>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            }
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
+              ))}
+            </div>
+          )}
+        </div>
       </Card>
     </div>
   );

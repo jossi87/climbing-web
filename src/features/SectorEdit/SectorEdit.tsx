@@ -368,17 +368,19 @@ export const SectorEdit = ({ sector, area }: Props) => {
       <title>{`Edit ${data.name} | ${meta?.title}`}</title>
       <Card flush className='min-w-0 border-0 sm:border'>
         <div className='p-4 sm:p-5'>
-          <SectionHeader title='Edit Sector' icon={Edit} subheader={`${area.name ?? ''} / ${data.name ?? ''}`} />
-          <div className='bg-surface-nav/20 border-surface-border flex items-center gap-3 rounded-xl border p-3 text-[11px] text-slate-400 sm:text-[12px]'>
-            <Info size={14} className='text-brand shrink-0' />
-            <p>
-              Contact{' '}
-              <a href='mailto:jostein.oygarden@gmail.com' className='hover:text-brand font-semibold text-slate-200'>
-                Jostein Øygarden
-              </a>{' '}
-              if you want to move or split sector.
-            </p>
-          </div>
+          <SectionHeader
+            title='Edit Sector'
+            icon={Edit}
+            description={
+              <>
+                Contact{' '}
+                <a href='mailto:jostein.oygarden@gmail.com' className='hover:text-brand font-semibold text-slate-200'>
+                  Jostein Øygarden
+                </a>{' '}
+                if you want to move or split sector.
+              </>
+            }
+          />
         </div>
       </Card>
 
@@ -505,25 +507,31 @@ export const SectorEdit = ({ sector, area }: Props) => {
           <div className='space-y-4'>
             <div className='relative'>
               <input
-                className={cn(inputClasses, 'pl-10')}
+                className={cn(
+                  inputClasses,
+                  'border-red-500/25 pl-10 focus:border-red-400/45 focus:ring-1 focus:ring-red-400/15',
+                )}
                 placeholder='Sector closed reason...'
                 value={data.accessClosed ?? ''}
                 onChange={(e) => onAccessClosedChanged(dummyEvent, { value: e.target.value })}
               />
-              <AlertTriangle className='absolute top-1/2 left-3 -translate-y-1/2 text-amber-500' size={14} />
-              <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[9px] font-black tracking-tighter text-amber-500 uppercase'>
+              <AlertTriangle className='absolute top-1/2 left-3 -translate-y-1/2 text-red-400/90' size={14} />
+              <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[9px] font-black tracking-tighter text-red-300/90 uppercase'>
                 Sector Closed
               </span>
             </div>
             <div className='relative'>
               <input
-                className={cn(inputClasses, 'pl-10')}
+                className={cn(
+                  inputClasses,
+                  'border-orange-500/25 pl-10 focus:border-orange-400/45 focus:ring-1 focus:ring-orange-400/15',
+                )}
                 placeholder='Sector restrictions...'
                 value={data.accessInfo ?? ''}
                 onChange={(e) => onAccessInfoChanged(dummyEvent, { value: e.target.value })}
               />
-              <Info className='absolute top-1/2 left-3 -translate-y-1/2 text-blue-400' size={14} />
-              <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[9px] font-black tracking-tighter text-blue-400 uppercase'>
+              <Info className='absolute top-1/2 left-3 -translate-y-1/2 text-orange-400/90' size={14} />
+              <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[9px] font-black tracking-tighter text-orange-300/90 uppercase'>
                 Restrictions
               </span>
             </div>
@@ -542,7 +550,11 @@ export const SectorEdit = ({ sector, area }: Props) => {
 
         <div className='bg-surface-card border-surface-border space-y-4 rounded-xl border p-6 shadow-sm'>
           <div className='flex flex-wrap items-center justify-between gap-4'>
-            <div className='bg-surface-nav border-surface-border flex rounded-lg border p-1'>
+            <div
+              className='bg-surface-nav/60 border-surface-border flex flex-wrap items-stretch gap-0.5 rounded-xl border p-1'
+              role='group'
+              aria-label='Map drawing mode'
+            >
               {[
                 { id: 'PARKING', label: 'Parking', icon: MapPin },
                 { id: 'POLYGON', label: 'Outline', icon: Layers },
@@ -554,19 +566,22 @@ export const SectorEdit = ({ sector, area }: Props) => {
                   type='button'
                   onClick={() => setLeafletMode(m.id)}
                   className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-1.5 text-[10px] font-black tracking-widest uppercase transition-all',
-                    leafletMode === m.id ? 'bg-brand shadow-sm' : 'opacity-70 hover:opacity-100',
+                    'inline-flex min-h-9 items-center gap-1.5 rounded-lg px-3 py-2 text-[11px] font-semibold tracking-wide transition-colors sm:text-xs',
+                    leafletMode === m.id
+                      ? 'bg-brand text-slate-950 shadow-sm ring-1 ring-black/10'
+                      : 'hover:bg-surface-card text-slate-500 hover:text-slate-200',
                   )}
                 >
-                  <m.icon size={12} /> {m.label}
+                  <m.icon size={14} strokeWidth={2} className='shrink-0 opacity-80' aria-hidden />
+                  {m.label}
                 </button>
               ))}
               <button
                 type='button'
                 onClick={clearDrawing}
-                className='border-surface-border ml-2 flex items-center gap-2 border-l px-3 py-1.5 text-[10px] font-black tracking-widest text-orange-500 uppercase hover:text-orange-400'
+                className='border-surface-border ml-0.5 inline-flex min-h-9 items-center gap-1.5 border-l pl-2.5 text-[11px] font-semibold tracking-wide text-orange-400 hover:text-orange-300 sm:pl-3 sm:text-xs'
               >
-                <RotateCcw size={12} /> Reset
+                <RotateCcw size={14} strokeWidth={2} aria-hidden /> Reset
               </button>
             </div>
 
@@ -586,10 +601,10 @@ export const SectorEdit = ({ sector, area }: Props) => {
                 }
               }}
               className={cn(
-                'rounded-lg border px-4 py-2 text-[10px] font-black tracking-widest uppercase transition-all',
+                'rounded-xl border px-4 py-2.5 text-[11px] font-semibold tracking-wide transition-colors sm:text-xs',
                 sectorMarkers != null && sectorMarkers.length > 0
-                  ? 'bg-brand border-brand'
-                  : 'bg-surface-nav border-surface-border opacity-75 hover:opacity-100',
+                  ? 'border-brand bg-brand text-slate-950 shadow-sm ring-1 ring-black/10'
+                  : 'border-surface-border bg-surface-nav hover:bg-surface-card text-slate-400 hover:text-slate-200',
               )}
             >
               Include all markers in sector

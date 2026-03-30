@@ -85,17 +85,19 @@ export const AreaEdit = () => {
       <title>{`Edit ${data.name} | ${meta?.title}`}</title>
       <Card flush className='min-w-0 border-0 sm:border'>
         <div className='p-4 sm:p-5'>
-          <SectionHeader title='Edit Area' icon={Edit} subheader={`Area ${data.name ?? ''}`} />
-          <div className='bg-surface-nav/20 border-surface-border flex items-center gap-3 rounded-xl border p-3 text-[11px] text-slate-400 sm:text-[12px]'>
-            <Info size={14} className='text-brand shrink-0' />
-            <p>
-              Contact{' '}
-              <a href='mailto:jostein.oygarden@gmail.com' className='hover:text-brand font-semibold text-slate-200'>
-                Jostein Øygarden
-              </a>{' '}
-              if you want to split area.
-            </p>
-          </div>
+          <SectionHeader
+            title='Edit Area'
+            icon={Edit}
+            description={
+              <>
+                Contact{' '}
+                <a href='mailto:jostein.oygarden@gmail.com' className='hover:text-brand font-semibold text-slate-200'>
+                  Jostein Øygarden
+                </a>{' '}
+                if you want to split area.
+              </>
+            }
+          />
           <form onSubmit={save} className='mt-3 space-y-3'>
             <div className='space-y-4'>
               <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
@@ -201,25 +203,31 @@ export const AreaEdit = () => {
               <div className='space-y-4'>
                 <div className='relative'>
                   <input
-                    className={cn(inputClasses, 'pl-10')}
+                    className={cn(
+                      inputClasses,
+                      'border-red-500/25 pl-10 focus:border-red-400/45 focus:ring-1 focus:ring-red-400/15',
+                    )}
                     placeholder='Enter closed-reason...'
                     value={data.accessClosed ?? ''}
                     onChange={(e) => setString('accessClosed')(e, { value: e.target.value })}
                   />
-                  <AlertTriangle className='absolute top-1/2 left-3 -translate-y-1/2 text-amber-500' size={14} />
-                  <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[9px] font-black tracking-tighter text-amber-500 uppercase'>
+                  <AlertTriangle className='absolute top-1/2 left-3 -translate-y-1/2 text-red-400/90' size={14} />
+                  <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[9px] font-black tracking-tighter text-red-300/90 uppercase'>
                     Area Closed
                   </span>
                 </div>
                 <div className='relative'>
                   <input
-                    className={cn(inputClasses, 'pl-10')}
+                    className={cn(
+                      inputClasses,
+                      'border-orange-500/25 pl-10 focus:border-orange-400/45 focus:ring-1 focus:ring-orange-400/15',
+                    )}
                     placeholder='Enter specific restrictions...'
                     value={data.accessInfo ?? ''}
                     onChange={(e) => setString('accessInfo')(e, { value: e.target.value })}
                   />
-                  <Info className='absolute top-1/2 left-3 -translate-y-1/2 text-blue-400' size={14} />
-                  <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[9px] font-black tracking-tighter text-blue-400 uppercase'>
+                  <Info className='absolute top-1/2 left-3 -translate-y-1/2 text-orange-400/90' size={14} />
+                  <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[9px] font-black tracking-tighter text-orange-300/90 uppercase'>
                     Restrictions
                   </span>
                 </div>

@@ -39,7 +39,7 @@ const Regions = () => {
                 className={cn(
                   'inline-flex h-8 shrink-0 items-center justify-center rounded-full border px-3 text-[11px] leading-none font-medium transition-colors sm:text-[12px]',
                   selectedType === id
-                    ? 'bg-surface-hover/55 border-white/18 text-slate-100'
+                    ? 'border-brand/55 bg-brand shadow-brand/20 text-slate-950 shadow-sm'
                     : 'bg-surface-nav/25 hover:bg-surface-nav/40 border-white/10 text-slate-300 hover:text-slate-200',
                 )}
               >

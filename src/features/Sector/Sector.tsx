@@ -23,7 +23,12 @@ import type { Slope } from '../../@types/buldreinfo';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { DownloadButton } from '../../shared/ui/DownloadButton';
 import { Card, PageCardBreadcrumbRow } from '../../shared/ui';
-import { tabBarButtonClassName, tabBarIconClassName } from '../../design/tabBar';
+import {
+  tabBarButtonClassName,
+  tabBarIconClassName,
+  tabBarStripContainerClassName,
+  TAB_BAR_ICON_SIZE,
+} from '../../design/tabBar';
 import { ExpandableMarkdown } from '../../shared/components/ExpandableMarkdown';
 import {
   AlertTriangle,
@@ -32,7 +37,7 @@ import {
   Edit,
   Plus,
   MapPin,
-  Brush,
+  Waypoints,
   Film,
   Image as ImageIcon,
   LayoutDashboard,
@@ -87,15 +92,19 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
       }
     }
     const n = problem.numTicks ?? 0;
-    segments.push({
-      key: 'ascents',
-      node: (
-        <>
-          <span className='tabular-nums'>{n}</span>
-          {n === 1 ? ' ascent' : ' ascents'}
-        </>
-      ),
-    });
+    if (n > 0) {
+      segments.push({
+        key: 'ascents',
+        node: (
+          <>
+            <span className='tabular-nums'>{n}</span>
+            {n === 1 ? ' ascent' : ' ascents'}
+          </>
+        ),
+      });
+    }
+
+    if (segments.length === 0) return null;
 
     return (
       <span className={tickFlags}>
@@ -140,8 +149,8 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
         </span>
       ) : null}
       {problem.hasTopo ? (
-        <span className='inline pl-1' title='Topo'>
-          <Brush size={12} strokeWidth={2} className='inline-block align-[-0.125em]' />
+        <span className='inline pl-1' title='Topo line'>
+          <Waypoints size={12} strokeWidth={2} className='inline-block align-[-0.125em]' />
         </span>
       ) : null}
       {problem.hasImages ? (
@@ -424,6 +433,25 @@ const Sector = () => {
       sectorName: '',
     })) ?? [];
 
+  const sectorAccessRestrictions =
+    data.areaAccessClosed || data.accessClosed || data.areaAccessInfo || data.accessInfo || data.areaNoDogsAllowed ? (
+      <div className='min-w-0 space-y-2 text-[12px] leading-relaxed sm:text-[13px]'>
+        {(data.areaAccessClosed || data.accessClosed) && (
+          <p className='text-pretty text-red-300/90'>
+            {(data.areaAccessClosed ? 'Area' : 'Sector') + ' closed: '}
+            {(data.areaAccessClosed || '') + (data.accessClosed || '')}
+          </p>
+        )}
+        {(data.areaNoDogsAllowed || data.areaAccessInfo || data.accessInfo) && (
+          <div className='space-y-1.5 text-orange-300/90'>
+            {data.areaNoDogsAllowed && <NoDogsAllowed />}
+            {data.areaAccessInfo && <p className='text-pretty'>{data.areaAccessInfo}</p>}
+            {data.accessInfo && <p className='text-pretty'>{data.accessInfo}</p>}
+          </div>
+        )}
+      </div>
+    ) : null;
+
   return (
     <div className='w-full min-w-0 space-y-4 sm:space-y-6'>
       <title>{`${data.name} (${data.areaName}) | ${meta?.title}`}</title>
@@ -434,14 +462,14 @@ const Sector = () => {
           className='mb-0'
           breadcrumb={
             <>
-              <nav className='flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-2 text-[12px] leading-relaxed text-pretty break-words text-slate-500 sm:text-[13px]'>
-                <Link to='/areas' className='inline align-middle transition-colors hover:text-slate-300'>
+              <nav className='flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-2 text-[12px] leading-relaxed text-pretty break-words sm:text-[13px]'>
+                <Link to='/areas' className='inline align-middle text-slate-400 transition-colors hover:text-slate-200'>
                   Areas
                 </Link>
                 <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
                 <Link
                   to={`/area/${data.areaId}`}
-                  className='inline min-w-0 align-middle transition-colors hover:text-slate-300'
+                  className='inline min-w-0 align-middle text-slate-400 transition-colors hover:text-slate-200'
                 >
                   {data.areaName}
                 </Link>
@@ -456,8 +484,8 @@ const Sector = () => {
                       aria-label={`Sector: ${data.name}. Open list of sectors in this area.`}
                       onClick={() => setSectorPickerOpen((o) => !o)}
                       className={cn(
-                        'group inline-flex max-w-full min-w-0 items-center gap-1 border-0 bg-transparent p-0 text-left text-[12px] font-medium text-slate-300 transition-colors sm:text-[13px]',
-                        'hover:text-slate-200',
+                        'group inline-flex max-w-full min-w-0 items-center gap-1 border-0 bg-transparent p-0 text-left text-[12px] font-semibold text-slate-50 transition-colors sm:text-[13px]',
+                        'hover:text-slate-100',
                         'focus-visible:ring-brand/40 focus-visible:rounded-sm focus-visible:ring-2 focus-visible:outline-none',
                       )}
                     >
@@ -502,7 +530,7 @@ const Sector = () => {
                     )}
                   </div>
                 ) : (
-                  <span className='inline-flex max-w-full min-w-0 items-center gap-1 align-middle text-[12px] font-medium text-slate-300 sm:text-[13px]'>
+                  <span className='inline-flex max-w-full min-w-0 items-center gap-1 align-middle text-[12px] font-semibold text-slate-50 sm:text-[13px]'>
                     <span className='min-w-0 truncate'>{data.name}</span>
                     <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
                   </span>
@@ -514,54 +542,38 @@ const Sector = () => {
             meta.isAdmin ? (
               <>
                 <Link
-                  to={`/sector/edit/${data.areaId}/${data.id}`}
-                  title='Edit sector'
-                  aria-label='Edit sector'
-                  className='inline-flex h-8 w-8 items-center justify-center rounded-full border border-amber-300/45 bg-amber-400/18 text-amber-100 transition-colors hover:bg-amber-400/28'
-                >
-                  <Edit size={12} />
-                </Link>
-                <Link
                   to={`/problem/edit/${data.id}/0`}
                   title='Add problem'
                   aria-label='Add problem'
-                  className='inline-flex h-8 w-8 items-center justify-center rounded-full border border-green-400/40 bg-green-500/20 text-green-300 transition-colors hover:bg-green-500/30 hover:text-green-200'
+                  className={cn(
+                    designContract.controls.pageHeaderIconButton,
+                    'border-green-400/40 bg-green-500/20 text-green-300 hover:bg-green-500/30 hover:text-green-200',
+                  )}
                 >
-                  <Plus size={12} />
+                  <Plus className={designContract.controls.pageHeaderIconGlyph} />
+                </Link>
+                <Link
+                  to={`/sector/edit/${data.areaId}/${data.id}`}
+                  title='Edit sector'
+                  aria-label='Edit sector'
+                  className={cn(
+                    designContract.controls.pageHeaderIconButton,
+                    'border-amber-300/45 bg-amber-400/18 text-amber-100 hover:bg-amber-400/28',
+                  )}
+                >
+                  <Edit className={designContract.controls.pageHeaderIconGlyph} />
                 </Link>
               </>
             ) : null
           }
         />
-
-        {data.areaAccessClosed ||
-        data.accessClosed ||
-        data.areaAccessInfo ||
-        data.accessInfo ||
-        data.areaNoDogsAllowed ? (
-          <div className='min-w-0 space-y-2 text-[12px] leading-relaxed sm:text-[13px]'>
-            {(data.areaAccessClosed || data.accessClosed) && (
-              <p className='text-pretty text-red-300/90'>
-                {(data.areaAccessClosed ? 'Area' : 'Sector') + ' closed: '}
-                {(data.areaAccessClosed || '') + (data.accessClosed || '')}
-              </p>
-            )}
-            {(data.areaNoDogsAllowed || data.areaAccessInfo || data.accessInfo) && (
-              <div className='space-y-1.5 text-orange-300/90'>
-                {data.areaNoDogsAllowed && <NoDogsAllowed />}
-                {data.areaAccessInfo && <p className='text-pretty'>{data.areaAccessInfo}</p>}
-                {data.accessInfo && <p className='text-pretty'>{data.accessInfo}</p>}
-              </div>
-            )}
-          </div>
-        ) : null}
       </div>
 
       <Card flush className='min-w-0 border-0 shadow-sm sm:border'>
         {tabs.length > 0 && (
           <>
             <div
-              className={designContract.controls.tabBarRow}
+              className={tabBarStripContainerClassName('equal')}
               style={{ display: 'grid', gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
               role='tablist'
               aria-label='Sector sections'
@@ -578,8 +590,12 @@ const Sector = () => {
                     onClick={() => setActiveTab(t.id)}
                     className={tabBarButtonClassName(isActive)}
                   >
-                    <IconComp size={12} strokeWidth={isActive ? 2.3 : 2} className={tabBarIconClassName(isActive)} />
-                    <span className='block min-w-0 truncate leading-none'>{t.label}</span>
+                    <IconComp
+                      size={TAB_BAR_ICON_SIZE}
+                      strokeWidth={isActive ? 2.3 : 2}
+                      className={tabBarIconClassName(isActive)}
+                    />
+                    <span className='type-small block min-w-0 truncate leading-none sm:text-[12px]'>{t.label}</span>
                   </button>
                 );
               })}
@@ -589,6 +605,7 @@ const Sector = () => {
               <div>
                 {effectiveTab === 'overview' && (
                   <div className='space-y-4 p-4 sm:p-5'>
+                    {sectorAccessRestrictions}
                     {(data.media?.length ?? 0) > 0 && (
                       <Media
                         pitches={null}
@@ -622,7 +639,7 @@ const Sector = () => {
                           title='Open parking in Google Maps'
                           className={designContract.surfaces.metaChipInteractive}
                         >
-                          <MapIcon size={11} className='shrink-0 text-slate-500' strokeWidth={2.25} />
+                          <MapIcon size={11} className='shrink-0 text-slate-100' strokeWidth={2.25} />
                           Parking
                         </a>
                       )}
@@ -637,7 +654,7 @@ const Sector = () => {
                           title='Sector location in Google Maps'
                           className={designContract.surfaces.metaChipInteractive}
                         >
-                          <MapIcon size={11} className='shrink-0 text-slate-500' strokeWidth={2.25} />
+                          <MapIcon size={11} className='shrink-0 text-slate-100' strokeWidth={2.25} />
                           Sector
                         </a>
                       )}
@@ -657,7 +674,7 @@ const Sector = () => {
                           carouselMedia={carouselMedia}
                           optProblemId={null}
                           showLocation={false}
-                          compactTiles
+                          triviaTiles
                         />
                       </div>
                     )}
@@ -706,25 +723,29 @@ const Sector = () => {
 
       {effectiveTab === 'map' &&
         ((data.approach?.coordinates ?? []).length > 0 || (data.descent?.coordinates ?? []).length > 0) && (
-          <div className='mt-4 min-w-0 sm:mt-5'>
-            <div className='grid min-w-0 gap-4 md:grid-cols-2 md:items-start md:gap-5'>
+          <div className={cn('mt-4 min-w-0 sm:mt-5', 'max-sm:-mx-4 max-sm:w-[calc(100%+2rem)] sm:mx-0 sm:w-full')}>
+            <div className='grid min-w-0 grid-cols-1 gap-3 md:grid-cols-2 md:items-stretch md:gap-4'>
               {(data.approach?.coordinates ?? []).length > 0 && (
-                <SlopeProfile
-                  compact
-                  title='Approach'
-                  areaName={data.areaName ?? ''}
-                  sectorName={data.name ?? ''}
-                  slope={data.approach as Slope}
-                />
+                <div className={cn((data.descent?.coordinates ?? []).length === 0 && 'min-w-0 md:col-span-2')}>
+                  <SlopeProfile
+                    compact
+                    title='Approach'
+                    areaName={data.areaName ?? ''}
+                    sectorName={data.name ?? ''}
+                    slope={data.approach as Slope}
+                  />
+                </div>
               )}
               {(data.descent?.coordinates ?? []).length > 0 && (
-                <SlopeProfile
-                  compact
-                  title='Descent'
-                  areaName={data.areaName ?? ''}
-                  sectorName={data.name ?? ''}
-                  slope={data.descent as Slope}
-                />
+                <div className={cn((data.approach?.coordinates ?? []).length === 0 && 'min-w-0 md:col-span-2')}>
+                  <SlopeProfile
+                    compact
+                    title='Descent'
+                    areaName={data.areaName ?? ''}
+                    sectorName={data.name ?? ''}
+                    slope={data.descent as Slope}
+                  />
+                </div>
               )}
             </div>
           </div>
@@ -739,8 +760,8 @@ const Sector = () => {
               defaultOrder={data.orderByGrade ? 'grade-desc' : 'number'}
               rows={sectorProblemListRows}
               contentBeforeList={
-                sectorTypeSummaries.length > 0 ? (
-                  <div className='mb-2 min-w-0 sm:mb-3'>
+                sectorTypeSummaries.length > 1 ? (
+                  <div className='min-w-0'>
                     <p
                       className='min-w-0 text-[13px] leading-relaxed text-pretty [overflow-wrap:anywhere] text-slate-300 sm:text-sm'
                       aria-label='Route counts by type in this sector'

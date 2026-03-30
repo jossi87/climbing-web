@@ -245,7 +245,7 @@ export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedi
                     carouselMedia={carouselMedia}
                     optProblemId={null}
                     showLocation={false}
-                    compactTiles
+                    triviaTiles
                   />
                 </div>
               ) : null}

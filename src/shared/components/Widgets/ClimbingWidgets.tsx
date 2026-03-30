@@ -1,5 +1,5 @@
 import SunCalc from 'suncalc';
-import { Compass, Sun, Eye, type LucideIcon } from 'lucide-react';
+import { Compass, Sun, Sunrise, type LucideIcon } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
 import { type ReactNode } from 'react';
@@ -15,12 +15,12 @@ type BadgeProps = {
 export const Badge = ({ children, title, className, icon: Icon }: BadgeProps) => (
   <span
     className={cn(
-      'inline-flex max-w-full items-center gap-1 rounded-md bg-white/[0.04] px-2 py-0.5 text-[11px] leading-snug font-medium text-slate-400 ring-1 ring-white/[0.06] transition-colors duration-150 sm:text-[12px]',
+      'inline-flex max-w-full items-center gap-1 rounded-md bg-white/[0.05] px-2 py-0.5 text-[11px] leading-snug font-medium text-slate-300 ring-1 ring-white/[0.1] transition-colors duration-150 sm:text-[12px]',
       className,
     )}
     title={title}
   >
-    {Icon && <Icon size={11} strokeWidth={2} className='shrink-0 text-slate-500' />}
+    {Icon && <Icon size={11} strokeWidth={2} className='shrink-0 text-slate-100' />}
     <span className='min-w-0 normal-case'>{children}</span>
   </span>
 );
@@ -42,7 +42,7 @@ export const SunOnWall = ({ sunFromHour, sunToHour, variant = 'chip', className 
         className={cn(designContract.typography.menuItem, 'inline-flex items-center gap-1 text-slate-300', className)}
         title='Sun on wall'
       >
-        <Sun size={11} strokeWidth={2} className='shrink-0 text-slate-500' />
+        <Sun size={11} strokeWidth={2} className='shrink-0 text-slate-100' />
         <span className='font-medium tabular-nums'>{label}</span>
       </span>
     );
@@ -62,29 +62,39 @@ type SunriseSunsetProps = {
   className?: string;
 };
 
+const sunriseSunsetTitle = 'Sunrise and sunset today (local times)';
+
 export const SunriseSunset = ({ lat, lng, date, variant = 'chip', className }: SunriseSunsetProps) => {
   const { sunrise, sunset } = SunCalc.getTimes(date ?? new Date(), lat, lng);
   if (isNaN(sunrise.getTime()) || isNaN(sunset.getTime())) return null;
   const format = (d: Date) => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-  const label = `${format(sunrise)}–${format(sunset)}`;
+  const times = (
+    <>
+      <span className='tabular-nums'>{format(sunrise)}</span>
+      <span className='mx-px text-slate-500' aria-hidden>
+        ·
+      </span>
+      <span className='tabular-nums'>{format(sunset)}</span>
+    </>
+  );
   if (variant === 'inline') {
     return (
       <span
         className={cn(
           designContract.typography.menuItem,
-          'inline-flex max-w-full items-center gap-1 text-slate-300',
+          'inline-flex max-w-full items-center gap-1.5 text-slate-300',
           className,
         )}
-        title='Sunrise and sunset'
+        title={sunriseSunsetTitle}
       >
-        <Eye size={11} strokeWidth={2} className='shrink-0 text-slate-500' />
-        <span className='min-w-0 font-medium tabular-nums'>{label}</span>
+        <Sunrise size={11} strokeWidth={2} className='shrink-0 text-slate-100' aria-hidden />
+        <span className='inline-flex min-w-0 items-baseline gap-0 font-medium'>{times}</span>
       </span>
     );
   }
   return (
-    <Badge icon={Eye} title='Sunrise and sunset'>
-      {label}
+    <Badge icon={Sunrise} title={sunriseSunsetTitle}>
+      <span className='inline-flex items-baseline gap-0 font-medium'>{times}</span>
     </Badge>
   );
 };
@@ -115,7 +125,7 @@ export const WallDirection = ({
         )}
         title={title}
       >
-        <Compass size={11} strokeWidth={2} className='shrink-0 opacity-90' />
+        <Compass size={11} strokeWidth={2} className='shrink-0 text-slate-100' />
         <span className='min-w-0 font-medium'>{direction}</span>
       </span>
     );

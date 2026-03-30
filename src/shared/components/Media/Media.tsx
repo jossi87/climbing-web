@@ -28,6 +28,8 @@ type Props = Pick<ComponentProps<typeof MediaModal>, 'optProblemId'> & {
   carouselMedia?: MediaItem[] | null;
   showLocation: boolean;
   compactTiles?: boolean;
+  /** Denser grid than `compactTiles` (trivia on area/sector/problem). */
+  triviaTiles?: boolean;
 };
 const useIds = () => {
   const { mediaId, pitch } = useParams();
@@ -35,7 +37,16 @@ const useIds = () => {
 };
 type MediaAction = (token: string) => Promise<unknown>;
 
-const Media = ({ pitches, media, orderableMedia, carouselMedia, optProblemId, showLocation, compactTiles }: Props) => {
+const Media = ({
+  pitches,
+  media,
+  orderableMedia,
+  carouselMedia,
+  optProblemId,
+  showLocation,
+  compactTiles,
+  triviaTiles,
+}: Props) => {
   const { mediaId, pitch } = useIds();
   const location = useLocation();
   const navigate = useNavigate();
@@ -116,6 +127,8 @@ const Media = ({ pitches, media, orderableMedia, carouselMedia, optProblemId, sh
   } else if (!mediaId && !pitch && m) {
     setM(null);
   }
+  const tileCompact = compactTiles || triviaTiles;
+
   const LazyMediaCard = ({ x }: { x: MediaItem }) => {
     const { ref, inView } = useInView({ triggerOnce: true, rootMargin: '200px 0px' });
     const hasSvgs = (x.svgs?.length ?? 0) > 0 || (x.mediaSvgs?.length ?? 0) > 0;
@@ -125,7 +138,7 @@ const Media = ({ pitches, media, orderableMedia, carouselMedia, optProblemId, sh
         onClick={() => openModal(x)}
         className={cn(
           'group relative w-full min-w-0 cursor-pointer overflow-hidden border transition-all duration-300',
-          compactTiles ? 'rounded-lg' : 'rounded-xl',
+          tileCompact ? 'rounded-lg' : 'rounded-xl',
           'bg-surface-nav border-surface-border hover:border-brand/50 hover:shadow-lg',
           x.inherited && 'border-slate-700',
         )}
@@ -150,7 +163,9 @@ const Media = ({ pitches, media, orderableMedia, carouselMedia, optProblemId, sh
                   className='absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-105'
                   style={{
                     backgroundImage: `url(${JSON.stringify(
-                      getMediaFileUrl(Number(x.id ?? 0), Number(x.versionStamp ?? 0), false, { minDimension: 205 }),
+                      getMediaFileUrl(Number(x.id ?? 0), Number(x.versionStamp ?? 0), false, {
+                        minDimension: triviaTiles ? 160 : 205,
+                      }),
                     )})`,
                   }}
                 />
@@ -176,7 +191,7 @@ const Media = ({ pitches, media, orderableMedia, carouselMedia, optProblemId, sh
     );
   };
   return (
-    <div className={cn(compactTiles ? 'space-y-3' : 'space-y-6')}>
+    <div className={cn(triviaTiles ? 'space-y-2' : compactTiles ? 'space-y-3' : 'space-y-6')}>
       {' '}
       {confirmation && (
         <div className='animate-in fade-in fixed inset-0 z-100 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm duration-200'>
@@ -267,9 +282,11 @@ const Media = ({ pitches, media, orderableMedia, carouselMedia, optProblemId, sh
         )}{' '}
       <div
         className={cn(
-          compactTiles
-            ? designContract.layout.mediaTileGridCompact
-            : 'grid grid-cols-3 gap-2.5 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5',
+          triviaTiles
+            ? designContract.layout.mediaTileGridTrivia
+            : compactTiles
+              ? designContract.layout.mediaTileGridCompact
+              : 'grid grid-cols-3 gap-2.5 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5',
         )}
       >
         {' '}

@@ -48,16 +48,16 @@ const ProblemEditMedia = () => {
             breadcrumb={
               <nav
                 className={cn(
-                  'block min-w-0 text-[11px] leading-relaxed text-pretty break-words text-slate-500 sm:text-[12px] [&>*+*]:ml-1.5',
+                  'block min-w-0 text-[11px] leading-relaxed text-pretty break-words text-slate-400 sm:text-[12px] [&>*+*]:ml-1.5',
                 )}
               >
-                <Link to='/areas' className='inline align-middle transition-colors hover:text-slate-300'>
+                <Link to='/areas' className='inline align-middle transition-colors hover:text-slate-200'>
                   Areas
                 </Link>
                 <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
                 <Link
                   to={problem?.areaId != null ? `/area/${problem.areaId}` : '/areas'}
-                  className='inline min-w-0 align-middle transition-colors hover:text-slate-300'
+                  className='inline min-w-0 align-middle transition-colors hover:text-slate-200'
                 >
                   {problem?.areaName ?? 'Area'}
                 </Link>
@@ -68,7 +68,7 @@ const ProblemEditMedia = () => {
                 <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
                 <Link
                   to={problem?.sectorId != null ? `/sector/${problem.sectorId}` : '/areas'}
-                  className='inline min-w-0 align-middle transition-colors hover:text-slate-300'
+                  className='inline min-w-0 align-middle transition-colors hover:text-slate-200'
                 >
                   {problem?.sectorName ?? 'Sector'}
                 </Link>
@@ -79,7 +79,7 @@ const ProblemEditMedia = () => {
                 <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
                 <Link
                   to={problemId ? `/problem/${problemId}` : '/areas'}
-                  className='inline min-w-0 align-middle transition-colors hover:text-slate-300'
+                  className='inline min-w-0 align-middle transition-colors hover:text-slate-200'
                 >
                   {problem?.nr != null && problem?.name ? (
                     <span className='font-medium text-slate-400'>

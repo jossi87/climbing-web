@@ -46,6 +46,10 @@ export const designContract = {
      */
     mediaTileGridCompact: 'grid grid-cols-3 gap-1.5 sm:grid-cols-4 sm:gap-2 md:grid-cols-5 md:gap-2.5 lg:grid-cols-6',
     /**
+     * Trivia / secondary galleries: one extra column vs `mediaTileGridCompact` at each step so tiles read as less prominent.
+     */
+    mediaTileGridTrivia: 'grid grid-cols-4 gap-1.5 sm:grid-cols-5 sm:gap-2 md:grid-cols-6 md:gap-2.5 lg:grid-cols-7',
+    /**
      * Area overview sector cards: wider tiles on phone (2 cols), up to 6 on large screens.
      */
     areaSectorCardGrid:
@@ -63,27 +67,47 @@ export const designContract = {
      * Use `inlineChipInteractive` for links/buttons (hover border).
      */
     inlineChip:
-      'bg-surface-nav border-surface-border inline-flex max-w-full min-w-0 items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs text-slate-300',
+      'inline-flex max-w-full min-w-0 items-center gap-1.5 rounded-md border border-white/12 bg-white/[0.04] px-2.5 py-1 text-xs text-slate-200',
     inlineChipInteractive:
-      'bg-surface-nav border-surface-border inline-flex max-w-full min-w-0 items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs text-slate-300 transition-colors hover:border-white/15',
+      'inline-flex max-w-full min-w-0 items-center gap-1.5 rounded-md border border-white/12 bg-white/[0.04] px-2.5 py-1 text-xs text-slate-200 transition-colors hover:border-white/22',
+    /**
+     * Hover affordance for {@link Badge} used inside links (weather, webcams, external URLs).
+     * Static info chips omit this — only interactive targets get the brand ring.
+     */
+    badgeLinkHover:
+      'cursor-pointer transition-colors duration-150 hover:bg-brand/[0.08] hover:text-slate-100 hover:ring-brand/35',
     /**
      * Ring chip for downloads, map links, and other meta actions — matches {@link DownloadButton}.
      */
     metaChipInteractive:
-      'inline-flex max-w-full cursor-pointer items-center gap-1 rounded-md bg-white/[0.04] px-2 py-0.5 text-[11px] font-medium text-slate-400 ring-1 ring-white/[0.06] transition-colors duration-150 hover:bg-white/[0.08] hover:text-slate-300 hover:ring-white/[0.1] sm:text-[12px]',
+      'inline-flex max-w-full cursor-pointer items-center gap-1 rounded-md bg-white/[0.05] px-2 py-0.5 text-[11px] font-medium text-slate-300 ring-1 ring-white/[0.1] transition-colors duration-150 hover:bg-brand/[0.08] hover:text-slate-100 hover:ring-brand/35 sm:text-[12px]',
   },
   controls: {
     chipButton: 'btn-glass',
     chipButtonActive: 'btn-glass-active',
     listRow: 'group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-white/5',
+    /**
+     * Round icon buttons in the page header breadcrumb row (Problem, Area, Sector).
+     * One size token everywhere; glyph scales slightly from `sm` up.
+     */
+    pageHeaderIconButton:
+      'inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-colors sm:h-8 sm:w-8',
+    pageHeaderIconGlyph: 'pointer-events-none h-3 w-3 sm:h-[14px] sm:w-[14px]',
     /** Full-width tab row (Profile, Area, etc.): active state via short bar — no full-width rules above/below */
     tabBarRow: 'flex w-full min-w-0 flex-wrap',
+    /**
+     * Card tab strip chrome: bottom rule + horizontal inset. Use on every page tab row (with {@link tabBarRow})
+     * so primary strips match secondary (e.g. Area overview tabs vs Sectors/Routes).
+     */
+    tabBarStrip: 'border-surface-border/40 border-b px-4 pt-2.5 pb-0 sm:px-5',
+    /** Content-sized tab pairs (e.g. Sectors | Routes): extra air between tabs */
+    tabBarStripGapInline: 'gap-x-6 gap-y-1 sm:gap-x-10',
     tabBarButton:
-      'relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 border-b-2 border-transparent px-1 py-2.5 text-[11px] leading-none font-semibold transition-colors sm:flex-row sm:gap-1.5 sm:px-3 sm:text-[12px]',
+      'relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 border-b-2 border-transparent px-1 py-2.5 text-[11px] leading-none font-semibold transition-colors sm:flex-row sm:gap-1.5 sm:px-3 sm:py-3 sm:text-[12px]',
     /** Capped-width bar reads better on 2-tab rows than a full-cell underline */
     tabBarButtonActive:
-      'text-slate-100 after:pointer-events-none after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-[min(5.75rem,calc(100%-0.75rem))] after:max-w-[11rem] after:-translate-x-1/2 after:rounded-full after:bg-slate-200/90',
-    tabBarButtonInactive: 'text-slate-500 hover:text-slate-300',
+      'text-slate-100 after:pointer-events-none after:absolute after:bottom-0 after:left-1/2 after:h-[3px] after:w-[min(5.75rem,calc(100%-0.75rem))] after:max-w-[11rem] after:-translate-x-1/2 after:rounded-full after:bg-brand',
+    tabBarButtonInactive: 'text-slate-400 hover:text-slate-200',
     tabButton:
       'flex items-center gap-2 border-b-2 px-6 py-3 text-[10px] font-semibold tracking-[0.16em] uppercase transition-colors',
     navPill:

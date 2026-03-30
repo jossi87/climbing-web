@@ -26,7 +26,12 @@ import { ProblemNeighboursRow } from './ProblemNeighboursRow';
 import { DownloadButton } from '../../shared/ui/DownloadButton';
 import { Card, PageCardBreadcrumbRow } from '../../shared/ui';
 import { ExpandableMarkdown } from '../../shared/components/ExpandableMarkdown';
-import { tabBarButtonClassName, tabBarIconClassName } from '../../design/tabBar';
+import {
+  tabBarButtonClassName,
+  tabBarIconClassName,
+  tabBarStripContainerClassName,
+  TAB_BAR_ICON_SIZE,
+} from '../../design/tabBar';
 import {
   Bookmark,
   Check,
@@ -203,7 +208,7 @@ export const Problem = () => {
           title='Parking in Google Maps'
           className={designContract.surfaces.metaChipInteractive}
         >
-          <MapIcon size={11} className='shrink-0 text-slate-500' strokeWidth={2.25} />
+          <MapIcon size={11} className='shrink-0 text-slate-100' strokeWidth={2.25} />
           Parking
         </a>
       )}
@@ -215,7 +220,7 @@ export const Problem = () => {
           title={meta.isBouldering ? 'Boulder in Google Maps' : 'Route in Google Maps'}
           className={designContract.surfaces.metaChipInteractive}
         >
-          <MapIcon size={11} className='shrink-0 text-slate-500' strokeWidth={2.25} />{' '}
+          <MapIcon size={11} className='shrink-0 text-slate-100' strokeWidth={2.25} />{' '}
           {meta.isBouldering ? 'Boulder' : 'Route'}
         </a>
       )}
@@ -224,8 +229,41 @@ export const Problem = () => {
   );
 
   const commentText = (data.comment ?? '').trim();
+
+  const problemAccessRestrictions =
+    data.broken ||
+    data.areaAccessClosed ||
+    data.sectorAccessClosed ||
+    data.areaNoDogsAllowed ||
+    data.areaAccessInfo ||
+    data.sectorAccessInfo ? (
+      <div className='min-w-0 space-y-2 text-[12px] leading-relaxed sm:text-[13px]'>
+        {data.broken && (
+          <p className='text-pretty text-red-300/90'>
+            <span className='font-medium'>{meta.isBouldering ? 'Problem' : 'Route'} broken:</span> {data.broken}
+          </p>
+        )}
+        {(data.areaAccessClosed || data.sectorAccessClosed) && (
+          <p className='text-pretty text-red-300/90'>
+            {(data.areaAccessClosed ? 'Area' : 'Sector') + ' closed: '}
+            {(data.areaAccessClosed || '') + (data.sectorAccessClosed || '')}
+          </p>
+        )}
+        {(data.areaNoDogsAllowed || data.areaAccessInfo || data.sectorAccessInfo) && (
+          <div className='space-y-1.5 text-orange-300/90'>
+            {data.areaNoDogsAllowed && <NoDogsAllowed />}
+            <Linkify>
+              {data.areaAccessInfo && <p className='text-pretty'>{data.areaAccessInfo}</p>}
+              {data.sectorAccessInfo && <p className='text-pretty'>{data.sectorAccessInfo}</p>}
+            </Linkify>
+          </div>
+        )}
+      </div>
+    ) : null;
+
   const overviewPanel = (
     <div className='space-y-4 p-4 sm:p-5'>
+      {problemAccessRestrictions}
       {(data.media?.length ?? 0) > 0 && (
         <Media
           pitches={data.sections}
@@ -292,18 +330,18 @@ export const Problem = () => {
           breadcrumb={
             <nav
               aria-label='Breadcrumb'
-              className='block min-w-0 text-[12px] leading-relaxed break-words text-slate-500 sm:text-[13px] [&>*+*]:ml-1.5'
+              className='block min-w-0 text-[11px] leading-snug break-words sm:text-[13px] sm:leading-relaxed [&>*+*]:ml-1 sm:[&>*+*]:ml-1.5'
             >
               <Link
                 to='/areas'
-                className='inline align-middle tracking-tight text-slate-600 transition-colors hover:text-slate-400'
+                className='inline align-middle tracking-tight text-slate-400 transition-colors hover:text-slate-200'
               >
                 Areas
               </Link>
               <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
               <Link
                 to={`/area/${data.areaId}`}
-                className='inline min-w-0 align-middle tracking-tight text-slate-600 transition-colors hover:text-slate-400'
+                className='inline min-w-0 align-middle tracking-tight text-slate-400 transition-colors hover:text-slate-200'
               >
                 {data.areaName}
               </Link>
@@ -311,7 +349,7 @@ export const Problem = () => {
               <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
               <Link
                 to={`/sector/${data.sectorId}`}
-                className='inline min-w-0 align-middle tracking-tight text-slate-600 transition-colors hover:text-slate-400'
+                className='inline min-w-0 align-middle tracking-tight text-slate-400 transition-colors hover:text-slate-200'
               >
                 {data.sectorName}
               </Link>
@@ -363,13 +401,17 @@ export const Problem = () => {
                     onClick={handleToggleTodo}
                     disabled={isPending}
                     className={cn(
-                      'inline-flex h-7 w-7 items-center justify-center rounded-full border transition-colors sm:h-8 sm:w-8',
+                      designContract.controls.pageHeaderIconButton,
                       optimisticTodo
                         ? 'border-blue-400/50 bg-blue-500/22 text-blue-200 hover:bg-blue-500/32'
                         : 'border-white/12 bg-white/[0.06] text-slate-300 hover:border-white/18 hover:bg-white/[0.1]',
                     )}
                   >
-                    <Bookmark size={12} fill={optimisticTodo ? 'currentColor' : 'none'} strokeWidth={2.25} />
+                    <Bookmark
+                      className={designContract.controls.pageHeaderIconGlyph}
+                      fill={optimisticTodo ? 'currentColor' : 'none'}
+                      strokeWidth={2.25}
+                    />
                   </button>
                 )}
                 <button
@@ -377,21 +419,24 @@ export const Problem = () => {
                   title={isTicked ? 'Edit tick' : 'Tick'}
                   onClick={() => setShowTickModal(true)}
                   className={cn(
-                    'inline-flex h-7 w-7 items-center justify-center rounded-full border transition-colors sm:h-8 sm:w-8',
+                    designContract.controls.pageHeaderIconButton,
                     isTicked
                       ? 'border-green-400/45 bg-green-500/20 text-green-300 hover:bg-green-500/28'
                       : 'border-white/12 bg-white/[0.06] text-slate-300 hover:border-white/18 hover:bg-white/[0.1]',
                   )}
                 >
-                  <Check size={12} strokeWidth={2.5} />
+                  <Check className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
                 </button>
                 <button
                   type='button'
                   title='Comment'
                   onClick={() => setShowCommentModal({ id: -1, danger: false, resolved: false })}
-                  className='inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/12 bg-white/[0.06] text-slate-300 transition-colors hover:border-white/18 hover:bg-white/[0.1] sm:h-8 sm:w-8'
+                  className={cn(
+                    designContract.controls.pageHeaderIconButton,
+                    'border-white/12 bg-white/[0.06] text-slate-300 hover:border-white/18 hover:bg-white/[0.1]',
+                  )}
                 >
-                  <MessageSquare size={12} strokeWidth={2.25} />
+                  <MessageSquare className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.25} />
                 </button>
                 {meta.isAdmin && (
                   <button
@@ -399,69 +444,64 @@ export const Problem = () => {
                     title={showHiddenMedia ? 'Showing hidden media' : 'Show hidden media'}
                     onClick={() => setShowHiddenMedia(!showHiddenMedia)}
                     className={cn(
-                      'inline-flex h-7 w-7 items-center justify-center rounded-full border transition-colors sm:h-8 sm:w-8',
+                      designContract.controls.pageHeaderIconButton,
                       showHiddenMedia
                         ? 'border-sky-400/45 bg-sky-500/20 text-sky-200 hover:bg-sky-500/28'
                         : 'border-white/12 bg-white/[0.06] text-slate-300 hover:border-white/18 hover:bg-white/[0.1]',
                     )}
                   >
-                    <Eye size={12} strokeWidth={2.25} />
+                    <Eye className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.25} />
                   </button>
                 )}
-                <Link
-                  to={meta.isAdmin ? `/problem/edit/${data.sectorId}/${data.id}` : `/problem/edit/media/${data.id}`}
-                  title={meta.isAdmin ? 'Edit problem' : 'Add media'}
-                  aria-label={meta.isAdmin ? 'Edit problem' : 'Add media'}
-                  className={cn(
-                    'inline-flex h-7 w-7 items-center justify-center rounded-full border transition-colors sm:h-8 sm:w-8',
-                    meta.isAdmin
-                      ? 'border-amber-300/45 bg-amber-400/18 text-amber-100 hover:bg-amber-400/28'
-                      : 'border-green-400/40 bg-green-500/20 text-green-300 hover:bg-green-500/30 hover:text-green-200',
-                  )}
-                >
-                  {meta.isAdmin ? <Edit size={12} /> : <Plus size={12} />}
-                </Link>
+                {meta.isAdmin ? (
+                  <>
+                    <Link
+                      to={`/problem/edit/media/${data.id}`}
+                      title='Add media'
+                      aria-label='Add media'
+                      className={cn(
+                        designContract.controls.pageHeaderIconButton,
+                        'border-green-400/40 bg-green-500/20 text-green-300 hover:bg-green-500/30 hover:text-green-200',
+                      )}
+                    >
+                      <Plus className={designContract.controls.pageHeaderIconGlyph} />
+                    </Link>
+                    <Link
+                      to={`/problem/edit/${data.sectorId}/${data.id}`}
+                      title='Edit problem'
+                      aria-label='Edit problem'
+                      className={cn(
+                        designContract.controls.pageHeaderIconButton,
+                        'border-amber-300/45 bg-amber-400/18 text-amber-100 hover:bg-amber-400/28',
+                      )}
+                    >
+                      <Edit className={designContract.controls.pageHeaderIconGlyph} />
+                    </Link>
+                  </>
+                ) : (
+                  <Link
+                    to={`/problem/edit/media/${data.id}`}
+                    title='Add media'
+                    aria-label='Add media'
+                    className={cn(
+                      designContract.controls.pageHeaderIconButton,
+                      'border-green-400/40 bg-green-500/20 text-green-300 hover:bg-green-500/30 hover:text-green-200',
+                    )}
+                  >
+                    <Plus className={designContract.controls.pageHeaderIconGlyph} />
+                  </Link>
+                )}
               </>
             ) : null
           }
         />
-
-        {data.broken ||
-        data.areaAccessClosed ||
-        data.sectorAccessClosed ||
-        data.areaNoDogsAllowed ||
-        data.areaAccessInfo ||
-        data.sectorAccessInfo ? (
-          <div className='min-w-0 space-y-2 text-[12px] leading-relaxed sm:text-[13px]'>
-            {data.broken && (
-              <p className='text-pretty text-red-300/90'>
-                <span className='font-medium'>{meta.isBouldering ? 'Problem' : 'Route'} broken:</span> {data.broken}
-              </p>
-            )}
-            {(data.areaAccessClosed || data.sectorAccessClosed) && (
-              <p className='text-pretty text-red-300/90'>
-                {(data.areaAccessClosed ? 'Area' : 'Sector') + ' closed: '}
-                {(data.areaAccessClosed || '') + (data.sectorAccessClosed || '')}
-              </p>
-            )}
-            {(data.areaNoDogsAllowed || data.areaAccessInfo || data.sectorAccessInfo) && (
-              <div className='space-y-1.5 text-orange-300/90'>
-                {data.areaNoDogsAllowed && <NoDogsAllowed />}
-                <Linkify>
-                  {data.areaAccessInfo && <p className='text-pretty'>{data.areaAccessInfo}</p>}
-                  {data.sectorAccessInfo && <p className='text-pretty'>{data.sectorAccessInfo}</p>}
-                </Linkify>
-              </div>
-            )}
-          </div>
-        ) : null}
       </div>
 
       <Card flush className='min-w-0 border-0 shadow-sm sm:border'>
         {showMapTab ? (
           <>
             <div
-              className={designContract.controls.tabBarRow}
+              className={tabBarStripContainerClassName('equal')}
               style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }}
               role='tablist'
               aria-label='Problem sections'
@@ -474,11 +514,11 @@ export const Problem = () => {
                 className={tabBarButtonClassName(activeTab === 'overview')}
               >
                 <LayoutDashboard
-                  size={12}
+                  size={TAB_BAR_ICON_SIZE}
                   strokeWidth={activeTab === 'overview' ? 2.3 : 2}
                   className={tabBarIconClassName(activeTab === 'overview')}
                 />
-                <span className='block min-w-0 truncate leading-none'>Overview</span>
+                <span className='type-small block min-w-0 truncate leading-none sm:text-[12px]'>Overview</span>
               </button>
               <button
                 type='button'
@@ -488,11 +528,11 @@ export const Problem = () => {
                 className={tabBarButtonClassName(activeTab === 'map')}
               >
                 <MapIcon
-                  size={12}
+                  size={TAB_BAR_ICON_SIZE}
                   strokeWidth={activeTab === 'map' ? 2.3 : 2}
                   className={tabBarIconClassName(activeTab === 'map')}
                 />
-                <span className='block min-w-0 truncate leading-none'>Map</span>
+                <span className='type-small block min-w-0 truncate leading-none sm:text-[12px]'>Map</span>
               </button>
             </div>
             {activeTab === 'overview' ? (
@@ -531,25 +571,29 @@ export const Problem = () => {
       </Card>
 
       {showMapTab && activeTab === 'map' && (hasApproach || hasDescent) && (
-        <div className='mt-4 min-w-0 sm:mt-5'>
-          <div className='grid min-w-0 gap-4 md:grid-cols-2 md:items-start md:gap-5'>
+        <div className={cn('mt-4 min-w-0 sm:mt-5', 'max-sm:-mx-4 max-sm:w-[calc(100%+2rem)] sm:mx-0 sm:w-full')}>
+          <div className='grid min-w-0 grid-cols-1 gap-3 md:grid-cols-2 md:items-stretch md:gap-4'>
             {hasApproach && (
-              <SlopeProfile
-                compact
-                title='Approach'
-                areaName={data.areaName ?? ''}
-                sectorName={data.sectorName ?? ''}
-                slope={data.sectorApproach as Slope}
-              />
+              <div className={cn(!hasDescent && 'min-w-0 md:col-span-2')}>
+                <SlopeProfile
+                  compact
+                  title='Approach'
+                  areaName={data.areaName ?? ''}
+                  sectorName={data.sectorName ?? ''}
+                  slope={data.sectorApproach as Slope}
+                />
+              </div>
             )}
             {hasDescent && (
-              <SlopeProfile
-                compact
-                title='Descent'
-                areaName={data.areaName ?? ''}
-                sectorName={data.sectorName ?? ''}
-                slope={data.sectorDescent as Slope}
-              />
+              <div className={cn(!hasApproach && 'min-w-0 md:col-span-2')}>
+                <SlopeProfile
+                  compact
+                  title='Descent'
+                  areaName={data.areaName ?? ''}
+                  sectorName={data.sectorName ?? ''}
+                  slope={data.sectorDescent as Slope}
+                />
+              </div>
             )}
           </div>
         </div>
@@ -558,10 +602,15 @@ export const Problem = () => {
       {showOverviewContent && hasPitches && data.sections && (
         <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm sm:border'>
           <div className='p-4 sm:p-5'>
-            <div className='flex flex-col gap-6'>
+            <div className='flex flex-col gap-7'>
               {data.sections.map((s) => (
-                <article key={s.nr} className='min-w-0 space-y-2.5' aria-label={`Pitch ${s.nr}`}>
-                  <div className='leading-snug text-pretty text-slate-300'>
+                <article key={s.nr} className='min-w-0' aria-label={`Pitch ${s.nr}`}>
+                  <p
+                    className={cn(
+                      'text-[13px] leading-snug text-pretty text-slate-300 sm:text-sm sm:leading-relaxed',
+                      '[&_a]:text-slate-300 [&_a]:underline [&_a]:decoration-white/15 [&_a]:underline-offset-2 [&_a]:transition-colors hover:[&_a]:text-slate-200',
+                    )}
+                  >
                     <span
                       className={cn(
                         designContract.typography.meta,
@@ -569,36 +618,38 @@ export const Problem = () => {
                       )}
                     >
                       Pitch {s.nr}
-                    </span>
-                    <span className='text-slate-600'> · </span>
+                    </span>{' '}
+                    <span className='text-slate-600' aria-hidden>
+                      ·
+                    </span>{' '}
                     <span className={cn(designContract.typography.grade, 'font-semibold text-slate-100')}>
                       {s.grade}
                     </span>
                     {s.description ? (
                       <>
-                        <span className='text-slate-600'> · </span>
-                        <div
-                          className={cn(
-                            designContract.typography.meta,
-                            'inline-block max-w-full align-baseline text-slate-400 [&_a]:text-slate-300 [&_a]:underline [&_a]:decoration-white/15 [&_a]:underline-offset-2 [&_a]:transition-colors hover:[&_a]:text-slate-200',
-                          )}
-                        >
+                        {' '}
+                        <span className='text-slate-600' aria-hidden>
+                          ·
+                        </span>{' '}
+                        <span className='font-normal text-slate-300'>
                           <Linkify>{s.description}</Linkify>
-                        </div>
+                        </span>
                       </>
                     ) : null}
-                  </div>
-                  {s.media && s.media.length > 0 && (
-                    <Media
-                      pitches={data.sections}
-                      media={s.media}
-                      orderableMedia={orderableMedia}
-                      carouselMedia={carouselMedia}
-                      optProblemId={null}
-                      showLocation={false}
-                      compactTiles
-                    />
-                  )}
+                  </p>
+                  {s.media && s.media.length > 0 ? (
+                    <div className='mt-2'>
+                      <Media
+                        pitches={data.sections}
+                        media={s.media}
+                        orderableMedia={orderableMedia}
+                        carouselMedia={carouselMedia}
+                        optProblemId={null}
+                        showLocation={false}
+                        compactTiles
+                      />
+                    </div>
+                  ) : null}
                 </article>
               ))}
             </div>

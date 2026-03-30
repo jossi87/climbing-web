@@ -199,7 +199,7 @@ const Header = () => {
   return (
     <nav
       className={cn(
-        'border-surface-border bg-surface-nav/75 z-50 w-full border-b backdrop-blur-xl transition-transform duration-300',
+        'border-surface-border/70 bg-surface-card/55 z-50 w-full border-b backdrop-blur-xl transition-[transform,background-color] duration-300',
         shouldStickHeader ? 'sticky top-0' : 'relative',
         !isVisible && '-translate-y-full lg:translate-y-0',
       )}
@@ -207,12 +207,16 @@ const Header = () => {
       <div className='max-w-container mx-auto h-13 px-4'>
         <div className='flex h-full items-center justify-between gap-x-4'>
           <div className='flex h-full min-w-0 flex-1 items-center gap-4'>
-            <Link to='/' className='relative flex h-full shrink-0 items-center'>
+            <Link
+              to='/'
+              className='group focus-visible:ring-brand/35 focus-visible:ring-offset-surface-card relative flex h-full shrink-0 items-center rounded-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none'
+            >
               <img
                 src='/png/logo_70x62.png'
-                alt='Logo'
-                className={cn('h-auto w-7 transition-all', isHome ? 'opacity-100' : 'opacity-40 hover:opacity-100')}
+                alt=''
+                className='h-auto w-7 brightness-0 invert transition-[transform,filter] duration-300 ease-out will-change-transform group-hover:scale-[1.06] group-hover:drop-shadow-[0_0_14px_rgba(198,161,91,0.35)] group-active:scale-100'
               />
+              <span className='sr-only'>Home</span>
               {isHome && <div className='bg-brand shadow-brand absolute right-0 bottom-0 left-0 h-0.5 rounded-t' />}
             </Link>
             <div className='min-w-0 flex-1'>

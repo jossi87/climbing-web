@@ -29,7 +29,7 @@ export function ExternalLinkLabels({
                 'inline-flex max-w-full items-center gap-1 [overflow-wrap:anywhere] text-slate-400 underline decoration-transparent underline-offset-2 transition-colors hover:text-slate-200 hover:decoration-white/20',
               )}
             >
-              <LinkIcon size={11} strokeWidth={2} className='shrink-0 text-slate-500' />
+              <LinkIcon size={11} strokeWidth={2} className='shrink-0 text-slate-100' />
               <span className='min-w-0 font-medium'>
                 {l.title}
                 {l.url?.includes('page=') && (
@@ -53,7 +53,7 @@ export function ExternalLinkLabels({
     <>
       {externalLinks.map((l) => (
         <a key={l.id} href={l.url ?? '#'} target='_blank' rel='noreferrer'>
-          <Badge icon={LinkIcon} className='hover:bg-white/[0.08] hover:text-slate-300 hover:ring-white/[0.1]'>
+          <Badge icon={LinkIcon} className={designContract.surfaces.badgeLinkHover}>
             {l.title}
             {l.url?.includes('page=') && <span className='ml-1 text-slate-500'>p.{l.url.split('page=')[1]}</span>}
           </Badge>

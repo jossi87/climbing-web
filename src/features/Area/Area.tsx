@@ -30,9 +30,8 @@ import {
   Bookmark,
   MapPin,
   Mountain,
-  Brush,
+  Waypoints,
   Film,
-  CheckCircle2,
   LayoutGrid,
   LayoutDashboard,
   List,
@@ -40,7 +39,21 @@ import {
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
-import { tabBarButtonClassName, tabBarButtonClassNameInline, tabBarIconClassName } from '../../design/tabBar';
+import {
+  tabBarButtonClassName,
+  tabBarButtonClassNameInline,
+  tabBarIconClassName,
+  tabBarStripContainerClassName,
+  TAB_BAR_ICON_SIZE,
+} from '../../design/tabBar';
+import { ProfileRowTextSep } from '../../shared/components/Profile/ProfileRowTextSep';
+import {
+  profileRowRootClass,
+  tickCommentSmall,
+  tickFlags,
+  tickProblemLink,
+  tickWhenGrade,
+} from '../../shared/components/Profile/profileRowTypography';
 
 /** Project / Projects subtype chips — no green “complete” border (not ticked like graded lines). */
 function isProjectSubtypeChip(typeLabel: string | undefined): boolean {
@@ -57,160 +70,194 @@ function isTypeChipFullyTicked(x: components['schemas']['TypeNumTickedTodo']): b
 }
 
 type Props = {
+  sectorId: number;
   sectorName: string;
   problem: NonNullable<NonNullable<components['schemas']['Area']['sectors']>[number]['problems']>[number];
 };
 
-const SectorListItem = ({ sectorName, problem }: Props) => {
-  const { isClimbing } = useMeta();
-  const type = isClimbing
-    ? (problem.t?.subType ?? '') + ((problem.numPitches ?? 1) > 1 ? ', ' + problem.numPitches + ' pitches' : '')
-    : null;
-  const ascents = problem.numTicks && problem.numTicks === 1 ? '1 ascent' : (problem.numTicks ?? 0) + ' ascents';
+const areaListLockInlineClass = 'ml-0.5 inline-block align-middle';
 
-  let faTypeAscents = (problem.fa ?? '').trim();
-  if (problem.faDate) {
-    const y = problem.faDate.substring(0, 4);
-    faTypeAscents = faTypeAscents ? `${faTypeAscents} ${y}` : y;
-  }
-  if (type && ascents) {
-    faTypeAscents = (faTypeAscents ? `${faTypeAscents} (` : '(') + type + ', ' + ascents + ')';
-  } else if (type) {
-    faTypeAscents = (faTypeAscents ? `${faTypeAscents} (` : '(') + type + ')';
-  } else if (ascents) {
-    faTypeAscents = (faTypeAscents ? `${faTypeAscents} (` : '(') + ascents + ')';
-  }
+/** Area Routes tab row — same typography/layout as the sector problem list; includes sector name for context. */
+const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
+  const { isClimbing, isBouldering } = useMeta();
 
-  const hasTrailIcons =
-    !!problem.coordinates ||
-    !!problem.hasTopo ||
-    !!problem.hasImages ||
-    !!problem.hasMovies ||
-    !!problem.ticked ||
-    !!problem.todo;
+  const faMetaBlock = (() => {
+    const segments: { key: string; node: ReactNode }[] = [];
+    const faText = (problem.fa ?? '').trim();
+    const faYear = problem.faDate ? problem.faDate.substring(0, 4) : '';
+    const faLine = [faText, faYear].filter(Boolean).join(' ');
+    if (faLine) {
+      segments.push({ key: 'fa', node: faLine });
+    }
+    if (isClimbing && problem.t?.subType) {
+      segments.push({ key: 'subtype', node: problem.t.subType });
+      if ((problem.numPitches ?? 1) > 1) {
+        segments.push({
+          key: 'pitches',
+          node: (
+            <>
+              <span className='tabular-nums'>{problem.numPitches}</span> pitches
+            </>
+          ),
+        });
+      }
+    }
+    const n = problem.numTicks ?? 0;
+    if (n > 0) {
+      segments.push({
+        key: 'ascents',
+        node: (
+          <>
+            <span className='tabular-nums'>{n}</span>
+            {n === 1 ? ' ascent' : ' ascents'}
+          </>
+        ),
+      });
+    }
 
-  const trailBlock = hasTrailIcons ? (
-    <span className='inline-flex flex-wrap items-center gap-x-1.5 gap-y-0.5 align-middle text-slate-500'>
-      {problem.coordinates && (
-        <span title='Coordinates'>
-          <MapPin size={12} />
-        </span>
-      )}
-      {problem.hasTopo && (
-        <span title='Topo'>
-          <Brush size={12} />
-        </span>
-      )}
-      {problem.hasImages && (
-        <span title='Images'>
-          <ImageIcon size={12} />
-        </span>
-      )}
-      {problem.hasMovies && (
-        <span title='Movies'>
-          <Film size={12} />
-        </span>
-      )}
-      {problem.ticked && (
-        <span title='Ticked'>
-          <CheckCircle2 size={12} className='text-green-500' />
-        </span>
-      )}
-      {problem.todo && (
-        <span title='To-Do'>
-          <Bookmark size={12} className='text-blue-500' />
-        </span>
-      )}
-    </span>
-  ) : null;
+    if (segments.length === 0) return null;
 
-  const metaPieces: ReactNode[] = [];
-  if (faTypeAscents)
-    metaPieces.push(
-      <span key='fa' className='text-slate-400'>
-        {faTypeAscents}
-      </span>,
-    );
-  if (problem.rock)
-    metaPieces.push(
-      <span key='rock' className='font-medium text-slate-400 not-italic'>
-        Rock: {problem.rock}.
-      </span>,
-    );
-  if (problem.comment)
-    metaPieces.push(
-      <span key='c' className='text-slate-500 italic'>
-        {problem.comment}
-      </span>,
-    );
-
-  const metaBlock =
-    metaPieces.length > 0 ? (
-      <span className={cn(designContract.typography.meta, 'text-slate-500')}>
-        {metaPieces.map((node, i) => (
-          <Fragment key={i}>
-            {i > 0 ? <span className='text-slate-600'> · </span> : null}
-            {node}
+    return (
+      <span className={tickFlags}>
+        {segments.map((seg, i) => (
+          <Fragment key={seg.key}>
+            {i > 0 ? <ProfileRowTextSep /> : null}
+            {seg.node}
           </Fragment>
         ))}
       </span>
+    );
+  })();
+
+  const hasMediaTrail = !!problem.coordinates || !!problem.hasTopo || !!problem.hasImages || !!problem.hasMovies;
+
+  const hasLock = !!(problem.lockedAdmin || problem.lockedSuperadmin);
+  const hasBroken = !!problem.broken;
+  const lockBrokenBlock =
+    hasLock || hasBroken ? (
+      <>
+        {hasLock ? (
+          <span className={areaListLockInlineClass}>
+            <LockSymbol lockedAdmin={!!problem.lockedAdmin} lockedSuperadmin={!!problem.lockedSuperadmin} />
+          </span>
+        ) : null}
+        {hasBroken ? (
+          <>
+            {hasLock ? ' ' : null}
+            <span className='rounded border border-red-500/25 bg-red-500/12 px-1.5 py-0.5 text-[9px] font-semibold tracking-wide text-red-300 uppercase'>
+              {problem.broken}
+            </span>
+          </>
+        ) : null}
+      </>
     ) : null;
 
-  const sectorBlock = (
-    <>
-      <span className={designContract.typography.meta}>{sectorName}</span>
-      <LockSymbol lockedAdmin={!!problem.lockedAdmin} lockedSuperadmin={!!problem.lockedSuperadmin} />
-    </>
-  );
+  const mediaTrailBlock = hasMediaTrail ? (
+    <span className='inline text-slate-500'>
+      {problem.coordinates ? (
+        <span className='inline' title='Coordinates'>
+          <MapPin size={12} strokeWidth={2} className='inline-block align-[-0.125em]' />
+        </span>
+      ) : null}
+      {problem.hasTopo ? (
+        <span className='inline pl-1' title='Topo line'>
+          <Waypoints size={12} strokeWidth={2} className='inline-block align-[-0.125em]' />
+        </span>
+      ) : null}
+      {problem.hasImages ? (
+        <span className='inline pl-1' title='Images'>
+          <ImageIcon size={12} strokeWidth={2} className='inline-block align-[-0.125em]' />
+        </span>
+      ) : null}
+      {problem.hasMovies ? (
+        <span className='inline pl-1' title='Movies'>
+          <Film size={12} strokeWidth={2} className='inline-block align-[-0.125em]' />
+        </span>
+      ) : null}
+    </span>
+  ) : null;
 
-  const tailBlocks = [trailBlock, metaBlock].filter(Boolean);
+  const lockAndMedia =
+    lockBrokenBlock || mediaTrailBlock ? (
+      <>
+        {lockBrokenBlock}
+        {lockBrokenBlock && mediaTrailBlock ? ' ' : null}
+        {mediaTrailBlock}
+      </>
+    ) : null;
+
+  const hasIconRunBeforeFa = !!(lockAndMedia || (problem.stars && problem.stars > 0) || sectorName);
 
   return (
-    <div
-      className={cn(
-        'rounded-md px-0 py-2 transition-colors sm:px-0.5',
-        problem.ticked && 'bg-green-500/[0.04]',
-        problem.todo && !problem.ticked && 'bg-blue-500/[0.04]',
-      )}
-    >
-      <p
-        className={cn(
-          designContract.typography.body,
-          'min-w-0 leading-snug text-pretty [overflow-wrap:anywhere] text-slate-300 sm:leading-relaxed',
-        )}
-      >
-        {problem.danger && <AlertTriangle size={13} className='mr-1 inline-block shrink-0 text-red-500' />}
-        <span className={cn(designContract.typography.meta, 'font-mono text-slate-500 tabular-nums')}>
+    <div className={cn(profileRowRootClass, 'min-w-0 py-1 text-pretty [overflow-wrap:anywhere] sm:py-1.5')}>
+      <div className='min-w-0 leading-snug'>
+        {problem.danger ? (
+          <AlertTriangle
+            size={12}
+            className='mr-1 inline-block shrink-0 align-[-0.125em] text-red-400'
+            strokeWidth={2.25}
+          />
+        ) : null}
+        <span
+          className={cn(
+            'font-mono tabular-nums',
+            problem.ticked ? 'text-emerald-400' : problem.todo ? 'text-blue-400' : 'text-slate-500',
+          )}
+          title={
+            problem.ticked ? 'Ticked' : problem.todo ? 'On to-do list' : `${isBouldering ? 'Boulder' : 'Route'} number`
+          }
+        >
           #{problem.nr}
         </span>{' '}
         <Link
           to={`/problem/${problem.id}`}
-          className={cn(designContract.typography.listLink, designContract.typography.listEmphasis)}
+          className={cn(tickProblemLink, problem.broken ? 'line-through opacity-60' : undefined)}
         >
           {problem.name}
         </Link>
         {problem.grade ? (
-          <>
-            {' '}
-            <span className={cn(designContract.typography.meta, 'font-mono text-slate-500 tabular-nums')}>
-              {problem.grade}
-            </span>
-          </>
+          <span className={cn(tickWhenGrade, 'ml-1 whitespace-nowrap tabular-nums')}>{problem.grade}</span>
         ) : null}
         {problem.stars ? (
-          <span className='ml-1 inline-flex origin-left scale-90 align-middle'>
-            <Stars numStars={problem.stars} includeStarOutlines={false} />
+          <span className='ml-1 inline-block align-[-0.15em] opacity-90'>
+            <Stars numStars={problem.stars} includeStarOutlines={false} size={11} />
           </span>
         ) : null}
-        <span className='text-slate-600'> · </span>
-        {sectorBlock}
-        {tailBlocks.map((block, i) => (
-          <Fragment key={i}>
-            <span className='text-slate-600'> · </span>
-            {block}
-          </Fragment>
-        ))}
-      </p>
+        {lockAndMedia ? <> {lockAndMedia}</> : null}
+        {sectorName ? (
+          <>
+            <ProfileRowTextSep />
+            {sectorId > 0 ? (
+              <Link
+                to={`/sector/${sectorId}`}
+                className={cn(tickFlags, designContract.typography.listLinkMuted, 'underline-offset-2 hover:underline')}
+              >
+                {sectorName}
+              </Link>
+            ) : (
+              <span className={cn(tickFlags, 'text-slate-300')}>{sectorName}</span>
+            )}
+          </>
+        ) : null}
+        {faMetaBlock ? (
+          <>
+            {hasIconRunBeforeFa ? ' ' : <ProfileRowTextSep />}
+            {faMetaBlock}
+          </>
+        ) : null}
+        {problem.rock ? (
+          <>
+            <ProfileRowTextSep />
+            <span className={cn(tickFlags, 'not-italic')}>Rock: {problem.rock}</span>
+          </>
+        ) : null}
+        {problem.comment ? (
+          <>
+            <ProfileRowTextSep />
+            <span className={tickCommentSmall}>{problem.comment}</span>
+          </>
+        ) : null}
+      </div>
     </div>
   );
 };
@@ -323,7 +370,7 @@ const Area = () => {
         const name = sector.name ?? '';
         const problems = sector.problems ?? [];
         return problems.map((p) => ({
-          element: <SectorListItem key={p.id} sectorName={name} problem={p} />,
+          element: <SectorListItem key={p.id} sectorId={sector.id ?? 0} sectorName={name} problem={p} />,
           name: p.name ?? '',
           areaName: data.name ?? '',
           sectorName: name,
@@ -369,6 +416,19 @@ const Area = () => {
     if (data.triviaMedia.length > 1) orderableMedia.push(...data.triviaMedia);
   }
 
+  const areaAccessRestrictions =
+    data.accessClosed || data.noDogsAllowed || data.accessInfo ? (
+      <div className='min-w-0 space-y-2 text-[12px] leading-relaxed sm:text-[13px]'>
+        {data.accessClosed && <p className='text-pretty text-red-300/90'>{data.accessClosed}</p>}
+        {(data.noDogsAllowed || data.accessInfo) && (
+          <div className='space-y-1.5 text-orange-300/90'>
+            {data.noDogsAllowed && <p className='text-pretty'>No dogs allowed (landowner request).</p>}
+            {data.accessInfo && <p className='text-pretty'>{data.accessInfo}</p>}
+          </div>
+        )}
+      </div>
+    ) : null;
+
   return (
     <div className='w-full min-w-0'>
       <title>{`${data.name} | ${meta?.title}`}</title>
@@ -378,13 +438,13 @@ const Area = () => {
         <PageCardBreadcrumbRow
           className='mb-0'
           breadcrumb={
-            <nav className='block min-w-0 text-[12px] leading-relaxed text-pretty break-words text-slate-500 sm:text-[13px] [&>*+*]:ml-1.5'>
-              <Link to='/areas' className='inline align-middle transition-colors hover:text-slate-300'>
+            <nav className='block min-w-0 text-[12px] leading-relaxed text-pretty break-words sm:text-[13px] [&>*+*]:ml-1.5'>
+              <Link to='/areas' className='inline align-middle text-slate-400 transition-colors hover:text-slate-200'>
                 Areas
               </Link>
               <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
-              <span className='inline-flex max-w-full min-w-0 items-center gap-1.5 align-middle text-slate-400'>
-                <span className='min-w-0 font-medium'>{data.name}</span>
+              <span className='inline-flex max-w-full min-w-0 items-center gap-1.5 align-middle'>
+                <span className='min-w-0 font-semibold text-slate-50'>{data.name}</span>
                 <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
               </span>
             </nav>
@@ -393,44 +453,38 @@ const Area = () => {
             meta.isAdmin ? (
               <>
                 <Link
-                  to={`/area/edit/${data.id}`}
-                  title='Edit area'
-                  aria-label='Edit area'
-                  className='inline-flex h-8 w-8 items-center justify-center rounded-full border border-amber-300/45 bg-amber-400/18 text-amber-100 transition-colors hover:bg-amber-400/28'
-                >
-                  <Edit size={12} />
-                </Link>
-                <Link
                   to={`/sector/edit/${data.id}/0`}
                   title='Add sector'
                   aria-label='Add sector'
-                  className='inline-flex h-8 w-8 items-center justify-center rounded-full border border-green-400/40 bg-green-500/20 text-green-300 transition-colors hover:bg-green-500/30 hover:text-green-200'
+                  className={cn(
+                    designContract.controls.pageHeaderIconButton,
+                    'border-green-400/40 bg-green-500/20 text-green-300 hover:bg-green-500/30 hover:text-green-200',
+                  )}
                 >
-                  <Plus size={12} />
+                  <Plus className={designContract.controls.pageHeaderIconGlyph} />
+                </Link>
+                <Link
+                  to={`/area/edit/${data.id}`}
+                  title='Edit area'
+                  aria-label='Edit area'
+                  className={cn(
+                    designContract.controls.pageHeaderIconButton,
+                    'border-amber-300/45 bg-amber-400/18 text-amber-100 hover:bg-amber-400/28',
+                  )}
+                >
+                  <Edit className={designContract.controls.pageHeaderIconGlyph} />
                 </Link>
               </>
             ) : null
           }
         />
-
-        {data.accessClosed || data.noDogsAllowed || data.accessInfo ? (
-          <div className='min-w-0 space-y-2 text-[12px] leading-relaxed sm:text-[13px]'>
-            {data.accessClosed && <p className='text-pretty text-red-300/90'>{data.accessClosed}</p>}
-            {(data.noDogsAllowed || data.accessInfo) && (
-              <div className='space-y-1.5 text-orange-300/90'>
-                {data.noDogsAllowed && <p className='text-pretty'>No dogs allowed (landowner request).</p>}
-                {data.accessInfo && <p className='text-pretty'>{data.accessInfo}</p>}
-              </div>
-            )}
-          </div>
-        ) : null}
       </div>
 
       <Card flush className='min-w-0 border-0 sm:border'>
         {tabs.length > 0 && (
           <>
             <div
-              className={designContract.controls.tabBarRow}
+              className={tabBarStripContainerClassName('equal')}
               style={{ display: 'grid', gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
               role='tablist'
               aria-label='Area sections'
@@ -447,8 +501,12 @@ const Area = () => {
                     onClick={() => setActiveTab(t.id)}
                     className={tabBarButtonClassName(isActive)}
                   >
-                    <IconComp size={12} strokeWidth={isActive ? 2.3 : 2} className={tabBarIconClassName(isActive)} />
-                    <span className='block min-w-0 truncate leading-none'>{t.label}</span>
+                    <IconComp
+                      size={TAB_BAR_ICON_SIZE}
+                      strokeWidth={isActive ? 2.3 : 2}
+                      className={tabBarIconClassName(isActive)}
+                    />
+                    <span className='type-small block min-w-0 truncate leading-none sm:text-[12px]'>{t.label}</span>
                   </button>
                 );
               })}
@@ -458,6 +516,7 @@ const Area = () => {
               <div>
                 {effectiveTab === 'overview' && (
                   <div className='space-y-4 p-4 sm:p-5'>
+                    {areaAccessRestrictions}
                     {(data.media?.length ?? 0) > 0 && (
                       <Media
                         pitches={null}
@@ -508,7 +567,7 @@ const Area = () => {
                           carouselMedia={carouselMedia}
                           optProblemId={null}
                           showLocation={false}
-                          compactTiles
+                          triviaTiles
                         />
                       </div>
                     )}
@@ -557,11 +616,11 @@ const Area = () => {
       </Card>
 
       {effectiveTab === 'overview' && (data.sectors?.length ?? 0) > 0 && (
-        <div className='mt-6 min-w-0 space-y-4'>
+        <Card flush className='mt-6 min-w-0 overflow-hidden border-0 shadow-sm sm:border'>
           <div
             role='tablist'
             aria-label='Choose sector grid or full problem list'
-            className={cn(designContract.controls.tabBarRow, 'gap-x-6 gap-y-1 sm:gap-x-10')}
+            className={tabBarStripContainerClassName('inline')}
           >
             <button
               type='button'
@@ -571,12 +630,15 @@ const Area = () => {
               className={cn(tabBarButtonClassNameInline(activeSectorTab === 'sectors'), 'flex-row gap-2')}
             >
               <LayoutGrid
-                size={14}
+                size={TAB_BAR_ICON_SIZE}
                 strokeWidth={activeSectorTab === 'sectors' ? 2.3 : 2}
                 className={tabBarIconClassName(activeSectorTab === 'sectors')}
               />
-              <span className='whitespace-nowrap'>
-                Sectors <span className='font-normal text-slate-500'>({data.sectors?.length ?? 0})</span>
+              <span className='type-small font-semibold whitespace-nowrap'>
+                Sectors{' '}
+                <span className={cn(designContract.typography.micro, 'font-normal text-slate-500 tabular-nums')}>
+                  ({data.sectors?.length ?? 0})
+                </span>
               </span>
             </button>
             <button
@@ -587,26 +649,27 @@ const Area = () => {
               className={cn(tabBarButtonClassNameInline(activeSectorTab === 'problems'), 'flex-row gap-2')}
             >
               <List
-                size={14}
+                size={TAB_BAR_ICON_SIZE}
                 strokeWidth={activeSectorTab === 'problems' ? 2.3 : 2}
                 className={tabBarIconClassName(activeSectorTab === 'problems')}
               />
-              <span className='whitespace-nowrap'>
+              <span className='type-small font-semibold whitespace-nowrap'>
                 {meta.isBouldering ? 'Problems' : 'Routes'}{' '}
-                <span className='font-normal text-slate-500'>({problemRows.length})</span>
+                <span className={cn(designContract.typography.micro, 'font-normal text-slate-500 tabular-nums')}>
+                  ({problemRows.length})
+                </span>
               </span>
             </button>
           </div>
-          <div className='min-w-0'>
+          <div className='min-w-0 p-4 sm:p-5'>
             {activeSectorTab === 'sectors' ? (
               <div className={cn('min-w-0', designContract.layout.areaSectorCardGrid)}>
                 {data.sectors?.map((sector) => {
                   const sectorHasThumb = !!sector.randomMediaId;
                   return (
-                    <Card
+                    <div
                       key={sector.id}
-                      flush
-                      className='h-full max-w-full min-w-0 overflow-hidden rounded-xl border border-white/10 shadow-lg ring-1 ring-white/10 max-sm:!mx-0 max-sm:!w-full sm:border sm:shadow-xl sm:ring-0'
+                      className='bg-surface-card/40 h-full max-w-full min-w-0 overflow-hidden rounded-xl border border-white/10 shadow-lg ring-1 ring-white/10 max-sm:!mx-0 max-sm:!w-full sm:border sm:shadow-xl sm:ring-0'
                     >
                       <Link
                         to={`/sector/${sector.id}`}
@@ -691,27 +754,15 @@ const Area = () => {
                           )}
                         </div>
                       </Link>
-                    </Card>
+                    </div>
                   );
                 })}
               </div>
             ) : (
-              <Card
-                flush
-                className='border-surface-border/35 bg-surface-card/90 min-w-0 overflow-hidden rounded-xl shadow-sm ring-1 ring-white/5 sm:border'
-              >
-                <div className='p-3 sm:p-4'>
-                  <ProblemList
-                    storageKey={`area/${areaId}`}
-                    mode='sector'
-                    defaultOrder='grade-desc'
-                    rows={problemRows}
-                  />
-                </div>
-              </Card>
+              <ProblemList storageKey={`area/${areaId}`} mode='sector' defaultOrder='grade-desc' rows={problemRows} />
             )}
           </div>
-        </div>
+        </Card>
       )}
 
       {effectiveTab === 'activity' && (

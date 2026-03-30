@@ -1,7 +1,7 @@
 import { useSector } from '../../../api';
 import { LockSymbol, Stars } from '../../../shared/ui/Indicators';
 import { Link } from 'react-router-dom';
-import { MapPin, Pencil, Camera, Film, Check, Bookmark } from 'lucide-react';
+import { MapPin, Waypoints, Camera, Film, Check, Bookmark } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
 
@@ -61,7 +61,11 @@ export const ProblemsOnRock = ({
           <div className='ml-0.5 flex items-center gap-1.5 border-l border-white/10 pl-1.5'>
             <Stars numStars={p.stars} includeStarOutlines={false} />
             {p.coordinates && <MapPin size={10} className={problemId === p.id ? '' : 'opacity-70'} />}
-            {p.hasTopo && <Pencil size={10} className={problemId === p.id ? '' : 'opacity-70'} />}
+            {p.hasTopo && (
+              <span title='Topo line' className='inline-flex'>
+                <Waypoints size={10} className={problemId === p.id ? '' : 'opacity-70'} aria-hidden />
+              </span>
+            )}
             {p.hasImages && <Camera size={10} className={problemId === p.id ? '' : 'opacity-70'} />}
             {p.hasMovies && <Film size={10} className={problemId === p.id ? '' : 'opacity-70'} />}
             <LockSymbol lockedAdmin={p.lockedAdmin} lockedSuperadmin={p.lockedSuperadmin} />
