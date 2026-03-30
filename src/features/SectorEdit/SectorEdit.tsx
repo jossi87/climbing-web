@@ -569,7 +569,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
                     'inline-flex min-h-9 items-center gap-1.5 rounded-lg px-3 py-2 text-[11px] font-semibold tracking-wide transition-colors sm:text-xs',
                     leafletMode === m.id
                       ? 'bg-brand text-slate-950 shadow-sm ring-1 ring-black/10'
-                      : 'hover:bg-surface-card text-slate-500 hover:text-slate-200',
+                      : 'hover:bg-surface-hover text-slate-500 hover:text-slate-200',
                   )}
                 >
                   <m.icon size={14} strokeWidth={2} className='shrink-0 opacity-80' aria-hidden />
@@ -604,7 +604,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
                 'rounded-xl border px-4 py-2.5 text-[11px] font-semibold tracking-wide transition-colors sm:text-xs',
                 sectorMarkers != null && sectorMarkers.length > 0
                   ? 'border-brand bg-brand text-slate-950 shadow-sm ring-1 ring-black/10'
-                  : 'border-surface-border bg-surface-nav hover:bg-surface-card text-slate-400 hover:text-slate-200',
+                  : 'border-surface-border bg-surface-nav hover:bg-surface-hover text-slate-400 hover:text-slate-200',
               )}
             >
               Include all markers in sector

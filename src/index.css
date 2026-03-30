@@ -4,7 +4,8 @@
   --color-brand: #c6a15b;
   --color-surface-dark: #0d1014;
   --color-surface-nav: #16181e;
-  --color-surface-card: #1d2026;
+  /* Same as nav/footer chrome — panels read as part of the page, not a brighter lift */
+  --color-surface-card: #16181e;
   --color-surface-hover: #292d35;
   --color-surface-border: #363d4a;
   --color-white: #e2e8f0;

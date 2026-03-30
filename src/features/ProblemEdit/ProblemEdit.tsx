@@ -462,7 +462,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                     'rounded-lg px-4 py-1.5 text-xs font-black uppercase transition-all',
                     data.faAid
                       ? 'bg-brand text-slate-950 shadow-sm ring-1 ring-black/10'
-                      : 'bg-surface-nav hover:bg-surface-card text-slate-500 opacity-90 hover:text-slate-200',
+                      : 'bg-surface-nav hover:bg-surface-hover text-slate-500 opacity-90 hover:text-slate-200',
                   )}
                 >
                   Yes
@@ -474,7 +474,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                     'rounded-lg px-4 py-1.5 text-xs font-black uppercase transition-all',
                     !data.faAid
                       ? 'bg-brand text-slate-950 shadow-sm ring-1 ring-black/10'
-                      : 'bg-surface-nav hover:bg-surface-card text-slate-500 opacity-90 hover:text-slate-200',
+                      : 'bg-surface-nav hover:bg-surface-hover text-slate-500 opacity-90 hover:text-slate-200',
                   )}
                 >
                   No

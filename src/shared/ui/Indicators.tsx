@@ -58,12 +58,12 @@ export const Stars = ({
   const hasHalfStar = numStars % 1 !== 0;
   const stars = [];
   const filledClass = muted ? 'fill-slate-500/90 text-slate-500' : 'fill-slate-100 text-slate-100';
-  const outlineClass = muted ? 'text-slate-600/75 opacity-80' : 'text-slate-500/85 opacity-90';
+  const outlineClass = muted ? 'fill-none text-slate-500/95' : 'fill-none text-slate-400/95';
 
   for (let i = 0; i < 3; i++) {
     if (i < fullStars) stars.push(<Star key={i} size={size} className={filledClass} />);
     else if (i === fullStars && hasHalfStar) stars.push(<StarHalf key={i} size={size} className={filledClass} />);
-    else if (includeStarOutlines) stars.push(<Star key={i} size={size} className={outlineClass} />);
+    else if (includeStarOutlines) stars.push(<Star key={i} size={size} strokeWidth={2.65} className={outlineClass} />);
   }
   return <div className='inline-flex items-center gap-0.5'>{stars}</div>;
 };

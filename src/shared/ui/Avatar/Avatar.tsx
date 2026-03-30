@@ -89,12 +89,12 @@ export function AvatarGroup({
             key={item.mediaId || i}
             {...item}
             size={size}
-            className={cn('ring-surface-card rounded-full ring-2', item.className)}
+            className={cn('ring-surface-hover rounded-full ring-2', item.className)}
           />
         ))}
         {items.length > max && (
           <div
-            className='bg-surface-nav ring-surface-card flex items-center justify-center rounded-full text-[8px] font-bold text-slate-500 ring-2'
+            className='bg-surface-nav ring-surface-hover flex items-center justify-center rounded-full text-[8px] font-bold text-slate-500 ring-2'
             style={{ width: SIZE_MAP[size], height: SIZE_MAP[size] }}
           >
             +{items.length - max}
