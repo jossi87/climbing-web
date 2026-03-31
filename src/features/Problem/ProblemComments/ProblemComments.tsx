@@ -14,7 +14,7 @@ import {
   tickProblemLink,
 } from '../../../shared/components/Profile/profileRowTypography';
 
-const rowShell = 'group px-3 py-2 transition-colors hover:bg-white/[0.015] sm:px-4 sm:py-2.5';
+const rowShell = 'group px-3 py-1.5 transition-colors hover:bg-white/[0.015] sm:px-4 sm:py-2';
 
 const actionIconBtn = 'rounded-md p-1.5 text-slate-600 transition-colors hover:bg-white/[0.06] hover:text-slate-300';
 
@@ -69,14 +69,14 @@ export const ProblemComments = ({
   if (comments.length === 0) return null;
 
   return (
-    <div className='flex flex-col gap-0.5 text-left'>
+    <div className='flex flex-col gap-3 text-left sm:gap-3.5'>
       {comments.map((c) => {
         const isOwn = !!c.editable;
         const showFlagAction = !c.danger && !c.resolved && meta.isAuthenticated && meta.isClimbing;
 
         return (
           <div key={c.id} className={rowShell}>
-            <div className='flex items-start gap-2.5 sm:gap-3'>
+            <div className='flex items-start gap-2 sm:gap-2.5'>
               <div className='shrink-0'>
                 <ClickableAvatar
                   name={c.name}
@@ -88,7 +88,7 @@ export const ProblemComments = ({
               </div>
 
               <div className='min-w-0 flex-1'>
-                <div className='flex min-w-0 flex-wrap items-start gap-x-2 gap-y-1'>
+                <div className='flex min-w-0 flex-wrap items-start gap-x-2 gap-y-0.5'>
                   <div
                     className={cn(
                       profileRowRootClass,
@@ -165,14 +165,14 @@ export const ProblemComments = ({
                 <div
                   className={cn(
                     tickCommentSmall,
-                    'mt-1.5 leading-relaxed text-pretty break-words text-slate-50 not-italic',
+                    'mt-0.5 leading-snug text-pretty break-words text-slate-50 not-italic sm:leading-relaxed',
                   )}
                 >
                   <Linkify>{c.message}</Linkify>
                 </div>
 
                 {(c.media ?? []).length > 0 && (
-                  <div className='mt-2.5'>
+                  <div className='mt-2'>
                     <Media
                       pitches={sections}
                       media={c.media ?? []}

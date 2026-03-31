@@ -26,10 +26,13 @@ function joinDates(dates: (string | undefined | null)[]) {
   return dates.filter(nonEmptyDate).join(' · ');
 }
 
-/** Compact list rows for long tick histories. */
-const rowShell = 'group px-3 py-2 transition-colors hover:bg-white/[0.015] sm:px-4 sm:py-2.5';
+/** Room between rows; light vertical padding so body + note + stars read as one unit. */
+const rowShell = 'group px-3 py-1.5 transition-colors hover:bg-white/[0.015] sm:px-4 sm:py-2';
 
-const quoteBlock = cn(tickCommentSmall, 'mt-1 leading-relaxed text-pretty break-words text-slate-50 not-italic');
+const quoteBlock = cn(
+  tickCommentSmall,
+  'mt-0.5 leading-snug text-pretty break-words text-slate-50 not-italic sm:leading-relaxed',
+);
 
 export const ProblemTicks = ({ ticks }: Props) => {
   const safeTicks = ticks ?? [];
@@ -37,7 +40,7 @@ export const ProblemTicks = ({ ticks }: Props) => {
   if (safeTicks.length === 0) return null;
 
   return (
-    <div className='flex flex-col gap-0.5'>
+    <div className='flex flex-col gap-3 sm:gap-3.5'>
       {safeTicks.map((t, index) => {
         const repeats = t.repeats ?? [];
         const isSelf = !!t.writable;
@@ -46,7 +49,7 @@ export const ProblemTicks = ({ ticks }: Props) => {
 
         if (repeats.length > 0) {
           commentContent = (
-            <div className={cn(quoteBlock, 'space-y-1')}>
+            <div className={cn(quoteBlock, 'space-y-0.5')}>
               <div className='flex flex-wrap gap-x-2 gap-y-0.5'>
                 {nonEmptyDate(t.date) ? (
                   <span className={cn(tickFlags, 'font-mono tabular-nums')}>{t.date}</span>
@@ -81,7 +84,7 @@ export const ProblemTicks = ({ ticks }: Props) => {
 
         return (
           <div key={t.id != null ? `tick-${t.id}` : `tick-${t.idUser}-${index}`} className={rowShell}>
-            <div className='flex items-start gap-2.5 sm:gap-3'>
+            <div className='flex items-start gap-2 sm:gap-2.5'>
               <div className='shrink-0'>
                 <ClickableAvatar
                   name={t.name}
@@ -127,7 +130,7 @@ export const ProblemTicks = ({ ticks }: Props) => {
                 </div>
 
                 {t.stars !== -1 && (
-                  <div className='mt-1 self-start'>
+                  <div className='mt-0.5 self-start'>
                     <Stars numStars={t.stars ?? 0} includeStarOutlines size={11} />
                   </div>
                 )}

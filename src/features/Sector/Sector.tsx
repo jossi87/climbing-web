@@ -106,15 +106,20 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
 
     if (segments.length === 0) return null;
 
+    const metaMuted = tickFlags;
+    /** Route type: reads as a label, not buried in gray meta. */
+    const metaTypeClass =
+      'inline-flex max-w-full items-center rounded-md border border-white/12 bg-white/[0.06] px-1.5 py-0.5 text-[10px] font-medium text-slate-100 antialiased shadow-sm sm:text-[11px]';
+
     return (
-      <span className={tickFlags}>
+      <>
         {segments.map((seg, i) => (
           <Fragment key={seg.key}>
-            {i > 0 ? <ProfileRowTextSep /> : null}
-            {seg.node}
+            {i > 0 ? segments[i - 1]!.key === 'subtype' || seg.key === 'subtype' ? ' ' : <ProfileRowTextSep /> : null}
+            <span className={seg.key === 'subtype' ? metaTypeClass : metaMuted}>{seg.node}</span>
           </Fragment>
         ))}
-      </span>
+      </>
     );
   })();
 
@@ -189,15 +194,16 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
         ) : null}
         <span
           className={cn(
-            'font-mono tabular-nums',
-            problem.ticked ? 'text-emerald-400' : problem.todo ? 'text-blue-400' : 'text-slate-500',
+            tickWhenGrade,
+            'mr-1.5 inline-block tabular-nums sm:mr-2',
+            problem.ticked ? 'text-emerald-400' : problem.todo ? 'text-sky-400' : null,
           )}
           title={
             problem.ticked ? 'Ticked' : problem.todo ? 'On to-do list' : `${isBouldering ? 'Boulder' : 'Route'} number`
           }
         >
           #{problem.nr}
-        </span>{' '}
+        </span>
         <Link
           to={`/problem/${problem.id}`}
           className={cn(tickProblemLink, problem.broken ? 'line-through opacity-60' : undefined)}
