@@ -4,7 +4,11 @@ import { numberWithCommas } from '../../api';
 import { cn } from '../../lib/utils';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { Card, SectionLabel } from '../../shared/ui';
-import { designContract } from '../../design/contract';
+
+/** Matches activity filter chips: frosted hover, slate/white type, no gradient or brand tint. */
+const statTileClass =
+  'border-white/10 bg-surface-nav/50 group relative flex min-h-[5rem] w-full flex-col items-center justify-center border p-3 text-center transition-colors duration-200 sm:min-h-[5.75rem] sm:p-4 ' +
+  'hover:border-white/14 hover:bg-surface-nav';
 
 type StatItemProps = {
   to?: string;
@@ -16,21 +20,21 @@ type StatItemProps = {
 
 const StatItem = ({ to, icon: Icon, label, value, loading }: StatItemProps) => {
   const content = (
-    <div className='bg-surface-card group hover:bg-brand/8 hover:border-brand/20 relative flex h-full w-full flex-col items-center justify-center border border-transparent p-2 text-center transition-all duration-300 sm:p-4'>
+    <div className={statTileClass}>
       <div
         className={cn(
-          'mb-1 text-slate-400 transition-colors sm:mb-2',
-          'group-hover:text-brand',
+          'relative z-[1] mb-1.5 text-slate-500 transition-colors sm:mb-2',
+          'group-hover:text-slate-300',
           loading && 'animate-pulse',
         )}
       >
         <Icon size={16} strokeWidth={2} />
       </div>
-      <div className='flex min-w-0 flex-col items-center justify-center'>
+      <div className='relative z-[1] flex min-w-0 flex-col items-center justify-center gap-0.5'>
         {loading ? (
           <>
-            <div className='mb-1 flex h-6 items-center justify-center'>
-              <div className='bg-surface-hover h-3 w-10 animate-pulse rounded sm:w-12' />
+            <div className='mb-1 flex h-7 items-center justify-center'>
+              <div className='bg-surface-hover h-3.5 w-11 animate-pulse rounded sm:w-14' />
             </div>
             <div className='flex h-3 items-center justify-center'>
               <SectionLabel className='!text-[9px] !tracking-[0.06em] text-slate-400 sm:!text-[10px] sm:!tracking-[0.1em]'>
@@ -40,13 +44,13 @@ const StatItem = ({ to, icon: Icon, label, value, loading }: StatItemProps) => {
           </>
         ) : value !== undefined && value !== '' ? (
           <>
-            <div className='mb-1 flex h-6 items-center justify-center'>
-              <span className={cn(designContract.typography.subtitle, 'leading-none tabular-nums transition-opacity')}>
+            <div className='flex min-h-[1.5rem] items-center justify-center'>
+              <span className='text-base font-semibold tracking-tight text-slate-100 tabular-nums transition-colors sm:text-lg'>
                 {value}
               </span>
             </div>
-            <div className='flex h-3 items-center justify-center'>
-              <SectionLabel className='!text-[9px] !tracking-[0.06em] text-slate-300 transition-colors group-hover:text-slate-200 sm:!text-[10px] sm:!tracking-[0.1em]'>
+            <div className='flex h-3 items-center justify-center pt-0.5'>
+              <SectionLabel className='!text-[9px] !tracking-[0.06em] text-slate-400 transition-colors group-hover:text-slate-300 sm:!text-[10px] sm:!tracking-[0.1em]'>
                 {label}
               </SectionLabel>
             </div>
@@ -55,7 +59,7 @@ const StatItem = ({ to, icon: Icon, label, value, loading }: StatItemProps) => {
           <>
             <div className='mb-1 flex h-6 items-center justify-center' />
             <div className='flex h-3 items-center justify-center'>
-              <SectionLabel className='group-hover:text-brand !text-[9px] !tracking-[0.06em] text-slate-300 transition-colors sm:!text-[10px] sm:!tracking-[0.1em]'>
+              <SectionLabel className='!text-[9px] !tracking-[0.06em] text-slate-400 transition-colors group-hover:text-slate-300 sm:!text-[10px] sm:!tracking-[0.1em]'>
                 {label}
               </SectionLabel>
             </div>

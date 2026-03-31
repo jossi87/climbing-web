@@ -14,9 +14,11 @@ type Props = {
   tone?: 'default' | 'soft';
 };
 
-const softCragLink = 'font-normal text-slate-200 antialiased transition-colors hover:text-brand';
-const softProblemLink = 'font-medium text-slate-100 antialiased transition-colors hover:text-brand';
-const softWhenGrade = 'font-normal text-slate-300 antialiased';
+/** Home feed: crags de-emphasized so route + grade read first. */
+const softCragLink = 'font-normal text-slate-400 antialiased transition-colors hover:text-brand';
+const softProblemLink = 'font-semibold text-slate-100 antialiased transition-colors hover:text-brand';
+/** Home feed: grade as secondary metadata, not a loud accent. */
+const softWhenGrade = 'font-medium text-slate-300 antialiased';
 
 /** Same hierarchy as profile ascents / todo: crag → problem + grade + type (no badge box). */
 export const ProblemLink = ({ a, type, flagsClassName, tone = 'default' }: Props) => {

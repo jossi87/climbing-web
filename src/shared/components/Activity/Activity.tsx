@@ -28,8 +28,8 @@ type ActivityLayoutDensity = 'default' | 'frontpage';
 const ActivitySkeleton = ({ density = 'default' }: { density?: ActivityLayoutDensity }) => (
   <div
     className={cn(
-      'min-h-14 animate-pulse border-b border-white/5 px-3 py-2 last:border-0',
-      density === 'frontpage' ? 'md:min-h-[3.25rem] md:px-4 md:py-2.5' : 'sm:min-h-[3.25rem] sm:px-4 sm:py-2.5',
+      'min-h-14 animate-pulse border-b border-slate-800/50 px-3 py-2.5 last:border-b-0 last:border-transparent',
+      density === 'frontpage' ? 'md:min-h-[3.5rem] md:px-4 md:py-3' : 'sm:min-h-[3.25rem] sm:px-4 sm:py-2.5',
     )}
   >
     <div className={cn('flex items-start', density === 'frontpage' ? 'gap-2.5 md:gap-3' : 'gap-2.5 sm:gap-3')}>
@@ -130,18 +130,18 @@ const Activity = ({
               aria-expanded={isFilterOpen}
               type='button'
             >
-              <Filter size={12} className='text-brand shrink-0' strokeWidth={2} />
+              <Filter size={12} className='shrink-0 text-slate-100' strokeWidth={2} />
               <span
                 className={cn(
                   designContract.typography.uiCompact,
-                  'min-w-0 truncate text-slate-200 max-sm:text-[10px]',
+                  'min-w-0 truncate text-slate-100 max-sm:text-[10px]',
                 )}
               >
                 {normalizedLowerGradeText === 'n/a' ? 'All' : normalizedLowerGradeText}
               </span>
               <ChevronDown
                 size={10}
-                className={cn('shrink-0 text-slate-400 transition-transform', isFilterOpen && 'rotate-180')}
+                className={cn('shrink-0 text-slate-200 transition-transform', isFilterOpen && 'rotate-180')}
                 strokeWidth={2}
               />
             </button>
@@ -173,7 +173,7 @@ const Activity = ({
                         designContract.typography.menuItem,
                         'flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left transition-colors',
                         g.id === lowerGradeId
-                          ? 'bg-brand/12 font-semibold text-slate-100'
+                          ? 'bg-white/[0.1] font-semibold text-slate-100'
                           : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-200',
                       )}
                       onClick={() => {
@@ -219,7 +219,7 @@ const Activity = ({
       </div>
 
       {embedded ? (
-        <div className='border-surface-border/45 bg-surface-nav/20 divide-y divide-white/5 overflow-hidden rounded-xl border'>
+        <div className='border-surface-border/45 bg-surface-nav/20 divide-y divide-slate-800/50 overflow-hidden rounded-xl border'>
           {isPending
             ? [...Array(10)].map((_, i) => <ActivitySkeleton key={i} density={layoutDensity} />)
             : activity?.map((a) => (
@@ -232,7 +232,7 @@ const Activity = ({
               ))}
         </div>
       ) : (
-        <Card flush className='divide-y divide-white/5'>
+        <Card flush className='divide-y divide-slate-800/50'>
           {isPending
             ? [...Array(10)].map((_, i) => <ActivitySkeleton key={i} density={layoutDensity} />)
             : activity?.map((a) => (
@@ -256,12 +256,12 @@ type FilterButtonProps = {
   label: string;
 };
 
-/** Tighter on small screens so the whole strip fits one row without scrolling. */
+/** Roomier pills on `sm+`; keep phones compact so one row still fits. */
 const activityChipBase =
-  'inline-flex h-7 shrink-0 items-center gap-1 rounded-full border px-2 text-[10px] font-semibold leading-none transition-colors duration-200 active:scale-95 sm:h-8 sm:gap-1.5 sm:px-3 sm:text-[11px]';
+  'inline-flex h-7 shrink-0 items-center gap-1.5 rounded-full border px-2.5 text-[10px] font-semibold leading-none transition-colors duration-200 active:scale-95 sm:h-8 sm:gap-2 sm:px-4 sm:text-[11px]';
 const activityChipIdle =
-  'bg-surface-nav/45 border-surface-border text-slate-300 hover:bg-surface-nav hover:text-slate-100';
-const activityChipActive = 'bg-surface-hover/85 border-white/18 text-slate-100 shadow-sm';
+  'border-white/10 bg-surface-nav/50 text-slate-400 hover:border-white/14 hover:bg-surface-nav hover:text-slate-200';
+const activityChipActive = 'border-transparent bg-white/[0.12] text-slate-100 shadow-sm';
 
 /** Brighter than {@link tickFlags} for verbs (ticked, on, in, …) so they read with primary copy. */
 const activityActionClass = 'font-normal text-slate-200 antialiased';
@@ -270,6 +270,9 @@ const activityCommentBlock = cn(
   tickCommentSmall,
   'mt-1 leading-relaxed text-pretty break-words text-slate-50 not-italic',
 );
+/** Home: story line distinct from who/what/where. */
+const activityCommentFrontpage =
+  'mt-1.5 text-pretty break-words text-[10px] leading-relaxed italic text-slate-400 antialiased sm:text-[11px]';
 
 const FilterButton = ({ active, onClick, icon: Icon, label }: FilterButtonProps) => (
   <button
@@ -278,18 +281,7 @@ const FilterButton = ({ active, onClick, icon: Icon, label }: FilterButtonProps)
     aria-pressed={active}
     type='button'
   >
-    <Icon
-      size={12}
-      strokeWidth={2}
-      className={cn(
-        'shrink-0',
-        active && label === 'FA' && designContract.activityColors.filter.fa,
-        active && label === 'Ticks' && designContract.activityColors.filter.ticks,
-        active && label === 'Media' && designContract.activityColors.filter.media,
-        active && label === 'Com' && designContract.activityColors.filter.comments,
-        !active && 'text-slate-500',
-      )}
-    />
+    <Icon size={12} strokeWidth={2} className={cn('shrink-0', active ? 'text-slate-100' : 'text-slate-500')} />
     <span className={cn(designContract.typography.uiCompact, active ? 'text-slate-100' : 'text-slate-400')}>
       {label}
     </span>
@@ -326,7 +318,7 @@ const ActivityItem = ({ a, isBouldering, layoutDensity = 'default' }: ActivityIt
     [0, 0],
   );
 
-  const pad = layoutDensity === 'frontpage' ? 'px-3 py-2 md:px-4 md:py-2.5' : 'px-3 py-2 sm:px-4 sm:py-2.5';
+  const pad = layoutDensity === 'frontpage' ? 'px-3 py-2.5 md:px-4 md:py-3' : 'px-3 py-2 sm:px-4 sm:py-2.5';
   const gap = layoutDensity === 'frontpage' ? 'gap-2.5 md:gap-3' : 'gap-2.5 sm:gap-3';
   const mediaMt = layoutDensity === 'frontpage' ? 'mt-1.5 md:mt-2' : 'mt-1.5 sm:mt-2';
   const faRowMt = layoutDensity === 'frontpage' ? 'mt-1.5 md:mt-2' : 'mt-1.5 sm:mt-2';
@@ -334,9 +326,9 @@ const ActivityItem = ({ a, isBouldering, layoutDensity = 'default' }: ActivityIt
   const isFrontpage = layoutDensity === 'frontpage';
   /** Slightly duller than the default feed so the home hero feels less stark white-on-dark. */
   const actionClass = cn(activityActionClass, isFrontpage && 'text-slate-300');
-  const commentClass = cn(activityCommentBlock, isFrontpage && 'text-slate-100');
-  const cragLeadClass = cn(tickCrag, 'font-medium', isFrontpage && 'text-slate-200');
-  const userLinkClass = cn(tickProblemLink, isFrontpage && 'text-slate-100');
+  const commentClass = isFrontpage ? activityCommentFrontpage : activityCommentBlock;
+  const cragLeadClass = cn(tickCrag, 'font-medium', isFrontpage && 'text-slate-300');
+  const userLinkClass = cn(tickProblemLink, isFrontpage && 'font-semibold text-slate-100');
   const problemLinkTone = isFrontpage ? 'soft' : 'default';
   const timeHoverClass = isFrontpage ? 'group-hover:text-slate-400' : 'group-hover:text-slate-300';
   const faNameHoverClass = isFrontpage ? 'group-hover/user:text-slate-200' : 'group-hover/user:text-slate-100';

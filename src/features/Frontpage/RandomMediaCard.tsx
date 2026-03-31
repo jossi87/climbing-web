@@ -31,10 +31,10 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
 
   const taggedUsers = randomMedia.tagged || [];
   const photographer = randomMedia.photographer;
-  const problemTitleClass = 'text-[15px] leading-tight font-semibold text-slate-100 md:text-[16px]';
-  const gradeClass = 'text-[13px] leading-none font-normal text-slate-300 tabular-nums md:text-[14px]';
-  const locationClass = 'text-[11px] leading-tight font-medium text-slate-300 md:text-[12px]';
-  const metaTextClass = 'text-[11px] text-slate-300 md:text-[12px]';
+  const problemTitleClass = 'text-[15px] leading-snug font-semibold text-slate-100 md:text-[16px]';
+  const gradeClass = 'text-[13px] leading-none font-medium text-slate-300 tabular-nums md:text-[14px]';
+  const locationClass = 'text-[11px] leading-snug font-medium text-slate-300 md:text-[12px]';
+  const metaTextClass = 'text-[11px] leading-snug text-slate-200 md:text-[12px]';
   const interactiveLinkClass =
     'rounded-sm transition-colors duration-150 hover:text-brand hover:underline hover:decoration-brand/60 underline-offset-[3px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/35';
 
@@ -73,7 +73,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
             <h3 className={problemTitleClass}>{randomMedia.problem}</h3>
             <span className={gradeClass}>{randomMedia.grade}</span>
           </Link>
-          <div className='mt-2 mb-4 leading-tight'>
+          <div className='mt-3 mb-0 leading-snug'>
             <Link to={`/area/${randomMedia.idArea}`} className={interactiveLinkClass}>
               <span className={locationClass}>{randomMedia.area}</span>
             </Link>
@@ -84,7 +84,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
           </div>
 
           {(taggedUsers.length > 0 || photographer) && (
-            <div className='flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-white/10 pt-4'>
+            <div className='mt-5 flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-white/10 pt-5'>
               {taggedUsers.length > 0 && (
                 <div className='flex items-center gap-2'>
                   <AvatarGroup
@@ -113,7 +113,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
                     className='h-5! w-5! ring-1 ring-white/20'
                   />
                   <div className={metaTextClass}>
-                    <span className='mr-1 text-slate-400'>By</span>
+                    <span className='mr-1 text-slate-400/95'>By</span>
                     <Link to={`/user/${photographer.id}`} className={interactiveLinkClass}>
                       {photographer.name}
                     </Link>
@@ -126,12 +126,15 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
       </div>
 
       <div className='hidden p-4 md:block'>
-        <div className='mb-4'>
-          <Link to={`/problem/${randomMedia.idProblem}`} className={`${interactiveLinkClass} inline-block`}>
+        <div className='space-y-3'>
+          <Link
+            to={`/problem/${randomMedia.idProblem}`}
+            className={`${interactiveLinkClass} inline-flex flex-wrap items-baseline gap-x-2 gap-y-1`}
+          >
             <span className={problemTitleClass}>{randomMedia.problem}</span>
-            <span className={'ml-1 ' + gradeClass}>{randomMedia.grade}</span>
+            <span className={gradeClass}>{randomMedia.grade}</span>
           </Link>
-          <div className='mt-2 leading-tight'>
+          <div className='leading-snug'>
             <Link to={`/area/${randomMedia.idArea}`} className={interactiveLinkClass}>
               <span className={locationClass}>{randomMedia.area}</span>
             </Link>
@@ -143,7 +146,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
         </div>
 
         {(taggedUsers.length > 0 || photographer) && (
-          <div className='border-surface-border/50 flex flex-wrap items-center gap-x-4 gap-y-3 border-t pt-4'>
+          <div className='border-surface-border/50 mt-6 flex flex-wrap items-center gap-x-4 gap-y-3 border-t pt-5'>
             {taggedUsers.length > 0 && (
               <div className='flex items-center gap-3'>
                 <AvatarGroup items={taggedUsers.map((u) => ({ ...u, mediaId: u.mediaId ?? 0 }))} size='mini' max={3} />
@@ -166,7 +169,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
                   size='mini'
                 />
                 <div className={metaTextClass}>
-                  <span className='mr-1 text-slate-500'>By</span>
+                  <span className='mr-1 text-slate-400'>By</span>
                   <Link to={`/user/${photographer.id}`} className={interactiveLinkClass}>
                     {photographer.name}
                   </Link>
