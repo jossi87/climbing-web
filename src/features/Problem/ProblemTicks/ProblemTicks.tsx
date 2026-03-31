@@ -114,20 +114,23 @@ export const ProblemTicks = ({ ticks }: Props) => {
                       <span className={cn(tickWhenGrade, 'tabular-nums')}>{t.suggestedGrade}</span>
                     </>
                   )}
-                  <span className='ml-1 inline-flex origin-left align-middle opacity-90'>
-                    <Stars numStars={t.stars ?? 0} includeStarOutlines size={11} />
-                  </span>
                   {displayDate ? (
                     <span
                       className={cn(
                         tickFlags,
-                        'ml-1.5 inline tabular-nums transition-colors group-hover:text-slate-300',
+                        'ml-1.5 inline text-slate-500 tabular-nums transition-colors group-hover:text-slate-400',
                       )}
                     >
                       {displayDate}
                     </span>
                   ) : null}
                 </div>
+
+                {t.stars !== -1 && (
+                  <div className='mt-1 self-start'>
+                    <Stars numStars={t.stars ?? 0} includeStarOutlines size={11} />
+                  </div>
+                )}
 
                 {commentContent}
               </div>

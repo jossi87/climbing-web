@@ -1,8 +1,6 @@
 import { Link } from 'react-router-dom';
 import { getMediaFileUrl, getMediaFileUrlSrcSet } from '../../api';
 import { ClickableAvatar, AvatarGroup, Card } from '../../shared/ui';
-import { profileRowMiddleDotClass } from '../../shared/components/Profile/ProfileRowTextSep';
-import { cn } from '../../lib/utils';
 import type { components } from '../../@types/buldreinfo/swagger';
 
 type RandomMedia = components['schemas']['FrontpageRandomMedia'];
@@ -33,7 +31,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
   const photographer = randomMedia.photographer;
   const problemTitleClass = 'text-[15px] leading-snug font-semibold text-slate-100 md:text-[16px]';
   const gradeClass = 'text-[13px] leading-none font-medium text-slate-300 tabular-nums md:text-[14px]';
-  const locationClass = 'text-[11px] leading-snug font-medium text-slate-300 md:text-[12px]';
+  const locationClass = 'text-[11px] leading-snug font-medium text-slate-200 md:text-[12px]';
   const metaTextClass = 'text-[11px] leading-snug text-slate-200 md:text-[12px]';
   const interactiveLinkClass =
     'rounded-sm transition-colors duration-150 hover:text-brand hover:underline hover:decoration-brand/60 underline-offset-[3px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/35';
@@ -77,7 +75,9 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
             <Link to={`/area/${randomMedia.idArea}`} className={interactiveLinkClass}>
               <span className={locationClass}>{randomMedia.area}</span>
             </Link>
-            <span className={cn('mx-1', profileRowMiddleDotClass)}>·</span>
+            <span className='mx-1 text-slate-200/90' aria-hidden>
+              ·
+            </span>
             <Link to={`/sector/${randomMedia.idSector}`} className={interactiveLinkClass}>
               <span className={locationClass}>{randomMedia.sector}</span>
             </Link>
@@ -138,7 +138,9 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
             <Link to={`/area/${randomMedia.idArea}`} className={interactiveLinkClass}>
               <span className={locationClass}>{randomMedia.area}</span>
             </Link>
-            <span className={cn('mx-1', profileRowMiddleDotClass)}>·</span>
+            <span className='mx-1 text-slate-200/90' aria-hidden>
+              ·
+            </span>
             <Link to={`/sector/${randomMedia.idSector}`} className={interactiveLinkClass}>
               <span className={locationClass}>{randomMedia.sector}</span>
             </Link>

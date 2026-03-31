@@ -104,7 +104,7 @@ export const ProblemComments = ({
                     <span
                       className={cn(
                         tickFlags,
-                        'ml-1.5 inline tabular-nums transition-colors group-hover:text-slate-300',
+                        'ml-1.5 inline text-slate-500 tabular-nums transition-colors group-hover:text-slate-400',
                       )}
                     >
                       {c.date}

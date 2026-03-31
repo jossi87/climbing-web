@@ -25,6 +25,8 @@ export const ProblemLink = ({ a, type, flagsClassName, tone = 'default' }: Props
   const crag = tone === 'soft' ? softCragLink : tickCragLink;
   const problem = tone === 'soft' ? softProblemLink : tickProblemLink;
   const grade = tone === 'soft' ? softWhenGrade : tickWhenGrade;
+  const showGrade = !!(a.grade && a.grade !== '.');
+  const showSubtype = !!(a.problemSubtype && a.problemSubtype !== '.');
 
   return (
     <>
@@ -46,12 +48,13 @@ export const ProblemLink = ({ a, type, flagsClassName, tone = 'default' }: Props
         {a.problemName}
       </Link>
 
-      {a.grade && a.grade !== '.' ? (
-        <span className={cn(grade, 'ml-1 whitespace-nowrap tabular-nums')}>{a.grade}</span>
-      ) : null}
+      {showGrade ? <span className={cn(grade, 'ml-1 whitespace-nowrap tabular-nums')}>{a.grade}</span> : null}
 
-      {a.problemSubtype && a.problemSubtype !== '.' ? (
-        <span className={cn(tickFlags, 'ml-1', flagsClassName)}>{a.problemSubtype}</span>
+      {showSubtype ? (
+        <>
+          {showGrade ? <ProfileRowTextSep /> : null}
+          <span className={cn(tickFlags, !showGrade && 'ml-1', flagsClassName)}>{a.problemSubtype}</span>
+        </>
       ) : null}
 
       <span className='ml-1.5 inline-block align-middle'>

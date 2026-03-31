@@ -102,8 +102,13 @@ export function AvatarGroup({
         )}
       </div>
       {statusIcon && (
-        <div className='bg-surface-card border-surface-border absolute -right-1 -bottom-1 z-10 flex items-center justify-center rounded-full border p-px shadow-sm'>
-          {statusIcon}
+        <div
+          className={cn(
+            'bg-surface-card border-surface-border absolute -right-1 -bottom-1 z-10 flex items-center justify-center rounded-full border p-px shadow-sm',
+            'ring-surface-dark ring-2',
+          )}
+        >
+          <span className='inline-flex items-center justify-center drop-shadow-sm'>{statusIcon}</span>
         </div>
       )}
     </div>

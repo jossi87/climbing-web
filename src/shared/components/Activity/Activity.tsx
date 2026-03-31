@@ -306,11 +306,12 @@ const ActivityItem = ({ a, isBouldering, layoutDensity = 'default' }: ActivityIt
           }))
         : [{ name: a.name, mediaId: undefined, mediaVersionStamp: undefined }];
 
+  const statusIconGlyph = 'shrink-0 text-white';
   const statusIcon = (() => {
-    if (a.users) return <Plus size={8} className={designContract.activityColors.status.fa} />;
-    if (a.message) return <MessageSquare size={8} className={designContract.activityColors.status.comments} />;
-    if (a.media && !a.name) return <Camera size={8} className={designContract.activityColors.status.media} />;
-    return <Check size={8} className={designContract.activityColors.status.ticks} />;
+    if (a.users) return <Plus size={8} className={statusIconGlyph} strokeWidth={2} />;
+    if (a.message) return <MessageSquare size={8} className={statusIconGlyph} strokeWidth={2} />;
+    if (a.media && !a.name) return <Camera size={8} className={statusIconGlyph} strokeWidth={2} />;
+    return <Check size={8} className={statusIconGlyph} strokeWidth={2} />;
   })();
 
   const [numImg, numMov] = (a.media ?? []).reduce(
@@ -331,6 +332,13 @@ const ActivityItem = ({ a, isBouldering, layoutDensity = 'default' }: ActivityIt
   const userLinkClass = cn(tickProblemLink, isFrontpage && 'font-semibold text-slate-100');
   const problemLinkTone = isFrontpage ? 'soft' : 'default';
   const timeHoverClass = isFrontpage ? 'group-hover:text-slate-400' : 'group-hover:text-slate-300';
+  /** Secondary to area/route line; home feed uses softer crags so time must step down again. */
+  const timeClass = cn(
+    tickFlags,
+    'ml-1.5 inline-block tabular-nums transition-colors select-none',
+    isFrontpage ? 'text-slate-500' : 'text-slate-400',
+    timeHoverClass,
+  );
   const faNameHoverClass = isFrontpage ? 'group-hover/user:text-slate-200' : 'group-hover/user:text-slate-100';
 
   return (
@@ -378,15 +386,7 @@ const ActivityItem = ({ a, isBouldering, layoutDensity = 'default' }: ActivityIt
                 <ProblemLink a={a} flagsClassName={actionClass} tone={problemLinkTone} />
               </>
             )}
-            <span
-              className={cn(
-                tickFlags,
-                'ml-1.5 inline-block tabular-nums transition-colors select-none',
-                timeHoverClass,
-              )}
-            >
-              {a.timeAgo}
-            </span>
+            <span className={timeClass}>{a.timeAgo}</span>
           </div>
 
           {a.message ? (
@@ -398,7 +398,7 @@ const ActivityItem = ({ a, isBouldering, layoutDensity = 'default' }: ActivityIt
           ) : null}
 
           {a.stars !== undefined && a.stars !== -1 && (
-            <div className='mt-1 origin-left'>
+            <div className='mt-1.5 self-start'>
               <Stars numStars={a.stars} includeStarOutlines={true} size={12} />
             </div>
           )}
@@ -425,7 +425,7 @@ const ActivityItem = ({ a, isBouldering, layoutDensity = 'default' }: ActivityIt
                     mediaId={u.mediaId}
                     mediaVersionStamp={u.mediaVersionStamp}
                     size='micro'
-                    className='group-hover/user:ring-brand/45 shrink-0 ring-1 ring-white/10 transition-all'
+                    className='group-hover/user:ring-brand/55 ring-surface-dark shrink-0 ring-2 transition-all'
                   />
                   <span className={cn('min-w-0', faNameHoverClass)}>{u.name}</span>
                 </Link>

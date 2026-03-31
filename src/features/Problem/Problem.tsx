@@ -341,7 +341,7 @@ export const Problem = () => {
               <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
               <Link
                 to={`/area/${data.areaId}`}
-                className='inline min-w-0 align-middle tracking-tight text-slate-400 transition-colors hover:text-slate-200'
+                className='inline min-w-0 align-middle tracking-tight text-slate-300 transition-colors hover:text-slate-100'
               >
                 {data.areaName}
               </Link>
@@ -349,7 +349,7 @@ export const Problem = () => {
               <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
               <Link
                 to={`/sector/${data.sectorId}`}
-                className='inline min-w-0 align-middle tracking-tight text-slate-400 transition-colors hover:text-slate-200'
+                className='inline min-w-0 align-middle tracking-tight text-slate-300 transition-colors hover:text-slate-100'
               >
                 {data.sectorName}
               </Link>
