@@ -11,6 +11,7 @@ import {
   type MediaRegion,
 } from '../../../utils/svg-scaler';
 import './SvgViewer.css';
+import { cn } from '../../../lib/utils';
 
 type SvgProps = {
   className?: string;
@@ -162,7 +163,10 @@ export const SvgViewer = ({
   ]);
 
   return (
-    <div className={`relative h-full w-full overflow-hidden ${className}`} style={style}>
+    <div
+      className={cn('relative h-full w-full overflow-hidden', !thumb && 'touch-pinch-zoom', className)}
+      style={style}
+    >
       <canvas
         className='buldreinfo-svg-canvas pointer-events-none absolute inset-0 h-full w-full'
         width={imgW}
@@ -171,7 +175,10 @@ export const SvgViewer = ({
       <svg
         xmlns='http://www.w3.org/2000/svg'
         overflow='visible'
-        className='buldreinfo-svg absolute inset-0 h-full w-full touch-none select-none'
+        className={cn(
+          'buldreinfo-svg absolute inset-0 h-full w-full select-none',
+          thumb ? 'touch-none' : 'touch-pinch-zoom',
+        )}
         viewBox={`0 0 ${imgW} ${imgH}`}
         preserveAspectRatio={thumb ? 'xMidYMid slice' : 'xMidYMid meet'}
         onClick={(e: MouseEvent<SVGSVGElement>) => {

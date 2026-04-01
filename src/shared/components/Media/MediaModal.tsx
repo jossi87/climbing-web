@@ -457,7 +457,7 @@ const MediaModal = ({
         >
           {isImage ? (
             svgs.length > 0 ? (
-              <div className='h-full w-full' onClick={(e) => e.stopPropagation()}>
+              <div className='h-full w-full touch-pinch-zoom' onClick={(e) => e.stopPropagation()}>
                 <SvgViewer
                   m={m}
                   pitch={pitch}
