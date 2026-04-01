@@ -18,7 +18,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@tanstack/react-query-devtools": "^5.96.0",
+    "@tanstack/react-query-devtools": "^5.96.1",
     "@types/leaflet": "^1.9.21",
     "@types/node": "^25.5.0",
     "@types/react": "^19.2.14",
@@ -48,7 +48,7 @@
     "@auth0/auth0-react": "^2.16.1",
     "@react-leaflet/core": "^3.0.0",
     "@sentry/react": "^10.47.0",
-    "@tanstack/react-query": "^5.96.0",
+    "@tanstack/react-query": "^5.96.1",
     "flat": "^6.0.1",
     "heic2any": "^0.0.4",
     "json-url": "^4.0.0",
