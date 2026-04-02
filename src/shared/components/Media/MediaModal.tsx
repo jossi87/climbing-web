@@ -107,6 +107,7 @@ const MediaModal = ({
 
   const [problemIdHovered, setProblemIdHovered] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [visualViewportScale, setVisualViewportScale] = useState(() => window.visualViewport?.scale ?? 1);
   const [offsetX, setOffsetX] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
   const wasSwiping = useRef(false);
@@ -115,6 +116,20 @@ const MediaModal = ({
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  /** While pinch-zoomed, detach carousel swipe handlers so pan/zoom gestures stay native. */
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const sync = () => setVisualViewportScale(vv.scale);
+    sync();
+    vv.addEventListener('resize', sync);
+    vv.addEventListener('scroll', sync);
+    return () => {
+      vv.removeEventListener('resize', sync);
+      vv.removeEventListener('scroll', sync);
+    };
   }, []);
 
   const resetSwipe = useCallback(() => {
@@ -127,8 +142,7 @@ const MediaModal = ({
 
   const handlers = useSwipeable({
     onSwiping: (e) => {
-      const scale = window.visualViewport?.scale ?? 1;
-      if (carouselSize <= 1 || !isMobile || scale > 1.05) return;
+      if (carouselSize <= 1 || !isMobile || visualViewportScale > 1.05) return;
       setIsSwiping(true);
       wasSwiping.current = true;
       setOffsetX(e.deltaX);
@@ -226,6 +240,8 @@ const MediaModal = ({
   const canOrder = isAdmin && isImage && (orderableMedia ?? []).some((om) => om.id === (m.id ?? 0));
   const canMove = isAdmin && isImage;
 
+  const attachCarouselSwipeHandlers = isMobile && carouselSize > 1 && visualViewportScale <= 1.05;
+
   return (
     <div
       className='fixed inset-0 z-150 flex h-[100dvh] min-h-[100dvh] w-full max-w-[100vw] overflow-hidden bg-black select-none'
@@ -299,7 +315,7 @@ const MediaModal = ({
 
       <div
         className='relative flex h-full min-h-0 w-full min-w-0 flex-1 items-center justify-center overflow-hidden'
-        {...handlers}
+        {...(attachCarouselSwipeHandlers ? handlers : {})}
       >
         <div className='absolute top-3 right-3 z-170 flex max-w-[calc(100vw-1.5rem)] flex-wrap items-center justify-end gap-1.5 sm:top-4 sm:right-4 sm:gap-2'>
           {m.url && (
@@ -522,7 +538,7 @@ const MediaModal = ({
         >
           {isImage ? (
             svgs.length > 0 ? (
-              <div className='h-full w-full touch-pinch-zoom' onClick={(e) => e.stopPropagation()}>
+              <div className='touch-pan-pinch h-full w-full' onClick={(e) => e.stopPropagation()}>
                 <SvgViewer
                   m={m}
                   pitch={pitch}
@@ -537,7 +553,7 @@ const MediaModal = ({
               </div>
             ) : (
               <img
-                className='max-h-screen max-w-full cursor-pointer touch-pinch-zoom object-contain select-none'
+                className='touch-pan-pinch max-h-screen max-w-full cursor-pointer object-contain select-none'
                 src={getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, false, {
                   targetWidth: Math.min(1920, m.width ?? 1920),
                 })}

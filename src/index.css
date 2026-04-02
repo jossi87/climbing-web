@@ -169,6 +169,14 @@
 }
 
 @layer utilities {
+  /*
+   * Pinch-zoom + one-finger pan (visual viewport / browser zoom).
+   * Avoid touch-action: pinch-zoom alone — it disables panning.
+   */
+  .touch-pan-pinch {
+    touch-action: manipulation;
+  }
+
   /* Global micro-typography normalization for legacy utility usage */
   .text-xs,
   .text-\[10px\],

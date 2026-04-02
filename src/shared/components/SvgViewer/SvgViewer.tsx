@@ -163,10 +163,7 @@ export const SvgViewer = ({
   ]);
 
   return (
-    <div
-      className={cn('relative h-full w-full overflow-hidden', !thumb && 'touch-pinch-zoom', className)}
-      style={style}
-    >
+    <div className={cn('relative h-full w-full overflow-hidden', !thumb && 'touch-pan-pinch', className)} style={style}>
       <canvas
         className='buldreinfo-svg-canvas pointer-events-none absolute inset-0 h-full w-full'
         width={imgW}
@@ -177,7 +174,7 @@ export const SvgViewer = ({
         overflow='visible'
         className={cn(
           'buldreinfo-svg absolute inset-0 h-full w-full select-none',
-          thumb ? 'touch-none' : 'touch-pinch-zoom',
+          thumb ? 'touch-none' : 'touch-pan-pinch',
         )}
         viewBox={`0 0 ${imgW} ${imgH}`}
         preserveAspectRatio={thumb ? 'xMidYMid slice' : 'xMidYMid meet'}
