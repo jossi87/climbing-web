@@ -258,10 +258,10 @@ type FilterButtonProps = {
 
 /** Roomier pills on `sm+`; keep phones compact so one row still fits. */
 const activityChipBase =
-  'inline-flex h-7 shrink-0 items-center gap-1.5 rounded-full border px-2.5 text-[10px] font-semibold leading-none transition-[color,transform] duration-200 active:scale-95 sm:h-8 sm:gap-2 sm:px-4 sm:text-[11px]';
+  'inline-flex h-7 shrink-0 items-center gap-1.5 rounded-full border px-2.5 text-[10px] font-semibold leading-none transition-[color,transform,border-color] duration-200 active:scale-95 sm:h-8 sm:gap-2 sm:px-4 sm:text-[11px]';
 const activityChipIdle =
-  'border-white/10 bg-surface-nav/50 text-slate-400 hover:border-white/14 hover:bg-surface-nav hover:text-slate-200';
-const activityChipActive = 'border-transparent bg-white/[0.12] text-slate-100 shadow-sm';
+  'border-white/10 bg-surface-nav/50 text-slate-400 hover:border-brand/45 hover:bg-surface-nav hover:text-slate-200';
+const activityChipActive = 'border-transparent bg-white/[0.12] text-slate-100 shadow-sm hover:border-brand/50';
 
 /** Brighter than {@link tickFlags} for verbs (ticked, on, in, …) so they read with primary copy. */
 const activityActionClass = 'font-normal text-slate-200 antialiased';

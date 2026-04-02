@@ -1,4 +1,4 @@
-import { useState, useEffect, type MouseEvent, useRef, useCallback } from 'react';
+import { useState, useEffect, useMemo, type MouseEvent, useRef, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSwipeable } from 'react-swipeable';
 import {
@@ -21,8 +21,6 @@ import {
   Trash2,
   ExternalLink,
   Play,
-  Check,
-  Bookmark,
   MapPin,
   Calendar,
   User as UserIcon,
@@ -36,7 +34,16 @@ import VideoPlayer from './VideoPlayer';
 import { Descent, Rappel } from '../../../utils/svg-utils';
 import { useMeta } from '../Meta';
 import type { components } from '../../../@types/buldreinfo/swagger';
+import { designContract } from '../../../design/contract';
 import { cn } from '../../../lib/utils';
+
+/** Route index color (matches topo SVG number semantics; typography-only, no boxes). */
+function svgListNrColor(svg: components['schemas']['Svg']) {
+  if (svg.ticked) return 'text-green-500';
+  if (svg.todo) return 'text-sky-400';
+  if (svg.dangerous) return 'text-red-500';
+  return 'text-slate-500';
+}
 
 type Props = {
   isSaving: boolean;
@@ -138,7 +145,7 @@ const MediaModal = ({
     delta: 50,
   });
 
-  const svgs = (m.svgs ?? m.mediaSvgs ?? []) as components['schemas']['Svg'][];
+  const svgs = useMemo(() => (m.svgs ?? m.mediaSvgs ?? []) as components['schemas']['Svg'][], [m.svgs, m.mediaSvgs]);
 
   const canShowSidebar =
     svgs
@@ -146,20 +153,54 @@ const MediaModal = ({
       .map((v) => v.problemId)
       .filter((value, index, self) => self.indexOf(value) === index).length > 1;
 
+  const sidebarSvgs = useMemo(
+    () =>
+      svgs
+        .filter((svg) => (svg.pitch ?? 0) === 0 || (svg.pitch ?? 0) === 1)
+        .sort((a, b) => (a.nr ?? 0) - (b.nr ?? 0) || (a.problemName ?? '').localeCompare(b.problemName ?? '')),
+    [svgs],
+  );
+
+  const activeSidebarIndex = useMemo(() => {
+    if (optProblemId == null) return -1;
+    return sidebarSvgs.findIndex((s) => s.problemId === optProblemId);
+  }, [sidebarSvgs, optProblemId]);
+
+  const activeSidebarRowRef = useRef<HTMLAnchorElement | null>(null);
+
+  useEffect(() => {
+    if (!canShowSidebar || !showSidebar || activeSidebarIndex < 0) return;
+    const id = requestAnimationFrame(() => {
+      activeSidebarRowRef.current?.scrollIntoView({ block: 'center', behavior: 'auto' });
+    });
+    return () => cancelAnimationFrame(id);
+  }, [canShowSidebar, showSidebar, activeSidebarIndex, m.id]);
+
   const isImage = m?.idType === 1;
   const isVideoFile = m?.idType === 2 && !m.embedUrl;
 
-  const handleDimmerClick = (e: MouseEvent) => {
-    if (e.target === e.currentTarget && !wasSwiping.current && offsetX === 0) {
-      onClose();
+  /**
+   * When "Problems in View" is open, backdrop / empty-SVG clicks should dismiss the sidebar first.
+   * {@link SvgViewer} calls `close` on SVG background clicks — that path must use this too (not raw `onClose`).
+   */
+  const closeSidebarOrModal = useCallback(() => {
+    if (canShowSidebar && showSidebar) {
+      setShowSidebar(false);
+      return;
     }
+    onClose();
+  }, [canShowSidebar, showSidebar, onClose, setShowSidebar]);
+
+  const handleDimmerClick = (e: MouseEvent) => {
+    if (e.target !== e.currentTarget || wasSwiping.current || offsetX !== 0) return;
+    closeSidebarOrModal();
   };
 
   /** Letterboxed area around media: clicks hit this layer, not the full-screen root. */
   const handleBackdropClick = (e: MouseEvent<HTMLDivElement>) => {
     if (e.target !== e.currentTarget) return;
     if (wasSwiping.current || offsetX !== 0) return;
-    onClose();
+    closeSidebarOrModal();
   };
 
   if (isSaving) {
@@ -192,7 +233,7 @@ const MediaModal = ({
     >
       {canShowSidebar && showSidebar && (
         <div className='bg-surface-dark border-surface-border animate-in slide-in-from-left z-160 flex h-full w-80 flex-col border-r shadow-2xl duration-300'>
-          <div className='border-surface-border bg-surface-nav/20 flex items-center justify-between border-b p-5'>
+          <div className='border-surface-border bg-surface-nav/20 flex items-center justify-between border-b px-3 py-2 sm:px-3.5'>
             <h3 className='type-label'>Problems in View</h3>
             <button
               type='button'
@@ -202,32 +243,56 @@ const MediaModal = ({
               <X size={18} />
             </button>
           </div>
-          <div className='custom-scrollbar divide-surface-border/30 flex-1 divide-y overflow-y-auto text-left'>
-            {svgs
-              .filter((svg) => (svg.pitch ?? 0) === 0 || (svg.pitch ?? 0) === 1)
-              .sort((a, b) => (a.nr ?? 0) - (b.nr ?? 0) || (a.problemName ?? '').localeCompare(b.problemName ?? ''))
-              .map((svg) => (
+          <div className='custom-scrollbar divide-surface-border/30 flex-1 divide-y overflow-x-hidden overflow-y-auto text-left'>
+            {sidebarSvgs.map((svg, rowIndex) => {
+              const isRowActive = problemIdHovered === svg.problemId || optProblemId === svg.problemId;
+              const nrDisplay = svg.nr != null ? svg.nr : '—';
+              const statusHint = svg.ticked
+                ? 'Ticked'
+                : svg.todo
+                  ? 'In todo list'
+                  : svg.dangerous
+                    ? 'Flagged as dangerous'
+                    : undefined;
+              const grade = svg.pitch === 0 && svg.problemGrade && svg.problemGrade !== '.' ? svg.problemGrade : null;
+              return (
                 <Link
                   key={`${svg.problemId}-${svg.pitch}`}
+                  ref={activeSidebarIndex === rowIndex ? activeSidebarRowRef : undefined}
                   to={`/problem/${svg.problemId}/${m.id}`}
                   onMouseEnter={() => setProblemIdHovered(svg.problemId ?? null)}
                   onMouseLeave={() => setProblemIdHovered(null)}
+                  title={statusHint}
+                  aria-label={[svg.problemName, grade ?? undefined, statusHint].filter(Boolean).join('. ') || undefined}
                   className={cn(
-                    'flex items-center justify-between p-4 text-xs font-bold transition-all',
-                    problemIdHovered === svg.problemId || optProblemId === svg.problemId
-                      ? 'bg-brand/10 text-brand shadow-[inset_3px_0_0_0_#f97316]'
-                      : 'hover:bg-surface-nav text-slate-400 hover:text-slate-200',
+                    'group block scroll-mt-1 px-2 py-1.5 transition-colors sm:px-2.5',
+                    isRowActive ? 'bg-brand/10 shadow-[inset_3px_0_0_0_#f97316]' : 'hover:bg-surface-nav',
                   )}
                 >
-                  <span>
-                    {svg.pitch === 0 ? `#${svg.nr} ${svg.problemName} [${svg.problemGrade}]` : svg.problemName}
-                  </span>
-                  <div className='flex shrink-0 gap-2'>
-                    {svg.ticked && <Check size={14} className='text-green-500' />}
-                    {svg.todo && <Bookmark size={14} className='text-blue-400' />}
+                  <div
+                    className={cn(
+                      designContract.typography.menuItem,
+                      'flex min-w-0 items-baseline gap-x-2 leading-snug',
+                    )}
+                  >
+                    <span className={cn('min-w-[1.25rem] shrink-0 tabular-nums', svgListNrColor(svg))}>
+                      {nrDisplay}
+                    </span>
+                    <span
+                      className={cn(
+                        'min-w-0 flex-1 truncate font-medium',
+                        isRowActive ? 'text-brand' : 'text-slate-200 group-hover:text-slate-100',
+                      )}
+                    >
+                      {svg.problemName}
+                    </span>
+                    {grade != null ? (
+                      <span className={cn(designContract.typography.grade, 'shrink-0')}>{grade}</span>
+                    ) : null}
                   </div>
                 </Link>
-              ))}
+              );
+            })}
           </div>
         </div>
       )}
@@ -462,7 +527,7 @@ const MediaModal = ({
                   m={m}
                   pitch={pitch}
                   thumb={false}
-                  close={onClose}
+                  close={closeSidebarOrModal}
                   optProblemId={optProblemId}
                   showText={canShowSidebar && !showSidebar}
                   problemIdHovered={problemIdHovered}
@@ -480,7 +545,7 @@ const MediaModal = ({
                 alt=''
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (!wasSwiping.current && offsetX === 0) onClose();
+                  if (!wasSwiping.current && offsetX === 0) closeSidebarOrModal();
                 }}
               />
             )

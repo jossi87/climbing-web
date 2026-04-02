@@ -5,10 +5,10 @@ import { cn } from '../../lib/utils';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { Card, SectionLabel } from '../../shared/ui';
 
-/** Matches activity filter chips: frosted hover, slate/white type, no gradient or brand tint. */
+/** Frosted tiles; hover highlights with a brand border (copy stays slate). */
 const statTileClass =
-  'border-white/10 bg-surface-nav/50 group relative flex min-h-[5rem] w-full flex-col items-center justify-center border p-3 text-center transition-colors duration-200 sm:min-h-[5.75rem] sm:p-4 ' +
-  'hover:border-white/14 hover:bg-surface-nav';
+  'border border-white/10 bg-surface-nav/50 group relative flex min-h-[5rem] w-full flex-col items-center justify-center p-3 text-center transition-[background-color,border-color] duration-200 sm:min-h-[5.75rem] sm:p-4 ' +
+  'hover:border-brand/50 hover:bg-surface-nav';
 
 type StatItemProps = {
   to?: string;
@@ -45,7 +45,7 @@ const StatItem = ({ to, icon: Icon, label, value, loading }: StatItemProps) => {
         ) : value !== undefined && value !== '' ? (
           <>
             <div className='flex min-h-[1.5rem] items-center justify-center'>
-              <span className='text-base font-semibold tracking-tight text-slate-100 tabular-nums transition-colors sm:text-lg'>
+              <span className='text-base font-semibold tracking-tight text-slate-100 tabular-nums sm:text-lg'>
                 {value}
               </span>
             </div>
