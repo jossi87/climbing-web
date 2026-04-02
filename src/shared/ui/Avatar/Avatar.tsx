@@ -104,11 +104,11 @@ export function AvatarGroup({
       {statusIcon && (
         <div
           className={cn(
-            'bg-surface-card border-surface-border absolute -right-1 -bottom-1 z-10 flex items-center justify-center rounded-full border p-px shadow-sm',
-            'ring-surface-dark ring-2',
+            'bg-surface-card absolute -right-1 -bottom-1 z-10 flex items-center justify-center rounded-full border border-white/12 p-px shadow-sm',
+            'ring-brand/35 ring-1',
           )}
         >
-          <span className='inline-flex items-center justify-center drop-shadow-sm'>{statusIcon}</span>
+          <span className='inline-flex items-center justify-center text-slate-100 drop-shadow-sm'>{statusIcon}</span>
         </div>
       )}
     </div>

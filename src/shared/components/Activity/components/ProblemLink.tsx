@@ -16,7 +16,8 @@ type Props = {
 
 /** Home feed: crags de-emphasized so route + grade read first. */
 const softCragLink = 'font-normal text-slate-400 antialiased transition-colors hover:text-brand';
-const softProblemLink = 'font-semibold text-slate-100 antialiased transition-colors hover:text-brand';
+/** Stand out from gray crag/meta copy so route names scan on one line (esp. mobile). */
+const softProblemLink = 'inline-block font-bold text-white antialiased transition-colors hover:text-brand';
 /** Home feed: grade as secondary metadata, not a loud accent. */
 const softWhenGrade = 'font-medium text-slate-300 antialiased';
 

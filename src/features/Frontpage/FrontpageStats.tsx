@@ -23,8 +23,8 @@ const StatItem = ({ to, icon: Icon, label, value, loading }: StatItemProps) => {
     <div className={statTileClass}>
       <div
         className={cn(
-          'relative z-[1] mb-1.5 text-slate-500 transition-colors sm:mb-2',
-          'group-hover:text-slate-300',
+          'relative z-[1] mb-1.5 text-slate-400 transition-colors sm:mb-2',
+          'group-hover:text-slate-200',
           loading && 'animate-pulse',
         )}
       >

@@ -61,7 +61,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
             loading='eager'
           />
         </Link>
-        <div className='pointer-events-none absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent opacity-100 transition-opacity duration-500 group-hover:opacity-100 md:opacity-0' />
+        <div className='pointer-events-none absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-100 transition-opacity duration-500 group-hover:opacity-100 md:opacity-0' />
 
         <div className='absolute right-0 bottom-0 left-0 p-4 md:hidden'>
           <Link
