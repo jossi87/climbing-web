@@ -1,28 +1,51 @@
 import { Link } from 'react-router-dom';
 import { getMediaFileUrl, getMediaFileUrlSrcSet } from '../../api';
+import { cn } from '../../lib/utils';
 import { ClickableAvatar, AvatarGroup, Card } from '../../shared/ui';
 import type { components } from '../../@types/buldreinfo/swagger';
 
 type RandomMedia = components['schemas']['FrontpageRandomMedia'];
 
-export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) => {
+type Props = {
+  randomMedia?: RandomMedia;
+  /** While true, show placeholder card (frontpage waits for stats + media + meta together to avoid staggered CLS). */
+  isLoading?: boolean;
+};
+
+/** Matches API crop; img is `absolute` so decode/intrinsic size cannot collapse the frame (CLS). */
+const mediaFrameClass = 'relative aspect-[275/250] w-full overflow-hidden bg-surface-card';
+
+const desktopCopyMin = 'hidden min-h-[5.25rem] p-4 md:block md:min-h-[5.5rem]';
+
+export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
   const cardShellClass = 'group overflow-hidden border-0 text-left md:border';
+
+  if (isLoading)
+    return (
+      <Card flush className={cardShellClass}>
+        <div className={mediaFrameClass}>
+          <div className='bg-surface-hover/50 absolute inset-0 animate-pulse' />
+        </div>
+        <div className={desktopCopyMin}>
+          <div className='space-y-3'>
+            <div className='flex flex-wrap items-baseline gap-x-2 gap-y-1'>
+              <div className='bg-surface-hover h-[1.125rem] max-w-[min(100%,14rem)] flex-1 animate-pulse rounded sm:h-5' />
+              <div className='bg-surface-hover/60 h-3.5 w-10 shrink-0 animate-pulse rounded md:h-4 md:w-11' />
+            </div>
+            <div className='bg-surface-hover/45 h-3 w-full max-w-[18rem] animate-pulse rounded md:h-[0.875rem]' />
+          </div>
+        </div>
+      </Card>
+    );
 
   if (!randomMedia)
     return (
       <Card flush className={cardShellClass}>
-        <div className='bg-surface-card w-full animate-pulse' style={{ aspectRatio: '275 / 250' }} />
-        <div className='hidden p-4 md:block'>
-          <div className='mb-4 space-y-2'>
-            <div className='bg-surface-hover h-4 w-3/4 animate-pulse rounded' />
-            <div className='bg-surface-hover/50 h-3 w-1/2 animate-pulse rounded' />
-          </div>
-          <div className='border-surface-border/50 flex flex-col gap-y-3 border-t pt-4'>
-            <div className='flex items-center gap-3'>
-              <div className='bg-surface-hover h-6 w-6 animate-pulse rounded-full' />
-              <div className='bg-surface-hover/50 h-3 w-24 animate-pulse rounded' />
-            </div>
-          </div>
+        <div className={cn(mediaFrameClass, 'flex items-center justify-center text-center text-sm text-slate-500')}>
+          No featured media
+        </div>
+        <div className={desktopCopyMin}>
+          <p className='text-sm text-slate-500'>Check back later for a random photo from the index.</p>
         </div>
       </Card>
     );
@@ -38,10 +61,10 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
 
   return (
     <Card flush className={cardShellClass}>
-      <div className='bg-surface-card relative overflow-hidden' style={{ aspectRatio: '275 / 250' }}>
+      <div className={mediaFrameClass}>
         <Link
           to={`/problem/${randomMedia.idProblem}`}
-          className='focus-visible:ring-brand/45 block h-full w-full transition-[filter,transform] duration-300 outline-none hover:brightness-110 focus-visible:ring-2 focus-visible:ring-inset'
+          className='focus-visible:ring-brand/45 absolute inset-0 block transition-[filter,transform] duration-300 outline-none hover:brightness-110 focus-visible:ring-2 focus-visible:ring-inset'
         >
           <img
             className='h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105'
@@ -57,6 +80,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
             alt={randomMedia.problem}
             width={400}
             height={364}
+            decoding='async'
             fetchPriority='high'
             loading='eager'
           />
@@ -125,7 +149,7 @@ export const RandomMediaCard = ({ randomMedia }: { randomMedia?: RandomMedia }) 
         </div>
       </div>
 
-      <div className='hidden p-4 md:block'>
+      <div className={desktopCopyMin}>
         <div className='space-y-3'>
           <Link
             to={`/problem/${randomMedia.idProblem}`}

@@ -9,7 +9,14 @@ import { designContract } from '../../design/contract';
 const Frontpage = () => {
   const meta = useMeta();
   const { data: stats, isPending: statsPending } = useData<Success<'getFrontpageStats'>>(`/frontpage/stats`);
-  const { data: randomMedia } = useData<Success<'getFrontpageRandomMedia'>>(`/frontpage/random_media`);
+  const { data: randomMedia, isPending: randomMediaPending } =
+    useData<Success<'getFrontpageRandomMedia'>>(`/frontpage/random_media`);
+
+  /**
+   * Reveal stats + random media together once everything needed for the aside is ready.
+   * Otherwise stats resolving before media (or vice versa) updates layout twice and the sticky column “steps down”.
+   */
+  const asideReady = Boolean(meta?.title) && !statsPending && !randomMediaPending;
 
   const type = meta.isBouldering ? 'bouldering problems' : 'climbing routes';
   /** Entries in meta.sites for the active site’s group (header region list scope). */
@@ -28,30 +35,30 @@ const Frontpage = () => {
         <div className='md:hidden'>
           <FrontpageStats
             placement='top'
-            stats={stats}
+            stats={asideReady ? stats : undefined}
             regionsTo={regionsTo}
             numRegions={numRegions}
-            regionsLoading={!meta.title}
-            statsLoading={statsPending}
+            regionsLoading={!asideReady}
+            statsLoading={!asideReady}
             isBouldering={meta.isBouldering}
           />
         </div>
 
         <div className={designContract.layout.frontpageGrid}>
-          <aside className='order-1 w-full md:col-span-3'>
+          <aside className='order-1 w-full [overflow-anchor:none] md:col-span-3'>
             <div className={designContract.layout.asideStack}>
               <div className='hidden md:block'>
                 <FrontpageStats
                   placement='sidebar'
-                  stats={stats}
+                  stats={asideReady ? stats : undefined}
                   regionsTo={regionsTo}
                   numRegions={numRegions}
-                  regionsLoading={!meta.title}
-                  statsLoading={statsPending}
+                  regionsLoading={!asideReady}
+                  statsLoading={!asideReady}
                   isBouldering={meta.isBouldering}
                 />
               </div>
-              <RandomMediaCard randomMedia={randomMedia} />
+              <RandomMediaCard randomMedia={randomMedia} isLoading={!asideReady} />
             </div>
           </aside>
 

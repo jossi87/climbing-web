@@ -32,7 +32,8 @@ export const designContract = {
   layout: {
     pageSection: 'w-full pb-0',
     /** Home: fluid column only below `md` (phones); tablet / iPad / desktop share 12-col sidebar layout. */
-    frontpageGrid: 'grid grid-cols-1 gap-4 md:grid-cols-12 md:gap-8',
+    /** `items-start`: avoid default stretch making the short column track the tall one’s height (reduces perceived aside “jump” when the feed loads). */
+    frontpageGrid: 'grid grid-cols-1 items-start gap-4 md:grid-cols-12 md:gap-8',
     asideStack: 'w-full space-y-4 self-start md:space-y-6 md:sticky md:top-20',
     toolbar: 'mb-4 flex flex-col items-center justify-between gap-3 px-4 sm:flex-row sm:px-0',
     /** Activity on frontpage: same `md` switch as stats/sidebar (no `sm` density step on home). */

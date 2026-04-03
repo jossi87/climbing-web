@@ -14,6 +14,10 @@ export const Card = ({ children, className = '', flush = false }: Props) => (
       className,
     )}
   >
-    <div className={cn('h-full', !flush && 'p-4 sm:p-6')}>{children}</div>
+    {/*
+      Flush cards: avoid `h-full` on the inner wrapper — with an `auto`-height parent, percentage height
+      is ill-defined and can interact badly with grid/flex children (frontpage aside CLS).
+    */}
+    <div className={cn(!flush && 'h-full p-4 sm:p-6')}>{children}</div>
   </div>
 );

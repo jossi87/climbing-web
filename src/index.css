@@ -24,6 +24,8 @@
   }
 
   html {
+    /* Reserve space for the vertical scrollbar so layout doesn’t shift when content grows (CLS). */
+    scrollbar-gutter: stable;
     @apply selection:bg-brand/30 font-sans text-slate-300 antialiased;
     font-family: var(--font-ui);
     font-size: 14px;
