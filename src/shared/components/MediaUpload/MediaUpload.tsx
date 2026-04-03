@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, type ComponentProps } from 'react';
+import { useEffect, useState, useCallback, useRef, type ComponentProps } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload, Film, X, Hash, MessageSquare, Camera, User as UserIcon, Users, Clock, Loader2 } from 'lucide-react';
 import VideoEmbedder from './VideoEmbedder';
@@ -27,10 +27,12 @@ const MediaUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
   const meta = useMeta();
   const [media, setMedia] = useState<UploadedMedia[]>([]);
   const [isConverting, setIsConverting] = useState(false);
+  const onMediaChangedRef = useRef(onMediaChanged);
+  onMediaChangedRef.current = onMediaChanged;
 
   useEffect(() => {
-    onMediaChanged(media as UploadedMedia[]);
-  }, [media, onMediaChanged]);
+    onMediaChangedRef.current(media as UploadedMedia[]);
+  }, [media]);
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {

@@ -6,6 +6,7 @@ import { Loading } from '../../shared/ui/StatusWidgets';
 import { useNavigate, useParams } from 'react-router-dom';
 import { VisibilitySelectorField } from '../../shared/ui/VisibilitySelector';
 import { captureException } from '@sentry/react';
+import { spaPathFromRedirectResponse } from '../../api';
 import { useAreaEdit } from './useAreaEdit';
 import { hours } from '../../utils/hours';
 import ExternalLink from '../../shared/ui/ExternalLinks';
@@ -50,14 +51,18 @@ export const AreaEdit = () => {
       if (!data.trash || confirm('Are you sure you want to move area to trash?')) {
         performSave(data)
           .then(async (res) => {
-            navigate(res.destination ?? '/areas');
+            const path = spaPathFromRedirectResponse(res);
+            if (path === null) return;
+            const id = res.idArea && res.idArea > 0 ? res.idArea : +(areaId ?? 0);
+            const fallback = id > 0 ? `/area/${id}` : '/areas';
+            navigate(path ?? fallback);
           })
           .catch((error) => {
             captureException(error);
           });
       }
     },
-    [data, navigate, performSave],
+    [areaId, data, navigate, performSave],
   );
 
   const handleNumberChange = (field: 'sunFromHour' | 'sunToHour') => (e: ChangeEvent<HTMLSelectElement>) => {

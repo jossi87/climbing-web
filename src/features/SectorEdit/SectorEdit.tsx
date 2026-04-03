@@ -2,7 +2,7 @@ import { useState, useCallback, type ComponentProps, type UIEvent, type FormEven
 import MediaUpload from '../../shared/components/MediaUpload/MediaUpload';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { useMeta } from '../../shared/components/Meta';
-import { postSector, useAccessToken, useArea, useElevation, useSector } from '../../api';
+import { postSector, spaPathFromRedirectResponse, useAccessToken, useArea, useElevation, useSector } from '../../api';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
 import { useNavigate, useParams } from 'react-router-dom';
 import { VisibilitySelectorField } from '../../shared/ui/VisibilitySelector';
@@ -11,9 +11,9 @@ import { ProblemOrder } from './ProblemOrder';
 import { PolylineEditor } from './PolylineEditor';
 import { ZoomLogic } from './ZoomLogic';
 import { PolylineMarkers } from './PolylineMarkers';
-import { captureMessage } from '@sentry/react';
+import { captureException } from '@sentry/react';
 import { hours } from '../../utils/hours';
-import ExternalLinks from '../../shared/ui/ExternalLinks';
+import ExternalLink from '../../shared/ui/ExternalLinks';
 import {
   Info,
   Edit,
@@ -202,15 +202,21 @@ export const SectorEdit = ({ sector, area }: Props) => {
         data.problemOrder,
       )
         .then(async (res) => {
-          if (!res.destination) {
-            captureMessage('Missing res.destination');
-            navigate(-1);
-          } else {
-            navigate(res.destination);
-          }
+          const path = spaPathFromRedirectResponse(res);
+          if (path === null) return;
+          const fallback =
+            res.idSector && res.idSector > 0
+              ? `/sector/${res.idSector}`
+              : sectorId > 0
+                ? `/sector/${sectorId}`
+                : res.idArea && res.idArea > 0
+                  ? `/area/${res.idArea}`
+                  : `/area/${areaId}`;
+          navigate(path ?? fallback);
         })
         .catch((error) => {
           console.warn(error);
+          captureException(error);
         })
         .finally(() => setSaving(false));
     }
@@ -360,7 +366,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
   }
 
   const inputClasses =
-    'w-full bg-surface-nav border border-surface-border rounded-lg py-2 px-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-brand transition-colors';
+    'w-full bg-surface-nav border border-surface-border rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-slate-600 transition-colors focus:border-brand focus:outline-none';
   const labelClasses = 'ml-1 mb-1 block text-[11px] font-medium text-slate-400 sm:text-[12px]';
 
   return (
@@ -381,345 +387,366 @@ export const SectorEdit = ({ sector, area }: Props) => {
               </>
             }
           />
+          <form onSubmit={save} className='mt-3 space-y-3'>
+            <div className='space-y-4'>
+              <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4'>
+                <div className='space-y-2 md:col-span-2 lg:col-span-1'>
+                  <label className={labelClasses}>Sector name</label>
+                  <input
+                    className={cn(inputClasses, !data.name && 'border-red-500/50')}
+                    value={data.name ?? ''}
+                    onChange={(e) => onNameChanged(dummyEvent, { value: e.target.value })}
+                  />
+                  {!data.name && <p className='ml-1 text-[10px] font-bold text-red-500'>Sector name required</p>}
+                </div>
+
+                {meta.isClimbing && (
+                  <div className='space-y-2'>
+                    <label className={labelClasses}>Wall Direction</label>
+                    <select
+                      className={inputClasses}
+                      value={data.wallDirectionManual?.id || 0}
+                      onChange={(e) => onWallDirectionManualIdChanged(dummyEvent, { value: e.target.value })}
+                    >
+                      <option value={0}>
+                        {data.wallDirectionCalculated
+                          ? `${data.wallDirectionCalculated.direction} (calculated)`
+                          : '<calculate from outline>'}
+                      </option>
+                      {meta.compassDirections.map((cd) => (
+                        <option key={cd.id} value={cd.id}>
+                          {cd.direction}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                <VisibilitySelectorField
+                  value={{ lockedAdmin: !!data.lockedAdmin, lockedSuperadmin: !!data.lockedSuperadmin }}
+                  onChange={onLockedChanged}
+                />
+
+                <div className='space-y-2'>
+                  <label className={labelClasses}>Move to trash</label>
+                  <button
+                    type='button'
+                    disabled={!data.id || data.id <= 0}
+                    onClick={() => setData((p) => ({ ...p, trash: !p.trash }))}
+                    className={cn(
+                      'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none disabled:opacity-30',
+                      data.trash ? 'bg-red-500' : 'bg-slate-700',
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+                        data.trash ? 'translate-x-5' : 'translate-x-0',
+                      )}
+                    />
+                  </button>
+                </div>
+              </div>
+
+              {meta.isClimbing && (
+                <div className='grid grid-cols-2 gap-4'>
+                  <div className='space-y-2'>
+                    <label className={labelClasses}>Sun from hour</label>
+                    <select
+                      className={inputClasses}
+                      value={data.sunFromHour || ''}
+                      onChange={(e) => onSunFromHourChanged(dummyEvent, { value: e.target.value })}
+                    >
+                      <option value=''>Empty</option>
+                      {hours
+                        .filter((h) => h.value > 0)
+                        .map((h) => (
+                          <option key={h.key} value={h.value}>
+                            {h.text}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                  <div className='space-y-2'>
+                    <label className={labelClasses}>Sun to hour</label>
+                    <select
+                      className={inputClasses}
+                      value={data.sunToHour || ''}
+                      onChange={(e) => onSunToHourChanged(dummyEvent, { value: e.target.value })}
+                    >
+                      <option value=''>Empty</option>
+                      {hours
+                        .filter((h) => h.value > 0)
+                        .map((h) => (
+                          <option key={h.key} value={h.value}>
+                            {h.text}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                </div>
+              )}
+
+              <div className='space-y-2'>
+                <label className={labelClasses}>
+                  Description (supports{' '}
+                  <a
+                    href='https://jonschlinkert.github.io/remarkable/demo/'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='text-brand underline'
+                  >
+                    markdown
+                  </a>
+                  )
+                </label>
+                <textarea
+                  className={cn(inputClasses, 'min-h-30 resize-none')}
+                  value={data.comment ?? ''}
+                  onChange={(e) => onCommentChanged(dummyEvent, { value: e.target.value })}
+                />
+              </div>
+
+              <div className='space-y-4'>
+                <div className='relative'>
+                  <input
+                    className={cn(
+                      inputClasses,
+                      'border-red-500/25 pl-10 focus:border-red-400/45 focus:ring-1 focus:ring-red-400/15',
+                    )}
+                    placeholder='Sector closed reason...'
+                    value={data.accessClosed ?? ''}
+                    onChange={(e) => onAccessClosedChanged(dummyEvent, { value: e.target.value })}
+                  />
+                  <AlertTriangle className='absolute top-1/2 left-3 -translate-y-1/2 text-red-400/90' size={14} />
+                  <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[9px] font-black tracking-tighter text-red-300/90 uppercase'>
+                    Sector Closed
+                  </span>
+                </div>
+                <div className='relative'>
+                  <input
+                    className={cn(
+                      inputClasses,
+                      'border-orange-500/25 pl-10 focus:border-orange-400/45 focus:ring-1 focus:ring-orange-400/15',
+                    )}
+                    placeholder='Sector restrictions...'
+                    value={data.accessInfo ?? ''}
+                    onChange={(e) => onAccessInfoChanged(dummyEvent, { value: e.target.value })}
+                  />
+                  <Info className='absolute top-1/2 left-3 -translate-y-1/2 text-orange-400/90' size={14} />
+                  <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[9px] font-black tracking-tighter text-orange-300/90 uppercase'>
+                    Restrictions
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <ExternalLink
+              externalLinks={data.externalLinks?.filter((l) => !l.inherited) || []}
+              onExternalLinksUpdated={onExternalLinksUpdated}
+              hideLabel
+              mobileFlat
+            />
+
+            <div className='space-y-4'>
+              <label className={labelClasses}>Add media</label>
+              <MediaUpload onMediaChanged={onNewMediaChanged} isMultiPitch={false} />
+            </div>
+
+            <div className='space-y-4'>
+              <div className='space-y-2'>
+                <label className={labelClasses}>Sector map</label>
+                <p className='ml-1 max-w-prose text-[10px] leading-relaxed text-slate-500 sm:text-[11px]'>
+                  Choose parking, outline, approach, or descent, then draw on the map. Reset clears the active mode.
+                </p>
+                <div className='border-surface-border bg-surface-nav/15 overflow-hidden rounded-lg border'>
+                  <div
+                    className='border-surface-border bg-surface-nav/40 border-b px-3 py-2.5'
+                    role='group'
+                    aria-label='Map drawing mode'
+                  >
+                    <div className='max-sm:grid max-sm:grid-cols-2 max-sm:gap-1.5 sm:flex sm:flex-wrap sm:items-stretch sm:gap-0.5'>
+                      {[
+                        { id: 'PARKING', label: 'Parking', icon: MapPin },
+                        { id: 'POLYGON', label: 'Outline', icon: Layers },
+                        { id: 'APPROACH', label: 'Approach', icon: Route },
+                        { id: 'DESCENT', label: 'Descent', icon: ArrowDownCircle },
+                      ].map((m) => (
+                        <button
+                          key={m.id}
+                          type='button'
+                          onClick={() => setLeafletMode(m.id)}
+                          className={cn(
+                            'inline-flex min-h-10 w-full items-center justify-center gap-1.5 rounded-md px-2 py-2 text-[11px] font-semibold tracking-wide transition-colors sm:min-h-9 sm:w-auto sm:justify-start sm:rounded-lg sm:px-3 sm:text-xs',
+                            leafletMode === m.id
+                              ? 'bg-brand text-slate-950 shadow-sm ring-1 ring-black/10'
+                              : 'bg-surface-nav/80 hover:bg-surface-hover text-slate-400 hover:text-slate-200',
+                          )}
+                        >
+                          <m.icon size={14} strokeWidth={2} className='shrink-0 opacity-80' aria-hidden />
+                          <span className='min-w-0 truncate'>{m.label}</span>
+                        </button>
+                      ))}
+                      <button
+                        type='button'
+                        onClick={clearDrawing}
+                        className='border-surface-border hover:bg-surface-hover inline-flex min-h-10 w-full items-center justify-center gap-1.5 rounded-md border border-dashed px-2 py-2 text-[11px] font-semibold tracking-wide text-orange-400 transition-colors hover:text-orange-300 max-sm:col-span-2 sm:ml-0.5 sm:w-auto sm:border-0 sm:border-l sm:border-solid sm:pl-3'
+                      >
+                        <RotateCcw size={14} strokeWidth={2} aria-hidden /> Reset
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className='border-surface-border relative overflow-hidden border-b'>
+                    <Leaflet
+                      markers={markers}
+                      outlines={outlines}
+                      slopes={slopes}
+                      defaultCenter={defaultCenter}
+                      defaultZoom={defaultZoom}
+                      onMouseClick={onMapMouseClick}
+                      onMouseMove={onMouseMove}
+                      height={'300px'}
+                      showSatelliteImage={meta.isBouldering}
+                      clusterMarkers={false}
+                      rocks={undefined}
+                      flyToId={null}
+                    >
+                      <ZoomLogic area={area} sector={data} />
+                      {leafletMode === 'POLYGON' && <PolylineMarkers coordinates={data.outline ?? []} />}
+                      {leafletMode === 'APPROACH' && <PolylineMarkers coordinates={data.approach?.coordinates ?? []} />}
+                      {leafletMode === 'DESCENT' && <PolylineMarkers coordinates={data.descent?.coordinates ?? []} />}
+                    </Leaflet>
+                  </div>
+
+                  <div className='border-surface-border flex items-center gap-3 border-t px-3 py-2.5'>
+                    <button
+                      type='button'
+                      role='switch'
+                      aria-checked={sectorMarkers != null && sectorMarkers.length > 0}
+                      onClick={() => {
+                        if (sectorMarkers == null || sectorMarkers.length === 0) {
+                          if (sectorId) {
+                            setSectorMarkers(
+                              data.problems
+                                ?.filter((p): p is Required<Pick<typeof p, 'coordinates' | 'name'>> => !!p.coordinates)
+                                .map((p) => ({ coordinates: p.coordinates, label: p.name })) || [],
+                            );
+                          }
+                        } else {
+                          setSectorMarkers([]);
+                        }
+                      }}
+                      className={cn(
+                        'focus-visible:ring-brand/40 relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2',
+                        sectorMarkers != null && sectorMarkers.length > 0 ? 'bg-brand' : 'bg-slate-700',
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+                          sectorMarkers != null && sectorMarkers.length > 0 ? 'translate-x-5' : 'translate-x-0',
+                        )}
+                      />
+                    </button>
+                    <span className='text-[11px] font-medium text-slate-300 sm:text-[12px]'>
+                      Include all markers in sector
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {leafletMode === 'PARKING' && (
+                <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+                  <div className='space-y-1'>
+                    <label className={labelClasses}>Latitude</label>
+                    <input
+                      className={inputClasses}
+                      inputMode='decimal'
+                      placeholder='e.g. 59.123'
+                      value={data.parking?.latitude ?? ''}
+                      onChange={onLatChanged}
+                    />
+                  </div>
+                  <div className='space-y-1'>
+                    <label className={labelClasses}>Longitude</label>
+                    <input
+                      className={inputClasses}
+                      inputMode='decimal'
+                      placeholder='e.g. 10.456'
+                      value={data.parking?.longitude ?? ''}
+                      onChange={onLngChanged}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {['POLYGON', 'APPROACH', 'DESCENT'].includes(leafletMode) && (
+                <div className='space-y-2'>
+                  <label className={labelClasses}>{['Outline', elevation].filter(Boolean).join(' ')}</label>
+                  <PolylineEditor
+                    coordinates={
+                      leafletMode === 'POLYGON'
+                        ? (data.outline ?? [])
+                        : leafletMode === 'APPROACH'
+                          ? (data.approach?.coordinates ?? [])
+                          : (data.descent?.coordinates ?? [])
+                    }
+                    parking={data.parking ?? {}}
+                    onChange={(coordinates) => {
+                      if (leafletMode === 'POLYGON') setData((prev) => ({ ...prev, outline: coordinates }));
+                      else if (leafletMode === 'APPROACH') setData((prev) => ({ ...prev, approach: { coordinates } }));
+                      else if (leafletMode === 'DESCENT') setData((prev) => ({ ...prev, descent: { coordinates } }));
+                    }}
+                    upload={leafletMode !== 'POLYGON'}
+                  />
+                </div>
+              )}
+            </div>
+
+            {data.problemOrder && data.problemOrder.length > 1 && (
+              <div>
+                <button
+                  type='button'
+                  onClick={() => setShowProblemOrder(!showProblemOrder)}
+                  className='bg-surface-nav/10 type-label flex w-full items-center justify-between rounded-lg p-3 sm:p-4'
+                >
+                  <span className='flex items-center gap-2'>
+                    <Route size={14} className='text-brand' /> Change order of problems in sector
+                  </span>
+                  {showProblemOrder ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                </button>
+                {showProblemOrder && (
+                  <div className='animate-in fade-in slide-in-from-top-2 space-y-3 p-3 pt-0 duration-200 sm:p-4 sm:pt-0'>
+                    <ProblemOrder
+                      problemOrder={data.problemOrder}
+                      onChange={(problemOrder) => setData((prev) => ({ ...prev, problemOrder }))}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div className='flex items-center justify-end gap-3'>
+              <button
+                type='button'
+                onClick={() => navigate(sectorId ? `/sector/${sectorId}` : `/area/${areaId}`)}
+                className='bg-surface-nav border-surface-border hover:bg-surface-hover type-label rounded-lg border px-6 py-2.5 opacity-85 transition-all hover:opacity-100'
+              >
+                Cancel
+              </button>
+              <button
+                type='submit'
+                disabled={saving || !data.name || !!data.sunFromHour !== !!data.sunToHour}
+                className='type-label flex items-center gap-2 rounded-lg bg-emerald-400 px-8 py-2.5 text-slate-950 shadow-lg shadow-emerald-900/30 transition-all hover:bg-emerald-300 disabled:opacity-50'
+              >
+                {saving ? <Loader2 className='animate-spin' size={16} /> : <Save size={16} />}
+                Save Sector
+              </button>
+            </div>
+          </form>
         </div>
       </Card>
-
-      <form onSubmit={save} className='mt-4 space-y-4'>
-        <div className='bg-surface-card border-surface-border space-y-6 rounded-xl border p-6 shadow-sm'>
-          <div className='grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4'>
-            <div className='space-y-2 md:col-span-2 lg:col-span-1'>
-              <label className={labelClasses}>Sector name</label>
-              <input
-                className={cn(inputClasses, !data.name && 'border-red-500/50')}
-                value={data.name ?? ''}
-                onChange={(e) => onNameChanged(dummyEvent, { value: e.target.value })}
-              />
-              {!data.name && <p className='ml-1 text-[10px] font-bold text-red-500'>Sector name required</p>}
-            </div>
-
-            {meta.isClimbing && (
-              <div className='space-y-2'>
-                <label className={labelClasses}>Wall Direction</label>
-                <select
-                  className={inputClasses}
-                  value={data.wallDirectionManual?.id || 0}
-                  onChange={(e) => onWallDirectionManualIdChanged(dummyEvent, { value: e.target.value })}
-                >
-                  <option value={0}>
-                    {data.wallDirectionCalculated
-                      ? `${data.wallDirectionCalculated.direction} (calculated)`
-                      : '<calculate from outline>'}
-                  </option>
-                  {meta.compassDirections.map((cd) => (
-                    <option key={cd.id} value={cd.id}>
-                      {cd.direction}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-
-            <VisibilitySelectorField
-              value={{ lockedAdmin: !!data.lockedAdmin, lockedSuperadmin: !!data.lockedSuperadmin }}
-              onChange={onLockedChanged}
-            />
-
-            <div className='space-y-2'>
-              <label className={labelClasses}>Move to trash</label>
-              <button
-                type='button'
-                disabled={!data.id || data.id <= 0}
-                onClick={() => setData((p) => ({ ...p, trash: !p.trash }))}
-                className={cn(
-                  'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none disabled:opacity-30',
-                  data.trash ? 'bg-red-500' : 'bg-slate-700',
-                )}
-              >
-                <span
-                  className={cn(
-                    'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                    data.trash ? 'translate-x-5' : 'translate-x-0',
-                  )}
-                />
-              </button>
-            </div>
-          </div>
-
-          {meta.isClimbing && (
-            <div className='grid grid-cols-2 gap-6'>
-              <div className='space-y-2'>
-                <label className={labelClasses}>Sun from hour</label>
-                <select
-                  className={inputClasses}
-                  value={data.sunFromHour || ''}
-                  onChange={(e) => onSunFromHourChanged(dummyEvent, { value: e.target.value })}
-                >
-                  <option value=''>Empty</option>
-                  {hours
-                    .filter((h) => h.value > 0)
-                    .map((h) => (
-                      <option key={h.key} value={h.value}>
-                        {h.text}
-                      </option>
-                    ))}
-                </select>
-              </div>
-              <div className='space-y-2'>
-                <label className={labelClasses}>Sun to hour</label>
-                <select
-                  className={inputClasses}
-                  value={data.sunToHour || ''}
-                  onChange={(e) => onSunToHourChanged(dummyEvent, { value: e.target.value })}
-                >
-                  <option value=''>Empty</option>
-                  {hours
-                    .filter((h) => h.value > 0)
-                    .map((h) => (
-                      <option key={h.key} value={h.value}>
-                        {h.text}
-                      </option>
-                    ))}
-                </select>
-              </div>
-            </div>
-          )}
-
-          <div className='space-y-2'>
-            <label className={labelClasses}>
-              Description (supports{' '}
-              <a
-                href='https://jonschlinkert.github.io/remarkable/demo/'
-                target='_blank'
-                rel='noopener noreferrer'
-                className='text-brand underline'
-              >
-                markdown
-              </a>
-              )
-            </label>
-            <textarea
-              className={cn(inputClasses, 'min-h-30 resize-none')}
-              value={data.comment ?? ''}
-              onChange={(e) => onCommentChanged(dummyEvent, { value: e.target.value })}
-            />
-          </div>
-
-          <div className='space-y-4'>
-            <div className='relative'>
-              <input
-                className={cn(
-                  inputClasses,
-                  'border-red-500/25 pl-10 focus:border-red-400/45 focus:ring-1 focus:ring-red-400/15',
-                )}
-                placeholder='Sector closed reason...'
-                value={data.accessClosed ?? ''}
-                onChange={(e) => onAccessClosedChanged(dummyEvent, { value: e.target.value })}
-              />
-              <AlertTriangle className='absolute top-1/2 left-3 -translate-y-1/2 text-red-400/90' size={14} />
-              <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[9px] font-black tracking-tighter text-red-300/90 uppercase'>
-                Sector Closed
-              </span>
-            </div>
-            <div className='relative'>
-              <input
-                className={cn(
-                  inputClasses,
-                  'border-orange-500/25 pl-10 focus:border-orange-400/45 focus:ring-1 focus:ring-orange-400/15',
-                )}
-                placeholder='Sector restrictions...'
-                value={data.accessInfo ?? ''}
-                onChange={(e) => onAccessInfoChanged(dummyEvent, { value: e.target.value })}
-              />
-              <Info className='absolute top-1/2 left-3 -translate-y-1/2 text-orange-400/90' size={14} />
-              <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[9px] font-black tracking-tighter text-orange-300/90 uppercase'>
-                Restrictions
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <ExternalLinks
-          externalLinks={data.externalLinks?.filter((l) => !l.inherited) || []}
-          onExternalLinksUpdated={onExternalLinksUpdated}
-        />
-
-        <div className='bg-surface-card border-surface-border rounded-xl border p-6 shadow-sm'>
-          <label className={labelClasses}>Add media</label>
-          <MediaUpload onMediaChanged={onNewMediaChanged} isMultiPitch={false} />
-        </div>
-
-        <div className='bg-surface-card border-surface-border space-y-4 rounded-xl border p-6 shadow-sm'>
-          <div className='flex flex-wrap items-center justify-between gap-4'>
-            <div
-              className='bg-surface-nav/60 border-surface-border flex flex-wrap items-stretch gap-0.5 rounded-xl border p-1'
-              role='group'
-              aria-label='Map drawing mode'
-            >
-              {[
-                { id: 'PARKING', label: 'Parking', icon: MapPin },
-                { id: 'POLYGON', label: 'Outline', icon: Layers },
-                { id: 'APPROACH', label: 'Approach', icon: Route },
-                { id: 'DESCENT', label: 'Descent', icon: ArrowDownCircle },
-              ].map((m) => (
-                <button
-                  key={m.id}
-                  type='button'
-                  onClick={() => setLeafletMode(m.id)}
-                  className={cn(
-                    'inline-flex min-h-9 items-center gap-1.5 rounded-lg px-3 py-2 text-[11px] font-semibold tracking-wide transition-colors sm:text-xs',
-                    leafletMode === m.id
-                      ? 'bg-brand text-slate-950 shadow-sm ring-1 ring-black/10'
-                      : 'hover:bg-surface-hover text-slate-500 hover:text-slate-200',
-                  )}
-                >
-                  <m.icon size={14} strokeWidth={2} className='shrink-0 opacity-80' aria-hidden />
-                  {m.label}
-                </button>
-              ))}
-              <button
-                type='button'
-                onClick={clearDrawing}
-                className='border-surface-border ml-0.5 inline-flex min-h-9 items-center gap-1.5 border-l pl-2.5 text-[11px] font-semibold tracking-wide text-orange-400 hover:text-orange-300 sm:pl-3 sm:text-xs'
-              >
-                <RotateCcw size={14} strokeWidth={2} aria-hidden /> Reset
-              </button>
-            </div>
-
-            <button
-              type='button'
-              onClick={() => {
-                if (sectorMarkers == null || sectorMarkers.length === 0) {
-                  if (sectorId) {
-                    setSectorMarkers(
-                      data.problems
-                        ?.filter((p): p is Required<Pick<typeof p, 'coordinates' | 'name'>> => !!p.coordinates)
-                        .map((p) => ({ coordinates: p.coordinates, label: p.name })) || [],
-                    );
-                  }
-                } else {
-                  setSectorMarkers([]);
-                }
-              }}
-              className={cn(
-                'rounded-xl border px-4 py-2.5 text-[11px] font-semibold tracking-wide transition-colors sm:text-xs',
-                sectorMarkers != null && sectorMarkers.length > 0
-                  ? 'border-brand bg-brand text-slate-950 shadow-sm ring-1 ring-black/10'
-                  : 'border-surface-border bg-surface-nav hover:bg-surface-hover text-slate-400 hover:text-slate-200',
-              )}
-            >
-              Include all markers in sector
-            </button>
-          </div>
-
-          <div className='border-surface-border relative overflow-hidden rounded-xl border'>
-            <Leaflet
-              markers={markers}
-              outlines={outlines}
-              slopes={slopes}
-              defaultCenter={defaultCenter}
-              defaultZoom={defaultZoom}
-              onMouseClick={onMapMouseClick}
-              onMouseMove={onMouseMove}
-              height={'400px'}
-              showSatelliteImage={meta.isBouldering}
-              clusterMarkers={false}
-              rocks={undefined}
-              flyToId={null}
-            >
-              <ZoomLogic area={area} sector={data} />
-              {leafletMode === 'POLYGON' && <PolylineMarkers coordinates={data.outline ?? []} />}
-              {leafletMode === 'APPROACH' && <PolylineMarkers coordinates={data.approach?.coordinates ?? []} />}
-              {leafletMode === 'DESCENT' && <PolylineMarkers coordinates={data.descent?.coordinates ?? []} />}
-            </Leaflet>
-          </div>
-
-          {leafletMode === 'PARKING' && (
-            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-              <div className='space-y-1'>
-                <label className={labelClasses}>Latitude</label>
-                <input
-                  className={inputClasses}
-                  placeholder='Latitude'
-                  value={data.parking?.latitude ?? ''}
-                  onChange={onLatChanged}
-                />
-              </div>
-              <div className='space-y-1'>
-                <label className={labelClasses}>Longitude</label>
-                <input
-                  className={inputClasses}
-                  placeholder='Longitude'
-                  value={data.parking?.longitude ?? ''}
-                  onChange={onLngChanged}
-                />
-              </div>
-            </div>
-          )}
-
-          {['POLYGON', 'APPROACH', 'DESCENT'].includes(leafletMode) && (
-            <div className='space-y-2'>
-              <label className={labelClasses}>{['Outline', elevation].filter(Boolean).join(' ')}</label>
-              <PolylineEditor
-                coordinates={
-                  leafletMode === 'POLYGON'
-                    ? (data.outline ?? [])
-                    : leafletMode === 'APPROACH'
-                      ? (data.approach?.coordinates ?? [])
-                      : (data.descent?.coordinates ?? [])
-                }
-                parking={data.parking ?? {}}
-                onChange={(coordinates) => {
-                  if (leafletMode === 'POLYGON') setData((prev) => ({ ...prev, outline: coordinates }));
-                  else if (leafletMode === 'APPROACH') setData((prev) => ({ ...prev, approach: { coordinates } }));
-                  else if (leafletMode === 'DESCENT') setData((prev) => ({ ...prev, descent: { coordinates } }));
-                }}
-                upload={leafletMode !== 'POLYGON'}
-              />
-            </div>
-          )}
-        </div>
-
-        {data.problemOrder && data.problemOrder.length > 1 && (
-          <div className='bg-surface-card border-surface-border rounded-xl border shadow-sm'>
-            <button
-              type='button'
-              onClick={() => setShowProblemOrder(!showProblemOrder)}
-              className='type-label flex w-full items-center justify-between p-4'
-            >
-              <span className='flex items-center gap-2'>
-                <Route size={14} className='text-brand' /> Change order of problems in sector
-              </span>
-              {showProblemOrder ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-            </button>
-            {showProblemOrder && (
-              <div className='animate-in fade-in slide-in-from-top-2 p-4 pt-0 duration-200'>
-                <ProblemOrder
-                  problemOrder={data.problemOrder}
-                  onChange={(problemOrder) => setData((prev) => ({ ...prev, problemOrder }))}
-                />
-              </div>
-            )}
-          </div>
-        )}
-
-        <div className='flex items-center justify-end gap-3'>
-          <button
-            type='button'
-            onClick={() => navigate(sectorId ? `/sector/${sectorId}` : `/area/${areaId}`)}
-            className='bg-surface-nav border-surface-border hover:bg-surface-hover type-label rounded-lg border px-6 py-2.5 opacity-85 transition-all hover:opacity-100'
-          >
-            Cancel
-          </button>
-          <button
-            type='submit'
-            disabled={saving || !data.name || !!data.sunFromHour !== !!data.sunToHour}
-            className='type-label flex items-center gap-2 rounded-lg bg-emerald-400 px-8 py-2.5 text-slate-950 shadow-lg shadow-emerald-900/30 transition-all hover:bg-emerald-300 disabled:opacity-50'
-          >
-            {saving ? <Loader2 className='animate-spin' size={16} /> : <Save size={16} />}
-            Save Sector
-          </button>
-        </div>
-      </form>
     </div>
   );
 };

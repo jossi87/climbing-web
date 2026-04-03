@@ -117,7 +117,8 @@ export function makeAuthenticatedRequest(accessToken: string | null, incomingUrl
     if ((options.method ?? 'GET') !== 'GET') {
       window.dispatchEvent(
         new CustomEvent(DATA_MUTATION_EVENT, {
-          detail: { mode: consistencyAction ?? 'refetch' },
+          /** Default `nop`: global refetch was refetching every query and flooding errors/network. Opt in with `consistencyAction: 'refetch'`. */
+          detail: { mode: consistencyAction ?? 'nop' },
         }),
       );
     }

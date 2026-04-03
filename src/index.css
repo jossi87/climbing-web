@@ -216,3 +216,115 @@
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/*
+ * react-datepicker default stylesheet is imported from feature chunks after this file,
+ * so we scope with `html` and override critical colors for dark UI (FA date, ticks, First AID date).
+ */
+html .react-datepicker-popper {
+  z-index: 1200;
+}
+
+html .react-datepicker {
+  font-family: var(--font-ui), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.8125rem;
+  background-color: var(--color-surface-card) !important;
+  color: rgb(226 232 240) !important;
+  border: 1px solid var(--color-surface-border) !important;
+  border-radius: 0.75rem;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+}
+
+html .react-datepicker__header {
+  background-color: var(--color-surface-nav) !important;
+  border-bottom: 1px solid var(--color-surface-border) !important;
+}
+
+html .react-datepicker__current-month,
+html .react-datepicker-time__header,
+html .react-datepicker-year-header {
+  color: rgb(226 232 240) !important;
+}
+
+html .react-datepicker__day-name,
+html .react-datepicker__day,
+html .react-datepicker__time-name {
+  color: rgb(203 213 225) !important;
+}
+
+html .react-datepicker__day-name--disabled,
+html .react-datepicker__day--disabled,
+html .react-datepicker__time-name--disabled {
+  color: rgb(71 85 105) !important;
+}
+
+html .react-datepicker__day:not([aria-disabled='true']):hover,
+html .react-datepicker__month-text:not([aria-disabled='true']):hover,
+html .react-datepicker__quarter-text:not([aria-disabled='true']):hover,
+html .react-datepicker__year-text:not([aria-disabled='true']):hover {
+  background-color: var(--color-surface-hover) !important;
+}
+
+html .react-datepicker__day--selected,
+html .react-datepicker__day--in-selecting-range,
+html .react-datepicker__day--in-range,
+html .react-datepicker__month-text--selected,
+html .react-datepicker__month-text--in-range,
+html .react-datepicker__quarter-text--selected,
+html .react-datepicker__year-text--selected {
+  background-color: color-mix(in srgb, var(--color-brand) 82%, #0a0c10) !important;
+  color: rgb(15 23 42) !important;
+}
+
+html .react-datepicker__day--selected:not([aria-disabled='true']):hover,
+html .react-datepicker__day--in-range:not([aria-disabled='true']):hover {
+  background-color: var(--color-brand) !important;
+  color: rgb(15 23 42) !important;
+}
+
+html .react-datepicker__day--keyboard-selected,
+html .react-datepicker__month-text--keyboard-selected,
+html .react-datepicker__quarter-text--keyboard-selected,
+html .react-datepicker__year-text--keyboard-selected {
+  background-color: color-mix(in srgb, var(--color-brand) 45%, var(--color-surface-hover)) !important;
+  color: rgb(226 232 240) !important;
+}
+
+html .react-datepicker__navigation-icon::before {
+  border-color: rgb(148 163 184) !important;
+}
+
+html .react-datepicker__navigation:hover *::before {
+  border-color: rgb(226 232 240) !important;
+}
+
+html .react-datepicker-popper[data-placement^='bottom'] .react-datepicker__triangle {
+  fill: var(--color-surface-card) !important;
+  color: var(--color-surface-card) !important;
+  stroke: var(--color-surface-border) !important;
+}
+
+html .react-datepicker-popper[data-placement^='top'] .react-datepicker__triangle {
+  fill: var(--color-surface-card) !important;
+  color: var(--color-surface-card) !important;
+}
+
+html .react-datepicker__month-select,
+html .react-datepicker__year-select,
+html .react-datepicker__month-year-select {
+  background-color: var(--color-surface-nav) !important;
+  border: 1px solid var(--color-surface-border) !important;
+  color: rgb(226 232 240) !important;
+}
+
+html .react-datepicker__input-container input {
+  background-color: var(--color-surface-nav) !important;
+  color: rgb(226 232 240) !important;
+  border-color: var(--color-surface-border) !important;
+}
+
+html .react-datepicker__input-container input:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--color-brand) 55%, transparent) !important;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-brand) 35%, transparent);
+}

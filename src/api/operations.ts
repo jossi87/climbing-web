@@ -198,11 +198,28 @@ export function postProblem(
     headers: {
       Accept: 'application/json',
     },
+    /** Avoid refetching every cached query — that floods the network/console after save. */
+    consistencyAction: 'nop',
   })
-    .then((data) => data.json())
+    .then(async (response) => {
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const message =
+          typeof body === 'object' &&
+          body !== null &&
+          'message' in body &&
+          typeof (body as { message?: unknown }).message === 'string'
+            ? (body as { message: string }).message
+            : response.statusText;
+        throw new Error(message);
+      }
+      return body;
+    })
     .catch((error) => {
       console.warn(error);
-      alert(error);
+      const message = error instanceof Error ? error.message : String(error);
+      alert(message);
+      throw error;
     });
 }
 
@@ -342,11 +359,27 @@ export function postSector(
     headers: {
       Accept: 'application/json',
     },
+    consistencyAction: 'nop',
   })
-    .then((data) => data.json())
+    .then(async (response) => {
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const message =
+          typeof body === 'object' &&
+          body !== null &&
+          'message' in body &&
+          typeof (body as { message?: unknown }).message === 'string'
+            ? (body as { message: string }).message
+            : response.statusText;
+        throw new Error(message);
+      }
+      return body;
+    })
     .catch((error) => {
       console.warn(error);
-      alert(error);
+      const message = error instanceof Error ? error.message : String(error);
+      alert(message);
+      throw error;
     });
 }
 

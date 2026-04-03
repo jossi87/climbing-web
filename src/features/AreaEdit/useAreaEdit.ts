@@ -180,7 +180,10 @@ export const useAreaEdit = ({ areaId }: { areaId: number }) => {
       return formData;
     },
     select: (res) => res.json(),
-    fetchOptions: { headers: { Accept: 'application/json' } },
+    fetchOptions: {
+      headers: { Accept: 'application/json' },
+      consistencyAction: 'nop',
+    },
   });
 
   return {
