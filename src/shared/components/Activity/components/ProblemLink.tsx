@@ -12,6 +12,8 @@ type Props = {
   flagsClassName?: string;
   /** Home feed: one step down from pure `slate-50`/`100` so the block sits calmer in the hero. */
   tone?: 'default' | 'soft';
+  /** Activity row: tighter margin before lock so “· Today” doesn’t sit in a huge gap. */
+  compactEnd?: boolean;
 };
 
 /** Home feed: crags de-emphasized so route + grade read first. */
@@ -22,7 +24,7 @@ const softProblemLink = 'inline-block font-bold text-white antialiased transitio
 const softWhenGrade = 'font-medium text-slate-300 antialiased';
 
 /** Same hierarchy as profile ascents / todo: crag → problem + grade + type (no badge box). */
-export const ProblemLink = ({ a, type, flagsClassName, tone = 'default' }: Props) => {
+export const ProblemLink = ({ a, type, flagsClassName, tone = 'default', compactEnd = false }: Props) => {
   const crag = tone === 'soft' ? softCragLink : tickCragLink;
   const problem = tone === 'soft' ? softProblemLink : tickProblemLink;
   const grade = tone === 'soft' ? softWhenGrade : tickWhenGrade;
@@ -34,19 +36,19 @@ export const ProblemLink = ({ a, type, flagsClassName, tone = 'default' }: Props
       {type ? <span className={cn(tickFlags, 'mr-1.5', flagsClassName)}>{type}</span> : null}
 
       <Link to={`/area/${a.areaId}`} className={crag}>
-        {a.areaName}
+        {a.areaName?.trim()}
       </Link>
 
       <ProfileRowTextSep />
 
       <Link to={`/sector/${a.sectorId}`} className={crag}>
-        {a.sectorName}
+        {a.sectorName?.trim()}
       </Link>
 
       <ProfileRowTextSep />
 
       <Link to={`/problem/${a.problemId}`} className={problem}>
-        {a.problemName}
+        {a.problemName?.trim()}
       </Link>
 
       {showGrade ? <span className={cn(grade, 'ml-1 whitespace-nowrap tabular-nums')}>{a.grade}</span> : null}
@@ -58,7 +60,7 @@ export const ProblemLink = ({ a, type, flagsClassName, tone = 'default' }: Props
         </>
       ) : null}
 
-      <span className='ml-1.5 inline-block align-middle'>
+      <span className={cn(compactEnd ? 'ml-1' : 'ml-1.5', 'inline-block align-middle')}>
         <LockSymbol
           lockedAdmin={!!(a.areaLockedAdmin || a.sectorLockedAdmin || a.problemLockedAdmin)}
           lockedSuperadmin={!!(a.areaLockedSuperadmin || a.sectorLockedSuperadmin || a.problemLockedSuperadmin)}

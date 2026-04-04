@@ -9,7 +9,8 @@ import { Avatar, AvatarGroup, Card, SectionLabel } from '../../ui';
 import { Stars } from '../../ui/Indicators';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
-import { tickCrag, tickFlags, tickProblemLink } from '../Profile/profileRowTypography';
+import { profileRowMiddleDotClass } from '../Profile/ProfileRowTextSep';
+import { tickCrag, tickProblemLink } from '../Profile/profileRowTypography';
 import { ProblemLink } from './components/ProblemLink';
 import { LazyMedia } from './components/LazyMedia';
 import type { components } from '../../../@types/buldreinfo/swagger';
@@ -258,7 +259,7 @@ const activityChipActive = 'border-transparent bg-white/[0.12] text-slate-100 sh
 const activityRowRootClass =
   'm-0 text-[12px] font-normal leading-[1.45] tracking-normal sm:text-[13px] sm:leading-snug';
 
-/** Brighter than {@link tickFlags} for verbs (ticked, on, in, …) so they read with primary copy. */
+/** Brighter than route meta greys for verbs (ticked, on, in, …) so they read with primary copy. */
 const activityActionClass = 'font-normal text-slate-200 antialiased';
 
 const activityCommentBlock = cn(
@@ -328,13 +329,10 @@ const ActivityItem = ({ a, isBouldering, layoutDensity = 'default' }: ActivityIt
   const cragLeadClass = cn(tickCrag, 'font-medium', isFrontpage && 'text-slate-300');
   const userLinkClass = cn(tickProblemLink, isFrontpage && 'font-semibold text-slate-100');
   const problemLinkTone = isFrontpage ? 'soft' : 'default';
-  const timeHoverClass = isFrontpage ? 'group-hover:text-slate-400' : 'group-hover:text-slate-300';
-  /** Secondary to area/route line; home feed uses softer crags so time must step down again. */
+  /** Same sentence as story (inline flow — not a flex “time column”). */
   const timeClass = cn(
-    tickFlags,
-    'ml-1.5 inline-block tabular-nums transition-colors select-none',
-    isFrontpage ? 'text-slate-500' : 'text-slate-400',
-    timeHoverClass,
+    'whitespace-nowrap tabular-nums font-normal antialiased transition-colors select-none',
+    isFrontpage ? 'text-slate-400 group-hover:text-slate-300' : 'text-slate-300 group-hover:text-slate-200',
   );
   const faNameHoverClass = isFrontpage ? 'group-hover/user:text-slate-200' : 'group-hover/user:text-slate-100';
 
@@ -346,44 +344,52 @@ const ActivityItem = ({ a, isBouldering, layoutDensity = 'default' }: ActivityIt
         </div>
 
         <div className='min-w-0 flex-1'>
-          <div className={cn(activityRowRootClass, 'min-w-0 text-pretty [overflow-wrap:anywhere]')}>
-            {a.users && a.users.length > 0 && !a.repeat ? (
-              <>
-                <span className={cragLeadClass}>New {isBouldering ? 'boulder' : 'route'}</span>{' '}
-                <span className={actionClass}>in</span>{' '}
-                <ProblemLink a={a} flagsClassName={actionClass} tone={problemLinkTone} />
-              </>
-            ) : a.message ? (
-              <>
-                <Link to={`/user/${a.id}`} className={userLinkClass}>
-                  {a.name}
-                </Link>{' '}
-                <span className={actionClass}>commented on</span>{' '}
-                <ProblemLink a={a} flagsClassName={actionClass} tone={problemLinkTone} />
-              </>
-            ) : (
-              <>
-                {a.name ? (
-                  <>
-                    <Link to={`/user/${a.id}`} className={userLinkClass}>
-                      {a.name}
-                    </Link>{' '}
-                    <span className={actionClass}>{a.repeat ? 'repeated' : 'ticked'}</span>{' '}
-                  </>
-                ) : numImg > 0 || numMov > 0 ? (
-                  <>
-                    <span className={cragLeadClass}>
-                      {numImg > 0 && `${numImg} ${numImg === 1 ? 'image' : 'images'}`}
-                      {numImg > 0 && numMov > 0 && ' & '}
-                      {numMov > 0 && `${numMov} ${numMov === 1 ? 'video' : 'videos'}`}
-                    </span>{' '}
-                    <span className={actionClass}>on</span>{' '}
-                  </>
-                ) : null}
-                <ProblemLink a={a} flagsClassName={actionClass} tone={problemLinkTone} />
-              </>
-            )}
-            <span className={timeClass}>{a.timeAgo}</span>
+          <div className={cn(activityRowRootClass, 'max-w-full min-w-0 text-pretty [overflow-wrap:anywhere]')}>
+            {[
+              a.users && a.users.length > 0 && !a.repeat ? (
+                <>
+                  <span className={cragLeadClass}>New {isBouldering ? 'boulder' : 'route'}</span>{' '}
+                  <span className={actionClass}>in</span>{' '}
+                  <ProblemLink a={a} compactEnd flagsClassName={actionClass} tone={problemLinkTone} />
+                </>
+              ) : a.message ? (
+                <>
+                  <Link to={`/user/${a.id}`} className={userLinkClass}>
+                    {a.name}
+                  </Link>{' '}
+                  <span className={actionClass}>commented on</span>{' '}
+                  <ProblemLink a={a} compactEnd flagsClassName={actionClass} tone={problemLinkTone} />
+                </>
+              ) : (
+                <>
+                  {a.name ? (
+                    <>
+                      <Link to={`/user/${a.id}`} className={userLinkClass}>
+                        {a.name}
+                      </Link>{' '}
+                      <span className={actionClass}>{a.repeat ? 'repeated' : 'ticked'}</span>{' '}
+                    </>
+                  ) : numImg > 0 || numMov > 0 ? (
+                    <>
+                      <span className={cragLeadClass}>
+                        {numImg > 0 && `${numImg} ${numImg === 1 ? 'image' : 'images'}`}
+                        {numImg > 0 && numMov > 0 && ' & '}
+                        {numMov > 0 && `${numMov} ${numMov === 1 ? 'video' : 'videos'}`}
+                      </span>{' '}
+                      <span className={actionClass}>on</span>{' '}
+                    </>
+                  ) : null}
+                  <ProblemLink a={a} compactEnd flagsClassName={actionClass} tone={problemLinkTone} />
+                </>
+              ),
+              ' ',
+              <span key='activity-when' className='inline align-baseline whitespace-nowrap'>
+                <span className={profileRowMiddleDotClass} aria-hidden>
+                  ·
+                </span>{' '}
+                <span className={timeClass}>{a.timeAgo}</span>
+              </span>,
+            ]}
           </div>
 
           {a.message ? (
