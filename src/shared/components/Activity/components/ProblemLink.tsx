@@ -2,13 +2,13 @@ import { Link } from 'react-router-dom';
 import type { components } from '../../../../@types/buldreinfo/swagger';
 import { LockSymbol } from '../../../ui/Indicators';
 import { ProfileRowTextSep } from '../../Profile/ProfileRowTextSep';
-import { tickCragLink, tickFlags, tickProblemLink, tickWhenGrade } from '../../Profile/profileRowTypography';
+import { tickCragLink, tickFlags, tickProblemLink } from '../../Profile/profileRowTypography';
 import { cn } from '../../../../lib/utils';
 
 type Props = {
   a: components['schemas']['Activity'];
   type?: string;
-  /** Merges with {@link tickFlags} for type + subtype (e.g. Activity feed: brighter muted text). */
+  /** Activity sentence meta (“in”, “ticked”, …): when set, used alone for optional `type` + subtype so typography matches those words ({@link tickFlags} otherwise). */
   flagsClassName?: string;
   /** Home feed: one step down from pure `slate-50`/`100` so the block sits calmer in the hero. */
   tone?: 'default' | 'soft';
@@ -20,14 +20,17 @@ type Props = {
 const softCragLink = 'font-normal text-slate-400 antialiased transition-colors hover:text-brand';
 /** Stand out from gray crag/meta copy so route names scan on one line (esp. mobile). */
 const softProblemLink = 'inline-block font-bold text-white antialiased transition-colors hover:text-brand';
-/** Home feed: grade as secondary metadata, not a loud accent. */
-const softWhenGrade = 'font-medium text-slate-300 antialiased';
+/** Beside problem title: same bright color, lighter weight so the name stays primary. */
+const softGradeBesideProblem = 'font-normal text-white antialiased';
+const defaultGradeBesideProblem = 'font-normal text-slate-50 antialiased';
 
 /** Same hierarchy as profile ascents / todo: crag → problem + grade + type (no badge box). */
 export const ProblemLink = ({ a, type, flagsClassName, tone = 'default', compactEnd = false }: Props) => {
   const crag = tone === 'soft' ? softCragLink : tickCragLink;
   const problem = tone === 'soft' ? softProblemLink : tickProblemLink;
-  const grade = tone === 'soft' ? softWhenGrade : tickWhenGrade;
+  const gradeBesideProblem = tone === 'soft' ? softGradeBesideProblem : defaultGradeBesideProblem;
+  /** One class stack for label-like spans (optional API type, subtype); avoids mixing with {@link tickFlags} in activity rows. */
+  const metaSpanClass = flagsClassName ?? tickFlags;
   const showGrade = !!(a.grade && a.grade !== '.');
   const showSubtype = !!(a.problemSubtype && a.problemSubtype !== '.');
   const hasLock = !!(
@@ -41,7 +44,7 @@ export const ProblemLink = ({ a, type, flagsClassName, tone = 'default', compact
 
   return (
     <>
-      {type ? <span className={cn(tickFlags, 'mr-1.5', flagsClassName)}>{type}</span> : null}
+      {type ? <span className={cn(metaSpanClass, 'mr-1.5')}>{type}</span> : null}
 
       <Link to={`/area/${a.areaId}`} className={crag}>
         {a.areaName?.trim()}
@@ -58,13 +61,14 @@ export const ProblemLink = ({ a, type, flagsClassName, tone = 'default', compact
       <Link to={`/problem/${a.problemId}`} className={problem}>
         {a.problemName?.trim()}
       </Link>
-
-      {showGrade ? <span className={cn(grade, 'ml-1 whitespace-nowrap tabular-nums')}>{a.grade}</span> : null}
+      {showGrade ? (
+        <span className={cn(gradeBesideProblem, 'ml-1 whitespace-nowrap tabular-nums')}>{a.grade}</span>
+      ) : null}
 
       {showSubtype ? (
         <>
           {showGrade ? <ProfileRowTextSep /> : null}
-          <span className={cn(tickFlags, !showGrade && 'ml-1', flagsClassName)}>{a.problemSubtype}</span>
+          <span className={cn(metaSpanClass, !showGrade && 'ml-1')}>{a.problemSubtype}</span>
         </>
       ) : null}
 

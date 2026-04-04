@@ -323,7 +323,6 @@ const ActivityItem = ({ a, isBouldering, layoutDensity = 'default' }: ActivityIt
   const cragLeadClass = cn(tickCrag, 'font-medium', isFrontpage && 'text-slate-300');
   const userLinkClass = cn(tickProblemLink, isFrontpage && 'font-semibold text-slate-100');
   const problemLinkTone = isFrontpage ? 'soft' : 'default';
-  const activityWhenClass = cn(actionClass, 'whitespace-nowrap');
   const faNameHoverClass = isFrontpage ? 'group-hover/user:text-slate-200' : 'group-hover/user:text-slate-100';
 
   return (
@@ -337,7 +336,6 @@ const ActivityItem = ({ a, isBouldering, layoutDensity = 'default' }: ActivityIt
           <ActivityFeedMetaRow
             a={a}
             activityRowRootClass={activityRowRootClass}
-            activityWhenClass={activityWhenClass}
             actionClass={actionClass}
             cragLeadClass={cragLeadClass}
             isBouldering={isBouldering}
