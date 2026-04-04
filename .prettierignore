@@ -1,1 +1,2 @@
 src/@types/buldreinfo/swagger.d.ts
+src/shared/components/Activity/ActivityFeedMetaRow.tsx

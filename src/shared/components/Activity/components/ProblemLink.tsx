@@ -30,6 +30,14 @@ export const ProblemLink = ({ a, type, flagsClassName, tone = 'default', compact
   const grade = tone === 'soft' ? softWhenGrade : tickWhenGrade;
   const showGrade = !!(a.grade && a.grade !== '.');
   const showSubtype = !!(a.problemSubtype && a.problemSubtype !== '.');
+  const hasLock = !!(
+    a.areaLockedAdmin ||
+    a.sectorLockedAdmin ||
+    a.problemLockedAdmin ||
+    a.areaLockedSuperadmin ||
+    a.sectorLockedSuperadmin ||
+    a.problemLockedSuperadmin
+  );
 
   return (
     <>
@@ -60,12 +68,14 @@ export const ProblemLink = ({ a, type, flagsClassName, tone = 'default', compact
         </>
       ) : null}
 
-      <span className={cn(compactEnd ? 'ml-1' : 'ml-1.5', 'inline-block align-middle')}>
-        <LockSymbol
-          lockedAdmin={!!(a.areaLockedAdmin || a.sectorLockedAdmin || a.problemLockedAdmin)}
-          lockedSuperadmin={!!(a.areaLockedSuperadmin || a.sectorLockedSuperadmin || a.problemLockedSuperadmin)}
-        />
-      </span>
+      {hasLock ? (
+        <span className={cn(compactEnd ? 'ml-1' : 'ml-1.5', 'inline-block align-middle')}>
+          <LockSymbol
+            lockedAdmin={!!(a.areaLockedAdmin || a.sectorLockedAdmin || a.problemLockedAdmin)}
+            lockedSuperadmin={!!(a.areaLockedSuperadmin || a.sectorLockedSuperadmin || a.problemLockedSuperadmin)}
+          />
+        </span>
+      ) : null}
     </>
   );
 };

@@ -9,9 +9,8 @@ import { Avatar, AvatarGroup, Card, SectionLabel } from '../../ui';
 import { Stars } from '../../ui/Indicators';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
-import { profileRowMiddleDotClass } from '../Profile/ProfileRowTextSep';
 import { tickCrag, tickProblemLink } from '../Profile/profileRowTypography';
-import { ProblemLink } from './components/ProblemLink';
+import { ActivityFeedMetaRow } from './ActivityFeedMetaRow';
 import { LazyMedia } from './components/LazyMedia';
 import type { components } from '../../../@types/buldreinfo/swagger';
 
@@ -259,8 +258,8 @@ const activityChipActive = 'border-transparent bg-white/[0.12] text-slate-100 sh
 const activityRowRootClass =
   'm-0 text-[12px] font-normal leading-[1.45] tracking-normal sm:text-[13px] sm:leading-snug';
 
-/** Brighter than route meta greys for verbs (ticked, on, in, …) so they read with primary copy. */
-const activityActionClass = 'font-normal text-slate-200 antialiased';
+/** Verbs, subtype, relative time — muted vs names/route, still readable on dark feed bg. */
+const activityMetaClass = 'font-normal text-slate-300 antialiased';
 
 const activityCommentBlock = cn(
   'mt-1 text-pretty break-words antialiased not-italic',
@@ -312,28 +311,19 @@ const ActivityItem = ({ a, isBouldering, layoutDensity = 'default' }: ActivityIt
     return <Check size={8} className={statusIconGlyph} strokeWidth={2} />;
   })();
 
-  const [numImg, numMov] = (a.media ?? []).reduce(
-    (acc: number[], item) => (item.movie ? [acc[0], acc[1] + 1] : [acc[0] + 1, acc[1]]),
-    [0, 0],
-  );
-
   const pad = layoutDensity === 'frontpage' ? 'px-3 py-2.5 md:px-4 md:py-3' : 'px-3 py-2 sm:px-4 sm:py-2.5';
   const gap = layoutDensity === 'frontpage' ? 'gap-2.5 md:gap-3' : 'gap-2.5 sm:gap-3';
   const mediaMt = layoutDensity === 'frontpage' ? 'mt-1.5 md:mt-2' : 'mt-1.5 sm:mt-2';
   const faRowMt = layoutDensity === 'frontpage' ? 'mt-1.5 md:mt-2' : 'mt-1.5 sm:mt-2';
 
   const isFrontpage = layoutDensity === 'frontpage';
-  /** Slightly duller than the default feed so the home hero feels less stark white-on-dark. */
-  const actionClass = cn(activityActionClass, isFrontpage && 'text-slate-300');
+  /** Home: slightly softer than default feed meta. */
+  const actionClass = cn(activityMetaClass, isFrontpage && 'text-slate-400');
   const commentClass = isFrontpage ? activityCommentFrontpage : activityCommentBlock;
   const cragLeadClass = cn(tickCrag, 'font-medium', isFrontpage && 'text-slate-300');
   const userLinkClass = cn(tickProblemLink, isFrontpage && 'font-semibold text-slate-100');
   const problemLinkTone = isFrontpage ? 'soft' : 'default';
-  /** Same sentence as story (inline flow — not a flex “time column”). */
-  const timeClass = cn(
-    'whitespace-nowrap tabular-nums font-normal antialiased transition-colors select-none',
-    isFrontpage ? 'text-slate-400 group-hover:text-slate-300' : 'text-slate-300 group-hover:text-slate-200',
-  );
+  const activityWhenClass = cn(actionClass, 'whitespace-nowrap');
   const faNameHoverClass = isFrontpage ? 'group-hover/user:text-slate-200' : 'group-hover/user:text-slate-100';
 
   return (
@@ -344,53 +334,16 @@ const ActivityItem = ({ a, isBouldering, layoutDensity = 'default' }: ActivityIt
         </div>
 
         <div className='min-w-0 flex-1'>
-          <div className={cn(activityRowRootClass, 'max-w-full min-w-0 text-pretty [overflow-wrap:anywhere]')}>
-            {[
-              a.users && a.users.length > 0 && !a.repeat ? (
-                <>
-                  <span className={cragLeadClass}>New {isBouldering ? 'boulder' : 'route'}</span>{' '}
-                  <span className={actionClass}>in</span>{' '}
-                  <ProblemLink a={a} compactEnd flagsClassName={actionClass} tone={problemLinkTone} />
-                </>
-              ) : a.message ? (
-                <>
-                  <Link to={`/user/${a.id}`} className={userLinkClass}>
-                    {a.name}
-                  </Link>{' '}
-                  <span className={actionClass}>commented on</span>{' '}
-                  <ProblemLink a={a} compactEnd flagsClassName={actionClass} tone={problemLinkTone} />
-                </>
-              ) : (
-                <>
-                  {a.name ? (
-                    <>
-                      <Link to={`/user/${a.id}`} className={userLinkClass}>
-                        {a.name}
-                      </Link>{' '}
-                      <span className={actionClass}>{a.repeat ? 'repeated' : 'ticked'}</span>{' '}
-                    </>
-                  ) : numImg > 0 || numMov > 0 ? (
-                    <>
-                      <span className={cragLeadClass}>
-                        {numImg > 0 && `${numImg} ${numImg === 1 ? 'image' : 'images'}`}
-                        {numImg > 0 && numMov > 0 && ' & '}
-                        {numMov > 0 && `${numMov} ${numMov === 1 ? 'video' : 'videos'}`}
-                      </span>{' '}
-                      <span className={actionClass}>on</span>{' '}
-                    </>
-                  ) : null}
-                  <ProblemLink a={a} compactEnd flagsClassName={actionClass} tone={problemLinkTone} />
-                </>
-              ),
-              ' ',
-              <span key='activity-when' className='inline align-baseline whitespace-nowrap'>
-                <span className={profileRowMiddleDotClass} aria-hidden>
-                  ·
-                </span>{' '}
-                <span className={timeClass}>{a.timeAgo}</span>
-              </span>,
-            ]}
-          </div>
+          <ActivityFeedMetaRow
+            a={a}
+            activityRowRootClass={activityRowRootClass}
+            activityWhenClass={activityWhenClass}
+            actionClass={actionClass}
+            cragLeadClass={cragLeadClass}
+            isBouldering={isBouldering}
+            problemLinkTone={problemLinkTone}
+            userLinkClass={userLinkClass}
+          />
 
           {a.message ? (
             <div className={commentClass}>
